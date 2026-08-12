@@ -127,7 +127,7 @@ const launchProviders = [
     pricePerKgGto: '$11,000 (est.)',
     ridesharePerKg: 'TBD',
     status: 'In Development',
-    notes: 'Medium-lift reusable rocket targeting 2026 first flight. Designed for mega-constellation deployment and interplanetary missions.',
+    notes: 'Medium-lift reusable rocket now targeting a late-2026 debut after a tank-testing setback, with risk of slipping to 2027. Designed for mega-constellation deployment and interplanetary missions.',
   },
   {
     provider: 'SpaceX Starship',
@@ -193,7 +193,7 @@ const historicalCosts = [
   { year: '2010', costPerKg: '$10,000', vehicle: 'Falcon 9 v1.0', notes: 'SpaceX enters the market' },
   { year: '2015', costPerKg: '$4,650', vehicle: 'Falcon 9 FT', notes: 'First successful booster landing' },
   { year: '2020', costPerKg: '$2,720', vehicle: 'Falcon 9 Block 5', notes: 'Routine reuse, 10+ flights per booster' },
-  { year: '2025', costPerKg: '$2,500', vehicle: 'Falcon 9 Block 5', notes: 'Booster reuse exceeds 20 flights' },
+  { year: '2025', costPerKg: '$2,500', vehicle: 'Falcon 9 Block 5', notes: 'Booster reuse exceeds 25 flights; 165 Falcon launches in one year' },
   { year: '2026+', costPerKg: '<$100 (target)', vehicle: 'Starship', notes: 'Fully reusable, super heavy lift' },
 ];
 
@@ -206,7 +206,7 @@ const faqItems = [
   {
     question: 'Why are SpaceX launches cheaper than competitors?',
     answer:
-      'SpaceX achieves lower costs through three key innovations: (1) Reusable first-stage boosters that have flown 20+ times each, spreading manufacturing cost across many flights; (2) Vertical integration — SpaceX manufactures 80% of components in-house, avoiding subcontractor markups; (3) High launch cadence (60+ launches per year) that amortizes fixed infrastructure costs. This combination has reduced per-kg launch costs by approximately 90% compared to pre-SpaceX era pricing.',
+      'SpaceX achieves lower costs through three key innovations: (1) Reusable first-stage boosters that have flown 30+ times each, spreading manufacturing cost across many flights; (2) Vertical integration — SpaceX manufactures 80% of components in-house, avoiding subcontractor markups; (3) High launch cadence (165 Falcon launches in 2025) that amortizes fixed infrastructure costs. This combination has reduced per-kg launch costs by approximately 90% compared to pre-SpaceX era pricing.',
   },
   {
     question: 'What is the difference between rideshare and dedicated launch?',
@@ -221,7 +221,7 @@ const faqItems = [
   {
     question: 'Will satellite launch costs continue to decrease?',
     answer:
-      'Yes, the trend toward lower launch costs is expected to continue. SpaceX Starship aims to reduce per-kg costs to under $100, a 95% reduction from current Falcon 9 pricing. Increased competition from Rocket Lab Neutron, Relativity Terran R, Blue Origin New Glenn, and Chinese commercial providers will drive further price reductions. Industry analysts project launch costs could fall another 50-90% by 2030, enabled by full reusability, higher flight rates, and manufacturing improvements.',
+      'Yes, the trend toward lower launch costs is expected to continue. SpaceX Starship aims to reduce per-kg costs to under $100, a 95% reduction from current Falcon 9 pricing. Increased competition from Rocket Lab Neutron, Relativity Terran R, the now-operational Blue Origin New Glenn, and Chinese commercial providers will drive further price reductions. Industry analysts project launch costs could fall another 50-90% by 2030, enabled by full reusability, higher flight rates, and manufacturing improvements.',
   },
 ];
 
@@ -240,7 +240,7 @@ export default function SatelliteLaunchCostPage() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/spacenexus-logo.png' },
     },
     datePublished: '2026-02-18T00:00:00Z',
-    dateModified: '2026-02-18T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/learn/satellite-launch-cost',
   };
 
@@ -266,7 +266,7 @@ export default function SatelliteLaunchCostPage() {
             <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
               Cost Analysis
             </span>
-            <span className="text-xs text-slate-500">Updated February 2026</span>
+            <span className="text-xs text-slate-500">Updated August 2026</span>
             <span className="text-xs text-slate-500">12 min read</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-4">
@@ -320,7 +320,7 @@ export default function SatelliteLaunchCostPage() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-2">Launch Cost Comparison by Provider</h2>
           <p className="text-slate-400 text-sm mb-6">
-            Prices reflect publicly available data and industry estimates as of early 2026. All costs in
+            Prices reflect publicly available data and industry estimates as of mid-2026. All costs in
             USD. Costs adjusted to 2026 dollars where applicable.
           </p>
           <div className="overflow-x-auto">
@@ -539,7 +539,8 @@ export default function SatelliteLaunchCostPage() {
                 <div>
                   <h4 className="text-white font-semibold">Consider emerging launch providers</h4>
                   <p className="text-slate-400 text-sm mt-1">
-                    New entrants like Firefly, ABL Space, and Chinese commercial providers often offer competitive
+                    New entrants like Firefly Aerospace — whose upgraded Alpha Block 2 is now targeting a
+                    Q4 2026 debut — Stoke Space, and Chinese commercial providers often offer competitive
                     pricing to build their manifest. First-flight discounts can be significant.
                   </p>
                 </div>

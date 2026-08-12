@@ -27,12 +27,28 @@ interface WeeklyBrief {
 
 const BRIEFS: WeeklyBrief[] = [
   {
+    id: 'aug-10-2026',
+    weekOf: 'August 10, 2026',
+    dateRange: 'Aug 10 - Aug 16',
+    topStory: {
+      headline: 'Rocket Lab Posts Record Quarter as $8B Iridium Deal Reshapes the Sector',
+      summary: 'Rocket Lab\'s August 10 investor update paired record Q2 revenue of $234M (up 62% YoY) and a record $2.36B backlog with the June agreement to acquire Iridium for $54/share — roughly $8B in enterprise value, expected to close mid-2027. Shares still fell as Q3 margin guidance reflected peak Neutron first-flight spending; the rocket remains on track for pad delivery in Q4 2026.',
+    },
+    sections: [
+      { category: 'Market', icon: '📊', headline: 'SpaceX Priced Like an AI Company; the Mid-Tier Gets Margin Questions', details: ['Argus Research upgraded SpaceX-linked shares to Buy with a $160 target after Elon Musk projected $500B in annual revenue within roughly two years', 'Rocket Lab (RKLB) fell post-earnings despite record revenue as Neutron first-flight spending pressured Q3 margin guidance', 'Firefly Aerospace (FLY) pushed its Alpha Block 2 debut to Q4 2026 and now expects just three Alpha flights this year'] },
+      { category: 'Launches', icon: '🚀', headline: 'SpaceX Reaches 93 Falcon Flights for the Year', details: ['Starlink 17-38 from Vandenberg on Aug 8 was SpaceX\'s 50th West Coast launch of 2026', 'Starlink 10-19 from Cape Canaveral on Aug 11 was the year\'s 93rd Falcon 9 flight and 72nd Starlink mission', 'Starship\'s first orbital Starlink V3 deployment attempt is targeted for late August from Starbase'] },
+      { category: 'Regulatory', icon: '⚖️', headline: 'Golden Dome Faces a 2027 Funding Cliff', details: ['Gen. Michael Guetlein warned that most of Golden Dome\'s initial funding is already committed — and that under a continuing resolution "there is no Golden Dome"', 'Contractors are booking Golden Dome work largely through existing programs of record, keeping the program\'s true cost opaque to Congress', 'A bipartisan Space Superiority Readiness Act was introduced to ensure US military readiness for orbital conflict'] },
+      { category: 'Lunar', icon: '🌕', headline: 'A Quietly Productive Week for the Moon Economy', details: ['NASA declared "wrenches down" on LEMS — the first completed science payload designed for Artemis astronauts to deploy on the lunar surface', 'NASA opened a formal request for input on Moon base health and research needs', 'New research suggests moonquake seismology could help locate lunar ice deposits'] },
+    ],
+    keyTakeaway: 'The launch industry is splitting into two different businesses. One company is being underwritten as an AI-era platform; the rest are being asked about gross margins. Rocket Lab\'s answer — buy Iridium and bolt recurring communications revenue onto the launch stack — is the boldest response yet, and the template rivals will now be measured against.',
+  },
+  {
     id: 'feb-17-2026',
     weekOf: 'February 17, 2026',
     dateRange: 'Feb 17 - Feb 23',
     topStory: {
       headline: 'Starship Achieves Rapid Reusability Milestone',
-      summary: 'SpaceX successfully launched and recovered a Starship booster within 48 hours of its previous flight, marking the fastest turnaround for the Super Heavy vehicle. The company says it expects to reach weekly cadence by Q3 2026.',
+      summary: 'SpaceX successfully launched and recovered a Starship booster within 48 hours of its previous flight, marking the fastest turnaround for the Super Heavy vehicle. At the time, the company said it aimed for weekly cadence by Q3 2026. (Update, August 2026: weekly Starship cadence has not yet been reached — the program\'s next milestone is a first orbital Starlink V3 deployment attempt in late August.)',
     },
     sections: [
       { category: 'Funding', icon: '💰', headline: '3 Notable Rounds This Week', details: ['Impulse Space raises $175M Series C for orbital transfer vehicles', 'Muon Space closes $45M Series A for climate monitoring satellites', 'Astroforge secures $25M for asteroid mining proof-of-concept mission'] },
@@ -49,7 +65,7 @@ const BRIEFS: WeeklyBrief[] = [
     dateRange: 'Feb 10 - Feb 16',
     topStory: {
       headline: 'Artemis II Crew Completes Final Training Milestone',
-      summary: 'NASA announced the four-person Artemis II crew has completed their final integrated training exercise, including a full mission simulation. Launch remains on track for Q4 2026 from Kennedy Space Center.',
+      summary: 'NASA announced the four-person Artemis II crew had completed their final integrated training exercise, including a full mission simulation. (Update: Artemis II launched from Kennedy Space Center on April 1, 2026 and splashed down April 10 after a successful nine-day lunar flyby — the first crewed flight beyond low Earth orbit since Apollo. SpaceNexus\'s live mission coverage is archived.)',
     },
     sections: [
       { category: 'Funding', icon: '💰', headline: 'Relativity Space Closes $200M Growth Round', details: ['Relativity Space raises $200M at $4.2B valuation for Terran R development', 'True Anomaly raises $100M Series B for space domain awareness', 'Inversion Space raises $20M Seed for Earth re-entry capsule delivery'] },
@@ -85,6 +101,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Regulatory: 'border-amber-500/30 bg-amber-500/5',
   Personnel: 'border-purple-500/30 bg-purple-500/5',
   Market: 'border-blue-500/30 bg-blue-500/5',
+  Lunar: 'border-cyan-500/30 bg-cyan-500/5',
 };
 
 export default function IntelligenceBriefPage() {
@@ -125,11 +142,11 @@ export default function IntelligenceBriefPage() {
         <ScrollReveal delay={0.1}>
           <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-bold text-white">Get the brief in your inbox every Monday</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Join 2,000+ space professionals. Free weekly delivery.</p>
+              <h3 className="text-sm font-bold text-white">The State of the Space Economy brief ships every Monday</h3>
+              <p className="text-xs text-slate-400 mt-0.5">A weekly data brief built from SpaceNexus&apos;s own tracked news, funding, launch, and hiring data — free.</p>
             </div>
-            <Link href="/news" className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
-              Subscribe Free
+            <Link href="/ai-insights" className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+              Read the Latest Brief
             </Link>
           </div>
         </ScrollReveal>

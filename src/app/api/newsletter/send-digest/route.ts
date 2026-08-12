@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
 
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireCronSecret, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
@@ -132,7 +133,7 @@ export async function POST(request: NextRequest) {
         categoriesIncluded: JSON.stringify(Object.keys(categorizedNews)),
         status: 'sending',
         sendStartedAt: new Date(),
-        aiModel: 'claude-sonnet-4-20250514',
+        aiModel: EDITORIAL_MODEL,
       },
     });
 

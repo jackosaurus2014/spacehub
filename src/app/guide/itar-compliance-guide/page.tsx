@@ -70,7 +70,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'What are the penalties for ITAR violations?',
-    a: 'ITAR violations can result in criminal penalties of up to $1 million per violation and up to 20 years imprisonment, or civil penalties of up to $1,213,116 per violation (adjusted annually for inflation). Companies may also be debarred from future export activities. Notable settlements include Boeing ($75 million in 2006) and Lockheed Martin/L3 Technologies (tens of millions in various settlements). Even inadvertent violations can result in significant penalties.',
+    a: 'ITAR violations can result in criminal penalties of up to $1 million per violation and up to 20 years imprisonment, or civil penalties of more than $1.2 million per violation (the statutory maximum is adjusted annually for inflation). Companies may also be debarred from future export activities. Notable settlements include Boeing ($75 million in 2006) and Lockheed Martin/L3 Technologies (tens of millions in various settlements). Even inadvertent violations can result in significant penalties.',
   },
   {
     q: 'What is the difference between ITAR and EAR?',
@@ -95,7 +95,7 @@ function buildStructuredData() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
-    dateModified: '2026-02-08T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/guide/itar-compliance-guide',
     image: 'https://spacenexus.us/og-image.png',
   };
@@ -170,7 +170,7 @@ export default function ItarComplianceGuidePage() {
               Export Controls, Licensing &amp; Best Practices for the Space Industry
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
-              <time dateTime="2026-02-08">Last updated: February 2026</time>
+              <time dateTime="2026-08-12">Last updated: August 2026</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
               <ReadingTime wordCount={4000} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>

@@ -130,7 +130,7 @@ const FAQ_ITEMS = [
   {
     question: 'How many satellites are currently in orbit?',
     answer:
-      'As of early 2026, there are approximately 13,000 active satellites in orbit, with over 48,000 total tracked objects including defunct satellites and debris. SpaceX Starlink alone accounts for over 6,500 operational satellites. The number grows weekly as new constellations are deployed.',
+      'As of mid-2026, there are more than 16,000 active satellites in orbit, with roughly 50,000 total tracked objects including defunct satellites and debris, per CelesTrak and Jonathan McDowell\'s satellite tallies. SpaceX Starlink alone accounts for over 10,000 operational satellites — about two-thirds of all active spacecraft. The number grows weekly as new constellations are deployed.',
   },
   {
     question: 'Can I track satellites with my phone?',
@@ -194,7 +194,7 @@ export default function SatelliteTrackingGuidePage() {
               monitoring objects in Earth orbit.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Last updated: February 2026</span>
+              <span>Last updated: August 2026</span>
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
@@ -232,9 +232,9 @@ export default function SatelliteTrackingGuidePage() {
                 debris that threaten operational spacecraft.
               </p>
               <p className="text-slate-300 leading-relaxed mb-4">
-                As of early 2026, the US Space Force&apos;s 18th Space Defense Squadron tracks over
-                <strong className="text-white"> 48,000 objects</strong> larger than 10 centimeters in orbit.
-                Of these, approximately 13,000 are active satellites, while the remainder consists of defunct
+                As of mid-2026, the US Space Force&apos;s 18th Space Defense Squadron tracks nearly
+                <strong className="text-white"> 50,000 objects</strong> larger than 10 centimeters in orbit.
+                Of these, more than 16,000 are active satellites, while the remainder consists of defunct
                 spacecraft, spent rocket stages, and debris fragments. With mega-constellations like Starlink,
                 OneWeb, and Amazon Kuiper deploying thousands of new satellites, the orbital environment is
                 growing more congested than ever.
@@ -466,7 +466,7 @@ export default function SatelliteTrackingGuidePage() {
                 though thresholds vary by operator and mission criticality.
               </p>
               <p className="text-slate-300 leading-relaxed mb-4">
-                SpaceX&apos;s Starlink constellation, with over 6,500 satellites, performs thousands of avoidance
+                SpaceX&apos;s Starlink constellation, with over 10,000 satellites, performs thousands of avoidance
                 maneuvers per year using an autonomous collision avoidance system. In 2025, Starlink executed
                 approximately 50,000 maneuvers, highlighting the scale of the traffic management challenge.
                 Operators without maneuvering capability (such as small cubesats) must rely on ground-based

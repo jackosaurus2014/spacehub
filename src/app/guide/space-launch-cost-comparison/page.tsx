@@ -60,15 +60,15 @@ const TOC = [
 const FAQ_ITEMS = [
   {
     q: 'What is the cheapest rocket to launch to orbit?',
-    a: 'On a cost-per-kilogram basis, SpaceX\'s Falcon 9 is currently the cheapest operational orbital launch vehicle, with commercial rideshare pricing starting at approximately $5,500 per kilogram to LEO. For dedicated missions, the Falcon 9 list price of $67 million translates to roughly $3,000 per kilogram for a full 22,800 kg payload to LEO. SpaceX\'s Starship, once fully operational, is expected to reduce costs further, potentially to $100-$500 per kilogram.',
+    a: 'On a cost-per-kilogram basis, SpaceX\'s Falcon 9 is currently the cheapest operational orbital launch vehicle, with published rideshare pricing of approximately $7,000 per kilogram to sun-synchronous orbit as of 2026. For dedicated missions, the Falcon 9 list price of approximately $70 million translates to roughly $3,000-$3,100 per kilogram for a full 22,800 kg payload to LEO. SpaceX\'s Starship, which began deploying operational payloads in 2026, is expected to reduce costs further, potentially to $100-$500 per kilogram at mature flight rates.',
   },
   {
     q: 'How much does a Falcon 9 launch cost?',
-    a: 'SpaceX lists the Falcon 9 commercial launch price at $67 million for a dedicated mission. However, actual prices vary based on orbit, payload integration requirements, and contract terms. Rideshare missions on the Transporter series start at approximately $1.1 million for a 200 kg payload. Government missions (e.g., for the U.S. Space Force) are priced higher, with National Security Space Launch (NSSL) contracts valued at $100 million or more per mission.',
+    a: 'SpaceX lists the Falcon 9 commercial launch price at approximately $70 million for a dedicated mission as of 2026. However, actual prices vary based on orbit, payload integration requirements, and contract terms. Rideshare missions on the Transporter series start at $350,000 for the first 50 kg, with additional mass priced at approximately $7,000 per kilogram. Government missions (e.g., for the U.S. Space Force) are priced higher, with National Security Space Launch (NSSL) contracts valued at $100 million or more per mission.',
   },
   {
     q: 'How much does it cost to launch per kilogram?',
-    a: 'Cost per kilogram varies dramatically by vehicle: Falcon 9 achieves roughly $2,700-$3,000/kg to LEO for a full payload, Electron costs approximately $25,000-$30,000/kg (small-sat premium), Ariane 6 is estimated at $8,000-$10,000/kg, and the Space Shuttle historically cost approximately $54,000/kg. Starship targets $100-$500/kg once operational at full cadence.',
+    a: 'Cost per kilogram varies dramatically by vehicle: Falcon 9 achieves roughly $3,000-$3,100/kg to LEO for a full payload, Electron costs approximately $25,000-$30,000/kg (small-sat premium), Ariane 6 is estimated at $8,000-$10,000/kg, and the Space Shuttle historically cost approximately $54,000/kg. Starship targets $100-$500/kg once operational at full cadence.',
   },
   {
     q: 'Why do small rockets cost more per kilogram?',
@@ -93,7 +93,7 @@ function buildStructuredData() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
-    dateModified: '2026-02-08T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/guide/space-launch-cost-comparison',
     image: 'https://spacenexus.us/og-image.png',
   };
@@ -156,7 +156,7 @@ export default function SpaceLaunchCostComparisonPage() {
               Prices, Payload Capacity &amp; Cost Per Kilogram for Every Major Vehicle
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
-              <time dateTime="2026-02-08">Last updated: February 2026</time>
+              <time dateTime="2026-08-12">Last updated: August 2026</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
               <ReadingTime wordCount={3600} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
@@ -218,8 +218,8 @@ export default function SpaceLaunchCostComparisonPage() {
                     primarily by SpaceX&apos;s development of the reusable Falcon 9 rocket. Where
                     the Space Shuttle cost approximately $54,000 per kilogram to low Earth orbit
                     (LEO) and expendable vehicles of the 2000s cost $10,000-$20,000/kg, SpaceX has
-                    brought the effective cost below $3,000/kg and is targeting sub-$500/kg with
-                    Starship.
+                    brought the effective cost down to roughly $3,000/kg and is targeting sub-$500/kg
+                    with Starship.
                   </p>
                   <p>
                     This guide provides a comprehensive comparison of launch costs across all major
@@ -275,7 +275,7 @@ export default function SpaceLaunchCostComparisonPage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-star-300">Falcon 9 (reusable, 2026)</span>
-                        <span className="text-slate-300 font-semibold">~$2,700/kg</span>
+                        <span className="text-slate-300 font-semibold">~$3,070/kg</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">
@@ -285,17 +285,16 @@ export default function SpaceLaunchCostComparisonPage() {
 
                   <p>
                     The key innovation was reusability. SpaceX&apos;s Falcon 9 first stage has been
-                    recovered and reflown over 300 times in aggregate (with individual boosters
-                    flying 20+ times), dramatically reducing the marginal cost of each launch. While
-                    SpaceX does not publicly disclose its internal costs, estimates from financial
-                    analysts and former SpaceX employees suggest the marginal cost of a Falcon 9
-                    launch (with a reused booster) is approximately $15-20 million, significantly
-                    below the $67 million list price. This margin funds development programs
-                    including Starship and Starlink.
+                    recovered and reflown over 450 times in aggregate (with individual boosters
+                    flying more than 25 times), dramatically reducing the marginal cost of each
+                    launch. Estimates from financial analysts and industry observers suggest the
+                    marginal cost of a Falcon 9 launch (with a reused booster) is approximately
+                    $15-20 million, significantly below the roughly $70 million list price. This
+                    margin funds development programs including Starship and Starlink.
                   </p>
                   <p>
                     The economic impact extends well beyond SpaceX. Reduced launch costs have
-                    enabled the deployment of mega-constellations (Starlink&apos;s 6,000+ satellites
+                    enabled the deployment of mega-constellations (Starlink&apos;s 10,000+ satellites
                     would have been economically impossible at pre-Falcon 9 prices), stimulated
                     demand for smaller and more frequent satellite missions, and forced competitors
                     to invest in their own cost-reduction technologies.
@@ -315,11 +314,12 @@ export default function SpaceLaunchCostComparisonPage() {
                     SpaceX Falcon 9
                   </h3>
                   <p>
-                    The Falcon 9 is the world&apos;s most-flown orbital rocket, with over 400
-                    cumulative launches. Listed commercial price: <strong className="text-white">$67
-                    million</strong> for a dedicated LEO mission. Payload to LEO: approximately
+                    The Falcon 9 is the world&apos;s most-flown orbital rocket, with over 600
+                    cumulative launches — including 165 missions in 2025 alone and roughly 80 more
+                    by mid-2026. Listed commercial price: <strong className="text-white">approximately
+                    $70 million</strong> for a dedicated LEO mission. Payload to LEO: approximately
                     22,800 kg (with reusable first stage). Payload to GTO: approximately 8,300 kg.
-                    The cost per kilogram for a full LEO payload is roughly $2,940/kg -- the lowest
+                    The cost per kilogram for a full LEO payload is roughly $3,070/kg -- the lowest
                     of any currently operational vehicle. SpaceX conducts the majority of its
                     launches for internal Starlink deployment, with commercial and government
                     missions filling the remaining manifest.
@@ -342,14 +342,16 @@ export default function SpaceLaunchCostComparisonPage() {
                     SpaceX Starship
                   </h3>
                   <p>
-                    Starship is the super heavy-lift, fully reusable launch system under active
-                    development. With a target LEO payload of approximately 150,000 kg (150 tons)
-                    in its fully reusable configuration, Starship aims to achieve per-kilogram costs
-                    that are an order of magnitude below Falcon 9. SpaceX CEO Elon Musk has stated
-                    a long-term target of <strong className="text-white">$10 per kilogram</strong>
-                    to LEO, though most analysts consider $100-$500/kg more realistic in the
-                    near-to-medium term. Even at $500/kg, Starship would represent a 5-6x reduction
-                    from Falcon 9 and would transform the economics of nearly every space application.
+                    Starship is the super heavy-lift, fully reusable launch system that reached a
+                    major milestone in July 2026, deploying its first operational payloads — 20
+                    Starlink V3 satellites — while recovering both stages. With a target LEO payload
+                    of approximately 150,000 kg (150 tons) in its fully reusable configuration,
+                    Starship aims to achieve per-kilogram costs that are an order of magnitude below
+                    Falcon 9. SpaceX CEO Elon Musk has stated a long-term target of{' '}
+                    <strong className="text-white">$10 per kilogram</strong> to LEO, though most
+                    analysts consider $100-$500/kg more realistic in the near-to-medium term. Even
+                    at $500/kg, Starship would represent a 5-6x reduction from Falcon 9 and would
+                    transform the economics of nearly every space application.
                   </p>
 
                   <h3 className="text-xl font-semibold text-white mt-8 mb-3">
@@ -363,7 +365,7 @@ export default function SpaceLaunchCostComparisonPage() {
                     provides dedicated launch with precise orbital placement and flexible scheduling
                     -- capabilities worth the premium for many customers who cannot afford to wait
                     for rideshare opportunities or accept orbit compromises. Rocket Lab has flown
-                    Electron over 50 times with a strong reliability record.
+                    Electron more than 60 times with a strong reliability record.
                   </p>
 
                   <h3 className="text-xl font-semibold text-white mt-8 mb-3">
@@ -375,7 +377,7 @@ export default function SpaceLaunchCostComparisonPage() {
                     designed to compete with Falcon 9 for constellation deployment and other
                     medium-lift missions. Pricing has not been publicly announced, but Rocket Lab
                     has indicated it will be competitive with Falcon 9, implying a per-kg cost in
-                    the $3,000-$5,000 range. First launch is targeted for 2025-2026.
+                    the $3,000-$5,000 range. First launch is targeted for late 2026.
                   </p>
 
                   <h3 className="text-xl font-semibold text-white mt-8 mb-3">
@@ -386,8 +388,8 @@ export default function SpaceLaunchCostComparisonPage() {
                     stage. Payload to LEO: approximately 45,000 kg. Pricing has not been publicly
                     disclosed, but industry estimates suggest a commercial price in the $70-100
                     million range, implying a cost per kg of approximately $1,600-$2,200/kg to LEO.
-                    New Glenn began flight testing in 2025, with commercial operations expected to
-                    ramp up through 2026-2027.
+                    New Glenn debuted in January 2025 and has been ramping commercial operations
+                    through 2026, including booster recovery on its second flight.
                   </p>
 
                   <h3 className="text-xl font-semibold text-white mt-8 mb-3">
@@ -456,8 +458,8 @@ export default function SpaceLaunchCostComparisonPage() {
                         <tr className="border-b border-white/10">
                           <td className="py-2 pr-3 text-white">Falcon 9</td>
                           <td className="py-2 pr-3 text-right">22,800 kg</td>
-                          <td className="py-2 pr-3 text-right">$67M</td>
-                          <td className="py-2 text-right text-slate-300 font-semibold">$2,940</td>
+                          <td className="py-2 pr-3 text-right">~$70M</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">~$3,070</td>
                         </tr>
                         <tr className="border-b border-white/10">
                           <td className="py-2 pr-3 text-white">Neutron (est.)</td>
@@ -541,12 +543,13 @@ export default function SpaceLaunchCostComparisonPage() {
                   </h3>
                   <p>
                     SpaceX&apos;s Transporter rideshare program offers smallsat launch services
-                    starting at approximately <strong className="text-white">$1.1 million for 200 kg
-                    </strong> to sun-synchronous orbit (SSO), with a per-kilogram rate of
-                    approximately $5,500/kg. Additional mass can be purchased at similar rates.
-                    SpaceX typically conducts several Transporter missions per year, each carrying
-                    dozens to over 100 small satellites. The Transporter program has become the
-                    most popular rideshare option globally due to its low cost and regular cadence.
+                    starting at <strong className="text-white">$350,000 for the first 50 kg</strong>{' '}
+                    to sun-synchronous orbit (SSO), with additional mass priced at approximately
+                    $7,000/kg as of 2026 — up from the $5,500/kg entry pricing of the program&apos;s
+                    early years, with published rates rising roughly $500/kg annually. SpaceX
+                    typically conducts several Transporter missions per year, each carrying dozens
+                    to over 100 small satellites. The Transporter program remains the most popular
+                    rideshare option globally due to its low cost and regular cadence.
                   </p>
 
                   <h3 className="text-xl font-semibold text-white mt-8 mb-3">
@@ -756,8 +759,9 @@ export default function SpaceLaunchCostComparisonPage() {
                     Lower launch costs stimulate demand, which in turn supports higher flight rates,
                     which further reduces per-unit costs through manufacturing learning curves and
                     fixed-cost amortization. This virtuous cycle is already visible with Falcon 9:
-                    SpaceX&apos;s progression from 18 launches in 2020 to over 130 in 2025 has been
-                    driven by the low costs that make Starlink economically viable.
+                    SpaceX&apos;s progression from 18 launches in 2020 to 165 in 2025 — and a pace
+                    of 150+ in 2026 — has been driven by the low costs that make Starlink
+                    economically viable.
                   </p>
 
                   <p className="mt-4">

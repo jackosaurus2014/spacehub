@@ -320,14 +320,14 @@ const REGULATIONS: Regulation[] = [
     complianceBurden: 'high',
   },
   {
-    title: 'EU Space Law -- Proposed Regulation on Space Traffic Management',
+    title: 'EU Space Act -- Proposed Regulation on Space Safety, Resilience, and Sustainability',
     authority: 'European Commission',
     type: 'regulation',
     jurisdiction: 'eu',
-    effectiveDate: '2024-01-01',
+    effectiveDate: '2025-06-25',
     status: 'proposed',
     summary:
-      'Draft framework for EU-level space traffic management rules, including mandatory collision avoidance, space debris mitigation standards, and a coordinated EU space surveillance and tracking (SST) capability.',
+      'The EU Space Act, formally proposed by the European Commission in June 2025, would create EU-level rules for space traffic management, including mandatory collision avoidance, space debris mitigation standards, cybersecurity resilience requirements, and a coordinated EU space surveillance and tracking (SST) capability.',
     keyProvisions: [
       'Mandatory collision avoidance maneuver capability',
       'Post-mission disposal within 5 years',
@@ -504,7 +504,7 @@ const REGULATIONS: Regulation[] = [
     effectiveDate: '2020-10-13',
     status: 'active',
     summary:
-      'Bilateral accords establishing principles for cooperative civil space exploration consistent with the Outer Space Treaty. Over 40 nations have signed as of 2025, supporting sustainable lunar exploration.',
+      'Bilateral accords establishing principles for cooperative civil space exploration consistent with the Outer Space Treaty. 70 nations have signed as of mid-2026, supporting sustainable lunar exploration.',
     keyProvisions: [
       'Peaceful purposes and transparency of space activities',
       'Interoperability of space systems',
@@ -545,7 +545,7 @@ const REGULATIONS: Regulation[] = [
     effectiveDate: '2025-01-01',
     status: 'proposed',
     summary:
-      'Proposed civilian-led space traffic management framework to replace DoD as the primary provider of space situational awareness data to commercial operators. Would create a civil open-architecture data repository.',
+      'Proposed civilian-led space traffic management framework to replace DoD as the primary provider of space situational awareness data to commercial operators. Would create a civil open-architecture data repository. The framework\'s future is uncertain: FY2026 budget proposals targeted the Commerce Department\'s TraCSS program for elimination, with traffic-coordination services proposed to shift to commercial providers.',
     keyProvisions: [
       'Civil SSA data repository open to commercial users',
       'Standardized conjunction notifications',

@@ -7,6 +7,7 @@ import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const revalidate = 3600;
 
@@ -53,14 +54,14 @@ const TOC = [
 const SPACE_STOCKS = [
   {
     company: 'SpaceX',
-    ticker: 'Private',
-    marketCap: '~$350B (private valuation)',
+    ticker: 'SPCX',
+    marketCap: '~$1.75T (June 2026 IPO)',
     focusArea: 'Launch, Starlink broadband, Starship',
   },
   {
     company: 'Rocket Lab USA',
     ticker: 'RKLB',
-    marketCap: '$12.8B',
+    marketCap: '~$17B',
     focusArea: 'Small/medium launch, spacecraft, components',
   },
   {
@@ -78,7 +79,7 @@ const SPACE_STOCKS = [
   {
     company: 'AST SpaceMobile',
     ticker: 'ASTS',
-    marketCap: '$8.5B',
+    marketCap: '~$40B',
     focusArea: 'Direct-to-device satellite broadband',
   },
   {
@@ -122,12 +123,12 @@ const FAQ_ITEMS = [
   {
     question: 'What are the best space stocks to buy?',
     answer:
-      'The answer depends on your risk tolerance and investment horizon. For lower risk, established companies like Iridium (IRDM) offer profitable satellite services. For growth exposure, Rocket Lab (RKLB) provides vertically integrated launch and spacecraft capabilities. AST SpaceMobile (ASTS) represents a high-risk/high-reward bet on direct-to-device satellite connectivity. Large defense primes like Northrop Grumman (NOC) and L3Harris (LHX) offer space exposure with diversified revenue. Always conduct your own due diligence.',
+      'The answer depends on your risk tolerance and investment horizon. SpaceX (SPCX), public since its record June 2026 IPO, is the sector\'s dominant franchise across launch and broadband. For lower risk, established companies like Iridium (IRDM) offer profitable satellite services. For growth exposure, Rocket Lab (RKLB) provides vertically integrated launch and spacecraft capabilities. AST SpaceMobile (ASTS) represents a high-risk/high-reward bet on direct-to-device satellite connectivity. Large defense primes like Northrop Grumman (NOC) and L3Harris (LHX) offer space exposure with diversified revenue. Always conduct your own due diligence.',
   },
   {
     question: 'Can I invest in SpaceX?',
     answer:
-      'SpaceX is privately held and not available on public stock exchanges. Accredited investors can sometimes access SpaceX shares through secondary market platforms like Forge Global, EquityZen, or SharesPost, though shares trade at significant premiums. Some mutual funds (like Fidelity Contrafund and Baron Focused Growth) hold SpaceX shares. Alternatively, investing in SpaceX suppliers and partners provides indirect exposure.',
+      'Yes. As of June 2026, SpaceX is publicly traded: the company completed the largest initial public offering in history on June 12, 2026, listing on Nasdaq under the ticker SPCX at a valuation of approximately $1.75 trillion. Shares are now available through any standard brokerage. Investors should note the concentration of SpaceX\'s revenue in Starlink (roughly 61% of 2025 revenue) and the premium valuation relative to current earnings when sizing a position.',
   },
   {
     question: 'What are the biggest risks of investing in space companies?',
@@ -170,7 +171,7 @@ export default function SpaceEconomyInvestmentPage() {
               themes — with the frameworks you need to evaluate opportunities.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Last updated: February 2026</span>
+              <span>Last updated: August 2026</span>
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
@@ -212,9 +213,10 @@ export default function SpaceEconomyInvestmentPage() {
             <section id="space-economy-overview">
               <h2 className="text-2xl font-bold text-white mb-4">Space Economy Overview</h2>
               <p className="text-slate-300 leading-relaxed mb-4">
-                The global space economy reached approximately <strong className="text-white">$630 billion</strong> in
-                2025, according to estimates from the Space Foundation, Euroconsult, and Morgan Stanley. This
-                figure encompasses the entire value chain: government space budgets ($120B+), commercial
+                The global space economy now exceeds an estimated <strong className="text-white">$630 billion</strong> —
+                the Space Foundation reported a record $613 billion for 2024, and estimates from the Space
+                Foundation, Euroconsult, and Morgan Stanley point higher for 2026. The
+                figure encompasses the entire value chain: government space budgets ($130B+), commercial
                 satellite services ($200B+), ground equipment ($150B+), launch services ($18B), and
                 downstream applications powered by space infrastructure.
               </p>
@@ -246,9 +248,10 @@ export default function SpaceEconomyInvestmentPage() {
               <h2 className="text-2xl font-bold text-white mb-4">Public Market Space Stocks</h2>
               <p className="text-slate-300 leading-relaxed mb-4">
                 The universe of publicly traded pure-play space companies has expanded significantly since the
-                SPAC wave of 2020-2021. While many SPAC-era space stocks have struggled, the survivors have
-                matured and several have demonstrated improving fundamentals. Here are the most significant
-                public space companies:
+                SPAC wave of 2020-2021 — most dramatically in June 2026, when SpaceX completed the largest
+                IPO in history and began trading on Nasdaq as SPCX. While many SPAC-era space stocks have
+                struggled, the survivors have matured and several have demonstrated improving fundamentals.
+                Here are the most significant public space companies:
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -256,7 +259,7 @@ export default function SpaceEconomyInvestmentPage() {
                     <tr className="border-b border-white/[0.06]">
                       <th className="py-3 pr-4 text-left text-white font-semibold">Company</th>
                       <th className="py-3 pr-4 text-left text-white font-semibold">Ticker</th>
-                      <th className="py-3 pr-4 text-left text-white font-semibold">Market Cap</th>
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Market Cap (approx., mid-2026)</th>
                       <th className="py-3 text-left text-white font-semibold">Focus Area</th>
                     </tr>
                   </thead>
@@ -282,7 +285,7 @@ export default function SpaceEconomyInvestmentPage() {
               </p>
               <p className="text-slate-300 text-sm mt-4">
                 <Link href="/company-profiles" className="text-slate-300 hover:underline">
-                  Research detailed profiles for 200+ space companies on SpaceNexus &rarr;
+                  Research detailed profiles for {SITE_STATS.companies} space companies on SpaceNexus &rarr;
                 </Link>
               </p>
             </section>

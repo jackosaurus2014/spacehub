@@ -1,6 +1,7 @@
 // Digest generator for newsletter system
 // Aggregates yesterday's news and generates AI feature articles
 
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
@@ -129,7 +130,7 @@ Respond with valid JSON in this exact format:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: EDITORIAL_MODEL,
       max_tokens: 2000,
       messages: [
         {
@@ -252,7 +253,7 @@ export async function generateDailyDigest(): Promise<DigestResult> {
         newsArticleCount: news.length,
         categoriesIncluded: JSON.stringify(categories),
         status: 'draft',
-        aiModel: 'claude-sonnet-4-20250514',
+        aiModel: EDITORIAL_MODEL,
       },
       update: {
         subject,
@@ -262,7 +263,7 @@ export async function generateDailyDigest(): Promise<DigestResult> {
         newsArticleCount: news.length,
         categoriesIncluded: JSON.stringify(categories),
         status: 'draft',
-        aiModel: 'claude-sonnet-4-20250514',
+        aiModel: EDITORIAL_MODEL,
       },
     });
 

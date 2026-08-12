@@ -59,7 +59,7 @@ const TOC = [
 const FAQ_ITEMS = [
   {
     q: 'How big is the space industry?',
-    a: 'The global space economy was valued at an estimated $630 billion or more in 2025, according to figures from the Space Foundation and Euroconsult. This encompasses government space budgets, commercial satellite services, launch revenues, ground equipment, and a growing array of downstream applications.',
+    a: 'The global space economy exceeds an estimated $630 billion as of 2026. The Space Foundation reported a record $613 billion for 2024, and figures from the Space Foundation and Euroconsult point higher on continued commercial growth. This encompasses government space budgets, commercial satellite services, launch revenues, ground equipment, and a growing array of downstream applications.',
   },
   {
     q: 'How fast is the space industry growing?',
@@ -117,7 +117,7 @@ function buildStructuredData() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
-    dateModified: '2026-02-08T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/guide/space-industry',
     image: 'https://spacenexus.us/og-image.png',
   };
@@ -176,7 +176,7 @@ export default function SpaceIndustryGuidePage() {
               Markets, Technologies &amp; Opportunities
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
-              <time dateTime="2026-02-08">February 8, 2026</time>
+              <time dateTime="2026-08-12">Last updated: August 2026</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
               <ReadingTime wordCount={5000} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
@@ -241,9 +241,9 @@ export default function SpaceIndustryGuidePage() {
                     generating hundreds of billions of dollars in annual revenue.
                   </p>
                   <p>
-                    The global space economy surpassed an estimated $630 billion in 2025, according
-                    to the Space Foundation, and analysts project it could reach $1.8 trillion by
-                    2035. Driving this growth are falling launch costs, the proliferation of
+                    The global space economy now exceeds an estimated $630 billion — the Space
+                    Foundation reported a record $613 billion for 2024 — and analysts project it
+                    could reach $1.8 trillion by 2035. Driving this growth are falling launch costs, the proliferation of
                     broadband satellite constellations, expanding national security space budgets,
                     and a new generation of entrepreneurial companies tackling everything from
                     orbital manufacturing to lunar logistics.
@@ -267,11 +267,11 @@ export default function SpaceIndustryGuidePage() {
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
                   <p>
-                    The global space economy has grown steadily over the past decade. According to
-                    estimates from the Space Foundation and Euroconsult, the total value reached
-                    approximately $630 billion or more in 2025, encompassing government budgets,
-                    commercial revenues, and the broader ecosystem of ground equipment and
-                    downstream services.
+                    The global space economy has grown steadily over the past decade. The Space
+                    Foundation recorded $613 billion for 2024 — 7.8 percent year-over-year growth
+                    — and current estimates from the Space Foundation and Euroconsult put the total
+                    above $630 billion, encompassing government budgets, commercial revenues, and
+                    the broader ecosystem of ground equipment and downstream services.
                   </p>
 
                   {/* Data callout */}
@@ -279,7 +279,7 @@ export default function SpaceIndustryGuidePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
                         <div className="text-3xl font-display font-bold text-slate-300">$630B+</div>
-                        <div className="text-star-300 text-sm mt-1">Global Space Economy (2025 est.)</div>
+                        <div className="text-star-300 text-sm mt-1">Global Space Economy (2026 est.)</div>
                       </div>
                       <div>
                         <div className="text-3xl font-display font-bold text-slate-300">7-9%</div>
@@ -294,9 +294,9 @@ export default function SpaceIndustryGuidePage() {
 
                   <p>
                     A key structural shift over the past two decades has been the growing share of
-                    commercial activity. Government space spending still accounts for a significant
-                    portion of the economy -- roughly 40 percent of the total -- but the commercial
-                    sector now generates an estimated 60 percent or more of overall space-related
+                    commercial activity. Government space spending remains a foundational pillar --
+                    roughly 22 percent of the total, per the Space Foundation -- but the commercial
+                    sector now generates an estimated 78 percent of overall space-related
                     revenue. This ratio continues to tilt toward commercial as broadband
                     constellations, commercial launch, and downstream data services expand.
                   </p>
@@ -341,16 +341,17 @@ export default function SpaceIndustryGuidePage() {
                     </h3>
                     <p>
                       The launch sector has been revolutionized by reusability. SpaceX dominates the
-                      global launch market, conducting over 90 orbital launches in 2024 alone and
-                      continuing to increase cadence with the Falcon 9 and Falcon Heavy. The
-                      company&apos;s Starship super heavy-lift vehicle, under active development,
-                      promises to further reduce costs and dramatically increase payload capacity.
+                      global launch market, conducting 165 Falcon 9 launches in 2025 and running
+                      ahead of that pace in 2026. The company&apos;s Starship super heavy-lift
+                      vehicle deployed its first operational payloads — Starlink V3 satellites — in
+                      July 2026, and promises to further reduce costs and dramatically increase
+                      payload capacity.
                     </p>
                     <p className="mt-3">
                       Rocket Lab has established itself as the leading dedicated small-launch
                       provider with its Electron rocket and is developing the medium-lift Neutron
-                      vehicle. Blue Origin&apos;s New Glenn, a large reusable rocket, has entered
-                      flight testing. Europe&apos;s Ariane 6, developed by ArianeGroup for ESA,
+                      vehicle. Blue Origin&apos;s New Glenn, a large reusable rocket, debuted in 2025
+                      and is ramping commercial flights. Europe&apos;s Ariane 6, developed by ArianeGroup for ESA,
                       provides independent European access to space. Other notable entrants include
                       Relativity Space (Terran R), Firefly Aerospace (Alpha and the MLV
                       medium-launch vehicle), and ULA&apos;s Vulcan Centaur.
@@ -365,11 +366,12 @@ export default function SpaceIndustryGuidePage() {
                     </h3>
                     <p>
                       Satellite broadband is the largest growth driver in the commercial space
-                      economy. SpaceX&apos;s Starlink constellation has deployed over 6,000
-                      satellites and serves millions of subscribers worldwide, generating billions in
-                      annual revenue. Eutelsat OneWeb operates a medium-Earth orbit constellation for
-                      enterprise and government connectivity. Amazon&apos;s Project Kuiper has begun
-                      satellite production and deployment with plans for over 3,200 satellites.
+                      economy. SpaceX&apos;s Starlink constellation has more than 10,000 satellites
+                      in orbit and serves over 12 million subscribers worldwide, generating more
+                      than $11 billion in annual revenue as of 2025. Eutelsat OneWeb operates a
+                      low-Earth orbit constellation for
+                      enterprise and government connectivity. Amazon&apos;s Project Kuiper is
+                      actively deploying its planned constellation of over 3,200 satellites.
                     </p>
                     <p className="mt-3">
                       Direct-to-device (D2D) satellite connectivity is an emerging frontier, with
@@ -448,12 +450,13 @@ export default function SpaceIndustryGuidePage() {
                     Public &amp; High-Profile Companies
                   </h3>
                   <p>
-                    <strong className="text-white">SpaceX</strong> remains the most influential
-                    private space company. With a valuation reportedly exceeding $200 billion (based
-                    on secondary market transactions), SpaceX operates the world&apos;s most active
-                    launch vehicle (Falcon 9), the largest satellite constellation (Starlink), and is
-                    developing Starship, intended for deep-space missions and eventually Mars
-                    colonization.
+                    <strong className="text-white">SpaceX (SPCX)</strong> remains the most
+                    influential space company. In June 2026 it completed the largest initial public
+                    offering in history, listing on Nasdaq at a valuation of approximately $1.75
+                    trillion. SpaceX operates the world&apos;s most active
+                    launch vehicle (Falcon 9), the largest satellite constellation (Starlink), and
+                    Starship, which began deploying operational payloads in 2026 and is intended for
+                    deep-space missions and eventually Mars colonization.
                   </p>
                   <p>
                     <strong className="text-white">Rocket Lab (RKLB)</strong> is a publicly traded
@@ -652,7 +655,7 @@ export default function SpaceIndustryGuidePage() {
                       Space Sustainability &amp; Debris Removal
                     </h3>
                     <p>
-                      With over 13,000 active satellites in orbit and tens of thousands of tracked
+                      With more than 16,000 active satellites in orbit and tens of thousands of tracked
                       debris objects, space sustainability has become a critical concern.
                       Astroscale (Japan) is a pioneer in active debris removal, having demonstrated
                       proximity operations and docking with defunct satellites. ClearSpace
@@ -815,8 +818,8 @@ export default function SpaceIndustryGuidePage() {
                         <div className="text-star-300 text-sm mt-1">Annual VC Investment</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-rocket-400">$200B+</div>
-                        <div className="text-star-300 text-sm mt-1">SpaceX Valuation (est.)</div>
+                        <div className="text-3xl font-display font-bold text-rocket-400">$1.75T</div>
+                        <div className="text-star-300 text-sm mt-1">SpaceX IPO Valuation (2026)</div>
                       </div>
                       <div>
                         <div className="text-3xl font-display font-bold text-rocket-400">20+</div>
@@ -837,10 +840,11 @@ export default function SpaceIndustryGuidePage() {
                   </p>
                   <p>
                     For individual investors, options include direct stock purchases in public space
-                    companies, space-focused ETFs like the Procure Space ETF (UFO) and ARK Space
+                    companies — a universe that expanded dramatically when SpaceX went public in
+                    June 2026 — space-focused ETFs like the Procure Space ETF (UFO) and ARK Space
                     Exploration &amp; Innovation ETF (ARKX), and indirect exposure through defense
-                    primes with significant space divisions. Private market access to companies like
-                    SpaceX is possible through secondary market platforms and specialized venture
+                    primes with significant space divisions. Access to remaining private companies
+                    is possible through secondary market platforms and specialized venture
                     funds, though typically at premium valuations and with limited liquidity.
                   </p>
 

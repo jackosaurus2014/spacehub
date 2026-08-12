@@ -3,6 +3,7 @@
  * Uses Claude Sonnet to verify and update module data based on recent news context.
  */
 
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import Anthropic from '@anthropic-ai/sdk';
 import prisma from '@/lib/db';
 import { getModuleContent, upsertContent, logRefresh } from './dynamic-content';
@@ -537,7 +538,7 @@ Respond with valid JSON (no markdown code fences):
     // 5. Call Claude Sonnet
     const anthropic = new Anthropic();
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: EDITORIAL_MODEL,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     });

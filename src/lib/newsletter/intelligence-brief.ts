@@ -2,6 +2,7 @@
 // Aggregates weekly news, company events, and uses Claude AI to generate
 // an 8-section intelligence brief for space industry professionals.
 
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
@@ -210,7 +211,7 @@ Return the JSON response now.`;
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: EDITORIAL_MODEL,
       max_tokens: 6000,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userPrompt }],

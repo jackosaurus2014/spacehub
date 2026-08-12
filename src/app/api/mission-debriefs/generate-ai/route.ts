@@ -1,3 +1,4 @@
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import Anthropic from '@anthropic-ai/sdk';
@@ -262,7 +263,7 @@ export async function POST(request: NextRequest) {
 
     const anthropic = new Anthropic();
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: EDITORIAL_MODEL,
       max_tokens: 6000,
       system: SYSTEM_PROMPT,
       messages: [

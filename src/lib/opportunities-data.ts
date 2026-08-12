@@ -1,3 +1,4 @@
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import prisma from '@/lib/db';
 import { safeJsonParse } from '@/lib/errors';
 import Anthropic from '@anthropic-ai/sdk';
@@ -559,7 +560,7 @@ Focus on opportunities that are:
 Return your response as a JSON array of opportunity objects.`;
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: EDITORIAL_MODEL,
       max_tokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     });

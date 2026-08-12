@@ -4,13 +4,14 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import HowToSchema from '@/components/seo/HowToSchema';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: 'How to Track Satellites in Real Time — Complete Guide | SpaceNexus',
   description:
-    'Learn how to track satellites in real time including the ISS, Starlink, GPS, and 30,000+ objects. Understand TLE data, orbital mechanics, LEO/MEO/GEO orbits, and use free satellite tracking tools.',
+    'Learn how to track satellites in real time including the ISS, Starlink, GPS, and thousands of tracked objects. Understand TLE data, orbital mechanics, LEO/MEO/GEO orbits, and use free satellite tracking tools.',
   keywords: [
     'satellite tracker',
     'track satellites',
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How to Track Satellites in Real Time — Complete Guide',
     description:
-      'Everything you need to know about satellite tracking: TLE data, orbit types, popular satellites to follow, and how to use SpaceNexus satellite tracker.',
+      'Everything you need to know about satellite tracking: TLE data, orbit types, popular satellites to follow, and how to use the SpaceNexus satellite tracker.',
     type: 'article',
     url: 'https://spacenexus.us/learn/how-to-track-satellites',
     siteName: 'SpaceNexus',
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'How to Track Satellites in Real Time — Complete Guide',
     description:
-      'Track the ISS, Starlink, GPS, and 30,000+ objects. Learn TLE data, orbit types, and use free tracking tools.',
+      'Track the ISS, Starlink, GPS, and thousands of objects. Learn TLE data, orbit types, and use free tracking tools.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/learn/how-to-track-satellites',
@@ -116,7 +117,7 @@ const popularSatellites = [
   },
   {
     name: 'Starlink Constellation',
-    noradId: 'Multiple (6,000+)',
+    noradId: 'Multiple (10,000+)',
     orbit: 'LEO (~550 km)',
     size: '3.4m x 2.8m each',
     brightness: 'Magnitude 5-7 (visible in groups)',
@@ -152,11 +153,11 @@ const popularSatellites = [
   },
   {
     name: 'GOES Weather Satellites',
-    noradId: 'Multiple (GOES-16, 18)',
+    noradId: 'Multiple (GOES-18, 19)',
     orbit: 'GEO (~35,786 km)',
     size: '~6.1m x 5.6m',
     brightness: 'Telescope only',
-    trackingTip: 'Geostationary weather satellites provide the images you see on weather forecasts. GOES-16 covers the eastern US, GOES-18 covers the western US. Fixed position in the sky.',
+    trackingTip: 'Geostationary weather satellites provide the images you see on weather forecasts. GOES-19 covers the eastern US, GOES-18 covers the western US. Fixed position in the sky.',
     link: '/satellites',
   },
 ];
@@ -186,7 +187,7 @@ const trackingConcepts = [
   {
     concept: 'Space Debris Tracking',
     description:
-      'In addition to active satellites, the US Space Force tracks over 35,000 pieces of debris and defunct objects larger than 10 cm, for a total catalog exceeding 48,000 objects. This includes spent rocket stages, defunct satellites, and collision fragments. Debris tracking is critical for conjunction analysis (collision avoidance). SpaceNexus visualizes debris density in the Space Environment module.',
+      'In addition to active satellites, space surveillance networks track roughly 30,000 pieces of debris and defunct objects larger than 10 cm, bringing the total tracked population to roughly 46,000 objects as of mid-2026. This includes spent rocket stages, defunct satellites, and collision fragments. Debris tracking is critical for conjunction analysis (collision avoidance). SpaceNexus visualizes debris density in the Space Environment module.',
   },
 ];
 
@@ -199,12 +200,12 @@ const faqItems = [
   {
     question: 'How many satellites are currently in orbit?',
     answer:
-      'As of early 2026, there are approximately 13,000 active satellites in orbit, with SpaceX Starlink alone accounting for over 6,500. The US Space Force tracks over 48,000 objects larger than 10 cm (including debris), and an estimated 100 million pieces of debris smaller than 1 cm are in orbit. The number of active satellites has more than tripled since 2020, driven primarily by mega-constellation deployments.',
+      'As of mid-2026, there are more than 15,000 active satellites in orbit, with SpaceX Starlink alone accounting for over 10,000. Space surveillance networks track roughly 46,000 objects larger than 10 cm (including debris), and an estimated 100 million pieces of debris smaller than 1 cm are in orbit. The number of active satellites has more than quadrupled since 2020, driven primarily by mega-constellation deployments.',
   },
   {
     question: 'What is the best satellite tracking app?',
     answer:
-      'SpaceNexus provides a comprehensive satellite tracker with real-time position data for 30,000+ objects, interactive 3D visualization, pass predictions for your location, and constellation views. Other popular tools include Heavens-Above (for visual observers), Space-Track.org (for raw TLE data, requires registration), and N2YO.com (simple web-based tracker). For professional satellite operators, SpaceNexus also provides conjunction analysis and orbital management tools.',
+      'SpaceNexus provides a comprehensive satellite tracker with real-time position data for 10,000+ active satellites, interactive 3D visualization, pass predictions for your location, and constellation views. Other popular tools include Heavens-Above (for visual observers), Space-Track.org (for raw TLE data, requires registration), and N2YO.com (simple web-based tracker). For professional satellite operators, SpaceNexus also provides conjunction analysis and orbital management tools.',
   },
   {
     question: 'How does satellite tracking work technically?',
@@ -224,7 +225,7 @@ export default function HowToTrackSatellitesPage() {
     '@type': 'Article',
     headline: 'How to Track Satellites in Real Time — Complete Guide',
     description:
-      'Learn how satellite tracking works, understand TLE data and orbital mechanics, explore orbit types, and track the ISS, Starlink, and 30,000+ objects.',
+      'Learn how satellite tracking works, understand TLE data and orbital mechanics, explore orbit types, and track the ISS, Starlink, and thousands of objects.',
     author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
@@ -233,7 +234,7 @@ export default function HowToTrackSatellitesPage() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/spacenexus-logo.png' },
     },
     datePublished: '2026-02-18T00:00:00Z',
-    dateModified: '2026-02-18T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/learn/how-to-track-satellites',
   };
 
@@ -246,7 +247,7 @@ export default function HowToTrackSatellitesPage() {
         name="How to Track Satellites"
         description="Learn how to find and track satellites visible to the naked eye"
         steps={[
-          { name: 'Learn what satellite tracking is', text: 'Understand how satellite tracking works using ground-based radar, optical telescopes, and laser ranging stations that detect and measure positions of 30,000+ objects, with orbit data published as Two-Line Element sets (TLEs).' },
+          { name: 'Learn what satellite tracking is', text: 'Understand how satellite tracking works using ground-based radar, optical telescopes, and laser ranging stations that detect and measure positions of tens of thousands of objects, with orbit data published as Two-Line Element sets (TLEs).' },
           { name: 'Understand the different orbit types', text: 'Study the five main orbits: LEO (160-2,000 km, where ISS and Starlink operate), MEO (GPS and navigation constellations), GEO (stationary weather and broadcast satellites), HEO (high-latitude coverage), and SSO (Earth observation imaging).' },
           { name: 'Know which satellites are visible to the naked eye', text: 'Identify the best targets for visual observation: the ISS (magnitude -6, very bright), Starlink trains after deployment, Hubble Space Telescope, and Tiangong Space Station. LEO satellites are visible during twilight hours as steady, non-blinking moving lights.' },
           { name: 'Learn TLE data and orbital propagation basics', text: 'Understand Two-Line Element sets that encode six orbital parameters, NORAD catalog numbers for unique identification, and the SGP4 algorithm that predicts satellite positions with accuracy to about 1 km over a few days.' },
@@ -270,14 +271,14 @@ export default function HowToTrackSatellitesPage() {
             <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
               Technical Guide
             </span>
-            <span className="text-xs text-slate-500">Updated February 2026</span>
+            <span className="text-xs text-slate-500">Updated August 2026</span>
             <span className="text-xs text-slate-500">11 min read</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-4">
             How to Track Satellites in Real Time — Complete Guide
           </h1>
           <p className="text-lg text-slate-300 leading-relaxed">
-            Over 13,000 active satellites orbit Earth right now, from the International Space Station
+            More than 15,000 active satellites orbit Earth right now, from the International Space Station
             visible to the naked eye to tiny CubeSats transmitting scientific data. Whether you are a
             satellite operator managing a constellation, an amateur astronomer spotting the ISS, or an
             analyst tracking orbital debris, this guide explains how satellite tracking works and how to
@@ -298,9 +299,9 @@ export default function HowToTrackSatellitesPage() {
             </p>
             <p className="text-slate-300 leading-relaxed mb-4">
               The US Space Force&apos;s 18th Space Defense Squadron operates a global network of 30+ sensors
-              called the Space Surveillance Network (SSN). This network tracks over 48,000 objects
-              larger than 10 cm, publishing orbital data as Two-Line Element Sets (TLEs) that anyone can
-              use for tracking.
+              called the Space Surveillance Network (SSN). Combined with allied and commercial sensors,
+              the tracked population now stands at roughly 46,000 objects larger than 10 cm, with
+              orbital data published as Two-Line Element Sets (TLEs) that anyone can use for tracking.
             </p>
             <h3 className="text-white font-semibold mb-3">Who uses satellite tracking?</h3>
             <ul className="space-y-2">
@@ -569,8 +570,8 @@ export default function HowToTrackSatellitesPage() {
         <div className="bg-white/[0.06] border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Start Tracking Satellites Now</h3>
           <p className="text-slate-400 text-sm mb-4">
-            SpaceNexus tracks over 30,000 objects in real time with 3D visualization, pass predictions,
-            constellation monitoring, and debris tracking. Free to use.
+            SpaceNexus tracks {SITE_STATS.satellites} active satellites in real time with 3D visualization,
+            pass predictions, constellation monitoring, and debris tracking. Free to use.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
@@ -610,7 +611,7 @@ export default function HowToTrackSatellitesPage() {
               className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Tracker</div>
-              <div className="text-slate-500 text-xs">30,000+ objects</div>
+              <div className="text-slate-500 text-xs">{SITE_STATS.satellites} satellites</div>
             </Link>
             <Link
               href="/space-environment"

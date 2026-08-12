@@ -52,10 +52,10 @@ const launchProviders = [
     hq: 'Hawthorne, CA',
     founded: 2002,
     employees: '13,000+',
-    valuation: '$350B+ (private)',
-    whyWatch: 'Dominates global launch market with 60%+ share. Starlink is the world\'s largest satellite constellation (6,000+ satellites, 4M+ subscribers). Starship — the fully reusable super-heavy lift vehicle — could reduce launch costs by 100x and enable Mars colonization.',
-    keyStats: ['60+ Falcon 9 launches in 2025', '22,800 kg to LEO capacity', '$67M per dedicated launch', '4M+ Starlink subscribers'],
-    recentMilestones: 'Starship orbital flight tests continuing. Starlink Direct to Cell partnership with T-Mobile. Booster reuse exceeding 20+ flights per vehicle.',
+    valuation: '$1T+ (NASDAQ: SPCX)',
+    whyWatch: 'Dominates global launch: 165 Falcon missions in 2025 — more than the rest of the world combined. Starlink is the world\'s largest satellite constellation (10,000+ satellites, 10M+ subscribers). After its record-setting June 2026 IPO, Wall Street has increasingly priced SpaceX as an AI-infrastructure platform — Starlink-scale connectivity plus the compute workloads that ride on it — while Starship works toward operational flights.',
+    keyStats: ['165 Falcon launches in 2025', '22,800 kg to LEO capacity', '10,000+ Starlink satellites', '10M+ Starlink subscribers'],
+    recentMilestones: 'Went public on Nasdaq in June 2026. Starlink Direct to Cell service live with T-Mobile. Booster reuse exceeding 30 flights per vehicle.',
   },
   {
     rank: 2,
@@ -64,10 +64,10 @@ const launchProviders = [
     hq: 'Long Beach, CA',
     founded: 2006,
     employees: '2,000+',
-    valuation: '$12B (RKLB)',
-    whyWatch: 'The second-most frequently launching US rocket company. Electron is the leading dedicated small-sat launcher. Neutron medium-lift reusable rocket targets 2026 first flight. Growing spacecraft and components business (reaction wheels, solar panels, star trackers).',
-    keyStats: ['50+ Electron launches total', '300 kg to LEO (Electron)', '$7.5M per launch', 'Neutron: 13,000 kg to LEO'],
-    recentMilestones: 'Neutron vehicle structure revealed. Archimedes engine testing underway. Multiple Electron missions for NASA, NRO, and commercial customers.',
+    valuation: '$50B (RKLB)',
+    whyWatch: 'The second-most frequently launching US rocket company. Electron is the leading dedicated small-sat launcher, with a record 21 launches in 2025. Neutron medium-lift reusable rocket now targets a late-2026 debut. Record revenue quarters in 2026, though softer margin guidance — driven by lower-margin satellite-platform sales — has drawn investor scrutiny.',
+    keyStats: ['85+ Electron launches total', '21 Electron launches in 2025 (record)', '$7.5M per launch', 'Neutron: 13,000 kg to LEO'],
+    recentMilestones: 'Record Q2 2026 revenue and $2B+ backlog. Neutron debut pushed to Q4 2026 after a tank-test accident, with slip risk into 2027.',
   },
   {
     rank: 3,
@@ -77,9 +77,9 @@ const launchProviders = [
     founded: 2000,
     employees: '11,000+',
     valuation: 'Private (est. $30B+)',
-    whyWatch: 'New Glenn heavy-lift rocket completed maiden flight in early 2025 and is ramping to operational cadence. BE-4 engines power ULA Vulcan. Blue Moon lunar lander selected for NASA Artemis missions. Orbital Reef commercial space station partnership with Sierra Space.',
+    whyWatch: 'New Glenn heavy-lift rocket flew twice in 2025 — landing its booster on the second flight and sending NASA\'s ESCAPADE probes toward Mars — and is ramping cadence in 2026. BE-4 engines power ULA Vulcan. Blue Moon lunar lander selected for NASA Artemis missions. Orbital Reef commercial space station partnership with Sierra Space.',
     keyStats: ['New Glenn: 45,000 kg to LEO', 'BE-4 engines for ULA Vulcan', 'Blue Moon lunar lander', 'Orbital Reef space station'],
-    recentMilestones: 'New Glenn maiden flight completed in early 2025. Ramping toward commercial operations. Blue Moon lander development for Artemis. New Shepard suborbital flights continuing.',
+    recentMilestones: 'New Glenn booster landing achieved (Nov 2025). ESCAPADE launched toward Mars. Blue Moon lander development for Artemis. New Shepard suborbital flights continuing.',
   },
   {
     rank: 4,
@@ -91,7 +91,7 @@ const launchProviders = [
     valuation: 'JV (Boeing/Lockheed)',
     whyWatch: 'Vulcan Centaur replacing both Atlas V and Delta IV. Primary launcher for US national security missions. 100% mission success rate across all programs. Amazon Kuiper constellation launch contract.',
     keyStats: ['27,200 kg to LEO (Vulcan)', '100% mission success rate', 'NSSL Phase 2 contract winner', 'Kuiper launch contract'],
-    recentMilestones: 'Vulcan Centaur entering operational service. Multiple national security launches completed. Transitioning from legacy Atlas V to Vulcan.',
+    recentMilestones: 'Vulcan Centaur flying national security missions. Amazon Leo (formerly Kuiper) launch campaign underway. Transitioning from legacy Atlas V to Vulcan.',
   },
   {
     rank: 5,
@@ -103,7 +103,7 @@ const launchProviders = [
     valuation: 'ESA/CNES-backed',
     whyWatch: 'Ariane 6 is Europe\'s next-generation launcher, replacing Ariane 5 after 27 years of service. Vega-C for small to medium payloads. Europe\'s guaranteed access to space. Facing competitive pressure from SpaceX driving innovation.',
     keyStats: ['21,650 kg to LEO (Ariane 6)', 'Launches from Kourou, French Guiana', 'Two variants: A62 and A64', 'European institutional launch guarantee'],
-    recentMilestones: 'Ariane 6 maiden flight completed. Building launch cadence. Multiple Galileo navigation satellite launches planned.',
+    recentMilestones: 'Ariane 6 operational and increasing cadence. Galileo and institutional launches proceeding alongside commercial missions.',
   },
 ];
 
@@ -178,7 +178,7 @@ const earthObservation = [
     hq: 'San Francisco, CA',
     founded: 2010,
     employees: '900+',
-    valuation: '$2.8B (PL)',
+    valuation: '$8B+ (PL)',
     whyWatch: 'Operates the largest Earth imaging constellation (200+ satellites). Daily global scan capability at 3m resolution. SkySat provides 50 cm imagery. AI-powered analytics platform turning imagery into actionable insights for agriculture, insurance, and defense.',
     keyStats: ['200+ satellites in orbit', 'Daily global coverage', '3m resolution (Dove)', '50 cm resolution (SkySat)'],
     recentMilestones: 'Pelican next-gen satellite program. AI analytics platform expansion. Growing defense and intelligence revenue.',
@@ -190,7 +190,7 @@ const earthObservation = [
     hq: 'Herndon, VA',
     founded: 2014,
     employees: '400+',
-    valuation: '$600M (BKSY)',
+    valuation: 'Public (BKSY)',
     whyWatch: 'Real-time geospatial intelligence platform. Rapid revisit imaging constellation. AI-powered analytics combining satellite imagery with global data feeds. Strong government and defense customer base. Dawn-to-dusk imaging capability.',
     keyStats: ['Revisit times under 1 hour', '1m resolution constellation', 'AI-powered intelligence platform', 'Strong NRO/defense contracts'],
     recentMilestones: 'Gen-3 satellite constellation expansion. Electro-Optical/Infrared imaging capability. Growing classified revenue streams.',
@@ -202,7 +202,7 @@ const earthObservation = [
     hq: 'Vienna, VA',
     founded: 2012,
     employees: '500+',
-    valuation: '$800M (SPIR)',
+    valuation: 'Public (SPIR)',
     whyWatch: 'Space-as-a-service model: operates 100+ multi-purpose nanosatellites collecting weather, maritime, and aviation data. Radio occultation weather data filling gaps in government forecasting networks. Satellite-as-a-service enables third-party payloads.',
     keyStats: ['100+ nanosatellites', 'Radio occultation weather data', 'Maritime AIS tracking', 'Aviation ADS-B from space'],
     recentMilestones: 'Expanding Lemur constellation. Weather data contracts with NOAA and EUMETSAT. Space-as-a-service platform growing.',
@@ -226,7 +226,7 @@ const earthObservation = [
     hq: 'Buenos Aires / Charlotte, NC',
     founded: 2010,
     employees: '300+',
-    valuation: '$500M (SATL)',
+    valuation: 'Public (SATL)',
     whyWatch: 'Building a 200+ satellite constellation for sub-meter multispectral and hyperspectral Earth observation. Lowest cost per high-res image. Expanding rapidly with government and commercial contracts. Full vertical integration from satellite design to analytics.',
     keyStats: ['Sub-meter multispectral', 'Hyperspectral imaging', 'Vertical integration', 'Lowest cost per image target'],
     recentMilestones: 'Constellation scaling toward 200+ satellites. Hyperspectral data products launching. Government contract wins in multiple countries.',
@@ -242,9 +242,9 @@ const spaceStations = [
     founded: 2016,
     employees: '1,000+',
     valuation: 'Private ($5B+ est.)',
-    whyWatch: 'Building the first commercial space station, initially attached to ISS before operating independently. Won NASA Next Gen spacesuit contract (AxEMU). Three successful private astronaut missions to ISS. Thales Alenia Space building core modules.',
-    keyStats: ['First commercial station', 'AxEMU spacesuit contract', '3 private ISS missions completed', 'Modules under construction'],
-    recentMilestones: 'Axiom Station Module 1 in production. Ax-4 private mission planned. AxEMU suit testing for Artemis III.',
+    whyWatch: 'Building the first commercial space station, initially attached to ISS before operating independently. Won NASA Next Gen spacesuit contract (AxEMU). Four successful private astronaut missions to ISS. Thales Alenia Space building core modules.',
+    keyStats: ['First commercial station', 'AxEMU spacesuit contract', '4 private ISS missions completed', 'Modules under construction'],
+    recentMilestones: 'Assembly plan revised with NASA: power module (PPTM) to ISS targeted for 2027, with a free-flying two-module station by around 2028. AxEMU suit testing for Artemis III.',
   },
   {
     rank: 17,
@@ -254,9 +254,9 @@ const spaceStations = [
     founded: 2021,
     employees: '400+',
     valuation: 'Private ($2B+ est.)',
-    whyWatch: 'Developing Haven-1, a single-module commercial space station launching on Falcon 9. Founded by Jed McCaleb (cryptocurrency billionaire) with significant private funding. First Haven-1 crew rotation planned via SpaceX Dragon. Focused on making space stations accessible.',
-    keyStats: ['Haven-1 station on Falcon 9', 'Single module initial design', 'SpaceX Dragon crew rotation', 'Well-funded startup'],
-    recentMilestones: 'Haven-1 hardware in production. SpaceX launch agreement signed. Artificial gravity station designs revealed.',
+    whyWatch: 'Developing Haven-1, a single-module commercial space station launching on Falcon 9 — now targeting early 2027. Founded by Jed McCaleb (cryptocurrency billionaire) with significant private funding. First Haven-1 crew visit planned via SpaceX Dragon. Focused on making space stations accessible.',
+    keyStats: ['Haven-1 station on Falcon 9', 'Single module initial design', 'SpaceX Dragon crew visits', 'Well-funded startup'],
+    recentMilestones: 'Haven-1 structural qualification complete and a pathfinder mission flown in 2025; launch now targeted for early 2027.',
   },
   {
     rank: 18,
@@ -268,7 +268,7 @@ const spaceStations = [
     valuation: 'Private ($5.3B)',
     whyWatch: 'Dream Chaser spaceplane for ISS cargo delivery. Orbital Reef commercial space station (with Blue Origin). LIFE inflatable habitat module with 300+ cubic meters of pressurized volume. Reusable Dream Chaser lands on conventional runways.',
     keyStats: ['Dream Chaser spaceplane', 'Orbital Reef partnership', 'LIFE inflatable habitat', 'Runway landing capability'],
-    recentMilestones: 'Dream Chaser Tenacity nearing first ISS cargo mission. LIFE habitat burst testing successful. Orbital Reef partnership with Blue Origin progressing.',
+    recentMilestones: 'Dream Chaser Tenacity targeting a Q4 2026 debut, reprofiled as a free-flyer demonstration rather than an ISS docking. LIFE habitat burst testing successful.',
   },
   {
     rank: 19,
@@ -277,10 +277,10 @@ const spaceStations = [
     hq: 'Denver, CO',
     founded: 2019,
     employees: '400+',
-    valuation: 'Private ($3B+ est.)',
+    valuation: 'Public (NYSE: VOYG)',
     whyWatch: 'Developing Starlab commercial space station with Airbus as prime contractor. Continuously crewed station with 4 crew. George Washington Carver Science Park for research. Selected by NASA as one of three commercial LEO destination providers.',
     keyStats: ['Starlab station (with Airbus)', '4 crew capacity', 'NASA CLD selection', 'Launch on Starship planned'],
-    recentMilestones: 'Airbus selected as Starlab prime contractor. NASA funding milestones achieved. Targeting late 2020s launch.',
+    recentMilestones: 'Went public on NYSE in 2025. Airbus selected as Starlab prime contractor. NASA funding milestones achieved. Targeting late 2020s launch.',
   },
   {
     rank: 20,
@@ -289,7 +289,7 @@ const spaceStations = [
     hq: 'Tokyo, Japan',
     founded: 2013,
     employees: '700+',
-    valuation: 'Private ($2B+ est.)',
+    valuation: 'Public (TSE: 186A)',
     whyWatch: 'Leading orbital debris removal and in-space servicing company. ELSA-d mission demonstrated capture technology. ADRAS-J mission inspected debris in orbit. Contracts with ESA, JAXA, and commercial operators. First-mover in the $3B debris removal market.',
     keyStats: ['ELSA-d capture demo', 'ADRAS-J debris inspection', 'Global office presence', 'First debris removal contracts'],
     recentMilestones: 'ADRAS-J successfully approached and inspected upper stage debris. ESA ClearSpace partnership. Growing order book for end-of-life services.',
@@ -328,9 +328,9 @@ const defenseCompanies = [
     hq: 'Costa Mesa, CA',
     founded: 2017,
     employees: '3,000+',
-    valuation: 'Private ($14B+)',
+    valuation: 'Private ($30B+)',
     whyWatch: 'Fast-growing defense tech company entering space with autonomous systems. Fury autonomous air vehicle adaptable for space applications. Lattice AI command and control platform. Acquiring companies to build space division. Represents the "new prime" model disrupting traditional defense.',
-    keyStats: ['$14B+ valuation', 'Lattice AI/ML platform', 'Fury autonomous systems', 'Rapid prototyping model'],
+    keyStats: ['$30B+ valuation', 'Lattice AI/ML platform', 'Fury autonomous systems', 'Rapid prototyping model'],
     recentMilestones: 'Space division expansion. Lattice platform adoption by Space Force. Multiple acquisition targets in space domain.',
   },
   {
@@ -340,7 +340,7 @@ const defenseCompanies = [
     hq: 'Hawthorne, CA',
     founded: 2002,
     employees: '13,000+',
-    valuation: '$350B+',
+    valuation: '$1T+ (SPCX)',
     whyWatch: 'Starshield leverages Starlink technology for national security missions. Proliferated LEO architecture for military communications and ISR. Classified contracts with NRO and Space Force. Potentially the largest new defense space player.',
     keyStats: ['Starshield military constellation', 'NRO classified contracts', 'Leverages Starlink tech', 'Rapid deployment capability'],
     recentMilestones: 'Starshield contracts expanding. NRO satellite launches. Military communications demonstrations.',
@@ -364,8 +364,8 @@ const emergingStartups = [
     name: 'Relativity Space',
     slug: 'relativity-space',
     focus: '3D-printed rockets',
-    valuation: 'Private ($4.2B)',
-    description: 'Building Terran R, a fully reusable, largely 3D-printed rocket. Stargate is the world\'s largest 3D metal printer. Aiming to radically reduce manufacturing time and cost for launch vehicles.',
+    valuation: 'Private',
+    description: 'Building Terran R, a fully reusable, largely 3D-printed rocket, now led by former Google CEO Eric Schmidt. Stargate is the world\'s largest 3D metal printer. Aiming to radically reduce manufacturing time and cost for launch vehicles.',
   },
   {
     name: 'Impulse Space',
@@ -422,17 +422,17 @@ const faqItems = [
   {
     question: 'What are the biggest space companies in 2026?',
     answer:
-      'The largest space companies by space-related revenue are SpaceX (estimated $15B including Starlink), Boeing Space & Defense ($12.3B), Lockheed Martin Space ($12.1B), Northrop Grumman Space ($10.8B), and Airbus Defence and Space ($10.2B). By valuation, SpaceX leads at $350B+, followed by traditional defense primes. Among pure-play commercial space companies, Rocket Lab ($12B market cap), Planet Labs ($2.8B), and Axiom Space (private, $5B+) are the largest.',
+      'The largest space companies by space-related revenue are SpaceX (estimated $15B+ including Starlink), Boeing Space & Defense ($12.3B), Lockheed Martin Space ($12.1B), Northrop Grumman Space ($10.8B), and Airbus Defence and Space ($10.2B). By valuation, SpaceX leads at over $1 trillion following its June 2026 IPO, far ahead of the traditional defense primes. Among pure-play commercial space companies, Rocket Lab (~$50B market cap), AST SpaceMobile (~$28B), and Planet Labs ($8B+) are the largest.',
   },
   {
     question: 'Which space companies are publicly traded?',
     answer:
-      'Major publicly traded space companies include Rocket Lab (RKLB, $12B), AST SpaceMobile (ASTS, $8.5B), Iridium (IRDM, $6.8B), Planet Labs (PL, $2.8B), Spire Global (SPIR, $800M), BlackSky (BKSY, $600M), and Satellogic (SATL, $500M). The large defense primes with significant space divisions are also public: Lockheed Martin (LMT), Northrop Grumman (NOC), L3Harris (LHX), RTX (RTX), and Boeing (BA). Space ETFs like ARKX, UFO, and ROKT provide diversified exposure.',
+      'Major publicly traded space companies include SpaceX itself (SPCX) since its June 2026 IPO, Rocket Lab (RKLB, ~$50B), AST SpaceMobile (ASTS, ~$28B), Planet Labs (PL, $8B+), Iridium (IRDM), Voyager Technologies (VOYG), Spire Global (SPIR), BlackSky (BKSY), and Satellogic (SATL). The large defense primes with significant space divisions are also public: Lockheed Martin (LMT), Northrop Grumman (NOC), L3Harris (LHX), RTX (RTX), and Boeing (BA). Space ETFs like ARKX, UFO, and ROKT provide diversified exposure.',
   },
   {
     question: 'What space startups are most promising?',
     answer:
-      'The most promising space startups in 2026 include Relativity Space (3D-printed rockets, $4.2B valuation), Impulse Space (in-space transportation, $1.2B), Stoke Space (fully reusable rocket, $1B+), Axiom Space (commercial space station, $5B+), True Anomaly (space domain awareness, $300M+), Capella Space (SAR imaging, $1.5B+), and Muon Space (climate monitoring). These companies are addressing large market needs with innovative technology approaches.',
+      'The most promising space startups in 2026 include Relativity Space (3D-printed rockets, now led by Eric Schmidt), Impulse Space (in-space transportation, $1.2B), Stoke Space (fully reusable rocket, $1B+), Axiom Space (commercial space station, $5B+), True Anomaly (space domain awareness, $300M+), Capella Space (SAR imaging, $1.5B+), and Muon Space (climate monitoring). These companies are addressing large market needs with innovative technology approaches.',
   },
   {
     question: 'Which space sector is growing the fastest?',
@@ -461,7 +461,7 @@ export default function SpaceCompaniesPage() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/spacenexus-logo.png' },
     },
     datePublished: '2026-02-18T00:00:00Z',
-    dateModified: '2026-02-18T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/learn/space-companies-to-watch',
   };
 
@@ -537,7 +537,7 @@ export default function SpaceCompaniesPage() {
             <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
               Industry Analysis
             </span>
-            <span className="text-xs text-slate-500">Updated February 2026</span>
+            <span className="text-xs text-slate-500">Updated August 2026</span>
             <span className="text-xs text-slate-500">14 min read</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-4">
@@ -564,7 +564,7 @@ export default function SpaceCompaniesPage() {
             <div className="text-xs text-slate-400">Industry Sectors</div>
           </div>
           <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-slate-300 mb-1">$800B+</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">$2T+</div>
             <div className="text-xs text-slate-400">Combined Valuation</div>
           </div>
           <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">

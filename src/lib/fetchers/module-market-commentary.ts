@@ -6,6 +6,7 @@
  * API (same pattern as AI Insights). Stores output in DynamicContent.
  */
 
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import prisma from '@/lib/db';
 import { upsertContent } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
@@ -155,7 +156,7 @@ Respond with valid JSON (no markdown code fences):
 }`;
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: EDITORIAL_MODEL,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     });

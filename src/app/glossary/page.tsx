@@ -58,7 +58,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     term: 'Artemis Program',
     definition:
-      'NASA\'s flagship lunar exploration program aimed at returning humans to the Moon and establishing a sustainable long-term presence. Artemis uses the Space Launch System (SLS) rocket and Orion spacecraft. Artemis I (2022) was an uncrewed test flight, Artemis II (2025) will carry astronauts around the Moon, and Artemis III will land the first woman and first person of color on the lunar surface using SpaceX\'s Starship HLS. The program also includes the Gateway lunar space station and international partnerships through the Artemis Accords.',
+      'NASA\'s flagship lunar exploration program aimed at returning humans to the Moon and establishing a sustainable long-term presence. Artemis uses the Space Launch System (SLS) rocket and Orion spacecraft. Artemis I (2022) was an uncrewed test flight, Artemis II (2026) carried astronauts around the Moon, and Artemis III aims to land the first crew of the program on the lunar surface using SpaceX\'s Starship HLS. The program also includes the Gateway lunar space station and international partnerships through the Artemis Accords.',
     category: 'Exploration',
   },
   {
@@ -256,7 +256,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     term: 'Mega-Constellation',
     definition:
-      'A satellite constellation consisting of hundreds to thousands of spacecraft, typically in LEO, designed to provide global broadband internet, IoT connectivity, or persistent Earth observation. Notable mega-constellations include Starlink (SpaceX, 6,000+ deployed), OneWeb (648 satellites), and Amazon Kuiper (planned 3,236 satellites). They raise concerns about orbital debris, light pollution, and radio frequency interference.',
+      'A satellite constellation consisting of hundreds to thousands of spacecraft, typically in LEO, designed to provide global broadband internet, IoT connectivity, or persistent Earth observation. Notable mega-constellations include Starlink (SpaceX, 10,000+ satellites in orbit), OneWeb (648 satellites), and Amazon Leo (formerly Project Kuiper, 3,236 satellites planned). They raise concerns about orbital debris, light pollution, and radio frequency interference.',
     category: 'Spacecraft',
   },
   {
@@ -310,7 +310,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     term: 'Reusability',
     definition:
-      'The design philosophy and engineering practice of building launch vehicle stages, fairings, or spacecraft to be flown multiple times rather than discarded after a single use. SpaceX\'s Falcon 9 first stage has demonstrated over 20 flights on a single booster. Reusability dramatically reduces launch costs and is a key enabler of the modern commercial space economy.',
+      'The design philosophy and engineering practice of building launch vehicle stages, fairings, or spacecraft to be flown multiple times rather than discarded after a single use. SpaceX\'s Falcon 9 first stage has demonstrated more than 30 flights on a single booster. Reusability dramatically reduces launch costs and is a key enabler of the modern commercial space economy.',
     category: 'Launch',
   },
   {
@@ -352,7 +352,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     term: 'Space Economy',
     definition:
-      'The full range of commercial, governmental, and academic activities that generate value from space-related resources, infrastructure, and data. The global space economy was valued at approximately $626 billion in 2025, with commercial activities accounting for roughly 80% of total revenue. Major segments include satellite communications, Earth observation, launch services, ground equipment manufacturing, space tourism, and downstream data analytics. Investment banks and consulting firms project the space economy will surpass $1 trillion by 2030-2035, driven by mega-constellations, in-space manufacturing, and cislunar commerce.',
+      'The full range of commercial, governmental, and academic activities that generate value from space-related resources, infrastructure, and data. The global space economy was valued at approximately $630 billion in 2025, with commercial activities accounting for roughly 80% of total revenue. Major segments include satellite communications, Earth observation, launch services, ground equipment manufacturing, space tourism, and downstream data analytics. Investment banks and consulting firms project the space economy will surpass $1 trillion by 2030-2035, driven by mega-constellations, in-space manufacturing, and cislunar commerce.',
     category: 'Business',
   },
   {
@@ -370,7 +370,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     term: 'Space Debris',
     definition:
-      'Non-functional human-made objects in Earth orbit, including spent rocket stages, defunct satellites, fragments from collisions or explosions, and mission-related debris (lens caps, thermal blankets, paint flakes). As of 2024, approximately 36,500 objects larger than 10 cm are tracked, with an estimated 130 million fragments larger than 1 mm. Debris travels at 7-8 km/s in LEO, making even millimeter-sized particles hazardous.',
+      'Non-functional human-made objects in Earth orbit, including spent rocket stages, defunct satellites, fragments from collisions or explosions, and mission-related debris (lens caps, thermal blankets, paint flakes). Space surveillance networks now regularly track roughly 46,000 objects (as of mid-2026), most larger than 10 cm, with an estimated 130 million fragments larger than 1 mm in orbit. Debris travels at 7-8 km/s in LEO, making even millimeter-sized particles hazardous.',
     category: 'Space Environment',
   },
   {

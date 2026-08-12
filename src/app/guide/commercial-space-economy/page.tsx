@@ -63,7 +63,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'How big is the commercial space market?',
-    a: 'The commercial space sector generates approximately $380 billion or more annually, representing roughly 60% of the total global space economy. This includes satellite services (~$113B), ground equipment (~$145B), satellite manufacturing (~$19B), and launch services (~$9B), plus a growing contribution from downstream data services and emerging in-space markets. These figures are from the SIA and Euroconsult.',
+    a: 'The commercial space sector generates approximately $480 billion annually — roughly 78% of the total global space economy, per the Space Foundation\'s figures for 2024. This includes satellite services (~$113B), ground equipment (~$145B), satellite manufacturing (~$19B), and launch services (~$9B), plus a growing contribution from downstream data services and emerging in-space markets. Segment figures are from the SIA and Euroconsult.',
   },
   {
     q: 'What are the fastest-growing space businesses?',
@@ -92,7 +92,7 @@ function buildStructuredData() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
-    dateModified: '2026-02-08T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/guide/commercial-space-economy',
     image: 'https://spacenexus.us/og-image.png',
   };
@@ -154,7 +154,7 @@ export default function CommercialSpaceEconomyPage() {
               Industries, Revenue Streams &amp; Business Opportunities in the New Space Age
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
-              <time dateTime="2026-02-08">Last updated: February 2026</time>
+              <time dateTime="2026-08-12">Last updated: August 2026</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
               <ReadingTime wordCount={4400} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
@@ -208,10 +208,10 @@ export default function CommercialSpaceEconomyPage() {
                   <p>
                     The commercial space economy is no longer a sideshow to government space
                     programs -- it is the main event. Commercial activities now account for
-                    approximately 60 percent of the global space economy, generating over $380
-                    billion in annual revenue. This shift from a government-dominated to a
-                    commercially-driven space industry is the defining transformation of the
-                    modern space age.
+                    roughly 78 percent of the global space economy, generating approximately $480
+                    billion in annual revenue per the Space Foundation&apos;s 2024 figures. This
+                    shift from a government-dominated to a commercially-driven space industry is
+                    the defining transformation of the modern space age.
                   </p>
                   <p>
                     The drivers of this transformation are well established: dramatically lower
@@ -243,16 +243,16 @@ export default function CommercialSpaceEconomyPage() {
                   <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-300">~60%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~78%</div>
                         <div className="text-star-300 text-sm mt-1">Commercial Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-300">~40%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~22%</div>
                         <div className="text-star-300 text-sm mt-1">Government Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-300">$380B+</div>
-                        <div className="text-star-300 text-sm mt-1">Commercial Revenue</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~$480B</div>
+                        <div className="text-star-300 text-sm mt-1">Commercial Revenue (2024)</div>
                       </div>
                     </div>
                   </div>
@@ -307,16 +307,16 @@ export default function CommercialSpaceEconomyPage() {
                   <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-white/90">6,000+</div>
-                        <div className="text-star-300 text-sm mt-1">Starlink Satellites Deployed</div>
+                        <div className="text-3xl font-display font-bold text-white/90">10,000+</div>
+                        <div className="text-star-300 text-sm mt-1">Starlink Satellites in Orbit</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-white/90">$6-8B</div>
-                        <div className="text-star-300 text-sm mt-1">Starlink Annual Revenue (est.)</div>
+                        <div className="text-3xl font-display font-bold text-white/90">$11.4B</div>
+                        <div className="text-star-300 text-sm mt-1">Starlink Revenue (2025)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-white/90">4M+</div>
-                        <div className="text-star-300 text-sm mt-1">Starlink Subscribers (est.)</div>
+                        <div className="text-3xl font-display font-bold text-white/90">12M+</div>
+                        <div className="text-star-300 text-sm mt-1">Starlink Subscribers (mid-2026)</div>
                       </div>
                     </div>
                   </div>
@@ -326,9 +326,10 @@ export default function CommercialSpaceEconomyPage() {
                   </h3>
                   <p>
                     Starlink is the largest satellite constellation in history and the dominant player
-                    in LEO broadband. With over 6,000 operational satellites, an estimated 4+ million
-                    subscribers, and annual recurring revenue estimated at $6-8 billion (based on
-                    pricing and subscriber estimates), Starlink has single-handedly created a
+                    in LEO broadband. With more than 10,000 satellites in orbit, over 12 million
+                    subscribers as of mid-2026, and 2025 revenue of approximately $11.4 billion
+                    (per disclosures surrounding SpaceX&apos;s 2026 public listing), Starlink has
+                    single-handedly created a
                     multi-billion dollar market. The service provides internet speeds of 50-250 Mbps
                     with latencies of 20-40 ms, competitive with many terrestrial broadband options
                     and vastly superior to legacy satellite internet (GEO-based, with 600+ ms latency).
@@ -363,13 +364,14 @@ export default function CommercialSpaceEconomyPage() {
                   <p>
                     One of the most commercially significant emerging applications is direct-to-device
                     satellite connectivity, which enables standard smartphones to connect to
-                    satellite networks without specialized equipment. SpaceX and T-Mobile have
-                    partnered to provide text messaging via Starlink satellites, with voice and data
-                    capabilities planned. AST SpaceMobile is developing large-aperture satellites
-                    (BlueBird constellation) designed to provide broadband connectivity directly to
-                    unmodified smartphones. Apple&apos;s Emergency SOS via Satellite feature (powered
-                    by Globalstar) has already demonstrated consumer demand for satellite-smartphone
-                    integration.
+                    satellite networks without specialized equipment. T-Mobile&apos;s
+                    Starlink-powered satellite service launched commercially in 2025, beginning with
+                    messaging and expanding toward data capabilities. AST SpaceMobile has launched
+                    its first commercial BlueBird satellites, large-aperture spacecraft designed to
+                    provide broadband connectivity directly to unmodified smartphones, and has
+                    secured major carrier partnerships. Apple&apos;s Emergency SOS via Satellite
+                    feature (powered by Globalstar) has already demonstrated consumer demand for
+                    satellite-smartphone integration.
                   </p>
 
                   <p className="mt-4">
@@ -403,8 +405,8 @@ export default function CommercialSpaceEconomyPage() {
                     <strong className="text-white">Planet Labs (PL)</strong> operates the largest
                     fleet of Earth-imaging satellites, with over 200 SuperDove satellites providing
                     daily global coverage at 3-5 meter resolution and SkySat satellites providing
-                    sub-meter resolution tasking capability. Planet&apos;s annual revenue is
-                    approximately $220 million (FY2025) and growing at roughly 15% annually.
+                    sub-meter resolution tasking capability. Planet&apos;s annual revenue surpassed
+                    $240 million in FY2025 and continues to grow at a double-digit rate.
                   </p>
                   <p>
                     <strong className="text-white">Maxar Technologies</strong> (now private, owned

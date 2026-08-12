@@ -5,6 +5,7 @@ import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const revalidate = 3600;
 
@@ -47,12 +48,12 @@ const TOC = [
 ];
 
 const LAUNCH_PROVIDERS = [
-  { name: 'SpaceX', vehicle: 'Falcon 9, Falcon Heavy, Starship', missions: '80-100+', country: 'United States' },
+  { name: 'SpaceX', vehicle: 'Falcon 9, Falcon Heavy, Starship', missions: '150+ (~80 flown by mid-year)', country: 'United States' },
   { name: 'Rocket Lab', vehicle: 'Electron, Neutron', missions: '15-20', country: 'United States / New Zealand' },
   { name: 'ULA', vehicle: 'Vulcan Centaur, Atlas V', missions: '8-12', country: 'United States' },
   { name: 'Arianespace', vehicle: 'Ariane 6, Vega-C', missions: '8-10', country: 'Europe (French Guiana)' },
   { name: 'ISRO', vehicle: 'GSLV, SSLV, LVM3', missions: '8-12', country: 'India' },
-  { name: 'CASC', vehicle: 'Long March 5, 7, 2D', missions: '50-60', country: 'China' },
+  { name: 'CASC', vehicle: 'Long March 5, 7, 2D', missions: '90+', country: 'China' },
   { name: 'Blue Origin', vehicle: 'New Glenn, New Shepard', missions: '3-6', country: 'United States' },
   { name: 'Relativity Space', vehicle: 'Terran R', missions: '1-2', country: 'United States' },
 ];
@@ -71,7 +72,7 @@ const LAUNCH_SITES = [
 const FAQ_ITEMS = [
   {
     question: 'How many rocket launches are expected in 2026?',
-    answer: 'The space industry is on track for over 250 orbital launches in 2026, continuing the rapid growth from 2024-2025. SpaceX alone accounts for 80-100+ missions, with significant contributions from China, Europe, India, and emerging providers.',
+    answer: '2026 is on track to exceed the record 324 orbital launch attempts set in 2025. SpaceX alone completed roughly 80 Falcon 9 missions before mid-2026 and is on pace for 150 or more this year, with China conducting 90+ launches and Europe, India, and emerging providers adding the rest.',
   },
   {
     question: 'Where can I watch rocket launches live?',
@@ -79,7 +80,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What is the most anticipated launch of 2026?',
-    answer: 'Key milestones include SpaceX Starship crewed missions, Blue Origin New Glenn ramping to operational cadence after its 2025 maiden flight, Ariane 6 reaching full operational cadence, and potential commercial space station module launches from Axiom Space.',
+    answer: 'The year\'s biggest moments have already included Artemis II, NASA\'s first crewed lunar flyby since Apollo (flown April 2026), and Starship\'s first operational payload deployment of Starlink V3 satellites in July. Still ahead: Rocket Lab\'s Neutron debut, SpaceX\'s Starship propellant-transfer demonstration, JAXA\'s MMX Mars-moon sample-return launch window (October-December), and ESA\'s PLATO exoplanet telescope on Ariane 62 in December.',
   },
   {
     question: 'How do I get launch notifications?',
@@ -87,7 +88,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What launch vehicles are new in 2026?',
-    answer: 'Vehicles expected to reach operational milestones in 2026 include Blue Origin New Glenn (ramping commercial flights after its 2025 debut), Relativity Space Terran R, and several small launch vehicles from Firefly and international startups. Rocket Lab Neutron is also targeting its first flight.',
+    answer: 'Starship reached a major operational milestone in July 2026, deploying its first functioning payloads (Starlink V3) and recovering both stages. Rocket Lab Neutron is targeting its first flight late in the year, Blue Origin New Glenn is ramping commercial cadence after its 2025 debut, and Relativity Space Terran R and several small launchers from Firefly and international startups round out the new entrants.',
   },
 ];
 
@@ -105,11 +106,11 @@ export default function SpaceLaunchSchedule2026Page() {
               2026 Space Launch Schedule: Every Mission This Year
             </h1>
             <p className="text-lg text-slate-300 leading-relaxed">
-              A comprehensive, continuously updated guide to every orbital and suborbital launch
-              planned for 2026 — from SpaceX Falcon 9 rideshares to Ariane 6 commercial flights.
+              A comprehensive, continuously updated guide to 2026 launch activity — what has flown
+              so far this record-setting year, and every major mission still to come before December.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Last updated: February 2026</span>
+              <span>Last updated: August 2026</span>
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
@@ -141,16 +142,19 @@ export default function SpaceLaunchSchedule2026Page() {
             <section id="overview">
               <h2 className="text-2xl font-bold text-white mb-4">Launch Activity Overview</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
-                2026 is shaping up to be the busiest year in spaceflight history. The global space industry
-                is projected to conduct <strong className="text-slate-300">over 250 orbital launches</strong>,
-                building on the record-breaking cadence of 2024 and 2025. SpaceX continues to dominate with
-                roughly 40% of global launches, while China maintains a robust 50+ launch campaign.
+                2026 is the busiest year in spaceflight history. 2025 set the standing record with{' '}
+                <strong className="text-slate-300">324 orbital launch attempts</strong> — a 25 percent
+                jump over 2024 — and 2026 is running ahead of that pace. SpaceX completed roughly 80
+                Falcon 9 missions before mid-year and is on pace for 150 or more, accounting for close
+                to half of global launches, while China maintains a robust 90+ launch campaign.
               </p>
               <p className="text-slate-400 leading-relaxed mb-4">
-                New entrants are reshaping the landscape: Blue Origin&apos;s New Glenn ramps toward operational cadence after its 2025 debut,
-                Ariane 6 reaches full cadence in Europe, and multiple small launch vehicle providers compete
-                for dedicated rideshare missions. The mega-constellation buildout continues with Starlink,
-                OneWeb, and Amazon&apos;s Project Kuiper all requiring dozens of flights.
+                The year has already delivered historic milestones: Artemis II carried a crew around
+                the Moon in April, and Starship deployed its first operational payloads — 20 Starlink
+                V3 satellites — in July while recovering both stages. Blue Origin&apos;s New Glenn is
+                ramping toward operational cadence, Ariane 6 is flying regularly in Europe, and the
+                mega-constellation buildout continues with Starlink, OneWeb, and Amazon&apos;s Project
+                Kuiper all requiring dozens of flights.
               </p>
               <div className="bg-white/[0.04] border border-white/10 rounded-lg p-4">
                 <p className="text-white/90 text-sm">
@@ -194,7 +198,7 @@ export default function SpaceLaunchSchedule2026Page() {
               </div>
               <p className="text-slate-400 text-sm mt-4">
                 <Link href="/company-profiles" className="text-slate-300 hover:underline">
-                  View detailed profiles for all 200+ space companies &rarr;
+                  View detailed profiles for {SITE_STATS.companies} space companies &rarr;
                 </Link>
               </p>
             </section>
@@ -203,16 +207,23 @@ export default function SpaceLaunchSchedule2026Page() {
             <section id="monthly">
               <h2 className="text-2xl font-bold text-white mb-4">Month-by-Month Launch Schedule</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
-                Launch schedules are dynamic and subject to delays. SpaceNexus updates this data in real time
-                as providers announce schedule changes. For the most current information, visit our{' '}
-                <Link href="/launch" className="text-slate-300 hover:underline">live launch dashboard</Link>.
+                January through July are in the books, with the global industry averaging roughly 25-30
+                launches per month. Launch schedules for the remainder of the year are dynamic and
+                subject to delays. For the live manifest with countdown timers, visit{' '}
+                <Link href="/mission-control" className="text-slate-300 hover:underline">Mission Control</Link>{' '}
+                or our <Link href="/launch" className="text-slate-300 hover:underline">launch dashboard</Link>.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month) => (
+                {[
+                  { month: 'Jan', flown: true }, { month: 'Feb', flown: true }, { month: 'Mar', flown: true },
+                  { month: 'Apr', flown: true }, { month: 'May', flown: true }, { month: 'Jun', flown: true },
+                  { month: 'Jul', flown: true }, { month: 'Aug', flown: false }, { month: 'Sep', flown: false },
+                  { month: 'Oct', flown: false }, { month: 'Nov', flown: false }, { month: 'Dec', flown: false },
+                ].map(({ month, flown }) => (
                   <div key={month} className="card p-3 text-center">
                     <div className="text-sm font-semibold text-slate-300">{month} 2026</div>
-                    <div className="text-lg font-bold text-slate-300 mt-1">20-25</div>
-                    <div className="text-xs text-slate-400">expected launches</div>
+                    <div className="text-lg font-bold text-slate-300 mt-1">{flown ? 'Flown' : '25-30'}</div>
+                    <div className="text-xs text-slate-400">{flown ? '~25-30 missions' : 'expected launches'}</div>
                   </div>
                 ))}
               </div>
@@ -229,7 +240,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 <div className="card p-4">
                   <h3 className="font-semibold text-white text-sm">SpaceX Starship</h3>
                   <p className="text-slate-400 text-xs mt-1">
-                    Super-heavy lift. 150t to LEO. Fully reusable target. Key for Artemis HLS and Starlink V2.
+                    Super-heavy lift. 150t to LEO. Fully reusable target. Now deploying Starlink V3; key to Artemis HLS.
                   </p>
                 </div>
                 <div className="card p-4">
@@ -247,7 +258,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 <div className="card p-4">
                   <h3 className="font-semibold text-white text-sm">Rocket Lab Neutron</h3>
                   <p className="text-slate-400 text-xs mt-1">
-                    Medium lift. 13t to LEO. Reusable. Targeting constellation deployment and government missions.
+                    Medium lift. 13t to LEO. Reusable. First flight targeted late 2026 for constellation and government missions.
                   </p>
                 </div>
               </div>
@@ -290,17 +301,31 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* Milestones */}
             <section id="milestones">
-              <h2 className="text-2xl font-bold text-white mb-4">Key Milestones to Watch in 2026</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Key 2026 Milestones</h2>
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">Completed so far</h3>
+              <ul className="space-y-3 mb-6">
+                {[
+                  'Artemis II — NASA’s first crewed lunar flyby since Apollo, flown April 2026',
+                  'Starship Flight 13 — first operational payload deployment (20 Starlink V3 satellites) with both stages recovered, July 2026',
+                  'SpaceX’s ~80th Falcon 9 mission of the year before mid-2026 — a record cadence',
+                ].map((milestone) => (
+                  <li key={milestone} className="flex items-start gap-3">
+                    <span className="text-slate-300 mt-1 flex-shrink-0">&#10003;</span>
+                    <span className="text-slate-400 text-sm">{milestone}</span>
+                  </li>
+                ))}
+              </ul>
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">Still to come in 2026</h3>
               <ul className="space-y-3">
                 {[
-                  'SpaceX Starship crewed orbital mission (targeting Q3-Q4)',
-                  'Blue Origin New Glenn reaching operational cadence',
-                  'Amazon Project Kuiper initial constellation deployment',
-                  'Ariane 6 achieving commercial operational status',
-                  'Axiom Space commercial station module launch',
-                  'NASA Artemis III preparations and gateway module flights',
-                  'India ISRO Gaganyaan crewed spaceflight program milestones',
-                  'Commercial space station demonstrations (Orbital Reef, Starlab)',
+                  'Rocket Lab Neutron first flight (targeted late 2026)',
+                  'SpaceX Starship propellant-transfer demonstration (late 2026)',
+                  'JAXA MMX Mars-moon sample-return mission launch window (October-December)',
+                  'ESA PLATO exoplanet telescope launch on Ariane 62 (December)',
+                  'BepiColombo arrival at Mercury and Hera arrival at asteroid Didymos (November)',
+                  'Amazon Project Kuiper constellation buildout toward initial service',
+                  'Blue Origin New Glenn ramping toward operational cadence',
+                  'Commercial space station progress (Axiom, Orbital Reef, Starlab)',
                 ].map((milestone) => (
                   <li key={milestone} className="flex items-start gap-3">
                     <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>

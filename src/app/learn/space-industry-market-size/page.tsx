@@ -128,7 +128,7 @@ const marketSegments = [
 ];
 
 const topCompanies = [
-  { name: 'SpaceX', revenue: '$15.0B (est.)', segment: 'Launch, Satellite Services', marketCap: 'Private ($350B val.)', slug: 'spacex', highlight: 'Largest launch provider; Starlink has 4M+ subscribers' },
+  { name: 'SpaceX', revenue: '$15B+ (est.)', segment: 'Launch, Satellite Services', marketCap: 'Public ($1T+, SPCX)', slug: 'spacex', highlight: 'Largest launch provider; Starlink has 10M+ subscribers' },
   { name: 'Boeing (Space & Defense)', revenue: '$12.3B', segment: 'Manufacturing, Defense', marketCap: '$115B', slug: 'boeing', highlight: 'SLS prime contractor; Starliner crew vehicle' },
   { name: 'Lockheed Martin (Space)', revenue: '$12.1B', segment: 'Defense, Satellites', marketCap: '$135B', slug: 'lockheed-martin', highlight: 'Orion spacecraft; GPS III; SBIRS missile warning' },
   { name: 'Northrop Grumman (Space)', revenue: '$10.8B', segment: 'Defense, Launch', marketCap: '$80B', slug: 'northrop-grumman', highlight: 'James Webb prime contractor; Cygnus cargo; solid rocket motors' },
@@ -136,8 +136,8 @@ const topCompanies = [
   { name: 'L3Harris Technologies', revenue: '$8.4B', segment: 'Defense, Sensors', marketCap: '$48B', slug: 'l3harris', highlight: 'Space sensors; missile tracking; responsive small sats' },
   { name: 'Raytheon (RTX) Space', revenue: '$5.2B', segment: 'Defense, Sensors', marketCap: '$155B (group)', slug: 'rtx', highlight: 'Space-based infrared sensors; GPS ground control' },
   { name: 'SES', revenue: '$2.0B', segment: 'Satellite Services', marketCap: '$5.8B', slug: 'ses', highlight: 'O3b mPOWER MEO constellation; largest GEO fleet' },
-  { name: 'Rocket Lab', revenue: '$0.4B', segment: 'Launch, Components', marketCap: '$12B', slug: 'rocket-lab', highlight: 'Electron small-sat launcher; Neutron medium-lift in development' },
-  { name: 'Planet Labs', revenue: '$0.24B', segment: 'Earth Observation', marketCap: '$2.8B', slug: 'planet-labs', highlight: 'Largest Earth imaging constellation (200+ satellites)' },
+  { name: 'Rocket Lab', revenue: '$0.6B', segment: 'Launch, Components', marketCap: '$50B', slug: 'rocket-lab', highlight: 'Electron small-sat launcher; Neutron targeting late-2026 debut' },
+  { name: 'Planet Labs', revenue: '$0.26B', segment: 'Earth Observation', marketCap: '$8B+', slug: 'planet-labs', highlight: 'Largest Earth imaging constellation (200+ satellites)' },
 ];
 
 const growthDrivers = [
@@ -188,7 +188,7 @@ const projections = [
   { year: '2022', size: '$424B', label: 'Post-COVID recovery' },
   { year: '2024', size: '$508B', label: 'Constellation deployments accelerate' },
   { year: '2025', size: '$630B', label: 'Current baseline' },
-  { year: '2026', size: '$670B (est.)', label: 'Starship operational flights begin' },
+  { year: '2026', size: '$670B (est.)', label: 'Record global launch cadence; SpaceX IPO' },
   { year: '2028', size: '$740B (proj.)', label: 'Kuiper constellation online' },
   { year: '2030', size: '$950B (proj.)', label: 'Commercial space stations operational' },
   { year: '2035', size: '$1.8T (proj.)', label: 'Lunar economy emerging' },
@@ -218,7 +218,7 @@ const faqItems = [
   {
     question: 'Is the space industry a good investment?',
     answer:
-      'The space industry has generated strong returns for investors in high-growth segments. Private market valuations have risen significantly: SpaceX is valued at $350B+, and Rocket Lab market cap has exceeded $12B. However, the sector has seen mixed results for publicly traded companies: some SPACs have underperformed, while established players like L3Harris and Northrop Grumman have delivered steady returns. Key investment themes include satellite broadband, Earth observation, defense modernization, and launch vehicle manufacturing. SpaceNexus tracks space economy trends at /market-intel.',
+      'The space industry has generated strong returns for investors in high-growth segments. SpaceX went public in June 2026 at a valuation above $1 trillion, and Rocket Lab\'s market cap has exceeded $50 billion. However, the sector has seen mixed results for publicly traded companies: some SPACs have underperformed, while established players like L3Harris and Northrop Grumman have delivered steady returns. Key investment themes include satellite broadband, Earth observation, defense modernization, and launch vehicle manufacturing. SpaceNexus tracks space economy trends at /market-intel.',
   },
 ];
 
@@ -237,7 +237,7 @@ export default function SpaceIndustryMarketSizePage() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/spacenexus-logo.png' },
     },
     datePublished: '2026-02-18T00:00:00Z',
-    dateModified: '2026-02-18T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/learn/space-industry-market-size',
   };
 
@@ -263,7 +263,7 @@ export default function SpaceIndustryMarketSizePage() {
             <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
               Market Intelligence
             </span>
-            <span className="text-xs text-slate-500">Updated February 2026</span>
+            <span className="text-xs text-slate-500">Updated August 2026</span>
             <span className="text-xs text-slate-500">10 min read</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-4">
@@ -515,15 +515,15 @@ export default function SpaceIndustryMarketSizePage() {
               <h3 className="text-white font-semibold mb-1">United States</h3>
               <div className="text-xl font-bold text-slate-300 mb-2">~55% market share</div>
               <p className="text-slate-400 text-sm">
-                Dominant position driven by SpaceX, defense primes, NASA budgets ($25B+), Space Force ($30B+),
-                and a thriving VC ecosystem. Home to most commercial space startups.
+                Dominant position driven by SpaceX, defense primes, NASA budgets ($24.4B FY2026 appropriation),
+                Space Force ($30B+), and a thriving VC ecosystem. Home to most commercial space startups.
               </p>
             </div>
             <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Europe</h3>
               <div className="text-xl font-bold text-slate-300 mb-2">~15% market share</div>
               <p className="text-slate-400 text-sm">
-                ESA budget of $7.7B+, Arianespace launch services, Airbus and Thales satellite manufacturing.
+                ESA budget of &euro;8.3B (2026), Arianespace launch services, Airbus and Thales satellite manufacturing.
                 Strong in Earth observation (Copernicus) and navigation (Galileo).
               </p>
             </div>

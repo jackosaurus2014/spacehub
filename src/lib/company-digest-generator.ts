@@ -1,3 +1,4 @@
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
@@ -127,7 +128,7 @@ Respond with valid JSON (no markdown code fences):
 
     try {
       const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-5-20250929',
+        model: EDITORIAL_MODEL,
         max_tokens: 12000,
         messages: [{ role: 'user', content: prompt }],
       });
@@ -253,7 +254,7 @@ Respond with JSON (no markdown code fences):
 
     try {
       const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-5-20250929',
+        model: EDITORIAL_MODEL,
         max_tokens: 6000,
         messages: [{ role: 'user', content: sectorPrompt }],
       });

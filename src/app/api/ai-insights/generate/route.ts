@@ -1,3 +1,4 @@
+import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -66,7 +67,7 @@ async function factCheckArticle(
 ): Promise<FactCheckResult> {
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: EDITORIAL_MODEL,
       max_tokens: 2000,
       messages: [
         {
@@ -370,7 +371,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
     });
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: EDITORIAL_MODEL,
       max_tokens: 16000,
       messages: [{ role: 'user', content: prompt }],
     });

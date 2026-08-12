@@ -116,7 +116,7 @@ const FAQ_ITEMS = [
   {
     question: 'How big is the space industry in 2026?',
     answer:
-      'The global space economy is valued at approximately $630 billion in 2026, according to estimates from the Space Foundation and Euroconsult. This includes commercial space revenue ($430B+), government space budgets ($120B+), and the downstream satellite services and applications market. The industry is projected to exceed $1 trillion by 2030 and $1.8 trillion by 2035.',
+      'The global space economy exceeds an estimated $630 billion as of 2026. The Space Foundation reported a record $613 billion for 2024, with commercial activity accounting for roughly 78% (about $480 billion) and government space budgets contributing approximately $130 billion. The industry is projected to cross $1 trillion by the early 2030s and reach $1.8 trillion by 2035.',
   },
   {
     question: 'How can a small business break into the space industry?',
@@ -166,7 +166,7 @@ export default function SpaceBusinessOpportunitiesPage() {
               shows you how to position your company to capture market share.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Last updated: February 2026</span>
+              <span>Last updated: August 2026</span>
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
@@ -198,15 +198,16 @@ export default function SpaceBusinessOpportunitiesPage() {
             <section id="market-overview">
               <h2 className="text-2xl font-bold text-white mb-4">Overview of the Commercial Space Market</h2>
               <p className="text-slate-300 leading-relaxed mb-4">
-                The global space economy reached an estimated <strong className="text-white">$630 billion</strong> in
-                2025, according to the Space Foundation&apos;s annual report, and is on pace to exceed that figure
-                in 2026. This represents a more than doubling from $350 billion in 2018, driven by the
-                rapid commercialization of launch, satellite broadband, and downstream applications.
+                The global space economy now exceeds an estimated <strong className="text-white">$630 billion</strong>:
+                the Space Foundation&apos;s annual report recorded a record $613 billion for 2024 — 7.8 percent
+                year-over-year growth — and 2026 is tracking higher. That is nearly double the $350 billion of
+                2018, driven by the rapid commercialization of launch, satellite broadband, and downstream
+                applications.
               </p>
               <p className="text-slate-300 leading-relaxed mb-4">
-                Several structural trends are fueling this growth. Launch costs have fallen by over 90% in the
-                past decade, from roughly $54,000 per kilogram to LEO on legacy vehicles to under $3,000 per kg
-                on SpaceX Falcon 9 rideshare missions. This cost reduction has unlocked entire new markets:
+                Several structural trends are fueling this growth. Launch costs have fallen by over 90% versus
+                the legacy era, from roughly $54,000 per kilogram to LEO to about $3,000 per kg
+                on a fully loaded SpaceX Falcon 9. This cost reduction has unlocked entire new markets:
                 mega-constellations for broadband, proliferated LEO architectures for defense, IoT connectivity
                 for remote industrial assets, and frequent Earth observation revisit rates.
               </p>

@@ -164,7 +164,7 @@ export default function SpaceRegulatoryCompliancePage() {
               to spectrum coordination and international treaties — so you can operate with confidence.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Last updated: February 2026</span>
+              <span>Last updated: August 2026</span>
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
@@ -345,8 +345,9 @@ export default function SpaceRegulatoryCompliancePage() {
               <p className="text-slate-300 leading-relaxed mb-4">
                 For non-geostationary (NGSO) constellations, the FCC has introduced milestone requirements to
                 prevent spectrum warehousing. Operators must deploy a percentage of their constellation within
-                specified timeframes or risk losing their authorization. This has created urgency for companies
-                like Amazon (Project Kuiper) to begin deployment.
+                specified timeframes or risk losing their authorization. These milestones have driven
+                deployment urgency for companies like Amazon, whose Project Kuiper constellation buildout
+                is now well underway.
               </p>
               <p className="text-slate-300 leading-relaxed">
                 The FCC also regulates earth stations (ground terminals). The rise of consumer-grade terminals
@@ -444,7 +445,7 @@ export default function SpaceRegulatoryCompliancePage() {
               <h3 className="text-xl font-bold text-white mb-3 mt-6">The Artemis Accords (2020)</h3>
               <p className="text-slate-300 leading-relaxed mb-4">
                 A set of bilateral agreements establishing norms for civil exploration of the Moon, Mars,
-                and beyond. As of 2026, over 40 nations have signed. Key provisions include commitments
+                and beyond. As of mid-2026, 70 nations have signed. Key provisions include commitments
                 to transparency, interoperability, emergency assistance, registration of space objects,
                 release of scientific data, preservation of heritage sites, and prevention of harmful
                 interference. The Accords are particularly relevant for companies involved in lunar

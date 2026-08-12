@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -75,49 +76,89 @@ const MILESTONES: Milestone[] = [
     icon: '\u{2728}',
     color: 'from-emerald-500 to-teal-500',
   },
+  {
+    date: 'April 2026',
+    title: 'Artemis II Live Coverage',
+    description:
+      'Wall-to-wall coverage of the first crewed lunar flyby since Apollo: livestream embeds at the top of the site, a running live blog through launch and splashdown, and a permanent mission archive after the crew returned home on April 10.',
+    icon: '\u{1F315}',
+    color: 'from-slate-400 to-indigo-500',
+  },
+  {
+    date: 'August 2026',
+    title: 'One Simple Pro Plan',
+    description:
+      'The Enterprise tier was retired and every paywalled module — AI reports, compliance suite, patents, procurement, API access, custom dashboards, webhooks — now unlocks with a single Professional plan. Recruitment pages became fully public.',
+    icon: '\u{1F511}',
+    color: 'from-emerald-500 to-cyan-500',
+  },
+  {
+    date: 'August 2026',
+    title: 'Navigation Overhaul & Live Satellite Tracker',
+    description:
+      'A full information-architecture audit collapsed ~50 duplicate pages into dense survivors with 72 verified redirects, rebuilt the navigation from 174 links to 42 curated ones, and promoted the live CelesTrak-powered satellite tracker (10,000+ objects, 30-second refresh) to the main /satellites page.',
+    icon: '\u{1F6F0}',
+    color: 'from-cyan-500 to-blue-500',
+  },
+  {
+    date: 'August 2026',
+    title: 'Real Jobs Board: 6,300+ ATS-Synced Listings',
+    description:
+      'The jobs board switched to live hiring data: daily syncs from 16 verified company ATS boards (SpaceX, Anduril, Rocket Lab, Planet, Vast, Stoke, and more) via Greenhouse, Lever, and Ashby APIs — 6,300+ real listings on the first production sync, with expired postings automatically retired.',
+    icon: '\u{1F4BC}',
+    color: 'from-amber-500 to-orange-500',
+  },
+  {
+    date: 'August 2026',
+    title: 'Weekly Data Brief, Real Status Monitoring & OAuth',
+    description:
+      'The State of the Space Economy brief now auto-publishes every Monday from our own tracked data. The /status page became genuine live monitoring of database and cron-fleet health, and Google and Microsoft OAuth sign-in shipped alongside major page-weight reductions.',
+    icon: '\u{1F4C8}',
+    color: 'from-purple-500 to-pink-500',
+  },
 ];
 
 const GROWTH_STATS: GrowthStat[] = [
   {
-    label: 'Blog Articles',
-    value: '133+',
-    subtext: 'Original long-form content',
+    label: 'Original Articles',
+    value: SITE_STATS.articles,
+    subtext: 'Blog posts & published insights',
     color: 'border-blue-500/30 bg-blue-500/5',
   },
   {
-    label: 'Platform Routes',
-    value: '600+',
-    subtext: 'Pages, APIs & endpoints',
+    label: 'Pages & Tools',
+    value: SITE_STATS.pagesAndTools,
+    subtext: 'Distinct platform routes',
     color: 'border-purple-500/30 bg-purple-500/5',
   },
   {
     label: 'Company Profiles',
-    value: '200+',
+    value: SITE_STATS.companies,
     subtext: 'With financials & SpaceNexus Score',
     color: 'border-amber-500/30 bg-amber-500/5',
   },
   {
-    label: 'Development Waves',
-    value: '70+',
-    subtext: 'Recursive build iterations',
+    label: 'ATS-Synced Jobs',
+    value: '6,300+',
+    subtext: 'Live listings from 16 company boards',
     color: 'border-emerald-500/30 bg-emerald-500/5',
   },
   {
     label: 'Data Sources',
-    value: '26+',
+    value: SITE_STATS.dataSources,
     subtext: 'RSS, APIs & content feeds',
     color: 'border-red-500/30 bg-red-500/5',
   },
   {
-    label: 'Glossary Terms',
-    value: '69',
-    subtext: 'Across 12 categories',
+    label: 'Satellites Tracked',
+    value: SITE_STATS.satellites,
+    subtext: 'Live CelesTrak TLE data',
     color: 'border-cyan-500/30 bg-cyan-500/5',
   },
   {
-    label: 'Changelog Releases',
-    value: '15+',
-    subtext: 'Shipped since February',
+    label: 'Automated Feeds',
+    value: SITE_STATS.automatedFeeds,
+    subtext: 'Scheduled data-refresh jobs',
     color: 'border-pink-500/30 bg-pink-500/5',
   },
   {
@@ -130,32 +171,32 @@ const GROWTH_STATS: GrowthStat[] = [
 
 const WHATS_NEXT: FutureItem[] = [
   {
-    title: 'AI-Powered Insights',
+    title: 'AI Insights & Weekly Data Brief',
     description:
-      'Machine-learning models analyzing launch cadence, funding patterns, and regulatory shifts to deliver predictive intelligence you cannot get anywhere else.',
+      'Shipped: the AI Insights hub publishes editorial analysis grounded in our tracked news, and the State of the Space Economy data brief — built entirely from platform data — now goes out every Monday.',
     icon: '\u{1F9E0}',
-    eta: 'Q2 2026',
+    eta: 'Shipped \u{2014} 2026',
+  },
+  {
+    title: 'Developer API',
+    description:
+      'Shipped: structured space-industry data via authenticated v1 API endpoints with API keys and a developer portal — now included with the single Professional plan.',
+    icon: '\u{1F310}',
+    eta: 'Shipped \u{2014} 2026',
   },
   {
     title: 'Mobile Apps',
     description:
-      'Native iOS and Android apps with push notifications for launches, breaking news, and portfolio alerts. Take SpaceNexus everywhere.',
+      'The installable PWA with offline support is live today. Native iOS and Android apps with push notifications for launches and breaking news remain on the roadmap.',
     icon: '\u{1F4F1}',
-    eta: 'Q3 2026',
-  },
-  {
-    title: 'API Marketplace',
-    description:
-      'A commercial API marketplace where developers can access structured space industry data, build integrations, and power their own products with SpaceNexus data.',
-    icon: '\u{1F310}',
-    eta: 'Q3 2026',
+    eta: '2027',
   },
   {
     title: 'Real-Time Collaboration',
     description:
       'Shared workspaces, team dashboards, and collaborative deal rooms for analysts, investors, and engineering teams working together on space projects.',
     icon: '\u{1F91D}',
-    eta: 'Q4 2026',
+    eta: '2027',
   },
 ];
 
@@ -178,9 +219,10 @@ export default function YearInReviewPage() {
             SpaceNexus 2026: Year in Review
           </h1>
           <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            From a blank repository to the most comprehensive free space intelligence platform
-            on the internet. 70+ waves of recursive development, 133 original articles,
-            600+ routes, and a community of space professionals.
+            From a blank repository in February to a comprehensive space intelligence platform
+            by August: {SITE_STATS.articles} original articles, {SITE_STATS.pagesAndTools} pages
+            and tools, a live satellite tracker, a real jobs board with 6,300+ listings, and a
+            weekly data brief — built in public, one wave at a time.
           </p>
         </div>
       </section>
@@ -239,7 +281,7 @@ export default function YearInReviewPage() {
           </h2>
           <p className="text-slate-400 text-center max-w-2xl mx-auto mb-12">
             Every number below represents real, shipped product built from scratch
-            across 70+ development waves since February 2026.
+            since February 2026 — audited August 2026 and rounded down to what we can defend.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {GROWTH_STATS.map((s) => (
@@ -266,7 +308,8 @@ export default function YearInReviewPage() {
           What&apos;s Next
         </h2>
         <p className="text-slate-400 text-center max-w-2xl mx-auto mb-12">
-          The foundation is built. Now we push into intelligence, mobile, and ecosystem.
+          A roadmap check-in: what we promised in the spring, what has shipped since,
+          and what comes next.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {WHATS_NEXT.map((item) => (
@@ -301,7 +344,8 @@ export default function YearInReviewPage() {
           </h2>
           <p className="text-slate-300 mb-8 max-w-xl mx-auto">
             SpaceNexus is free to use and built for space professionals. Create your
-            account and get access to 600+ pages of data, tools, and content today.
+            account and get access to {SITE_STATS.pagesAndTools} pages of data, tools,
+            and content today.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -324,7 +368,7 @@ export default function YearInReviewPage() {
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
         <p className="text-xs text-slate-500">
           SpaceNexus is independently built and operated. All platform statistics
-          reflect production data as of March 2026.
+          reflect production data as of August 2026.
         </p>
       </div>
     </div>

@@ -62,7 +62,7 @@ const TOC = [
 const FAQ_ITEMS = [
   {
     q: 'What is the total size of the space industry in 2026?',
-    a: 'The global space economy is estimated at approximately $670 billion to $700 billion in 2026, building on the $630 billion figure reported for 2025 by the Space Foundation and Euroconsult. This includes commercial revenues, government budgets, and the broader ground equipment and services ecosystem.',
+    a: 'The global space economy exceeds an estimated $630 billion as of 2026. The Space Foundation reported a record $613 billion for 2024 — 7.8 percent year-over-year growth — and continued commercial expansion has pushed current estimates higher. The total includes commercial revenues, government budgets, and the broader ground equipment and services ecosystem.',
   },
   {
     q: 'What is the largest segment of the space economy?',
@@ -95,7 +95,7 @@ function buildStructuredData() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
-    dateModified: '2026-02-08T00:00:00Z',
+    dateModified: new Date().toISOString(),
     mainEntityOfPage: 'https://spacenexus.us/guide/space-industry-market-size',
     image: 'https://spacenexus.us/og-image.png',
   };
@@ -158,7 +158,7 @@ export default function SpaceIndustryMarketSizePage() {
               Data, Trends &amp; Growth Forecasts for the Global Space Economy
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
-              <time dateTime="2026-02-08">Last updated: February 2026</time>
+              <time dateTime="2026-08-12">Last updated: August 2026</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
               <ReadingTime wordCount={4000} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
@@ -211,12 +211,12 @@ export default function SpaceIndustryMarketSizePage() {
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
                   <p>
                     The global space economy has entered a period of sustained, accelerating growth.
-                    What was a $280 billion industry in 2010 has more than doubled, surpassing $630
-                    billion in 2025 according to the Space Foundation&apos;s annual report and
-                    corroborated by Euroconsult&apos;s Space Economy Report. The industry is on track
-                    to exceed $670 billion in 2026, driven by commercial satellite broadband expansion,
-                    increasing government defense space budgets, and the maturation of downstream
-                    data services.
+                    What was a $280 billion industry in 2010 has more than doubled: the Space
+                    Foundation&apos;s The Space Report recorded a record $613 billion for 2024 —
+                    7.8 percent year-over-year growth — and current estimates put the total above
+                    $630 billion, driven by commercial satellite broadband expansion, increasing
+                    government defense space budgets, and the maturation of downstream data
+                    services.
                   </p>
                   <p>
                     This guide provides a detailed breakdown of where the money flows within the space
@@ -246,11 +246,11 @@ export default function SpaceIndustryMarketSizePage() {
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
                   <p>
                     The most commonly cited figure for the global space economy comes from the Space
-                    Foundation, which estimated the total at over $630 billion for 2025. This number
-                    encompasses four broad categories: government space budgets, commercial space
-                    revenues (including satellite services, launch, and manufacturing), ground
-                    equipment and infrastructure, and downstream applications that depend on
-                    space-derived data and signals.
+                    Foundation, which reported a record $613 billion for 2024, with current estimates
+                    exceeding $630 billion. This number encompasses four broad categories: government
+                    space budgets, commercial space revenues (including satellite services, launch,
+                    and manufacturing), ground equipment and infrastructure, and downstream
+                    applications that depend on space-derived data and signals.
                   </p>
 
                   {/* Data callout */}
@@ -258,14 +258,14 @@ export default function SpaceIndustryMarketSizePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
                       <div>
                         <div className="text-3xl font-display font-bold text-slate-300">$630B+</div>
-                        <div className="text-star-300 text-sm mt-1">Total Space Economy (2025)</div>
+                        <div className="text-star-300 text-sm mt-1">Total Space Economy (2026 est.)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-300">~60%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~78%</div>
                         <div className="text-star-300 text-sm mt-1">Commercial Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-300">~40%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~22%</div>
                         <div className="text-star-300 text-sm mt-1">Government Share</div>
                       </div>
                       <div>
@@ -398,12 +398,13 @@ export default function SpaceIndustryMarketSizePage() {
                   </h3>
                   <p>
                     Satellite broadband is the fastest-growing sub-segment within satellite services.
-                    SpaceX&apos;s Starlink constellation, with over 6,000 satellites deployed and
-                    millions of subscribers, is estimated to be generating $6 billion to $8 billion
-                    in annual recurring revenue as of late 2025, based on industry estimates and
-                    secondary market disclosures. Amazon&apos;s Project Kuiper has begun deploying
-                    its planned 3,236-satellite constellation. Eutelsat OneWeb operates approximately
-                    630 satellites in medium Earth orbit, primarily serving enterprise and government
+                    SpaceX&apos;s Starlink constellation, with more than 10,000 satellites in orbit
+                    and over 12 million subscribers as of mid-2026, generated approximately $11.4
+                    billion in 2025 revenue — the first satellite internet service to clear $10
+                    billion in a single year, per disclosures surrounding SpaceX&apos;s 2026 public
+                    listing. Amazon&apos;s Project Kuiper is actively deploying its planned
+                    3,236-satellite constellation. Eutelsat OneWeb operates approximately 630
+                    satellites in low Earth orbit, primarily serving enterprise and government
                     customers.
                   </p>
                   <p>
@@ -472,12 +473,12 @@ export default function SpaceIndustryMarketSizePage() {
                   <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-white/90">230+</div>
+                        <div className="text-3xl font-display font-bold text-white/90">324</div>
                         <div className="text-star-300 text-sm mt-1">Orbital Launches (2025)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-white/90">~65%</div>
-                        <div className="text-star-300 text-sm mt-1">SpaceX Market Share</div>
+                        <div className="text-3xl font-display font-bold text-white/90">~51%</div>
+                        <div className="text-star-300 text-sm mt-1">SpaceX Share of 2025 Launches</div>
                       </div>
                       <div>
                         <div className="text-3xl font-display font-bold text-white/90">$9B</div>
@@ -487,20 +488,22 @@ export default function SpaceIndustryMarketSizePage() {
                   </div>
 
                   <p>
-                    SpaceX dominates the global launch market with an estimated 60 to 65 percent
-                    share of commercial launches by mass to orbit. The company conducted over 130
-                    orbital launches in 2025, an unprecedented cadence made possible by the reusable
-                    Falcon 9 first stage, which has now flown individual boosters more than 20 times.
-                    SpaceX&apos;s internal launch costs are estimated at $15 million to $20 million
-                    per Falcon 9 mission, a fraction of the listed commercial price of $67 million.
+                    SpaceX dominates the global launch market, conducting 165 Falcon 9 launches in
+                    2025 — roughly half of all orbital launches worldwide and the large majority of
+                    mass delivered to orbit — and running ahead of that pace in 2026 with about 80
+                    missions flown before mid-year. This unprecedented cadence is made possible by
+                    the reusable Falcon 9 first stage, which has now flown individual boosters more
+                    than 25 times. SpaceX&apos;s internal launch costs are estimated at $15 million
+                    to $20 million per Falcon 9 mission, a fraction of the listed commercial price
+                    of approximately $70 million.
                   </p>
                   <p>
                     Other significant launch providers include Rocket Lab (Electron, with 50+ cumulative
                     launches, and the forthcoming Neutron medium-lift vehicle), China&apos;s CASC
                     (Long March family, representing the second-most-active national launch program),
                     Arianespace (Ariane 6, which entered service in 2024), ULA (Vulcan Centaur, the
-                    successor to Atlas V and Delta IV), and Blue Origin (New Glenn, currently in
-                    early flight testing).
+                    successor to Atlas V and Delta IV), and Blue Origin (New Glenn, which debuted
+                    in 2025 and is ramping commercial operations).
                   </p>
                   <p>
                     The launch market is expected to grow significantly as satellite constellation
@@ -571,22 +574,22 @@ export default function SpaceIndustryMarketSizePage() {
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
                   <p>
-                    Government space budgets worldwide totaled approximately $117 billion in 2025,
-                    according to Euroconsult&apos;s Government Space Programs report. This represents
-                    continued growth from approximately $103 billion in 2023 and $92 billion in 2022.
-                    The trend is broadly upward across all major spacefaring nations, driven by
-                    national security concerns, scientific ambitions, and the recognition of space
-                    as critical infrastructure.
+                    Government space budgets worldwide totaled approximately $132 billion in 2024,
+                    according to the Space Foundation — up 6.7 percent year over year, continuing
+                    the climb from roughly $103 billion in 2023 and $92 billion in 2022. The trend
+                    is broadly upward across all major spacefaring nations, driven by national
+                    security concerns, scientific ambitions, and the recognition of space as
+                    critical infrastructure.
                   </p>
 
                   <div className="card p-6 my-8">
                     <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-                      Top Government Space Budgets (2025 Estimates)
+                      Top Government Space Budgets (2024-25 Estimates)
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">United States (Total)</span>
-                        <span className="text-slate-300 font-semibold">~$73B</span>
+                        <span className="text-slate-300 font-semibold">~$77B</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">China (est.)</span>
@@ -606,17 +609,17 @@ export default function SpaceIndustryMarketSizePage() {
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Rest of World</span>
-                        <span className="text-slate-300 font-semibold">~$11.5B</span>
+                        <span className="text-slate-300 font-semibold">~$22B</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">
-                      Sources: Euroconsult Government Space Programs 2025, national budget documents. U.S. total includes NASA, Space Force, NRO, SDA, and other agencies.
+                      Sources: Space Foundation The Space Report 2025, Euroconsult, national budget documents. U.S. total includes NASA, Space Force, NRO, SDA, and other agencies.
                     </p>
                   </div>
 
                   <p>
                     The United States is by far the largest government space spender, with a combined
-                    total of approximately $73 billion across NASA (~$25 billion), the U.S. Space
+                    total of approximately $77 billion across NASA (~$25 billion), the U.S. Space
                     Force and Space Development Agency (~$30 billion), the National Reconnaissance
                     Office (classified, estimated at $15-20 billion), and space-related activities
                     at NOAA, the FAA, and other agencies. U.S. government space spending has been
@@ -734,12 +737,13 @@ export default function SpaceIndustryMarketSizePage() {
                     2. Satellite Broadband Constellations
                   </h3>
                   <p>
-                    Mega-constellations are the single largest commercial growth driver. Starlink is
-                    projected to generate $10 billion or more in annual revenue within the next few
-                    years. Amazon&apos;s Kuiper, which has an authorized $10 billion-plus investment,
-                    will add further competition and capacity. The combined broadband satellite market
-                    is projected to grow from approximately $7 billion in 2024 to $40 billion or more
-                    by 2030, driven by enterprise, maritime, aviation, and consumer demand.
+                    Mega-constellations are the single largest commercial growth driver. Starlink
+                    surpassed $11 billion in annual revenue in 2025 and continues to grow rapidly.
+                    Amazon&apos;s Kuiper, which has an authorized $10 billion-plus investment,
+                    is adding further competition and capacity as its deployment continues. The
+                    combined broadband satellite market — roughly $15 billion in 2025 — is projected
+                    to grow to $40 billion or more by 2030, driven by enterprise, maritime, aviation,
+                    and consumer demand.
                   </p>
 
                   <h3 className="text-xl font-semibold text-white mt-8 mb-3">
@@ -818,7 +822,7 @@ export default function SpaceIndustryMarketSizePage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-star-300">Space Foundation (2025)</span>
-                        <span className="text-white/70 font-semibold">$1T+ by 2030</span>
+                        <span className="text-white/70 font-semibold">$1T as soon as 2032</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">
@@ -914,7 +918,8 @@ export default function SpaceIndustryMarketSizePage() {
                     <strong className="text-white">The Space Foundation</strong> uses the broadest
                     definition, including all commercial space revenue (satellite services, launch,
                     manufacturing, ground equipment), government budgets, and downstream applications
-                    that depend on space infrastructure. This produces the largest figure (~$630B).
+                    that depend on space infrastructure. This produces the largest figure ($613B
+                    reported for 2024; above $630B on current estimates).
                   </p>
                   <p>
                     <strong className="text-white">The Satellite Industry Association (SIA)</strong>{' '}
