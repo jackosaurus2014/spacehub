@@ -56,6 +56,7 @@ import {
   type AgeDistribution,
 } from './data';
 import RelatedModules from '@/components/ui/RelatedModules';
+import NewsletterSignup from '@/components/NewsletterSignup';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { extractApiError } from '@/lib/errors';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -2409,6 +2410,11 @@ function SpaceTalentHubContent() {
                       </button>
                     </div>
                   )}
+
+                  {/* Inline newsletter capture — job seekers are repeat visitors */}
+                  <div className="mt-10">
+                    <NewsletterSignup variant="cta" source="space-talent-jobs" />
+                  </div>
                 </>
               )}
             </div>

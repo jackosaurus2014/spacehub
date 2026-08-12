@@ -12,6 +12,7 @@ import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
 import type { Source } from '@/components/ui/SourceCitation';
 import { clientLogger } from '@/lib/client-logger';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 interface Insight {
   id: string;
@@ -409,6 +410,11 @@ export default function AIInsightDetailPage() {
                 </GlassCard>
               </motion.div>
             )}
+
+            {/* Inline newsletter capture — the article IS the funnel */}
+            <div className="mt-12">
+              <NewsletterSignup variant="cta" source="ai-insight-article" />
+            </div>
 
             {/* Back to All Link */}
             <div className="mt-12 pt-8 border-t border-white/[0.08]/50 text-center">
