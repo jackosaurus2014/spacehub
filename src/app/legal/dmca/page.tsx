@@ -17,7 +17,6 @@ export default function DMCAPage() {
         <AnimatedPageHeader
           title="DMCA & Copyright Policy"
           subtitle="Our process for handling copyright infringement claims"
-          icon="🛡️"
           accentColor="red"
           breadcrumb="Home / Legal / DMCA & Copyright Policy"
         >

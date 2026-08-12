@@ -452,7 +452,6 @@ export default function SatellitesPage() {
           <AnimatedPageHeader
             title="Live Satellite Tracker"
             subtitle="Track satellites in real-time across all orbital regimes with live TLE-based position propagation"
-            icon={<span className="text-4xl">🛰️</span>}
             accentColor="cyan"
           />
 

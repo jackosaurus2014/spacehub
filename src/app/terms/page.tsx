@@ -20,7 +20,6 @@ export default function TermsOfServicePage() {
         <AnimatedPageHeader
           title="Terms of Service"
           subtitle="Please read these terms carefully before using our services"
-          icon="📜"
           accentColor="amber"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">

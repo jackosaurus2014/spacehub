@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { MODULE_ROUTES } from '@/lib/module-routes';
 import Link from 'next/link';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface WidgetContentProps {
   moduleId: string;
@@ -299,7 +300,7 @@ function getPlaceholderData(
       { label: 'Conjunctions', value: '8', trend: '+2' },
     ],
     'space-economy': [
-      { label: 'Market Cap', value: '$546B', trend: '+4.2%' },
+      { label: 'Space Economy', value: SITE_STATS.spaceEconomyNow },
       { label: 'Launches YTD', value: '28' },
       { label: 'Funding', value: '$2.1B', trend: '+12%' },
       { label: 'IPOs', value: '3' },

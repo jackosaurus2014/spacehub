@@ -4,6 +4,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Solutions for Every Space Professional | SpaceNexus',
@@ -31,7 +32,7 @@ const PERSONAS = [
     slug: 'investors',
     title: 'For Investors',
     description:
-      'Make smarter space investments with proprietary SpaceNexus Scores, funding trackers, deal flow tools, and comprehensive due-diligence data across 200+ companies.',
+      `Make smarter space investments with proprietary SpaceNexus Scores, funding trackers, deal flow tools, and comprehensive due-diligence data across ${SITE_STATS.companies} companies.`,
     featureCount: 12,
     icon: (
       <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

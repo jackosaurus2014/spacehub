@@ -2,9 +2,10 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'What Users Say - SpaceNexus',
+  title: 'Platform in Numbers - SpaceNexus',
   description: 'See what the SpaceNexus platform offers space industry professionals. Explore our platform stats, features, and submit your own feedback.',
   alternates: { canonical: 'https://spacenexus.us/testimonials' },
 };
@@ -12,10 +13,10 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const platformHighlights = [
-  { stat: '525+', label: 'Pages & Tools', description: 'Dashboards, calculators, trackers, and reference pages' },
-  { stat: '198+', label: 'Original Articles', description: 'Guides, analysis, market reports, and technical deep-dives' },
-  { stat: '50+', label: 'Data Sources', description: 'NASA, NOAA, SpaceX, CelesTrak, USAspending, and more' },
-  { stat: '39+', label: 'Cron Jobs', description: 'Automated data refresh every 2-60 minutes' },
+  { stat: SITE_STATS.pagesAndTools, label: 'Pages & Tools', description: 'Dashboards, calculators, trackers, and reference pages' },
+  { stat: SITE_STATS.articles, label: 'Original Articles', description: 'Guides, analysis, market reports, and technical deep-dives' },
+  { stat: SITE_STATS.dataSources, label: 'Data Sources', description: 'NASA, NOAA, SpaceX, CelesTrak, USAspending, and more' },
+  { stat: SITE_STATS.automatedFeeds, label: 'Automated Feeds', description: 'Scheduled data-refresh jobs running around the clock' },
   { stat: '19', label: 'Tradeable Resources', description: 'Dynamic global market in Space Tycoon' },
   { stat: '1,000', label: 'Research Items', description: 'Procedural tech tree across 25 categories' },
 ];
@@ -28,7 +29,7 @@ const featureHighlights = [
   },
   {
     title: 'Satellite Tracker',
-    description: 'Track 10,000+ cataloged objects including Starlink, ISS, and classified payloads using CelesTrak TLE data.',
+    description: `Track ${SITE_STATS.satellites} cataloged objects including Starlink, ISS, and classified payloads using CelesTrak TLE data.`,
     href: '/satellites',
   },
   {
@@ -58,9 +59,8 @@ export default function TestimonialsPage() {
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
         <AnimatedPageHeader
-          title="Why SpaceNexus"
+          title="Platform in Numbers"
           subtitle="Built for space industry professionals — powered by real data"
-          icon="🚀"
           accentColor="cyan"
         >
           <Link href="/register" className="btn-primary text-sm py-2 px-4">

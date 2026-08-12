@@ -3,6 +3,7 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const revalidate = 86400;
 
@@ -762,7 +763,7 @@ export default function SpaceCompaniesPage() {
               className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Company Profiles</div>
-              <div className="text-slate-500 text-xs">200+ companies</div>
+              <div className="text-slate-500 text-xs">{SITE_STATS.companies} companies</div>
             </Link>
             <Link
               href="/market-intel"

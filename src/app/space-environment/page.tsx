@@ -103,7 +103,6 @@ function SpaceEnvironmentContent() {
           <AnimatedPageHeader
             title="Space Environment Monitor"
             subtitle="Unified dashboard for space weather, orbital debris tracking, and operational awareness"
-            icon="☀️"
             accentColor="red"
           />
         </div>

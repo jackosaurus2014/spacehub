@@ -6,6 +6,7 @@ import { useSubscription } from './SubscriptionProvider';
 import { SubscriptionTier, SUBSCRIPTION_PLANS } from '@/types';
 import { getRequiredTierForModule } from '@/lib/subscription';
 import { trackGA4Event } from '@/lib/analytics';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // Contextual upgrade messages with feature-specific value propositions
 export type UpgradeContext =
@@ -248,11 +249,11 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     icon: '\u{1F4C8}',
     title: 'Space Market Intelligence',
     description:
-      'Unlock real-time space stock tracking and 200+ company valuations. Monitor market cap movements, earnings, and sector performance across the space economy.',
+      `Unlock real-time space stock tracking and ${SITE_STATS.companies} company valuations. Monitor market cap movements, earnings, and sector performance across the space economy.`,
     requiredTier: 'pro',
     highlights: [
       'Real-time stock tracking for 20+ space companies',
-      '200+ company valuations & financial profiles',
+      `${SITE_STATS.companies} company valuations & financial profiles`,
       'Sector performance analytics & trend detection',
     ],
   },

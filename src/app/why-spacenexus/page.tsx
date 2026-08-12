@@ -4,6 +4,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const COMPARISON_FEATURES = [
   {
@@ -34,7 +35,7 @@ const COMPARISON_FEATURES = [
     quilty: false,
     spacenews: false,
     freeTools: 'Partial',
-    spacenexusNote: '19,000+ objects, 3D globe',
+    spacenexusNote: `${SITE_STATS.satellites} objects, 3D globe`,
     quiltyNote: 'Not available',
     spacenewsNote: 'Not available',
     freeToolsNote: 'N2YO, Heavens-Above (basic)',
@@ -306,8 +307,8 @@ export default function WhySpaceNexusPage() {
                 {[
                   { title: '10+ Integrated Modules', desc: 'Launches, satellites, companies, market intel, compliance, and more in one platform.' },
                   { title: 'Real-Time Data', desc: '50+ live feeds from NASA, NOAA, SAM.gov, FCC, and commercial sources. Updated continuously.' },
-                  { title: '200+ Company Profiles', desc: 'Interactive profiles with financials, satellite assets, competitive positioning, and news.' },
-                  { title: '19,000+ Tracked Objects', desc: '3D satellite globe with orbital data, conjunction warnings, and constellation tracking.' },
+                  { title: `${SITE_STATS.companies} Company Profiles`, desc: 'Interactive profiles with financials, satellite assets, competitive positioning, and news.' },
+                  { title: `${SITE_STATS.satellites} Tracked Objects`, desc: '3D satellite globe with orbital data, conjunction warnings, and constellation tracking.' },
                   { title: 'Daily AI Insights', desc: 'AI-generated market commentary and opportunity scoring, refreshed every day.' },
                   { title: 'Weekly Intelligence Brief', desc: '8-section curated brief delivered to your inbox every Monday. Trusted by 2,000+ pros.' },
                 ].map((item) => (

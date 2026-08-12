@@ -5,6 +5,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Space Companies Directory 2026: Top 50 Aerospace & Space Companies',
@@ -52,7 +53,7 @@ export default function SpaceCompaniesDirectoryPage() {
       <div className="container mx-auto px-4 pb-16">
         <AnimatedPageHeader
           title="Space Companies Directory"
-          subtitle="200+ companies profiled with funding, market data, and ratings"
+          subtitle={`${SITE_STATS.companies} companies profiled with funding, market data, and ratings`}
           icon="🏢"
           accentColor="cyan"
         >
@@ -88,7 +89,7 @@ export default function SpaceCompaniesDirectoryPage() {
                 </table>
               </div>
               <p className="text-slate-500 text-xs mt-3">
-                <Link href="/company-profiles" className="text-cyan-400 hover:text-cyan-300">Browse all 200+ company profiles</Link> with SpaceNexus Score ratings, funding data, and market intelligence.
+                <Link href="/company-profiles" className="text-cyan-400 hover:text-cyan-300">Browse all {SITE_STATS.companies} company profiles</Link> with SpaceNexus Score ratings, funding data, and market intelligence.
               </p>
             </div>
           </ScrollReveal>

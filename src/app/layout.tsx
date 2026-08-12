@@ -10,6 +10,7 @@ import DataInitializer from '@/components/DataInitializer';
 import MobileTabBar from '@/components/mobile/MobileTabBar';
 import StructuredData from '@/components/StructuredData';
 import dynamic from 'next/dynamic';
+import { SITE_STATS } from '@/lib/site-stats';
 // Starfield removed in V2 redesign — true black background needs no decoration
 const Footer = dynamic(() => import('@/components/Footer'), { ssr: false });
 const QuickAccessSidebar = dynamic(() => import('@/components/QuickAccessSidebar'), { ssr: false });
@@ -94,7 +95,7 @@ export const metadata: Metadata = {
     template: '%s | SpaceNexus',
     default: 'SpaceNexus - Space Industry Intelligence Platform',
   },
-  description: 'SpaceNexus — Space industry intelligence platform. Track satellites, monitor launches, analyze space stocks, and access 200+ company profiles. Free to start.',
+  description: `SpaceNexus — Space industry intelligence platform. Track satellites, monitor launches, analyze space stocks, and access ${SITE_STATS.companies} company profiles. Free to start.`,
   keywords: [
     'space industry',
     'space intelligence',
@@ -154,7 +155,7 @@ export const metadata: Metadata = {
     url: 'https://spacenexus.us',
     siteName: 'SpaceNexus',
     title: 'SpaceNexus \u2014 Space Industry Intelligence Platform',
-    description: 'Track satellites, monitor launches, analyze space markets, and access 200+ company profiles. The all-in-one intelligence platform for space industry professionals, investors, and engineers.',
+    description: `Track satellites, monitor launches, analyze space markets, and access ${SITE_STATS.companies} company profiles. The all-in-one intelligence platform for space industry professionals, investors, and engineers.`,
     images: [
       {
         url: '/api/og?title=SpaceNexus&subtitle=Space%20Industry%20Intelligence',
@@ -167,7 +168,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'SpaceNexus \u2014 Space Industry Intelligence Platform',
-    description: 'Track satellites, monitor launches, analyze space markets, and access 200+ company profiles. The all-in-one intelligence platform for space industry professionals, investors, and engineers.',
+    description: `Track satellites, monitor launches, analyze space markets, and access ${SITE_STATS.companies} company profiles. The all-in-one intelligence platform for space industry professionals, investors, and engineers.`,
     images: ['/api/og?title=SpaceNexus&subtitle=Space%20Industry%20Intelligence'],
     creator: '@spacenexus',
     site: '@spacenexus',

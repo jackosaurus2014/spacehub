@@ -3,6 +3,7 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'SpaceX Starship vs Blue Origin New Glenn: Heavy-Lift Rocket Comparison 2026',
@@ -118,7 +119,7 @@ export default function Page() {
         <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Compare launch vehicles and track upcoming launches on SpaceNexus</p>
         <div className="flex flex-wrap gap-3 justify-center">
           <Link href="/compare/launch-vehicles" className="btn-primary text-sm">Launch Vehicle Database</Link>
-          <Link href="/company-profiles" className="btn-secondary text-sm">Browse 200+ Companies</Link>
+          <Link href="/company-profiles" className="btn-secondary text-sm">Browse {SITE_STATS.companies} Companies</Link>
         </div>
       </div>
 

@@ -14,6 +14,7 @@ import NotificationBell from '@/components/ui/NotificationBell';
 import RecentlyViewed from './ui/RecentlyViewed';
 import { usePlatformModifier } from '@/hooks/useKeyboardShortcut';
 import { trackGA4Event } from '@/lib/analytics';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface DropdownItem {
   label: string;
@@ -52,7 +53,7 @@ const NEWS_ITEMS: DropdownItem[] = [
 
 const MARKETS_ITEMS: DropdownItem[] = [
   { label: 'Market Intelligence', href: '/market-intel', description: 'Companies and stock tracking' },
-  { label: 'Company Profiles', href: '/company-profiles', description: '100+ space company profiles' },
+  { label: 'Company Profiles', href: '/company-profiles', description: `${SITE_STATS.companies} space company profiles` },
   { label: 'Funding & Deals', href: '/funding-tracker', description: 'Live funding rounds & M&A' },
   { label: 'Investors', href: '/investors', description: 'Investor directory & deal flow' },
   { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies' },

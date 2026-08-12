@@ -7,6 +7,7 @@ import { formatCompact } from '@/lib/format-number';
 import { useIsMobile } from '@/hooks/useCompactNumber';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { SITE_STATS } from '@/lib/site-stats';
 
 /* Lazy-loaded heavy dashboard components (client-only, no SSR) */
 const SpaceIndustrySnapshot = dynamic(
@@ -614,7 +615,7 @@ function NewUserWelcome() {
         </svg>
       ),
       title: 'Explore space companies',
-      description: 'Browse profiles of 200+ companies across the industry',
+      description: `Browse profiles of ${SITE_STATS.companies} companies across the industry`,
       href: '/company-profiles',
     },
     {

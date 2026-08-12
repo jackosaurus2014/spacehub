@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface RelatedCompany {
   name: string;
@@ -184,7 +185,7 @@ export default function CompanyResearchPage() {
 
       <AnimatedPageHeader
         title="Company Research Assistant"
-        subtitle="Ask questions about space industry companies in natural language. Get instant answers from our database of 100+ company profiles."
+        subtitle={`Ask questions about space industry companies in natural language. Get instant answers from our database of ${SITE_STATS.companies} company profiles.`}
         accentColor="cyan"
         breadcrumb="Company Intelligence"
       />

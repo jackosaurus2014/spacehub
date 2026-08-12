@@ -1743,7 +1743,6 @@ export default function PatentTrackerPage() {
           <AnimatedPageHeader
             title="Patent & IP Tracker"
             subtitle="Monitor space technology patent filings, company portfolios, technology trends, and NASA licensing opportunities"
-            icon="📜"
             accentColor="purple"
           />
         </div>

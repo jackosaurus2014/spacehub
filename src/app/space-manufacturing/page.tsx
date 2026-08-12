@@ -1607,7 +1607,6 @@ function ManufacturingAndImageryContent() {
         <AnimatedPageHeader
           title="Manufacturing & Imagery"
           subtitle="In-space manufacturing intelligence and satellite imagery marketplace -- pharmaceutical production, advanced materials, Earth observation providers, and the emerging orbital economy"
-          icon="🏭"
           accentColor="emerald"
         />
 

@@ -613,7 +613,6 @@ export default function GlossaryPage() {
           <AnimatedPageHeader
             title="Space Industry Glossary"
             subtitle="A comprehensive reference of key terms, acronyms, and concepts used across the global space industry — from orbital mechanics to regulatory frameworks."
-            icon={<span className="text-4xl">&#128218;</span>}
             breadcrumb="Resources"
             accentColor="cyan"
           />

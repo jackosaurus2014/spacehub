@@ -3,6 +3,7 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Bloomberg Terminal for Space Industry | SpaceNexus',
@@ -34,9 +35,9 @@ export const metadata: Metadata = {
 const FEATURE_COMPARISON = [
   { feature: 'Starting Price', spacenexus: 'Free (Pro $19.99/mo, everything included)', competitor: '$25,000/year (~$2,083/mo)', winner: 'spacenexus' },
   { feature: 'Space Launch Tracking', spacenexus: 'Real-time global launch dashboard with countdowns', competitor: 'Limited launch news via wire services', winner: 'spacenexus' },
-  { feature: 'Satellite Tracking', spacenexus: 'Interactive 3D globe, 19,000+ objects, TLE data', competitor: 'Not available', winner: 'spacenexus' },
+  { feature: 'Satellite Tracking', spacenexus: `Interactive 3D globe, ${SITE_STATS.satellites} objects, TLE data`, competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Orbital Slot Data', spacenexus: 'ITU filings, GEO/LEO slot tracking, spectrum data', competitor: 'Not available', winner: 'spacenexus' },
-  { feature: 'Company Profiles', spacenexus: '200+ space companies with competitive intel', competitor: 'Extensive (all public companies globally)', winner: 'competitor' },
+  { feature: 'Company Profiles', spacenexus: `${SITE_STATS.companies} space companies with competitive intel`, competitor: 'Extensive (all public companies globally)', winner: 'competitor' },
   { feature: 'Financial Data Depth', spacenexus: 'Space stocks, ETFs, funding rounds, SPAC tracking', competitor: 'Full financial markets (equities, bonds, FX, commodities)', winner: 'competitor' },
   { feature: 'Procurement Intelligence', spacenexus: 'SAM.gov integration, SBIR/STTR, contract tracking', competitor: 'Limited government contract data', winner: 'spacenexus' },
   { feature: 'Spectrum Management', spacenexus: 'FCC filings, ITU data, auction tracking', competitor: 'Not available', winner: 'spacenexus' },
@@ -92,7 +93,7 @@ export default function BloombergComparisonPage() {
               <strong className="text-white/70">Bloomberg Terminal</strong> excels at deep financial data across
               all markets and has an unmatched trading ecosystem. <strong className="text-white/70">SpaceNexus</strong> is
               purpose-built for the space industry, offering satellite tracking, launch monitoring, procurement
-              intelligence, orbital data, and 200+ company profiles at a fraction of the cost. If you need
+              intelligence, orbital data, and {SITE_STATS.companies} company profiles at a fraction of the cost. If you need
               space-specific intelligence, SpaceNexus is the better tool. If you need broad financial market
               access for trading, Bloomberg remains unmatched.
             </p>
@@ -255,9 +256,9 @@ export default function BloombergComparisonPage() {
                 {[
                   { title: 'Purpose-built for space', desc: 'SpaceNexus was designed from day one for the space industry. Every module, every data feed, and every feature is optimized for aerospace professionals.' },
                   { title: '99% cost reduction', desc: 'SpaceNexus Pro ($19.99/mo) costs 99% less than a single Bloomberg Terminal ($2,083/mo), while providing space-specific features Bloomberg lacks entirely.' },
-                  { title: 'Satellite and orbital intelligence', desc: 'Track 19,000+ objects on an interactive 3D globe, monitor orbital slots, analyze constellation deployments, and access TLE data — none of which Bloomberg offers.' },
+                  { title: 'Satellite and orbital intelligence', desc: `Track ${SITE_STATS.satellites} objects on an interactive 3D globe, monitor orbital slots, analyze constellation deployments, and access TLE data — none of which Bloomberg offers.` },
                   { title: 'Government procurement', desc: 'Integrated SAM.gov and SBIR/STTR intelligence helps you find and win government contracts in the space sector. Bloomberg has no equivalent capability.' },
-                  { title: 'Space-specific company profiles', desc: '200+ detailed profiles of space companies including launch providers, satellite operators, ground segment, and defense contractors — with competitive positioning and financial data.' },
+                  { title: 'Space-specific company profiles', desc: `${SITE_STATS.companies} detailed profiles of space companies including launch providers, satellite operators, ground segment, and defense contractors — with competitive positioning and financial data.` },
                   { title: 'Free tier available', desc: 'Start exploring space industry data immediately with no credit card, no sales call, and no 2-year contract. Upgrade when you need more.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">

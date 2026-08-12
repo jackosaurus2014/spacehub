@@ -74,7 +74,6 @@ export default function MentorsPage() {
         <AnimatedPageHeader
           title="Mentors"
           subtitle="Connect with experienced space industry advisors — engineering, regulatory, fundraising, and career guidance"
-          icon="🧑‍🚀"
           accentColor="purple"
         >
           <Link href="/space-talent" className="btn-secondary text-sm py-2 px-4">

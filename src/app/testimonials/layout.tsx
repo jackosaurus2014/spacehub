@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Testimonials',
-  description: 'What space professionals say about SpaceNexus. User feedback and platform reviews.',
+  title: 'Platform in Numbers',
+  description: 'SpaceNexus by the numbers — platform stats, data sources, and feature highlights for space industry professionals.',
   alternates: {
     canonical: 'https://spacenexus.us/testimonials',
   },

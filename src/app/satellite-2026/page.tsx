@@ -9,6 +9,7 @@ import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const showingCards = [
   {
@@ -18,7 +19,7 @@ const showingCards = [
       </svg>
     ),
     title: 'Real-time Satellite Tracking',
-    description: 'Live 3D visualization tracking 19,000+ objects in orbit. Monitor ISS, Starlink, debris fields, and more with real-time TLE data.',
+    description: `Live 3D visualization tracking ${SITE_STATS.satellites} objects in orbit. Monitor ISS, Starlink, debris fields, and more with real-time TLE data.`,
   },
   {
     icon: (

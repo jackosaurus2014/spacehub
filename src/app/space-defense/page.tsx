@@ -1776,7 +1776,6 @@ export default function SpaceDefensePage() {
         <AnimatedPageHeader
           title="Space Defense & National Security"
           subtitle="Open-source intelligence on military space organizations, programs, procurement, counterspace threats, and allied cooperation"
-          icon="🛡️"
           accentColor="red"
         />
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />

@@ -709,7 +709,6 @@ function ProcurementContent() {
         <AnimatedPageHeader
           title="Procurement Intelligence"
           subtitle="Track government space contracts, SBIR/STTR opportunities, agency budgets, and congressional activity"
-          icon="📋"
         />
 
         {/* Ignition Tracker Callout */}

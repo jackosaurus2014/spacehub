@@ -135,7 +135,6 @@ export default function GovernmentBudgetsPage() {
         <AnimatedPageHeader
           title="Government Space Budgets"
           subtitle="Track government space spending across 15+ agencies worldwide. Comprehensive budget data, per-capita analysis, and key program funding."
-          icon="🏛️"
           accentColor="purple"
         />
 

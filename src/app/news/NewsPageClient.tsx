@@ -1,0 +1,444 @@
+'use client';
+
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import NewsCard from '@/components/NewsCard';
+import NewsFilter from '@/components/NewsFilter';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { SkeletonNewsGrid } from '@/components/ui/Skeleton';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ExportButton from '@/components/ui/ExportButton';
+import PullToRefresh from '@/components/ui/PullToRefresh';
+import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
+import { useSubscription } from '@/components/SubscriptionProvider';
+import AdSlot from '@/components/ads/AdSlot';
+import AlertNudge from '@/components/ui/AlertNudge';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
+import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
+import EmptyState from '@/components/ui/EmptyState';
+import { clientLogger } from '@/lib/client-logger';
+import Image from 'next/image';
+import Link from 'next/link';
+import type { BlogPostMeta } from '@/lib/blog-metadata';
+import ItemListSchema from '@/components/seo/ItemListSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import { NewsArticle } from '@/types';
+import RelatedModules from '@/components/ui/RelatedModules';
+import TrendingSidebar from '@/components/TrendingSidebar';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { trackTimeOnPage } from '@/lib/analytics';
+import JsonLd from '@/components/seo/JsonLd';
+
+function NewsContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const initialCategory = searchParams.get('category');
+  const { remainingArticles } = useSubscription();
+
+  // Track time spent on the news page
+  useEffect(() => {
+    return trackTimeOnPage('/news');
+  }, []);
+
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    initialCategory
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [newArticlesCount, setNewArticlesCount] = useState(0);
+  const lastKnownTotal = useRef<number>(0);
+  const limit = 12;
+
+  // Calculate how many articles have been viewed today
+  // remainingArticles is null for paid users, or 0-10 for free users
+  const maxDailyArticles = 10;
+  const articlesViewed = remainingArticles !== null
+    ? maxDailyArticles - remainingArticles
+    : 0;
+
+  // Sync category to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set('category', selectedCategory);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedCategory, router, pathname]);
+
+  const fetchNews = useCallback(async (currentOffset?: number) => {
+    const off = currentOffset ?? offset;
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (selectedCategory) params.set('category', selectedCategory);
+      params.set('limit', limit.toString());
+      params.set('offset', off.toString());
+
+      const res = await fetch(`/api/news?${params}`);
+      const data = await res.json();
+
+      if (off === 0) {
+        setArticles(data.articles || []);
+      } else {
+        setArticles((prev) => [...prev, ...(data.articles || [])]);
+      }
+      setTotal(data.total);
+      lastKnownTotal.current = data.total;
+      setNewArticlesCount(0);
+      setLastUpdated(new Date());
+    } catch (error) {
+      clientLogger.error('Failed to fetch news', { error: error instanceof Error ? error.message : String(error) });
+      setError('Failed to load data.');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCategory, offset]);
+
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
+
+  // Poll for new articles every 2 minutes — lightweight check for total count only
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const params = new URLSearchParams();
+        if (selectedCategory) params.set('category', selectedCategory);
+        params.set('limit', '1');
+        params.set('offset', '0');
+        const res = await fetch(`/api/news?${params}`);
+        const data = await res.json();
+        if (data.total && lastKnownTotal.current > 0 && data.total > lastKnownTotal.current) {
+          setNewArticlesCount(data.total - lastKnownTotal.current);
+        }
+      } catch {
+        // Silently ignore poll errors
+      }
+    }, 120_000); // 2 minutes
+    return () => clearInterval(interval);
+  }, [selectedCategory]);
+
+  const handleRefresh = useCallback(async () => {
+    setOffset(0);
+    setNewArticlesCount(0);
+    await fetchNews(0);
+  }, [fetchNews]);
+
+  const handleCategoryChange = (category: string | null) => {
+    setSelectedCategory(category);
+    setOffset(0);
+    setArticles([]);
+    setNewArticlesCount(0);
+  };
+
+  const loadMore = () => {
+    setOffset((prev) => prev + limit);
+  };
+
+  return (
+    <PullToRefresh onRefresh={handleRefresh}>
+      {/* Filters */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <NewsFilter
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+          <ExportButton
+            data={articles}
+            filename="space-news"
+            columns={[
+              { key: 'title', label: 'Title' },
+              { key: 'source', label: 'Source' },
+              { key: 'category', label: 'Category' },
+              { key: 'publishedAt', label: 'Published At' },
+              { key: 'url', label: 'URL' },
+              { key: 'summary', label: 'Summary' },
+            ]}
+          />
+        </div>
+        {/* New articles indicator — shown when background poll detects newer content */}
+        {newArticlesCount > 0 && (
+          <button
+            onClick={handleRefresh}
+            className="w-full mb-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-sm font-medium hover:bg-cyan-500/20 transition-colors"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+            </span>
+            {newArticlesCount} new article{newArticlesCount !== 1 ? 's' : ''} available — click to refresh
+          </button>
+        )}
+        <div className="mb-4">
+          <DataFreshnessBadge
+            lastUpdated={lastUpdated}
+            source="RSS Feeds"
+            refreshInterval="every 30 min"
+            onRefresh={handleRefresh}
+          />
+        </div>
+      </div>
+
+      {/* Article Limit Banner */}
+      <ArticleLimitBanner
+        articlesViewed={articlesViewed}
+        maxArticles={maxDailyArticles}
+      />
+
+      {/* Error Banner */}
+      {error && !loading && (
+        <div role="alert" aria-live="polite" className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+          <button
+            onClick={() => fetchNews(0)}
+            className="mt-3 px-4 py-2 min-h-[44px] bg-white/10 text-slate-300 rounded-lg hover:bg-white/[0.08] transition-colors text-sm font-medium"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {/* News Grid */}
+      {loading && articles.length === 0 ? (
+        <div aria-live="polite" aria-busy="true">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            <span className="text-sm text-slate-400">Loading live data...</span>
+          </div>
+          <SkeletonNewsGrid count={6} />
+        </div>
+      ) : articles.length === 0 ? (
+        <EmptyState
+          icon={<span className="text-4xl">🔭</span>}
+          title="No articles found"
+          description={selectedCategory
+            ? `No articles in ${selectedCategory} category yet. Try a different category or browse our blog.`
+            : 'No articles available. Try refreshing the page.'}
+          suggestions={[
+            { label: 'Blog & Analysis', href: '/blog' },
+            { label: 'Daily Digest', href: '/daily-digest' },
+            { label: 'AI Insights', href: '/ai-insights' },
+          ]}
+        />
+      ) : (
+        <>
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-grid">
+            {articles.flatMap((article, index) => {
+              const items: React.ReactNode[] = [
+                <StaggerItem key={article.id}>
+                  <NewsCard article={article} priority={index === 0} />
+                </StaggerItem>,
+              ];
+              if ((index + 1) % 6 === 0 && index + 1 < articles.length) {
+                items.push(
+                  <div key={`ad-${index}`} className="col-span-1 md:col-span-2 lg:col-span-3">
+                    <AdSlot position="in_feed" module="news-feed" adsenseSlot="in_feed_news" adsenseFormat="rectangle" />
+                  </div>
+                );
+              }
+              return items;
+            })}
+          </StaggerContainer>
+
+          {/* Footer Ad */}
+          <div className="mt-12">
+            <AdSlot position="footer" module="news-feed" adsenseSlot="footer_news" adsenseFormat="horizontal" />
+          </div>
+
+          {/* Load More */}
+          {articles.length < total && (
+            <div className="text-center mt-12">
+              <button
+                onClick={loadMore}
+                disabled={loading}
+                className="btn-secondary py-3 px-8"
+              >
+                {loading ? (
+                  <span className="flex items-center space-x-2">
+                    <LoadingSpinner size="sm" />
+                    <span>Loading...</span>
+                  </span>
+                ) : (
+                  `Load More (${articles.length} of ${total})`
+                )}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </PullToRefresh>
+  );
+}
+
+interface NewsPageClientProps {
+  /** Top featured blog posts (metadata only), provided by the server page. */
+  featuredBlogPosts: BlogPostMeta[];
+}
+
+export default function NewsPageClient({ featuredBlogPosts }: NewsPageClientProps) {
+  return (
+    <div className="min-h-screen">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Space News', href: '/news' },
+      ]} />
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Space Industry News',
+        description: 'Breaking space industry news covering launches, satellite deployments, space policy, and commercial spaceflight.',
+        url: 'https://spacenexus.us/news',
+        isPartOf: {
+          '@type': 'WebSite',
+          name: 'SpaceNexus',
+          url: 'https://spacenexus.us',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'SpaceNexus',
+          url: 'https://spacenexus.us',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://spacenexus.us/icons/icon-512x512.png',
+          },
+        },
+        mainEntity: {
+          '@type': 'ItemList',
+          name: 'Space Industry News Articles',
+          description: 'Curated space industry news from 50+ sources',
+        },
+      }} />
+      <ItemListSchema
+        name="Space Industry News"
+        description="Breaking space industry news covering launches, satellite deployments, space policy, and commercial spaceflight."
+        url="/news"
+        items={[
+          { name: 'Launch News', url: '/news?category=launches', description: 'Rocket launch coverage and updates' },
+          { name: 'Satellite News', url: '/news?category=satellites', description: 'Satellite deployment and operations news' },
+          { name: 'Space Defense', url: '/news?category=defense', description: 'Space defense and military space news' },
+          { name: 'Space Business', url: '/news?category=business', description: 'Space industry business and financial news' },
+        ]}
+      />
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-news-media.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" breadcrumb="Dashboard → News & Media" />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4">
+
+        <AlertNudge moduleName="Space News" alertType="news" ctaHref="/alerts" className="mb-4" />
+
+        {/* Main content + Trending sidebar grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main content — 3/4 width on desktop */}
+          <div className="lg:col-span-3">
+            {/* Content wrapped in Suspense for useSearchParams */}
+            <Suspense fallback={
+              <div className="flex justify-center py-20">
+                <LoadingSpinner size="lg" />
+              </div>
+            }>
+              <NewsContent />
+            </Suspense>
+          </div>
+
+          {/* Trending sidebar — 1/4 width on desktop, full width on mobile */}
+          <div className="lg:col-span-1">
+            <TrendingSidebar />
+            {/* Artemis II Sidebar CTA */}
+            <Link
+              href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
+              className="block mt-4 card p-4 border border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.04] to-purple-500/[0.04] hover:border-cyan-500/30 transition-all group"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold border border-cyan-500/20">
+                  LIVE Apr 1
+                </span>
+              </div>
+              <h4 className="text-sm font-semibold text-white group-hover:text-cyan-50 transition-colors mb-1">
+                How to Watch Artemis II Launch
+              </h4>
+              <p className="text-xs text-slate-400 mb-2">
+                Stream links, crew profiles, mission timeline &mdash; your complete viewing guide.
+              </p>
+              <span className="text-xs font-medium text-cyan-400/70 group-hover:text-cyan-400 transition-colors flex items-center gap-1">
+                Read Guide
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* From Our Blog */}
+        <ScrollReveal>
+          <div className="mt-16 pb-12">
+            <h2 className="text-lg font-semibold text-white mb-6">SpaceNexus Analysis</h2>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {featuredBlogPosts.map(post => (
+                <StaggerItem key={post.slug}>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group block card p-5 hover:border-white/15"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/90 border border-white/10">
+                        Blog
+                      </span>
+                      <ContentEngagementBadge
+                        readTimeMin={post.readingTime}
+                        publishedAt={post.publishedAt}
+                        trending={post.featured}
+                        variant="compact"
+                      />
+                    </div>
+                    <h3 className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors mb-2 line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-xs text-slate-400 line-clamp-2">{post.excerpt}</p>
+                  </Link>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+        </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['news']} />
+      </div>
+
+      <StickyMobileCTA
+        label="Get News Alerts"
+        href="/alerts?source=news"
+        icon={
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        }
+      />
+    </div>
+  );
+}

@@ -205,7 +205,6 @@ function InvestorsPageInner() {
         <AnimatedPageHeader
           title="Space Industry Investors"
           subtitle="Directory of venture capital, private equity, corporate, and government investors active in the space economy"
-          icon="🏦"
           accentColor="cyan"
         />
 

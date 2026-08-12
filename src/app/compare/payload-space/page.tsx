@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Payload Space — Space Industry Platform Comparison | SpaceNexus',
@@ -34,9 +35,9 @@ const FEATURE_COMPARISON = [
   { feature: 'Type', spacenexus: 'Interactive intelligence platform', competitor: 'Newsletter and media brand', winner: 'tie' },
   { feature: 'Price', spacenexus: 'Free (Pro $19.99/mo, everything included)', competitor: 'Free newsletter (premium tier available)', winner: 'tie' },
   { feature: 'News Delivery', spacenexus: '50+ RSS feeds, auto-categorized, searchable', competitor: 'Curated daily newsletter by editors', winner: 'tie' },
-  { feature: 'Satellite Tracking', spacenexus: 'Interactive 3D globe with 19,000+ objects', competitor: 'Not available', winner: 'spacenexus' },
+  { feature: 'Satellite Tracking', spacenexus: `Interactive 3D globe with ${SITE_STATS.satellites} objects`, competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Launch Tracking', spacenexus: 'Live dashboard with countdowns and alerts', competitor: 'Launch news coverage in newsletter', winner: 'spacenexus' },
-  { feature: 'Company Profiles', spacenexus: '200+ interactive profiles with financials', competitor: 'Company coverage in articles', winner: 'spacenexus' },
+  { feature: 'Company Profiles', spacenexus: `${SITE_STATS.companies} interactive profiles with financials`, competitor: 'Company coverage in articles', winner: 'spacenexus' },
   { feature: 'Market Intelligence', spacenexus: 'Interactive dashboards, stocks, ETFs, funding', competitor: 'Market coverage in newsletter', winner: 'spacenexus' },
   { feature: 'Procurement Intel', spacenexus: 'SAM.gov, SBIR/STTR, contract tracking', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'B2B Marketplace', spacenexus: 'RFQs, proposals, provider matching', competitor: 'Not available', winner: 'spacenexus' },
@@ -189,9 +190,9 @@ export default function PayloadComparisonPage() {
               </p>
               <ul className="space-y-3">
                 {[
-                  { title: 'Interactive satellite tracking', desc: 'Monitor 19,000+ objects on a 3D globe in real time. Search by operator, orbit type, or constellation. No newsletter can provide this.' },
+                  { title: 'Interactive satellite tracking', desc: `Monitor ${SITE_STATS.satellites} objects on a 3D globe in real time. Search by operator, orbit type, or constellation. No newsletter can provide this.` },
                   { title: 'Live launch dashboard', desc: 'Real-time countdown timers, mission details, and launch vehicle specs for every global launch — not just a summary of what already happened.' },
-                  { title: '200+ company profiles', desc: 'Interactive profiles with financial data, satellite assets, competitive positioning, and auto-tagged news. Research any company on demand.' },
+                  { title: `${SITE_STATS.companies} company profiles`, desc: 'Interactive profiles with financial data, satellite assets, competitive positioning, and auto-tagged news. Research any company on demand.' },
                   { title: 'Procurement intelligence', desc: 'Search SAM.gov contracts, track SBIR/STTR opportunities, and match your capabilities to open solicitations.' },
                   { title: 'B2B marketplace', desc: 'Post RFQs, receive proposals, and connect with space industry vendors. Turn intelligence into business opportunities.' },
                   { title: 'API access', desc: 'Build space industry data into your own applications, dashboards, and workflows with the SpaceNexus REST API.' },

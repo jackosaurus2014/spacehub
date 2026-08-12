@@ -1,2 +1,2 @@
 import { redirect } from 'next/navigation';
-export default function LaunchesRedirect() { redirect('/launch-manifest'); }
+export default function LaunchesRedirect() { redirect('/mission-control'); }

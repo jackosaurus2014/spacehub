@@ -22,6 +22,46 @@ const BREADCRUMB_ROUTES: Record<string, string> = {
   'Space Environment': '/space-environment',
 };
 
+/**
+ * Static accent style lookup. Tailwind's JIT compiler requires full literal
+ * class strings (no template interpolation), so each accent is spelled out.
+ * `green` intentionally maps to the emerald styles to collapse the duplicate.
+ */
+const ACCENT_STYLES: Record<string, { bar: string; iconBox: string }> = {
+  cyan: {
+    bar: 'bg-gradient-to-r from-cyan-400/80 to-transparent',
+    iconBox: 'bg-cyan-400/10 ring-cyan-400/20',
+  },
+  purple: {
+    bar: 'bg-gradient-to-r from-purple-400/80 to-transparent',
+    iconBox: 'bg-purple-400/10 ring-purple-400/20',
+  },
+  amber: {
+    bar: 'bg-gradient-to-r from-amber-400/80 to-transparent',
+    iconBox: 'bg-amber-400/10 ring-amber-400/20',
+  },
+  emerald: {
+    bar: 'bg-gradient-to-r from-emerald-400/80 to-transparent',
+    iconBox: 'bg-emerald-400/10 ring-emerald-400/20',
+  },
+  red: {
+    bar: 'bg-gradient-to-r from-red-400/80 to-transparent',
+    iconBox: 'bg-red-400/10 ring-red-400/20',
+  },
+  green: {
+    bar: 'bg-gradient-to-r from-emerald-400/80 to-transparent',
+    iconBox: 'bg-emerald-400/10 ring-emerald-400/20',
+  },
+  blue: {
+    bar: 'bg-gradient-to-r from-blue-400/80 to-transparent',
+    iconBox: 'bg-blue-400/10 ring-blue-400/20',
+  },
+  indigo: {
+    bar: 'bg-gradient-to-r from-indigo-400/80 to-transparent',
+    iconBox: 'bg-indigo-400/10 ring-indigo-400/20',
+  },
+};
+
 interface AnimatedPageHeaderProps {
   title: string;
   subtitle?: string;
@@ -41,6 +81,7 @@ export default function AnimatedPageHeader({
 }: AnimatedPageHeaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const accent = ACCENT_STYLES[accentColor] ?? ACCENT_STYLES.cyan;
 
   useEffect(() => {
     const el = containerRef.current;
@@ -120,12 +161,18 @@ export default function AnimatedPageHeader({
         }`}
       >
         {icon && (
-          <span className="text-4xl">{icon}</span>
+          <span
+            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-3xl ring-1 ${accent.iconBox}`}
+            aria-hidden="true"
+          >
+            {icon}
+          </span>
         )}
         <div>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-100">
             {title}
           </h1>
+          <div className={`mt-2 h-0.5 w-16 rounded-full ${accent.bar}`} aria-hidden="true" />
         </div>
       </div>
 

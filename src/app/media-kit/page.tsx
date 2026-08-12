@@ -4,6 +4,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { getRelatedModules } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const BRAND_COLORS = [
   { name: 'Indigo Primary', hex: '#6366f1', className: 'bg-[#6366f1]' },
@@ -36,19 +37,19 @@ const COMPANY_INFO = {
 
 const SCREENSHOTS = [
   { title: 'Mission Control Dashboard', description: 'Real-time dashboard with launches, market data, breaking news, and AI insights' },
-  { title: 'Satellite Tracker (3D Globe)', description: 'Interactive 3D globe tracking 19,000+ active satellites in real-time' },
-  { title: 'Company Intelligence Directory', description: '200+ company profiles with funding data, executive moves, and competitive analysis' },
+  { title: 'Satellite Tracker (3D Globe)', description: `Interactive 3D globe tracking ${SITE_STATS.satellites} active satellites in real-time` },
+  { title: 'Company Intelligence Directory', description: `${SITE_STATS.companies} company profiles with funding data, executive moves, and competitive analysis` },
   { title: 'Market Intelligence Module', description: 'Space economy data, industry trends, TAM analysis, and market segments' },
   { title: 'B2B Marketplace', description: 'Space services marketplace connecting buyers and providers' },
   { title: 'Engineering Tools Suite', description: 'Orbital, thermal, link budget, and power calculators for mission planning' },
 ];
 
 const BOILERPLATES = {
-  short: `SpaceNexus is a space industry intelligence platform that consolidates real-time launches, satellite tracking, market analytics, procurement, and 200+ company profiles into one accessible platform, democratizing access to the data powering the $1.8 trillion space economy.`,
-  medium: `SpaceNexus is a space industry intelligence platform consolidating real-time data, market analytics, and business tools into a single accessible platform. With 30+ integrated modules covering launches, satellite tracking, market intelligence, procurement, company profiles, and regulatory compliance, SpaceNexus replaces dozens of expensive, fragmented data sources. The platform aggregates data from NASA, NOAA, SAM.gov, and 50+ industry feeds through 33 automated pipelines, serving space startups, defense contractors, investors, engineers, and government agencies. Available as a progressive web app with offline support, SpaceNexus offers a free Explorer tier and an everything-included Professional tier ($19.99/month).`,
+  short: `SpaceNexus is a space industry intelligence platform that consolidates real-time launches, satellite tracking, market analytics, procurement, and ${SITE_STATS.companies} company profiles into one accessible platform, democratizing access to the data powering the $1.8 trillion space economy.`,
+  medium: `SpaceNexus is a space industry intelligence platform consolidating real-time data, market analytics, and business tools into a single accessible platform. With ${SITE_STATS.modules} integrated modules covering launches, satellite tracking, market intelligence, procurement, company profiles, and regulatory compliance, SpaceNexus replaces dozens of expensive, fragmented data sources. The platform aggregates data from NASA, NOAA, SAM.gov, and 50+ industry feeds through 33 automated pipelines, serving space startups, defense contractors, investors, engineers, and government agencies. Available as a progressive web app with offline support, SpaceNexus offers a free Explorer tier and an everything-included Professional tier ($19.99/month).`,
   long: `SpaceNexus is the most comprehensive space industry intelligence platform available, designed to serve the rapidly growing $1.8 trillion global space economy. The platform integrates 30+ modules -- including Mission Control, News & Media, Space Market Intelligence, Business Opportunities, Mission Planning, Space Operations, Space Talent Hub, Regulatory & Compliance, B2B Marketplace, and Solar System Exploration -- into a unified interface that replaces dozens of fragmented, expensive data sources.
 
-SpaceNexus aggregates real-time data from NASA, NOAA, SAM.gov, the FCC, and over 50 curated news and analysis sources through 33 automated data pipelines. Users can track every orbital and suborbital launch worldwide, monitor 19,000+ satellites on an interactive 3D globe, access detailed profiles of 200+ space companies with financial data and competitive analysis, browse 55+ original articles and industry guides, and discover government procurement opportunities through integrated SAM.gov and SBIR/STTR intelligence.
+SpaceNexus aggregates real-time data from NASA, NOAA, SAM.gov, the FCC, and over 50 curated news and analysis sources through 33 automated data pipelines. Users can track every orbital and suborbital launch worldwide, monitor ${SITE_STATS.satellites} satellites on an interactive 3D globe, access detailed profiles of ${SITE_STATS.companies} space companies with financial data and competitive analysis, browse ${SITE_STATS.articles} original articles and industry guides, and discover government procurement opportunities through integrated SAM.gov and SBIR/STTR intelligence.
 
 The platform leverages AI powered by Claude (Anthropic) to categorize news, tag company mentions, and generate daily market insights. SpaceNexus serves aerospace engineers, defense contractors, investors, startup founders, government program managers, journalists, and space enthusiasts alike.
 

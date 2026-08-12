@@ -8,6 +8,7 @@ import MobileValueProp from '@/components/marketing/MobileValueProp';
 import QuickFacts from '@/components/ui/QuickFacts';
 import ExportButton from '@/components/ui/ExportButton';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const SPACE_ECONOMY_FACTS = [
   { value: '$626B', label: 'Global Space Economy (2025)' },
@@ -139,7 +140,7 @@ export default function SpaceEconomyPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Economy Dashboard"
-          subtitle="Comprehensive intelligence on the $546B global space economy -- market segments, national budgets, and growth projections"
+          subtitle={`Comprehensive intelligence on the ${SITE_STATS.spaceEconomyNow} global space economy -- market segments, national budgets, and growth projections`}
           icon={'\u{1F4B0}'}
           accentColor="emerald"
         />

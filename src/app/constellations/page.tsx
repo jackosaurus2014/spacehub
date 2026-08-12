@@ -8,6 +8,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ────────────────────────────────────────
 // Types & Constants
@@ -1118,7 +1119,7 @@ export default function ConstellationTrackerPage() {
             <ScrollReveal>
               <RelatedModules
                 modules={[
-              { name: 'Satellite Tracker', description: 'Track 19,000+ objects in real-time orbit', href: '/satellites', icon: '🛰️' },
+              { name: 'Satellite Tracker', description: `Track ${SITE_STATS.satellites} objects in real-time orbit`, href: '/satellites', icon: '🛰️' },
               { name: 'Orbital Slots', description: 'GEO/MEO/LEO slot allocations and services', href: '/orbital-slots', icon: '📡' },
               { name: 'Space Environment', description: 'Space weather, debris, and situational awareness', href: '/space-environment', icon: '🌍' },
               { name: 'Launch Vehicles', description: 'Compare launch providers and capabilities', href: '/launch-vehicles', icon: '🚀' },

@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface ResourceItem { name: string; href: string; description: string }
 interface ResourceCategory { name: string; icon: string; description: string; items: ResourceItem[] }
@@ -42,7 +43,7 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
     icon: '\uD83D\uDCE1',
     description: 'Real-time tracking and monitoring',
     items: [
-      { name: 'Satellite Tracker', href: '/satellites', description: '19,000+ tracked objects' },
+      { name: 'Satellite Tracker', href: '/satellites', description: `${SITE_STATS.satellites} tracked objects` },
       { name: 'Space Weather', href: '/space-weather', description: 'Solar activity and geomagnetic conditions' },
       { name: 'Debris Tracker', href: '/debris-tracker', description: 'Orbital debris monitoring' },
       { name: 'Launch Schedule', href: '/launch', description: 'Upcoming launches worldwide' },

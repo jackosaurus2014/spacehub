@@ -1,3 +1,5 @@
+import { SITE_STATS } from '@/lib/site-stats';
+
 export default function StructuredData() {
   const organizationSchema = {
     '@context': 'https://schema.org',
@@ -6,22 +8,11 @@ export default function StructuredData() {
     legalName: 'SpaceNexus LLC',
     url: 'https://spacenexus.us',
     logo: 'https://spacenexus.us/logo.png',
-    description:
-      'SpaceNexus is a comprehensive space industry intelligence platform providing real-time data on launches, satellite tracking, market trends, company profiles, and business opportunities across the $1.8 trillion space economy.',
+    description: `SpaceNexus is a comprehensive space industry intelligence platform providing real-time data on launches, satellite tracking, market trends, company profiles, and business opportunities across a global space economy projected to reach ${SITE_STATS.spaceEconomyProjection}.`,
     foundingDate: '2024',
-    foundingLocation: {
-      '@type': 'Place',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Houston',
-        addressRegion: 'TX',
-        addressCountry: 'US',
-      },
-    },
     sameAs: [
       'https://twitter.com/spacenexus',
       'https://linkedin.com/company/spacenexus',
-      'https://github.com/jackosaurus2014/spacehub',
     ],
     contactPoint: [
       {
@@ -37,14 +28,6 @@ export default function StructuredData() {
         availableLanguage: ['English'],
       },
     ],
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '1234 Orbit Drive, Suite 500',
-      addressLocality: 'Houston',
-      addressRegion: 'TX',
-      postalCode: '77058',
-      addressCountry: 'US',
-    },
     numberOfEmployees: {
       '@type': 'QuantitativeValue',
       value: '2-10',
@@ -66,8 +49,7 @@ export default function StructuredData() {
     name: 'SpaceNexus',
     alternateName: 'SpaceNexus Space Intelligence',
     url: 'https://spacenexus.us',
-    description:
-      'Your comprehensive gateway to space industry intelligence. Track launches, satellites, market data, 200+ company profiles, and discover business opportunities.',
+    description: `Your comprehensive gateway to space industry intelligence. Track launches, satellites, market data, ${SITE_STATS.companies} company profiles, and discover business opportunities.`,
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -91,7 +73,7 @@ export default function StructuredData() {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'SpaceNexus',
-    description: 'A comprehensive space industry intelligence platform. Track 19,000+ satellites, monitor launches, analyze market data, and access 200+ company profiles.',
+    description: `A comprehensive space industry intelligence platform. Track ${SITE_STATS.satellites} satellites, monitor launches, analyze market data, and access ${SITE_STATS.companies} company profiles.`,
     applicationCategory: 'BusinessApplication',
     applicationSubCategory: 'Space Industry Intelligence',
     operatingSystem: 'Web, Android, iOS',
@@ -120,10 +102,10 @@ export default function StructuredData() {
     ],
     featureList: [
       'Real-time launch tracking with countdown timers',
-      'Satellite tracking for 19,000+ objects on 3D globe',
-      '200+ space company profiles with financial data',
+      `Satellite tracking for ${SITE_STATS.satellites} objects on 3D globe`,
+      `${SITE_STATS.companies} space company profiles with financial data`,
       'AI-powered market intelligence (Claude)',
-      'News aggregation from 50+ curated sources',
+      `News aggregation from ${SITE_STATS.newsFeeds} curated sources`,
       'Government procurement intelligence (SAM.gov)',
       'Space weather and debris monitoring',
       'Regulatory compliance tracking',
@@ -145,8 +127,7 @@ export default function StructuredData() {
       price: '0',
       priceCurrency: 'USD',
     },
-    description:
-      'Space industry intelligence platform providing real-time launch tracking, satellite monitoring, market data, 200+ company profiles, and business opportunities across the global space economy.',
+    description: `Space industry intelligence platform providing real-time launch tracking, satellite monitoring, market data, ${SITE_STATS.companies} company profiles, and business opportunities across the global space economy.`,
   };
 
   return (

@@ -19,7 +19,6 @@ export default function CookiePolicyPage() {
         <AnimatedPageHeader
           title="Cookie Policy"
           subtitle="How we use cookies and similar technologies"
-          icon="🍪"
           accentColor="amber"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">

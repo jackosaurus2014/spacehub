@@ -175,7 +175,6 @@ export default function ToolsHubPage() {
         <AnimatedPageHeader
           title="Space Engineering Tools"
           subtitle="Interactive calculators and analysis tools for space mission planning"
-          icon="&#9881;"
           accentColor="cyan"
         />
 

@@ -443,7 +443,7 @@ function MarketIntelContent() {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
         </div>
         <div className="container mx-auto px-4 pt-6">
-          <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" breadcrumb="Dashboard → Market Intel" />
+          <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" accentColor="emerald" breadcrumb="Dashboard → Market Intel" />
         </div>
       </div>
 

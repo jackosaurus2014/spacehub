@@ -3,6 +3,7 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'SpaceX vs Blue Origin: Complete Comparison 2026',
@@ -108,7 +109,7 @@ export default function SpaceXVsBlueOrigin() {
             Interactive Comparison Tool
           </Link>
           <Link href="/company-profiles" className="btn-secondary text-sm">
-            Browse All 200+ Companies
+            Browse All {SITE_STATS.companies} Companies
           </Link>
         </div>
       </div>

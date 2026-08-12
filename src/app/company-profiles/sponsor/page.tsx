@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { toast } from '@/lib/toast';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface SponsorTierInfo {
   name: string;
@@ -75,10 +76,10 @@ const SPONSOR_TIERS: SponsorTierInfo[] = [
 ];
 
 const ROI_STATS = [
-  { label: 'Monthly Profile Views', value: '2,500+', description: 'Average for Tier 1 companies' },
-  { label: 'Industry Professionals', value: '15,000+', description: 'Active SpaceNexus users' },
-  { label: 'Companies Profiled', value: '100+', description: 'In our intelligence database' },
-  { label: 'Decision Makers', value: '60%', description: 'Of our users are VP+ level' },
+  { label: 'Companies Profiled', value: SITE_STATS.companies, description: 'In our intelligence database' },
+  { label: 'Pages & Tools', value: SITE_STATS.pagesAndTools, description: 'Across the platform' },
+  { label: 'Data Sources', value: SITE_STATS.dataSources, description: 'Named, licensed feeds' },
+  { label: 'Original Articles', value: SITE_STATS.articles, description: 'Analysis & intelligence briefs' },
 ];
 
 function SponsorPageInner() {

@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Space Industry Ecosystem Map | Value Chain & Company Directory',
   description:
-    'Interactive map of the space industry value chain. Explore upstream suppliers, launch providers, satellite operators, and downstream applications. See how 100+ companies connect across the space economy.',
+    `Interactive map of the space industry value chain. Explore upstream suppliers, launch providers, satellite operators, and downstream applications. See how ${SITE_STATS.companies} companies connect across the space economy.`,
   keywords: [
     'space industry ecosystem',
     'space value chain',
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Space Industry Ecosystem Map | SpaceNexus',
     description:
-      'Interactive visual map of the space industry value chain with 100+ companies.',
+      `Interactive visual map of the space industry value chain with ${SITE_STATS.companies} companies.`,
     images: ['/og-image.png'],
   },
   alternates: {

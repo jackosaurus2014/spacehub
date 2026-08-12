@@ -6,6 +6,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 import PersonalizedWelcome from '@/components/onboarding/PersonalizedWelcome';
 import YouTubeEmbed from '@/components/ui/YouTubeEmbed';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const STEP_ILLUSTRATIONS: Record<number, string> = {
   1: '/art/onboarding-step1.png',
@@ -44,7 +45,7 @@ const QUICK_START_STEPS = [
     step: 3,
     title: 'Dive Into Intelligence',
     description:
-      'Browse 100+ company profiles, track funding rounds, monitor regulatory changes, or run an orbital simulation. Every module is one click away.',
+      `Browse ${SITE_STATS.companies} company profiles, track funding rounds, monitor regulatory changes, or run an orbital simulation. Every module is one click away.`,
     cta: 'Browse All Features',
     href: '/features',
     icon: (

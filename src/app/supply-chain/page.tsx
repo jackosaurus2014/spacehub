@@ -1599,7 +1599,6 @@ export default function SupplyChainPage() {
           <AnimatedPageHeader
             title="Global Supply Chain"
             subtitle="Aerospace supply chain tracking with geopolitical risk analysis"
-            icon="\uD83D\uDD17"
             accentColor="cyan"
           >
             <Link href="/" className="btn-secondary text-sm py-2 px-4">

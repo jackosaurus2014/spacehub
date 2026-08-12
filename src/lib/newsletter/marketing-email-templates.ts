@@ -2,6 +2,7 @@
 // Uses same dark-themed, inline CSS pattern as main email-templates.ts
 
 import { APP_URL } from '@/lib/constants';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const styles = {
   bgDark: '#0a0a1a',
@@ -87,9 +88,9 @@ export function generateLaunchAnnouncementEmail(): { html: string; plain: string
           <p style="color:${styles.accentCyan};font-weight:bold;margin:0 0 8px;font-size:14px;">What you get for free:</p>
           <ul style="color:${styles.textLight};font-size:13px;line-height:1.8;margin:0;padding-left:20px;">
             <li>Real-time launch tracking with countdowns</li>
-            <li>Space news from 50+ curated sources</li>
-            <li>Satellite tracker (19,000+ objects)</li>
-            <li>200+ space company directory</li>
+            <li>Space news from ${SITE_STATS.newsFeeds} curated feeds</li>
+            <li>Satellite tracker (${SITE_STATS.satellites} objects)</li>
+            <li>${SITE_STATS.companies} space company directory</li>
             <li>Space weather monitoring</li>
             <li>Mission Control dashboard</li>
           </ul>
@@ -108,9 +109,9 @@ The space industry's most comprehensive intelligence platform is now available.
 
 What you get for free:
 - Real-time launch tracking with countdowns
-- Space news from 50+ curated sources
-- Satellite tracker (19,000+ objects)
-- 200+ space company directory
+- Space news from ${SITE_STATS.newsFeeds} curated feeds
+- Satellite tracker (${SITE_STATS.satellites} objects)
+- ${SITE_STATS.companies} space company directory
 - Space weather monitoring
 - Mission Control dashboard
 
@@ -127,13 +128,13 @@ SpaceNexus LLC | spacenexus.us`;
  * Email 2: Feature Highlight (Day 3)
  */
 export function generateFeatureHighlightEmail(): { html: string; plain: string; subject: string } {
-  const subject = '30+ modules, 200+ companies, real-time data — a tour of SpaceNexus';
+  const subject = `${SITE_STATS.modules} modules, ${SITE_STATS.companies} companies, real-time data — a tour of SpaceNexus`;
 
   const modules = [
     { name: 'Mission Control', desc: 'Real-time dashboard with launches, markets, and news', icon: '🎯' },
     { name: 'Market Intelligence', desc: 'Space stocks, ETFs, funding rounds, and M&A', icon: '📊' },
-    { name: 'Satellite Tracker', desc: '19,000+ objects on interactive 3D globe', icon: '🛰️' },
-    { name: 'Company Profiles', desc: '200+ companies with financials and analysis', icon: '🏢' },
+    { name: 'Satellite Tracker', desc: `${SITE_STATS.satellites} objects on interactive 3D globe`, icon: '🛰️' },
+    { name: 'Company Profiles', desc: `${SITE_STATS.companies} companies with financials and analysis`, icon: '🏢' },
     { name: 'Procurement Intel', desc: 'Government contracts from SAM.gov and SBIR', icon: '📋' },
   ];
 
@@ -170,8 +171,8 @@ SpaceNexus isn't just a news feed or a satellite tracker. It's a complete intell
 
 1. Mission Control — Real-time dashboard
 2. Market Intelligence — Space stocks, ETFs, funding
-3. Satellite Tracker — 19,000+ objects on 3D globe
-4. Company Profiles — 200+ companies with financials
+3. Satellite Tracker — ${SITE_STATS.satellites} objects on 3D globe
+4. Company Profiles — ${SITE_STATS.companies} companies with financials
 5. Procurement Intel — Government contracts from SAM.gov
 
 Plus 5 more modules covering talent, compliance, mission planning, space weather, and solar exploration.

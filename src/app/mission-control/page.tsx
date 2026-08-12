@@ -1114,7 +1114,7 @@ function MissionControlContent() {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
         </div>
         <div className="container mx-auto px-4 pt-6">
-          <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" icon="🚀" accentColor="cyan" />
+          <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" accentColor="cyan" />
         </div>
       </div>
 

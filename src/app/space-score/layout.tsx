@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Space Score Leaderboard - Company Ratings & Rankings',
-  description: 'Space Score is a composite 0-1000 rating system for space companies measuring Innovation, Financial Health, Market Position, Operational Capacity, and Growth Trajectory. See how SpaceX, Blue Origin, Rocket Lab, and 100+ companies rank.',
+  description: `Space Score is a composite 0-1000 rating system for space companies measuring Innovation, Financial Health, Market Position, Operational Capacity, and Growth Trajectory. See how SpaceX, Blue Origin, Rocket Lab, and ${SITE_STATS.companies} companies rank.`,
   keywords: [
     'space company ratings',
     'space score',

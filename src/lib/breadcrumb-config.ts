@@ -181,7 +181,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/solutions/engineers': 'For Engineers',
   '/solutions/executives': 'For Executives',
   '/use-cases': 'Use Cases',
-  '/case-studies': 'Case Studies',
   '/press': 'Press',
   '/media-kit': 'Media Kit',
   '/security': 'Security',

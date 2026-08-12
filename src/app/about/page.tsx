@@ -4,6 +4,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const whatWeDoCards = [
   {
@@ -46,10 +47,10 @@ const whatWeDoCards = [
 ];
 
 const stats = [
-  { value: '200+', label: 'Companies Profiled' },
-  { value: '50+', label: 'Data Sources' },
-  { value: '30+', label: 'Intelligence Modules' },
-  { value: '19,000+', label: 'Satellites Tracked' },
+  { value: SITE_STATS.companies, label: 'Companies Profiled' },
+  { value: SITE_STATS.dataSources, label: 'Data Sources' },
+  { value: SITE_STATS.pagesAndTools, label: 'Pages & Tools' },
+  { value: SITE_STATS.satellites, label: 'Satellites Tracked' },
 ];
 
 export default function AboutPage() {
@@ -172,9 +173,39 @@ export default function AboutPage() {
                 </svg>
               </div>
               <h2 className="text-2xl md:text-3xl font-display font-bold text-white">
-                The Team
+                Leadership &amp; Team
               </h2>
             </div>
+
+            {/* Founder card */}
+            <div className="card p-6 md:p-8 bg-white/[0.03] border border-white/[0.08] max-w-2xl mb-8">
+              <div className="flex items-start gap-5">
+                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 border border-white/10 flex items-center justify-center">
+                  <span className="text-xl font-bold text-white">JG</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Jay Griffiths</h3>
+                  <p className="text-sm text-cyan-400 font-medium mb-3">Founder</p>
+                  <p className="text-slate-300 leading-relaxed">
+                    Jay is a space-industry enthusiast and builder who founded SpaceNexus to bring
+                    fragmented space intelligence into a single, accessible platform. He leads
+                    SpaceNexus LLC from Houston, TX.
+                  </p>
+                  <a
+                    href="https://www.linkedin.com/company/spacenexus-llc"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-4 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                    SpaceNexus LLC on LinkedIn
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <p className="text-lg text-slate-300 leading-relaxed max-w-4xl">
               SpaceNexus is built by a team of engineers, analysts, and space enthusiasts based in Houston, TX.
               We combine deep aerospace domain expertise with modern software engineering to deliver intelligence

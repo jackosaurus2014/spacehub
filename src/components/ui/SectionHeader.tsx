@@ -12,7 +12,7 @@ interface SectionHeaderProps {
   description?: string;
   /** Gradient color for the accent bar (Tailwind gradient classes) */
   accentGradient?: string;
-  /** Small meta text on the right (e.g., "264+ tools", "Updated Q1 2026") */
+  /** Small meta text on the right (e.g., "400+ tools", "Updated Q1 2026") */
   meta?: string;
   /** Additional className on the wrapper */
   className?: string;

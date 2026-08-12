@@ -2,6 +2,7 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const COMPARISON_DATA = [
   { metric: 'Parent Company Founded', a: '1939 (Northrop); 1994 merger with Grumman', b: '1916' },
@@ -104,7 +105,7 @@ export default function Page() {
         <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Track defense primes and space contracts on SpaceNexus</p>
         <div className="flex flex-wrap gap-3 justify-center">
           <Link href="/compare/companies?a=northrop-grumman&b=boeing" className="btn-primary text-sm">Interactive Comparison</Link>
-          <Link href="/company-profiles" className="btn-secondary text-sm">Browse 200+ Companies</Link>
+          <Link href="/company-profiles" className="btn-secondary text-sm">Browse {SITE_STATS.companies} Companies</Link>
         </div>
       </div>
 

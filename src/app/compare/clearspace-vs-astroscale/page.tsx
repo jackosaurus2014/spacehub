@@ -3,6 +3,7 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'ClearSpace vs Astroscale: Debris Removal Comparison 2026',
@@ -117,7 +118,7 @@ export default function Page() {
         <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Track debris removal companies and orbital environment data on SpaceNexus</p>
         <div className="flex flex-wrap gap-3 justify-center">
           <Link href="/compare/companies?a=clearspace&b=astroscale" className="btn-primary text-sm">Interactive Comparison</Link>
-          <Link href="/company-profiles" className="btn-secondary text-sm">Browse 200+ Companies</Link>
+          <Link href="/company-profiles" className="btn-secondary text-sm">Browse {SITE_STATS.companies} Companies</Link>
         </div>
       </div>
 

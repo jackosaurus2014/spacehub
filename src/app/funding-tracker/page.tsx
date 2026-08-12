@@ -230,7 +230,6 @@ function FundingTrackerPageInner() {
         <AnimatedPageHeader
           title="Space Startup & Funding Tracker"
           subtitle="Track venture capital, M&A, and IPO activity across the space industry"
-          icon="💰"
           accentColor="green"
         />
 

@@ -20,7 +20,6 @@ export default function PrivacyPolicyPage() {
         <AnimatedPageHeader
           title="Privacy Policy"
           subtitle="How we collect, use, and protect your information"
-          icon="🔒"
           accentColor="amber"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">

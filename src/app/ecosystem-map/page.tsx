@@ -7,6 +7,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -541,10 +542,10 @@ export default function EcosystemMapPage() {
         {/* ──── MARKET SIZE ──── */}
         <ScrollReveal>
           <div className="mt-8 bg-gradient-to-r from-white/[0.06] to-white/[0.05] border border-white/[0.08] rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-3">Space Economy by the Numbers (2025)</h3>
+            <h3 className="text-white font-semibold mb-3">Space Economy by the Numbers</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white/70">$546B</div>
+                <div className="text-2xl font-bold text-white/70">{SITE_STATS.spaceEconomyNow}</div>
                 <div className="text-slate-400 text-xs mt-1">Global Space Economy</div>
               </div>
               <div className="text-center">

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -40,7 +41,7 @@ const COMPETITORS: Competitor[] = [
       'Limited tooling: no calculators, trackers, or community',
     ],
     spaceNexusAdvantage:
-      'SpaceNexus provides comparable market data, company intelligence, and trend analysis at $19.99/mo. You get real-time dashboards, 200+ company profiles, engineering calculators, and community features that Quilty does not offer — with daily AI insights, full API access, and custom dashboards all included in the single Pro plan at a fraction of the cost.',
+      `SpaceNexus provides comparable market data, company intelligence, and trend analysis at $19.99/mo. You get real-time dashboards, ${SITE_STATS.companies} company profiles, engineering calculators, and community features that Quilty does not offer — with daily AI insights, full API access, and custom dashboards all included in the single Pro plan at a fraction of the cost.`,
     color: 'bg-blue-500/10',
     textColor: 'text-blue-400',
     borderColor: 'border-blue-500/20',
@@ -80,7 +81,7 @@ const COMPETITORS: Competitor[] = [
       'No engineering calculators, regulatory tools, or community features',
     ],
     spaceNexusAdvantage:
-      'Payload is great for staying informed via email; SpaceNexus is a full platform for working in the space industry. You get structured data, 200+ company profiles, live satellite tracking, launch databases, calculators, funding trackers, and an intelligence brief that goes deeper than any newsletter.',
+      `Payload is great for staying informed via email; SpaceNexus is a full platform for working in the space industry. You get structured data, ${SITE_STATS.companies} company profiles, live satellite tracking, launch databases, calculators, funding trackers, and an intelligence brief that goes deeper than any newsletter.`,
     color: 'bg-purple-500/10',
     textColor: 'text-purple-400',
     borderColor: 'border-purple-500/20',

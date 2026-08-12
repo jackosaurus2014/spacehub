@@ -5,21 +5,22 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 /* metadata is in layout.tsx */
 
 // revalidate moved to layout
 
 const KEY_STATS = [
-  { label: 'Modules', value: '30+', description: 'Integrated intelligence modules' },
-  { label: 'Company Profiles', value: '200+', description: 'Space companies tracked' },
-  { label: 'News Sources', value: '50+', description: 'Curated RSS feeds and blogs' },
-  { label: 'Satellites Tracked', value: '19,000+', description: 'Active orbital objects' },
-  { label: 'Data Sources', value: '26+', description: 'APIs and data feeds' },
+  { label: 'Modules', value: SITE_STATS.modules, description: 'Integrated intelligence modules' },
+  { label: 'Company Profiles', value: SITE_STATS.companies, description: 'Space companies tracked' },
+  { label: 'News Sources', value: SITE_STATS.newsFeeds, description: 'Curated RSS feeds and blogs' },
+  { label: 'Satellites Tracked', value: SITE_STATS.satellites, description: 'Active orbital objects' },
+  { label: 'Data Sources', value: SITE_STATS.dataSources, description: 'APIs and data feeds' },
   { label: 'Launches Monitored', value: 'All', description: 'Global orbital and suborbital' },
-  { label: 'Cron Jobs', value: '33', description: 'Automated data pipelines' },
-  { label: 'Blog Articles', value: '30+', description: 'In-depth industry analysis' },
-  { label: 'App Routes', value: '180+', description: 'Platform pages and features' },
+  { label: 'Automated Feeds', value: SITE_STATS.automatedFeeds, description: 'Automated data pipelines' },
+  { label: 'Articles', value: SITE_STATS.articles, description: 'In-depth industry analysis' },
+  { label: 'Pages & Tools', value: SITE_STATS.pagesAndTools, description: 'Platform pages and features' },
 ];
 
 const COMPANY_FACTS = [
@@ -29,7 +30,7 @@ const COMPANY_FACTS = [
   { label: 'Industry', value: 'Space Intelligence / SaaS' },
   { label: 'Model', value: 'Freemium (Free / Pro)' },
   { label: 'Platforms', value: 'Web (PWA), Android, iOS' },
-  { label: 'Data Refresh', value: 'Real-time (33 automated jobs)' },
+  { label: 'Data Refresh', value: `Real-time (${SITE_STATS.automatedFeeds} automated jobs)` },
   { label: 'AI Engine', value: 'Claude by Anthropic' },
 ];
 
@@ -62,7 +63,7 @@ const PRESS_COVERAGE = [
     type: 'Launch',
   },
   {
-    title: 'SpaceNexus Reaches 200+ Company Profiles Milestone',
+    title: `SpaceNexus Reaches ${SITE_STATS.companies} Company Profiles Milestone`,
     outlet: 'Company Milestone',
     date: 'December 2025',
     url: '/company-profiles',
@@ -84,7 +85,6 @@ export default function PressPage() {
         <AnimatedPageHeader
           title="Press Kit & Media Resources"
           subtitle="Everything journalists, analysts, and partners need to cover SpaceNexus"
-          icon="📰"
           accentColor="cyan"
         />
 
@@ -99,11 +99,12 @@ export default function PressPage() {
                 <h3 className="text-lg font-semibold text-white mb-2">About SpaceNexus</h3>
                 <p className="text-slate-400 leading-relaxed">
                   SpaceNexus is the most comprehensive space industry intelligence platform available, designed
-                  to serve the rapidly growing $1.8 trillion global space economy. With 30+ integrated modules
-                  covering launches, satellite tracking, market intelligence, procurement, 200+ company profiles,
+                  to serve the {SITE_STATS.spaceEconomyNow} global space economy (projected to reach {SITE_STATS.spaceEconomyProjection}).
+                  With {SITE_STATS.modules} integrated modules
+                  covering launches, satellite tracking, market intelligence, procurement, {SITE_STATS.companies} company profiles,
                   regulatory compliance, and a B2B marketplace, SpaceNexus replaces dozens of expensive, fragmented
-                  data sources. The platform aggregates real-time data from NASA, NOAA, SAM.gov, and 50+ industry
-                  feeds through 33 automated data pipelines, serving space startups, defense contractors, investors,
+                  data sources. The platform aggregates real-time data from NASA, NOAA, SAM.gov, and {SITE_STATS.newsFeeds} industry
+                  feeds through {SITE_STATS.automatedFeeds} automated data pipelines, serving space startups, defense contractors, investors,
                   engineers, and government agencies. Available as a progressive web app with native Android and iOS
                   apps, SpaceNexus offers a free Explorer tier and an everything-included Professional tier ($19.99/mo).
                 </p>
@@ -124,14 +125,14 @@ export default function PressPage() {
                 <div>
                   <h4 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3">Key Differentiators</h4>
                   <ul className="text-slate-400 space-y-1.5 text-sm list-disc list-inside">
-                    <li>Only platform combining 30+ modules of space intelligence</li>
+                    <li>Only platform combining {SITE_STATS.modules} modules of space intelligence</li>
                     <li>Freemium model vs. $10K+ enterprise-only competitors</li>
-                    <li>Real-time data via 33 automated cron jobs vs. periodic static reports</li>
+                    <li>Real-time data via {SITE_STATS.automatedFeeds} automated feeds vs. periodic static reports</li>
                     <li>AI-powered insights via Claude by Anthropic</li>
                     <li>Mobile-first PWA with offline support</li>
                     <li>B2B marketplace for space services and procurement</li>
-                    <li>30+ original blog articles and industry guides</li>
-                    <li>180+ platform pages covering every aspect of the space economy</li>
+                    <li>{SITE_STATS.articles} original articles and industry guides</li>
+                    <li>{SITE_STATS.pagesAndTools} platform pages covering every aspect of the space economy</li>
                   </ul>
                 </div>
               </div>
@@ -249,10 +250,10 @@ export default function PressPage() {
 
           </ScrollReveal>
 
-          {/* Recent Press Coverage */}
+          {/* Company Announcements */}
           <ScrollReveal delay={0.1}>
           <section>
-            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Recent Coverage</h2>
+            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Company Announcements</h2>
             <div className="space-y-3">
               {PRESS_COVERAGE.map((item) => (
                 <Link
@@ -304,9 +305,9 @@ export default function PressPage() {
                 </div>
                 <p className="text-slate-400 text-sm leading-relaxed bg-white/[0.04] p-4 rounded-lg border border-white/[0.08]">
                   SpaceNexus is a space industry intelligence platform that consolidates real-time launches,
-                  satellite tracking, market analytics, procurement intelligence, and 200+ company profiles into one
+                  satellite tracking, market analytics, procurement intelligence, and {SITE_STATS.companies} company profiles into one
                   accessible platform. Serving aerospace professionals, investors, and government agencies, SpaceNexus
-                  democratizes access to the data powering the $1.8 trillion space economy.
+                  democratizes access to the data powering the {SITE_STATS.spaceEconomyNow} space economy.
                 </p>
               </div>
 
@@ -323,10 +324,10 @@ export default function PressPage() {
                 </div>
                 <p className="text-slate-400 text-sm leading-relaxed bg-white/[0.04] p-4 rounded-lg border border-white/[0.08]">
                   SpaceNexus is a space industry intelligence platform that consolidates real-time data, market
-                  analytics, and business tools into a single, accessible platform. With 30+ integrated modules
+                  analytics, and business tools into a single, accessible platform. With {SITE_STATS.modules} integrated modules
                   covering launches, satellite tracking, market intelligence, procurement, company profiles, and
                   regulatory compliance, SpaceNexus replaces dozens of expensive, fragmented data sources. The
-                  platform aggregates data from NASA, NOAA, SAM.gov, and 50+ industry feeds through 33 automated
+                  platform aggregates data from NASA, NOAA, SAM.gov, and {SITE_STATS.newsFeeds} industry feeds through {SITE_STATS.automatedFeeds} automated
                   data pipelines, serving space startups, defense contractors, investors, engineers, and government
                   agencies. Available as a progressive web app with offline support, SpaceNexus offers free
                   Explorer and everything-included Professional tiers. Learn more at spacenexus.us.
@@ -346,16 +347,16 @@ export default function PressPage() {
                 </div>
                 <p className="text-slate-400 text-sm leading-relaxed bg-white/[0.04] p-4 rounded-lg border border-white/[0.08]">
                   SpaceNexus is the most comprehensive space industry intelligence platform available, designed
-                  to serve the rapidly growing $1.8 trillion global space economy. The platform integrates 30+
+                  to serve the {SITE_STATS.spaceEconomyNow} global space economy, projected to reach {SITE_STATS.spaceEconomyProjection}. The platform integrates {SITE_STATS.modules}
                   modules&mdash;including Mission Control, News &amp; Media, Space Market Intelligence, Business
                   Opportunities, Mission Planning, Space Operations, Space Talent Hub, Regulatory &amp; Compliance,
                   B2B Marketplace, and Solar System Exploration&mdash;into a unified interface that replaces dozens
                   of fragmented, expensive data sources.<br /><br />
-                  SpaceNexus aggregates real-time data from NASA, NOAA, SAM.gov, the FCC, and over 50 curated
-                  news and analysis sources through 33 automated data pipelines. Users can track every orbital and
-                  suborbital launch worldwide, monitor 19,000+ satellites on an interactive 3D globe, access detailed
-                  profiles of 200+ space companies with financial data and competitive analysis, browse 30+ original
-                  blog articles and industry guides, and discover government procurement opportunities through
+                  SpaceNexus aggregates real-time data from NASA, NOAA, SAM.gov, the FCC, and {SITE_STATS.newsFeeds} curated
+                  news and analysis sources through {SITE_STATS.automatedFeeds} automated data pipelines. Users can track every orbital and
+                  suborbital launch worldwide, monitor {SITE_STATS.satellites} satellites on an interactive 3D globe, access detailed
+                  profiles of {SITE_STATS.companies} space companies with financial data and competitive analysis, browse {SITE_STATS.articles} original
+                  articles and industry guides, and discover government procurement opportunities through
                   integrated SAM.gov and SBIR/STTR intelligence.<br /><br />
                   The platform leverages AI powered by Claude (Anthropic) to categorize news, tag company mentions,
                   and generate daily market insights. SpaceNexus serves aerospace
@@ -364,7 +365,7 @@ export default function PressPage() {
                   Unlike legacy competitors charging $10,000-50,000+ per year for narrow data sets, SpaceNexus
                   offers a free Explorer tier alongside a single Professional plan ($19.99/month) that includes everything,
                   democratizing access to space industry intelligence. The platform is available as a responsive
-                  web application with 180+ pages, progressive web app capabilities, and native Android and iOS mobile
+                  web application with {SITE_STATS.pagesAndTools} pages, progressive web app capabilities, and native Android and iOS mobile
                   apps. Founded in 2024 and headquartered in Houston, Texas, SpaceNexus LLC is building the Bloomberg
                   Terminal of the space economy.
                 </p>
@@ -393,13 +394,13 @@ export default function PressPage() {
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Satellite Tracker (3D Globe)</span>
                   </div>
-                  <p className="text-xs text-slate-400">Interactive 3D globe tracking 19,000+ satellites</p>
+                  <p className="text-xs text-slate-400">Interactive 3D globe tracking {SITE_STATS.satellites} satellites</p>
                 </div>
                 <div className="card p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Company Profiles Directory</span>
                   </div>
-                  <p className="text-xs text-slate-400">200+ company profiles with financial data and analysis</p>
+                  <p className="text-xs text-slate-400">{SITE_STATS.companies} company profiles with financial data and analysis</p>
                 </div>
                 <div className="card p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
@@ -466,7 +467,7 @@ export default function PressPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
                   <div className="space-y-3 text-sm">
-                    <a href="https://linkedin.com/company/spacenexus" className="flex items-center gap-3 group" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.linkedin.com/company/spacenexus-llc" className="flex items-center gap-3 group" target="_blank" rel="noopener noreferrer">
                       <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
                         <svg className="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -518,26 +519,26 @@ export default function PressPage() {
                   SpaceNexus brings everything together&mdash;launches, markets, companies, procurement, compliance&mdash;into
                   one platform that anyone can access. We&apos;re building the Bloomberg Terminal of the space economy.&quot;
                 </p>
-                <cite className="text-slate-500 text-sm mt-2 block">&mdash; Founder, SpaceNexus</cite>
+                <cite className="text-slate-500 text-sm mt-2 block">&mdash; Jay Griffiths, Founder, SpaceNexus</cite>
               </blockquote>
 
               <blockquote className="border-l-4 border-white/15 pl-4">
                 <p className="text-slate-400 italic leading-relaxed">
                   &quot;Our competitors charge $10,000 to $50,000 per year for narrow datasets. SpaceNexus offers
-                  30+ integrated modules starting at free. We believe democratizing space intelligence accelerates
+                  {SITE_STATS.modules} integrated modules starting at free. We believe democratizing space intelligence accelerates
                   the entire industry.&quot;
                 </p>
-                <cite className="text-slate-500 text-sm mt-2 block">&mdash; Founder, SpaceNexus</cite>
+                <cite className="text-slate-500 text-sm mt-2 block">&mdash; Jay Griffiths, Founder, SpaceNexus</cite>
               </blockquote>
 
               <blockquote className="border-l-4 border-white/15 pl-4">
                 <p className="text-slate-400 italic leading-relaxed">
-                  &quot;With 33 automated data pipelines refreshing information around the clock, SpaceNexus
+                  &quot;With {SITE_STATS.automatedFeeds} automated data pipelines refreshing information around the clock, SpaceNexus
                   provides the real-time intelligence that space professionals need to make informed decisions.
                   We&apos;re not just aggregating data&mdash;we&apos;re building the connective tissue of the
                   space economy.&quot;
                 </p>
-                <cite className="text-slate-500 text-sm mt-2 block">&mdash; Founder, SpaceNexus</cite>
+                <cite className="text-slate-500 text-sm mt-2 block">&mdash; Jay Griffiths, Founder, SpaceNexus</cite>
               </blockquote>
             </div>
           </section>

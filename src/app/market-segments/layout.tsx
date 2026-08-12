@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Space Industry Market Segments Analysis',

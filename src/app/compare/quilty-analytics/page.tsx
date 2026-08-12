@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Quilty Space Analytics — Space Industry Platform Comparison | SpaceNexus',
@@ -34,12 +35,12 @@ const FEATURE_COMPARISON = [
   { feature: 'Starting Price', spacenexus: 'Free (Pro $19.99/mo, everything included)', competitor: '$5,000-50,000/year (report packages)', winner: 'spacenexus' },
   { feature: 'Delivery Model', spacenexus: 'Self-service interactive platform', competitor: 'PDF reports and analyst briefings', winner: 'spacenexus' },
   { feature: 'Data Freshness', spacenexus: 'Real-time feeds, updated continuously', competitor: 'Periodic reports (monthly/quarterly)', winner: 'spacenexus' },
-  { feature: 'Satellite Tracking', spacenexus: '19,000+ objects on interactive 3D globe', competitor: 'Satellite market analysis in reports', winner: 'spacenexus' },
+  { feature: 'Satellite Tracking', spacenexus: `${SITE_STATS.satellites} objects on interactive 3D globe`, competitor: 'Satellite market analysis in reports', winner: 'spacenexus' },
   { feature: 'Launch Monitoring', spacenexus: 'Live launch dashboard with countdowns', competitor: 'Launch market forecasts in reports', winner: 'spacenexus' },
   { feature: 'Market Intelligence', spacenexus: 'Interactive dashboards, stock tracking, funding data', competitor: 'Deep analyst-written market reports', winner: 'tie' },
   { feature: 'Custom Research', spacenexus: 'Daily AI market insights and self-service dashboards', competitor: 'Custom analyst engagements available', winner: 'competitor' },
   { feature: 'Analyst Expertise', spacenexus: 'AI-powered insights and automated analysis', competitor: 'Veteran space industry analysts', winner: 'competitor' },
-  { feature: 'Company Profiles', spacenexus: '200+ interactive profiles with financials', competitor: 'Select companies covered in depth', winner: 'spacenexus' },
+  { feature: 'Company Profiles', spacenexus: `${SITE_STATS.companies} interactive profiles with financials`, competitor: 'Select companies covered in depth', winner: 'spacenexus' },
   { feature: 'Procurement Intelligence', spacenexus: 'SAM.gov, SBIR/STTR, contract tracking', competitor: 'Not a focus area', winner: 'spacenexus' },
   { feature: 'Regulatory Tracking', spacenexus: 'FCC, ITU, space law, spectrum auctions', competitor: 'Policy analysis in select reports', winner: 'spacenexus' },
   { feature: 'API Access', spacenexus: 'RESTful API (included with Pro)', competitor: 'No API access', winner: 'spacenexus' },
@@ -122,7 +123,7 @@ export default function QuiltyComparisonPage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
-                    <span>10 integrated modules, 200+ company profiles</span>
+                    <span>10 integrated modules, {SITE_STATS.companies} company profiles</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
@@ -271,7 +272,7 @@ export default function QuiltyComparisonPage() {
                   { title: 'Always-on intelligence', desc: 'Real-time launch tracking, satellite monitoring, and market data that updates continuously. No waiting for the next report cycle.' },
                   { title: 'Broader coverage', desc: '10 integrated modules covering launches, satellites, market intelligence, procurement, companies, regulatory, and more. Research firms typically cover only market analysis.' },
                   { title: 'Self-service exploration', desc: 'Explore data interactively and discover insights that a pre-written report might not cover. Daily AI market insights keep the analysis fresh.' },
-                  { title: '200+ company profiles', desc: 'Interactive profiles with financial data, competitive positioning, satellite assets, and news tagging. Updated automatically, not annually.' },
+                  { title: `${SITE_STATS.companies} company profiles`, desc: 'Interactive profiles with financial data, competitive positioning, satellite assets, and news tagging. Updated automatically, not annually.' },
                   { title: 'Accessible pricing', desc: 'Start free, upgrade to Pro at $19.99/mo. A single Quilty report package can cost more than years of SpaceNexus Pro access.' },
                   { title: 'Procurement advantage', desc: 'SAM.gov integration and SBIR/STTR tracking give you a direct path from intelligence to revenue — something research reports cannot provide.' },
                 ].map((item) => (

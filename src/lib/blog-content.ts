@@ -1,7 +1,13 @@
 // Original SpaceNexus blog content
 // Each post is authored by SpaceNexus and rendered on /blog/[slug]
 
-export type BlogCategory = 'analysis' | 'guide' | 'market' | 'technology' | 'policy' | 'building-in-public';
+// NOTE: this file is multi-MB (full article HTML). Never import it from a
+// 'use client' file — client components should use `src/lib/blog-metadata.ts`
+// (types + categories) and receive post metadata via server-component props.
+import type { BlogCategory } from './blog-metadata';
+
+export type { BlogCategory } from './blog-metadata';
+export { BLOG_CATEGORIES } from './blog-metadata';
 
 export interface OriginalBlogPost {
   slug: string;
@@ -17,15 +23,6 @@ export interface OriginalBlogPost {
   featured?: boolean;
   content: string; // HTML content
 }
-
-export const BLOG_CATEGORIES: { value: BlogCategory; label: string }[] = [
-  { value: 'analysis', label: 'Analysis' },
-  { value: 'guide', label: 'Guides' },
-  { value: 'market', label: 'Market' },
-  { value: 'technology', label: 'Technology' },
-  { value: 'policy', label: 'Policy' },
-  { value: 'building-in-public', label: 'Building in Public' },
-];
 
 export const BLOG_POSTS: OriginalBlogPost[] = [
   {

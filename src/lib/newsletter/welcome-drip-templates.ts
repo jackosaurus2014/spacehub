@@ -2,6 +2,7 @@
 // Uses same dark-themed, inline CSS pattern as main email-templates.ts
 
 import { APP_URL } from '@/lib/constants';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const styles = {
   bgDark: '#0a0a1a',
@@ -93,7 +94,7 @@ function generateWelcomeEmail(): { html: string; plain: string; subject: string 
     </h1>
     <p style="color:${styles.textLight};font-size:15px;line-height:1.6;margin:0 0 16px;">
       You're in. You now have access to the space industry's most comprehensive intelligence
-      platform — real-time data from 50+ sources, 200+ company profiles, and 10 integrated modules.
+      platform — real-time data from ${SITE_STATS.dataSources} sources, ${SITE_STATS.companies} company profiles, and 10 integrated modules.
     </p>
     <p style="color:${styles.textLight};font-size:15px;line-height:1.6;margin:0 0 20px;">
       Here are 3 things to try first:
@@ -102,8 +103,8 @@ function generateWelcomeEmail(): { html: string; plain: string; subject: string 
       <tr><td style="padding:12px;background-color:${styles.bgDark};border-radius:8px;border:1px solid ${styles.borderColor};">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
           ${featureRow('1️⃣', 'Explore Mission Control', 'Your real-time dashboard with launches, markets, and news')}
-          ${featureRow('2️⃣', 'Browse Company Profiles', 'Deep-dive into 200+ space companies with financials and analysis')}
-          ${featureRow('3️⃣', 'Track a Satellite', '19,000+ objects on an interactive 3D globe')}
+          ${featureRow('2️⃣', 'Browse Company Profiles', `Deep-dive into ${SITE_STATS.companies} space companies with financials and analysis`)}
+          ${featureRow('3️⃣', 'Track a Satellite', `${SITE_STATS.satellites} objects on an interactive 3D globe`)}
         </table>
       </td></tr>
     </table>
@@ -120,8 +121,8 @@ You're in. You now have access to the space industry's most comprehensive intell
 
 3 things to try first:
 1. Explore Mission Control — your real-time dashboard: ${APP_URL}/mission-control
-2. Browse Company Profiles — 200+ space companies: ${APP_URL}/company-profiles
-3. Track a Satellite — 19,000+ objects on 3D globe: ${APP_URL}/satellites
+2. Browse Company Profiles — ${SITE_STATS.companies} space companies: ${APP_URL}/company-profiles
+3. Track a Satellite — ${SITE_STATS.satellites} objects on 3D globe: ${APP_URL}/satellites
 
 Open Mission Control: ${APP_URL}/mission-control
 

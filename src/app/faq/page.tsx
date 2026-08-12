@@ -172,7 +172,6 @@ export default function FAQPage() {
         <AnimatedPageHeader
           title="Frequently Asked Questions"
           subtitle="Find answers to common questions about SpaceNexus"
-          icon="❓"
           accentColor="purple"
         >
           <Link href="/contact" className="btn-primary text-sm py-2 px-4">

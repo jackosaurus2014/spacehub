@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SITE_STATS } from '@/lib/site-stats';
 
 /* ------------------------------------------------------------------ */
 /*  "See SpaceNexus in Action" — Tabbed demo showcase                  */
@@ -213,6 +214,8 @@ function MarketCard() {
         </div>
         <div className="text-xl font-semibold font-mono text-white mt-1">$4.7B</div>
       </div>
+
+      <p className="text-[10px] text-slate-600 text-right">Illustrative data — not live quotes</p>
     </div>
   );
 }
@@ -230,7 +233,7 @@ function CompanyCard() {
           </div>
           <div>
             <div className="text-sm font-semibold text-white">Company Profiles</div>
-            <div className="text-xs text-slate-500">101+ space companies</div>
+            <div className="text-xs text-slate-500">{SITE_STATS.companies} space companies</div>
           </div>
         </div>
       </div>
@@ -294,7 +297,7 @@ function CompanyCard() {
 
       {/* CTA inline */}
       <div className="text-center pt-1">
-        <span className="text-xs text-slate-500">Browse all 101+ company profiles</span>
+        <span className="text-xs text-slate-500">Browse all {SITE_STATS.companies} company profiles</span>
       </div>
     </div>
   );

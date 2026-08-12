@@ -545,7 +545,6 @@ export default function RegulatoryHubPage() {
           <AnimatedPageHeader
             title="Regulatory Hub"
             subtitle="Comprehensive regulatory tracking, compliance guidance, space law, bid protests, case law, filings, and expert analysis for the space industry"
-            icon="⚖️"
             accentColor="amber"
           >
             <Link href="/" className="btn-secondary text-sm py-2 px-4">

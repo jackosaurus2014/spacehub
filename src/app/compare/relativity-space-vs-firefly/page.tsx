@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Relativity Space vs Firefly Aerospace: Complete Comparison 2026',
@@ -96,7 +97,7 @@ export default function Page() {
         <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Track both companies on SpaceNexus</p>
         <div className="flex flex-wrap gap-3 justify-center">
           <Link href="/compare/companies" className="btn-primary text-sm">Interactive Comparison</Link>
-          <Link href="/company-profiles" className="btn-secondary text-sm">Browse 200+ Companies</Link>
+          <Link href="/company-profiles" className="btn-secondary text-sm">Browse {SITE_STATS.companies} Companies</Link>
         </div>
       </div>
 

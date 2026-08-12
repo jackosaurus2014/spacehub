@@ -2,6 +2,7 @@
 // Uses same dark-themed, inline CSS pattern as marketing-email-templates.ts
 
 import { APP_URL } from '@/lib/constants';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const styles = {
   bgDark: '#0a0a1a',
@@ -100,7 +101,7 @@ export function generateSpaceVCOutreach(): OutreachEmailResult {
       Here&rsquo;s what VCs are using it for:
     </p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
-      ${bulletPoint('<strong style="color:' + styles.textWhite + ';">200+ company profiles</strong> with funding history, team data, and competitive positioning &mdash; searchable and filterable by subsector')}
+      ${bulletPoint('<strong style="color:' + styles.textWhite + ';">' + SITE_STATS.companies + ' company profiles</strong> with funding history, team data, and competitive positioning &mdash; searchable and filterable by subsector')}
       ${bulletPoint('<strong style="color:' + styles.textWhite + ';">Real-time funding tracker</strong> that surfaces new rounds, M&A activity, and SPAC movements the day they happen')}
       ${bulletPoint('<strong style="color:' + styles.textWhite + ';">Deal flow alerts</strong> &mdash; get notified when companies in your focus areas raise, hire key execs, or win government contracts')}
     </table>
@@ -119,7 +120,7 @@ I noticed {{FIRM_NAME}} has been active in the space sector -- congrats on the r
 
 Here's what VCs are using it for:
 
-- 200+ company profiles with funding history, team data, and competitive positioning -- searchable and filterable by subsector
+- ${SITE_STATS.companies} company profiles with funding history, team data, and competitive positioning -- searchable and filterable by subsector
 - Real-time funding tracker that surfaces new rounds, M&A activity, and SPAC movements the day they happen
 - Deal flow alerts -- get notified when companies in your focus areas raise, hire key execs, or win government contracts
 
@@ -210,7 +211,7 @@ export function generateSpaceStartupOutreach(): OutreachEmailResult {
     </p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
       ${bulletPoint('<strong style="color:' + styles.textWhite + ';">Live market data</strong> &mdash; TAM/SAM sizing, segment growth rates, and investment flow data updated daily, not annually')}
-      ${bulletPoint('<strong style="color:' + styles.textWhite + ';">200+ company profiles</strong> &mdash; know your competitors\' funding, team size, contracts, and strategic moves before your next board meeting')}
+      ${bulletPoint('<strong style="color:' + styles.textWhite + ';">' + SITE_STATS.companies + ' company profiles</strong> &mdash; know your competitors\' funding, team size, contracts, and strategic moves before your next board meeting')}
       ${bulletPoint('<strong style="color:' + styles.textWhite + ';">Competitive analysis tools</strong> &mdash; side-by-side comparisons, market positioning maps, and automated alerts when competitors make moves')}
     </table>
     <p style="color:${styles.textLight};font-size:15px;line-height:1.6;margin:0 0 8px;">
@@ -231,7 +232,7 @@ SpaceNexus gives you the same caliber of space market intelligence for $19.99/mo
 What startups get:
 
 - Live market data -- TAM/SAM sizing, segment growth rates, and investment flow data updated daily, not annually
-- 200+ company profiles -- know your competitors' funding, team size, contracts, and strategic moves before your next board meeting
+- ${SITE_STATS.companies} company profiles -- know your competitors' funding, team size, contracts, and strategic moves before your next board meeting
 - Competitive analysis tools -- side-by-side comparisons, market positioning maps, and automated alerts when competitors make moves
 
 Your investors expect you to know the market. SpaceNexus makes that possible without the enterprise price tag.

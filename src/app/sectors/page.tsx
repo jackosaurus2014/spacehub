@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { SECTORS } from '@/lib/sector-data';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Space Industry Sectors — Complete Market Directory',
@@ -51,7 +52,7 @@ export default function SectorsDirectoryPage() {
           Track companies across all sectors with SpaceNexus
         </p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Link href="/company-profiles" className="btn-primary text-sm">Browse 200+ Companies</Link>
+          <Link href="/company-profiles" className="btn-primary text-sm">Browse {SITE_STATS.companies} Companies</Link>
           <Link href="/compare/companies" className="btn-secondary text-sm">Compare Companies</Link>
         </div>
       </div>

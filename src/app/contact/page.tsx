@@ -272,7 +272,6 @@ export default function ContactPage() {
         <AnimatedPageHeader
           title="Contact Us"
           subtitle="Have questions or feedback? We'd love to hear from you."
-          icon="📧"
           accentColor="cyan"
         >
           <Link href="/faq" className="btn-secondary text-sm py-2 px-4">

@@ -175,10 +175,10 @@ export default function BookDemoPage() {
                   Explore Pricing
                 </Link>
                 <Link
-                  href="/case-studies"
+                  href="/why-spacenexus"
                   className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/[0.1] text-white/90 font-semibold hover:bg-white/[0.04] transition-colors"
                 >
-                  Read Case Studies
+                  Why SpaceNexus
                 </Link>
               </div>
             </div>

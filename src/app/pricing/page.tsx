@@ -21,9 +21,10 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { useABTest } from '@/hooks/useABTest';
 import { PRICING_CTA_TEST } from '@/lib/ab-testing';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const PRICING_FAQ = [
-  { question: 'What is SpaceNexus?', answer: 'SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and 200+ company profiles across 30+ modules.' },
+  { question: 'What is SpaceNexus?', answer: `SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and ${SITE_STATS.companies} company profiles across ${SITE_STATS.modules} modules.` },
   { question: 'Is there a free plan?', answer: 'Yes! Our Explorer plan is completely free and includes access to mission countdowns, basic news feeds, satellite tracking for 50 satellites, and community features.' },
   { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks everything: unlimited news, full satellite tracking, market intelligence, deal flow, daily AI market insights, regulatory and compliance suite, patent and procurement intelligence, full API access, custom dashboards, CSV data export, and an ad-free experience. One plan, the entire platform.' },
   { question: 'Can I cancel anytime?', answer: 'Absolutely. All plans are month-to-month with no long-term commitment. You can cancel anytime and retain access until the end of your billing period.' },
@@ -692,10 +693,10 @@ function PricingPageContent() {
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { value: '264+', label: 'Pages & Tools', icon: '📊' },
-                { value: '200+', label: 'Original Articles', icon: '📝' },
-                { value: '50+', label: 'Data Sources', icon: '🚀' },
-                { value: '600+', label: 'Routes', icon: '✅' },
+                { value: SITE_STATS.pagesAndTools, label: 'Pages & Tools', icon: '📊' },
+                { value: SITE_STATS.articles, label: 'Original Articles', icon: '📝' },
+                { value: SITE_STATS.dataSources, label: 'Data Sources', icon: '🚀' },
+                { value: SITE_STATS.automatedFeeds, label: 'Automated Feeds', icon: '✅' },
               ].map(s => (
                 <div key={s.label} className="text-center p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                   <span className="text-lg block mb-1">{s.icon}</span>

@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Market Intel',
-  description: 'Space industry market intelligence dashboard. Track space stocks, analyze sector trends, and monitor 200+ company valuations in real-time.',
+  description: `Space industry market intelligence dashboard. Track space stocks, analyze sector trends, and monitor ${SITE_STATS.companies} company valuations in real-time.`,
   keywords: [
     'space stocks',
     'space industry stocks',
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Market Intel | SpaceNexus',
-    description: 'Space industry market intelligence dashboard. Track space stocks, analyze sector trends, and monitor 200+ company valuations in real-time.',
+    description: `Space industry market intelligence dashboard. Track space stocks, analyze sector trends, and monitor ${SITE_STATS.companies} company valuations in real-time.`,
     url: 'https://spacenexus.us/market-intel',
     images: [
       {
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Market Intel | SpaceNexus',
-    description: 'Space industry market intelligence dashboard. Track space stocks, analyze sector trends, and monitor 200+ company valuations in real-time.',
+    description: `Space industry market intelligence dashboard. Track space stocks, analyze sector trends, and monitor ${SITE_STATS.companies} company valuations in real-time.`,
     images: ['/og-market-intel.png'],
   },
   alternates: {

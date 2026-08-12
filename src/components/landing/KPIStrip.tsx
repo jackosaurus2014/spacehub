@@ -2,31 +2,46 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { formatCompact } from '@/lib/format-number';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface KPIMetric {
   label: string;
   value: number;
   suffix: string;
   prefix: string;
-  change: string;
-  changeUp: boolean;
   colorClass: string;
 }
 
+/**
+ * Parse a SITE_STATS display string (e.g. '10,000+', '$630B', '26') into an
+ * animatable numeric value plus prefix/suffix, so the strip always renders
+ * the canonical platform statistics.
+ */
+function parseStat(stat: string): { value: number; prefix: string; suffix: string } {
+  const match = stat.match(/^(\$?)([\d,.]+)(.*)$/);
+  if (!match) return { value: 0, prefix: '', suffix: stat };
+  return {
+    value: parseFloat(match[2].replace(/,/g, '')),
+    prefix: match[1],
+    suffix: match[3],
+  };
+}
+
 const KPI_METRICS: KPIMetric[] = [
-  { label: 'Launches YTD', value: 68, suffix: '', prefix: '', change: '+22% YoY', changeUp: true, colorClass: 'text-white' },
-  { label: 'Active Satellites', value: 10200, suffix: '+', prefix: '', change: '+12%', changeUp: true, colorClass: 'text-emerald-400' },
-  { label: 'Companies Tracked', value: 15000, suffix: '+', prefix: '', change: '+6%', changeUp: true, colorClass: 'text-white' },
-  { label: 'Space Economy', value: 546, suffix: 'B', prefix: '$', change: '+8.2%', changeUp: true, colorClass: 'text-emerald-400' },
-  { label: 'VC Funding YTD', value: 2.1, suffix: 'B', prefix: '$', change: '+12% QoQ', changeUp: true, colorClass: 'text-white' },
-  { label: 'Space Agencies', value: 77, suffix: '+', prefix: '', change: '+3 new', changeUp: true, colorClass: 'text-amber-400' },
+  { label: 'Active Satellites Tracked', ...parseStat(SITE_STATS.satellites), colorClass: 'text-emerald-400' },
+  { label: 'Company Profiles', ...parseStat(SITE_STATS.companies), colorClass: 'text-white' },
+  { label: 'Space Economy', ...parseStat(SITE_STATS.spaceEconomyNow), colorClass: 'text-emerald-400' },
+  { label: 'Original Articles', ...parseStat(SITE_STATS.articles), colorClass: 'text-white' },
+  { label: 'Pages & Tools', ...parseStat(SITE_STATS.pagesAndTools), colorClass: 'text-amber-400' },
+  { label: 'Data Sources', ...parseStat(SITE_STATS.dataSources), colorClass: 'text-white' },
 ];
 
 function formatNumber(value: number, prefix: string, suffix: string): string {
   if (prefix === '$' && (suffix === 'T' || suffix === 'B')) {
-    return `${prefix}${value.toFixed(1)}${suffix}`;
+    return `${prefix}${Math.round(value)}${suffix}`;
   }
-  return `${prefix}${formatCompact(value)}${suffix}`;
+  if (value >= 1e6) return `${prefix}${formatCompact(value)}${suffix}`;
+  return `${prefix}${Math.round(value).toLocaleString('en-US')}${suffix}`;
 }
 
 function easeOutCubic(t: number): number {
@@ -71,9 +86,6 @@ function AnimatedCounter({ metric, shouldAnimate }: { metric: KPIMetric; shouldA
       <span className="text-[10px] md:text-xs text-slate-500 mt-1 font-medium whitespace-nowrap uppercase tracking-wider">
         {metric.label}
       </span>
-      <span className={`text-[9px] font-semibold mt-0.5 ${metric.changeUp ? 'text-emerald-400/70' : 'text-red-400/70'}`}>
-        {metric.changeUp ? '▲' : '▼'} {metric.change}
-      </span>
     </div>
   );
 }
@@ -109,9 +121,9 @@ export default function KPIStrip() {
                 <div className="card-terminal__dot card-terminal__dot--amber" />
                 <div className="card-terminal__dot card-terminal__dot--green" />
               </div>
-              <span className="card-terminal__path">spacenexus:~/market-data</span>
+              <span className="card-terminal__path">spacenexus:~/platform-stats</span>
             </div>
-            <span className="badge badge-live">LIVE</span>
+            <span className="text-[9px] uppercase tracking-[0.15em] text-slate-500 font-semibold">Platform</span>
           </div>
           <div className="overflow-x-auto md:overflow-x-visible scrollbar-hide">
             <div className="grid grid-cols-3 md:grid-cols-6 min-w-0 divide-x divide-white/[0.04]">

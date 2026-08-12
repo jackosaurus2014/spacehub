@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'API Access | SpaceNexus',
   description:
-    'Build space intelligence into your applications with the SpaceNexus API. REST endpoints, JSON responses, 99.9% uptime. Full API access included with Pro.',
+    'Build space intelligence into your applications with the SpaceNexus API. REST endpoints, JSON responses, reliable monitored infrastructure. Full API access included with Pro.',
   alternates: { canonical: 'https://spacenexus.us/api-access' },
   openGraph: {
     title: 'SpaceNexus API - Space Intelligence for Developers',

@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ════════════════════════════════════════
 // Types & Constants
@@ -712,7 +713,7 @@ function OverviewTab() {
             <div className="p-3 rounded-lg bg-black/50">
               <p className="text-xs text-slate-400 mb-1">Economic Impact</p>
               <p className="text-sm text-white/90">
-                The space economy ($546B in 2024) depends on safe orbital access. Kessler syndrome
+                The space economy ({SITE_STATS.spaceEconomyNow}) depends on safe orbital access. Kessler syndrome
                 could increase launch costs 10-100x and strand $1T+ in orbital infrastructure.
               </p>
             </div>

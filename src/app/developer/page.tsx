@@ -43,55 +43,14 @@ interface UsageStats {
 // Constants
 // ============================================================
 
-const API_TIERS = [
-  {
-    name: 'Developer',
-    tier: 'developer',
-    price: 'Included with Pro',
-    monthlyLimit: '5,000',
-    perMinute: '60',
-    features: [
-      '5,000 API calls/month',
-      '60 calls/minute burst limit',
-      'Up to 3 API keys',
-      'All standard endpoints',
-      'Community support',
-    ],
-    highlighted: false,
-  },
-  {
-    name: 'Business',
-    tier: 'business',
-    price: 'Included with Pro',
-    monthlyLimit: '50,000',
-    perMinute: '300',
-    features: [
-      '50,000 API calls/month',
-      '300 calls/minute burst limit',
-      'Up to 10 API keys',
-      'All standard endpoints',
-      'Priority support',
-      'Usage analytics',
-    ],
-    highlighted: true,
-  },
-  {
-    name: 'Enterprise',
-    tier: 'enterprise',
-    price: 'Included with Pro',
-    monthlyLimit: 'Unlimited',
-    perMinute: '1,000',
-    features: [
-      'Unlimited API calls',
-      '1,000 calls/minute burst limit',
-      'Unlimited API keys',
-      'All endpoints including Opportunities',
-      'Dedicated support',
-      'Custom integrations',
-      'SLA guarantee',
-    ],
-    highlighted: false,
-  },
+// API access is a single plan bundled with the Professional subscription —
+// presented as one limits table, not tiers.
+const API_ACCESS_LIMITS: { label: string; value: string }[] = [
+  { label: 'Monthly requests', value: '10,000 req/mo' },
+  { label: 'Key management', value: 'Create, rotate, and revoke keys' },
+  { label: 'Webhooks', value: 'Event notifications for your integrations' },
+  { label: 'Endpoints', value: 'All v1 endpoints, including Opportunities' },
+  { label: 'Usage analytics', value: 'Per-endpoint and daily call breakdowns' },
 ];
 
 const CODE_EXAMPLES = {
@@ -135,6 +94,79 @@ response = requests.get(
 )
 data = response.json()
 print(data['data'])  # List of upcoming launches`,
+
+  typescript: `// SpaceNexus API client -- no dependencies, copy-paste ready.
+const BASE_URL = 'https://spacenexus.us/api/v1';
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  pagination?: { limit: number; offset: number; total: number };
+  error?: { code: string; message: string };
+}
+
+interface Launch {
+  id: string;
+  name: string;
+  provider: string;
+  vehicle: string;
+  windowStart: string; // ISO 8601
+  site: string;
+}
+
+interface Company {
+  slug: string;
+  name: string;
+  sector: string;
+  headquarters: string;
+}
+
+interface MarketQuote {
+  symbol: string;
+  name: string;
+  price: number;
+  changePercent: number;
+}
+
+class SpaceNexusClient {
+  constructor(private readonly apiKey: string) {}
+
+  private async get<T>(
+    path: string,
+    params?: Record<string, string | number>
+  ): Promise<T> {
+    const url = new URL(BASE_URL + path);
+    for (const [key, value] of Object.entries(params ?? {})) {
+      url.searchParams.set(key, String(value));
+    }
+    const res = await fetch(url, {
+      headers: { 'X-API-Key': this.apiKey },
+    });
+    const body = (await res.json()) as ApiResponse<T>;
+    if (!res.ok || !body.success) {
+      throw new Error(
+        body.error?.message ?? 'Request failed (' + res.status + ')'
+      );
+    }
+    return body.data;
+  }
+
+  launches = {
+    upcoming: (limit = 10) => this.get<Launch[]>('/launches', { limit }),
+  };
+
+  companies = {
+    list: (limit = 20, offset = 0) =>
+      this.get<Company[]>('/companies', { limit, offset }),
+  };
+
+  marketData = () => this.get<MarketQuote[]>('/market');
+}
+
+// Usage
+const client = new SpaceNexusClient('snx_YOUR_API_KEY');
+const launches = await client.launches.upcoming(5);
+console.log(launches.map((l) => l.name));`,
 };
 
 // ============================================================
@@ -270,7 +302,7 @@ function ApiKeyCard({
 export default function DeveloperPortalPage() {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<'overview' | 'keys' | 'usage' | 'docs'>('overview');
-  const [codeLanguage, setCodeLanguage] = useState<'curl' | 'javascript' | 'axios' | 'python'>('curl');
+  const [codeLanguage, setCodeLanguage] = useState<'curl' | 'javascript' | 'typescript' | 'axios' | 'python'>('curl');
   const [apiKeys, setApiKeys] = useState<ApiKeyData[]>([]);
   const [usage, setUsage] = useState<UsageStats | null>(null);
   const [loading, setLoading] = useState(false);
@@ -541,54 +573,33 @@ export default function DeveloperPortalPage() {
             </section>
             </ScrollReveal>
 
-            {/* Pricing Table */}
+            {/* API Access */}
             <ScrollReveal>
             <section>
-              <h2 className="text-2xl font-bold mb-6">API Pricing Tiers</h2>
-              <StaggerContainer className="grid md:grid-cols-3 gap-6">
-                {API_TIERS.map((tier) => (
-                  <StaggerItem key={tier.tier}>
-                    <div
-                      className={`border rounded-lg p-6 ${
-                        tier.highlighted
-                          ? 'border-white/15 bg-white/5 relative'
-                          : 'border-white/[0.08] bg-white/[0.03]'
-                      }`}
-                    >
-                      {tier.highlighted && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="bg-white text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
-                            Recommended
-                          </span>
-                        </div>
-                      )}
-                      <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
-                      <p className="text-sm text-white/70 mb-4">{tier.price}</p>
-                      <div className="mb-4">
-                        <div className="text-3xl font-bold">
-                          {tier.monthlyLimit}
-                          <span className="text-sm text-slate-400 font-normal"> calls/mo</span>
-                        </div>
-                        <div className="text-sm text-slate-400">
-                          {tier.perMinute} calls/min burst
-                        </div>
-                      </div>
-                      <ul className="space-y-2">
-                        {tier.features.map((f) => (
-                          <li key={f} className="flex items-start gap-2 text-sm text-white/70">
-                            <svg className="w-4 h-4 text-white/70 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </StaggerItem>
-                ))}
-              </StaggerContainer>
+              <h2 className="text-2xl font-bold mb-6">API Access</h2>
+              <div className="max-w-2xl mx-auto border border-white/15 bg-white/5 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-xl font-bold">Developer API</h3>
+                  <span className="bg-white text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
+                    Included with Professional
+                  </span>
+                </div>
+                <p className="text-sm text-slate-400 mb-5">
+                  One plan, no tiers -- every Professional subscriber gets full API access.
+                </p>
+                <table className="w-full text-sm">
+                  <tbody>
+                    {API_ACCESS_LIMITS.map((row) => (
+                      <tr key={row.label} className="border-b border-white/[0.06] last:border-0">
+                        <td className="py-2.5 pr-4 text-slate-400 whitespace-nowrap align-top">{row.label}</td>
+                        <td className="py-2.5 text-white/80">{row.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               <p className="text-sm text-slate-500 mt-4 text-center">
-                API access is included with your SpaceNexus subscription. <Link href="/pricing" className="text-white/70 hover:text-white">View subscription plans</Link>
+                API access is included with your SpaceNexus Professional subscription. <Link href="/pricing" className="text-white/70 hover:text-white">View subscription plans</Link>
               </p>
             </section>
             </ScrollReveal>
@@ -887,7 +898,7 @@ export default function DeveloperPortalPage() {
             <section className="card p-6">
               <h3 className="text-lg font-semibold text-white/70 mb-3">Code Examples</h3>
               <div className="flex gap-2 mb-4">
-                {(['curl', 'javascript', 'axios', 'python'] as const).map((lang) => (
+                {(['curl', 'javascript', 'typescript', 'axios', 'python'] as const).map((lang) => (
                   <button
                     key={lang}
                     onClick={() => setCodeLanguage(lang)}
@@ -897,7 +908,7 @@ export default function DeveloperPortalPage() {
                         : 'bg-white/[0.06] text-slate-400 hover:text-white/70 border border-transparent'
                     }`}
                   >
-                    {lang === 'curl' ? 'cURL' : lang === 'javascript' ? 'JavaScript' : lang === 'axios' ? 'Axios' : 'Python'}
+                    {lang === 'curl' ? 'cURL' : lang === 'javascript' ? 'JavaScript' : lang === 'typescript' ? 'TypeScript' : lang === 'axios' ? 'Axios' : 'Python'}
                   </button>
                 ))}
               </div>

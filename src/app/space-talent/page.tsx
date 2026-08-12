@@ -2733,7 +2733,6 @@ export default function SpaceTalentHubPage() {
           <AnimatedPageHeader
             title="Space Talent Hub"
             subtitle="Expert consultants, webinars, job listings, salary benchmarks, and workforce analytics"
-            icon="👨‍🚀"
             accentColor="emerald"
           />
         </div>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { SITE_STATS } from '@/lib/site-stats';
 
 /* ------------------------------------------------------------------ */
 /*  Bento Grid — Asymmetric feature showcase, inspired by Linear/Vercel */
@@ -174,7 +175,7 @@ export default function BentoFeatures() {
               </h2>
             </div>
             <span className="text-[9px] uppercase tracking-[0.15em] text-slate-600 font-medium">
-              264+ tools
+              {SITE_STATS.pagesAndTools} tools
             </span>
           </div>
           <p className="text-sm text-slate-500 ml-4">
@@ -255,7 +256,7 @@ export default function BentoFeatures() {
             href="/mission-control"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/70 hover:text-white hover:border-white/15 hover:bg-white/[0.05] transition-all duration-200 text-sm font-medium"
           >
-            Browse All 264+ Tools & Modules
+            Browse All {SITE_STATS.pagesAndTools} Tools & Modules
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>

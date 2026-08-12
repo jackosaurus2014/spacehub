@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -29,6 +30,96 @@ function getPasswordStrength(password: string): { score: number; label: string; 
 }
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+function GoogleLogo() {
+  return (
+    <svg viewBox="0 0 48 48" className="w-5 h-5 flex-shrink-0" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+    </svg>
+  );
+}
+
+function MicrosoftLogo() {
+  return (
+    <svg viewBox="0 0 21 21" className="w-5 h-5 flex-shrink-0" aria-hidden="true">
+      <rect x="1" y="1" width="9" height="9" fill="#F25022" />
+      <rect x="11" y="1" width="9" height="9" fill="#7FBA00" />
+      <rect x="1" y="11" width="9" height="9" fill="#00A4EF" />
+      <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
+    </svg>
+  );
+}
+
+function OAuthButtons({
+  callbackUrl,
+  dividerLabel = 'or',
+  trackEvent,
+}: {
+  callbackUrl: string;
+  dividerLabel?: string;
+  trackEvent?: (provider: string) => void;
+}) {
+  const [oauthProviders, setOauthProviders] = useState({ google: false, microsoft: false });
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/auth/providers-available')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) {
+          setOauthProviders({ google: !!data.google, microsoft: !!data.microsoft });
+        }
+      })
+      .catch(() => { /* buttons simply stay hidden */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!oauthProviders.google && !oauthProviders.microsoft) return null;
+
+  const handleOAuthSignIn = (provider: 'google' | 'azure-ad') => {
+    setOauthLoading(provider);
+    trackEvent?.(provider);
+    signIn(provider, { callbackUrl });
+  };
+
+  return (
+    <div className="mb-6">
+      <div className="space-y-3">
+        {oauthProviders.google && (
+          <button
+            type="button"
+            onClick={() => handleOAuthSignIn('google')}
+            disabled={oauthLoading !== null}
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 min-h-[44px] rounded-lg bg-white text-[#3c4043] font-medium text-sm hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-white/20"
+          >
+            <GoogleLogo />
+            <span>{oauthLoading === 'google' ? 'Redirecting...' : 'Continue with Google'}</span>
+          </button>
+        )}
+        {oauthProviders.microsoft && (
+          <button
+            type="button"
+            onClick={() => handleOAuthSignIn('azure-ad')}
+            disabled={oauthLoading !== null}
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 min-h-[44px] rounded-lg bg-white text-[#3c4043] font-medium text-sm hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-white/20"
+          >
+            <MicrosoftLogo />
+            <span>{oauthLoading === 'azure-ad' ? 'Redirecting...' : 'Continue with Microsoft'}</span>
+          </button>
+        )}
+      </div>
+      <div className="flex items-center gap-3 mt-6">
+        <div className="flex-1 h-px bg-white/[0.08]" />
+        <span className="text-slate-500 text-xs uppercase tracking-wider">{dividerLabel}</span>
+        <div className="flex-1 h-px bg-white/[0.08]" />
+      </div>
+    </div>
+  );
+}
 
 function getRegisterFieldError(field: string, value: string, password?: string): string | null {
   switch (field) {
@@ -264,6 +355,21 @@ function RegisterPageContent() {
               </span>
             </div>
           )}
+
+          <OAuthButtons
+            callbackUrl="/getting-started"
+            dividerLabel="or sign up with email"
+            trackEvent={(provider) => {
+              trackGA4Event('signup_attempt', {
+                role: role || 'not_selected',
+                plan: planParam || 'free',
+                founding: isFounding,
+                trial: isTrial,
+                method: provider,
+              });
+              trackGA4Event('sign_up', { method: provider });
+            }}
+          />
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (

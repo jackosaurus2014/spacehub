@@ -23,6 +23,7 @@ import SponsorBadge from '@/components/company/SponsorBadge';
 import CompanyAvatar from '@/components/company/CompanyAvatar';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface CompanyCard {
   id: string;
@@ -417,7 +418,6 @@ export default function CompanyProfilesPage() {
       <AnimatedPageHeader
         title="Space Company Profiles"
         subtitle="Comprehensive intelligence on 100+ space industry companies — financials, leadership, products, contracts, and relationships"
-        icon="🏢"
       />
 
       {/* Stats Bar */}
@@ -621,7 +621,7 @@ export default function CompanyProfilesPage() {
         {isFreeUser && companies.length > FREE_PREVIEW_LIMIT && (
           <FeatureTeaser
             featureName="Company Profiles"
-            description="Unlock full access to 200+ company profiles with funding data, executive teams, SpaceNexus Score ratings, and competitive analysis."
+            description={`Unlock full access to ${SITE_STATS.companies} company profiles with funding data, executive teams, SpaceNexus Score ratings, and competitive analysis.`}
             requiredTier="pro"
             freePreviewCount={FREE_PREVIEW_LIMIT}
             totalCount={companies.length}

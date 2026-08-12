@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Rocket Lab vs Relativity Space: Complete Comparison 2026',
@@ -105,7 +106,7 @@ export default function RocketLabVsRelativitySpace() {
             Interactive Comparison Tool
           </Link>
           <Link href="/company-profiles" className="btn-secondary text-sm">
-            Browse All 200+ Companies
+            Browse All {SITE_STATS.companies} Companies
           </Link>
         </div>
       </div>

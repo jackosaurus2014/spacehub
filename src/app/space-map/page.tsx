@@ -8,6 +8,7 @@ import ItemListSchema from '@/components/seo/ItemListSchema';
 import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -320,7 +321,7 @@ export default function SpaceIndustryMapPage() {
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Space Industry Ecosystem Map"
-          subtitle={`Explore ${SECTORS.length} sectors and ${totalCompanies}+ key players shaping the $546B space economy`}
+          subtitle={`Explore ${SECTORS.length} sectors and ${totalCompanies}+ key players shaping the ${SITE_STATS.spaceEconomyNow} space economy`}
           icon="M"
           accentColor="blue"
         />
@@ -339,7 +340,7 @@ export default function SpaceIndustryMapPage() {
               <SocialShare
                 title="Space Industry Ecosystem Map - SpaceNexus"
                 url="https://spacenexus.us/space-map"
-                description="Interactive map of the space industry: 8 sectors, 30+ key companies, and market sizing across the $546B space economy."
+                description={`Interactive map of the space industry: 8 sectors, 30+ key companies, and market sizing across the ${SITE_STATS.spaceEconomyNow} space economy.`}
               />
             </div>
           </div>
@@ -457,10 +458,10 @@ export default function SpaceIndustryMapPage() {
         {/* Total market summary */}
         <ScrollReveal>
           <div className="mt-12 bg-gradient-to-r from-white/[0.06] to-white/[0.03] border border-white/[0.08] rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-4">Space Economy at a Glance (2025)</h3>
+            <h3 className="text-white font-semibold mb-4">Space Economy at a Glance</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-400">$546B</div>
+                <div className="text-2xl font-bold text-blue-400">{SITE_STATS.spaceEconomyNow}</div>
                 <div className="text-slate-400 text-xs mt-1">Global Space Economy</div>
               </div>
               <div className="text-center">

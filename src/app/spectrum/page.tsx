@@ -543,7 +543,6 @@ function SpectrumContent() {
           <AnimatedPageHeader
             title="Spectrum Management"
             subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-            icon="📶"
             accentColor="purple"
           />
           <div className="flex justify-center py-20">
@@ -563,7 +562,6 @@ function SpectrumContent() {
           <AnimatedPageHeader
             title="Spectrum Management"
             subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-            icon="📶"
             accentColor="purple"
           />
           <div className="card p-12 text-center max-w-lg mx-auto">
@@ -610,7 +608,6 @@ function SpectrumContent() {
           <AnimatedPageHeader
             title="Spectrum Management"
             subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-            icon="📶"
             accentColor="purple"
           >
             <Link href="/" className="btn-secondary text-sm py-2 px-4">
@@ -2399,7 +2396,6 @@ export default function SpectrumPage() {
             <AnimatedPageHeader
               title="Spectrum Management"
               subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-              icon="📶"
               accentColor="purple"
             />
             <div className="flex justify-center py-20">

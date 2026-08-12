@@ -3,6 +3,7 @@
 // Uses same dark-themed, inline CSS pattern as welcome-drip-templates.ts
 
 import { APP_URL } from '@/lib/constants';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const styles = {
   bgDark: '#0a0a1a',
@@ -140,14 +141,14 @@ function generateTrialWelcomeEmail(params: TrialDripParams): { html: string; pla
     ${actionCard(
       '\u{1F3E2}',
       'Browse Company Profiles',
-      'Deep-dive into 200+ space companies with financials, news, and analysis.',
+      `Deep-dive into ${SITE_STATS.companies} space companies with financials, news, and analysis.`,
       `${APP_URL}/company-profiles`
     )}
 
     ${actionCard(
       '\u{1F6F0}\uFE0F',
       'Track Satellites',
-      '19,000+ objects on an interactive 3D globe \u2014 ISS, Starlink, weather satellites, and more.',
+      `${SITE_STATS.satellites} objects on an interactive 3D globe \u2014 ISS, Starlink, weather satellites, and more.`,
       `${APP_URL}/satellites`
     )}
 
@@ -169,11 +170,11 @@ Your space command center is ready. You have 14 days of full Professional access
    ${APP_URL}/dashboard
 
 2. Browse Company Profiles
-   Deep-dive into 200+ space companies with financials, news, and analysis.
+   Deep-dive into ${SITE_STATS.companies} space companies with financials, news, and analysis.
    ${APP_URL}/company-profiles
 
 3. Track Satellites
-   19,000+ objects on an interactive 3D globe.
+   ${SITE_STATS.satellites} objects on an interactive 3D globe.
    ${APP_URL}/satellites
 
 Get Started: ${APP_URL}/getting-started

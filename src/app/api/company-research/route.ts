@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const dynamic = 'force-dynamic';
 
@@ -151,12 +152,12 @@ function generateResearchAnswer(
     if (relatedCompanies.length > 0) {
       return `Companies matching your query:\n\n${relatedCompanies.map(c => `- **${c.name}** -- ${c.sector || 'Space Industry'}, ${c.country || 'Global'} [View Profile](/company-profiles/${c.slug})`).join('\n')}\n\nExplore sector-level analysis at /market-intel and market sizing data at /market-sizing for comprehensive industry intelligence.`;
     }
-    return `For sector and market analysis, explore these resources:\n\n- **Market Intelligence** at /market-intel for company and sector tracking\n- **Space Economy** at /space-economy for market size, investment, and budgets\n- **Market Sizing** at /market-sizing for interactive TAM analysis\n- **Company Directory** at /company-profiles to browse 100+ company profiles by sector\n\nTry narrowing your question with a specific sector like launch, satellite, defense, or analytics.`;
+    return `For sector and market analysis, explore these resources:\n\n- **Market Intelligence** at /market-intel for company and sector tracking\n- **Space Economy** at /space-economy for market size, investment, and budgets\n- **Market Sizing** at /market-sizing for interactive TAM analysis\n- **Company Directory** at /company-profiles to browse ${SITE_STATS.companies} company profiles by sector\n\nTry narrowing your question with a specific sector like launch, satellite, defense, or analytics.`;
   }
 
   if (relatedCompanies.length > 0) {
     return `Based on your question, these companies may be relevant:\n\n${relatedCompanies.map(c => `- **${c.name}** -- ${c.sector || 'Space Industry'} [View Profile](/company-profiles/${c.slug})`).join('\n')}\n\nFor deeper analysis, try our Market Intelligence module at /market-intel or the Marketplace at /marketplace.`;
   }
 
-  return `I can help you research space industry companies. Try asking about:\n\n- A specific company (e.g., "Tell me about SpaceX")\n- Competitors (e.g., "Who competes with Rocket Lab?")\n- Funding (e.g., "How much has Axiom Space raised?")\n- Market segments (e.g., "Which companies do Earth observation?")\n- Comparisons (e.g., "Compare launch providers")\n\nOur database includes 100+ company profiles with financial data, satellite assets, and industry analysis. You can also browse the full directory at /company-profiles.`;
+  return `I can help you research space industry companies. Try asking about:\n\n- A specific company (e.g., "Tell me about SpaceX")\n- Competitors (e.g., "Who competes with Rocket Lab?")\n- Funding (e.g., "How much has Axiom Space raised?")\n- Market segments (e.g., "Which companies do Earth observation?")\n- Comparisons (e.g., "Compare launch providers")\n\nOur database includes ${SITE_STATS.companies} company profiles with financial data, satellite assets, and industry analysis. You can also browse the full directory at /company-profiles.`;
 }

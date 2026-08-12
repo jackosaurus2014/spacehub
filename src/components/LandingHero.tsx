@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { SITE_STATS } from '@/lib/site-stats';
 
 /* Staggered entrance */
 function Reveal({ children, delay, className = '' }: { children: React.ReactNode; delay: number; className?: string }) {
@@ -18,10 +19,10 @@ function Reveal({ children, delay, className = '' }: { children: React.ReactNode
 
 /** Platform stat constants — exported so pricing/register pages can reuse them */
 export const PLATFORM_STATS = [
-  { value: '264+', label: 'Modules & Tools' },
-  { value: '258+', label: 'Original Articles' },
-  { value: '50+', label: 'Live Data Sources' },
-  { value: '10K+', label: 'Tracked Objects' },
+  { value: SITE_STATS.pagesAndTools, label: 'Pages & Tools' },
+  { value: SITE_STATS.articles, label: 'Original Articles' },
+  { value: SITE_STATS.dataSources, label: 'Data Sources' },
+  { value: SITE_STATS.satellites, label: 'Satellites Tracked' },
 ];
 
 interface HeroContentCard {
@@ -62,9 +63,9 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
   // Fetch live metrics for the data preview via the /api/pulse endpoint
   const [nextLaunch, setNextLaunch] = useState<string>('—');
   const [launchName, setLaunchName] = useState<string>('');
-  const [activeSats, setActiveSats] = useState<string>('10,200+');
+  const [activeSats, setActiveSats] = useState<string>(SITE_STATS.satellites);
   const [satsSub, setSatsSub] = useState<string>('tracked in database');
-  const [weatherSummary, setWeatherSummary] = useState<string>('$546B');
+  const [weatherSummary, setWeatherSummary] = useState<string>(SITE_STATS.spaceEconomyNow);
   const [weatherSub, setWeatherSub] = useState<string>('Space Economy');
   const [fundingValue, setFundingValue] = useState<string>('—');
   const [fundingSub, setFundingSub] = useState<string>('loading...');
@@ -200,7 +201,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
             <Reveal delay={0.15} className="mb-8">
               <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#56F000] animate-pulse" />
-                <span className="text-[11px] text-[var(--text-secondary)] font-medium tracking-wide">50+ live data sources connected</span>
+                <span className="text-[11px] text-[var(--text-secondary)] font-medium tracking-wide">{SITE_STATS.dataSources} live data sources connected</span>
               </div>
             </Reveal>
 
@@ -216,7 +217,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
             {/* Value prop */}
             <Reveal delay={0.45} className="mb-10">
               <p className="text-base md:text-lg text-[var(--text-secondary)] max-w-lg leading-relaxed">
-                Track launches, monitor satellites, analyze funding rounds, and research 200+ companies. Real-time intelligence for the space industry.
+                Track launches, monitor satellites, analyze funding rounds, and research {SITE_STATS.companies} companies. Real-time intelligence for the space industry.
               </p>
             </Reveal>
 
@@ -282,7 +283,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
 
                 {/* Bottom strip */}
                 <div className="px-4 py-2 border-t border-[var(--border-subtle)] flex items-center justify-between">
-                  <span className="text-[9px] text-[var(--text-muted)] font-mono">264 modules · 258 articles · 50+ sources</span>
+                  <span className="text-[9px] text-[var(--text-muted)] font-mono">{SITE_STATS.modules} modules · {SITE_STATS.articles} articles · {SITE_STATS.dataSources} sources</span>
                   <Link href="/mission-control" className="text-[10px] text-[var(--accent-primary)] hover:text-[var(--accent-primary-bright)] font-medium transition-colors">
                     Open Dashboard →
                   </Link>

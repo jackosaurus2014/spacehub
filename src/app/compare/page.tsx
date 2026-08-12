@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const COMPARISON_TOOLS = [
   {
@@ -29,7 +30,7 @@ const COMPARISON_TOOLS = [
     description: 'Compare space companies head-to-head: revenue, funding, employees, market cap, and capabilities.',
     href: '/compare/companies',
     icon: '🏢',
-    stats: '100+ companies',
+    stats: `${SITE_STATS.companies} companies`,
     heroImage: '/art/hero-market-intel.png',
   },
   {

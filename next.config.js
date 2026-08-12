@@ -344,6 +344,8 @@ const nextConfig = {
       { source: '/startups', destination: '/funding-tracker', permanent: true },
       // Single paid plan (Pro) — retired enterprise marketing page
       { source: '/enterprise', destination: '/pricing', permanent: true },
+      // Empty "coming soon" marketing page — retired in favor of /why-spacenexus
+      { source: '/case-studies', destination: '/why-spacenexus', permanent: true },
       // Retired user-triggered AI features
       { source: '/marketplace/copilot', destination: '/marketplace/rfq/new', permanent: true },
       { source: '/investment-thesis', destination: '/market-intel', permanent: true },

@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import { BLOG_POSTS } from '@/lib/blog-content';
 
 interface AnalyticsData {
   totalUsers: number;
@@ -48,6 +47,22 @@ export default function AdminAnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Blog post count comes from /api/stats so the multi-MB blog-content
+  // module stays out of the client bundle.
+  const [blogPostCount, setBlogPostCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then((res) => res.json())
+      .then((json) => {
+        if (typeof json?.data?.blogArticles === 'number') {
+          setBlogPostCount(json.data.blogArticles);
+        }
+      })
+      .catch(() => {
+        // Non-critical stat; leave as null
+      });
+  }, []);
 
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
@@ -210,7 +225,7 @@ export default function AdminAnalyticsPage() {
                   <StaggerItem>
                     <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
                       <p className="text-star-400 text-sm font-medium">Blog Articles</p>
-                      <p className="text-3xl font-bold text-cyan-400 mt-1">{BLOG_POSTS.length}</p>
+                      <p className="text-3xl font-bold text-cyan-400 mt-1">{blogPostCount ?? '—'}</p>
                       <p className="text-star-500 text-xs mt-1">original posts</p>
                     </div>
                   </StaggerItem>

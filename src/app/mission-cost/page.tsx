@@ -662,7 +662,6 @@ function MissionCostContent() {
           <AnimatedPageHeader
             title="Mission Cost Simulator"
             subtitle="Estimate launch costs, insurance premiums, and regulatory fees for your space mission"
-            icon="🧮"
             accentColor="emerald"
           />
         </div>
