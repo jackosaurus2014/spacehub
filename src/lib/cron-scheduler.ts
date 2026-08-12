@@ -102,6 +102,8 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
   // Forum digest — weekly on Sundays at 9am UTC
   { schedule: '0 9 * * 0',    path: '/api/newsletter/forum-digest',              label: 'forum-digest-email',         maxStaleMinutes: 11520 },
+  // State of the Space Economy — weekly data brief, Mondays 1pm UTC (no AI, pure DB aggregation)
+  { schedule: '0 13 * * 1',   path: '/api/cron/weekly-economy-post',             label: 'weekly-economy-post',        maxStaleMinutes: 11520 },
 
   // ─── New Real-Time Data Feed Integrations ────────────────────────────
   { schedule: '0 */6 * * *',  path: '/api/refresh?type=conjunction-alerts',       label: 'conjunction-alerts',          maxStaleMinutes: 480 },

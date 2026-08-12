@@ -454,6 +454,53 @@ function FAQAccordionItem({ question, answer }: { question: string; answer: stri
   );
 }
 
+interface FoundingPromo {
+  active: boolean;
+  code?: string;
+  percentOff?: number;
+  durationMonths?: number;
+  remaining?: number;
+  total?: number;
+}
+
+function FoundingMemberBanner() {
+  const [promo, setPromo] = useState<FoundingPromo | null>(null);
+
+  useEffect(() => {
+    fetch('/api/promo/founding')
+      .then((r) => r.json())
+      .then(setPromo)
+      .catch(() => setPromo(null));
+  }, []);
+
+  if (!promo?.active || !promo.code) return null;
+
+  return (
+    <ScrollReveal>
+      <div className="max-w-4xl mx-auto mt-8 mb-6">
+        <div className="relative overflow-hidden rounded-2xl border border-purple-500/30 shadow-lg shadow-purple-500/10">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/90 via-purple-800/90 to-blue-900/90" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent" />
+          <div className="relative px-6 py-5 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            <div className="flex-1 text-center sm:text-left">
+              <p className="text-lg sm:text-xl font-bold text-white mb-1">
+                <span role="img" aria-label="rocket">🚀</span> Founding Member Offer
+              </p>
+              <p className="text-sm sm:text-base text-purple-100/90">
+                Use code <span className="font-mono font-bold text-white bg-white/10 px-1.5 py-0.5 rounded">{promo.code}</span> at
+                checkout for <span className="font-bold text-white">{promo.percentOff}% off Professional for {promo.durationMonths} months</span>.
+                {typeof promo.remaining === 'number' && (
+                  <> <span className="font-bold text-amber-300">{promo.remaining} of {promo.total}</span> spots remaining.</>
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ScrollReveal>
+  );
+}
+
 function PricingPageContent() {
   const { data: session } = useSession();
   const { tier, isTrialing, trialEndsAt, refreshSubscription } = useSubscription();
@@ -634,6 +681,9 @@ function PricingPageContent() {
       />
 
       <div className="container mx-auto px-4">
+        {/* Founding Member offer — rendered only while the live Stripe promo has spots left */}
+        <FoundingMemberBanner />
+
         {/* Platform Scale — reason to subscribe */}
         <ScrollReveal>
           <div className="max-w-3xl mx-auto mb-8">
