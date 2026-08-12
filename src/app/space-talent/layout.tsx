@@ -15,13 +15,14 @@ export const metadata: Metadata = {
     title: 'Space Jobs & Workforce Intelligence | SpaceNexus',
     description: 'Find space industry jobs, salary benchmarks, and workforce intelligence.',
     url: 'https://spacenexus.us/space-talent',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'SpaceNexus' }],
+    // Image comes from the co-located opengraph-image.tsx file convention,
+    // which renders the live open-job count — do not add a static images array here.
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Space Jobs & Workforce Intelligence | SpaceNexus',
     description: 'Find space industry jobs, salary benchmarks, and workforce intelligence.',
-    images: ['/og-image.png'],
+    // Image comes from the co-located opengraph-image.tsx file convention.
   },
   alternates: {
     canonical: 'https://spacenexus.us/space-talent',

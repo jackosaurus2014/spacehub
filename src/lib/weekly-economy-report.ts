@@ -27,7 +27,19 @@ export async function buildWeeklyEconomyReport(now = new Date()): Promise<Weekly
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const twoWeeksAhead = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-  const [articles, launchEvents, funding, newJobs, totalJobs] = await Promise.all([
+  const [
+    articles,
+    launchEvents,
+    funding,
+    newJobs,
+    totalJobs,
+    totalActiveJobs,
+    privateCompanyActiveJobs,
+    topHiringCompanies,
+    engineeringJobs,
+    softwareJobs,
+    manufacturingJobs,
+  ] = await Promise.all([
     prisma.newsArticle.findMany({
       where: { publishedAt: { gte: weekAgo } },
       select: {
@@ -59,6 +71,23 @@ export async function buildWeeklyEconomyReport(now = new Date()): Promise<Weekly
     }),
     prisma.spaceJobPosting.count({ where: { createdAt: { gte: weekAgo } } }),
     prisma.spaceJobPosting.count(),
+    // ── Hiring signals ──
+    prisma.spaceJobPosting.count({ where: { isActive: true } }),
+    prisma.spaceJobPosting.count({
+      where: { isActive: true, companyProfile: { isPublic: false } },
+    }),
+    prisma.spaceJobPosting.groupBy({
+      by: ['company'],
+      where: { isActive: true },
+      _count: { company: true },
+      orderBy: { _count: { company: 'desc' } },
+      take: 5,
+    }),
+    prisma.spaceJobPosting.count({ where: { isActive: true, category: 'engineering' } }),
+    prisma.spaceJobPosting.count({
+      where: { isActive: true, category: 'engineering', title: { contains: 'software', mode: 'insensitive' } },
+    }),
+    prisma.spaceJobPosting.count({ where: { isActive: true, category: 'manufacturing' } }),
   ]);
 
   // Upstream data sometimes mis-types celestial events as launches; a real
@@ -155,6 +184,49 @@ export async function buildWeeklyEconomyReport(now = new Date()): Promise<Weekly
     }
     lines.push('');
     lines.push('Track countdowns live in [Mission Control](/mission-control).');
+    lines.push('');
+  }
+
+  if (totalActiveJobs > 0) {
+    lines.push('## Hiring signals');
+    lines.push('');
+    const openLine = [
+      `${totalActiveJobs.toLocaleString()} active job listings`,
+      privateCompanyActiveJobs > 0
+        ? `${privateCompanyActiveJobs.toLocaleString()} of them at private, pre-IPO companies`
+        : null,
+    ].filter(Boolean);
+    lines.push(`${openLine.join(' — ')} across the space industry right now.`);
+    lines.push('');
+
+    if (topHiringCompanies.length > 0) {
+      lines.push('**Top hiring companies (active listings):**');
+      lines.push('');
+      for (const c of topHiringCompanies) {
+        lines.push(`- ${c.company} — ${c._count.company} open roles`);
+      }
+      lines.push('');
+    }
+
+    const categoryLines: string[] = [];
+    if (engineeringJobs > 0) {
+      categoryLines.push(
+        `**Engineering** — ${engineeringJobs.toLocaleString()} listings${softwareJobs > 0 ? ` (${softwareJobs.toLocaleString()} software)` : ''}`,
+      );
+    }
+    if (manufacturingJobs > 0) {
+      categoryLines.push(`**Manufacturing** — ${manufacturingJobs.toLocaleString()} listings`);
+    }
+    if (categoryLines.length > 0) {
+      lines.push('**By category:**');
+      lines.push('');
+      for (const c of categoryLines) {
+        lines.push(`- ${c}`);
+      }
+      lines.push('');
+    }
+
+    lines.push('[Browse open roles on Space Talent](https://spacenexus.us/space-talent) · [Who\'s hiring at private space companies](https://spacenexus.us/startups)');
     lines.push('');
   }
 

@@ -17,13 +17,15 @@ export const metadata: Metadata = {
     description:
       'The pre-IPO watchlist, recent funding rounds, IPO pipeline, and hiring signals across the space industry — built for investors and job seekers.',
     url: 'https://spacenexus.us/startups',
+    // Image comes from the co-located opengraph-image.tsx file convention,
+    // which renders live private-company and open-role counts.
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Space Startup & Pre-IPO Intelligence | SpaceNexus',
     description:
       'The pre-IPO watchlist, recent funding rounds, IPO pipeline, and hiring signals across the space industry.',
-    images: ['/og-image.png'],
+    // Image comes from the co-located opengraph-image.tsx file convention.
   },
   alternates: {
     canonical: 'https://spacenexus.us/startups',
