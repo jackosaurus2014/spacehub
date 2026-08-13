@@ -9,6 +9,22 @@ const PUBLISHED_REPORTS = [
     tag: 'Annual Report',
     year: '2026',
   },
+  {
+    slug: 'state-of-space-2026',
+    title: 'State of the Space Industry 2026',
+    description:
+      'A comprehensive, data-driven analysis of the $1.8 trillion space economy — market sizing, funding trends, launch data, satellite deployments, and forecasts across every major segment.',
+    tag: 'Free Report',
+    year: '2026',
+  },
+  {
+    slug: 'monthly',
+    title: 'State of Space — Monthly Industry Report',
+    description:
+      'The monthly State of Space report: launch activity, funding trends, market movers, regulatory developments, technology milestones, and the month ahead. Refreshed automatically each month.',
+    tag: 'Monthly',
+    year: 'Updated monthly',
+  },
 ];
 
 export default function ReportsPage() {
@@ -62,9 +78,13 @@ export default function ReportsPage() {
 
         {/* Footer note */}
         <div className="mt-12 rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center">
-          <h3 className="text-lg font-semibold text-white mb-2">More reports coming</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">More research</h3>
           <p className="text-slate-400 text-sm max-w-xl mx-auto">
-            New reports are published periodically. In the meantime, explore live data in{' '}
+            Looking for company-by-company scorecards? Check out{' '}
+            <Link href="/report-cards" className="text-slate-200 underline hover:text-white">
+              Report Cards
+            </Link>
+            . For live data, explore{' '}
             <Link href="/market-intel" className="text-slate-200 underline hover:text-white">
               Market Intelligence
             </Link>{' '}

@@ -1,9 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { PAGE_RELATIONS } from '@/lib/module-relationships';
-import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -183,7 +180,7 @@ const AGENCIES: RegulatoryAgency[] = [
     keyOffice: 'Director of Spectrum Management',
   },
   {
-    name: 'Centre National d\'Etudes Spatiales',
+    name: "Centre National d'Etudes Spatiales",
     abbreviation: 'CNES',
     jurisdiction: 'France',
     regulatoryArea: ['launch', 'space-operations', 'policy'],
@@ -196,7 +193,7 @@ const AGENCIES: RegulatoryAgency[] = [
     abbreviation: 'DLR',
     jurisdiction: 'Germany',
     regulatoryArea: ['space-operations', 'remote-sensing'],
-    description: 'Germany\'s national space agency and aeronautics research center. Manages Germany\'s space program, operates the German Space Operations Center (GSOC), and oversees satellite operations licensing. Also operates the TerraSAR-X and TanDEM-X radar satellite missions.',
+    description: "Germany's national space agency and aeronautics research center. Manages Germany's space program, operates the German Space Operations Center (GSOC), and oversees satellite operations licensing. Also operates the TerraSAR-X and TanDEM-X radar satellite missions.",
     website: 'https://www.dlr.de',
     keyOffice: 'Chairman of the Executive Board, DLR',
   },
@@ -205,7 +202,7 @@ const AGENCIES: RegulatoryAgency[] = [
     abbreviation: 'ASI',
     jurisdiction: 'Italy',
     regulatoryArea: ['space-operations', 'policy'],
-    description: 'Italy\'s national space agency coordinating Italian space activities and participation in ESA programs. Manages the COSMO-SkyMed SAR constellation, operates the Broglio Space Centre (San Marco) in Kenya, and coordinates Italian space industry participation in international programs.',
+    description: "Italy's national space agency coordinating Italian space activities and participation in ESA programs. Manages the COSMO-SkyMed SAR constellation, operates the Broglio Space Centre (San Marco) in Kenya, and coordinates Italian space industry participation in international programs.",
     website: 'https://www.asi.it',
     keyOffice: 'President, ASI',
   },
@@ -214,7 +211,7 @@ const AGENCIES: RegulatoryAgency[] = [
     abbreviation: 'JAXA',
     jurisdiction: 'Japan',
     regulatoryArea: ['launch', 'space-operations', 'policy'],
-    description: 'Japan\'s national space agency responsible for space development and utilization. Operates the Tanegashima Space Center and Uchinoura Space Center. Manages Japan\'s H3 launch vehicle, the QZSS navigation constellation, and coordinates Japan\'s space activities under the 2008 Basic Space Law.',
+    description: "Japan's national space agency responsible for space development and utilization. Operates the Tanegashima Space Center and Uchinoura Space Center. Manages Japan's H3 launch vehicle, the QZSS navigation constellation, and coordinates Japan's space activities under the 2008 Basic Space Law.",
     website: 'https://www.jaxa.jp',
     keyOffice: 'President, JAXA',
   },
@@ -223,7 +220,7 @@ const AGENCIES: RegulatoryAgency[] = [
     abbreviation: 'ISRO',
     jurisdiction: 'India',
     regulatoryArea: ['launch', 'space-operations', 'policy'],
-    description: 'India\'s national space agency and the primary body for space activities. Operates the Satish Dhawan Space Centre (SHAR) and manages India\'s launch vehicles (PSLV, GSLV, LVM3), communication satellites, and Earth observation programs. India\'s 2023 space policy opened the sector to private companies under IN-SPACe regulation.',
+    description: "India's national space agency and the primary body for space activities. Operates the Satish Dhawan Space Centre (SHAR) and manages India's launch vehicles (PSLV, GSLV, LVM3), communication satellites, and Earth observation programs. India's 2023 space policy opened the sector to private companies under IN-SPACe regulation.",
     website: 'https://www.isro.gov.in',
     keyOffice: 'Chairman, ISRO / Secretary, Department of Space',
   },
@@ -232,7 +229,7 @@ const AGENCIES: RegulatoryAgency[] = [
     abbreviation: 'CNSA',
     jurisdiction: 'China',
     regulatoryArea: ['launch', 'space-operations', 'policy'],
-    description: 'China\'s governmental space agency responsible for national space policy and international cooperation. Manages China\'s space program including the Long March launch vehicles, Tiangong space station, Chang\'e lunar missions, and BeiDou navigation system. China\'s rapidly growing commercial space sector operates under CNSA regulatory oversight.',
+    description: "China's governmental space agency responsible for national space policy and international cooperation. Manages China's space program including the Long March launch vehicles, Tiangong space station, Chang'e lunar missions, and BeiDou navigation system. China's rapidly growing commercial space sector operates under CNSA regulatory oversight.",
     website: 'https://www.cnsa.gov.cn',
     keyOffice: 'Administrator, CNSA',
   },
@@ -241,7 +238,7 @@ const AGENCIES: RegulatoryAgency[] = [
     abbreviation: 'KARI',
     jurisdiction: 'South Korea',
     regulatoryArea: ['launch', 'space-operations'],
-    description: 'South Korea\'s aerospace research institute responsible for space development. Developed the Nuri (KSLV-II) launch vehicle and operates the Naro Space Center. South Korea\'s space activities are governed by the Space Development Promotion Act (2005) and the emerging Korea AeroSpace Administration (KASA) established in 2024.',
+    description: "South Korea's aerospace research institute responsible for space development. Developed the Nuri (KSLV-II) launch vehicle and operates the Naro Space Center. South Korea's space activities are governed by the Space Development Promotion Act (2005) and the emerging Korea AeroSpace Administration (KASA) established in 2024.",
     website: 'https://www.kari.re.kr',
     keyOffice: 'President, KARI',
   },
@@ -295,14 +292,13 @@ const JURISDICTION_FLAGS: Record<string, string> = {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export default function RegulatoryAgenciesPage() {
+export function AgencyDirectoryTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [jurisdictionFilter, setJurisdictionFilter] = useState<JurisdictionFilter>('all');
   const [areaFilter, setAreaFilter] = useState<AreaFilter>('all');
 
   const filteredAgencies = useMemo(() => {
     return AGENCIES.filter((agency) => {
-      // Search filter
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const matchesSearch =
@@ -314,7 +310,6 @@ export default function RegulatoryAgenciesPage() {
         if (!matchesSearch) return false;
       }
 
-      // Jurisdiction filter
       if (jurisdictionFilter !== 'all') {
         if (jurisdictionFilter === 'National') {
           if (agency.jurisdiction === 'US' || agency.jurisdiction === 'International') return false;
@@ -323,7 +318,6 @@ export default function RegulatoryAgenciesPage() {
         }
       }
 
-      // Area filter
       if (areaFilter !== 'all') {
         if (!agency.regulatoryArea.includes(areaFilter)) return false;
       }
@@ -332,7 +326,6 @@ export default function RegulatoryAgenciesPage() {
     });
   }, [searchQuery, jurisdictionFilter, areaFilter]);
 
-  // Group by jurisdiction for display
   const grouped = useMemo(() => {
     const groups: Record<string, RegulatoryAgency[]> = {};
     filteredAgencies.forEach((agency) => {
@@ -345,213 +338,129 @@ export default function RegulatoryAgenciesPage() {
     return groups;
   }, [filteredAgencies]);
 
-  const relatedModules = PAGE_RELATIONS['regulatory-agencies'] || PAGE_RELATIONS['compliance'] || [];
-
   return (
-    <div className="min-h-screen bg-black">
-      {/* Header */}
-      <div className="border-b border-white/[0.06]">
-        <div className="container mx-auto px-4 py-10">
-          <div className="flex items-center gap-2 text-sm text-slate-400 mb-4">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-white">Regulatory Agencies</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-            Space Regulatory Agencies: Complete Directory
-          </h1>
-          <p className="text-slate-400 text-lg max-w-3xl">
-            Every government agency and international body that regulates space activities — from launch licensing and spectrum allocation to export controls and remote sensing. Searchable by jurisdiction and area of regulation.
-          </p>
-          <div className="flex items-center gap-4 mt-4 text-sm text-slate-500">
-            <span>{AGENCIES.length} agencies</span>
-            <span>|</span>
-            <span>{filteredAgencies.length} shown</span>
-          </div>
-        </div>
+    <div>
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6">
+        <h4 className="font-semibold text-blue-400 mb-2">Global Agency Directory</h4>
+        <p className="text-sm text-slate-400">Every government agency and international body that regulates space activities — from launch licensing and spectrum allocation to export controls and remote sensing. {AGENCIES.length} agencies, searchable by jurisdiction and area of regulation.</p>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          {/* Search */}
-          <div className="relative flex-1">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search agencies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10 text-sm transition-colors"
-            />
-          </div>
-
-          {/* Jurisdiction filter */}
-          <select
-            value={jurisdictionFilter}
-            onChange={(e) => setJurisdictionFilter(e.target.value as JurisdictionFilter)}
-            className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-white/20 cursor-pointer appearance-none min-w-[180px]"
-          >
-            {JURISDICTION_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">
-                {opt.label}
-              </option>
-            ))}
-          </select>
-
-          {/* Area filter */}
-          <select
-            value={areaFilter}
-            onChange={(e) => setAreaFilter(e.target.value as AreaFilter)}
-            className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-white/20 cursor-pointer appearance-none min-w-[180px]"
-          >
-            {AREA_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">
-                {opt.label}
-              </option>
-            ))}
-          </select>
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search agencies..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Search agencies"
+            className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10 text-sm transition-colors"
+          />
         </div>
 
-        {/* Results */}
-        {Object.keys(grouped).length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-slate-400 text-lg mb-2">No agencies match your filters.</p>
-            <button
-              onClick={() => { setSearchQuery(''); setJurisdictionFilter('all'); setAreaFilter('all'); }}
-              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              Clear all filters
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-10">
-            {Object.entries(grouped).map(([groupName, agencies]) => (
-              <div key={groupName}>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-mono text-slate-400">
-                    {agencies.length}
-                  </span>
-                  {groupName}
-                </h2>
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {agencies.map((agency) => (
-                    <div
-                      key={agency.abbreviation}
-                      className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 hover:bg-white/[0.04] hover:border-white/[0.10] transition-all duration-200 group"
-                    >
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 border border-white/[0.06]">
-                              {JURISDICTION_FLAGS[agency.jurisdiction] || agency.jurisdiction}
-                            </span>
-                            <h3 className="text-base font-semibold text-white truncate">
-                              {agency.abbreviation}
-                            </h3>
-                          </div>
-                          <p className="text-sm text-slate-400 leading-snug">
-                            {agency.name}
-                          </p>
-                        </div>
-                      </div>
+        <select
+          value={jurisdictionFilter}
+          onChange={(e) => setJurisdictionFilter(e.target.value as JurisdictionFilter)}
+          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-white/20 cursor-pointer appearance-none min-w-[180px]"
+        >
+          {JURISDICTION_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">{opt.label}</option>
+          ))}
+        </select>
 
-                      {/* Regulatory areas */}
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {agency.regulatoryArea.map((area) => (
-                          <span
-                            key={area}
-                            className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${AREA_COLORS[area] || 'bg-white/10 text-slate-300 border-white/10'}`}
-                          >
-                            {AREA_OPTIONS.find((o) => o.value === area)?.label || area}
+        <select
+          value={areaFilter}
+          onChange={(e) => setAreaFilter(e.target.value as AreaFilter)}
+          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-white/20 cursor-pointer appearance-none min-w-[180px]"
+        >
+          {AREA_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">{opt.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {Object.keys(grouped).length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-slate-400 text-lg mb-2">No agencies match your filters.</p>
+          <button
+            onClick={() => { setSearchQuery(''); setJurisdictionFilter('all'); setAreaFilter('all'); }}
+            className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            Clear all filters
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-10">
+          {Object.entries(grouped).map(([groupName, agencies]) => (
+            <div key={groupName}>
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-mono text-slate-400">
+                  {agencies.length}
+                </span>
+                {groupName}
+              </h2>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {agencies.map((agency) => (
+                  <div
+                    key={agency.abbreviation}
+                    className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 hover:bg-white/[0.04] hover:border-white/[0.10] transition-all duration-200 group"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 border border-white/[0.06]">
+                            {JURISDICTION_FLAGS[agency.jurisdiction] || agency.jurisdiction}
                           </span>
-                        ))}
+                          <h3 className="text-base font-semibold text-white truncate">{agency.abbreviation}</h3>
+                        </div>
+                        <p className="text-sm text-slate-400 leading-snug">{agency.name}</p>
                       </div>
-
-                      {/* Description */}
-                      <p className="text-sm text-slate-400 leading-relaxed mb-3 line-clamp-3">
-                        {agency.description}
-                      </p>
-
-                      {/* Meta */}
-                      {agency.parentAgency && (
-                        <p className="text-xs text-slate-500 mb-2">
-                          <span className="text-slate-600">Parent:</span> {agency.parentAgency}
-                        </p>
-                      )}
-                      {agency.keyOffice && (
-                        <p className="text-xs text-slate-500 mb-3">
-                          <span className="text-slate-600">Key contact:</span> {agency.keyOffice}
-                        </p>
-                      )}
-
-                      {/* Link */}
-                      <a
-                        href={agency.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors group-hover:underline"
-                      >
-                        {agency.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
                     </div>
-                  ))}
-                </div>
+
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {agency.regulatoryArea.map((area) => (
+                        <span
+                          key={area}
+                          className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${AREA_COLORS[area] || 'bg-white/10 text-slate-300 border-white/10'}`}
+                        >
+                          {AREA_OPTIONS.find((o) => o.value === area)?.label || area}
+                        </span>
+                      ))}
+                    </div>
+
+                    <p className="text-sm text-slate-400 leading-relaxed mb-3 line-clamp-3">{agency.description}</p>
+
+                    {agency.parentAgency && (
+                      <p className="text-xs text-slate-500 mb-2">
+                        <span className="text-slate-600">Parent:</span> {agency.parentAgency}
+                      </p>
+                    )}
+                    {agency.keyOffice && (
+                      <p className="text-xs text-slate-500 mb-3">
+                        <span className="text-slate-600">Key contact:</span> {agency.keyOffice}
+                      </p>
+                    )}
+
+                    <a
+                      href={agency.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors group-hover:underline"
+                    >
+                      {agency.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
-
-        <SubscribeCTA />
-
-        {/* Related modules */}
-        {relatedModules.length > 0 && (
-          <div className="mt-16 border-t border-white/[0.06] pt-8">
-            <h2 className="text-lg font-semibold text-white mb-4">Related Modules</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {relatedModules.slice(0, 5).map((mod) => (
-                <Link
-                  key={mod.href}
-                  href={mod.href}
-                  className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-3 hover:bg-white/[0.04] hover:border-white/[0.10] transition-all text-center"
-                >
-                  <span className="text-2xl mb-1 block">{mod.icon}</span>
-                  <span className="text-sm font-medium text-white block">{mod.name}</span>
-                  <span className="text-xs text-slate-500">{mod.description}</span>
-                </Link>
-              ))}
             </div>
-          </div>
-        )}
-
-        {/* CTA */}
-        <div className="mt-12 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/[0.08] rounded-xl p-8 text-center">
-          <h2 className="text-xl font-bold text-white mb-2">Track Regulatory Changes in Real Time</h2>
-          <p className="text-slate-400 mb-4 max-w-xl mx-auto">
-            SpaceNexus monitors compliance deadlines, licensing requirements, and policy changes across all major space regulatory agencies.
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <Link
-              href="/compliance"
-              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors"
-            >
-              Explore Compliance Hub
-            </Link>
-            <Link
-              href="/regulatory-calendar"
-              className="px-5 py-2.5 bg-white/[0.06] hover:bg-white/[0.10] text-white rounded-lg text-sm font-medium transition-colors border border-white/[0.08]"
-            >
-              Regulatory Calendar
-            </Link>
-          </div>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

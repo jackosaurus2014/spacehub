@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -60,6 +61,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { extractApiError } from '@/lib/errors';
+import { toast } from '@/lib/toast';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import GigBoard from '@/components/workforce/GigBoard';
 
@@ -1190,6 +1192,7 @@ function SpaceTalentHubContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { status: sessionStatus } = useSession();
 
   // Read top-level tab from URL (?tab=talent or ?tab=workforce)
   const initialTopTab = (searchParams.get('tab') as TopLevelTab) || 'talent';
@@ -1274,6 +1277,12 @@ function SpaceTalentHubContent() {
   const [categoryFilter, setCategoryFilter] = useState<JobCategory | ''>(initialCategory);
   const [seniorityFilter, setSeniorityFilter] = useState<SeniorityLevel | ''>(initialSeniority);
   const [remoteOnly, setRemoteOnly] = useState(initialRemote);
+
+  // Job alerts (saved search + email notification for new matching jobs)
+  const [jobAlerts, setJobAlerts] = useState<
+    { id: string; name: string; query: string | null; alertEnabled: boolean }[]
+  >([]);
+  const [jobAlertSaving, setJobAlertSaving] = useState(false);
 
   // Trends state
   const [trends, setTrends] = useState<WorkforceTrend[]>([]);
@@ -1464,6 +1473,109 @@ function SpaceTalentHubContent() {
   };
 
   const hasJobFilters = categoryFilter || seniorityFilter || remoteOnly || searchQuery;
+
+  // ════════════════════════════════════════
+  // JOB ALERTS (saved search + email notification)
+  // ════════════════════════════════════════
+
+  const fetchJobAlerts = useCallback(async () => {
+    if (sessionStatus !== 'authenticated') return;
+    try {
+      const res = await fetch('/api/saved-searches?searchType=space_jobs', { cache: 'no-store' });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setJobAlerts(
+          (json.data.savedSearches || []).map(
+            (s: { id: string; name: string; query: string | null; alertEnabled: boolean }) => ({
+              id: s.id,
+              name: s.name,
+              query: s.query,
+              alertEnabled: s.alertEnabled,
+            })
+          )
+        );
+      }
+    } catch (err) {
+      clientLogger.error('Failed to load job alerts', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }, [sessionStatus]);
+
+  useEffect(() => {
+    if (topTab === 'workforce' && wfSubTab === 'jobs' && sessionStatus === 'authenticated') {
+      fetchJobAlerts();
+    }
+  }, [topTab, wfSubTab, sessionStatus, fetchJobAlerts]);
+
+  const saveJobAlert = async () => {
+    if (sessionStatus !== 'authenticated') {
+      toast.error('Please sign in to save job alerts.');
+      router.push(`/login?returnTo=${encodeURIComponent(`${pathname}?tab=workforce`)}`);
+      return;
+    }
+    setJobAlertSaving(true);
+    try {
+      const nameParts = [
+        categoryFilter ? JOB_CATEGORIES.find((c) => c.value === categoryFilter)?.label : null,
+        seniorityFilter ? SENIORITY_LABELS[seniorityFilter] : null,
+        remoteOnly ? 'Remote' : null,
+        searchQuery ? `"${searchQuery}"` : null,
+      ].filter((v): v is string => Boolean(v));
+      const name = (nameParts.length > 0 ? `Job alert: ${nameParts.join(' · ')}` : 'Job alert: All space jobs').slice(
+        0,
+        200
+      );
+
+      const res = await fetch('/api/saved-searches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          searchType: 'space_jobs',
+          filters: {
+            category: categoryFilter || undefined,
+            seniorityLevel: seniorityFilter || undefined,
+            remoteOk: remoteOnly || undefined,
+          },
+          query: searchQuery || null,
+          alertEnabled: true,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        toast.error(extractApiError(json, 'Failed to save job alert'));
+        return;
+      }
+      toast.success("Alert saved — we'll email you when new matching jobs post.");
+      fetchJobAlerts();
+    } catch (err) {
+      clientLogger.error('Failed to save job alert', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      toast.error('Failed to save job alert');
+    } finally {
+      setJobAlertSaving(false);
+    }
+  };
+
+  const removeJobAlert = async (id: string) => {
+    try {
+      const res = await fetch(`/api/saved-searches/${id}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        toast.error(extractApiError(json, 'Failed to remove job alert'));
+        return;
+      }
+      setJobAlerts((prev) => prev.filter((a) => a.id !== id));
+      toast.success('Job alert removed');
+    } catch (err) {
+      clientLogger.error('Failed to remove job alert', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      toast.error('Failed to remove job alert');
+    }
+  };
 
   // ════════════════════════════════════════
   // TOP-LEVEL TAB CHANGE
@@ -2389,6 +2501,15 @@ function SpaceTalentHubContent() {
                     </button>
                   )}
 
+                  <button
+                    onClick={saveJobAlert}
+                    disabled={jobAlertSaving}
+                    title="Save this search and get an email when new matching jobs post"
+                    className="px-3 py-2 rounded-lg text-sm font-medium bg-white/[0.06] text-star-200 border border-white/[0.06] hover:text-white hover:border-white/15 transition-all disabled:opacity-50"
+                  >
+                    {jobAlertSaving ? 'Saving…' : '🔔 Save Search + Email Me'}
+                  </button>
+
                   <div className="flex items-center gap-2 ml-auto">
                     <span className="text-xs text-slate-400">
                       {totalJobs} {totalJobs === 1 ? 'job' : 'jobs'} found
@@ -2401,6 +2522,27 @@ function SpaceTalentHubContent() {
                     />
                   </div>
                 </div>
+
+                {jobAlerts.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-white/[0.06]">
+                    <span className="text-xs text-slate-500">Your job alerts:</span>
+                    {jobAlerts.map((alert) => (
+                      <span
+                        key={alert.id}
+                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-star-200"
+                      >
+                        {alert.name}
+                        <button
+                          onClick={() => removeJobAlert(alert.id)}
+                          aria-label={`Remove job alert: ${alert.name}`}
+                          className="text-slate-500 hover:text-rose-300 transition-colors"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Job Listings */}

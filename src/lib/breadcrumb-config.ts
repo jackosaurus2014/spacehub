@@ -60,7 +60,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/podcasts': 'Podcasts',
   '/newsletters-directory': 'Newsletters Directory',
   '/reports': 'Reports',
-  '/report/state-of-space-2026': 'State of Space 2026',
+  '/reports/state-of-space-2026': 'State of Space 2026',
   '/intelligence-brief': 'Intelligence Brief',
   '/company-profiles': 'Companies',
   '/company-research': 'Company Research',
@@ -305,8 +305,9 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/legal-resources': '/compliance',
 
   // Report sub-pages
-  '/report/state-of-space-2026': '/reports',
+  '/reports/state-of-space-2026': '/reports',
   '/reports/space-economy-2026': '/reports',
+  '/reports/monthly': '/reports',
 
   // Guide pages → /learn parent
   '/guide/space-industry': '/learn',

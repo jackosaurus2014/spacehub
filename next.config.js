@@ -424,6 +424,24 @@ const nextConfig = {
       { source: '/engineering', destination: '/tools', permanent: true },
       { source: '/engineering-hub', destination: '/tools', permanent: true },
       { source: '/launches', destination: '/mission-control', permanent: true },
+
+      // ── URL consolidation (2026-08) — regulatory cluster folds into /compliance ──
+      // Note: /regulation-explainers is intentionally NOT redirected — it's a live,
+      // cron-fed content system (nightly generation, sitemap-registered per-article
+      // pages) rather than a duplicative orphan page. See IA cleanup notes.
+      { source: '/regulations', destination: '/compliance?tab=ref-all-regs', permanent: true },
+      { source: '/regulatory-agencies', destination: '/compliance?tab=ref-agencies', permanent: true },
+      { source: '/regulatory-risk', destination: '/compliance?tab=risk', permanent: true },
+      { source: '/regulatory-tracker', destination: '/compliance?tab=policy', permanent: true },
+      { source: '/legal', destination: '/compliance', permanent: true },
+      { source: '/legal-resources', destination: '/compliance?tab=ref-legal', permanent: true },
+
+      // ── URL consolidation (2026-08) — /reports is the canonical hub ──
+      { source: '/report/monthly', destination: '/reports/monthly', permanent: true },
+      { source: '/report/state-of-space-2026', destination: '/reports/state-of-space-2026', permanent: true },
+
+      // ── Duplicate company profile merged (2026-08) ──
+      { source: '/company-profiles/anduril', destination: '/company-profiles/anduril-industries', permanent: true },
     ];
   },
 }

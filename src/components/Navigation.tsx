@@ -42,6 +42,7 @@ const ALL_CATEGORIES: { key: CategoryKey; label: string; items: DropdownItem[] }
 
 const NEWS_ITEMS: DropdownItem[] = [
   { label: 'News Feed', href: '/news', description: 'Latest space industry news' },
+  { label: 'Industry Reports', href: '/reports', description: 'In-depth research reports & market analysis' },
   { label: 'AI Insights & Analysis', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
   { label: 'Industry Blogs', href: '/blogs', description: 'Expert industry insights' },

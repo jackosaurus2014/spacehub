@@ -1668,7 +1668,7 @@ export const companyWatchlistSchema = z.object({
 
 export const generalSavedSearchSchema = z.object({
   name: z.string().min(1, 'Name is required').max(200).transform((val) => val.trim()),
-  searchType: z.enum(['company_directory', 'marketplace_listings', 'marketplace_rfqs']),
+  searchType: z.enum(['company_directory', 'marketplace_listings', 'marketplace_rfqs', 'space_jobs']),
   filters: z.record(z.string(), z.unknown()),
   query: z.string().max(500).optional().nullable().transform((val) => val?.trim() || null),
   alertEnabled: z.boolean().default(false),

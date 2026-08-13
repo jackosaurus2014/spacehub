@@ -78,9 +78,8 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/funding-opportunities`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/funding-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/customer-discovery`, changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/regulatory-risk`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/business-models`, changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/space-events`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/space-calendar`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/deal-rooms`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // Company Intelligence directory
@@ -251,7 +250,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/whats-overhead`, changeFrequency: 'daily' as const, priority: 0.7 },
 
     // Reports
-    { url: `${BASE_URL}/report/monthly`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/reports/monthly`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Platform status
     { url: `${BASE_URL}/status`, changeFrequency: 'daily' as const, priority: 0.4 },
@@ -388,7 +387,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/solutions/executives`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/use-cases`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/security`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/report/state-of-space-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/reports/state-of-space-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/book-demo`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/getting-started`, changeFrequency: 'monthly' as const, priority: 0.7 },
 

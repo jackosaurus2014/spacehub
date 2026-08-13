@@ -101,7 +101,7 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
       { name: 'Artemis II Moon Mission', href: '/blog/artemis-ii-moon-mission-everything-you-need-to-know', description: 'Everything you need to know about Artemis II' },
       { name: 'SpaceX IPO Analysis', href: '/blog/spacex-ipo-what-it-means-for-space-investors', description: 'What a SpaceX IPO means for space investors' },
       { name: 'Sierra Space & Vast Raises', href: '/blog/sierra-space-vast-billion-dollar-raises-2026', description: 'Billion-dollar space station funding rounds in 2026' },
-      { name: 'State of Space 2026', href: '/report/state-of-space-2026', description: 'Comprehensive annual industry report' },
+      { name: 'State of Space 2026', href: '/reports/state-of-space-2026', description: 'Comprehensive annual industry report' },
       { name: 'Space Economy Investment Guide', href: '/guide/space-economy-investment', description: 'How to invest in the space economy' },
       { name: 'Space Launch Cost Comparison', href: '/guide/space-launch-cost-comparison', description: 'Launch costs across all major providers' },
     ],

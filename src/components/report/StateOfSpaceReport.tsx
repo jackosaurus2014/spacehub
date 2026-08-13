@@ -551,7 +551,7 @@ export default function StateOfSpaceReport({ report }: StateOfSpaceReportProps) 
                 Published by the SpaceNexus Intelligence Team using data from NASA, NOAA, SEC, CelesTrak, SAM.gov, and 50+ additional sources.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
-                <Link href="/report/state-of-space-2026" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors">
+                <Link href="/reports/state-of-space-2026" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors">
                   Annual Report
                 </Link>
                 <span className="text-white/10">|</span>

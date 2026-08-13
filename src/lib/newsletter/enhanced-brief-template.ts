@@ -108,7 +108,7 @@ export function renderEnhancedBrief(data: {
       <p>
         <a href="https://spacenexus.us?utm_source=newsletter">SpaceNexus</a> · Space Industry Intelligence Platform<br>
         <a href="https://spacenexus.us/newsletter?action=unsubscribe">Unsubscribe</a> ·
-        <a href="https://spacenexus.us/report/monthly">Monthly Report</a> ·
+        <a href="https://spacenexus.us/reports/monthly">Monthly Report</a> ·
         Forward this to a colleague who works in space
       </p>
       <p style="margin-top: 8px;">Houston, TX · © 2026 SpaceNexus LLC</p>

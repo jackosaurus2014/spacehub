@@ -1308,6 +1308,34 @@ model SpaceJobPosting {
   @@index([source])
 }
 
+// Daily per-company snapshot of active job counts, built from SpaceJobPosting.
+// Powers hiring-velocity trend lines on company profiles â€” a leading
+// indicator investors care about. One row per (date, companyName); two
+// reserved sentinel rows per day carry site-wide totals:
+//   companyName = '_TOTAL'         â€” all active postings, site-wide
+//   companyName = '_PRIVATE_TOTAL' â€” active postings at non-public companies
+// (private = no linked CompanyProfile OR linked profile with isPublic=false,
+// matching the semantics in /api/widgets/jobs/route.ts).
+model CompanyJobSnapshot {
+  id String @id @default(cuid())
+
+  date DateTime @db.Date // UTC calendar date the snapshot was captured for
+
+  companyProfileId String?
+  companyProfile   CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: SetNull)
+  companyName      String // Denormalized from SpaceJobPosting.company â€” survives profile changes/deletion
+
+  activeJobs Int // Count of isActive=true postings for this company on this date
+
+  source String? // 'ats' when every counted posting came through the ATS sync pipeline, null otherwise (seed/mixed/manual data)
+
+  createdAt DateTime @default(now())
+
+  @@unique([date, companyName])
+  @@index([companyProfileId, date])
+  @@index([date])
+}
+
 model WorkforceTrend {
   id String @id @default(cuid())
 
@@ -2806,6 +2834,7 @@ model CompanyProfile {
   watchedBy               CompanyWatchlistItem[]
   digests                 CompanyDigest[]
   jobPostings             SpaceJobPosting[]
+  jobSnapshots            CompanyJobSnapshot[]
   gigOpportunities        GigOpportunity[]
   forumThreads            ForumThread[]             @relation("CompanyForumThreads")
   forumPosts              ForumPost[]               @relation("CompanyForumPosts")

@@ -1337,3 +1337,141 @@ SpaceNexus — ${APP_URL}`;
 
   return { html, text, subject };
 }
+
+// ============================================================================
+// Job Alerts (space-talent saved search alerts — SavedSearch.searchType='space_jobs')
+// ============================================================================
+
+interface JobAlertUser {
+  name: string | null;
+  email: string;
+}
+
+interface JobAlertSearchInfo {
+  searchId: string;
+  searchName: string;
+}
+
+export interface JobAlertMatch {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  remoteOk: boolean;
+  category: string;
+  seniorityLevel: string;
+  salaryMin: number | null;
+  salaryMax: number | null;
+}
+
+function formatJobSalaryRange(min: number | null, max: number | null): string {
+  const fmt = (n: number) => `$${Math.round(n / 1000)}k`;
+  if (min && max) return `${fmt(min)}–${fmt(max)}`;
+  if (min) return `${fmt(min)}+`;
+  if (max) return `Up to ${fmt(max)}`;
+  return '';
+}
+
+/**
+ * Generate the job-alert email sent by the daily `/api/cron/job-alerts` job.
+ * One email per SavedSearch row (searchType='space_jobs') that has new
+ * matching ACTIVE SpaceJobPosting rows since its last run. `jobs` is expected
+ * to already be capped (20 per email) by the caller; `overflowCount` is the
+ * number of additional matches beyond that cap, shown as a "+N more" line.
+ */
+export function generateJobAlertEmail(
+  user: JobAlertUser,
+  search: JobAlertSearchInfo,
+  jobs: JobAlertMatch[],
+  overflowCount = 0
+): { html: string; text: string; subject: string } {
+  const userName = user.name || user.email.split('@')[0];
+  const totalCount = jobs.length + overflowCount;
+  const subject = `${totalCount} new space job${totalCount === 1 ? '' : 's'} match${totalCount === 1 ? 'es' : ''} "${search.searchName}"`;
+
+  let rowsHtml = '';
+  let rowsText = '';
+  jobs.forEach((job, i) => {
+    const url = `${APP_URL}/space-talent/job/${job.id}`;
+    const salary = formatJobSalaryRange(job.salaryMin, job.salaryMax);
+    const metaParts = [job.location, job.remoteOk ? 'Remote OK' : null, salary || null].filter(
+      (v): v is string => Boolean(v)
+    );
+    const meta = metaParts.join(' · ');
+
+    rowsHtml += `
+      <tr><td style="padding:14px 0;border-bottom:1px solid #334155;">
+        <p style="margin:0 0 4px 0;color:#06b6d4;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">
+          ${escapeHtml(job.company)}
+        </p>
+        <p style="margin:0 0 6px 0;color:#f1f5f9;font-size:15px;font-weight:600;line-height:1.35;">
+          <a href="${escapeHtml(url)}" style="color:#f1f5f9;text-decoration:none;">${escapeHtml(job.title)}</a>
+        </p>
+        <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.55;">${escapeHtml(meta)}</p>
+      </td></tr>`;
+
+    rowsText += `${i + 1}. ${job.title} — ${job.company}\n   ${meta}\n   ${url}\n\n`;
+  });
+
+  const seeAllUrl = `${APP_URL}/space-talent?tab=workforce`;
+  const manageUrl = `${APP_URL}/space-talent?tab=workforce`;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#0f172a;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;">
+    <tr><td align="center" style="padding:40px 20px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#1e293b;border-radius:12px;overflow:hidden;">
+        <tr><td style="padding:32px 40px;text-align:center;border-bottom:1px solid #334155;">
+          <h1 style="margin:0;color:#06b6d4;font-size:24px;">SpaceNexus</h1>
+          <p style="margin:8px 0 0 0;color:#94a3b8;font-size:13px;">Job Alert</p>
+        </td></tr>
+
+        <tr><td style="padding:32px 40px 8px 40px;">
+          <h2 style="margin:0 0 8px 0;color:#f1f5f9;font-size:20px;">Hi ${escapeHtml(userName)},</h2>
+          <p style="margin:0;color:#94a3b8;font-size:15px;line-height:1.6;">
+            <strong style="color:#06b6d4;">${totalCount}</strong> new ${totalCount === 1 ? 'job matches' : 'jobs match'}
+            your saved search <strong style="color:#f1f5f9;">"${escapeHtml(search.searchName)}"</strong>.
+          </p>
+        </td></tr>
+
+        <tr><td style="padding:8px 40px 8px 40px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            ${rowsHtml}
+          </table>
+          ${overflowCount > 0 ? `<p style="margin:12px 0 0 0;color:#64748b;font-size:13px;">+ ${overflowCount} more</p>` : ''}
+        </td></tr>
+
+        <tr><td style="padding:30px 40px;border-top:1px solid #334155;text-align:center;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 16px;">
+            <tr><td style="background-color:#06b6d4;border-radius:8px;padding:12px 28px;">
+              <a href="${escapeHtml(seeAllUrl)}" style="color:#0f172a;text-decoration:none;font-weight:bold;font-size:14px;">
+                View All Jobs
+              </a>
+            </td></tr>
+          </table>
+          <p style="margin:0;color:#64748b;font-size:11px;">
+            <a href="${escapeHtml(manageUrl)}" style="color:#64748b;text-decoration:underline;">Manage job alerts</a>
+            &nbsp;&middot;&nbsp;
+            <a href="${APP_URL}/account" style="color:#64748b;text-decoration:underline;">Notification preferences</a>
+            &nbsp;&middot;&nbsp;
+            <a href="${APP_URL}" style="color:#64748b;text-decoration:underline;">Visit SpaceNexus</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `Hi ${userName},
+
+${totalCount} new ${totalCount === 1 ? 'job matches' : 'jobs match'} your saved search "${search.searchName}".
+
+${rowsText}${overflowCount > 0 ? `+ ${overflowCount} more — view all: ${seeAllUrl}\n\n` : ''}---
+Manage job alerts: ${manageUrl}
+SpaceNexus — ${APP_URL}`;
+
+  return { html, text, subject };
+}

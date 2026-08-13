@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
@@ -623,6 +624,23 @@ export default function GlossaryPage() {
             className="mt-2 flex-shrink-0"
           />
         </div>
+
+        {/* ---- Cross-link to Acronyms ---- */}
+        <ScrollReveal delay={0.05}>
+          <Link
+            href="/acronyms"
+            className="group flex items-center justify-between gap-4 mb-6 p-4 rounded-xl border border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/30 transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">&#128292;</span>
+              <div>
+                <p className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors">Looking for an acronym instead?</p>
+                <p className="text-xs text-slate-400">Browse the A-Z Space Industry Acronyms &amp; Abbreviations reference</p>
+              </div>
+            </div>
+            <span className="text-cyan-400 text-sm font-medium flex-shrink-0 group-hover:translate-x-0.5 transition-transform">View Acronyms &rarr;</span>
+          </Link>
+        </ScrollReveal>
 
         {/* ---- Search & Filter ---- */}
         <ScrollReveal delay={0.1}>

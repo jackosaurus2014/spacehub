@@ -16,6 +16,7 @@ import CompanyAvatar from '@/components/company/CompanyAvatar';
 import SponsorBanner from '@/components/company/SponsorBanner';
 import LeadCaptureForm from '@/components/company/LeadCaptureForm';
 import SimilarCompanies from '@/components/company/SimilarCompanies';
+import HiringTrend from '@/components/company/HiringTrend';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
 import SocialShare from '@/components/ui/SocialShare';
@@ -1105,6 +1106,7 @@ function JobsTab({ companySlug, companyName }: { companySlug: string; companyNam
   if (jobs.length === 0) {
     return (
       <SectionCard title="Open Positions">
+        <HiringTrend companySlug={companySlug} className="mb-4" />
         <p className="text-slate-400 text-center py-8">No open positions listed for {companyName} right now.</p>
       </SectionCard>
     );
@@ -1116,6 +1118,7 @@ function JobsTab({ companySlug, companyName }: { companySlug: string; companyNam
 
   return (
     <SectionCard title="Open Positions" count={jobs.length}>
+      <HiringTrend companySlug={companySlug} className="mb-4" />
       <div className="space-y-3">
         {jobs.map((job, i) => {
           const inner = (

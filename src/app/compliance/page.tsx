@@ -65,6 +65,10 @@ const ProtestsSection = dynamic(() => import('./ProtestsSection'), {
 // Import the compliance tab components (they render inline based on activeSubTab)
 import { PolicyTrackerTab, ComplianceWizardTab, CaseLawArchiveTab, ExportControlMonitorTab, ExpertCommentaryTab } from './ComplianceTab';
 import { RegulatoryBodiesRefTab, KeyRegulationsTab, ComplianceChecklistsTab } from './QuickReferenceTab';
+import { AgencyDirectoryTab } from './AgencyDirectoryTab';
+import { AllRegulationsTab } from './AllRegulationsTab';
+import { LegalResourceDirectoryTab } from './LegalResourceDirectoryTab';
+import { RiskAssessmentTab } from './RiskAssessmentTab';
 import type { BidProtest } from './ProtestsSection';
 
 // Runtime-populated data (populated from DynamicContent API)
@@ -102,11 +106,11 @@ function getFilingsTabs(): { id: FilingsTabId; label: string; count: number }[] 
 type TopSection = 'compliance' | 'space-law' | 'filings' | 'protests' | 'quick-reference';
 
 function getTopSectionFromTab(tab: string): TopSection {
-  const complianceTabs = ['policy', 'wizard', 'cases', 'export', 'experts'];
+  const complianceTabs = ['policy', 'wizard', 'cases', 'export', 'experts', 'risk'];
   const spaceLawTabs = ['treaties', 'national', 'artemis', 'proceedings', 'bodies'];
   const filingsTabs = ['fcc', 'faa', 'itu', 'sec', 'federal-register'];
   const protestTabs = ['protests-overview', 'protests-timeline', 'protests-analysis'];
-  const quickRefTabs = ['ref-bodies', 'ref-regulations', 'ref-checklists'];
+  const quickRefTabs = ['ref-bodies', 'ref-regulations', 'ref-checklists', 'ref-agencies', 'ref-all-regs', 'ref-legal'];
   if (complianceTabs.includes(tab)) return 'compliance';
   if (spaceLawTabs.includes(tab)) return 'space-law';
   if (filingsTabs.includes(tab)) return 'filings';
@@ -259,6 +263,7 @@ function RegulatoryHubContent() {
     { id: 'cases', label: 'Case Law Archive', icon: '\u2696\uFE0F' },
     { id: 'export', label: 'Export Controls', icon: '\uD83D\uDCE6' },
     { id: 'experts', label: 'Expert Commentary', icon: '\uD83D\uDCA1' },
+    { id: 'risk', label: 'Risk Assessment', icon: '\u26A0\uFE0F' },
   ];
 
   const spaceLawSubTabs = [
@@ -279,6 +284,9 @@ function RegulatoryHubContent() {
     { id: 'ref-bodies', label: 'Regulatory Bodies' },
     { id: 'ref-regulations', label: 'Key Regulations' },
     { id: 'ref-checklists', label: 'Compliance Checklists' },
+    { id: 'ref-agencies', label: 'Agency Directory' },
+    { id: 'ref-all-regs', label: 'All Regulations' },
+    { id: 'ref-legal', label: 'Legal Resources' },
   ];
 
   if (loading) {
@@ -476,6 +484,7 @@ function RegulatoryHubContent() {
       {activeSubTab === 'cases' && <CaseLawArchiveTab />}
       {activeSubTab === 'export' && <ExportControlMonitorTab />}
       {activeSubTab === 'experts' && <ExpertCommentaryTab />}
+      {activeSubTab === 'risk' && <RiskAssessmentTab />}
 
       {/* Space Law Section (lazy-loaded) */}
       {activeSection === 'space-law' && (
@@ -514,6 +523,9 @@ function RegulatoryHubContent() {
       {activeSubTab === 'ref-bodies' && <RegulatoryBodiesRefTab />}
       {activeSubTab === 'ref-regulations' && <KeyRegulationsTab />}
       {activeSubTab === 'ref-checklists' && <ComplianceChecklistsTab />}
+      {activeSubTab === 'ref-agencies' && <AgencyDirectoryTab />}
+      {activeSubTab === 'ref-all-regs' && <AllRegulationsTab />}
+      {activeSubTab === 'ref-legal' && <LegalResourceDirectoryTab />}
     </PullToRefresh>
   );
 }
@@ -595,7 +607,7 @@ export default function RegulatoryHubPage() {
 
         <RelatedModules modules={[
           { name: 'Regulatory Calendar', description: 'Upcoming deadlines and filing dates', href: '/regulatory-calendar', icon: '\u{1F4C5}' },
-          { name: 'Regulatory Risk', description: 'Risk assessment and scoring', href: '/regulatory-risk', icon: '\u{26A0}\u{FE0F}' },
+          { name: 'Regulatory Risk', description: 'Risk assessment and scoring', href: '/compliance?tab=risk', icon: '\u{26A0}\u{FE0F}' },
           { name: 'Spectrum Management', description: 'Frequency allocations and auctions', href: '/spectrum', icon: '\u{1F4E1}' },
         ]} />
       </div>

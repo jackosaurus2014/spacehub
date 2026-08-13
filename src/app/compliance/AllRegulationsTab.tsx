@@ -1,12 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import RelatedModules from '@/components/ui/RelatedModules';
-import { PAGE_RELATIONS } from '@/lib/module-relationships';
-import EmptyState from '@/components/ui/EmptyState';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -545,7 +539,7 @@ const REGULATIONS: Regulation[] = [
     effectiveDate: '2025-01-01',
     status: 'proposed',
     summary:
-      'Proposed civilian-led space traffic management framework to replace DoD as the primary provider of space situational awareness data to commercial operators. Would create a civil open-architecture data repository. The framework\'s future is uncertain: FY2026 budget proposals targeted the Commerce Department\'s TraCSS program for elimination, with traffic-coordination services proposed to shift to commercial providers.',
+      "Proposed civilian-led space traffic management framework to replace DoD as the primary provider of space situational awareness data to commercial operators. Would create a civil open-architecture data repository. The framework's future is uncertain: FY2026 budget proposals targeted the Commerce Department's TraCSS program for elimination, with traffic-coordination services proposed to shift to commercial providers.",
     keyProvisions: [
       'Civil SSA data repository open to commercial users',
       'Standardized conjunction notifications',
@@ -701,95 +695,67 @@ function ComplianceBurdenIndicator({ level }: { level: string }) {
         ))}
       </div>
       <span className={`text-xs font-medium ${config.color}`}>{config.label}</span>
-    
-
-        <RelatedModules modules={PAGE_RELATIONS['regulations']} />
-      </div>
+    </div>
   );
 }
 
-function RegulationCard({ regulation, index }: { regulation: Regulation; index: number }) {
+function RegulationCard({ regulation }: { regulation: Regulation }) {
   const [expanded, setExpanded] = useState(false);
   const statusCfg = STATUS_CONFIG[regulation.status];
 
   return (
-    <ScrollReveal delay={Math.min(index * 0.04, 0.3)}>
-      <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 hover:border-amber-500/30 transition-all duration-300">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-slate-100 leading-snug">{regulation.title}</h3>
-            <p className="text-sm text-slate-400 mt-1">{regulation.authority}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <span className={`text-xs px-2.5 py-1 rounded-full border ${statusCfg.color}`}>
-              {statusCfg.label}
-            </span>
-            <ComplianceBurdenIndicator level={regulation.complianceBurden} />
-          </div>
+    <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 hover:border-amber-500/30 transition-all duration-300">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-semibold text-slate-100 leading-snug">{regulation.title}</h3>
+          <p className="text-sm text-slate-400 mt-1">{regulation.authority}</p>
         </div>
-
-        {/* Meta Row */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">
-            {TYPE_LABELS[regulation.type] || regulation.type}
-          </span>
-          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">
-            {JURISDICTION_LABELS[regulation.jurisdiction] || regulation.jurisdiction}
-          </span>
-          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">
-            Effective: {new Date(regulation.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-          </span>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <span className={`text-xs px-2.5 py-1 rounded-full border ${statusCfg.color}`}>{statusCfg.label}</span>
+          <ComplianceBurdenIndicator level={regulation.complianceBurden} />
         </div>
-
-        {/* Summary */}
-        <p className="text-sm text-white/70 leading-relaxed mb-3">{regulation.summary}</p>
-
-        {/* Affected Activities */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {regulation.affectedActivities.map((activity) => (
-            <span
-              key={activity}
-              className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20"
-            >
-              {activity}
-            </span>
-          ))}
-        </div>
-
-        {/* Expandable Key Provisions */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1"
-        >
-          <svg
-            className={`w-4 h-4 transition-transform duration-200 ${expanded ? 'rotate-90' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          {expanded ? 'Hide' : 'Show'} Key Provisions ({regulation.keyProvisions.length})
-        </button>
-
-        {expanded && (
-          <ul className="mt-3 space-y-1.5 pl-4 border-l-2 border-amber-500/30">
-            {regulation.keyProvisions.map((provision, i) => (
-              <li key={i} className="text-sm text-white/70 relative before:content-[''] before:absolute before:-left-[17px] before:top-2 before:w-2 before:h-2 before:rounded-full before:bg-amber-500/40">
-                {provision}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
-    </ScrollReveal>
+
+      <div className="flex flex-wrap gap-2 mb-3">
+        <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">{TYPE_LABELS[regulation.type] || regulation.type}</span>
+        <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">{JURISDICTION_LABELS[regulation.jurisdiction] || regulation.jurisdiction}</span>
+        <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">
+          Effective: {new Date(regulation.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+        </span>
+      </div>
+
+      <p className="text-sm text-white/70 leading-relaxed mb-3">{regulation.summary}</p>
+
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {regulation.affectedActivities.map((activity) => (
+          <span key={activity} className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+            {activity}
+          </span>
+        ))}
+      </div>
+
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1"
+      >
+        <svg className={`w-4 h-4 transition-transform duration-200 ${expanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+        {expanded ? 'Hide' : 'Show'} Key Provisions ({regulation.keyProvisions.length})
+      </button>
+
+      {expanded && (
+        <ul className="mt-3 space-y-1.5 pl-4 border-l-2 border-amber-500/30">
+          {regulation.keyProvisions.map((provision, i) => (
+            <li key={i} className="text-sm text-white/70 relative before:content-[''] before:absolute before:-left-[17px] before:top-2 before:w-2 before:h-2 before:rounded-full before:bg-amber-500/40">
+              {provision}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Stats Bar
-// ---------------------------------------------------------------------------
 
 function StatsBar({ regulations }: { regulations: Regulation[] }) {
   const active = regulations.filter((r) => r.status === 'active').length;
@@ -806,35 +772,31 @@ function StatsBar({ regulations }: { regulations: Regulation[] }) {
   ];
 
   return (
-    <ScrollReveal>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
-        {stats.map((stat) => (
-          <div key={stat.label} className="bg-white/[0.05] border border-white/[0.06] rounded-lg p-4 text-center">
-            <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-            <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-    </ScrollReveal>
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+      {stats.map((stat) => (
+        <div key={stat.label} className="bg-white/[0.05] border border-white/[0.06] rounded-lg p-4 text-center">
+          <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+          <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
+        </div>
+      ))}
+    </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Main Page
+// Main Tab
 // ---------------------------------------------------------------------------
 
-export default function SpaceRegulationsExplorerPage() {
+export function AllRegulationsTab() {
   const [search, setSearch] = useState('');
   const [jurisdictionFilter, setJurisdictionFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [burdenFilter, setBurdenFilter] = useState<string>('all');
 
-  // Build unique filter options from the data
   const jurisdictions = Array.from(new Set(REGULATIONS.map((r) => r.jurisdiction))).sort();
   const types = Array.from(new Set(REGULATIONS.map((r) => r.type))).sort();
 
-  // Apply filters
   const filtered = REGULATIONS.filter((r) => {
     if (jurisdictionFilter !== 'all' && r.jurisdiction !== jurisdictionFilter) return false;
     if (typeFilter !== 'all' && r.type !== typeFilter) return false;
@@ -842,15 +804,7 @@ export default function SpaceRegulationsExplorerPage() {
     if (burdenFilter !== 'all' && r.complianceBurden !== burdenFilter) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
-      const searchable = [
-        r.title,
-        r.authority,
-        r.summary,
-        ...r.keyProvisions,
-        ...r.affectedActivities,
-      ]
-        .join(' ')
-        .toLowerCase();
+      const searchable = [r.title, r.authority, r.summary, ...r.keyProvisions, ...r.affectedActivities].join(' ').toLowerCase();
       if (!searchable.includes(q)) return false;
     }
     return true;
@@ -865,240 +819,130 @@ export default function SpaceRegulationsExplorerPage() {
   };
 
   const hasActiveFilters =
-    search.trim() !== '' ||
-    jurisdictionFilter !== 'all' ||
-    typeFilter !== 'all' ||
-    statusFilter !== 'all' ||
-    burdenFilter !== 'all';
+    search.trim() !== '' || jurisdictionFilter !== 'all' || typeFilter !== 'all' || statusFilter !== 'all' || burdenFilter !== 'all';
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Header */}
-        <AnimatedPageHeader
-          title="Space Regulations Explorer"
-          subtitle="Searchable database of space regulations, treaties, and legal frameworks governing commercial and governmental space activities worldwide."
-          icon={<span>&#9878;&#65039;</span>}
-          accentColor="amber"
-        />
-
-        {/* Stats */}
-        <StatsBar regulations={filtered} />
-
-        {/* Search & Filters */}
-        <ScrollReveal>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mb-8">
-            {/* Search Bar */}
-            <div className="relative mb-4">
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search regulations by keyword, authority, activity..."
-                className="w-full pl-10 pr-4 py-3 bg-black/60 border border-white/[0.08] rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
-              />
-            </div>
-
-            {/* Filter Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {/* Jurisdiction */}
-              <div>
-                <label className="block text-xs text-slate-400 mb-1 font-medium">Jurisdiction</label>
-                <select
-                  value={jurisdictionFilter}
-                  onChange={(e) => setJurisdictionFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
-                >
-                  <option value="all">All Jurisdictions</option>
-                  {jurisdictions.map((j) => (
-                    <option key={j} value={j}>
-                      {JURISDICTION_LABELS[j] || j}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Type */}
-              <div>
-                <label className="block text-xs text-slate-400 mb-1 font-medium">Type</label>
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
-                >
-                  <option value="all">All Types</option>
-                  {types.map((t) => (
-                    <option key={t} value={t}>
-                      {TYPE_LABELS[t] || t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className="block text-xs text-slate-400 mb-1 font-medium">Status</label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="active">Active</option>
-                  <option value="proposed">Proposed</option>
-                  <option value="amended">Amended</option>
-                </select>
-              </div>
-
-              {/* Compliance Burden */}
-              <div>
-                <label className="block text-xs text-slate-400 mb-1 font-medium">Compliance Burden</label>
-                <select
-                  value={burdenFilter}
-                  onChange={(e) => setBurdenFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
-                >
-                  <option value="all">All Levels</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Active Filters / Clear */}
-            {hasActiveFilters && (
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
-                <p className="text-sm text-slate-400">
-                  Showing <span className="text-amber-400 font-medium">{filtered.length}</span> of{' '}
-                  <span className="text-white/70">{REGULATIONS.length}</span> regulations
-                </p>
-                <button
-                  onClick={clearFilters}
-                  className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </div>
-        </ScrollReveal>
-
-        {/* Results */}
-        {filtered.length > 0 ? (
-          <div className="space-y-4">
-            {filtered.map((regulation, index) => (
-              <RegulationCard key={regulation.title} regulation={regulation} index={index} />
-            ))}
-          </div>
-        ) : (
-          <ScrollReveal>
-            <EmptyState
-              icon={<span className="text-4xl">📜</span>}
-              title="No regulations found"
-              description="Try adjusting your search terms or clearing some filters."
-              action={
-                <button
-                  onClick={clearFilters}
-                  className="text-sm px-4 py-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg hover:bg-amber-500/30 transition-colors"
-                >
-                  Clear all filters
-                </button>
-              }
-            />
-          </ScrollReveal>
-        )}
-
-        {/* Related Pages */}
-        <ScrollReveal delay={0.2}>
-          <div className="mt-12 bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">Related Resources</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 stagger-grid">
-              <Link
-                href="/compliance"
-                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
-              >
-                <span className="text-2xl">&#128203;</span>
-                <div>
-                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
-                    Compliance Hub
-                  </p>
-                  <p className="text-xs text-slate-500">Treaties, filings & compliance tracking</p>
-                </div>
-              </Link>
-
-              <Link
-                href="/regulatory-risk"
-                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
-              >
-                <span className="text-2xl">&#9888;&#65039;</span>
-                <div>
-                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
-                    Regulatory Risk
-                  </p>
-                  <p className="text-xs text-slate-500">Risk assessment & impact analysis</p>
-                </div>
-              </Link>
-
-              <Link
-                href="/regulatory-calendar"
-                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
-              >
-                <span className="text-2xl">&#128197;</span>
-                <div>
-                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
-                    Regulatory Calendar
-                  </p>
-                  <p className="text-xs text-slate-500">Deadlines & upcoming changes</p>
-                </div>
-              </Link>
-
-              <Link
-                href="/regulation-explainers"
-                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
-              >
-                <span className="text-2xl">&#128218;</span>
-                <div>
-                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
-                    Regulation Explainers
-                  </p>
-                  <p className="text-xs text-slate-500">Plain-language guides & summaries</p>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Disclaimer */}
-        <ScrollReveal delay={0.3}>
-          <div className="mt-8 p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg">
-            <p className="text-xs text-slate-500 leading-relaxed">
-              <span className="text-slate-400 font-medium">Disclaimer:</span> This database is provided
-              for informational purposes only and does not constitute legal advice. Regulations may have
-              been amended or superseded since the effective dates listed. Always consult with qualified
-              legal counsel specializing in space law before making compliance decisions. This is a
-              curated reference database — periodically reviewed.
-            </p>
-          </div>
-        </ScrollReveal>
+    <div>
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-6">
+        <h4 className="font-semibold text-amber-400 mb-2">Full Regulations Database</h4>
+        <p className="text-sm text-slate-400">Searchable database of {REGULATIONS.length} space regulations, treaties, and legal frameworks governing commercial and governmental space activities worldwide.</p>
       </div>
-    </main>
+
+      <StatsBar regulations={filtered} />
+
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mb-6">
+        <div className="relative mb-4">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search regulations by keyword, authority, activity..."
+            className="w-full pl-10 pr-4 py-3 bg-black/60 border border-white/[0.08] rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div>
+            <label className="block text-xs text-slate-400 mb-1 font-medium">Jurisdiction</label>
+            <select
+              value={jurisdictionFilter}
+              onChange={(e) => setJurisdictionFilter(e.target.value)}
+              className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
+            >
+              <option value="all">All Jurisdictions</option>
+              {jurisdictions.map((j) => (
+                <option key={j} value={j}>{JURISDICTION_LABELS[j] || j}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs text-slate-400 mb-1 font-medium">Type</label>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
+            >
+              <option value="all">All Types</option>
+              {types.map((t) => (
+                <option key={t} value={t}>{TYPE_LABELS[t] || t}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs text-slate-400 mb-1 font-medium">Status</label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="proposed">Proposed</option>
+              <option value="amended">Amended</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs text-slate-400 mb-1 font-medium">Compliance Burden</label>
+            <select
+              value={burdenFilter}
+              onChange={(e) => setBurdenFilter(e.target.value)}
+              className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
+            >
+              <option value="all">All Levels</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+
+        {hasActiveFilters && (
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
+            <p className="text-sm text-slate-400">
+              Showing <span className="text-amber-400 font-medium">{filtered.length}</span> of{' '}
+              <span className="text-white/70">{REGULATIONS.length}</span> regulations
+            </p>
+            <button onClick={clearFilters} className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear filters
+            </button>
+          </div>
+        )}
+      </div>
+
+      {filtered.length > 0 ? (
+        <div className="space-y-4">
+          {filtered.map((regulation) => (
+            <RegulationCard key={regulation.title} regulation={regulation} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20">
+          <div className="text-4xl mb-3">📜</div>
+          <h3 className="text-xl font-semibold text-white mb-2">No regulations found</h3>
+          <p className="text-slate-400 text-sm mb-4">Try adjusting your search terms or clearing some filters.</p>
+          <button onClick={clearFilters} className="text-sm px-4 py-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg hover:bg-amber-500/30 transition-colors">
+            Clear all filters
+          </button>
+        </div>
+      )}
+
+      <div className="mt-8 p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg">
+        <p className="text-xs text-slate-500 leading-relaxed">
+          <span className="text-slate-400 font-medium">Disclaimer:</span> This database is provided for informational purposes only and does not
+          constitute legal advice. Regulations may have been amended or superseded since the effective dates listed. Always consult with qualified
+          legal counsel specializing in space law before making compliance decisions. This is a curated reference database — periodically reviewed.
+        </p>
+      </div>
+    </div>
   );
 }
