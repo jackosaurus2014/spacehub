@@ -60,6 +60,7 @@ import {
 import RelatedModules from '@/components/ui/RelatedModules';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
 import { extractApiError } from '@/lib/errors';
 import { toast } from '@/lib/toast';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -2590,6 +2591,23 @@ function SpaceTalentHubContent() {
                       </button>
                     </div>
                   )}
+
+                  {/* Browse by category & location — links to the SEO landing pages
+                      defined in src/lib/job-landing-pages.ts (/space-talent/browse/[slug]) */}
+                  <div className="mt-10 card p-5">
+                    <h2 className="text-sm font-semibold text-slate-300 mb-3">Browse by category &amp; location</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {JOB_LANDING_PAGES.map((entry) => (
+                        <Link
+                          key={entry.slug}
+                          href={`/space-talent/browse/${entry.slug}`}
+                          className="text-xs px-2.5 py-1 rounded-full bg-white/[0.06] text-slate-300 hover:bg-white/10 hover:text-cyan-400 transition-colors"
+                        >
+                          {entry.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
 
                   <div className="mt-10">
                     <RelatedModules modules={PAGE_RELATIONS['space-talent']} />

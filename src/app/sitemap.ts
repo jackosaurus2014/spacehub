@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import prisma from '@/lib/db';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
+import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
 
 const BASE_URL = 'https://spacenexus.us';
 
@@ -47,6 +48,18 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compliance`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/solar-exploration`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/space-talent`, changeFrequency: 'daily' as const, priority: 0.8 },
+
+    // Job landing pages (programmatic SEO) — category/remote/location slices of
+    // the jobs board, defined in src/lib/job-landing-pages.ts. Listed here
+    // unconditionally since eligibility for noindex depends on a live DB count
+    // that can't be evaluated statically; the per-page <meta robots> (set in
+    // generateMetadata when a page's live match count is thin) is what
+    // actually governs indexing, not sitemap inclusion.
+    ...JOB_LANDING_PAGES.map((entry) => ({
+      url: `${BASE_URL}/space-talent/browse/${entry.slug}`,
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    })),
     { url: `${BASE_URL}/hire`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-environment`, changeFrequency: 'hourly' as const, priority: 0.8 },
 
