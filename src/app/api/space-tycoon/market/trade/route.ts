@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY, MARKET_BROKER_FEE_RATE, getEffectiveBrokerFeeRate } from '@/lib/game/market-engine';
+import { getGlobalMarketEventMultiplier } from '@/lib/game/market-events';
+import { MINED_ONLY_RESOURCE_IDS } from '@/lib/game/economic-sinks';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 
 /**
@@ -141,10 +143,28 @@ export async function POST(request: NextRequest) {
     const baselineSupply = resDef?.startingSupply || 1000;
     const isBuy = type === 'buy';
 
+    // Audit Wave E (C5 "resource-gated T6+ construction —
+    // canBuyOnMarket:false enforcement"): mined-only resources cannot be
+    // bought from the NPC market. They must be produced (interstellar
+    // colonies / expeditions) or traded player-to-player via the order
+    // book — "MUST mine these yourself or trade with other players"
+    // (economic-sinks.ts §5). Selling remains allowed.
+    if (isBuy && MINED_ONLY_RESOURCE_IDS.includes(resourceSlug)) {
+      return NextResponse.json({
+        error: `${resourceSlug} cannot be bought on the open market — it must be mined, produced by your colonies, or acquired from other players via the order book`,
+        minedOnly: true,
+      }, { status: 400 });
+    }
+
     // For buys: calculate supply-adjusted price (scarcity premium)
+    // Audit Wave E (A5-iii): the world-shared market event multiplier now
+    // prices into EXECUTION on both sides — a "Helium-3 ×2.0" event raises
+    // what buyers pay AND what sellers receive for its stated duration,
+    // which is what makes positioning around events real gameplay.
+    const eventMult = getGlobalMarketEventMultiplier(resourceSlug);
     const supplyMult = getSupplyPriceMultiplier(resource.totalSupply, baselineSupply);
-    const effectivePrice = Math.round(resource.currentPrice * supplyMult);
-    const pricePerUnit = isBuy ? effectivePrice : resource.currentPrice;
+    const effectivePrice = Math.round(resource.currentPrice * supplyMult * eventMult);
+    const pricePerUnit = isBuy ? effectivePrice : Math.round(resource.currentPrice * eventMult);
     const grossTotal = Math.round(pricePerUnit * quantity);
 
     // Sell-side broker commission (Wave 4 balance: sink that prevents

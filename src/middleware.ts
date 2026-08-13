@@ -263,6 +263,7 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/space-tycoon/rivals/snapshot', '/api/space-tycoon/bidding/resolve',
         '/api/space-tycoon/zones/update', '/api/space-tycoon/leagues/process-week',
         '/api/space-tycoon/alliance-cron', '/api/space-tycoon/market/restock',
+        '/api/space-tycoon/market/mean-revert',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {

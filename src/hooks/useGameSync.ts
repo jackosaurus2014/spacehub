@@ -10,6 +10,7 @@ import {
   type IntelPerkSnapshot,
   type LeagueBoostSnapshot,
 } from '@/lib/game/server-effects';
+import { queueMarketFlowFlush } from '@/lib/game/market-pressure';
 
 interface SyncStatus {
   lastSyncAt: number | null;
@@ -68,6 +69,12 @@ export function useGameSync(
     setStatus(prev => ({ ...prev, syncing: true, error: null }));
 
     try {
+      // Audit Wave E (A5-i / §1d-5 "Mining never moves prices" + A5-iv NPC
+      // pressure): snapshot the pending flows so we can flush exactly what
+      // was transmitted after a 200 (amounts accrued mid-flight survive).
+      const minedFlows = { ...(state.pendingMarketFlows?.mined || {}) };
+      const npcFlows = { ...(state.pendingMarketFlows?.npc || {}) };
+
       const payload = {
         money: state.money,
         totalEarned: state.totalEarned,
@@ -110,6 +117,13 @@ export function useGameSync(
         // state has already applied. The server only reconciles/returns
         // entries beyond it (idempotent under retries).
         ledgerAck: state.serverLedgerAck ?? 0,
+        // Audit Wave E (A5-i): "send minedThisTick in the sync payload (one
+        // line…— server code already applies it)". Mining supply pressure
+        // depresses the shared price at 1/3 trade impact.
+        minedThisTick: minedFlows,
+        // Audit Wave E (A5-iv): NPC trade flow — the formerly write-only
+        // npcMarketPressure accumulator, now a real price input server-side.
+        npcMarketFlows: npcFlows,
       };
 
       const res = await fetch('/api/space-tycoon/sync', {
@@ -122,6 +136,11 @@ export function useGameSync(
         const data = await res.json();
         lastSyncRef.current = Date.now();
         retryCount.current = 0;
+        // Audit Wave E (A5-i/iv): the flows were delivered — queue the flush
+        // so the engine subtracts exactly what was sent on the next tick.
+        if (Object.keys(minedFlows).length > 0 || Object.keys(npcFlows).length > 0) {
+          queueMarketFlowFlush({ mined: minedFlows, npc: npcFlows });
+        }
         setStatus({
           lastSyncAt: Date.now(),
           syncing: false,

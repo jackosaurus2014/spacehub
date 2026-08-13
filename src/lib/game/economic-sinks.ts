@@ -1,5 +1,13 @@
 // ─── Space Tycoon: Economic Sinks & Resource-Gated Progression ───────────────
 //
+// AUDIT WAVE E (Change #9 / C5): this file was "100% orphaned — the designed
+// anti-inflation economy" (audit §1e). It is now ACTIVE. game-engine's
+// month-end pass charges insurance premiums, decays volatile stockpiles,
+// rolls economic disasters, and enforces the T5+ cash-reserve requirement;
+// the market/trade route enforces the mined-only resource restriction.
+// Every activated rate below cites the audit section and the BALANCE.md
+// invariant it satisfies at its definition site.
+//
 // PROBLEM: In most tycoon games, money becomes meaningless mid-game because
 // income grows exponentially while costs stay flat. Players stop caring
 // about decisions because they can afford everything.
@@ -274,6 +282,131 @@ export function getReserveStatus(
   if (ratio >= 0.5) return { status: 'warning', efficiencyMultiplier: 0.85 }; // 15% penalty
   return { status: 'critical', efficiencyMultiplier: 0.60 }; // 40% penalty — serious
 }
+
+// ─── ACTIVATION LAYER (audit Wave E — Change #9 / C5) ────────────────────────
+// Helpers consumed by game-engine.ts's month-end pass and the market routes.
+// All deterministic; disaster rolls are seeded per (game-month) — no
+// Math.random ("seeded rng patterns only" per the wave constraints).
+
+import type { GameState } from './types';
+import { BUILDING_MAP } from './buildings';
+import { SHIP_MAP } from './ships';
+import { mulberry32, hashStringToSeed } from './formulas';
+
+/** Locations whose occupancy raises the insurance risk surcharge
+ *  (economic-sinks §2: "+0.2% per hazardous location (Io, Mercury, etc.)").
+ *  Set mirrors the high-multiplier rows in hazards.ts LOCATION_MULTIPLIERS. */
+export const HAZARDOUS_LOCATIONS = new Set([
+  'mercury_surface', 'io_surface', 'asteroid_belt', 'outer_system', 'jupiter_system',
+]);
+
+/** Total insurable asset value: completed buildings + built ships at baseCost.
+ *  The premium base for calculateInsurancePremium (audit A4: "opt-in
+ *  recurring sink" — BALANCE.md invariant "cost scales with empire size" ✓). */
+export function computeInsuredAssetValue(state: GameState): number {
+  let total = 0;
+  for (const b of state.buildings) {
+    if (!b.isComplete) continue;
+    const def = BUILDING_MAP.get(b.definitionId);
+    if (def) total += def.baseCost;
+  }
+  for (const s of state.ships || []) {
+    if (!s.isBuilt) continue;
+    const def = SHIP_MAP.get(s.definitionId);
+    if (def) total += def.baseCost;
+  }
+  return total;
+}
+
+/** Count of distinct hazardous locations where the player has assets. */
+export function countInsuranceRiskLocations(state: GameState): number {
+  const locs = new Set<string>();
+  for (const b of state.buildings) {
+    if (b.isComplete && HAZARDOUS_LOCATIONS.has(b.locationId)) locs.add(b.locationId);
+  }
+  for (const s of state.ships || []) {
+    if (s.isBuilt && HAZARDOUS_LOCATIONS.has(s.currentLocation)) locs.add(s.currentLocation);
+  }
+  return locs.size;
+}
+
+/** Monthly premium for the active policy: 0.5% of asset value + 0.2% per
+ *  hazardous location (§2 rates, unchanged — "at the audit's recommended
+ *  rates"). Returns 0 when no policy is active. */
+export function getMonthlyInsurancePremium(state: GameState): number {
+  if (state.insuranceActive !== true) return 0;
+  return calculateInsurancePremium(computeInsuredAssetValue(state), countInsuranceRiskLocations(state));
+}
+
+/** Engine-facing toggle for the UI wave (opt-in/out is a real economic
+ *  decision: premiums vs. payout — audit A4). Exported so no page/component
+ *  edit is needed later than a single onClick. */
+export function setInsuranceActive(state: GameState, active: boolean): GameState {
+  if ((state.insuranceActive === true) === active) return state;
+  return { ...state, insuranceActive: active };
+}
+
+/** Fraction of a covered disaster's cost that insurance absorbs. */
+export const DISASTER_INSURANCE_COVERAGE = 0.75;
+
+export interface DisasterRoll {
+  disaster: EconomicDisaster;
+  grossCost: number;
+  insuranceCovered: number;
+  netCost: number;
+}
+
+/**
+ * Roll at most ONE economic disaster for a game-month (§4 rates: 0.1%-0.5%
+ * per month each; combined ~1.7%/month for a large empire). Deterministic:
+ * seeded per (monthIndex, disasterId) so the same world month produces the
+ * same disaster weather for every player, and reloading cannot re-roll.
+ * minBuildings gates protect small operations (BALANCE.md: "new-player
+ * exemption" pattern, same as exec comp); Frontier players are exempted by
+ * the caller (gentle on-ramp per the wave constraints).
+ */
+export function rollMonthlyDisaster(state: GameState, monthIndex: number): DisasterRoll | null {
+  const buildingCount = state.buildings.filter(b => b.isComplete).length;
+  for (const disaster of ECONOMIC_DISASTERS) {
+    if (buildingCount < disaster.minBuildings) continue;
+    const rng = mulberry32(hashStringToSeed(`stw-disaster:${monthIndex}:${disaster.id}`));
+    // §4 probabilities are documented per month ("~0.3% per month") and
+    // applied per month here at the file's own recommended rates. Across the
+    // gated ladder a 20+-building empire faces ~1.7%/month combined — the
+    // §Summary's designed "1-2% chance per month of significant losses".
+    if (rng() >= disaster.probability) continue;
+    let grossCost = 0;
+    switch (disaster.costFormula) {
+      case 'flat': grossCost = disaster.costAmount; break;
+      case 'percentage': grossCost = Math.max(0, Math.round(state.money * disaster.costAmount)); break;
+      case 'per_building': grossCost = disaster.costAmount * buildingCount; break;
+    }
+    if (grossCost <= 0) return null;
+    const insuranceCovered = disaster.requiresInsurance && state.insuranceActive === true
+      ? Math.round(grossCost * DISASTER_INSURANCE_COVERAGE)
+      : 0;
+    return { disaster, grossCost, insuranceCovered, netCost: grossCost - insuranceCovered };
+  }
+  return null;
+}
+
+/**
+ * Mined-only resources (audit C5: "resource-gated T6+ construction —
+ * canBuyOnMarket:false enforcement — mined-only inputs make late-game mining
+ * matter again"). The NPC market will not SELL these; they must be produced
+ * (interstellar colonies / expeditions) or bought from other players via the
+ * P2P order book — exactly the §5 "MUST mine these yourself or trade with
+ * other players" contract, mapped onto the resource ids that actually exist.
+ * (The §5 table's deuterium/antimatter_precursors/bio_samples were never
+ * registered as resources; exotic_fuel and xenogenic_biomatter are their
+ * live-schema equivalents, produced only by the interstellar end-game.)
+ * Enforced in market/trade/route.ts.
+ */
+export const MINED_ONLY_RESOURCE_IDS: string[] = ['exotic_fuel', 'xenogenic_biomatter'];
+
+/** Reserve requirement (§7) applies from this corporation tier up (audit C5:
+ *  "reserve requirements for T5+ — efficiency penalty below 3-month runway"). */
+export const RESERVE_REQUIREMENT_MIN_TIER = 5;
 
 // ─── Summary: Why Money Always Matters ───────────────────────────────────────
 //

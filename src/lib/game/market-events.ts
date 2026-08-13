@@ -1,6 +1,22 @@
 // ─── Space Tycoon: Dynamic Market Events ────────────────────────────────────
 // Market-wide events that shift resource prices temporarily.
 // Creates trading opportunities for players who pay attention.
+//
+// Audit Wave E (Change #5 / A5-iii + §1d-6): market events were "flavor
+// text" — getMarketEventMultiplier had zero callers, so "Helium-3 ×2.0"
+// never touched a price. Two fixes here:
+//   1. getGlobalActiveMarketEvents — a DETERMINISTIC, WORLD-SHARED schedule
+//      (seeded per 4-hour wall-clock window off SERVER_EPOCH_MS, mulberry32
+//      — "seeded rng patterns only"). The server market routes and every
+//      client compute the identical schedule with no DB state, so the event
+//      a player reads in their feed is the event moving the shared price.
+//   2. The multiplier is APPLIED: market/route.ts (displayed effective
+//      price), market/trade/route.ts (execution price), and game-engine
+//      mirrors the schedule into state.activeMarketEvents so existing panels
+//      keep rendering it — for the event's STATED duration, then it expires.
+
+import { mulberry32, hashStringToSeed } from './formulas';
+import { SERVER_EPOCH_MS } from './server-time';
 
 export interface MarketEvent {
   id: string;
@@ -70,9 +86,11 @@ export const MARKET_EVENTS: MarketEvent[] = [
   },
 ];
 
-/** Select a random market event */
+/** Select a random market event.
+ *  @deprecated Wave E — superseded by getGlobalActiveMarketEvents (per-player
+ *  Math.random rolls meant every player saw different "events" and none of
+ *  them priced). Kept only for back-compat imports. */
 export function rollMarketEvent(): MarketEvent | null {
-  // 5% chance per game tick (once every ~40 ticks = ~80 seconds)
   if (Math.random() > 0.05) return null;
   const index = Math.floor(Math.random() * MARKET_EVENTS.length);
   return MARKET_EVENTS[index];
@@ -97,13 +115,62 @@ export function isMarketEventExpired(event: ActiveMarketEvent): boolean {
 export function getMarketEventMultiplier(
   resourceId: string,
   activeEvents: ActiveMarketEvent[],
+  nowMs: number = Date.now(),
 ): number {
   let multiplier = 1.0;
   for (const event of activeEvents) {
-    if (Date.now() >= event.expiresAtMs) continue; // Expired
+    if (nowMs >= event.expiresAtMs) continue; // Expired
     if (event.affectedResources.includes(resourceId)) {
       multiplier *= event.priceMultiplier;
     }
   }
   return multiplier;
+}
+
+// ─── Global deterministic schedule (audit Wave E — A5-iii) ───────────────────
+
+/** Wall-clock spawn window. One spawn check per window keeps the cadence at
+ *  ~2-3 events per real day (each lasting 2-8h), so there is usually one
+ *  live opportunity without the market being permanently distorted. */
+export const MARKET_EVENT_WINDOW_MS = 4 * 3600_000;
+
+/** Chance that a window opens with a new event. */
+export const MARKET_EVENT_SPAWN_CHANCE = 0.40;
+
+/**
+ * The world-shared market event schedule at a moment in time. Pure and
+ * deterministic: every caller (server routes, client engine, tests) passing
+ * the same `nowMs` gets the same answer. Seeded per window index off
+ * SERVER_EPOCH_MS — same epoch that drives the shared game calendar, so
+ * event windows are aligned for all players.
+ */
+export function getGlobalActiveMarketEvents(nowMs: number = Date.now()): ActiveMarketEvent[] {
+  const active: ActiveMarketEvent[] = [];
+  const currentWindow = Math.floor((nowMs - SERVER_EPOCH_MS) / MARKET_EVENT_WINDOW_MS);
+  // Look back far enough to cover the longest event duration (8h = 2 windows).
+  for (let w = currentWindow - 2; w <= currentWindow; w++) {
+    if (w < 0) continue;
+    const rng = mulberry32(hashStringToSeed(`stw-market-event:${w}`));
+    if (rng() >= MARKET_EVENT_SPAWN_CHANCE) continue;
+    const def = MARKET_EVENTS[Math.floor(rng() * MARKET_EVENTS.length)];
+    const startedAtMs = SERVER_EPOCH_MS + w * MARKET_EVENT_WINDOW_MS;
+    const expiresAtMs = startedAtMs + def.durationHours * 3600_000;
+    if (nowMs < startedAtMs || nowMs >= expiresAtMs) continue;
+    active.push({
+      eventId: def.id,
+      name: def.name,
+      icon: def.icon,
+      affectedResources: def.affectedResources,
+      priceMultiplier: def.priceMultiplier,
+      startedAtMs,
+      expiresAtMs,
+    });
+  }
+  return active;
+}
+
+/** Effective event multiplier for a resource from the global schedule —
+ *  convenience for the server market routes. */
+export function getGlobalMarketEventMultiplier(resourceId: string, nowMs: number = Date.now()): number {
+  return getMarketEventMultiplier(resourceId, getGlobalActiveMarketEvents(nowMs), nowMs);
 }

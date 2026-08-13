@@ -95,6 +95,10 @@ export interface BuildingInstance {
   /** If currently upgrading, when it started and how long */
   upgradeStartedAtMs?: number;
   upgradeDurationSeconds?: number;
+  /** V15 (audit Wave D / A4): persistent hazard damage 0-0.85. Penalizes the
+   *  revenue of services this building enables until auto-repair (a
+   *  repair-cost money sink in game-engine) works it back to 0. */
+  damagePct?: number;
 }
 
 // ─── Research ───────────────────────────────────────────────────────────────
@@ -375,6 +379,9 @@ export interface GameState {
       startedAtMs: number;
       durationSeconds: number;
     };
+    /** V15 (audit Wave D / A4): persistent hull damage 0-0.85. Penalizes
+     *  mining rate until auto-repair (money sink) restores the hull. */
+    hullDamagePct?: number;
   }[];
 
   // Prestige (deprecated — kept for migration; see legacy-system.ts)
@@ -673,16 +680,61 @@ export interface GameState {
   recentHazards?: {
     id: string;
     type: 'solar_storm' | 'micrometeorite' | 'pirate_raid' | 'equipment_failure';
+    /** V15 (Wave D): severity class of the strike. */
+    severity?: 'minor' | 'major' | 'severe';
     locationId: string;
     occurredAtMs: number;
     affectedShipInstanceId?: string;
     affectedBuildingInstanceId?: string;
+    targetName?: string;
     damagePct: number;
     mitigatedPct: number;
     destroyed: boolean;
     insurancePayout: number;
     summary: string;
   }[];
+
+  // ─── Audit Waves D+E (V15) — risk pillar + market integrity state ─────────
+  // All fields additive + optional with save-migration defaults in
+  // save-load.ts; every consumer falls back to a neutral value.
+
+  /** Wave D (A4): corporate hazard insurance policy. While true, monthly
+   *  premiums are charged (economic-sinks.calculateInsurancePremium — a real
+   *  recurring sink) and destroyed assets pay out their insured value.
+   *  Defaults ON (player-protective now that hazards can destroy); toggled
+   *  via economic-sinks.setInsuranceActive (UI wave surfaces the switch).
+   *  Premiums are waived inside the Protected Frontier. */
+  insuranceActive?: boolean;
+
+  /** Wave D (A4 warning cadence): severe hazards forecast for next
+   *  game-month at the player's asset locations. Refreshed each month-end;
+   *  surfaced in the event log now and as map overlays in the UI wave. */
+  hazardWarnings?: {
+    id: string;
+    type: 'solar_storm' | 'micrometeorite' | 'pirate_raid' | 'equipment_failure';
+    severity: 'minor' | 'major' | 'severe';
+    locationId: string;
+    forecastMonthIndex: number;
+    issuedAtMs: number;
+    summary: string;
+  }[];
+
+  /** Wave E (A5-i/A5-iv): market flows awaiting transmission to the shared
+   *  market via sync — mined units (supply pressure) and net NPC trade flow.
+   *  Drained after each successful sync (market-pressure.ts). */
+  pendingMarketFlows?: {
+    mined: Record<string, number>;
+    npc: Record<string, number>;
+  };
+
+  /** Wave E (C5 §7): cash-reserve requirement status for T5+ corporations.
+   *  Below a 3-month expense runway, services run at reduced efficiency.
+   *  Computed at month-end; multiplier applied to service revenue. */
+  reserveStatus?: {
+    status: 'healthy' | 'warning' | 'critical';
+    efficiencyMultiplier: number;
+    requiredReserve: number;
+  };
 }
 
 export interface DeliveryContractState {

@@ -19,7 +19,7 @@ import { SHIP_MAP } from './ships';
 import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
 import { getActiveBoostMultiplier, cleanupExpiredBoosts } from './speed-boosts';
 import type { ActiveBoost } from './speed-boosts';
-import { rollMarketEvent } from './market-events';
+import { getGlobalActiveMarketEvents } from './market-events';
 import type { ActiveMarketEvent } from './market-events';
 import { checkAchievements } from './achievements';
 import { rollTimedEvent, calculateEventReward, EVENT_TEMPLATES } from './timed-events';
@@ -30,7 +30,18 @@ import { getReputationBonuses, addReputation } from './reputation';
 import { computeCommanderBonuses } from './commanders';
 import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
 import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
-import { rollMonthlyHazards, applyHazards } from './hazards';
+import { rollMonthlyHazards, applyHazards, forecastSevereHazards } from './hazards';
+// Audit Wave D+E (Change #4 hazards/insurance, Change #5 markets, Change #9
+// sinks — see docs/GAME_SYSTEMS_AUDIT_2026-08.md A4/A5/C5) imports:
+import {
+  getMonthlyInsurancePremium,
+  applyResourceDecay,
+  rollMonthlyDisaster,
+  calculateRequiredReserve,
+  getReserveStatus,
+  RESERVE_REQUIREMENT_MIN_TIER,
+} from './economic-sinks';
+import { accumulateMinedFlows, accumulateNpcFlows, consumeMarketFlowFlush, applyMarketFlowFlush } from './market-pressure';
 import { processExpeditionTick } from './expeditions';
 import { consumeServerReconciliation, applyReconciliationToState } from './ledger-reconcile';
 // Audit Wave B (Change #2 "dead-multiplier pack" + Change #6 + A10) imports:
@@ -172,6 +183,16 @@ export function processTick(state: GameState): GameState {
   // the (N-1)th. See serviceSaturationMultiplier for the curve.
   const saturationCounts = new Map<string, number>();
 
+  // Audit Wave E (C5 §7 reserve requirement): T5+ corporations below a
+  // 3-month expense runway run services at reduced efficiency (status set at
+  // month-end below). BALANCE.md invariants: ongoing pressure that scales
+  // with empire size ✓, transparent (status + event) ✓, mitigation path =
+  // hold cash / trim costs ✓, exempt below T5 (new-player exemption) ✓.
+  const reserveEfficiencyMult =
+    corpTier >= RESERVE_REQUIREMENT_MIN_TIER && state.reserveStatus
+      ? Math.max(0.6, Math.min(1, state.reserveStatus.efficiencyMultiplier))
+      : 1.0;
+
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
@@ -218,6 +239,11 @@ export function processTick(state: GameState): GameState {
       * (1 + (subsidiaryBonusByType.get(def.type) || 0))
       * (1 + zoneBonusPct / 100)
     );
+    // Audit Wave D (A4): hazard damage on the enabling building penalizes
+    // service revenue until auto-repair (month-end money sink below) works
+    // it off — "building revenue penalty until repaired". 50% damage ≈ -37%
+    // revenue; floor 0.25 so a crippled facility still limps.
+    const hazardDamageFactor = Math.max(0.25, 1 - 0.75 * (linkedBld?.damagePct || 0));
     const revenue = Math.round(
       def.revenuePerMonth * fraction
       * svc.revenueMultiplier
@@ -236,6 +262,8 @@ export function processTick(state: GameState): GameState {
       * saturationMult
       * wfBonuses.moraleMultiplier
       * waveBRevenueMult
+      * hazardDamageFactor        // audit Wave D (A4)
+      * reserveEfficiencyMult     // audit Wave E (C5 §7)
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
@@ -439,6 +467,10 @@ export function processTick(state: GameState): GameState {
   const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
   const currentTotalMonths = newDate.year * 12 + newDate.month;
   const miningBonuses = state.miningBonuses || [];
+  // Audit Wave E (A5-i / §1d-5 "Mining never moves prices"): track units
+  // mined this tick so useGameSync can send them as minedThisTick supply
+  // pressure — the sync payload field the audit identifies as missing.
+  const minedFlowsThisTick: Record<string, number> = {};
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
@@ -461,10 +493,14 @@ export function processTick(state: GameState): GameState {
       // Accumulate fractional amounts — only add whole units
       const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus) * (1 + locationBonus);
       if (fractionalAmount >= 1) {
-        resources[resource] = (resources[resource] || 0) + Math.round(fractionalAmount);
+        const added = Math.round(fractionalAmount);
+        resources[resource] = (resources[resource] || 0) + added;
+        minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
       } else if (isMonthEnd) {
         // On month boundary, add at least the monthly total
-        resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult * (1 + freighterBonus) * (1 + locationBonus));
+        const added = Math.round(amountPerMonth * miningMult * (1 + freighterBonus) * (1 + locationBonus));
+        resources[resource] = (resources[resource] || 0) + added;
+        minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
       }
     }
   }
@@ -570,30 +606,26 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 8. Market events (5% chance per MONTH, only on month boundary) ──
+  // ─── 8. Market events — world-shared deterministic schedule ─────────
+  // Audit Wave E (Change #5 / A5-iii, §1d-6): events were per-player
+  // Math.random flavor text — "'Helium-3 ×2.0' never touches a price". The
+  // state now mirrors getGlobalActiveMarketEvents — the SAME schedule the
+  // server market routes price against — so what the player reads is what
+  // the shared market is doing, for the event's stated duration.
   let activeMarketEvents: ActiveMarketEvent[] = [...(state.activeMarketEvents || [])];
   try {
-    const marketEventDef = isMonthEnd ? rollMarketEvent() : null;
-    if (marketEventDef) {
-      const now = Date.now();
-      const activeEvent: ActiveMarketEvent = {
-        eventId: marketEventDef.id,
-        name: marketEventDef.name,
-        icon: marketEventDef.icon,
-        affectedResources: marketEventDef.affectedResources,
-        priceMultiplier: marketEventDef.priceMultiplier,
-        startedAtMs: now,
-        expiresAtMs: now + marketEventDef.durationHours * 3600000,
-      };
-      activeMarketEvents.push(activeEvent);
+    const globalEvents = getGlobalActiveMarketEvents(Date.now());
+    const known = new Set(activeMarketEvents.map(e => `${e.eventId}:${e.startedAtMs}`));
+    for (const evt of globalEvents) {
+      if (known.has(`${evt.eventId}:${evt.startedAtMs}`)) continue;
+      const hoursLeft = Math.max(1, Math.round((evt.expiresAtMs - Date.now()) / 3600_000));
       events.push({
         id: generateId(), date: newDate, type: 'random_event',
-        title: `📈 ${marketEventDef.name}`,
-        description: `${marketEventDef.description} (${marketEventDef.durationHours}h)`,
+        title: `📈 ${evt.name}`,
+        description: `Market event: affected prices ×${evt.priceMultiplier} for ~${hoursLeft}h. Trade around it.`,
       });
     }
-    // Cleanup expired market events
-    activeMarketEvents = activeMarketEvents.filter(e => Date.now() < e.expiresAtMs);
+    activeMarketEvents = globalEvents;
   } catch { /* market events non-critical */ }
 
   // ─── 9. Clean up expired effects, boosts, and mining bonuses ────
@@ -638,6 +670,115 @@ export function processTick(state: GameState): GameState {
         title: '📉 Crew morale falling',
         description: 'Hazards, fatigue, or cash trouble are wearing on your crew. Morale reduces all service revenue — consider training budget, medics, or lighter crew utilization.',
       });
+    }
+  }
+
+  // ─── 9c. Month-end economics (audit Waves D+E) ───────────────────────────
+  // Change #4 (A4): insurance premium sink + hazard auto-repair sink.
+  // Change #9 (C5): resource decay, seeded economic disasters, T5+ cash
+  // reserve requirement. All fire once per game-month (6 real hours), all
+  // deterministic, all Frontier-exempt where hostile (gentle on-ramp).
+  let buildingsFinal = buildings;
+  let reserveStatusOut = state.reserveStatus;
+  if (isMonthEnd) {
+    const inFrontier = isInFrontier(state);
+    // Recurring per-tick cost slice BEFORE this block's month-end lumps —
+    // the basis for the reserve requirement's monthly expense run-rate.
+    const recurringCostSliceThisTick = monthlyCosts + payroll;
+
+    // (D-2) Insurance premium — economic-sinks.calculateInsurancePremium
+    // (audit A4: "wire calculateInsurancePremium as an opt-in recurring
+    // sink"). 0.5%/mo of insured asset value + 0.2% per hazardous location.
+    // Waived inside the Frontier (no hazards there → nothing to insure
+    // against; keeps the on-ramp free of sinks per the wave constraints).
+    // BALANCE.md invariants: ongoing sink ✓, scales with empire size ✓,
+    // mitigation via opting out / avoiding hazardous locations ✓.
+    if (!inFrontier && state.insuranceActive === true) {
+      const premium = getMonthlyInsurancePremium({ ...state, buildings: buildingsFinal });
+      if (premium > 0) {
+        money -= premium;
+        totalSpent += premium;
+        monthlyCosts += premium;
+      }
+    }
+
+    // (E-5a) Resource decay (audit C5 §3 "resource decay on volatiles", at
+    // the file's own rates: water 1%/mo, hydrocarbons 0.5%/mo — metals and
+    // exotics never decay). Prevents infinite hoarding; makes stockpile
+    // logistics a real decision. BALANCE.md: sink that scales with the
+    // player's stockpile ✓.
+    const decayed = applyResourceDecay(resources);
+    for (const k of Object.keys(decayed)) resources[k] = decayed[k];
+
+    // (D-3) Hazard auto-repair — the audit A4 "repair-cost money sink".
+    // Damaged buildings repair 10 damage-points per month at 30% of
+    // baseCost per point-fraction repaired; revenue penalty (applied in §1)
+    // shrinks as damage heals. Runs headless now; the UI wave adds a
+    // pay-to-rush repair button on the same fields.
+    let repairSpend = 0;
+    let stillDamaged = 0;
+    buildingsFinal = buildingsFinal.map(b => {
+      if (!b.isComplete || !b.damagePct || b.damagePct <= 0) return b;
+      const def = BUILDING_MAP.get(b.definitionId);
+      if (!def) return b;
+      const step = Math.min(b.damagePct, 0.10);
+      repairSpend += Math.round(step * def.baseCost * 0.30);
+      const remaining = Math.round((b.damagePct - step) * 1000) / 1000;
+      if (remaining > 0.001) stillDamaged++;
+      return { ...b, damagePct: remaining > 0.001 ? remaining : undefined };
+    });
+    if (repairSpend > 0) {
+      money -= repairSpend;
+      totalSpent += repairSpend;
+      monthlyCosts += repairSpend;
+      events.push({
+        id: generateId(), date: newDate, type: 'random_event',
+        title: '🔧 Hazard repairs underway',
+        description: `Repair crews billed ${(repairSpend / 1_000_000).toFixed(1)}M this month restoring damaged infrastructure.${stillDamaged > 0 ? ` ${stillDamaged} structure(s) still operating at reduced output.` : ' All structures back to full output.'}`,
+      });
+    }
+
+    // (E-5b) Economic disasters (audit C5 §4, seeded per world month —
+    // "economic disasters (choice-modal driven)" gets its choice modal in
+    // the UI wave; costs and insurance interplay land now). Insurance
+    // covers 75% of covered disasters — carrying a policy is a real
+    // decision, not flavor. minBuildings gates + Frontier exemption keep
+    // small operations safe. BALANCE.md: forces cash reserves ✓.
+    if (!inFrontier) {
+      const disasterRoll = rollMonthlyDisaster({ ...state, money, buildings: buildingsFinal }, globalDate.totalMonths);
+      if (disasterRoll && disasterRoll.netCost > 0) {
+        money -= disasterRoll.netCost;
+        totalSpent += disasterRoll.netCost;
+        monthlyCosts += disasterRoll.netCost;
+        events.push({
+          id: generateId(), date: newDate, type: 'random_event',
+          title: `🚨 ${disasterRoll.disaster.name}`,
+          description: `${disasterRoll.disaster.description} Cost: ${(disasterRoll.grossCost / 1_000_000).toFixed(1)}M${disasterRoll.insuranceCovered > 0 ? ` — insurance covered ${(disasterRoll.insuranceCovered / 1_000_000).toFixed(1)}M (75%)` : disasterRoll.disaster.requiresInsurance ? ' — UNINSURED, full cost borne' : ''}.`,
+        });
+      }
+    }
+
+    // (E-6) Cash reserve requirement for T5+ corporations (audit C5 §7:
+    // "reserve requirements for T5+ — efficiency penalty below 3-month
+    // runway"). Status computed here, efficiency multiplier applied to
+    // service revenue in §1 on subsequent ticks.
+    if (corpTier >= RESERVE_REQUIREMENT_MIN_TIER) {
+      const monthlyExpenseRunRate = Math.round(recurringCostSliceThisTick * TICKS_PER_GAME_MONTH);
+      const requiredReserve = calculateRequiredReserve(0, monthlyExpenseRunRate);
+      const rs = getReserveStatus(money, requiredReserve);
+      const prevStatus = state.reserveStatus?.status || 'healthy';
+      reserveStatusOut = { status: rs.status, efficiencyMultiplier: rs.efficiencyMultiplier, requiredReserve };
+      if (rs.status !== prevStatus) {
+        events.push({
+          id: generateId(), date: newDate, type: 'random_event',
+          title: rs.status === 'healthy' ? '🏦 Cash reserves restored' : rs.status === 'warning' ? '🏦 Cash reserves low' : '🏦 Cash reserves CRITICAL',
+          description: rs.status === 'healthy'
+            ? 'Reserves cover the required 3-month runway. Services at full efficiency.'
+            : `Board policy requires a 3-month expense reserve (${(requiredReserve / 1_000_000).toFixed(0)}M). Services operating at ${(rs.efficiencyMultiplier * 100).toFixed(0)}% efficiency until reserves recover.`,
+        });
+      }
+    } else if (reserveStatusOut) {
+      reserveStatusOut = undefined; // dropped below the tier — requirement lifts
     }
   }
 
@@ -694,7 +835,7 @@ export function processTick(state: GameState): GameState {
     money,
     totalEarned,
     totalSpent,
-    buildings,
+    buildings: buildingsFinal,      // audit Wave D (A4 auto-repair)
     completedResearch,
     activeResearch,
     activeResearch2,
@@ -706,6 +847,10 @@ export function processTick(state: GameState): GameState {
     miningBonuses: cleanedMiningBonuses,
     activeIntelPerks: cleanedIntelPerks,   // audit Wave B (A8)
     workforce: workforceOut,               // audit Wave B (A10 morale writer)
+    reserveStatus: reserveStatusOut,       // audit Wave E (C5 §7)
+    // Audit Wave E (A5-i): building-mining output joins the pending market
+    // flows; ship mining + NPC flows are added in processFullTick.
+    pendingMarketFlows: accumulateMinedFlows(state.pendingMarketFlows, minedFlowsThisTick),
     pendingChoice,
     incomeHistory,
     eventLog,
@@ -718,10 +863,17 @@ export function processTick(state: GameState): GameState {
   out = ensureFreshDeliveryPool(out);
   out = processContractDeadlines(out);
 
-  // Hazards (Phase II): roll once per game-month. Frontier players are
-  // shielded from all hostile hazards per the onramp policy.
+  // Hazards v2 (audit Wave D / Change #4 "hazards hurt, insurance pays"):
+  // roll once per game-month, seeded per (world month, location, type) —
+  // deterministic, shared weather, no save-scumming. Severe events can
+  // destroy genuinely exposed assets (tiered thresholds); shielding modules,
+  // security crew, and structural tier mitigate; insurance pays per its
+  // terms. Frontier players remain FULLY shielded per the onramp policy
+  // (stronger than the audit's "NPC piracy capped" minimum — verified in
+  // frontier gating tests).
   if (isMonthEnd && !isInFrontier(out)) {
-    const hazards = rollMonthlyHazards(out, Date.now());
+    const monthIndex = globalDate.totalMonths;
+    const hazards = rollMonthlyHazards(out, Date.now(), monthIndex);
     if (hazards.length > 0) {
       const applied = applyHazards(out, hazards);
       out = {
@@ -729,6 +881,28 @@ export function processTick(state: GameState): GameState {
         eventLog: [...applied.events, ...(applied.state.eventLog || [])].slice(0, MAX_EVENT_LOG),
       };
     }
+    // Warning cadence (A4 / task spec): severe hazards are telegraphed one
+    // full game-month (6 real hours) ahead — the player can shield, insure,
+    // staff security, or relocate BEFORE the hit lands (CLAUDE.md: "players
+    // must invest in insurance, redundancy, shielding").
+    const warnings = forecastSevereHazards(out, monthIndex + 1, Date.now());
+    const previousWarningIds = new Set((out.hazardWarnings || []).map(w => w.id));
+    const warningEvents: GameEvent[] = warnings
+      .filter(w => !previousWarningIds.has(w.id))
+      .map(w => ({
+        id: generateId(),
+        date: newDate,
+        type: 'random_event' as const,
+        title: `🛰 ${w.type === 'solar_storm' ? 'Solar storm watch' : w.type === 'pirate_raid' ? 'Pirate activity warning' : w.type === 'micrometeorite' ? 'Debris field warning' : 'Systems strain warning'}`,
+        description: w.summary,
+      }));
+    out = {
+      ...out,
+      hazardWarnings: warnings,
+      eventLog: warningEvents.length > 0
+        ? [...warningEvents, ...out.eventLog].slice(0, MAX_EVENT_LOG)
+        : out.eventLog,
+    };
   }
 
   // Frontier: auto-graduate when time + net worth conditions are met.
@@ -839,6 +1013,18 @@ export function processFullTick(state: GameState): GameState {
     console.error('Server effects apply error (non-fatal):', err);
   }
 
+  // 0c. Audit Wave E (A5-i / A5-iv): drain market flows a successful sync
+  // just transmitted to the shared market (mining supply pressure + NPC
+  // trade flow). Same hand-off pattern as the ledger/effects queues above.
+  try {
+    const flush = consumeMarketFlowFlush();
+    if (flush) {
+      workingState = applyMarketFlowFlush(workingState, flush);
+    }
+  } catch (err) {
+    console.error('Market flow flush error (non-fatal):', err);
+  }
+
   // 1. Process player tick
   let newState: GameState;
   try {
@@ -860,6 +1046,12 @@ export function processFullTick(state: GameState): GameState {
           newState.npcMarketPressure || {},
           npcResult.marketActions,
         ),
+        // Audit Wave E (A5-iv / §1d-4): the accumulator above was write-only
+        // — "the entire NPC buy/sell tuning ('gentle nudges, not crashes')
+        // is inert". NPC trade flow now also joins pendingMarketFlows and
+        // reaches the SHARED market via sync (server applies it at 1/3
+        // trade impact, clamped) — NPC activity finally moves prices.
+        pendingMarketFlows: accumulateNpcFlows(newState.pendingMarketFlows, npcResult.marketActions),
       };
     }
   } catch (err) {
@@ -978,8 +1170,37 @@ export function processFullTick(state: GameState): GameState {
       const shipEvents: typeof newState.eventLog = [];
       const shipReports: GameReport[] = [];
       const shipsToRemove: string[] = []; // For consumed survey probes
+      // Audit Wave E (A5-i): ship-mined units join the market flows too.
+      const shipMinedFlows: Record<string, number> = {};
+      // Audit Wave D (A4): month-end hull auto-repair sink (tickCount resets
+      // to 0 exactly on the month boundary inside processTick).
+      const isShipMonthEnd = newState.tickCount === 0;
+      let hullRepairSpend = 0;
 
-      const updatedShips = newState.ships.map(ship => {
+      // Audit Wave D (A4): month-end hull auto-repair. Damaged ships repair
+      // 10 hull-points/month at 30% of baseCost per point-fraction — the
+      // fleet half of the repair-cost money sink. Mining penalty (below)
+      // shrinks as the hull heals.
+      const shipsAfterRepair = !isShipMonthEnd ? newState.ships : newState.ships.map(s => {
+        if (!s.isBuilt || !s.hullDamagePct || s.hullDamagePct <= 0) return s;
+        const sDef = SHIP_MAP.get(s.definitionId);
+        if (!sDef) return s;
+        const step = Math.min(s.hullDamagePct, 0.10);
+        hullRepairSpend += Math.round(step * sDef.baseCost * 0.30);
+        const remaining = Math.round((s.hullDamagePct - step) * 1000) / 1000;
+        return { ...s, hullDamagePct: remaining > 0.001 ? remaining : undefined };
+      });
+      if (hullRepairSpend > 0) {
+        shipMoney -= hullRepairSpend;
+        shipTotalSpent += hullRepairSpend;
+        shipEvents.push({
+          id: generateId(), date: newState.gameDate, type: 'random_event',
+          title: '🔧 Fleet hull repairs',
+          description: `Drydock crews billed ${(hullRepairSpend / 1_000_000).toFixed(1)}M restoring hazard-damaged hulls.`,
+        });
+      }
+
+      const updatedShips = shipsAfterRepair.map(ship => {
         // Build completion
         if (!ship.isBuilt && ship.buildStartedAtMs && ship.buildDurationSeconds) {
           const elapsed = (now - ship.buildStartedAtMs) / 1000;
@@ -1010,9 +1231,14 @@ export function processFullTick(state: GameState): GameState {
             // (+30% each) finally modify the actual mining computation —
             // previously "the engine reads raw shipDef.miningRate".
             const moduleMiningMult = getShipMiningRateMultiplier(newState, ship.instanceId);
-            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * shipFraction);
+            // Audit Wave D (A4): persistent hull damage penalizes mining
+            // rate until repaired — "ship mining-rate penalty" verbatim.
+            const hullDamageFactor = Math.max(0.25, 1 - 0.75 * (ship.hullDamagePct || 0));
+            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * hullDamageFactor * shipFraction);
             if (mined >= 1) {
               resources[resId] = (resources[resId] || 0) + mined;
+              // Audit Wave E (A5-i): mined units → shared-market pressure.
+              shipMinedFlows[resId] = (shipMinedFlows[resId] || 0) + mined;
             }
           }
         }
@@ -1109,6 +1335,8 @@ export function processFullTick(state: GameState): GameState {
         ...newState,
         ships: finalShips,
         resources,
+        // Audit Wave E (A5-i): ship-mined units join the pending flows.
+        pendingMarketFlows: accumulateMinedFlows(newState.pendingMarketFlows, shipMinedFlows),
         money: shipMoney,
         totalSpent: shipTotalSpent,
         eventLog: shipEvents.length > 0

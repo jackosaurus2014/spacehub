@@ -133,6 +133,9 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 */2 * * *',  path: '/api/space-tycoon/alliance-cron',             label: 'tycoon-alliance-processing',  maxStaleMinutes: 1440 },
   // Market NPC restocking — every hour (gradually replenishes supply toward baseline)
   { schedule: '0 * * * *',    path: '/api/space-tycoon/market/restock',             label: 'tycoon-market-restock',       maxStaleMinutes: 1440 },
+  // Market mean reversion — hourly at :30 (audit Wave E / A5-ii: prices drift back
+  // toward baseline via calculateIdleDecay; ~6.6h half-life ≈ one game-month)
+  { schedule: '30 * * * *',   path: '/api/space-tycoon/market/mean-revert',         label: 'tycoon-market-mean-revert',   maxStaleMinutes: 1440 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

@@ -100,6 +100,14 @@ export function getNewGameState(): GameState {
     zoneStandings: [],
     activeIntelPerks: [],
     claimedLeagueBoostSeasonIds: [],
+    // V15 — Audit Waves D+E: risk pillar + market integrity.
+    // Insurance defaults ON: hazards can now destroy assets (Wave D / A4), so
+    // a fresh corporation starts covered; premiums are waived while in the
+    // Protected Frontier, so the on-ramp stays gentle and the first premium
+    // coincides with the first month hazards can actually strike.
+    insuranceActive: true,
+    hazardWarnings: [],
+    pendingMarketFlows: { mined: {}, npc: {} },
   };
 }
 
@@ -246,6 +254,25 @@ export function loadGame(): GameState | null {
       if (state.workforce.trainingLevel === undefined) state.workforce.trainingLevel = 0.5;
       if (state.workforce.trainingBudgetPerCrew === undefined) state.workforce.trainingBudgetPerCrew = 0;
     }
+
+    // V15 fields — Audit Waves D+E (risk pillar + market integrity)
+    if (state.insuranceActive === undefined) {
+      // Existing saves get coverage ON: Wave D makes hazards destructive and
+      // an uninsured migration would be a silent downgrade. The premium sink
+      // is announced once so it is never a hidden tax (BALANCE.md invariant
+      // "transparent to the player"); opting out is a real decision the UI
+      // wave surfaces via economic-sinks.setInsuranceActive.
+      state.insuranceActive = true;
+      state.eventLog = [{
+        id: 'evt_v15_insurance',
+        date: state.gameDate,
+        type: 'random_event' as const,
+        title: '🛡 Hazard insurance activated',
+        description: 'Solar storms, impacts, raids, and equipment failures can now damage or destroy assets. Your corporation carries a policy: monthly premiums (0.5% of asset value + risk surcharges) buy payouts on catastrophic losses. Shielding modules, security crew, and structural tiers reduce damage.',
+      }, ...(state.eventLog || [])].slice(0, 50);
+    }
+    if (!state.hazardWarnings) state.hazardWarnings = [];
+    if (!state.pendingMarketFlows) state.pendingMarketFlows = { mined: {}, npc: {} };
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

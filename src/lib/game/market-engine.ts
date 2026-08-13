@@ -17,8 +17,26 @@ export function getMarketDepth(volatility: number): number {
 }
 
 /**
+ * Trade price-impact coefficient (audit Wave E — A5-v "tame volatility:
+ * impact `qty×vol²` → `qty×vol×k` with per-trade clamp"). The old algebra
+ * collapsed to qty × volatility² — fine for iron (vol 0.02 → 0.04%/unit)
+ * but "absurdly twitchy" for rare commodities: 100 helium-3 (vol 0.12) was
+ * a 144% move → instant floor (audit §5). With k = 0.02 the common-metal
+ * impact is UNCHANGED (0.02 × 0.02 ≡ 0.02² for iron) while helium-3 drops
+ * to 0.24%/unit, and no single trade can move a price more than ±25%.
+ */
+export const TRADE_IMPACT_K = 0.02;
+
+/** Per-trade price-impact clamp (A5-v). */
+export const MAX_TRADE_IMPACT = 0.25;
+
+/** Per-call clamp for background flows (mining / NPC) — gentler than trades. */
+export const MAX_BACKGROUND_IMPACT = 0.10;
+
+/**
  * Calculate new price after a trade.
  * Buys push price up; sells push price down.
+ * Impact = qty × volatility × k, clamped at ±25% per trade (audit A5-v).
  */
 export function calculatePriceAfterTrade(
   currentPrice: number,
@@ -29,8 +47,7 @@ export function calculatePriceAfterTrade(
   minPrice: number,
   maxPrice: number,
 ): number {
-  const depth = getMarketDepth(volatility);
-  const impactPct = (quantity / depth) * volatility * 10;
+  const impactPct = Math.min(MAX_TRADE_IMPACT, quantity * volatility * TRADE_IMPACT_K);
   const direction = isBuy ? 1 : -1;
   const newPrice = currentPrice * (1 + impactPct * direction);
   return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
@@ -38,7 +55,11 @@ export function calculatePriceAfterTrade(
 
 /**
  * Apply mining supply pressure (gentler than direct trades).
- * Mining adds 1/3 of normal sell pressure per unit mined.
+ * Mining adds 1/3 of normal sell pressure per unit mined (BALANCE.md
+ * "mining pressure at 1/3 … audited in Wave 4 and found sound" — the 1/3
+ * ratio is kept; only the underlying impact curve is tamed per A5-v).
+ * Audit §1d-5: this is the "mass extraction depresses prices" path — the
+ * client now actually sends minedThisTick via sync (see market-pressure.ts).
  */
 export function calculatePriceAfterMining(
   currentPrice: number,
@@ -48,15 +69,45 @@ export function calculatePriceAfterMining(
   minPrice: number,
   maxPrice: number,
 ): number {
-  const depth = getMarketDepth(volatility);
-  const impactPct = (quantity / depth) * volatility * 10 * 0.33; // 1/3 of trade impact
+  const impactPct = Math.min(MAX_BACKGROUND_IMPACT, quantity * volatility * TRADE_IMPACT_K * 0.33);
   const newPrice = currentPrice * (1 - impactPct);
   return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
 }
 
 /**
- * Decay price toward base price when idle.
- * Called periodically (e.g., every few minutes by cron).
+ * Apply a signed background market flow (audit Wave E — A5-iv: the NPC
+ * market-pressure accumulator was "write-only … the entire NPC buy/sell
+ * tuning ('gentle nudges, not crashes') is inert"). Positive quantity =
+ * supply added (NPC sells) → price down; negative = NPC buys → price up.
+ * Same 1/3-of-trade gentleness as mining, same per-call clamp.
+ */
+export function calculatePriceAfterBackgroundFlow(
+  currentPrice: number,
+  basePrice: number,
+  signedQuantity: number,
+  volatility: number,
+  minPrice: number,
+  maxPrice: number,
+): number {
+  if (!Number.isFinite(signedQuantity) || signedQuantity === 0) return currentPrice;
+  const impactPct = Math.min(MAX_BACKGROUND_IMPACT, Math.abs(signedQuantity) * volatility * TRADE_IMPACT_K * 0.33);
+  const direction = signedQuantity > 0 ? -1 : 1; // supply in → down; demand → up
+  const newPrice = currentPrice * (1 + impactPct * direction);
+  return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
+}
+
+/**
+ * Decay price toward base price when idle — MEAN REVERSION.
+ *
+ * Audit Wave E (A5-ii): this function had "zero callers and no cron touches
+ * currentPrice … a dumped price stays dumped forever" (audit §5). It is now
+ * called hourly by /api/space-tycoon/market/mean-revert (cron-scheduler
+ * 'tycoon-market-mean-revert'). At the hourly cadence each call moves the
+ * price ≤10% of the gap toward base (the 0.5%/min rate caps out past 20
+ * idle minutes), giving a reversion half-life of ~6.6 real hours ≈ one
+ * game-month — crashes and squeezes are tradeable for a session, then the
+ * market heals. Trades within the last 5 minutes suppress decay so active
+ * price discovery isn't fought by the cron.
  */
 export function calculateIdleDecay(
   currentPrice: number,

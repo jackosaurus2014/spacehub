@@ -53,6 +53,7 @@ export async function POST(request: Request) {
       gameYear = 2026,
       companyName = 'Untitled Aerospace',
       minedThisTick = {},
+      npcMarketFlows = {},
       // Full state for multiplayer visibility
       buildings = [],
       activeServices = [],
@@ -204,25 +205,63 @@ export async function POST(request: Request) {
     }
 
     // Apply mining pressure to global market (if resources were mined this tick)
+    // Audit Wave E (A5-i): the client finally SENDS minedThisTick (audit
+    // §1d-5 — "useGameSync.ts never sends it"), so "mass extraction
+    // depresses prices" (CLAUDE.md) is live. Per-resource per-sync clamp:
+    // the payload is client-claimed, so a forged burst is bounded
+    // (POLICY.md simulation-integrity floor; the price impact itself is
+    // also clamped inside calculatePriceAfterMining).
+    const MINED_PER_SYNC_CAP = 2_000;
     if (minedThisTick && typeof minedThisTick === 'object') {
       try {
         const { calculatePriceAfterMining } = await import('@/lib/game/market-engine');
         for (const [slug, qty] of Object.entries(minedThisTick)) {
           if (typeof qty !== 'number' || qty <= 0) continue;
+          const safeQty = Math.min(MINED_PER_SYNC_CAP, Math.floor(qty));
           const resource = await prisma.marketResource.findUnique({ where: { slug } });
           if (!resource) continue;
           const newPrice = calculatePriceAfterMining(
-            resource.currentPrice, resource.basePrice, qty,
+            resource.currentPrice, resource.basePrice, safeQty,
             resource.volatility, resource.minPrice, resource.maxPrice,
           );
-          if (newPrice !== resource.currentPrice) {
+          if (newPrice !== resource.currentPrice || safeQty > 0) {
             await prisma.marketResource.update({
               where: { id: resource.id },
-              data: { currentPrice: newPrice, totalSupply: resource.totalSupply + qty },
+              data: { currentPrice: newPrice, totalSupply: resource.totalSupply + safeQty },
             });
           }
         }
       } catch { /* mining pressure is non-critical */ }
+    }
+
+    // Audit Wave E (A5-iv / §1d-4): NPC trade flow becomes a real price
+    // input. The client's NPC backdrop reports its net buy/sell volume
+    // (positive = sell → supply in, price down; negative = buy → price up),
+    // applied at the same gentle 1/3-of-trade impact. Tight per-sync clamp
+    // (±300/resource) keeps forged payloads AND legitimate NPC activity in
+    // "gentle nudges, not crashes" territory (NPC_BACKDROP.md).
+    const NPC_FLOW_PER_SYNC_CAP = 300;
+    if (npcMarketFlows && typeof npcMarketFlows === 'object') {
+      try {
+        const { calculatePriceAfterBackgroundFlow } = await import('@/lib/game/market-engine');
+        for (const [slug, qty] of Object.entries(npcMarketFlows)) {
+          if (typeof qty !== 'number' || !Number.isFinite(qty) || qty === 0) continue;
+          const safeQty = Math.max(-NPC_FLOW_PER_SYNC_CAP, Math.min(NPC_FLOW_PER_SYNC_CAP, Math.round(qty)));
+          const resource = await prisma.marketResource.findUnique({ where: { slug } });
+          if (!resource) continue;
+          const newPrice = calculatePriceAfterBackgroundFlow(
+            resource.currentPrice, resource.basePrice, safeQty,
+            resource.volatility, resource.minPrice, resource.maxPrice,
+          );
+          const newSupply = Math.max(0, resource.totalSupply + safeQty);
+          if (newPrice !== resource.currentPrice || newSupply !== resource.totalSupply) {
+            await prisma.marketResource.update({
+              where: { id: resource.id },
+              data: { currentPrice: newPrice, totalSupply: newSupply },
+            });
+          }
+        }
+      } catch { /* NPC flow pressure is non-critical */ }
     }
 
     // ── League Metric Tracking ──────────────────────────────────────────────

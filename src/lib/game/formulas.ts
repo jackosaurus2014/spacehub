@@ -28,20 +28,46 @@ export function revenueMultiplier(relevantResearchCount: number): number {
  * Scales with net worth above a $100M exemption threshold. Prevents wealthy
  * players from passively accumulating cash with no ongoing costs.
  *
- * Rate: 0.03% of (net worth - $100M), monthly. ~0.36% annual drag on wealth.
+ * Audit Wave E (Change #9 / C5 "Late-game recurring sinks"): the flat 0.03%/mo
+ * rate was "outrun by any empire earning >0.36% on net worth" (audit §5
+ * inflation verdict). Per the audit's spec — "Escalate exec comp: 0.03%/mo →
+ * progressive brackets reaching ~0.15%/mo above $1T" — the tax is now
+ * MARGINAL-bracketed like a progressive income tax:
  *
- * Examples (above the $100M threshold):
- *   - $1B net worth:   $270K/mo (trivial — early-mid game)
- *   - $10B:            $2.97M/mo (notable)
- *   - $100B:           $30M/mo (meaningful)
- *   - $1T:             $300M/mo (substantial ongoing pressure)
- *   - $10T:            $3B/mo (late-game)
+ *   $100M – $10B   : 0.03% / month   (unchanged — early/mid game untouched)
+ *   $10B  – $100B  : 0.06% / month
+ *   $100B – $1T    : 0.10% / month
+ *   > $1T          : 0.15% / month
  *
- * Corporation tier reductions apply — larger corps get efficient negotiation.
+ * Examples:
+ *   - $1B net worth:   $270K/mo   (identical to pre-Wave-E)
+ *   - $10B:            $2.97M/mo  (identical — bracket boundary)
+ *   - $100B:           $56.97M/mo (was $30M)
+ *   - $1T:             $956.97M/mo (was $300M)
+ *   - $10T:            $14.46B/mo (~0.145%/mo blended — approaches 1.8%/yr)
+ *
+ * BALANCE.md invariants: extends an ongoing sink (not income) ✓, cost scales
+ * with player wealth ✓, sublinear revenue unaffected ✓, mitigation path via
+ * corporation-tier maintenance reductions (applied in game-engine) ✓.
  */
+const EXEC_COMP_BRACKETS: { floor: number; rate: number }[] = [
+  { floor: 100_000_000,        rate: 0.0003 },  // 0.03%/mo
+  { floor: 10_000_000_000,     rate: 0.0006 },  // 0.06%/mo
+  { floor: 100_000_000_000,    rate: 0.0010 },  // 0.10%/mo
+  { floor: 1_000_000_000_000,  rate: 0.0015 },  // 0.15%/mo
+];
+
 export function executiveCompensationMonthly(netWorth: number): number {
-  const taxable = Math.max(0, netWorth - 100_000_000);
-  return Math.round(taxable * 0.0003);
+  if (netWorth <= EXEC_COMP_BRACKETS[0].floor) return 0;
+  let total = 0;
+  for (let i = 0; i < EXEC_COMP_BRACKETS.length; i++) {
+    const { floor, rate } = EXEC_COMP_BRACKETS[i];
+    const ceiling = i + 1 < EXEC_COMP_BRACKETS.length ? EXEC_COMP_BRACKETS[i + 1].floor : Infinity;
+    if (netWorth <= floor) break;
+    const taxableInBracket = Math.min(netWorth, ceiling) - floor;
+    total += taxableInBracket * rate;
+  }
+  return Math.round(total);
 }
 
 /**
@@ -143,6 +169,35 @@ export function formatCountdown(remainingSeconds: number): string {
 /** Generate a simple unique ID */
 export function generateId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+// ─── Seeded RNG (audit Waves D+E: "deterministic — seeded rng patterns only") ─
+// Same mulberry32 generator the expedition engine fixed at Wave 10
+// (expeditions.ts:212). Hazard rolls, disaster rolls, and the global market
+// event schedule all draw from hash-derived seeds so outcomes are replayable,
+// save-scum-proof, and identical for every player observing the same world
+// month — no Math.random in any new tick path.
+
+/** Deterministic PRNG. Returns a function yielding floats in [0, 1). */
+export function mulberry32(seed: number): () => number {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Stable 32-bit FNV-1a hash for string-derived seeds. */
+export function hashStringToSeed(input: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
 }
 
 /** Calculate monthly net income for current state */
