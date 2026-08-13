@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import {
   LANES,
@@ -14,6 +15,7 @@ import {
   type Chokepoint,
 } from '@/lib/game/spatial-strategy';
 import { formatMoney } from '@/lib/game/formulas';
+import { EFFECT_ASSETS } from '@/lib/game/assets';
 
 interface Props {
   state: GameState;
@@ -30,10 +32,12 @@ export default function SpatialStrategyPanel({ state }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="card p-4">
+      <div className="hud-frame relative card p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
-            <h2 className="text-white text-base font-bold flex items-center gap-2">
+            <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
               <span className="text-purple-400">✦</span> Spatial Strategy
             </h2>
             <p className="text-slate-500 text-xs mt-0.5">
@@ -43,7 +47,7 @@ export default function SpatialStrategyPanel({ state }: Props) {
           </div>
         </div>
 
-        <div className="flex gap-1">
+        <div className="game-tab-bar flex gap-1 overflow-x-auto">
           <TabButton active={tab === 'lanes'} onClick={() => setTab('lanes')}>
             🛰️ Shipping Lanes ({traffic.filter(t => t.bothLocationsUnlocked).length})
           </TabButton>
@@ -67,8 +71,8 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
-        active ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
+      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 whitespace-nowrap ${
+        active ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
       }`}
     >
       {children}
@@ -134,16 +138,29 @@ function LaneRow({ traffic, accent }: { traffic: LaneTraffic; accent: { text: st
   const { lane, playerShips, inTransit } = traffic;
   const fmtDays = (d: number) => d < 1 ? '<1 day' : d < 30 ? `${Math.round(d)} days` : d < 365 ? `${Math.round(d / 30)} mo` : `${(d / 365).toFixed(1)} yr`;
   return (
-    <div className="rounded bg-black/30 p-2.5">
+    <div className="route-card rounded bg-black/30 p-2.5">
       <div className="flex items-baseline justify-between gap-2">
         <div className="font-medium text-white text-sm truncate">
           {locationName(lane.from)} <span className="text-slate-500">↔</span> {locationName(lane.to)}
         </div>
-        <div className="flex gap-3 text-[10px] font-mono shrink-0">
-          <span className={accent.text}>Δv {lane.deltaV.toLocaleString()}</span>
+        <div className="flex gap-3 text-[10px] shrink-0">
+          <span className={`game-number ${accent.text}`}>Δv {lane.deltaV.toLocaleString()}</span>
           <span className="text-slate-500">{fmtDays(lane.travelDays)}</span>
         </div>
       </div>
+
+      {/* Route line — decorative engine-trail VFX marks active traffic on the lane */}
+      <div className="relative my-2 flex items-center gap-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-slate-600 shrink-0" aria-hidden="true" />
+        <div className="route-line flex-1" />
+        {inTransit > 0 && (
+          <div className="vfx-sprite vfx-pulse relative w-6 h-3 shrink-0" aria-hidden="true">
+            <Image src={EFFECT_ASSETS.engineTrail} alt="" fill className="object-contain" />
+          </div>
+        )}
+        <span className="w-1.5 h-1.5 rounded-full bg-slate-600 shrink-0" aria-hidden="true" />
+      </div>
+
       {lane.narrative && (
         <p className="text-slate-500 text-[10px] italic mt-1 leading-relaxed">{lane.narrative}</p>
       )}
@@ -158,7 +175,7 @@ function LaneRow({ traffic, accent }: { traffic: LaneTraffic; accent: { text: st
 function TrafficBadge({ label, value, tone }: { label: string; value: number; tone: 'active' | 'muted' }) {
   const color = tone === 'active' ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20' : 'text-slate-500 bg-white/[0.03] border-white/[0.05]';
   return (
-    <span className={`px-1.5 py-0.5 rounded border ${color} font-mono`}>
+    <span className={`px-1.5 py-0.5 rounded border ${color} game-number`}>
       {label}: <span className="font-bold">{value}</span>
     </span>
   );
@@ -196,15 +213,22 @@ function ChokepointsTab({ chokepoints }: { chokepoints: Chokepoint[] }) {
 
 function ChokepointSection({ title, severity, list, accent }: { title: string; severity: string; list: Chokepoint[]; accent: string }) {
   if (list.length === 0) return null;
+  const hudColor = severity === 'critical' ? 'hud-frame-red' : severity === 'major' ? 'hud-frame-amber' : '';
   return (
-    <div className={`rounded-lg border ${accent} p-3`}>
-      <div className="text-xs font-bold uppercase tracking-wider mb-2">{title} <span className="text-slate-500 font-normal normal-case">({list.length})</span></div>
+    <div className={`hud-frame ${hudColor} relative rounded-lg border ${accent} p-3`}>
+      {severity !== 'minor' && (
+        <>
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+        </>
+      )}
+      <div className="font-hud text-xs font-bold uppercase tracking-wider mb-2">{title} <span className="text-slate-500 font-normal normal-case">({list.length})</span></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {list.map(c => (
-          <div key={c.locationId} className="rounded bg-black/30 p-2">
+          <div key={c.locationId} className="chokepoint-card rounded bg-black/30 p-2 hover:bg-black/40">
             <div className="flex items-baseline justify-between gap-2">
               <span className="text-white text-sm font-bold truncate">{locationName(c.locationId)}</span>
-              <span className="font-mono text-[10px] text-slate-400 shrink-0">{c.laneCount} lanes</span>
+              <span className="game-number text-[10px] text-slate-400 shrink-0">{c.laneCount} lanes</span>
             </div>
             <div className="text-[10px] text-slate-500 mt-0.5">
               {c.laneCount >= 6 ? 'Every transit route touches here.' : c.laneCount >= 3 ? 'Regional hub.' : 'Terminal.'}
@@ -237,14 +261,16 @@ function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotRepo
 
       <div className="grid grid-cols-1 gap-3">
         {report.map(r => (
-          <div key={r.pool.locationId} className="card p-3">
+          <div key={r.pool.locationId} className="hud-frame relative card p-3">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-baseline justify-between mb-1">
               <div>
-                <h3 className="text-white font-bold text-sm">{r.pool.label}</h3>
+                <h3 className="font-hud text-white font-bold text-sm">{r.pool.label}</h3>
                 <div className="text-slate-500 text-[10px]">{locationName(r.pool.locationId)}</div>
               </div>
               <div className="text-right shrink-0">
-                <div className="text-cyan-300 font-mono text-sm font-bold">{r.playerOccupied} / {r.pool.totalSlots}</div>
+                <div className="game-number text-cyan-300 text-sm font-bold">{r.playerOccupied} / {r.pool.totalSlots}</div>
                 <div className="text-[10px] text-slate-500">your slots</div>
               </div>
             </div>

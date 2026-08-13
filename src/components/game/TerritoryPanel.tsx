@@ -1,7 +1,21 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
+import { LOCATION_ASSETS } from '@/lib/game/assets';
+
+// Zone slug → location-art mapping (zone.zoneId is the DB zone slug, e.g. "zone_leo")
+const ZONE_ART: Record<string, string> = {
+  zone_leo: LOCATION_ASSETS.leo,
+  zone_geo: LOCATION_ASSETS.geo,
+  zone_lunar: LOCATION_ASSETS.lunar_orbit,
+  zone_mars: LOCATION_ASSETS.mars_orbit,
+  zone_belt: LOCATION_ASSETS.asteroid_belt,
+  zone_jupiter: LOCATION_ASSETS.jupiter_system,
+  zone_saturn: LOCATION_ASSETS.saturn_system,
+  zone_outer: LOCATION_ASSETS.outer_system,
+};
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -251,91 +265,116 @@ function ZoneCard({ zone, onClick }: { zone: ZoneData; onClick: () => void }) {
   const isContested = zone.challenge !== null;
   const myShare = zone.myInfluence?.sharePct || 0;
 
+  const art = ZONE_ART[zone.zoneId];
+
   return (
     <button
       onClick={onClick}
       className={`
-        relative text-left rounded-lg p-4 transition-all hover:scale-[1.02] hover:brightness-110
+        chokepoint-card game-card min-h-[44px] relative text-left rounded-lg p-4 overflow-hidden
         ${isGoverned
-          ? 'bg-gradient-to-br from-yellow-900/30 to-gray-800/80 border-2 border-yellow-500/40'
+          ? 'hud-frame hud-frame-amber bg-gradient-to-br from-yellow-900/30 to-gray-800/80 border-2 border-yellow-500/40'
           : isContested
-            ? 'bg-gradient-to-br from-red-900/20 to-gray-800/80 border-2 border-red-500/30 animate-pulse-slow'
+            ? 'hud-frame hud-frame-red bg-gradient-to-br from-red-900/20 to-gray-800/80 border-2 border-red-500/30 animate-pulse-slow'
             : myShare > 0
               ? 'bg-gray-800/70 border border-gray-600/50 hover:border-gray-500/70'
               : 'bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/50 opacity-80'
         }
       `}
     >
+      {(isGoverned || isContested) && (
+        <>
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+        </>
+      )}
+      {/* Zone art backdrop */}
+      {art && (
+        <div className="absolute inset-0 pointer-events-none opacity-[0.12]" aria-hidden="true">
+          <Image src={art} alt="" fill className="object-cover" />
+        </div>
+      )}
+
       {/* Zone tier badge */}
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <h3 className="font-semibold text-white text-sm leading-tight">{zone.name}</h3>
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider">
-            {TIER_LABELS[zone.tier] || 'Unknown'} (T{zone.tier})
-          </span>
+      <div className="relative flex items-start justify-between mb-2">
+        <div className="flex items-center gap-2 min-w-0">
+          {art && (
+            <div className="sprite-frame w-8 h-8 flex-shrink-0 flex items-center justify-center">
+              <Image src={art} alt="" width={32} height={32} className="w-8 h-8 object-cover rounded" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <h3 className="font-hud font-semibold text-white text-sm leading-tight truncate">{zone.name}</h3>
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider">
+              {TIER_LABELS[zone.tier] || 'Unknown'} (T{zone.tier})
+            </span>
+          </div>
         </div>
         {isContested && (
-          <span className="text-xs bg-red-600/30 text-red-300 px-1.5 py-0.5 rounded border border-red-500/30 shrink-0">
-            CONTESTED
+          <span className="contested-chip text-red-300 bg-red-600/30 border-red-500/30 shrink-0">
+            <span aria-hidden="true">⚠</span> Contested
           </span>
         )}
       </div>
 
-      {/* Governor */}
-      <div className="text-xs text-gray-400 mb-2">
-        {zone.governor ? (
-          <>
-            Gov:{' '}
-            <span className={isGoverned ? 'text-yellow-300 font-medium' : 'text-gray-300'}>
-              {isGoverned ? 'You' : zone.governor.companyName}
-            </span>
-          </>
-        ) : (
-          <span className="text-gray-500">No Governor</span>
-        )}
-      </div>
-
-      {/* Influence Bar */}
-      <div className="mb-2">
-        <div className="flex items-center justify-between text-[10px] mb-1">
-          <span className="text-gray-400">Your influence</span>
-          <span className={myShare > 0 ? 'text-white font-medium' : 'text-gray-500'}>
-            {myShare > 0 ? `${myShare.toFixed(1)}%` : '--'}
-          </span>
-        </div>
-        <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${Math.min(100, myShare)}%`,
-              backgroundColor: zone.accentColor,
-              opacity: myShare > 0 ? 1 : 0,
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Status badge */}
-      {zone.myInfluence && zone.myInfluence.status !== 'none' && (
-        <div className="flex items-center gap-1">
-          {STATUS_BADGES[zone.myInfluence.status] && (
-            <span className={`text-[10px] px-1.5 py-0.5 rounded border ${STATUS_BADGES[zone.myInfluence.status].className}`}>
-              {STATUS_BADGES[zone.myInfluence.status].label}
-            </span>
+      {/* Remaining content — position:relative so it paints above the absolute art backdrop */}
+      <div className="relative">
+        {/* Governor */}
+        <div className="text-xs text-gray-400 mb-2">
+          {zone.governor ? (
+            <>
+              Gov:{' '}
+              <span className={isGoverned ? 'text-yellow-300 font-medium' : 'text-gray-300'}>
+                {isGoverned ? 'You' : zone.governor.companyName}
+              </span>
+            </>
+          ) : (
+            <span className="text-gray-500">No Governor</span>
           )}
         </div>
-      )}
 
-      {/* Challenge countdown */}
-      {isContested && zone.challenge && (
-        <div className="mt-2 text-[10px] text-red-300">
-          {zone.challenge.hoursRemaining.toFixed(0)}h remaining
+        {/* Influence Bar */}
+        <div className="mb-2">
+          <div className="flex items-center justify-between text-[10px] mb-1">
+            <span className="text-gray-400">Your influence</span>
+            <span className={myShare > 0 ? 'text-white font-medium' : 'text-gray-500'}>
+              {myShare > 0 ? `${myShare.toFixed(1)}%` : '--'}
+            </span>
+          </div>
+          <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${Math.min(100, myShare)}%`,
+                backgroundColor: zone.accentColor,
+                opacity: myShare > 0 ? 1 : 0,
+              }}
+            />
+          </div>
         </div>
-      )}
 
-      {/* Participants */}
-      <div className="mt-2 text-[10px] text-gray-500">
-        {zone.totalParticipants} player{zone.totalParticipants !== 1 ? 's' : ''} | {formatIp(zone.totalIp)} total IP
+        {/* Status badge */}
+        {zone.myInfluence && zone.myInfluence.status !== 'none' && (
+          <div className="flex items-center gap-1">
+            {STATUS_BADGES[zone.myInfluence.status] && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded border ${STATUS_BADGES[zone.myInfluence.status].className}`}>
+                {STATUS_BADGES[zone.myInfluence.status].label}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Challenge countdown */}
+        {isContested && zone.challenge && (
+          <div className="mt-2 text-[10px] text-red-300">
+            {zone.challenge.hoursRemaining.toFixed(0)}h remaining
+          </div>
+        )}
+
+        {/* Participants */}
+        <div className="mt-2 text-[10px] text-gray-500">
+          {zone.totalParticipants} player{zone.totalParticipants !== 1 ? 's' : ''} | {formatIp(zone.totalIp)} total IP
+        </div>
       </div>
     </button>
   );
@@ -371,32 +410,48 @@ function ZoneDetail({
     && myShare > 0
     && myIp >= (zone.governor.sharePct * 0.8); // Approximate check
 
+  const art = ZONE_ART[zone.zoneId];
+
   return (
     <div className="space-y-4">
       {/* Zone Header */}
       <div
-        className="rounded-lg p-4 border"
+        className={`hud-frame relative rounded-lg p-4 border overflow-hidden ${isContested ? 'hud-frame-red' : isGoverned ? 'hud-frame-amber' : ''}`}
         style={{
           borderColor: `${zone.accentColor}40`,
           background: `linear-gradient(135deg, ${zone.accentColor}10, transparent)`,
         }}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div>
-            <h3 className="text-lg font-bold text-white">{zone.name}</h3>
-            <span className="text-xs text-gray-400">
-              Tier {zone.tier} | {TIER_LABELS[zone.tier]}
-            </span>
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        {art && (
+          <div className="absolute inset-0 pointer-events-none opacity-[0.14]" aria-hidden="true">
+            <Image src={art} alt="" fill className="object-cover" />
+          </div>
+        )}
+        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
+            {art && (
+              <div className="sprite-frame holo-sprite w-12 h-12 flex-shrink-0 flex items-center justify-center">
+                <Image src={art} alt="" width={48} height={48} className="w-12 h-12 object-cover rounded" />
+              </div>
+            )}
+            <div>
+              <h3 className="font-hud text-lg font-bold text-white">{zone.name}</h3>
+              <span className="text-xs text-gray-400">
+                Tier {zone.tier} | {TIER_LABELS[zone.tier]}
+              </span>
+            </div>
           </div>
           {isContested && (
-            <span className="text-sm bg-red-600/20 text-red-300 px-3 py-1 rounded-full border border-red-500/30">
-              GOVERNANCE CONTESTED
+            <span className="contested-chip text-sm text-red-300 bg-red-600/20 border-red-500/30 px-3 py-1" style={{ fontSize: '12px' }}>
+              <span aria-hidden="true">⚠</span> Governance Contested
             </span>
           )}
         </div>
 
         {/* Governor info */}
-        <div className="mt-3 text-sm">
+        <div className="relative mt-3 text-sm">
           {zone.governor ? (
             <div className="text-gray-300">
               Governor:{' '}
@@ -414,7 +469,7 @@ function ZoneDetail({
 
         {/* Challenge info */}
         {zone.challenge && (
-          <div className="mt-2 bg-red-900/20 rounded p-2 border border-red-500/20 text-sm">
+          <div className="relative mt-2 bg-red-900/20 rounded p-2 border border-red-500/20 text-sm">
             <p className="text-red-300">
               Challenger: <span className="font-medium text-red-200">{zone.challenge.challengerName}</span>
             </p>
@@ -437,7 +492,7 @@ function ZoneDetail({
             {zone.topInfluencers.map((inf, i) => (
               <div
                 key={inf.profileId || i}
-                className="flex items-center gap-3"
+                className="holo-row flex items-center gap-3 rounded-lg px-1.5 py-1"
               >
                 <span className="text-xs text-gray-500 w-5 text-right">{i + 1}.</span>
                 <div className="flex-1 min-w-0">

@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { EFFECT_ASSETS } from '@/lib/game/assets';
 import {
   ESPIONAGE_ACTIONS,
   SECURITY_LEVELS,
@@ -288,15 +290,22 @@ export default function EspionagePanel({ state }: EspionagePanelProps) {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <h2 className="text-xl font-bold text-white">
-          Intelligence Operations
-        </h2>
+      <div className="hud-frame hud-frame-red relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-xl border border-red-900/30 bg-red-950/10 px-4 py-3">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="flex items-center gap-2">
+          <div className="vfx-sprite vfx-pulse relative w-8 h-8 flex-shrink-0" aria-hidden="true">
+            <Image src={EFFECT_ASSETS.shield} alt="" fill className="object-contain" />
+          </div>
+          <h2 className="font-hud text-xl font-bold text-white tracking-wide">
+            Intelligence Operations
+          </h2>
+        </div>
         {espState && (
           <div className="flex items-center gap-4 text-sm">
             <span className="text-gray-400">
               Actions Today:{' '}
-              <span className={espState.actions.remaining > 0 ? 'text-amber-400' : 'text-red-400'}>
+              <span className={`game-number ${espState.actions.remaining > 0 ? 'text-amber-400' : 'text-red-400'}`}>
                 {espState.actions.actionsToday}/{espState.actions.maxActionsPerDay}
               </span>
             </span>
@@ -323,14 +332,14 @@ export default function EspionagePanel({ state }: EspionagePanelProps) {
       )}
 
       {/* Sub-tab navigation */}
-      <div className="flex gap-1 bg-gray-800/50 p-1 rounded-lg overflow-x-auto">
+      <div className="game-tab-bar flex gap-1 bg-gray-800/50 p-1 rounded-lg overflow-x-auto">
         {(['operations', 'reports', 'security', 'history'] as SubTab[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setSubTab(tab)}
-            className={`flex-1 min-w-[80px] px-3 py-2 rounded text-sm font-medium transition-colors whitespace-nowrap ${
+            className={`flex-1 min-w-[80px] px-3 py-2 rounded text-sm font-medium transition-colors whitespace-nowrap min-h-[44px] ${
               subTab === tab
-                ? 'bg-red-900/60 text-red-300 border border-red-700/40'
+                ? 'game-tab-active bg-red-900/60 text-red-300 border border-red-700/40'
                 : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
             }`}
           >
@@ -395,8 +404,10 @@ function OperationsTab({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* Target Selector (Left) */}
-      <div className="bg-gray-800/40 rounded-lg border border-gray-700/50 p-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-3">Select Target</h3>
+      <div className="hud-frame relative bg-gray-800/40 rounded-lg border border-gray-700/50 p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <h3 className="font-hud text-sm font-semibold text-gray-300 mb-3">Select Target</h3>
 
         {/* Search */}
         <input
@@ -416,7 +427,7 @@ function OperationsTab({
               <button
                 key={target.profileId}
                 onClick={() => onSelectTarget(selectedTarget?.profileId === target.profileId ? null : target)}
-                className={`w-full text-left px-3 py-2 rounded transition-colors ${
+                className={`game-card w-full text-left px-3 py-2 rounded transition-colors min-h-[44px] ${
                   selectedTarget?.profileId === target.profileId
                     ? 'bg-red-900/40 border border-red-700/40'
                     : 'bg-gray-900/30 border border-transparent hover:bg-gray-700/40 hover:border-gray-600/30'
@@ -450,8 +461,10 @@ function OperationsTab({
       </div>
 
       {/* Action Panel (Right) */}
-      <div className="bg-gray-800/40 rounded-lg border border-gray-700/50 p-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-3">
+      <div className="hud-frame hud-frame-red relative bg-gray-800/40 rounded-lg border border-gray-700/50 p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <h3 className="font-hud text-sm font-semibold text-gray-300 mb-3">
           {selectedTarget ? `Operations vs ${selectedTarget.companyName}` : 'Select a target'}
         </h3>
 
@@ -486,12 +499,15 @@ function OperationsTab({
               return (
                 <div
                   key={actionType}
-                  className={`p-3 rounded border transition-colors ${
+                  className={`intel-dossier relative p-3 rounded border transition-colors ${
                     isDisabled
                       ? 'bg-gray-900/30 border-gray-700/30 opacity-60'
                       : 'bg-gray-900/50 border-gray-600/40 hover:border-red-700/40'
                   }`}
                 >
+                  {!isDisabled && !isSelfTargeted && (
+                    <span className="dossier-stamp" aria-hidden="true">Classified</span>
+                  )}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className="w-8 h-8 flex items-center justify-center text-xs font-bold bg-red-900/40 text-red-400 rounded border border-red-800/40">
@@ -502,7 +518,7 @@ function OperationsTab({
                         <div className="text-xs text-gray-500">{action.description.substring(0, 80)}...</div>
                       </div>
                     </div>
-                    <span className="text-xs text-amber-400 whitespace-nowrap font-mono">
+                    <span className="game-number text-xs text-amber-400 whitespace-nowrap">
                       {formatMoney(cost)}
                     </span>
                   </div>
@@ -529,13 +545,18 @@ function OperationsTab({
                   <button
                     onClick={() => onExecute(actionType)}
                     disabled={isDisabled}
-                    className={`mt-2 w-full py-1.5 rounded text-xs font-semibold transition-colors ${
+                    className={`game-btn relative mt-2 w-full py-2.5 min-h-[44px] rounded text-xs font-semibold transition-colors overflow-hidden ${
                       isDisabled
                         ? 'bg-gray-700/40 text-gray-500 cursor-not-allowed'
                         : 'bg-red-900/60 text-red-300 hover:bg-red-800/60 border border-red-700/40'
                     }`}
                   >
-                    {executing ? 'Executing...' : isSelfTargeted ? 'ACTIVATE' : 'LAUNCH OPERATION'}
+                    {!isDisabled && (
+                      <span className="vfx-sprite absolute -right-1 -top-1 w-6 h-6 opacity-30" aria-hidden="true">
+                        <Image src={EFFECT_ASSETS.beamWeapon} alt="" fill className="object-contain" />
+                      </span>
+                    )}
+                    <span className="relative">{executing ? 'Executing...' : isSelfTargeted ? 'ACTIVATE' : 'LAUNCH OPERATION'}</span>
                   </button>
                 </div>
               );
@@ -580,8 +601,9 @@ function ReportsTab({ espState }: { espState: EspionageState | null }) {
         return (
           <div
             key={report.missionId}
-            className={`bg-gray-900/50 rounded-lg border p-4 ${borderColor} ${report.isStale ? 'opacity-60' : ''}`}
+            className={`intel-dossier relative rounded-lg border p-4 ${borderColor} ${report.isStale ? 'opacity-60' : ''}`}
           >
+            <span className="dossier-stamp" aria-hidden="true">{report.isStale ? 'Expired' : 'Intel'}</span>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold bg-red-900/40 text-red-400 px-1.5 py-0.5 rounded">
@@ -663,10 +685,17 @@ function SecurityTab({
   return (
     <div className="space-y-4">
       {/* Security Level Panel */}
-      <div className="bg-gray-800/40 rounded-lg border border-gray-700/50 p-4">
+      <div className="hud-frame hud-frame-red relative bg-gray-800/40 rounded-lg border border-gray-700/50 p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-300">Corporate Security</h3>
-          <span className="text-sm text-amber-400 font-mono">Level {currentLevel}/10</span>
+          <div className="flex items-center gap-2">
+            <div className="vfx-sprite relative w-6 h-6 flex-shrink-0" aria-hidden="true">
+              <Image src={EFFECT_ASSETS.shield} alt="" fill className="object-contain" />
+            </div>
+            <h3 className="font-hud text-sm font-semibold text-gray-300">Corporate Security</h3>
+          </div>
+          <span className="game-number text-sm text-amber-400">Level {currentLevel}/10</span>
         </div>
 
         {/* Progress bar */}
@@ -821,7 +850,7 @@ function HistoryTab({ espState }: { espState: EspionageState | null }) {
           return (
             <div
               key={m.id}
-              className="grid grid-cols-2 sm:grid-cols-6 gap-2 px-4 py-2.5 text-xs hover:bg-gray-800/40 transition-colors"
+              className="holo-row grid grid-cols-2 sm:grid-cols-6 gap-2 px-4 py-2.5 text-xs transition-colors"
             >
               <span className="text-gray-300 font-medium truncate">{actionDef?.name || m.actionType}</span>
               <span className="text-gray-400 truncate">{m.targetCompanyName}</span>

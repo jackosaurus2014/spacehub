@@ -1,15 +1,26 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { formatMoney } from '@/lib/game/formulas';
+import { EFFECT_ASSETS } from '@/lib/game/assets';
 import {
   TIER_NAMES,
   TIER_THRESHOLDS,
   formatMPP,
   formatNumber,
 } from '@/lib/game/mega-projects';
+
+// Rank → medal frame class (top-3 get a glowing circular mount; matches Wave-3
+// Leaderboard/League treatment for cross-panel consistency).
+function rankMedalClass(rank: number): string {
+  if (rank === 1) return 'rank-medal rank-medal-gold';
+  if (rank === 2) return 'rank-medal rank-medal-silver';
+  if (rank === 3) return 'rank-medal rank-medal-bronze';
+  return '';
+}
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -362,11 +373,16 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
   return (
     <div className="space-y-4">
       {/* ── Project Banner ─────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-slate-900/50 to-purple-500/10 p-4 sm:p-5">
+      <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-slate-900/50 to-purple-500/10 p-4 sm:p-5 overflow-hidden">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="vfx-sprite vfx-pulse absolute right-3 top-3 w-10 h-10 pointer-events-none" aria-hidden="true">
+          <Image src={EFFECT_ASSETS.warpJump} alt="" fill className="object-contain" />
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+              <span className="font-hud text-xs font-bold uppercase tracking-wider text-amber-400">
                 Mega-Project
               </span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -384,7 +400,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
             <p className="text-slate-400 text-xs mt-1 max-w-lg">{project.description}</p>
           </div>
           <div className="text-right shrink-0">
-            <p className="text-amber-300 text-sm font-mono">{countdown}</p>
+            <p className="timer-hud timer-hud-live text-amber-300 text-sm">{countdown}</p>
             <p className="text-slate-500 text-xs">{formatCountdownDays(project.daysRemaining)}</p>
           </div>
         </div>
@@ -401,13 +417,13 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
           </div>
           <div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-white/[0.06]">
             <div
-              className={`h-full rounded-full transition-all duration-700 ${progressBarColor(project.completionPct)} shadow-lg`}
+              className={`game-progress-shimmer h-full rounded-full transition-all duration-700 ${progressBarColor(project.completionPct)} shadow-lg`}
               style={{ width: `${Math.min(100, project.completionPct)}%` }}
             />
           </div>
         </div>
 
-        {/* Phase Segments */}
+        {/* Phase Segments — season-track-style progress nodes */}
         <div className="mt-3 flex gap-1">
           {phases.map((phase) => {
             const pct = phase.isComplete ? 100 : phase.isLocked ? 0 : (() => {
@@ -425,7 +441,9 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
                 <div className="text-[10px] text-center text-slate-500 mb-0.5">
                   P{phase.phase} {phase.isComplete ? '(Done)' : phase.isLocked ? '(Locked)' : ''}
                 </div>
-                <div className="h-2 bg-slate-800 rounded-full overflow-hidden border border-white/[0.04]">
+                <div className={`season-node h-2 bg-slate-800 rounded-full overflow-hidden border border-white/[0.04] ${
+                  phase.isComplete ? 'season-node-claimed' : phase.isCurrent ? 'season-node-current' : ''
+                }`}>
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       phase.isComplete ? 'bg-green-500' :
@@ -441,17 +459,17 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
         </div>
 
         {/* Quick Stats */}
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
+        <div className="relative mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
           {player.rank && (
-            <span>Your rank: <span className="text-amber-300 font-medium">#{player.rank}</span></span>
+            <span>Your rank: <span className="game-number text-amber-300 font-medium">#{player.rank}</span></span>
           )}
           <span>Tier: <span className="text-amber-300 font-medium">{player.tierName}</span></span>
-          <span>MPP: <span className="text-amber-300 font-medium">{formatMPP(player.totalMpp)}</span></span>
+          <span>MPP: <span className="game-number text-amber-300 font-medium">{formatMPP(player.totalMpp)}</span></span>
         </div>
       </div>
 
       {/* ── Sub-Tab Navigation ─────────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-1.5">
+      <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto">
         {([
           { id: 'overview' as SubTab, label: 'Overview', icon: '📊' },
           { id: 'contribute' as SubTab, label: 'Contribute', icon: '🔨' },
@@ -461,9 +479,9 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
           <button
             key={tab.id}
             onClick={() => setSubTab(tab.id)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
               subTab === tab.id
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                ? 'game-tab-active bg-amber-500/20 text-amber-300 border border-amber-500/30'
                 : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
             }`}
           >
@@ -479,8 +497,10 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
         <div className="space-y-4">
           {/* Current Phase Detail */}
           {currentPhase && (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <h3 className="text-white font-semibold text-sm mb-3">
+            <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
+              <h3 className="font-hud text-white font-semibold text-sm mb-3">
                 Phase {currentPhase.phase}: {currentPhase.name}
               </h3>
 
@@ -533,7 +553,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
               {phases.map(phase => (
                 <div
                   key={phase.phase}
-                  className={`flex items-center gap-3 p-2 rounded-lg ${
+                  className={`holo-row flex items-center gap-3 p-2 rounded-lg ${
                     phase.isCurrent ? 'bg-amber-500/10 border border-amber-500/20' :
                     phase.isComplete ? 'bg-green-500/5 border border-green-500/10' :
                     'bg-white/[0.02] border border-white/[0.04]'
@@ -573,8 +593,10 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
           </div>
 
           {/* Permanent Bonus Preview */}
-          <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
-            <h3 className="text-purple-300 font-semibold text-sm mb-1">Completion Reward</h3>
+          <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <h3 className="font-hud text-purple-300 font-semibold text-sm mb-1">Completion Reward</h3>
             <p className="text-white text-sm">{project.permanentBonus.label}</p>
             <p className="text-slate-400 text-xs mt-1">
               This bonus is permanent and benefits ALL players in the galaxy, forever.
@@ -591,15 +613,17 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
               ) : (
                 <div className="space-y-1">
                   {compact.alliances.map(a => (
-                    <div key={a.rank} className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400">
-                        <span className={`font-bold ${a.rank <= 3 ? 'text-amber-400' : 'text-slate-500'}`}>
-                          #{a.rank}
-                        </span>{' '}
-                        <span className="text-slate-500">[{a.allianceTag}]</span>{' '}
-                        <span className="text-white">{a.allianceName}</span>
+                    <div key={a.rank} className="holo-row flex items-center gap-2 justify-between text-xs rounded px-1 py-0.5">
+                      <span className="flex items-center gap-1.5 text-slate-400 min-w-0">
+                        {a.rank <= 3 ? (
+                          <span className={`${rankMedalClass(a.rank)} w-5 h-5 text-[10px] font-bold text-amber-100 shrink-0`}>{a.rank}</span>
+                        ) : (
+                          <span className="font-bold text-slate-500 w-5 text-right shrink-0">#{a.rank}</span>
+                        )}
+                        <span className="text-slate-500 shrink-0">[{a.allianceTag}]</span>
+                        <span className="text-white truncate">{a.allianceName}</span>
                       </span>
-                      <span className="text-amber-300 font-mono">{formatMPP(a.totalMpp)}</span>
+                      <span className="game-number text-amber-300 shrink-0">{formatMPP(a.totalMpp)}</span>
                     </div>
                   ))}
                 </div>
@@ -622,17 +646,19 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
               ) : (
                 <div className="space-y-1">
                   {compact.individuals.slice(0, 10).map(ind => (
-                    <div key={ind.rank} className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400 truncate mr-2">
-                        <span className={`font-bold ${ind.rank <= 3 ? 'text-amber-400' : 'text-slate-500'}`}>
-                          #{ind.rank}
-                        </span>{' '}
-                        <span className="text-white">{ind.companyName}</span>
+                    <div key={ind.rank} className="holo-row flex items-center gap-2 justify-between text-xs rounded px-1 py-0.5">
+                      <span className="flex items-center gap-1.5 text-slate-400 min-w-0">
+                        {ind.rank <= 3 ? (
+                          <span className={`${rankMedalClass(ind.rank)} w-5 h-5 text-[10px] font-bold text-amber-100 shrink-0`}>{ind.rank}</span>
+                        ) : (
+                          <span className="font-bold text-slate-500 w-5 text-right shrink-0">#{ind.rank}</span>
+                        )}
+                        <span className="text-white truncate">{ind.companyName}</span>
                         {ind.allianceTag && (
-                          <span className="text-slate-600 ml-1">[{ind.allianceTag}]</span>
+                          <span className="text-slate-600 shrink-0">[{ind.allianceTag}]</span>
                         )}
                       </span>
-                      <span className="text-amber-300 font-mono shrink-0">{formatMPP(ind.totalMpp)}</span>
+                      <span className="game-number text-amber-300 shrink-0">{formatMPP(ind.totalMpp)}</span>
                     </div>
                   ))}
                 </div>
@@ -651,8 +677,10 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
       {/* CONTRIBUTE */}
       {subTab === 'contribute' && currentPhase && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-            <h3 className="text-amber-300 font-semibold text-sm mb-1">
+          <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <h3 className="font-hud text-amber-300 font-semibold text-sm mb-1">
               Contribute to Phase {currentPhase.phase}: {currentPhase.name}
             </h3>
             <p className="text-slate-400 text-xs">
@@ -677,7 +705,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
               </div>
               <button
                 onClick={setCashMax}
-                className="px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium hover:bg-amber-500/20 transition-colors"
+                className="game-btn min-h-[44px] px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium hover:bg-amber-500/20 transition-colors"
               >
                 Max (10%)
               </button>
@@ -755,13 +783,18 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
           <button
             onClick={handleContribute}
             disabled={contributing}
-            className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${
+            className={`game-btn relative min-h-[44px] w-full py-3 rounded-xl font-semibold text-sm transition-all overflow-hidden ${
               contributing
                 ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
                 : 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:from-amber-400 hover:to-yellow-400 shadow-lg shadow-amber-500/20'
             }`}
           >
-            {contributing ? 'Contributing...' : 'Contribute to Mega-Project'}
+            {!contributing && (
+              <span className="vfx-sprite absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 opacity-30" aria-hidden="true">
+                <Image src={EFFECT_ASSETS.miningLaser} alt="" fill className="object-contain" />
+              </span>
+            )}
+            <span className="relative">{contributing ? 'Contributing...' : 'Contribute to Mega-Project'}</span>
           </button>
         </div>
       )}
@@ -824,7 +857,9 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
       {subTab === 'progress' && (
         <div className="space-y-4">
           {/* Tier Card */}
-          <div className="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-slate-900/50 p-5">
+          <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-slate-900/50 p-5">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-center gap-3 mb-3">
               <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-lg">
                 {player.tier === 0 ? '👁' :
@@ -855,7 +890,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
                 </div>
                 <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-white/[0.06]">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-500"
+                    className="game-progress-shimmer h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-500"
                     style={{ width: `${player.progressToNext * 100}%` }}
                   />
                 </div>
@@ -924,7 +959,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
                 return (
                   <div
                     key={i}
-                    className={`flex items-center gap-2 p-2 rounded-lg text-xs ${
+                    className={`holo-row flex items-center gap-2 p-2 rounded-lg text-xs ${
                       isCurrent ? 'bg-amber-500/10 border border-amber-500/20' :
                       reached ? 'bg-green-500/5 border border-green-500/10' :
                       'bg-white/[0.01] border border-white/[0.04]'
@@ -1028,8 +1063,11 @@ function LeaderboardAlliances({ data }: { data: Record<string, unknown> }) {
   if (!alliances) return null;
 
   return (
-    <div className="rounded-xl border border-white/[0.06] overflow-hidden">
-      <table className="w-full text-xs">
+    <div className="hud-frame relative rounded-xl border border-white/[0.06] overflow-hidden">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
+      <div className="overflow-x-auto">
+      <table className="holo-table w-full text-xs">
         <thead>
           <tr className="bg-white/[0.03]">
             <th className="text-left text-slate-500 font-medium py-2 px-3 w-10">#</th>
@@ -1040,16 +1078,13 @@ function LeaderboardAlliances({ data }: { data: Record<string, unknown> }) {
         </thead>
         <tbody>
           {alliances.byTotal.map((entry) => (
-            <tr key={entry.rank} className="border-t border-white/[0.04] hover:bg-white/[0.02]">
+            <tr key={entry.rank} className="holo-row border-t border-white/[0.04]">
               <td className="py-2 px-3">
-                <span className={`font-bold ${
-                  entry.rank === 1 ? 'text-amber-400' :
-                  entry.rank === 2 ? 'text-slate-300' :
-                  entry.rank === 3 ? 'text-amber-600' :
-                  'text-slate-500'
-                }`}>
-                  {entry.rank}
-                </span>
+                {entry.rank <= 3 ? (
+                  <span className={`${rankMedalClass(entry.rank)} w-6 h-6 text-[10px] font-bold text-amber-100`}>{entry.rank}</span>
+                ) : (
+                  <span className="font-bold text-slate-500">{entry.rank}</span>
+                )}
               </td>
               <td className="py-2 px-3">
                 <span className="text-slate-500">[{entry.allianceTag}]</span>{' '}
@@ -1057,15 +1092,16 @@ function LeaderboardAlliances({ data }: { data: Record<string, unknown> }) {
                 <span className="text-slate-600 ml-1 text-[10px]">{entry.memberCount}m</span>
               </td>
               <td className="py-2 px-3 text-right">
-                <span className="text-amber-300 font-mono">{formatMPP(entry.totalMpp)}</span>
+                <span className="game-number text-amber-300">{formatMPP(entry.totalMpp)}</span>
               </td>
               <td className="py-2 px-3 text-right hidden sm:table-cell">
-                <span className="text-slate-400 font-mono">{formatMPP(entry.perCapitaMpp)}</span>
+                <span className="game-number text-slate-400">{formatMPP(entry.perCapitaMpp)}</span>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
       {alliances.playerAlliance && (
         <div className="bg-amber-500/5 border-t border-amber-500/20 px-3 py-2 text-xs">
           <span className="text-slate-400">Your alliance: </span>
@@ -1095,8 +1131,11 @@ function LeaderboardIndividuals({ data }: { data: Record<string, unknown> }) {
   if (!individuals) return null;
 
   return (
-    <div className="rounded-xl border border-white/[0.06] overflow-hidden">
-      <table className="w-full text-xs">
+    <div className="hud-frame relative rounded-xl border border-white/[0.06] overflow-hidden">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
+      <div className="overflow-x-auto">
+      <table className="holo-table w-full text-xs">
         <thead>
           <tr className="bg-white/[0.03]">
             <th className="text-left text-slate-500 font-medium py-2 px-3 w-10">#</th>
@@ -1108,21 +1147,14 @@ function LeaderboardIndividuals({ data }: { data: Record<string, unknown> }) {
           {individuals.entries.map((entry) => (
             <tr
               key={entry.rank}
-              className={`border-t border-white/[0.04] ${
-                entry.isYou
-                  ? 'bg-amber-500/5 hover:bg-amber-500/10'
-                  : 'hover:bg-white/[0.02]'
-              }`}
+              className={`holo-row border-t border-white/[0.04] ${entry.isYou ? 'holo-row-you' : ''}`}
             >
               <td className="py-2 px-3">
-                <span className={`font-bold ${
-                  entry.rank === 1 ? 'text-amber-400' :
-                  entry.rank === 2 ? 'text-slate-300' :
-                  entry.rank === 3 ? 'text-amber-600' :
-                  'text-slate-500'
-                }`}>
-                  {entry.rank}
-                </span>
+                {entry.rank <= 3 ? (
+                  <span className={`${rankMedalClass(entry.rank)} w-6 h-6 text-[10px] font-bold text-amber-100`}>{entry.rank}</span>
+                ) : (
+                  <span className="font-bold text-slate-500">{entry.rank}</span>
+                )}
               </td>
               <td className="py-2 px-3">
                 <span className={`font-medium ${entry.isYou ? 'text-amber-300' : 'text-white'}`}>
@@ -1138,7 +1170,7 @@ function LeaderboardIndividuals({ data }: { data: Record<string, unknown> }) {
                 )}
               </td>
               <td className="py-2 px-3 text-right">
-                <span className={`font-mono ${entry.isYou ? 'text-amber-300' : 'text-amber-300'}`}>
+                <span className="game-number text-amber-300">
                   {formatMPP(entry.totalMpp)}
                 </span>
               </td>
@@ -1146,6 +1178,7 @@ function LeaderboardIndividuals({ data }: { data: Record<string, unknown> }) {
           ))}
         </tbody>
       </table>
+      </div>
       {individuals.playerRank && !individuals.entries.some(e => e.isYou) && (
         <div className="bg-amber-500/5 border-t border-amber-500/20 px-3 py-2 text-xs">
           <span className="text-slate-400">Your rank: </span>

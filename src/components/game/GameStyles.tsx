@@ -746,6 +746,123 @@ export default function GameStyles() {
       @media (prefers-reduced-motion: reduce) {
         .timer-hud-live { animation: none; }
       }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE 4 — INTEL / TERRITORY / SPATIAL / MODULE / ANOMALY / MEGAPROJECT
+         CHROME. Shared by Espionage, Territory, Spatial Strategy, Modules,
+         Anomalies, Mega-Project and Megastructure panels.
+         ═══════════════════════════════════════════════════════════════════ */
+
+      /* Intel dossier card — classified-briefing treatment for espionage ops */
+      .intel-dossier {
+        position: relative;
+        background: linear-gradient(160deg, rgba(20, 6, 6, 0.5), rgba(10, 10, 20, 0.85));
+      }
+      .dossier-stamp {
+        position: absolute;
+        top: 8px;
+        right: 6px;
+        transform: rotate(6deg);
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        color: rgba(248, 113, 113, 0.85);
+        background: rgba(239, 68, 68, 0.08);
+        border-radius: 3px;
+        pointer-events: none;
+      }
+
+      /* VFX sprite accents — purely decorative, never load-bearing information */
+      .vfx-sprite {
+        pointer-events: none;
+        opacity: 0.55;
+      }
+      @keyframes vfx-pulse {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50%      { opacity: 0.6; transform: scale(1.04); }
+      }
+      .vfx-pulse { animation: vfx-pulse 3.6s ease-in-out infinite; }
+      @media (prefers-reduced-motion: reduce) {
+        .vfx-pulse { animation: none; opacity: 0.45; }
+      }
+
+      /* Chokepoint / territory control cards */
+      .chokepoint-card {
+        position: relative;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+      .contested-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border-width: 1px;
+        border-style: solid;
+      }
+
+      /* Delta-v route cards — Spatial Strategy lane rows */
+      .route-card {
+        position: relative;
+        overflow: hidden;
+      }
+      .route-line {
+        position: relative;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(34,211,238,0.5), rgba(139,92,246,0.5));
+        border-radius: 2px;
+      }
+
+      /* Module fitting socket — holo mount for ModulesPanel hardpoint slots */
+      .module-socket {
+        position: relative;
+        border-radius: 10px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .module-socket-filled {
+        box-shadow: 0 0 12px rgba(34, 211, 238, 0.15), inset 0 0 0 1px rgba(34, 211, 238, 0.15);
+      }
+      .module-socket-empty {
+        background: repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 6px, transparent 6px 12px);
+      }
+
+      /* Holo table — replaces plain <table> chrome in ranking / contribution lists */
+      .holo-table {
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+      .holo-table thead th {
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 9px;
+      }
+      .holo-table tbody tr {
+        transition: background 0.2s ease;
+      }
+      .holo-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      /* Mega-project phase track — season-pass-style horizontal progress track */
+      .phase-track-node {
+        position: relative;
+      }
+      .phase-track-node-complete {
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+      }
+      .phase-track-node-current {
+        animation: glow-pulse-amber 2s ease-in-out infinite;
+      }
     `}</style>
   );
 }

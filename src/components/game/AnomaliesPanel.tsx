@@ -1,10 +1,22 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import { stakeClaim, formatAnomalyRewards, rollAnomalyDiscovery, recordDiscovery, type AnomalyKind } from '@/lib/game/exploration';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { formatMoney } from '@/lib/game/formulas';
+import { PLANET_ASSETS, EFFECT_ASSETS } from '@/lib/game/assets';
+
+const KIND_ART: Record<AnomalyKind, string> = {
+  rich_deposit: PLANET_ASSETS.asteroid_field,
+  ancient_artifact: PLANET_ASSETS.ancient_ruins,
+  derelict_ship: PLANET_ASSETS.nebula,
+  uncharted_asteroid: PLANET_ASSETS.asteroid_field,
+  hazard_zone: PLANET_ASSETS.lava,
+  alien_signal: PLANET_ASSETS.anomaly,
+  gravitational_lens: PLANET_ASSETS.black_hole,
+};
 
 interface Props {
   state: GameState;
@@ -47,10 +59,12 @@ export default function AnomaliesPanel({ state, setState }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="card p-4">
+      <div className="hud-frame relative card p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
-            <h2 className="text-white text-base font-bold flex items-center gap-2">
+            <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
               <span className="text-sky-400">🔭</span> Discoveries & Claims
             </h2>
             <p className="text-slate-500 text-xs mt-0.5">
@@ -61,7 +75,7 @@ export default function AnomaliesPanel({ state, setState }: Props) {
           </div>
         </div>
 
-        <div className="flex gap-1 flex-wrap">
+        <div className="game-tab-bar flex gap-1 flex-wrap overflow-x-auto">
           <TabButton active={tab === 'known'} onClick={() => setTab('known')}>🔍 Unclaimed ({known.length})</TabButton>
           <TabButton active={tab === 'claimed'} onClick={() => setTab('claimed')}>📌 Claimed ({claimed.length})</TabButton>
           <TabButton active={tab === 'manual'} onClick={() => setTab('manual')}>🎲 Dev tools</TabButton>
@@ -79,8 +93,8 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
-        active ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
+      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 whitespace-nowrap ${
+        active ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
       }`}
     >
       {children}
@@ -106,35 +120,50 @@ function KnownTab({ state, setState, anomalies, now }: { state: GameState; setSt
         const fadeRemaining = a.fadesAtMs - now;
         const fadeDays = Math.max(0, Math.floor(fadeRemaining / (24 * 60 * 60 * 1000)));
         const locName = LOCATION_MAP.get(a.locationId)?.name || a.locationId;
+        const art = KIND_ART[kind];
         return (
-          <div key={a.id} className={`rounded-xl border-2 ${KIND_ACCENT[kind]} p-3`} style={{ background: '#0a0a1a' }}>
-            <div className="flex items-start gap-2 mb-2">
-              <span className="text-3xl shrink-0" aria-hidden="true">{KIND_ICON[kind]}</span>
+          <div key={a.id} className={`game-card relative rounded-xl border-2 overflow-hidden ${KIND_ACCENT[kind]} p-3`} style={{ background: '#0a0a1a' }}>
+            {art && (
+              <div className="absolute inset-0 pointer-events-none opacity-[0.1]" aria-hidden="true">
+                <Image src={art} alt="" fill className="object-cover" />
+              </div>
+            )}
+            <div className="relative flex items-start gap-2 mb-2">
+              <div className="sprite-frame holo-sprite w-12 h-12 flex-shrink-0 flex items-center justify-center">
+                {art ? (
+                  <Image src={art} alt="" width={48} height={48} className="w-11 h-11 object-cover rounded" />
+                ) : (
+                  <span className="text-3xl" aria-hidden="true">{KIND_ICON[kind]}</span>
+                )}
+              </div>
               <div className="flex-1 min-w-0">
                 <div className={`text-[9px] uppercase tracking-wider font-bold ${KIND_ACCENT[kind].split(' ').find(c => c.startsWith('text-'))}`}>
-                  {kind.replace(/_/g, ' ')}
+                  <span aria-hidden="true">{KIND_ICON[kind]}</span> {kind.replace(/_/g, ' ')}
                 </div>
                 <h3 className="text-white text-sm font-bold leading-tight">{a.title}</h3>
                 <p className="text-slate-500 text-[10px]">{locName}</p>
               </div>
             </div>
 
-            <p className="text-slate-400 text-[11px] leading-relaxed mb-2">{a.summary}</p>
+            <p className="relative text-slate-400 text-[11px] leading-relaxed mb-2">{a.summary}</p>
 
-            <div className="rounded bg-black/30 p-2 mb-2">
+            <div className="relative rounded bg-black/30 p-2 mb-2">
               <div className="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Rewards on claim</div>
               <div className="text-[11px] text-slate-200">{formatAnomalyRewards(a as any)}</div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="relative flex items-center justify-between">
               <span className="text-[10px] text-slate-500">
                 Fades in <span className={fadeDays < 3 ? 'text-amber-300 font-bold' : 'text-slate-300'}>{fadeDays} days</span>
               </span>
               <button
                 onClick={() => setState(prev => prev ? stakeClaim(prev, a.id) : prev)}
-                className="px-3 py-1.5 rounded text-[11px] font-bold bg-cyan-500 text-black hover:bg-cyan-400 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                className="game-btn relative min-h-[44px] px-3 py-1.5 rounded text-[11px] font-bold bg-cyan-500 text-black hover:bg-cyan-400 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 overflow-hidden"
               >
-                Stake claim
+                <span className="vfx-sprite absolute -right-1 -top-1 w-6 h-6 opacity-25" aria-hidden="true">
+                  <Image src={EFFECT_ASSETS.warpJump} alt="" fill className="object-contain" />
+                </span>
+                <span className="relative">Stake claim</span>
               </button>
             </div>
           </div>
@@ -158,9 +187,16 @@ function ClaimedTab({ anomalies }: { anomalies: NonNullable<GameState['knownAnom
         {anomalies.map(a => {
           const kind = a.kind as AnomalyKind;
           const locName = LOCATION_MAP.get(a.locationId)?.name || a.locationId;
+          const art = KIND_ART[kind];
           return (
-            <div key={a.id} className="py-2 px-1 flex items-center gap-3">
-              <span className="text-2xl shrink-0" aria-hidden="true">{KIND_ICON[kind]}</span>
+            <div key={a.id} className="holo-row py-2 px-1 flex items-center gap-3 rounded-lg">
+              <div className="sprite-frame w-9 h-9 flex-shrink-0 flex items-center justify-center">
+                {art ? (
+                  <Image src={art} alt="" width={36} height={36} className="w-9 h-9 object-cover rounded" />
+                ) : (
+                  <span className="text-2xl" aria-hidden="true">{KIND_ICON[kind]}</span>
+                )}
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-white text-sm font-bold truncate">{a.title}</span>
@@ -197,7 +233,7 @@ function ManualTab({ state, setState }: { state: GameState; setState: Props['set
                 return recordDiscovery(prev, a);
               });
             }}
-            className="px-2 py-1 rounded text-[10px] font-medium bg-white/[0.04] text-slate-300 hover:text-white border border-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="min-h-[36px] px-2 py-1 rounded text-[10px] font-medium bg-white/[0.04] text-slate-300 hover:text-white border border-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-400"
           >
             Roll at {LOCATION_MAP.get(locId)?.name || locId}
           </button>

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
+import { EFFECT_ASSETS } from '@/lib/game/assets';
 import {
   MEGASTRUCTURES,
   MEGASTRUCTURE_MAP,
@@ -89,16 +91,16 @@ export default function MegastructurePanel({ state, onStartMegastructure, onAdva
   return (
     <div className="space-y-4">
       {/* Sub-tabs */}
-      <div className="flex gap-2 border-b border-white/[0.06] pb-2">
+      <div className="game-tab-bar flex gap-2 border-b border-white/[0.06] pb-2 overflow-x-auto">
         <button
           onClick={() => setSubTab('megastructures')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${subTab === 'megastructures' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'text-slate-400 hover:text-white'}`}
+          className={`font-hud min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${subTab === 'megastructures' ? 'game-tab-active bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'text-slate-400 hover:text-white'}`}
         >
           Megastructures
         </button>
         <button
           onClick={() => setSubTab('reputation')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${subTab === 'reputation' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-slate-400 hover:text-white'}`}
+          className={`font-hud min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${subTab === 'reputation' ? 'game-tab-active bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-slate-400 hover:text-white'}`}
         >
           Reputation
         </button>
@@ -191,7 +193,9 @@ function ActiveConstructionBanner({ inst }: { inst: PersonalMegastructureInstanc
   const phaseName = def.phases[inst.currentPhase]?.name || `Phase ${inst.currentPhase + 1}`;
 
   return (
-    <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-4">
+    <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/30 bg-purple-500/10 p-4 overflow-hidden">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xl">{def.icon}</span>
@@ -200,15 +204,18 @@ function ActiveConstructionBanner({ inst }: { inst: PersonalMegastructureInstanc
             <p className="text-purple-300 text-xs">{phaseName} (Phase {inst.currentPhase + 1}/{def.phases.length})</p>
           </div>
         </div>
-        <p className="text-purple-300 text-sm font-mono">{formatCountdown(remaining)}</p>
+        <p className="timer-hud timer-hud-live text-purple-300 text-sm">{formatCountdown(remaining)}</p>
       </div>
-      <div className="w-full h-2 rounded-full bg-slate-700 overflow-hidden">
+      <div className="relative w-full h-2 rounded-full bg-slate-700 overflow-hidden">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 transition-all duration-1000"
+          className="game-progress-shimmer h-full rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 transition-all duration-1000"
           style={{ width: `${pct}%` }}
         />
+        <div className="vfx-sprite vfx-pulse absolute top-1/2 -translate-y-1/2 w-8 h-4 pointer-events-none" style={{ left: `calc(${pct}% - 16px)` }} aria-hidden="true">
+          <Image src={EFFECT_ASSETS.engineTrail} alt="" fill className="object-contain" />
+        </div>
       </div>
-      <p className="text-slate-400 text-xs mt-1 text-right">{pct.toFixed(1)}%</p>
+      <p className="game-number text-slate-400 text-xs mt-1 text-right">{pct.toFixed(1)}%</p>
     </div>
   );
 }
@@ -302,7 +309,7 @@ function MegastructureCard({
 
   return (
     <div
-      className={`rounded-xl border ${borderColor} ${bgColor} p-3 cursor-pointer transition-all hover:border-white/20`}
+      className={`game-card rounded-xl border ${borderColor} ${bgColor} p-3 cursor-pointer transition-all hover:border-white/20`}
       onClick={onSelect}
     >
       {/* Header */}
@@ -320,17 +327,17 @@ function MegastructureCard({
         )}
       </div>
 
-      {/* Phase progress bar */}
+      {/* Phase progress bar — season-track-style pips */}
       {inst && !isComplete && (
         <div className="flex gap-1 mb-2">
           {def.phases.map((_, i) => (
             <div
               key={i}
-              className={`h-1.5 flex-1 rounded-full ${
+              className={`season-node h-1.5 flex-1 rounded-full ${
                 i < (inst.completedPhases || 0)
-                  ? 'bg-emerald-500'
+                  ? 'season-node-claimed bg-emerald-500'
                   : i === inst.currentPhase && isBuilding
-                    ? 'bg-purple-500'
+                    ? 'season-node-current bg-purple-500'
                     : 'bg-slate-700'
               }`}
             />
@@ -404,7 +411,7 @@ function MegastructureCard({
           {!inst && startCheck.can && (
             <button
               onClick={(e) => { e.stopPropagation(); onStart(); }}
-              className="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors"
+              className="game-btn min-h-[44px] w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors"
             >
               Begin Construction
             </button>
@@ -415,7 +422,7 @@ function MegastructureCard({
           {isPaused && advanceCheck.can && (
             <button
               onClick={(e) => { e.stopPropagation(); onAdvance(); }}
-              className="w-full py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-colors"
+              className="game-btn min-h-[44px] w-full py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-colors"
             >
               Start Next Phase
             </button>
@@ -474,8 +481,10 @@ function ReputationTab({ reputation }: { reputation: number }) {
   return (
     <div className="space-y-4">
       {/* Overview */}
-      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-center">
-        <p className="text-amber-300 text-2xl font-bold">{reputation.toLocaleString()}</p>
+      <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-center">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <p className="game-number text-amber-300 text-2xl font-bold">{reputation.toLocaleString()}</p>
         <p className="text-amber-400 text-sm font-bold mt-1">{title}</p>
         {progress.nextThreshold && (
           <div className="mt-3">
@@ -485,7 +494,7 @@ function ReputationTab({ reputation }: { reputation: number }) {
             </div>
             <div className="w-full h-2 rounded-full bg-slate-700 overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500"
+                className="game-progress-shimmer h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500"
                 style={{ width: `${progress.progressToNext * 100}%` }}
               />
             </div>
@@ -533,7 +542,7 @@ function ReputationTab({ reputation }: { reputation: number }) {
             return (
               <div
                 key={threshold.points}
-                className={`flex items-center justify-between p-2 rounded-lg text-xs ${
+                className={`holo-row flex items-center justify-between p-2 rounded-lg text-xs ${
                   reached ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-white/[0.02]'
                 }`}
               >

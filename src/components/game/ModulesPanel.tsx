@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
+import { EFFECT_ASSETS } from '@/lib/game/assets';
 import {
   MODULES,
   MODULE_MAP,
@@ -47,20 +49,27 @@ export default function ModulesPanel({ state, setState }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="card p-4">
+      <div className="hud-frame relative card p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-start justify-between gap-3 mb-3">
-          <div>
-            <h2 className="text-white text-base font-bold flex items-center gap-2">
-              <span className="text-cyan-400">⚙️</span> Ship Modules
-            </h2>
-            <p className="text-slate-500 text-xs mt-0.5">
-              Purchase modules at the fabrication shop, fit them to your ships for stat bonuses. Each ship has a fixed
-              number of hardpoints by role — cargo freighters fit cargo/engine/utility modules, survey ships fit sensors, etc.
-            </p>
+          <div className="flex items-center gap-2">
+            <div className="vfx-sprite relative w-7 h-7 flex-shrink-0" aria-hidden="true">
+              <Image src={EFFECT_ASSETS.shield} alt="" fill className="object-contain" />
+            </div>
+            <div>
+              <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
+                <span className="text-cyan-400">⚙️</span> Ship Modules
+              </h2>
+              <p className="text-slate-500 text-xs mt-0.5">
+                Purchase modules at the fabrication shop, fit them to your ships for stat bonuses. Each ship has a fixed
+                number of hardpoints by role — cargo freighters fit cargo/engine/utility modules, survey ships fit sensors, etc.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="flex gap-1">
+        <div className="game-tab-bar flex gap-1 overflow-x-auto">
           <TabButton active={tab === 'shop'} onClick={() => setTab('shop')}>🏪 Shop ({MODULES.length})</TabButton>
           <TabButton active={tab === 'inventory'} onClick={() => setTab('inventory')}>📦 Inventory ({inventory.length})</TabButton>
           <TabButton active={tab === 'fit'} onClick={() => setTab('fit')}>🔩 Fit ({builtShips.length} ships)</TabButton>
@@ -85,8 +94,8 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
-        active ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
+      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 whitespace-nowrap ${
+        active ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
       }`}
     >
       {children}
@@ -122,7 +131,7 @@ function ShopTab({ state, setState }: { state: GameState; setState: Props['setSt
           const accent = RARITY_ACCENT[m.rarity];
           const canAfford = state.money >= m.baseCost;
           return (
-            <div key={m.id} className={`rounded-xl overflow-hidden border-2 ${accent.border}`} style={{ background: '#0a0a1a' }}>
+            <div key={m.id} className={`game-card rounded-xl overflow-hidden border-2 ${accent.border}`} style={{ background: '#0a0a1a' }}>
               <div className={`p-3 ${accent.bg}`}>
                 <div className="flex items-start gap-2">
                   <span className="text-3xl shrink-0" aria-hidden="true">{m.icon}</span>
@@ -146,7 +155,7 @@ function ShopTab({ state, setState }: { state: GameState; setState: Props['setSt
                   <button
                     onClick={() => setState(prev => prev ? purchaseModule(prev, m.id) : prev)}
                     disabled={!canAfford}
-                    className={`px-3 py-1.5 rounded text-[11px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                    className={`game-btn min-h-[44px] px-3 py-1.5 rounded text-[11px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                       canAfford ? 'bg-cyan-500 text-black hover:bg-cyan-400' : 'bg-white/[0.04] text-slate-500 cursor-not-allowed'
                     }`}
                   >
@@ -255,25 +264,34 @@ function FitTab({
       {selected && selectedDef && selectedStats && effectiveStats && (
         <>
           {/* Slot visualization */}
-          <div className="card p-3">
+          <div className="hud-frame relative card p-3">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-start justify-between gap-3 mb-2">
-              <div>
-                <h3 className="text-white text-sm font-bold">{selected.name}</h3>
-                <p className="text-[10px] text-slate-500">
-                  {selectedDef.name} · {selectedDef.role} · Hardpoints: {selectedStats.hardpointTypes.map(t => HARDPOINT_ICON[t] + ' ' + t).join(' / ')}
-                </p>
+              <div className="flex items-center gap-2">
+                <div className="vfx-sprite relative w-6 h-6 flex-shrink-0" aria-hidden="true">
+                  <Image src={EFFECT_ASSETS.shield} alt="" fill className="object-contain" />
+                </div>
+                <div>
+                  <h3 className="font-hud text-white text-sm font-bold">{selected.name}</h3>
+                  <p className="text-[10px] text-slate-500">
+                    {selectedDef.name} · {selectedDef.role} · Hardpoints: {selectedStats.hardpointTypes.map(t => HARDPOINT_ICON[t] + ' ' + t).join(' / ')}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="flex gap-1.5 mb-3">
+            <div className="flex gap-1.5 mb-3 flex-wrap">
               {Array.from({ length: selectedStats.moduleSlots }).map((_, i) => {
                 const fittedItem = fitted[i];
                 const fittedDef = fittedItem ? MODULE_MAP.get(fittedItem.definitionId) : null;
                 return (
                   <div
                     key={i}
-                    className={`flex-1 min-w-0 p-2 rounded-lg text-center ${
-                      fittedDef ? `${RARITY_ACCENT[fittedDef.rarity].border} ${RARITY_ACCENT[fittedDef.rarity].bg} border-2` : 'border-2 border-dashed border-white/10'
+                    className={`module-socket flex-1 min-w-[64px] min-h-[64px] p-2 rounded-lg text-center flex flex-col items-center justify-center ${
+                      fittedDef
+                        ? `module-socket-filled ${RARITY_ACCENT[fittedDef.rarity].border} ${RARITY_ACCENT[fittedDef.rarity].bg} border-2`
+                        : 'module-socket-empty border-2 border-dashed border-white/10'
                     }`}
                   >
                     {fittedDef ? (
@@ -282,7 +300,7 @@ function FitTab({
                         <div className={`text-[9px] font-bold truncate ${RARITY_ACCENT[fittedDef.rarity].text}`}>{fittedDef.name}</div>
                         <button
                           onClick={() => setState(prev => prev ? unfitModule(prev, selected.instanceId, fittedItem.instanceId) : prev)}
-                          className="mt-1 text-[9px] text-red-300 hover:text-red-200"
+                          className="mt-1 text-[9px] text-red-300 hover:text-red-200 min-h-[20px]"
                         >
                           Unfit
                         </button>
@@ -341,7 +359,7 @@ function FitTab({
                       <button
                         onClick={() => setState(prev => prev ? fitModule(prev, selected.instanceId, owned.instanceId) : prev)}
                         disabled={!fittable}
-                        className={`px-2 py-1 rounded text-[10px] font-bold transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                        className={`game-btn min-h-[36px] min-w-[44px] px-2 py-1 rounded text-[10px] font-bold transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                           fittable ? 'bg-cyan-500 text-black hover:bg-cyan-400' : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
                         }`}
                         title={!compatHardpoint ? 'Incompatible hardpoint type' : !compatRole ? `Role-locked (${def.compatibleRoles?.join(', ')})` : !slotsFree ? 'All slots full' : ''}
