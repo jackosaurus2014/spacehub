@@ -26,6 +26,8 @@ import MarketPanel from '@/components/game/MarketPanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
 import { useGameSync } from '@/hooks/useGameSync';
+import { postWithRetry, LOCATION_MILESTONE_MAP } from '@/hooks/useWorldState';
+import { toast } from '@/lib/toast';
 import SolarSystemCanvas from '@/components/game/SolarSystemCanvas';
 import ContractsPanel from '@/components/game/ContractsPanel';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
@@ -872,28 +874,12 @@ export default function SpaceTycoonPage() {
 
   const handleUnlockLocation = useCallback((locId: string) => {
     playSound('location_unlock');
+    let claimCompanyName: string | null = null;
     setState(prev => {
       if (!prev) return prev;
       const loc = LOCATION_MAP.get(locId);
       if (!loc || prev.money < loc.unlockCost) { playSound('error'); return prev; }
-
-      // Claim colony slot on server (non-blocking)
-      fetch('/api/space-tycoon/colonies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locationId: locId, companyName: prev.companyName || 'Untitled Aerospace' }),
-      }).catch(() => {}); // Non-blocking — claim is best-effort
-
-      // Also try to claim milestone
-      fetch('/api/space-tycoon/milestones', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          milestoneId: locId === 'lunar_surface' ? 'first_moon' : locId === 'mars_orbit' ? 'first_mars' : locId === 'jupiter_system' ? 'first_jupiter' : locId === 'outer_system' ? 'first_outer_system' : null,
-          companyName: prev.companyName || 'Untitled Aerospace',
-          reward: 0,
-        }),
-      }).catch(() => {});
+      claimCompanyName = prev.companyName || 'Untitled Aerospace';
 
       return {
         ...prev,
@@ -909,6 +895,59 @@ export default function SpaceTycoonPage() {
         }, ...prev.eventLog].slice(0, 50),
       };
     });
+
+    // The local unlock above always happens (it's the player's own save) —
+    // everything below is reconciling that with the shared multiplayer
+    // world (audit hotlist #6). Both used to be `.catch(() => {})`
+    // fire-and-forget, silently swallowing scarcity failures and race
+    // losses. Now: retry once on network failure, surface the outcome via
+    // toast either way, and log an honest event when we lost a race.
+    if (claimCompanyName === null) return;
+    const companyName = claimCompanyName;
+    const locName = LOCATION_MAP.get(locId)?.name || locId;
+
+    postWithRetry('/api/space-tycoon/colonies', { locationId: locId, companyName })
+      .then(async res => {
+        if (!res) {
+          toast.warning(`Couldn't confirm your colony claim at ${locName} with the server — it'll stay in sync next time you're online.`, 'Colony claim');
+          return;
+        }
+        if (res.status === 401) return; // anonymous/local-only play — nothing to reconcile
+        if (!res.ok) return;
+        const data = await res.json().catch(() => null);
+        if (data && data.success === false && data.error) {
+          toast.warning(data.error, 'Colony slot');
+        }
+      })
+      .catch(() => {});
+
+    const milestoneId = LOCATION_MILESTONE_MAP[locId]?.id;
+    if (milestoneId) {
+      postWithRetry('/api/space-tycoon/milestones', { milestoneId, companyName, reward: 0 })
+        .then(async res => {
+          if (!res || res.status === 401 || !res.ok) return;
+          const data = await res.json().catch(() => null);
+          if (!data) return;
+          if (data.success) {
+            toast.success(`First to reach "${milestoneId.replace(/_/g, ' ')}"! Global milestone claimed.`, 'Milestone!');
+          } else if (data.alreadyClaimed) {
+            const beatBy = data.claimedBy || 'another corporation';
+            toast.info(`${beatBy} already claimed this milestone — you still unlocked ${locName}, just no first-mover reward.`, 'Milestone race lost');
+            // Reconcile the log honestly instead of silently dropping the loss.
+            setState(p => p ? {
+              ...p,
+              eventLog: [{
+                id: generateId(),
+                date: p.gameDate,
+                type: 'milestone' as const,
+                title: `Milestone race lost at ${locName}`,
+                description: `${beatBy} claimed it first.`,
+              }, ...p.eventLog].slice(0, 50),
+            } : p);
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   const [showArchetypePicker, setShowArchetypePicker] = useState(false);

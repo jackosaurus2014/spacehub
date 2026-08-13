@@ -9,6 +9,8 @@ import type { GameState, DeliveryContractState } from './types';
 import { FACTIONS, FACTION_MAP, getFactionRep, shiftReputation, type FactionId } from './factions';
 import { RESOURCES, RESOURCE_MAP, type ResourceId } from './resources';
 import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER } from './frontier';
+import { getReputationBonuses } from './reputation';
+import { getWorkforceBonuses } from './workforce';
 
 /** Public type alias — the persisted DeliveryContractState is the contract. */
 export type DeliveryContract = DeliveryContractState;
@@ -285,7 +287,17 @@ export function deliverContract(state: GameState, contractId: string, now: numbe
   resources[contract.resourceId] = (resources[contract.resourceId] || 0) - contract.quantity;
 
   const frontierBonus = isInFrontier(state, now) ? FRONTIER_CONTRACT_PAYOUT_MULTIPLIER : 1;
-  const payment = Math.round(contract.paymentMoney * frontierBonus);
+  // Audit Wave B (§1c): reputation contractRewardMultiplier (up to +60%) and
+  // negotiator contractPayBonus were dead outputs — they now scale delivery
+  // payouts, same as static contract rewards (contracts.applyContractReward).
+  const repBonuses = getReputationBonuses(state.reputation || 0);
+  const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+  const payment = Math.round(
+    contract.paymentMoney
+    * frontierBonus
+    * repBonuses.contractRewardMultiplier
+    * (1 + wfBonuses.contractPayBonus)
+  );
 
   const completed: DeliveryContract = {
     ...contract,

@@ -31,6 +31,7 @@ import { playSound } from '@/lib/game/sound-engine';
 import { REGION_LABELS } from './SolarSystemCanvas';
 import { SYSTEM_RISK_META, RISK_TONE_CLASS } from './GalacticMapView';
 import BuildPanel from './BuildPanel';
+import { useWorldState, getColonySlotCap, LOCATION_MILESTONE_MAP } from '@/hooks/useWorldState';
 
 export type MapSelection = { kind: 'location'; id: string } | { kind: 'system'; id: string };
 
@@ -237,6 +238,8 @@ function LocationOverview({
     <div className="space-y-3">
       <p className="text-slate-400 text-[11px] leading-relaxed">{loc.description}</p>
 
+      <WorldPresenceBlock locationId={locationId} />
+
       {!unlocked ? (
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
           <div className="text-[10px] uppercase tracking-wider text-amber-400 font-semibold mb-1.5">Locked</div>
@@ -347,6 +350,61 @@ function LocationOverview({
             </button>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+/** Live-world scarcity + milestone-race readout for a single location (audit
+ *  Change #3 / D1 + top-10 item #3). Renders whether the location is locked
+ *  or not — knowing 3 other corporations already operate here (or that a
+ *  colony-slot cap is nearly full) is exactly the kind of intelligence a
+ *  player should have BEFORE spending money to unlock it. */
+function WorldPresenceBlock({ locationId }: { locationId: string }) {
+  const { world, available } = useWorldState();
+
+  if (!available) {
+    return (
+      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 text-[10px] text-slate-500 italic">
+        🌐 Sign in to see the live world — other corporations&rsquo; presence here.
+      </div>
+    );
+  }
+
+  const names = world?.world.colonies[locationId] || [];
+  const count = world?.world.colonyCounts[locationId] || names.length;
+  const cap = getColonySlotCap(locationId);
+  const milestone = LOCATION_MILESTONE_MAP[locationId];
+  const milestoneClaimedBy = milestone ? world?.milestones[milestone.id] : undefined;
+
+  if (count === 0 && !cap && !milestone) return null;
+
+  return (
+    <div className="rounded-lg border border-purple-500/20 bg-purple-500/5 p-2.5 space-y-1">
+      <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold flex items-center gap-1">
+        <span aria-hidden="true">🌐</span> Live World
+      </div>
+      {count > 0 ? (
+        <p className="text-[11px] text-slate-300">
+          <span className="text-white font-mono">{count}</span> corporation{count === 1 ? '' : 's'} operating here
+          {names[0] && <> — first mover: <span className="text-purple-200">{names[0]}</span></>}
+        </p>
+      ) : (
+        <p className="text-[11px] text-slate-500">No corporation has claimed this location yet.</p>
+      )}
+      {cap != null && (
+        <p className="text-[10px] text-slate-500">
+          Colony slots: <span className={count >= cap ? 'text-red-300 font-semibold' : 'text-slate-300'}>{count}/{cap}</span>{count >= cap ? ' — FULL' : ''}
+        </p>
+      )}
+      {milestone && (
+        <p className="text-[10px]">
+          {milestoneClaimedBy ? (
+            <span className="text-amber-300">🏆 {milestone.label}: claimed by {milestoneClaimedBy}</span>
+          ) : (
+            <span className="text-emerald-300">🏁 {milestone.label}: OPEN — first to unlock wins it</span>
+          )}
+        </p>
       )}
     </div>
   );

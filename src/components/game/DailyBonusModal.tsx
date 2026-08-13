@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { canClaimBonus, claimDailyBonus, getCurrentStreak, getBonusSchedule } from '@/lib/game/daily-bonus';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
@@ -14,18 +14,54 @@ interface DailyBonusModalProps {
  * Daily login bonus modal for Space Tycoon.
  * Shows automatically when a player opens the game and has an unclaimed bonus.
  * Displays 7-day reward schedule with escalating amounts.
+ *
+ * Wave-A leftover wiring (audit hotlist #2): signed-in players now claim
+ * through POST /api/space-tycoon/daily-bonus, the authoritative server
+ * tracker (one claim per UTC day, tracked on GameProfile) — the old
+ * localStorage-only flow was trivially resettable into a perpetual
+ * $200M/week faucet. localStorage remains the ONLY path for anonymous
+ * players (no GameProfile to track a server-side claim against), so the
+ * game still works without an account.
  */
 export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
   const [visible, setVisible] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [claimedAmount, setClaimedAmount] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [claiming, setClaiming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // Whether this session should use the server-authoritative flow. Resolved
+  // once on mount from the GET probe below; null while unresolved.
+  const useServerRef = useRef<boolean | null>(null);
 
   const schedule = getBonusSchedule();
 
   useEffect(() => {
     // Check if bonus available after a short delay (let game load first)
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/space-tycoon/daily-bonus');
+        if (res.status === 401) {
+          // Anonymous — no GameProfile to track against. Fall back to the
+          // localStorage-only flow entirely.
+          useServerRef.current = false;
+        } else if (res.ok) {
+          const data = await res.json();
+          useServerRef.current = true;
+          if (data.claimable) {
+            setStreak(data.streak || 0);
+            setVisible(true);
+          }
+          return;
+        } else {
+          // Server hiccup — degrade to localStorage rather than block the
+          // reward entirely.
+          useServerRef.current = false;
+        }
+      } catch {
+        useServerRef.current = false;
+      }
+      // localStorage fallback path (anonymous or server unavailable)
       if (canClaimBonus()) {
         setStreak(getCurrentStreak());
         setVisible(true);
@@ -34,7 +70,41 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleClaim = () => {
+  const handleClaim = async () => {
+    if (claiming) return;
+    setError(null);
+
+    if (useServerRef.current) {
+      setClaiming(true);
+      try {
+        const res = await fetch('/api/space-tycoon/daily-bonus', { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.amount > 0) {
+            playSound('milestone');
+            setClaimedAmount(data.amount);
+            setStreak(data.newStreak);
+            setClaimed(true);
+            onClaim(data.amount);
+            setTimeout(() => setVisible(false), 3000);
+          }
+        } else if (res.status === 409) {
+          // Already claimed today (e.g. another tab/device beat this one) —
+          // reconcile honestly instead of granting a duplicate reward.
+          setError('Already claimed today from another session.');
+          setTimeout(() => setVisible(false), 2000);
+        } else {
+          setError('Could not reach the server. Try again shortly.');
+        }
+      } catch {
+        setError('Network error — could not claim right now.');
+      } finally {
+        setClaiming(false);
+      }
+      return;
+    }
+
+    // Anonymous fallback — localStorage only.
     const { amount, newStreak } = claimDailyBonus();
     if (amount > 0) {
       playSound('milestone');
@@ -116,10 +186,15 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
               {/* Claim button */}
               <button
                 onClick={handleClaim}
-                className="w-full py-3 text-sm font-bold text-white bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 rounded-xl transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-[0.98]"
+                disabled={claiming}
+                className="w-full py-3 text-sm font-bold text-white bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 rounded-xl transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-wait"
               >
-                Claim {formatMoney(schedule[(currentDay - 1) % 7].amount)}
+                {claiming ? 'Claiming…' : `Claim ${formatMoney(schedule[(currentDay - 1) % 7].amount)}`}
               </button>
+
+              {error && (
+                <p role="alert" className="text-red-400 text-[10px] text-center mt-2">{error}</p>
+              )}
 
               <p className="text-slate-600 text-[10px] text-center mt-2">
                 Come back tomorrow for Day {currentDay < 7 ? currentDay + 1 : 1} reward!

@@ -16,6 +16,7 @@ import SolarSystemCanvas from './SolarSystemCanvas';
 import GalacticMapView from './GalacticMapView';
 import OrderQueueHUD, { type OrderQueueTarget } from './OrderQueueHUD';
 import MapContextPanel, { type MapSelection } from './MapContextPanel';
+import GlobalActivityFeed from './GlobalActivityFeed';
 import { playSound } from '@/lib/game/sound-engine';
 
 type Layer = 'solar' | 'galactic';
@@ -38,6 +39,7 @@ export default function MapCommandCenter({
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
+  const [showActivity, setShowActivity] = useState(false);
 
   // Explicit measured height. `flex-1` under the shell's `min-h-screen` flex
   // column is unreliable (min-height parents don't guarantee flex-grow space,
@@ -133,7 +135,47 @@ export default function MapCommandCenter({
         >
           ✴ Galactic
         </button>
+        <button
+          type="button"
+          onClick={() => { playSound('click'); setShowActivity(v => !v); }}
+          aria-pressed={showActivity}
+          aria-expanded={showActivity}
+          aria-controls="map-activity-feed-popover"
+          className={`min-h-[44px] px-3 text-[11px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 border-l border-white/[0.08] ${
+            showActivity ? 'bg-purple-500/20 text-purple-200' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          📡 Activity
+        </button>
       </div>
+
+      {/* Global Activity Feed popover — reachable from the map HUD (audit
+          Change #3 / D1). Sits below the layer toggle so it never collides
+          with the Order Queue HUD (top-left) or the context panel (right /
+          bottom-sheet). */}
+      {showActivity && (
+        <div
+          id="map-activity-feed-popover"
+          className="hud-frame absolute top-14 left-1/2 -translate-x-1/2 z-20 w-[min(92vw,380px)] max-h-[50vh] rounded-xl border border-white/[0.08] bg-[#050510]/95 backdrop-blur-md overflow-hidden animate-reveal-up"
+        >
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06]">
+            <span className="text-[11px] font-hud font-bold text-white flex items-center gap-1.5">
+              <span aria-hidden="true">📡</span> Galactic Activity
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowActivity(false)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              aria-label="Close activity feed"
+            >
+              ✕
+            </button>
+          </div>
+          <GlobalActivityFeed compact limit={25} className="p-2" />
+        </div>
+      )}
 
       {selection && (
         <MapContextPanel

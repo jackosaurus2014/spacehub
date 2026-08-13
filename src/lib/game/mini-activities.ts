@@ -23,6 +23,58 @@ export interface MiniActivityBonus {
   value: number;
   durationMs?: number;
   label: string;
+  /** Which resource a resource_find grants (defaults to iron). */
+  resourceId?: string;
+}
+
+/**
+ * Apply a mini-activity bonus to game state (audit Wave B, §1c: the old
+ * page.tsx handler branched only on 'resource_find' and hardcoded iron —
+ * mining_boost / research_speed were silently dropped).
+ *
+ * - resource_find  → +value units of bonus.resourceId (default iron)
+ * - mining_boost   → timed 'mining' ActiveBoost (value = multiplier, e.g. 1.1)
+ * - research_speed → timed 'research' ActiveBoost
+ *
+ * NOTE for the UI wave: page.tsx:~1108 should call this instead of its
+ * inline resource_find branch so all three bonus types apply.
+ */
+export function applyMiniActivityBonus(
+  state: GameState,
+  bonus: MiniActivityBonus,
+  now: number = Date.now(),
+): GameState {
+  if (!bonus) return state;
+  switch (bonus.type) {
+    case 'resource_find': {
+      const resId = bonus.resourceId || 'iron';
+      const resources = { ...(state.resources || {}) };
+      resources[resId] = (resources[resId] || 0) + Math.max(0, Math.round(bonus.value));
+      return { ...state, resources };
+    }
+    case 'mining_boost':
+    case 'research_speed': {
+      const boostType = bonus.type === 'mining_boost' ? 'mining' as const : 'research' as const;
+      const multiplier = Math.max(1, Math.min(2, bonus.value));
+      const durationMs = Math.max(60_000, bonus.durationMs || 600_000);
+      return {
+        ...state,
+        activeBoosts: [
+          ...(state.activeBoosts || []),
+          {
+            boostId: `mini_${bonus.type}_${now}`,
+            type: boostType,
+            multiplier,
+            activatedAtMs: now,
+            expiresAtMs: now + durationMs,
+            label: bonus.label,
+          },
+        ],
+      };
+    }
+    default:
+      return state;
+  }
 }
 
 export interface MiniActivityReward {

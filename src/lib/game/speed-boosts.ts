@@ -2,7 +2,10 @@
 // Players earn speed boosts from completing contracts and competitive contracts.
 // Boosts can be activated to accelerate construction or research.
 
-export type BoostType = 'construction' | 'research';
+// 'mining' added in audit Wave B: mini-activity mining_boost rewards
+// (silently dropped before — audit §1c) now land here and the engine
+// multiplies getActiveBoostMultiplier(boosts, 'mining') into mining output.
+export type BoostType = 'construction' | 'research' | 'mining';
 
 export interface SpeedBoost {
   id: string;

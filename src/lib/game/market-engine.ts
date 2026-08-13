@@ -86,10 +86,41 @@ export const MINIMUM_MARKET_SUPPLY = 100;
  * downward pressure to raw-resource revenue at scale.
  *
  * Magnate commanders reduce this fee via the marketPriceMultiplier bonus,
- * applied client-side when the fee is surfaced for display. The server-side
- * endpoint applies the base fee; per-player bonuses are computed from state.
+ * now applied SERVER-SIDE in market/trade/route.ts via
+ * getEffectiveBrokerFeeRate (audit Wave B, §1c "commanders
+ * marketPriceMultiplier — never cuts the broker fee").
  */
 export const MARKET_BROKER_FEE_RATE = 0.03;
+
+/**
+ * Effective sell-side broker fee rate after per-player reductions
+ * (audit Wave B — Change #2):
+ * - §1c: Magnate commander `marketPriceMultiplier` (each point above 1.0 is
+ *   a matching fractional fee cut, capped at 50%).
+ * - A8: espionage `trade_route_intel` reward — temporary market-fee
+ *   discount on the target's traded resources.
+ * - A2: alliance diplomacy trade agreements (`tradeBonus` = fee reduction,
+ *   e.g. 0.02 = -2% fee per the treaty definition).
+ *
+ * Reductions are additive and the total is capped at 85% so the fee sink
+ * never fully disappears (BALANCE.md Wave 4: the fee is a designed sink).
+ * Pure + deterministic — unit-tested in audit-wave-b-wiring.test.ts.
+ */
+export function getEffectiveBrokerFeeRate(opts: {
+  baseRate?: number;
+  commanderMarketMultiplier?: number;
+  espionageDiscount?: number;
+  diplomacyTradeBonus?: number;
+}): number {
+  const base = opts.baseRate ?? MARKET_BROKER_FEE_RATE;
+  const clampFrac = (v: number | undefined, cap: number) =>
+    typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(cap, v)) : 0;
+  const commanderCut = clampFrac((opts.commanderMarketMultiplier ?? 1) - 1, 0.50);
+  const espionageCut = clampFrac(opts.espionageDiscount, 0.50);
+  const diplomacyCut = clampFrac(opts.diplomacyTradeBonus, 0.50);
+  const totalCut = Math.min(0.85, commanderCut + espionageCut + diplomacyCut);
+  return base * (1 - totalCut);
+}
 
 /**
  * Calculate price multiplier based on current supply vs baseline.

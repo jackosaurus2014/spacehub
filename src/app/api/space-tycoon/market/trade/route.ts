@@ -3,8 +3,80 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY, MARKET_BROKER_FEE_RATE } from '@/lib/game/market-engine';
+import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY, MARKET_BROKER_FEE_RATE, getEffectiveBrokerFeeRate } from '@/lib/game/market-engine';
 import { RESOURCE_MAP } from '@/lib/game/resources';
+
+/**
+ * Audit Wave B (Change #2): per-player sell-side broker-fee reductions.
+ * - §1c: Magnate commander `marketPriceMultiplier` — roster synced into
+ *   GameProfile.workforceData._commanders, bonus recomputed from definitions.
+ * - A8: espionage `trade_route_intel` reward — 10% fee discount on the
+ *   spied-on resources, read straight from EspionageMission rows (server
+ *   authoritative — the client cannot forge these).
+ * - A2: alliance diplomacy trade agreements (tradeBonus = fee reduction).
+ * All reductions are clamped inside getEffectiveBrokerFeeRate (total ≤85%).
+ */
+async function computeSellerFeeRate(profileId: string, resourceSlug: string): Promise<number> {
+  let commanderMarketMultiplier = 1;
+  let espionageDiscount = 0;
+  let diplomacyTradeBonus = 0;
+
+  try {
+    const profileRow = await prisma.gameProfile.findUnique({
+      where: { id: profileId },
+      select: { workforceData: true, allianceMembership: { select: { allianceId: true } } },
+    });
+
+    // Magnate commanders (audit §1c)
+    const commanderIds = (profileRow?.workforceData as { _commanders?: string[] } | null)?._commanders;
+    if (Array.isArray(commanderIds) && commanderIds.length > 0) {
+      const { computeCommanderBonuses } = await import('@/lib/game/commanders');
+      const bonuses = computeCommanderBonuses(
+        commanderIds.filter(id => typeof id === 'string').slice(0, 30).map(definitionId => ({ definitionId, hiredAtMs: 0 })),
+      );
+      commanderMarketMultiplier = bonuses.marketPriceMultiplier;
+    }
+
+    // Espionage trade_route_intel reward (audit A8)
+    const missions = await prisma.espionageMission.findMany({
+      where: {
+        attackerId: profileId,
+        succeeded: true,
+        actionType: 'trade_route_intel',
+        createdAt: { gte: new Date(Date.now() - 24 * 3600_000) },
+      },
+      select: { reward: true, createdAt: true },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+    for (const m of missions) {
+      const r = m.reward as { type?: string; discount?: number; durationHours?: number; resources?: string[] } | null;
+      if (r?.type !== 'market_discount') continue;
+      const expiresAtMs = m.createdAt.getTime() + (r.durationHours || 24) * 3600_000;
+      if (expiresAtMs <= Date.now()) continue;
+      const covered = Array.isArray(r.resources) ? r.resources : [];
+      if (covered.length === 0 || covered.includes(resourceSlug)) {
+        espionageDiscount = Math.max(espionageDiscount, r.discount ?? 0.1);
+      }
+    }
+
+    // Alliance diplomacy trade agreements (audit A2)
+    const allianceId = profileRow?.allianceMembership?.allianceId;
+    if (allianceId) {
+      const { getDiplomacyBonuses } = await import('@/lib/game/alliance-diplomacy');
+      const treaties = await prisma.allianceDiplomacy.findMany({
+        where: { status: 'active', OR: [{ senderId: allianceId }, { receiverId: allianceId }] },
+        select: { type: true, tradeBonus: true },
+        take: 25,
+      });
+      diplomacyTradeBonus = getDiplomacyBonuses(treaties).tradeBonus;
+    }
+  } catch {
+    // Fee bonuses are best-effort — fall back to the base rate.
+  }
+
+  return getEffectiveBrokerFeeRate({ commanderMarketMultiplier, espionageDiscount, diplomacyTradeBonus });
+}
 
 /**
  * POST /api/space-tycoon/market/trade
@@ -78,7 +150,13 @@ export async function POST(request: NextRequest) {
     // Sell-side broker commission (Wave 4 balance: sink that prevents
     // frictionless mine-and-sell loops). Buy-side is unaffected — scarcity
     // premium is already baked into the supply multiplier.
-    const brokerFee = isBuy ? 0 : Math.round(grossTotal * MARKET_BROKER_FEE_RATE);
+    // Audit Wave B: the effective rate now honors Magnate commanders (§1c),
+    // espionage trade_route_intel discounts (A8), and alliance diplomacy
+    // trade agreements (A2) — see computeSellerFeeRate above.
+    const effectiveFeeRate = isBuy || !profileId
+      ? MARKET_BROKER_FEE_RATE
+      : await computeSellerFeeRate(profileId, resourceSlug);
+    const brokerFee = isBuy ? 0 : Math.round(grossTotal * effectiveFeeRate);
     const totalCost = isBuy ? grossTotal : grossTotal - brokerFee;
 
     // For buys: check available supply (always at least MINIMUM_MARKET_SUPPLY)
@@ -168,7 +246,7 @@ export async function POST(request: NextRequest) {
         pricePerUnit,
         grossTotal,
         brokerFee,
-        brokerFeeRate: isBuy ? 0 : MARKET_BROKER_FEE_RATE,
+        brokerFeeRate: isBuy ? 0 : effectiveFeeRate,
         totalCost,
         newPrice: newEffectivePrice,
         supply: newSupply,

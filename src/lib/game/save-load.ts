@@ -57,7 +57,7 @@ export function getNewGameState(): GameState {
     playerTitle: null,
     ships: [],
     reports: [],
-    workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0 },
+    workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0, morale: 1.0, fatigue: 0, trainingLevel: 0.5, trainingBudgetPerCrew: 0 },
     prestige: {
       level: 0,
       legacyPoints: 0,
@@ -96,6 +96,10 @@ export function getNewGameState(): GameState {
     expeditions: [],
     interstellarColonies: [],
     interstellarTradeRoutes: [],
+    // V14 — Audit Wave B: wired-bonus state (alliance/zones/espionage/leagues)
+    zoneStandings: [],
+    activeIntelPerks: [],
+    claimedLeagueBoostSeasonIds: [],
   };
 }
 
@@ -227,6 +231,21 @@ export function loadGame(): GameState | null {
     if (!state.expeditions) state.expeditions = [];
     if (!state.interstellarColonies) state.interstellarColonies = [];
     if (!state.interstellarTradeRoutes) state.interstellarTradeRoutes = [];
+    // V14 fields — Audit Wave B: wired-bonus state
+    if (!state.zoneStandings) state.zoneStandings = [];
+    if (!state.activeIntelPerks) state.activeIntelPerks = [];
+    if (!state.claimedLeagueBoostSeasonIds) state.claimedLeagueBoostSeasonIds = [];
+    // V14 morale migration (audit A10): the old default 0.8 was a hidden
+    // -20% revenue tax with no writer. A save at exactly 0.8 (or unset) is
+    // treated as the untouched default and lifted to the new 1.0 baseline.
+    // (A managed crew that later drifts through exactly 0.800 would also be
+    // bumped on reload — a rare, bounded, player-favoring edge we accept.)
+    if (state.workforce) {
+      if (state.workforce.morale === undefined || state.workforce.morale === 0.8) state.workforce.morale = 1.0;
+      if (state.workforce.fatigue === undefined) state.workforce.fatigue = 0;
+      if (state.workforce.trainingLevel === undefined) state.workforce.trainingLevel = 0.5;
+      if (state.workforce.trainingBudgetPerCrew === undefined) state.workforce.trainingBudgetPerCrew = 0;
+    }
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

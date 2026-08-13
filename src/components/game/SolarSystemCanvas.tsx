@@ -7,6 +7,7 @@ import { LANES } from '@/lib/game/spatial-strategy';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { useWorldState } from '@/hooks/useWorldState';
 
 // Friendly group labels for the keyboard-accessible Location List, keyed by
 // SolarSystemLocation.type. Mirrors the bodies actually present in LOCATIONS.
@@ -195,7 +196,13 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   const [zoom, setZoom] = useState(1);
   const [showLanes, setShowLanes] = useState(true);
   const [showShips, setShowShips] = useState(true);
+  const [showWorld, setShowWorld] = useState(true);
   const animRef = useRef(0);
+
+  // World presence (audit Change #3 / D1) — other corporations' colony
+  // claims per location, shared/cached across every consumer of the hook.
+  const { world, available: worldAvailable } = useWorldState();
+  const worldLayerActive = showWorld && worldAvailable;
 
   // Keyboard-accessible Location List — collapsed by default on desktop, but
   // defaults open for prefers-reduced-motion users (see effect below) since
@@ -517,6 +524,28 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         ctx.textBaseline = 'alphabetic';
       }
 
+      // World presence badge — other CORPORATIONS' colony claims here (audit
+      // Change #3). Distinct purple/gold from the red NPC badge and cyan
+      // building badge so scarcity reads as "other players", not noise.
+      const worldCount = worldLayerActive ? (world?.world.colonyCounts[loc.id] || 0) : 0;
+      if (worldCount > 0) {
+        const wBadgeX = lx + r * 0.7;
+        const wBadgeY = ly + r * 0.75;
+        ctx.fillStyle = '#a855f7c8';
+        ctx.beginPath();
+        ctx.arc(wBadgeX, wBadgeY, 6.5 * zoom, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#f3e8ff90';
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+        ctx.fillStyle = '#f5f3ff';
+        ctx.font = `bold ${7 * zoom}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(worldCount), wBadgeX, wBadgeY);
+        ctx.textBaseline = 'alphabetic';
+      }
+
       // Small orbiting dots for player satellites.
       // Reduced motion: hold each dot at a fixed angle instead of orbiting.
       if (completedHere > 0) {
@@ -626,7 +655,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, layoutOf, imgs.cache, imgs.loaded]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -724,6 +753,8 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   const canUnlock = selectedLocData && !isUnlocked && selectedLocData.requiredResearch.every(r => state.completedResearch.includes(r)) && state.money >= selectedLocData.unlockCost;
   const shipsAtSelected = selectedLoc ? (state.ships || []).filter(s => s.isBuilt && s.currentLocation === selectedLoc) : [];
   const shipsInTransit = (state.ships || []).filter(s => s.isBuilt && s.status === 'in_transit');
+  const worldNamesAtSelected = selectedLoc && worldAvailable ? (world?.world.colonies[selectedLoc] || []) : [];
+  const worldCountAtSelected = selectedLoc && worldAvailable ? (world?.world.colonyCounts[selectedLoc] || 0) : 0;
 
   // Shared JSX fragments — the keyboard Location List is used both as a
   // stacked block (standalone/legacy layout) and as a bottom-left overlay
@@ -833,6 +864,20 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           >
             {showShips ? '● Ships' : '○ Ships'}
           </button>
+          <button
+            onClick={() => setShowWorld(v => !v)}
+            aria-pressed={showWorld}
+            disabled={!worldAvailable}
+            title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}
+            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
+              worldLayerActive ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+            }`}
+          >
+            {worldLayerActive ? '● World' : '○ World'}
+          </button>
+          {!worldAvailable && (
+            <p className="text-[8px] text-slate-600 text-right max-w-[110px] leading-tight">Sign in to see the live world</p>
+          )}
         </div>
 
         {/* Keyboard-accessible Location List — collapsible overlay so it
@@ -903,6 +948,17 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           >
             {showShips ? '● Ships' : '○ Ships'}
           </button>
+          <button
+            onClick={() => setShowWorld(v => !v)}
+            aria-pressed={showWorld}
+            disabled={!worldAvailable}
+            title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}
+            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
+              worldLayerActive ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+            }`}
+          >
+            {worldLayerActive ? '● World' : '○ World'}
+          </button>
         </div>
 
         {/* Legend + activity */}
@@ -913,6 +969,11 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-red-400" /> NPC presence
           </span>
+          {worldAvailable && (
+            <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400" /> Other corporations
+            </span>
+          )}
           <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> Mining ship
           </span>
@@ -969,6 +1030,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                 <div className="mt-2 text-[10px] text-slate-500 italic">
                   🤖 {npcCountAtSelected} NPC {npcCountAtSelected === 1 ? 'competitor already operates' : 'competitors already operate'} here — informational only, not a gate
                 </div>
+              )}
+              {worldCountAtSelected > 0 && (
+                <div className="mt-2 text-[10px] text-purple-300/90">
+                  🌐 {worldCountAtSelected} corporation{worldCountAtSelected === 1 ? '' : 's'} operating here{worldNamesAtSelected[0] ? ` — first mover: ${worldNamesAtSelected[0]}` : ''}
+                </div>
+              )}
+              {!worldAvailable && (
+                <div className="mt-2 text-[10px] text-slate-600 italic">🌐 Sign in to see the live world</div>
               )}
             </div>
             <div>

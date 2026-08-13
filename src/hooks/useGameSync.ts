@@ -3,6 +3,13 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { queueServerReconciliation, type LedgerReconciliation } from '@/lib/game/ledger-reconcile';
+import {
+  queueServerEffects,
+  type AllianceBonusSnapshot,
+  type ZoneStandingSnapshot,
+  type IntelPerkSnapshot,
+  type LeagueBoostSnapshot,
+} from '@/lib/game/server-effects';
 
 interface SyncStatus {
   lastSyncAt: number | null;
@@ -31,6 +38,14 @@ export function useGameSync(
     ledger?: LedgerReconciliation;
     /** Server-reconciled money figure at sync time (informational). */
     reconciledMoney?: number;
+    /** Audit Wave B (Change #6 / A2): server-aggregated alliance bonuses. */
+    allianceBonuses?: AllianceBonusSnapshot | null;
+    /** Audit Wave B (A7): per-zone governor/stakeholder standings. */
+    zoneStandings?: ZoneStandingSnapshot[];
+    /** Audit Wave B (A8): active espionage reward perks. */
+    espionagePerks?: IntelPerkSnapshot[];
+    /** Audit Wave B (§1b Leagues): last finalized league promotion boost. */
+    leagueBoost?: LeagueBoostSnapshot | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -84,6 +99,13 @@ export function useGameSync(
           currentLocation: s.currentLocation,
         })),
         workforce: state.workforce || null,
+        // Audit Wave B (§1c commander marketPriceMultiplier): the hired
+        // commander roster, so the server-side broker-fee reduction in
+        // market/trade can recompute the Magnate bonus from definitions.
+        // (Stored inside GameProfile.workforceData under `_commanders` —
+        // no schema change; same client-claimed trust level as the rest
+        // of the sync payload.)
+        commanderIds: (state.hiredCommanders || []).map(c => c.definitionId).slice(0, 30),
         // One Wallet (audit A1): ack cursor — highest server ledger seq this
         // state has already applied. The server only reconciles/returns
         // entries beyond it (idempotent under retries).
@@ -119,6 +141,22 @@ export function useGameSync(
           }
         }
 
+        // Audit Wave B (Change #6 / A2, A7, A8, league boosts): queue the
+        // server-computed bonus snapshot for the engine to fold into
+        // GameState on the next tick. Before this wave, sync received
+        // `allianceBonuses` and dropped them on the floor — "the entire
+        // alliance bonus pipeline is severed one hop before the player's
+        // tick" (audit §4).
+        if (data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost) {
+          queueServerEffects({
+            allianceBonuses: data.allianceBonuses || null,
+            zoneStandings: Array.isArray(data.zoneStandings) ? data.zoneStandings : undefined,
+            espionagePerks: Array.isArray(data.espionagePerks) ? data.espionagePerks : undefined,
+            leagueBoost: data.leagueBoost || null,
+            fetchedAtMs: Date.now(),
+          });
+        }
+
         // Pass server-side pricing and milestone data back to the game
         if (onServerData) {
           onServerData({
@@ -126,6 +164,10 @@ export function useGameSync(
             globalMilestones: data.globalMilestones || undefined,
             ledger: data.ledger || undefined,
             reconciledMoney: typeof data.reconciledMoney === 'number' ? data.reconciledMoney : undefined,
+            allianceBonuses: data.allianceBonuses || undefined,
+            zoneStandings: Array.isArray(data.zoneStandings) ? data.zoneStandings : undefined,
+            espionagePerks: Array.isArray(data.espionagePerks) ? data.espionagePerks : undefined,
+            leagueBoost: data.leagueBoost || undefined,
           });
         }
 

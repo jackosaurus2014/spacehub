@@ -3,6 +3,8 @@
 // Each contract has requirements that logically match its description.
 
 import type { GameState, GameDate } from './types';
+import { getReputationBonuses } from './reputation';
+import { getWorkforceBonuses } from './workforce';
 
 export interface ContractRequirement {
   type: 'money_earned' | 'buildings_completed' | 'resources_mined' | 'services_active'
@@ -281,7 +283,12 @@ export function generateContracts(state: GameState): ContractDefinition[] {
   return arr.slice(0, 4);
 }
 
-/** Apply contract reward to game state */
+/** Apply contract reward to game state.
+ *
+ *  Audit Wave B (§1c): reputation `contractRewardMultiplier` (up to +60%)
+ *  and negotiator `contractPayBonus` (workforce) were defined but "applied
+ *  to no contract payout" — they now scale the cash half of every static
+ *  contract reward. Resources are unscaled (they're supply, not payment). */
 export function applyContractReward(state: GameState, reward: ContractReward): GameState {
   const resources = { ...state.resources };
   if (reward.resources) {
@@ -289,10 +296,17 @@ export function applyContractReward(state: GameState, reward: ContractReward): G
       resources[id] = (resources[id] || 0) + qty;
     }
   }
+  const repBonuses = getReputationBonuses(state.reputation || 0);
+  const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+  const payout = Math.round(
+    reward.money
+    * repBonuses.contractRewardMultiplier
+    * (1 + wfBonuses.contractPayBonus)
+  );
   return {
     ...state,
-    money: state.money + reward.money,
-    totalEarned: state.totalEarned + reward.money,
+    money: state.money + payout,
+    totalEarned: state.totalEarned + payout,
     resources,
   };
 }

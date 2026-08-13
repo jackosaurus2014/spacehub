@@ -18,6 +18,8 @@ import DashboardVizBlock from '@/components/game/DashboardVizBlock';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import MiniActivitiesWidget from '@/components/game/MiniActivitiesWidget';
 import type { MiniActivityReward } from '@/lib/game/mini-activities';
+import WorldStatusCard from '@/components/game/WorldStatusCard';
+import { useActivityFeed, formatRelativeTime, usePrefersReducedMotion } from '@/hooks/useWorldState';
 
 /** Live countdown timer for research (purple) */
 function ResearchCountdown({ startedAtMs, durationSeconds }: { startedAtMs: number; durationSeconds: number }) {
@@ -297,6 +299,50 @@ function LiveClock() {
 
 /** Command Center header band — corporation identity, mission clock, region readout.
  *  Per CLAUDE.md: "Earth command center is the main hub" — this is the operations-room anchor. */
+/** Compact activity ticker for the Command Center header (audit Change #3 /
+ *  D1). The `activity` route already has 6 writers and, before this wave,
+ *  zero readers anywhere in the client — this is the cheapest possible
+ *  "other people exist" signal. Reduced motion: renders a static list of the
+ *  latest 3 items instead of auto-advancing — no marquee, ever, under
+ *  reduced motion. */
+function ActivityTicker() {
+  const { activities } = useActivityFeed(10);
+  const reducedMotion = usePrefersReducedMotion();
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    if (reducedMotion || activities.length <= 1) return;
+    const timer = setInterval(() => setIdx(i => (i + 1) % activities.length), 6000);
+    return () => clearInterval(timer);
+  }, [reducedMotion, activities.length]);
+
+  if (activities.length === 0) return null;
+
+  if (reducedMotion) {
+    return (
+      <div className="mt-2 pt-2 border-t border-white/[0.06] space-y-1" aria-live="polite">
+        <p className="game-label !text-cyan-400/70 mb-1">Galactic Activity</p>
+        {activities.slice(0, 3).map(a => (
+          <p key={a.id} className="text-[10px] text-slate-400 truncate">
+            {a.title} <span className="text-slate-600">· {formatRelativeTime(a.createdAt)}</span>
+          </p>
+        ))}
+      </div>
+    );
+  }
+
+  const current = activities[idx % activities.length];
+  return (
+    <div className="mt-2 pt-2 border-t border-white/[0.06]" aria-live="polite" role="status">
+      <p className="game-label !text-cyan-400/70 mb-1">Galactic Activity</p>
+      <p key={current.id} className="text-[10px] text-slate-300 truncate animate-reveal-up">
+        <span aria-hidden="true">📡</span> {current.title}
+        <span className="text-slate-600"> · {formatRelativeTime(current.createdAt)}</span>
+      </p>
+    </div>
+  );
+}
+
 function CommandCenterHeader({ state }: { state: GameState }) {
   const corpTier = state.corporationTier || 1;
   const tierDef = getTierDef(corpTier);
@@ -370,6 +416,8 @@ function CommandCenterHeader({ state }: { state: GameState }) {
           </div>
         </div>
       )}
+
+      <ActivityTicker />
     </div>
   );
 }
@@ -511,6 +559,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate 
       <CommandCenterHeader state={state} />
       {/* Quick-nav holo tiles — one-tap access to the panels players touch most, + live alerts strip */}
       <QuickNavGrid state={state} hasPowerDeficit={financials.hasPowerDeficit} onNavigate={onNavigate} />
+      {/* The live world — colony races, milestone claims, competitive contracts (audit Change #3) */}
+      <WorldStatusCard companyName={state.companyName} />
       {/* Empire Overview — visual summary at the top */}
       <EmpireOverview state={state} onUpdateCompanyName={onUpdateCompanyName} />
       {/* HUD-styled at-a-glance viz — revenue breakdown, fleet status, infrastructure mix */}

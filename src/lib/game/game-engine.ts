@@ -10,7 +10,7 @@ import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
 import { advanceDate, generateId, revenueMultiplier, serviceSaturationMultiplier, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
 import { LOCATION_MAP } from './solar-system';
 import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH, DEV_FAST_MULTIPLIER, DEV_REVENUE_MULTIPLIER } from './constants';
-import { getGlobalGameDate } from './server-time';
+import { getGlobalGameDate, GAME_START_YEAR } from './server-time';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
 import { checkMilestones } from './milestones';
@@ -33,6 +33,15 @@ import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
 import { rollMonthlyHazards, applyHazards } from './hazards';
 import { processExpeditionTick } from './expeditions';
 import { consumeServerReconciliation, applyReconciliationToState } from './ledger-reconcile';
+// Audit Wave B (Change #2 "dead-multiplier pack" + Change #6 + A10) imports:
+import { getSpecializationBonuses } from './specializations';
+import { getVictoryBonuses } from './victory-conditions';
+import { getTotalSubsidiaryIncome, getSubsidiaryServiceBonus } from './subsidiaries';
+import { getGovernorBenefits, getStakeholderServiceBonus, getMultiZonePenalty, LOCATION_TO_ZONE } from './zone-influence';
+import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses } from './server-effects';
+import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './modules';
+import { updateCrewWellbeing, getTotalCrew, getCrewCapacity } from './workforce';
+import type { ServiceType } from './types';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -57,7 +66,13 @@ export function processTick(state: GameState): GameState {
   // The calendar is derived from real wall-clock time (server epoch),
   // NOT from tick counting. Revenue/costs apply fractionally each tick.
   const globalDate = getGlobalGameDate();
-  const prevTotalMonths = state.gameDate.year * 12 + state.gameDate.month - 1 - (2025 * 12);
+  // Audit Wave B fix: prevTotalMonths was anchored at 2025 while
+  // getGlobalGameDate anchors at GAME_START_YEAR (2026) — an off-by-12 that
+  // made isMonthEnd fire only when the save's date was 13+ game-months
+  // stale. Every monthly system (random events, hazards, mining floor, and
+  // the new A10 crew-wellbeing pass) gates on this flag; it now fires once
+  // per game-month as all of that code intends.
+  const prevTotalMonths = (state.gameDate.year - GAME_START_YEAR) * 12 + (state.gameDate.month - 1);
   const isMonthEnd = globalDate.totalMonths > prevTotalMonths;
   const newDate = { year: globalDate.year, month: globalDate.month };
   const tickCount = isMonthEnd ? 0 : (state.tickCount || 0) + 1;
@@ -99,6 +114,41 @@ export function processTick(state: GameState): GameState {
 
   // Get commander bonuses (passive stacked bonuses from hired commanders)
   const commanderBonuses = computeCommanderBonuses(state.hiredCommanders);
+
+  // ─── Audit Wave B: formerly-dead multiplier packs (Change #2 / A3) ────
+  // Specializations (§1b): the 10 purchased bonus keys finally apply.
+  const specBonuses = getSpecializationBonuses(
+    state.specialization || { primary: null, secondary: null, respecCount: 0 },
+  );
+  // Victory conditions (§1b): permanent bonuses from earned victories.
+  const victoryBonuses = getVictoryBonuses(state.earnedVictories || []);
+  // Alliance bonuses (Change #6 / A2): server-aggregated, delivered via
+  // sync → server-effects → state.allianceBonuses. Re-clamped defensively.
+  const allianceB = clampAllianceBonuses(state.allianceBonuses) || {
+    revenueBonus: 0, miningBonus: 0, researchBonus: 0, buildSpeedBonus: 0,
+  };
+  // Territory (A7): zone standings (governor / stakeholder) by location.
+  const zoneStandingByLocation = new Map<string, { sharePct: number; isGovernor: boolean }>();
+  if ((state.zoneStandings || []).length > 0) {
+    const standingByZone = new Map((state.zoneStandings || []).map(z => [z.zoneSlug, z]));
+    LOCATION_TO_ZONE.forEach((slug, locId) => {
+      const zs = standingByZone.get(slug);
+      if (zs) zoneStandingByLocation.set(locId, { sharePct: zs.sharePct, isGovernor: zs.isGovernor });
+    });
+  }
+  // Subsidiaries (§1b): synergy service bonus per service type, precomputed.
+  const subsidiaries = state.subsidiaries || [];
+  const subsidiaryBonusByType = new Map<ServiceType, number>();
+  // Specialization revenue bonus per service type.
+  const specServiceBonus = (svcType: ServiceType): number => {
+    switch (svcType) {
+      case 'launch_payload': return specBonuses.launchRevenue;
+      case 'ai_datacenter': return specBonuses.dataRevenue;
+      case 'tourism': return specBonuses.tourismRevenue;
+      case 'fabrication_output': return specBonuses.fabricationOutput;
+      default: return 0;
+    }
+  };
 
   // ─── 0. Workforce payroll (fractional per tick) ──────────────────
   const payroll = Math.round(getMonthlyPayroll(workforce) * fraction);
@@ -147,6 +197,27 @@ export function processTick(state: GameState): GameState {
       }
       return Math.min(bonus, 0.50); // Cap at +50%
     })();
+    // Audit Wave B (Change #2 + #6 + A7): the formerly display-only bonus
+    // pack — specializations (§1b), victory rewards (§1b), alliance
+    // aggregate (A2), subsidiary synergy (§1b), zone stakeholder/governor
+    // standing (A7) — now multiplies service revenue. The combined product
+    // of these NEW sources is capped at 2.0x per BALANCE.md's "cap the
+    // combined product" invariant (A3), so the wiring cannot compound the
+    // existing ~14-multiplier stack into runaway inflation.
+    if (!subsidiaryBonusByType.has(def.type)) {
+      subsidiaryBonusByType.set(def.type, getSubsidiaryServiceBonus(subsidiaries, def.type));
+    }
+    const zoneStanding = zoneStandingByLocation.get(svc.locationId);
+    const zoneBonusPct = zoneStanding
+      ? getStakeholderServiceBonus(zoneStanding.sharePct, zoneStanding.isGovernor)
+      : 0;
+    const waveBRevenueMult = Math.min(2.0,
+      (1 + specServiceBonus(def.type) + specBonuses.allRevenue)
+      * victoryBonuses.revenueMultiplier
+      * (1 + allianceB.revenueBonus)
+      * (1 + (subsidiaryBonusByType.get(def.type) || 0))
+      * (1 + zoneBonusPct / 100)
+    );
     const revenue = Math.round(
       def.revenuePerMonth * fraction
       * svc.revenueMultiplier
@@ -164,9 +235,11 @@ export function processTick(state: GameState): GameState {
       * (1 + stationBonus)
       * saturationMult
       * wfBonuses.moraleMultiplier
+      * waveBRevenueMult
       * DEV_REVENUE_MULTIPLIER
     );
-    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);
+    // Specialization maintenance_reduction (§1b) applies to operating costs.
+    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction));
     money += revenue - cost;
     totalEarned += revenue;
     totalSpent += cost;
@@ -188,6 +261,7 @@ export function processTick(state: GameState): GameState {
       * (1 - tierBonuses.maintenanceReduction)
       * (megaBonuses.maintenanceMultiplier || 1)
       * repBonuses.maintenanceMultiplier
+      * (1 - specBonuses.maintenanceReduction) // audit Wave B §1b (specializations)
     );
     if (overhead > 0) {
       money -= overhead;
@@ -222,7 +296,7 @@ export function processTick(state: GameState): GameState {
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);
+    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -236,7 +310,16 @@ export function processTick(state: GameState): GameState {
     if (bld.isComplete) return bld;
     const elapsed = (now - (bld.startedAtMs || 0)) / 1000;
     // Speed boosts reduce effective duration
-    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier * DEV_FAST_MULTIPLIER);
+    // Audit Wave B additions to build speed: workforce buildSpeed (§1c —
+    // "engineers' headline bonus!"), research buildSpeedBonus (§1c),
+    // specialization build_speed (§1b), victory buildSpeed (§1b), alliance
+    // buildSpeedBonus (A2). Combined new factor capped at 2x.
+    const waveBBuildSpeedMult = Math.min(2.0,
+      (1 + wfBonuses.buildSpeed + resBonuses.buildSpeedBonus + specBonuses.buildSpeed)
+      * victoryBonuses.buildSpeedMultiplier
+      * (1 + allianceB.buildSpeedBonus)
+    );
+    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier * waveBBuildSpeedMult * DEV_FAST_MULTIPLIER);
     if (elapsed >= effectiveDuration) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
@@ -258,7 +341,10 @@ export function processTick(state: GameState): GameState {
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
     const researchBoostMult = getActiveBoostMultiplier(activeBoosts, 'research');
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    // Audit Wave B: + specialization research_speed (§1b), victory research
+    // bonus (§1b), alliance researchBonus (A2). Combined new factor cap 2x.
+    const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus));
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult * DEV_FAST_MULTIPLIER;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completedResearch.push(activeResearch.definitionId);
@@ -282,7 +368,8 @@ export function processTick(state: GameState): GameState {
   if (activeResearch2 && completedResearch.includes('parallel_research')) {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
-    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus)); // audit Wave B (same pack as queue 1)
+    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult2 * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
       completedResearch.push(activeResearch2.definitionId);
@@ -339,7 +426,17 @@ export function processTick(state: GameState): GameState {
 
   // ─── 6. Resource production (fractional per tick, with bonuses) ───
   const resources = { ...(state.resources || {}) };
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier;
+  // Audit Wave B: + specialization mining_output (§1b), victory mining
+  // bonus (§1b), alliance miningBonus (A2), and timed 'mining' boosts from
+  // mini-activities (§1c — mining_boost was silently dropped before).
+  // Combined new factor capped at 2x (BALANCE.md invariant).
+  const waveBMiningMult = Math.min(2.0,
+    (1 + specBonuses.miningOutput)
+    * victoryBonuses.miningMultiplier
+    * (1 + allianceB.miningBonus)
+    * getActiveBoostMultiplier(activeBoosts, 'mining')
+  );
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
   const currentTotalMonths = newDate.year * 12 + newDate.month;
   const miningBonuses = state.miningBonuses || [];
   for (const svc of activeServices) {
@@ -387,6 +484,52 @@ export function processTick(state: GameState): GameState {
         resources[resId] = (resources[resId] || 0) + Math.round(fractionalAmt);
       } else if (isMonthEnd) {
         resources[resId] = (resources[resId] || 0) + Math.round(amt);
+      }
+    }
+  }
+
+  // ─── 6c. Subsidiary net income (audit Wave B, §1b "Subsidiaries") ────────
+  // The audit called subsidiaries "a $66B purchase of a fake readout":
+  // getTotalSubsidiaryIncome / getSubsidiaryServiceBonus were read only by
+  // SubsidiaryPanel for display. The readout is now real — the same
+  // net-income figure the panel shows is credited fractionally per tick.
+  // Net can be negative (overhead-heavy portfolios) — that's a real cost.
+  {
+    const subsidiaryNetMonthly = getTotalSubsidiaryIncome(state);
+    if (subsidiaryNetMonthly !== 0) {
+      const subDelta = Math.round(subsidiaryNetMonthly * fraction);
+      money += subDelta;
+      if (subDelta > 0) {
+        totalEarned += subDelta;
+        monthlyRevenue += subDelta;
+      } else if (subDelta < 0) {
+        totalSpent += -subDelta;
+        monthlyCosts += -subDelta;
+      }
+    }
+  }
+
+  // ─── 6d. Governor tax (audit Wave B, A7 "Territory pays") ────────────────
+  // getGovernorBenefits was "defined, never called anywhere" (§1b) while
+  // TerritoryPanel rendered "Governor Benefits (Active)" for benefits that
+  // didn't exist. Governors now collect taxRate × zone-wide service
+  // activity (server-computed taxBaseMonthly via sync → server-effects),
+  // capped per zone, scaled by the multi-zone governance penalty.
+  {
+    const standings = state.zoneStandings || [];
+    const governed = standings.filter(z => z.isGovernor);
+    if (governed.length > 0) {
+      const penalty = getMultiZonePenalty(governed.length);
+      let taxMonthly = 0;
+      for (const z of governed) {
+        const gb = getGovernorBenefits(z.zoneSlug);
+        taxMonthly += Math.min(gb.taxCap, gb.taxRate * Math.max(0, z.taxBaseMonthly || 0));
+      }
+      const tax = Math.round(taxMonthly * penalty * fraction);
+      if (tax > 0) {
+        money += tax;
+        totalEarned += tax;
+        monthlyRevenue += tax;
       }
     }
   }
@@ -457,6 +600,46 @@ export function processTick(state: GameState): GameState {
   const activeEffects = cleanupExpiredEffects({ ...state, gameDate: newDate });
   const cleanedBoosts = cleanupExpiredBoosts(activeBoosts);
   const cleanedMiningBonuses = miningBonuses.filter(b => b.expiresAtMonth > currentTotalMonths);
+  // Audit Wave B (A8): expire consumed-by-time espionage perks.
+  const cleanedIntelPerks = (state.activeIntelPerks || []).filter(p => p.expiresAtMs > now);
+
+  // ─── 9b. Crew wellbeing writer + training budget sink (audit A10) ────────
+  // Runs once per game-month. Training budget is charged as a real payroll
+  // add-on (a new recurring sink); morale/fatigue/training then update via
+  // the pure updateCrewWellbeing model in workforce.ts. Deterministic.
+  let workforceOut = state.workforce;
+  if (isMonthEnd && state.workforce) {
+    const totalCrew = getTotalCrew(state.workforce);
+    // Training budget charge (only when crew exists and budget is set)
+    const budgetPerCrew = Math.max(0, state.workforce.trainingBudgetPerCrew ?? 0);
+    if (totalCrew > 0 && budgetPerCrew > 0) {
+      const trainingCharge = Math.round(totalCrew * budgetPerCrew);
+      money -= trainingCharge;
+      totalSpent += trainingCharge;
+      monthlyCosts += trainingCharge;
+    }
+    // Utilization: crew headcount vs infrastructure capacity
+    const completedCount = buildings.filter(b => b.isComplete).length;
+    const capacity = getCrewCapacity(completedCount, state.unlockedLocations.length, completedResearch.length).total;
+    const utilization = capacity > 0 ? totalCrew / capacity : 0;
+    // Hazards that struck within the last game-month (6 real hours)
+    const oneGameMonthMs = 6 * 60 * 60 * 1000;
+    const recentHazardCount = (state.recentHazards || []).filter(h => now - h.occurredAtMs < oneGameMonthMs).length;
+    const prevMorale = state.workforce.morale ?? 1.0;
+    workforceOut = updateCrewWellbeing(state.workforce, {
+      utilization,
+      recentHazardCount,
+      cashNegative: money < 0,
+    });
+    // Surface meaningful morale drops so the stat is discoverable/manageable
+    if ((workforceOut.morale ?? 1.0) <= prevMorale - 0.05) {
+      events.push({
+        id: generateId(), date: newDate, type: 'random_event',
+        title: '📉 Crew morale falling',
+        description: 'Hazards, fatigue, or cash trouble are wearing on your crew. Morale reduces all service revenue — consider training budget, medics, or lighter crew utilization.',
+      });
+    }
+  }
 
   // ─── 10. Track income history (last 24 months) ────────────────────
   const netIncome = Math.round(monthlyRevenue - monthlyCosts - payroll);
@@ -521,6 +704,8 @@ export function processTick(state: GameState): GameState {
     activeMarketEvents,
     activeBoosts: cleanedBoosts,
     miningBonuses: cleanedMiningBonuses,
+    activeIntelPerks: cleanedIntelPerks,   // audit Wave B (A8)
+    workforce: workforceOut,               // audit Wave B (A10 morale writer)
     pendingChoice,
     incomeHistory,
     eventLog,
@@ -640,6 +825,20 @@ export function processFullTick(state: GameState): GameState {
     console.error('Ledger reconciliation apply error (non-fatal):', err);
   }
 
+  // 0b. Audit Wave B (Change #6 / A2, A7, A8, league boosts): apply any
+  // queued server-effects snapshot (alliance bonuses, zone standings,
+  // espionage perks, league promotion boosts) BEFORE the tick so this
+  // tick's multipliers already include them. Same hand-off pattern as the
+  // ledger above; idempotent (league boosts dedupe per season).
+  try {
+    const eff = consumeServerEffects();
+    if (eff) {
+      workingState = applyServerEffectsToState(workingState, eff);
+    }
+  } catch (err) {
+    console.error('Server effects apply error (non-fatal):', err);
+  }
+
   // 1. Process player tick
   let newState: GameState;
   try {
@@ -674,10 +873,12 @@ export function processFullTick(state: GameState): GameState {
     if (newClaims.length > 0) {
       let milestoneReward = 0;
       const milestoneEvents: typeof newState.eventLog = [];
+      let milestoneRepAwards = 0;
       for (const claim of newClaims) {
         claimedMilestones[claim.id] = claim.claimedBy;
         if (claim.isPlayer) {
           milestoneReward += claim.reward;
+          milestoneRepAwards++; // audit Wave B §1c: milestone_claimed rep was never awarded
           milestoneEvents.push({
             id: generateId(), date: newState.gameDate, type: 'milestone',
             title: `🏆 Milestone: ${claim.claimedBy} — First to achieve "${claim.id.replace(/_/g, ' ')}"!`,
@@ -698,6 +899,11 @@ export function processFullTick(state: GameState): GameState {
         totalEarned: newState.totalEarned + milestoneReward,
         eventLog: [...milestoneEvents, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
       };
+      // Audit Wave B (§1c): REPUTATION_POINTS.milestone_claimed was defined
+      // but "never passed to addReputation" — award it per player claim.
+      for (let i = 0; i < milestoneRepAwards; i++) {
+        newState = addReputation(newState, 'milestone_claimed');
+      }
     }
   } catch (err) {
     console.error('Milestone check error (non-fatal):', err);
@@ -758,7 +964,17 @@ export function processFullTick(state: GameState): GameState {
       const wfBonuses = getWorkforceBonuses(newState.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
       const shipLegacyBonuses = getLegacyBonuses(newState.legacy || DEFAULT_LEGACY);
       const shipTierBonuses = getTierBonuses(newState.corporationTier || 1);
-      const shipMiningMult = (1 + wfBonuses.miningOutput) * shipLegacyBonuses.miningMultiplier * (1 + shipTierBonuses.miningBonus);
+      // Audit Wave B: specialization mining_output + fleet_speed (§1b),
+      // victory mining bonus (§1b), and alliance miningBonus (A2) now reach
+      // ship operations too — previously only building-based mining got any
+      // bonuses and ships read raw definition stats.
+      const shipSpecBonuses = getSpecializationBonuses(
+        newState.specialization || { primary: null, secondary: null, respecCount: 0 },
+      );
+      const shipVictoryBonuses = getVictoryBonuses(newState.earnedVictories || []);
+      const shipAllianceB = clampAllianceBonuses(newState.allianceBonuses);
+      const shipMiningMult = (1 + wfBonuses.miningOutput) * shipLegacyBonuses.miningMultiplier * (1 + shipTierBonuses.miningBonus)
+        * (1 + shipSpecBonuses.miningOutput) * shipVictoryBonuses.miningMultiplier * (1 + (shipAllianceB?.miningBonus || 0));
       const shipEvents: typeof newState.eventLog = [];
       const shipReports: GameReport[] = [];
       const shipsToRemove: string[] = []; // For consumed survey probes
@@ -790,7 +1006,11 @@ export function processFullTick(state: GameState): GameState {
             // Location multiplier: further/riskier locations yield more
             const { getMiningMultiplier: getLocMult } = require('./ships');
             const locationMult = getLocMult(ship.miningOperation.locationId || ship.currentLocation) || 1;
-            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * locationMult * shipFraction);
+            // Audit Wave B (§1b "Modules"): fitted mining-laser clusters
+            // (+30% each) finally modify the actual mining computation —
+            // previously "the engine reads raw shipDef.miningRate".
+            const moduleMiningMult = getShipMiningRateMultiplier(newState, ship.instanceId);
+            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * shipFraction);
             if (mined >= 1) {
               resources[resId] = (resources[resId] || 0) + mined;
             }
@@ -805,7 +1025,20 @@ export function processFullTick(state: GameState): GameState {
         // deduct-at-departure, capacity + fuel costs) ships. Both current
         // dispatch call sites pass empty cargo, so this is behavior-neutral.
         if (ship.status === 'in_transit' && ship.route) {
-          if (now >= ship.route.arrivalAtMs) {
+          // Audit Wave B (§1b Modules + Specializations fleet_speed, §1c
+          // workforce shipEfficiency): transit-speed multipliers shorten the
+          // effective journey. Dispatch ETAs are computed from base stats in
+          // the UI (unchanged this wave), so boosted ships simply arrive
+          // early — the engine treats the multiplier as dividing remaining
+          // travel time. Clamped ≥1 so nothing ever arrives late.
+          const transitSpeedMult = Math.max(1,
+            (1 + shipSpecBonuses.fleetSpeed)
+            * (1 + wfBonuses.shipEfficiency)
+            * getShipTransitSpeedMultiplier(newState, ship.instanceId)
+          );
+          const plannedDuration = Math.max(0, ship.route.arrivalAtMs - ship.route.departedAtMs);
+          const effectiveArrivalAtMs = ship.route.departedAtMs + plannedDuration / transitSpeedMult;
+          if (now >= effectiveArrivalAtMs) {
             return { ...ship, status: 'idle' as const, currentLocation: ship.route.to, route: undefined };
           }
         }
@@ -920,6 +1153,11 @@ export function processFullTick(state: GameState): GameState {
           playerTitle: newAchievements.find(a => a.title)?.title || newState.playerTitle,
           eventLog: [...achievementEvents, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
         };
+        // Audit Wave B (§1c): achievement_earned reputation was defined but
+        // never awarded.
+        for (let i = 0; i < newAchievements.length; i++) {
+          newState = addReputation(newState, 'achievement_earned');
+        }
       }
     }
   } catch (err) {
@@ -1073,6 +1311,11 @@ export function processFullTick(state: GameState): GameState {
     const activeTimedEvents = [...(newState.activeTimedEvents || [])];
     const timedEventLog: typeof newState.eventLog = [];
     let timedReward = 0;
+    // Audit Wave B (§1c): timed-event boostReward was "copied into state,
+    // never granted on completion" — completed events now also grant their
+    // speed boost into availableBoosts (2x for 1h, matching the tier-2
+    // contract boost magnitude). Deterministic id — no RNG in the tick.
+    const timedBoostGrants: NonNullable<GameState['availableBoosts']> = [];
 
     // Check completion and expiration of active events
     for (let i = activeTimedEvents.length - 1; i >= 0; i--) {
@@ -1092,10 +1335,21 @@ export function processFullTick(state: GameState): GameState {
         if (progress >= evt.target) {
           activeTimedEvents[i] = { ...evt, completed: true, completedAtMs: now };
           timedReward += evt.rewardAmount;
+          const boostNote = evt.boostReward ? ` +2x ${evt.boostReward} boost (1h)` : '';
+          if (evt.boostReward) {
+            timedBoostGrants.push({
+              id: `boost_timed_${evt.templateId}_${evt.startedAtMs}`,
+              type: evt.boostReward,
+              multiplier: 2.0,
+              durationSeconds: 3600,
+              source: `timed_event_${evt.templateId}`,
+              label: `${evt.name}: 2x ${evt.boostReward} (1h)`,
+            });
+          }
           timedEventLog.push({
             id: generateId(), date: newState.gameDate, type: 'milestone',
             title: `${evt.icon} Event Complete: ${evt.name}`,
-            description: `Reward: +$${(evt.rewardAmount / 1_000_000).toFixed(1)}M`,
+            description: `Reward: +$${(evt.rewardAmount / 1_000_000).toFixed(1)}M${boostNote}`,
           });
         }
       }
@@ -1135,6 +1389,9 @@ export function processFullTick(state: GameState): GameState {
       activeTimedEvents: cleanedEvents,
       money: newState.money + timedReward,
       totalEarned: newState.totalEarned + timedReward,
+      availableBoosts: timedBoostGrants.length > 0
+        ? [...(newState.availableBoosts || []), ...timedBoostGrants]
+        : newState.availableBoosts,
       eventLog: timedEventLog.length > 0
         ? [...timedEventLog, ...newState.eventLog].slice(0, MAX_EVENT_LOG)
         : newState.eventLog,

@@ -60,8 +60,21 @@ export async function POST(request: Request) {
       completedResearch = [],
       ships = [],
       workforce = null,
+      commanderIds = [],
       ledgerAck = 0,
     } = body;
+
+    // Audit Wave B (§1c commander marketPriceMultiplier): stash the hired
+    // commander roster inside workforceData so market/trade can recompute
+    // the Magnate broker-fee reduction server-side from definitions. JSON
+    // column — no schema change. Same client-claimed trust level as the
+    // rest of the sync payload; the fee reduction is clamped at read time.
+    const safeCommanderIds = Array.isArray(commanderIds)
+      ? commanderIds.filter((c: unknown) => typeof c === 'string').slice(0, 30)
+      : [];
+    const workforceData = workforce && typeof workforce === 'object'
+      ? { ...(workforce as Record<string, unknown>), _commanders: safeCommanderIds }
+      : (safeCommanderIds.length > 0 ? { _commanders: safeCommanderIds } : workforce);
 
     // ── One Wallet: reconcile client money against the server delta ledger ──
     // (see route header). Falls back to the raw client figure when the ledger
@@ -164,7 +177,7 @@ export async function POST(request: Request) {
         unlockedLocationsList: safeLocations,
         completedResearchList: safeResearch,
         shipsData: safeShips,
-        workforceData: workforce,
+        workforceData: workforceData as object,
         lastSyncAt: new Date(),
       },
       update: {
@@ -177,7 +190,7 @@ export async function POST(request: Request) {
         unlockedLocationsList: safeLocations,
         completedResearchList: safeResearch,
         shipsData: safeShips,
-        workforceData: workforce,
+        workforceData: workforceData as object,
         lastSyncAt: new Date(),
       },
     });
@@ -310,7 +323,7 @@ export async function POST(request: Request) {
     let allianceBonus = 0;
     let allianceName: string | null = null;
     let allianceTag: string | null = null;
-    let allianceBonuses: { revenueBonus: number; miningBonus: number; researchBonus: number; buildSpeedBonus: number } | null = null;
+    let allianceBonuses: { revenueBonus: number; miningBonus: number; researchBonus: number; buildSpeedBonus: number; tradeBonus?: number } | null = null;
     try {
       const membership = await prisma.allianceMember.findUnique({
         where: { profileId: profile.id },
@@ -360,8 +373,28 @@ export async function POST(request: Request) {
           }
         }
 
+        // 6. Diplomacy bonuses (audit Wave B, A2: "Include
+        // alliance-diplomacy.getDiplomacyBonuses in the sync aggregate").
+        // tradeBonus is a broker-fee reduction fraction; it rides along in
+        // the aggregate (informational client-side) and is also enforced
+        // server-side in market/trade.
+        let diplomacyTradeBonus = 0;
+        try {
+          const { getDiplomacyBonuses } = await import('@/lib/game/alliance-diplomacy');
+          const activeTreaties = await prisma.allianceDiplomacy.findMany({
+            where: {
+              status: 'active',
+              OR: [{ senderId: ally.id }, { receiverId: ally.id }],
+            },
+            select: { type: true, tradeBonus: true },
+            take: 25,
+          });
+          diplomacyTradeBonus = getDiplomacyBonuses(activeTreaties).tradeBonus;
+        } catch { /* diplomacy non-critical */ }
+
         // Aggregate all bonus sources
         allianceBonuses = {
+          tradeBonus: diplomacyTradeBonus,
           revenueBonus:
             allianceBonus +
             tierInfo.perks.revenueBonus +
@@ -425,24 +458,123 @@ export async function POST(request: Request) {
     const serverGameDate = getGlobalGameDate();
 
     // Compute global service counts for dynamic pricing
-    // Count how many instances of each service exist across ALL players
+    // Count how many instances of each service exist across ALL players.
+    // Audit Wave B (A7): the same pass also accumulates per-ZONE monthly
+    // service base revenue — the governor tax base returned in zoneStandings.
     let servicePriceMultipliers: Record<string, number> = {};
+    const zoneServiceRevenueBase: Record<string, number> = {};
     try {
+      const { SERVICE_MAP } = await import('@/lib/game/services');
+      const { LOCATION_TO_ZONE } = await import('@/lib/game/zone-influence');
       const allProfiles = await prisma.gameProfile.findMany({
         select: { activeServicesData: true },
         where: { lastSyncAt: { gt: new Date(Date.now() - 7 * 24 * 3600_000) } }, // Active in last 7 days
       });
       const globalServiceCounts: Record<string, number> = {};
       for (const p of allProfiles) {
-        const services = (p.activeServicesData as { definitionId: string }[] | null) || [];
+        const services = (p.activeServicesData as { definitionId: string; locationId?: string }[] | null) || [];
         for (const svc of services) {
           if (svc.definitionId) {
             globalServiceCounts[svc.definitionId] = (globalServiceCounts[svc.definitionId] || 0) + 1;
+          }
+          // Governor tax base (audit A7): zone-wide service activity
+          if (svc.definitionId && svc.locationId) {
+            const zoneSlug = LOCATION_TO_ZONE.get(svc.locationId);
+            const def = SERVICE_MAP.get(svc.definitionId);
+            if (zoneSlug && def) {
+              zoneServiceRevenueBase[zoneSlug] = (zoneServiceRevenueBase[zoneSlug] || 0) + def.revenuePerMonth;
+            }
           }
         }
       }
       servicePriceMultipliers = getAllServicePriceMultipliers(globalServiceCounts);
     } catch { /* non-critical — fall back to no adjustment */ }
+
+    // ── Audit Wave B (A7): the player's zone standings for the tick ─────────
+    // Governor benefits and stakeholder service bonuses were "defined, never
+    // called anywhere" (audit §1b Territory). The client engine applies them
+    // from this snapshot via server-effects.ts.
+    let zoneStandings: { zoneSlug: string; sharePct: number; isGovernor: boolean; taxBaseMonthly: number }[] = [];
+    try {
+      const influences = await prisma.zoneInfluence.findMany({
+        where: { profileId: profile.id },
+        include: { zone: { select: { slug: true, governorId: true } } },
+      });
+      zoneStandings = influences
+        .filter(inf => inf.sharePercent > 0 || inf.zone.governorId === profile.id)
+        .map(inf => ({
+          zoneSlug: inf.zone.slug,
+          sharePct: inf.sharePercent,
+          isGovernor: inf.zone.governorId === profile.id,
+          taxBaseMonthly: Math.round(zoneServiceRevenueBase[inf.zone.slug] || 0),
+        }));
+    } catch { /* zone standings non-critical */ }
+
+    // ── Audit Wave B (A8): active espionage reward perks ────────────────────
+    // EspionageMission.reward was "persisted and never consumed" (audit §1b).
+    // Return unexpired trade_route_intel / employee_headhunt rewards so the
+    // engine can store them as activeIntelPerks (headhunt hire discount is
+    // client-side via getHireCost; the market-fee discount is ALSO enforced
+    // server-side in market/trade from the same mission rows).
+    const espionagePerks: { type: string; discount: number; expiresAtMs: number; resources?: string[] }[] = [];
+    try {
+      const recentMissions = await prisma.espionageMission.findMany({
+        where: {
+          attackerId: profile.id,
+          succeeded: true,
+          actionType: { in: ['trade_route_intel', 'employee_headhunt'] },
+          createdAt: { gte: new Date(Date.now() - 72 * 3600_000) },
+        },
+        select: { actionType: true, reward: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      });
+      const nowMs = Date.now();
+      for (const m of recentMissions) {
+        const r = m.reward as { type?: string; discount?: number; durationHours?: number; resources?: string[] } | null;
+        if (!r?.type) continue;
+        const expiresAtMs = m.createdAt.getTime() + (r.durationHours || 24) * 3600_000;
+        if (expiresAtMs <= nowMs) continue;
+        espionagePerks.push({
+          type: r.type,
+          discount: Math.min(0.9, Math.max(0, r.discount ?? 0.1)),
+          expiresAtMs,
+          resources: Array.isArray(r.resources) ? r.resources.slice(0, 10) : undefined,
+        });
+      }
+    } catch { /* espionage perks non-critical */ }
+
+    // ── Audit Wave B (§1b Leagues): last finalized promotion boost ──────────
+    // league-system.ts defines boostType/boostMultiplier/boostDurationSeconds
+    // for top-10 finishers, but process-week "never create[d] an ActiveBoost".
+    // Return the player's most recent finalized top-10 result; the engine
+    // grants it once per season (claimedLeagueBoostSeasonIds dedupe).
+    let leagueBoost: { seasonId: string; rank: number; league: number; boostType: string; boostMultiplier: number; boostDurationSeconds: number } | null = null;
+    try {
+      const finalized = await prisma.leagueBracketEntry.findFirst({
+        where: {
+          profileId: profile.id,
+          rank: { gte: 1, lte: 10 },
+          bracket: { season: { isActive: false, endsAt: { gte: new Date(Date.now() - 14 * 24 * 3600_000) } } },
+        },
+        include: { bracket: { select: { league: true, seasonId: true } } },
+        orderBy: { updatedAt: 'desc' },
+      });
+      if (finalized) {
+        const { getLeagueRewards } = await import('@/lib/game/league-system');
+        const rewards = getLeagueRewards(finalized.rank, finalized.bracket.league);
+        if (rewards.boostType && rewards.boostMultiplier > 1) {
+          leagueBoost = {
+            seasonId: finalized.bracket.seasonId,
+            rank: finalized.rank,
+            league: finalized.bracket.league,
+            boostType: rewards.boostType,
+            boostMultiplier: rewards.boostMultiplier,
+            boostDurationSeconds: rewards.boostDurationSeconds,
+          };
+        }
+      }
+    } catch { /* league boost non-critical */ }
 
     // ── Ghost Rivals: Lightweight summary for dashboard widget ──
     let rivalsSummary: { activeCount: number; topRivalScore: number | null; topRivalName: string | null; hasNewEvents: boolean } = {
@@ -489,6 +621,11 @@ export async function POST(request: Request) {
       servicePriceMultipliers,
       rivals: rivalsSummary,
       leagueInfo,
+      // Audit Wave B: server-computed effects consumed by the client tick
+      // via useGameSync → server-effects.ts → game-engine.
+      zoneStandings,
+      espionagePerks,
+      leagueBoost,
       // Global game date — all players must use this
       serverGameDate: {
         year: serverGameDate.year,

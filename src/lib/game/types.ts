@@ -411,9 +411,11 @@ export interface GameState {
   earnedAchievements?: string[];
   playerTitle?: string | null;
 
-  // Speed boosts (earned from contracts)
-  availableBoosts?: { id: string; type: 'construction' | 'research'; multiplier: number; durationSeconds: number; source: string; label: string }[];
-  activeBoosts?: { boostId: string; type: 'construction' | 'research'; multiplier: number; activatedAtMs: number; expiresAtMs: number; label: string }[];
+  // Speed boosts (earned from contracts, leagues, mini-activities).
+  // 'mining' added in audit Wave B so mini-activity mining_boost rewards
+  // (audit §1c mini-activities) have a mechanical home.
+  availableBoosts?: { id: string; type: 'construction' | 'research' | 'mining'; multiplier: number; durationSeconds: number; source: string; label: string }[];
+  activeBoosts?: { boostId: string; type: 'construction' | 'research' | 'mining'; multiplier: number; activatedAtMs: number; expiresAtMs: number; label: string }[];
 
   // Dynamic service pricing (from server — multiplier per service ID)
   servicePriceMultipliers?: Record<string, number>;
@@ -626,6 +628,46 @@ export interface GameState {
   expeditions?: ExpeditionState[];
   interstellarColonies?: InterstellarColonyState[];
   interstellarTradeRoutes?: InterstellarTradeRouteState[];
+
+  // ─── Audit Wave B (V14) — server-computed bonuses that reach the tick ────
+  // All fields additive + optional; solo/logged-out players never set them
+  // and every consumer falls back to neutral values.
+
+  /** Audit A2: alliance bonus aggregate (member count + tier + research +
+   *  perks + projects), computed by sync/route.ts and piped through
+   *  server-effects.ts. Multiplied into the tick next to tier bonuses. */
+  allianceBonuses?: {
+    revenueBonus: number;
+    miningBonus: number;
+    researchBonus: number;
+    buildSpeedBonus: number;
+    tradeBonus?: number;
+  };
+
+  /** Audit A7: per-zone standing (governor / stakeholder) from the server
+   *  zone-influence tables. Drives getStakeholderServiceBonus on services in
+   *  the zone and the governor tax revenue line. */
+  zoneStandings?: {
+    zoneSlug: string;
+    sharePct: number;
+    isGovernor: boolean;
+    taxBaseMonthly: number;
+  }[];
+
+  /** Audit A8: persisted espionage rewards (EspionageMission.reward) become
+   *  consumable perks: market_discount cuts the broker fee (applied
+   *  server-side in market/trade), headhunt_voucher discounts the next hire
+   *  (workforce.getHireCost). */
+  activeIntelPerks?: {
+    type: 'market_discount' | 'headhunt_voucher';
+    discount: number;
+    expiresAtMs: number;
+    resources?: string[];
+  }[];
+
+  /** Audit §1b "Leagues": seasons whose promotion boost has already been
+   *  granted (dedupe cursor for server-effects league boost grants). */
+  claimedLeagueBoostSeasonIds?: string[];
 
   // Hazards (Phase II) — recent hazard log
   recentHazards?: {

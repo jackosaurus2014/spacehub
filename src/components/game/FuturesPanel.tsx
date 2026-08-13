@@ -10,6 +10,7 @@ import {
   computeBidAsk,
   computeMargin,
   openFutures,
+  checkFuturesStrike,
   expireDueFutures,
   getOpenFuturesExposure,
   FUTURES_MARGIN_RATE,
@@ -158,19 +159,41 @@ export default function FuturesPanel({ state, setState }: Props) {
     if (strikeNum < 1) { setError('Enter a valid strike price.'); return; }
     if (!canAfford) { setError(`Insufficient funds to post margin (need ${formatMoney(marginRequired)}).`); return; }
 
+    // Mirror the engine's own price-band check (audit A6 / hotlist #2)
+    // BEFORE calling openFutures, which silently returns state unchanged —
+    // not an exception — when the strike is out of band. Previously this
+    // component always showed a success toast regardless, hiding the
+    // refusal from the player entirely.
+    const band = checkFuturesStrike(resource, strikeNum, quote?.spotPrice ?? null);
+    if (!band.valid) {
+      setError(`Strike price out of band — must be between ${formatMoney(band.min)} and ${formatMoney(band.max)} for this resource.`);
+      return;
+    }
+
     setSubmitting(true);
+    let opened = false;
     setState(prev => {
       if (!prev) return prev;
-      return openFutures(prev, {
+      const next = openFutures(prev, {
         resourceSlug: resource,
         quantity: qtyNum,
         strikePrice: strikeNum,
         direction,
         expiresAtMs: Date.now() + expiry.ms,
+        spotPrice: quote?.spotPrice ?? null,
       });
+      opened = next !== prev;
+      return next;
     });
-    setSuccess(`Opened ${direction === 'long' ? 'LONG' : 'SHORT'} position: ${qtyNum.toLocaleString()} ${resourceDef?.name || resource} @ ${formatMoney(strikeNum)}.`);
-    setQuantity('');
+    if (opened) {
+      setSuccess(`Opened ${direction === 'long' ? 'LONG' : 'SHORT'} position: ${qtyNum.toLocaleString()} ${resourceDef?.name || resource} @ ${formatMoney(strikeNum)}.`);
+      setQuantity('');
+    } else {
+      // openFutures refused for a reason our pre-check didn't catch (e.g. a
+      // margin/quantity edge case) — surface the refusal instead of a fake
+      // success toast.
+      setError('The exchange refused this contract. Check your margin and quantity, then try again.');
+    }
     setSubmitting(false);
   };
 

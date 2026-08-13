@@ -187,6 +187,49 @@ export function getEffectiveShipStats(state: GameState, shipInstanceId: string):
   return out;
 }
 
+// ─── Engine readers (audit Wave B — §1b "Modules") ───────────────────────────
+// The audit found modules were a "fake shop": getEffectiveShipStats was
+// called only by ModulesPanel for display while the engine read raw
+// shipDef stats. These readers are what game-engine.ts now consumes.
+
+/** The mining-laser module's rate bonus lives here (not in ShipDerivedStats —
+ *  miningRate is on ShipDefinition; see the in-file note at the module def). */
+export const MINING_LASER_MODULE_ID = 'mod_mining_laser';
+export const MINING_LASER_RATE_BONUS = 0.30;
+
+/**
+ * Mining-rate multiplier from modules fitted to a ship (mining laser +30%
+ * each, additive). Consumed by the ship-mining branch of processFullTick.
+ */
+export function getShipMiningRateMultiplier(state: GameState, shipInstanceId: string): number {
+  let mult = 1;
+  for (const m of getFittedModulesForShip(state, shipInstanceId)) {
+    if (m.definitionId === MINING_LASER_MODULE_ID) mult += MINING_LASER_RATE_BONUS;
+  }
+  return mult;
+}
+
+/**
+ * Transit-speed multiplier from fitted engine/nav modules, derived from the
+ * ratio of effective vs base warpFactor / sublightSpeed (ion thrusters +20%
+ * warp, navcomp +15% sublight). The engine divides remaining transit time by
+ * this, so fitted ships arrive early even though dispatch ETAs were computed
+ * from base stats. Clamped 1.0-1.6 (speed-ups only; audit Wave B keeps
+ * effects conservative).
+ */
+export function getShipTransitSpeedMultiplier(state: GameState, shipInstanceId: string): number {
+  const ship = (state.ships || []).find(s => s.instanceId === shipInstanceId);
+  if (!ship) return 1;
+  const def = SHIP_MAP.get(ship.definitionId);
+  if (!def) return 1;
+  const eff = getEffectiveShipStats(state, shipInstanceId);
+  if (!eff) return 1;
+  const base = getShipDerivedStats(def);
+  const warpRatio = base.warpFactor > 0 ? eff.warpFactor / base.warpFactor : 1;
+  const sublightRatio = base.sublightSpeed > 0 ? eff.sublightSpeed / base.sublightSpeed : 1;
+  return Math.max(1, Math.min(1.6, Math.max(warpRatio, sublightRatio)));
+}
+
 // ─── Purchase & fitting actions ──────────────────────────────────────────────
 
 export function purchaseModule(state: GameState, moduleId: string, now: number = Date.now()): GameState {
