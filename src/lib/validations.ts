@@ -48,9 +48,10 @@ export const paginationSchema = z.object({
 export const contactFormSchema = z.object({
   name: nameSchema,
   email: emailSchema,
-  subject: z.enum(['general', 'technical', 'billing', 'partnership'], {
-    message: 'Please select a valid subject',
-  }),
+  subject: z.enum(
+    ['general', 'technical', 'billing', 'partnership', 'employer-interest', 'sponsorship-inquiry'],
+    { message: 'Please select a valid subject' }
+  ),
   message: z
     .string()
     .min(10, 'Message must be at least 10 characters')

@@ -680,7 +680,14 @@ describe('contactFormSchema', () => {
   });
 
   it('accepts all valid subject values', () => {
-    const subjects = ['general', 'technical', 'billing', 'partnership'] as const;
+    const subjects = [
+      'general',
+      'technical',
+      'billing',
+      'partnership',
+      'employer-interest',
+      'sponsorship-inquiry',
+    ] as const;
     for (const subject of subjects) {
       const result = contactFormSchema.safeParse({ ...validContact, subject });
       expect(result.success).toBe(true);

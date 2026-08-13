@@ -76,6 +76,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Mission Cost & Insurance', href: '/mission-cost', description: 'Cost estimates & risk pricing' },
   { label: 'Deal Rooms', href: '/deal-rooms', description: 'Secure document sharing' },
   { label: 'Gig Work', href: '/gig-work', description: 'Freelance & contract work' },
+  { label: 'Hire Talent', href: '/hire', description: 'Post jobs & find space industry talent' },
 ];
 
 const EXPLORE_ITEMS: DropdownItem[] = [

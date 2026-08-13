@@ -1,61 +1,57 @@
-'use client';
-
-import { useState } from 'react';
 import Link from 'next/link';
+import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
+import { SITE_STATS } from '@/lib/site-stats';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import { toast } from '@/lib/toast';
-import { extractApiError } from '@/lib/errors';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import AdvertiseInquiryForm from './AdvertiseInquiryForm';
 
-const sponsorshipTiers = [
+export const dynamic = 'force-dynamic';
+
+async function getLiveCounts() {
+  try {
+    const [activeJobs, companies] = await Promise.all([
+      prisma.spaceJobPosting.count({ where: { isActive: true } }),
+      prisma.companyProfile.count(),
+    ]);
+    return { activeJobs, companies };
+  } catch (error) {
+    logger.error('Failed to load /advertise live counts', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return { activeJobs: null, companies: null };
+  }
+}
+
+const sponsorshipOptions = [
   {
-    name: 'Bronze',
-    price: '$500',
-    period: '/mo',
-    description: 'Get your brand in front of the space industry with foundational visibility.',
-    features: [
-      'Logo in footer',
-      '1 sponsored post/month',
-    ],
-    highlight: false,
+    name: 'State of the Space Economy',
+    description: 'A weekly, data-driven brief published every Monday, built directly from our own market and news data — not AI-generated. Sponsor a placement in the brief.',
+    cta: 'Live every Monday',
+    color: 'cyan',
+  },
+  {
+    name: "Who's Hiring in Space",
+    description: "A weekly article generated entirely from live SpaceJobPosting data synced from company ATS boards. Sponsor a placement alongside the week's hiring roundup.",
+    cta: 'Live weekly',
+    color: 'purple',
+  },
+  {
+    name: 'Jobs Widget & Feed Attribution',
+    description: 'Our embeddable live jobs widget is used by third-party sites. Sponsor branded attribution on the widget and job feed.',
+    cta: 'See the widget',
+    href: '/widgets/jobs',
+    color: 'emerald',
+  },
+  {
+    name: 'Site Display',
+    description: 'Logo and banner placement across relevant SpaceNexus pages — market intelligence, jobs, and news sections.',
+    cta: 'Sponsorships open',
     color: 'amber',
   },
-  {
-    name: 'Silver',
-    price: '$1,500',
-    period: '/mo',
-    description: 'Amplify your reach with multi-channel exposure across the SpaceNexus platform.',
-    features: [
-      'Banner ad rotation',
-      '4 sponsored posts/month',
-      'Newsletter mention',
-    ],
-    highlight: true,
-    color: 'slate',
-  },
-  {
-    name: 'Gold',
-    price: '$3,000',
-    period: '/mo',
-    description: 'Maximum brand impact with dedicated sponsorship across content and events.',
-    features: [
-      'Dedicated module sponsorship',
-      'Co-branded content',
-      'Event sponsorship',
-    ],
-    highlight: false,
-    color: 'yellow',
-  },
-];
-
-const audienceStats = [
-  { value: 'Growing', label: 'Active User Base' },
-  { value: 'Space', label: 'Industry Focused' },
-  { value: 'Global', label: 'Professional Audience' },
-  { value: 'Premium', label: 'Content Environment' },
 ];
 
 const audienceDemographics = [
@@ -63,7 +59,6 @@ const audienceDemographics = [
     icon: (
       <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17l-5.1-5.1m0 0L11.42 4.97m-5.1 5.1h14.25M4.5 19.5h15" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
     title: 'Space Engineers',
@@ -98,91 +93,15 @@ const audienceDemographics = [
   },
 ];
 
-interface ContactFormData {
-  name: string;
-  email: string;
-  company: string;
-  message: string;
-}
+const CARD_ACCENTS: Record<string, string> = {
+  cyan: 'from-cyan-400 to-blue-500',
+  purple: 'from-purple-400 to-fuchsia-500',
+  emerald: 'from-emerald-400 to-teal-500',
+  amber: 'from-amber-400 to-orange-500',
+};
 
-interface FormErrors {
-  name?: string;
-  email?: string;
-  company?: string;
-  message?: string;
-}
-
-export default function AdvertisePage() {
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: '',
-    email: '',
-    company: '',
-    message: '',
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    if (!formData.company.trim()) newErrors.company = 'Company is required';
-    if (!formData.message.trim()) {
-      newErrors.message = 'Message is required';
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    setStatus('submitting');
-    setErrorMessage('');
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          subject: 'Advertising Inquiry',
-          message: `Company: ${formData.company}\n\n${formData.message}`,
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(extractApiError(data, 'Failed to submit inquiry'));
-      }
-
-      setStatus('success');
-      toast.success('Inquiry sent! Our partnerships team will be in touch.');
-      setFormData({ name: '', email: '', company: '', message: '' });
-    } catch (error) {
-      setStatus('error');
-      const msg = error instanceof Error ? error.message : 'An unexpected error occurred';
-      setErrorMessage(msg);
-      toast.error(msg);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
-  };
+export default async function AdvertisePage() {
+  const { activeJobs, companies } = await getLiveCounts();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0a0a0a] to-black">
@@ -190,86 +109,92 @@ export default function AdvertisePage() {
         {/* Hero */}
         <AnimatedPageHeader
           title="Advertise on SpaceNexus"
-          subtitle="Reach space industry professionals"
+          subtitle="A media kit for sponsoring space industry intelligence"
           accentColor="emerald"
         />
 
         <ScrollReveal className="mt-4 mb-16">
           <p className="text-center text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Space engineers, executives, investors, analysts, and government professionals rely on SpaceNexus for industry intelligence every day.
+            Space engineers, executives, investors, analysts, and government professionals rely on SpaceNexus
+            for industry intelligence. Below is what&apos;s available to sponsor — no traffic or subscriber
+            numbers are published here; those are shared directly on request.
           </p>
         </ScrollReveal>
 
-        {/* Audience Stats */}
-        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16" staggerDelay={0.1}>
-          {audienceStats.map((stat) => (
-            <StaggerItem key={stat.label}>
-              <div className="card p-6 text-center">
-                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
-                  {stat.value}
-                </p>
-                <p className="text-sm text-slate-400 mt-2 font-medium">{stat.label}</p>
-              </div>
-            </StaggerItem>
-          ))}
+        {/* Live audience stats — SITE_STATS + live DB counts only */}
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-4" staggerDelay={0.1}>
+          <StaggerItem>
+            <div className="card p-6 text-center">
+              <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
+                {companies != null ? companies.toLocaleString() : SITE_STATS.companies}
+              </p>
+              <p className="text-sm text-slate-400 mt-2 font-medium">Company Profiles</p>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card p-6 text-center">
+              <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
+                {activeJobs != null ? activeJobs.toLocaleString() : SITE_STATS.jobListings}
+              </p>
+              <p className="text-sm text-slate-400 mt-2 font-medium">Live Job Listings</p>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card p-6 text-center">
+              <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
+                {SITE_STATS.newsFeeds}
+              </p>
+              <p className="text-sm text-slate-400 mt-2 font-medium">News Feeds Ingested</p>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card p-6 text-center">
+              <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
+                {SITE_STATS.dataSources}
+              </p>
+              <p className="text-sm text-slate-400 mt-2 font-medium">Named Data Sources</p>
+            </div>
+          </StaggerItem>
         </StaggerContainer>
 
-        {/* Sponsorship Tiers */}
-        <ScrollReveal className="mb-4">
-          <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center">
-            Sponsorship Tiers
-          </h2>
-          <p className="text-slate-400 text-center mb-8 max-w-2xl mx-auto">
-            Choose the level of visibility that matches your goals. All tiers include performance reporting and a dedicated account manager.
+        <ScrollReveal className="mb-16">
+          <p className="text-center text-sm text-slate-500 max-w-2xl mx-auto">
+            Traffic, session, and subscriber metrics are shared directly with sponsors on request.
           </p>
         </ScrollReveal>
 
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16" staggerDelay={0.12}>
-          {sponsorshipTiers.map((tier) => (
-            <StaggerItem key={tier.name}>
-              <div
-                className={`card p-8 relative h-full flex flex-col ${
-                  tier.highlight ? 'border-white/15 glow-border' : ''
-                }`}
-              >
-                {tier.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-white text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
-                      Most Popular
-                    </span>
-                  </div>
+        {/* What's available to sponsor */}
+        <ScrollReveal className="mb-4">
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center">
+            What&apos;s Available to Sponsor
+          </h2>
+          <p className="text-slate-400 text-center mb-8 max-w-2xl mx-auto">
+            Sponsorships are open. Pricing is still in research — inquire below and our team will follow up
+            with options and a tailored proposal.
+          </p>
+        </ScrollReveal>
+
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16" staggerDelay={0.12}>
+          {sponsorshipOptions.map((option) => (
+            <StaggerItem key={option.name}>
+              <div className="card p-8 h-full flex flex-col">
+                <h3 className="text-xl font-bold text-white mb-2">{option.name}</h3>
+                <p className="text-slate-300 text-sm leading-relaxed mb-6 flex-1">{option.description}</p>
+                {option.href ? (
+                  <Link
+                    href={option.href}
+                    className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${CARD_ACCENTS[option.color]} bg-clip-text text-transparent`}
+                  >
+                    {option.cta} →
+                  </Link>
+                ) : (
+                  <a
+                    href="#contact"
+                    className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${CARD_ACCENTS[option.color]} bg-clip-text text-transparent`}
+                  >
+                    {option.cta} →
+                  </a>
                 )}
-
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-white mb-1">{tier.name}</h3>
-                  <p className="text-slate-400 text-sm mb-4">{tier.description}</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold text-white">{tier.price}</span>
-                    <span className="text-slate-400 text-sm">{tier.period}</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-3 flex-1">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <svg className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-slate-300 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <a
-                  href="#contact"
-                  className={`mt-6 w-full inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-lg transition-all duration-200 ${
-                    tier.highlight
-                      ? 'bg-white text-slate-900 hover:bg-slate-100 shadow-lg shadow-white/[0.05]'
-                      : 'border border-white/[0.12] text-white hover:bg-white/[0.06]'
-                  }`}
-                >
-                  Get Started
-                </a>
               </div>
             </StaggerItem>
           ))}
@@ -278,10 +203,10 @@ export default function AdvertisePage() {
         {/* Why Advertise With Us */}
         <ScrollReveal className="mb-4">
           <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center">
-            Why Advertise With Us
+            Who You&apos;ll Reach
           </h2>
           <p className="text-slate-400 text-center mb-8 max-w-2xl mx-auto">
-            SpaceNexus attracts the most engaged audience of space industry professionals across every segment of the value chain.
+            SpaceNexus is built for the full space industry value chain — from engineers to investors.
           </p>
         </ScrollReveal>
 
@@ -307,135 +232,13 @@ export default function AdvertisePage() {
         <ScrollReveal className="mb-16">
           <div className="max-w-2xl mx-auto" id="contact">
             <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center">
-              Get in Touch
+              Sponsorships Open — Inquire
             </h2>
             <p className="text-slate-400 text-center mb-8">
-              Interested in advertising on SpaceNexus? Tell us about your goals and our partnerships team will reach out with a tailored proposal.
+              Tell us about your sponsorship goals and our team will reach out with options. Pricing is still
+              in research, so proposals are tailored per conversation.
             </p>
-
-            {status === 'success' ? (
-              <div className="card p-8 text-center">
-                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Inquiry Sent!</h3>
-                <p className="text-slate-400 mb-6">
-                  Thank you for your interest. Our partnerships team will be in touch within 1-2 business days.
-                </p>
-                <button
-                  onClick={() => setStatus('idle')}
-                  className="btn-primary"
-                >
-                  Send Another Inquiry
-                </button>
-              </div>
-            ) : (
-              <div className="card p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {status === 'error' && (
-                    <div role="alert" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  <div>
-                    <label htmlFor="adv-name" className="block text-slate-400 text-sm mb-2">
-                      Name <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      id="adv-name"
-                      name="name"
-                      type="text"
-                      autoComplete="name"
-                      enterKeyHint="next"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className={`input w-full ${errors.name ? 'border-red-500' : ''}`}
-                      placeholder="Your name"
-                      aria-required="true"
-                      aria-invalid={errors.name ? true : undefined}
-                    />
-                    {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="adv-email" className="block text-slate-400 text-sm mb-2">
-                      Email <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      id="adv-email"
-                      name="email"
-                      type="email"
-                      inputMode="email"
-                      autoComplete="email"
-                      enterKeyHint="next"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className={`input w-full ${errors.email ? 'border-red-500' : ''}`}
-                      placeholder="you@company.com"
-                      aria-required="true"
-                      aria-invalid={errors.email ? true : undefined}
-                    />
-                    {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="adv-company" className="block text-slate-400 text-sm mb-2">
-                      Company <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      id="adv-company"
-                      name="company"
-                      type="text"
-                      autoComplete="organization"
-                      enterKeyHint="next"
-                      value={formData.company}
-                      onChange={handleChange}
-                      className={`input w-full ${errors.company ? 'border-red-500' : ''}`}
-                      placeholder="Your company"
-                      aria-required="true"
-                      aria-invalid={errors.company ? true : undefined}
-                    />
-                    {errors.company && <p className="text-red-400 text-sm mt-1">{errors.company}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="adv-message" className="block text-slate-400 text-sm mb-2">
-                      Message <span className="text-red-400">*</span>
-                    </label>
-                    <textarea
-                      id="adv-message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      rows={4}
-                      className={`input w-full resize-none ${errors.message ? 'border-red-500' : ''}`}
-                      placeholder="Tell us about your advertising goals, target audience, and budget range..."
-                      aria-required="true"
-                      aria-invalid={errors.message ? true : undefined}
-                    />
-                    {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message}</p>}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={status === 'submitting'}
-                    className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {status === 'submitting' ? (
-                      <span className="flex items-center justify-center space-x-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Sending...</span>
-                      </span>
-                    ) : (
-                      'Send Inquiry'
-                    )}
-                  </button>
-                </form>
-              </div>
-            )}
+            <AdvertiseInquiryForm />
           </div>
         </ScrollReveal>
 

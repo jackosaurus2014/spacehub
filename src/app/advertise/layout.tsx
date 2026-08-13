@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Advertise on SpaceNexus - Reach Space Industry Decision-Makers',
-  description: 'Advertise on SpaceNexus and reach thousands of space industry decision-makers. Sponsorship tiers from $500/mo. Reach engineers, executives, investors, analysts, and government professionals.',
+  title: 'Advertise on SpaceNexus - Media Kit for Space Industry Sponsors',
+  description: 'Sponsor space industry intelligence on SpaceNexus: the weekly State of the Space Economy brief, the weekly Who\'s Hiring in Space article, the live jobs widget, and site display. Sponsorships open — inquire for details.',
   keywords: [
     'space advertising',
     'aerospace marketing',
@@ -11,13 +11,14 @@ export const metadata: Metadata = {
     'satellite industry sponsorship',
     'space industry decision-makers',
     'aerospace B2B marketing',
+    'space media kit',
   ],
   openGraph: {
     type: 'website',
     siteName: 'SpaceNexus',
     locale: 'en_US',
-    title: 'Advertise on SpaceNexus | Reach Space Industry Decision-Makers',
-    description: 'Reach thousands of space industry decision-makers with Bronze, Silver, and Gold sponsorship tiers. Engineers, executives, investors, analysts, and government professionals.',
+    title: 'Advertise on SpaceNexus | Media Kit for Space Industry Sponsors',
+    description: 'Sponsor space industry intelligence on SpaceNexus: the weekly State of the Space Economy brief, the weekly Who\'s Hiring in Space article, the live jobs widget, and site display. Sponsorships open — inquire for details.',
     url: 'https://spacenexus.us/advertise',
     images: [
       {
@@ -32,8 +33,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@spacenexus',
     creator: '@spacenexus',
-    title: 'Advertise on SpaceNexus | Reach Space Industry Decision-Makers',
-    description: 'Reach thousands of space industry decision-makers with Bronze, Silver, and Gold sponsorship tiers on SpaceNexus.',
+    title: 'Advertise on SpaceNexus | Media Kit for Space Industry Sponsors',
+    description: 'Sponsor space industry intelligence on SpaceNexus. Sponsorships open — inquire for details.',
     images: ['/og-image.png'],
   },
   alternates: {
