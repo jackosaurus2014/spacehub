@@ -646,7 +646,16 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
     resize();
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    // The embedded map-command layout can settle its height after mount
+    // (measured shell height, font load, mobile URL-bar changes) — a
+    // window-resize listener alone misses those, leaving the scene drawn
+    // into a collapsed strip. Observe the container itself.
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
+    ro?.observe(container);
+    return () => {
+      window.removeEventListener('resize', resize);
+      ro?.disconnect();
+    };
   }, []);
 
   // Animation loop

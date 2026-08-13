@@ -9,7 +9,7 @@
 // down from space-tycoon/page.tsx — this component only manages which
 // location/system is selected and which layer (solar/galactic) is showing.
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 import type { GameState, GameTab } from '@/lib/game/types';
 import SolarSystemCanvas from './SolarSystemCanvas';
 import GalacticMapView from './GalacticMapView';
@@ -37,6 +37,30 @@ export default function MapCommandCenter({
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
 
+  // Explicit measured height. `flex-1` under the shell's `min-h-screen` flex
+  // column is unreliable (min-height parents don't guarantee flex-grow space,
+  // and the game page sits below variable site chrome), which collapsed the
+  // map into a ribbon. Measure our own top edge and take the rest of the
+  // viewport, with a floor so tiny landscape phones still get a usable map.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [mapHeight, setMapHeight] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = rootRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      const vh = window.visualViewport?.height ?? window.innerHeight;
+      setMapHeight(Math.max(420, Math.floor(vh - top)));
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    window.visualViewport?.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+      window.visualViewport?.removeEventListener('resize', measure);
+    };
+  }, []);
+
   const selectLocation = useCallback((locId: string | null) => {
     setSelection(locId ? { kind: 'location', id: locId } : null);
     onRegionFocus(locId);
@@ -52,7 +76,11 @@ export default function MapCommandCenter({
   }, [layer, selectLocation]);
 
   return (
-    <div className="relative flex-1 min-h-0 w-full overflow-hidden bg-[#020208]">
+    <div
+      ref={rootRef}
+      className="relative w-full overflow-hidden bg-[#020208]"
+      style={{ height: mapHeight ? `${mapHeight}px` : '70vh' }}
+    >
       {layer === 'solar' ? (
         <SolarSystemCanvas
           state={state}
