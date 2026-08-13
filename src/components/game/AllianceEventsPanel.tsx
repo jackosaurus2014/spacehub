@@ -125,8 +125,8 @@ export default function AllianceEventsPanel({ dailyMetrics }: AllianceEventsPane
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-        <div className="inline-block w-5 h-5 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-2" />
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center" role="status" aria-live="polite">
+        <div className="inline-block w-5 h-5 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin motion-reduce:animate-none mb-2" />
         <p className="text-slate-400 text-xs">Loading alliance events...</p>
       </div>
     );
@@ -134,7 +134,7 @@ export default function AllianceEventsPanel({ dailyMetrics }: AllianceEventsPane
 
   if (error || !data) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
+      <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
         <p className="text-red-400 text-xs mb-2">{error || 'No data available'}</p>
         <button
           onClick={() => { setLoading(true); fetchData(); }}
@@ -156,7 +156,7 @@ export default function AllianceEventsPanel({ dailyMetrics }: AllianceEventsPane
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`font-hud flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+            className={`font-hud flex-1 min-h-[44px] py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
               activeTab === tab
                 ? 'bg-purple-600/30 text-purple-300 border border-purple-500/30'
                 : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -291,35 +291,38 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
           <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-2">
             Top Contributors
           </h4>
-          <div className="flex items-center justify-between py-1 px-2.5">
-            <div className="flex items-center gap-2">
-              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500 w-4">#</span>
-              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Commander</span>
-            </div>
-            <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Score</span>
-          </div>
-          <div className="space-y-1">
-            {contributions.slice(0, 5).map((c, idx) => (
-              <div
-                key={c.profileId}
-                className={`flex items-center justify-between py-1.5 px-2.5 rounded-lg border-b border-white/[0.04] last:border-0 ${
-                  c.isYou ? 'bg-cyan-500/5 border border-cyan-500/10' : 'hover:bg-white/[0.02]'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-600 text-[10px] font-mono w-4">{idx + 1}.</span>
-                  <span className={`text-xs ${c.isYou ? 'text-cyan-300 font-semibold' : 'text-white'}`}>
-                    {c.companyName}
-                  </span>
-                  {c.isYou && (
-                    <span className="text-[8px] px-1 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
-                      YOU
-                    </span>
-                  )}
-                </div>
-                <span className="game-number text-slate-300 text-xs font-mono">{c.score.toLocaleString()} pts</span>
+          <div className="rounded-lg" role="table" aria-label="Top contributors">
+            <div className="flex items-center justify-between py-1 px-2.5" role="row">
+              <div className="flex items-center gap-2">
+                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500 w-4" role="columnheader">#</span>
+                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
               </div>
-            ))}
+              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Score</span>
+            </div>
+            <div className="space-y-1">
+              {contributions.slice(0, 5).map((c, idx) => (
+                <div
+                  key={c.profileId}
+                  role="row"
+                  className={`flex items-center justify-between py-1.5 px-2.5 rounded-lg border-b border-white/[0.04] last:border-0 ${
+                    c.isYou ? 'bg-cyan-500/5 border border-cyan-500/10' : 'hover:bg-white/[0.02]'
+                  }`}
+                >
+                  <div role="cell" className="flex items-center gap-2">
+                    <span className="text-slate-600 text-[10px] font-mono w-4">{idx + 1}.</span>
+                    <span className={`text-xs ${c.isYou ? 'text-cyan-300 font-semibold' : 'text-white'}`}>
+                      {c.companyName}
+                    </span>
+                    {c.isYou && (
+                      <span className="text-[8px] px-1 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                        YOU
+                      </span>
+                    )}
+                  </div>
+                  <span role="cell" className="game-number text-slate-300 text-xs font-mono">{c.score.toLocaleString()} pts</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -342,15 +345,16 @@ function BracketStandings({ event }: { event: AllianceEventData }) {
       {event.bracketStandings.length === 0 ? (
         <p className="text-slate-500 text-xs text-center py-4">No standings yet.</p>
       ) : (
-        <div className="space-y-1.5">
+        <div className="space-y-1.5" role="table" aria-label="Bracket standings">
           {event.bracketStandings.map(s => (
             <div
               key={s.allianceId}
+              role="row"
               className={`flex items-center justify-between py-2 px-3 rounded-lg border-b border-white/[0.04] last:border-0 ${
                 s.isYou ? 'bg-purple-500/10 border border-purple-500/20' : 'hover:bg-white/[0.02]'
               }`}
             >
-              <div className="flex items-center gap-2.5">
+              <div role="cell" className="flex items-center gap-2.5">
                 <span className={`game-number text-sm font-bold font-mono w-6 ${
                   s.rank === 1 ? 'text-amber-300' : s.rank === 2 ? 'text-slate-300' : s.rank === 3 ? 'text-amber-600' : 'text-slate-500'
                 }`}>
@@ -375,7 +379,7 @@ function BracketStandings({ event }: { event: AllianceEventData }) {
                   </span>
                 </div>
               </div>
-              <div className="text-right">
+              <div role="cell" className="text-right">
                 <p className="game-number text-white text-xs font-mono font-bold">{s.perCapitaScore.toFixed(1)}</p>
                 <p className="text-slate-600 text-[9px]">per capita</p>
               </div>

@@ -255,14 +255,16 @@ export default function AllianceProjectsPanel({ state }: AllianceProjectsPanelPr
   return (
     <div className="space-y-4">
       {/* Tab Navigation */}
-      <div className="flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]">
+      <div className="flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]" role="tablist" aria-label="Alliance projects view">
         {(['active', 'available', 'completed'] as const).map(tab => {
           const count = tab === 'active' ? activeProjects.length : tab === 'completed' ? completedProjects.length : availableProjects.length;
           return (
             <button
               key={tab}
+              role="tab"
+              aria-selected={activeTab === tab}
               onClick={() => setActiveTab(tab)}
-              className={`font-hud flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+              className={`font-hud flex-1 min-h-[44px] py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
                 activeTab === tab
                   ? 'bg-purple-600/30 text-purple-300 border border-purple-500/30'
                   : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -275,7 +277,7 @@ export default function AllianceProjectsPanel({ state }: AllianceProjectsPanelPr
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center" role="alert" aria-live="polite">
           <p className="text-red-400 text-[10px]">{error}</p>
         </div>
       )}
@@ -483,30 +485,33 @@ function ActiveProjectCard({
       {project.contributions.length > 0 && (
         <div className="mb-3">
           <h4 className="font-hud text-white text-[10px] font-bold uppercase tracking-wider mb-1.5">Top Contributors</h4>
-          <div className="flex items-center justify-between py-1 px-2 text-[9px]">
-            <div className="flex items-center gap-1.5">
-              <span className="font-hud uppercase tracking-widest text-slate-500">#</span>
-              <span className="font-hud uppercase tracking-widest text-slate-500">Commander</span>
-            </div>
-            <span className="font-hud uppercase tracking-widest text-slate-500">Share</span>
-          </div>
-          <div className="space-y-1">
-            {project.contributions.slice(0, 5).map((c, idx) => (
-              <div
-                key={c.profileId}
-                className={`flex items-center justify-between py-1 px-2 rounded text-[10px] border-b border-white/[0.04] last:border-0 ${
-                  c.isYou ? 'bg-cyan-500/5' : ''
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  <span className="text-slate-600 font-mono">{idx + 1}.</span>
-                  <span className={c.isYou ? 'text-cyan-300' : 'text-slate-300'}>{c.companyName}</span>
-                </div>
-                <span className="game-number text-slate-400 font-mono">
-                  {(c.contributionShare * 100).toFixed(1)}%
-                </span>
+          <div role="table" aria-label="Top contributors">
+            <div className="flex items-center justify-between py-1 px-2 text-[9px]" role="row">
+              <div className="flex items-center gap-1.5">
+                <span className="font-hud uppercase tracking-widest text-slate-500" role="columnheader">#</span>
+                <span className="font-hud uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
               </div>
-            ))}
+              <span className="font-hud uppercase tracking-widest text-slate-500" role="columnheader">Share</span>
+            </div>
+            <div className="space-y-1">
+              {project.contributions.slice(0, 5).map((c, idx) => (
+                <div
+                  key={c.profileId}
+                  role="row"
+                  className={`flex items-center justify-between py-1 px-2 rounded text-[10px] border-b border-white/[0.04] last:border-0 ${
+                    c.isYou ? 'bg-cyan-500/5' : ''
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5" role="cell">
+                    <span className="text-slate-600 font-mono">{idx + 1}.</span>
+                    <span className={c.isYou ? 'text-cyan-300' : 'text-slate-300'}>{c.companyName}</span>
+                  </div>
+                  <span className="game-number text-slate-400 font-mono" role="cell">
+                    {(c.contributionShare * 100).toFixed(1)}%
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -658,7 +663,7 @@ function ContributionForm({
       )}
 
       {error && (
-        <p className="text-red-400 text-[10px] mb-2">{error}</p>
+        <p className="text-red-400 text-[10px] mb-2" role="alert" aria-live="polite">{error}</p>
       )}
 
       <div className="flex gap-2">

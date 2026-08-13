@@ -71,7 +71,7 @@ function UpgradeTrackWidget({
             onClick={() => { if (canBuy) { playSound('click'); onUpgrade(); } }}
             disabled={!canBuy}
             title={!canBuy ? reason : undefined}
-            className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
+            className={`min-h-[44px] px-3 py-1 rounded text-[10px] font-medium transition-colors ${
               canBuy
                 ? 'bg-cyan-600 text-white hover:bg-cyan-500'
                 : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
@@ -199,7 +199,7 @@ function SubsidiaryCard({
       {!showDissolve ? (
         <button
           onClick={() => setShowDissolve(true)}
-          className="text-[10px] text-red-400/50 hover:text-red-400 transition-colors"
+          className="min-h-[44px] inline-flex items-center text-[10px] text-red-400/50 hover:text-red-400 transition-colors"
         >
           Dissolve subsidiary...
         </button>
@@ -208,13 +208,13 @@ function SubsidiaryCard({
           <span className="text-[10px] text-red-400">Dissolve? No refund.</span>
           <button
             onClick={() => { playSound('click'); onDissolve(); }}
-            className="px-2 py-1 rounded text-[10px] font-medium bg-red-600 text-white hover:bg-red-500"
+            className="min-h-[44px] px-3 py-1 rounded text-[10px] font-medium bg-red-600 text-white hover:bg-red-500"
           >
             Confirm
           </button>
           <button
             onClick={() => setShowDissolve(false)}
-            className="px-2 py-1 rounded text-[10px] text-slate-400 hover:text-white"
+            className="min-h-[44px] px-3 py-1 rounded text-[10px] text-slate-400 hover:text-white"
           >
             Cancel
           </button>
@@ -363,7 +363,7 @@ export default function SubsidiaryPanel({ state, onCreate, onUpgrade, onDissolve
                       onClick={() => { if (check.allowed) { playSound('click'); onCreate(def.id); setShowCreate(false); } }}
                       disabled={!check.allowed}
                       title={check.reason}
-                      className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                      className={`w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                         check.allowed
                           ? 'bg-cyan-600 text-white hover:bg-cyan-500'
                           : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'

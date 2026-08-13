@@ -328,19 +328,20 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-32 bg-white/[0.03] rounded-xl animate-pulse" />
-        <div className="h-48 bg-white/[0.03] rounded-xl animate-pulse" />
-        <div className="h-24 bg-white/[0.03] rounded-xl animate-pulse" />
+      <div className="space-y-4" role="status" aria-live="polite">
+        <span className="sr-only">Loading mega-project data…</span>
+        <div className="h-32 bg-white/[0.03] rounded-xl animate-pulse motion-reduce:animate-none" />
+        <div className="h-48 bg-white/[0.03] rounded-xl animate-pulse motion-reduce:animate-none" />
+        <div className="h-24 bg-white/[0.03] rounded-xl animate-pulse motion-reduce:animate-none" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center">
+      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center" role="alert" aria-live="polite">
         <p className="text-red-400 text-sm">Failed to load mega-project: {error}</p>
-        <button onClick={fetchData} className="mt-2 text-xs text-red-300 underline">Retry</button>
+        <button onClick={fetchData} className="mt-2 min-h-[44px] px-3 text-xs text-red-300 underline">Retry</button>
       </div>
     );
   }
@@ -747,7 +748,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
                       />
                       <button
                         onClick={() => setResourceMax(id)}
-                        className="px-2 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] font-medium hover:bg-amber-500/20 transition-colors"
+                        className="min-h-[44px] px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] font-medium hover:bg-amber-500/20 transition-colors"
                       >
                         Max
                       </button>
@@ -769,12 +770,12 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
 
           {/* Errors & Success */}
           {contributeError && (
-            <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2 text-red-300 text-xs">
+            <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2 text-red-300 text-xs" role="alert" aria-live="polite">
               {contributeError}
             </div>
           )}
           {contributeSuccess && (
-            <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-2 text-green-300 text-xs">
+            <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-2 text-green-300 text-xs" role="status" aria-live="polite">
               {contributeSuccess}
             </div>
           )}
@@ -812,7 +813,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
           <div className="flex gap-1.5">
             <button
               onClick={() => setLeaderboardTab('alliance')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 leaderboardTab === 'alliance'
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                   : 'bg-white/[0.04] text-slate-400 border border-transparent'
@@ -822,7 +823,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
             </button>
             <button
               onClick={() => setLeaderboardTab('individual')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 leaderboardTab === 'individual'
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                   : 'bg-white/[0.04] text-slate-400 border border-transparent'
@@ -833,7 +834,8 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
             <button
               onClick={fetchLeaderboard}
               disabled={leaderboardLoading}
-              className="ml-auto px-2 py-1.5 rounded-lg text-xs text-slate-500 hover:text-white"
+              aria-label="Refresh leaderboard"
+              className="ml-auto min-h-[44px] px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-white"
             >
               {leaderboardLoading ? '...' : 'Refresh'}
             </button>

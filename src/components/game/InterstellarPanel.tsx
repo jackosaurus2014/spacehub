@@ -7,7 +7,7 @@ import { FACTION_MAP, getFactionArtUrl, type FactionId } from '@/lib/game/factio
 import { formatMoney } from '@/lib/game/formulas';
 import { PLANET_ASSETS } from '@/lib/game/assets';
 import Image from 'next/image';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 interface Props {
   state: GameState;
@@ -140,6 +140,7 @@ export default function InterstellarPanel({ state }: Props) {
                   <div className="rounded bg-white/[0.03] p-1.5">
                     <div className="game-label">Fuel needed</div>
                     <div className={`game-number font-bold ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>
+                      {fuelMissing && <span aria-hidden="true">⚠ </span>}
                       {system.jumpFuelRequired.toLocaleString()}
                     </div>
                   </div>
@@ -204,11 +205,13 @@ function FirstContactModal({
   event: typeof FIRST_CONTACT_EVENTS[string];
   onClose: () => void;
 }) {
-  useEscapeKey(onClose);
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
   const faction = event.factionId ? FACTION_MAP.get(event.factionId as FactionId) : null;
 
   return (
     <div
+      ref={modalRef}
+      tabIndex={-1}
       className="fixed inset-0 z-[80] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
@@ -262,7 +265,7 @@ function FirstContactModal({
 
           <button
             onClick={onClose}
-            className="mt-3 w-full px-4 py-2 rounded-lg text-xs font-bold bg-white/[0.04] text-slate-300 border border-white/[0.06] hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="mt-3 w-full min-h-[44px] px-4 py-2 rounded-lg text-xs font-bold bg-white/[0.04] text-slate-300 border border-white/[0.06] hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
           >
             Close briefing
           </button>

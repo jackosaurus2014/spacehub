@@ -126,20 +126,27 @@ export default function FeatureUnlockToast({ availableTabsKey, availableTabs, on
   if (!visible || !currentUnlock) return null;
 
   return (
-    <div className="fixed top-20 right-4 z-50 animate-reveal-up md:w-80">
+    <div className="fixed top-20 right-4 z-50 animate-reveal-up md:w-80" role="status" aria-live="polite">
       <div className="rounded-lg overflow-hidden shadow-xl" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--accent-primary)', boxShadow: '0 0 20px rgba(99, 102, 241, 0.15)' }}>
         {/* Header */}
         <div className="px-4 py-2 flex items-center justify-between" style={{ background: 'rgba(99, 102, 241, 0.1)', borderBottom: '1px solid rgba(99, 102, 241, 0.15)' }}>
           <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-            ✨ New Feature Unlocked
+            <span aria-hidden="true">✨ </span>New Feature Unlocked
           </span>
-          <button onClick={() => setVisible(false)} className="text-xs" style={{ color: 'var(--text-muted)' }}>✕</button>
+          <button
+            onClick={() => setVisible(false)}
+            aria-label="Dismiss notification"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <span aria-hidden="true">✕</span>
+          </button>
         </div>
 
         {/* Content */}
         <div className="px-4 py-3">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-xl">{currentUnlock.icon}</span>
+            <span className="text-xl" aria-hidden="true">{currentUnlock.icon}</span>
             <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{currentUnlock.name}</span>
           </div>
           <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--text-secondary)' }}>
@@ -148,7 +155,7 @@ export default function FeatureUnlockToast({ availableTabsKey, availableTabs, on
           {onNavigateToTab && (
             <button
               onClick={() => { onNavigateToTab(currentUnlock.tab); setVisible(false); }}
-              className="w-full py-1.5 text-xs font-semibold text-white rounded transition-colors"
+              className="w-full min-h-[44px] py-1.5 text-xs font-semibold text-white rounded transition-colors"
               style={{ background: 'var(--accent-primary)' }}
             >
               Open {currentUnlock.name} →

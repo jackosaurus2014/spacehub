@@ -3,7 +3,7 @@
 import { formatMoney } from '@/lib/game/formulas';
 import type { OfflineEarnings } from '@/lib/game/offline-income';
 import { playSound } from '@/lib/game/sound-engine';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 interface WelcomeBackModalProps {
   earnings: OfflineEarnings;
@@ -11,7 +11,7 @@ interface WelcomeBackModalProps {
 }
 
 export default function WelcomeBackModal({ earnings, onCollect }: WelcomeBackModalProps) {
-  useEscapeKey(onCollect);
+  const modalRef = useModalA11y<HTMLDivElement>(onCollect);
   const hours = Math.floor(earnings.timeAwayCapped / 3600000);
   const minutes = Math.floor((earnings.timeAwayCapped % 3600000) / 60000);
   const timeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
@@ -23,7 +23,7 @@ export default function WelcomeBackModal({ earnings, onCollect }: WelcomeBackMod
     .slice(0, 4);
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="welcome-back-title">
+    <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="welcome-back-title">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" aria-hidden="true" />
 
       <div className="relative w-full max-w-sm rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #0f1530 0%, #0a0a1a 100%)' }}>

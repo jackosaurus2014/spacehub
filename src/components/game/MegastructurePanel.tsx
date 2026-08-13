@@ -309,8 +309,19 @@ function MegastructureCard({
 
   return (
     <div
-      className={`game-card rounded-xl border ${borderColor} ${bgColor} p-3 cursor-pointer transition-all hover:border-white/20`}
+      className={`game-card rounded-xl border ${borderColor} ${bgColor} p-3 cursor-pointer transition-all hover:border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400`}
       onClick={onSelect}
+      role="button"
+      tabIndex={0}
+      aria-expanded={isSelected}
+      aria-label={`${def.name} — ${isComplete ? 'Complete' : isBuilding ? 'Building' : isPaused ? 'Ready for next phase' : isLocked ? 'Locked' : 'Available'}. ${isSelected ? 'Collapse' : 'Expand'} details.`}
+      onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return; // ignore keydowns bubbling from nested action buttons
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
     >
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">

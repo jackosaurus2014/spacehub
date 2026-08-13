@@ -244,12 +244,14 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
       </div>
 
       {/* Tab Switcher */}
-      <div className="flex gap-1">
+      <div className="flex gap-1" role="tablist" aria-label="Market order book views">
         {(['book', 'place', 'orders'] as const).map(t => (
           <button
             key={t}
+            role="tab"
+            aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`px-3 py-1 text-[10px] font-medium rounded-md transition-colors ${
+            className={`min-h-[44px] px-3 py-1 text-[10px] font-medium rounded-md transition-colors ${
               tab === t
                 ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30'
                 : 'text-slate-400 hover:text-white border border-transparent'
@@ -272,7 +274,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
           ) : (
             <div className="grid grid-cols-2 gap-3">
               {/* Bids (Buy Orders) */}
-              <div>
+              <div role="table" aria-label="Buy orders (bids)">
                 <div className="font-hud text-[10px] text-green-400 font-bold uppercase tracking-wider mb-2">
                   ▲ Bids (Buy)
                 </div>
@@ -281,7 +283,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                     <div className="text-slate-600 text-[10px] py-2">No buy orders</div>
                   ) : (
                     book.bids.map((bid, i) => (
-                      <div key={i} className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
+                      <div key={i} role="row" className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
                         {/* Depth bar — holo gradient, grows from the price column outward */}
                         <div
                           className="absolute inset-y-0 left-0 rounded"
@@ -293,8 +295,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                           role="presentation"
                           aria-label={`${bid.totalQty} units at ${formatMoney(bid.price)}`}
                         />
-                        <span className="game-number relative z-10 text-green-400">{formatMoney(bid.price)}</span>
-                        <span className="game-number relative z-10 text-slate-300">
+                        <span className="game-number relative z-10 text-green-400" role="cell">{formatMoney(bid.price)}</span>
+                        <span className="game-number relative z-10 text-slate-300" role="cell">
                           {bid.totalQty}
                           {bid.isNpc && <span className="text-slate-600 ml-1">NPC</span>}
                         </span>
@@ -305,7 +307,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
               </div>
 
               {/* Asks (Sell Orders) */}
-              <div>
+              <div role="table" aria-label="Sell orders (asks)">
                 <div className="font-hud text-[10px] text-red-400 font-bold uppercase tracking-wider mb-2">
                   ▼ Asks (Sell)
                 </div>
@@ -314,7 +316,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                     <div className="text-slate-600 text-[10px] py-2">No sell orders</div>
                   ) : (
                     book.asks.map((ask, i) => (
-                      <div key={i} className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
+                      <div key={i} role="row" className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
                         <div
                           className="absolute inset-y-0 right-0 rounded"
                           style={{
@@ -325,8 +327,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                           role="presentation"
                           aria-label={`${ask.totalQty} units at ${formatMoney(ask.price)}`}
                         />
-                        <span className="game-number relative z-10 text-red-400">{formatMoney(ask.price)}</span>
-                        <span className="game-number relative z-10 text-slate-300">
+                        <span className="game-number relative z-10 text-red-400" role="cell">{formatMoney(ask.price)}</span>
+                        <span className="game-number relative z-10 text-slate-300" role="cell">
                           {ask.totalQty}
                           {ask.isNpc && <span className="text-slate-600 ml-1">NPC</span>}
                         </span>
@@ -349,7 +351,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
           <div className="flex rounded-lg overflow-hidden border border-white/[0.08]">
             <button
               onClick={() => setSide('buy')}
-              className={`flex-1 py-2 text-xs font-semibold transition-colors ${
+              aria-pressed={side === 'buy'}
+              className={`flex-1 min-h-[44px] py-2 text-xs font-semibold transition-colors ${
                 side === 'buy'
                   ? 'bg-green-600/20 text-green-400 border-r border-white/[0.08]'
                   : 'text-slate-400 hover:text-white border-r border-white/[0.08]'
@@ -359,7 +362,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
             </button>
             <button
               onClick={() => setSide('sell')}
-              className={`flex-1 py-2 text-xs font-semibold transition-colors ${
+              aria-pressed={side === 'sell'}
+              className={`flex-1 min-h-[44px] py-2 text-xs font-semibold transition-colors ${
                 side === 'sell'
                   ? 'bg-red-600/20 text-red-400'
                   : 'text-slate-400 hover:text-white'
@@ -454,7 +458,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
           {/* Error */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 text-red-400 text-[10px]">
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 text-red-400 text-[10px]" role="alert" aria-live="polite">
               {error}
             </div>
           )}
@@ -463,7 +467,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
           <button
             onClick={handlePlaceOrder}
             disabled={submitting || !priceInt || !qtyInt}
-            className={`w-full py-2.5 text-xs font-semibold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`w-full min-h-[44px] py-2.5 text-xs font-semibold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
               side === 'buy'
                 ? 'bg-green-600 hover:bg-green-500 text-white'
                 : 'bg-red-600 hover:bg-red-500 text-white'
@@ -486,7 +490,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
               No orders yet. Place your first limit order!
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2" role="table" aria-label="My open orders" aria-live="polite">
               {myOrders.map(order => {
                 const rDef = RESOURCE_MAP.get(order.resourceSlug as never);
                 const fillPct = order.quantity > 0 ? Math.round((order.filledQty / order.quantity) * 100) : 0;
@@ -499,6 +503,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                 return (
                   <div
                     key={order.id}
+                    role="row"
                     className={`p-2.5 rounded-lg border transition-colors ${
                       isActive
                         ? 'border-white/[0.08] bg-white/[0.02]'
@@ -530,7 +535,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                         {isActive && (
                           <button
                             onClick={() => handleCancelOrder(order.id)}
-                            className="text-[9px] text-red-400 hover:text-red-300 px-1.5 py-0.5 rounded border border-red-500/20 hover:border-red-500/40 transition-colors"
+                            aria-label={`Cancel ${order.side} order for ${rDef?.name || order.resourceSlug}`}
+                            className="min-h-[44px] inline-flex items-center justify-center text-[9px] text-red-400 hover:text-red-300 px-2.5 py-0.5 rounded border border-red-500/20 hover:border-red-500/40 transition-colors"
                           >
                             Cancel
                           </button>

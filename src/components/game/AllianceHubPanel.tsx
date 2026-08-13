@@ -166,19 +166,22 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
       )}
 
       {/* Sub-tab Navigation */}
-      <div className="game-tab-bar flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]">
+      <div className="game-tab-bar flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]" role="tablist" aria-label="Corporation hub section">
         {HUB_TABS.map(t => (
           <button
             key={t.id}
+            role="tab"
+            aria-selected={activeTab === t.id}
+            aria-label={t.label}
             onClick={() => setActiveTab(t.id)}
-            className={`flex-1 py-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+            className={`flex-1 min-h-[44px] py-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
               activeTab === t.id
                 ? 'bg-purple-600/30 text-purple-300 border border-purple-500/30'
                 : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
             }`}
           >
-            <span className="mr-0.5">{t.icon}</span>
-            <span className="hidden sm:inline">{t.label}</span>
+            <span className="mr-0.5" aria-hidden="true">{t.icon}</span>
+            <span className="hidden sm:inline" aria-hidden="true">{t.label}</span>
           </button>
         ))}
       </div>

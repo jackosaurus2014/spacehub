@@ -188,7 +188,7 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
                     onClick={() => { if (canHire) { playSound('click'); onHire(worker.type); } }}
                     disabled={!canHire}
                     title={!hireCheck.allowed ? hireCheck.reason : !canAfford ? 'Insufficient funds' : undefined}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       canHire
                         ? 'bg-cyan-600 text-white hover:bg-cyan-500'
                         : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
@@ -199,7 +199,8 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
                   {onDismiss && count > 0 && (
                     <button
                       onClick={() => { playSound('click'); onDismiss(worker.type); }}
-                      className="px-2 py-1.5 rounded-lg text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                      aria-label={`Dismiss a ${worker.name}`}
+                      className="min-h-[44px] px-3 py-1.5 rounded-lg text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
                     >
                       Dismiss
                     </button>

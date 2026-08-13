@@ -237,11 +237,11 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             <p className="text-slate-500 text-[10px] mb-2">Selling will push the market price down</p>
             <div className="flex items-center gap-3 mb-3">
               <div className="flex items-center gap-1">
-                <button onClick={() => setSellQty(Math.max(1, sellQty - 1))} className="w-7 h-7 rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors">-</button>
+                <button onClick={() => setSellQty(Math.max(1, sellQty - 1))} aria-label="Decrease sell quantity by 1" className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors">-</button>
                 <input type="number" min={1} max={held} value={sellQty} onChange={e => setSellQty(Math.max(1, Math.min(held, parseInt(e.target.value) || 1)))} className="w-16 h-7 rounded bg-white/[0.06] text-white text-xs text-center border border-white/[0.06] focus:outline-none focus:border-cyan-500/30" />
-                <button onClick={() => setSellQty(Math.min(held, sellQty + 1))} className="w-7 h-7 rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors">+</button>
+                <button onClick={() => setSellQty(Math.min(held, sellQty + 1))} aria-label="Increase sell quantity by 1" className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors">+</button>
               </div>
-              <button onClick={() => setSellQty(held)} className="text-[10px] text-cyan-400 hover:text-cyan-300">Sell All ({held})</button>
+              <button onClick={() => setSellQty(held)} className="min-h-[44px] px-1 text-[10px] text-cyan-400 hover:text-cyan-300">Sell All ({held})</button>
             </div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-slate-400 text-xs">Price: {formatMoney(price)}/unit</span>
@@ -312,7 +312,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                         <button
                           onClick={() => { setSelectedResource(r.id); setSellQty(Math.min(1, state.resources[r.id] || 0)); }}
                           disabled={trading}
-                          className="px-2 py-0.5 text-[9px] font-medium rounded transition-colors bg-amber-600/20 text-amber-400 border border-amber-600/30 hover:bg-amber-600/30"
+                          className="min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors bg-amber-600/20 text-amber-400 border border-amber-600/30 hover:bg-amber-600/30"
                         >Sell</button>
                       </>
                     )}
@@ -323,7 +323,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                           onClick={() => handleBuy(r.id, 1)}
                           disabled={state.money < ask || trading}
                           title={`Pay ${formatMoney(ask)}`}
-                          className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                          className={`min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
                             state.money >= ask && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
@@ -333,7 +333,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                           onClick={() => handleBuy(r.id, 10)}
                           disabled={state.money < ask * 10 || trading}
                           title={`Pay ${formatMoney(ask * 10)}`}
-                          className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                          className={`min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
                             state.money >= ask * 10 && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
@@ -343,7 +343,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                           onClick={() => handleBuy(r.id, 100)}
                           disabled={state.money < ask * 100 || trading}
                           title={`Pay ${formatMoney(ask * 100)}`}
-                          className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                          className={`min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
                             state.money >= ask * 100 && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'

@@ -169,9 +169,10 @@ export default function RivalsPanel() {
   // ─── Loading state ──────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4" role="status" aria-live="polite">
+        <span className="sr-only">Loading rivals…</span>
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
-          <div className="animate-pulse space-y-4">
+          <div className="animate-pulse motion-reduce:animate-none space-y-4">
             <div className="h-6 bg-white/[0.06] rounded w-48" />
             <div className="h-4 bg-white/[0.04] rounded w-64" />
             <div className="h-32 bg-white/[0.04] rounded" />
@@ -185,11 +186,11 @@ export default function RivalsPanel() {
   // ─── Error state ────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center">
+      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center" role="alert" aria-live="polite">
         <p className="text-red-400 text-sm">{error}</p>
         <button
           onClick={fetchRivals}
-          className="mt-3 px-4 py-2 rounded-lg bg-red-500/10 text-red-300 text-xs hover:bg-red-500/20 transition-colors"
+          className="mt-3 min-h-[44px] px-4 py-2 rounded-lg bg-red-500/10 text-red-300 text-xs hover:bg-red-500/20 transition-colors"
         >
           Retry
         </button>
@@ -219,7 +220,8 @@ export default function RivalsPanel() {
           <button
             onClick={assignRivals}
             disabled={assigning}
-            className="px-5 py-2.5 rounded-lg bg-indigo-500/20 text-indigo-300 text-sm font-medium hover:bg-indigo-500/30 transition-colors disabled:opacity-50"
+            aria-live="polite"
+            className="min-h-[44px] px-5 py-2.5 rounded-lg bg-indigo-500/20 text-indigo-300 text-sm font-medium hover:bg-indigo-500/30 transition-colors disabled:opacity-50"
           >
             {assigning ? 'Searching...' : 'Find Rivals'}
           </button>

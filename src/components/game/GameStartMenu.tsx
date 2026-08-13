@@ -36,7 +36,7 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
       {/* Animated star field */}
       {mounted && (
         <>
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             {Array.from({ length: 80 }).map((_, i) => {
               const seed = i * 7 + 1;
               const x = ((Math.sin(seed) * 10000) % 1 + 1) % 1 * 100;
@@ -61,8 +61,8 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
           </div>
 
           {/* Nebula glow */}
-          <div className="absolute top-1/3 left-1/4 w-[600px] h-[400px] bg-purple-500/[0.04] rounded-full blur-[150px] pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/3 w-[500px] h-[300px] bg-cyan-500/[0.03] rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/3 left-1/4 w-[600px] h-[400px] bg-purple-500/[0.04] rounded-full blur-[150px] pointer-events-none" aria-hidden="true" />
+          <div className="absolute bottom-1/4 right-1/3 w-[500px] h-[300px] bg-cyan-500/[0.03] rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
         </>
       )}
 
@@ -74,7 +74,7 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
           style={{ animation: mounted ? 'reveal-up 0.8s ease-out forwards' : 'none', opacity: mounted ? 1 : 0 }}
         >
           {/* Orbit rings logomark */}
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="mx-auto mb-4">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="mx-auto mb-4" aria-hidden="true">
             <ellipse cx="40" cy="40" rx="36" ry="18" stroke="url(#menuGrad)" strokeWidth="1.5" transform="rotate(-25 40 40)" opacity="0.6">
               <animateTransform attributeName="transform" type="rotate" from="-25 40 40" to="335 40 40" dur="20s" repeatCount="indefinite" />
             </ellipse>
@@ -171,6 +171,11 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
         @keyframes twinkle {
           0%, 100% { opacity: 0.15; }
           50% { opacity: 0.9; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+          }
         }
       `}</style>
     </div>

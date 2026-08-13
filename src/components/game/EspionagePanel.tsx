@@ -282,7 +282,7 @@ export default function EspionagePanel({ state }: EspionagePanelProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400 animate-pulse">Loading intelligence systems...</div>
+        <div className="text-gray-400 animate-pulse motion-reduce:animate-none" role="status" aria-live="polite">Loading intelligence systems...</div>
       </div>
     );
   }
@@ -319,6 +319,8 @@ export default function EspionagePanel({ state }: EspionagePanelProps) {
       {/* Message banner */}
       {message && (
         <div
+          role={message.type === 'error' ? 'alert' : 'status'}
+          aria-live="polite"
           className={`px-4 py-2 rounded text-sm ${
             message.type === 'success'
               ? 'bg-green-900/50 text-green-300 border border-green-700/50'
@@ -412,6 +414,7 @@ function OperationsTab({
         {/* Search */}
         <input
           type="text"
+          aria-label="Search companies"
           placeholder="Search companies..."
           value={searchQuery}
           onChange={(e) => onSearch(e.target.value)}
@@ -436,7 +439,8 @@ function OperationsTab({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     {/* Online indicator */}
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${target.isOnline ? 'bg-green-400' : 'bg-gray-600'}`} />
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${target.isOnline ? 'bg-green-400' : 'bg-gray-600'}`} aria-hidden="true" title={target.isOnline ? 'Online' : 'Offline'} />
+                    <span className="sr-only">{target.isOnline ? 'Online' : 'Offline'}</span>
                     <span className="text-sm text-white truncate">{target.companyName}</span>
                     {target.allianceTag && (
                       <span className="text-xs text-gray-500 flex-shrink-0">[{target.allianceTag}]</span>
@@ -832,15 +836,15 @@ function HistoryTab({ espState }: { espState: EspionageState | null }) {
   }
 
   return (
-    <div className="bg-gray-800/40 rounded-lg border border-gray-700/50 overflow-hidden">
+    <div className="bg-gray-800/40 rounded-lg border border-gray-700/50 overflow-hidden overflow-x-auto" role="table" aria-label="Mission history">
       {/* Table header */}
-      <div className="hidden sm:grid grid-cols-6 gap-2 px-4 py-2 bg-gray-900/60 text-xs text-gray-500 font-medium border-b border-gray-700/50">
-        <span>Action</span>
-        <span>Target</span>
-        <span>Result</span>
-        <span>Success %</span>
-        <span>Cost</span>
-        <span>When</span>
+      <div className="hidden sm:grid grid-cols-6 gap-2 px-4 py-2 bg-gray-900/60 text-xs text-gray-500 font-medium border-b border-gray-700/50" role="row">
+        <span role="columnheader">Action</span>
+        <span role="columnheader">Target</span>
+        <span role="columnheader">Result</span>
+        <span role="columnheader">Success %</span>
+        <span role="columnheader">Cost</span>
+        <span role="columnheader">When</span>
       </div>
 
       {/* Rows */}
@@ -850,11 +854,12 @@ function HistoryTab({ espState }: { espState: EspionageState | null }) {
           return (
             <div
               key={m.id}
+              role="row"
               className="holo-row grid grid-cols-2 sm:grid-cols-6 gap-2 px-4 py-2.5 text-xs transition-colors"
             >
-              <span className="text-gray-300 font-medium truncate">{actionDef?.name || m.actionType}</span>
-              <span className="text-gray-400 truncate">{m.targetCompanyName}</span>
-              <span>
+              <span role="cell" className="text-gray-300 font-medium truncate">{actionDef?.name || m.actionType}</span>
+              <span role="cell" className="text-gray-400 truncate">{m.targetCompanyName}</span>
+              <span role="cell">
                 {m.succeeded ? (
                   <span className="text-green-400">Success</span>
                 ) : (
@@ -863,9 +868,9 @@ function HistoryTab({ espState }: { espState: EspionageState | null }) {
                 {m.detected && <span className="text-amber-400 ml-1">[D]</span>}
                 {m.tracedBack && <span className="text-red-500 ml-1">[T]</span>}
               </span>
-              <span className="text-gray-400 hidden sm:block">{Math.round(m.successRate * 100)}%</span>
-              <span className="text-amber-400 hidden sm:block font-mono">{formatMoney(m.cost)}</span>
-              <span className="text-gray-600 hidden sm:block">{timeAgo(m.createdAt)}</span>
+              <span role="cell" className="text-gray-400 hidden sm:block">{Math.round(m.successRate * 100)}%</span>
+              <span role="cell" className="text-amber-400 hidden sm:block font-mono">{formatMoney(m.cost)}</span>
+              <span role="cell" className="text-gray-600 hidden sm:block">{timeAgo(m.createdAt)}</span>
             </div>
           );
         })}

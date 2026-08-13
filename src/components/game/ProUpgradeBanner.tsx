@@ -32,12 +32,13 @@ export default function ProUpgradeBanner({ completedResearch }: { completedResea
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-40 animate-reveal-up">
-      <div className="rounded-xl border border-cyan-500/20 bg-[#0a0a1a]/95 backdrop-blur-sm p-4 shadow-2xl shadow-black/50">
+      <div className="relative rounded-xl border border-cyan-500/20 bg-[#0a0a1a]/95 backdrop-blur-sm p-4 shadow-2xl shadow-black/50">
         <button
           onClick={handleDismiss}
-          className="absolute top-2 right-2 text-slate-600 hover:text-white text-xs"
+          aria-label="Dismiss banner"
+          className="absolute top-2 right-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-600 hover:text-white text-xs"
         >
-          ✕
+          <span aria-hidden="true">✕</span>
         </button>
         <div className="flex items-start gap-3">
           <span className="text-2xl shrink-0">🛰️</span>
@@ -49,14 +50,14 @@ export default function ProUpgradeBanner({ completedResearch }: { completedResea
             <div className="flex gap-2">
               <Link
                 href="/discover?utm_source=game&utm_medium=pro_banner"
-                className="px-3 py-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-cyan-600 to-purple-600 rounded-lg hover:from-cyan-500 hover:to-purple-500 transition-all"
+                className="min-h-[44px] inline-flex items-center px-3 py-1.5 text-[10px] font-semibold text-white bg-gradient-to-r from-cyan-600 to-purple-600 rounded-lg hover:from-cyan-500 hover:to-purple-500 transition-all"
                 onClick={handleDismiss}
               >
                 Explore SpaceNexus
               </Link>
               <button
                 onClick={handleDismiss}
-                className="px-3 py-1.5 text-[10px] text-slate-500 hover:text-white transition-colors"
+                className="min-h-[44px] inline-flex items-center px-3 py-1.5 text-[10px] text-slate-500 hover:text-white transition-colors"
               >
                 Maybe later
               </button>

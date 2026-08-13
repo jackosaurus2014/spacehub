@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { canClaimBonus, claimDailyBonus, getCurrentStreak, getBonusSchedule } from '@/lib/game/daily-bonus';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 interface DailyBonusModalProps {
   onClaim: (amount: number) => void;
@@ -52,13 +52,13 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
     setVisible(false);
   };
 
-  useEscapeKey(handleDismiss, visible);
+  const modalRef = useModalA11y<HTMLDivElement>(handleDismiss, visible);
   if (!visible) return null;
 
   const currentDay = (streak % 7) + 1;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="daily-bonus-title">
+    <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="daily-bonus-title">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm game-modal-backdrop" onClick={handleDismiss} aria-hidden="true" />
 
@@ -72,7 +72,7 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
             <>
               {/* Header */}
               <div className="text-center mb-5">
-                <span className="text-3xl block mb-2">🎁</span>
+                <span className="text-3xl block mb-2" aria-hidden="true">🎁</span>
                 <h3 id="daily-bonus-title" className="text-xl font-bold text-white">Daily Bonus</h3>
                 <p className="text-slate-400 text-sm mt-1">
                   {streak > 0 ? `${streak}-day streak!` : 'Welcome back!'} Claim your reward.
@@ -101,11 +101,12 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
                       <p className={`text-[10px] font-bold mt-0.5 ${isToday ? 'text-white' : isPast ? 'text-green-400/70' : 'text-slate-400'}`}>
                         {formatMoney(day.amount)}
                       </p>
+                      <span className="sr-only">{isPast ? ' (claimed)' : isToday ? ' (today)' : ''}</span>
                       {isPast && (
-                        <span className="absolute -top-1 -right-1 text-[8px]">✅</span>
+                        <span className="absolute -top-1 -right-1 text-[8px]" aria-hidden="true">✅</span>
                       )}
                       {isToday && (
-                        <span className="absolute -top-1 -right-1 text-[10px] animate-pulse">⭐</span>
+                        <span className="absolute -top-1 -right-1 text-[10px] animate-pulse motion-reduce:animate-none" aria-hidden="true">⭐</span>
                       )}
                     </div>
                   );
@@ -126,8 +127,8 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
             </>
           ) : (
             /* Claimed state */
-            <div className="text-center py-4">
-              <span className="text-5xl block mb-3">💰</span>
+            <div className="text-center py-4" role="status" aria-live="polite">
+              <span className="text-5xl block mb-3" aria-hidden="true">💰</span>
               <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300 mb-1">
                 +{formatMoney(claimedAmount)}
               </h3>

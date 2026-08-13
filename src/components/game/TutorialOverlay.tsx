@@ -180,7 +180,7 @@ export default function TutorialOverlay({
             </div>
             <button
               onClick={handleSkipClick}
-              className="text-[10px] uppercase tracking-wider transition-colors hover:text-white"
+              className="min-h-[44px] px-2 text-[10px] uppercase tracking-wider transition-colors hover:text-white"
               style={{ color: 'rgba(255,255,255,0.35)' }}
             >
               Skip Tutorial
@@ -188,8 +188,8 @@ export default function TutorialOverlay({
           </div>
 
           {/* Content */}
-          <div className="flex items-start gap-3 mb-4">
-            <span className="text-2xl shrink-0 mt-0.5">{stepDef.icon}</span>
+          <div className="flex items-start gap-3 mb-4" aria-live="polite">
+            <span className="text-2xl shrink-0 mt-0.5" aria-hidden="true">{stepDef.icon}</span>
             <div>
               <h3 className="text-sm font-bold text-white mb-1">{stepDef.title}</h3>
               <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
@@ -202,7 +202,7 @@ export default function TutorialOverlay({
           {currentTab !== stepDef.targetTab && (
             <button
               onClick={handleGoToTab}
-              className="w-full mb-3 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:brightness-110"
+              className="w-full min-h-[44px] mb-3 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:brightness-110"
               style={{
                 background: 'rgba(34,211,238,0.08)',
                 border: '1px solid rgba(34,211,238,0.2)',
@@ -217,7 +217,7 @@ export default function TutorialOverlay({
           <div className="flex gap-2">
             <button
               onClick={handleNextClick}
-              className="flex-1 py-2 text-xs font-semibold text-white rounded-lg transition-all hover:brightness-110 active:scale-[0.98]"
+              className="flex-1 min-h-[44px] py-2 text-xs font-semibold text-white rounded-lg transition-all hover:brightness-110 active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(135deg, #0891b2, #06b6d4)',
                 boxShadow: '0 2px 8px rgba(6,182,212,0.3)',
@@ -228,7 +228,7 @@ export default function TutorialOverlay({
           </div>
 
           {/* Step dots */}
-          <div className="flex justify-center gap-1.5 mt-3">
+          <div className="flex justify-center gap-1.5 mt-3" aria-hidden="true">
             {TUTORIAL_STEPS.map(s => (
               <div
                 key={s.step}

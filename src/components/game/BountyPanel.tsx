@@ -233,7 +233,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 motion-reduce:hidden" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
           </span>
           <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Bounty Board</span>
@@ -245,7 +245,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
       <div className="flex justify-center">
         <button
           onClick={() => setShowPostForm(!showPostForm)}
-          className="px-4 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors"
+          className="min-h-[44px] px-4 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors"
         >
           {showPostForm ? 'Cancel' : '📜 Post Bounty'}
         </button>
@@ -287,7 +287,8 @@ export default function BountyPanel({ state }: BountyPanelProps) {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPostQuantity(Math.max(1, postQuantity - 10))}
-                  className="w-7 h-7 rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors"
+                  aria-label="Decrease quantity by 10"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors"
                 >-</button>
                 <input
                   type="number"
@@ -298,7 +299,8 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                 />
                 <button
                   onClick={() => setPostQuantity(postQuantity + 10)}
-                  className="w-7 h-7 rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors"
+                  aria-label="Increase quantity by 10"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors"
                 >+</button>
               </div>
             </div>
@@ -331,7 +333,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
             </div>
 
             {postError && (
-              <p className="text-red-400 text-[10px]">{postError}</p>
+              <p role="alert" className="text-red-400 text-[10px]">{postError}</p>
             )}
 
             <button
@@ -517,7 +519,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
 
       {/* Error display */}
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-center">
+        <div role="alert" className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-center">
           <p className="text-red-400 text-xs">{error}</p>
         </div>
       )}

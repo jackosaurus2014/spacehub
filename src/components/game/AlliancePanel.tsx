@@ -277,39 +277,42 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
           <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span>👥</span> Members ({myAlliance.members.length})
           </h3>
-          <div className="flex items-center justify-between py-1 px-3 mb-1">
-            <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Commander</span>
-            <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Net Worth</span>
-          </div>
-          <div>
-            {myAlliance.members.map((member) => (
-              <div
-                key={member.companyName}
-                className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors border-b border-white/[0.04] last:border-0 ${
-                  member.isYou ? 'bg-cyan-500/5 border border-cyan-500/10' : 'hover:bg-white/[0.02]'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">
-                    {member.role === 'leader' ? '👑' : member.role === 'officer' ? '⭐' : '🧑‍🚀'}
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className={`text-xs font-medium ${member.isYou ? 'text-cyan-300' : 'text-white'}`}>
-                        {member.companyName}
-                      </span>
-                      {member.isYou && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
-                          YOU
+          <div className="overflow-x-auto" role="table" aria-label="Corporation members">
+            <div className="flex items-center justify-between py-1 px-3 mb-1" role="row">
+              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
+              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Net Worth</span>
+            </div>
+            <div>
+              {myAlliance.members.map((member) => (
+                <div
+                  key={member.companyName}
+                  role="row"
+                  className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors border-b border-white/[0.04] last:border-0 ${
+                    member.isYou ? 'bg-cyan-500/5 border border-cyan-500/10' : 'hover:bg-white/[0.02]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2" role="cell">
+                    <span className="text-sm" aria-hidden="true">
+                      {member.role === 'leader' ? '👑' : member.role === 'officer' ? '⭐' : '🧑‍🚀'}
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-xs font-medium ${member.isYou ? 'text-cyan-300' : 'text-white'}`}>
+                          {member.companyName}
                         </span>
-                      )}
+                        {member.isYou && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                            YOU
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-slate-500 capitalize">{member.role}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 capitalize">{member.role}</span>
                   </div>
+                  <span className="game-number text-slate-400 text-xs" role="cell">{formatMoney(member.netWorth)}</span>
                 </div>
-                <span className="game-number text-slate-400 text-xs">{formatMoney(member.netWorth)}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -321,29 +324,32 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
             <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <span>🏭</span> Shared Facilities
             </h3>
-            <div className="flex items-center justify-between py-1 px-2.5 mb-1">
-              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Facility</span>
-              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Level</span>
-            </div>
-            <div className="space-y-2">
-              {myAlliance.sharedFacilities.map((facility) => (
-                <div
-                  key={facility.id}
-                  className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.04]"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">{facility.icon}</span>
-                    <div>
-                      <p className="text-white text-xs font-medium">{facility.name}</p>
-                      <p className="text-slate-500 text-[10px]">{facility.description}</p>
+            <div className="overflow-x-auto" role="table" aria-label="Shared corporation facilities">
+              <div className="flex items-center justify-between py-1 px-2.5 mb-1" role="row">
+                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Facility</span>
+                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Level</span>
+              </div>
+              <div className="space-y-2">
+                {myAlliance.sharedFacilities.map((facility) => (
+                  <div
+                    key={facility.id}
+                    role="row"
+                    className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.04]"
+                  >
+                    <div className="flex items-center gap-2" role="cell">
+                      <span className="text-sm" aria-hidden="true">{facility.icon}</span>
+                      <div>
+                        <p className="text-white text-xs font-medium">{facility.name}</p>
+                        <p className="text-slate-500 text-[10px]">{facility.description}</p>
+                      </div>
+                    </div>
+                    <div className="text-right" role="cell">
+                      <span className="game-number text-amber-400 text-[10px]">Lv.{facility.level}</span>
+                      <p className="text-slate-600 text-[9px]">by {facility.contributedBy}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <span className="game-number text-amber-400 text-[10px]">Lv.{facility.level}</span>
-                    <p className="text-slate-600 text-[9px]">by {facility.contributedBy}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -361,7 +367,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
 
         {/* Error display */}
         {error && (
-          <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-center">
+          <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-center" role="alert" aria-live="polite">
             <p className="text-red-400 text-xs">{error}</p>
           </div>
         )}
@@ -422,7 +428,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
               />
             </div>
             {createError && (
-              <p className="text-red-400 text-[10px]">{createError}</p>
+              <p className="text-red-400 text-[10px]" role="alert" aria-live="polite">{createError}</p>
             )}
             <button
               onClick={handleCreate}
@@ -484,7 +490,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
 
       {/* Error display */}
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-center">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-center" role="alert" aria-live="polite">
           <p className="text-red-400 text-xs">{error}</p>
         </div>
       )}

@@ -257,7 +257,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
           <div className="hud-frame flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
             <span className="hud-corner-bl" aria-hidden="true" />
             <span className="hud-corner-br" aria-hidden="true" />
-            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" aria-hidden="true" />
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
             <span
               className="timer-hud timer-hud-live text-cyan-300 text-sm font-bold"
               role="timer"
@@ -271,7 +271,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
 
       {/* Error Banner */}
       {error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2 text-red-400 text-sm">
+        <div role="alert" className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2 text-red-400 text-sm">
           {error}
         </div>
       )}
@@ -294,7 +294,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
               role="tab"
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`font-hud flex-1 py-2.5 px-3 rounded-md text-xs font-medium transition-all min-h-[40px] ${
+              className={`font-hud flex-1 py-2.5 px-3 rounded-md text-xs font-medium transition-all min-h-[44px] ${
                 activeTab === tab.id
                   ? 'game-tab-active bg-amber-500/20 text-amber-300 border border-amber-500/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -351,7 +351,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                   )}
 
                   {data.activeAttempt.isCompleted && (
-                    <div className="mt-2 rounded-lg bg-green-500/10 border border-green-500/20 px-3 py-2 text-center">
+                    <div role="status" aria-live="polite" className="mt-2 rounded-lg bg-green-500/10 border border-green-500/20 px-3 py-2 text-center">
                       <span className="text-green-400 text-xs font-medium">Milestone Complete!</span>
                     </div>
                   )}
@@ -467,7 +467,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
           <div className="flex gap-1 flex-wrap">
             <button
               onClick={() => setBracketFilter('all')}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+              className={`min-h-[44px] px-3 py-1 rounded-md text-xs font-medium transition-all ${
                 bracketFilter === 'all'
                   ? 'bg-white/10 text-white border border-white/20'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -479,7 +479,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
               <button
                 key={b.id}
                 onClick={() => setBracketFilter(b.id)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                className={`min-h-[44px] px-3 py-1 rounded-md text-xs font-medium transition-all ${
                   bracketFilter === b.id
                     ? `${BRACKET_BG[b.id]} ${BRACKET_COLORS[b.id]} border`
                     : 'text-slate-400 hover:text-white hover:bg-white/5'

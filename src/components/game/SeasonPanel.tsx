@@ -304,7 +304,7 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
               {displayEvent.participantCount} participant{displayEvent.participantCount !== 1 ? 's' : ''}
             </span>
             {displayEvent.phase === 'FINAL_SPRINT' && (
-              <span className="text-red-400 text-[10px] font-bold animate-pulse">
+              <span className="text-red-400 text-[10px] font-bold animate-pulse motion-reduce:animate-none">
                 1.25x SP Bonus!
               </span>
             )}
@@ -315,7 +315,8 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
             <button
               onClick={handleJoinSeason}
               disabled={joining}
-              className={`mt-3 w-full py-2.5 rounded-lg font-bold text-sm text-white transition-all ${
+              aria-live="polite"
+              className={`mt-3 w-full py-2.5 rounded-lg font-bold text-sm text-white transition-all min-h-[44px] ${
                 joining
                   ? 'bg-slate-700 cursor-wait'
                   : `bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-[0.98]`
@@ -364,8 +365,9 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
             key={tab.id}
             role="tab"
             aria-selected={activeTab === tab.id}
+            aria-label={tab.label}
             onClick={() => setActiveTab(tab.id)}
-            className={`font-hud flex-1 py-2.5 px-2 rounded-md text-[11px] font-medium transition-all min-h-[40px] ${
+            className={`font-hud flex-1 py-2.5 px-2 rounded-md text-[11px] font-medium transition-all min-h-[44px] ${
               activeTab === tab.id
                 ? `game-tab-active ${accent.bg} ${accent.text} border ${accent.border}`
                 : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
@@ -379,9 +381,9 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
 
       {/* Error display */}
       {error && (
-        <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+        <div role="alert" className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
           {error}
-          <button onClick={() => setError(null)} className="ml-2 underline">Dismiss</button>
+          <button onClick={() => setError(null)} className="ml-2 underline min-h-[44px] inline-flex items-center px-1">Dismiss</button>
         </div>
       )}
 
@@ -733,7 +735,7 @@ function SeasonPassTab({
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <h4 className="text-white text-xs font-bold mb-2">Tier Rewards</h4>
-        <div className="space-y-1">
+        <div className="space-y-1" role="table" aria-label="Season pass tier rewards">
           {visibleTiers.map(tier => {
             const reward = getTierReward(tier);
             const isReached = tier <= currentTier;
@@ -743,6 +745,7 @@ function SeasonPassTab({
             return (
               <div
                 key={tier}
+                role="row"
                 className={`season-node flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all ${
                   isCurrent
                     ? `${accent.bg} border ${accent.border} season-node-current`
@@ -751,7 +754,7 @@ function SeasonPassTab({
                       : 'border border-transparent'
                 }`}
               >
-                <div className={`game-number w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border ${
+                <div role="cell" className={`game-number w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border ${
                   isReached
                     ? 'bg-green-500/20 text-green-400 border-green-500/30'
                     : isBonus
@@ -760,14 +763,14 @@ function SeasonPassTab({
                 }`}>
                   {isReached ? '\u2713' : tier}
                 </div>
-                <div className="flex-1 min-w-0">
+                <div role="cell" className="flex-1 min-w-0">
                   <span className={`text-[11px] truncate ${
                     isReached ? 'text-green-400' : 'text-slate-300'
                   }`}>
                     {reward.description}
                   </span>
                 </div>
-                <span className={`game-number text-[10px] font-medium whitespace-nowrap ${
+                <span role="cell" className={`game-number text-[10px] font-medium whitespace-nowrap ${
                   isReached ? 'text-green-500' : 'text-slate-500'
                 }`}>
                   {tier * SP_PER_TIER} SP
@@ -817,7 +820,7 @@ function LeaderboardTab({
       <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide">
         <button
           onClick={() => onBracketChange(null)}
-          className={`px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap transition-all ${
+          className={`min-h-[44px] inline-flex items-center px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap transition-all ${
             bracketFilter === null
               ? `${accent.bg} ${accent.text} border ${accent.border}`
               : 'text-slate-400 bg-slate-800/30 border border-slate-700/30 hover:bg-slate-700/30'
@@ -829,7 +832,7 @@ function LeaderboardTab({
           <button
             key={b.number}
             onClick={() => onBracketChange(b.number)}
-            className={`px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap transition-all ${
+            className={`min-h-[44px] inline-flex items-center px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap transition-all ${
               bracketFilter === b.number
                 ? `${accent.bg} ${accent.text} border ${accent.border}`
                 : 'text-slate-400 bg-slate-800/30 border border-slate-700/30 hover:bg-slate-700/30'
@@ -866,13 +869,13 @@ function LeaderboardTab({
       )}
 
       {/* Leaderboard entries */}
-      <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 overflow-hidden">
+      <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 overflow-hidden" role="table" aria-label="Season leaderboard">
         {/* Header */}
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-slate-700/50 text-[10px] text-slate-500 uppercase tracking-wider">
-          <span className="w-6">#</span>
-          <span className="flex-1">Company</span>
-          <span className="w-12 text-right">Tier</span>
-          <span className="w-16 text-right">Score</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-slate-700/50 text-[10px] text-slate-500 uppercase tracking-wider" role="row">
+          <span className="w-6" role="columnheader">#</span>
+          <span className="flex-1" role="columnheader">Company</span>
+          <span className="w-12 text-right" role="columnheader">Tier</span>
+          <span className="w-16 text-right" role="columnheader">Score</span>
         </div>
 
         {data.entries.length === 0 ? (
@@ -883,11 +886,12 @@ function LeaderboardTab({
             return (
               <div
                 key={`${entry.rank}-${entry.companyName}`}
+                role="row"
                 className={`flex items-center gap-2 px-3 py-2 border-b border-slate-700/20 last:border-0 transition-colors ${
                   isPlayer ? `${accent.bg}` : idx % 2 === 0 ? '' : 'bg-slate-800/10'
                 }`}
               >
-                <span className={`w-6 text-xs font-bold ${
+                <span role="cell" className={`w-6 text-xs font-bold ${
                   entry.rank === 1 ? 'text-yellow-400' :
                   entry.rank === 2 ? 'text-slate-300' :
                   entry.rank === 3 ? 'text-amber-600' :
@@ -895,7 +899,7 @@ function LeaderboardTab({
                 }`}>
                   {entry.rank <= 3 ? ['', '\uD83E\uDD47', '\uD83E\uDD48', '\uD83E\uDD49'][entry.rank] : entry.rank}
                 </span>
-                <div className="flex-1 min-w-0">
+                <div role="cell" className="flex-1 min-w-0">
                   <span className={`text-[11px] truncate block ${isPlayer ? 'text-white font-bold' : 'text-slate-300'}`}>
                     {entry.allianceTag && (
                       <span className="text-slate-500">[{entry.allianceTag}] </span>
@@ -906,8 +910,8 @@ function LeaderboardTab({
                     <span className="text-purple-400 text-[9px]">{entry.title}</span>
                   )}
                 </div>
-                <span className="w-12 text-right text-slate-400 text-[10px]">{entry.currentTier}</span>
-                <span className={`w-16 text-right text-xs font-medium ${isPlayer ? accent.text : 'text-white'}`}>
+                <span role="cell" className="w-12 text-right text-slate-400 text-[10px]">{entry.currentTier}</span>
+                <span role="cell" className={`w-16 text-right text-xs font-medium ${isPlayer ? accent.text : 'text-white'}`}>
                   {Math.round(entry.totalScore).toLocaleString()}
                 </span>
               </div>

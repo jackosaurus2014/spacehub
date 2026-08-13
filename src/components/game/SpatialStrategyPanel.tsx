@@ -47,7 +47,7 @@ export default function SpatialStrategyPanel({ state }: Props) {
           </div>
         </div>
 
-        <div className="game-tab-bar flex gap-1 overflow-x-auto">
+        <div className="game-tab-bar flex gap-1 overflow-x-auto" role="tablist" aria-label="Spatial strategy view">
           <TabButton active={tab === 'lanes'} onClick={() => setTab('lanes')}>
             🛰️ Shipping Lanes ({traffic.filter(t => t.bothLocationsUnlocked).length})
           </TabButton>
@@ -70,6 +70,8 @@ export default function SpatialStrategyPanel({ state }: Props) {
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
+      role="tab"
+      aria-selected={active}
       onClick={onClick}
       className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 whitespace-nowrap ${
         active ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'

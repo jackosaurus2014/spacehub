@@ -83,7 +83,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
         active ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
       }`}
     >
@@ -141,7 +141,7 @@ function FactionChip({ active, onClick, label, accent }: { active: boolean; onCl
   return (
     <button
       onClick={onClick}
-      className={`px-2 py-1 rounded font-medium transition-colors ${
+      className={`min-h-[38px] px-2 py-1 rounded font-medium transition-colors ${
         active
           ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
           : `bg-white/[0.04] border border-white/[0.06] hover:text-white ${accent || 'text-slate-400'}`
@@ -310,7 +310,7 @@ function ContractCard({
           action.onClick ? (
             <button
               onClick={action.onClick}
-              className={`w-full mt-2 px-2 py-1.5 rounded text-[11px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${toneClasses}`}
+              className={`w-full min-h-[44px] mt-2 px-2 py-1.5 rounded text-[11px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${toneClasses}`}
             >
               {action.label}
             </button>

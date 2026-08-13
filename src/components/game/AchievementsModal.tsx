@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { ACHIEVEMENTS, getAchievementBadgeUrl } from '@/lib/game/achievements';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 interface AchievementsModalProps {
   state: GameState;
@@ -23,7 +23,7 @@ const CATEGORIES = [
 
 export default function AchievementsModal({ state, unlockedIds, onClose }: AchievementsModalProps) {
   const [filter, setFilter] = useState('all');
-  useEscapeKey(onClose);
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
 
   const filtered = filter === 'all'
     ? ACHIEVEMENTS
@@ -34,7 +34,14 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
   const pct = Math.round((unlocked / total) * 100);
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="achievements-title">
+    <div
+      ref={modalRef}
+      className="fixed inset-0 z-[70] flex items-center justify-center px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="achievements-title"
+      tabIndex={-1}
+    >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm game-modal-backdrop" onClick={onClose} aria-hidden="true" />
 
       <div className="relative w-full max-w-lg max-h-[80vh] rounded-2xl overflow-hidden flex flex-col game-modal-card" style={{ background: '#0a0a1a' }}>
@@ -47,7 +54,7 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
             <button
               onClick={onClose}
               aria-label="Close achievements"
-              className="w-9 h-9 rounded-full text-slate-400 hover:text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors text-sm flex items-center justify-center"
+              className="w-11 h-11 rounded-full text-slate-400 hover:text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors text-sm flex items-center justify-center"
             >
               <span aria-hidden="true">✕</span>
             </button>
@@ -75,7 +82,8 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
               <button
                 key={cat.id}
                 onClick={() => setFilter(cat.id)}
-                className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
+                aria-pressed={filter === cat.id}
+                className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium transition-colors ${
                   filter === cat.id
                     ? 'bg-cyan-500/20 text-cyan-300'
                     : 'bg-white/[0.04] text-slate-500 hover:text-white'

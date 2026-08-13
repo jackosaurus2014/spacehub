@@ -147,6 +147,19 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
   const [showShips, setShowShips] = useState(true);
   const animRef = useRef(0);
 
+  // Track prefers-reduced-motion so the render loop can skip/flatten purely
+  // decorative motion (starfield twinkle, sun pulse, lane traffic pulses,
+  // orbiting satellite/ship dots) while keeping functional motion — ship
+  // transit interpolation reflects real travel time and stays untouched.
+  const reducedMotionRef = useRef(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    reducedMotionRef.current = mq.matches;
+    const onChange = () => { reducedMotionRef.current = mq.matches; };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
   // Preload every planet sprite + every ship role sprite + nebula bg. Safe to
   // render before these resolve — we fall back to procedural circles/chevrons.
   const assetUrls = useMemo<string[]>(
@@ -206,6 +219,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
     // ─── Stars (twinkling, 3-layer parallax) ─────────────────────
     // Farthest layer (0) barely shifts with pan; closest (2) tracks full offset.
     const tSec = timestampMs * 0.001;
+    const reducedMotion = reducedMotionRef.current;
     const PARALLAX = [0.3, 0.6, 1.0] as const;
     for (const s of starfield) {
       const p = PARALLAX[s.layer];
@@ -213,7 +227,8 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
       const sy = (s.y * h + offset.y * p) % h;
       const wx = sx < 0 ? sx + w : sx;
       const wy = sy < 0 ? sy + h : sy;
-      const alpha = 0.15 + Math.abs(Math.sin(tSec * s.speed + s.phase)) * 0.55;
+      // Reduced motion: hold stars at a fixed brightness instead of twinkling.
+      const alpha = reducedMotion ? 0.45 : 0.15 + Math.abs(Math.sin(tSec * s.speed + s.phase)) * 0.55;
       ctx.fillStyle = `rgba(255,255,255,${alpha})`;
       ctx.beginPath();
       ctx.arc(wx, wy, s.size, 0, Math.PI * 2);
@@ -244,7 +259,16 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
 
         // Animated flow pulses on active lanes (both endpoints unlocked).
         // 3 dots staggered across the chord; t cycles every 4s.
-        if (unlockedBoth) {
+        // Reduced motion: show one static midpoint dot (lane is active) instead
+        // of continuously traveling pulses.
+        if (unlockedBoth && reducedMotion) {
+          const mx = (fx + tx) / 2;
+          const my = (fy + ty) / 2;
+          ctx.fillStyle = 'rgba(34,211,238,0.5)';
+          ctx.beginPath();
+          ctx.arc(mx, my, 1.4, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (unlockedBoth) {
           const laneSeed = (lane.from.charCodeAt(0) + lane.to.charCodeAt(0)) * 0.13;
           for (let k = 0; k < 3; k++) {
             const t = (((tSec * 0.25) + laneSeed + k / 3) % 1 + 1) % 1;
@@ -262,7 +286,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
     }
 
     // ─── Sun ──────────────────────────────────────────────────────
-    const sunPulse = 1 + Math.sin(tSec * 0.5) * 0.04;
+    const sunPulse = reducedMotion ? 1 : 1 + Math.sin(tSec * 0.5) * 0.04;
     const sunGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 70 * zoom * sunPulse);
     sunGrad.addColorStop(0, 'rgba(254,240,138,0.9)');
     sunGrad.addColorStop(0.25, 'rgba(251,191,36,0.5)');
@@ -324,7 +348,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
 
       // Selection ring — animated pulse
       if (isSelected) {
-        const pulse = 1 + Math.sin(tSec * 3) * 0.12;
+        const pulse = reducedMotion ? 1 : 1 + Math.sin(tSec * 3) * 0.12;
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -431,11 +455,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
         ctx.textBaseline = 'alphabetic';
       }
 
-      // Small orbiting dots for player satellites
+      // Small orbiting dots for player satellites.
+      // Reduced motion: hold each dot at a fixed angle instead of orbiting.
       if (completedHere > 0) {
         const time = tSec;
         for (let s = 0; s < Math.min(completedHere, 5); s++) {
-          const angle = time * (0.5 + s * 0.3) + s * (Math.PI * 2 / 5);
+          const angle = reducedMotion
+            ? s * (Math.PI * 2 / 5)
+            : time * (0.5 + s * 0.3) + s * (Math.PI * 2 / 5);
           const orbitR = r + 4 + s * 2;
           const sx = lx + Math.cos(angle) * orbitR;
           const sy = ly + Math.sin(angle) * orbitR;
@@ -462,7 +489,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
           const def = SHIP_MAP.get(ship.definitionId);
           const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
           const time = tSec;
-          const angle = time * 0.8 + ship.instanceId.charCodeAt(0) * 0.1;
+          // Reduced motion: hold the ship marker at a fixed position instead
+          // of continuously orbiting the location.
+          const angle = reducedMotion ? ship.instanceId.charCodeAt(0) * 0.1 : time * 0.8 + ship.instanceId.charCodeAt(0) * 0.1;
           const orbitR = r + 12 + (ship.instanceId.charCodeAt(1) % 6);
           const sx = px.x + Math.cos(angle) * orbitR;
           const sy = px.y + Math.sin(angle) * orbitR;
@@ -635,20 +664,24 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
           onMouseLeave={handleMouseUp}
           onWheel={handleWheel}
           className="w-full h-full"
+          role="img"
+          aria-label="Interactive solar system map showing your unlocked locations, buildings, NPC presence, and ships in transit"
+          aria-describedby="solar-system-canvas-hint"
         />
 
         {/* Zoom controls */}
         <div className="absolute top-2 right-2 flex flex-col gap-1">
-          <button onClick={() => setZoom(z => Math.min(3, z + 0.2))} className="w-7 h-7 rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
-          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))} className="w-7 h-7 rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
-          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-7 h-7 rounded bg-black/60 text-white text-[9px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+          <button onClick={() => setZoom(z => Math.min(3, z + 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
+          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
+          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[9px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
         </div>
 
         {/* Layer toggles */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           <button
             onClick={() => setShowLanes(v => !v)}
-            className={`px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            aria-pressed={showLanes}
+            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -656,7 +689,8 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
           </button>
           <button
             onClick={() => setShowShips(v => !v)}
-            className={`px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            aria-pressed={showShips}
+            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -727,7 +761,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
               ) : canUnlock ? (
                 <button
                   onClick={() => { playSound('location_unlock'); onUnlock(selectedLoc!); }}
-                  className="px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  className="min-h-[44px] px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
                 >
                   Unlock {formatMoney(selectedLocData.unlockCost)}
                 </button>
@@ -739,7 +773,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
         </div>
       )}
 
-      <p className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag to pan, scroll to zoom. Toggle lanes and ships with the top-left buttons.</p>
+      <p id="solar-system-canvas-hint" className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag to pan, scroll to zoom. Toggle lanes and ships with the top-left buttons. This map is mouse/touch-only — a keyboard-accessible location list is not yet available here.</p>
     </div>
   );
 }

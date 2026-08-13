@@ -192,14 +192,16 @@ export default function AllianceResearchPanel() {
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]">
+      <div className="flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]" role="tablist" aria-label="Research category">
         {CATEGORY_CONFIG.map(cat => {
           const catColors = COLOR_MAP[cat.color];
           return (
             <button
               key={cat.id}
+              role="tab"
+              aria-selected={activeCategory === cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`font-hud flex-1 py-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+              className={`font-hud flex-1 min-h-[44px] py-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
                 activeCategory === cat.id
                   ? `${catColors.bg} ${catColors.text} border ${catColors.border}`
                   : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -261,7 +263,7 @@ export default function AllianceResearchPanel() {
 
       {/* Error display */}
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center" role="alert" aria-live="polite">
           <p className="text-red-400 text-[10px]">{error}</p>
         </div>
       )}
@@ -305,7 +307,7 @@ function TierSlot({
             isCompleted
               ? 'bg-green-500/20 border-green-500 text-green-300'
               : isResearching
-                ? `${colors.bg} ${colors.border} ${colors.text} animate-pulse`
+                ? `${colors.bg} ${colors.border} ${colors.text} animate-pulse motion-reduce:animate-none`
                 : isAvailable
                   ? `${colors.bg} ${colors.border} ${colors.text}`
                   : 'bg-white/[0.03] border-white/[0.08] text-slate-600'

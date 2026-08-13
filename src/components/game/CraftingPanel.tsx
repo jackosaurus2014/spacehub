@@ -137,14 +137,15 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
                       <div className="flex items-center gap-1.5 mb-2 flex-wrap">
                         {Object.entries(recipe.inputs).map(([resId, qty]) => {
                           const have = allResources[resId] || 0;
+                          const short = have < qty;
                           return (
-                            <span key={resId} className={`text-[8px] px-1 py-0.5 rounded border ${
-                              have >= qty ? 'text-slate-400 border-white/[0.06]' : 'text-red-400 border-red-500/20'
-                            }`}>{resId.replace(/_/g, ' ')} {have}/{qty}</span>
+                            <span key={resId} className={`text-[10px] px-1 py-0.5 rounded border ${
+                              short ? 'text-red-400 border-red-500/20' : 'text-slate-400 border-white/[0.06]'
+                            }`}>{short ? '⚠ ' : ''}{resId.replace(/_/g, ' ')} {have}/{qty}</span>
                           );
                         })}
                         <span className="text-slate-600 text-[10px]">→</span>
-                        <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
                           {recipe.outputQuantity}x {recipe.outputId.replace(/_/g, ' ')}
                         </span>
                       </div>
@@ -158,7 +159,7 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
                         <button
                           onClick={() => { if (canCraft) { playSound('build_start'); onStartCrafting(recipe.id); } }}
                           disabled={!canCraft}
-                          className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                          className={`min-h-[44px] px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
                             canCraft
                               ? 'bg-purple-600 text-white hover:bg-purple-500'
                               : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'

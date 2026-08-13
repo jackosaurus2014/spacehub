@@ -87,7 +87,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                       <div className="sprite-frame w-14 h-14 flex-shrink-0 flex items-center justify-center">
                         <Image
                           src={getShipAsset(def.id)}
-                          alt=""
+                          alt={`${def.name} illustration`}
                           width={56}
                           height={56}
                           className="w-12 h-12 object-contain drop-shadow-[0_0_6px_rgba(34,211,238,0.35)]"
@@ -173,7 +173,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                         <button
                           key={resId}
                           onClick={() => { playSound('build_start'); onStartMining(selectedShipInstance.instanceId, resId); setSelectedShip(null); }}
-                          className="px-2.5 py-1 text-[10px] font-medium bg-amber-600/20 text-amber-400 border border-amber-600/30 rounded-lg hover:bg-amber-600/30 transition-colors"
+                          className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-amber-600/20 text-amber-400 border border-amber-600/30 rounded-lg hover:bg-amber-600/30 transition-colors"
                         >
                           ⛏️ Mine {resId.replace(/_/g, ' ')}
                         </button>
@@ -195,7 +195,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
           {selectedShipInstance.status === 'mining' && (
             <button
               onClick={() => { onStopMining(selectedShipInstance.instanceId); setSelectedShip(null); }}
-              className="px-3 py-1.5 text-xs font-medium bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors mb-3"
+              className="inline-flex items-center justify-center min-h-[44px] px-3 py-1.5 text-xs font-medium bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors mb-3"
             >
               Stop Mining
             </button>
@@ -214,7 +214,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     <button
                       key={locId}
                       onClick={() => { playSound('build_start'); onLaunchSurvey(selectedShipInstance.instanceId, locId); setSelectedShip(null); }}
-                      className="px-2.5 py-1 text-[10px] font-medium bg-purple-600/20 text-purple-400 border border-purple-600/30 rounded-lg hover:bg-purple-600/30 transition-colors"
+                      className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-purple-600/20 text-purple-400 border border-purple-600/30 rounded-lg hover:bg-purple-600/30 transition-colors"
                     >
                       📡 {loc?.name} ({formatDuration(duration)})
                     </button>
@@ -237,7 +237,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     <button
                       key={locId}
                       onClick={() => { playSound('build_start'); onStartTransport(selectedShipInstance.instanceId, locId, {}); setSelectedShip(null); }}
-                      className="px-2.5 py-1 text-[10px] font-medium bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
+                      className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
                     >
                       🚀 {loc?.name} ({formatDuration(travelTime)})
                     </button>
@@ -257,7 +257,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     setSelectedShip(null);
                   }
                 }}
-                className="w-full px-3 py-1.5 text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
+                className="w-full inline-flex items-center justify-center min-h-[44px] px-3 py-1.5 text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
               >
                 Scrap Ship (recover {formatMoney(Math.round(selectedShipDef.baseCost * 0.3))})
               </button>
@@ -329,7 +329,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     <div className="sprite-frame w-16 h-16 flex-shrink-0 flex items-center justify-center holo-sprite">
                       <Image
                         src={getShipAsset(ship.id)}
-                        alt=""
+                        alt={`${ship.name} illustration`}
                         width={64}
                         height={64}
                         className="w-14 h-14 object-contain drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
@@ -413,7 +413,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                       onClick={() => { playSound('build_start'); onBuildShip(ship.id, selectedShipyard); }}
                       disabled={!canBuildThis}
                       title={!canBuild ? 'Shipyard full' : !canAffordMoney ? 'Insufficient funds' : !hasResources ? 'Missing resources' : undefined}
-                      className={`px-2.5 py-1 rounded text-[10px] font-medium transition-colors ${
+                      className={`inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 rounded text-[10px] font-medium transition-colors ${
                         canBuildThis
                           ? 'bg-cyan-600 text-white hover:bg-cyan-500'
                           : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'

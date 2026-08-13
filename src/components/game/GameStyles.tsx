@@ -863,6 +863,33 @@ export default function GameStyles() {
       .phase-track-node-current {
         animation: glow-pulse-amber 2s ease-in-out infinite;
       }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE 7 — REDUCED MOTION GUARDS for animation classes defined above
+         that predate the prefers-reduced-motion sweep. Disabling the
+         animation leaves the element at its default (fully visible, no
+         transform) state, since none of these rules set other properties.
+         ═══════════════════════════════════════════════════════════════════ */
+      @media (prefers-reduced-motion: reduce) {
+        .game-glow-pulse,
+        .glow-pulse-cyan,
+        .glow-pulse-green,
+        .glow-pulse-amber,
+        .game-progress-shimmer::after,
+        .money-flash,
+        .resource-gain,
+        .achievement-pop,
+        .slide-in-right,
+        .float-up-fade,
+        .construction-pulse,
+        .game-nebula-bg::before,
+        .game-nebula-bg::after,
+        .game-tutorial-pulse,
+        .season-node-current,
+        .phase-track-node-current {
+          animation: none !important;
+        }
+      }
     `}</style>
   );
 }

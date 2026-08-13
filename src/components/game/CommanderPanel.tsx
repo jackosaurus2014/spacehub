@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 import type { GameState } from '@/lib/game/types';
 import {
   COMMANDER_MAP,
@@ -83,7 +83,7 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
       <div className="flex gap-2">
         <button
           onClick={() => setActiveTab('roster')}
-          className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex-1 min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === 'roster' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.03] text-slate-400 border border-white/[0.06] hover:text-white'
           }`}
         >
@@ -91,7 +91,7 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
         </button>
         <button
           onClick={() => setActiveTab('recruit')}
-          className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex-1 min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === 'recruit' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.03] text-slate-400 border border-white/[0.06] hover:text-white'
           }`}
         >
@@ -245,7 +245,7 @@ function CommanderCard({
         {onAction ? (
           <button
             onClick={onAction}
-            className={`w-full mt-2 px-2 py-1.5 rounded text-[10px] font-bold transition-colors ${toneClasses}`}
+            className={`w-full min-h-[44px] mt-2 px-2 py-1.5 rounded text-[10px] font-bold transition-colors ${toneClasses}`}
           >
             {actionLabel}
           </button>
@@ -260,13 +260,13 @@ function CommanderCard({
 }
 
 function HeroModal({ def, onClose }: { def: CommanderDefinition; onClose: () => void }) {
-  useEscapeKey(onClose);
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
   const fullbody = getFullbodyUrl(def);
   if (!fullbody) return null;
   const accent = RARITY_ACCENT[def.rarity];
   const titleId = `hero-title-${def.id}`;
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md game-modal-backdrop" onClick={onClose} aria-hidden="true" />
       <div className={`hud-frame relative w-full max-w-md rounded-2xl overflow-hidden border-2 ${accent.border} shadow-2xl ${accent.glow} game-modal-card`} style={{ background: '#0a0a1a' }}>
         <span className="hud-corner-bl" aria-hidden="true" />
@@ -276,7 +276,7 @@ function HeroModal({ def, onClose }: { def: CommanderDefinition; onClose: () => 
           <button
             onClick={onClose}
             aria-label="Close hero portrait"
-            className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors flex items-center justify-center text-sm"
+            className="absolute top-3 right-3 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors flex items-center justify-center text-sm"
           >
             <span aria-hidden="true">✕</span>
           </button>

@@ -9,7 +9,7 @@ import {
   FRONTIER_CONTRACT_PAYOUT_MULTIPLIER,
 } from '@/lib/game/frontier';
 import { formatMoney } from '@/lib/game/formulas';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 interface Props {
   state: GameState;
@@ -58,7 +58,7 @@ export default function FrontierBadge({ state, onGraduate }: Props) {
         <div className="flex-1" />
         <button
           onClick={() => setDetailOpen(true)}
-          className="ml-auto px-2 py-0.5 rounded text-[10px] font-bold bg-black/30 hover:bg-black/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 shrink-0"
+          className="ml-auto min-h-[38px] px-2 py-0.5 rounded text-[10px] font-bold bg-black/30 hover:bg-black/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 shrink-0"
           aria-label="Open Protected Frontier details"
         >
           Details
@@ -86,13 +86,13 @@ function FrontierDetailModal({
   onClose: () => void;
   onGraduate: () => void;
 }) {
-  useEscapeKey(onClose);
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
   const summary = getFrontierSummary(state);
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="frontier-title">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md game-modal-backdrop" onClick={onClose} aria-hidden="true" />
-      <div className="relative w-full max-w-md rounded-2xl overflow-hidden border border-emerald-500/30 game-modal-card" style={{ background: '#0a0a1a' }}>
+      <div ref={modalRef} tabIndex={-1} className="relative w-full max-w-md rounded-2xl overflow-hidden border border-emerald-500/30 game-modal-card" style={{ background: '#0a0a1a' }}>
         <div className="h-1 bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500" aria-hidden="true" />
 
         <div className="p-5">
@@ -109,7 +109,7 @@ function FrontierDetailModal({
             <button
               onClick={onClose}
               aria-label="Close Protected Frontier details"
-              className="w-9 h-9 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
+              className="min-w-[44px] min-h-[44px] rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
             >
               <span aria-hidden="true">✕</span>
             </button>
@@ -177,7 +177,7 @@ function FrontierDetailModal({
           {/* Graduate button */}
           <button
             onClick={onGraduate}
-            className="w-full px-3 py-2 rounded-lg text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30 hover:bg-purple-500/25 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-colors"
+            className="w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30 hover:bg-purple-500/25 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-colors"
           >
             Graduate Early — Enter Open Economy
           </button>

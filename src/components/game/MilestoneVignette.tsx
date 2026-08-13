@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { playSound } from '@/lib/game/sound-engine';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 /**
  * MilestoneVignette — full-screen celebration overlay that fires when the
@@ -123,6 +124,10 @@ export default function MilestoneVignette({ state }: MilestoneVignetteProps) {
     const t = window.setTimeout(() => setActive(null), 3800);
     return () => window.clearTimeout(t);
   }, [state]);
+
+  // Auto-dismiss doesn't require interaction, but keyboard users should still
+  // be able to close early the same way mouse users can by clicking.
+  useEscapeKey(() => setActive(null), active !== null);
 
   if (!active) return null;
 

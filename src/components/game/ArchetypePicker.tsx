@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ARCHETYPES, type StartingArchetype } from '@/lib/game/archetypes';
 import { formatMoney } from '@/lib/game/formulas';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 interface Props {
   onSelect: (id: StartingArchetype) => void;
@@ -17,16 +17,18 @@ interface Props {
  */
 export default function ArchetypePicker({ onSelect, onCancel }: Props) {
   const [selected, setSelected] = useState<StartingArchetype | null>(null);
-  useEscapeKey(onCancel);
+  const modalRef = useModalA11y<HTMLDivElement>(onCancel);
 
   const chosen = selected ? ARCHETYPES.find(a => a.id === selected) : null;
 
   return (
     <div
+      ref={modalRef}
       className="fixed inset-0 z-[80] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="archetype-title"
+      tabIndex={-1}
     >
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md game-modal-backdrop" onClick={onCancel} aria-hidden="true" />
 
@@ -46,7 +48,7 @@ export default function ArchetypePicker({ onSelect, onCancel }: Props) {
           <button
             onClick={onCancel}
             aria-label="Cancel and return to start menu"
-            className="w-9 h-9 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
+            className="w-11 h-11 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
           >
             <span aria-hidden="true">✕</span>
           </button>
@@ -125,14 +127,14 @@ export default function ArchetypePicker({ onSelect, onCancel }: Props) {
           <div className="flex items-center gap-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.05] transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              className="min-h-[44px] px-4 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.05] transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
             >
               Back
             </button>
             <button
               onClick={() => chosen && onSelect(chosen.id)}
               disabled={!chosen}
-              className={`px-5 py-2 rounded-lg text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+              className={`min-h-[44px] px-5 py-2 rounded-lg text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                 chosen
                   ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white hover:from-cyan-400 hover:to-purple-400 shadow-lg'
                   : 'bg-white/[0.04] text-slate-500 cursor-not-allowed'

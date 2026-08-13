@@ -36,6 +36,7 @@ export default function IncomeChart({ data }: IncomeChartProps) {
   const lineColor = trending ? '#22c55e' : '#ef4444';
   const fillColorStart = trending ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
   const fillColorEnd = 'rgba(0,0,0,0)';
+  const chartSummary = `Income trend over the last ${data.length} months, trending ${trending ? 'up' : 'down'}. Currently ${formatMoney(latest)} per month, ranging from ${formatMoney(min)} to ${formatMoney(max)}.`;
 
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
@@ -45,7 +46,7 @@ export default function IncomeChart({ data }: IncomeChartProps) {
           {latest >= 0 ? '+' : ''}{formatMoney(latest)}/mo
         </span>
       </div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-12" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-12" preserveAspectRatio="none" role="img" aria-label={chartSummary}>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={fillColorStart} />

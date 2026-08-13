@@ -159,7 +159,7 @@ export default function TerritoryPanel({ state }: TerritoryPanelProps) {
         <h2 className="text-xl font-bold text-white">Territory Influence</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-            <div key={i} className="bg-gray-800/50 rounded-lg p-4 animate-pulse h-40" />
+            <div key={i} className="bg-gray-800/50 rounded-lg p-4 animate-pulse motion-reduce:animate-none h-40" />
           ))}
         </div>
       </div>
@@ -170,11 +170,11 @@ export default function TerritoryPanel({ state }: TerritoryPanelProps) {
     return (
       <div className="p-4">
         <h2 className="text-xl font-bold text-white mb-4">Territory Influence</h2>
-        <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 text-red-300">
+        <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 text-red-300" role="status" aria-live="polite">
           {error}
           <button
             onClick={fetchZones}
-            className="ml-3 text-sm underline hover:text-red-200"
+            className="ml-3 text-sm underline hover:text-red-200 min-h-[44px] px-2 -my-2 inline-flex items-center"
           >
             Retry
           </button>
@@ -210,7 +210,7 @@ export default function TerritoryPanel({ state }: TerritoryPanelProps) {
         {selectedZone && (
           <button
             onClick={() => setSelectedZone(null)}
-            className="text-sm text-blue-400 hover:text-blue-300 shrink-0"
+            className="text-sm text-blue-400 hover:text-blue-300 shrink-0 min-h-[44px] px-2 -my-2 inline-flex items-center"
           >
             Back to Overview
           </button>
@@ -275,7 +275,7 @@ function ZoneCard({ zone, onClick }: { zone: ZoneData; onClick: () => void }) {
         ${isGoverned
           ? 'hud-frame hud-frame-amber bg-gradient-to-br from-yellow-900/30 to-gray-800/80 border-2 border-yellow-500/40'
           : isContested
-            ? 'hud-frame hud-frame-red bg-gradient-to-br from-red-900/20 to-gray-800/80 border-2 border-red-500/30 animate-pulse-slow'
+            ? 'hud-frame hud-frame-red bg-gradient-to-br from-red-900/20 to-gray-800/80 border-2 border-red-500/30 animate-pulse-slow motion-reduce:animate-none'
             : myShare > 0
               ? 'bg-gray-800/70 border border-gray-600/50 hover:border-gray-500/70'
               : 'bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/50 opacity-80'
@@ -488,14 +488,15 @@ function ZoneDetail({
         {zone.topInfluencers.length === 0 ? (
           <p className="text-sm text-gray-500">No players have influence in this zone yet.</p>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2" role="table" aria-label="Zone influence leaderboard">
             {zone.topInfluencers.map((inf, i) => (
               <div
                 key={inf.profileId || i}
+                role="row"
                 className="holo-row flex items-center gap-3 rounded-lg px-1.5 py-1"
               >
-                <span className="text-xs text-gray-500 w-5 text-right">{i + 1}.</span>
-                <div className="flex-1 min-w-0">
+                <span className="text-xs text-gray-500 w-5 text-right" role="cell">{i + 1}.</span>
+                <div className="flex-1 min-w-0" role="cell">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm text-white truncate">
                       {inf.companyName}
@@ -520,7 +521,7 @@ function ZoneDetail({
                     />
                   </div>
                 </div>
-                <span className="text-sm text-gray-300 font-medium w-14 text-right shrink-0">
+                <span className="text-sm text-gray-300 font-medium w-14 text-right shrink-0" role="cell">
                   {inf.sharePct.toFixed(1)}%
                 </span>
               </div>
@@ -573,7 +574,7 @@ function ZoneDetail({
             <button
               onClick={() => onChallenge(zone.zoneId)}
               disabled={challengeLoading}
-              className="w-full mt-2 py-2 px-4 bg-red-600/30 hover:bg-red-600/50 text-red-300
+              className="w-full mt-2 min-h-[44px] py-2 px-4 bg-red-600/30 hover:bg-red-600/50 text-red-300
                          border border-red-500/40 rounded-lg text-sm font-medium transition-colors
                          disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -581,7 +582,11 @@ function ZoneDetail({
             </button>
           )}
           {challengeMessage && (
-            <p className={`text-xs mt-2 ${challengeMessage.includes('initiated') ? 'text-green-400' : 'text-red-400'}`}>
+            <p
+              className={`text-xs mt-2 ${challengeMessage.includes('initiated') ? 'text-green-400' : 'text-red-400'}`}
+              role="status"
+              aria-live="polite"
+            >
               {challengeMessage}
             </p>
           )}

@@ -58,7 +58,7 @@ function VictoryCard({ victory, state, isEarned }: { victory: VictoryDefinition;
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">{victory.icon}</span>
+          <span className="text-2xl" aria-hidden="true">{victory.icon}</span>
           <div>
             <h3 className={`text-sm font-bold ${isEarned ? 'text-yellow-300' : 'text-white'}`}>
               {victory.name}
@@ -180,7 +180,7 @@ function HallOfFame({ earnedVictoryIds }: { earnedVictoryIds: string[] }) {
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">{'🏆'}</span>
+        <span className="text-lg" aria-hidden="true">{'🏆'}</span>
         <h3 className="font-hud text-sm font-bold text-yellow-300">Hall of Fame</h3>
         <span className="text-[10px] text-yellow-300/50 ml-auto">
           {earned.length} / {VICTORY_CONDITIONS.length} victories
@@ -194,7 +194,7 @@ function HallOfFame({ earnedVictoryIds }: { earnedVictoryIds: string[] }) {
             key={v.id}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/20"
           >
-            <span className="text-base">{v.icon}</span>
+            <span className="text-base" aria-hidden="true">{v.icon}</span>
             <div>
               <p className="text-[10px] font-bold text-yellow-300">{v.name}</p>
               <p className="text-[9px] text-yellow-300/50">&quot;{v.title}&quot;</p>

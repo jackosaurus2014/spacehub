@@ -300,7 +300,8 @@ function FitTab({
                         <div className={`text-[9px] font-bold truncate ${RARITY_ACCENT[fittedDef.rarity].text}`}>{fittedDef.name}</div>
                         <button
                           onClick={() => setState(prev => prev ? unfitModule(prev, selected.instanceId, fittedItem.instanceId) : prev)}
-                          className="mt-1 text-[9px] text-red-300 hover:text-red-200 min-h-[20px]"
+                          aria-label={`Unfit ${fittedDef.name}`}
+                          className="mt-1 text-[9px] text-red-300 hover:text-red-200 min-h-[44px] min-w-[44px] px-2 flex items-center justify-center"
                         >
                           Unfit
                         </button>
@@ -359,10 +360,11 @@ function FitTab({
                       <button
                         onClick={() => setState(prev => prev ? fitModule(prev, selected.instanceId, owned.instanceId) : prev)}
                         disabled={!fittable}
-                        className={`game-btn min-h-[36px] min-w-[44px] px-2 py-1 rounded text-[10px] font-bold transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                        className={`game-btn min-h-[44px] min-w-[44px] px-2 py-1 rounded text-[10px] font-bold transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                           fittable ? 'bg-cyan-500 text-black hover:bg-cyan-400' : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
                         }`}
                         title={!compatHardpoint ? 'Incompatible hardpoint type' : !compatRole ? `Role-locked (${def.compatibleRoles?.join(', ')})` : !slotsFree ? 'All slots full' : ''}
+                        aria-label={fittable ? `Fit ${def.name}` : !compatHardpoint ? `Cannot fit ${def.name}: incompatible hardpoint type` : !compatRole ? `Cannot fit ${def.name}: role-locked (${def.compatibleRoles?.join(', ')})` : `Cannot fit ${def.name}: all slots full`}
                       >
                         {fittable ? 'Fit' : '—'}
                       </button>
@@ -400,6 +402,7 @@ function StatRow({
       <span className="text-slate-500">{label}</span>
       <span className={changed ? (isImprovement ? 'text-emerald-300 font-mono' : 'text-red-300 font-mono') : 'text-slate-300 font-mono'}>
         {changed && <span className="text-slate-600 text-[8px]">{format(base)} → </span>}
+        {changed && <span aria-hidden="true">{isImprovement ? '▲' : '▼'} </span>}
         {format(effective)}
       </span>
     </div>

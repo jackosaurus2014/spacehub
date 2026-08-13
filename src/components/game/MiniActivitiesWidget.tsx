@@ -34,7 +34,7 @@ function RewardPopup({ reward, onDone }: { reward: MiniActivityReward; onDone: (
   }, [onDone]);
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+    <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none" role="status" aria-live="polite">
       <div
         className="px-4 py-3 rounded-xl border border-cyan-500/30 shadow-lg shadow-cyan-500/10 max-w-[280px] text-center pointer-events-auto"
         style={{ background: 'var(--bg-elevated, #111827)', animation: 'reveal-up 0.3s ease-out' }}
@@ -177,7 +177,8 @@ export default function MiniActivitiesWidget({ state, onExecute }: MiniActivitie
       {/* Header */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="w-full flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-white/[0.02]"
+        aria-expanded={!isCollapsed}
+        className="w-full min-h-[44px] flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-white/[0.02]"
         style={{ borderBottom: isCollapsed ? 'none' : '1px solid var(--border-subtle, rgba(255,255,255,0.06))' }}
       >
         <div className="flex items-center gap-2">

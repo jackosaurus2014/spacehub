@@ -172,7 +172,7 @@ export default function GameChat({ companyName }: GameChatProps) {
             </div>
             <button
               onClick={handleToggle}
-              className="text-slate-400 hover:text-white transition-colors text-lg leading-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white transition-colors text-lg leading-none"
               aria-label="Close chat"
             >
               &times;
@@ -180,7 +180,15 @@ export default function GameChat({ companyName }: GameChatProps) {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2" style={{ scrollbarWidth: 'thin' }}>
+          <div
+            className="flex-1 overflow-y-auto px-3 py-2 space-y-2"
+            style={{ scrollbarWidth: 'thin' }}
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+            aria-label="Chat messages"
+            tabIndex={0}
+          >
             {messages.length === 0 && (
               <div className="flex items-center justify-center h-full">
                 <p className="text-xs text-slate-500 text-center">
@@ -215,6 +223,7 @@ export default function GameChat({ companyName }: GameChatProps) {
           {/* Error Display */}
           {error && (
             <div
+              role="alert"
               className="px-3 py-1.5 text-[10px] shrink-0"
               style={{ color: '#f87171', background: 'rgba(248, 113, 113, 0.08)' }}
             >
@@ -249,7 +258,7 @@ export default function GameChat({ companyName }: GameChatProps) {
             <button
               onClick={handleSend}
               disabled={!input.trim() || sending || cooldown}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all disabled:opacity-30"
+              className="min-w-[44px] min-h-[38px] flex items-center justify-center text-xs font-semibold px-3 py-1.5 rounded-lg transition-all disabled:opacity-30"
               style={{
                 background: !input.trim() || sending || cooldown
                   ? 'rgba(99, 179, 237, 0.1)'
@@ -276,13 +285,20 @@ export default function GameChat({ companyName }: GameChatProps) {
           border: '1px solid rgba(99, 179, 237, 0.3)',
           boxShadow: '0 4px 20px rgba(99, 179, 237, 0.15)',
         }}
-        aria-label={isOpen ? 'Close chat' : 'Open chat'}
+        aria-label={
+          isOpen
+            ? 'Close chat'
+            : unreadCount > 0
+              ? `Open chat, ${unreadCount} unread message${unreadCount === 1 ? '' : 's'}`
+              : 'Open chat'
+        }
       >
-        <span className="text-lg">{isOpen ? '✕' : '💬'}</span>
+        <span className="text-lg" aria-hidden="true">{isOpen ? '✕' : '💬'}</span>
 
         {/* Unread Badge */}
         {!isOpen && unreadCount > 0 && (
           <span
+            aria-hidden="true"
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold text-white px-1"
             style={{ background: '#ef4444' }}
           >

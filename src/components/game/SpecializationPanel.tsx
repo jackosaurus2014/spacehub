@@ -64,6 +64,11 @@ function TierNode({
               UNLOCKED
             </span>
           )}
+          {!isUnlocked && isNext && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+              NEXT
+            </span>
+          )}
         </div>
         <p className="text-[10px] text-slate-500 mt-0.5">{tierDef.description}</p>
         {!isUnlocked && (
@@ -130,7 +135,7 @@ function SpecCard({
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors px-2 py-1"
+          className="min-h-[44px] text-[10px] text-slate-500 hover:text-slate-300 transition-colors px-2 py-1"
         >
           {expanded ? 'Hide' : 'Details'}
         </button>
@@ -179,7 +184,7 @@ function SpecCard({
             }
           }}
           disabled={!purchaseCheck.allowed}
-          className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+          className={`w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
             purchaseCheck.allowed
               ? 'bg-cyan-600 text-white hover:bg-cyan-500'
               : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
@@ -327,7 +332,7 @@ export default function SpecializationPanel({ state, onPurchaseTier, onRespec }:
       <div className="flex gap-2">
         <button
           onClick={() => setViewMode('primary')}
-          className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex-1 min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
             viewMode === 'primary'
               ? 'bg-cyan-600 text-white'
               : 'bg-white/[0.04] text-slate-400 hover:text-white'
@@ -338,7 +343,7 @@ export default function SpecializationPanel({ state, onPurchaseTier, onRespec }:
         <button
           onClick={() => setViewMode('secondary')}
           disabled={!spec.primary}
-          className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex-1 min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
             viewMode === 'secondary'
               ? 'bg-purple-600 text-white'
               : spec.primary
@@ -394,7 +399,7 @@ export default function SpecializationPanel({ state, onPurchaseTier, onRespec }:
               <button
                 onClick={() => { playSound('click'); onRespec('primary'); }}
                 disabled={state.money < respecCost}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   state.money >= respecCost
                     ? 'bg-red-600 text-white hover:bg-red-500'
                     : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
@@ -407,7 +412,7 @@ export default function SpecializationPanel({ state, onPurchaseTier, onRespec }:
               <button
                 onClick={() => { playSound('click'); onRespec('secondary'); }}
                 disabled={state.money < respecCost}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   state.money >= respecCost
                     ? 'bg-red-600/80 text-white hover:bg-red-500/80'
                     : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'

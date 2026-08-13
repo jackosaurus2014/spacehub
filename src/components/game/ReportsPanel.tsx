@@ -95,7 +95,7 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
         <div className="flex items-center gap-3">
           <h2 className="font-hud text-sm font-semibold text-white">📬 Reports &amp; Mail</h2>
           {unreadCount > 0 && (
-            <span className="game-number px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+            <span aria-live="polite" className="game-number px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
               {unreadCount} unread
             </span>
           )}
@@ -105,7 +105,8 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
           <div className="flex rounded-lg overflow-hidden border border-white/[0.06]">
             <button
               onClick={() => setFilter('all')}
-              className={`px-3 py-1 text-[10px] font-medium transition-colors ${
+              aria-pressed={filter === 'all'}
+              className={`min-h-[44px] px-3 py-1 text-[10px] font-medium transition-colors ${
                 filter === 'all'
                   ? 'bg-white/[0.08] text-white'
                   : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
@@ -115,7 +116,8 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
             </button>
             <button
               onClick={() => setFilter('unread')}
-              className={`px-3 py-1 text-[10px] font-medium transition-colors ${
+              aria-pressed={filter === 'unread'}
+              className={`min-h-[44px] px-3 py-1 text-[10px] font-medium transition-colors ${
                 filter === 'unread'
                   ? 'bg-white/[0.08] text-white'
                   : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
@@ -127,7 +129,7 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
           {unreadCount > 0 && (
             <button
               onClick={onMarkAllRead}
-              className="px-2 py-1 text-[10px] text-slate-400 hover:text-cyan-400 transition-colors"
+              className="min-h-[44px] px-2 py-1 text-[10px] text-slate-400 hover:text-cyan-400 transition-colors"
             >
               Mark all read
             </button>
@@ -151,15 +153,19 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
           return (
             <div
               key={report.id}
-              className="holo-row rounded-lg transition-all cursor-pointer"
+              className="holo-row rounded-lg transition-all"
               style={{
                 background: isExpanded ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
                 border: `1px solid ${!report.read ? accent + '40' : 'rgba(255,255,255,0.06)'}`,
               }}
-              onClick={() => handleExpand(report)}
             >
               {/* Report header */}
-              <div className="flex items-start gap-3 px-3 py-2.5">
+              <button
+                type="button"
+                onClick={() => handleExpand(report)}
+                aria-expanded={isExpanded}
+                className="w-full flex items-start gap-3 px-3 py-2.5 text-left"
+              >
                 {/* Unread indicator + icon */}
                 <div className="relative flex-shrink-0 mt-0.5">
                   <span className="text-lg">{getReportIcon(report.type)}</span>
@@ -217,10 +223,11 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                   strokeWidth={2}
+                  aria-hidden="true"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
-              </div>
+              </button>
 
               {/* Expanded body */}
               {isExpanded && (

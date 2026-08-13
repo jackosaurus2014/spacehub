@@ -149,7 +149,7 @@ export default function LeaguePanel() {
 
   if (loading) {
     return (
-      <div className="space-y-4 animate-pulse">
+      <div className="space-y-4 animate-pulse motion-reduce:animate-none" role="status" aria-live="polite" aria-label="Loading league data">
         <div className="h-24 bg-white/[0.04] rounded-xl" />
         <div className="h-16 bg-white/[0.04] rounded-xl" />
         <div className="h-64 bg-white/[0.04] rounded-xl" />
@@ -159,7 +159,7 @@ export default function LeaguePanel() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
+      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center" role="alert">
         <p className="text-red-400 text-sm">{error}</p>
         <button
           onClick={() => { setLoading(true); fetchLeagueData(); }}

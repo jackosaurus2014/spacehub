@@ -44,7 +44,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
       {(timedEvents.length > 0 || completedTimedEvents.length > 0) && (
         <div>
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse motion-reduce:animate-none" />
             Timed Events ({timedEvents.length} active)
           </h3>
           <div className="grid gap-2">
@@ -91,7 +91,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
       {active.length > 0 && (
         <div>
           <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" />
             Active Contracts ({active.length})
           </h3>
           <div className="space-y-3">
@@ -107,7 +107,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                       <span className="text-white text-sm font-semibold">{contract.name}</span>
                       <p className="text-slate-500 text-[10px] mt-0.5">{contract.client}</p>
                     </div>
-                    {complete && <span className="text-green-400 text-xs font-bold">COMPLETE!</span>}
+                    {complete && <span role="status" aria-live="polite" className="text-green-400 text-xs font-bold">COMPLETE!</span>}
                   </div>
                   <p className="text-slate-400 text-xs mb-3">{contract.description}</p>
                   {/* Requirements with progress */}
@@ -175,7 +175,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                 </div>
                 <button
                   onClick={() => { playSound('click'); onAcceptContract(contract.id); }}
-                  className="w-full py-1.5 text-xs font-medium bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition-colors"
+                  className="w-full min-h-[44px] py-1.5 text-xs font-medium bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition-colors"
                 >
                   Accept Contract
                 </button>
@@ -209,12 +209,12 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
         <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">
           🏆 Competitive Milestones
         </h3>
-        <div className="space-y-1.5">
+        <div className="space-y-1.5" role="list" aria-label="Competitive milestones">
           {MILESTONES.map(m => {
             const claimed = claimedMilestones[m.id];
             const isPlayer = claimed === (state.companyName || 'Your Company');
             return (
-              <div key={m.id} className={`holo-row flex items-center justify-between p-2 rounded-lg ${
+              <div key={m.id} role="listitem" className={`holo-row flex items-center justify-between p-2 rounded-lg ${
                 claimed
                   ? isPlayer ? 'bg-green-500/5 border border-green-500/20' : 'bg-red-500/5 border border-red-500/20'
                   : 'bg-white/[0.02] border border-white/[0.04]'

@@ -93,6 +93,8 @@ import SpecializationPanel from '@/components/game/SpecializationPanel';
 import { purchaseTier, respecSpecialization } from '@/lib/game/specializations';
 import VictoryPanel from '@/components/game/VictoryPanel';
 import { checkVictories } from '@/lib/game/victory-conditions';
+import FuturesPanel from '@/components/game/FuturesPanel';
+import EconomyPanel from '@/components/game/EconomyPanel';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1541,6 +1543,8 @@ export default function SpaceTycoonPage() {
     { id: 'contracts', label: 'Contracts', icon: '📋' },
     { id: 'crafting', label: 'Craft', icon: '🔨' },
     { id: 'market', label: 'Market', icon: '📈' },
+    { id: 'futures', label: 'Futures', icon: '📈' },
+    { id: 'economy', label: 'Economy', icon: '🌐' },
     { id: 'workforce', label: 'Crew', icon: '👷' },
     { id: 'alliance', label: 'Corporation', icon: '🏢' },
     { id: 'bounties', label: 'Bounties', icon: '📦' },
@@ -1929,6 +1933,7 @@ export default function SpaceTycoonPage() {
             <MarketOrderBook state={state} />
           </div>
         )}
+        {tab === 'futures' && <FuturesPanel state={state} setState={setState} />}
         {tab === 'contracts' && <ContractsPanel state={state} onAcceptContract={(contractId) => {
           playSound('click');
           setState(prev => {
@@ -1988,6 +1993,7 @@ export default function SpaceTycoonPage() {
           />
         )}
         {tab === 'intelligence' && <MarketIntelligencePanel />}
+        {tab === 'economy' && <EconomyPanel state={state} />}
         {tab === 'spatial' && <SpatialStrategyPanel state={state} />}
         {tab === 'diplomacy' && (
           <DiplomacyPanel

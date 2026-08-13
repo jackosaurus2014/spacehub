@@ -102,11 +102,14 @@ export default function HazardAlertLayer({ state }: HazardAlertLayerProps) {
         />
       )}
 
-      {/* HUD alert stack — top-right, each alert slides in */}
+      {/* HUD alert stack — top-right, each alert slides in.
+          aria-live escalates to "assertive" whenever the stack contains an
+          asset-loss incident, since those are the time-critical ones per the
+          project's hazard-risk design; pure damage warnings stay "polite". */}
       <div
         className="pointer-events-none fixed top-20 right-4 z-[60] flex flex-col gap-2 items-end"
         role="status"
-        aria-live="polite"
+        aria-live={alerts.some(a => a.severity === 'loss') ? 'assertive' : 'polite'}
       >
         {alerts.map(a => (
           <div
@@ -122,7 +125,16 @@ export default function HazardAlertLayer({ state }: HazardAlertLayerProps) {
           >
             <span className="hud-corner-bl" aria-hidden="true" />
             <span className="hud-corner-br" aria-hidden="true" />
-            <div className="font-hud font-bold tracking-widest">{a.title}</div>
+            <div className="font-hud font-bold tracking-widest flex items-center gap-1.5">
+              <span
+                className={`text-[8px] px-1 py-0.5 rounded ${
+                  a.severity === 'loss' ? 'bg-red-500/40 text-red-100' : 'bg-amber-500/40 text-amber-100'
+                }`}
+              >
+                {a.severity === 'loss' ? 'LOSS' : 'WARNING'}
+              </span>
+              {a.title}
+            </div>
             <div className="text-[11px] opacity-90 mt-0.5 max-w-[260px]">{a.detail}</div>
           </div>
         ))}

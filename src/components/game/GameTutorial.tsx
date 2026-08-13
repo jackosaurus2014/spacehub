@@ -312,7 +312,7 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
             </div>
             <span className="card-terminal__path">spacenexus:~/tutorial</span>
           </div>
-          <button onClick={handleSkip} className="text-[9px] uppercase tracking-wider hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
+          <button onClick={handleSkip} className="min-h-[44px] px-2 text-[9px] uppercase tracking-wider hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
             Skip All
           </button>
         </div>
@@ -345,8 +345,8 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
           </div>
 
           {/* Content */}
-          <div className="flex items-start gap-3 mb-3">
-            <span className="text-2xl shrink-0">{currentStep.icon}</span>
+          <div className="flex items-start gap-3 mb-3" aria-live="polite">
+            <span className="text-2xl shrink-0" aria-hidden="true">{currentStep.icon}</span>
             <div>
               <h3 className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{currentStep.title}</h3>
               <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{currentStep.description}</p>
@@ -374,7 +374,7 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
             {!isFirst && (
               <button
                 onClick={handleBack}
-                className="flex-1 py-2 text-xs font-medium rounded transition-colors"
+                className="flex-1 min-h-[44px] py-2 text-xs font-medium rounded transition-colors"
                 style={{ background: 'var(--bg-hover)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}
               >
                 ← Back
@@ -382,7 +382,7 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
             )}
             <button
               onClick={handleNext}
-              className="flex-1 py-2 text-xs font-semibold text-white rounded transition-all"
+              className="flex-1 min-h-[44px] py-2 text-xs font-semibold text-white rounded transition-all"
               style={{ background: phaseColors[currentStep.phase || 'early'] === '#2DCCFF' ? 'var(--accent-primary)' : phaseColors[currentStep.phase || 'early'] }}
             >
               {isLast ? '🌌 Start Playing!' : 'Next →'}

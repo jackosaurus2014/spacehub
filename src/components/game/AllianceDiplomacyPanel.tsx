@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { playSound } from '@/lib/game/sound-engine';
+import { useModalA11y } from './useModalA11y';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -88,6 +89,9 @@ export default function AllianceDiplomacyPanel() {
   const [showWarModal, setShowWarModal] = useState(false);
   const [warTarget, setWarTarget] = useState('');
   const [warObjective, setWarObjective] = useState<WarObjective>('zone_control');
+
+  const proposeModalRef = useModalA11y<HTMLDivElement>(() => setShowProposeModal(false), showProposeModal);
+  const warModalRef = useModalA11y<HTMLDivElement>(() => setShowWarModal(false), showWarModal);
 
   const fetchData = useCallback(async () => {
     try {
@@ -202,8 +206,8 @@ export default function AllianceDiplomacyPanel() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-        <div className="inline-block w-5 h-5 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-2" />
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center" role="status" aria-live="polite">
+        <div className="inline-block w-5 h-5 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin motion-reduce:animate-none mb-2" />
         <p className="text-slate-400 text-xs">Loading diplomacy...</p>
       </div>
     );
@@ -504,8 +508,15 @@ export default function AllianceDiplomacyPanel() {
       {/* Propose Treaty Modal */}
       {showProposeModal && (
         <div className="game-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="game-modal-card w-full max-w-md rounded-xl border border-green-500/20 bg-[#0a0a14] p-5">
-            <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
+          <div
+            ref={proposeModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="propose-treaty-title"
+            tabIndex={-1}
+            className="game-modal-card w-full max-w-md rounded-xl border border-green-500/20 bg-[#0a0a14] p-5"
+          >
+            <h3 id="propose-treaty-title" className="text-white text-sm font-bold mb-4 flex items-center gap-2">
               <span>🕊️</span> Propose Treaty
             </h3>
 
@@ -538,7 +549,7 @@ export default function AllianceDiplomacyPanel() {
                     <button
                       key={type}
                       onClick={() => setProposeType(type)}
-                      className={`p-2 rounded-lg border text-[10px] font-semibold transition-colors ${
+                      className={`min-h-[44px] p-2 rounded-lg border text-[10px] font-semibold transition-colors ${
                         proposeType === type
                           ? `${tc.bg} ${tc.border} ${tc.text}`
                           : 'bg-white/[0.03] border-white/[0.06] text-slate-500 hover:text-white'
@@ -573,8 +584,15 @@ export default function AllianceDiplomacyPanel() {
       {/* Declare War Modal */}
       {showWarModal && (
         <div className="game-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="game-modal-card w-full max-w-md rounded-xl border border-red-500/20 bg-[#0a0a14] p-5">
-            <h3 className="text-red-300 text-sm font-bold mb-4 flex items-center gap-2">
+          <div
+            ref={warModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="declare-war-title"
+            tabIndex={-1}
+            className="game-modal-card w-full max-w-md rounded-xl border border-red-500/20 bg-[#0a0a14] p-5"
+          >
+            <h3 id="declare-war-title" className="text-red-300 text-sm font-bold mb-4 flex items-center gap-2">
               <span>⚔️</span> Declare War
             </h3>
 
@@ -605,7 +623,7 @@ export default function AllianceDiplomacyPanel() {
                   <button
                     key={obj}
                     onClick={() => setWarObjective(obj)}
-                    className={`w-full p-2.5 rounded-lg border text-left text-[10px] font-semibold transition-colors ${
+                    className={`w-full min-h-[44px] p-2.5 rounded-lg border text-left text-[10px] font-semibold transition-colors ${
                       warObjective === obj
                         ? 'bg-red-500/10 border-red-500/30 text-red-300'
                         : 'bg-white/[0.03] border-white/[0.06] text-slate-500 hover:text-white'
@@ -644,7 +662,7 @@ export default function AllianceDiplomacyPanel() {
 
       {/* Error display */}
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center">
+        <div role="alert" className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center">
           <p className="text-red-400 text-[10px]">{error}</p>
         </div>
       )}

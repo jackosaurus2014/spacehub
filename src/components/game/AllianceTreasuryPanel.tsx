@@ -139,8 +139,8 @@ export default function AllianceTreasuryPanel() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-        <div className="inline-block w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin mb-2" />
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center" role="status" aria-live="polite">
+        <div className="inline-block w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin motion-reduce:animate-none mb-2" />
         <p className="text-slate-400 text-xs">Loading treasury...</p>
       </div>
     );
@@ -220,7 +220,7 @@ export default function AllianceTreasuryPanel() {
           <button
             key={t}
             onClick={() => setActiveTab(t)}
-            className={`font-hud flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+            className={`font-hud flex-1 min-h-[44px] py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
               activeTab === t
                 ? 'bg-amber-600/30 text-amber-300 border border-amber-500/30'
                 : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -310,7 +310,7 @@ export default function AllianceTreasuryPanel() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px]">
                   <span className={`game-number ${treasury >= perk.treasuryCost ? 'text-amber-300' : 'text-red-400'}`}>
-                    {formatMoney(perk.treasuryCost)}
+                    {treasury >= perk.treasuryCost ? '' : '⚠ '}{formatMoney(perk.treasuryCost)}
                   </span>
                   <span className="text-slate-600">|</span>
                   <span className="text-slate-500">{perk.durationHours}h</span>
@@ -350,20 +350,21 @@ export default function AllianceTreasuryPanel() {
           {recentLogs.length === 0 ? (
             <p className="text-slate-500 text-xs text-center py-4">No transactions yet.</p>
           ) : (
-            <div className="max-h-80 overflow-y-auto game-scroll">
+            <div className="max-h-80 overflow-y-auto overflow-x-auto game-scroll" role="table" aria-label="Treasury transaction history">
               {/* Column header row */}
-              <div className="flex items-center justify-between py-1 px-3 font-hud text-[9px] uppercase tracking-widest text-slate-500">
-                <span>Event</span>
-                <span>Actor</span>
-                <span>Amount</span>
+              <div className="flex items-center justify-between py-1 px-3 font-hud text-[9px] uppercase tracking-widest text-slate-500" role="row">
+                <span role="columnheader">Event</span>
+                <span role="columnheader">Actor</span>
+                <span role="columnheader">Amount</span>
               </div>
               <div>
                 {recentLogs.map((log, idx) => (
                   <div
                     key={idx}
+                    role="row"
                     className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors border-b border-white/[0.04] last:border-0"
                   >
-                    <div className="flex items-center gap-2">
+                    <div role="cell" className="flex items-center gap-2">
                       <span className="text-sm">
                         {log.type === 'treasury_deposit' ? '📥' : log.type === 'perk_activated' ? '✨' : '📤'}
                       </span>
@@ -374,7 +375,7 @@ export default function AllianceTreasuryPanel() {
                         </p>
                       </div>
                     </div>
-                    <span className={`game-number text-xs font-bold ${
+                    <span role="cell" className={`game-number text-xs font-bold ${
                       log.type === 'treasury_deposit' ? 'text-green-400' : 'text-red-400'
                     }`}>
                       {log.type === 'treasury_deposit' ? '+' : '-'}
@@ -394,7 +395,7 @@ export default function AllianceTreasuryPanel() {
 
       {/* Error display */}
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center">
+        <div role="alert" className="rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-center">
           <p className="text-red-400 text-[10px]">{error}</p>
         </div>
       )}

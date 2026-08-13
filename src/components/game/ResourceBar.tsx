@@ -181,7 +181,7 @@ export default function ResourceBar({ state }: ResourceBarProps) {
             key={flashKey}
             className={`flex items-center gap-2 px-1.5 py-0.5 ${flashDir === 'up' ? 'delta-flash-up' : flashDir === 'down' ? 'delta-flash-down' : ''}`}
           >
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
             <AnimatedMoney
               value={state.money}
               className="text-white font-bold text-sm sm:text-base font-mono tracking-tight"
@@ -222,7 +222,7 @@ export default function ResourceBar({ state }: ResourceBarProps) {
             <span className="text-slate-300 font-mono text-xs sm:text-sm">{formatGameDate(state.gameDate)}</span>
           </div>
           <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" aria-hidden="true" />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
             <span className="text-[9px] text-cyan-400 font-medium tracking-widest">LIVE</span>
           </div>
         </div>
@@ -231,14 +231,18 @@ export default function ResourceBar({ state }: ResourceBarProps) {
         <div className="flex items-center gap-1">
           <button
             onClick={handleToggleAmbient}
-            className={`px-1.5 py-1 text-xs transition-colors rounded ${ambient ? 'text-purple-400' : 'text-slate-600 hover:text-slate-400'}`}
+            aria-label={ambient ? 'Turn off ambient music' : 'Turn on ambient music'}
+            aria-pressed={ambient}
+            className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${ambient ? 'text-purple-400' : 'text-slate-600 hover:text-slate-400'}`}
             title={ambient ? 'Ambient: On' : 'Ambient: Off'}
           >
             🎵
           </button>
           <button
             onClick={handleToggleMute}
-            className="px-1.5 py-1 text-xs text-slate-500 hover:text-white transition-colors"
+            aria-label={muted ? 'Unmute sound effects' : 'Mute sound effects'}
+            aria-pressed={muted}
+            className="min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs text-slate-500 hover:text-white transition-colors"
             title={muted ? 'Unmute SFX' : 'Mute SFX'}
           >
             {muted ? '🔇' : '🔊'}

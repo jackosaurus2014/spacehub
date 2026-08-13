@@ -9,7 +9,7 @@ import {
 import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { formatMoney } from '@/lib/game/formulas';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -96,7 +96,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
         active ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
       }`}
     >
@@ -290,14 +290,14 @@ function DeepDiveModal({
     };
   }, [chartData]);
 
-  useEscapeKey(onClose);
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
   if (!resource) return null;
   const titleId = `market-deepdive-${resourceSlug}`;
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md game-modal-backdrop" onClick={onClose} aria-hidden="true" />
-      <div className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden border border-cyan-500/30 flex flex-col game-modal-card" style={{ background: '#0a0a1a' }}>
+      <div ref={modalRef} tabIndex={-1} className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden border border-cyan-500/30 flex flex-col game-modal-card" style={{ background: '#0a0a1a' }}>
         <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" aria-hidden="true" />
 
         {/* Header */}
@@ -315,7 +315,7 @@ function DeepDiveModal({
             <button
               onClick={onClose}
               aria-label={`Close ${resource.name} price chart`}
-              className="w-9 h-9 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm"
+              className="min-w-[44px] min-h-[44px] rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm"
             >
               <span aria-hidden="true">✕</span>
             </button>
@@ -340,7 +340,7 @@ function DeepDiveModal({
             <button
               key={key}
               onClick={() => setTimeframe(key)}
-              className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-colors ${
+              className={`min-h-[38px] px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-colors ${
                 timeframe === key ? 'bg-cyan-500 text-black' : 'bg-white/[0.04] text-slate-400 hover:text-white'
               }`}
             >
@@ -491,7 +491,7 @@ function CorporationsTab() {
             <button
               key={o.key}
               onClick={() => setSort(o.key)}
-              className={`px-2 py-1 rounded transition-colors ${
+              className={`min-h-[38px] px-2 py-1 rounded transition-colors ${
                 sort === o.key ? 'bg-cyan-500/20 text-cyan-300' : 'bg-white/[0.04] text-slate-500 hover:text-white'
               }`}
             >
@@ -554,12 +554,12 @@ function CorporationsTab() {
 }
 
 function CorporationDetail({ corp, onClose }: { corp: CorporationRow; onClose: () => void }) {
-  useEscapeKey(onClose);
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
   const titleId = `corp-detail-${corp.id}`;
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} aria-hidden="true" />
-      <div className="relative w-full max-w-xl rounded-2xl overflow-hidden border border-cyan-500/30" style={{ background: '#0a0a1a' }}>
+      <div ref={modalRef} tabIndex={-1} className="relative w-full max-w-xl rounded-2xl overflow-hidden border border-cyan-500/30" style={{ background: '#0a0a1a' }}>
         <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" aria-hidden="true" />
 
         <div className="p-4">
@@ -577,7 +577,7 @@ function CorporationDetail({ corp, onClose }: { corp: CorporationRow; onClose: (
             <button
               onClick={onClose}
               aria-label={`Close ${corp.companyName} profile`}
-              className="w-9 h-9 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
+              className="min-w-[44px] min-h-[44px] rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
             >
               <span aria-hidden="true">✕</span>
             </button>

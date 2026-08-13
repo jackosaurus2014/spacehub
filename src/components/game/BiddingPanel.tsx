@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { useModalA11y } from './useModalA11y';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -172,6 +173,8 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
 
   // Fulfill/abandon state
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const bidModalRef = useModalA11y<HTMLDivElement>(() => closeBidModal(), bidModalContract !== null);
 
   // Countdown timer
   useEffect(() => {
@@ -356,7 +359,7 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
         <div className="flex gap-1">
           <button
             onClick={() => setActiveTab('board')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`min-h-[44px] px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
               activeTab === 'board'
                 ? 'bg-cyan-600 text-white'
                 : 'bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08]'
@@ -366,7 +369,7 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
           </button>
           <button
             onClick={() => setActiveTab('mybids')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`min-h-[44px] px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
               activeTab === 'mybids'
                 ? 'bg-cyan-600 text-white'
                 : 'bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08]'
@@ -394,7 +397,7 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
 
       {/* Cooldown warning */}
       {meta?.biddingCooldownUntil && new Date(meta.biddingCooldownUntil) > new Date() && (
-        <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+        <div role="status" aria-live="polite" className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
           Bidding cooldown active until {new Date(meta.biddingCooldownUntil).toLocaleString()}.
           You cannot place new bids during this period.
         </div>
@@ -428,7 +431,7 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
 
       {/* Error state */}
       {error && !loading && (
-        <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+        <div role="alert" className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
           {error}
           <button
             onClick={fetchContracts}
@@ -480,7 +483,7 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
           {myActiveBids.length > 0 && (
             <div>
               <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" />
                 Pending Bids ({myActiveBids.length}/3)
               </h3>
               <div className="space-y-2">
@@ -577,13 +580,20 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
 
       {/* ── Bid Submission Modal ───────────────────────────────────── */}
       {bidModalContract && (
-        <div className="game-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div
+          ref={bidModalRef}
+          tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="bid-modal-title"
+          className="game-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+        >
           <div className="game-modal-card w-full max-w-md rounded-xl bg-slate-900 border border-white/10 shadow-2xl overflow-hidden">
             {/* Modal Header */}
             <div className={`p-4 ${getTierBgColor(bidModalContract.tier)} border-b ${getTierBorderColor(bidModalContract.tier)}`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-white text-sm font-bold">Place Bid</h3>
+                  <h3 id="bid-modal-title" className="text-white text-sm font-bold">Place Bid</h3>
                   <p className="text-slate-400 text-[10px] mt-0.5">{bidModalContract.title}</p>
                 </div>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${getTierTextColor(bidModalContract.tier)} ${getTierBorderColor(bidModalContract.tier)}`}>
@@ -666,7 +676,7 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
 
               {/* Error */}
               {bidError && (
-                <p className="text-red-400 text-xs">{bidError}</p>
+                <p role="alert" className="text-red-400 text-xs">{bidError}</p>
               )}
 
               {/* Actions */}
@@ -733,7 +743,7 @@ function ContractCard({
                 {statusBadge.label}
               </span>
               {isEmergency && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 font-bold animate-pulse">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 font-bold animate-pulse motion-reduce:animate-none">
                   URGENT
                 </span>
               )}
@@ -868,7 +878,7 @@ function MyBidCard({
           {contract.deliveryDeadline && (
             <div className="flex items-center gap-2 text-[10px]">
               <span className="text-slate-500">Deadline:</span>
-              <span className={`game-number font-mono ${deadlineMs < 3600000 ? 'text-red-400 animate-pulse' : deadlineMs < 7200000 ? 'text-amber-400' : 'text-slate-300'}`}>
+              <span className={`game-number font-mono ${deadlineMs < 3600000 ? 'text-red-400 animate-pulse motion-reduce:animate-none' : deadlineMs < 7200000 ? 'text-amber-400' : 'text-slate-300'}`}>
                 {formatCountdown(deadlineMs)}
               </span>
             </div>

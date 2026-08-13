@@ -4,7 +4,7 @@ import { canPrestige, calculatePrestigeRewards, getPrestigeName } from '@/lib/ga
 import type { GameState } from '@/lib/game/types';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useModalA11y } from './useModalA11y';
 
 interface PrestigeModalProps {
   state: GameState;
@@ -13,13 +13,13 @@ interface PrestigeModalProps {
 }
 
 export default function PrestigeModal({ state, onPrestige, onClose }: PrestigeModalProps) {
-  useEscapeKey(onClose);
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
   const currentLevel = state.prestige?.level || 0;
   const isEligible = canPrestige(state.unlockedLocations.length, state.completedResearch.length);
   const nextRewards = calculatePrestigeRewards(state.prestige || { level: 0, legacyPoints: 0, permanentBonuses: { revenueMultiplier: 1, buildSpeedMultiplier: 1, researchSpeedMultiplier: 1, miningMultiplier: 1, startingMoney: 500_000_000 } });
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="prestige-title">
+    <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="prestige-title">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" onClick={onClose} aria-hidden="true" />
 
       <div className="relative w-full max-w-md rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #1a0a30 0%, #0a0a1a 100%)' }}>

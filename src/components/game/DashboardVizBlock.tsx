@@ -106,6 +106,7 @@ function RevenueDonut({ state }: { state: GameState }) {
 
   return (
     <div className="flex items-center gap-3">
+      <span className="sr-only">Total revenue: {formatMoney(Math.round(total))} per month, across {slices.length} region{slices.length !== 1 ? 's' : ''}.</span>
       <svg width={96} height={96} className="flex-shrink-0" aria-hidden="true">
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={8} />
         {segments}
@@ -195,7 +196,7 @@ function InfrastructureFootprint({ state }: { state: GameState }) {
       </div>
       {total > 0 && (
         <>
-          <div className="w-full h-3 rounded-full overflow-hidden flex bg-white/[0.04]">
+          <div className="w-full h-3 rounded-full overflow-hidden flex bg-white/[0.04]" aria-hidden="true">
             {([1, 2, 3, 4, 5] as const).map(t => {
               const pct = (byTier[t] / total) * 100;
               if (pct === 0) return null;

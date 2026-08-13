@@ -42,7 +42,7 @@ function ResearchCountdown({ startedAtMs, durationSeconds }: { startedAtMs: numb
           className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full transition-all duration-1000 relative"
           style={{ width: `${pct}%` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite] motion-reduce:animate-none" />
         </div>
       </div>
       <span className="text-purple-400 font-mono text-xs shrink-0 tabular-nums w-14 text-right">
@@ -157,9 +157,10 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
           ) : (
             <button
               onClick={() => { if (onUpdateCompanyName) { setNameInput(state.companyName || ''); setEditingName(true); } }}
-              className="text-[9px] uppercase tracking-wider font-mono hover:text-cyan-400 transition-colors cursor-pointer"
+              className="text-[9px] uppercase tracking-wider font-mono hover:text-cyan-400 transition-colors cursor-pointer inline-flex items-center min-h-[44px] px-1"
               style={{ color: 'var(--text-muted)' }}
               title="Click to rename"
+              aria-label={`Rename company (currently ${state.companyName || 'Your Company'})`}
             >
               {state.companyName || 'Your Company'} ✎
             </button>
@@ -231,6 +232,7 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
                   : data.ratio >= 0.6
                     ? 'bg-amber-400'
                     : 'bg-red-400';
+                const statusGlyph = data.ratio >= 1 ? '✓' : data.ratio >= 0.6 ? '⚠' : '✗';
                 const locName = loc.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
                 const shortName = locName.replace('Surface', 'Sfc').replace('System', 'Sys').replace('Orbit', 'Orb').trim();
                 const revenuePenalty = data.ratio < 1 ? Math.round((1 - data.ratio) * 100) : 0;
@@ -244,7 +246,7 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
                       <span className="text-[9px] font-medium" style={{ color: 'var(--text-secondary)' }}>{shortName}</span>
                       <div className="flex items-center gap-1.5">
                         <span className={`text-[10px] font-mono ${color}`}>
-                          {'\u26A1'} {data.generated}/{data.required} MW
+                          {'\u26A1'} <span aria-hidden="true">{statusGlyph}</span> {data.generated}/{data.required} MW
                         </span>
                         {revenuePenalty > 0 && (
                           <span className="text-[9px] font-mono text-red-400 bg-red-500/20 px-1 rounded">
@@ -577,7 +579,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate 
       {inProgress.length > 0 && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
           <h3 className="text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse motion-reduce:animate-none" />
             Building ({inProgress.length})
           </h3>
           <div className="space-y-2">
@@ -740,7 +742,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate 
                       // This requires a setState callback from the parent — use window event
                       window.dispatchEvent(new CustomEvent('activate-boost', { detail: { boostId: b.id, activeBoost } }));
                     }}
-                    className="px-2 py-0.5 text-[9px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded hover:bg-amber-500/30 transition-colors"
+                    className="min-h-[44px] inline-flex items-center justify-center px-3 text-[9px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded hover:bg-amber-500/30 transition-colors"
                   >
                     Activate
                   </button>
@@ -782,7 +784,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate 
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full border border-purple-500/30 flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse motion-reduce:animate-none" />
                 </div>
                 <span className="text-white text-sm font-medium">Researching{hasQ2 ? ' (Q1)' : ''}: {def?.name}</span>
               </div>
@@ -811,7 +813,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate 
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full border border-cyan-500/30 flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" />
                 </div>
                 <span className="text-white text-sm font-medium">Researching (Q2): {def2?.name}</span>
               </div>
@@ -836,7 +838,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate 
       {inProgress.length > 0 && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
           <h3 className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse motion-reduce:animate-none" />
             Under Construction ({inProgress.length})
           </h3>
           <div className="space-y-2">

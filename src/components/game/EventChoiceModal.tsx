@@ -1,6 +1,7 @@
 'use client';
 
 import { playSound } from '@/lib/game/sound-engine';
+import { useModalA11y } from './useModalA11y';
 
 interface EventChoiceModalProps {
   eventName: string;
@@ -12,10 +13,15 @@ interface EventChoiceModalProps {
 
 /**
  * Modal for random choice events — player must pick an option before the game continues.
+ * This is a mandatory-choice modal: there is no cancel action, so Escape intentionally
+ * does not dismiss it (the underlying hook is given a no-op close). We still get Tab
+ * focus-trapping between the choice buttons and initial focus placed inside the modal.
  */
 export default function EventChoiceModal({ eventName, eventIcon, eventDescription, choices, onChoose }: EventChoiceModalProps) {
+  const modalRef = useModalA11y<HTMLDivElement>(() => {});
+
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="alertdialog" aria-modal="true" aria-labelledby="event-title" aria-describedby="event-desc">
+    <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="alertdialog" aria-modal="true" aria-labelledby="event-title" aria-describedby="event-desc">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" aria-hidden="true" />
 
       <div className="relative w-full max-w-md rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #12122a 0%, #0a0a1a 100%)' }}>

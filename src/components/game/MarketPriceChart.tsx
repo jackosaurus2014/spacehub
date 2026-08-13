@@ -149,6 +149,13 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
   // Hovered candle info
   const hovered = hoveredIdx !== null && hoveredIdx < candles.length ? candles[hoveredIdx] : null;
 
+  // Screen-reader text summary of the chart — the SVG itself is presentational.
+  const chartSummary = candles.length === 0
+    ? `${resourceDef?.name || resource} price chart: no trading data available for the ${timeframe} timeframe.`
+    : `${resourceDef?.name || resource} price chart, ${timeframe} timeframe. Current price ${formatMoney(currentPrice)}, ${
+        priceChange > 0 ? 'up' : priceChange < 0 ? 'down' : 'unchanged'
+      }${priceChange !== 0 ? ` ${Math.abs(priceChange)}%` : ''} over the visible window. High ${formatMoney(priceMax)}, low ${formatMoney(priceMin)}. Volatility: ${volatilityTier}.`;
+
   // ─── Render ───────────────────────────────────────────────────────────
 
   return (
@@ -160,7 +167,8 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
             <select
               value={resource}
               onChange={e => setResource(e.target.value)}
-              className="px-2 py-1 rounded-lg bg-white/[0.06] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500/30"
+              aria-label="Select resource"
+              className="min-h-[44px] px-2 py-1 rounded-lg bg-white/[0.06] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500/30"
             >
               {RESOURCES.map(r => (
                 <option key={r.id} value={r.id} className="bg-slate-900">{r.icon} {r.name}</option>
@@ -201,7 +209,9 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
             <button
               key={tf.key}
               onClick={() => setTimeframe(tf.key)}
-              className={`px-2 py-1 text-[10px] font-medium rounded transition-colors ${
+              aria-label={`${tf.label} timeframe`}
+              aria-pressed={timeframe === tf.key}
+              className={`min-h-[44px] px-2 py-1 text-[10px] font-medium rounded transition-colors ${
                 timeframe === tf.key
                   ? 'bg-cyan-600/20 text-cyan-400'
                   : 'text-slate-500 hover:text-white'
@@ -226,7 +236,11 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
       )}
 
       {/* Chart */}
-      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-2 overflow-hidden">
+      <div
+        className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-2 overflow-hidden"
+        role="img"
+        aria-label={chartSummary}
+      >
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         {/* Local scanline overlay — CRT-display feel scoped to the chart, hidden under reduced motion */}
