@@ -85,6 +85,10 @@ import { graduateFrontier } from '@/lib/game/frontier';
 import ModulesPanel from '@/components/game/ModulesPanel';
 import AnomaliesPanel from '@/components/game/AnomaliesPanel';
 import InterstellarPanel from '@/components/game/InterstellarPanel';
+import {
+  launchExpedition, establishColony, upgradeColony, establishTradeRoute, setTradeRouteStatus,
+  type ExpeditionPlanRequest,
+} from '@/lib/game/expeditions';
 import ArchetypePicker from '@/components/game/ArchetypePicker';
 import { applyArchetype, type StartingArchetype } from '@/lib/game/archetypes';
 import SubsidiaryPanel from '@/components/game/SubsidiaryPanel';
@@ -1292,6 +1296,57 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
+  // ─── Interstellar expeditions (Wave 10) ──────────────────────────────────
+  // Plan quoting + error surfacing happen client-side in the calling panels
+  // (planExpedition is pure and reads current `state`); these handlers only
+  // perform the actual state mutation once the caller has confirmed a valid
+  // plan, following the same setState(prev => ...) pattern as every other
+  // engine-wired action on this page.
+  const handleLaunchExpedition = useCallback((req: ExpeditionPlanRequest) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const result = launchExpedition(prev, req);
+      if (!result.ok) { playSound('error'); return prev; }
+      playSound('milestone');
+      return result.state;
+    });
+  }, []);
+
+  const handleEstablishColony = useCallback((expeditionId: string, name?: string) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const result = establishColony(prev, expeditionId, name);
+      if (!result.ok) { playSound('error'); return prev; }
+      playSound('milestone');
+      return result.state;
+    });
+  }, []);
+
+  const handleUpgradeColony = useCallback((colonyId: string) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const result = upgradeColony(prev, colonyId);
+      if (!result.ok) { playSound('error'); return prev; }
+      playSound('milestone');
+      return result.state;
+    });
+  }, []);
+
+  const handleEstablishTradeRoute = useCallback((colonyId: string, resourceId: string) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const result = establishTradeRoute(prev, colonyId, resourceId);
+      if (!result.ok) { playSound('error'); return prev; }
+      playSound('milestone');
+      return result.state;
+    });
+  }, []);
+
+  const handleSetTradeRouteStatus = useCallback((routeId: string, status: 'active' | 'suspended') => {
+    playSound('click');
+    setState(prev => (prev ? setTradeRouteStatus(prev, routeId, status) : prev));
+  }, []);
+
   const handleBuyResource = useCallback((resourceId: string, quantity: number, cost: number) => {
     playSound('money');
     setState(prev => {
@@ -1572,6 +1627,7 @@ export default function SpaceTycoonPage() {
           onBuild={handleBuild}
           onSellBuilding={handleSellBuilding}
           onDispatchShip={handleDispatchShip}
+          onLaunchExpedition={handleLaunchExpedition}
           onNavigateTab={(navTab) => { playSound('click'); setTab(navTab as GameTab); }}
           onRegionFocus={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }}
         />
@@ -1802,7 +1858,16 @@ export default function SpaceTycoonPage() {
         )}
         {tab === 'modules' && <ModulesPanel state={state} setState={setState} />}
         {tab === 'discoveries' && <AnomaliesPanel state={state} setState={setState} />}
-        {tab === 'interstellar' && <InterstellarPanel state={state} />}
+        {tab === 'interstellar' && (
+          <InterstellarPanel
+            state={state}
+            onNavigateTab={(navTab) => { playSound('click'); setTab(navTab as GameTab); }}
+            onEstablishColony={handleEstablishColony}
+            onUpgradeColony={handleUpgradeColony}
+            onEstablishTradeRoute={handleEstablishTradeRoute}
+            onSetTradeRouteStatus={handleSetTradeRouteStatus}
+          />
+        )}
         {tab === 'subsidiaries' && (
           <SubsidiaryPanel
             state={state}

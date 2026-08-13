@@ -11,7 +11,16 @@
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { formatCountdown } from '@/lib/game/formulas';
+import { getExpeditionProgress } from '@/lib/game/expeditions';
+import { SHIP_MAP } from '@/lib/game/ships';
+import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '@/lib/game/constants';
 import type { GameState } from '@/lib/game/types';
+
+/** Real seconds per game-month at 1x speed (30 ticks × 2s/tick) — same
+ *  convention documented in constants.ts and expeditions.ts. */
+const REAL_SECONDS_PER_GAME_MONTH = TICKS_PER_GAME_MONTH * (TICK_INTERVALS[1] / 1000);
+
+export type OrderQueueTarget = { kind: 'location'; id: string } | { kind: 'system'; id: string };
 
 interface OrderQueueItem {
   id: string;
@@ -20,7 +29,7 @@ interface OrderQueueItem {
   sub: string;
   pct: number | null;      // null = no completion percentage (continuous op)
   etaSeconds: number | null;
-  locationId: string;
+  target: OrderQueueTarget;
 }
 
 function buildOrderQueue(state: GameState): OrderQueueItem[] {
@@ -42,7 +51,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
       sub: loc?.name || b.locationId,
       pct,
       etaSeconds: Math.max(0, total - elapsed),
-      locationId: b.locationId,
+      target: { kind: 'location', id: b.locationId },
     });
   }
 
@@ -60,7 +69,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
         sub: `→ ${toLoc?.name || s.route.to}`,
         pct,
         etaSeconds: Math.max(0, (s.route.arrivalAtMs - nowMs) / 1000),
-        locationId: s.route.to,
+        target: { kind: 'location', id: s.route.to },
       });
     } else if (s.status === 'mining' && s.miningOperation) {
       const loc = LOCATION_MAP.get(s.miningOperation.locationId);
@@ -71,7 +80,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
         sub: `Mining ${s.miningOperation.resourceId.replace(/_/g, ' ')} · ${loc?.name || s.miningOperation.locationId}`,
         pct: null,
         etaSeconds: null,
-        locationId: s.miningOperation.locationId,
+        target: { kind: 'location', id: s.miningOperation.locationId },
       });
     } else if (s.status === 'surveying' && s.surveyExpedition) {
       const loc = LOCATION_MAP.get(s.surveyExpedition.targetLocation);
@@ -85,9 +94,27 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
         sub: `Surveying ${loc?.name || s.surveyExpedition.targetLocation}`,
         pct,
         etaSeconds: Math.max(0, total - elapsed),
-        locationId: s.surveyExpedition.targetLocation,
+        target: { kind: 'location', id: s.surveyExpedition.targetLocation },
       });
     }
+  }
+
+  // Interstellar expeditions in flight (Wave 10) — outbound/exploring/returning.
+  for (const exp of state.expeditions || []) {
+    if (exp.phase !== 'outbound' && exp.phase !== 'exploring' && exp.phase !== 'returning') continue;
+    const progress = getExpeditionProgress(state, exp.id);
+    if (!progress) continue;
+    const shipDef = SHIP_MAP.get(exp.shipDefinitionId);
+    const etaSeconds = progress.monthsRemaining > 0 ? progress.monthsRemaining * REAL_SECONDS_PER_GAME_MONTH : null;
+    items.push({
+      id: `expedition-${exp.id}`,
+      icon: shipDef?.icon || '🌠',
+      label: shipDef?.name || 'Expedition',
+      sub: `${progress.phaseLabel} · ${progress.systemName}`,
+      pct: Math.round(progress.progressPct * 100),
+      etaSeconds,
+      target: { kind: 'system', id: exp.targetSystemId },
+    });
   }
 
   // Soonest-completing orders first; continuous ops (null ETA) sort last.
@@ -97,7 +124,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
 
 interface OrderQueueHUDProps {
   state: GameState;
-  onSelect: (locationId: string) => void;
+  onSelect: (target: OrderQueueTarget) => void;
   className?: string;
 }
 
@@ -119,7 +146,7 @@ export default function OrderQueueHUD({ state, onSelect, className }: OrderQueue
           <button
             key={item.id}
             type="button"
-            onClick={() => onSelect(item.locationId)}
+            onClick={() => onSelect(item.target)}
             className="shrink-0 min-h-[44px] flex items-center gap-1.5 px-2 py-1 rounded-lg border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/30 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-cyan-400"
             title={`${item.label} — ${item.sub}`}
           >

@@ -11,9 +11,10 @@
 
 import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 import type { GameState, GameTab } from '@/lib/game/types';
+import type { ExpeditionPlanRequest } from '@/lib/game/expeditions';
 import SolarSystemCanvas from './SolarSystemCanvas';
 import GalacticMapView from './GalacticMapView';
-import OrderQueueHUD from './OrderQueueHUD';
+import OrderQueueHUD, { type OrderQueueTarget } from './OrderQueueHUD';
 import MapContextPanel, { type MapSelection } from './MapContextPanel';
 import { playSound } from '@/lib/game/sound-engine';
 
@@ -25,6 +26,7 @@ interface MapCommandCenterProps {
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
   onDispatchShip: (shipInstanceId: string, toLocationId: string) => void;
+  onLaunchExpedition: (req: ExpeditionPlanRequest) => void;
   onNavigateTab: (tab: GameTab) => void;
   /** Drives the shell's region backdrop tint + ambient sound, same contract
    *  SolarSystemCanvas's onSelectLocation always had. */
@@ -32,7 +34,7 @@ interface MapCommandCenterProps {
 }
 
 export default function MapCommandCenter({
-  state, onUnlock, onBuild, onSellBuilding, onDispatchShip, onNavigateTab, onRegionFocus,
+  state, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus,
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
@@ -70,10 +72,15 @@ export default function MapCommandCenter({
     setSelection(sysId ? { kind: 'system', id: sysId } : null);
   }, []);
 
-  const handleOrderQueueSelect = useCallback((locationId: string) => {
-    if (layer !== 'solar') setLayer('solar');
-    selectLocation(locationId);
-  }, [layer, selectLocation]);
+  const handleOrderQueueSelect = useCallback((target: OrderQueueTarget) => {
+    if (target.kind === 'system') {
+      if (layer !== 'galactic') setLayer('galactic');
+      selectSystem(target.id);
+    } else {
+      if (layer !== 'solar') setLayer('solar');
+      selectLocation(target.id);
+    }
+  }, [layer, selectLocation, selectSystem]);
 
   return (
     <div
@@ -137,6 +144,7 @@ export default function MapCommandCenter({
           onBuild={onBuild}
           onSellBuilding={onSellBuilding}
           onDispatchShip={onDispatchShip}
+          onLaunchExpedition={onLaunchExpedition}
           onNavigateTab={onNavigateTab}
         />
       )}

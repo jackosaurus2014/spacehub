@@ -12,11 +12,26 @@ import {
   getLeagueDefinition,
 } from '@/lib/game/league-system';
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
+import { reconcileBalance, applyResourceDeltas, type LedgerEntryLite } from '@/lib/game/ledger-reconcile';
+import { isLedgerAvailable } from '@/lib/game/server-ledger';
 
 /**
  * POST /api/space-tycoon/sync
  * Sync client game state to server for leaderboard ranking.
  * Returns: rank, netWorth, alliance bonuses, global milestones, active bounties count.
+ *
+ * One Wallet (audit Change #1): the client-reported money figure no longer
+ * overwrites server history. Server-side debits/credits (order escrow/fills,
+ * bid collateral, mega-project/alliance contributions, treasury deposits,
+ * espionage costs, bounty payouts, league rewards) accumulate as signed
+ * GameLedgerEntry deltas. This route reconciles:
+ *
+ *   reconciledMoney = clientMoney + Σ(entries with seq > client ack cursor)
+ *
+ * and stores THAT, returning the pending deltas so the client can apply them
+ * into GameState and advance its ack cursor. Entries at/below the cursor are
+ * already reflected in the client figure and are excluded — idempotent under
+ * sync retries. Players with an empty ledger (solo play) see zero change.
  */
 export async function POST(request: Request) {
   try {
@@ -45,31 +60,88 @@ export async function POST(request: Request) {
       completedResearch = [],
       ships = [],
       workforce = null,
+      ledgerAck = 0,
     } = body;
 
-    // Calculate net worth using live market prices
+    // ── One Wallet: reconcile client money against the server delta ledger ──
+    // (see route header). Falls back to the raw client figure when the ledger
+    // table is unavailable or the profile doesn't exist yet.
+    const clientMoney = typeof money === 'number' && Number.isFinite(money) ? money : 0;
+    const clientResources: Record<string, number> =
+      typeof resources === 'object' && resources !== null ? (resources as Record<string, number>) : {};
+    let reconciledMoney = clientMoney;
+    let reconciledResources: Record<string, number> = clientResources;
+    let ledgerInfo: {
+      ackSeq: number;
+      maxSeq: number;
+      moneyDelta: number;
+      resourceDeltas: Record<string, number>;
+      entries: LedgerEntryLite[];
+    } | null = null;
+
+    try {
+      const existingProfile = await prisma.gameProfile.findUnique({
+        where: { userId: session.user.id },
+        select: { id: true },
+      });
+      if (existingProfile && (await isLedgerAvailable())) {
+        const safeAck = typeof ledgerAck === 'number' && Number.isFinite(ledgerAck) && ledgerAck > 0
+          ? Math.floor(ledgerAck)
+          : 0;
+
+        // Mark acked entries as applied (cleanup marker; reconciliation keys
+        // off the seq cursor, so this is not correctness-critical).
+        await prisma.gameLedgerEntry.updateMany({
+          where: { profileId: existingProfile.id, seq: { lte: safeAck }, appliedAt: null },
+          data: { appliedAt: new Date() },
+        });
+
+        const pendingRows = await prisma.gameLedgerEntry.findMany({
+          where: { profileId: existingProfile.id, seq: { gt: safeAck } },
+          orderBy: { seq: 'asc' },
+          take: 1000,
+          select: { seq: true, moneyDelta: true, resourceSlug: true, resourceDelta: true, reason: true, refId: true },
+        });
+
+        const rec = reconcileBalance(clientMoney, pendingRows, safeAck);
+        reconciledMoney = rec.reconciledMoney;
+        reconciledResources = applyResourceDeltas(clientResources, rec.resourceDeltas);
+        ledgerInfo = {
+          ackSeq: safeAck,
+          maxSeq: rec.maxSeq,
+          moneyDelta: rec.moneyDelta,
+          resourceDeltas: rec.resourceDeltas,
+          // Cap the entry list returned for UI display purposes.
+          entries: rec.pending.slice(-25),
+        };
+      }
+    } catch (ledgerError) {
+      // Reconciliation is best-effort; never block the sync.
+      logger.error('Ledger reconciliation failed', { error: String(ledgerError) });
+      reconciledMoney = clientMoney;
+      reconciledResources = clientResources;
+      ledgerInfo = null;
+    }
+
+    // Calculate net worth using live market prices (over reconciled holdings)
     let resourceValue = 0;
     try {
       const marketResources = await prisma.marketResource.findMany({
         select: { slug: true, currentPrice: true },
       });
       const priceMap = new Map(marketResources.map(r => [r.slug, r.currentPrice]));
-      if (typeof resources === 'object' && resources !== null) {
-        for (const [id, qty] of Object.entries(resources)) {
-          if (typeof qty === 'number') {
-            resourceValue += qty * (priceMap.get(id) || 50_000);
-          }
+      for (const [id, qty] of Object.entries(reconciledResources)) {
+        if (typeof qty === 'number') {
+          resourceValue += qty * (priceMap.get(id) || 50_000);
         }
       }
     } catch {
       // Fallback to flat $50K/unit
-      if (typeof resources === 'object' && resources !== null) {
-        for (const qty of Object.values(resources)) {
-          if (typeof qty === 'number') resourceValue += qty * 50_000;
-        }
+      for (const qty of Object.values(reconciledResources)) {
+        if (typeof qty === 'number') resourceValue += qty * 50_000;
       }
     }
-    const netWorth = money + resourceValue;
+    const netWorth = reconciledMoney + resourceValue;
 
     // Sanitize arrays for storage
     const safeBuildings = Array.isArray(buildings) ? buildings.slice(0, 200) : [];
@@ -84,9 +156,9 @@ export async function POST(request: Request) {
       create: {
         userId: session.user.id,
         companyName: String(companyName).slice(0, 50),
-        money, totalEarned, totalSpent, netWorth,
+        money: reconciledMoney, totalEarned, totalSpent, netWorth,
         buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
-        resources: resources as object,
+        resources: reconciledResources as object,
         buildingsData: safeBuildings,
         activeServicesData: safeServices,
         unlockedLocationsList: safeLocations,
@@ -97,9 +169,9 @@ export async function POST(request: Request) {
       },
       update: {
         companyName: String(companyName).slice(0, 50),
-        money, totalEarned, totalSpent, netWorth,
+        money: reconciledMoney, totalEarned, totalSpent, netWorth,
         buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
-        resources: resources as object,
+        resources: reconciledResources as object,
         buildingsData: safeBuildings,
         activeServicesData: safeServices,
         unlockedLocationsList: safeLocations,
@@ -403,6 +475,9 @@ export async function POST(request: Request) {
       success: true,
       profileId: profile.id,
       netWorth,
+      // One Wallet: reconciled balance + pending deltas for client adoption.
+      reconciledMoney,
+      ledger: ledgerInfo,
       rank,
       totalPlayers,
       allianceBonus,

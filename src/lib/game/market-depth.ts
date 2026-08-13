@@ -10,7 +10,9 @@
 
 import type { GameState } from './types';
 import type { ResourceId } from './resources';
+import { RESOURCE_MAP } from './resources';
 import { MARKET_BROKER_FEE_RATE, getSupplyPriceMultiplier } from './market-engine';
+import { validateFuturesStrike } from './price-band';
 
 // ─── Bid / Ask spread ────────────────────────────────────────────────────────
 
@@ -93,14 +95,43 @@ export function computeMargin(quantity: number, strikePrice: number): number {
 }
 
 /**
+ * Validate a proposed futures strike price against the same price band the
+ * server order book enforces (audit A6 / hotlist #2): the strike must sit
+ * within [ref × 0.3, ref × 3.0] clamped to the resource's hard min/max,
+ * where ref is the live spot price when known, else the static base price.
+ * Before this check, a short at a fantasy strike (e.g. $50M vs a $5K spot)
+ * was a guaranteed money printer at settlement.
+ */
+export function checkFuturesStrike(
+  resourceSlug: ResourceId,
+  strikePrice: number,
+  spotPrice?: number | null,
+): { valid: boolean; min: number; max: number } {
+  const def = RESOURCE_MAP.get(resourceSlug);
+  if (!def) return { valid: false, min: 0, max: 0 };
+  return validateFuturesStrike(strikePrice, {
+    baseMarketPrice: def.baseMarketPrice,
+    minPrice: def.minPrice,
+    maxPrice: def.maxPrice,
+    spotPrice,
+  });
+}
+
+/**
  * Open a new futures contract. Locks margin from player money; if they can't
- * post margin the contract is refused (state returned unchanged).
+ * post margin — or the strike falls outside the allowed price band — the
+ * contract is refused (state returned unchanged).
  */
 export function openFutures(
   state: GameState,
-  params: { resourceSlug: ResourceId; quantity: number; strikePrice: number; direction: FuturesDirection; expiresAtMs: number },
+  params: { resourceSlug: ResourceId; quantity: number; strikePrice: number; direction: FuturesDirection; expiresAtMs: number; spotPrice?: number | null },
   now: number = Date.now(),
 ): GameState {
+  // Strike-price band enforcement (audit A6). Applies regardless of caller.
+  if (!checkFuturesStrike(params.resourceSlug, params.strikePrice, params.spotPrice).valid) {
+    return state;
+  }
+  if (!Number.isFinite(params.quantity) || params.quantity <= 0) return state;
   const margin = computeMargin(params.quantity, params.strikePrice);
   if (state.money < margin) return state;
   const contract: FuturesContract = {

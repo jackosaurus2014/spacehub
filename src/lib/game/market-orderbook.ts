@@ -5,13 +5,13 @@
 import prisma from '@/lib/db';
 import { RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
+import { validatePriceBand } from './price-band';
+import { recordLedger, isLedgerAvailable } from './server-ledger';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const FEE_RATE = 0.02; // 2% transaction fee
 const NPC_SPREAD_HALF = 0.10; // 10% each side = 20% total NPC spread
-const PRICE_BAND_LOW = 0.30; // 30% of basePrice
-const PRICE_BAND_HIGH = 3.00; // 300% of basePrice
 const MAX_OPEN_ORDERS = 20; // Base max open orders per player
 const NPC_PROFILE_ID = '__NPC_MARKET_MAKER__';
 
@@ -31,21 +31,10 @@ function getResourceDef(slug: string) {
   return RESOURCE_MAP.get(slug as ResourceId);
 }
 
-/** Validate that a price is within allowed bands for a resource */
-export function validatePriceBand(
-  price: number,
-  basePrice: number,
-  minPrice: number,
-  maxPrice: number,
-): { valid: boolean; min: number; max: number } {
-  const bandMin = Math.max(minPrice, Math.round(basePrice * PRICE_BAND_LOW));
-  const bandMax = Math.min(maxPrice, Math.round(basePrice * PRICE_BAND_HIGH));
-  return {
-    valid: price >= bandMin && price <= bandMax,
-    min: bandMin,
-    max: bandMax,
-  };
-}
+// validatePriceBand now lives in ./price-band (pure, client-safe) so the
+// futures engine (market-depth.ts) can enforce the same band. Re-exported
+// here for backward compatibility.
+export { validatePriceBand } from './price-band';
 
 /** Calculate the remaining quantity on an order */
 function remainingQty(order: { quantity: number; filledQty: number }): number {
@@ -137,26 +126,13 @@ export async function placeLimitOrder(
 
   const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
 
+  // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+  const ledgerOn = await isLedgerAvailable();
+
   // Create order and deduct escrow in a transaction
   const order = await prisma.$transaction(async (tx) => {
-    // Deduct escrow
-    if (side === 'buy') {
-      await tx.gameProfile.update({
-        where: { id: profileId },
-        data: { money: { decrement: escrowAmount } },
-      });
-    } else {
-      const currentResources = (profile.resources as Record<string, number>) || {};
-      const updatedResources = { ...currentResources };
-      updatedResources[resourceSlug] = (updatedResources[resourceSlug] || 0) - quantity;
-      await tx.gameProfile.update({
-        where: { id: profileId },
-        data: { resources: updatedResources },
-      });
-    }
-
-    // Create the order
-    return tx.marketLimitOrder.create({
+    // Create the order first so ledger entries can reference it
+    const created = await tx.marketLimitOrder.create({
       data: {
         profileId,
         resourceSlug,
@@ -169,6 +145,36 @@ export async function placeLimitOrder(
         expiresAt,
       },
     });
+
+    // Deduct escrow (+ledger entry, atomically)
+    if (side === 'buy') {
+      await tx.gameProfile.update({
+        where: { id: profileId },
+        data: { money: { decrement: escrowAmount } },
+      });
+      if (ledgerOn) {
+        await recordLedger(tx, {
+          profileId, moneyDelta: -escrowAmount,
+          reason: 'order_escrow', refId: created.id,
+        });
+      }
+    } else {
+      const currentResources = (profile.resources as Record<string, number>) || {};
+      const updatedResources = { ...currentResources };
+      updatedResources[resourceSlug] = (updatedResources[resourceSlug] || 0) - quantity;
+      await tx.gameProfile.update({
+        where: { id: profileId },
+        data: { resources: updatedResources },
+      });
+      if (ledgerOn) {
+        await recordLedger(tx, {
+          profileId, resourceSlug, resourceDelta: -quantity,
+          reason: 'order_resource_escrow', refId: created.id,
+        });
+      }
+    }
+
+    return created;
   });
 
   // Attempt immediate matching
@@ -210,6 +216,9 @@ export async function matchOrders(resourceSlug: string): Promise<{
     buyerProfileId: string;
     sellerProfileId: string;
   }[] = [];
+
+  // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+  const ledgerOn = await isLedgerAvailable();
 
   // Use a transaction with serializable isolation for consistency
   await prisma.$transaction(async (tx) => {
@@ -335,6 +344,12 @@ export async function matchOrders(resourceSlug: string): Promise<{
             where: { id: bestBuy.profileId },
             data: { resources: buyerRes },
           });
+          if (ledgerOn) {
+            await recordLedger(tx, {
+              profileId: bestBuy.profileId, resourceSlug, resourceDelta: fillQty,
+              reason: 'order_resource_credit', refId: bestBuy.id,
+            });
+          }
         }
 
         // Refund excess escrow to buyer if execution price < order price
@@ -345,6 +360,12 @@ export async function matchOrders(resourceSlug: string): Promise<{
             where: { id: bestBuy.profileId },
             data: { money: { increment: refund } },
           });
+          if (ledgerOn) {
+            await recordLedger(tx, {
+              profileId: bestBuy.profileId, moneyDelta: refund,
+              reason: 'order_fill_refund', refId: bestBuy.id,
+            });
+          }
         }
       }
 
@@ -355,6 +376,12 @@ export async function matchOrders(resourceSlug: string): Promise<{
           where: { id: bestSell.profileId },
           data: { money: { increment: sellerRevenue } },
         });
+        if (ledgerOn) {
+          await recordLedger(tx, {
+            profileId: bestSell.profileId, moneyDelta: sellerRevenue,
+            reason: 'order_sale_revenue', refId: bestSell.id,
+          });
+        }
       }
 
       // Update candle
@@ -401,6 +428,9 @@ export async function cancelOrder(
 
   const remaining = order.quantity - order.filledQty;
 
+  // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+  const ledgerOn = await isLedgerAvailable();
+
   await prisma.$transaction(async (tx) => {
     // Mark cancelled
     await tx.marketLimitOrder.update({
@@ -415,6 +445,12 @@ export async function cancelOrder(
         where: { id: profileId },
         data: { money: { increment: refund } },
       });
+      if (ledgerOn) {
+        await recordLedger(tx, {
+          profileId, moneyDelta: refund,
+          reason: 'order_escrow_refund', refId: orderId,
+        });
+      }
     } else {
       const profile = await tx.gameProfile.findUnique({ where: { id: profileId } });
       if (profile) {
@@ -424,6 +460,12 @@ export async function cancelOrder(
           where: { id: profileId },
           data: { resources },
         });
+        if (ledgerOn) {
+          await recordLedger(tx, {
+            profileId, resourceSlug: order.resourceSlug, resourceDelta: remaining,
+            reason: 'order_resource_refund', refId: orderId,
+          });
+        }
       }
     }
   });

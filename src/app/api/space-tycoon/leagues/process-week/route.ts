@@ -17,6 +17,7 @@ import {
   LEAGUES,
 } from '@/lib/game/league-system';
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
 
@@ -150,14 +151,24 @@ export async function POST(request: NextRequest) {
               },
             });
 
-            // Award cash reward to player's game profile
+            // Award cash reward to player's game profile (+ledger, audit A1 —
+            // this payout previously vanished at the next client sync)
             if (rewards.cashReward > 0) {
-              await prisma.gameProfile.update({
-                where: { id: entry.profileId },
-                data: {
-                  money: { increment: rewards.cashReward },
-                  totalEarned: { increment: rewards.cashReward },
-                },
+              const ledgerOn = await isLedgerAvailable();
+              await prisma.$transaction(async (tx) => {
+                await tx.gameProfile.update({
+                  where: { id: entry.profileId },
+                  data: {
+                    money: { increment: rewards.cashReward },
+                    totalEarned: { increment: rewards.cashReward },
+                  },
+                });
+                if (ledgerOn) {
+                  await recordLedger(tx, {
+                    profileId: entry.profileId, moneyDelta: rewards.cashReward,
+                    reason: 'league_reward', refId: entry.id,
+                  });
+                }
               });
             }
 

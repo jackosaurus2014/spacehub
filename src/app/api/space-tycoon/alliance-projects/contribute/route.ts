@@ -9,6 +9,7 @@ import {
   calculateContributionShares,
   calculateFundingProgress,
 } from '@/lib/game/alliance-projects';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 /**
  * POST /api/space-tycoon/alliance-projects/contribute
@@ -129,18 +130,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Deduct from player's game profile
+    // Deduct from player's game profile (+ledger, audit A1 — atomically, so
+    // the contribution is a real cost instead of reappearing at next sync)
     const updatedResources = { ...playerResources };
     for (const [resourceId, qty] of Object.entries(actualResources)) {
       updatedResources[resourceId] = (updatedResources[resourceId] ?? 0) - qty;
     }
 
-    await prisma.gameProfile.update({
-      where: { id: profile.id },
-      data: {
-        money: { decrement: actualMoney },
-        resources: updatedResources,
-      },
+    const ledgerOn = await isLedgerAvailable();
+    await prisma.$transaction(async (tx) => {
+      await tx.gameProfile.update({
+        where: { id: profile.id },
+        data: {
+          money: { decrement: actualMoney },
+          resources: updatedResources,
+        },
+      });
+      if (ledgerOn) {
+        if (actualMoney > 0) {
+          await recordLedger(tx, {
+            profileId: profile.id, moneyDelta: -actualMoney,
+            reason: 'alliance_project_contribution', refId: projectId,
+          });
+        }
+        for (const [resourceId, qty] of Object.entries(actualResources)) {
+          if (qty > 0) {
+            await recordLedger(tx, {
+              profileId: profile.id, resourceSlug: resourceId, resourceDelta: -qty,
+              reason: 'alliance_project_resources', refId: projectId,
+            });
+          }
+        }
+      }
     });
 
     // Upsert the contribution record

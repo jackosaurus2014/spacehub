@@ -31,6 +31,28 @@ function getYesterday(): string {
   return d.toISOString().split('T')[0];
 }
 
+/**
+ * Pure claim computation — shared by the localStorage flow below and the
+ * server-side claim route (/api/space-tycoon/daily-bonus), which is the
+ * authoritative tracker (audit A6: the localStorage-only bonus was
+ * resettable for a $200M/week perpetual faucet).
+ *
+ * All dates are ISO YYYY-MM-DD strings (UTC).
+ */
+export function computeDailyBonusClaim(
+  lastClaimDate: string | null,
+  currentStreak: number,
+  today: string = getToday(),
+  yesterday: string = getYesterday(),
+): { claimable: boolean; amount: number; newStreak: number } {
+  if (lastClaimDate === today) {
+    return { claimable: false, amount: 0, newStreak: currentStreak };
+  }
+  const newStreak = lastClaimDate === yesterday ? currentStreak + 1 : 1;
+  const dayIndex = (newStreak - 1) % BONUS_SCHEDULE.length;
+  return { claimable: true, amount: BONUS_SCHEDULE[dayIndex], newStreak };
+}
+
 /** Load daily bonus state from localStorage */
 export function loadBonusState(): DailyBonusState {
   try {

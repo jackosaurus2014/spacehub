@@ -9,6 +9,7 @@ import {
   MAX_CONCURRENT_WON,
   MIN_BALANCE_AFTER_COLLATERAL,
 } from '@/lib/game/contract-bidding';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,6 +56,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+    const ledgerOn = await isLedgerAvailable();
 
     // Execute bid placement in a transaction for atomicity
     const result = await prisma.$transaction(async (tx) => {
@@ -201,13 +205,19 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // 14. Deduct collateral from player balance
+      // 14. Deduct collateral from player balance (+ledger, audit A1)
       await tx.gameProfile.update({
         where: { id: profile.id },
         data: {
           money: { decrement: collateralAmount },
         },
       });
+      if (ledgerOn) {
+        await recordLedger(tx, {
+          profileId: profile.id, moneyDelta: -collateralAmount,
+          reason: 'bid_collateral', refId: bid.id,
+        });
+      }
 
       // 15. Increment contract bid count
       await tx.biddingContract.update({

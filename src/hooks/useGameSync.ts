@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
+import { queueServerReconciliation, type LedgerReconciliation } from '@/lib/game/ledger-reconcile';
 
 interface SyncStatus {
   lastSyncAt: number | null;
@@ -23,7 +24,14 @@ interface SyncStatus {
 export function useGameSync(
   state: GameState | null,
   intervalMs: number = 60_000,
-  onServerData?: (data: { servicePriceMultipliers?: Record<string, number>; globalMilestones?: Record<string, string> }) => void,
+  onServerData?: (data: {
+    servicePriceMultipliers?: Record<string, number>;
+    globalMilestones?: Record<string, string>;
+    /** One Wallet (audit A1): pending server-side deltas + new ack cursor. */
+    ledger?: LedgerReconciliation;
+    /** Server-reconciled money figure at sync time (informational). */
+    reconciledMoney?: number;
+  }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
     lastSyncAt: null,
@@ -76,6 +84,10 @@ export function useGameSync(
           currentLocation: s.currentLocation,
         })),
         workforce: state.workforce || null,
+        // One Wallet (audit A1): ack cursor — highest server ledger seq this
+        // state has already applied. The server only reconciles/returns
+        // entries beyond it (idempotent under retries).
+        ledgerAck: state.serverLedgerAck ?? 0,
       };
 
       const res = await fetch('/api/space-tycoon/sync', {
@@ -95,11 +107,25 @@ export function useGameSync(
           rank: data.rank || null,
           netWorth: data.netWorth || null,
         });
+        // One Wallet (audit A1): queue pending server-side deltas for the
+        // game engine to apply on the next tick (money + resources + ack
+        // cursor move atomically inside processFullTick). The queue is
+        // consumed at most once per reconciliation and the engine re-checks
+        // the ack cursor, so a duplicate response cannot double-apply.
+        if (data.ledger && typeof data.ledger.maxSeq === 'number') {
+          const ack = state.serverLedgerAck ?? 0;
+          if (data.ledger.maxSeq > ack) {
+            queueServerReconciliation(data.ledger as LedgerReconciliation);
+          }
+        }
+
         // Pass server-side pricing and milestone data back to the game
         if (onServerData) {
           onServerData({
             servicePriceMultipliers: data.servicePriceMultipliers || undefined,
             globalMilestones: data.globalMilestones || undefined,
+            ledger: data.ledger || undefined,
+            reconciledMoney: typeof data.reconciledMoney === 'number' ? data.reconciledMoney : undefined,
           });
         }
 

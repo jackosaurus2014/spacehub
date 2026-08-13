@@ -6,6 +6,7 @@ import {
   SECURITY_LEVELS,
   getSecurityUpgradeCost,
 } from '@/lib/game/espionage-system';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 /**
  * POST /api/space-tycoon/espionage/upgrade
@@ -81,8 +82,11 @@ export async function POST(request: NextRequest) {
     // ── Execute upgrade in a transaction ──
     const newSecDef = SECURITY_LEVELS[targetLevel];
 
+    // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+    const ledgerOn = await isLedgerAvailable();
+
     await prisma.$transaction(async (tx) => {
-      // Deduct cost
+      // Deduct cost (+ledger, audit A1)
       await tx.gameProfile.update({
         where: { id: profile.id },
         data: {
@@ -90,6 +94,12 @@ export async function POST(request: NextRequest) {
           totalSpent: { increment: upgradeCost },
         },
       });
+      if (ledgerOn) {
+        await recordLedger(tx, {
+          profileId: profile.id, moneyDelta: -upgradeCost,
+          reason: 'espionage_upgrade',
+        });
+      }
 
       // Upgrade security level
       await tx.espionageProfile.update({

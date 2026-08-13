@@ -92,6 +92,10 @@ export const SHIP_ASSETS: Record<string, string> = {
   asteroid_miner: `${BASE}/ship-mining-m.webp`,
   deep_space_miner: `${BASE}/ship-mining-l.webp`,
   survey_probe: `${BASE}/ship-scout.webp`,
+  // Interstellar hulls (Wave 10) — distinct angle/hull variants so they read
+  // differently from their solar-system cousins (survey_probe, heavy_transport).
+  starfarer_explorer: `${BASE}/ship-scout-angle2.webp`,
+  colony_ark: `${BASE}/ship-transport-l.webp`,
 };
 
 // ─── BACKGROUND ASSETS ───────────────────────────────────────────────────────

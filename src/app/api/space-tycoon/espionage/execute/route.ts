@@ -17,6 +17,7 @@ import {
   type TargetEspionageProfile,
   type TargetGameProfile,
 } from '@/lib/game/espionage-system';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 /**
  * POST /api/space-tycoon/espionage/execute
@@ -284,10 +285,14 @@ export async function POST(request: NextRequest) {
       attackerGameProfile.id,
     );
 
+    // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+    const ledgerOn = await isLedgerAvailable();
+
     // ── Persist results in a transaction ──
     // CRITICAL: Only the attacker's money is deducted. The target is NEVER modified economically.
     const missionRecord = await prisma.$transaction(async (tx) => {
-      // Deduct cost from attacker
+      // Deduct cost from attacker (+ledger, audit A1 — this debit previously
+      // vanished at the next client sync, making espionage free)
       await tx.gameProfile.update({
         where: { id: attackerGameProfile.id },
         data: {
@@ -295,6 +300,12 @@ export async function POST(request: NextRequest) {
           totalSpent: { increment: cost },
         },
       });
+      if (ledgerOn) {
+        await recordLedger(tx, {
+          profileId: attackerGameProfile.id, moneyDelta: -cost,
+          reason: 'espionage_cost', refId: targetId,
+        });
+      }
 
       // Increment daily action count
       await tx.espionageProfile.update({

@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { COMPETITIVE_CONTRACT_POOL } from '@/lib/game/competitive-contracts';
 import { getGlobalGameDate } from '@/lib/game/server-time';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
 
@@ -130,22 +131,43 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Claim the slot
-    await prisma.playerActivity.create({
-      data: {
-        profileId: profile.id,
-        companyName: String(companyName).slice(0, 50),
-        type: 'competitive_contract_claimed',
-        title: `${companyName} completed "${contract.title}"`,
-        description: `Slot ${currentClaims + 1}/${contract.maxWinners} — Reward: $${(contract.reward.money / 1e6).toFixed(0)}M`,
-        metadata: {
-          contractId,
-          slotNumber: currentClaims + 1,
-          maxWinners: contract.maxWinners,
-          reward: contract.reward.money,
-          tier: contract.tier,
+    // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+    const ledgerOn = await isLedgerAvailable();
+
+    // Claim the slot and pay the reward (previously the reward existed only
+    // in the response JSON — nobody was ever credited)
+    await prisma.$transaction(async (tx) => {
+      await tx.playerActivity.create({
+        data: {
+          profileId: profile.id,
+          companyName: String(companyName).slice(0, 50),
+          type: 'competitive_contract_claimed',
+          title: `${companyName} completed "${contract.title}"`,
+          description: `Slot ${currentClaims + 1}/${contract.maxWinners} — Reward: $${(contract.reward.money / 1e6).toFixed(0)}M`,
+          metadata: {
+            contractId,
+            slotNumber: currentClaims + 1,
+            maxWinners: contract.maxWinners,
+            reward: contract.reward.money,
+            tier: contract.tier,
+          },
         },
-      },
+      });
+      if (contract.reward.money > 0) {
+        await tx.gameProfile.update({
+          where: { id: profile.id },
+          data: {
+            money: { increment: contract.reward.money },
+            totalEarned: { increment: contract.reward.money },
+          },
+        });
+        if (ledgerOn) {
+          await recordLedger(tx, {
+            profileId: profile.id, moneyDelta: contract.reward.money,
+            reason: 'competitive_contract_reward', refId: contractId,
+          });
+        }
+      }
     });
 
     logger.info('Competitive contract claimed', {

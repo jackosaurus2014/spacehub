@@ -10,6 +10,7 @@ import {
   SECONDS_PER_GAME_MONTH,
 } from '@/lib/game/contract-bidding';
 import { getGlobalGameDate } from '@/lib/game/server-time';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
 
@@ -172,13 +173,19 @@ export async function POST(request: NextRequest) {
               },
             });
 
-            // Refund collateral to losing bidder
+            // Refund collateral to losing bidder (+ledger, audit A1)
             await tx.gameProfile.update({
               where: { id: losingBid.profileId },
               data: {
                 money: { increment: losingBid.collateralLocked },
               },
             });
+            if (await isLedgerAvailable()) {
+              await recordLedger(tx, {
+                profileId: losingBid.profileId, moneyDelta: losingBid.collateralLocked,
+                reason: 'bid_collateral_refund', refId: losingBid.id,
+              });
+            }
           }
 
           // Create activity feed entry
@@ -354,16 +361,24 @@ export async function POST(request: NextRequest) {
 }
 
 async function refundCollateral(profileId: string, amount: number, bidId: string) {
-  await prisma.$transaction([
-    prisma.gameProfile.update({
+  // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+  const ledgerOn = await isLedgerAvailable();
+  await prisma.$transaction(async (tx) => {
+    await tx.gameProfile.update({
       where: { id: profileId },
       data: { money: { increment: amount } },
-    }),
-    prisma.contractBid.update({
+    });
+    await tx.contractBid.update({
       where: { id: bidId },
       data: { status: 'lost' },
-    }),
-  ]);
+    });
+    if (ledgerOn) {
+      await recordLedger(tx, {
+        profileId, moneyDelta: amount,
+        reason: 'bid_collateral_refund', refId: bidId,
+      });
+    }
+  });
 }
 
 function formatShort(amount: number): string {

@@ -418,6 +418,13 @@ export interface GameState {
   // Dynamic service pricing (from server — multiplier per service ID)
   servicePriceMultipliers?: Record<string, number>;
 
+  // One Wallet (audit A1): highest server ledger seq already applied into
+  // this state's money/resources. Sent with every sync as the ack cursor;
+  // the server only returns (and re-returns) entries beyond it, making
+  // reconciliation idempotent under sync retries. Lives in GameState so the
+  // cursor persists/saves atomically with the balance it describes.
+  serverLedgerAck?: number;
+
   // Timed competitive events
   activeTimedEvents?: {
     templateId: string;

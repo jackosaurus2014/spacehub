@@ -12,6 +12,7 @@ import {
   type ContractRequirements,
   type FulfillmentOutcome,
 } from '@/lib/game/contract-bidding';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
 
@@ -112,6 +113,9 @@ export async function POST(request: NextRequest) {
       const newReliability = updateReliability(profile.bidReliability, 'abandoned');
       const cooldownUntil = new Date(now.getTime() + 1 * SECONDS_PER_GAME_MONTH * 1000);
 
+      // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+      const ledgerOn = await isLedgerAvailable();
+
       await prisma.$transaction(async (tx) => {
         // Update contract
         await tx.biddingContract.update({
@@ -138,6 +142,12 @@ export async function POST(request: NextRequest) {
             biddingCooldownUntil: cooldownUntil,
           },
         });
+        if (ledgerOn) {
+          await recordLedger(tx, {
+            profileId: profile.id, moneyDelta: collateralReturned,
+            reason: 'bid_collateral_refund', refId: contract.id,
+          });
+        }
 
         // Activity feed
         await tx.playerActivity.create({
@@ -226,6 +236,9 @@ export async function POST(request: NextRequest) {
     const collateralReturned = winningBid.collateralLocked;
     const reputationGain = outcome === 'fulfilled_with_bonus' ? 25 : 15;
 
+    // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+    const ledgerOn = await isLedgerAvailable();
+
     await prisma.$transaction(async (tx) => {
       // Update contract
       await tx.biddingContract.update({
@@ -255,9 +268,17 @@ export async function POST(request: NextRequest) {
           where: { id: profile.id },
           data: { resources: newResources },
         });
+        if (ledgerOn) {
+          await recordLedger(tx, {
+            profileId: profile.id,
+            resourceSlug: requirements.resourceId,
+            resourceDelta: -requirements.target,
+            reason: 'bid_delivery_resources', refId: contract.id,
+          });
+        }
       }
 
-      // Pay the player: bid amount + returned collateral
+      // Pay the player: bid amount + returned collateral (+ledger, audit A1)
       await tx.gameProfile.update({
         where: { id: profile.id },
         data: {
@@ -265,6 +286,12 @@ export async function POST(request: NextRequest) {
           bidReliability: newReliability,
         },
       });
+      if (ledgerOn) {
+        await recordLedger(tx, {
+          profileId: profile.id, moneyDelta: payment + collateralReturned,
+          reason: 'bid_contract_payment', refId: contract.id,
+        });
+      }
 
       // Activity feed
       const bonuses: string[] = [];

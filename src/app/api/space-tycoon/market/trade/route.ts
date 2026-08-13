@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY, MARKET_BROKER_FEE_RATE } from '@/lib/game/market-engine';
@@ -20,14 +22,38 @@ import { RESOURCE_MAP } from '@/lib/game/resources';
  */
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY (audit hotlist #1): this route moves the SHARED global price
+    // for every player. It was unauthenticated — anyone could curl prices
+    // up/down. Session required, matching sibling routes (orders, bounties).
+    // Anonymous solo players are unaffected: MarketPanel falls back to
+    // client-side local pricing when this returns 401.
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { type, resourceSlug, quantity, profileId } = body;
+    const { type, resourceSlug, quantity } = body;
+
+    // Never trust a client-supplied profileId — attribute trades to the
+    // session's own profile.
+    const sessionProfile = await prisma.gameProfile.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true },
+    });
+    const profileId = sessionProfile?.id;
 
     if (!type || !resourceSlug || !quantity || quantity <= 0) {
       return NextResponse.json({ error: 'Invalid trade parameters' }, { status: 400 });
     }
     if (type !== 'buy' && type !== 'sell') {
       return NextResponse.json({ error: 'Type must be "buy" or "sell"' }, { status: 400 });
+    }
+    // Sanity cap: one call cannot dump an absurd volume onto the shared
+    // price. (Price impact is already clamped to min/max band; this is
+    // defense-in-depth against manipulation via a single authed request.)
+    if (quantity > 100_000) {
+      return NextResponse.json({ error: 'Quantity exceeds per-trade limit (100,000)' }, { status: 400 });
     }
 
     // Get current resource state

@@ -17,6 +17,7 @@ import {
   MAX_CASH_PERCENT_PER_TX,
   type PhaseRequirement,
 } from '@/lib/game/mega-projects';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 /**
  * POST /api/space-tycoon/mega-projects/contribute
@@ -197,9 +198,13 @@ export async function POST(request: Request) {
       isFirstEverContribution,
     );
 
+    // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+    const ledgerOn = await isLedgerAvailable();
+
     // Execute everything in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Deduct money from player
+      // 1. Deduct money from player (+ledger, audit A1 — contributions were
+      // previously free: the debit vanished at the next client sync)
       if (cashAmount > 0) {
         await tx.gameProfile.update({
           where: { id: profile.id },
@@ -208,6 +213,12 @@ export async function POST(request: Request) {
             totalSpent: { increment: cashAmount },
           },
         });
+        if (ledgerOn) {
+          await recordLedger(tx, {
+            profileId: profile.id, moneyDelta: -cashAmount,
+            reason: 'mega_project_contribution', refId: project.id,
+          });
+        }
       }
 
       // 2. Deduct resources from player
@@ -221,6 +232,15 @@ export async function POST(request: Request) {
           where: { id: profile.id },
           data: { resources: updatedResources },
         });
+        if (ledgerOn) {
+          for (const [id, qty] of Object.entries(resourceContributions)) {
+            if (!qty) continue;
+            await recordLedger(tx, {
+              profileId: profile.id, resourceSlug: id, resourceDelta: -qty,
+              reason: 'mega_project_resources', refId: project.id,
+            });
+          }
+        }
       }
 
       // 3. Upsert contribution record

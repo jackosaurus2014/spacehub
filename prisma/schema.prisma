@@ -228,11 +228,62 @@ model GameProfile {
   // â”€â”€ Alliance Event Contributions â”€â”€
   allianceEventContributions AllianceEventContribution[]
 
+  // One Wallet: server-side money/resource delta ledger (audit A1)
+  ledgerEntries GameLedgerEntry[]
+
+  // Server-side daily bonus claim tracking (audit A6 / hotlist)
+  dailyBonusLastClaim DateTime?
+  dailyBonusStreak    Int       @default(0)
+
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
   @@index([lastSyncAt])
   @@index([peakNetWorth])
+}
+
+// One Wallet (audit Change #1): signed delta ledger for server-side
+// debits/credits. Every server route that touches GameProfile.money (or
+// server-held resources) writes an entry atomically with its mutation.
+// The sync route reconciles: reconciledMoney = clientMoney + sum(entries
+// with seq > client ack cursor). The client applies the delta and advances
+// its ack cursor (GameState.serverLedgerAck) so entries apply exactly once.
+model GameLedgerEntry {
+  id        String      @id @default(cuid())
+  // Monotonic global sequence - the client ack cursor. Idempotency anchor.
+  seq       Int         @unique @default(autoincrement())
+  profileId String
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // Signed money delta (positive = credit to player, negative = debit).
+  moneyDelta Float @default(0)
+  // Optional signed resource delta (order fills, bounty deliveries, escrows).
+  resourceSlug  String?
+  resourceDelta Float   @default(0)
+
+  reason String // e.g. order_escrow, order_sale_revenue, bid_collateral, bounty_payout
+  refId  String? // related entity id (order, bid, bounty, project...)
+
+  createdAt DateTime  @default(now())
+  // Set once the client has acked at/past this seq (cleanup marker only -
+  // reconciliation itself keys off the seq cursor, not this field).
+  appliedAt DateTime?
+
+  @@index([profileId, seq])
+  @@index([profileId, appliedAt])
+}
+
+// Persistent game chat (audit hotlist #7 - was per-lambda module memory)
+model GameChatMessage {
+  id          String   @id @default(cuid())
+  channel     String   @default("global")
+  userId      String
+  companyName String
+  message     String
+  createdAt   DateTime @default(now())
+
+  @@index([channel, createdAt])
+  @@index([userId, createdAt])
 }
 
 // Colony claims â€” tracks who occupies which location slots

@@ -16,8 +16,20 @@ import { MINING_LOCATIONS, SHIP_MAP, getTravelTime } from '@/lib/game/ships';
 import { LOCATION_ASSETS, SHIP_ASSETS } from '@/lib/game/assets';
 import { formatMoney, formatDuration } from '@/lib/game/formulas';
 import { INTERSTELLAR_SYSTEM_MAP, getJumpPrerequisites } from '@/lib/game/interstellar';
+import {
+  planExpedition,
+  getExpeditionCapableShips,
+  getExpeditionProgress,
+  GAME_MONTHS_PER_LY,
+  COLONY_CAPABLE_SHIP_IDS,
+  type ExpeditionPlanRequest,
+  type ExpeditionPlan,
+  type ExpeditionPlanError,
+} from '@/lib/game/expeditions';
+import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { playSound } from '@/lib/game/sound-engine';
 import { REGION_LABELS } from './SolarSystemCanvas';
+import { SYSTEM_RISK_META, RISK_TONE_CLASS } from './GalacticMapView';
 import BuildPanel from './BuildPanel';
 
 export type MapSelection = { kind: 'location'; id: string } | { kind: 'system'; id: string };
@@ -30,6 +42,7 @@ interface MapContextPanelProps {
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
   onDispatchShip: (shipInstanceId: string, toLocationId: string) => void;
+  onLaunchExpedition: (req: ExpeditionPlanRequest) => void;
   onNavigateTab: (tab: GameTab) => void;
 }
 
@@ -49,9 +62,9 @@ const CATEGORY_META: Record<string, { label: string; icon: string }> = {
 };
 
 export default function MapContextPanel({
-  state, selection, onClose, onUnlock, onBuild, onSellBuilding, onDispatchShip, onNavigateTab,
+  state, selection, onClose, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab,
 }: MapContextPanelProps) {
-  const [view, setView] = useState<'overview' | 'build' | 'dispatch'>('overview');
+  const [view, setView] = useState<'overview' | 'build' | 'dispatch' | 'plan-expedition'>('overview');
   const [pickedShip, setPickedShip] = useState<string | null>(null);
 
   // Reset the sub-view whenever the selection itself changes, so switching
@@ -83,8 +96,25 @@ export default function MapContextPanel({
   );
 
   if (selection.kind === 'system') {
+    if (view === 'plan-expedition') {
+      const sys = INTERSTELLAR_SYSTEM_MAP.get(selection.id);
+      return panelShell(
+        <PanelTitle icon="🌠" title="Plan Expedition" subtitle={sys?.name || selection.id} onBack={() => setView('overview')} />,
+        <ExpeditionPlanner
+          state={state}
+          systemId={selection.id}
+          onLaunch={(req) => { onLaunchExpedition(req); setView('overview'); }}
+          onNavigateTab={onNavigateTab}
+        />
+      );
+    }
     return panelShell(<GalacticHeader systemId={selection.id} />, (
-      <GalacticBody state={state} systemId={selection.id} onNavigateTab={onNavigateTab} />
+      <GalacticBody
+        state={state}
+        systemId={selection.id}
+        onNavigateTab={onNavigateTab}
+        onOpenPlan={() => setView('plan-expedition')}
+      />
     ));
   }
 
@@ -400,7 +430,14 @@ function DispatchBody({
   );
 }
 
-function GalacticBody({ state, systemId, onNavigateTab }: { state: GameState; systemId: string; onNavigateTab: (tab: GameTab) => void }) {
+function GalacticBody({
+  state, systemId, onNavigateTab, onOpenPlan,
+}: {
+  state: GameState;
+  systemId: string;
+  onNavigateTab: (tab: GameTab) => void;
+  onOpenPlan: () => void;
+}) {
   const sys = INTERSTELLAR_SYSTEM_MAP.get(systemId);
   if (!sys) return <p className="text-slate-500 text-xs">Unknown system.</p>;
 
@@ -408,28 +445,49 @@ function GalacticBody({ state, systemId, onNavigateTab }: { state: GameState; sy
   const exoticFuel = state.resources?.exotic_fuel || 0;
   const fuelMissing = exoticFuel < sys.jumpFuelRequired;
   const ready = missing.length === 0 && !fuelMissing;
+  const risk = SYSTEM_RISK_META[systemId] || { label: 'Unknown risk', glyph: '?', tone: 'moderate' as const };
+  const outboundMonths = Math.ceil(sys.distanceLy * GAME_MONTHS_PER_LY);
+
+  const localExpeditions = (state.expeditions || []).filter(e => e.targetSystemId === systemId && e.phase !== 'completed' && e.phase !== 'lost');
+  const colony = (state.interstellarColonies || []).find(c => c.systemId === systemId);
+  const eligibleShips = getExpeditionCapableShips(state);
 
   return (
     <div className="space-y-3">
       <p className="text-slate-400 text-[11px] leading-relaxed">{sys.description}</p>
+
+      {/* System dossier */}
       <div className="grid grid-cols-2 gap-2 text-[10px]">
         <div className="rounded bg-white/[0.02] p-2">
           <div className="text-slate-500">Distance</div>
           <div className="text-white font-mono">{sys.distanceLy.toFixed(2)} ly</div>
         </div>
         <div className="rounded bg-white/[0.02] p-2">
-          <div className="text-slate-500">Fuel required</div>
+          <div className="text-slate-500">Fuel required / jump</div>
           <div className={`font-mono ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>{sys.jumpFuelRequired.toLocaleString()}</div>
         </div>
+        <div className="rounded bg-white/[0.02] p-2">
+          <div className="text-slate-500">Outbound transit</div>
+          <div className="text-white font-mono">~{outboundMonths} months</div>
+        </div>
+        <div className="rounded bg-white/[0.02] p-2">
+          <div className="text-slate-500">Round trip (survey)</div>
+          <div className="text-white font-mono">~{outboundMonths * 2 + 12} months</div>
+        </div>
       </div>
+      <div className={`text-[11px] font-semibold flex items-center gap-1.5 ${RISK_TONE_CLASS[risk.tone]}`}>
+        <span aria-hidden="true">{risk.glyph}</span> {risk.label}
+      </div>
+
       <div>
         <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Known Resources</div>
         <div className="flex flex-wrap gap-1">
           {sys.knownResources.map(r => (
-            <span key={r} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300">{r.replace(/_/g, ' ')}</span>
+            <span key={r} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300">{RESOURCE_MAP.get(r as ResourceId)?.name || r.replace(/_/g, ' ')}</span>
           ))}
         </div>
       </div>
+
       <div className={`rounded-lg border p-2.5 ${ready ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
         <div className={`text-[10px] uppercase tracking-wider font-bold mb-1 ${ready ? 'text-emerald-300' : 'text-red-300'}`}>
           {ready ? 'Jump ready' : 'Blocked by'}
@@ -441,16 +499,246 @@ function GalacticBody({ state, systemId, onNavigateTab }: { state: GameState; sy
           </ul>
         )}
       </div>
-      <button
-        type="button"
-        onClick={() => { playSound('click'); onNavigateTab('interstellar'); }}
-        className="w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
-      >
-        View first-contact briefing →
-      </button>
-      <p className="text-[10px] text-slate-500 italic text-center">
-        Engine gap: jump/expedition execution isn&apos;t implemented yet — the Interstellar Gateway tab shows the full prerequisite check and narrative preview.
-      </p>
+
+      {/* Active expeditions targeting this system */}
+      {localExpeditions.length > 0 && (
+        <div className="space-y-1.5">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Expeditions here</div>
+          {localExpeditions.map(exp => {
+            const progress = getExpeditionProgress(state, exp.id);
+            if (!progress) return null;
+            return (
+              <div key={exp.id} className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-2 text-[11px]">
+                <div className="flex items-center justify-between">
+                  <span className="text-cyan-200 font-medium">{progress.phaseLabel}</span>
+                  <span className="text-slate-400 font-mono">{Math.max(0, Math.round(progress.monthsRemaining))} mo left</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Colony summary */}
+      {colony && (
+        <div className="rounded-lg border border-purple-500/25 bg-purple-500/5 p-2.5 text-[11px]">
+          <div className="text-purple-300 font-semibold mb-1">🏙️ {colony.name}</div>
+          <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
+            <span>Population: <span className="text-white font-mono">{Math.floor(colony.population).toLocaleString()}</span></span>
+            <span>Infrastructure: <span className="text-white font-mono">L{colony.infrastructureLevel}</span></span>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-2 pt-1">
+        <button
+          type="button"
+          disabled={!ready || eligibleShips.length === 0}
+          onClick={() => { playSound('click'); onOpenPlan(); }}
+          className={`min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+            ready && eligibleShips.length > 0
+              ? 'bg-indigo-600 text-white hover:bg-indigo-500'
+              : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
+          }`}
+        >
+          🌠 Plan Expedition
+        </button>
+        {ready && eligibleShips.length === 0 && (
+          <p className="text-[10px] text-amber-300/90 text-center">
+            No expedition-capable ship idle. Build a Starfarer Explorer or Colony Ark in{' '}
+            <button type="button" className="underline hover:text-amber-200" onClick={() => { playSound('click'); onNavigateTab('fleet'); }}>Fleet</button>.
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={() => { playSound('click'); onNavigateTab('interstellar'); }}
+          className="min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium text-indigo-300/80 hover:text-indigo-200 border border-white/[0.06] hover:border-indigo-500/30 transition-colors"
+        >
+          Mission Control — Interstellar Gateway →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Expedition Planner (Wave 10) ───────────────────────────────────────────
+// Ship picker + insurance/shielding toggles with a live cost/risk quote from
+// planExpedition (pure — no mutation). Launch calls back into page.tsx's
+// engine-wired handler; plan errors are surfaced inline right here.
+
+const PLAN_ERROR_TEXT: Record<ExpeditionPlanError['reason'], string> = {
+  unknown_system: 'Unknown destination system.',
+  missing_prerequisites: 'Research prerequisites not met.',
+  ship_not_found: 'Select a ship to continue.',
+  ship_not_built: 'That ship is still under construction.',
+  ship_busy: 'That ship is not idle.',
+  ship_not_expedition_capable: 'Only Starfarer Explorers and Colony Arks can fly expeditions.',
+  insufficient_crew: 'Not enough workforce to crew this ship.',
+  insufficient_funds: 'Not enough cash to cover the launch cost.',
+};
+
+function ExpeditionPlanner({
+  state, systemId, onLaunch, onNavigateTab,
+}: {
+  state: GameState;
+  systemId: string;
+  onLaunch: (req: ExpeditionPlanRequest) => void;
+  onNavigateTab: (tab: GameTab) => void;
+}) {
+  const [shipInstanceId, setShipInstanceId] = useState<string | null>(null);
+  const [insured, setInsured] = useState(true);
+  const [extraShielding, setExtraShielding] = useState(false);
+
+  const eligibleShips = getExpeditionCapableShips(state);
+  const sys = INTERSTELLAR_SYSTEM_MAP.get(systemId);
+
+  if (eligibleShips.length === 0) {
+    return (
+      <div className="text-center py-6 space-y-2">
+        <p className="text-slate-500 text-xs">No idle expedition-capable ship in the fleet.</p>
+        <p className="text-slate-600 text-[10px]">A Starfarer-Class Explorer or Colony Ark must be built and idle before launch.</p>
+        <button
+          type="button"
+          onClick={() => { playSound('click'); onNavigateTab('fleet'); }}
+          className="min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+        >
+          Open Fleet / Shipyard →
+        </button>
+      </div>
+    );
+  }
+
+  const req: ExpeditionPlanRequest | null = shipInstanceId
+    ? { targetSystemId: systemId, shipInstanceId, insured, extraShielding }
+    : null;
+  const plan: ExpeditionPlan | ExpeditionPlanError | null = req ? planExpedition(state, req) : null;
+
+  return (
+    <div className="space-y-3">
+      <p className="text-slate-500 text-[10px]">Pick a ship for the {sys?.name || systemId} expedition:</p>
+      <div className="space-y-1.5 max-h-[30vh] overflow-y-auto">
+        {eligibleShips.map(s => {
+          const def = SHIP_MAP.get(s.definitionId);
+          const isColonyShip = (COLONY_CAPABLE_SHIP_IDS as readonly string[]).includes(s.definitionId);
+          const isPicked = shipInstanceId === s.instanceId;
+          return (
+            <button
+              key={s.instanceId}
+              type="button"
+              onClick={() => { playSound('click'); setShipInstanceId(isPicked ? null : s.instanceId); }}
+              aria-pressed={isPicked}
+              className={`w-full min-h-[44px] flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-left transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                isPicked ? 'border-indigo-500/50 bg-indigo-500/10' : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05]'
+              }`}
+            >
+              {def && SHIP_ASSETS[def.id] && (
+                <div className="relative w-7 h-7 shrink-0">
+                  <Image src={SHIP_ASSETS[def.id]} alt="" fill className="object-contain" />
+                </div>
+              )}
+              <span className="min-w-0 flex-1">
+                <span className="block text-white text-[11px] truncate">{s.name}</span>
+                <span className="block text-slate-500 text-[10px] truncate">{def?.name} · {isColonyShip ? 'one-way colony hold' : 'round-trip survey'}</span>
+              </span>
+              {isPicked && <span className="text-indigo-300 text-[10px] shrink-0">✓ selected</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {shipInstanceId && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+            <label htmlFor="expedition-insured" className="text-[11px] text-slate-300">
+              Insure the mission (8% premium, 70% payout on total loss)
+            </label>
+            <input
+              id="expedition-insured"
+              type="checkbox"
+              checked={insured}
+              onChange={e => setInsured(e.target.checked)}
+              className="w-5 h-5 accent-cyan-500 shrink-0"
+            />
+          </div>
+          <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+            <label htmlFor="expedition-shielding" className="text-[11px] text-slate-300">
+              Extra hardened shielding (+10% hull cost, −hazard damage)
+            </label>
+            <input
+              id="expedition-shielding"
+              type="checkbox"
+              checked={extraShielding}
+              onChange={e => setExtraShielding(e.target.checked)}
+              className="w-5 h-5 accent-cyan-500 shrink-0"
+            />
+          </div>
+
+          {plan && plan.ok && (
+            <div className="rounded-lg border border-indigo-500/25 bg-indigo-500/5 p-3 space-y-1.5 text-[11px]">
+              <div className="text-indigo-200 font-semibold text-[10px] uppercase tracking-wider mb-1">Cost &amp; Mission Breakdown</div>
+              <Row label="Fuel (from inventory)" value={`${plan.costs.fuelFromInventory.toLocaleString()} units`} />
+              {plan.costs.fuelUnitsPurchased > 0 && (
+                <Row label="Fuel purchased" value={`${plan.costs.fuelUnitsPurchased.toLocaleString()} units — ${formatMoney(plan.costs.fuelPurchaseCost)}`} />
+              )}
+              <Row label="Supplies" value={formatMoney(plan.costs.suppliesCost)} />
+              {plan.costs.shieldingCost > 0 && <Row label="Shielding" value={formatMoney(plan.costs.shieldingCost)} />}
+              {plan.costs.insurancePremium > 0 && <Row label="Insurance premium" value={formatMoney(plan.costs.insurancePremium)} />}
+              <div className="h-px bg-white/[0.08] my-1" />
+              <Row label="Total launch cost" value={formatMoney(plan.costs.totalMoneyCost)} strong />
+              <div className="h-px bg-white/[0.08] my-1" />
+              <Row label="Outbound transit" value={`${plan.outboundMonths} months`} />
+              {plan.isColonyShip ? (
+                <Row label="Holds station" value="Indefinitely (maintenance keeps ticking)" />
+              ) : (
+                <>
+                  <Row label="Survey window" value={`${plan.exploreMonths} months`} />
+                  <Row label="Return transit" value={`${plan.outboundMonths} months`} />
+                  <Row label="Total mission" value={`${plan.totalPlannedMonths} months`} />
+                </>
+              )}
+              <p className="text-[10px] text-slate-500 pt-1">
+                {plan.isColonyShip
+                  ? 'Colony Arks are a one-way commitment — on arrival you may found a permanent colony that holds station and keeps producing indefinitely.'
+                  : 'Starfarer Explorers survey and automatically return with data + resource samples; they never colonize.'}
+              </p>
+            </div>
+          )}
+
+          {plan && !plan.ok && (
+            <div className="rounded-lg border border-red-500/25 bg-red-500/5 p-3 text-[11px] text-red-200" role="alert">
+              <div className="font-semibold mb-1">{PLAN_ERROR_TEXT[plan.reason]}</div>
+              {plan.detail && <div className="text-red-300/80">{plan.detail}</div>}
+              {plan.missingPrerequisites && plan.missingPrerequisites.length > 0 && (
+                <ul className="pl-4 mt-1 space-y-0.5" style={{ listStyle: 'disc' }}>
+                  {plan.missingPrerequisites.map(r => <li key={r}>Research: {r.replace(/_/g, ' ')}</li>)}
+                </ul>
+              )}
+            </div>
+          )}
+
+          <button
+            type="button"
+            disabled={!plan || !plan.ok}
+            onClick={() => { if (req && plan?.ok) { onLaunch(req); } }}
+            className={`w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
+              plan && plan.ok
+                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400'
+                : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
+            }`}
+          >
+            🚀 Launch Expedition
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="text-slate-400">{label}</span>
+      <span className={`font-mono ${strong ? 'text-white font-bold' : 'text-slate-200'}`}>{value}</span>
     </div>
   );
 }

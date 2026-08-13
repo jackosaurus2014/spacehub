@@ -2,6 +2,7 @@
 // Treasury deposits, perk definitions, perk activation, and bonus aggregation.
 
 import { PrismaClient } from '@prisma/client';
+import { recordLedger, isLedgerAvailable } from './server-ledger';
 
 // ─── Perk Definitions ──────────────────────────────────────────────────────
 
@@ -113,18 +114,29 @@ export async function depositToTreasury(
     return { success: false, error: 'Insufficient funds.', newTreasuryBalance: 0, amountDeposited: 0 };
   }
 
-  // Atomically update treasury and deduct from player
-  const [updatedAlliance] = await prisma.$transaction([
-    prisma.alliance.update({
+  // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+  const ledgerOn = await isLedgerAvailable();
+
+  // Atomically update treasury, deduct from player, and record the ledger
+  // debit (previously the deduction vanished at the next client sync,
+  // making treasury deposits free money for the alliance).
+  const updatedAlliance = await prisma.$transaction(async (tx) => {
+    const alliance = await tx.alliance.update({
       where: { id: allianceId },
       data: { treasury: { increment: amount } },
       select: { treasury: true },
-    }),
-    prisma.gameProfile.update({
+    });
+    await tx.gameProfile.update({
       where: { id: profileId },
       data: { money: { decrement: amount } },
-    }),
-    prisma.allianceLog.create({
+    });
+    if (ledgerOn) {
+      await recordLedger(tx, {
+        profileId, moneyDelta: -amount,
+        reason: 'treasury_deposit', refId: allianceId,
+      });
+    }
+    await tx.allianceLog.create({
       data: {
         allianceId,
         type: 'treasury_deposit',
@@ -134,8 +146,9 @@ export async function depositToTreasury(
         metadata: { amount },
         xpEarned: 0,
       },
-    }),
-  ]);
+    });
+    return alliance;
+  });
 
   return {
     success: true,

@@ -32,6 +32,7 @@ import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-co
 import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
 import { rollMonthlyHazards, applyHazards } from './hazards';
 import { processExpeditionTick } from './expeditions';
+import { consumeServerReconciliation, applyReconciliationToState } from './ledger-reconcile';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -611,13 +612,41 @@ function generateProbeReport(
  * Full tick: processes player state + NPC companies + achievements in lockstep.
  */
 export function processFullTick(state: GameState): GameState {
+  // 0. One Wallet (audit A1): apply any queued server ledger reconciliation
+  // BEFORE the tick. Server-side debits/credits (order fills, bid collateral,
+  // bounty payouts, contributions…) arrive from the sync response as signed
+  // deltas; applying them here moves money/resources and the ack cursor in
+  // one atomic state update. Idempotent: applyReconciliationToState no-ops
+  // unless the reconciliation covers seqs beyond state.serverLedgerAck.
+  let workingState = state;
+  try {
+    const rec = consumeServerReconciliation();
+    if (rec) {
+      const applied = applyReconciliationToState(workingState, rec);
+      if (applied !== workingState && rec.moneyDelta !== 0) {
+        workingState = {
+          ...applied,
+          eventLog: [{
+            id: generateId(), date: applied.gameDate, type: 'random_event' as const,
+            title: `🏦 Multiplayer settlement: ${rec.moneyDelta > 0 ? '+' : '−'}$${(Math.abs(rec.moneyDelta) / 1_000_000).toFixed(1)}M`,
+            description: 'Server-side trades, contracts, and contributions settled into your account.',
+          }, ...applied.eventLog].slice(0, MAX_EVENT_LOG),
+        };
+      } else {
+        workingState = applied;
+      }
+    }
+  } catch (err) {
+    console.error('Ledger reconciliation apply error (non-fatal):', err);
+  }
+
   // 1. Process player tick
   let newState: GameState;
   try {
-    newState = processTick(state);
+    newState = processTick(workingState);
   } catch (err) {
     console.error('processTick error:', err);
-    return { ...state, lastTickAt: Date.now() };
+    return { ...workingState, lastTickAt: Date.now() };
   }
 
   // 2. Process NPC companies (can fail safely)
@@ -768,14 +797,15 @@ export function processFullTick(state: GameState): GameState {
           }
         }
 
-        // Transit arrival — deliver cargo to destination
+        // Transit arrival
+        // SECURITY (audit hotlist #5): the old code credited route.cargo into
+        // the resource pool on arrival, but NOTHING ever deducts cargo at
+        // departure — a duplication exploit the moment any UI passes cargo.
+        // Arrival credit is disabled until real cargo logistics (audit C1:
+        // deduct-at-departure, capacity + fuel costs) ships. Both current
+        // dispatch call sites pass empty cargo, so this is behavior-neutral.
         if (ship.status === 'in_transit' && ship.route) {
           if (now >= ship.route.arrivalAtMs) {
-            if (ship.route.cargo) {
-              for (const [resId, qty] of Object.entries(ship.route.cargo)) {
-                resources[resId] = (resources[resId] || 0) + qty;
-              }
-            }
             return { ...ship, status: 'idle' as const, currentLocation: ship.route.to, route: undefined };
           }
         }
