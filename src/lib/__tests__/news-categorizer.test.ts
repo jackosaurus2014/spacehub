@@ -1,4 +1,4 @@
-import { categorizeArticle } from '../news-fetcher';
+import { categorizeArticle, isSpaceRelevant } from '../news-fetcher';
 
 describe('categorizeArticle', () => {
   it('categorizes launch-related articles', () => {
@@ -66,5 +66,44 @@ describe('categorizeArticle', () => {
   it('uses combined title and summary for matching', () => {
     // Title has no keywords, but summary does
     expect(categorizeArticle('Update Today', 'The SpaceX team confirmed')).toBe('companies');
+  });
+});
+
+describe('isSpaceRelevant', () => {
+  it('accepts articles with clear space vocabulary', () => {
+    expect(isSpaceRelevant('SpaceX Falcon 9 Launch', '')).toBe(true);
+    expect(isSpaceRelevant('Artemis Moon Mission Update', '')).toBe(true);
+    expect(isSpaceRelevant('New Earth Observation Satellite', '')).toBe(true);
+    expect(isSpaceRelevant('', 'NASA astronauts return from the ISS')).toBe(true);
+    expect(isSpaceRelevant('Space Force Awards Contract', '')).toBe(true);
+  });
+
+  it('rejects the HSBC-style off-topic false positive', () => {
+    // Regression test: this exact shape of story (banking/financial-crime
+    // coverage with generic "profit"/"financial"/"investor" vocabulary)
+    // previously slipped through and was mis-categorized as "Earnings"
+    // because those words are also earnings-category keywords.
+    expect(
+      isSpaceRelevant(
+        'HSBC fined over drug cartel money laundering scheme',
+        'The bank reported a drop in profit as investors reacted to the financial penalty and quarterly regulatory scrutiny'
+      )
+    ).toBe(false);
+  });
+
+  it('rejects generic business/tech stories with no space content', () => {
+    expect(isSpaceRelevant('Tech company reports quarterly earnings', 'Revenue and profit both grew year over year')).toBe(false);
+    expect(isSpaceRelevant('Congress debates new budget bill', 'Lawmakers discussed government spending and administration priorities')).toBe(false);
+  });
+
+  it('accepts space-relevant business stories using non-generic keywords', () => {
+    // "SpaceX" and "satellite" are space-specific signals that survive the
+    // generic-term denylist even though the story is business-flavored.
+    expect(isSpaceRelevant('SpaceX raises new funding round', 'The satellite company confirmed its latest valuation')).toBe(true);
+  });
+
+  it('is case-insensitive and checks combined title+summary', () => {
+    expect(isSpaceRelevant('ORBITAL DEBRIS RISK RISING', '')).toBe(true);
+    expect(isSpaceRelevant('Update Today', 'The lunar rover made progress')).toBe(true);
   });
 });

@@ -53,6 +53,90 @@ export function categorizeArticle(title: string, summary: string): string {
   return 'missions'; // default fallback for uncategorizable articles
 }
 
+// --- Relevance guard ---
+//
+// Some RSS feeds are not space-dedicated: they're general-interest outlets
+// with a space vertical (CNN, Wired), general business/tech coverage
+// (TechCrunch, GeekWire), general defense coverage (Defense One,
+// DefenseScoop, Federal News Network), or wire syndication that mixes in
+// unrelated stories (SpaceDaily, ScienceAlert). Without a gate, an
+// off-topic story (e.g. an HSBC banking/cartel piece from SpaceDaily) can
+// slip in — and worse, get mis-categorized as "Earnings" because generic
+// financial vocabulary ("profit", "financial", "investor") is also part
+// of the earnings category's keyword list.
+//
+// GENERIC_KEYWORD_DENYLIST removes exactly those generic business/policy
+// terms from the relevance signal (they're fine for *categorizing* an
+// already-confirmed space article, but too weak on their own to prove an
+// article is about space at all).
+const GENERIC_KEYWORD_DENYLIST = new Set([
+  // earnings — generic financial vocabulary
+  'earnings', 'revenue', 'profit', 'financial', 'stock', 'investor', 'quarterly',
+  'ipo ', 'spac ', 'valuation', 'funding round', 'series a', 'series b', 'series c',
+  'series d', 'venture capital',
+  // mergers — generic corporate-deal vocabulary
+  'acquisition', 'acquire', 'merger', 'merge', 'deal ', 'buyout', 'takeover',
+  'joint venture', 'partnership', 'consolidat',
+  // development — generic R&D vocabulary
+  'develop', 'test', 'prototype', 'technology', 'innovation', 'research', 'manufacturing',
+  // policy — generic government/regulatory vocabulary
+  'faa', 'congress', 'regulation', 'law', 'policy', 'government', 'budget', 'administration',
+  'fcc ', 'itu ', 'spectrum', 'license', 'authorization', 'liability', 'compliance',
+  // defense — generic military vocabulary
+  'dod ', 'department of defense', 'national security', 'missile defense',
+]);
+
+// A handful of category keywords double as ordinary English words or
+// unrelated proper nouns (a Delta Air Lines earnings story, a "gateway
+// drug" health piece, a USDA policy story matching "sda ", a Senate
+// "probe" story, Apollo Global Management, a Land Rover review...). Fine
+// for categorizeArticle (low-stakes, just a mislabeled category) but too
+// loose for a gate that decides whether to store the article at all.
+const AMBIGUOUS_TERM_DENYLIST = new Set([
+  'vast', 'virgin', 'gateway', 'probe', 'rover', 'engine', 'delta', 'atlas',
+  'ses ', 'sda ', 'reconnaissance', 'apollo',
+]);
+
+const SPACE_RELEVANCE_KEYWORDS: string[] = Array.from(new Set([
+  ...Object.values(CATEGORY_KEYWORDS)
+    .flat()
+    .filter(keyword => !GENERIC_KEYWORD_DENYLIST.has(keyword) && !AMBIGUOUS_TERM_DENYLIST.has(keyword)),
+  // Core space vocabulary not already covered by the category keyword lists
+  'space', 'orbit', 'orbital', 'spacecraft', 'astronaut', 'cosmonaut',
+  'nasa', 'esa', 'jaxa', 'isro', 'cnsa', 'cosmos', 'interstellar',
+  'exoplanet', 'spaceport', 'space station', 'microgravity', 'zero gravity',
+  'space agency', 'space industry',
+  // "iss" alone is too short/ambiguous (matches "dismissed", "issue", etc.);
+  // require the fuller phrase instead.
+  'international space station',
+]));
+
+/**
+ * Conservative relevance check: does the title+summary contain at least
+ * one keyword that signals the article is genuinely about space? Used to
+ * gate feeds that aren't space-dedicated (see RELEVANCE_GUARD_FEEDS).
+ */
+export function isSpaceRelevant(title: string, summary: string): boolean {
+  const text = `${title} ${summary}`.toLowerCase();
+  return SPACE_RELEVANCE_KEYWORDS.some(keyword => text.includes(keyword));
+}
+
+// Feeds that require at least one space-relevance keyword match before an
+// article is stored. Space-dedicated feeds (NASA, ESA, SpaceNews,
+// NASASpaceflight, Payload, etc.) bypass this guard entirely — everything
+// they publish is presumed on-topic.
+const RELEVANCE_GUARD_FEEDS = new Set([
+  'SpaceDaily',
+  'ScienceAlert Space',
+  'CNN Space',
+  'Wired Science',
+  'TechCrunch Space',
+  'GeekWire Space',
+  'Federal News Network Defense',
+  'Defense One',
+  'DefenseScoop',
+]);
+
 // --- Deduplication helpers ---
 
 /**
@@ -276,6 +360,14 @@ export async function fetchSpaceflightNews(): Promise<number> {
       logger.error('[RSS] Error fetching RSS feeds', { error: rssError instanceof Error ? rssError.message : String(rssError) });
     }
 
+    // Bounded og:image enrichment for recent imageless articles (capped at
+    // 30 page fetches per cron run — see enrichRecentArticlesWithOgImages).
+    try {
+      await enrichRecentArticlesWithOgImages();
+    } catch (enrichError) {
+      logger.warn('[OG-Enrich] Enrichment step failed', { error: enrichError instanceof Error ? enrichError.message : String(enrichError) });
+    }
+
     // Clean up the cache after the fetch cycle completes
     resetDeduplicationCache();
 
@@ -411,6 +503,7 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
       const parsed = await rssParser.parseURL(feed.url);
       let savedCount = 0;
       let skippedCount = 0;
+      let offtopicSkipped = 0;
 
       const items = (parsed.items || []).slice(0, 25); // Max 25 per feed
 
@@ -419,6 +512,13 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
 
         const summary = item.contentSnippet || item.content || item.summary || '';
         const cleanSummary = sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} }).slice(0, 500);
+
+        // Conservative relevance guard for feeds that aren't space-dedicated
+        if (RELEVANCE_GUARD_FEEDS.has(feed.name) && !isSpaceRelevant(item.title, cleanSummary)) {
+          offtopicSkipped++;
+          continue;
+        }
+
         // Use keyword-based categorization when it finds a specific match;
         // fall back to the feed's default category only when categorizeArticle
         // returns the generic 'missions' default (meaning no keywords matched)
@@ -485,6 +585,9 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
       if (skippedCount > 0) {
         logger.info(`[RSS] ${feed.name}: skipped ${skippedCount} duplicate articles`);
       }
+      if (offtopicSkipped > 0) {
+        logger.info(`[RSS] ${feed.name}: skipped ${offtopicSkipped} off-topic articles (relevance guard)`);
+      }
 
       return savedCount;
     } catch (error) {
@@ -494,30 +597,183 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
   }, 0); // fallback: 0 saved articles
 }
 
+// URL shapes that are almost never a real article thumbnail: tracking
+// pixels, ad-network beacons, and FeedBurner's stats beacon path.
+const JUNK_IMAGE_URL_PATTERNS: RegExp[] = [
+  /\/(pixel|beacon|spacer|blank|tracking|track)[.\-_/]/i,
+  /\/~ff\//i, // FeedBurner tracking-beacon path (feeds.feedburner.com/~ff/...)
+  /feedburner\.com\/.*\b(count|stats)\b/i,
+  /doubleclick\.net/i,
+  /google-analytics\.com/i,
+  /googlesyndication\.com/i,
+];
+
+function isJunkImageUrl(url: string | undefined | null): boolean {
+  if (!url) return true;
+  if (url.startsWith('data:')) return true; // reject data: URIs outright
+  if (JUNK_IMAGE_URL_PATTERNS.some(pattern => pattern.test(url))) return true;
+  // A bare .gif whose path also hints at tracking/1x1 usage — reject as a
+  // likely tracking pixel. (Legitimate photo .gifs are rare in RSS content
+  // and this keeps the check conservative rather than blocking all .gifs.)
+  if (/\.gif(\?.*)?$/i.test(url) && /(pixel|beacon|spacer|track|1x1|blank)/i.test(url)) return true;
+  return false;
+}
+
+function isTooSmall(width?: string, height?: string): boolean {
+  const w = width ? parseInt(width, 10) : NaN;
+  const h = height ? parseInt(height, 10) : NaN;
+  if (!Number.isNaN(w) && w < 200) return true;
+  if (!Number.isNaN(h) && h < 200) return true;
+  return false;
+}
+
 function extractImageFromRSS(item: RSSParser.Item & Record<string, unknown>): string | null {
-  // Check enclosure
-  if (item.enclosure?.url && item.enclosure.type?.startsWith('image')) {
+  // 1. Enclosure (type image/*)
+  if (item.enclosure?.url && item.enclosure.type?.startsWith('image') && !isJunkImageUrl(item.enclosure.url)) {
     return item.enclosure.url;
   }
 
-  // Check media:content or media:thumbnail
-  const media = item['media:content'] as { $?: { url?: string } } | undefined;
-  if (media?.$?.url) {
+  // 2. media:content
+  const media = item['media:content'] as { $?: { url?: string; width?: string; height?: string } } | undefined;
+  if (media?.$?.url && !isJunkImageUrl(media.$.url) && !isTooSmall(media.$.width, media.$.height)) {
     return media.$.url;
   }
-  const mediaThumbnail = item['media:thumbnail'] as { $?: { url?: string } } | undefined;
-  if (mediaThumbnail?.$?.url) {
+
+  // 3. media:thumbnail
+  const mediaThumbnail = item['media:thumbnail'] as { $?: { url?: string; width?: string; height?: string } } | undefined;
+  if (mediaThumbnail?.$?.url && !isJunkImageUrl(mediaThumbnail.$.url) && !isTooSmall(mediaThumbnail.$.width, mediaThumbnail.$.height)) {
     return mediaThumbnail.$.url;
   }
 
-  // Try to extract first image from content HTML
-  const content = (item.content || item['content:encoded'] || '') as string;
-  const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/);
-  if (imgMatch) {
-    return imgMatch[1];
+  // 4. itunes:image (podcast namespace — some feeds carry it)
+  const itunesImage = item['itunes:image'] as { $?: { href?: string } } | undefined;
+  if (itunesImage?.$?.href && !isJunkImageUrl(itunesImage.$.href)) {
+    return itunesImage.$.href;
+  }
+
+  // 5. First qualifying <img> in content:encoded / content / description HTML
+  const content = (item.content || item['content:encoded'] || item['description'] || '') as string;
+  const imgTags = content.match(/<img\b[^>]*>/gi) || [];
+  for (const tag of imgTags) {
+    const srcMatch = tag.match(/\bsrc=["']([^"']+)["']/i);
+    if (!srcMatch) continue;
+    const src = srcMatch[1];
+    if (isJunkImageUrl(src)) continue;
+    const widthMatch = tag.match(/\bwidth=["']?(\d+)/i);
+    const heightMatch = tag.match(/\bheight=["']?(\d+)/i);
+    if (isTooSmall(widthMatch?.[1], heightMatch?.[1])) continue;
+    return src;
   }
 
   return null;
+}
+
+// --- Bounded og:image enrichment ---
+//
+// RSS-extracted images cover most feeds, but some publish no usable image
+// at all in their feed XML. Rather than page-scrape og:image for every
+// article on every cron run (too slow), we bound it: only the most recent
+// N imageless articles (the ones most likely to surface on the
+// homepage/top-of-feed) get a single bounded-timeout fetch per cron cycle.
+const OG_IMAGE_ENRICHMENT_LIMIT = 30;
+const OG_IMAGE_FETCH_TIMEOUT_MS = 5000;
+const OG_IMAGE_ENRICHMENT_CONCURRENCY = 5;
+
+async function fetchOgImage(url: string): Promise<string | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), OG_IMAGE_FETCH_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'SpaceNexus/1.0 (Space Industry News Aggregator)' },
+    });
+    if (!response.ok) return null;
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('text/html')) return null;
+
+    // og:image/twitter:image live in <head> — read only a bounded prefix
+    // of the page rather than the full body.
+    let html = '';
+    const reader = response.body?.getReader();
+    if (reader) {
+      const decoder = new TextDecoder();
+      const MAX_BYTES = 100_000; // 100KB comfortably covers <head>
+      let bytesRead = 0;
+      while (bytesRead < MAX_BYTES) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        bytesRead += value.byteLength;
+        html += decoder.decode(value, { stream: true });
+        if (/<\/head>/i.test(html)) break;
+      }
+      reader.cancel().catch(() => {});
+    } else {
+      html = await response.text();
+    }
+
+    const ogMatch =
+      html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+    if (ogMatch?.[1] && !isJunkImageUrl(ogMatch[1])) return ogMatch[1];
+
+    const twitterMatch =
+      html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i);
+    if (twitterMatch?.[1] && !isJunkImageUrl(twitterMatch[1])) return twitterMatch[1];
+
+    return null;
+  } catch {
+    return null; // fail silent — timeout, network error, bad markup, etc.
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Enrich the most recently published imageless articles with an og:image
+ * scraped from the article page. Bounded to OG_IMAGE_ENRICHMENT_LIMIT page
+ * fetches per call (i.e. per cron run), each with a 5s timeout, processed
+ * with limited concurrency. Best-effort / fail-silent throughout.
+ */
+async function enrichRecentArticlesWithOgImages(limit = OG_IMAGE_ENRICHMENT_LIMIT): Promise<number> {
+  try {
+    const candidates = await prisma.newsArticle.findMany({
+      where: { imageUrl: null },
+      orderBy: { publishedAt: 'desc' },
+      take: limit,
+      select: { id: true, url: true },
+    });
+
+    if (candidates.length === 0) return 0;
+
+    let enrichedCount = 0;
+    for (let i = 0; i < candidates.length; i += OG_IMAGE_ENRICHMENT_CONCURRENCY) {
+      const batch = candidates.slice(i, i + OG_IMAGE_ENRICHMENT_CONCURRENCY);
+      const results = await Promise.all(
+        batch.map(async (article) => {
+          const ogImage = await fetchOgImage(article.url);
+          if (!ogImage) return false;
+          try {
+            await prisma.newsArticle.update({ where: { id: article.id }, data: { imageUrl: ogImage } });
+            return true;
+          } catch {
+            return false;
+          }
+        })
+      );
+      enrichedCount += results.filter(Boolean).length;
+    }
+
+    if (enrichedCount > 0) {
+      logger.info(`[OG-Enrich] Enriched ${enrichedCount}/${candidates.length} imageless articles with og:image`);
+    }
+    return enrichedCount;
+  } catch (error) {
+    logger.warn('[OG-Enrich] Failed to enrich articles with og:image', { error: error instanceof Error ? error.message : String(error) });
+    return 0;
+  }
 }
 
 async function fetchRSSFeeds(): Promise<number> {
