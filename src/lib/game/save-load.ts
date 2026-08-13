@@ -58,17 +58,8 @@ export function getNewGameState(): GameState {
     ships: [],
     reports: [],
     workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0, morale: 1.0, fatigue: 0, trainingLevel: 0.5, trainingBudgetPerCrew: 0 },
-    prestige: {
-      level: 0,
-      legacyPoints: 0,
-      permanentBonuses: {
-        revenueMultiplier: 1,
-        buildSpeedMultiplier: 1,
-        researchSpeedMultiplier: 1,
-        miningMultiplier: 1,
-        startingMoney: STARTING_MONEY,
-      },
-    },
+    // prestige: deleted in Wave F (prestige.ts removed; legacy-system.ts is
+    // the permanent-progression system). New games no longer initialize it.
     completedContracts: [],
     activeContracts: [],
     // V3 fields
@@ -273,6 +264,18 @@ export function loadGame(): GameState | null {
     }
     if (!state.hazardWarnings) state.hazardWarnings = [];
     if (!state.pendingMarketFlows) state.pendingMarketFlows = { mined: {}, npc: {} };
+
+    // V16 — Audit Wave F: prestige.ts (and refining.ts, research-generator.ts,
+    // modular-construction.ts) deleted as dead/deprecated engines. The prestige
+    // -> legacy conversion above (V6 block) already ran for any save that had
+    // prestige progress and no legacy state yet, so `state.prestige` is safe
+    // to strip now — nothing reads it anymore (corp tiers, victory conditions,
+    // speed runs, and offline income all moved to Legacy Power). Additive-null:
+    // the field stays optional on GameState for type compatibility with old
+    // exported saves; this just clears it so it stops round-tripping forever.
+    if (state.prestige !== undefined) {
+      delete state.prestige;
+    }
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

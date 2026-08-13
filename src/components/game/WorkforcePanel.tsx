@@ -11,9 +11,10 @@ interface WorkforcePanelProps {
   state: GameState;
   onHire: (workerType: string) => void;
   onDismiss?: (workerType: string) => void;
+  onUpdateTrainingBudget?: (perCrewPerMonth: number) => void;
 }
 
-export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePanelProps) {
+export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrainingBudget }: WorkforcePanelProps) {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const payroll = getMonthlyPayroll(workforce);
   const bonuses = getWorkforceBonuses(workforce);
@@ -24,9 +25,16 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
   const morale = workforce.morale ?? 0.8;
   const fatigue = workforce.fatigue ?? 0;
   const training = workforce.trainingLevel ?? 0.5;
+  const trainingBudget = workforce.trainingBudgetPerCrew ?? 0;
+  const monthlyTrainingCost = totalWorkers * trainingBudget;
   const completedBuildings = state.buildings.filter(b => b.isComplete).length;
   const legacyBonusCrew = getLegacyBonuses(state.legacy || DEFAULT_LEGACY).bonusCrewCapacity;
   const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew);
+  const now = Date.now();
+  const headhuntVoucher = (state.activeIntelPerks || []).find(
+    p => p.type === 'headhunt_voucher' && p.expiresAtMs > now
+  );
+  const headhuntMinutesLeft = headhuntVoucher ? Math.max(0, Math.ceil((headhuntVoucher.expiresAtMs - now) / 60000)) : 0;
 
   return (
     <div className="space-y-4">
@@ -104,6 +112,37 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
             display={`${(training * 100).toFixed(0)}%`}
           />
         </div>
+        {onUpdateTrainingBudget && (
+          <div className="mt-3 pt-3 border-t border-white/[0.06]">
+            <div className="flex items-center justify-between mb-1">
+              <label htmlFor="training-budget-slider" className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+                Training Budget
+              </label>
+              <span className="text-xs font-mono font-bold text-sky-300">
+                {formatMoney(trainingBudget)}/crew/mo
+              </span>
+            </div>
+            <input
+              id="training-budget-slider"
+              type="range"
+              min={0}
+              max={1_000_000}
+              step={50_000}
+              value={trainingBudget}
+              onChange={(e) => onUpdateTrainingBudget(Number(e.target.value))}
+              aria-valuetext={`${formatMoney(trainingBudget)} per crew member per month`}
+              className="w-full accent-sky-500"
+            />
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-slate-500 text-[10px]">
+                Higher training budget raises your crew&apos;s Training Level over time, unlocking workforce bonuses. Charged monthly per crew member.
+              </p>
+              <span className="text-slate-400 text-[10px] font-mono shrink-0 ml-2">
+                Total: {formatMoney(monthlyTrainingCost)}/mo
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Active Bonuses */}
@@ -157,7 +196,15 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
       <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
-        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">Hire Crew</h3>
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+          <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider">Hire Crew</h3>
+          {headhuntVoucher && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 flex items-center gap-1">
+              <span aria-hidden="true">🕵️</span>
+              Headhunt intel active: −{Math.round(headhuntVoucher.discount * 100)}% next hire — expires in {headhuntMinutesLeft}m
+            </span>
+          )}
+        </div>
         <div className="space-y-3">
           {WORKER_TYPES.map(worker => {
             const count = workforce[`${worker.type}s` as keyof typeof workforce] || 0;

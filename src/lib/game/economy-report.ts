@@ -22,6 +22,10 @@ import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMult
 import { computeCommanderBonuses } from './commanders';
 import { serviceSaturationMultiplier, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
 import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER } from './frontier';
+import { getTotalSubsidiaryIncome } from './subsidiaries';
+import { getGovernorBenefits, getMultiZonePenalty } from './zone-influence';
+import { getMonthlyInsurancePremium } from './economic-sinks';
+import { calculateRushRepairCost } from './hazards';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +69,28 @@ export interface CostBreakdown {
   corporateOverhead: number;
   executiveCompensation: number;
   workforcePayroll: number;
+  /** Wave F (h): monthly hazard-insurance premium — economic-sinks.ts,
+   *  same figure the tick actually charges. 0 when uninsured. */
+  insurancePremium: number;
   total: number;
+}
+
+/** Wave F (h): P&L lines the audit flagged as real money flows the tick
+ *  applies but no report ever showed — surfaced honestly, using the exact
+ *  same functions/formulas game-engine.ts uses (A11 "one P&L truth"). */
+export interface AdditionalPnLLines {
+  /** Territory governor tax collected this month (zone-influence.ts,
+   *  mirrors game-engine.ts "6d. Governor tax"). Always >= 0. */
+  governorTaxMonthly: number;
+  /** Net subsidiary income/loss this month (subsidiaries.ts, mirrors
+   *  game-engine.ts "6c. Subsidiary net income"). Can be negative. */
+  subsidiaryIncomeMonthly: number;
+  /** Estimated cost to instantly rush-repair ALL currently damaged
+   *  buildings/ships at today's damage levels (hazards.ts
+   *  calculateRushRepairCost — the same 30%-per-full-damage-fraction rate
+   *  the passive monthly auto-repair uses). This is a standing balance, not
+   *  a monthly charge — the tick heals it down gradually unless rushed. */
+  outstandingRepairCost: number;
 }
 
 export interface BalanceSheet {
@@ -119,6 +144,9 @@ export interface EconomyReport {
 
   // ─── Historical contract performance ───────────
   contractStats: ContractStats;
+
+  // ─── Wave F (h): previously-invisible P&L lines ─
+  pnlLines: AdditionalPnLLines;
 }
 
 // ─── Compute ─────────────────────────────────────────────────────────────────
@@ -306,14 +334,58 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     * (1 - tierBonuses.maintenanceReduction),
   );
 
+  // ─── Wave F (h): previously-invisible P&L lines, using the exact same
+  // functions/formulas game-engine.ts's tick applies (A11 "one P&L truth"):
+  //   - subsidiaries.ts getTotalSubsidiaryIncome (§6c)
+  //   - zone-influence.ts getGovernorBenefits/getMultiZonePenalty (§6d)
+  //   - economic-sinks.ts getMonthlyInsurancePremium
+  //   - hazards.ts calculateRushRepairCost, summed over currently-damaged assets
+  const subsidiaryIncomeMonthly = getTotalSubsidiaryIncome(state);
+
+  let governorTaxMonthly = 0;
+  const governedZones = (state.zoneStandings || []).filter(z => z.isGovernor);
+  if (governedZones.length > 0) {
+    const penalty = getMultiZonePenalty(governedZones.length);
+    let taxMonthly = 0;
+    for (const z of governedZones) {
+      const gb = getGovernorBenefits(z.zoneSlug);
+      taxMonthly += Math.min(gb.taxCap, gb.taxRate * Math.max(0, z.taxBaseMonthly || 0));
+    }
+    governorTaxMonthly = Math.round(taxMonthly * penalty);
+  }
+
+  const insurancePremium = getMonthlyInsurancePremium(state);
+
+  let outstandingRepairCost = 0;
+  for (const bld of state.buildings) {
+    if (!bld.isComplete || !bld.damagePct) continue;
+    const def = BUILDING_MAP.get(bld.definitionId);
+    if (def) outstandingRepairCost += calculateRushRepairCost(bld.damagePct, def.baseCost);
+  }
+  for (const ship of state.ships || []) {
+    if (!ship.isBuilt || !ship.hullDamagePct) continue;
+    const sDef = SHIP_MAP.get(ship.definitionId);
+    if (sDef) outstandingRepairCost += calculateRushRepairCost(ship.hullDamagePct, sDef.baseCost);
+  }
+
+  const pnlLines: AdditionalPnLLines = {
+    governorTaxMonthly,
+    subsidiaryIncomeMonthly,
+    outstandingRepairCost,
+  };
+
   const costs: CostBreakdown = {
     serviceOperating: totalOperatingCost,
     buildingMaintenance,
     corporateOverhead,
     executiveCompensation,
     workforcePayroll: payroll,
-    total: totalOperatingCost + buildingMaintenance + corporateOverhead + executiveCompensation + payroll,
+    insurancePremium,
+    total: totalOperatingCost + buildingMaintenance + corporateOverhead + executiveCompensation + payroll + insurancePremium
+      + (subsidiaryIncomeMonthly < 0 ? -subsidiaryIncomeMonthly : 0),
   };
+
+  monthlyRevenue += governorTaxMonthly + (subsidiaryIncomeMonthly > 0 ? subsidiaryIncomeMonthly : 0);
 
   const monthlyNet = monthlyRevenue - costs.total;
 
@@ -396,5 +468,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     inFrontier,
     frontierContractBoost: inFrontier ? FRONTIER_CONTRACT_PAYOUT_MULTIPLIER : 1,
     contractStats: { completed, defaulted, completedRevenue, defaultedRepLoss },
+
+    pnlLines,
   };
 }

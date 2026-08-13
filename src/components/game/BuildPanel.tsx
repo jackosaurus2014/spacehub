@@ -17,6 +17,7 @@ import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction } from '@/lib/game/construction-slots';
+import { calculateRushRepairCost } from '@/lib/game/hazards';
 import Image from 'next/image';
 
 interface BuildPanelProps {
@@ -29,9 +30,13 @@ interface BuildPanelProps {
   /** Hide the location switcher row — the location is already implied by the
    *  context the panel is embedded in (map context panel). */
   lockLocation?: boolean;
+  /** Instantly heals all current hazard damage on a built structure for
+   *  calculateRushRepairCost(damagePct, baseCost) money. Rush Repair button
+   *  only renders when this is provided. */
+  onRushRepairBuilding?: (instanceId: string) => void;
 }
 
-export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation }: BuildPanelProps) {
+export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding }: BuildPanelProps) {
   const [selectedLocation, setSelectedLocation] = useState(initialLocationId || state.unlockedLocations[0] || 'earth_surface');
   const totalSlots = getConstructionSlots(state);
   const activeBuilds = getActiveConstructions(state);
@@ -286,15 +291,39 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 const def = BUILDING_MAP.get(bld.definitionId);
                 if (!def) return null;
                 const sellPrice = Math.round(def.baseCost * 0.4);
+                const hasDamage = !!bld.damagePct && bld.damagePct > 0;
+                const isSevere = !!bld.damagePct && bld.damagePct >= 0.5;
+                const repairCost = calculateRushRepairCost(bld.damagePct, def.baseCost);
                 return (
-                  <div key={bld.instanceId} className="flex items-center justify-between py-1 px-2 rounded hover:bg-white/[0.02]">
-                    <span className="text-white text-xs">{def.name}</span>
-                    {onSellBuilding && (
+                  <div key={bld.instanceId} className="py-1 px-2 rounded hover:bg-white/[0.02]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-white text-xs">{def.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        {hasDamage && (
+                          <span className={`inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-full border font-semibold ${
+                            isSevere
+                              ? 'bg-red-500/10 text-red-400 border-red-500/30'
+                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                          }`}>
+                            <span aria-hidden="true">⚠️</span> {Math.round((bld.damagePct || 0) * 100)}% dmg
+                          </span>
+                        )}
+                        {onSellBuilding && (
+                          <button
+                            onClick={() => { if (confirm(`Sell ${def.name} for ${formatMoney(sellPrice)}? (40% of build cost)`)) onSellBuilding(bld.instanceId); }}
+                            className="text-[9px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                          >
+                            Sell ({formatMoney(sellPrice)})
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {hasDamage && onRushRepairBuilding && (
                       <button
-                        onClick={() => { if (confirm(`Sell ${def.name} for ${formatMoney(sellPrice)}? (40% of build cost)`)) onSellBuilding(bld.instanceId); }}
-                        className="text-[9px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                        onClick={() => onRushRepairBuilding(bld.instanceId)}
+                        className="mt-1 w-full min-h-[28px] text-[9px] px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
                       >
-                        Sell ({formatMoney(sellPrice)})
+                        🔧 Rush Repair — {formatMoney(repairCost)}
                       </button>
                     )}
                   </div>

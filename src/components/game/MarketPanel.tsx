@@ -6,6 +6,7 @@ import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
+import { isMarketEventExpired, type ActiveMarketEvent } from '@/lib/game/market-events';
 import Image from 'next/image';
 
 interface MarketPrices {
@@ -15,6 +16,10 @@ interface MarketPrices {
     /** Scarcity-adjusted price — this is what the server actually charges on buy. */
     effectivePrice?: number;
     change: number;
+    supply?: number;
+    available?: number;
+    supplyMultiplier?: number;
+    eventMultiplier?: number;
   };
 }
 
@@ -24,8 +29,14 @@ interface MarketPanelProps {
   onBuyResource?: (resourceId: string, quantity: number, cost: number) => void;
 }
 
+/** Resources that only come from mining operations — never stocked by NPC
+ *  brokers on the open market. Buy flow is disabled for these; sell flow
+ *  (surplus from mining) stays fully functional. */
+const MINED_ONLY_RESOURCE_IDS = new Set(['exotic_fuel', 'xenogenic_biomatter']);
+
 export default function MarketPanel({ state, onSellResource, onBuyResource }: MarketPanelProps) {
   const [prices, setPrices] = useState<MarketPrices>({});
+  const [activeMarketEvents, setActiveMarketEvents] = useState<ActiveMarketEvent[]>([]);
   const [selectedResource, setSelectedResource] = useState<string | null>(null);
   const [sellQty, setSellQty] = useState(1);
   const [trading, setTrading] = useState(false);
@@ -37,6 +48,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
       if (res.ok) {
         const data = await res.json();
         setPrices(data.prices || {});
+        setActiveMarketEvents(data.activeMarketEvents || []);
         return;
       }
     } catch { /* fallback */ }
@@ -139,8 +151,86 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
 
   const ownedResources = Object.entries(state.resources || {}).filter(([, qty]) => qty > 0);
 
+  // Live (non-expired) market events, filtered for render.
+  const liveMarketEvents = activeMarketEvents.filter(ev => !isMarketEventExpired(ev));
+
+  // Active, unexpired market-discount intel perks (espionage rewards).
+  const activeMarketDiscountPerks = (state.activeIntelPerks || []).filter(
+    perk => perk.type === 'market_discount' && perk.expiresAtMs > Date.now()
+  );
+
+  const minutesRemaining = (expiresAtMs: number) => Math.max(0, Math.round((expiresAtMs - Date.now()) / 60000));
+
   return (
     <div className="space-y-4">
+      {/* Active Market Events */}
+      {liveMarketEvents.length > 0 && (
+        <div className="space-y-2" role="status" aria-label="Active market events">
+          {liveMarketEvents.map(ev => {
+            const affectedNames = ev.affectedResources
+              .map(id => RESOURCE_MAP.get(id as never)?.name || id)
+              .join(', ');
+            const isSurge = ev.priceMultiplier >= 1;
+            return (
+              <div
+                key={ev.eventId}
+                className={`hud-frame relative flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 rounded-lg border ${
+                  isSurge ? 'border-green-500/25 bg-green-500/[0.06]' : 'border-red-500/25 bg-red-500/[0.06]'
+                }`}
+              >
+                <span className="hud-corner-bl" aria-hidden="true" />
+                <span className="hud-corner-br" aria-hidden="true" />
+                <span className="text-sm" aria-hidden="true">{ev.icon}</span>
+                <span className="font-hud text-white text-xs font-semibold">{ev.name}</span>
+                <span className={`game-number text-[10px] px-1.5 py-0.5 rounded font-semibold ${
+                  isSurge ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
+                }`}>
+                  {isSurge ? '▲' : '▼'} ×{ev.priceMultiplier.toFixed(1)}
+                </span>
+                <span className="text-slate-400 text-[10px]">Affects: {affectedNames}</span>
+                <span
+                  className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-300 font-mono"
+                  aria-label={`Expires in ${minutesRemaining(ev.expiresAtMs)} minutes`}
+                >
+                  ⏱ {minutesRemaining(ev.expiresAtMs)}m left
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Market Discount Intel Perks */}
+      {activeMarketDiscountPerks.length > 0 && (
+        <div className="space-y-2" role="status" aria-label="Active market discount perks">
+          {activeMarketDiscountPerks.map((perk, i) => (
+            <div
+              key={i}
+              className="hud-frame relative flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 rounded-lg border border-purple-500/25 bg-purple-500/[0.06]"
+            >
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
+              <span className="text-sm" aria-hidden="true">🕵️</span>
+              <span className="font-hud text-white text-xs font-semibold">Trade Route Intel Active</span>
+              <span className="game-number text-[10px] px-1.5 py-0.5 rounded font-semibold bg-purple-500/15 text-purple-300">
+                −{Math.round(perk.discount * 100)}% broker fee
+              </span>
+              <span className="text-slate-400 text-[10px]">
+                {perk.resources && perk.resources.length > 0
+                  ? `Applies to: ${perk.resources.map(id => RESOURCE_MAP.get(id as never)?.name || id).join(', ')}`
+                  : 'Applies to all resources'}
+              </span>
+              <span
+                className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-300 font-mono"
+                aria-label={`Expires in ${minutesRemaining(perk.expiresAtMs)} minutes`}
+              >
+                ⏱ {minutesRemaining(perk.expiresAtMs)}m left
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Live Market Banner */}
       <div className="hud-frame hud-frame-amber relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
         <span className="hud-corner-bl" aria-hidden="true" />
@@ -271,6 +361,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             // Ask = what you actually pay (scarcity-adjusted) — this is what the server charges.
             const ask = priceData?.effectivePrice || current;
             const change = priceData?.change || 0;
+            const mineOnly = MINED_ONLY_RESOURCE_IDS.has(r.id);
             return (
               <div key={r.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center gap-2">
@@ -317,7 +408,15 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                       </>
                     )}
                     {/* Buy buttons */}
-                    {onBuyResource && (
+                    {onBuyResource && mineOnly && (
+                      <span
+                        className="min-h-[44px] flex items-center px-2 py-0.5 text-[9px] font-medium rounded bg-white/[0.02] text-slate-500 border border-dashed border-white/[0.08]"
+                        title="Mined only — not sold on the open market"
+                      >
+                        ⛏ Mined only — not for sale
+                      </span>
+                    )}
+                    {onBuyResource && !mineOnly && (
                       <>
                         <button
                           onClick={() => handleBuy(r.id, 1)}

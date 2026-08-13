@@ -12,6 +12,7 @@ import { formatMoney } from './formulas';
 import { getMonthlyPayroll, getWorkforceBonuses } from './workforce';
 import { getResearchBonuses } from './research-tree';
 import { TICKS_PER_GAME_MONTH } from './constants';
+import { DEFAULT_LEGACY, getLegacyBonuses } from './legacy-system';
 
 const MAX_OFFLINE_HOURS = 8;
 const MAX_OFFLINE_MS = MAX_OFFLINE_HOURS * 60 * 60 * 1000;
@@ -44,7 +45,12 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
   const resBonuses = getResearchBonuses(state.completedResearch);
-  const prestigeRevMult = state.prestige?.permanentBonuses?.revenueMultiplier || 1;
+  // Wave F: prestige.ts deleted (deprecated, superseded by legacy-system.ts).
+  // Offline income now applies the live Legacy bonuses instead — the tick
+  // engine already does this (game-engine.ts), so this also fixes a latent
+  // drift where offline income never accounted for Legacy progress at all.
+  const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
+  const prestigeRevMult = legacyBonuses.revenueMultiplier;
 
   // IMPORTANT: Revenue/costs are MONTHLY values. Each tick = 1/TICKS_PER_GAME_MONTH of a month.
   // This must match the game engine's fractional calculation exactly.
@@ -92,7 +98,7 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
   const moneyEarned = Math.max(0, netPerTick * ticksProcessed); // Don't lose money offline
 
   // Calculate resources earned offline (also fractional per tick, with bonuses matching game engine)
-  const prestigeMiningMult = state.prestige?.permanentBonuses?.miningMultiplier || 1;
+  const prestigeMiningMult = legacyBonuses.miningMultiplier;
   const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * prestigeMiningMult;
   const resourcesEarned: Record<string, number> = {};
   for (const svc of state.activeServices) {

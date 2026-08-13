@@ -200,6 +200,42 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
                     <span>🚀 {r.fleetCount} ship{r.fleetCount !== 1 ? 's' : ''}</span>
                     <span>🏗️ {r.buildingCount} building{r.buildingCount !== 1 ? 's' : ''}</span>
                   </div>
+
+                  {/* Wave F (h): previously-invisible P&L lines. Older stored
+                      reports (pre-Wave-F) don't have these fields — hide the
+                      block entirely rather than showing misleading zeros. */}
+                  {(r.governorTaxQuarterly !== undefined) && (
+                    <div className="mt-3 pt-2 border-t border-white/[0.04]">
+                      <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">P&amp;L Detail</p>
+                      <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+                        <div className="flex justify-between px-2 py-1 rounded bg-white/[0.02]">
+                          <span className="text-slate-500">Governor Tax</span>
+                          <span className={(r.governorTaxQuarterly || 0) > 0 ? 'text-emerald-300 font-mono' : 'text-slate-500 font-mono'}>
+                            +{formatMoney(r.governorTaxQuarterly || 0)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between px-2 py-1 rounded bg-white/[0.02]">
+                          <span className="text-slate-500">Subsidiary Income</span>
+                          <span className={`font-mono ${(r.subsidiaryIncomeQuarterly || 0) >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+                            {(r.subsidiaryIncomeQuarterly || 0) >= 0 ? '+' : ''}{formatMoney(r.subsidiaryIncomeQuarterly || 0)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between px-2 py-1 rounded bg-white/[0.02]">
+                          <span className="text-slate-500">Insurance Premiums</span>
+                          <span className={(r.insurancePremiumQuarterly || 0) > 0 ? 'text-red-300 font-mono' : 'text-slate-500 font-mono'}>
+                            −{formatMoney(r.insurancePremiumQuarterly || 0)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between px-2 py-1 rounded bg-white/[0.02]">
+                          <span className="text-slate-500">Outstanding Repairs</span>
+                          <span className={(r.outstandingRepairCost || 0) > 0 ? 'text-amber-300 font-mono' : 'text-slate-500 font-mono'}>
+                            {formatMoney(r.outstandingRepairCost || 0)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {r.notableEvents.length > 0 && (
                     <div className="mt-3">
                       <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">Notable This Quarter</p>

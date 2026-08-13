@@ -7,7 +7,7 @@ import {
   SPEED_RUN_MILESTONES,
   BRACKETS,
   formatElapsedTime,
-  getPrestigeBracket,
+  getLegacyBracket,
   getBracketDisplayName,
   checkMilestoneCompletion,
 } from '@/lib/game/speed-runs';
@@ -25,7 +25,7 @@ const RANK_MEDAL: Record<number, { badge: string; tone: 'gold' | 'silver' | 'bro
 
 interface ActiveAttempt {
   id: string;
-  prestigeLevel: number;
+  legacyPower: number;
   bracket: string;
   bracketName: string;
   startedAtMs: number;
@@ -45,7 +45,7 @@ interface LeaderboardEntry {
   bracketName: string;
   durationSeconds: number;
   elapsedFormatted: string;
-  prestigeLevel: number;
+  legacyPower: number;
   completedAt: number;
   isCurrentPlayer: boolean;
 }
@@ -129,8 +129,8 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
   const stateRef = useRef(state);
   stateRef.current = state;
 
-  const prestigeLevel = state.prestige?.level ?? 0;
-  const canParticipate = prestigeLevel >= 1;
+  const legacyPower = state.legacy?.legacyPower ?? 0;
+  const canParticipate = legacyPower >= 1;
 
   // Fetch speed run data
   const fetchData = useCallback(async () => {
@@ -178,7 +178,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
       const res = await fetch('/api/space-tycoon/speed-runs/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prestigeLevel }),
+        body: JSON.stringify({ legacyPower }),
       });
       if (!res.ok) {
         const errBody = await res.json();
@@ -251,7 +251,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
           <h2 className="game-heading text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-cyan-300">
             Speed Runs
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">Race to milestones after prestige</p>
+          <p className="text-xs text-slate-500 mt-0.5">Race to milestones, bracketed by Legacy Power</p>
         </div>
         {canParticipate && data?.activeAttempt && !data.activeAttempt.isCompleted && (
           <div className="hud-frame flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
@@ -280,8 +280,8 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
       {!canParticipate && (
         <div className="rounded-xl bg-amber-500/5 border border-amber-500/20 p-4 text-center">
           <span className="text-3xl block mb-2">&#128640;</span>
-          <p className="text-amber-300 font-medium text-sm">Speed Runs unlock after your first Prestige</p>
-          <p className="text-slate-500 text-xs mt-1">Complete your first playthrough, then prestige to P1 to start competing!</p>
+          <p className="text-amber-300 font-medium text-sm">Speed Runs unlock once you've earned Legacy Power</p>
+          <p className="text-slate-500 text-xs mt-1">Complete Legacy milestones through normal play — buildings, research, contracts, ships — to start competing!</p>
         </div>
       )}
 
@@ -322,8 +322,8 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
               {data?.activeAttempt ? (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-400">Prestige Level</span>
-                    <span className="game-number text-xs text-white font-medium">P{data.activeAttempt.prestigeLevel}</span>
+                    <span className="text-xs text-slate-400">Legacy Power</span>
+                    <span className="game-number text-xs text-white font-medium">{data.activeAttempt.legacyPower}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Bracket</span>
@@ -386,7 +386,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
               ) : (
                 <div className="text-center py-4">
                   <p className="text-slate-400 text-xs mb-3">
-                    Prestige to start a speed run. Race against other players to reach milestones as fast as possible!
+                    Start a run. Race against other players to reach milestones as fast as possible!
                   </p>
                   <button
                     onClick={handleStartSpeedRun}
@@ -396,7 +396,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                     {starting ? 'Starting...' : 'Start Speed Run'}
                   </button>
                   <p className="text-[10px] text-slate-600 mt-2">
-                    Your prestige level: P{prestigeLevel} ({getBracketDisplayName(getPrestigeBracket(prestigeLevel))})
+                    Your Legacy Power: {legacyPower} ({getBracketDisplayName(getLegacyBracket(legacyPower))})
                   </p>
                 </div>
               )}
@@ -547,7 +547,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                       <span className={`text-[10px] hidden md:block ${BRACKET_COLORS[entry.bracket as SpeedRunBracket] || 'text-slate-400'}`} role="cell">
                         {entry.bracket.charAt(0).toUpperCase() + entry.bracket.slice(1)}
                       </span>
-                      <span className="game-number text-[10px] text-slate-400" role="cell">P{entry.prestigeLevel}</span>
+                      <span className="game-number text-[10px] text-slate-400" role="cell">{entry.legacyPower} LP</span>
                       <span className="text-[10px] text-slate-600 hidden md:block" role="cell">
                         {entry.completedAt ? new Date(entry.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
                       </span>

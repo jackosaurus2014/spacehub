@@ -557,6 +557,13 @@ export interface GameState {
     corporationTier: number;
     notableEvents: string[];
     growthRatePct: number | null;
+    // Wave F (h): previously-invisible P&L lines (governor tax, subsidiary
+    // income, insurance premiums, outstanding repairs) — see quarterly-reports.ts.
+    // Optional: reports stored before this wave don't have these fields.
+    governorTaxQuarterly?: number;
+    subsidiaryIncomeQuarterly?: number;
+    insurancePremiumQuarterly?: number;
+    outstandingRepairCost?: number;
   }[];
 
   // Starting archetype — the path the player picked at game creation
@@ -861,4 +868,13 @@ export interface InterstellarTradeRouteState {
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'intelligence' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'spatial' | 'diplomacy' | 'modules' | 'discoveries' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'futures' | 'economy';
+// Audit Wave F (docs/GAME_SYSTEMS_AUDIT_2026-08.md §B2-B5): 36 tabs -> 28.
+// Removed as standalone tabs (folded into a surviving hub tab as subtabs —
+// see TAB_CATALOG comment in space-tycoon/page.tsx for the merge mapping):
+// 'diplomacy' + 'bidding' -> 'contracts' (ContractsHubPanel, PVE/PVP subtabs)
+// 'rivals' + 'leagues' -> 'leaderboard' (StandingsHubPanel)
+// 'intelligence' + 'economy' + 'futures' -> 'market' (MarketHubPanel)
+// 'spatial' -> 'map' (MapCommandCenter HUD overlay toggle)
+// Legacy save tab ids for the six removed values are mapped forward by
+// resolveLegacyTab() in space-tycoon/page.tsx so old saves/links never dead-end.
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory';

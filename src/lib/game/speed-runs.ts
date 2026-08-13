@@ -1,6 +1,10 @@
-// ─── Space Tycoon: Prestige Speed Runs ──────────────────────────────────────
-// Weekly competitive challenges where players race to reach milestones
-// as fast as possible after prestiging. All times are server-validated.
+// ─── Space Tycoon: Legacy Speed Runs ─────────────────────────────────────────
+// Weekly competitive challenges where players race to reach milestones as
+// fast as possible. Brackets are keyed by Legacy Power (legacy-system.ts)
+// rather than the deprecated prestige.level (Wave F / audit A9 — prestige.ts
+// deleted). The Prisma column is still named `prestigeLevel` for schema
+// stability; it now stores the player's Legacy Power at attempt start.
+// All times are server-validated.
 
 import type { GameState } from './types';
 import { getCurrentWeekId } from './weekly-events';
@@ -247,30 +251,33 @@ export function getCompositeById(id: string): CompositeMilestone | undefined {
 }
 
 // ─── Bracket System ─────────────────────────────────────────────────────────
+// Wave F (A9): brackets are keyed by Legacy Power, not the deprecated
+// prestige.level. The Speed Run tab only unlocks at corp tier 6 (>=300 LP),
+// so brackets are scaled above that floor.
 
 export const BRACKETS: { id: SpeedRunBracket; name: string; minLevel: number; maxLevel: number }[] = [
-  { id: 'rookie', name: 'Rookie', minLevel: 1, maxLevel: 3 },
-  { id: 'veteran', name: 'Veteran', minLevel: 4, maxLevel: 6 },
-  { id: 'elite', name: 'Elite', minLevel: 7, maxLevel: 10 },
-  { id: 'grandmaster', name: 'Grandmaster', minLevel: 11, maxLevel: Infinity },
+  { id: 'rookie', name: 'Rookie', minLevel: 1, maxLevel: 399 },
+  { id: 'veteran', name: 'Veteran', minLevel: 400, maxLevel: 699 },
+  { id: 'elite', name: 'Elite', minLevel: 700, maxLevel: 999 },
+  { id: 'grandmaster', name: 'Grandmaster', minLevel: 1000, maxLevel: Infinity },
 ];
 
 /**
- * Determine prestige bracket from prestige level.
- * P0 cannot participate in speed runs (no prestige yet).
+ * Determine speed-run bracket from Legacy Power.
+ * 0 LP cannot participate in speed runs (no legacy progress yet).
  */
-export function getPrestigeBracket(prestigeLevel: number): SpeedRunBracket {
-  if (prestigeLevel <= 3) return 'rookie';
-  if (prestigeLevel <= 6) return 'veteran';
-  if (prestigeLevel <= 10) return 'elite';
+export function getLegacyBracket(legacyPower: number): SpeedRunBracket {
+  if (legacyPower <= 399) return 'rookie';
+  if (legacyPower <= 699) return 'veteran';
+  if (legacyPower <= 999) return 'elite';
   return 'grandmaster';
 }
 
 export function getBracketDisplayName(bracket: SpeedRunBracket): string {
   const def = BRACKETS.find(b => b.id === bracket);
   if (!def) return bracket;
-  if (bracket === 'grandmaster') return `Grandmaster (P11+)`;
-  return `${def.name} (P${def.minLevel}-P${def.maxLevel})`;
+  if (bracket === 'grandmaster') return `Grandmaster (1000+ LP)`;
+  return `${def.name} (${def.minLevel}-${def.maxLevel} LP)`;
 }
 
 // ─── Weekly Challenge Selection ─────────────────────────────────────────────
@@ -475,7 +482,7 @@ export function getRecordReward(): SpeedRunReward {
 // ─── Server-Side Helpers (used by API routes) ───────────────────────────────
 
 /**
- * Start a speed run for a player after prestige.
+ * Start a speed run for a player. Bracket is keyed by Legacy Power.
  * Called from the API route, not directly from client.
  */
 export async function startSpeedRun(
@@ -489,9 +496,9 @@ export async function startSpeedRun(
     };
   },
   profileId: string,
-  prestigeLevel: number,
+  legacyPower: number,
 ): Promise<{ attemptId: string; challengeId: string; bracket: SpeedRunBracket }> {
-  const bracket = getPrestigeBracket(prestigeLevel);
+  const bracket = getLegacyBracket(legacyPower);
   const challenge = getCurrentChallenge();
 
   // Ensure the weekly challenge record exists
@@ -518,7 +525,7 @@ export async function startSpeedRun(
     data: {
       challengeId: dbChallenge.id,
       profileId,
-      prestigeLevel,
+      prestigeLevel: legacyPower, // DB column predates the Legacy migration; now stores Legacy Power
       bracket,
       startedAtMs: Date.now(),
     },

@@ -5,7 +5,7 @@ import prisma from '@/lib/db';
 import {
   getCurrentChallenge,
   getNextWeekChallenge,
-  getPrestigeBracket,
+  getLegacyBracket,
   getBracketDisplayName,
   formatElapsedTime,
 } from '@/lib/game/speed-runs';
@@ -64,9 +64,9 @@ export async function GET(request: NextRequest) {
 
         activeAttempt = {
           id: attempt.id,
-          prestigeLevel: attempt.prestigeLevel,
+          legacyPower: attempt.prestigeLevel, // DB column predates the Legacy migration; now stores Legacy Power
           bracket: attempt.bracket,
-          bracketName: getBracketDisplayName(getPrestigeBracket(attempt.prestigeLevel)),
+          bracketName: getBracketDisplayName(getLegacyBracket(attempt.prestigeLevel)),
           startedAtMs: attempt.startedAtMs,
           completedAtMs: attempt.completedAtMs,
           durationSeconds: attempt.durationSeconds,
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
       bracketName: string;
       durationSeconds: number;
       elapsedFormatted: string;
-      prestigeLevel: number;
+      legacyPower: number;
       completedAt: number;
       isCurrentPlayer: boolean;
     }[] = [];
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
           bracketName: getBracketDisplayName(a.bracket as 'rookie' | 'veteran' | 'elite' | 'grandmaster'),
           durationSeconds: a.durationSeconds ?? 0,
           elapsedFormatted: formatElapsedTime(elapsedMs),
-          prestigeLevel: a.prestigeLevel,
+          legacyPower: a.prestigeLevel,
           completedAt: a.completedAtMs ?? 0,
           isCurrentPlayer: a.profile.id === profile.id,
         });

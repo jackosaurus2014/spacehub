@@ -50,6 +50,15 @@ export interface QuarterlyReport {
 
   /** % change in net worth vs. the prior stored report. Null for the first report. */
   growthRatePct: number | null;
+
+  // ─── Wave F (h): previously-invisible P&L lines (from economy-report.ts's
+  // pnlLines, monthly figures × 3 for the quarter — except outstandingRepairCost,
+  // a standing balance, not a monthly charge). Optional: older stored reports
+  // (pre-Wave-F) don't have these fields; readers must handle undefined. ────
+  governorTaxQuarterly?: number;
+  subsidiaryIncomeQuarterly?: number;
+  insurancePremiumQuarterly?: number;
+  outstandingRepairCost?: number;
 }
 
 // ─── Quarter derivation (from the player's own game clock) ─────────────────
@@ -134,6 +143,11 @@ export function generateQuarterlyReport(state: GameState, now: number = Date.now
     fleetCount: (state.ships || []).filter(s => s.isBuilt).length,
     buildingCount: state.buildings.filter(b => b.isComplete).length,
     corporationTier: state.corporationTier || 1,
+
+    governorTaxQuarterly: Math.round(econ.pnlLines.governorTaxMonthly * 3),
+    subsidiaryIncomeQuarterly: Math.round(econ.pnlLines.subsidiaryIncomeMonthly * 3),
+    insurancePremiumQuarterly: Math.round(econ.costs.insurancePremium * 3),
+    outstandingRepairCost: econ.pnlLines.outstandingRepairCost,
 
     notableEvents,
     growthRatePct,

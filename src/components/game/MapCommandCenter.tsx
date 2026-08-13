@@ -17,7 +17,9 @@ import GalacticMapView from './GalacticMapView';
 import OrderQueueHUD, { type OrderQueueTarget } from './OrderQueueHUD';
 import MapContextPanel, { type MapSelection } from './MapContextPanel';
 import GlobalActivityFeed from './GlobalActivityFeed';
+import SpatialStrategyPanel from './SpatialStrategyPanel';
 import { playSound } from '@/lib/game/sound-engine';
+import { isFoldedFeatureUnlocked } from '@/lib/game/corporation-tiers';
 
 type Layer = 'solar' | 'galactic';
 
@@ -40,6 +42,11 @@ export default function MapCommandCenter({
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
   const [showActivity, setShowActivity] = useState(false);
+  // Audit Wave F §B5: Spatial Strategy (lane traffic, orbital-slot occupancy,
+  // chokepoints) folded into the map as a HUD overlay — it's geography, so it
+  // belongs here per the map-first mandate. Standalone 'spatial' tab removed.
+  const [showSpatial, setShowSpatial] = useState(false);
+  const spatialUnlocked = isFoldedFeatureUnlocked(state.corporationTier || 1, 'spatial');
 
   // Explicit measured height. `flex-1` under the shell's `min-h-screen` flex
   // column is unreliable (min-height parents don't guarantee flex-grow space,
@@ -147,6 +154,20 @@ export default function MapCommandCenter({
         >
           📡 Activity
         </button>
+        {spatialUnlocked && (
+          <button
+            type="button"
+            onClick={() => { playSound('click'); setShowSpatial(v => !v); }}
+            aria-pressed={showSpatial}
+            aria-expanded={showSpatial}
+            aria-controls="map-spatial-strategy-popover"
+            className={`min-h-[44px] px-3 text-[11px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 border-l border-white/[0.08] ${
+              showSpatial ? 'bg-amber-500/20 text-amber-200' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            ✦ Spatial
+          </button>
+        )}
       </div>
 
       {/* Global Activity Feed popover — reachable from the map HUD (audit
@@ -174,6 +195,34 @@ export default function MapCommandCenter({
             </button>
           </div>
           <GlobalActivityFeed compact limit={25} className="p-2" />
+        </div>
+      )}
+
+      {/* Spatial Strategy overlay — lane traffic, orbital-slot occupancy,
+          chokepoints (audit §B5: folded from the standalone 'spatial' tab). */}
+      {showSpatial && spatialUnlocked && (
+        <div
+          id="map-spatial-strategy-popover"
+          className="hud-frame absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-2 sm:top-14 sm:bottom-2 z-20 sm:w-[min(94vw,460px)] max-h-[70vh] sm:max-h-none overflow-y-auto rounded-xl border border-white/[0.08] bg-[#050510]/95 backdrop-blur-md animate-reveal-up"
+        >
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <div className="sticky top-0 flex items-center justify-between px-3 py-2 border-b border-white/[0.06] bg-[#050510]/95 backdrop-blur-md z-10">
+            <span className="text-[11px] font-hud font-bold text-white flex items-center gap-1.5">
+              <span aria-hidden="true">✦</span> Spatial Strategy
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowSpatial(false)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              aria-label="Close spatial strategy"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="p-2">
+            <SpatialStrategyPanel state={state} />
+          </div>
         </div>
       )}
 

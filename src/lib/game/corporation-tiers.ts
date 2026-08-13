@@ -3,6 +3,7 @@
 // Each tier unlocks new tabs, grants base slot increases, and applies bonuses.
 
 import type { GameState, GameTab } from './types';
+import { DEFAULT_LEGACY, getLegacyPower } from './legacy-system';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -20,7 +21,14 @@ export interface CorporationTierDef {
     activeServices?: number;
     builtShips?: number;
     completedContracts?: number;
-    prestigeLevel?: number;
+    /** Wave F: replaces the deprecated prestige.level gate (prestige.ts deleted).
+     *  Legacy Power (legacy-system.ts) is the permanent-progression score that
+     *  now stands in for "has meaningfully progressed the endgame." */
+    legacyPower?: number;
+    /** Wave F: T7 gate also requires at least one completed megastructure
+     *  phase-set, per the audit's "legacy displayTier + a megastructure"
+     *  recommendation (D6) for a reachable endgame gate. */
+    completedMegastructures?: number;
   };
   /** Base construction slots granted at this tier */
   constructionSlots: number;
@@ -58,7 +66,11 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 3,
     shipyardSlots: 1,
     bonuses: { maintenanceReduction: 0.03, revenueBonus: 0.03, miningBonus: 0 },
-    unlockedTabs: ['fleet', 'reports', 'spatial', 'diplomacy', 'modules', 'discoveries', 'specialization', 'economy'],
+    // Wave F: 'spatial' folded into 'map' (already tier-1), 'diplomacy'
+    // folded into 'contracts' (already tier-1), 'economy' folded into
+    // 'market' (already tier-1) — see FOLDED_FEATURE_TIERS for their
+    // subtab-level gating, which still activates at tier 2 as before.
+    unlockedTabs: ['fleet', 'reports', 'modules', 'discoveries', 'specialization'],
   },
   {
     tier: 3, name: 'Enterprise', icon: '🏢', color: '#a78bfa',
@@ -72,7 +84,9 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 4,
     shipyardSlots: 2,
     bonuses: { maintenanceReduction: 0.05, revenueBonus: 0.05, miningBonus: 0.05 },
-    unlockedTabs: ['crafting', 'workforce', 'commanders', 'intelligence', 'futures'],
+    // Wave F: 'intelligence'/'futures' folded into 'market' (subtabs gate at
+    // tier 3 via FOLDED_FEATURE_TIERS).
+    unlockedTabs: ['crafting', 'workforce', 'commanders'],
   },
   {
     tier: 4, name: 'Corporation', icon: '🏛️', color: '#fbbf24',
@@ -86,7 +100,9 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 5,
     shipyardSlots: 3,
     bonuses: { maintenanceReduction: 0.08, revenueBonus: 0.08, miningBonus: 0.10 },
-    unlockedTabs: ['alliance', 'bounties', 'rivals', 'factions', 'subsidiaries'],
+    // Wave F: 'rivals' folded into 'leaderboard' (Standings hub — subtab
+    // gates at tier 4 via FOLDED_FEATURE_TIERS).
+    unlockedTabs: ['alliance', 'bounties', 'factions', 'subsidiaries'],
   },
   {
     tier: 5, name: 'Conglomerate', icon: '👑', color: '#f97316',
@@ -102,7 +118,10 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 7,
     shipyardSlots: 4,
     bonuses: { maintenanceReduction: 0.10, revenueBonus: 0.12, miningBonus: 0.15 },
-    unlockedTabs: ['leagues', 'bidding', 'megaproject', 'megastructures', 'victory'],
+    // Wave F: 'leagues' folded into 'leaderboard' (Standings hub), 'bidding'
+    // folded into 'contracts' (Contracts hub PVP subtab) — both gate their
+    // subtab at tier 5 via FOLDED_FEATURE_TIERS.
+    unlockedTabs: ['megaproject', 'megastructures', 'victory'],
   },
   {
     tier: 6, name: 'Megacorp', icon: '🌟', color: '#ef4444',
@@ -113,7 +132,10 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
       unlockedLocations: 11,
       builtShips: 10,
       activeServices: 25,
-      prestigeLevel: 1,
+      // Wave F (A9): replaces the deprecated prestige.level >= 1 gate.
+      // 300 Legacy Power is roughly "5 tier-2 milestones + some stretch
+      // progress" — a meaningful but reachable bar for a tier this deep.
+      legacyPower: 300,
     },
     constructionSlots: 10,
     shipyardSlots: 5,
@@ -130,14 +152,44 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
       builtShips: 20,
       activeServices: 30,
       completedContracts: 25,
-      prestigeLevel: 1,
+      // Wave F (A9/D6): replaces the deprecated prestige.level >= 1 gate —
+      // "legacy displayTier + a megastructure" per the audit's recommended
+      // reachable endgame gate for the interstellar unlock.
+      legacyPower: 600,
+      completedMegastructures: 1,
     },
     constructionSlots: 14,
     shipyardSlots: 7,
     bonuses: { maintenanceReduction: 0.20, revenueBonus: 0.20, miningBonus: 0.25 },
-    unlockedTabs: ['megastructures', 'interstellar'],
+    // 'megastructures' removed here — it's already unlocked at tier 5; listing
+    // it again was a dedupe no-op (audit §2 "Tier gating observations").
+    unlockedTabs: ['interstellar'],
   },
 ];
+
+// ─── Folded-feature subtab gating (Wave F tab merges) ────────────────────────
+// The six tabs merged into hub tabs (§B2-B5) each had their own tier gate.
+// The hub tab itself now unlocks at the *earliest* of its merged tabs' tiers
+// (usually tier 1, since 'contracts'/'market'/'map'/'leaderboard' were
+// already unlocked there) — but the individual subtab/section inside the hub
+// still respects its original unlock tier, so staged unlocks (CLAUDE.md
+// "New-player on-ramp") are preserved exactly as before the merge.
+export const FOLDED_FEATURE_TIERS = {
+  diplomacy: 2,    // -> Contracts hub, PVE > Faction Deliveries subtab
+  spatial: 2,      // -> Map HUD overlay toggle
+  economy: 2,      // -> Markets hub, Economy subtab
+  intelligence: 3, // -> Markets hub, Analytics subtab
+  futures: 3,      // -> Markets hub, Futures subtab
+  rivals: 4,       // -> Standings hub, Rivals subtab
+  leagues: 5,      // -> Standings hub, Leagues subtab (default spine)
+  bidding: 5,      // -> Contracts hub, PVP Bidding top-tab
+} as const;
+
+export type FoldedFeature = keyof typeof FOLDED_FEATURE_TIERS;
+
+export function isFoldedFeatureUnlocked(tier: number, feature: FoldedFeature): boolean {
+  return tier >= FOLDED_FEATURE_TIERS[feature];
+}
 
 export const TIER_MAP = new Map(CORPORATION_TIERS.map(t => [t.tier, t]));
 
@@ -154,7 +206,8 @@ export function checkCorporationTier(state: GameState): number {
   const activeServices = state.activeServices.length;
   const builtShips = (state.ships || []).filter(s => s.isBuilt).length;
   const completedContracts = (state.completedContracts || []).length;
-  const prestigeLevel = state.prestige?.level || 0;
+  const legacyPower = state.legacy?.legacyPower ?? getLegacyPower(state.legacy || DEFAULT_LEGACY);
+  const completedMegastructures = (state.megastructures || []).filter(m => m.status === 'complete').length;
 
   // Check from highest tier down
   for (let i = CORPORATION_TIERS.length - 1; i >= 0; i--) {
@@ -169,7 +222,8 @@ export function checkCorporationTier(state: GameState): number {
       (req.activeServices === undefined || activeServices >= req.activeServices) &&
       (req.builtShips === undefined || builtShips >= req.builtShips) &&
       (req.completedContracts === undefined || completedContracts >= req.completedContracts) &&
-      (req.prestigeLevel === undefined || prestigeLevel >= req.prestigeLevel);
+      (req.legacyPower === undefined || legacyPower >= req.legacyPower) &&
+      (req.completedMegastructures === undefined || completedMegastructures >= req.completedMegastructures);
 
     if (meets) return tier.tier;
   }
@@ -273,9 +327,13 @@ export function getNextTierProgress(state: GameState, currentTier: number): {
     const current = (state.completedContracts || []).length;
     progress.push({ label: 'Contracts', current, required: req.completedContracts, met: current >= req.completedContracts });
   }
-  if (req.prestigeLevel !== undefined) {
-    const current = state.prestige?.level || 0;
-    progress.push({ label: 'Prestige Level', current, required: req.prestigeLevel, met: current >= req.prestigeLevel });
+  if (req.legacyPower !== undefined) {
+    const current = state.legacy?.legacyPower ?? getLegacyPower(state.legacy || DEFAULT_LEGACY);
+    progress.push({ label: 'Legacy Power', current, required: req.legacyPower, met: current >= req.legacyPower });
+  }
+  if (req.completedMegastructures !== undefined) {
+    const current = (state.megastructures || []).filter(m => m.status === 'complete').length;
+    progress.push({ label: 'Megastructures Completed', current, required: req.completedMegastructures, met: current >= req.completedMegastructures });
   }
 
   return progress;

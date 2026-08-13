@@ -7,7 +7,7 @@ import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
 import { BUILDINGS, BUILDING_MAP, scaledBuildTime } from '@/lib/game/buildings';
-import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect } from '@/lib/game/research-tree';
+import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect, getResearchBonuses } from '@/lib/game/research-tree';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
@@ -18,20 +18,20 @@ import ResourceBar from '@/components/game/ResourceBar';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
 import DailyBonusModal from '@/components/game/DailyBonusModal';
-import LeaderboardPanel from '@/components/game/LeaderboardPanel';
 import AlliancePanel from '@/components/game/AlliancePanel';
 import AllianceHubPanel from '@/components/game/AllianceHubPanel';
 import BountyPanel from '@/components/game/BountyPanel';
-import MarketPanel from '@/components/game/MarketPanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
 import { useGameSync } from '@/hooks/useGameSync';
 import { postWithRetry, LOCATION_MILESTONE_MAP } from '@/hooks/useWorldState';
 import { toast } from '@/lib/toast';
 import SolarSystemCanvas from '@/components/game/SolarSystemCanvas';
-import ContractsPanel from '@/components/game/ContractsPanel';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
 import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
+import { applyMiniActivityBonus } from '@/lib/game/mini-activities';
+import { setInsuranceActive } from '@/lib/game/economic-sinks';
+import { calculateRushRepairCost } from '@/lib/game/hazards';
 import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/game/contracts';
 import { createContractBoost } from '@/lib/game/speed-boosts';
 import WelcomeBackModal from '@/components/game/WelcomeBackModal';
@@ -45,14 +45,9 @@ import MilestoneVignette from '@/components/game/MilestoneVignette';
 import FleetPanel from '@/components/game/FleetPanel';
 import CraftingPanel from '@/components/game/CraftingPanel';
 import WorkforcePanel from '@/components/game/WorkforcePanel';
-import LeaguePanel from '@/components/game/LeaguePanel';
-import RivalsPanel from '@/components/game/RivalsPanel';
-import BiddingPanel from '@/components/game/BiddingPanel';
 import SeasonPanel from '@/components/game/SeasonPanel';
 import AllianceEventsPanel from '@/components/game/AllianceEventsPanel';
 import AllianceProjectsPanel from '@/components/game/AllianceProjectsPanel';
-import MarketOrderBook from '@/components/game/MarketOrderBook';
-import MarketPriceChart from '@/components/game/MarketPriceChart';
 import TerritoryPanel from '@/components/game/TerritoryPanel';
 import SpeedRunPanel from '@/components/game/SpeedRunPanel';
 import EspionagePanel from '@/components/game/EspionagePanel';
@@ -60,13 +55,11 @@ import MegaProjectPanel from '@/components/game/MegaProjectPanel';
 import MegastructurePanel from '@/components/game/MegastructurePanel';
 import { startMegastructure, advanceMegastructurePhase } from '@/lib/game/personal-megastructures';
 import ReportsPanel from '@/components/game/ReportsPanel';
-import PrestigeModal from '@/components/game/PrestigeModal';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import { SHIP_MAP, getTravelTime, generateShipName } from '@/lib/game/ships';
 import { CHAIN_MAP } from '@/lib/game/production-chains';
-import { getHireCost } from '@/lib/game/workforce';
+import { getHireCost, consumeHeadhuntVoucher } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
-import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 import GameTutorial from '@/components/game/GameTutorial';
 import TutorialOverlay, { getTutorialTargetTab } from '@/components/game/TutorialOverlay';
 import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
@@ -77,9 +70,6 @@ import CommanderPanel from '@/components/game/CommanderPanel';
 import { hireCommander, dismissCommander } from '@/lib/game/commanders';
 import FactionPanel from '@/components/game/FactionPanel';
 import { sendEnvoy } from '@/lib/game/factions';
-import MarketIntelligencePanel from '@/components/game/MarketIntelligencePanel';
-import SpatialStrategyPanel from '@/components/game/SpatialStrategyPanel';
-import DiplomacyPanel from '@/components/game/DiplomacyPanel';
 import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
 import FrontierGraduationModal from '@/components/game/FrontierGraduationModal';
@@ -99,11 +89,12 @@ import SpecializationPanel from '@/components/game/SpecializationPanel';
 import { purchaseTier, respecSpecialization } from '@/lib/game/specializations';
 import VictoryPanel from '@/components/game/VictoryPanel';
 import { checkVictories } from '@/lib/game/victory-conditions';
-import FuturesPanel from '@/components/game/FuturesPanel';
-import EconomyPanel from '@/components/game/EconomyPanel';
 import { shouldGenerateQuarterlyReport, recordQuarterlyReport } from '@/lib/game/quarterly-reports';
 import BuildPanel from '@/components/game/BuildPanel';
 import MapCommandCenter from '@/components/game/MapCommandCenter';
+import ContractsHubPanel from '@/components/game/ContractsHubPanel';
+import StandingsHubPanel from '@/components/game/StandingsHubPanel';
+import MarketHubPanel from '@/components/game/MarketHubPanel';
 
 // ─── Research Panel (redesigned — collapsible categories, search, progress) ──
 
@@ -667,6 +658,26 @@ function pickInitialTab(state: GameState): GameTab {
   return (state.tutorialStep ?? 6) >= 6 ? 'map' : 'dashboard';
 }
 
+/** Audit Wave F (§B2-B5): 8 tabs were merged away into hub tabs. GameState
+ *  never persists a "last active tab," so there's no literal old-save vector
+ *  today — but child panels (tutorial steps, feature-unlock toasts, nav
+ *  callbacks) hand back tab ids as plain strings, and a future URL/deep-link
+ *  entry point could too. Route any of the six removed ids to the hub tab
+ *  that now owns that functionality instead of rendering a dead branch. */
+const LEGACY_TAB_MAP: Record<string, GameTab> = {
+  diplomacy: 'contracts',
+  bidding: 'contracts',
+  rivals: 'leaderboard',
+  leagues: 'leaderboard',
+  intelligence: 'market',
+  economy: 'market',
+  futures: 'market',
+  spatial: 'map',
+};
+function resolveLegacyTab(id: string): GameTab {
+  return LEGACY_TAB_MAP[id] ?? (id as GameTab);
+}
+
 // ─── Main Game Page ─────────────────────────────────────────────────────────
 
 export default function SpaceTycoonPage() {
@@ -679,7 +690,6 @@ export default function SpaceTycoonPage() {
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   const [offlineEarnings, setOfflineEarnings] = useState<OfflineEarnings | null>(null);
-  const [showPrestige, setShowPrestige] = useState(false);
   const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [showFrontierGraduation, setShowFrontierGraduation] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -768,7 +778,12 @@ export default function SpaceTycoonPage() {
       const def = BUILDING_MAP.get(buildingId);
       if (!def) return prev;
       const count = prev.buildings.filter(b => b.definitionId === buildingId && b.locationId === locationId).length;
-      const cost = scaledBuildingCost(def.baseCost, count);
+      // Audit A3 wiring note: research-tree's buildCostReduction (the
+      // largest keyword bucket in the research effect system — all
+      // cost-reducing rocketry/propulsion/infrastructure/crew/ships research)
+      // previously computed but was never applied to the actual build cost.
+      const { buildCostReduction } = getResearchBonuses(prev.completedResearch);
+      const cost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
       if (prev.money < cost) { playSound('error'); return prev; }
 
       // Check resource costs
@@ -1139,25 +1154,26 @@ export default function SpaceTycoonPage() {
       playSound('click');
       setState(prev => {
         if (!prev) return prev;
+        // Audit A3/Wave B wiring note: applyMiniActivityBonus handles all
+        // three bonus types (resource_find w/ real resourceId, mining_boost,
+        // research_speed) — the old inline branch here only handled
+        // resource_find and hardcoded iron.
+        const withBonus = reward.bonus ? applyMiniActivityBonus(prev, reward.bonus) : prev;
         return {
-          ...prev,
-          money: prev.money + (reward.money || 0),
-          totalEarned: prev.totalEarned + (reward.money || 0),
+          ...withBonus,
+          money: withBonus.money + (reward.money || 0),
+          totalEarned: withBonus.totalEarned + (reward.money || 0),
           miniActivityCooldowns: {
-            ...(prev.miniActivityCooldowns || {}),
+            ...(withBonus.miniActivityCooldowns || {}),
             [activityId]: Date.now(),
           },
-          // Apply resource bonus if present
-          resources: reward.bonus?.type === 'resource_find'
-            ? { ...prev.resources, iron: (prev.resources.iron || 0) + (reward.bonus.value || 0) }
-            : prev.resources,
           eventLog: [{
             id: generateId(),
-            date: prev.gameDate,
+            date: withBonus.gameDate,
             type: 'milestone' as const,
             title: `Activity: ${reward.message.split(' — ')[0] || 'Activity complete'}`,
             description: reward.message,
-          }, ...prev.eventLog].slice(0, 50),
+          }, ...withBonus.eventLog].slice(0, 50),
         };
       });
     };
@@ -1425,7 +1441,14 @@ export default function SpaceTycoonPage() {
     );
   }
 
-  // Tab definitions — full catalog of all possible tabs
+  // Tab definitions — full catalog of all possible tabs.
+  // Audit Wave F (docs/GAME_SYSTEMS_AUDIT_2026-08.md §B2-B5): 36 tabs -> 28.
+  // Merge mapping (removed tab -> surviving hub tab, subtab keeps original
+  // corp-tier gate via FOLDED_FEATURE_TIERS in corporation-tiers.ts):
+  //   diplomacy, bidding      -> contracts   (ContractsHubPanel: PVE/PVP)
+  //   rivals, leagues         -> leaderboard (StandingsHubPanel)
+  //   intelligence, economy, futures -> market (MarketHubPanel)
+  //   spatial                 -> map (MapCommandCenter HUD overlay toggle)
   const TAB_CATALOG: { id: GameTab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'build', label: 'Build', icon: '🏗️' },
@@ -1436,27 +1459,19 @@ export default function SpaceTycoonPage() {
     { id: 'reports', label: 'Reports', icon: '📬' },
     { id: 'contracts', label: 'Contracts', icon: '📋' },
     { id: 'crafting', label: 'Craft', icon: '🔨' },
-    { id: 'market', label: 'Market', icon: '📈' },
-    { id: 'futures', label: 'Futures', icon: '📈' },
-    { id: 'economy', label: 'Economy', icon: '🌐' },
+    { id: 'market', label: 'Markets', icon: '📈' },
     { id: 'workforce', label: 'Crew', icon: '👷' },
     { id: 'alliance', label: 'Corporation', icon: '🏢' },
     { id: 'bounties', label: 'Bounties', icon: '📦' },
-    { id: 'rivals', label: 'Rivals', icon: '⚔️' },
-    { id: 'leagues', label: 'Leagues', icon: '🏅' },
-    { id: 'bidding', label: 'Bidding', icon: '🎯' },
     { id: 'megaproject', label: 'Mega-Project', icon: '🌍' },
     { id: 'megastructures', label: 'Megastructures', icon: '🛰️' },
     { id: 'espionage', label: 'Intel', icon: '🕵️' },
     { id: 'territory', label: 'Territory', icon: '🗺️' },
     { id: 'speedruns', label: 'Speed Run', icon: '⏱️' },
     { id: 'seasons', label: 'Seasons', icon: '🌟' },
-    { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
+    { id: 'leaderboard', label: 'Standings', icon: '🏆' },
     { id: 'commanders', label: 'Commanders', icon: '🎖️' },
     { id: 'factions', label: 'Factions', icon: '🛡️' },
-    { id: 'intelligence', label: 'Analytics', icon: '📈' },
-    { id: 'spatial', label: 'Spatial', icon: '✦' },
-    { id: 'diplomacy', label: 'Diplomacy', icon: '⚐' },
     { id: 'modules', label: 'Modules', icon: '⚙️' },
     { id: 'discoveries', label: 'Discoveries', icon: '🔭' },
     { id: 'interstellar', label: 'Interstellar', icon: '✴' },
@@ -1626,13 +1641,6 @@ export default function SpaceTycoonPage() {
           🏆<span className="hidden sm:inline"> {unlockedAchievements.length}</span>
         </button>
         <button
-          onClick={() => { playSound('click'); setShowPrestige(true); }}
-          className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-purple-400 transition-colors whitespace-nowrap shrink-0"
-          title="Prestige"
-        >
-          ⭐<span className="hidden sm:inline"> Prestige</span>
-        </button>
-        <button
           onClick={() => { saveGame(state); playSound('click'); }}
           className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-white transition-colors whitespace-nowrap shrink-0"
           title="Save Game"
@@ -1667,7 +1675,7 @@ export default function SpaceTycoonPage() {
           onSellBuilding={handleSellBuilding}
           onDispatchShip={handleDispatchShip}
           onLaunchExpedition={handleLaunchExpedition}
-          onNavigateTab={(navTab) => { playSound('click'); setTab(navTab as GameTab); }}
+          onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
           onRegionFocus={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }}
         />
       ) : (
@@ -1675,9 +1683,32 @@ export default function SpaceTycoonPage() {
         {tab === 'dashboard' && <DashboardPanel
           state={state}
           onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)}
-          onNavigate={(navTab) => { playSound('click'); setTab(navTab as GameTab); }}
+          onNavigate={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+          onSetInsuranceActive={(active) => {
+            playSound('click');
+            setState(prev => prev ? setInsuranceActive(prev, active) : prev);
+          }}
         />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} />}
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onRushRepairBuilding={(instanceId) => {
+          setState(prev => {
+            if (!prev) return prev;
+            const bld = prev.buildings.find(b => b.instanceId === instanceId);
+            if (!bld || !bld.damagePct) return prev;
+            const def = BUILDING_MAP.get(bld.definitionId);
+            if (!def) return prev;
+            const cost = calculateRushRepairCost(bld.damagePct, def.baseCost);
+            if (prev.money < cost) { playSound('error'); return prev; }
+            playSound('click');
+            const buildings = prev.buildings.map(b => b.instanceId === instanceId ? { ...b, damagePct: undefined } : b);
+            return {
+              ...prev,
+              money: prev.money - cost,
+              totalSpent: prev.totalSpent + cost,
+              buildings,
+              eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Rush repair: ${def.name}`, description: `Paid ${formatMoney(cost)} to instantly repair structural damage.` }, ...prev.eventLog].slice(0, 50),
+            };
+          });
+        }} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel
@@ -1773,6 +1804,26 @@ export default function SpaceTycoonPage() {
             });
           }}
           onScrapShip={handleScrapShip}
+          onRushRepairShip={(shipInstanceId) => {
+            setState(prev => {
+              if (!prev) return prev;
+              const ship = (prev.ships || []).find(s => s.instanceId === shipInstanceId);
+              if (!ship || !ship.hullDamagePct) return prev;
+              const def = SHIP_MAP.get(ship.definitionId);
+              if (!def) return prev;
+              const cost = calculateRushRepairCost(ship.hullDamagePct, def.baseCost);
+              if (prev.money < cost) { playSound('error'); return prev; }
+              playSound('click');
+              const ships = (prev.ships || []).map(s => s.instanceId === shipInstanceId ? { ...s, hullDamagePct: undefined } : s);
+              return {
+                ...prev,
+                money: prev.money - cost,
+                totalSpent: prev.totalSpent + cost,
+                ships,
+                eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Rush repair: ${ship.name}`, description: `Paid ${formatMoney(cost)} to instantly repair hull damage.` }, ...prev.eventLog].slice(0, 50),
+              };
+            });
+          }}
         />}
         {tab === 'crafting' && <CraftingPanel state={state} onStartCrafting={(recipeId) => {
           const recipe = CHAIN_MAP.get(recipeId);
@@ -1803,42 +1854,64 @@ export default function SpaceTycoonPage() {
           });
         }} />}
         {tab === 'workforce' && <WorkforcePanel state={state} onHire={(workerType) => {
-          const cost = getHireCost(workerType as 'engineer' | 'scientist' | 'miner' | 'operator');
           setState(prev => {
-            if (!prev || prev.money < cost) { playSound('error'); return prev; }
+            if (!prev) return prev;
+            // Audit A8 / Wave F wiring: pass state so an active espionage
+            // headhunt voucher (employee_headhunt reward) discounts the hire,
+            // then consume the voucher so it doesn't apply twice.
+            const cost = getHireCost(workerType as 'engineer' | 'scientist' | 'miner' | 'operator', prev);
+            if (prev.money < cost) { playSound('error'); return prev; }
             playSound('click');
             const workforce = { ...(prev.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 }) };
             const key = `${workerType}s` as keyof WorkforceState;
             workforce[key] = (workforce[key] || 0) + 1;
-            return { ...prev, money: prev.money - cost, totalSpent: prev.totalSpent + cost, workforce };
+            const next = { ...prev, money: prev.money - cost, totalSpent: prev.totalSpent + cost, workforce };
+            return consumeHeadhuntVoucher(next);
           });
-        }} onDismiss={handleDismissWorker} />}
-        {tab === 'market' && (
-          <div className="space-y-4">
-            <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />
-            <MarketPriceChart />
-            <MarketOrderBook state={state} />
-          </div>
-        )}
-        {tab === 'futures' && <FuturesPanel state={state} setState={setState} />}
-        {tab === 'contracts' && <ContractsPanel state={state} onAcceptContract={(contractId) => {
+        }} onDismiss={handleDismissWorker} onUpdateTrainingBudget={(perCrewPerMonth) => {
           playSound('click');
           setState(prev => {
             if (!prev) return prev;
-            const activeContracts = [...(prev.activeContracts || [])];
-            if (activeContracts.includes(contractId)) return prev;
-            activeContracts.push(contractId);
-            return { ...prev, activeContracts };
+            const workforce = { ...(prev.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 }), trainingBudgetPerCrew: Math.max(0, perCrewPerMonth) };
+            return { ...prev, workforce };
           });
         }} />}
+        {tab === 'market' && (
+          <MarketHubPanel
+            state={state}
+            setState={setState}
+            onSellResource={handleSellResource}
+            onBuyResource={handleBuyResource}
+          />
+        )}
+        {tab === 'contracts' && (
+          <ContractsHubPanel
+            state={state}
+            onAcceptContract={(contractId) => {
+              playSound('click');
+              setState(prev => {
+                if (!prev) return prev;
+                const activeContracts = [...(prev.activeContracts || [])];
+                if (activeContracts.includes(contractId)) return prev;
+                activeContracts.push(contractId);
+                return { ...prev, activeContracts };
+              });
+            }}
+            onAcceptDelivery={(id) => {
+              playSound('click');
+              setState(prev => prev ? acceptDelivery(prev, id) : prev);
+            }}
+            onDeliverContract={(id) => {
+              playSound('milestone');
+              setState(prev => prev ? deliverContract(prev, id) : prev);
+            }}
+          />
+        )}
         {tab === 'alliance' && <AllianceHubPanel state={state} />}
         {tab === 'bounties' && <BountyPanel state={state} />}
-        {tab === 'leaderboard' && <LeaderboardPanel state={state} />}
+        {tab === 'leaderboard' && <StandingsHubPanel state={state} />}
 
         {/* Competitive Multiplayer Panels */}
-        {tab === 'leagues' && <LeaguePanel />}
-        {tab === 'rivals' && <RivalsPanel />}
-        {tab === 'bidding' && <BiddingPanel state={state} />}
         {tab === 'seasons' && <SeasonPanel state={state} />}
         {tab === 'territory' && <TerritoryPanel state={state} />}
         {tab === 'speedruns' && <SpeedRunPanel state={state} />}
@@ -1879,28 +1952,12 @@ export default function SpaceTycoonPage() {
             }}
           />
         )}
-        {tab === 'intelligence' && <MarketIntelligencePanel />}
-        {tab === 'economy' && <EconomyPanel state={state} />}
-        {tab === 'spatial' && <SpatialStrategyPanel state={state} />}
-        {tab === 'diplomacy' && (
-          <DiplomacyPanel
-            state={state}
-            onAccept={(id) => {
-              playSound('click');
-              setState(prev => prev ? acceptDelivery(prev, id) : prev);
-            }}
-            onDeliver={(id) => {
-              playSound('milestone');
-              setState(prev => prev ? deliverContract(prev, id) : prev);
-            }}
-          />
-        )}
         {tab === 'modules' && <ModulesPanel state={state} setState={setState} />}
         {tab === 'discoveries' && <AnomaliesPanel state={state} setState={setState} />}
         {tab === 'interstellar' && (
           <InterstellarPanel
             state={state}
-            onNavigateTab={(navTab) => { playSound('click'); setTab(navTab as GameTab); }}
+            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
             onEstablishColony={handleEstablishColony}
             onUpgradeColony={handleUpgradeColony}
             onEstablishTradeRoute={handleEstablishTradeRoute}
@@ -2009,35 +2066,13 @@ export default function SpaceTycoonPage() {
         />
       )}
       {/* Legacy detailed tutorial + Feature Unlock Notifications */}
-      <GameTutorial key={state.createdAt} onSetTab={(t) => setTab(t as GameTab)} />
+      <GameTutorial key={state.createdAt} onSetTab={(t) => setTab(resolveLegacyTab(t))} />
       <FeatureUnlockToast
         availableTabsKey={tabIdsKey}
         availableTabs={allTabs.map(t => t.id)}
-        onNavigateToTab={(t) => setTab(t as GameTab)}
+        onNavigateToTab={(t) => setTab(resolveLegacyTab(t))}
       />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
-
-      {/* Prestige Modal */}
-      {showPrestige && (
-        <PrestigeModal
-          state={state}
-          onClose={() => setShowPrestige(false)}
-          onPrestige={() => {
-            const cp = { ...DEFAULT_PRESTIGE };
-            cp.level = state.prestige?.level || 0;
-            cp.legacyPoints = state.prestige?.legacyPoints || 0;
-            const newPrestige = calculatePrestigeRewards(cp);
-            const freshState = getNewGameState();
-            setState({
-              ...freshState,
-              money: newPrestige.permanentBonuses.startingMoney,
-              prestige: newPrestige,
-            });
-            saveGame({ ...freshState, money: newPrestige.permanentBonuses.startingMoney, prestige: newPrestige });
-            setShowPrestige(false);
-          }}
-        />
-      )}
 
       {/* Offline Income Modal */}
       {offlineEarnings && (

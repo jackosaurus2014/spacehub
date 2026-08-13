@@ -15,6 +15,9 @@ import { BUILDING_MAP } from '@/lib/game/buildings';
 import { MINING_LOCATIONS, SHIP_MAP, getTravelTime } from '@/lib/game/ships';
 import { LOCATION_ASSETS, SHIP_ASSETS } from '@/lib/game/assets';
 import { formatMoney, formatDuration } from '@/lib/game/formulas';
+import { getShipTransitSpeedMultiplier } from '@/lib/game/modules';
+import { getSpecializationBonuses } from '@/lib/game/specializations';
+import { getWorkforceBonuses } from '@/lib/game/workforce';
 import { INTERSTELLAR_SYSTEM_MAP, getJumpPrerequisites } from '@/lib/game/interstellar';
 import {
   planExpedition,
@@ -234,11 +237,32 @@ function LocationOverview({
     byCategory.set(cat, entry);
   }
 
+  // Wave F UI surfacing (b): hazard forecast chips for this location.
+  const warningsHere = (state.hazardWarnings || []).filter(w => w.locationId === locationId);
+
   return (
     <div className="space-y-3">
       <p className="text-slate-400 text-[11px] leading-relaxed">{loc.description}</p>
 
       <WorldPresenceBlock locationId={locationId} />
+
+      {warningsHere.length > 0 && (
+        <div className="space-y-1" role="status" aria-live="polite">
+          {warningsHere.map(w => (
+            <div
+              key={w.id}
+              className={`flex items-center gap-1.5 text-[10px] px-2 py-1.5 rounded-lg border ${
+                w.severity === 'severe' ? 'bg-red-500/10 border-red-500/25 text-red-300'
+                  : w.severity === 'major' ? 'bg-amber-500/10 border-amber-500/25 text-amber-300'
+                  : 'bg-white/[0.03] border-white/[0.08] text-slate-400'
+              }`}
+            >
+              <span aria-hidden="true">⚠️</span>
+              <span>{w.summary}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {!unlocked ? (
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
@@ -434,7 +458,17 @@ function DispatchBody({
   }
 
   const ship = pickedShip ? eligibleShips.find(s => s.instanceId === pickedShip) : null;
-  const eta = ship ? getTravelTime(ship.currentLocation, targetLocationId) : 0;
+  // Real effective transit speed — replicates the exact multiplier the
+  // engine tick applies (see game-engine.ts), so the ETA shown here matches
+  // when the ship actually arrives instead of the raw unmodified travel time.
+  const specBonuses = getSpecializationBonuses(state.specialization || { primary: null, secondary: null, respecCount: 0 });
+  const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+  const transitSpeedMult = ship
+    ? Math.max(1, (1 + specBonuses.fleetSpeed) * (1 + wfBonuses.shipEfficiency) * getShipTransitSpeedMultiplier(state, ship.instanceId))
+    : 1;
+  const isBoosted = transitSpeedMult > 1.001;
+  const rawEta = ship ? getTravelTime(ship.currentLocation, targetLocationId) : 0;
+  const eta = rawEta / transitSpeedMult;
 
   return (
     <div className="space-y-2">
@@ -473,6 +507,7 @@ function DispatchBody({
         <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3 mt-2">
           <div className="text-[11px] text-slate-300 mb-2">
             ETA: <span className="text-cyan-300 font-mono">{formatDuration(eta)}</span>
+            {isBoosted && <span className="text-cyan-300 ml-1" aria-label="speed boosted by modules, specialization, or workforce">⚡ boosted</span>}
             <span className="text-slate-600"> — travel-time system is real; ship snaps to route immediately, position interpolates on the map.</span>
           </div>
           <button

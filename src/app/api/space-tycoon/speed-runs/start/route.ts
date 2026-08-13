@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import {
   getCurrentChallenge,
-  getPrestigeBracket,
+  getLegacyBracket,
   getBracketDisplayName,
   SPEED_RUN_MILESTONES,
 } from '@/lib/game/speed-runs';
@@ -12,11 +12,12 @@ import { getCurrentWeekId } from '@/lib/game/weekly-events';
 
 /**
  * POST /api/space-tycoon/speed-runs/start
- * Start a speed run attempt after prestiging.
- * Body: { prestigeLevel: number }
+ * Start a speed run attempt. Bracket is keyed by Legacy Power (Wave F: the
+ * deprecated prestige system was deleted; legacy-system.ts supersedes it).
+ * Body: { legacyPower: number }
  *
  * Creates a SpeedRunAttempt with startedAtMs = now.
- * Player must have prestige level >= 1 (P0 cannot participate).
+ * Player must have Legacy Power >= 1 (no legacy progress = cannot participate).
  */
 export async function POST(request: Request) {
   try {
@@ -26,11 +27,11 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { prestigeLevel } = body;
+    const { legacyPower } = body;
 
-    if (typeof prestigeLevel !== 'number' || prestigeLevel < 1) {
+    if (typeof legacyPower !== 'number' || legacyPower < 1) {
       return NextResponse.json(
-        { error: 'Must have prestiged at least once (P1+) to start a speed run' },
+        { error: 'Must have earned Legacy Power to start a speed run' },
         { status: 400 },
       );
     }
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
 
     const weekId = getCurrentWeekId();
     const challenge = getCurrentChallenge(weekId);
-    const bracket = getPrestigeBracket(prestigeLevel);
+    const bracket = getLegacyBracket(legacyPower);
 
     // Ensure the weekly challenge record exists
     let dbChallenge = await prisma.speedRunChallenge.findUnique({
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
 
     if (existingAttempt) {
       return NextResponse.json(
-        { error: 'You already have an attempt for this week\'s challenge. Prestige again next week for a new attempt.' },
+        { error: 'You already have an attempt for this week\'s challenge. Come back next week for a new attempt.' },
         { status: 409 },
       );
     }
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
       data: {
         challengeId: dbChallenge.id,
         profileId: profile.id,
-        prestigeLevel,
+        prestigeLevel: legacyPower, // DB column predates the Legacy migration; now stores Legacy Power
         bracket,
         startedAtMs: now,
       },
@@ -133,7 +134,7 @@ export async function POST(request: Request) {
       attempt: {
         id: attempt.id,
         challengeId: dbChallenge.id,
-        prestigeLevel,
+        legacyPower,
         bracket,
         bracketName: getBracketDisplayName(bracket),
         startedAtMs: now,

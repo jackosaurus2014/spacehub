@@ -10,6 +10,10 @@ import { formatMoney, formatCountdown, formatDuration } from '@/lib/game/formula
 import { playSound } from '@/lib/game/sound-engine';
 import { getShipAsset } from '@/lib/game/assets';
 import { getShipyardSlots, getActiveShipBuilds, canBuildShip, getShipyardBreakdown } from '@/lib/game/shipyard-slots';
+import { calculateRushRepairCost } from '@/lib/game/hazards';
+import { getShipTransitSpeedMultiplier } from '@/lib/game/modules';
+import { getSpecializationBonuses } from '@/lib/game/specializations';
+import { getWorkforceBonuses } from '@/lib/game/workforce';
 import Image from 'next/image';
 
 interface FleetPanelProps {
@@ -20,9 +24,13 @@ interface FleetPanelProps {
   onStartTransport: (shipInstanceId: string, toLocation: string, cargo: Record<string, number>) => void;
   onLaunchSurvey?: (shipInstanceId: string, targetLocation: string) => void;
   onScrapShip?: (shipInstanceId: string) => void;
+  /** Instantly heals all current hull damage on a ship for
+   *  calculateRushRepairCost(hullDamagePct, baseCost) money. Rush Repair
+   *  button only renders when this is provided. */
+  onRushRepairShip?: (shipInstanceId: string) => void;
 }
 
-export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMining, onStartTransport, onLaunchSurvey, onScrapShip }: FleetPanelProps) {
+export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMining, onStartTransport, onLaunchSurvey, onScrapShip, onRushRepairShip }: FleetPanelProps) {
   const [selectedShipyard, setSelectedShipyard] = useState('earth_surface');
   const [selectedShip, setSelectedShip] = useState<string | null>(null);
 
@@ -71,16 +79,23 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
               if (!def) return null;
               const loc = LOCATION_MAP.get(ship.currentLocation);
               const isSelected = selectedShip === ship.instanceId;
+              const hasDamage = !!ship.hullDamagePct && ship.hullDamagePct > 0;
+              const isSevere = !!ship.hullDamagePct && ship.hullDamagePct >= 0.5;
+              const repairCost = calculateRushRepairCost(ship.hullDamagePct, def.baseCost);
 
               return (
-                <button
+                <div
                   key={ship.instanceId}
-                  onClick={() => { playSound('click'); setSelectedShip(isSelected ? null : ship.instanceId); }}
-                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                  className={`rounded-lg transition-all ${
                     isSelected
                       ? 'bg-cyan-500/10 border border-cyan-500/30'
                       : 'bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.1]'
                   }`}
+                >
+                <button
+                  type="button"
+                  onClick={() => { playSound('click'); setSelectedShip(isSelected ? null : ship.instanceId); }}
+                  className="w-full text-left p-3"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -113,6 +128,19 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     </div>
                   </div>
 
+                  {/* Hull damage badge — colorblind-safe: icon + numeric % always shown alongside color */}
+                  {hasDamage && (
+                    <div className="mt-2">
+                      <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold ${
+                        isSevere
+                          ? 'bg-red-500/10 text-red-400 border-red-500/30'
+                          : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                      }`}>
+                        <span aria-hidden="true">⚠️</span> Hull damage {Math.round((ship.hullDamagePct || 0) * 100)}%
+                      </span>
+                    </div>
+                  )}
+
                   {/* Mining progress */}
                   {ship.status === 'mining' && ship.miningOperation && (
                     <div className="mt-2 flex items-center gap-2">
@@ -141,6 +169,20 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     </div>
                   )}
                 </button>
+
+                {/* Rush Repair — instantly heals current hull damage for money */}
+                {hasDamage && onRushRepairShip && (
+                  <div className="px-3 pb-3">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); playSound('click'); onRushRepairShip(ship.instanceId); }}
+                      className="w-full inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors"
+                    >
+                      🔧 Rush Repair — {formatMoney(repairCost)}
+                    </button>
+                  </div>
+                )}
+                </div>
               );
             })}
           </div>
@@ -225,26 +267,44 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
           )}
 
           {/* Transport action (for idle ships) */}
-          {selectedShipInstance.status === 'idle' && <div>
-            <p className="text-slate-400 text-xs mb-2">Send to location (capacity: {selectedShipDef.cargoCapacity} units):</p>
-            <div className="flex flex-wrap gap-1.5">
-              {state.unlockedLocations
-                .filter(locId => locId !== selectedShipInstance.currentLocation)
-                .map(locId => {
-                  const loc = LOCATION_MAP.get(locId);
-                  const travelTime = getTravelTime(selectedShipInstance.currentLocation, locId);
-                  return (
-                    <button
-                      key={locId}
-                      onClick={() => { playSound('build_start'); onStartTransport(selectedShipInstance.instanceId, locId, {}); setSelectedShip(null); }}
-                      className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
-                    >
-                      🚀 {loc?.name} ({formatDuration(travelTime)})
-                    </button>
-                  );
-                })}
-            </div>
-          </div>}
+          {selectedShipInstance.status === 'idle' && (() => {
+            // Real effective transit speed — replicates the exact multiplier
+            // the engine tick applies (see game-engine.ts), so the ETA shown
+            // here matches when the ship actually arrives instead of the raw
+            // unmodified travel time.
+            const specBonuses = getSpecializationBonuses(state.specialization || { primary: null, secondary: null, respecCount: 0 });
+            const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+            const transitSpeedMult = Math.max(1,
+              (1 + specBonuses.fleetSpeed)
+              * (1 + wfBonuses.shipEfficiency)
+              * getShipTransitSpeedMultiplier(state, selectedShipInstance.instanceId)
+            );
+            const isBoosted = transitSpeedMult > 1.001;
+
+            return (
+              <div>
+                <p className="text-slate-400 text-xs mb-2">Send to location (capacity: {selectedShipDef.cargoCapacity} units):</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {state.unlockedLocations
+                    .filter(locId => locId !== selectedShipInstance.currentLocation)
+                    .map(locId => {
+                      const loc = LOCATION_MAP.get(locId);
+                      const rawTravelTime = getTravelTime(selectedShipInstance.currentLocation, locId);
+                      const travelTime = rawTravelTime / transitSpeedMult;
+                      return (
+                        <button
+                          key={locId}
+                          onClick={() => { playSound('build_start'); onStartTransport(selectedShipInstance.instanceId, locId, {}); setSelectedShip(null); }}
+                          className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
+                        >
+                          🚀 {loc?.name} ({formatDuration(travelTime)}{isBoosted && <span className="text-cyan-300"> ⚡ boosted</span>})
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Scrap ship (only idle ships) */}
           {selectedShipInstance.status === 'idle' && onScrapShip && (

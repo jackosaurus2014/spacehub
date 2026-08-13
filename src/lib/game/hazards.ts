@@ -513,3 +513,18 @@ export function applyHazards(state: GameState, records: HazardRecord[]): { state
 
 /** Suppress hazards per Frontier protection (from frontier.ts). */
 export { isHostileEventSuppressed } from './frontier';
+
+// ─── Rush repair (Wave F UI surfacing, item c) ──────────────────────────────
+// The passive monthly auto-repair (game-engine.ts "D-3") heals 10 damage
+// points/month at 30% of baseCost per full point of damage-fraction healed.
+// Rush repair pays the same rate to heal ALL remaining damage instantly —
+// same constant, same math, just not spread over months. Exported so
+// BuildPanel/FleetPanel can price + apply a "Rush Repair" button without
+// duplicating the formula.
+export const REPAIR_COST_RATE = 0.30;
+
+/** Cost to instantly heal `damagePct` (0-1 fraction) of an asset worth `baseCost`. */
+export function calculateRushRepairCost(damagePct: number | undefined, baseCost: number): number {
+  if (!damagePct || damagePct <= 0) return 0;
+  return Math.round(damagePct * baseCost * REPAIR_COST_RATE);
+}

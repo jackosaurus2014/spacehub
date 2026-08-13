@@ -171,11 +171,11 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     phase: 'late',
   },
   {
-    title: 'Prestige & New Game+',
-    description: 'Once you\'ve expanded far enough (5+ locations, 20+ research), you can Prestige. This resets your game but gives PERMANENT bonuses: higher revenue, faster building, faster research, better mining, and more starting money. Each prestige level stacks.',
+    title: 'Legacy & Permanent Progression',
+    description: 'As you complete buildings, research, contracts, and ships, you earn Legacy milestones and stretch bonuses — permanent revenue, build-speed, research-speed, mining, and crew-capacity bonuses that never reset. Your Legacy Power score unlocks the deepest endgame tiers.',
     icon: '⭐',
-    action: 'Look for the ⭐ Prestige button when you\'re ready for a fresh start',
-    tip: 'Don\'t prestige too early — the bonuses compound, so reaching further before prestiging gives better returns. Aim for Asteroid Belt access minimum.',
+    action: 'Check your Legacy progress from the Dashboard as your corporation grows',
+    tip: 'Legacy bonuses stack forever — no resets required. The higher your Legacy Power, the higher your corporation tier ceiling (Speed Runs and the Interstellar era both gate on it).',
     phase: 'late',
   },
   {

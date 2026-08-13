@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       orderBy: [
         { durationSeconds: 'asc' },
         { completedAtMs: 'asc' }, // Tie-break: earlier completion wins
-        { prestigeLevel: 'desc' }, // Second tie-break: higher prestige level
+        { prestigeLevel: 'desc' }, // Second tie-break: higher Legacy Power (DB column predates the Legacy migration)
       ],
       take: limit,
       include: {
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       allianceTag: a.profile.allianceMembership?.alliance?.tag || null,
       elapsedMs: (a.durationSeconds ?? 0) * 1000,
       elapsedFormatted: formatElapsedTime((a.durationSeconds ?? 0) * 1000),
-      prestigeLevel: a.prestigeLevel,
+      legacyPower: a.prestigeLevel,
       bracket: a.bracket,
       bracketName: getBracketDisplayName(a.bracket as SpeedRunBracket),
       completedAt: a.completedAtMs,

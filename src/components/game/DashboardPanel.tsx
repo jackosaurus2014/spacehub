@@ -13,6 +13,11 @@ import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMult
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { LOCATIONS } from '@/lib/game/solar-system';
 import { getFrontierSummary, FRONTIER_GRADUATION_NET_WORTH } from '@/lib/game/frontier';
+import {
+  computeInsuredAssetValue,
+  countInsuranceRiskLocations,
+  getMonthlyInsurancePremium,
+} from '@/lib/game/economic-sinks';
 import IncomeChart from '@/components/game/IncomeChart';
 import DashboardVizBlock from '@/components/game/DashboardVizBlock';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
@@ -457,6 +462,17 @@ function QuickNavGrid({
   if (unreadReports > 0) alerts.push({ icon: '📬', label: `${unreadReports} unread report${unreadReports !== 1 ? 's' : ''}`, tone: 'cyan' });
   const recentHazard = (state.recentHazards || []).find(h => Date.now() - h.occurredAtMs < 10 * 60 * 1000);
   if (recentHazard) alerts.push({ icon: '☢️', label: `Recent hazard: ${recentHazard.type.replace(/_/g, ' ')}`, tone: 'amber' });
+  // Wave F UI surfacing (b): forecast warnings for next game-month, distinct
+  // from recentHazard above (which is a hazard that already struck).
+  const hazardWarningCount = (state.hazardWarnings || []).length;
+  const severeHazardWarning = (state.hazardWarnings || []).some(w => w.severity === 'severe');
+  if (hazardWarningCount > 0) {
+    alerts.push({
+      icon: '⚠️',
+      label: `${hazardWarningCount} hazard warning${hazardWarningCount !== 1 ? 's' : ''} forecast next month`,
+      tone: severeHazardWarning ? 'red' : 'amber',
+    });
+  }
 
   return (
     <div className="space-y-2">
@@ -498,7 +514,7 @@ function QuickNavGrid({
   );
 }
 
-export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void }) {
+export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate, onSetInsuranceActive }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void; onSetInsuranceActive?: (active: boolean) => void }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
 
@@ -1042,6 +1058,97 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate 
                 </div>
               ));
             })()}
+          </div>
+        )}
+      </div>
+
+      {/* Risk & Reserves — Wave F UI surfacing (b/d): insurance toggle
+          (economic-sinks.ts), hazard warnings (state.hazardWarnings), and
+          the T5+ cash-reserve meter (state.reserveStatus). CLAUDE.md "no
+          combat — but real risk": these are the risk-management decisions
+          hazards/insurance were designed to create. */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+        <h3 className="text-white text-xs font-bold uppercase tracking-wider">
+          Risk &amp; Reserves
+        </h3>
+
+        {/* Insurance */}
+        <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span aria-hidden="true">🛡️</span>
+              <span className="text-xs font-semibold text-white">Hazard Insurance</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${state.insuranceActive !== false ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-500/15 text-slate-400'}`}>
+                {state.insuranceActive !== false ? 'Active' : 'Uninsured'}
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-500 mt-0.5">
+              {formatMoney(computeInsuredAssetValue(state))} insured · {countInsuranceRiskLocations(state)} high-risk location{countInsuranceRiskLocations(state) === 1 ? '' : 's'} · {formatMoney(getMonthlyInsurancePremium(state))}/mo premium
+            </p>
+          </div>
+          {onSetInsuranceActive && (
+            <button
+              type="button"
+              onClick={() => onSetInsuranceActive(!(state.insuranceActive !== false))}
+              aria-pressed={state.insuranceActive !== false}
+              className={`shrink-0 min-h-[36px] px-3 rounded-lg text-[10px] font-bold transition-colors ${
+                state.insuranceActive !== false
+                  ? 'bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'
+                  : 'bg-white/[0.06] text-slate-300 hover:bg-white/[0.1]'
+              }`}
+            >
+              {state.insuranceActive !== false ? 'Cancel Policy' : 'Buy Coverage'}
+            </button>
+          )}
+        </div>
+
+        {/* Reserve meter — T5+ corporations only (economic-sinks §7) */}
+        {(state.corporationTier || 1) >= 5 && state.reserveStatus && (
+          <div className={`flex items-center justify-between gap-2 p-2.5 rounded-lg border ${
+            state.reserveStatus.status === 'critical' ? 'bg-red-500/10 border-red-500/25'
+              : state.reserveStatus.status === 'warning' ? 'bg-amber-500/10 border-amber-500/25'
+              : 'bg-white/[0.02] border-white/[0.05]'
+          }`}>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span aria-hidden="true">🏦</span>
+                <span className="text-xs font-semibold text-white">Cash Reserve</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
+                  state.reserveStatus.status === 'critical' ? 'bg-red-500/20 text-red-300'
+                    : state.reserveStatus.status === 'warning' ? 'bg-amber-500/20 text-amber-300'
+                    : 'bg-emerald-500/15 text-emerald-300'
+                }`}>
+                  {state.reserveStatus.status}
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                3-month runway target: {formatMoney(state.reserveStatus.requiredReserve)}
+                {state.reserveStatus.efficiencyMultiplier < 1 && (
+                  <span className="text-amber-400"> · service revenue at {Math.round(state.reserveStatus.efficiencyMultiplier * 100)}% until restored</span>
+                )}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Hazard warnings — forecast for next game-month */}
+        {(state.hazardWarnings || []).length > 0 && (
+          <div className="space-y-1">
+            <p className="text-[9px] text-slate-500 uppercase tracking-wider">Hazard Forecast</p>
+            {(state.hazardWarnings || []).slice(0, 4).map(w => (
+              <div
+                key={w.id}
+                className={`flex items-center gap-2 text-[10px] px-2 py-1.5 rounded-lg border ${
+                  w.severity === 'severe' ? 'bg-red-500/10 border-red-500/20 text-red-300'
+                    : w.severity === 'major' ? 'bg-amber-500/10 border-amber-500/20 text-amber-300'
+                    : 'bg-white/[0.03] border-white/[0.06] text-slate-400'
+                }`}
+              >
+                <span aria-hidden="true">⚠️</span>
+                <span>{w.summary}</span>
+                <span className="ml-auto font-mono text-[9px] text-slate-500">{LOCATION_MAP.get(w.locationId)?.name || w.locationId}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>

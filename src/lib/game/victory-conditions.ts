@@ -362,23 +362,26 @@ export const VICTORY_CONDITIONS: VictoryDefinition[] = [
   {
     id: 'hegemon',
     name: 'Hegemon',
-    description: 'Achieve 6 of the 10 other victories, prestige at least once, and earn 15+ achievements.',
+    description: 'Achieve 6 of the 10 other victories, reach 250+ Legacy Power, and earn 15+ achievements.',
     icon: '👑',
     title: 'Ascendant',
     reward: { revenueMultiplier: 1.10, buildSpeedMultiplier: 1.05, researchSpeedMultiplier: 1.05, miningMultiplier: 1.05 },
     check: (s) => {
       const earnedVictories = s.earnedVictories || [];
       const otherVictories = earnedVictories.filter(v => v !== 'hegemon').length;
-      const hasPrestige = (s.prestige?.level || 0) >= 1;
+      // Wave F (A9): replaces the deprecated prestige.level >= 1 gate with a
+      // Legacy Power bar (legacy-system.ts — the permanent-progression system
+      // that superseded prestige). 250 LP ~= sustained mid/late-game progress.
+      const hasLegacyPower = (s.legacy?.legacyPower || 0) >= 250;
       const achievementCount = (s.earnedAchievements || []).length;
-      return otherVictories >= 6 && hasPrestige && achievementCount >= 15;
+      return otherVictories >= 6 && hasLegacyPower && achievementCount >= 15;
     },
     progress: (s) => {
       const earnedVictories = s.earnedVictories || [];
       const otherVictories = earnedVictories.filter(v => v !== 'hegemon').length;
       const details = [
         { label: 'Other Victories', current: Math.min(otherVictories, 6), target: 6 },
-        { label: 'Prestige Level', current: Math.min(s.prestige?.level || 0, 1), target: 1 },
+        { label: 'Legacy Power', current: Math.min(s.legacy?.legacyPower || 0, 250), target: 250 },
         { label: 'Achievements', current: Math.min((s.earnedAchievements || []).length, 15), target: 15 },
       ];
       const percent = details.reduce((sum, d) => sum + Math.min(1, d.current / d.target), 0) / details.length;
