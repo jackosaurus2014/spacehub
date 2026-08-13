@@ -36,6 +36,21 @@ interface AnalyticsData {
   };
 }
 
+interface GrowthMetricsData {
+  generatedAt: string;
+  mau: number | null;
+  wau: number | null;
+  searchClicks: number | null;
+  searchImpressions: number | null;
+  goal: {
+    target: number;
+    milestones: Array<{ date: string; target: number }>;
+    currentTarget: number;
+    onTrack: boolean | null;
+  };
+  errors: string[];
+}
+
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   free: { label: 'Explorer (Free)', color: 'bg-slate-500/20 text-slate-300 border-slate-500/30' },
   pro: { label: 'Professional', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
@@ -50,6 +65,9 @@ export default function AdminAnalyticsPage() {
   // Blog post count comes from /api/stats so the multi-MB blog-content
   // module stays out of the client bundle.
   const [blogPostCount, setBlogPostCount] = useState<number | null>(null);
+  const [growthData, setGrowthData] = useState<GrowthMetricsData | null>(null);
+  const [growthLoading, setGrowthLoading] = useState(true);
+  const [growthError, setGrowthError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/stats')
@@ -62,6 +80,28 @@ export default function AdminAnalyticsPage() {
       .catch(() => {
         // Non-critical stat; leave as null
       });
+  }, []);
+
+  const fetchGrowthMetrics = useCallback(async () => {
+    setGrowthLoading(true);
+    setGrowthError(null);
+    try {
+      const res = await fetch('/api/admin/growth-metrics');
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        throw new Error(json?.error?.message || `Failed to load growth metrics (${res.status})`);
+      }
+      const json = await res.json();
+      if (json.success) {
+        setGrowthData(json.data);
+      } else {
+        throw new Error('Unexpected response');
+      }
+    } catch (err) {
+      setGrowthError(err instanceof Error ? err.message : 'Failed to load growth metrics');
+    } finally {
+      setGrowthLoading(false);
+    }
   }, []);
 
   const fetchAnalytics = useCallback(async () => {
@@ -89,8 +129,9 @@ export default function AdminAnalyticsPage() {
   useEffect(() => {
     if (session?.user?.isAdmin) {
       fetchAnalytics();
+      fetchGrowthMetrics();
     }
-  }, [session, fetchAnalytics]);
+  }, [session, fetchAnalytics, fetchGrowthMetrics]);
 
   if (authStatus === 'loading') {
     return (
@@ -127,6 +168,18 @@ export default function AdminAnalyticsPage() {
             >
               Back to Admin
             </Link>
+          </div>
+        </ScrollReveal>
+
+        {/* Growth — 10k MAU Goal */}
+        <ScrollReveal delay={0.05}>
+          <div className="mb-8">
+            <GrowthMetricsCard
+              data={growthData}
+              loading={growthLoading}
+              error={growthError}
+              onRetry={fetchGrowthMetrics}
+            />
           </div>
         </ScrollReveal>
 
@@ -499,6 +552,192 @@ export default function AdminAnalyticsPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// --------------- Growth — 10k MAU Goal ---------------
+
+function GrowthMetricsCard({
+  data,
+  loading,
+  error,
+  onRetry,
+}: {
+  data: GrowthMetricsData | null;
+  loading: boolean;
+  error: string | null;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="card border border-space-600/50 p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="text-white font-semibold text-lg">Growth — 10k MAU Goal</h2>
+        {data && (
+          <span className="text-star-500 text-xs">
+            updated {new Date(data.generatedAt).toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: '2-digit' })} UTC
+          </span>
+        )}
+      </div>
+      <p className="text-star-400 text-xs mb-4">
+        GA4 active users + Search Console clicks, tracked against 10,000 MAU by Nov 12, 2026
+      </p>
+
+      {loading && (
+        <div className="flex justify-center py-10">
+          <LoadingSpinner size="md" />
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-4">
+          <p className="text-red-400 font-medium text-sm">Error loading growth metrics</p>
+          <p className="text-red-300 text-sm mt-1">{error}</p>
+          <button onClick={onRetry} className="text-red-300 underline hover:no-underline text-sm mt-2">
+            Try again
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && data && (
+        <div className="space-y-5">
+          {/* Metrics not available */}
+          {data.mau === null && data.wau === null && (
+            <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-4">
+              <p className="text-yellow-300 text-sm font-medium">
+                Growth metrics unavailable: credentials not configured or API error
+              </p>
+              {data.errors.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {data.errors.map((e, i) => (
+                    <li key={i} className="text-yellow-200/80 text-xs">&bull; {e}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {/* Errors alongside partial data (e.g. GA4 ok, Search Console failed) */}
+          {(data.mau !== null || data.wau !== null) && data.errors.length > 0 && (
+            <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-3">
+              <p className="text-yellow-300 text-xs font-medium">Some metrics failed to load:</p>
+              <ul className="mt-1 space-y-0.5">
+                {data.errors.map((e, i) => (
+                  <li key={i} className="text-yellow-200/80 text-xs">&bull; {e}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Summary tiles */}
+          <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StaggerItem>
+              <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                <p className="text-star-400 text-sm font-medium">MAU</p>
+                <p className="text-3xl font-bold text-purple-400 mt-1">
+                  {data.mau !== null ? data.mau.toLocaleString() : '—'}
+                </p>
+                <p className="text-star-500 text-xs mt-1">last 30 days (GA4)</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                <p className="text-star-400 text-sm font-medium">WAU</p>
+                <p className="text-3xl font-bold text-blue-400 mt-1">
+                  {data.wau !== null ? data.wau.toLocaleString() : '—'}
+                </p>
+                <p className="text-star-500 text-xs mt-1">last 7 days (GA4)</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                <p className="text-star-400 text-sm font-medium">Search Clicks</p>
+                <p className="text-3xl font-bold text-cyan-400 mt-1">
+                  {data.searchClicks !== null ? data.searchClicks.toLocaleString() : '—'}
+                </p>
+                <p className="text-star-500 text-xs mt-1">last 28 days (GSC)</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                <p className="text-star-400 text-sm font-medium">Search Impressions</p>
+                <p className="text-3xl font-bold text-amber-400 mt-1">
+                  {data.searchImpressions !== null ? data.searchImpressions.toLocaleString() : '—'}
+                </p>
+                <p className="text-star-500 text-xs mt-1">last 28 days (GSC)</p>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
+
+          {/* Goal progress */}
+          <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <div>
+                <p className="text-star-400 text-sm font-medium">Today&apos;s interpolated target</p>
+                <p className="text-2xl font-bold text-white mt-0.5">
+                  {data.goal.currentTarget.toLocaleString()}
+                  <span className="text-star-500 text-sm font-normal"> / {data.goal.target.toLocaleString()} goal</span>
+                </p>
+              </div>
+              <span
+                className={`inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full border ${
+                  data.goal.onTrack === null
+                    ? 'bg-white/10 text-star-300 border-white/20'
+                    : data.goal.onTrack
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    : 'bg-red-500/20 text-red-300 border-red-500/30'
+                }`}
+              >
+                {data.goal.onTrack === null ? 'STATUS UNKNOWN' : data.goal.onTrack ? 'ON TRACK' : 'BEHIND PACE'}
+              </span>
+            </div>
+
+            {data.mau !== null && (
+              <div className="h-3 w-full rounded-full bg-white/[0.06] overflow-hidden mb-1">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-purple-400/50 to-blue-500/70 transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.max(2, (data.mau / data.goal.target) * 100))}%` }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Milestones */}
+          <div>
+            <h3 className="text-star-300 text-sm font-medium mb-2">Milestones</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {data.goal.milestones.map((m) => {
+                const isPast = new Date(m.date).getTime() <= Date.now();
+                const met = isPast && data.mau !== null && data.mau >= m.target;
+                return (
+                  <div
+                    key={m.date}
+                    className="rounded-lg border border-space-600/30 bg-space-700/10 px-3 py-2 flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="text-white text-sm font-medium">
+                        {new Date(m.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
+                      </p>
+                      <p className="text-star-500 text-xs">{m.target.toLocaleString()} MAU</p>
+                    </div>
+                    {isPast && (
+                      <span
+                        className={`text-xs font-medium px-2 py-0.5 rounded-full border ${
+                          met
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                            : 'bg-red-500/20 text-red-300 border-red-500/30'
+                        }`}
+                      >
+                        {met ? 'MET' : 'MISSED'}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
