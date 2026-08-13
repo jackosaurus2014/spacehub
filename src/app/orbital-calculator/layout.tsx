@@ -4,17 +4,17 @@ import FAQSchema from '@/components/seo/FAQSchema';
 import { TOOL_FAQS } from '@/lib/tool-faqs';
 
 export const metadata: Metadata = {
-  title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity',
-  description: 'Calculate Hohmann transfer delta-v, orbital periods, escape velocities, and satellite orbital decay. Interactive tools for mission planning with real physics formulas.',
+  title: 'Orbital Calculator: Delta-V & Escape Velocity',
+  description: 'Calculate Hohmann transfer delta-v, orbital period, and escape velocity with real physics formulas. Free interactive tool for satellite mission planning.',
   openGraph: {
-    title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity | SpaceNexus',
-    description: 'Calculate Hohmann transfer delta-v, orbital periods, escape velocities, and satellite orbital decay. Interactive tools for mission planning with real physics formulas.',
+    title: 'Orbital Calculator: Delta-V & Escape Velocity',
+    description: 'Calculate Hohmann transfer delta-v, orbital period, and escape velocity with real physics formulas. Free interactive tool for satellite mission planning.',
     type: 'website',
   },
     twitter: {
     card: 'summary_large_image',
-    title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity | SpaceNexus',
-    description: 'Calculate Hohmann transfer delta-v, orbital periods, escape velocities, and satellite orbital decay. Interactive tools for mission planning with real physics formulas.',
+    title: 'Orbital Calculator: Delta-V & Escape Velocity',
+    description: 'Calculate Hohmann transfer delta-v, orbital period, and escape velocity with real physics formulas. Free interactive tool for satellite mission planning.',
     images: ['/og-image.png'],
   },
   alternates: {

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Iridium vs Starlink: Satellite Connectivity Comparison 2026',
-  description: 'Compare Iridium and Starlink side by side — L-band IoT/voice vs Ka/Ku broadband, coverage, latency, use cases, pricing, and constellation architecture. Updated 2026.',
+  title: 'Iridium vs Starlink 2026: 66 vs 6,000+ Sats',
+  description: 'Iridium\'s 66-satellite L-band network vs Starlink\'s 6,000+ satellite broadband constellation — coverage, latency, pricing, and use cases compared for 2026.',
   keywords: ['Iridium vs Starlink', 'satellite internet comparison', 'LEO satellite connectivity', 'Iridium NEXT', 'Starlink broadband', 'satellite IoT 2026'],
   openGraph: {
-    title: 'Iridium vs Starlink: Satellite Connectivity Comparison 2026 | SpaceNexus',
-    description: 'Side-by-side comparison of Iridium and Starlink — L-band voice/IoT vs broadband, coverage models, and target markets.',
+    title: 'Iridium vs Starlink 2026: 66 vs 6,000+ Sats',
+    description: 'Iridium\'s 66-satellite L-band network vs Starlink\'s 6,000+ satellite broadband constellation — coverage, latency, pricing, and use cases compared for 2026.',
     url: 'https://spacenexus.us/compare/iridium-vs-starlink',
     type: 'article',
     images: [{
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Iridium vs Starlink: Satellite Connectivity Comparison 2026 | SpaceNexus',
-    description: 'Iridium vs Starlink — fundamentally different satellite connectivity approaches compared.',
+    title: 'Iridium vs Starlink 2026: 66 vs 6,000+ Sats',
+    description: 'Iridium\'s 66-satellite L-band network vs Starlink\'s 6,000+ satellite broadband constellation, compared for 2026.',
     images: ['/api/og?title=Iridium+vs+Starlink&subtitle=Satellite+Connectivity+Comparison+2026&type=compare'],
   },
   alternates: { canonical: 'https://spacenexus.us/compare/iridium-vs-starlink' },

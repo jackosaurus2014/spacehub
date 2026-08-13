@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Top Space Companies to Watch',
-  description: 'Discover the most innovative and influential space companies to watch. Profiles, funding data, and key milestones for leading aerospace firms.',
+  title: '25 Space Companies to Watch in 2026',
+  description: 'The 25 space companies to watch in 2026: SpaceX, Rocket Lab, Axiom Space, Planet Labs, and rising startups in launch, satellites, defense, and stations.',
   alternates: {
     canonical: 'https://spacenexus.us/learn/space-companies-to-watch',
   },
   openGraph: {
-    title: 'Top Space Companies to Watch | SpaceNexus',
-    description: 'Discover the most innovative and influential space companies to watch. Profiles, funding data, and key milestones for leading aerospace firms.',
+    title: '25 Space Companies to Watch in 2026 | SpaceNexus',
+    description: 'The 25 space companies to watch in 2026: SpaceX, Rocket Lab, Axiom Space, Planet Labs, and rising startups in launch, satellites, defense, and stations.',
   },
 };
 

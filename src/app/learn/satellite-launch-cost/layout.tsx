@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Satellite Launch Cost Guide',
-  description: 'How much does it cost to launch a satellite? Comprehensive breakdown of launch costs by vehicle, orbit, and payload size.',
+  title: 'How Much to Launch a Satellite in 2026? $2,720/kg',
+  description: 'Falcon 9 launches for about $2,720/kg; rideshare starts near $5,000/kg. See the full 2026 breakdown of satellite launch costs by vehicle, orbit, and payload.',
   alternates: {
     canonical: 'https://spacenexus.us/learn/satellite-launch-cost',
   },
   openGraph: {
-    title: 'Satellite Launch Cost Guide | SpaceNexus',
-    description: 'How much does it cost to launch a satellite? Comprehensive breakdown of launch costs by vehicle, orbit, and payload size.',
+    title: 'How Much to Launch a Satellite in 2026? $2,720/kg | SpaceNexus',
+    description: 'Falcon 9 launches for about $2,720/kg; rideshare starts near $5,000/kg. See the full 2026 breakdown of satellite launch costs by vehicle, orbit, and payload.',
   },
 };
 

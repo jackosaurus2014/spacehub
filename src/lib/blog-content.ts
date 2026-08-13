@@ -2168,15 +2168,15 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'direct-to-device-satellites-replace-cell-towers',
-    title: 'Direct-to-Device: How Satellites Will Replace Cell Towers by 2030',
-    excerpt: 'AST SpaceMobile is launching commercial satellite-to-smartphone service in 2026, with partnerships spanning AT&T, Verizon, and Orange. With forecasts of 411 million users and $12 billion in revenue by 2030, direct-to-device is the most disruptive technology in telecommunications. Here\'s how it works and who wins.',
+    title: 'Will Satellites Replace Cell Towers? 2026 D2D Guide',
+    excerpt: 'AST SpaceMobile\'s satellite-to-smartphone service is live in 2026, with AT&T, Verizon, and Orange on board. Will it really replace cell towers? Here\'s the case for and against.',
     category: 'technology',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-14T00:00:00Z',
     readingTime: 13,
     featured: true,
-    keywords: ['direct-to-device', 'AST SpaceMobile', 'satellite-to-smartphone', 'Starlink D2D', 'cell tower replacement', 'satellite broadband', 'mobile satellite service', 'AT&T satellite', 'Verizon satellite', 'D2D satellite technology'],
+    keywords: ['will satellites replace cell towers', 'direct-to-device', 'AST SpaceMobile', 'satellite-to-smartphone', 'Starlink D2D', 'cell tower replacement', 'satellite broadband', 'mobile satellite service', 'AT&T satellite', 'Verizon satellite', 'D2D satellite technology'],
     content: `
 <p>In September 2025, AST SpaceMobile made a phone call that changed the telecommunications industry forever. Using an unmodified Samsung Galaxy smartphone, they completed a <strong>voice call routed entirely through a satellite in low Earth orbit</strong> — no cell tower, no specialized antenna, no satellite phone. Just a regular smartphone connecting directly to a spacecraft 450 miles overhead.</p>
 
@@ -3508,8 +3508,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'space-launch-schedule-2026-complete-guide',
-    title: 'Space Launch Schedule 2026: Every Mission You Need to Know',
-    excerpt: 'The complete guide to every major rocket launch in 2026 — from Artemis II and Starship V3 to New Glenn and Vulcan. Monthly breakdown, launch providers, how to watch, and real-time tracking with SpaceNexus.',
+    title: 'Space Launch Schedule 2026: Every Mission',
+    excerpt: '2026 is on pace for 300+ orbital launches. Track Artemis II, Starship V3, New Glenn, and Vulcan month by month, with how-to-watch details for every mission.',
     category: 'guide',
     author: 'SpaceNexus Team',
     authorRole: 'Mission Intelligence',
@@ -6787,8 +6787,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'how-many-satellites-in-space-2026',
-    title: 'How Many Satellites Are in Space? A 2026 Guide',
-    excerpt: 'A comprehensive breakdown of the 10,000+ active satellites orbiting Earth in 2026, who operates them, what they do, and how the number is growing exponentially.',
+    title: 'How Many Satellites in Space? 10,500+ (2026)',
+    excerpt: 'Active satellites in orbit passed 10,500 in 2026, nearly triple the 2019 count. See who operates them — Starlink, OneWeb, Planet Labs, governments — and why.',
     category: 'guide',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
@@ -14499,8 +14499,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'economics-satellite-launch-cost-per-kilogram',
-    title: 'The Economics of Satellite Launch: Cost Per Kilogram Explained',
-    excerpt: 'Cost per kilogram to orbit is the single most important metric in the launch industry. Understanding how it is calculated, how it varies across vehicles, and where it is heading reveals the economic forces reshaping spaceflight.',
+    title: 'Cost Per Kilogram to Orbit 2026: $2,700/kg',
+    excerpt: 'Falcon 9 delivers cargo to orbit for about $2,700/kg; Starship targets under $100/kg. How cost per kilogram is calculated, and where it\'s heading in 2026.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
@@ -17379,8 +17379,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'satellite-frequency-bands-explained-l-s-c-x-ku-ka',
-    title: 'Satellite Frequency Bands Explained: L, S, C, X, Ku, Ka',
-    excerpt: 'A comprehensive breakdown of every major satellite frequency band — from L-band maritime links to Ka-band broadband — covering allocations, use cases, advantages, and the regulatory landscape shaping spectrum access.',
+    title: 'Satellite Frequency Bands: L to Ka (2026)',
+    excerpt: 'L-band to Ka-band explained: allocations, antenna size, rain fade, and who uses each — Iridium, DirecTV, WGS, Starlink. Updated for 2026 spectrum rules.',
     category: 'technology',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',

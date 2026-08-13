@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Statistics & Facts | SpaceNexus',
+  title: 'Space Industry Stats 2026: $626B, 10K+ Sats',
   description:
-    'Comprehensive space industry statistics: market size ($626B+), launch stats (230+ orbital launches), 10,000+ active satellites, $95B+ government spending, 360,000+ US workforce, and $10B+ annual VC investment. The definitive space economy reference.',
+    '$626B market, 10,000+ active satellites, 230+ annual launches, and $95B in government spending -- the definitive 2026 space industry statistics reference.',
   keywords: [
     'space industry statistics',
     'space industry market size',
@@ -17,17 +17,17 @@ export const metadata: Metadata = {
     'space workforce statistics',
   ],
   openGraph: {
-    title: 'Space Industry Statistics & Facts | SpaceNexus',
+    title: 'Space Industry Stats 2026: $626B, 10K+ Sats',
     description:
-      'The definitive reference for space industry statistics: $626B market, 230+ annual launches, 10,000+ satellites, 70+ space agencies, and more.',
+      '$626B market, 10,000+ active satellites, 230+ annual launches, and $95B in government spending -- the definitive 2026 space industry statistics reference.',
     url: 'https://spacenexus.us/space-stats',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Space Industry Statistics & Facts',
+    title: 'Space Industry Stats 2026: $626B, 10K+ Sats',
     description:
-      'Comprehensive space industry statistics: market size, launch data, satellites, government spending, workforce, and investment figures.',
+      '$626B market, 10,000+ active satellites, 230+ annual launches, and $95B in government spending in 2026.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/space-stats',

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SpaceX vs Blue Origin: Space Industry Comparison | SpaceNexus',
+  title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
   description:
-    'Compare SpaceX and Blue Origin side-by-side: launch vehicles, mission history, pricing, orbital capabilities, and future roadmaps. Data-driven analysis of the top commercial space companies.',
+    'SpaceX has flown 300+ orbital missions; Blue Origin\'s New Glenn has flown 2. Compare launch vehicles, payload capacity, reusability, and roadmaps for 2026.',
   keywords: [
     'SpaceX vs Blue Origin',
     'Falcon 9 vs New Glenn',
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
     'launch vehicle comparison',
   ],
   openGraph: {
-    title: 'SpaceX vs Blue Origin: Space Industry Comparison | SpaceNexus',
+    title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
     description:
-      'Compare SpaceX and Blue Origin side-by-side: launch vehicles, mission history, pricing, orbital capabilities, and future roadmaps.',
+      'SpaceX has flown 300+ orbital missions; Blue Origin\'s New Glenn has flown 2. Compare launch vehicles, payload capacity, reusability, and roadmaps for 2026.',
     type: 'website',
     url: 'https://spacenexus.us/compare/spacex-vs-blue-origin',
     siteName: 'SpaceNexus',
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SpaceX vs Blue Origin: Space Industry Comparison | SpaceNexus',
+    title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
     description:
-      'Compare SpaceX and Blue Origin side-by-side: launch vehicles, mission history, pricing, orbital capabilities, and future roadmaps.',
+      'SpaceX has flown 300+ orbital missions; Blue Origin\'s New Glenn has flown 2. Compare launch vehicles, payload capacity, reusability, and roadmaps for 2026.',
     images: ['/api/og?title=SpaceX+vs+Blue+Origin&type=compare'],
   },
   alternates: {

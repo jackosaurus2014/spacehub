@@ -10,10 +10,11 @@ import { SITE_STATS } from '@/lib/site-stats';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: '2026 Space Launch Schedule: Every Mission This Year | SpaceNexus',
+  title: 'Cape Canaveral Launch Schedule: 150+ in 2026',
   description:
-    'Complete 2026 space launch schedule with dates, launch vehicles, payloads, and launch sites. Track SpaceX Falcon 9, Starship, ULA Vulcan, Rocket Lab Electron, and every orbital mission worldwide.',
+    'See every Cape Canaveral rocket launch in 2026 -- SpaceX, ULA, and Blue Origin missions from SLC-40 and SLC-41, with dates, times, and how to watch live.',
   keywords: [
+    'cape canaveral launch schedule 2026',
     'space launch schedule 2026',
     'rocket launch schedule',
     'SpaceX launch schedule',
@@ -24,9 +25,9 @@ export const metadata: Metadata = {
     'orbital launch manifest',
   ],
   openGraph: {
-    title: '2026 Space Launch Schedule — Every Mission This Year',
+    title: 'Cape Canaveral Launch Schedule: 150+ in 2026',
     description:
-      'Track every orbital and suborbital launch in 2026. Complete schedule with dates, vehicles, payloads, and real-time updates.',
+      'See every Cape Canaveral rocket launch in 2026 -- SpaceX, ULA, and Blue Origin missions, with dates, times, and how to watch live.',
     type: 'article',
     publishedTime: '2026-02-14T00:00:00Z',
     authors: ['SpaceNexus'],

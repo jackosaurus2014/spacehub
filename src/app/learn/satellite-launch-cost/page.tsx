@@ -7,10 +7,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'How Much Does It Cost to Launch a Satellite in 2026? | SpaceNexus',
+  title: 'How Much to Launch a Satellite in 2026? $2,720/kg',
   description:
-    'Complete satellite launch cost breakdown by provider: SpaceX Falcon 9 ($2,720/kg), Rocket Lab Electron ($25,000/kg), ULA Vulcan, Arianespace Ariane 6. Rideshare from $5,000/kg. Compare pricing, orbit types, and calculate your mission cost.',
+    'Falcon 9 launches for about $2,720/kg; rideshare starts near $5,000/kg. See the full 2026 breakdown of satellite launch costs by vehicle, orbit, and payload.',
   keywords: [
+    'how much does it cost to launch a satellite',
     'satellite launch cost',
     'how much to launch a satellite',
     'space launch pricing',
@@ -26,18 +27,18 @@ export const metadata: Metadata = {
     'GEO launch cost',
   ],
   openGraph: {
-    title: 'How Much Does It Cost to Launch a Satellite in 2026?',
+    title: 'How Much to Launch a Satellite in 2026? $2,720/kg',
     description:
-      'Complete breakdown of satellite launch costs by provider, orbit type, and payload mass. Compare rideshare vs. dedicated pricing.',
+      'Falcon 9 launches for about $2,720/kg; rideshare starts near $5,000/kg. Full 2026 breakdown by vehicle, orbit, and payload.',
     type: 'article',
     url: 'https://spacenexus.us/learn/satellite-launch-cost',
     siteName: 'SpaceNexus',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'How Much Does It Cost to Launch a Satellite in 2026?',
+    title: 'How Much to Launch a Satellite in 2026? $2,720/kg',
     description:
-      'Complete breakdown of satellite launch costs by provider, orbit, and mass. Rideshare from $5,000/kg.',
+      'Falcon 9 launches for about $2,720/kg; rideshare starts near $5,000/kg. Full 2026 breakdown by vehicle, orbit, and payload.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/learn/satellite-launch-cost',

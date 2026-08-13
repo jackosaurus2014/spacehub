@@ -8,10 +8,11 @@ import { SITE_STATS } from '@/lib/site-stats';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Top 25 Space Companies to Watch in 2026 | SpaceNexus',
+  title: '25 Space Companies to Watch in 2026',
   description:
-    'The definitive list of 25 space companies to watch in 2026 across launch providers, satellite manufacturers, Earth observation, space stations, and defense. Includes SpaceX, Rocket Lab, Axiom Space, Planet Labs, and emerging startups.',
+    'The 25 space companies to watch in 2026: SpaceX, Rocket Lab, Axiom Space, Planet Labs, and rising startups in launch, satellites, defense, and stations.',
   keywords: [
+    'space companies',
     'top space companies',
     'space companies to invest in',
     'best aerospace companies',
@@ -26,18 +27,18 @@ export const metadata: Metadata = {
     'space defense companies',
   ],
   openGraph: {
-    title: 'Top 25 Space Companies to Watch in 2026',
+    title: '25 Space Companies to Watch in 2026',
     description:
-      'From SpaceX to emerging startups, discover the 25 most important companies driving the space economy across launch, satellites, defense, Earth observation, and space stations.',
+      'The 25 space companies to watch in 2026: SpaceX, Rocket Lab, Axiom Space, Planet Labs, and rising startups in launch, satellites, defense, and stations.',
     type: 'article',
     url: 'https://spacenexus.us/learn/space-companies-to-watch',
     siteName: 'SpaceNexus',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Top 25 Space Companies to Watch in 2026',
+    title: '25 Space Companies to Watch in 2026',
     description:
-      'The 25 most important companies shaping the space industry: launch, satellites, defense, EO, and space stations.',
+      'The 25 space companies to watch in 2026: SpaceX, Rocket Lab, Axiom Space, Planet Labs, and rising startups in launch, satellites, defense, and stations.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/learn/space-companies-to-watch',

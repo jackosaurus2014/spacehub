@@ -6,12 +6,12 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'SpaceX vs Blue Origin: Complete Comparison 2026',
-  description: 'Compare SpaceX and Blue Origin side by side — launch vehicles, funding, missions, employees, satellites, and strategy. Updated data from SpaceNexus intelligence platform.',
-  keywords: ['SpaceX vs Blue Origin', 'SpaceX comparison', 'Blue Origin comparison', 'space company comparison', 'rocket companies compared'],
+  title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
+  description: 'SpaceX has flown 300+ orbital missions; Blue Origin\'s New Glenn has flown 2. Compare launch vehicles, payload capacity, reusability, and roadmaps for 2026.',
+  keywords: ['Blue Origin vs SpaceX', 'SpaceX vs Blue Origin', 'SpaceX comparison', 'Blue Origin comparison', 'space company comparison', 'rocket companies compared'],
   openGraph: {
-    title: 'SpaceX vs Blue Origin: Complete Comparison 2026 | SpaceNexus',
-    description: 'Side-by-side comparison of SpaceX and Blue Origin with real data on launches, funding, employees, and strategy.',
+    title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
+    description: 'SpaceX has flown 300+ orbital missions; Blue Origin\'s New Glenn has flown 2. Compare launch vehicles, payload capacity, reusability, and roadmaps for 2026.',
     url: 'https://spacenexus.us/compare/spacex-vs-blue-origin',
     type: 'article',
   },
