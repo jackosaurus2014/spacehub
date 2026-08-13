@@ -10,7 +10,7 @@ import { playSound } from '@/lib/game/sound-engine';
 
 // Friendly group labels for the keyboard-accessible Location List, keyed by
 // SolarSystemLocation.type. Mirrors the bodies actually present in LOCATIONS.
-const REGION_LABELS: Record<LocationType, string> = {
+export const REGION_LABELS: Record<LocationType, string> = {
   earth_surface: 'Earth',
   earth_orbit: 'Earth Orbit',
   moon: 'Lunar System',
@@ -46,6 +46,16 @@ interface SolarSystemCanvasProps {
    *  backdrop + any ambient ops can follow the player's attention. Passing
    *  null means the user deselected (clicked empty space). */
   onSelectLocation?: (locId: string | null) => void;
+  /** Map-first command mode (Wave 9): canvas fills its container's full
+   *  height instead of a fixed 460px, the inline "Selected Location Details"
+   *  card is suppressed (the parent's MapContextPanel takes over that job),
+   *  and the keyboard-accessible Location List becomes a collapsible overlay
+   *  instead of a stacked block, so the canvas keeps the whole viewport. */
+  embedded?: boolean;
+  /** Controlled selection — lets the parent (map command center) drive the
+   *  highlighted location from the Order Queue HUD or the context panel's
+   *  close button, staying in sync with clicks/keyboard selection made here. */
+  selectedLocationId?: string | null;
 }
 
 // Visual layout: positions, radius, color, emoji per location.
@@ -166,10 +176,19 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
   return { cache: cacheRef.current, loaded };
 }
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
+
+  // Stay in sync with an externally-driven selection (e.g. the Order Queue
+  // HUD or the map context panel's close button in embedded mode).
+  useEffect(() => {
+    if (selectedLocationId !== undefined && selectedLocationId !== selectedLoc) {
+      setSelectedLoc(selectedLocationId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLocationId]);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -697,6 +716,135 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
   const shipsAtSelected = selectedLoc ? (state.ships || []).filter(s => s.isBuilt && s.currentLocation === selectedLoc) : [];
   const shipsInTransit = (state.ships || []).filter(s => s.isBuilt && s.status === 'in_transit');
 
+  // Shared JSX fragments — the keyboard Location List is used both as a
+  // stacked block (standalone/legacy layout) and as a bottom-left overlay
+  // (embedded map-command layout). Same markup, same selectLocation() calls.
+  const locationListBody = (
+    <>
+      <button
+        type="button"
+        onClick={() => setListExpanded(v => !v)}
+        aria-expanded={listExpanded}
+        aria-controls="solar-system-location-list"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 min-h-[44px] text-left rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400"
+      >
+        <span className="font-hud text-xs font-semibold text-white flex items-center gap-2">
+          <span aria-hidden="true">📜</span> Location List
+          <span className="text-slate-500 font-normal text-[10px] hidden sm:inline">— keyboard-accessible alternative to the map</span>
+        </span>
+        <span aria-hidden="true" className={`text-slate-400 transition-transform ${listExpanded ? 'rotate-180' : ''}`}>▾</span>
+      </button>
+      {listExpanded && (
+        <div id="solar-system-location-list" className={`px-3 pb-3 space-y-3 ${embedded ? 'max-h-[50vh] overflow-y-auto' : ''}`}>
+          {LOCATIONS_BY_REGION.map(({ type, locations }) => (
+            <div key={type}>
+              <h4 className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">
+                {REGION_LABELS[type] || type}
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5" role="group" aria-label={`${REGION_LABELS[type] || type} locations`}>
+                {locations.map(loc => {
+                  const unlocked = state.unlockedLocations.includes(loc.id);
+                  const isSelected = selectedLoc === loc.id;
+                  return (
+                    <button
+                      key={loc.id}
+                      type="button"
+                      onClick={() => selectLocation(loc.id)}
+                      aria-pressed={isSelected}
+                      className={`min-h-[44px] px-2 py-1.5 rounded-lg text-[11px] text-left border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                        isSelected
+                          ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-200'
+                          : unlocked
+                            ? 'bg-white/[0.03] border-white/[0.08] text-slate-200 hover:bg-white/[0.06]'
+                            : 'bg-white/[0.01] border-white/[0.04] text-slate-500 hover:bg-white/[0.03]'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1">
+                        <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
+                        <span className="truncate">{loc.name}</span>
+                      </span>
+                      <span className="sr-only">
+                        {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <div className="relative w-full h-full">
+        <canvas
+          ref={canvasRef}
+          onClick={handleClick}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
+          className="absolute inset-0 w-full h-full"
+          style={{ cursor: dragging ? 'grabbing' : 'grab' }}
+          role="img"
+          aria-label="Interactive solar system map showing your unlocked locations, buildings, NPC presence, and ships in transit"
+          aria-describedby="solar-system-canvas-hint"
+        />
+        <div ref={containerRef} className="absolute inset-0 pointer-events-none" />
+
+        {/* Zoom controls */}
+        <div className="absolute top-2 right-2 flex flex-col gap-1 z-20">
+          <button onClick={() => setZoom(z => Math.min(3, z + 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
+          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
+          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[9px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+        </div>
+
+        {/* Layer toggles — moved to bottom-right in map-command mode so the
+            top-left corner stays free for the Order Queue HUD strip. */}
+        <div className="absolute bottom-2 right-2 flex flex-col gap-1 z-20">
+          <button
+            onClick={() => setShowLanes(v => !v)}
+            aria-pressed={showLanes}
+            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+              showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+            }`}
+          >
+            {showLanes ? '● Lanes' : '○ Lanes'}
+          </button>
+          <button
+            onClick={() => setShowShips(v => !v)}
+            aria-pressed={showShips}
+            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+              showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+            }`}
+          >
+            {showShips ? '● Ships' : '○ Ships'}
+          </button>
+        </div>
+
+        {/* Keyboard-accessible Location List — collapsible overlay so it
+            doesn't eat into the full-viewport canvas when closed. */}
+        <div className="hud-frame absolute bottom-2 left-2 z-20 rounded-xl border border-white/[0.06] bg-[#050510]/90 backdrop-blur-sm w-[min(92vw,380px)]">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          {locationListBody}
+        </div>
+
+        {shipsInTransit.length > 0 && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 text-[9px] text-emerald-300 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm pointer-events-none">
+            ⚡ {shipsInTransit.length} in transit
+          </div>
+        )}
+
+        <p id="solar-system-canvas-hint" className="sr-only">Click a location to open its command panel. Drag to pan, scroll to zoom. This canvas is mouse/touch-only — use the Location List overlay (bottom-left) to browse and select every location by keyboard.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {/* Canvas */}
@@ -776,59 +924,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
       <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02]">
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
-        <button
-          type="button"
-          onClick={() => setListExpanded(v => !v)}
-          aria-expanded={listExpanded}
-          aria-controls="solar-system-location-list"
-          className="w-full flex items-center justify-between gap-2 px-3 py-2.5 min-h-[44px] text-left rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400"
-        >
-          <span className="font-hud text-xs font-semibold text-white flex items-center gap-2">
-            <span aria-hidden="true">📜</span> Location List
-            <span className="text-slate-500 font-normal text-[10px] hidden sm:inline">— keyboard-accessible alternative to the map</span>
-          </span>
-          <span aria-hidden="true" className={`text-slate-400 transition-transform ${listExpanded ? 'rotate-180' : ''}`}>▾</span>
-        </button>
-        {listExpanded && (
-          <div id="solar-system-location-list" className="px-3 pb-3 space-y-3">
-            {LOCATIONS_BY_REGION.map(({ type, locations }) => (
-              <div key={type}>
-                <h4 className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">
-                  {REGION_LABELS[type] || type}
-                </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5" role="group" aria-label={`${REGION_LABELS[type] || type} locations`}>
-                  {locations.map(loc => {
-                    const unlocked = state.unlockedLocations.includes(loc.id);
-                    const isSelected = selectedLoc === loc.id;
-                    return (
-                      <button
-                        key={loc.id}
-                        type="button"
-                        onClick={() => selectLocation(loc.id)}
-                        aria-pressed={isSelected}
-                        className={`min-h-[44px] px-2 py-1.5 rounded-lg text-[11px] text-left border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
-                          isSelected
-                            ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-200'
-                            : unlocked
-                              ? 'bg-white/[0.03] border-white/[0.08] text-slate-200 hover:bg-white/[0.06]'
-                              : 'bg-white/[0.01] border-white/[0.04] text-slate-500 hover:bg-white/[0.03]'
-                        }`}
-                      >
-                        <span className="flex items-center gap-1">
-                          <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
-                          <span className="truncate">{loc.name}</span>
-                        </span>
-                        <span className="sr-only">
-                          {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {locationListBody}
       </div>
 
       {/* Selected Location Details */}
