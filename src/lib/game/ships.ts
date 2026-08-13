@@ -88,7 +88,7 @@ export function getMiningMultiplier(locationId: string): number {
   return MINING_LOCATIONS[locationId]?.multiplier ?? 0;
 }
 
-export type ShipStatus = 'idle' | 'in_transit' | 'mining' | 'loading' | 'refining' | 'building' | 'surveying';
+export type ShipStatus = 'idle' | 'in_transit' | 'mining' | 'loading' | 'refining' | 'building' | 'surveying' | 'expedition';
 
 export interface ShipInstance {
   instanceId: string;
@@ -322,6 +322,32 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: { rare_earth: 5, aluminum: 10 },
     requiredResearch: ['high_res_optical'], buildTimeSeconds: 180, tier: 1,
     maintenancePerMonth: 0,
+  },
+
+  // ─── INTERSTELLAR (Wave 10 — expedition-capable hulls) ────────────────────
+  // Cost scale anchors: deep_space_miner (tier 4) = $1B; jump_drive research =
+  // $500B; corporation tier 5 requires $500B totalEarned. Interstellar hulls
+  // sit between those: end-game purchases that a tier-5+ corp can afford
+  // repeatedly but that still represent a meaningful capital commitment.
+  {
+    id: 'starfarer_explorer', name: 'Starfarer-Class Explorer', icon: '🌠', role: 'survey',
+    description: 'Alcubierre-capable survey vessel. The only ship class able to jump beyond the heliopause, survey a star system, and return.',
+    tooltip: 'WHY BUILD: The gateway to the interstellar era. Jump to Proxima Centauri, Barnard\'s Star, and beyond; survey findings pay $5B-$20B+ per expedition in exclusive data sales, plus exotic resource samples. Reusable across expeditions (unlike survey probes). Requires the Alcubierre-Class Jump Drive research and exotic-matter fuel per jump. Insure your expeditions — interstellar space is unforgiving.',
+    cargoCapacity: 400, baseCost: 25_000_000_000,
+    resourceCost: { titanium: 400, rare_earth: 150, exotic_materials: 40, helium3: 20 },
+    requiredResearch: ['jump_drive'], buildTimeSeconds: 43_200, tier: 5,
+    maintenancePerMonth: 60_000_000, // ~0.24% of hull/month, matching deep_space_miner's 0.5% at half rate for a ship that spends most months in transit
+    stats: { crewRequired: 12, crewCapacity: 20, lifeSupportDays: 4_000, shieldingRating: 0.35, hullIntegrity: 1_500 },
+  },
+  {
+    id: 'colony_ark', name: 'Colony Ark', icon: '🛸', role: 'transport',
+    description: 'Generation-ship-derived colony vessel. Carries an entire founding settlement — habitat rings, fabricators, and 100 colonists — to another star.',
+    tooltip: 'WHY BUILD: The only way to found an interstellar colony. Launch it on an expedition; on arrival you may establish a permanent colony that produces exotic resources unavailable in Sol — including exotic-matter fuel, which makes every later jump cheaper. The ship is permanently committed to the colony it founds. Per STATS_DESIGN: colonial ships are slow, expensive, and generational.',
+    cargoCapacity: 2_000, baseCost: 80_000_000_000,
+    resourceCost: { titanium: 1_200, aluminum: 2_000, rare_earth: 300, exotic_materials: 100, helium3: 50 },
+    requiredResearch: ['jump_drive', 'interstellar_colonization'], buildTimeSeconds: 86_400, tier: 5,
+    maintenancePerMonth: 120_000_000,
+    stats: { crewRequired: 40, crewCapacity: 160, lifeSupportDays: 8_000, shieldingRating: 0.40, hullIntegrity: 3_000 },
   },
 ];
 

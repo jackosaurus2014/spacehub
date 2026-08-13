@@ -14,7 +14,10 @@ export type ResourceId =
   | 'methane'
   | 'ethane'
   | 'exotic_materials'
-  | 'helium3';
+  | 'helium3'
+  // Interstellar era (Wave 10) — see expeditions.ts / interstellar.ts
+  | 'exotic_fuel'
+  | 'xenogenic_biomatter';
 
 export interface ResourceDefinition {
   id: ResourceId;
@@ -117,6 +120,25 @@ export const RESOURCES: ResourceDefinition[] = [
     description: 'Fusion fuel isotope from lunar regolith. The ultimate energy source.',
     baseMarketPrice: 5_000_000, minPrice: 1_000_000, maxPrice: 50_000_000, volatility: 0.12,
     startingSupply: 20, npcRestockPerHour: 0.1,
+  },
+
+  // ─── INTERSTELLAR (Wave 10) ───────────────────────────────────────────
+  // Numbers for exotic_fuel come verbatim from EXOTIC_FUEL_RESOURCE in
+  // interstellar.ts (the Phase VIII data spec). Neither resource has NPC
+  // supply — they enter the economy only through interstellar colonies and
+  // trade routes (expeditions.ts), per STATS_DESIGN §13 "Interstellar
+  // markets: commodities unique to specific star systems."
+  {
+    id: 'exotic_fuel', name: 'Exotic-Matter Fuel', icon: '⚛️', category: 'exotic',
+    description: 'Concentrated negative-mass particulates. Required to sustain the Alcubierre warp bubble on interstellar jumps.',
+    baseMarketPrice: 5_000_000, minPrice: 1_000_000, maxPrice: 50_000_000, volatility: 0.12,
+    startingSupply: 0, npcRestockPerHour: 0,
+  },
+  {
+    id: 'xenogenic_biomatter', name: 'Xenogenic Biomatter', icon: '🧬', category: 'exotic',
+    description: 'Non-terrestrial biological compounds — the trade currency of the Hive Collective. Found only beyond the heliopause.',
+    baseMarketPrice: 8_000_000, minPrice: 2_000_000, maxPrice: 80_000_000, volatility: 0.15,
+    startingSupply: 0, npcRestockPerHour: 0,
   },
 ];
 

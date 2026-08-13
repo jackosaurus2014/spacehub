@@ -109,6 +109,19 @@ const SPACE_RELEVANCE_KEYWORDS: string[] = Array.from(new Set([
   // "iss" alone is too short/ambiguous (matches "dismissed", "issue", etc.);
   // require the fuller phrase instead.
   'international space station',
+  // Astronomy/astrophysics vocabulary — SpaceDaily/ScienceAlert publish
+  // legitimate space-science stories (galaxy surveys, dark matter, stellar
+  // physics) that contain none of the industry vocabulary above. Without
+  // these, the guard flags real space content (verified against a dry-run
+  // that wrongly caught "Flat dark matter sheet solves galaxy motion").
+  // Stems chosen to avoid common-noun collisions ("star" and "planet"
+  // alone are too generic; "solar" alone matches terrestrial solar-energy).
+  'galaxy', 'galaxies', 'galactic', 'dark matter', 'dark energy',
+  'black hole', 'supernova', 'nebula', 'telescope', 'observatory',
+  'astronom', 'astrophys', 'cosmolog', 'cosmic', 'meteor', 'comet',
+  'quasar', 'pulsar', 'gravitational wave', 'neutron star', 'white dwarf',
+  'red giant', 'star system', 'stellar', 'planetary', 'solar system',
+  'solar flare', 'solar wind', 'solar storm', 'heliosphere', 'aurora',
 ]));
 
 /**

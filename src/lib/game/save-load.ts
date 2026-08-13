@@ -92,6 +92,10 @@ export function getNewGameState(): GameState {
     ...initializeFrontier(Date.now()),
     // V12 — Quarterly corporate reports
     quarterlyReports: [],
+    // V13 — Interstellar era (expeditions.ts): expeditions, colonies, trade routes
+    expeditions: [],
+    interstellarColonies: [],
+    interstellarTradeRoutes: [],
   };
 }
 
@@ -219,6 +223,10 @@ export function loadGame(): GameState | null {
     if (!state.miningBonuses) state.miningBonuses = [];
     // V12 fields — Quarterly corporate reports
     if (!state.quarterlyReports) state.quarterlyReports = [];
+    // V13 fields — Interstellar era (expeditions, colonies, trade routes)
+    if (!state.expeditions) state.expeditions = [];
+    if (!state.interstellarColonies) state.interstellarColonies = [];
+    if (!state.interstellarTradeRoutes) state.interstellarTradeRoutes = [];
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

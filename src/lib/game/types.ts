@@ -353,7 +353,7 @@ export interface GameState {
     instanceId: string;
     definitionId: string;
     name: string;
-    status: 'idle' | 'in_transit' | 'loading' | 'mining' | 'refining' | 'building' | 'surveying';
+    status: 'idle' | 'in_transit' | 'loading' | 'mining' | 'refining' | 'building' | 'surveying' | 'expedition';
     currentLocation: string;
     isBuilt: boolean;
     buildStartedAtMs?: number;
@@ -612,6 +612,14 @@ export interface GameState {
     status: 'open' | 'settled' | 'liquidated';
   }[];
 
+  // Interstellar era (V13, Wave 10) — expeditions, colonies, trade routes.
+  // Shapes defined below (ExpeditionState etc.) alongside DeliveryContractState;
+  // engine logic lives in expeditions.ts. Campaign-loop content per
+  // docs/SESSION_DESIGN.md ("Interstellar expansion — Campaign (end-game)").
+  expeditions?: ExpeditionState[];
+  interstellarColonies?: InterstellarColonyState[];
+  interstellarTradeRoutes?: InterstellarTradeRouteState[];
+
   // Hazards (Phase II) — recent hazard log
   recentHazards?: {
     id: string;
@@ -645,6 +653,109 @@ export interface DeliveryContractState {
   acceptedAtMs?: number;
   completedAtMs?: number;
   defaultedAtMs?: number;
+}
+
+// ─── Interstellar era (Wave 10 — expeditions.ts) ────────────────────────────
+// Per CLAUDE.md "Long-horizon expansion": solar-system gameplay is the
+// mid-game; interstellar exploration / colonization / trade is the end-game.
+// These types are defined here (like DeliveryContractState) so GameState can
+// reference them without circular imports; all logic lives in expeditions.ts.
+
+export type ExpeditionPhase =
+  | 'outbound'     // in jump-transit to the target system
+  | 'exploring'    // arrived; surveying — the colonize-or-return decision window
+  | 'returning'    // in jump-transit back to Sol
+  | 'colonizing'   // ship committed to founding a colony (terminal for the ship)
+  | 'completed'    // returned to Sol; findings + cargo delivered
+  | 'lost';        // destroyed en route by hazards (insurance may have paid out)
+
+export interface ExpeditionHazardEntry {
+  monthIndex: number;       // expedition month the hazard struck
+  type: 'radiation_burst' | 'debris_impact' | 'systems_failure';
+  damagePct: number;        // 0-1 hull integrity lost after mitigation
+  mitigatedPct: number;     // 0-1 fraction of raw damage absorbed
+  summary: string;
+}
+
+export interface ExpeditionOutcome {
+  surveyDataPayout: number;                 // $ credited on return
+  resourceSamples: Record<string, number>;  // cargo delivered to inventory on return
+  colonySuitability: number;                // 0-1 — scales colony founding results
+  firstContactFactionId?: string;           // faction met on arrival (lore hook)
+  summary: string;
+}
+
+export interface ExpeditionState {
+  id: string;
+  targetSystemId: string;          // key into INTERSTELLAR_SYSTEMS
+  shipInstanceId: string;          // committed ship (status 'expedition' while away)
+  shipDefinitionId: string;
+  crew: number;                    // workforce committed (returned on completion, lost with the ship)
+  /** Which workforce pools the crew was drawn from (returned to the same pools). */
+  crewBreakdown?: Record<string, number>;
+  phase: ExpeditionPhase;
+  launchedAtMs: number;
+  /** Total game-months elapsed since game start (quarterly-reports convention) at launch. */
+  launchGameMonth: number;
+  /** Game-months of one-way transit (distanceLy × GAME_MONTHS_PER_LY). */
+  outboundMonths: number;
+  /** Game-months spent surveying at the destination before auto-return. */
+  exploreMonths: number;
+  /** Expedition-months processed so far (advanced by processExpeditionTick). */
+  monthsElapsed: number;
+  /** Deterministic RNG seed fixed at launch — hazards & outcomes are replayable. */
+  seed: number;
+  /** Upfront mitigation choices (CLAUDE.md: loss must be insurable/mitigable). */
+  insured: boolean;
+  insurancePremiumPaid: number;
+  extraShielding: boolean;
+  totalCost: number;               // full launch cost (basis for insurance payout)
+  hullIntegrity: number;           // 1.0 → 0; expedition lost at ≤ 0
+  hazardLog: ExpeditionHazardEntry[];
+  outcome?: ExpeditionOutcome;     // rolled on arrival (start of 'exploring')
+  colonyId?: string;               // set if this expedition founded a colony
+  completedAtMs?: number;
+}
+
+export interface InterstellarColonyState {
+  id: string;
+  systemId: string;
+  name: string;
+  foundedAtMs: number;
+  foundedGameMonth: number;
+  /** Colonists on site. Grows monthly, capped by infrastructure. */
+  population: number;
+  /** 1-5. Each level raises production + population cap. */
+  infrastructureLevel: number;
+  upgradeInProgress?: { targetLevel: number; completesAtGameMonth: number } | null;
+  /** ResourceIds this colony produces (drawn from the system's knownResources + exotic_fuel). */
+  localResources: string[];
+  /** Local warehouse — production accrues here; trade routes ship it to Sol. */
+  stockpile: Record<string, number>;
+  /** Total game-months processed for this colony (production cadence bookkeeping). */
+  lastProcessedGameMonth: number;
+  /** 0-1 from the founding expedition's survey — scales production. */
+  suitability: number;
+}
+
+export interface InterstellarTradeRouteState {
+  id: string;
+  colonyId: string;
+  systemId: string;
+  resourceId: string;
+  establishedAtMs: number;
+  establishedGameMonth: number;
+  /** One-way shipment transit in game-months (same physics as expeditions). */
+  transitMonths: number;
+  /** Game-months between departures. */
+  cycleMonths: number;
+  nextDepartureGameMonth: number;
+  /** Shipments currently in transit toward Sol. */
+  inTransit: { quantity: number; departedGameMonth: number; arrivesGameMonth: number }[];
+  /** $ deducted per departure — logistics cost money (CLAUDE.md spatial strategy). */
+  logisticsFeePerShipment: number;
+  status: 'active' | 'suspended';
+  totalDelivered: number;
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────

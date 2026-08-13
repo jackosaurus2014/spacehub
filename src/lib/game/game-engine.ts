@@ -31,6 +31,7 @@ import { computeCommanderBonuses } from './commanders';
 import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
 import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
 import { rollMonthlyHazards, applyHazards } from './hazards';
+import { processExpeditionTick } from './expeditions';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -857,6 +858,15 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Ship processing error (non-fatal):', err);
+  }
+
+  // 6b. Interstellar expeditions, colonies, and trade routes (Wave 10).
+  // Campaign-loop subsystem — advances by game-months, no-ops (same state
+  // reference) when the player has no interstellar activity.
+  try {
+    newState = processExpeditionTick(newState, Date.now());
+  } catch (err) {
+    console.error('Expedition tick error (non-fatal):', err);
   }
 
   // 7. Check achievements (every 5 ticks to reduce overhead)
