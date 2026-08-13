@@ -165,8 +165,10 @@ export default function AllianceResearchPanel() {
   return (
     <div className="space-y-4">
       {/* Aggregate Bonuses Summary Bar */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-        <h3 className="text-white text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <h3 className="font-hud text-white text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <span>📊</span> Research Bonuses
         </h3>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -179,7 +181,7 @@ export default function AllianceResearchPanel() {
                 className={`p-2 rounded-lg ${catColors.bg} border ${catColors.border} text-center`}
               >
                 <span className="text-sm block">{cat.icon}</span>
-                <p className={`${catColors.text} text-xs font-bold font-mono`}>
+                <p className={`game-number ${catColors.text} text-xs font-bold`}>
                   {bonusVal > 0 ? `+${bonusVal}%` : '0%'}
                 </p>
                 <p className="text-slate-500 text-[9px]">{cat.label}</p>
@@ -197,7 +199,7 @@ export default function AllianceResearchPanel() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`flex-1 py-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+              className={`font-hud flex-1 py-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
                 activeCategory === cat.id
                   ? `${catColors.bg} ${catColors.text} border ${catColors.border}`
                   : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -210,15 +212,17 @@ export default function AllianceResearchPanel() {
       </div>
 
       {/* Tier Progression */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-4">
-          <h3 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${colors.text}`}>
+          <h3 className={`font-hud text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${colors.text}`}>
             <span>{activeCatConfig.icon}</span> {activeCatConfig.label} Research
           </h3>
           <div className="text-right text-[10px] text-slate-500">
-            <span>Alliance Lv.{allianceLevel}</span>
+            <span className="game-number">Alliance Lv.{allianceLevel}</span>
             <span className="mx-1.5">|</span>
-            <span className="text-amber-300 font-mono">${treasury.toLocaleString()}</span>
+            <span className="game-number text-amber-300">${treasury.toLocaleString()}</span>
           </div>
         </div>
 
@@ -355,7 +359,7 @@ function TierSlot({
             {isCompleted && (
               <div className="flex items-center gap-1.5">
                 <span className="text-green-400 text-sm">✅</span>
-                <span className="text-green-300 text-[10px] font-mono font-bold">+{Math.round(item.bonusValue * 100)}% {item.bonusType}</span>
+                <span className="game-number text-green-300 text-[10px] font-bold">+{Math.round(item.bonusValue * 100)}% {item.bonusType}</span>
               </div>
             )}
 
@@ -368,7 +372,7 @@ function TierSlot({
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <span className={`text-[10px] ${colors.text}`}>Researching...</span>
-                    <span className="text-slate-400 text-[10px] font-mono">{formatTimeRemaining(timeRemainingMs)}</span>
+                    <span className="game-number text-slate-400 text-[10px]">{formatTimeRemaining(timeRemainingMs)}</span>
                   </div>
                   <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                     <div
@@ -384,14 +388,14 @@ function TierSlot({
             {isAvailable && meetsLevel && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px]">
-                  <span className="text-amber-300 font-mono">{item.xpCost} XP</span>
+                  <span className="game-number text-amber-300">{item.xpCost} XP</span>
                   <span className="text-slate-600">+</span>
-                  <span className="text-amber-300 font-mono">${item.treasuryCost.toLocaleString()}</span>
+                  <span className="game-number text-amber-300">${item.treasuryCost.toLocaleString()}</span>
                 </div>
                 <button
                   onClick={onStart}
                   disabled={actionLoading}
-                  className={`px-3 py-1 text-[10px] font-semibold rounded-lg transition-colors ${colors.text} ${colors.bg} border ${colors.border} hover:brightness-125 disabled:opacity-50`}
+                  className={`min-h-[44px] px-3 py-1 text-[10px] font-semibold rounded-lg transition-colors ${colors.text} ${colors.bg} border ${colors.border} hover:brightness-125 disabled:opacity-50`}
                 >
                   {actionLoading ? 'Starting...' : 'Start Research'}
                 </button>

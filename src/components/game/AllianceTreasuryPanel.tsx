@@ -168,11 +168,13 @@ export default function AllianceTreasuryPanel() {
   return (
     <div className="space-y-4">
       {/* Treasury Balance */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-yellow-500/5 p-4">
+      <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-yellow-500/5 p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-amber-300/70 text-[10px] font-bold uppercase tracking-wider mb-1">Alliance Treasury</p>
-            <p className="text-amber-300 text-2xl font-bold font-mono">{formatMoney(treasury)}</p>
+            <p className="font-hud text-amber-300/70 text-[10px] font-bold uppercase tracking-wider mb-1">Alliance Treasury</p>
+            <p className="game-number text-amber-300 text-2xl font-bold">{formatMoney(treasury)}</p>
           </div>
           <span className="text-3xl">🏦</span>
         </div>
@@ -191,7 +193,7 @@ export default function AllianceTreasuryPanel() {
             <button
               onClick={handleDeposit}
               disabled={actionLoading || !depositAmount}
-              className="px-4 py-1.5 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              className="min-h-[44px] px-4 py-1.5 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
               {actionLoading ? 'Depositing...' : 'Deposit'}
             </button>
@@ -204,7 +206,7 @@ export default function AllianceTreasuryPanel() {
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 flex items-center gap-2">
           <span className="text-lg">🔒</span>
           <div>
-            <p className="text-amber-300 text-xs font-semibold">Alliance Level 8 Required</p>
+            <p className="font-hud text-amber-300 text-xs font-semibold">Alliance Level 8 Required</p>
             <p className="text-slate-500 text-[10px]">
               Perk activation requires your alliance to reach Level 8. Current level: {allianceLevel}.
             </p>
@@ -218,7 +220,7 @@ export default function AllianceTreasuryPanel() {
           <button
             key={t}
             onClick={() => setActiveTab(t)}
-            className={`flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+            className={`font-hud flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
               activeTab === t
                 ? 'bg-amber-600/30 text-amber-300 border border-amber-500/30'
                 : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -243,13 +245,15 @@ export default function AllianceTreasuryPanel() {
               {activePerks.map(perk => (
                 <div
                   key={perk.id}
-                  className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3"
+                  className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-3"
                 >
+                  <span className="hud-corner-bl" aria-hidden="true" />
+                  <span className="hud-corner-br" aria-hidden="true" />
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div>
                         <h4 className="text-white text-xs font-semibold">{perk.name}</h4>
-                        <span className="text-amber-300 text-[10px] font-mono font-bold">+{Math.round(perk.bonusValue * 100)}% {perk.bonusType}</span>
+                        <span className="game-number text-amber-300 text-[10px] font-bold">+{Math.round(perk.bonusValue * 100)}% {perk.bonusType}</span>
                       </div>
                     </div>
                   </div>
@@ -257,7 +261,7 @@ export default function AllianceTreasuryPanel() {
                     <span className="text-slate-500">
                       {perk.description}
                     </span>
-                    <span className="text-amber-300 font-mono">
+                    <span className="game-number text-amber-300">
                       {formatTimeRemaining(perk.remainingMs)}
                     </span>
                   </div>
@@ -283,7 +287,7 @@ export default function AllianceTreasuryPanel() {
           {perkCatalog.map(perk => (
             <div
               key={perk.perkId}
-              className={`rounded-xl border p-3 transition-colors ${
+              className={`hud-frame hud-frame-amber relative rounded-xl border p-3 transition-colors ${
                 perk.isActive
                   ? 'border-green-500/20 bg-green-500/5'
                   : perk.canActivate && !actionLoading
@@ -291,19 +295,21 @@ export default function AllianceTreasuryPanel() {
                     : 'border-white/[0.06] bg-white/[0.02] opacity-60'
               }`}
             >
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{perk.icon}</span>
                   <h4 className="text-white text-xs font-semibold">{perk.name}</h4>
                 </div>
-                <span className="text-amber-300 text-[10px] font-mono font-bold">+{Math.round(perk.bonusValue * 100)}%</span>
+                <span className="game-number text-amber-300 text-[10px] font-bold">+{Math.round(perk.bonusValue * 100)}%</span>
               </div>
 
               <p className="text-slate-400 text-[10px] mb-2">{perk.description}</p>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px]">
-                  <span className={`font-mono ${treasury >= perk.treasuryCost ? 'text-amber-300' : 'text-red-400'}`}>
+                  <span className={`game-number ${treasury >= perk.treasuryCost ? 'text-amber-300' : 'text-red-400'}`}>
                     {formatMoney(perk.treasuryCost)}
                   </span>
                   <span className="text-slate-600">|</span>
@@ -322,7 +328,7 @@ export default function AllianceTreasuryPanel() {
                   <button
                     onClick={() => handleActivatePerk(perk.perkId)}
                     disabled={!perk.canActivate || actionLoading}
-                    className="px-3 py-1 text-[10px] font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                    className="min-h-[44px] px-3 py-1 text-[10px] font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
                   >
                     Activate
                   </button>
@@ -335,42 +341,52 @@ export default function AllianceTreasuryPanel() {
 
       {/* Transaction Log */}
       {activeTab === 'log' && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span>📜</span> Transaction History
           </h3>
           {recentLogs.length === 0 ? (
             <p className="text-slate-500 text-xs text-center py-4">No transactions yet.</p>
           ) : (
-            <div className="space-y-1.5 max-h-80 overflow-y-auto game-scroll">
-              {recentLogs.map((log, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">
-                      {log.type === 'treasury_deposit' ? '📥' : log.type === 'perk_activated' ? '✨' : '📤'}
-                    </span>
-                    <div>
-                      <p className="text-white text-xs">{log.title}</p>
-                      <p className="text-slate-600 text-[9px]">
-                        {log.actorName ?? 'System'} &middot; {new Date(log.createdAt).toLocaleDateString()}
-                      </p>
+            <div className="max-h-80 overflow-y-auto game-scroll">
+              {/* Column header row */}
+              <div className="flex items-center justify-between py-1 px-3 font-hud text-[9px] uppercase tracking-widest text-slate-500">
+                <span>Event</span>
+                <span>Actor</span>
+                <span>Amount</span>
+              </div>
+              <div>
+                {recentLogs.map((log, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors border-b border-white/[0.04] last:border-0"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">
+                        {log.type === 'treasury_deposit' ? '📥' : log.type === 'perk_activated' ? '✨' : '📤'}
+                      </span>
+                      <div>
+                        <p className="text-white text-xs">{log.title}</p>
+                        <p className="text-slate-600 text-[9px]">
+                          {log.actorName ?? 'System'} &middot; {new Date(log.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
+                    <span className={`game-number text-xs font-bold ${
+                      log.type === 'treasury_deposit' ? 'text-green-400' : 'text-red-400'
+                    }`}>
+                      {log.type === 'treasury_deposit' ? '+' : '-'}
+                      {log.metadata && typeof log.metadata === 'object' && 'amount' in log.metadata
+                        ? formatMoney(Number(log.metadata.amount))
+                        : log.metadata && typeof log.metadata === 'object' && 'cost' in log.metadata
+                          ? formatMoney(Number(log.metadata.cost))
+                          : ''}
+                    </span>
                   </div>
-                  <span className={`text-xs font-mono font-bold ${
-                    log.type === 'treasury_deposit' ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {log.type === 'treasury_deposit' ? '+' : '-'}
-                    {log.metadata && typeof log.metadata === 'object' && 'amount' in log.metadata
-                      ? formatMoney(Number(log.metadata.amount))
-                      : log.metadata && typeof log.metadata === 'object' && 'cost' in log.metadata
-                        ? formatMoney(Number(log.metadata.cost))
-                        : ''}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>

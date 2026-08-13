@@ -142,20 +142,24 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
   return (
     <div className="space-y-4">
       {/* Live Market Banner */}
-      <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+      <div className="hud-frame hud-frame-amber relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 motion-reduce:hidden" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
           </span>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Live Global Market</span>
+          <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Live Global Market</span>
         </div>
         <span className="text-[10px] text-slate-500">Prices update in real time</span>
       </div>
 
       {/* Your Inventory */}
-      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-        <h3 className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+      <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <h3 className="font-hud text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
           <span>📦</span> Your Resources
         </h3>
         {ownedResources.length === 0 ? (
@@ -179,18 +183,20 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    {RESOURCE_ASSETS[id] ? (
-                      <Image src={RESOURCE_ASSETS[id]} alt="" width={28} height={28} className="w-7 h-7 rounded object-cover flex-shrink-0" />
-                    ) : (
-                      <span className="text-sm">{def.icon}</span>
-                    )}
+                    <div className="sprite-frame w-7 h-7 flex-shrink-0 flex items-center justify-center">
+                      {RESOURCE_ASSETS[id] ? (
+                        <Image src={RESOURCE_ASSETS[id]} alt="" width={28} height={28} className="w-7 h-7 rounded object-cover" />
+                      ) : (
+                        <span className="text-sm">{def.icon}</span>
+                      )}
+                    </div>
                     <span className="text-white text-xs font-medium truncate">{def.name}</span>
                   </div>
-                  <p className="text-amber-400 text-xs font-mono">{qty.toLocaleString()} units</p>
+                  <p className="game-number text-amber-400 text-xs">{qty.toLocaleString()} units</p>
                   <div className="flex items-center gap-1.5">
                     <p className="text-slate-500 text-[10px]">{formatMoney(value)}</p>
                     {change !== 0 && (
-                      <span className={`text-[9px] font-mono ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <span className={`game-number text-[9px] ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {change > 0 ? '▲' : '▼'}{Math.abs(change)}%
                       </span>
                     )}
@@ -210,16 +216,20 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
         const change = prices[selectedResource]?.change || 0;
         if (!def) return null;
         return (
-          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
+          <div className="hud-frame relative rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
             <h3 className="text-white text-sm font-semibold mb-2 flex items-center gap-2">
-              {RESOURCE_ASSETS[selectedResource] ? (
-                <Image src={RESOURCE_ASSETS[selectedResource]} alt="" width={24} height={24} className="w-6 h-6 rounded object-cover" />
-              ) : (
-                <span>{def.icon}</span>
-              )}
+              <div className="sprite-frame holo-sprite w-7 h-7 flex-shrink-0 flex items-center justify-center">
+                {RESOURCE_ASSETS[selectedResource] ? (
+                  <Image src={RESOURCE_ASSETS[selectedResource]} alt="" width={24} height={24} className="w-6 h-6 rounded object-cover" />
+                ) : (
+                  <span>{def.icon}</span>
+                )}
+              </div>
               Sell {def.name}
               {change !== 0 && (
-                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${change > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                <span className={`game-number text-[10px] px-1.5 py-0.5 rounded ${change > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
                   {change > 0 ? '▲' : '▼'}{Math.abs(change)}%
                 </span>
               )}
@@ -248,8 +258,10 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
       })()}
 
       {/* Market Prices */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">
           📊 Global Market Prices
         </h3>
         <div className="space-y-1.5">
@@ -262,11 +274,13 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             return (
               <div key={r.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center gap-2">
-                  {RESOURCE_ASSETS[r.id] ? (
-                    <Image src={RESOURCE_ASSETS[r.id]} alt="" width={24} height={24} className="w-6 h-6 rounded object-cover flex-shrink-0" />
-                  ) : (
-                    <span className="text-sm">{r.icon}</span>
-                  )}
+                  <div className="sprite-frame w-6 h-6 flex-shrink-0 flex items-center justify-center">
+                    {RESOURCE_ASSETS[r.id] ? (
+                      <Image src={RESOURCE_ASSETS[r.id]} alt="" width={24} height={24} className="w-6 h-6 rounded object-cover" />
+                    ) : (
+                      <span className="text-sm">{r.icon}</span>
+                    )}
+                  </div>
                   <div>
                     <span className="text-white text-xs">{r.name}</span>
                     <span className="text-slate-600 text-[10px] ml-1.5">{r.category}</span>
@@ -282,9 +296,9 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                         A: {formatMoney(ask)}
                       </span>
                     </div>
-                    <div className="text-white text-xs font-mono">
+                    <div className="game-number text-white text-xs">
                       {formatMoney(current)}
-                      <span className={`text-[10px] font-mono ml-1.5 ${
+                      <span className={`text-[10px] ml-1.5 ${
                         change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-slate-500'
                       }`}>
                         {change > 0 ? '▲+' : change < 0 ? '▼' : ''}{change}%

@@ -41,9 +41,11 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
           return (
             <div
               key={f.id}
-              className={`rounded-xl overflow-hidden border ${f.theme.border}`}
+              className={`hud-frame relative rounded-xl overflow-hidden border ${f.theme.border}`}
               style={{ background: '#0a0a1a' }}
             >
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
               <div className="relative aspect-[16/9] bg-black/40 overflow-hidden">
                 <Image
                   src={getFactionArtUrl(f.id)}
@@ -71,8 +73,8 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
                 {/* Reputation bar */}
                 <div className="mb-3">
                   <div className="flex justify-between items-center text-[10px] mb-1">
-                    <span className="text-slate-500" id={`rep-label-${f.id}`}>Reputation</span>
-                    <span className={`font-mono font-bold ${rep >= 0 ? 'text-cyan-300' : 'text-red-300'}`} aria-live="polite">
+                    <span className="font-hud text-slate-500" id={`rep-label-${f.id}`}>Reputation</span>
+                    <span className={`game-number font-mono font-bold ${rep >= 0 ? 'text-cyan-300' : 'text-red-300'}`} aria-live="polite">
                       {rep > 0 ? `+${rep}` : rep} — {STANDING_LABEL[standing]}
                     </span>
                   </div>
@@ -113,7 +115,7 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
                 <button
                   onClick={canAfford ? () => onSendEnvoy(f.id) : undefined}
                   disabled={!canAfford}
-                  className={`w-full px-3 py-2 rounded text-xs font-bold transition-colors ${
+                  className={`w-full min-h-[44px] px-3 py-2 rounded text-xs font-bold transition-colors ${
                     canAfford
                       ? `${f.theme.bg} ${f.theme.accent} hover:brightness-125 border ${f.theme.border}`
                       : 'bg-white/[0.03] text-slate-600 cursor-not-allowed border border-white/[0.05]'
@@ -121,7 +123,7 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
                 >
                   {rep >= 100
                     ? 'Maximum Standing Reached'
-                    : `Send Envoy · ${formatMoney(envoyCost)} · +10 rep`}
+                    : <>Send Envoy · <span className="game-number">{formatMoney(envoyCost)}</span> · +10 rep</>}
                 </button>
               </div>
             </div>

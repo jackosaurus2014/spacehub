@@ -383,11 +383,11 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
         {/* Stats bar */}
         {meta && (
           <div className="flex items-center gap-3 text-[10px] text-slate-500">
-            <span>Active Bids: <span className="text-cyan-400 font-mono">{meta.activeBidCount}/3</span></span>
-            <span>Reliability: <span className={`font-mono ${meta.bidReliability >= 0.9 ? 'text-green-400' : meta.bidReliability >= 0.7 ? 'text-amber-400' : 'text-red-400'}`}>
+            <span>Active Bids: <span className="game-number text-cyan-400 font-mono">{meta.activeBidCount}/3</span></span>
+            <span>Reliability: <span className={`game-number font-mono ${meta.bidReliability >= 0.9 ? 'text-green-400' : meta.bidReliability >= 0.7 ? 'text-amber-400' : 'text-red-400'}`}>
               {(meta.bidReliability * 100).toFixed(0)}%
             </span></span>
-            <span>Balance: <span className="text-green-400 font-mono">{formatMoney(meta.playerMoney)}</span></span>
+            <span>Balance: <span className="game-number text-green-400 font-mono">{formatMoney(meta.playerMoney)}</span></span>
           </div>
         )}
       </div>
@@ -551,23 +551,23 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
                 <div>
                   <span className="text-slate-600">Win Rate</span>
-                  <p className="text-white font-mono">
+                  <p className="game-number text-white font-mono">
                     {meta.activeBidCount > 0 ? '...' : '0%'}
                   </p>
                 </div>
                 <div>
                   <span className="text-slate-600">Reliability</span>
-                  <p className={`font-mono ${meta.bidReliability >= 0.9 ? 'text-green-400' : meta.bidReliability >= 0.7 ? 'text-amber-400' : 'text-red-400'}`}>
+                  <p className={`game-number font-mono ${meta.bidReliability >= 0.9 ? 'text-green-400' : meta.bidReliability >= 0.7 ? 'text-amber-400' : 'text-red-400'}`}>
                     {(meta.bidReliability * 100).toFixed(0)}%
                   </p>
                 </div>
                 <div>
                   <span className="text-slate-600">Active Bids</span>
-                  <p className="text-cyan-400 font-mono">{meta.activeBidCount}/3</p>
+                  <p className="game-number text-cyan-400 font-mono">{meta.activeBidCount}/3</p>
                 </div>
                 <div>
                   <span className="text-slate-600">Reputation</span>
-                  <p className="text-white font-mono">{meta.playerReputation}</p>
+                  <p className="game-number text-white font-mono">{meta.playerReputation}</p>
                 </div>
               </div>
             </div>
@@ -577,8 +577,8 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
 
       {/* ── Bid Submission Modal ───────────────────────────────────── */}
       {bidModalContract && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl bg-slate-900 border border-white/10 shadow-2xl overflow-hidden">
+        <div className="game-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="game-modal-card w-full max-w-md rounded-xl bg-slate-900 border border-white/10 shadow-2xl overflow-hidden">
             {/* Modal Header */}
             <div className={`p-4 ${getTierBgColor(bidModalContract.tier)} border-b ${getTierBorderColor(bidModalContract.tier)}`}>
               <div className="flex items-center justify-between">
@@ -642,22 +642,22 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
               <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] space-y-1.5">
                 <div className="flex justify-between text-[10px]">
                   <span className="text-slate-500">Collateral ({(bidModalContract.collateralPct * 100).toFixed(0)}%)</span>
-                  <span className="text-amber-400 font-mono">{formatShort(bidCollateral)}</span>
+                  <span className="game-number text-amber-400 font-mono">{formatShort(bidCollateral)}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
                   <span className="text-slate-500">Your balance</span>
-                  <span className="text-green-400 font-mono">{meta ? formatMoney(meta.playerMoney) : '--'}</span>
+                  <span className="game-number text-green-400 font-mono">{meta ? formatMoney(meta.playerMoney) : '--'}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
                   <span className="text-slate-500">After collateral lock</span>
-                  <span className={`font-mono ${meta && meta.playerMoney - bidCollateral < 1_000_000 ? 'text-red-400' : 'text-slate-300'}`}>
+                  <span className={`game-number font-mono ${meta && meta.playerMoney - bidCollateral < 1_000_000 ? 'text-red-400' : 'text-slate-300'}`}>
                     {meta ? formatMoney(meta.playerMoney - bidCollateral) : '--'}
                   </span>
                 </div>
                 {bidAmount && (
                   <div className="flex justify-between text-[10px] pt-1 border-t border-white/[0.04]">
                     <span className="text-slate-500">Est. profit</span>
-                    <span className={`font-mono ${bidProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <span className={`game-number font-mono ${bidProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                       {bidProfit >= 0 ? '+' : ''}{formatShort(bidProfit)}
                     </span>
                   </div>
@@ -673,14 +673,14 @@ export default function BiddingPanel({ state }: BiddingPanelProps) {
               <div className="flex gap-2">
                 <button
                   onClick={closeBidModal}
-                  className="flex-1 py-2 text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
+                  className="flex-1 min-h-[44px] flex items-center justify-center py-2 text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={submitBid}
                   disabled={bidSubmitting || !bidAmount || !bidDeliveryPromise}
-                  className="flex-1 py-2 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-lg transition-colors"
+                  className="flex-1 min-h-[44px] flex items-center justify-center py-2 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-lg transition-colors"
                 >
                   {bidSubmitting ? 'Submitting...' : 'Submit Bid'}
                 </button>
@@ -712,11 +712,13 @@ function ContractCard({
   const statusBadge = getStatusBadge(contract.status);
 
   return (
-    <div className={`rounded-xl border p-4 ${
+    <div className={`hud-frame relative rounded-xl border p-4 ${
       isEmergency
         ? 'border-red-500/30 bg-red-500/5'
         : `${getTierBorderColor(contract.tier)} ${getTierBgColor(contract.tier)}`
     }`}>
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Header row */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-start gap-2 min-w-0">
@@ -724,7 +726,7 @@ function ContractCard({
           <div className="min-w-0">
             <h4 className="text-white text-sm font-semibold truncate">{contract.title}</h4>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`text-[10px] px-1.5 py-0.5 rounded border font-bold ${getTierTextColor(contract.tier)} ${getTierBorderColor(contract.tier)}`}>
+              <span className={`game-badge-t${contract.tier} text-[10px] px-1.5 py-0.5 rounded font-bold`}>
                 T{getTierLabel(contract.tier)}
               </span>
               <span className={`text-[10px] px-1.5 py-0.5 rounded border ${statusBadge.className}`}>
@@ -750,13 +752,13 @@ function ContractCard({
 
       {/* Bid range and meta */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-slate-500 mb-3">
-        <span>Bid: <span className="text-slate-300 font-mono">{formatShort(contract.minBid)} - {formatShort(contract.maxBid)}</span></span>
+        <span>Bid: <span className="game-number text-slate-300 font-mono">{formatShort(contract.minBid)} - {formatShort(contract.maxBid)}</span></span>
         {contract.estimatedValueRange && (
           <span>Est: <span className="text-slate-300">{contract.estimatedValueRange}</span></span>
         )}
-        <span>Bids: <span className="text-slate-300 font-mono">{contract.bidCount !== null ? contract.bidCount : '--'}</span></span>
+        <span>Bids: <span className="game-number text-slate-300 font-mono">{contract.bidCount !== null ? contract.bidCount : '--'}</span></span>
         {contract.status === 'open' && (
-          <span>Closes: <span className={`font-mono ${timeRemaining < 3600000 ? 'text-red-400' : 'text-slate-300'}`}>
+          <span>Closes: <span className={`game-number font-mono ${timeRemaining < 3600000 ? 'text-red-400' : 'text-slate-300'}`}>
             {formatCountdown(timeRemaining)}
           </span></span>
         )}
@@ -783,7 +785,7 @@ function ContractCard({
           <button
             onClick={onBid}
             disabled={meta !== null && meta.activeBidCount >= 3}
-            className="w-full py-2 text-xs font-medium bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg transition-colors"
+            className="w-full min-h-[44px] flex items-center justify-center py-2 text-xs font-medium bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg transition-colors"
           >
             {meta && meta.activeBidCount >= 3 ? 'Max Bids Reached' : 'Place Bid'}
           </button>
@@ -816,13 +818,15 @@ function MyBidCard({
     : 0;
 
   return (
-    <div className={`rounded-xl border p-3 ${
+    <div className={`hud-frame relative rounded-xl border p-3 ${
       type === 'won'
         ? 'border-amber-500/20 bg-amber-500/5'
         : type === 'pending'
         ? 'border-cyan-500/20 bg-cyan-500/5'
         : 'border-white/[0.06] bg-white/[0.02]'
     }`}>
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-start justify-between gap-2 mb-1.5">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
@@ -830,7 +834,7 @@ function MyBidCard({
             <h4 className="text-white text-xs font-semibold truncate">{contract.title}</h4>
           </div>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className={`text-[10px] px-1 py-0.5 rounded border font-bold ${getTierTextColor(contract.tier)} ${getTierBorderColor(contract.tier)}`}>
+            <span className={`game-badge-t${contract.tier} text-[10px] px-1 py-0.5 rounded font-bold`}>
               T{getTierLabel(contract.tier)}
             </span>
             <span className={`text-[10px] px-1 py-0.5 rounded ${
@@ -845,16 +849,16 @@ function MyBidCard({
         </div>
         <div className="text-right text-[10px] flex-shrink-0">
           <p className="text-slate-500">Your bid</p>
-          <p className="text-white font-mono">{formatShort(bid.bidAmount)}</p>
+          <p className="game-number text-white font-mono">{formatShort(bid.bidAmount)}</p>
         </div>
       </div>
 
       {/* Collateral info */}
       <div className="flex items-center gap-3 text-[10px] text-slate-500 mb-2">
-        <span>Collateral: <span className="text-amber-400 font-mono">{formatShort(bid.collateralLocked)}</span></span>
-        <span>Delivery: <span className="text-slate-300 font-mono">{bid.deliveryPromise ?? '?'}mo</span></span>
+        <span>Collateral: <span className="game-number text-amber-400 font-mono">{formatShort(bid.collateralLocked)}</span></span>
+        <span>Delivery: <span className="game-number text-slate-300 font-mono">{bid.deliveryPromise ?? '?'}mo</span></span>
         {bid.compositeScore != null && (
-          <span>Score: <span className="text-slate-300 font-mono">{bid.compositeScore.toFixed(1)}</span></span>
+          <span>Score: <span className="game-number text-slate-300 font-mono">{bid.compositeScore.toFixed(1)}</span></span>
         )}
       </div>
 
@@ -864,7 +868,7 @@ function MyBidCard({
           {contract.deliveryDeadline && (
             <div className="flex items-center gap-2 text-[10px]">
               <span className="text-slate-500">Deadline:</span>
-              <span className={`font-mono ${deadlineMs < 3600000 ? 'text-red-400 animate-pulse' : deadlineMs < 7200000 ? 'text-amber-400' : 'text-slate-300'}`}>
+              <span className={`game-number font-mono ${deadlineMs < 3600000 ? 'text-red-400 animate-pulse' : deadlineMs < 7200000 ? 'text-amber-400' : 'text-slate-300'}`}>
                 {formatCountdown(deadlineMs)}
               </span>
             </div>
@@ -874,14 +878,14 @@ function MyBidCard({
             <button
               onClick={onClaim}
               disabled={isLoading}
-              className="flex-1 py-1.5 text-[10px] font-medium bg-green-600 hover:bg-green-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg transition-colors"
+              className="flex-1 min-h-[44px] flex items-center justify-center py-1.5 text-[10px] font-medium bg-green-600 hover:bg-green-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg transition-colors"
             >
               {isLoading ? '...' : 'Claim Fulfillment'}
             </button>
             <button
               onClick={onAbandon}
               disabled={isLoading}
-              className="px-3 py-1.5 text-[10px] font-medium bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg transition-colors border border-red-500/20"
+              className="px-3 min-h-[44px] flex items-center justify-center py-1.5 text-[10px] font-medium bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg transition-colors border border-red-500/20"
             >
               Abandon
             </button>
@@ -892,7 +896,7 @@ function MyBidCard({
       {/* Pending: time until close */}
       {type === 'pending' && (
         <div className="text-[10px] text-slate-500">
-          Bidding closes: <span className="text-slate-300 font-mono">
+          Bidding closes: <span className="game-number text-slate-300 font-mono">
             {formatCountdown(new Date(contract.biddingEndsAt).getTime() - now)}
           </span>
         </div>
@@ -903,7 +907,7 @@ function MyBidCard({
         <div className="text-[10px] text-slate-500">
           Collateral returned to your balance.
           {contract.winningBid && (
-            <span className="ml-1">Winning bid: <span className="text-slate-300 font-mono">{formatShort(contract.winningBid)}</span></span>
+            <span className="ml-1">Winning bid: <span className="game-number text-slate-300 font-mono">{formatShort(contract.winningBid)}</span></span>
           )}
         </div>
       )}

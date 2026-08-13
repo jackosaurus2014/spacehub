@@ -48,15 +48,17 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
   return (
     <div className="space-y-4">
       {/* Header + active bonuses summary */}
-      <div className="card p-4">
+      <div className="hud-frame game-panel-glow p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-start justify-between gap-4 mb-3">
           <div>
-            <h2 className="text-white text-base font-bold">Commanders</h2>
+            <h2 className="game-heading text-white text-base font-bold">Commanders</h2>
             <p className="text-slate-500 text-xs mt-0.5">Hired commanders grant passive global bonuses. Refresh pool every 8 hours.</p>
           </div>
           <div className="text-right shrink-0">
-            <div className="text-[10px] text-slate-500 uppercase tracking-wide">Roster</div>
-            <div className={`font-mono font-bold ${hired.length >= cap ? 'text-amber-400' : 'text-white'}`}>{hired.length}/{cap}</div>
+            <div className="game-label">Roster</div>
+            <div className={`game-number font-bold ${hired.length >= cap ? 'text-amber-400' : 'text-white'}`}>{hired.length}/{cap}</div>
             <div className="text-[9px] text-slate-600 mt-0.5">Cap rises with corp tier</div>
           </div>
         </div>
@@ -101,7 +103,9 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
       {activeTab === 'roster' && (
         <div>
           {hired.length === 0 ? (
-            <div className="card p-8 text-center">
+            <div className="hud-frame game-panel p-8 text-center">
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
               <div className="text-slate-500 text-sm">Your roster is empty.</div>
               <div className="text-slate-600 text-xs mt-1">Switch to Recruit to hire commanders.</div>
             </div>
@@ -168,7 +172,7 @@ function BonusChip({ label, value }: { label: string; value: string }) {
   return (
     <div className={`rounded-lg p-2 text-center ${isZero ? 'bg-white/[0.02] border border-white/[0.04]' : 'bg-cyan-500/5 border border-cyan-500/20'}`}>
       <div className={`text-[9px] uppercase tracking-wide ${isZero ? 'text-slate-600' : 'text-slate-400'}`}>{label}</div>
-      <div className={`font-mono text-sm font-bold ${isZero ? 'text-slate-500' : 'text-cyan-300'}`}>{value}</div>
+      <div className={`game-number text-sm font-bold ${isZero ? 'text-slate-500' : 'text-cyan-300'}`}>{value}</div>
     </div>
   );
 }
@@ -200,10 +204,12 @@ function CommanderCard({
       <button
         type="button"
         aria-label={onOpenHero ? `View hero portrait for ${def.name}` : `${def.name} portrait`}
-        className="relative w-full aspect-square bg-gradient-to-b from-transparent to-black/60 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-cyan-400"
+        className="hud-frame holo-sprite relative w-full aspect-square bg-gradient-to-b from-transparent to-black/60 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-cyan-400"
         onClick={onOpenHero}
         disabled={!onOpenHero}
       >
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <Image
           src={getPortraitUrl(def)}
           alt=""
@@ -231,7 +237,7 @@ function CommanderCard({
             {CLASS_LABEL[def.class]}
           </span>
         </div>
-        <div className={`mt-1.5 text-[10px] font-mono ${accent.text}`}>
+        <div className={`game-number mt-1.5 text-[10px] ${accent.text}`}>
           {getClassBonusText(def.class, def.rarity)}
         </div>
 
@@ -262,8 +268,10 @@ function HeroModal({ def, onClose }: { def: CommanderDefinition; onClose: () => 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md game-modal-backdrop" onClick={onClose} aria-hidden="true" />
-      <div className={`relative w-full max-w-md rounded-2xl overflow-hidden border-2 ${accent.border} shadow-2xl ${accent.glow} game-modal-card`} style={{ background: '#0a0a1a' }}>
-        <div className="relative aspect-[3/4]">
+      <div className={`hud-frame relative w-full max-w-md rounded-2xl overflow-hidden border-2 ${accent.border} shadow-2xl ${accent.glow} game-modal-card`} style={{ background: '#0a0a1a' }}>
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="relative aspect-[3/4] holo-sprite">
           <Image src={fullbody} alt={`${def.name} hero portrait`} fill className="object-cover" />
           <button
             onClick={onClose}
@@ -274,9 +282,9 @@ function HeroModal({ def, onClose }: { def: CommanderDefinition; onClose: () => 
           </button>
           <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/70 to-transparent">
             <div className={`text-[10px] font-bold uppercase tracking-wider ${accent.text}`}>{RARITY_LABEL[def.rarity]} · {CLASS_LABEL[def.class]}</div>
-            <h3 id={titleId} className="text-white text-2xl font-bold mt-1">{def.name}</h3>
+            <h3 id={titleId} className="game-heading text-white text-2xl font-bold mt-1">{def.name}</h3>
             <p className="text-slate-300 text-sm">{def.title}</p>
-            <div className={`mt-2 text-sm font-mono ${accent.text}`}>{getClassBonusText(def.class, def.rarity)}</div>
+            <div className={`game-number mt-2 text-sm ${accent.text}`}>{getClassBonusText(def.class, def.rarity)}</div>
           </div>
         </div>
       </div>

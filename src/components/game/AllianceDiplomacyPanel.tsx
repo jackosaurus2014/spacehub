@@ -241,7 +241,9 @@ export default function AllianceDiplomacyPanel() {
     <div className="space-y-4">
       {/* Active War Banner */}
       {activeWar && (
-        <div className="rounded-xl border-2 border-red-500/30 bg-gradient-to-r from-red-500/10 to-amber-500/5 p-4">
+        <div className="hud-frame hud-frame-red relative rounded-xl border-2 border-red-500/30 bg-gradient-to-r from-red-500/10 to-amber-500/5 p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-2xl">⚔️</span>
@@ -253,7 +255,7 @@ export default function AllianceDiplomacyPanel() {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-amber-300 text-xs font-mono font-bold">{formatTimeRemaining(activeWar.remainingMs)}</p>
+              <p className="game-number text-amber-300 text-xs font-mono font-bold">{formatTimeRemaining(activeWar.remainingMs)}</p>
               <p className="text-slate-500 text-[10px]">remaining</p>
             </div>
           </div>
@@ -273,7 +275,7 @@ export default function AllianceDiplomacyPanel() {
               <div>
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="text-green-300 text-[10px] font-semibold">Our Alliance</span>
-                  <span className="text-green-300 text-xs font-mono font-bold">
+                  <span className="game-number text-green-300 text-xs font-mono font-bold">
                     {(activeWar.isSender ? activeWar.warScore.senderScore : activeWar.warScore.receiverScore).toLocaleString()}
                   </span>
                 </div>
@@ -287,7 +289,7 @@ export default function AllianceDiplomacyPanel() {
               <div>
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="text-red-300 text-[10px] font-semibold">[{activeWar.partnerAllianceTag}]</span>
-                  <span className="text-red-300 text-xs font-mono font-bold">
+                  <span className="game-number text-red-300 text-xs font-mono font-bold">
                     {(activeWar.isSender ? activeWar.warScore.receiverScore : activeWar.warScore.senderScore).toLocaleString()}
                   </span>
                 </div>
@@ -304,7 +306,9 @@ export default function AllianceDiplomacyPanel() {
       )}
 
       {/* Active Treaties */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
             <span>📜</span> Active Treaties ({treaties.length})
@@ -325,32 +329,45 @@ export default function AllianceDiplomacyPanel() {
           </p>
         ) : (
           <div className="space-y-2">
+            {treaties.length >= 2 && (
+              <div className="font-hud flex items-center justify-between text-[9px] uppercase tracking-widest text-slate-500 px-1">
+                <span>Partner</span>
+                <span className="flex items-center gap-6">
+                  <span>Type</span>
+                  <span>Remaining</span>
+                </span>
+              </div>
+            )}
             {treaties.map(treaty => {
               const tc = TREATY_COLORS[treaty.type] ?? TREATY_COLORS.trade_agreement;
               return (
                 <div
                   key={treaty.id}
-                  className={`rounded-lg ${tc.bg} border ${tc.border} p-3`}
+                  className={treaties.length >= 2 ? 'border-b border-white/[0.04] last:border-0 pb-2 last:pb-0' : ''}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">{TREATY_ICONS[treaty.type] ?? '📜'}</span>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-white text-xs font-semibold">{treaty.partnerAllianceName}</span>
-                          <span className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-slate-400 font-mono">
-                            [{treaty.partnerAllianceTag}]
+                  <div
+                    className={`rounded-lg ${tc.bg} border ${tc.border} p-3`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{TREATY_ICONS[treaty.type] ?? '📜'}</span>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-white text-xs font-semibold">{treaty.partnerAllianceName}</span>
+                            <span className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-slate-400 font-mono">
+                              [{treaty.partnerAllianceTag}]
+                            </span>
+                          </div>
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase ${tc.badge}`}>
+                            {TREATY_LABELS[treaty.type] ?? treaty.type}
                           </span>
                         </div>
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase ${tc.badge}`}>
-                          {TREATY_LABELS[treaty.type] ?? treaty.type}
+                      </div>
+                      <div className="text-right">
+                        <span className={`text-[10px] font-mono ${tc.text}`}>
+                          {formatTimeRemaining(treaty.remainingMs)}
                         </span>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <span className={`text-[10px] font-mono ${tc.text}`}>
-                        {formatTimeRemaining(treaty.remainingMs)}
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -362,7 +379,9 @@ export default function AllianceDiplomacyPanel() {
 
       {/* Pending Proposals */}
       {(incomingProposals.length > 0 || outgoingProposals.length > 0) && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span>📨</span> Pending Proposals ({pending.length})
           </h3>
@@ -371,11 +390,19 @@ export default function AllianceDiplomacyPanel() {
           {incomingProposals.length > 0 && (
             <div className="mb-3">
               <p className="text-cyan-300 text-[10px] font-bold uppercase tracking-wider mb-2">Incoming</p>
+              {incomingProposals.length >= 2 && (
+                <div className="font-hud flex items-center justify-between text-[9px] uppercase tracking-widest text-slate-500 px-1 mb-1">
+                  <span>Partner</span>
+                  <span>Type</span>
+                </div>
+              )}
               <div className="space-y-2">
-                {incomingProposals.map(p => {
+                {incomingProposals.map((p, idx) => {
                   const tc = TREATY_COLORS[p.type] ?? TREATY_COLORS.trade_agreement;
+                  const isLast = idx === incomingProposals.length - 1;
                   return (
-                    <div key={p.id} className={`rounded-lg ${tc.bg} border ${tc.border} p-3`}>
+                    <div key={p.id} className={incomingProposals.length >= 2 && !isLast ? 'border-b border-white/[0.04] pb-2' : ''}>
+                    <div className={`rounded-lg ${tc.bg} border ${tc.border} p-3`}>
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           <span className="text-sm">{TREATY_ICONS[p.type] ?? '📜'}</span>
@@ -392,19 +419,20 @@ export default function AllianceDiplomacyPanel() {
                           <button
                             onClick={() => handleRespondProposal(p.id, true)}
                             disabled={actionLoading}
-                            className="px-3 py-1 text-[10px] font-semibold text-green-300 bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 rounded-lg transition-colors disabled:opacity-50"
+                            className="min-h-[44px] px-3 py-1 text-[10px] font-semibold text-green-300 bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 rounded-lg transition-colors disabled:opacity-50"
                           >
                             Accept
                           </button>
                           <button
                             onClick={() => handleRespondProposal(p.id, false)}
                             disabled={actionLoading}
-                            className="px-3 py-1 text-[10px] font-semibold text-red-300 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors disabled:opacity-50"
+                            className="min-h-[44px] px-3 py-1 text-[10px] font-semibold text-red-300 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors disabled:opacity-50"
                           >
                             Reject
                           </button>
                         </div>
                       )}
+                    </div>
                     </div>
                   );
                 })}
@@ -416,11 +444,19 @@ export default function AllianceDiplomacyPanel() {
           {outgoingProposals.length > 0 && (
             <div>
               <p className="text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-2">Outgoing</p>
+              {outgoingProposals.length >= 2 && (
+                <div className="font-hud flex items-center justify-between text-[9px] uppercase tracking-widest text-slate-500 px-1 mb-1">
+                  <span>Partner</span>
+                  <span>Type</span>
+                </div>
+              )}
               <div className="space-y-2">
-                {outgoingProposals.map(p => {
+                {outgoingProposals.map((p, idx) => {
                   const tc = TREATY_COLORS[p.type] ?? TREATY_COLORS.trade_agreement;
+                  const isLast = idx === outgoingProposals.length - 1;
                   return (
-                    <div key={p.id} className={`rounded-lg bg-white/[0.03] border border-white/[0.06] p-3`}>
+                    <div key={p.id} className={outgoingProposals.length >= 2 && !isLast ? 'border-b border-white/[0.04] pb-2' : ''}>
+                    <div className={`rounded-lg bg-white/[0.03] border border-white/[0.06] p-3`}>
                       <div className="flex items-center gap-2">
                         <span className="text-sm">{TREATY_ICONS[p.type] ?? '📜'}</span>
                         <div>
@@ -431,6 +467,7 @@ export default function AllianceDiplomacyPanel() {
                         </div>
                       </div>
                       <p className="text-slate-500 text-[10px] mt-1">Awaiting response...</p>
+                    </div>
                     </div>
                   );
                 })}
@@ -445,14 +482,14 @@ export default function AllianceDiplomacyPanel() {
         <div className="flex gap-2">
           <button
             onClick={() => setShowProposeModal(true)}
-            className="flex-1 py-2 text-xs font-semibold text-green-300 bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 rounded-lg transition-colors"
+            className="flex-1 min-h-[44px] py-2 text-xs font-semibold text-green-300 bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 rounded-lg transition-colors"
           >
             🕊️ Propose Treaty
           </button>
           {canDeclareWar ? (
             <button
               onClick={() => setShowWarModal(true)}
-              className="flex-1 py-2 text-xs font-semibold text-red-300 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors"
+              className="flex-1 min-h-[44px] py-2 text-xs font-semibold text-red-300 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors"
             >
               ⚔️ Declare War
             </button>
@@ -466,8 +503,8 @@ export default function AllianceDiplomacyPanel() {
 
       {/* Propose Treaty Modal */}
       {showProposeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-xl border border-green-500/20 bg-[#0a0a14] p-5">
+        <div className="game-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="game-modal-card w-full max-w-md rounded-xl border border-green-500/20 bg-[#0a0a14] p-5">
             <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
               <span>🕊️</span> Propose Treaty
             </h3>
@@ -518,13 +555,13 @@ export default function AllianceDiplomacyPanel() {
               <button
                 onClick={handleProposeTreaty}
                 disabled={actionLoading || !proposeTarget}
-                className="flex-1 py-2 text-xs font-semibold text-white bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                className="flex-1 min-h-[44px] py-2 text-xs font-semibold text-white bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
               >
                 {actionLoading ? 'Sending...' : 'Send Proposal'}
               </button>
               <button
                 onClick={() => setShowProposeModal(false)}
-                className="px-4 py-2 text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
+                className="min-h-[44px] px-4 py-2 text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -535,8 +572,8 @@ export default function AllianceDiplomacyPanel() {
 
       {/* Declare War Modal */}
       {showWarModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-xl border border-red-500/20 bg-[#0a0a14] p-5">
+        <div className="game-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="game-modal-card w-full max-w-md rounded-xl border border-red-500/20 bg-[#0a0a14] p-5">
             <h3 className="text-red-300 text-sm font-bold mb-4 flex items-center gap-2">
               <span>⚔️</span> Declare War
             </h3>
@@ -590,13 +627,13 @@ export default function AllianceDiplomacyPanel() {
               <button
                 onClick={handleDeclareWar}
                 disabled={actionLoading || !warTarget}
-                className="flex-1 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                className="flex-1 min-h-[44px] py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
               >
                 {actionLoading ? 'Declaring...' : 'Declare War'}
               </button>
               <button
                 onClick={() => setShowWarModal(false)}
-                className="px-4 py-2 text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
+                className="min-h-[44px] px-4 py-2 text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
               >
                 Cancel
               </button>

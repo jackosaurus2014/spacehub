@@ -205,9 +205,11 @@ export default function RivalsPanel() {
   if (rivals.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-8 text-center">
+        <div className="hud-frame game-panel-glow p-8 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="text-4xl mb-3">{'\u2694\uFE0F'}</div>
-          <h3 className="text-lg font-semibold text-white mb-2">
+          <h3 className="game-heading text-lg font-semibold text-white mb-2">
             No Rivals Yet
           </h3>
           <p className="text-slate-400 text-sm mb-4">
@@ -230,10 +232,12 @@ export default function RivalsPanel() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
+      <div className="hud-frame game-panel-glow p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-cyan-300">
+            <h2 className="game-heading text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-cyan-300">
               Shadow Rivals
             </h2>
             <p className="text-slate-500 text-xs mt-0.5">
@@ -242,7 +246,7 @@ export default function RivalsPanel() {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+            <p className="game-label">
               Week {summary.weekId}
             </p>
           </div>
@@ -255,16 +259,18 @@ export default function RivalsPanel() {
       ))}
 
       {/* Weekly Summary */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="hud-frame game-panel p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <h3 className="text-sm font-semibold text-slate-300 mb-3">
           Weekly Summary
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+            <p className="game-label">
               Streak
             </p>
-            <p className="text-lg font-bold text-cyan-300">
+            <p className="game-number text-lg font-bold text-cyan-300">
               {summary.currentStreak}W
             </p>
             {summary.streakTitle && (
@@ -274,26 +280,26 @@ export default function RivalsPanel() {
             )}
           </div>
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+            <p className="game-label">
               Wins
             </p>
-            <p className="text-lg font-bold text-green-400">
+            <p className="game-number text-lg font-bold text-green-400">
               {summary.allTimeRecord.wins}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+            <p className="game-label">
               Losses
             </p>
-            <p className="text-lg font-bold text-red-400">
+            <p className="game-number text-lg font-bold text-red-400">
               {summary.allTimeRecord.losses}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+            <p className="game-label">
               Draws
             </p>
-            <p className="text-lg font-bold text-slate-400">
+            <p className="game-number text-lg font-bold text-slate-400">
               {summary.allTimeRecord.draws}
             </p>
           </div>
@@ -404,12 +410,14 @@ function RivalCard({
   index: number;
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+    <div className="hud-frame game-card rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Card Header */}
       <div className="px-4 pt-4 pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-slate-600 font-mono">
+            <span className="game-number text-[10px] text-slate-600">
               #{index + 1}
             </span>
             <span className="text-sm font-semibold text-white">
@@ -417,7 +425,7 @@ function RivalCard({
             </span>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400">
+            <span className="game-number text-slate-400">
               {formatMoney(rival.rival.netWorth)}
             </span>
             <span
@@ -429,7 +437,7 @@ function RivalCard({
                     : 'text-slate-500'
               }
             >
-              {rival.rival.growthPct > 0 ? '+' : ''}
+              {rival.rival.growthPct > 0 ? '\u25B2 +' : rival.rival.growthPct < 0 ? '\u25BC ' : '\u25CF '}
               {rival.rival.growthPct.toFixed(1)}%
             </span>
           </div>
@@ -443,7 +451,7 @@ function RivalCard({
             <div className="relative h-3 bg-white/[0.06] rounded-full overflow-hidden">
               {/* Score fill */}
               <div
-                className={`absolute top-0 left-0 h-full rounded-full bg-gradient-to-r ${getScoreBarColor(
+                className={`game-progress-shimmer absolute top-0 left-0 h-full rounded-full bg-gradient-to-r ${getScoreBarColor(
                   rival.score,
                 )} transition-all duration-500`}
                 style={{ width: `${rival.score}%` }}
@@ -453,7 +461,7 @@ function RivalCard({
             </div>
           </div>
           <div className="flex items-center gap-2 min-w-[120px] justify-end">
-            <span className="text-xs font-mono text-white">
+            <span className="game-number text-xs text-white">
               {rival.score}/100
             </span>
             <span
@@ -513,7 +521,7 @@ function RivalCard({
         <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center justify-between text-xs">
           <div className="text-slate-400">
             <span className="text-slate-500">You:</span>{' '}
-            <span className="text-white font-mono">
+            <span className="game-number text-white">
               {formatMoney(rival.player.netWorth)}
             </span>
             {rival.player.growthPct !== 0 && (
@@ -531,7 +539,7 @@ function RivalCard({
           </div>
           <div className="text-slate-400">
             <span className="text-slate-500">Them:</span>{' '}
-            <span className="text-white font-mono">
+            <span className="game-number text-white">
               {formatMoney(rival.rival.netWorth)}
             </span>
             {rival.rival.growthPct !== 0 && (
@@ -572,9 +580,9 @@ function MetricCompare({
         {label}
       </p>
       <div className="flex items-center justify-center gap-1.5 text-xs">
-        <span className="text-cyan-300 font-mono">{playerVal}</span>
+        <span className="game-number text-cyan-300">{playerVal}</span>
         <span className="text-slate-600">/</span>
-        <span className="text-slate-400 font-mono">{rivalVal}</span>
+        <span className="game-number text-slate-400">{rivalVal}</span>
       </div>
       <p className={`text-[10px] mt-0.5 ${getDiffColor(diffPct)}`}>
         {diffPct > 0 ? '+' : ''}

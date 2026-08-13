@@ -1,9 +1,18 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import { getNPCTitle } from '@/lib/game/npc-companies';
 import { formatMoney } from '@/lib/game/formulas';
+
+// Rank 1-3 reuse existing achievement badge art as holo rank medals — escalating
+// wealth-tier badges read naturally as gold/silver/bronze without new art.
+const RANK_MEDAL: Record<number, { badge: string; tone: 'gold' | 'silver' | 'bronze' }> = {
+  1: { badge: 'transcendent', tone: 'gold' },
+  2: { badge: 'benefactor', tone: 'silver' },
+  3: { badge: 'industrialist', tone: 'bronze' },
+};
 
 interface LeaderboardEntry {
   rank: number;
@@ -82,24 +91,26 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
   return (
     <div className="space-y-4">
       {/* Player Rank Summary */}
-      <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4 text-center">
-        <p className="text-slate-400 text-xs mb-1">Your Rank</p>
-        <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">
+      <div className="hud-frame game-panel-glow p-4 text-center">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <p className="game-label text-center">Your Rank</p>
+        <p className="game-heading text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">
           #{playerRank}
         </p>
         <p className="text-slate-500 text-xs mt-1">out of {entries.length} companies</p>
       </div>
 
       {/* Sort Tabs */}
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Sort leaderboard by">
         {SORT_OPTIONS.map(opt => (
           <button
             key={opt.field}
+            role="tab"
+            aria-selected={sortBy === opt.field}
             onClick={() => setSortBy(opt.field)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              sortBy === opt.field
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
+            className={`font-hud px-3 py-2.5 rounded-lg text-xs font-medium transition-colors min-h-[38px] ${
+              sortBy === opt.field ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
             }`}
           >
             {opt.icon} {opt.label}
@@ -107,41 +118,40 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
         ))}
       </div>
 
-      {/* Leaderboard Table */}
-      <div className="rounded-xl border border-white/[0.06] overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-white/[0.03]">
-              <th className="text-left text-slate-500 font-medium py-2 px-3 w-12">#</th>
-              <th className="text-left text-slate-500 font-medium py-2 px-3">Company</th>
-              <th className="text-right text-slate-500 font-medium py-2 px-3">
-                {SORT_OPTIONS.find(o => o.field === sortBy)?.label}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr
+      {/* Leaderboard — holo ranking rows */}
+      <div className="hud-frame game-panel overflow-hidden" role="table" aria-label="Company leaderboard">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="flex items-center gap-3 bg-white/[0.03] px-3 py-2" role="row">
+          <span className="game-label w-12" role="columnheader">#</span>
+          <span className="game-label flex-1" role="columnheader">Company</span>
+          <span className="game-label text-right" role="columnheader">
+            {SORT_OPTIONS.find(o => o.field === sortBy)?.label}
+          </span>
+        </div>
+        <div className="game-scroll max-h-[520px] overflow-y-auto">
+          {entries.map((entry) => {
+            const medal = RANK_MEDAL[entry.rank];
+            return (
+              <div
                 key={entry.companyName}
-                className={`border-t border-white/[0.04] transition-colors ${
-                  entry.isYou
-                    ? 'bg-cyan-500/5 hover:bg-cyan-500/10'
-                    : 'hover:bg-white/[0.02]'
+                role="row"
+                className={`holo-row flex items-center gap-3 border-t border-white/[0.04] px-3 py-2.5 ${
+                  entry.isYou ? 'holo-row-you' : ''
                 }`}
               >
-                <td className="py-2.5 px-3">
-                  <span className={`text-xs font-bold ${
-                    entry.rank === 1 ? 'text-amber-400' :
-                    entry.rank === 2 ? 'text-slate-300' :
-                    entry.rank === 3 ? 'text-amber-600' :
-                    'text-slate-500'
-                  }`}>
-                    {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `${entry.rank}`}
-                  </span>
-                </td>
-                <td className="py-2.5 px-3">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
+                <div className="w-12 flex items-center" role="cell">
+                  {medal ? (
+                    <span className={`rank-medal rank-medal-${medal.tone} w-7 h-7`} title={`Rank #${entry.rank}`}>
+                      <Image src={`/game/ach-badge-${medal.badge}.webp`} alt={`Rank ${entry.rank} medal`} width={28} height={28} className="w-full h-full object-cover" />
+                    </span>
+                  ) : (
+                    <span className="game-number text-slate-500 text-xs">#{entry.rank}</span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0" role="cell">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-sm font-medium truncate ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
                       {entry.companyName}
                     </span>
                     {entry.isYou && (
@@ -150,7 +160,7 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
                       </span>
                     )}
                     {entry.isNPC && (
-                      <span className="text-[9px] px-1 py-0.5 rounded text-slate-600">🤖</span>
+                      <span className="text-[9px] px-1 py-0.5 rounded text-slate-600" title="NPC company">NPC</span>
                     )}
                     {entry.title && (
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
@@ -158,18 +168,18 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
                       </span>
                     )}
                   </div>
-                </td>
-                <td className="py-2.5 px-3 text-right">
-                  <span className={`font-mono text-xs ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
+                </div>
+                <div className="text-right" role="cell">
+                  <span className={`game-number text-xs ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
                     {sortBy === 'netWorth' || sortBy === 'totalEarned'
                       ? formatMoney(entry[sortBy] as number)
                       : entry[sortBy]}
                   </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Competition info */}

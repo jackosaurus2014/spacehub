@@ -95,7 +95,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
         <div className="inline-block w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mb-2" />
-        <p className="text-slate-400 text-xs">Loading corporation...</p>
+        <p className="font-hud text-slate-400 text-xs">Loading corporation...</p>
       </div>
     );
   }
@@ -114,7 +114,9 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
     <div className="space-y-4">
       {/* Corporation Header */}
       {allianceInfo && (
-        <div className="rounded-xl border border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-cyan-500/5 p-4">
+        <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-cyan-500/5 p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <span className="text-lg">🛡️</span>
@@ -135,11 +137,11 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
                 <span className={`text-xs font-bold ${tierInfo.color}`}>
                   {tierInfo.label}
                 </span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 font-mono">
+                <span className={`game-badge-t${allianceInfo.tier} text-[9px] px-1.5 py-0.5 rounded font-mono`}>
                   Tier {allianceInfo.tier}
                 </span>
               </div>
-              <p className="text-slate-400 text-[10px] font-mono mt-0.5">
+              <p className="game-number text-slate-400 text-[10px] mt-0.5">
                 Lv.{allianceInfo.level}
               </p>
             </div>
@@ -148,8 +150,8 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
           {/* XP Progress Bar */}
           <div>
             <div className="flex items-center justify-between mb-0.5">
-              <span className="text-slate-500 text-[9px]">Corporation XP</span>
-              <span className="text-purple-300 text-[9px] font-mono">
+              <span className="font-hud text-slate-500 text-[9px]">Corporation XP</span>
+              <span className="game-number text-purple-300 text-[9px]">
                 {allianceInfo.xp.toLocaleString()} / {allianceInfo.xpToNextLevel.toLocaleString()}
               </span>
             </div>
@@ -164,7 +166,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
       )}
 
       {/* Sub-tab Navigation */}
-      <div className="flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]">
+      <div className="game-tab-bar flex gap-1 bg-white/[0.02] rounded-lg p-1 border border-white/[0.06]">
         {HUB_TABS.map(t => (
           <button
             key={t.id}

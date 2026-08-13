@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import {
   BRACKETS,
@@ -12,6 +13,7 @@ import {
   getSeasonIcon,
   type SeasonType,
 } from '@/lib/game/seasonal-events';
+import { SEASONAL_ASSETS, getActiveHoliday } from '@/lib/game/assets';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -229,6 +231,8 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
   const displayEvent = event || seasonData!.recentlyEnded!;
   const seasonType = displayEvent.seasonType as SeasonType;
   const accent = getSeasonAccentClasses(seasonType);
+  const activeHoliday = getActiveHoliday();
+  const seasonalArt = activeHoliday ? SEASONAL_ASSETS[activeHoliday] : null;
   const participation = seasonData?.participation;
   const isParticipating = !!participation;
   const isJoinable = ['REGISTRATION', 'LATE_JOIN', 'ACTIVE'].includes(displayEvent.phase);
@@ -244,7 +248,15 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
   return (
     <div className="space-y-3">
       {/* Season Banner */}
-      <div className={`rounded-xl border ${accent.border} bg-gradient-to-r ${accent.gradient} p-4 relative overflow-hidden`}>
+      <div className={`hud-frame rounded-xl border ${accent.border} bg-gradient-to-r ${accent.gradient} p-4 relative overflow-hidden`}>
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        {/* Seasonal holiday art, when a holiday window is active */}
+        {seasonalArt && (
+          <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden="true">
+            <Image src={seasonalArt.banner} alt="" fill className="object-cover" />
+          </div>
+        )}
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-2 right-4 text-6xl">{getSeasonIcon(seasonType)}</div>
@@ -255,7 +267,7 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xl">{getSeasonIcon(seasonType)}</span>
-                <h2 className="text-white text-lg font-bold">{displayEvent.title}</h2>
+                <h2 className="game-heading text-white text-lg font-bold">{displayEvent.title}</h2>
               </div>
               {displayEvent.seasonDefinition && (
                 <p className={`text-xs ${accent.text} font-medium`}>
@@ -264,10 +276,10 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
               )}
             </div>
             <div className="text-right">
-              <span className="text-slate-400 text-[10px] uppercase tracking-wider">
+              <span className="game-label">
                 {displayEvent.countdownLabel}
               </span>
-              <p className="text-white text-lg font-mono font-bold">{countdown || displayEvent.countdown}</p>
+              <p className="timer-hud text-white text-lg font-bold">{countdown || displayEvent.countdown}</p>
             </div>
           </div>
 
@@ -317,15 +329,15 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
             <div className="mt-3 flex items-center gap-3">
               <div className={`flex-1 rounded-lg ${accent.bg} border ${accent.border} p-2 text-center`}>
                 <span className="text-slate-400 text-[10px] block">Score</span>
-                <span className="text-white text-sm font-bold">{Math.round(participation!.totalScore).toLocaleString()}</span>
+                <span className="game-number text-white text-sm font-bold">{Math.round(participation!.totalScore).toLocaleString()}</span>
               </div>
               <div className={`flex-1 rounded-lg ${accent.bg} border ${accent.border} p-2 text-center`}>
                 <span className="text-slate-400 text-[10px] block">Tier</span>
-                <span className="text-white text-sm font-bold">{participation!.currentTier}/{SEASON_PASS_TIERS}</span>
+                <span className="game-number text-white text-sm font-bold">{participation!.currentTier}/{SEASON_PASS_TIERS}</span>
               </div>
               <div className={`flex-1 rounded-lg ${accent.bg} border ${accent.border} p-2 text-center`}>
                 <span className="text-slate-400 text-[10px] block">Rank</span>
-                <span className="text-white text-sm font-bold">
+                <span className="game-number text-white text-sm font-bold">
                   {participation!.rank ? `#${participation!.rank}` : '--'}
                 </span>
               </div>
@@ -346,14 +358,16 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-800/30 rounded-lg p-0.5">
+      <div className="flex gap-1 bg-slate-800/30 rounded-lg p-0.5" role="tablist" aria-label="Season sections">
         {tabs.map(tab => (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-1.5 px-2 rounded-md text-[11px] font-medium transition-all ${
+            className={`font-hud flex-1 py-2.5 px-2 rounded-md text-[11px] font-medium transition-all min-h-[40px] ${
               activeTab === tab.id
-                ? `${accent.bg} ${accent.text} border ${accent.border}`
+                ? `game-tab-active ${accent.bg} ${accent.text} border ${accent.border}`
                 : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
             }`}
           >
@@ -677,21 +691,23 @@ function SeasonPassTab({
   return (
     <div className="space-y-3">
       {/* Overall Progress */}
-      <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 p-3">
+      <div className="hud-frame rounded-lg border border-slate-700/50 bg-slate-800/30 p-3">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-1">
           <h4 className="text-white text-xs font-bold">Season Pass Progress</h4>
-          <span className={`text-xs font-bold ${accent.text}`}>{currentSP.toLocaleString()} SP</span>
+          <span className={`game-number text-xs font-bold ${accent.text}`}>{currentSP.toLocaleString()} SP</span>
         </div>
 
         {/* Overall bar */}
-        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden mb-1">
+        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden mb-1 game-progress-shimmer">
           <div
             className="h-full rounded-full bg-gradient-to-r from-purple-600 via-indigo-500 to-cyan-400 transition-all duration-700"
             style={{ width: `${overallProgress}%` }}
           />
         </div>
         <div className="flex items-center justify-between text-[10px]">
-          <span className="text-slate-500">Tier {currentTier} / {SEASON_PASS_TIERS}</span>
+          <span className="game-number text-slate-500">Tier {currentTier} / {SEASON_PASS_TIERS}</span>
           <span className="text-slate-500">{overallProgress}% Complete</span>
         </div>
 
@@ -700,7 +716,7 @@ function SeasonPassTab({
           <div className="mt-2 pt-2 border-t border-slate-700/50">
             <div className="flex items-center justify-between mb-0.5">
               <span className="text-slate-400 text-[10px]">Next Tier: {currentTier + 1}</span>
-              <span className={`text-[10px] ${accent.text}`}>{spInCurrentTier} / {SP_PER_TIER} SP</span>
+              <span className={`game-number text-[10px] ${accent.text}`}>{spInCurrentTier} / {SP_PER_TIER} SP</span>
             </div>
             <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
               <div
@@ -712,8 +728,10 @@ function SeasonPassTab({
         )}
       </div>
 
-      {/* Tier List */}
-      <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 p-3">
+      {/* Reward Track \u2014 connected node chain, SEASONAL_ASSETS art on claimed nodes when a holiday is active */}
+      <div className="hud-frame rounded-lg border border-slate-700/50 bg-slate-800/30 p-3">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <h4 className="text-white text-xs font-bold mb-2">Tier Rewards</h4>
         <div className="space-y-1">
           {visibleTiers.map(tier => {
@@ -725,20 +743,20 @@ function SeasonPassTab({
             return (
               <div
                 key={tier}
-                className={`flex items-center gap-2 px-2 py-1.5 rounded transition-all ${
+                className={`season-node flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all ${
                   isCurrent
-                    ? `${accent.bg} border ${accent.border}`
+                    ? `${accent.bg} border ${accent.border} season-node-current`
                     : isReached
-                      ? 'bg-green-500/5 border border-green-500/10'
+                      ? 'bg-green-500/5 border border-green-500/10 season-node-claimed'
                       : 'border border-transparent'
                 }`}
               >
-                <div className={`w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-bold ${
+                <div className={`game-number w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border ${
                   isReached
-                    ? 'bg-green-500/20 text-green-400'
+                    ? 'bg-green-500/20 text-green-400 border-green-500/30'
                     : isBonus
-                      ? `${accent.bg} ${accent.text}`
-                      : 'bg-slate-700/50 text-slate-500'
+                      ? `${accent.bg} ${accent.text} ${accent.border}`
+                      : 'bg-slate-700/50 text-slate-500 border-white/[0.06]'
                 }`}>
                   {isReached ? '\u2713' : tier}
                 </div>
@@ -749,7 +767,7 @@ function SeasonPassTab({
                     {reward.description}
                   </span>
                 </div>
-                <span className={`text-[10px] font-medium whitespace-nowrap ${
+                <span className={`game-number text-[10px] font-medium whitespace-nowrap ${
                   isReached ? 'text-green-500' : 'text-slate-500'
                 }`}>
                   {tier * SP_PER_TIER} SP

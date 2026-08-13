@@ -1,7 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import type { CSSProperties } from 'react';
+import Image from 'next/image';
 import { formatMoney } from '@/lib/game/formulas';
+
+// Rank 1-3 reuse existing achievement badge art as holo rank medals — same
+// palette used across Leaderboard/Speed Run panels for a consistent "medal" language.
+const RANK_MEDAL: Record<number, { badge: string; tone: 'gold' | 'silver' | 'bronze' }> = {
+  1: { badge: 'transcendent', tone: 'gold' },
+  2: { badge: 'benefactor', tone: 'silver' },
+  3: { badge: 'industrialist', tone: 'bronze' },
+};
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -208,33 +218,43 @@ export default function LeaguePanel() {
 function LeagueBanner({ league, leagueProfile }: { league: LeagueInfo; leagueProfile: LeagueProfile }) {
   return (
     <div
-      className="rounded-xl p-4 border"
+      className="hud-frame rounded-xl p-4 border"
       style={{
         borderColor: `${league.color}33`,
         background: `linear-gradient(135deg, ${league.color}10, ${league.color}05)`,
-      }}
+        '--hud-color': `${league.color}59`,
+      } as CSSProperties}
     >
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{league.icon}</span>
           <div>
             <h3
-              className="text-lg font-bold"
+              className="game-heading text-lg font-bold"
               style={{ color: league.color }}
             >
               {league.name} League
             </h3>
-            <p className="text-slate-400 text-xs">
-              Tier {league.number} of 8
-              {league.maxNetWorth
-                ? ` \u00B7 ${formatMoney(league.minNetWorth)} - ${formatMoney(league.maxNetWorth)}`
-                : ` \u00B7 ${formatMoney(league.minNetWorth)}+`}
-            </p>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span
+                className="division-badge"
+                style={{ borderColor: `${league.color}55`, color: league.color, background: `${league.color}14` }}
+              >
+                {league.icon} Division {league.number} / 8
+              </span>
+              <p className="text-slate-400 text-xs">
+                {league.maxNetWorth
+                  ? `${formatMoney(league.minNetWorth)} - ${formatMoney(league.maxNetWorth)}`
+                  : `${formatMoney(league.minNetWorth)}+`}
+              </p>
+            </div>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-slate-500 text-[10px] uppercase tracking-wider">Season Pts</p>
-          <p className="text-white font-bold text-lg">{leagueProfile.seasonPoints}</p>
+          <p className="game-label">Season Pts</p>
+          <p className="game-number text-white font-bold text-lg">{leagueProfile.seasonPoints}</p>
         </div>
       </div>
 
@@ -292,7 +312,9 @@ function WeeklyChallengeCard({
   const delta = myEntry ? myEntry.currentValue - myEntry.startValue : 0;
 
   return (
-    <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
+    <div className="hud-frame rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xl">{metric.icon}</span>
@@ -314,22 +336,22 @@ function WeeklyChallengeCard({
       {myEntry && (
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white/[0.04] rounded-lg p-2 text-center">
-            <p className="text-slate-500 text-[10px] uppercase">Your Score</p>
-            <p className="text-white font-bold text-sm">
+            <p className="game-label">Your Score</p>
+            <p className="game-number text-white font-bold text-sm">
               {formatScore(myEntry.score, metric.scoreType)}
             </p>
           </div>
           <div className="bg-white/[0.04] rounded-lg p-2 text-center">
-            <p className="text-slate-500 text-[10px] uppercase">Delta</p>
-            <p className={`font-bold text-sm ${delta >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <p className="game-label">Delta</p>
+            <p className={`game-number font-bold text-sm ${delta >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {delta >= 0 ? '+' : ''}{metric.scoreType === 'percentage'
                 ? formatMoney(delta)
                 : delta.toFixed(0)}
             </p>
           </div>
           <div className="bg-white/[0.04] rounded-lg p-2 text-center">
-            <p className="text-slate-500 text-[10px] uppercase">Rank</p>
-            <p className="text-white font-bold text-sm">
+            <p className="game-label">Rank</p>
+            <p className="game-number text-white font-bold text-sm">
               {myEntry.rank ? `#${myEntry.rank}` : '--'}
             </p>
           </div>
@@ -341,12 +363,14 @@ function WeeklyChallengeCard({
 
 function RewardsCard({ rank, rewards }: { rank: number; rewards: ProjectedRewards }) {
   return (
-    <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
+    <div className="hud-frame rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between">
         <div>
           <p className="text-amber-400 text-xs font-semibold">Projected Rewards (Rank #{rank})</p>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-white text-sm font-medium">
+            <span className="game-number text-white text-sm font-medium">
               {formatMoney(rewards.cashReward)}
             </span>
             {rewards.title && (
@@ -381,132 +405,121 @@ function BracketStandings({
   const maxScore = Math.max(...standings.map(s => s.score), 1);
 
   return (
-    <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+    <div className="hud-frame game-panel overflow-hidden" role="table" aria-label="Bracket standings">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Header */}
-      <div className="bg-white/[0.03] px-3 py-2 flex items-center justify-between">
-        <h4 className="text-slate-400 text-xs font-medium uppercase tracking-wider">
+      <div className="bg-white/[0.03] px-3 py-2 flex items-center justify-between" role="row">
+        <h4 className="game-label" role="columnheader">
           Bracket Standings
         </h4>
         <span className="text-slate-500 text-[10px]">{bracketSize} players</span>
       </div>
 
-      {/* Table */}
-      <div className="max-h-[480px] overflow-y-auto">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-zinc-900/95 backdrop-blur-sm z-10">
-            <tr>
-              <th className="text-left text-slate-500 font-medium py-2 px-3 w-12">#</th>
-              <th className="text-left text-slate-500 font-medium py-2 px-3">Company</th>
-              <th className="text-right text-slate-500 font-medium py-2 px-3 w-24">Score</th>
-              <th className="text-right text-slate-500 font-medium py-2 px-3 w-20 hidden sm:table-cell">Bar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {standings.map((entry) => {
-              const inPromo = entry.rank <= promotionZone;
-              const inDemo = entry.rank > bracketSize - demotionZone;
+      {/* Holo ranking rows */}
+      <div className="game-scroll max-h-[480px] overflow-y-auto">
+        {standings.map((entry) => {
+          const inPromo = entry.rank <= promotionZone;
+          const inDemo = entry.rank > bracketSize - demotionZone;
+          const medal = RANK_MEDAL[entry.rank];
 
-              let zoneBg = '';
-              let zoneIndicator = '';
-              if (inPromo) {
-                zoneBg = 'bg-emerald-500/[0.04]';
-                zoneIndicator = 'border-l-2 border-l-emerald-500';
-              } else if (inDemo) {
-                zoneBg = 'bg-red-500/[0.04]';
-                zoneIndicator = 'border-l-2 border-l-red-500';
-              }
-
-              return (
-                <tr
-                  key={entry.rank}
-                  className={`border-t border-white/[0.04] transition-colors ${zoneBg} ${zoneIndicator} ${
-                    entry.isYou
-                      ? 'bg-cyan-500/[0.08] hover:bg-cyan-500/[0.12]'
-                      : 'hover:bg-white/[0.02]'
-                  }`}
-                >
-                  <td className="py-2 px-3">
-                    <span className={`text-xs font-bold ${
-                      entry.rank === 1 ? 'text-amber-400' :
-                      entry.rank === 2 ? 'text-slate-300' :
-                      entry.rank === 3 ? 'text-amber-600' :
-                      inPromo ? 'text-emerald-400' :
-                      inDemo ? 'text-red-400' :
-                      'text-slate-500'
-                    }`}>
-                      {entry.rank === 1 ? '\uD83E\uDD47' : entry.rank === 2 ? '\uD83E\uDD48' : entry.rank === 3 ? '\uD83E\uDD49' : `${entry.rank}`}
+          return (
+            <div
+              key={entry.rank}
+              role="row"
+              className={`holo-row flex items-center gap-3 border-t border-white/[0.04] px-3 py-2 ${
+                inPromo ? 'zone-promotion' : inDemo ? 'zone-relegation' : ''
+              } ${entry.isYou ? 'holo-row-you' : ''}`}
+            >
+              <div className="w-10 flex items-center" role="cell">
+                {medal ? (
+                  <span className={`rank-medal rank-medal-${medal.tone} w-6 h-6`} title={`Rank #${entry.rank}`}>
+                    <Image src={`/game/ach-badge-${medal.badge}.webp`} alt={`Rank ${entry.rank} medal`} width={24} height={24} className="w-full h-full object-cover" />
+                  </span>
+                ) : (
+                  <span className={`game-number text-xs ${inPromo ? 'text-emerald-400' : inDemo ? 'text-red-400' : 'text-slate-500'}`}>
+                    #{entry.rank}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0" role="cell">
+                <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                  <span className={`text-sm font-medium truncate ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
+                    {entry.companyName}
+                  </span>
+                  {entry.isYou && (
+                    <span className="flex-shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                      YOU
                     </span>
-                  </td>
-                  <td className="py-2 px-3">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className={`text-sm font-medium truncate ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
-                        {entry.companyName}
-                      </span>
-                      {entry.isYou && (
-                        <span className="flex-shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
-                          YOU
-                        </span>
-                      )}
-                      {entry.allianceTag && (
-                        <span className="flex-shrink-0 text-[9px] text-slate-500">
-                          [{entry.allianceTag}]
-                        </span>
-                      )}
-                      {entry.shielded && (
-                        <span className="flex-shrink-0 text-[9px] text-amber-400" title="Demotion shield active">
-                          {'\uD83D\uDEE1'}
-                        </span>
-                      )}
-                      {entry.promoted && (
-                        <span className="flex-shrink-0 text-[9px] text-emerald-400" title="Promoted">
-                          {'\u2B06'}
-                        </span>
-                      )}
-                      {entry.demoted && (
-                        <span className="flex-shrink-0 text-[9px] text-red-400" title="Demoted">
-                          {'\u2B07'}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-2 px-3 text-right">
-                    <span className={`font-mono text-xs ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
-                      {formatScore(entry.score, metric.scoreType)}
+                  )}
+                  {entry.allianceTag && (
+                    <span className="flex-shrink-0 text-[9px] text-slate-500">
+                      [{entry.allianceTag}]
                     </span>
-                  </td>
-                  <td className="py-2 px-3 hidden sm:table-cell">
-                    <div className="w-full bg-white/[0.06] rounded-full h-1.5">
-                      <div
-                        className="h-1.5 rounded-full transition-all"
-                        style={{
-                          width: `${Math.min(100, (entry.score / maxScore) * 100)}%`,
-                          backgroundColor: entry.isYou
-                            ? '#22d3ee'
-                            : inPromo
-                            ? '#22c55e'
-                            : inDemo
-                            ? '#ef4444'
-                            : '#6366f1',
-                        }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  )}
+                  {entry.shielded && (
+                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Demotion shield active">
+                      {'\uD83D\uDEE1'} Shielded
+                    </span>
+                  )}
+                  {entry.promoted && (
+                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" title="Promoted this week">
+                      {'\u2B06'} Promoted
+                    </span>
+                  )}
+                  {entry.demoted && (
+                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20" title="Demoted this week">
+                      {'\u2B07'} Demoted
+                    </span>
+                  )}
+                  {!entry.promoted && !entry.demoted && inPromo && (
+                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      {'\u25B2'} Promo Zone
+                    </span>
+                  )}
+                  {!entry.promoted && !entry.demoted && inDemo && (
+                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">
+                      {'\u25BC'} Danger Zone
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="text-right" role="cell">
+                <span className={`game-number text-xs ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
+                  {formatScore(entry.score, metric.scoreType)}
+                </span>
+              </div>
+              <div className="hidden sm:block w-20" role="cell">
+                <div className="w-full bg-white/[0.06] rounded-full h-1.5 game-progress-shimmer">
+                  <div
+                    className="h-1.5 rounded-full transition-all"
+                    style={{
+                      width: `${Math.min(100, (entry.score / maxScore) * 100)}%`,
+                      backgroundColor: entry.isYou
+                        ? '#22d3ee'
+                        : inPromo
+                        ? '#22c55e'
+                        : inDemo
+                        ? '#ef4444'
+                        : '#6366f1',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Legend */}
       <div className="bg-white/[0.02] px-3 py-2 flex items-center gap-4 text-[10px] text-slate-500 border-t border-white/[0.04]">
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          Promotion Zone (Top {promotionZone})
+          <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden="true" />
+          {'\u25B2'} Promotion Zone (Top {promotionZone})
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-red-500" />
-          Danger Zone (Bottom {demotionZone})
+          <span className="w-2 h-2 rounded-full bg-red-500" aria-hidden="true" />
+          {'\u25BC'} Danger Zone (Bottom {demotionZone})
         </span>
       </div>
     </div>

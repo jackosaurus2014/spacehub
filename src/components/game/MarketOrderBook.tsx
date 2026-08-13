@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RESOURCE_MAP, RESOURCES } from '@/lib/game/resources';
 import { formatMoney } from '@/lib/game/formulas';
+import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import type { GameState } from '@/lib/game/types';
+import Image from 'next/image';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -204,6 +206,13 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
     <div className="space-y-3">
       {/* Resource Selector */}
       <div className="flex items-center gap-2 flex-wrap">
+        <div className="sprite-frame w-8 h-8 flex-shrink-0 flex items-center justify-center">
+          {RESOURCE_ASSETS[resource] ? (
+            <Image src={RESOURCE_ASSETS[resource]} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover" />
+          ) : (
+            <span className="text-sm">{resourceDef?.icon}</span>
+          )}
+        </div>
         <select
           value={resource}
           onChange={e => { setResource(e.target.value); setPrice(''); }}
@@ -217,11 +226,11 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
         {book && (
           <div className="flex items-center gap-3 text-[10px]">
             <span className="text-slate-400">
-              Last: <span className="text-white font-mono">{formatMoney(book.lastTradePrice || book.currentPrice)}</span>
+              Last: <span className="game-number text-white">{formatMoney(book.lastTradePrice || book.currentPrice)}</span>
             </span>
             {book.change24h !== 0 && (
-              <span className={book.change24h > 0 ? 'text-green-400' : 'text-red-400'}>
-                {book.change24h > 0 ? '+' : ''}{book.change24h}%
+              <span className={`game-number ${book.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {book.change24h > 0 ? '▲+' : '▼'}{Math.abs(book.change24h)}%
               </span>
             )}
             {book.spread && (
@@ -253,7 +262,9 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
       {/* Order Book Tab */}
       {tab === 'book' && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           {loading ? (
             <div className="text-center text-slate-500 text-xs py-8">Loading order book...</div>
           ) : !book ? (
@@ -262,8 +273,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
             <div className="grid grid-cols-2 gap-3">
               {/* Bids (Buy Orders) */}
               <div>
-                <div className="text-[10px] text-green-400 font-bold uppercase tracking-wider mb-2">
-                  Bids (Buy)
+                <div className="font-hud text-[10px] text-green-400 font-bold uppercase tracking-wider mb-2">
+                  ▲ Bids (Buy)
                 </div>
                 <div className="space-y-0.5">
                   {book.bids.length === 0 ? (
@@ -271,15 +282,19 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                   ) : (
                     book.bids.map((bid, i) => (
                       <div key={i} className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
-                        {/* Depth bar */}
+                        {/* Depth bar — holo gradient, grows from the price column outward */}
                         <div
-                          className="absolute inset-y-0 left-0 bg-green-500/10 rounded"
-                          style={{ width: `${(bid.totalQty / maxQty) * 100}%` }}
+                          className="absolute inset-y-0 left-0 rounded"
+                          style={{
+                            width: `${(bid.totalQty / maxQty) * 100}%`,
+                            background: 'linear-gradient(to right, rgba(34,197,94,0.22), rgba(34,197,94,0.04))',
+                            boxShadow: 'inset 0 0 6px rgba(34,197,94,0.15)',
+                          }}
                           role="presentation"
                           aria-label={`${bid.totalQty} units at ${formatMoney(bid.price)}`}
                         />
-                        <span className="relative z-10 text-green-400 font-mono">{formatMoney(bid.price)}</span>
-                        <span className="relative z-10 text-slate-300 font-mono">
+                        <span className="game-number relative z-10 text-green-400">{formatMoney(bid.price)}</span>
+                        <span className="game-number relative z-10 text-slate-300">
                           {bid.totalQty}
                           {bid.isNpc && <span className="text-slate-600 ml-1">NPC</span>}
                         </span>
@@ -291,8 +306,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
               {/* Asks (Sell Orders) */}
               <div>
-                <div className="text-[10px] text-red-400 font-bold uppercase tracking-wider mb-2">
-                  Asks (Sell)
+                <div className="font-hud text-[10px] text-red-400 font-bold uppercase tracking-wider mb-2">
+                  ▼ Asks (Sell)
                 </div>
                 <div className="space-y-0.5">
                   {book.asks.length === 0 ? (
@@ -301,13 +316,17 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                     book.asks.map((ask, i) => (
                       <div key={i} className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
                         <div
-                          className="absolute inset-y-0 right-0 bg-red-500/10 rounded"
-                          style={{ width: `${(ask.totalQty / maxQty) * 100}%` }}
+                          className="absolute inset-y-0 right-0 rounded"
+                          style={{
+                            width: `${(ask.totalQty / maxQty) * 100}%`,
+                            background: 'linear-gradient(to left, rgba(239,68,68,0.22), rgba(239,68,68,0.04))',
+                            boxShadow: 'inset 0 0 6px rgba(239,68,68,0.15)',
+                          }}
                           role="presentation"
                           aria-label={`${ask.totalQty} units at ${formatMoney(ask.price)}`}
                         />
-                        <span className="relative z-10 text-red-400 font-mono">{formatMoney(ask.price)}</span>
-                        <span className="relative z-10 text-slate-300 font-mono">
+                        <span className="game-number relative z-10 text-red-400">{formatMoney(ask.price)}</span>
+                        <span className="game-number relative z-10 text-slate-300">
                           {ask.totalQty}
                           {ask.isNpc && <span className="text-slate-600 ml-1">NPC</span>}
                         </span>
@@ -323,7 +342,9 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
       {/* Place Order Tab */}
       {tab === 'place' && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           {/* Buy/Sell Toggle */}
           <div className="flex rounded-lg overflow-hidden border border-white/[0.08]">
             <button
@@ -457,7 +478,9 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
       {/* My Orders Tab */}
       {tab === 'orders' && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           {myOrders.length === 0 ? (
             <div className="text-center text-slate-500 text-xs py-6">
               No orders yet. Place your first limit order!
@@ -516,7 +539,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                     </div>
 
                     <div className="flex items-center justify-between text-[10px]">
-                      <span className="text-slate-400">
+                      <span className="game-number text-slate-400">
                         {order.filledQty}/{order.quantity} @ {formatMoney(order.price)}
                       </span>
                       {isActive && expiresAt && (

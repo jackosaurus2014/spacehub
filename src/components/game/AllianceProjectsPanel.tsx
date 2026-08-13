@@ -262,7 +262,7 @@ export default function AllianceProjectsPanel({ state }: AllianceProjectsPanelPr
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+              className={`font-hud flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
                 activeTab === tab
                   ? 'bg-purple-600/30 text-purple-300 border border-purple-500/30'
                   : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -389,11 +389,15 @@ function ActiveProjectCard({
     : null;
 
   return (
-    <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+    <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-xl">{project.icon}</span>
+          <div className="sprite-frame w-10 h-10 flex items-center justify-center">
+            <span className="text-xl">{project.icon}</span>
+          </div>
           <div>
             <h3 className="text-white text-sm font-semibold">{project.name}</h3>
             <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
@@ -407,7 +411,7 @@ function ActiveProjectCard({
         </div>
         {isBuilding && buildTimeStr && (
           <div className="text-right">
-            <p className="text-amber-300 text-xs font-mono font-bold">{buildTimeStr}</p>
+            <p className="game-number text-amber-300 text-xs font-mono font-bold">{buildTimeStr}</p>
             <p className="text-slate-500 text-[10px]">until complete</p>
           </div>
         )}
@@ -419,7 +423,7 @@ function ActiveProjectCard({
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
           <span className="text-slate-400 text-[10px]">Overall Progress</span>
-          <span className="text-white text-xs font-bold font-mono">{project.fundingProgressPct}%</span>
+          <span className="game-number text-white text-xs font-bold font-mono">{project.fundingProgressPct}%</span>
         </div>
         <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
           <div
@@ -462,13 +466,13 @@ function ActiveProjectCard({
       {/* Your contribution */}
       {project.myContribution && (
         <div className="p-2.5 rounded-lg bg-cyan-500/5 border border-cyan-500/10 mb-3">
-          <p className="text-cyan-300 text-[10px] font-bold uppercase tracking-wider mb-1">Your Contribution</p>
+          <p className="font-hud text-cyan-300 text-[10px] font-bold uppercase tracking-wider mb-1">Your Contribution</p>
           <div className="flex items-center gap-3 text-[10px]">
             <span className="text-white">
               {formatMoney(project.myContribution.moneyContributed)}
             </span>
             <span className="text-slate-500">|</span>
-            <span className="text-cyan-300 font-mono">
+            <span className="game-number text-cyan-300 font-mono">
               {(project.myContribution.contributionShare * 100).toFixed(1)}% share
             </span>
           </div>
@@ -478,12 +482,19 @@ function ActiveProjectCard({
       {/* Top contributors */}
       {project.contributions.length > 0 && (
         <div className="mb-3">
-          <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-1.5">Top Contributors</h4>
+          <h4 className="font-hud text-white text-[10px] font-bold uppercase tracking-wider mb-1.5">Top Contributors</h4>
+          <div className="flex items-center justify-between py-1 px-2 text-[9px]">
+            <div className="flex items-center gap-1.5">
+              <span className="font-hud uppercase tracking-widest text-slate-500">#</span>
+              <span className="font-hud uppercase tracking-widest text-slate-500">Commander</span>
+            </div>
+            <span className="font-hud uppercase tracking-widest text-slate-500">Share</span>
+          </div>
           <div className="space-y-1">
             {project.contributions.slice(0, 5).map((c, idx) => (
               <div
                 key={c.profileId}
-                className={`flex items-center justify-between py-1 px-2 rounded text-[10px] ${
+                className={`flex items-center justify-between py-1 px-2 rounded text-[10px] border-b border-white/[0.04] last:border-0 ${
                   c.isYou ? 'bg-cyan-500/5' : ''
                 }`}
               >
@@ -491,7 +502,7 @@ function ActiveProjectCard({
                   <span className="text-slate-600 font-mono">{idx + 1}.</span>
                   <span className={c.isYou ? 'text-cyan-300' : 'text-slate-300'}>{c.companyName}</span>
                 </div>
-                <span className="text-slate-400 font-mono">
+                <span className="game-number text-slate-400 font-mono">
                   {(c.contributionShare * 100).toFixed(1)}%
                 </span>
               </div>
@@ -504,7 +515,7 @@ function ActiveProjectCard({
       {project.status === 'funding' && (
         <button
           onClick={onContribute}
-          className="w-full py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"
+          className="w-full min-h-[44px] py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"
         >
           Contribute
         </button>
@@ -534,7 +545,7 @@ function ResourceProgressBar({
         <span className="text-slate-400 text-[10px] flex items-center gap-1">
           <span>{icon}</span> {label}
         </span>
-        <span className="text-slate-300 text-[10px] font-mono">
+        <span className="game-number text-slate-300 text-[10px] font-mono">
           {formatValue(current)} / {formatValue(target)}
         </span>
       </div>
@@ -592,16 +603,16 @@ function ContributionForm({
 
   return (
     <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4 mt-2">
-      <h4 className="text-cyan-300 text-xs font-bold uppercase tracking-wider mb-3">Contribute to {project.name}</h4>
+      <h4 className="font-hud text-cyan-300 text-xs font-bold uppercase tracking-wider mb-3">Contribute to {project.name}</h4>
 
       {/* Money slider */}
       {moneyRemaining > 0 && (
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1">
-            <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium">
+            <label className="font-hud text-slate-400 text-[10px] uppercase tracking-wider font-medium">
               Money ({moneyPct}%)
             </label>
-            <span className="text-white text-xs font-mono">{formatMoney(actualMoney)}</span>
+            <span className="game-number text-white text-xs font-mono">{formatMoney(actualMoney)}</span>
           </div>
           <input
             type="range"
@@ -613,7 +624,7 @@ function ContributionForm({
           />
           <div className="flex justify-between text-[9px] text-slate-600 mt-0.5">
             <span>0%</span>
-            <span>Available: {formatMoney(state.money)}</span>
+            <span>Available: <span className="game-number">{formatMoney(state.money)}</span></span>
             <span>100%</span>
           </div>
         </div>
@@ -622,11 +633,11 @@ function ContributionForm({
       {/* Resource inputs */}
       {neededResources.length > 0 && (
         <div className="space-y-2 mb-3">
-          <p className="text-slate-400 text-[10px] uppercase tracking-wider font-medium">Resources</p>
+          <p className="font-hud text-slate-400 text-[10px] uppercase tracking-wider font-medium">Resources</p>
           {neededResources.map(({ resourceId, remaining, playerHas }) => (
             <div key={resourceId} className="flex items-center gap-2">
               <span className="text-sm w-5">{RESOURCE_ICONS[resourceId] ?? '?'}</span>
-              <span className="text-slate-300 text-[10px] w-20 truncate">{RESOURCE_NAMES[resourceId] ?? resourceId}</span>
+              <span className="font-hud text-slate-300 text-[10px] w-20 truncate">{RESOURCE_NAMES[resourceId] ?? resourceId}</span>
               <input
                 type="number"
                 min={0}
@@ -639,7 +650,7 @@ function ContributionForm({
                 className="flex-1 h-7 px-2 rounded bg-white/[0.06] text-white text-xs border border-white/[0.06] focus:outline-none focus:border-cyan-500/30 font-mono"
               />
               <span className="text-slate-500 text-[9px] w-24 text-right">
-                need {remaining.toLocaleString()} / have {playerHas.toLocaleString()}
+                need <span className="game-number">{remaining.toLocaleString()}</span> / have <span className="game-number">{playerHas.toLocaleString()}</span>
               </span>
             </div>
           ))}
@@ -654,13 +665,13 @@ function ContributionForm({
         <button
           onClick={onContribute}
           disabled={contributing}
-          className="flex-1 py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+          className="flex-1 min-h-[44px] py-2 flex items-center justify-center text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
         >
           {contributing ? 'Contributing...' : 'Confirm Contribution'}
         </button>
         <button
           onClick={onCancel}
-          className="px-4 py-2 text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
+          className="px-4 min-h-[44px] py-2 flex items-center justify-center text-xs font-medium text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-colors"
         >
           Cancel
         </button>
@@ -681,14 +692,16 @@ function AvailableProjectCard({
   onPropose: () => void;
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xl">{project.icon}</span>
           <div>
             <h3 className="text-white text-xs font-semibold">{project.name}</h3>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 border border-white/[0.04]">
+              <span className={`text-[9px] px-1.5 py-0.5 rounded game-badge-t${project.tier}`}>
                 Tier {project.tier}
               </span>
               <span className="text-[9px] text-slate-500">
@@ -697,18 +710,18 @@ function AvailableProjectCard({
             </div>
           </div>
         </div>
-        <span className="text-green-400 text-[10px] font-mono">+{project.xpReward} XP</span>
+        <span className="game-number text-green-400 text-[10px] font-mono">+{project.xpReward} XP</span>
       </div>
 
       <p className="text-slate-400 text-[10px] mb-2">{project.description}</p>
 
       {/* Costs */}
       <div className="flex flex-wrap gap-2 mb-2">
-        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300 font-mono">
+        <span className="game-number text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300 font-mono">
           💰 {formatMoney(project.moneyCost)}
         </span>
         {Object.entries(project.resourceCosts).map(([resourceId, qty]) => (
-          <span key={resourceId} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300 font-mono">
+          <span key={resourceId} className="game-number text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300 font-mono">
             {RESOURCE_ICONS[resourceId] ?? '?'} {qty.toLocaleString()} {RESOURCE_NAMES[resourceId] ?? resourceId}
           </span>
         ))}
@@ -738,7 +751,7 @@ function AvailableProjectCard({
           <button
             onClick={onPropose}
             disabled={proposing}
-            className="px-4 py-1.5 text-[10px] font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-lg transition-colors"
+            className="px-4 min-h-[44px] py-1.5 flex items-center justify-center text-[10px] font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-lg transition-colors"
           >
             {proposing ? 'Proposing...' : 'Propose Project'}
           </button>
@@ -752,7 +765,9 @@ function AvailableProjectCard({
 
 function CompletedProjectCard({ project }: { project: ProjectData }) {
   return (
-    <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4">
+    <div className="hud-frame hud-frame-purple relative rounded-xl border border-green-500/20 bg-green-500/5 p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xl">{project.icon}</span>
@@ -782,7 +797,7 @@ function CompletedProjectCard({ project }: { project: ProjectData }) {
               : `+${(value * 100).toFixed(0)}%`;
           return (
             <span key={key} className="text-[9px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20 font-bold">
-              {label}: {display}
+              {label}: <span className="game-number">{display}</span>
             </span>
           );
         })}
@@ -791,7 +806,7 @@ function CompletedProjectCard({ project }: { project: ProjectData }) {
       {/* Top contributors */}
       {project.contributions.length > 0 && (
         <div>
-          <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-1">Contributors</h4>
+          <h4 className="font-hud text-white text-[10px] font-bold uppercase tracking-wider mb-1">Contributors</h4>
           <div className="flex flex-wrap gap-1.5">
             {project.contributions.slice(0, 5).map(c => (
               <span

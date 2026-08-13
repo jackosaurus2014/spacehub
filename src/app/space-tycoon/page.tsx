@@ -55,6 +55,8 @@ import TerritoryPanel from '@/components/game/TerritoryPanel';
 import SpeedRunPanel from '@/components/game/SpeedRunPanel';
 import EspionagePanel from '@/components/game/EspionagePanel';
 import MegaProjectPanel from '@/components/game/MegaProjectPanel';
+import MegastructurePanel from '@/components/game/MegastructurePanel';
+import { startMegastructure, advanceMegastructurePhase } from '@/lib/game/personal-megastructures';
 import ReportsPanel from '@/components/game/ReportsPanel';
 import PrestigeModal from '@/components/game/PrestigeModal';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
@@ -452,10 +454,12 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
     <div className="space-y-4">
       {/* Suggested Research — top 3 picks for progression */}
       {anyQueueFree && suggestions.length > 0 && (
-        <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
+        <div className="hud-frame hud-frame-purple relative rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm">💡</span>
-            <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>Suggested Research</h3>
+            <h3 className="font-hud text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>Suggested Research</h3>
             <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>— best for your current progress</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -518,19 +522,21 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
         const elapsed = (Date.now() - (state.activeResearch.startedAtMs || 0)) / 1000;
         const pct = Math.min(100, Math.round((elapsed / (state.activeResearch.realDurationSeconds || 1)) * 100));
         return (
-          <div className="rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-cyan-500/5 p-4">
+          <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-cyan-500/5 p-4 game-glow-purple">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-lg animate-pulse">🔬</span>
+                <span className="text-lg animate-pulse motion-reduce:animate-none">🔬</span>
                 <div>
                   <span className="text-white text-sm font-semibold">{def.name}</span>
                   {hasQueue2 && <span className="text-slate-500 text-[9px] ml-1.5">Q1</span>}
-                  <span className="text-purple-400 text-xs ml-2">{pct}%</span>
+                  <span className="game-number text-purple-400 text-xs ml-2">{pct}%</span>
                 </div>
               </div>
-              <span className="text-slate-400 text-xs">{formatCountdown(Math.max(0, (state.activeResearch.realDurationSeconds || 0) - elapsed))}</span>
+              <span className="game-number text-slate-400 text-xs">{formatCountdown(Math.max(0, (state.activeResearch.realDurationSeconds || 0) - elapsed))}</span>
             </div>
-            <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+            <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden glow-pulse-cyan">
               <div className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full transition-all duration-1000 game-progress-shimmer" style={{ width: `${pct}%` }} />
             </div>
             <p className="text-slate-500 text-[10px] mt-1.5">{def.effect}</p>
@@ -545,19 +551,21 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
         const elapsed2 = (Date.now() - (state.activeResearch2.startedAtMs || 0)) / 1000;
         const pct2 = Math.min(100, Math.round((elapsed2 / (state.activeResearch2.realDurationSeconds || 1)) * 100));
         return (
-          <div className="rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 p-4">
+          <div className="hud-frame relative rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 p-4 game-glow-cyan">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-lg animate-pulse">🔬</span>
+                <span className="text-lg animate-pulse motion-reduce:animate-none">🔬</span>
                 <div>
                   <span className="text-white text-sm font-semibold">{def2.name}</span>
                   <span className="text-slate-500 text-[9px] ml-1.5">Q2</span>
-                  <span className="text-cyan-400 text-xs ml-2">{pct2}%</span>
+                  <span className="game-number text-cyan-400 text-xs ml-2">{pct2}%</span>
                 </div>
               </div>
-              <span className="text-slate-400 text-xs">{formatCountdown(Math.max(0, (state.activeResearch2.realDurationSeconds || 0) - elapsed2))}</span>
+              <span className="game-number text-slate-400 text-xs">{formatCountdown(Math.max(0, (state.activeResearch2.realDurationSeconds || 0) - elapsed2))}</span>
             </div>
-            <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+            <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden glow-pulse-cyan">
               <div className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-1000 game-progress-shimmer" style={{ width: `${pct2}%` }} />
             </div>
             <p className="text-slate-500 text-[10px] mt-1.5">{def2.effect}</p>
@@ -665,10 +673,11 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                   // Unlocked (prereqs met) but missing money or resources
                   const unlockedCantAfford = !completed && !active && prereqsMet && (!canAffordMoney || !hasResCost);
 
+                  const tierBadgeClass = `game-badge-t${Math.max(1, Math.min(5, r.tier))}`;
                   return (
                     <div
                       key={r.id}
-                      className={`p-3 rounded-lg border transition-all game-card ${
+                      className={`p-3 rounded-lg border transition-all game-card ${(active || canStart) ? 'holo-sprite' : ''} ${
                         completed ? 'border-green-500/20 bg-green-500/5' :
                         active ? 'border-purple-500/30 bg-purple-500/10 game-glow-pulse' :
                         locked ? 'border-white/[0.03] bg-white/[0.01] opacity-40' :
@@ -681,7 +690,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                       <div className="flex justify-between items-start mb-1">
                         <div className="flex items-center gap-1.5">
                           {completed && <span className="text-green-400 text-xs">✓</span>}
-                          {active && <span className="text-purple-400 text-xs animate-pulse">◉</span>}
+                          {active && <span className="text-purple-400 text-xs animate-pulse motion-reduce:animate-none">◉</span>}
                           {locked && <span className="text-slate-600 text-xs">🔒</span>}
                           {canStart && <span className="text-purple-400 text-xs">▶</span>}
                           {unlockedCantAfford && <span className="text-amber-400/70 text-xs">◎</span>}
@@ -700,12 +709,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                           {unlockedCantAfford && (
                             <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400/70 font-medium">NEED $</span>
                           )}
-                          <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-                            completed ? 'bg-green-500/20 text-green-400' :
-                            active ? 'bg-purple-500/20 text-purple-400' :
-                            canStart ? 'bg-purple-500/15 text-purple-300' :
-                            `bg-white/[0.04] text-slate-500`
-                          }`}>T{r.tier}</span>
+                          <span className={`font-hud text-[9px] px-1.5 py-0.5 rounded-full ${tierBadgeClass}`}>T{r.tier}</span>
                         </div>
                       </div>
                       <p className="text-slate-400 text-[10px] mb-0.5 leading-relaxed">{r.effect}</p>
@@ -845,20 +849,39 @@ function ServicesPanel({ state }: { state: GameState }) {
     }
   }
 
-  const rows = Array.from(serviceGroups.entries()).map(([key, group]) => {
+  const cards = Array.from(serviceGroups.entries()).map(([key, group]) => {
     const locationNames = Array.from(group.locations).map(id => LOCATION_MAP.get(id)?.name || id);
+    // Resolve building art via the first required building's category — falls back
+    // to the generic category image when no tier-specific art exists.
+    const buildingId = group.def.requiredBuildings?.[0];
+    const buildingDef = buildingId ? BUILDING_MAP.get(buildingId) : undefined;
+    const artSrc = buildingDef ? getBuildingAsset(buildingDef.id, buildingDef.category, buildingDef.tier) : null;
+    const netGroup = group.totalRev - group.totalCostGroup;
     return (
-      <div key={key} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
-        <div>
-          <p className="text-white text-sm">
-            {group.def.name}
-            {group.count > 1 && <span className="text-cyan-400 ml-1.5 text-xs font-mono">x{group.count}</span>}
-          </p>
-          <p className="text-slate-500 text-xs truncate max-w-[200px]">{locationNames.join(', ')}</p>
+      <div key={key} className="game-card flex items-center gap-3 p-3 rounded-lg border border-white/[0.06] bg-white/[0.02]">
+        <div className="sprite-frame w-14 h-14 flex-shrink-0 flex items-center justify-center">
+          {artSrc ? (
+            <Image src={artSrc} alt="" width={56} height={56} className="w-12 h-12 object-contain drop-shadow-[0_0_6px_rgba(34,211,238,0.3)]" />
+          ) : (
+            <span className="text-2xl">💰</span>
+          )}
         </div>
-        <div className="text-right">
-          <p className="text-green-400 text-xs font-mono">+{formatMoney(group.totalRev)}/mo</p>
-          <p className="text-red-400/60 text-[10px] font-mono">-{formatMoney(group.totalCostGroup)}/mo</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-white text-sm truncate">
+            {group.def.name}
+            {group.count > 1 && <span className="game-number text-cyan-400 ml-1.5 text-xs">x{group.count}</span>}
+          </p>
+          <p className="text-slate-500 text-xs truncate">{locationNames.join(', ')}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="game-number text-[11px] text-green-400">▲ +{formatMoney(group.totalRev)}/mo</span>
+            <span className="game-number text-[10px] text-red-400/70">▼ -{formatMoney(group.totalCostGroup)}/mo</span>
+          </div>
+        </div>
+        <div className="text-right shrink-0">
+          <p className={`game-number text-xs font-bold ${netGroup >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>
+            {netGroup >= 0 ? '+' : ''}{formatMoney(netGroup)}
+          </p>
+          <p className="text-slate-600 text-[9px] uppercase tracking-wider">Net/mo</p>
         </div>
       </div>
     );
@@ -868,25 +891,27 @@ function ServicesPanel({ state }: { state: GameState }) {
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3">
         <div className="card p-3 text-center">
-          <p className="text-green-400 font-bold">{formatMoney(totalRevenue)}</p>
+          <p className="game-number text-green-400 font-bold">{formatMoney(totalRevenue)}</p>
           <p className="text-slate-500 text-xs">Revenue/mo</p>
         </div>
         <div className="card p-3 text-center">
-          <p className="text-red-400 font-bold">{formatMoney(totalCost)}</p>
+          <p className="game-number text-red-400 font-bold">{formatMoney(totalCost)}</p>
           <p className="text-slate-500 text-xs">Costs/mo</p>
         </div>
         <div className="card p-3 text-center">
-          <p className={`font-bold ${totalRevenue - totalCost >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>
+          <p className={`game-number font-bold ${totalRevenue - totalCost >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>
             {formatMoney(totalRevenue - totalCost)}
           </p>
           <p className="text-slate-500 text-xs">Net/mo</p>
         </div>
       </div>
-      <div className="card p-4">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         {state.activeServices.length === 0 ? (
           <p className="text-slate-500 text-sm text-center">No active services. Build infrastructure to generate revenue.</p>
         ) : (
-          <div>{rows}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{cards}</div>
         )}
       </div>
     </div>
@@ -1492,6 +1517,7 @@ export default function SpaceTycoonPage() {
     { id: 'leagues', label: 'Leagues', icon: '🏅' },
     { id: 'bidding', label: 'Bidding', icon: '🎯' },
     { id: 'megaproject', label: 'Mega-Project', icon: '🌍' },
+    { id: 'megastructures', label: 'Megastructures', icon: '🛰️' },
     { id: 'espionage', label: 'Intel', icon: '🕵️' },
     { id: 'territory', label: 'Territory', icon: '🗺️' },
     { id: 'speedruns', label: 'Speed Run', icon: '⏱️' },
@@ -1888,6 +1914,19 @@ export default function SpaceTycoonPage() {
         {tab === 'speedruns' && <SpeedRunPanel state={state} />}
         {tab === 'espionage' && <EspionagePanel state={state} />}
         {tab === 'megaproject' && <MegaProjectPanel state={state} />}
+        {tab === 'megastructures' && (
+          <MegastructurePanel
+            state={state}
+            onStartMegastructure={(defId) => {
+              playSound('build_start');
+              setState(prev => prev ? startMegastructure(prev, defId) : prev);
+            }}
+            onAdvancePhase={(defId) => {
+              playSound('build_start');
+              setState(prev => prev ? advanceMegastructurePhase(prev, defId) : prev);
+            }}
+          />
+        )}
         {tab === 'commanders' && (
           <CommanderPanel
             state={state}

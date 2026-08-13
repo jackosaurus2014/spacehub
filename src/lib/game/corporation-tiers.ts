@@ -102,7 +102,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 7,
     shipyardSlots: 4,
     bonuses: { maintenanceReduction: 0.10, revenueBonus: 0.12, miningBonus: 0.15 },
-    unlockedTabs: ['leagues', 'bidding', 'megaproject'],
+    unlockedTabs: ['leagues', 'bidding', 'megaproject', 'megastructures'],
   },
   {
     tier: 6, name: 'Megacorp', icon: '🌟', color: '#ef4444',

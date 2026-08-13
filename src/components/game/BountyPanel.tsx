@@ -228,7 +228,9 @@ export default function BountyPanel({ state }: BountyPanelProps) {
   return (
     <div className="space-y-4">
       {/* Header Banner */}
-      <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+      <div className="hud-frame hud-frame-amber relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
@@ -261,7 +263,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
           <div className="space-y-3">
             {/* Resource Select */}
             <div>
-              <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
+              <label className="font-hud text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
                 Resource
               </label>
               <select
@@ -279,7 +281,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
 
             {/* Quantity */}
             <div>
-              <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
+              <label className="font-hud text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
                 Quantity
               </label>
               <div className="flex items-center gap-2">
@@ -303,7 +305,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
 
             {/* Price per Unit */}
             <div>
-              <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
+              <label className="font-hud text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
                 Price per Unit
               </label>
               <div className="flex items-center gap-2">
@@ -325,7 +327,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
             {/* Total */}
             <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/[0.03] border border-white/[0.04]">
               <span className="text-slate-400 text-xs">Total Escrow</span>
-              <span className="text-amber-400 text-sm font-bold font-mono">{formatMoney(postQuantity * postPricePerUnit)}</span>
+              <span className="game-number text-amber-400 text-sm font-bold font-mono">{formatMoney(postQuantity * postPricePerUnit)}</span>
             </div>
 
             {postError && (
@@ -335,7 +337,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
             <button
               onClick={handlePost}
               disabled={posting || postQuantity <= 0 || postPricePerUnit <= 0}
-              className="w-full py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              className="w-full min-h-[44px] flex items-center justify-center py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
               {posting ? 'Posting...' : `Post Bounty for ${formatMoney(postQuantity * postPricePerUnit)}`}
             </button>
@@ -344,7 +346,9 @@ export default function BountyPanel({ state }: BountyPanelProps) {
       )}
 
       {/* Active Bounties */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
           <span>🎯</span> Active Bounties
         </h3>
@@ -374,17 +378,19 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                   {/* Top row: resource + status */}
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      {def && RESOURCE_ASSETS[bounty.resourceId] ? (
-                        <Image
-                          src={RESOURCE_ASSETS[bounty.resourceId]}
-                          alt=""
-                          width={28}
-                          height={28}
-                          className="w-7 h-7 rounded object-cover flex-shrink-0"
-                        />
-                      ) : (
-                        <span className="text-sm">{def?.icon || '?'}</span>
-                      )}
+                      <div className="sprite-frame w-7 h-7 flex-shrink-0 flex items-center justify-center">
+                        {def && RESOURCE_ASSETS[bounty.resourceId] ? (
+                          <Image
+                            src={RESOURCE_ASSETS[bounty.resourceId]}
+                            alt=""
+                            width={28}
+                            height={28}
+                            className="w-7 h-7 rounded object-cover"
+                          />
+                        ) : (
+                          <span className="text-sm">{def?.icon || '?'}</span>
+                        )}
+                      </div>
                       <div>
                         <span className="text-white text-xs font-medium">{def?.name || bounty.resourceId}</span>
                         {bounty.isYours && (
@@ -403,15 +409,15 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                   <div className="grid grid-cols-3 gap-2 mb-2">
                     <div>
                       <p className="text-slate-500 text-[9px] uppercase">Needed</p>
-                      <p className="text-white text-xs font-mono">{remaining.toLocaleString()}</p>
+                      <p className="game-number text-white text-xs font-mono">{remaining.toLocaleString()}</p>
                     </div>
                     <div>
                       <p className="text-slate-500 text-[9px] uppercase">Price/Unit</p>
-                      <p className="text-amber-400 text-xs font-mono">{formatMoney(bounty.pricePerUnit)}</p>
+                      <p className="game-number text-amber-400 text-xs font-mono">{formatMoney(bounty.pricePerUnit)}</p>
                     </div>
                     <div>
                       <p className="text-slate-500 text-[9px] uppercase">Total Value</p>
-                      <p className="text-green-400 text-xs font-mono">{formatMoney(totalValue)}</p>
+                      <p className="game-number text-green-400 text-xs font-mono">{formatMoney(totalValue)}</p>
                     </div>
                   </div>
 
@@ -440,14 +446,14 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] font-mono ${timeLeft <= 300_000 ? 'text-red-400' : 'text-slate-500'}`}>
+                      <span className={`game-number text-[10px] font-mono ${timeLeft <= 300_000 ? 'text-red-400' : 'text-slate-500'}`}>
                         {formatCountdown(timeLeft)}
                       </span>
                       {canFill && (
                         <button
                           onClick={() => handleFill(bounty.id)}
                           disabled={actionLoading === bounty.id}
-                          className="px-3 py-1 text-[10px] font-semibold text-white bg-green-600 hover:bg-green-500 disabled:opacity-50 rounded-lg transition-colors"
+                          className="px-3 min-h-[44px] flex items-center justify-center text-[10px] font-semibold text-white bg-green-600 hover:bg-green-500 disabled:opacity-50 rounded-lg transition-colors"
                         >
                           {actionLoading === bounty.id ? 'Filling...' : `Fill (${Math.min(held, remaining)})`}
                         </button>
@@ -463,7 +469,9 @@ export default function BountyPanel({ state }: BountyPanelProps) {
 
       {/* Completed / Expired Bounties */}
       {completedBounties.length > 0 && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span>📜</span> Recent History
           </h3>
@@ -476,24 +484,26 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                   className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    {def && RESOURCE_ASSETS[bounty.resourceId] ? (
-                      <Image
-                        src={RESOURCE_ASSETS[bounty.resourceId]}
-                        alt=""
-                        width={20}
-                        height={20}
-                        className="w-5 h-5 rounded object-cover flex-shrink-0"
-                      />
-                    ) : (
-                      <span className="text-xs">{def?.icon || '?'}</span>
-                    )}
+                    <div className="sprite-frame w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                      {def && RESOURCE_ASSETS[bounty.resourceId] ? (
+                        <Image
+                          src={RESOURCE_ASSETS[bounty.resourceId]}
+                          alt=""
+                          width={20}
+                          height={20}
+                          className="w-5 h-5 rounded object-cover"
+                        />
+                      ) : (
+                        <span className="text-xs">{def?.icon || '?'}</span>
+                      )}
+                    </div>
                     <div>
                       <span className="text-slate-300 text-[11px]">{def?.name || bounty.resourceId}</span>
                       <span className="text-slate-600 text-[10px] ml-1.5">x{bounty.quantity}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-500 text-[10px] font-mono">{formatMoney(bounty.quantity * bounty.pricePerUnit)}</span>
+                    <span className="game-number text-slate-500 text-[10px] font-mono">{formatMoney(bounty.quantity * bounty.pricePerUnit)}</span>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-medium ${getStatusColor(bounty.status)}`}>
                       {getStatusLabel(bounty.status)}
                     </span>

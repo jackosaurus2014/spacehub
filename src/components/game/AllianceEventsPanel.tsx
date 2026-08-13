@@ -156,7 +156,7 @@ export default function AllianceEventsPanel({ dailyMetrics }: AllianceEventsPane
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
+            className={`font-hud flex-1 py-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md transition-colors ${
               activeTab === tab
                 ? 'bg-purple-600/30 text-purple-300 border border-purple-500/30'
                 : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
@@ -170,7 +170,7 @@ export default function AllianceEventsPanel({ dailyMetrics }: AllianceEventsPane
       {/* Announcements / Event Directive */}
       {announcements.length > 0 && activeTab === 'events' && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-          <h4 className="text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-1.5">
+          <h4 className="font-hud text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-1.5">
             Alliance Directive
           </h4>
           {announcements.slice(0, 3).map((a, i) => (
@@ -231,7 +231,9 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
   const { allianceScore, contributions } = event;
 
   return (
-    <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+    <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Event Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -244,7 +246,7 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
           </div>
         </div>
         <div className="text-right">
-          <p className="text-amber-300 text-xs font-mono font-bold">{timeStr}</p>
+          <p className="game-number text-amber-300 text-xs font-mono font-bold">{timeStr}</p>
           <p className="text-slate-500 text-[10px]">remaining</p>
         </div>
       </div>
@@ -255,15 +257,15 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
       <div className="grid grid-cols-3 gap-2 mb-3">
         <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.04] text-center">
           <p className="text-slate-500 text-[9px] uppercase tracking-wider">Total Score</p>
-          <p className="text-white text-sm font-bold font-mono">{allianceScore.totalScore.toLocaleString()}</p>
+          <p className="game-number text-white text-sm font-bold font-mono">{allianceScore.totalScore.toLocaleString()}</p>
         </div>
         <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.04] text-center">
           <p className="text-slate-500 text-[9px] uppercase tracking-wider">Per Capita</p>
-          <p className="text-cyan-300 text-sm font-bold font-mono">{allianceScore.perCapitaScore.toFixed(1)}</p>
+          <p className="game-number text-cyan-300 text-sm font-bold font-mono">{allianceScore.perCapitaScore.toFixed(1)}</p>
         </div>
         <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.04] text-center">
           <p className="text-slate-500 text-[9px] uppercase tracking-wider">Rank</p>
-          <p className={`text-sm font-bold font-mono ${
+          <p className={`game-number text-sm font-bold font-mono ${
             allianceScore.bracketRank && allianceScore.bracketRank <= 3 ? 'text-amber-300' : 'text-white'
           }`}>
             {allianceScore.bracketRank ? `#${allianceScore.bracketRank}` : '--'}
@@ -289,11 +291,18 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
           <h4 className="text-white text-[10px] font-bold uppercase tracking-wider mb-2">
             Top Contributors
           </h4>
+          <div className="flex items-center justify-between py-1 px-2.5">
+            <div className="flex items-center gap-2">
+              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500 w-4">#</span>
+              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Commander</span>
+            </div>
+            <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Score</span>
+          </div>
           <div className="space-y-1">
             {contributions.slice(0, 5).map((c, idx) => (
               <div
                 key={c.profileId}
-                className={`flex items-center justify-between py-1.5 px-2.5 rounded-lg ${
+                className={`flex items-center justify-between py-1.5 px-2.5 rounded-lg border-b border-white/[0.04] last:border-0 ${
                   c.isYou ? 'bg-cyan-500/5 border border-cyan-500/10' : 'hover:bg-white/[0.02]'
                 }`}
               >
@@ -308,7 +317,7 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
                     </span>
                   )}
                 </div>
-                <span className="text-slate-300 text-xs font-mono">{c.score.toLocaleString()} pts</span>
+                <span className="game-number text-slate-300 text-xs font-mono">{c.score.toLocaleString()} pts</span>
               </div>
             ))}
           </div>
@@ -320,10 +329,12 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
 
 function BracketStandings({ event }: { event: AllianceEventData }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center gap-2 mb-3">
         <span className="text-lg">{event.icon}</span>
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider">
+        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider">
           {event.name} — Bracket Standings
         </h3>
       </div>
@@ -335,12 +346,12 @@ function BracketStandings({ event }: { event: AllianceEventData }) {
           {event.bracketStandings.map(s => (
             <div
               key={s.allianceId}
-              className={`flex items-center justify-between py-2 px-3 rounded-lg ${
+              className={`flex items-center justify-between py-2 px-3 rounded-lg border-b border-white/[0.04] last:border-0 ${
                 s.isYou ? 'bg-purple-500/10 border border-purple-500/20' : 'hover:bg-white/[0.02]'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <span className={`text-sm font-bold font-mono w-6 ${
+                <span className={`game-number text-sm font-bold font-mono w-6 ${
                   s.rank === 1 ? 'text-amber-300' : s.rank === 2 ? 'text-slate-300' : s.rank === 3 ? 'text-amber-600' : 'text-slate-500'
                 }`}>
                   #{s.rank}
@@ -365,7 +376,7 @@ function BracketStandings({ event }: { event: AllianceEventData }) {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-white text-xs font-mono font-bold">{s.perCapitaScore.toFixed(1)}</p>
+                <p className="game-number text-white text-xs font-mono font-bold">{s.perCapitaScore.toFixed(1)}</p>
                 <p className="text-slate-600 text-[9px]">per capita</p>
               </div>
             </div>
@@ -381,12 +392,14 @@ function DailyTasksCard({ tasks, allCompleted, dailyMetrics }: { tasks: DailyTas
   const totalXP = tasks.reduce((sum, t) => sum + t.xpReward, 0);
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="hud-frame hud-frame-amber relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
           <span>📋</span> Daily Alliance Tasks
         </h3>
-        <span className={`text-[10px] font-bold ${completedCount >= 3 ? 'text-green-400' : 'text-slate-500'}`}>
+        <span className={`game-number text-[10px] font-bold ${completedCount >= 3 ? 'text-green-400' : 'text-slate-500'}`}>
           {completedCount}/3 done
         </span>
       </div>
@@ -414,7 +427,7 @@ function DailyTasksCard({ tasks, allCompleted, dailyMetrics }: { tasks: DailyTas
                     {task.description}
                   </span>
                 </div>
-                <span className={`text-[10px] font-mono font-bold ${
+                <span className={`game-number text-[10px] font-mono font-bold ${
                   task.completed ? 'text-green-400' : 'text-amber-300'
                 }`}>
                   +{task.xpReward} XP
@@ -423,8 +436,8 @@ function DailyTasksCard({ tasks, allCompleted, dailyMetrics }: { tasks: DailyTas
               {!task.completed && (
                 <div className="mt-1.5 ml-7">
                   <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
-                    <span>{formatMetricValue(currentValue)} / {formatMetricValue(task.target)}</span>
-                    <span>{Math.round(progressPct)}%</span>
+                    <span className="game-number">{formatMetricValue(currentValue)} / {formatMetricValue(task.target)}</span>
+                    <span className="game-number">{Math.round(progressPct)}%</span>
                   </div>
                   <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
                     <div
@@ -465,15 +478,17 @@ function EventHistory({ history }: { history: EventHistoryItem[] }) {
   }
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-      <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+    <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
+      <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <span>📜</span> Recent Event Results
       </h3>
       <div className="space-y-2">
         {history.map(h => (
           <div
             key={h.id}
-            className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-white/[0.03] border border-white/[0.04]"
+            className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-white/[0.03] border border-white/[0.04] border-b-2 border-b-white/[0.04] last:border-b-0"
           >
             <div className="flex items-center gap-2">
               <span className="text-lg">{h.icon}</span>
@@ -487,16 +502,16 @@ function EventHistory({ history }: { history: EventHistoryItem[] }) {
             <div className="text-right">
               <div className="flex items-center gap-2">
                 {h.bracketRank && (
-                  <span className={`text-xs font-bold font-mono ${
+                  <span className={`game-number text-xs font-bold font-mono ${
                     h.bracketRank <= 3 ? 'text-amber-300' : 'text-slate-400'
                   }`}>
                     #{h.bracketRank}
                   </span>
                 )}
-                <span className="text-green-400 text-[10px] font-mono">+{h.rewardXP} XP</span>
+                <span className="game-number text-green-400 text-[10px] font-mono">+{h.rewardXP} XP</span>
               </div>
               {h.rewardBonus && (
-                <p className="text-[9px] text-cyan-400">
+                <p className="game-number text-[9px] text-cyan-400">
                   +{h.rewardBonus.revenueBonusPct}% rev ({h.rewardBonus.durationDays}d)
                 </p>
               )}

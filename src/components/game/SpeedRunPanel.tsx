@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import {
   SPEED_RUN_MILESTONES,
@@ -11,6 +12,14 @@ import {
   checkMilestoneCompletion,
 } from '@/lib/game/speed-runs';
 import type { SpeedRunBracket } from '@/lib/game/speed-runs';
+
+// Rank 1-3 reuse existing achievement badge art as holo rank medals — same
+// palette used across the Leaderboard/League panels.
+const RANK_MEDAL: Record<number, { badge: string; tone: 'gold' | 'silver' | 'bronze' }> = {
+  1: { badge: 'transcendent', tone: 'gold' },
+  2: { badge: 'benefactor', tone: 'silver' },
+  3: { badge: 'industrialist', tone: 'bronze' },
+};
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -239,15 +248,21 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-cyan-300">
+          <h2 className="game-heading text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-cyan-300">
             Speed Runs
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">Race to milestones after prestige</p>
         </div>
         {canParticipate && data?.activeAttempt && !data.activeAttempt.isCompleted && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="text-cyan-300 text-sm font-mono font-bold">
+          <div className="hud-frame flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" aria-hidden="true" />
+            <span
+              className="timer-hud timer-hud-live text-cyan-300 text-sm font-bold"
+              role="timer"
+              aria-label={`Elapsed time ${formatElapsedTime(elapsed)}`}
+            >
               {formatElapsedTime(elapsed)}
             </span>
           </div>
@@ -272,14 +287,16 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
 
       {/* Sub-Tabs */}
       {canParticipate && (
-        <div className="flex gap-1 p-1 rounded-lg bg-white/5">
+        <div className="flex gap-1 p-1 rounded-lg bg-white/5" role="tablist" aria-label="Speed run sections">
           {TAB_OPTIONS.map(tab => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all ${
+              className={`font-hud flex-1 py-2.5 px-3 rounded-md text-xs font-medium transition-all min-h-[40px] ${
                 activeTab === tab.id
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                  ? 'game-tab-active bg-amber-500/20 text-amber-300 border border-amber-500/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -294,7 +311,9 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Active Run / Start Button */}
-            <div className="rounded-xl bg-white/[0.02] border border-white/10 p-4">
+            <div className="hud-frame rounded-xl bg-white/[0.02] border border-white/10 p-4">
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
               <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                 <span className="text-cyan-400">&#9201;</span>
                 {data?.activeAttempt ? 'Active Run' : 'Start a Run'}
@@ -304,7 +323,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Prestige Level</span>
-                    <span className="text-xs text-white font-medium">P{data.activeAttempt.prestigeLevel}</span>
+                    <span className="game-number text-xs text-white font-medium">P{data.activeAttempt.prestigeLevel}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Bracket</span>
@@ -314,7 +333,10 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Elapsed</span>
-                    <span className="text-sm text-cyan-300 font-mono font-bold">
+                    <span
+                      className={`timer-hud text-sm text-cyan-300 font-bold ${!data.activeAttempt.isCompleted ? 'timer-hud-live' : ''}`}
+                      role={data.activeAttempt.isCompleted ? undefined : 'timer'}
+                    >
                       {data.activeAttempt.isCompleted
                         ? formatElapsedTime((data.activeAttempt.durationSeconds ?? 0) * 1000)
                         : formatElapsedTime(elapsed)
@@ -324,7 +346,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                   {data.activeAttempt.isCompleted && data.activeAttempt.rank && (
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Bracket Rank</span>
-                      <span className="text-xs text-amber-400 font-bold">#{data.activeAttempt.rank}</span>
+                      <span className="game-number text-xs text-amber-400 font-bold">#{data.activeAttempt.rank}</span>
                     </div>
                   )}
 
@@ -382,7 +404,9 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
 
             {/* Weekly Challenge Card */}
             {data?.currentChallenge && (
-              <div className="rounded-xl bg-white/[0.02] border border-amber-500/20 p-4">
+              <div className="hud-frame rounded-xl bg-white/[0.02] border border-amber-500/20 p-4">
+                <span className="hud-corner-bl" aria-hidden="true" />
+                <span className="hud-corner-br" aria-hidden="true" />
                 <h3 className="text-sm font-semibold text-amber-300 mb-3 flex items-center gap-2">
                   <span>&#127942;</span>
                   Weekly Challenge
@@ -400,11 +424,11 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-500">Participants</span>
-                    <span className="text-xs text-white">{data.currentChallenge.participantCount}</span>
+                    <span className="game-number text-xs text-white">{data.currentChallenge.participantCount}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-500">Time Remaining</span>
-                    <span className="text-xs text-cyan-400">{formatElapsedTime(data.currentChallenge.timeRemaining)}</span>
+                    <span className="timer-hud text-xs text-cyan-400">{formatElapsedTime(data.currentChallenge.timeRemaining)}</span>
                   </div>
 
                   {/* Composite milestone */}
@@ -466,15 +490,17 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
             ))}
           </div>
 
-          {/* Leaderboard Table */}
-          <div className="rounded-xl bg-white/[0.02] border border-white/10 overflow-hidden">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto] md:grid-cols-[auto_1fr_auto_auto_auto_auto] gap-x-3 px-3 py-2 bg-white/5 text-[10px] text-slate-500 uppercase tracking-wider">
-              <span>#</span>
-              <span>Company</span>
-              <span>Time</span>
-              <span className="hidden md:block">Bracket</span>
-              <span>P.Lvl</span>
-              <span className="hidden md:block">Date</span>
+          {/* Leaderboard — holo ranking rows */}
+          <div className="hud-frame game-panel overflow-hidden" role="table" aria-label="Speed run leaderboard">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto] md:grid-cols-[auto_1fr_auto_auto_auto_auto] gap-x-3 px-3 py-2 bg-white/5 text-[10px] text-slate-500 uppercase tracking-wider" role="row">
+              <span role="columnheader">#</span>
+              <span role="columnheader">Company</span>
+              <span role="columnheader">Time</span>
+              <span className="hidden md:block" role="columnheader">Bracket</span>
+              <span role="columnheader">P.Lvl</span>
+              <span className="hidden md:block" role="columnheader">Date</span>
             </div>
 
             {(!data?.leaderboard || data.leaderboard.length === 0) ? (
@@ -483,27 +509,31 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                 <p className="text-slate-600 text-[10px] mt-1">Be the first to set a time!</p>
               </div>
             ) : (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-white/5 game-scroll">
                 {data.leaderboard
                   .filter(e => bracketFilter === 'all' || e.bracket === bracketFilter)
-                  .map((entry) => (
+                  .map((entry) => {
+                    const medal = RANK_MEDAL[entry.rank];
+                    return (
                     <div
                       key={`${entry.rank}-${entry.companyName}`}
-                      className={`grid grid-cols-[auto_1fr_auto_auto_auto] md:grid-cols-[auto_1fr_auto_auto_auto_auto] gap-x-3 px-3 py-2.5 items-center ${
+                      role="row"
+                      className={`holo-row grid grid-cols-[auto_1fr_auto_auto_auto] md:grid-cols-[auto_1fr_auto_auto_auto_auto] gap-x-3 px-3 py-2.5 items-center ${
                         entry.isCurrentPlayer
-                          ? 'bg-amber-500/5 border-l-2 border-l-amber-500'
-                          : 'hover:bg-white/[0.02]'
+                          ? 'holo-row-you border-l-2 border-l-amber-500'
+                          : ''
                       }`}
                     >
-                      <span className={`text-xs font-bold w-6 text-right ${
-                        entry.rank === 1 ? 'text-amber-400' :
-                        entry.rank === 2 ? 'text-slate-300' :
-                        entry.rank === 3 ? 'text-amber-700' :
-                        'text-slate-500'
-                      }`}>
-                        {entry.rank <= 3 ? ['', '\u{1F947}', '\u{1F948}', '\u{1F949}'][entry.rank] : `#${entry.rank}`}
+                      <span className="w-6 flex items-center justify-end" role="cell">
+                        {medal ? (
+                          <span className={`rank-medal rank-medal-${medal.tone} w-5 h-5`} title={`Rank #${entry.rank}`}>
+                            <Image src={`/game/ach-badge-${medal.badge}.webp`} alt={`Rank ${entry.rank} medal`} width={20} height={20} className="w-full h-full object-cover" />
+                          </span>
+                        ) : (
+                          <span className="game-number text-xs font-bold text-slate-500">#{entry.rank}</span>
+                        )}
                       </span>
-                      <div className="min-w-0">
+                      <div className="min-w-0" role="cell">
                         <span className={`text-xs truncate block ${entry.isCurrentPlayer ? 'text-amber-300 font-bold' : 'text-white'}`}>
                           {entry.isCurrentPlayer ? '[YOU] ' : ''}{entry.companyName}
                           {entry.allianceTag && (
@@ -511,18 +541,19 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                           )}
                         </span>
                       </div>
-                      <span className="text-xs text-cyan-300 font-mono font-medium">
+                      <span className="timer-hud text-xs text-cyan-300 font-medium" role="cell">
                         {entry.elapsedFormatted}
                       </span>
-                      <span className={`text-[10px] hidden md:block ${BRACKET_COLORS[entry.bracket as SpeedRunBracket] || 'text-slate-400'}`}>
+                      <span className={`text-[10px] hidden md:block ${BRACKET_COLORS[entry.bracket as SpeedRunBracket] || 'text-slate-400'}`} role="cell">
                         {entry.bracket.charAt(0).toUpperCase() + entry.bracket.slice(1)}
                       </span>
-                      <span className="text-[10px] text-slate-400">P{entry.prestigeLevel}</span>
-                      <span className="text-[10px] text-slate-600 hidden md:block">
+                      <span className="game-number text-[10px] text-slate-400" role="cell">P{entry.prestigeLevel}</span>
+                      <span className="text-[10px] text-slate-600 hidden md:block" role="cell">
                         {entry.completedAt ? new Date(entry.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
                       </span>
                     </div>
-                  ))}
+                    );
+                  })}
               </div>
             )}
           </div>
@@ -532,7 +563,9 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
       {/* Hall of Fame Tab */}
       {canParticipate && activeTab === 'hallOfFame' && (
         <div className="space-y-4">
-          <div className="rounded-xl bg-white/[0.02] border border-amber-500/20 p-4">
+          <div className="hud-frame rounded-xl bg-white/[0.02] border border-amber-500/20 p-4">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
             <h3 className="text-sm font-semibold text-amber-300 mb-3 flex items-center gap-2">
               <span>&#127942;</span>
               All-Time Records
@@ -579,7 +612,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-white">{data.currentChallenge?.milestoneName ?? 'Current Challenge'}</span>
                     {data.activeAttempt.isCompleted && data.activeAttempt.durationSeconds ? (
-                      <span className="text-xs text-green-400 font-mono">
+                      <span className="timer-hud text-xs text-green-400">
                         {formatElapsedTime(data.activeAttempt.durationSeconds * 1000)}
                       </span>
                     ) : (

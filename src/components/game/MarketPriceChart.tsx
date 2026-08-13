@@ -75,9 +75,9 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
 
   const resourceDef = RESOURCE_MAP.get(resource as never);
 
-  const { priceMin, priceMax, volMax, pricePath, volumeBars, currentPrice, priceChange } = useMemo(() => {
+  const { priceMin, priceMax, volMax, pricePath, volumeBars, currentPrice, priceChange, volatilityPct, volatilityTier } = useMemo(() => {
     if (candles.length === 0) {
-      return { priceMin: 0, priceMax: 1, volMax: 1, pricePath: '', volumeBars: [], currentPrice: 0, priceChange: 0 };
+      return { priceMin: 0, priceMax: 1, volMax: 1, pricePath: '', volumeBars: [], currentPrice: 0, priceChange: 0, volatilityPct: 0, volatilityTier: 'low' as const };
     }
 
     const closes = candles.map(c => c.c);
@@ -127,6 +127,12 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
     const first = closes[0] || 0;
     const change = first > 0 ? Math.round(((current - first) / first) * 1000) / 10 : 0;
 
+    // Volatility — high/low range across the visible window as a % of the average close.
+    // Scale-invariant so it reads sensibly whether the commodity trades in cents or millions.
+    const avgClose = closes.reduce((s, c) => s + c, 0) / closes.length;
+    const vol = avgClose > 0 ? Math.round(((max - min) / avgClose) * 1000) / 10 : 0;
+    const volTier: 'low' | 'medium' | 'high' = vol >= 15 ? 'high' : vol >= 5 ? 'medium' : 'low';
+
     return {
       priceMin: min,
       priceMax: max,
@@ -135,6 +141,8 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
       volumeBars: bars,
       currentPrice: current,
       priceChange: change,
+      volatilityPct: vol,
+      volatilityTier: volTier,
     };
   }, [candles]);
 
@@ -160,14 +168,28 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
             </select>
           )}
           <div className="flex items-center gap-2">
-            <span className="text-white text-sm font-mono font-bold">{formatMoney(currentPrice)}</span>
+            <span className="game-number text-white text-sm font-bold">{formatMoney(currentPrice)}</span>
             {priceChange !== 0 && (
-              <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+              <span className={`game-number text-[10px] px-1.5 py-0.5 rounded ${
                 priceChange > 0
-                  ? 'bg-green-500/10 text-green-400'
-                  : 'bg-red-500/10 text-red-400'
+                  ? 'bg-cyan-500/10 text-cyan-400'
+                  : 'bg-amber-500/10 text-amber-400'
               }`}>
-                {priceChange > 0 ? '+' : ''}{priceChange}%
+                {priceChange > 0 ? '▲+' : '▼'}{Math.abs(priceChange)}%
+              </span>
+            )}
+            {candles.length > 0 && (
+              <span
+                className={`font-hud text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${
+                  volatilityTier === 'high'
+                    ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                    : volatilityTier === 'medium'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                    : 'bg-white/[0.04] text-slate-400 border-white/[0.06]'
+                }`}
+                title={`Volatility — high/low range over the visible window as % of average price`}
+              >
+                Vol: {volatilityTier === 'high' ? 'High' : volatilityTier === 'medium' ? 'Med' : 'Low'} ({volatilityPct}%)
               </span>
             )}
           </div>
@@ -195,16 +217,27 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
       {hovered && (
         <div className="flex items-center gap-3 text-[9px] text-slate-400 bg-white/[0.02] rounded px-2 py-1">
           <span>{new Date(hovered.t).toLocaleString()}</span>
-          <span>O: <span className="text-white font-mono">{formatMoney(hovered.o)}</span></span>
-          <span>H: <span className="text-green-400 font-mono">{formatMoney(hovered.h)}</span></span>
-          <span>L: <span className="text-red-400 font-mono">{formatMoney(hovered.l)}</span></span>
-          <span>C: <span className="text-white font-mono">{formatMoney(hovered.c)}</span></span>
-          <span>Vol: <span className="text-amber-400 font-mono">{hovered.v}</span></span>
+          <span>O: <span className="game-number text-white">{formatMoney(hovered.o)}</span></span>
+          <span>H: <span className="game-number text-cyan-400">{formatMoney(hovered.h)}</span></span>
+          <span>L: <span className="game-number text-amber-400">{formatMoney(hovered.l)}</span></span>
+          <span>C: <span className="game-number text-white">{formatMoney(hovered.c)}</span></span>
+          <span>Vol: <span className="game-number text-amber-400">{hovered.v}</span></span>
         </div>
       )}
 
       {/* Chart */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2 overflow-hidden">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-2 overflow-hidden">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        {/* Local scanline overlay — CRT-display feel scoped to the chart, hidden under reduced motion */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[1] motion-reduce:hidden"
+          style={{
+            background: 'repeating-linear-gradient(to bottom, transparent 0, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 3px)',
+            mixBlendMode: 'overlay',
+          }}
+          aria-hidden="true"
+        />
         {loading ? (
           <div className="flex items-center justify-center h-[240px] text-slate-500 text-xs">
             Loading chart data...
@@ -251,8 +284,8 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
                 <>
                   <defs>
                     <linearGradient id={`grad-${resource}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={priceChange >= 0 ? 'rgb(34,197,94)' : 'rgb(239,68,68)'} stopOpacity="0.2" />
-                      <stop offset="100%" stopColor={priceChange >= 0 ? 'rgb(34,197,94)' : 'rgb(239,68,68)'} stopOpacity="0.02" />
+                      <stop offset="0%" stopColor={priceChange >= 0 ? 'rgb(34,211,238)' : 'rgb(245,158,11)'} stopOpacity="0.2" />
+                      <stop offset="100%" stopColor={priceChange >= 0 ? 'rgb(34,211,238)' : 'rgb(245,158,11)'} stopOpacity="0.02" />
                     </linearGradient>
                   </defs>
                   <path
@@ -262,9 +295,10 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
                   <path
                     d={pricePath}
                     fill="none"
-                    stroke={priceChange >= 0 ? 'rgb(34,197,94)' : 'rgb(239,68,68)'}
+                    stroke={priceChange >= 0 ? 'rgb(34,211,238)' : 'rgb(245,158,11)'}
                     strokeWidth="1.5"
                     strokeLinejoin="round"
+                    style={{ filter: `drop-shadow(0 0 3px ${priceChange >= 0 ? 'rgba(34,211,238,0.4)' : 'rgba(245,158,11,0.4)'})` }}
                   />
                 </>
               )}
@@ -315,7 +349,7 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
                   y={bar.y}
                   width={Math.max(1, bar.w)}
                   height={Math.max(0.5, bar.h)}
-                  fill={bar.isUp ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}
+                  fill={bar.isUp ? 'rgba(34,211,238,0.3)' : 'rgba(245,158,11,0.3)'}
                   rx="0.5"
                 />
               ))}
@@ -327,12 +361,12 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
       {/* Stats bar */}
       {candles.length > 0 && (
         <div className="flex items-center justify-between text-[9px] text-slate-500 px-1">
-          <span>High: <span className="text-green-400 font-mono">{formatMoney(priceMax)}</span></span>
-          <span>Low: <span className="text-red-400 font-mono">{formatMoney(priceMin)}</span></span>
-          <span>Volume: <span className="text-amber-400 font-mono">
+          <span>High: <span className="game-number text-cyan-400">{formatMoney(priceMax)}</span></span>
+          <span>Low: <span className="game-number text-amber-400">{formatMoney(priceMin)}</span></span>
+          <span>Volume: <span className="game-number text-amber-400">
             {candles.reduce((s, c) => s + c.v, 0).toLocaleString()}
           </span></span>
-          <span>Trades: <span className="text-white font-mono">
+          <span>Trades: <span className="game-number text-white">
             {candles.reduce((s, c) => s + c.n, 0).toLocaleString()}
           </span></span>
         </div>

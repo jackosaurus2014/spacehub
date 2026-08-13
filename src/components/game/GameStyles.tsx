@@ -655,6 +655,97 @@ export default function GameStyles() {
         pointer-events: none;
         border-radius: inherit;
       }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE 3 — RANKING / ROSTER / SEASON-TRACK CHROME
+         Command-center treatment shared by Leaderboard, League, Rivals,
+         Commanders, Season Pass and Speed Run panels.
+         ═══════════════════════════════════════════════════════════════════ */
+
+      /* Holo ranking row — replaces plain <tr> rows in ranking lists */
+      .holo-row {
+        position: relative;
+        transition: background 0.2s ease;
+      }
+      .holo-row:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .holo-row-you {
+        background: linear-gradient(90deg, rgba(34, 211, 238, 0.08), transparent 75%);
+      }
+
+      /* Rank medal frame — circular holo mount for ach-badge art reused as rank medals */
+      .rank-medal {
+        position: relative;
+        border-radius: 9999px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .rank-medal-gold {
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.45), inset 0 0 0 1.5px rgba(245, 158, 11, 0.65);
+      }
+      .rank-medal-silver {
+        box-shadow: 0 0 8px rgba(203, 213, 225, 0.35), inset 0 0 0 1.5px rgba(203, 213, 225, 0.55);
+      }
+      .rank-medal-bronze {
+        box-shadow: 0 0 8px rgba(180, 120, 60, 0.4), inset 0 0 0 1.5px rgba(196, 138, 82, 0.6);
+      }
+
+      /* Division / league badge chip — colors set inline per-league via style prop */
+      .division-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35em;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border-width: 1px;
+        border-style: solid;
+      }
+
+      /* Promotion / relegation zone rows — border + background, always paired with a text+glyph tag */
+      .zone-promotion {
+        border-left: 2px solid rgba(34, 197, 94, 0.6);
+        background: rgba(34, 197, 94, 0.04);
+      }
+      .zone-relegation {
+        border-left: 2px solid rgba(239, 68, 68, 0.6);
+        background: rgba(239, 68, 68, 0.04);
+      }
+
+      /* Season-pass reward track node */
+      .season-node {
+        position: relative;
+      }
+      .season-node-claimed {
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+      }
+      .season-node-current {
+        animation: glow-pulse-cyan 2s ease-in-out infinite;
+      }
+
+      /* Speed-run timer HUD readout */
+      .timer-hud {
+        font-family: var(--font-hud), var(--font-mono), ui-monospace, monospace;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.04em;
+        text-shadow: 0 0 12px rgba(34, 211, 238, 0.5), 0 0 28px rgba(34, 211, 238, 0.15);
+      }
+      @keyframes timer-tick {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.85; }
+      }
+      .timer-hud-live { animation: timer-tick 1s ease-in-out infinite; }
+      @media (prefers-reduced-motion: reduce) {
+        .timer-hud-live { animation: none; }
+      }
     `}</style>
   );
 }

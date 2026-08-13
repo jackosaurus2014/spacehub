@@ -221,7 +221,9 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
     return (
       <div className="space-y-4">
         {/* Corporation Header */}
-        <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+        <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <span className="text-lg">🛡️</span>
@@ -234,7 +236,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
             </div>
             <div className="text-right">
               <p className="text-slate-400 text-[10px]">Combined Net Worth</p>
-              <p className="text-purple-300 text-sm font-bold font-mono">{formatMoney(myAlliance.totalNetWorth)}</p>
+              <p className="game-number text-purple-300 text-sm font-bold">{formatMoney(myAlliance.totalNetWorth)}</p>
             </div>
           </div>
           <div className="flex items-center gap-4 text-[10px] text-slate-500 mt-2">
@@ -245,8 +247,10 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
 
         {/* Alliance Bonuses */}
         {myAlliance.bonuses.length > 0 && (
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <span>⚡</span> Corporation Bonuses
             </h3>
             <div className="grid grid-cols-2 gap-2">
@@ -259,7 +263,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                     <span className="text-sm">{bonus.icon}</span>
                     <span className="text-slate-300 text-[11px]">{bonus.label}</span>
                   </div>
-                  <p className="text-green-400 text-xs font-bold font-mono">+{bonus.value}%</p>
+                  <p className="game-number text-green-400 text-xs font-bold">+{bonus.value}%</p>
                 </div>
               ))}
             </div>
@@ -267,15 +271,21 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
         )}
 
         {/* Member Roster */}
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+        <div className="hud-frame hud-frame-purple relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span>👥</span> Members ({myAlliance.members.length})
           </h3>
-          <div className="space-y-1.5">
+          <div className="flex items-center justify-between py-1 px-3 mb-1">
+            <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Commander</span>
+            <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Net Worth</span>
+          </div>
+          <div>
             {myAlliance.members.map((member) => (
               <div
                 key={member.companyName}
-                className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors ${
+                className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors border-b border-white/[0.04] last:border-0 ${
                   member.isYou ? 'bg-cyan-500/5 border border-cyan-500/10' : 'hover:bg-white/[0.02]'
                 }`}
               >
@@ -297,7 +307,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                     <span className="text-[10px] text-slate-500 capitalize">{member.role}</span>
                   </div>
                 </div>
-                <span className="text-slate-400 text-xs font-mono">{formatMoney(member.netWorth)}</span>
+                <span className="game-number text-slate-400 text-xs">{formatMoney(member.netWorth)}</span>
               </div>
             ))}
           </div>
@@ -305,10 +315,16 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
 
         {/* Shared Facilities */}
         {myAlliance.sharedFacilities.length > 0 && (
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <span>🏭</span> Shared Facilities
             </h3>
+            <div className="flex items-center justify-between py-1 px-2.5 mb-1">
+              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Facility</span>
+              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500">Level</span>
+            </div>
             <div className="space-y-2">
               {myAlliance.sharedFacilities.map((facility) => (
                 <div
@@ -323,7 +339,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-amber-400 text-[10px] font-mono">Lv.{facility.level}</span>
+                    <span className="game-number text-amber-400 text-[10px]">Lv.{facility.level}</span>
                     <p className="text-slate-600 text-[9px]">by {facility.contributedBy}</p>
                   </div>
                 </div>
@@ -337,7 +353,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
           <button
             onClick={handleLeave}
             disabled={actionLoading}
-            className="px-4 py-2 text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 hover:border-red-500/30 rounded-lg transition-colors disabled:opacity-50"
+            className="min-h-[44px] px-4 py-2 text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 hover:border-red-500/30 rounded-lg transition-colors disabled:opacity-50"
           >
             {actionLoading ? 'Leaving...' : 'Leave Corporation'}
           </button>
@@ -366,7 +382,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
         </p>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="px-4 py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"
+          className="min-h-[44px] px-4 py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"
         >
           {showCreateForm ? 'Cancel' : 'Create Corporation'}
         </button>
@@ -380,7 +396,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
           </h3>
           <div className="space-y-3">
             <div>
-              <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
+              <label className="font-hud text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
                 Corporation Name
               </label>
               <input
@@ -393,7 +409,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
               />
             </div>
             <div>
-              <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
+              <label className="font-hud text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
                 Tag (3-5 characters)
               </label>
               <input
@@ -411,7 +427,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
             <button
               onClick={handleCreate}
               disabled={actionLoading || !createName.trim() || createTag.trim().length < 3}
-              className="w-full py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              className="min-h-[44px] w-full py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
               {actionLoading ? 'Creating...' : `Create [${createTag.toUpperCase() || '???'}] ${createName.trim() || 'Corporation'}`}
             </button>
@@ -420,8 +436,10 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
       )}
 
       {/* Available Alliances */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
           <span>📋</span> Available Corporations
         </h3>
         {listings.length === 0 ? (
@@ -433,7 +451,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
             {listings.map((alliance) => (
               <div
                 key={alliance.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-white/[0.03] border border-white/[0.04] hover:border-white/[0.1] transition-colors"
+                className="game-card flex items-center justify-between p-3 rounded-lg bg-white/[0.03] border border-white/[0.04] hover:border-white/[0.1] transition-colors"
               >
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
@@ -444,13 +462,13 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                   </div>
                   <div className="flex items-center gap-3 text-[10px] text-slate-500">
                     <span>{alliance.memberCount} member{alliance.memberCount !== 1 ? 's' : ''}</span>
-                    <span>{formatMoney(alliance.totalNetWorth)} combined</span>
+                    <span className="game-number">{formatMoney(alliance.totalNetWorth)} combined</span>
                   </div>
                 </div>
                 <button
                   onClick={() => handleJoin(alliance.id)}
                   disabled={actionLoading || !alliance.isOpen}
-                  className={`px-3 py-1.5 text-[10px] font-semibold rounded-lg transition-colors ${
+                  className={`min-h-[44px] px-3 py-1.5 text-[10px] font-semibold rounded-lg transition-colors ${
                     alliance.isOpen && !actionLoading
                       ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30'
                       : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'

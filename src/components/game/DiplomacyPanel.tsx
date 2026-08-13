@@ -40,7 +40,9 @@ export default function DiplomacyPanel({ state, onAccept, onDeliver }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="card p-4">
+      <div className="hud-frame relative card p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <h2 className="text-white text-base font-bold flex items-center gap-2">
@@ -210,7 +212,9 @@ function HistoryTab({ completed }: { completed: DeliveryContract[] }) {
     );
   }
   return (
-    <div className="card p-3">
+    <div className="hud-frame relative card p-3">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="divide-y divide-white/[0.04]">
         {completed.map(c => {
           const faction = c.issuerFactionId ? FACTION_MAP.get(c.issuerFactionId as FactionId) : null;
@@ -229,10 +233,10 @@ function HistoryTab({ completed }: { completed: DeliveryContract[] }) {
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <div className={`font-mono text-sm font-bold ${won ? 'text-emerald-300' : 'text-red-300'}`}>
+                <div className={`game-number font-mono text-sm font-bold ${won ? 'text-emerald-300' : 'text-red-300'}`}>
                   {won ? `+${formatMoney(c.paymentMoney)}` : 'Default'}
                 </div>
-                <div className={`text-[10px] ${won ? 'text-emerald-400' : 'text-red-400'}`}>
+                <div className={`game-number text-[10px] ${won ? 'text-emerald-400' : 'text-red-400'}`}>
                   {won ? `+${c.reputationOnComplete} rep` : `${c.reputationOnDefault} rep`}
                 </div>
               </div>
@@ -267,7 +271,9 @@ function ContractCard({
       : 'bg-white/[0.04] text-slate-500 cursor-not-allowed border border-white/[0.05]';
 
   return (
-    <div className={`rounded-xl overflow-hidden border ${overdue ? 'border-red-500/40 bg-red-500/5' : faction ? faction.theme.border : 'border-white/[0.1]'}`} style={{ background: '#0a0a1a' }}>
+    <div className={`hud-frame relative rounded-xl overflow-hidden border ${overdue ? 'border-red-500/40 bg-red-500/5' : faction ? faction.theme.border : 'border-white/[0.1]'}`} style={{ background: '#0a0a1a' }}>
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Faction banner */}
       {faction && (
         <div className="relative h-12 overflow-hidden">
@@ -281,7 +287,7 @@ function ContractCard({
 
       <div className="p-3">
         <div className="flex items-start gap-2 mb-2">
-          <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white/[0.04] shrink-0">
+          <div className="sprite-frame relative w-10 h-10 shrink-0">
             {resource && <Image src={RESOURCE_ASSETS[contract.resourceId] || RESOURCE_ASSETS.iron} alt="" fill className="object-cover" />}
           </div>
           <div className="flex-1 min-w-0">
@@ -326,7 +332,7 @@ function MicroStat({ label, value, accent }: { label: string; value: string; acc
   return (
     <div className="rounded bg-white/[0.03] p-1.5 text-center">
       <div className="text-[9px] uppercase tracking-wide text-slate-500">{label}</div>
-      <div className={`font-mono text-[11px] font-bold ${color} truncate`}>{value}</div>
+      <div className={`game-number font-mono text-[11px] font-bold ${color} truncate`}>{value}</div>
     </div>
   );
 }
