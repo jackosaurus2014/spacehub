@@ -10,6 +10,8 @@ import { RESEARCH, getResearchBonuses, getResearchMechanicalEffect } from '@/lib
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
+import { getTierDef } from '@/lib/game/corporation-tiers';
+import { LOCATIONS } from '@/lib/game/solar-system';
 import IncomeChart from '@/components/game/IncomeChart';
 import DashboardVizBlock from '@/components/game/DashboardVizBlock';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
@@ -273,7 +275,144 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
   );
 }
 
-export default function DashboardPanel({ state, onUpdateCompanyName }: { state: GameState; onUpdateCompanyName?: (name: string) => void }) {
+/** Real-time HUD clock — ticks every second. Purely decorative "mission time" readout. */
+function LiveClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const hh = now.getHours().toString().padStart(2, '0');
+  const mm = now.getMinutes().toString().padStart(2, '0');
+  const ss = now.getSeconds().toString().padStart(2, '0');
+  return (
+    <span className="timer-hud timer-hud-live game-number text-cyan-300 text-xs sm:text-sm">
+      {hh}:{mm}:{ss}
+    </span>
+  );
+}
+
+/** Command Center header band — corporation identity, mission clock, region readout.
+ *  Per CLAUDE.md: "Earth command center is the main hub" — this is the operations-room anchor. */
+function CommandCenterHeader({ state }: { state: GameState }) {
+  const corpTier = state.corporationTier || 1;
+  const tierDef = getTierDef(corpTier);
+  const frontier = [...LOCATIONS].reverse().find(l => state.unlockedLocations.includes(l.id));
+  const showFrontier = frontier && frontier.id !== 'earth_surface';
+
+  return (
+    <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/[0.06] via-white/[0.02] to-cyan-500/[0.06] px-3 sm:px-4 py-3 mb-1">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0">
+          <p className="game-label !text-amber-400/80">Command Center</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="font-hud text-white text-base sm:text-xl font-bold tracking-wide truncate">
+              {state.companyName || 'Your Company'}
+            </h1>
+            <span
+              className="text-[9px] font-hud font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border shrink-0"
+              style={{ color: tierDef.color, borderColor: `${tierDef.color}40`, background: `${tierDef.color}14` }}
+            >
+              {tierDef.icon} {tierDef.name}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="text-right">
+            <p className="game-label">Mission Time</p>
+            <LiveClock />
+          </div>
+          <div className="text-right">
+            <p className="game-label">Region</p>
+            <p className="font-hud text-[11px] sm:text-xs text-cyan-300 whitespace-nowrap">
+              {'🌍'} Earth HQ{showFrontier ? ` · Frontier: ${frontier!.name}` : ''}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Quick-nav holo tile grid — one-tap access to the panels players touch most,
+ *  each showing a live stat, plus a current-alerts strip. Calls onNavigate with
+ *  a GameTab id to switch tabs via the existing tab-switch mechanism in page.tsx. */
+function QuickNavGrid({
+  state,
+  hasPowerDeficit,
+  onNavigate,
+}: {
+  state: GameState;
+  hasPowerDeficit: boolean;
+  onNavigate?: (tab: string) => void;
+}) {
+  const corpTier = state.corporationTier || 1;
+  const tierDef = getTierDef(corpTier);
+  const builtShips = (state.ships || []).filter(s => s.isBuilt).length;
+  const inProgressCount = state.buildings.filter(b => !b.isComplete).length;
+  const resourceUnits = Object.values(state.resources || {}).reduce((a, b) => a + b, 0);
+  const activeContracts = (state.activeContracts || []).length;
+  const researchDone = state.completedResearch.length;
+
+  const tiles: { id: string; label: string; icon: string; stat: string }[] = [
+    { id: 'market', label: 'Market', icon: '📈', stat: `${resourceUnits.toLocaleString()} units held` },
+    { id: 'fleet', label: 'Fleet', icon: '🚀', stat: `${builtShips} ship${builtShips !== 1 ? 's' : ''} active` },
+    { id: 'build', label: 'Build', icon: '🏗️', stat: `${inProgressCount} under construction` },
+    { id: 'alliance', label: 'Corporation', icon: '🏢', stat: `${tierDef.icon} ${tierDef.name}` },
+    { id: 'contracts', label: 'Contracts', icon: '📋', stat: `${activeContracts} active` },
+    { id: 'research', label: 'Research', icon: '🔬', stat: `${researchDone}/${RESEARCH.length} complete` },
+  ];
+
+  const alerts: { icon: string; label: string; tone: 'red' | 'amber' | 'cyan' }[] = [];
+  if (hasPowerDeficit) alerts.push({ icon: '⚡', label: 'Power deficit active', tone: 'red' });
+  const unreadReports = (state.reports || []).filter(r => !r.read).length;
+  if (unreadReports > 0) alerts.push({ icon: '📬', label: `${unreadReports} unread report${unreadReports !== 1 ? 's' : ''}`, tone: 'cyan' });
+  const recentHazard = (state.recentHazards || []).find(h => Date.now() - h.occurredAtMs < 10 * 60 * 1000);
+  if (recentHazard) alerts.push({ icon: '☢️', label: `Recent hazard: ${recentHazard.type.replace(/_/g, ' ')}`, tone: 'amber' });
+
+  return (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {tiles.map(t => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => onNavigate?.(t.id)}
+            className="hud-frame game-card game-card-interactive relative rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 text-left min-h-[44px] transition-colors hover:border-white/[0.18] focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          >
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="text-base" aria-hidden="true">{t.icon}</span>
+              <span className="game-label">{t.label}</span>
+            </div>
+            <p className="game-number text-white text-[11px]">{t.stat}</p>
+          </button>
+        ))}
+      </div>
+      {alerts.length > 0 && (
+        <div className="flex flex-wrap gap-1.5" role="status" aria-live="polite">
+          {alerts.map((a, i) => (
+            <span
+              key={i}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium border ${
+                a.tone === 'red' ? 'bg-red-500/10 text-red-300 border-red-500/25' :
+                a.tone === 'amber' ? 'bg-amber-500/10 text-amber-300 border-amber-500/25' :
+                'bg-cyan-500/10 text-cyan-300 border-cyan-500/25'
+              }`}
+            >
+              <span aria-hidden="true">{a.icon}</span> {a.label}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
 
@@ -330,6 +469,10 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
 
   return (
     <div className="space-y-4">
+      {/* Command Center header — corporation identity, mission clock, region readout */}
+      <CommandCenterHeader state={state} />
+      {/* Quick-nav holo tiles — one-tap access to the panels players touch most, + live alerts strip */}
+      <QuickNavGrid state={state} hasPowerDeficit={financials.hasPowerDeficit} onNavigate={onNavigate} />
       {/* Empire Overview — visual summary at the top */}
       <EmpireOverview state={state} onUpdateCompanyName={onUpdateCompanyName} />
       {/* HUD-styled at-a-glance viz — revenue breakdown, fleet status, infrastructure mix */}

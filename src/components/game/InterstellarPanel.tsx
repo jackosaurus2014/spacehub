@@ -5,12 +5,23 @@ import type { GameState } from '@/lib/game/types';
 import { INTERSTELLAR_SYSTEMS, getJumpPrerequisites, FIRST_CONTACT_EVENTS, JUMP_DRIVE_RESEARCH, EXOTIC_MATTER_REFINING_RESEARCH } from '@/lib/game/interstellar';
 import { FACTION_MAP, getFactionArtUrl, type FactionId } from '@/lib/game/factions';
 import { formatMoney } from '@/lib/game/formulas';
+import { PLANET_ASSETS } from '@/lib/game/assets';
 import Image from 'next/image';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface Props {
   state: GameState;
 }
+
+/** Thematic biome art per destination system — narrative-matched to each system's
+ *  description (habitable zones, frozen worlds, anomalies, dangerous binaries). */
+const SYSTEM_ART: Record<string, string> = {
+  proxima_centauri: PLANET_ASSETS.terrestrial,
+  barnards_star: PLANET_ASSETS.ice,
+  wolf_359: PLANET_ASSETS.anomaly,
+  alpha_centauri: PLANET_ASSETS.terrestrial,
+  sirius: PLANET_ASSETS.black_hole,
+};
 
 export default function InterstellarPanel({ state }: Props) {
   const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null);
@@ -24,37 +35,46 @@ export default function InterstellarPanel({ state }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="card p-4">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div>
-            <h2 className="text-white text-base font-bold flex items-center gap-2">
-              <span className="text-indigo-400">✴</span> Interstellar Gateway
-            </h2>
-            <p className="text-slate-500 text-xs mt-0.5">
-              End-game frontier. Once you have an Alcubierre-class jump drive and exotic-matter fuel,
-              five nearby star systems open up — each with unique resources, first-contact events, and the
-              beginning of humanity's galactic era.
-            </p>
-          </div>
+      <div className="hud-frame hud-frame-purple relative rounded-2xl border border-indigo-500/20 overflow-hidden" style={{ background: '#0a0a1a' }}>
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        {/* Nebula hero band */}
+        <div className="relative h-20 sm:h-24 overflow-hidden holo-sprite">
+          <Image src={PLANET_ASSETS.nebula} alt="" fill className="object-cover opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] via-[#0a0a1a]/40 to-transparent" />
         </div>
+        <div className="p-4 -mt-6 relative">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div>
+              <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
+                <span className="text-indigo-400">✴</span> Interstellar Gateway
+              </h2>
+              <p className="text-slate-400 text-xs mt-0.5">
+                End-game frontier. Once you have an Alcubierre-class jump drive and exotic-matter fuel,
+                five nearby star systems open up — each with unique resources, first-contact events, and the
+                beginning of humanity's galactic era.
+              </p>
+            </div>
+          </div>
 
-        {/* Prerequisites readout */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <PrereqChip
-            label="Jump Drive research"
-            met={hasJumpDrive}
-            help={`T${JUMP_DRIVE_RESEARCH.tier} propulsion; requires fusion_drive + metallic_hydrogen first.`}
-          />
-          <PrereqChip
-            label="Exotic Matter Refining"
-            met={hasExoticRefining}
-            help={`T${EXOTIC_MATTER_REFINING_RESEARCH.tier} materials; unlocks exotic_fuel production.`}
-          />
-          <PrereqChip
-            label={`Exotic fuel reserve (have ${Math.floor(exoticFuel)})`}
-            met={exoticFuel >= 500}
-            help="Exotic-matter fuel units. Minimum 500 for the nearest system (Proxima)."
-          />
+          {/* Prerequisites readout */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <PrereqChip
+              label="Jump Drive research"
+              met={hasJumpDrive}
+              help={`T${JUMP_DRIVE_RESEARCH.tier} propulsion; requires fusion_drive + metallic_hydrogen first.`}
+            />
+            <PrereqChip
+              label="Exotic Matter Refining"
+              met={hasExoticRefining}
+              help={`T${EXOTIC_MATTER_REFINING_RESEARCH.tier} materials; unlocks exotic_fuel production.`}
+            />
+            <PrereqChip
+              label={`Exotic fuel reserve (have ${Math.floor(exoticFuel)})`}
+              met={exoticFuel >= 500}
+              help="Exotic-matter fuel units. Minimum 500 for the nearest system (Proxima)."
+            />
+          </div>
         </div>
       </div>
 
@@ -72,28 +92,35 @@ export default function InterstellarPanel({ state }: Props) {
               key={system.id}
               type="button"
               onClick={() => setSelectedSystemId(system.id)}
-              className={`text-left rounded-2xl border overflow-hidden transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+              className={`hud-frame relative text-left rounded-2xl border overflow-hidden transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                 anyBlockers
                   ? 'border-white/[0.06] hover:border-white/15'
-                  : 'border-indigo-500/40 hover:border-indigo-500/60 shadow-lg shadow-indigo-500/20'
+                  : 'hud-frame-purple border-indigo-500/40 hover:border-indigo-500/60 shadow-lg shadow-indigo-500/20'
               }`}
               style={{ background: '#0a0a1a' }}
             >
-              {/* Faction banner if first-contact applicable */}
-              {faction && (
-                <div className="relative h-16 overflow-hidden">
-                  <Image src={getFactionArtUrl(fc!.factionId as FactionId)} alt="" fill className="object-cover opacity-60" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
+              {/* Faction banner if first-contact applicable, else biome art */}
+              <div className="relative h-16 overflow-hidden holo-sprite">
+                <Image
+                  src={faction ? getFactionArtUrl(fc!.factionId as FactionId) : (SYSTEM_ART[system.id] || PLANET_ASSETS.nebula)}
+                  alt=""
+                  fill
+                  className="object-cover opacity-60"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+                {faction && (
                   <div className="absolute inset-x-0 bottom-0 p-2">
                     <div className={`text-[9px] uppercase tracking-wider ${faction.theme.accent}`}>First contact: {faction.name}</div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
               <div className="p-3">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
-                    <h3 className="text-white text-base font-bold">{system.name}</h3>
+                    <h3 className="font-hud text-white text-base font-bold">{system.name}</h3>
                     <div className="text-[10px] text-slate-500">
                       {system.distanceLy.toFixed(2)} ly · Signal round-trip ~{Math.round(system.signalRoundTripMinutes / 60)}h
                     </div>
@@ -111,13 +138,13 @@ export default function InterstellarPanel({ state }: Props) {
 
                 <div className="grid grid-cols-2 gap-1.5 text-[10px] mb-2">
                   <div className="rounded bg-white/[0.03] p-1.5">
-                    <div className="text-[9px] uppercase tracking-wider text-slate-500">Fuel needed</div>
-                    <div className={`font-mono font-bold ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>
+                    <div className="game-label">Fuel needed</div>
+                    <div className={`game-number font-bold ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>
                       {system.jumpFuelRequired.toLocaleString()}
                     </div>
                   </div>
                   <div className="rounded bg-white/[0.03] p-1.5">
-                    <div className="text-[9px] uppercase tracking-wider text-slate-500">Known resources</div>
+                    <div className="game-label">Known resources</div>
                     <div className="text-slate-300 truncate" title={system.knownResources.join(', ')}>
                       {system.knownResources.length} types
                     </div>

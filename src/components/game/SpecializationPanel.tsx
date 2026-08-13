@@ -108,11 +108,13 @@ function SpecCard({
   const purchaseCheck = canPurchaseTier(state, def.id, isPrimarySlot);
 
   return (
-    <div className={`rounded-xl border p-4 transition-all ${
+    <div className={`hud-frame relative rounded-xl border p-4 transition-all ${
       isAssigned
         ? 'border-cyan-500/30 bg-cyan-500/5'
         : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]'
     }`}>
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
@@ -136,14 +138,14 @@ function SpecCard({
 
       <p className="text-slate-400 text-xs mb-3">{def.description}</p>
 
-      {/* Tier progress indicator (compact) */}
+      {/* Tier progress indicator (compact) — season-node styling for the current rung */}
       {!expanded && (
         <div className="flex gap-1 mb-3">
           {def.tiers.slice(0, maxTier).map((t, i) => (
             <div
               key={t.tier}
-              className={`h-1.5 flex-1 rounded-full ${
-                i < assignedTier ? 'bg-cyan-500' : 'bg-zinc-700'
+              className={`season-node h-1.5 flex-1 rounded-full ${
+                i < assignedTier ? 'season-node-claimed bg-cyan-500' : i === assignedTier ? 'season-node-current bg-zinc-600' : 'bg-zinc-700'
               }`}
             />
           ))}
@@ -217,29 +219,48 @@ export default function SpecializationPanel({ state, onPurchaseTier, onRespec }:
 
   return (
     <div className="space-y-4">
+      {/* Header banner */}
+      <div className="hud-frame hud-frame-purple relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="flex items-center gap-2">
+          <span className="text-base" aria-hidden="true">🎯</span>
+          <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Corporate Specialization</span>
+        </div>
+        <span className="text-[10px] text-slate-500">One primary path, one secondary — choose your edge</span>
+      </div>
+
       {/* Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
-          <p className="text-cyan-400 text-sm font-bold">
+        <div className="hud-frame relative rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="text-cyan-400 text-sm font-bold truncate">
             {primaryPath ? SPECIALIZATIONS.find(s => s.id === primaryPath)?.name || 'None' : 'None'}
           </p>
-          <p className="text-slate-500 text-[10px]">Primary (T{primaryTier})</p>
+          <p className="game-label">Primary (T{primaryTier})</p>
         </div>
-        <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 text-center">
-          <p className="text-purple-400 text-sm font-bold">
+        <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="text-purple-400 text-sm font-bold truncate">
             {secondaryPath ? SPECIALIZATIONS.find(s => s.id === secondaryPath)?.name || 'None' : 'None'}
           </p>
-          <p className="text-slate-500 text-[10px]">Secondary (T{secondaryTier})</p>
+          <p className="game-label">Secondary (T{secondaryTier})</p>
         </div>
-        <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
-          <p className="text-green-400 text-sm font-bold">
+        <div className="hud-frame relative rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-green-400 text-sm">
             +{Math.round(bonuses.allRevenue * 100)}%
           </p>
-          <p className="text-slate-500 text-[10px]">All Revenue</p>
+          <p className="game-label">All Revenue</p>
         </div>
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
-          <p className="text-amber-400 text-sm font-bold">{spec.respecCount}</p>
-          <p className="text-slate-500 text-[10px]">Respecs Used</p>
+        <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-amber-400 text-sm">{spec.respecCount}</p>
+          <p className="game-label">Respecs Used</p>
         </div>
       </div>
 

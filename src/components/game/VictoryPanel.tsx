@@ -48,11 +48,13 @@ function VictoryCard({ victory, state, isEarned }: { victory: VictoryDefinition;
   const estimate = progress && !isEarned ? estimateTimeToCompletion(progress) : null;
 
   return (
-    <div className={`rounded-xl border p-4 transition-all ${
+    <div className={`hud-frame relative rounded-xl border p-4 transition-all ${
       isEarned
-        ? 'border-yellow-500/40 bg-yellow-500/10'
+        ? 'hud-frame-amber border-yellow-500/40 bg-yellow-500/10'
         : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]'
     }`}>
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
@@ -174,10 +176,12 @@ function HallOfFame({ earnedVictoryIds }: { earnedVictoryIds: string[] }) {
   const bonuses = getVictoryBonuses(earnedVictoryIds);
 
   return (
-    <div className="rounded-xl border border-yellow-500/20 bg-gradient-to-b from-yellow-500/[0.06] to-transparent p-4">
+    <div className="hud-frame hud-frame-amber relative rounded-xl border border-yellow-500/20 bg-gradient-to-b from-yellow-500/[0.06] to-transparent p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center gap-2 mb-3">
         <span className="text-lg">{'🏆'}</span>
-        <h3 className="text-sm font-bold text-yellow-300">Hall of Fame</h3>
+        <h3 className="font-hud text-sm font-bold text-yellow-300">Hall of Fame</h3>
         <span className="text-[10px] text-yellow-300/50 ml-auto">
           {earned.length} / {VICTORY_CONDITIONS.length} victories
         </span>
@@ -261,24 +265,43 @@ export default function VictoryPanel({ state }: VictoryPanelProps) {
 
   return (
     <div className="space-y-4">
+      {/* Header banner */}
+      <div className="hud-frame hud-frame-amber relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="flex items-center gap-2">
+          <span className="text-base" aria-hidden="true">🥇</span>
+          <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Victory Conditions</span>
+        </div>
+        <span className="text-[10px] text-slate-500">Permanent milestones — endgame achievements</span>
+      </div>
+
       {/* Summary Header */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3 text-center">
-          <p className="text-yellow-300 text-lg font-bold">{earnedCount}</p>
-          <p className="text-slate-500 text-xs">Victories Earned</p>
+        <div className="hud-frame hud-frame-amber relative rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-yellow-300 text-lg">{earnedCount}</p>
+          <p className="game-label">Victories Earned</p>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
-          <p className="text-white text-lg font-bold">{VICTORY_CONDITIONS.length}</p>
-          <p className="text-slate-500 text-xs">Total Victories</p>
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-white text-lg">{VICTORY_CONDITIONS.length}</p>
+          <p className="game-label">Total Victories</p>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
-          <p className="text-cyan-400 text-lg font-bold">
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-cyan-400 text-lg">
             {earnedCount > 0 ? `${Math.round((earnedCount / VICTORY_CONDITIONS.length) * 100)}%` : '0%'}
           </p>
-          <p className="text-slate-500 text-xs">Completion</p>
+          <p className="game-label">Completion</p>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
-          <p className="text-purple-400 text-lg font-bold">
+        <div className="hud-frame hud-frame-purple relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-purple-400 text-lg">
             {inProgressList.length > 0
               ? (() => {
                   const next = inProgressList[0];
@@ -287,12 +310,14 @@ export default function VictoryPanel({ state }: VictoryPanelProps) {
                 })()
               : '--'}
           </p>
-          <p className="text-slate-500 text-xs">Next Victory</p>
+          <p className="game-label">Next Victory</p>
         </div>
       </div>
 
       {/* Info banner */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <p className="text-slate-400 text-xs">
           Victories are permanent milestones that grant lasting bonuses. They do not end the game.
           Achieving multiple victories compounds their rewards. Endgame victories require completing

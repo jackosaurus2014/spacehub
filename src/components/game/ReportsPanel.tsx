@@ -73,9 +73,11 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
   if (reports.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="text-center py-16">
+        <div className="hud-frame relative text-center py-16 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="text-4xl mb-3">📬</div>
-          <h3 className="text-lg font-semibold text-white mb-1">No Reports Yet</h3>
+          <h3 className="font-hud text-lg font-semibold text-white mb-1">No Reports Yet</h3>
           <p className="text-sm text-slate-400 max-w-md mx-auto">
             Send survey probes to explore locations. When they complete their expeditions, detailed discovery reports will appear here with rewards and recommendations.
           </p>
@@ -87,11 +89,13 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
   return (
     <div className="space-y-3">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-1">
+      <div className="hud-frame relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-3">
-          <h2 className="text-sm font-semibold text-white">Reports & Mail</h2>
+          <h2 className="font-hud text-sm font-semibold text-white">📬 Reports &amp; Mail</h2>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+            <span className="game-number px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
               {unreadCount} unread
             </span>
           )}
@@ -147,7 +151,7 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
           return (
             <div
               key={report.id}
-              className="rounded-lg transition-all cursor-pointer"
+              className="holo-row rounded-lg transition-all cursor-pointer"
               style={{
                 background: isExpanded ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
                 border: `1px solid ${!report.read ? accent + '40' : 'rgba(255,255,255,0.06)'}`,
@@ -193,7 +197,7 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
                 {!isExpanded && report.rewards && (
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {report.rewards.money && (
-                      <span className="text-[10px] font-mono text-emerald-400">
+                      <span className="game-number text-[10px] text-emerald-400">
                         {formatRewardMoney(report.rewards.money)}
                       </span>
                     )}

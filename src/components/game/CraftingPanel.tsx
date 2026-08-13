@@ -6,6 +6,8 @@ import { PRODUCTION_CHAINS } from '@/lib/game/production-chains';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
 import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { BUILDING_ASSETS } from '@/lib/game/assets';
+import Image from 'next/image';
 
 interface CraftingPanelProps {
   state: GameState;
@@ -45,11 +47,26 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
 
   return (
     <div className="space-y-4">
+      {/* Fabrication hero banner */}
+      <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 overflow-hidden">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="relative h-14 sm:h-16 overflow-hidden holo-sprite">
+          <Image src={BUILDING_ASSETS.fabrication} alt="" fill className="object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a1a]/90 via-[#0a0a1a]/60 to-[#0a0a1a]/90" />
+          <div className="absolute inset-0 flex items-center px-3">
+            <span className="font-hud text-[10px] text-purple-300 uppercase tracking-wider font-medium">Orbital Fabrication — Production Chains</span>
+          </div>
+        </div>
+      </div>
+
       {/* Fabrication Speed Bonus */}
       {fabCount >= 1 && (
-        <div className="flex items-center justify-between rounded-lg border border-cyan-500/15 bg-cyan-500/5 px-3 py-2">
+        <div className="hud-frame relative flex items-center justify-between rounded-lg border border-cyan-500/15 bg-cyan-500/5 px-3 py-2">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center gap-2">
-            <span className="text-cyan-400 text-xs font-medium">Fabrication Speed: {craftingSpeedMult.toFixed(2)}x</span>
+            <span className="game-number text-cyan-400 text-xs font-medium">Fabrication Speed: {craftingSpeedMult.toFixed(2)}x</span>
             <span className="text-slate-500 text-[10px]">({fabCount} fab{fabCount !== 1 ? 's' : ''})</span>
           </div>
           {fabCount === 1 && (
@@ -63,7 +80,9 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
 
       {/* Active Crafting */}
       {activeCraft && activeRecipe && (
-        <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+        <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <span className="text-lg">{activeRecipe.icon}</span>
@@ -72,10 +91,10 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
                 <p className="text-slate-500 text-[10px]">Producing {activeRecipe.outputQuantity}x {activeRecipe.outputId.replace(/_/g, ' ')}</p>
               </div>
             </div>
-            <span className="text-purple-400 font-mono text-xs">{formatCountdown(craftRemaining)}</span>
+            <span className="game-number text-purple-400 text-xs">{formatCountdown(craftRemaining)}</span>
           </div>
-          <div className="h-2 bg-purple-500/10 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-purple-600 to-cyan-500 rounded-full transition-all bar-shimmer" style={{ width: `${craftPct}%` }} />
+          <div className="h-2 bg-purple-500/10 rounded-full overflow-hidden game-progress-shimmer">
+            <div className="h-full bg-gradient-to-r from-purple-600 to-cyan-500 rounded-full transition-all" style={{ width: `${craftPct}%` }} />
           </div>
         </div>
       )}
@@ -92,7 +111,7 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
 
         return (
           <div key={tier}>
-            <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <span>{icon}</span> Tier {tier}: {label}
             </h3>
             {availableRecipes.length === 0 ? (
@@ -106,7 +125,9 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
                   const canCraft = hasInputs && !activeCraft;
 
                   return (
-                    <div key={recipe.id} className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                    <div key={recipe.id} className="hud-frame game-card relative p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                      <span className="hud-corner-bl" aria-hidden="true" />
+                      <span className="hud-corner-br" aria-hidden="true" />
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="text-sm">{recipe.icon}</span>
                         <h4 className="text-white text-xs font-medium">{recipe.name}</h4>

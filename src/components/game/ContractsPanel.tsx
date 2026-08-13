@@ -6,6 +6,8 @@ import { CONTRACT_POOL, getRequirementProgress, isContractComplete } from '@/lib
 import { formatMoney } from '@/lib/game/formulas';
 import { MILESTONES } from '@/lib/game/milestones';
 import { playSound } from '@/lib/game/sound-engine';
+import { RESOURCE_ASSETS } from '@/lib/game/assets';
+import Image from 'next/image';
 
 interface ContractsPanelProps {
   state: GameState;
@@ -88,7 +90,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
       {/* Active Contracts */}
       {active.length > 0 && (
         <div>
-          <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             Active Contracts ({active.length})
           </h3>
@@ -96,7 +98,9 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
             {active.map(contract => {
               const complete = isContractComplete(state, contract);
               return (
-                <div key={contract.id} className={`rounded-xl border p-4 ${complete ? 'border-green-500/30 bg-green-500/5' : 'border-cyan-500/20 bg-cyan-500/5'}`}>
+                <div key={contract.id} className={`hud-frame relative rounded-xl border p-4 ${complete ? 'hud-frame-amber border-green-500/30 bg-green-500/5' : 'border-cyan-500/20 bg-cyan-500/5'}`}>
+                  <span className="hud-corner-bl" aria-hidden="true" />
+                  <span className="hud-corner-br" aria-hidden="true" />
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <span className="text-lg mr-2">{contract.icon}</span>
@@ -116,7 +120,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                         <div key={i}>
                           <div className="flex justify-between text-[10px] mb-0.5">
                             <span className={done ? 'text-green-400' : 'text-slate-400'}>{req.label}</span>
-                            <span className={done ? 'text-green-400 font-mono' : 'text-slate-500 font-mono'}>
+                            <span className={done ? 'game-number text-green-400' : 'game-number text-slate-500'}>
                               {typeof progress === 'number' && progress >= 1000 ? formatMoney(progress) : progress}/{typeof req.target === 'number' && req.target >= 1000 ? formatMoney(req.target) : req.target}
                             </span>
                           </div>
@@ -127,13 +131,16 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                       );
                     })}
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    Reward: <span className="text-green-400">{formatMoney(contract.reward.money || 0)}</span>
-                    {contract.reward.resources && Object.keys(contract.reward.resources).length > 0 && (
-                      <span className="text-amber-400 ml-2">
-                        + {Object.entries(contract.reward.resources).map(([r, q]) => `${q} ${r.replace(/_/g, ' ')}`).join(', ')}
+                  <div className="text-[10px] text-slate-500 flex items-center flex-wrap gap-1.5">
+                    Reward: <span className="game-number text-green-400">{formatMoney(contract.reward.money || 0)}</span>
+                    {contract.reward.resources && Object.entries(contract.reward.resources).map(([r, q]) => (
+                      <span key={r} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                        {RESOURCE_ASSETS[r] && (
+                          <Image src={RESOURCE_ASSETS[r]} alt="" width={12} height={12} className="w-3 h-3 rounded object-cover" />
+                        )}
+                        {q} {r.replace(/_/g, ' ')}
                       </span>
-                    )}
+                    ))}
                   </div>
                 </div>
               );
@@ -144,7 +151,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
 
       {/* Available Contracts */}
       <div>
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
+        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">
           Available Contracts
         </h3>
         {available.length === 0 ? (
@@ -152,7 +159,9 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
         ) : (
           <div className="grid md:grid-cols-2 gap-3">
             {available.map(contract => (
-              <div key={contract.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={contract.id} className="hud-frame game-card relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <span className="hud-corner-bl" aria-hidden="true" />
+                <span className="hud-corner-br" aria-hidden="true" />
                 <div className="flex items-start gap-2 mb-2">
                   <span className="text-xl">{contract.icon}</span>
                   <div>
@@ -162,7 +171,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                 </div>
                 <p className="text-slate-400 text-xs mb-2">{contract.description}</p>
                 <div className="text-[10px] text-slate-500 mb-3">
-                  Reward: <span className="text-green-400">{formatMoney(contract.reward.money || 0)}</span>
+                  Reward: <span className="game-number text-green-400">{formatMoney(contract.reward.money || 0)}</span>
                 </div>
                 <button
                   onClick={() => { playSound('click'); onAcceptContract(contract.id); }}
@@ -197,7 +206,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
 
       {/* Competitive Milestones */}
       <div>
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
+        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">
           🏆 Competitive Milestones
         </h3>
         <div className="space-y-1.5">
@@ -205,7 +214,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
             const claimed = claimedMilestones[m.id];
             const isPlayer = claimed === (state.companyName || 'Your Company');
             return (
-              <div key={m.id} className={`flex items-center justify-between p-2 rounded-lg ${
+              <div key={m.id} className={`holo-row flex items-center justify-between p-2 rounded-lg ${
                 claimed
                   ? isPlayer ? 'bg-green-500/5 border border-green-500/20' : 'bg-red-500/5 border border-red-500/20'
                   : 'bg-white/[0.02] border border-white/[0.04]'

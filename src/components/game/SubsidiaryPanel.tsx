@@ -115,7 +115,9 @@ function SubsidiaryCard({
   const EFFICIENCY_MULT = [0, 0.10, 0.20, 0.32, 0.45, 0.60];
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -130,22 +132,22 @@ function SubsidiaryCard({
       {/* Income display */}
       <div className="grid grid-cols-3 gap-2 mb-3">
         <div className="rounded-lg bg-green-500/5 border border-green-500/15 p-2 text-center">
-          <p className="text-green-400 text-xs font-bold">{formatMoney(income.grossIncome)}</p>
-          <p className="text-slate-600 text-[9px]">Gross/mo</p>
+          <p className="game-number text-green-400 text-xs">{formatMoney(income.grossIncome)}</p>
+          <p className="game-label">Gross/mo</p>
         </div>
         <div className="rounded-lg bg-red-500/5 border border-red-500/15 p-2 text-center">
-          <p className="text-red-400 text-xs font-bold">-{formatMoney(income.overhead)}</p>
-          <p className="text-slate-600 text-[9px]">Overhead/mo</p>
+          <p className="game-number text-red-400 text-xs">-{formatMoney(income.overhead)}</p>
+          <p className="game-label">Overhead/mo</p>
         </div>
         <div className={`rounded-lg border p-2 text-center ${
           income.netIncome >= 0
             ? 'bg-cyan-500/5 border-cyan-500/15'
             : 'bg-red-500/5 border-red-500/15'
         }`}>
-          <p className={`text-xs font-bold ${income.netIncome >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>
+          <p className={`game-number text-xs ${income.netIncome >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>
             {formatMoney(income.netIncome)}
           </p>
-          <p className="text-slate-600 text-[9px]">Net/mo</p>
+          <p className="game-label">Net/mo</p>
         </div>
       </div>
 
@@ -234,44 +236,65 @@ export default function SubsidiaryPanel({ state, onCreate, onUpgrade, onDissolve
 
   return (
     <div className="space-y-4">
+      {/* Header banner */}
+      <div className="hud-frame hud-frame-amber relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="flex items-center gap-2">
+          <span className="text-base" aria-hidden="true">🏭</span>
+          <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Corporate Governance — Subsidiaries</span>
+        </div>
+        <span className="text-[10px] text-slate-500">Diversify revenue through owned business units</span>
+      </div>
+
       {/* Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
-          <p className="text-cyan-400 text-lg font-bold">{subsidiaries.length}</p>
-          <p className="text-slate-500 text-xs">Subsidiaries</p>
+        <div className="hud-frame relative rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-cyan-400 text-lg">{subsidiaries.length}</p>
+          <p className="game-label">Subsidiaries</p>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
-          <p className="text-white text-lg font-bold">{maxSlots}</p>
-          <p className="text-slate-500 text-xs">Max Slots (Tier {corpTier})</p>
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-white text-lg">{maxSlots}</p>
+          <p className="game-label">Max Slots (Tier {corpTier})</p>
         </div>
-        <div className={`rounded-xl border p-3 text-center ${
+        <div className={`hud-frame relative rounded-xl border p-3 text-center ${
           totalIncome >= 0
             ? 'border-green-500/20 bg-green-500/5'
             : 'border-red-500/20 bg-red-500/5'
         }`}>
-          <p className={`text-lg font-bold ${totalIncome >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className={`game-number text-lg ${totalIncome >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {formatMoney(totalIncome)}
           </p>
-          <p className="text-slate-500 text-xs">Net Income/mo</p>
+          <p className="game-label">Net Income/mo</p>
         </div>
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
-          <p className="text-amber-400 text-lg font-bold">Tier {corpTier}</p>
-          <p className="text-slate-500 text-xs">Corp Level</p>
+        <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-amber-400 text-lg">Tier {corpTier}</p>
+          <p className="game-label">Corp Level</p>
         </div>
       </div>
 
-      {/* Slot capacity bar */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+      {/* Slot capacity bar — module-socket styling reused from hardpoint fitting UI */}
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-2">
-          <span className="text-white text-xs font-bold uppercase tracking-wider">Subsidiary Slots</span>
-          <span className="text-cyan-400 text-xs font-mono">{subsidiaries.length}/{maxSlots}</span>
+          <span className="game-label !text-white">Subsidiary Slots</span>
+          <span className="game-number text-cyan-400 text-xs">{subsidiaries.length}/{maxSlots}</span>
         </div>
         <div className="flex gap-1.5">
           {Array.from({ length: Math.max(maxSlots, 1) }).map((_, i) => (
             <div
               key={i}
-              className={`h-2.5 flex-1 rounded-sm transition-colors ${
-                i < subsidiaries.length ? 'bg-cyan-500' : i < maxSlots ? 'bg-zinc-700' : 'bg-zinc-800'
+              className={`module-socket h-3 flex-1 ${
+                i < subsidiaries.length ? 'module-socket-filled bg-cyan-500' : i < maxSlots ? 'module-socket-empty bg-zinc-700' : 'bg-zinc-800'
               }`}
             />
           ))}
@@ -286,7 +309,7 @@ export default function SubsidiaryPanel({ state, onCreate, onUpgrade, onDissolve
       {/* Existing subsidiaries */}
       {subsidiaries.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-white text-xs font-bold uppercase tracking-wider">Your Subsidiaries</h3>
+          <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider">Your Subsidiaries</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {subsidiaries.map(sub => (
               <SubsidiaryCard

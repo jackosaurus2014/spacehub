@@ -58,7 +58,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 3,
     shipyardSlots: 1,
     bonuses: { maintenanceReduction: 0.03, revenueBonus: 0.03, miningBonus: 0 },
-    unlockedTabs: ['fleet', 'reports', 'spatial', 'diplomacy', 'modules', 'discoveries'],
+    unlockedTabs: ['fleet', 'reports', 'spatial', 'diplomacy', 'modules', 'discoveries', 'specialization'],
   },
   {
     tier: 3, name: 'Enterprise', icon: '🏢', color: '#a78bfa',
@@ -86,7 +86,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 5,
     shipyardSlots: 3,
     bonuses: { maintenanceReduction: 0.08, revenueBonus: 0.08, miningBonus: 0.10 },
-    unlockedTabs: ['alliance', 'bounties', 'rivals', 'factions'],
+    unlockedTabs: ['alliance', 'bounties', 'rivals', 'factions', 'subsidiaries'],
   },
   {
     tier: 5, name: 'Conglomerate', icon: '👑', color: '#f97316',
@@ -102,7 +102,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 7,
     shipyardSlots: 4,
     bonuses: { maintenanceReduction: 0.10, revenueBonus: 0.12, miningBonus: 0.15 },
-    unlockedTabs: ['leagues', 'bidding', 'megaproject', 'megastructures'],
+    unlockedTabs: ['leagues', 'bidding', 'megaproject', 'megastructures', 'victory'],
   },
   {
     tier: 6, name: 'Megacorp', icon: '🌟', color: '#ef4444',

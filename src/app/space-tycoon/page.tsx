@@ -87,6 +87,12 @@ import AnomaliesPanel from '@/components/game/AnomaliesPanel';
 import InterstellarPanel from '@/components/game/InterstellarPanel';
 import ArchetypePicker from '@/components/game/ArchetypePicker';
 import { applyArchetype, type StartingArchetype } from '@/lib/game/archetypes';
+import SubsidiaryPanel from '@/components/game/SubsidiaryPanel';
+import { createSubsidiary, upgradeSubsidiary, dissolveSubsidiary } from '@/lib/game/subsidiaries';
+import SpecializationPanel from '@/components/game/SpecializationPanel';
+import { purchaseTier, respecSpecialization } from '@/lib/game/specializations';
+import VictoryPanel from '@/components/game/VictoryPanel';
+import { checkVictories } from '@/lib/game/victory-conditions';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1241,6 +1247,31 @@ export default function SpaceTycoonPage() {
       setUnlockedAchievements(prev => [...prev, ...newlyUnlocked.map(a => a.id)]);
     }
 
+    // Check victory conditions (permanent milestones — do not end the game)
+    const alreadyEarnedVictories = state.earnedVictories || [];
+    const newlyWonVictories = checkVictories(state, alreadyEarnedVictories);
+    if (newlyWonVictories.length > 0) {
+      playSound('milestone');
+      setState(prev => {
+        if (!prev) return prev;
+        const earnedVictories = [...(prev.earnedVictories || []), ...newlyWonVictories.map(v => v.id)];
+        return {
+          ...prev,
+          earnedVictories,
+          eventLog: [
+            ...newlyWonVictories.map(v => ({
+              id: generateId(),
+              date: prev.gameDate,
+              type: 'milestone' as const,
+              title: `🥇 Victory: ${v.name}`,
+              description: `"${v.title}" — permanent bonus applied.`,
+            })),
+            ...prev.eventLog,
+          ].slice(0, 50),
+        };
+      });
+    }
+
     // Check active contracts for completion
     const activeContractIds = state.activeContracts || [];
     for (const cId of activeContractIds) {
@@ -1531,6 +1562,9 @@ export default function SpaceTycoonPage() {
     { id: 'modules', label: 'Modules', icon: '⚙️' },
     { id: 'discoveries', label: 'Discoveries', icon: '🔭' },
     { id: 'interstellar', label: 'Interstellar', icon: '✴' },
+    { id: 'subsidiaries', label: 'Subsidiaries', icon: '🏭' },
+    { id: 'specialization', label: 'Specialize', icon: '🎯' },
+    { id: 'victory', label: 'Victory', icon: '🥇' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -1725,7 +1759,11 @@ export default function SpaceTycoonPage() {
 
       {/* Panel Content — key={tab} triggers reveal animation on tab switch */}
       <div key={tab} className="flex-1 overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full animate-reveal-up game-scroll">
-        {tab === 'dashboard' && <DashboardPanel state={state} onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)} />}
+        {tab === 'dashboard' && <DashboardPanel
+          state={state}
+          onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)}
+          onNavigate={(navTab) => { playSound('click'); setTab(navTab as GameTab); }}
+        />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} onSelectLocation={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }} />}
@@ -1967,6 +2005,37 @@ export default function SpaceTycoonPage() {
         {tab === 'modules' && <ModulesPanel state={state} setState={setState} />}
         {tab === 'discoveries' && <AnomaliesPanel state={state} setState={setState} />}
         {tab === 'interstellar' && <InterstellarPanel state={state} />}
+        {tab === 'subsidiaries' && (
+          <SubsidiaryPanel
+            state={state}
+            onCreate={(type) => {
+              playSound('build_start');
+              setState(prev => prev ? createSubsidiary(prev, type) : prev);
+            }}
+            onUpgrade={(subId, track) => {
+              playSound('click');
+              setState(prev => prev ? upgradeSubsidiary(prev, subId, track) : prev);
+            }}
+            onDissolve={(subId) => {
+              playSound('click');
+              setState(prev => prev ? dissolveSubsidiary(prev, subId) : prev);
+            }}
+          />
+        )}
+        {tab === 'specialization' && (
+          <SpecializationPanel
+            state={state}
+            onPurchaseTier={(path, isPrimary) => {
+              playSound('click');
+              setState(prev => prev ? purchaseTier(prev, path, isPrimary) : prev);
+            }}
+            onRespec={(which) => {
+              playSound('click');
+              setState(prev => prev ? respecSpecialization(prev, which) : prev);
+            }}
+          />
+        )}
+        {tab === 'victory' && <VictoryPanel state={state} />}
         {tab === 'reports' && (
           <ReportsPanel
             state={state}

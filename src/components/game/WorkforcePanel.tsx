@@ -30,29 +30,50 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
 
   return (
     <div className="space-y-4">
+      {/* Header banner */}
+      <div className="hud-frame relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <div className="flex items-center gap-2">
+          <span className="text-base" aria-hidden="true">👷</span>
+          <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Crew Roster</span>
+        </div>
+        <span className="text-[10px] text-slate-500">Hire, train, and retain your workforce</span>
+      </div>
+
       {/* Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
-          <p className="text-cyan-400 text-lg font-bold">{totalWorkers}</p>
-          <p className="text-slate-500 text-xs">Total Crew</p>
+        <div className="hud-frame relative rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-cyan-400 text-lg">{totalWorkers}</p>
+          <p className="game-label">Total Crew</p>
         </div>
-        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-center">
-          <p className="text-red-400 text-lg font-bold">{formatMoney(payroll)}</p>
-          <p className="text-slate-500 text-xs">Monthly Payroll</p>
+        <div className="hud-frame relative rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-red-400 text-lg">{formatMoney(payroll)}</p>
+          <p className="game-label">Monthly Payroll</p>
         </div>
-        <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
-          <p className="text-green-400 text-lg font-bold">+{Math.round(bonuses.serviceRevenue * 100)}%</p>
-          <p className="text-slate-500 text-xs">Revenue Bonus</p>
+        <div className="hud-frame relative rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-green-400 text-lg">+{Math.round(bonuses.serviceRevenue * 100)}%</p>
+          <p className="game-label">Revenue Bonus</p>
         </div>
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
-          <p className="text-amber-400 text-lg font-bold">+{Math.round(bonuses.miningOutput * 100)}%</p>
-          <p className="text-slate-500 text-xs">Mining Bonus</p>
+        <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <p className="game-number text-amber-400 text-lg">+{Math.round(bonuses.miningOutput * 100)}%</p>
+          <p className="game-label">Mining Bonus</p>
         </div>
       </div>
 
       {/* Crew health (Phase III) — morale, fatigue, training level */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-        <p className="text-white text-xs font-bold mb-2 uppercase tracking-wider">Crew Health</p>
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <p className="font-hud text-white text-xs font-bold mb-2 uppercase tracking-wider">Crew Health</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <CrewStatBar
             label="Morale"
@@ -115,10 +136,12 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
       )}
 
       {/* Crew Capacity */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 mb-4">
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 mb-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-2">
-          <span className="text-white text-xs font-bold uppercase tracking-wider">Crew Capacity</span>
-          <span className="text-cyan-400 text-xs font-mono">{totalWorkers}/{capacity.total}</span>
+          <span className="game-label !text-white">Crew Capacity</span>
+          <span className="game-number text-cyan-400 text-xs">{totalWorkers}/{capacity.total}</span>
         </div>
         <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
           <div className="h-full bg-cyan-500 rounded-full transition-all" style={{ width: `${Math.min(100, (totalWorkers / Math.max(1, capacity.total)) * 100)}%` }} />
@@ -131,8 +154,10 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
       </div>
 
       {/* Hire Workers */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Hire Crew</h3>
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">Hire Crew</h3>
         <div className="space-y-3">
           {WORKER_TYPES.map(worker => {
             const count = workforce[`${worker.type}s` as keyof typeof workforce] || 0;
@@ -142,13 +167,13 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
             const canHire = canAfford && hireCheck.allowed;
 
             return (
-              <div key={worker.type} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div key={worker.type} className="holo-row flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{worker.icon}</span>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-white text-sm font-medium">{worker.name}</span>
-                      <span className="text-cyan-400 text-xs font-mono">{count} hired</span>
+                      <span className="game-number text-cyan-400 text-xs">{count} hired</span>
                     </div>
                     <p className="text-slate-500 text-[10px]">{worker.description}</p>
                     <div className="flex gap-2 mt-1">
