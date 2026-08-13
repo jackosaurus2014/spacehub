@@ -1,7 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
+
+/**
+ * DOM id of the slot rendered near the top of the homepage (above the hero),
+ * reserved for promoting this section when a major event is live. See
+ * src/app/page.tsx. Kept as a portal target so there's a single
+ * LiveStreamSection instance (one fetch, one chat state) that relocates
+ * itself instead of mounting a second copy at the top of the page.
+ */
+const MAJOR_EVENT_SLOT_ID = 'livestream-slot-top';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -19,6 +29,9 @@ interface ActiveLiveStream {
   embedUrl: string;
   platform?: 'youtube' | 'x';
   watchUrl?: string;
+  /** Flagship coverage (crewed launch, interplanetary mission, or manually
+   *  forced via NEXT_PUBLIC_FORCE_MAJOR_EVENT) — see livestream-detector.ts */
+  isMajorEvent?: boolean;
 }
 
 interface ChatMessage {
@@ -521,6 +534,15 @@ export default function LiveStreamSection() {
   const [countdown, setCountdown] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  // Portal target for major-event promotion — resolved client-side after
+  // mount since the slot div lives elsewhere in the page tree (above the
+  // hero). Stays null (no promotion) until both the DOM node and a
+  // qualifying live stream exist.
+  const [majorEventSlot, setMajorEventSlot] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setMajorEventSlot(document.getElementById(MAJOR_EVENT_SLOT_ID));
+  }, []);
 
   // Fetch active livestreams on mount and poll every 60s
   useEffect(() => {
@@ -833,19 +855,31 @@ export default function LiveStreamSection() {
   // ---- Active streams: show full live experience ----
   const currentStream = selectedStream || streams[0];
   const hasMultipleStreams = streams.length > 1;
+  // Major-event promotion: any qualifying stream (pattern-matched or forced
+  // via NEXT_PUBLIC_FORCE_MAJOR_EVENT — see livestream-detector.ts) bumps
+  // this whole section back to the top of the page via the portal below.
+  const isMajorEvent = streams.some((s) => s.isMajorEvent);
 
-  return (
-    <section className="relative z-10 py-6">
+  const sectionContent = (
+    <section className={`relative z-10 py-6${isMajorEvent ? ' major-event-live' : ''}`}>
+      {isMajorEvent && (
+        <div className="h-0.5 mb-6 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+      )}
       <div className="container mx-auto px-4">
         {/* LIVE NOW header with pulsing red dot */}
-        <div className="flex items-center gap-3 mb-5">
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
           </span>
           <h2 className="text-xl md:text-2xl font-display font-bold text-white uppercase tracking-wider">
-            Live Now
+            {isMajorEvent ? 'Major Event — Live' : 'Live Now'}
           </h2>
+          {isMajorEvent && (
+            <span className="px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 text-[10px] font-bold uppercase tracking-widest border border-amber-500/30">
+              Flagship Coverage
+            </span>
+          )}
           <div className="flex-1 h-px bg-gradient-to-r from-red-500/40 to-transparent" />
         </div>
 
@@ -980,4 +1014,13 @@ export default function LiveStreamSection() {
       </div>
     </section>
   );
+
+  // Major event: relocate to the slot above the hero via portal instead of
+  // rendering a second copy — single fetch/chat-state instance either way.
+  // Falls closed to the normal below-hero position when not promoted, or
+  // when the top slot hasn't resolved yet (e.g. first paint).
+  if (isMajorEvent && majorEventSlot) {
+    return createPortal(sectionContent, majorEventSlot);
+  }
+  return sectionContent;
 }

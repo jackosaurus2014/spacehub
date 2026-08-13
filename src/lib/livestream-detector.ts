@@ -36,6 +36,58 @@ export interface ActiveLiveStream {
   platform: 'youtube' | 'x';
   /** Direct URL to watch on the original platform */
   watchUrl: string;
+  /**
+   * True when this stream qualifies as a "flagship" moment — a crewed launch,
+   * an interplanetary mission, or a named flagship program milestone (see
+   * MAJOR_EVENT_PATTERNS below), or when manually forced via the
+   * NEXT_PUBLIC_FORCE_MAJOR_EVENT env var. Drives homepage promotion of the
+   * Live Now section back to the top of the page.
+   */
+  isMajorEvent: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Major-event detection
+// ---------------------------------------------------------------------------
+
+/**
+ * Conservative, easy-to-edit allowlist of patterns matched against a
+ * livestream's title + channel name to flag "flagship" coverage — crewed
+ * launches, interplanetary missions, and named flagship program milestones.
+ *
+ * Used to auto-promote the homepage Live Now section from its normal
+ * below-the-hero position back to the very top of the page (the treatment
+ * the site gave the Artemis II Moon-adjacent coverage). Keep this list
+ * conservative — a false positive promotes a routine stream to the top of
+ * the homepage. Add new flagship triggers here as missions are announced.
+ */
+export const MAJOR_EVENT_PATTERNS: RegExp[] = [
+  // Crewed lunar program (Artemis II circumlunar, Artemis III landing)
+  /\bartemis\s*(ii|iii|2|3)\b/i,
+  // SpaceX Crew Dragon rotation missions, Axiom private astronaut missions
+  /\bcrew-\d+\b/i,
+  /\bax-\d+\b/i,
+  // Boeing Starliner crewed flights
+  /\bstarliner\b[^.]{0,40}\bcrew\b/i,
+  // Generic crewed-launch language
+  /\bcrewed\b/i,
+  /\bastronauts?\b[^.]{0,20}\b(launch|aboard|onboard)\b/i,
+  // Interplanetary / deep-space flagship missions
+  /\bmars\b[^.]{0,30}\b(landing|sample|rover|mission)\b/i,
+  /\beuropa clipper\b/i,
+  /\bpsyche\b/i,
+  /\bjuice\b[^.]{0,30}\bjupiter\b/i,
+  /\bdragonfly\b[^.]{0,20}\btitan\b/i,
+  /\bmars sample return\b/i,
+  // Named flagship program milestones
+  /\bhuman landing system\b/i,
+  /\bfirst crewed (flight|launch|landing)\b/i,
+  /\bmoon landing\b/i,
+];
+
+/** Test a stream's title/channel text against MAJOR_EVENT_PATTERNS. */
+export function isMajorEventTitle(text: string): boolean {
+  return MAJOR_EVENT_PATTERNS.some((pattern) => pattern.test(text));
 }
 
 // ---------------------------------------------------------------------------
@@ -250,6 +302,7 @@ function toActiveLiveStreams(
       embedUrl: `https://www.youtube.com/embed/${videoId}`,
       platform: 'youtube' as const,
       watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
+      isMajorEvent: isMajorEventTitle(`${item.snippet.title} ${channelName}`),
     };
   });
 }
@@ -694,6 +747,7 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
           embedUrl: `https://www.youtube.com/embed/${videoId}`,
           platform: 'youtube' as const,
           watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
+          isMajorEvent: isMajorEventTitle(`${event.name} ${event.agency || ''}`),
         });
         continue;
       }
@@ -715,6 +769,7 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
           embedUrl: url,
           platform: 'x' as const,
           watchUrl: url,
+          isMajorEvent: isMajorEventTitle(`${event.name} ${event.agency || ''}`),
         });
       }
     }
@@ -842,9 +897,10 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
       // it drops viewers straight into the live player.
       const targetUrl = broadcastUrl || tweetUrl;
 
+      const tweetTitle = tweet.text?.slice(0, 120) || `${channelName} Live`;
       streams.push({
         videoId: tweet.id, // Use tweet ID as the identifier
-        title: tweet.text?.slice(0, 120) || `${channelName} Live`,
+        title: tweetTitle,
         channelName: matchedChannel?.name || channelName,
         channelId: xHandle,
         thumbnailUrl: thumbnailUrl || author?.profile_image_url || '',
@@ -853,6 +909,7 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
         embedUrl: targetUrl,
         platform: 'x' as const,
         watchUrl: targetUrl,
+        isMajorEvent: isMajorEventTitle(`${tweetTitle} ${channelName}`),
       });
     }
 
@@ -955,11 +1012,27 @@ export async function detectLiveStreams(): Promise<ActiveLiveStream[]> {
         return b.viewerCount - a.viewerCount;
       });
 
+      // Manual override — lets Jay force homepage promotion during a big
+      // moment without waiting on MAJOR_EVENT_PATTERNS to match. Set to a
+      // specific videoId to promote just that stream, or 'true'/'1' to
+      // promote whichever stream is currently live. Unset/empty = no-op
+      // (fails closed to the pattern-matched default).
+      const forceMajor = process.env.NEXT_PUBLIC_FORCE_MAJOR_EVENT?.trim();
+      if (forceMajor) {
+        const forceAll = forceMajor.toLowerCase() === 'true' || forceMajor === '1';
+        for (const stream of merged) {
+          if (forceAll || stream.videoId === forceMajor) {
+            stream.isMajorEvent = true;
+          }
+        }
+      }
+
       logger.info('[LivestreamDetector] Combined detection complete', {
         youtube: youtubeStreams.length,
         launchWebcasts: launchStreams.length,
         x: xStreams.length,
         total: merged.length,
+        majorEvent: merged.some((s) => s.isMajorEvent),
       });
 
       return merged;

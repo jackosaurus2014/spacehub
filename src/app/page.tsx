@@ -173,8 +173,12 @@ export default async function HomePage() {
       {/* Scroll manager: non-subscribers see top, subscribers see content */}
       <HomeScrollManager />
 
-      {/* Live Stream — top of page; shows countdown banner pre-launch, full embed when live */}
-      <LiveStreamSection />
+      {/* Major-event promotion slot — empty unless a flagship livestream is
+          currently live (crewed launch, interplanetary mission, or manually
+          forced via NEXT_PUBLIC_FORCE_MAJOR_EVENT). LiveStreamSection portals
+          its "Live Now" content in here instead of mounting a second
+          instance; see src/components/landing/LiveStreamSection.tsx. */}
+      <div id="livestream-slot-top" />
 
       {/* Hero Section with featured content */}
       <LandingHero featuredArticle={featuredArticle} trendingNews={trendingNews} />
@@ -184,6 +188,11 @@ export default async function HomePage() {
 
       {/* Space Industry KPIs — Animated Counter Strip */}
       <KPIStrip />
+
+      {/* Live Stream — normal position below the hero/stats; shows countdown
+          banner pre-launch, full embed when live. Relocates itself to the
+          slot above the hero when a major event is live (see component). */}
+      <LiveStreamSection />
 
       {/* Platform Feature Showcase — Bento Grid */}
       <BentoFeatures />
