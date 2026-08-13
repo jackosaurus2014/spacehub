@@ -1,12 +1,43 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import type { GameState } from '@/lib/game/types';
+import type { GameState, LocationType } from '@/lib/game/types';
 import { LOCATIONS } from '@/lib/game/solar-system';
 import { LANES } from '@/lib/game/spatial-strategy';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+
+// Friendly group labels for the keyboard-accessible Location List, keyed by
+// SolarSystemLocation.type. Mirrors the bodies actually present in LOCATIONS.
+const REGION_LABELS: Record<LocationType, string> = {
+  earth_surface: 'Earth',
+  earth_orbit: 'Earth Orbit',
+  moon: 'Lunar System',
+  mars: 'Mars System',
+  asteroid_belt: 'Asteroid Belt',
+  jupiter: 'Jovian System',
+  saturn: 'Saturnian System',
+  outer_system: 'Outer System',
+  mercury: 'Mercury',
+  venus: 'Venus',
+  uranus: 'Uranus',
+  neptune: 'Neptune',
+};
+
+// Group LOCATIONS by region once at module load — the list is static.
+const LOCATIONS_BY_REGION: { type: LocationType; locations: typeof LOCATIONS }[] = (() => {
+  const order: LocationType[] = [];
+  const groups = new Map<LocationType, typeof LOCATIONS>();
+  for (const loc of LOCATIONS) {
+    if (!groups.has(loc.type)) {
+      groups.set(loc.type, []);
+      order.push(loc.type);
+    }
+    groups.get(loc.type)!.push(loc);
+  }
+  return order.map(type => ({ type, locations: groups.get(type)! }));
+})();
 
 interface SolarSystemCanvasProps {
   state: GameState;
@@ -147,6 +178,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
   const [showShips, setShowShips] = useState(true);
   const animRef = useRef(0);
 
+  // Keyboard-accessible Location List — collapsed by default on desktop, but
+  // defaults open for prefers-reduced-motion users (see effect below) since
+  // the canvas's drag/zoom/animated-pulse interactions are the least
+  // accessible part of this component for them. The toggle button itself is
+  // always in the normal tab order regardless of collapsed state, so it's
+  // reachable by keyboard either way.
+  const [listExpanded, setListExpanded] = useState(false);
+
   // Track prefers-reduced-motion so the render loop can skip/flatten purely
   // decorative motion (starfield twinkle, sun pulse, lane traffic pulses,
   // orbiting satellite/ship dots) while keeping functional motion — ship
@@ -155,7 +194,11 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     reducedMotionRef.current = mq.matches;
-    const onChange = () => { reducedMotionRef.current = mq.matches; };
+    if (mq.matches) setListExpanded(true);
+    const onChange = () => {
+      reducedMotionRef.current = mq.matches;
+      if (mq.matches) setListExpanded(true);
+    };
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
   }, []);
@@ -593,6 +636,18 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
     return () => cancelAnimationFrame(animRef.current);
   }, [draw]);
 
+  // Shared selection logic — used by both the canvas click handler and the
+  // keyboard-focusable Location List buttons below, so the two entry points
+  // always stay in sync (same toggle-off behavior, same parent notification).
+  const selectLocation = useCallback((locId: string) => {
+    playSound('click');
+    setSelectedLoc(prev => {
+      const next = prev === locId ? null : locId;
+      onSelectLocation?.(next);
+      return next;
+    });
+  }, [onSelectLocation]);
+
   // Click detection
   const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -611,18 +666,13 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
       const r = layout.radius * zoom + 10;
       const dist = Math.sqrt(Math.pow(mx - lx, 2) + Math.pow(my - ly, 2));
       if (dist < r) {
-        playSound('click');
-        setSelectedLoc(prev => {
-          const next = prev === loc.id ? null : loc.id;
-          onSelectLocation?.(next);
-          return next;
-        });
+        selectLocation(loc.id);
         return;
       }
     }
     setSelectedLoc(null);
     onSelectLocation?.(null);
-  }, [zoom, offset, onSelectLocation]);
+  }, [zoom, offset, onSelectLocation, selectLocation]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setDragging(true);
@@ -720,6 +770,67 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
         </div>
       </div>
 
+      {/* Keyboard-accessible Location List — mouse/touch-drag canvas alternative.
+          Every location is a real, tab-reachable <button> grouped by region,
+          calling the same selectLocation() the canvas click handler uses. */}
+      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02]">
+        <span className="hud-corner-bl" aria-hidden="true" />
+        <span className="hud-corner-br" aria-hidden="true" />
+        <button
+          type="button"
+          onClick={() => setListExpanded(v => !v)}
+          aria-expanded={listExpanded}
+          aria-controls="solar-system-location-list"
+          className="w-full flex items-center justify-between gap-2 px-3 py-2.5 min-h-[44px] text-left rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400"
+        >
+          <span className="font-hud text-xs font-semibold text-white flex items-center gap-2">
+            <span aria-hidden="true">📜</span> Location List
+            <span className="text-slate-500 font-normal text-[10px] hidden sm:inline">— keyboard-accessible alternative to the map</span>
+          </span>
+          <span aria-hidden="true" className={`text-slate-400 transition-transform ${listExpanded ? 'rotate-180' : ''}`}>▾</span>
+        </button>
+        {listExpanded && (
+          <div id="solar-system-location-list" className="px-3 pb-3 space-y-3">
+            {LOCATIONS_BY_REGION.map(({ type, locations }) => (
+              <div key={type}>
+                <h4 className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">
+                  {REGION_LABELS[type] || type}
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5" role="group" aria-label={`${REGION_LABELS[type] || type} locations`}>
+                  {locations.map(loc => {
+                    const unlocked = state.unlockedLocations.includes(loc.id);
+                    const isSelected = selectedLoc === loc.id;
+                    return (
+                      <button
+                        key={loc.id}
+                        type="button"
+                        onClick={() => selectLocation(loc.id)}
+                        aria-pressed={isSelected}
+                        className={`min-h-[44px] px-2 py-1.5 rounded-lg text-[11px] text-left border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                          isSelected
+                            ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-200'
+                            : unlocked
+                              ? 'bg-white/[0.03] border-white/[0.08] text-slate-200 hover:bg-white/[0.06]'
+                              : 'bg-white/[0.01] border-white/[0.04] text-slate-500 hover:bg-white/[0.03]'
+                        }`}
+                      >
+                        <span className="flex items-center gap-1">
+                          <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
+                          <span className="truncate">{loc.name}</span>
+                        </span>
+                        <span className="sr-only">
+                          {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Selected Location Details */}
       {selectedLocData && (
         <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
@@ -773,7 +884,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }:
         </div>
       )}
 
-      <p id="solar-system-canvas-hint" className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag to pan, scroll to zoom. Toggle lanes and ships with the top-left buttons. This map is mouse/touch-only — a keyboard-accessible location list is not yet available here.</p>
+      <p id="solar-system-canvas-hint" className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag to pan, scroll to zoom. Toggle lanes and ships with the top-left buttons. This canvas is mouse/touch-only — use the Location List below to browse and select every location by keyboard.</p>
     </div>
   );
 }

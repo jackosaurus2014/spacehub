@@ -12,6 +12,7 @@ import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { LOCATIONS } from '@/lib/game/solar-system';
+import { getFrontierSummary, FRONTIER_GRADUATION_NET_WORTH } from '@/lib/game/frontier';
 import IncomeChart from '@/components/game/IncomeChart';
 import DashboardVizBlock from '@/components/game/DashboardVizBlock';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
@@ -302,6 +303,13 @@ function CommandCenterHeader({ state }: { state: GameState }) {
   const frontier = [...LOCATIONS].reverse().find(l => state.unlockedLocations.includes(l.id));
   const showFrontier = frontier && frontier.id !== 'earth_surface';
 
+  // Protected Frontier graduation progress — small, unobtrusive meter.
+  // Per CLAUDE.md: "Graduation to the open economy happens at a set
+  // net-worth threshold." Full detail lives in FrontierBadge; this is just
+  // an always-visible glance at progress while a new corp is still shielded.
+  const frontierSummary = getFrontierSummary(state);
+  const showFrontierMeter = frontierSummary.status === 'active' && frontierSummary.inFrontier;
+
   return (
     <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/[0.06] via-white/[0.02] to-cyan-500/[0.06] px-3 sm:px-4 py-3 mb-1">
       <span className="hud-corner-bl" aria-hidden="true" />
@@ -334,6 +342,34 @@ function CommandCenterHeader({ state }: { state: GameState }) {
           </div>
         </div>
       </div>
+
+      {showFrontierMeter && (
+        <div className="mt-2 pt-2 border-t border-white/[0.06]">
+          <div className="flex items-center justify-between text-[9px] mb-1 gap-2">
+            <span className="text-emerald-300/80 font-hud font-semibold uppercase tracking-wider flex items-center gap-1 shrink-0">
+              <span aria-hidden="true">🛡</span> Frontier Graduation
+            </span>
+            <span className="text-slate-400 font-mono truncate">
+              {formatMoney(frontierSummary.netWorth)} / {formatMoney(FRONTIER_GRADUATION_NET_WORTH)}
+            </span>
+          </div>
+          <div
+            className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden"
+            role="progressbar"
+            aria-label="Progress toward Protected Frontier graduation net worth threshold"
+            aria-valuenow={Math.round(frontierSummary.netWorthProgressPct)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuetext={`${Math.round(frontierSummary.netWorthProgressPct)}% of the way to graduation`}
+          >
+            <div
+              className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full transition-all duration-500"
+              style={{ width: `${frontierSummary.netWorthProgressPct}%` }}
+              aria-hidden="true"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

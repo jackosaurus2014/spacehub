@@ -90,6 +90,8 @@ export function getNewGameState(): GameState {
     miningBonuses: [],
     // V11 — Protected Frontier (new-player onramp shield)
     ...initializeFrontier(Date.now()),
+    // V12 — Quarterly corporate reports
+    quarterlyReports: [],
   };
 }
 
@@ -215,6 +217,8 @@ export function loadGame(): GameState | null {
     if (state.tutorialDismissed === undefined) state.tutorialDismissed = false;
     // V10 fields — mining bonuses from survey probes
     if (!state.miningBonuses) state.miningBonuses = [];
+    // V12 fields — Quarterly corporate reports
+    if (!state.quarterlyReports) state.quarterlyReports = [];
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

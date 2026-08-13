@@ -81,6 +81,7 @@ import SpatialStrategyPanel from '@/components/game/SpatialStrategyPanel';
 import DiplomacyPanel from '@/components/game/DiplomacyPanel';
 import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
+import FrontierGraduationModal from '@/components/game/FrontierGraduationModal';
 import { graduateFrontier } from '@/lib/game/frontier';
 import ModulesPanel from '@/components/game/ModulesPanel';
 import AnomaliesPanel from '@/components/game/AnomaliesPanel';
@@ -95,6 +96,7 @@ import VictoryPanel from '@/components/game/VictoryPanel';
 import { checkVictories } from '@/lib/game/victory-conditions';
 import FuturesPanel from '@/components/game/FuturesPanel';
 import EconomyPanel from '@/components/game/EconomyPanel';
+import { shouldGenerateQuarterlyReport, recordQuarterlyReport } from '@/lib/game/quarterly-reports';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -940,8 +942,10 @@ export default function SpaceTycoonPage() {
   const [offlineEarnings, setOfflineEarnings] = useState<OfflineEarnings | null>(null);
   const [showPrestige, setShowPrestige] = useState(false);
   const [showMoreTabs, setShowMoreTabs] = useState(false);
+  const [showFrontierGraduation, setShowFrontierGraduation] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevFrontierStatusRef = useRef<GameState['frontierStatus'] | undefined>(undefined);
 
   // Sync to server for leaderboard (every 60s, fails gracefully if not logged in)
   // Also receives dynamic service pricing multipliers from the server
@@ -1302,6 +1306,33 @@ export default function SpaceTycoonPage() {
       }
     }
   }, [state?.money, state?.buildings.length, state?.completedResearch.length, state?.unlockedLocations.length, state?.activeServices.length, unlockedAchievements]);
+
+  // Quarterly corporate reports — CLAUDE.md: "Every corporation produces an
+  // automatic public quarterly." Quarter boundaries are driven purely by the
+  // game clock (3 game-months per quarter), so this effect keys off gameDate
+  // rather than the money/buildings deps above. recordQuarterlyReport() is a
+  // no-op unless a full quarter has elapsed since the last stored report.
+  useEffect(() => {
+    if (!state) return;
+    if (shouldGenerateQuarterlyReport(state)) {
+      playSound('milestone');
+      setState(prev => (prev ? recordQuarterlyReport(prev) : prev));
+    }
+  }, [state?.gameDate.year, state?.gameDate.month]);
+
+  // Protected Frontier graduation — detect the active→graduated transition
+  // (auto-graduation happens inside processTick in game-engine.ts; manual
+  // "Graduate Early" goes through the same state field via FrontierBadge
+  // below) and surface the one-time celebratory modal either way.
+  useEffect(() => {
+    if (!state) return;
+    const prevStatus = prevFrontierStatusRef.current;
+    if (prevStatus === 'active' && state.frontierStatus === 'graduated') {
+      playSound('milestone');
+      setShowFrontierGraduation(true);
+    }
+    prevFrontierStatusRef.current = state.frontierStatus;
+  }, [state?.frontierStatus]);
 
   // Speed boost activation listener
   useEffect(() => {
@@ -2089,6 +2120,14 @@ export default function SpaceTycoonPage() {
           state={state}
           unlockedIds={unlockedAchievements}
           onClose={() => setShowAchievements(false)}
+        />
+      )}
+
+      {/* Protected Frontier graduation — one-time celebratory modal */}
+      {showFrontierGraduation && (
+        <FrontierGraduationModal
+          state={state}
+          onClose={() => setShowFrontierGraduation(false)}
         />
       )}
 

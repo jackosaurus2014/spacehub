@@ -519,6 +519,30 @@ export interface GameState {
   frontierEnteredAtMs?: number;
   frontierGraduatedAtMs?: number;
 
+  // Quarterly corporate reports (Wave 8) — QuarterlyReport shape defined in
+  // quarterly-reports.ts. Using an inline shape here (matching the
+  // npcCompanies precedent above) to avoid circular import issues with
+  // webpack. History of automatic public quarterly readouts, one per
+  // completed in-game quarter (3 game-months), oldest first.
+  quarterlyReports?: {
+    id: string;
+    quarterIndex: number;
+    quarterNumber: number;
+    gameYear: number;
+    quarterOfYear: number;
+    generatedAtMs: number;
+    gameDate: GameDate;
+    revenue: number;
+    costs: number;
+    profit: number;
+    netWorth: number;
+    fleetCount: number;
+    buildingCount: number;
+    corporationTier: number;
+    notableEvents: string[];
+    growthRatePct: number | null;
+  }[];
+
   // Starting archetype — the path the player picked at game creation
   startingArchetype?: 'cape_heritage' | 'meridian_signals' | 'tracking_consortium';
 
