@@ -1710,6 +1710,32 @@ model AIInsight {
   @@index([status])
 }
 
+// ============================================================
+// Published Briefs — unified newsletter/intelligence-brief hub
+// ============================================================
+// Consolidates the historically-hardcoded /intelligence-brief and
+// /newsletter-archive content into one DB-backed table. Rows arrive two
+// ways: (1) scripts/backfill-published-briefs.ts, a one-time idempotent
+// migration of the legacy hardcoded arrays, and (2) auto-mirroring from the
+// weekly economy/hiring crons (src/lib/published-briefs.ts) whenever they
+// publish a new AIInsight. /briefs (the live 7-day data digest) is a
+// separate, complementary surface and does not read this table.
+model PublishedBrief {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  briefType       String // 'weekly_intelligence' | 'economy' | 'hiring' | 'special'
+  summary         String   @db.Text
+  contentMd       String   @db.Text
+  publishedAt     DateTime
+  sourceInsightId String? // AIInsight.id when mirrored from an AIInsight row
+  createdAt       DateTime @default(now())
+
+  @@index([briefType])
+  @@index([publishedAt])
+  @@index([sourceInsightId])
+}
+
 // Company Addition Request
 model CompanyAddRequest {
   id             String   @id @default(cuid())

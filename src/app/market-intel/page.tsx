@@ -372,7 +372,7 @@ function MarketIntelContent() {
     setError(null);
     try {
       const params = new URLSearchParams();
-      params.set('limit', '200');
+      params.set('limit', '300');
       if (selectedCountry) params.set('country', selectedCountry);
       if (selectedType) params.set('isPublic', selectedType === 'public' ? 'true' : 'false');
       if (selectedFocus) params.set('focusArea', selectedFocus);

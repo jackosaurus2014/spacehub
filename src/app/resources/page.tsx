@@ -107,6 +107,23 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
     ],
   },
   {
+    name: 'Reference Library',
+    icon: '\uD83D\uDCC1',
+    description: 'Specialized datasets and archives \u2014 lower-traffic but still fully maintained',
+    items: [
+      { name: 'Technology Readiness Levels', href: '/tech-readiness', description: 'TRL tracking for emerging space technologies' },
+      { name: 'Industry Trends', href: '/industry-trends', description: 'Emerging trends and analysis' },
+      { name: 'Orbital Costs', href: '/orbital-costs', description: 'Cost-per-kg trends across orbital classes' },
+      { name: 'Blueprints', href: '/blueprints', description: 'Technical hardware breakdowns for space systems' },
+      { name: 'Orbital Slots', href: '/orbital-slots', description: 'GEO slot allocation and availability tracking' },
+      { name: 'Government Budgets', href: '/government-budgets', description: 'Agency budget tracking' },
+      { name: 'Space Stations', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
+      { name: 'Spaceports', href: '/spaceports', description: 'Spaceports & comms networks' },
+      { name: 'Space Exploration Timeline', href: '/timeline', description: 'Space exploration history' },
+      { name: 'Satellite Spotting', href: '/satellite-spotting', description: 'Visible pass predictions for naked-eye viewing' },
+    ],
+  },
+  {
     name: 'Community',
     icon: '\uD83E\uDD1D',
     description: 'Connect with space professionals',

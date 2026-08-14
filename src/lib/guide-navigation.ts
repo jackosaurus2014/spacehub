@@ -44,6 +44,21 @@ export const GUIDE_LIST: GuideEntry[] = [
     shortTitle: 'Launch Schedule 2026',
   },
   {
+    slug: 'watch-a-launch-cape-canaveral',
+    title: 'Where to Watch a Rocket Launch at Cape Canaveral',
+    shortTitle: 'Watch a Launch: Cape Canaveral',
+  },
+  {
+    slug: 'watch-a-launch-vandenberg',
+    title: 'Where to Watch a Rocket Launch at Vandenberg',
+    shortTitle: 'Watch a Launch: Vandenberg',
+  },
+  {
+    slug: 'watch-a-launch-starbase',
+    title: 'Where to Watch a Starship Launch at Starbase',
+    shortTitle: 'Watch a Launch: Starbase',
+  },
+  {
     slug: 'satellite-tracking-guide',
     title: 'The Complete Satellite Tracking Guide',
     shortTitle: 'Satellite Tracking',

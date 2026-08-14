@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { buildWeeklyEconomyReport } from '@/lib/weekly-economy-report';
+import { mirrorInsightAsBrief } from '@/lib/published-briefs';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,17 @@ export async function POST(request: NextRequest) {
 
     const existing = await prisma.aIInsight.findUnique({ where: { slug: report.slug } });
     if (existing) {
+      // Mirror even on the skip path — idempotent upsert — so re-running
+      // after the PublishedBrief table ships backfills the brief hub too.
+      await mirrorInsightAsBrief({
+        id: existing.id,
+        slug: existing.slug,
+        title: existing.title,
+        summary: existing.summary,
+        content: existing.content,
+        publishedAt: existing.generatedAt,
+        briefType: 'economy',
+      });
       return NextResponse.json({
         success: true,
         skipped: true,
@@ -45,6 +57,19 @@ export async function POST(request: NextRequest) {
         status: 'published',
         factCheckNote: 'Data brief generated directly from SpaceNexus database aggregates — no generative content.',
       },
+    });
+
+    // Additive mirror into the unified brief hub (src/lib/published-briefs.ts).
+    // Guarded internally against the PublishedBrief table not existing yet —
+    // never breaks this cron.
+    await mirrorInsightAsBrief({
+      id: created.id,
+      slug: created.slug,
+      title: created.title,
+      summary: created.summary,
+      content: created.content,
+      publishedAt: created.generatedAt,
+      briefType: 'economy',
     });
 
     logger.info('Weekly economy post published', { slug: created.slug });

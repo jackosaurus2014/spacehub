@@ -26,12 +26,18 @@ jest.mock('@/lib/db', () => ({
     spaceJobPosting: { findFirst: jest.fn() },
     newsArticle: { findFirst: jest.fn() },
     aIInsight: { findFirst: jest.fn() },
+    publishedBrief: { findFirst: jest.fn() },
   },
 }));
 
 const mockGetArtemisNewsArticles = jest.fn();
 jest.mock('@/lib/artemis-news', () => ({
   getArtemisNewsArticles: (...args: unknown[]) => mockGetArtemisNewsArticles(...args),
+}));
+
+const mockGetStarshipNewsArticles = jest.fn();
+jest.mock('@/lib/starship-news', () => ({
+  getStarshipNewsArticles: (...args: unknown[]) => mockGetStarshipNewsArticles(...args),
 }));
 
 import prisma from '@/lib/db';
@@ -51,6 +57,7 @@ const mockPrisma = prisma as unknown as {
   spaceJobPosting: { findFirst: jest.Mock };
   newsArticle: { findFirst: jest.Mock };
   aIInsight: { findFirst: jest.Mock };
+  publishedBrief: { findFirst: jest.Mock };
 };
 
 function getCheck(id: string): AccuracyCheckDef {
@@ -235,6 +242,60 @@ describe('artemis-tracker-freshness', () => {
     const result = await getCheck('artemis-tracker-freshness').run();
     expect(result.ok).toBe(false);
     expect(result.detail).toContain('No Artemis-matching NewsArticle rows found');
+  });
+});
+
+describe('starship-tracker-freshness', () => {
+  it('passes when the freshest Starship-matching article is under 7 days old', async () => {
+    mockGetStarshipNewsArticles.mockResolvedValueOnce([
+      { title: 'Starship Flight 14 targets tower catch', publishedAt: new Date(Date.now() - 2 * DAY) },
+    ]);
+    const result = await getCheck('starship-tracker-freshness').run();
+    expect(result.ok).toBe(true);
+    expect(mockGetStarshipNewsArticles).toHaveBeenCalledWith(1);
+  });
+
+  it('fails when the freshest Starship-matching article is over 7 days old', async () => {
+    mockGetStarshipNewsArticles.mockResolvedValueOnce([
+      { title: 'Starship Flight 14 targets tower catch', publishedAt: new Date(Date.now() - 10 * DAY) },
+    ]);
+    const result = await getCheck('starship-tracker-freshness').run();
+    expect(result.ok).toBe(false);
+  });
+
+  it('fails when there are no Starship-matching articles at all', async () => {
+    mockGetStarshipNewsArticles.mockResolvedValueOnce([]);
+    const result = await getCheck('starship-tracker-freshness').run();
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain('No Starship-matching NewsArticle rows found');
+  });
+});
+
+describe('published-briefs-fresh', () => {
+  it('passes when the freshest brief is under 10 days old', async () => {
+    mockPrisma.publishedBrief.findFirst.mockResolvedValueOnce({ publishedAt: new Date(Date.now() - 3 * DAY) });
+    const result = await getCheck('published-briefs-fresh').run();
+    expect(result.ok).toBe(true);
+  });
+
+  it('fails when the freshest brief is over 10 days old', async () => {
+    mockPrisma.publishedBrief.findFirst.mockResolvedValueOnce({ publishedAt: new Date(Date.now() - 14 * DAY) });
+    const result = await getCheck('published-briefs-fresh').run();
+    expect(result.ok).toBe(false);
+  });
+
+  it('fails when there are no PublishedBrief rows at all', async () => {
+    mockPrisma.publishedBrief.findFirst.mockResolvedValueOnce(null);
+    const result = await getCheck('published-briefs-fresh').run();
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain('No PublishedBrief rows found');
+  });
+
+  it('passes (skips) when the PublishedBrief table does not exist yet', async () => {
+    mockPrisma.publishedBrief.findFirst.mockRejectedValueOnce(new Error('relation "PublishedBrief" does not exist'));
+    const result = await getCheck('published-briefs-fresh').run();
+    expect(result.ok).toBe(true);
+    expect(result.detail).toContain('not migrated yet');
   });
 });
 

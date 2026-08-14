@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
-import { initializeCompanies } from '@/lib/companies-data';
+import { initializeCompanies } from '@/lib/company-roster';
 import { logger } from '@/lib/logger';
 import { requireCronSecret } from '@/lib/errors';
 

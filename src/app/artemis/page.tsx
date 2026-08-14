@@ -235,6 +235,24 @@ export default async function ArtemisTrackerPage() {
               Artemis II Archive
             </Link>
           </div>
+
+          {/* Program trackers cross-link */}
+          <div className="mt-4 flex items-center gap-2 flex-wrap text-xs">
+            <span className="text-slate-500 uppercase tracking-widest font-medium">Program Trackers:</span>
+            <Link
+              href="/artemis"
+              aria-current="page"
+              className="px-2.5 py-1 rounded-full bg-white/[0.08] text-white font-medium border border-white/[0.1]"
+            >
+              Artemis
+            </Link>
+            <Link
+              href="/starship"
+              className="px-2.5 py-1 rounded-full bg-white/[0.03] text-slate-300 hover:text-white hover:bg-white/[0.06] font-medium border border-white/[0.06] transition-colors"
+            >
+              Starship
+            </Link>
+          </div>
         </section>
 
         {/* ═══════ Mission Timeline ═══════ */}

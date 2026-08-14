@@ -50,6 +50,7 @@ const NEWS_ITEMS: DropdownItem[] = [
   { label: 'Podcasts', href: '/podcasts', description: 'Space podcast directory' },
   { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
   { label: 'Newsletter', href: '/newsletter', description: 'Weekly intelligence brief' },
+  { label: 'Starship Tracker', href: '/starship', description: 'Live flight history, program roles & news' },
 ];
 
 const MARKETS_ITEMS: DropdownItem[] = [
@@ -60,7 +61,6 @@ const MARKETS_ITEMS: DropdownItem[] = [
   { label: 'Startups & Pre-IPO', href: '/startups', description: 'Private companies, funding & IPO watch' },
   { label: 'Report Cards', href: '/report-cards', description: 'Quarterly company grades' },
   { label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes' },
-  { label: 'Government Budgets', href: '/government-budgets', description: 'Agency budget tracking' },
   { label: 'Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain intel' },
   { label: 'Industry Stats', href: '/space-stats', description: 'Key space industry statistics' },
 ];
@@ -87,8 +87,6 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Mars Planner', href: '/mars-planner', description: 'Mars missions & launch windows' },
   { label: 'Cislunar', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
   { label: 'Solar System', href: '/solar-exploration', description: '3D planetary visualization' },
-  { label: 'Spaceports', href: '/spaceports', description: 'Spaceports & comms networks' },
-  { label: 'Space Stations', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
   { label: 'Launch Vehicles', href: '/launch-vehicles', description: 'Compare rocket specs & costs' },
   { label: 'Aurora Forecast', href: '/aurora-forecast', description: 'Northern lights & Kp index' },
   { label: 'Tools & Calculators', href: '/tools', description: 'All calculators & analysis tools' },

@@ -7,6 +7,11 @@ import { useRouter } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { toast } from '@/lib/toast';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import {
+  SELF_SERVE_MIN_BUDGET_USD,
+  SELF_SERVE_MAX_BUDGET_USD,
+  SPONSORSHIP_CAMPAIGN_TYPE,
+} from '@/lib/ads/ad-billing';
 
 interface Campaign {
   id: string;
@@ -54,6 +59,27 @@ const STATUS_COLORS: Record<string, string> = {
   suspended: 'bg-red-500/20 text-red-300 border-red-500/30',
 };
 
+const CAMPAIGN_TYPES = [
+  { value: 'banner', label: 'Banner' },
+  { value: 'native', label: 'Native' },
+  { value: 'sponsored_content', label: 'Sponsored Content' },
+  { value: 'job_listing', label: 'Job Listing' },
+];
+
+const PLACEMENT_POSITIONS = [
+  { value: 'sidebar', label: 'Sidebar' },
+  { value: 'top_banner', label: 'Top Banner' },
+  { value: 'in_feed', label: 'In Feed' },
+  { value: 'footer', label: 'Footer' },
+];
+
+const PLACEMENT_FORMATS = [
+  { value: 'native_card', label: 'Native Card' },
+  { value: 'banner_728x90', label: 'Banner 728x90' },
+  { value: 'banner_300x250', label: 'Banner 300x250' },
+  { value: 'sponsored_article', label: 'Sponsored Article' },
+];
+
 function StatusBadge({ status }: { status: string }) {
   const colorClass = STATUS_COLORS[status] || STATUS_COLORS.draft;
   return (
@@ -81,6 +107,21 @@ function formatDate(dateStr: string): string {
   });
 }
 
+const EMPTY_FORM = {
+  name: '',
+  type: 'banner',
+  budget: '500',
+  startDate: '',
+  endDate: '',
+  targetModules: '',
+  position: 'sidebar',
+  format: 'native_card',
+  title: '',
+  description: '',
+  linkUrl: '',
+  ctaText: 'Learn More',
+};
+
 export default function AdvertiserDashboard() {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
@@ -88,6 +129,11 @@ export default function AdvertiserDashboard() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [creating, setCreating] = useState(false);
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [buyingSponsorship, setBuyingSponsorship] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -124,6 +170,22 @@ export default function AdvertiserDashboard() {
     }
   }, [sessionStatus, fetchData, router]);
 
+  // Show the checkout result once after returning from Stripe.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get('checkout');
+    if (!checkout) return;
+    if (checkout === 'success') {
+      toast.success(
+        'Payment received. Your campaign is now in review — we review within 2 business days.'
+      );
+    } else if (checkout === 'cancelled') {
+      toast.info('Checkout cancelled — your campaign is saved as a draft.');
+    }
+    window.history.replaceState({}, '', window.location.pathname);
+  }, []);
+
   const handleStatusChange = async (campaignId: string, newStatus: string) => {
     try {
       const res = await fetch(`/api/ads/campaigns/${campaignId}`, {
@@ -142,6 +204,112 @@ export default function AdvertiserDashboard() {
       }
     } catch {
       toast.error('Failed to update campaign');
+    }
+  };
+
+  const handlePayAndSubmit = async (campaignId: string) => {
+    setPayingId(campaignId);
+    try {
+      const res = await fetch('/api/ads/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaignId }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.url) {
+        window.location.href = data.data.url;
+        return;
+      }
+      toast.error(data.error?.message || 'Failed to start checkout');
+    } catch {
+      toast.error('Failed to start checkout');
+    } finally {
+      setPayingId(null);
+    }
+  };
+
+  const handleBuySponsorship = async (option: 'single' | 'block4') => {
+    setBuyingSponsorship(option);
+    try {
+      const res = await fetch('/api/ads/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sponsorship: option }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.url) {
+        window.location.href = data.data.url;
+        return;
+      }
+      toast.error(data.error?.message || 'Failed to start checkout');
+    } catch {
+      toast.error('Failed to start checkout');
+    } finally {
+      setBuyingSponsorship(null);
+    }
+  };
+
+  const handleCreateCampaign = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const budget = parseFloat(form.budget);
+    if (!Number.isFinite(budget) || budget <= 0) {
+      toast.error('Enter a valid budget');
+      return;
+    }
+    if (!form.startDate || !form.endDate) {
+      toast.error('Start and end dates are required');
+      return;
+    }
+    const modules = form.targetModules
+      .split(',')
+      .map((m) => m.trim())
+      .filter(Boolean);
+    if (modules.length === 0) {
+      toast.error('Enter at least one target module (e.g. news, jobs, startups)');
+      return;
+    }
+    if (!form.linkUrl) {
+      toast.error('A destination link URL is required');
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const res = await fetch('/api/ads/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          type: form.type,
+          budget,
+          startDate: new Date(`${form.startDate}T00:00:00Z`).toISOString(),
+          endDate: new Date(`${form.endDate}T23:59:59Z`).toISOString(),
+          targetModules: modules,
+          placements: [
+            {
+              position: form.position,
+              format: form.format,
+              title: form.title || undefined,
+              description: form.description || undefined,
+              linkUrl: form.linkUrl,
+              ctaText: form.ctaText || 'Learn More',
+            },
+          ],
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Draft campaign created — pay to submit it for review');
+        setShowCreateForm(false);
+        setForm(EMPTY_FORM);
+        fetchData();
+      } else {
+        toast.error(data.error?.message || 'Failed to create campaign');
+      }
+    } catch {
+      toast.error('Failed to create campaign');
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -188,6 +356,8 @@ export default function AdvertiserDashboard() {
       </main>
     );
   }
+
+  const isApproved = profile.status === 'approved';
 
   return (
     <main className="container mx-auto px-4 pb-20">
@@ -265,6 +435,54 @@ export default function AdvertiserDashboard() {
         </StaggerContainer>
       </ScrollReveal>
 
+      {/* Weekly Brief Sponsorships */}
+      <ScrollReveal delay={0.15}>
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-white mb-3">Weekly Brief Sponsorship</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="card p-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-white font-medium">Single issue</p>
+                <p className="text-star-300 text-sm mt-1">
+                  Your logo, one-line message, and link in one issue of the SpaceNexus weekly brief.
+                </p>
+                <p className="text-2xl font-bold text-white mt-2">$150</p>
+              </div>
+              <button
+                onClick={() => handleBuySponsorship('single')}
+                disabled={!isApproved || buyingSponsorship !== null}
+                className="btn-primary px-4 py-2 text-sm whitespace-nowrap disabled:opacity-50"
+              >
+                {buyingSponsorship === 'single' ? 'Redirecting…' : 'Sponsor an issue'}
+              </button>
+            </div>
+            <div className="card p-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-white font-medium">4-issue block</p>
+                <p className="text-star-300 text-sm mt-1">
+                  Four consecutive issues — a month of presence in front of space industry readers.
+                </p>
+                <p className="text-2xl font-bold text-white mt-2">
+                  $500 <span className="text-sm font-normal text-star-300">($125/issue)</span>
+                </p>
+              </div>
+              <button
+                onClick={() => handleBuySponsorship('block4')}
+                disabled={!isApproved || buyingSponsorship !== null}
+                className="btn-primary px-4 py-2 text-sm whitespace-nowrap disabled:opacity-50"
+              >
+                {buyingSponsorship === 'block4' ? 'Redirecting…' : 'Sponsor 4 issues'}
+              </button>
+            </div>
+          </div>
+          {!isApproved && (
+            <p className="text-star-300 text-xs mt-2">
+              Sponsorship purchase unlocks once your advertiser account is approved.
+            </p>
+          )}
+        </div>
+      </ScrollReveal>
+
       {/* Campaign Controls */}
       <ScrollReveal delay={0.2}>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -282,18 +500,104 @@ export default function AdvertiserDashboard() {
             <option value="active">Active</option>
             <option value="paused">Paused</option>
             <option value="completed">Completed</option>
+            <option value="rejected">Rejected</option>
           </select>
         </div>
 
-        <Link
-          href="/contact"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg border border-white/10 bg-white/[0.04] text-star-300 hover:text-white hover:bg-white/[0.08] transition-colors"
-          title="Self-serve campaign creation is launching soon"
+        <button
+          onClick={() => setShowCreateForm((v) => !v)}
+          className="btn-primary inline-flex items-center gap-2 px-4 py-2 text-sm"
         >
-          Self-serve campaigns launching soon — contact us
-        </Link>
+          {showCreateForm ? 'Close' : '+ New Campaign'}
+        </button>
       </div>
       </ScrollReveal>
+
+      {/* Create Campaign Form */}
+      {showCreateForm && (
+        <form onSubmit={handleCreateCampaign} className="card p-6 mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4">New Campaign (free draft)</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="c-name" className="block text-star-300 text-xs mb-1">Campaign name</label>
+              <input id="c-name" required maxLength={200} className="input w-full" value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            </div>
+            <div>
+              <label htmlFor="c-type" className="block text-star-300 text-xs mb-1">Type</label>
+              <select id="c-type" className="input w-full" value={form.type}
+                onChange={(e) => setForm({ ...form, type: e.target.value })}>
+                {CAMPAIGN_TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="c-budget" className="block text-star-300 text-xs mb-1">
+                Budget (USD, ${SELF_SERVE_MIN_BUDGET_USD}–${SELF_SERVE_MAX_BUDGET_USD.toLocaleString()} self-serve)
+              </label>
+              <input id="c-budget" type="number" min={1} step={1} required className="input w-full" value={form.budget}
+                onChange={(e) => setForm({ ...form, budget: e.target.value })} />
+            </div>
+            <div>
+              <label htmlFor="c-modules" className="block text-star-300 text-xs mb-1">Target modules (comma-separated)</label>
+              <input id="c-modules" required placeholder="news, jobs, startups" className="input w-full" value={form.targetModules}
+                onChange={(e) => setForm({ ...form, targetModules: e.target.value })} />
+            </div>
+            <div>
+              <label htmlFor="c-start" className="block text-star-300 text-xs mb-1">Start date</label>
+              <input id="c-start" type="date" required className="input w-full" value={form.startDate}
+                onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
+            </div>
+            <div>
+              <label htmlFor="c-end" className="block text-star-300 text-xs mb-1">End date</label>
+              <input id="c-end" type="date" required className="input w-full" value={form.endDate}
+                onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
+            </div>
+            <div>
+              <label htmlFor="c-position" className="block text-star-300 text-xs mb-1">Placement position</label>
+              <select id="c-position" className="input w-full" value={form.position}
+                onChange={(e) => setForm({ ...form, position: e.target.value })}>
+                {PLACEMENT_POSITIONS.map((p) => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="c-format" className="block text-star-300 text-xs mb-1">Format</label>
+              <select id="c-format" className="input w-full" value={form.format}
+                onChange={(e) => setForm({ ...form, format: e.target.value })}>
+                {PLACEMENT_FORMATS.map((f) => (
+                  <option key={f.value} value={f.value}>{f.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="c-title" className="block text-star-300 text-xs mb-1">Ad title</label>
+              <input id="c-title" maxLength={200} className="input w-full" value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            </div>
+            <div>
+              <label htmlFor="c-link" className="block text-star-300 text-xs mb-1">Destination link URL</label>
+              <input id="c-link" type="url" required placeholder="https://…" className="input w-full" value={form.linkUrl}
+                onChange={(e) => setForm({ ...form, linkUrl: e.target.value })} />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="c-desc" className="block text-star-300 text-xs mb-1">Ad description</label>
+              <textarea id="c-desc" maxLength={2000} rows={2} className="input w-full" value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 mt-4">
+            <button type="submit" disabled={creating} className="btn-primary px-6 py-2 text-sm disabled:opacity-50">
+              {creating ? 'Creating…' : 'Create draft'}
+            </button>
+            <p className="text-star-300 text-xs">
+              Drafts are free. You pay the budget when you submit for review.
+            </p>
+          </div>
+        </form>
+      )}
 
       {/* Campaign List */}
       {campaigns.length === 0 ? (
@@ -303,14 +607,18 @@ export default function AdvertiserDashboard() {
           </svg>
           <h3 className="text-lg font-semibold text-white mb-2">No Campaigns Yet</h3>
           <p className="text-star-300 text-sm mb-4">
-            Self-serve campaign creation is launching soon.{' '}
-            <Link href="/contact" className="underline hover:text-white">Contact us</Link>{' '}
-            to set up a campaign reaching space industry professionals in the meantime.
+            Create a free draft campaign above, or{' '}
+            <Link href="/contact" className="underline hover:text-white">contact us</Link>{' '}
+            for larger campaigns and custom packages.
           </p>
         </div>
       ) : (
         <StaggerContainer className="space-y-4">
-          {campaigns.map((campaign) => (
+          {campaigns.map((campaign) => {
+            const withinSelfServe =
+              campaign.budget >= SELF_SERVE_MIN_BUDGET_USD &&
+              campaign.budget <= SELF_SERVE_MAX_BUDGET_USD;
+            return (
             <StaggerItem key={campaign.id}>
             <div className="card p-6">
               <div className="flex items-start justify-between mb-4">
@@ -327,12 +635,25 @@ export default function AdvertiserDashboard() {
 
                 <div className="flex items-center gap-2">
                   {campaign.status === 'draft' && (
-                    <button
-                      onClick={() => handleStatusChange(campaign.id, 'pending_review')}
-                      className="text-xs px-3 py-1.5 rounded bg-white/10 text-white/90 hover:bg-white/15 transition-colors"
-                    >
-                      Submit for Review
-                    </button>
+                    withinSelfServe || campaign.type === SPONSORSHIP_CAMPAIGN_TYPE ? (
+                      <button
+                        onClick={() => handlePayAndSubmit(campaign.id)}
+                        disabled={payingId !== null}
+                        className="text-xs px-3 py-1.5 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors disabled:opacity-50"
+                      >
+                        {payingId === campaign.id
+                          ? 'Redirecting…'
+                          : `Pay ${formatCurrency(campaign.budget)} & submit for review`}
+                      </button>
+                    ) : (
+                      <Link
+                        href="/contact"
+                        className="text-xs px-3 py-1.5 rounded bg-white/10 text-white/90 hover:bg-white/15 transition-colors"
+                        title={`Self-serve budgets are $${SELF_SERVE_MIN_BUDGET_USD}–$${SELF_SERVE_MAX_BUDGET_USD.toLocaleString()}. Contact us for this budget.`}
+                      >
+                        Contact us to run this budget
+                      </Link>
+                    )
                   )}
                   {campaign.status === 'active' && (
                     <button
@@ -405,9 +726,25 @@ export default function AdvertiserDashboard() {
               )}
             </div>
             </StaggerItem>
-          ))}
+            );
+          })}
         </StaggerContainer>
       )}
+
+      {/* Billing terms — honest, no guarantees */}
+      <div className="card p-5 mt-8">
+        <h3 className="text-white font-semibold mb-2">Billing &amp; review terms</h3>
+        <ul className="text-star-300 text-sm space-y-1 list-disc list-inside">
+          <li>Creating a draft campaign is free. You pay your declared budget up front when you submit for review.</li>
+          <li>Every campaign is reviewed by our team within 2 business days before it goes live.</li>
+          <li>If your campaign is declined, you are refunded in full, automatically.</li>
+          <li>
+            Self-serve budgets run ${SELF_SERVE_MIN_BUDGET_USD}–${SELF_SERVE_MAX_BUDGET_USD.toLocaleString()}. For larger
+            campaigns, <Link href="/contact" className="underline hover:text-white">contact us</Link>.
+          </li>
+          <li>We do not guarantee impression or click volumes. Delivery depends on real traffic to the modules you target; unspent budget questions are handled case-by-case via <Link href="/contact" className="underline hover:text-white">contact</Link>.</li>
+        </ul>
+      </div>
     </main>
   );
 }

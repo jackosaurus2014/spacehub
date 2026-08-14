@@ -12,15 +12,14 @@ import {
   constrainOffset,
 } from '@/lib/errors';
 import { adCampaignCreateSchema, validateBody } from '@/lib/validations';
+import { isSelfServeAdsEnabled } from '@/lib/ads/ad-billing';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
-// Self-serve ad campaign creation is not yet open — there is no billing
-// integration behind it, so campaigns cannot be created (or pushed live)
-// until this is explicitly turned on. Advertising is still available via
-// manual outreach in the meantime (see /contact).
-const SELF_SERVE_ADS_ENABLED = process.env.SELF_SERVE_ADS_ENABLED === 'true';
+// Self-serve ads are billed via Stripe Checkout (see /api/ads/checkout).
+// The gate defaults ON when STRIPE_SECRET_KEY is configured;
+// SELF_SERVE_ADS_ENABLED=false forces it off (see isSelfServeAdsEnabled).
 
 /**
  * GET /api/ads/campaigns
@@ -106,9 +105,9 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    if (!SELF_SERVE_ADS_ENABLED) {
+    if (!isSelfServeAdsEnabled()) {
       return serviceUnavailableError(
-        'Self-serve campaign creation is launching soon. Contact us at /contact to set up a campaign in the meantime.'
+        'Self-serve campaign creation is not currently available. Contact us at /contact to set up a campaign in the meantime.'
       );
     }
 

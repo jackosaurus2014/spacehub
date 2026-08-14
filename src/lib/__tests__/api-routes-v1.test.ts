@@ -29,7 +29,7 @@ jest.mock('@/lib/api-auth-middleware', () => ({
 jest.mock('@/lib/db', () => ({
   __esModule: true,
   default: {
-    spaceCompany: { findMany: jest.fn(), count: jest.fn() },
+    companyProfile: { findMany: jest.fn(), count: jest.fn() },
     spaceEvent: { findMany: jest.fn(), count: jest.fn() },
     apiUsageLog: { create: jest.fn().mockResolvedValue({}) },
     apiKey: { update: jest.fn().mockResolvedValue({}) },
@@ -76,7 +76,7 @@ import { GET as satellitesGET } from '@/app/api/v1/satellites/route';
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const mockPrisma = prisma as unknown as {
-  spaceCompany: { findMany: jest.Mock; count: jest.Mock };
+  companyProfile: { findMany: jest.Mock; count: jest.Mock };
   spaceEvent: { findMany: jest.Mock; count: jest.Mock };
 };
 
@@ -266,19 +266,38 @@ describe('GET /api/v1/news', () => {
 describe('GET /api/v1/companies', () => {
   it('returns company data with valid API key', async () => {
     mockAuthenticateApiKey.mockResolvedValue(makeAuthSuccess());
-    mockPrisma.spaceCompany.findMany.mockResolvedValue([
+    mockPrisma.companyProfile.findMany.mockResolvedValue([
       {
         id: 'company-1',
         slug: 'spacex',
         name: 'SpaceX',
         description: 'Space Exploration Technologies',
         country: 'US',
+        headquarters: null,
+        foundedYear: 2002,
+        website: null,
+        logoUrl: null,
         isPublic: false,
-        focusAreas: '["launch","satellite"]',
-        subSectors: null,
+        ticker: null,
+        exchange: null,
+        marketCap: null,
+        stockPrice: null,
+        priceChange24h: null,
+        lastFundingRound: null,
+        lastFundingDate: null,
+        totalFunding: null,
+        valuation: 350_000_000_000,
+        sector: 'launch',
+        subsector: null,
+        tags: ['launch-provider', 'satellites'],
+        employeeCount: null,
+        revenueEstimate: null,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01'),
+        fundingRounds: [],
       },
     ]);
-    mockPrisma.spaceCompany.count.mockResolvedValue(1);
+    mockPrisma.companyProfile.count.mockResolvedValue(1);
 
     const req = makeGetRequest('http://localhost/api/v1/companies');
     const res = await companiesGET(req);
@@ -288,18 +307,23 @@ describe('GET /api/v1/companies', () => {
     expect(body.success).toBe(true);
     expect(body.data).toHaveLength(1);
     expect(body.data[0].name).toBe('SpaceX');
+    // Legacy response contract: country in ISO-3, valuation in billions USD,
+    // focusAreas as derived snake_case array.
+    expect(body.data[0].country).toBe('USA');
+    expect(body.data[0].valuation).toBe(350);
+    expect(body.data[0].focusAreas).toContain('launch_provider');
     expect(body.pagination.total).toBe(1);
   });
 
   it('applies search filter', async () => {
     mockAuthenticateApiKey.mockResolvedValue(makeAuthSuccess());
-    mockPrisma.spaceCompany.findMany.mockResolvedValue([]);
-    mockPrisma.spaceCompany.count.mockResolvedValue(0);
+    mockPrisma.companyProfile.findMany.mockResolvedValue([]);
+    mockPrisma.companyProfile.count.mockResolvedValue(0);
 
     const req = makeGetRequest('http://localhost/api/v1/companies?search=SpaceX');
     await companiesGET(req);
 
-    const findManyCall = mockPrisma.spaceCompany.findMany.mock.calls[0][0];
+    const findManyCall = mockPrisma.companyProfile.findMany.mock.calls[0][0];
     expect(findManyCall.where.name).toEqual({
       contains: 'SpaceX',
       mode: 'insensitive',
@@ -308,20 +332,27 @@ describe('GET /api/v1/companies', () => {
 
   it('applies sector filter', async () => {
     mockAuthenticateApiKey.mockResolvedValue(makeAuthSuccess());
-    mockPrisma.spaceCompany.findMany.mockResolvedValue([]);
-    mockPrisma.spaceCompany.count.mockResolvedValue(0);
+    mockPrisma.companyProfile.findMany.mockResolvedValue([]);
+    mockPrisma.companyProfile.count.mockResolvedValue(0);
 
     const req = makeGetRequest('http://localhost/api/v1/companies?sector=launch');
     await companiesGET(req);
 
-    const findManyCall = mockPrisma.spaceCompany.findMany.mock.calls[0][0];
-    expect(findManyCall.where.focusAreas).toEqual({ contains: 'launch' });
+    const findManyCall = mockPrisma.companyProfile.findMany.mock.calls[0][0];
+    // Sector filter is translated to a CompanyProfile sector/subsector/tags match.
+    expect(findManyCall.where.AND[1]).toEqual({
+      OR: [
+        { sector: { contains: 'launch', mode: 'insensitive' } },
+        { subsector: { contains: 'launch', mode: 'insensitive' } },
+        { tags: { hasSome: ['launch'] } },
+      ],
+    });
   });
 
   it('returns 500 when database throws', async () => {
     mockAuthenticateApiKey.mockResolvedValue(makeAuthSuccess());
-    mockPrisma.spaceCompany.findMany.mockRejectedValue(new Error('DB error'));
-    mockPrisma.spaceCompany.count.mockRejectedValue(new Error('DB error'));
+    mockPrisma.companyProfile.findMany.mockRejectedValue(new Error('DB error'));
+    mockPrisma.companyProfile.count.mockRejectedValue(new Error('DB error'));
 
     const req = makeGetRequest('http://localhost/api/v1/companies');
     const res = await companiesGET(req);

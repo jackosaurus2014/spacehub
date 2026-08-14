@@ -4,12 +4,13 @@ import { checkLaunchAlerts, checkSpaceWeatherAlerts } from '@/lib/push-triggers'
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
 import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
 import { fetchBlogPosts, initializeBlogSources } from '@/lib/blogs-fetcher';
-import { initializeCompanies } from '@/lib/companies-data';
+import { initializeCompanies } from '@/lib/company-roster';
 import { initializeResources } from '@/lib/resources-data';
 import { initializeOpportunities } from '@/lib/opportunities-data';
 import { initializeComplianceData } from '@/lib/compliance-data';
 import { initializeSolarExplorationData } from '@/lib/solar-exploration-data';
 import { initializeSpectrumData } from '@/lib/spectrum-data';
+import { fetchAndStoreSpectrumFilings } from '@/lib/fetchers/spectrum-filings-fetcher';
 import { initializeSpaceInsuranceData } from '@/lib/space-insurance-data';
 import { initializeWorkforceData } from '@/lib/workforce-data';
 import { initializeSolarFlareData } from '@/lib/solar-flare-data';
@@ -62,8 +63,8 @@ async function refreshDaily(): Promise<Record<string, string>> {
   const blogCount = await fetchBlogPosts();
   results.blogs = `Refreshed ${blogCount} blog posts`;
 
-  await initializeCompanies();
-  results.companies = 'Refreshed';
+  const companyCount = await initializeCompanies();
+  results.companies = `CompanyProfile canonical (${companyCount} companies; refreshed via scripts)`;
 
   await initializeResources();
   results.resources = 'Refreshed';
@@ -77,8 +78,12 @@ async function refreshDaily(): Promise<Record<string, string>> {
   await initializeSolarExplorationData();
   results.solarExploration = 'Refreshed';
 
+  // initializeSpectrumData() only ensures the curated reference seed exists
+  // (create-if-missing; a no-op once seeded). The actual daily "refresh" is
+  // the live FCC ECFS filings feed fetched below.
   await initializeSpectrumData();
-  results.spectrum = 'Refreshed';
+  const spectrumFilingsCount = await fetchAndStoreSpectrumFilings();
+  results.spectrum = `Reference data ensured; fetched ${spectrumFilingsCount} recent FCC filings`;
 
   await initializeSpaceInsuranceData();
   results.spaceInsurance = 'Refreshed';
@@ -129,7 +134,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', 'compliance-refresh', 'federal-register', 'space-environment-daily', 'business-opportunities', 'ats-jobs', or null (all)
+  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', 'compliance-refresh', 'federal-register', 'spectrum-filings', 'space-environment-daily', 'business-opportunities', 'ats-jobs', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -265,6 +270,12 @@ export async function POST(request: Request) {
       const { fetchAndStoreFederalRegister } = await import('@/lib/fetchers/federal-register-fetcher');
       const fedRegResult = await fetchAndStoreFederalRegister();
       results.federalRegister = fedRegResult;
+    }
+
+    if (type === 'spectrum-filings') {
+      const { fetchAndStoreSpectrumFilings } = await import('@/lib/fetchers/spectrum-filings-fetcher');
+      const spectrumFilingsCount = await fetchAndStoreSpectrumFilings();
+      results.spectrumFilings = { count: spectrumFilingsCount };
     }
 
     if (type === 'compliance-refresh') {
@@ -428,7 +439,7 @@ export async function GET() {
     const [latestNews, latestEvent, latestCompany] = await Promise.all([
       prisma.newsArticle.findFirst({ orderBy: { fetchedAt: 'desc' }, select: { fetchedAt: true } }),
       prisma.spaceEvent.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }),
-      prisma.spaceCompany.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }),
+      prisma.companyProfile.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }),
     ]);
 
     const now = new Date();

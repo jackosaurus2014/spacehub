@@ -12,6 +12,7 @@ export interface RelatedModuleConfig {
 const MODULES: Record<string, RelatedModuleConfig> = {
   // ── Market Intelligence ──
   marketIntel: { name: 'Market Intelligence', description: 'Industry analysis & trends', href: '/market-intel', icon: '📊' },
+  spaceStocks: { name: 'Space Stocks', description: 'Live public space-company quotes', href: '/space-stocks', icon: '📈' },
   companyProfiles: { name: 'Company Profiles', description: 'Space industry directory', href: '/company-profiles', icon: '🏢' },
   companyResearch: { name: 'Company Research', description: 'AI-powered research', href: '/company-research', icon: '🔬' },
   spaceEconomy: { name: 'Space Economy', description: 'Economic indicators', href: '/market-intel', icon: '💰' },
@@ -191,7 +192,8 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'space-score': [MODULES.companyProfiles, MODULES.reportCards, MODULES.companyResearch],
   'executive-moves': [MODULES.companyProfiles, MODULES.news, MODULES.maTracker, MODULES.spaceCapital],
   'space-investors': [MODULES.investors, MODULES.fundingTracker, MODULES.spaceCapital, MODULES.dealFlow],
-  'startups': [MODULES.fundingTracker, MODULES.companyProfiles, MODULES.investors, MODULES.startupTracker, MODULES.spaceCapital],
+  'startups': [MODULES.fundingTracker, MODULES.companyProfiles, MODULES.investors, MODULES.startupTracker, MODULES.spaceCapital, MODULES.spaceStocks],
+  'space-stocks': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.startupTracker, MODULES.fundingTracker],
 
   // ── News & Media cluster ──
   'news': [MODULES.newsDigest, MODULES.aiInsights, MODULES.intelligenceBrief, MODULES.blogs, MODULES.spaceDefense],
@@ -357,7 +359,6 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── New Pages ──
   'api-access': [MODULES.tools, MODULES.companyProfiles, MODULES.satellites, MODULES.marketIntel, MODULES.spaceEconomy],
-  'newsletter-archive': [MODULES.newsletters, MODULES.newsDigest, MODULES.intelligenceBrief, MODULES.blogs, MODULES.resources],
   'why-spacenexus': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.tools, MODULES.satellites, MODULES.spaceCapital],
   'widgets': [MODULES.satellites, MODULES.spaceWeather, MODULES.launchManifest, MODULES.marketIntel, MODULES.news],
 
@@ -432,6 +433,8 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'compare/spacenexus-vs-bryce-tech': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.spaceEconomy, MODULES.tools],
   'compare/spacex-vs-blue-origin': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceCapital],
   'compare/spacex-vs-rocket-lab': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.startupTracker],
+  'compare/spcx-vs-rklb-stock': [MODULES.spaceStocks, MODULES.marketIntel, MODULES.companyProfiles, MODULES.startupTracker],
+  'compare/starship-vs-new-glenn': [MODULES.spaceStocks, MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics],
   'compare/spacex-vs-ula': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceDefense],
   'compare/starlink-vs-ast-spacemobile': [MODULES.constellations, MODULES.companyProfiles, MODULES.spaceComms, MODULES.spectrum],
   'compare/starlink-vs-kuiper': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
@@ -484,6 +487,9 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'guide/space-mining-guide': [MODULES.spaceMining, MODULES.isru, MODULES.asteroidWatch, MODULES.materialsDB, MODULES.solarExploration],
   'guide/space-regulatory-compliance': [MODULES.compliance, MODULES.regulatoryTracker, MODULES.spaceLaw, MODULES.licensingChecker, MODULES.exportClassifications],
   'guide/itar-compliance-guide': [MODULES.exportClassifications, MODULES.compliance, MODULES.regulatoryRisk, MODULES.spaceLaw, MODULES.licensingChecker],
+  'guide/watch-a-launch-cape-canaveral': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
+  'guide/watch-a-launch-vandenberg': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
+  'guide/watch-a-launch-starbase': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
 
   // ── Launch pages ──
   'launches': [MODULES.launchManifest, MODULES.launchVehicles, MODULES.launchWindows, MODULES.launchSites, MODULES.missionPipeline],

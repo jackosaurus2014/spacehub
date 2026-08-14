@@ -3,6 +3,8 @@ import {
   getSpectrumAllocations,
   getSpectrumFilings,
   getSpectrumStats,
+  getRecentSpectrumFilings,
+  getRecentSpectrumFilingsFreshness,
 } from '@/lib/spectrum-data';
 import { logger } from '@/lib/logger';
 
@@ -15,16 +17,20 @@ export async function GET(request: Request) {
     const status = searchParams.get('status') || undefined;
     const operator = searchParams.get('operator') || undefined;
 
-    const [allocations, filings, stats] = await Promise.all([
+    const [allocations, filings, stats, recentFilings, recentFilingsFreshness] = await Promise.all([
       getSpectrumAllocations(),
       getSpectrumFilings({ bandName, status, operator }),
       getSpectrumStats(),
+      getRecentSpectrumFilings().catch(() => []),
+      getRecentSpectrumFilingsFreshness().catch(() => null),
     ]);
 
     return NextResponse.json({
       allocations,
       filings,
       stats,
+      recentFilings,
+      recentFilingsFreshness,
     });
   } catch (error) {
     logger.error('Failed to fetch spectrum data', { error: error instanceof Error ? error.message : String(error) });

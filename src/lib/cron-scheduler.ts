@@ -111,6 +111,8 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 9 * * 0',    path: '/api/newsletter/forum-digest',              label: 'forum-digest-email',         maxStaleMinutes: 11520 },
   // State of the Space Economy — weekly data brief, Mondays 1pm UTC (no AI, pure DB aggregation)
   { schedule: '0 13 * * 1',   path: '/api/cron/weekly-economy-post',             label: 'weekly-economy-post',        maxStaleMinutes: 11520 },
+  // This Week in Launches — weekly retention email, Mondays 12:30 UTC (SpaceEvent-sourced, idempotent per calendar week)
+  { schedule: '30 12 * * 1',  path: '/api/cron/launch-week-email',               label: 'launch-week-email',          maxStaleMinutes: 11520 },
 
   // ─── New Real-Time Data Feed Integrations ────────────────────────────
   { schedule: '0 */6 * * *',  path: '/api/refresh?type=conjunction-alerts',       label: 'conjunction-alerts',          maxStaleMinutes: 480 },

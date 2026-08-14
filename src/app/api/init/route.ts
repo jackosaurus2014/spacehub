@@ -3,7 +3,7 @@ import prisma from '@/lib/db';
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
 import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
 import { initializeBlogSources, fetchBlogPosts } from '@/lib/blogs-fetcher';
-import { initializeCompanies } from '@/lib/companies-data';
+import { initializeCompanies } from '@/lib/company-roster';
 import { initializeResources } from '@/lib/resources-data';
 import { initializeOpportunities } from '@/lib/opportunities-data';
 import { initializeComplianceData } from '@/lib/compliance-data';
@@ -48,14 +48,11 @@ export async function POST(request: Request) {
       results.blogs = `Already has ${blogsCount} blog posts`;
     }
 
-    // Check and initialize companies
-    const companiesCount = await prisma.spaceCompany.count();
-    if (companiesCount === 0) {
-      const count = await initializeCompanies();
-      results.companies = `Initialized ${count} companies`;
-    } else {
-      results.companies = `Already has ${companiesCount} companies`;
-    }
+    // Companies live in CompanyProfile (canonical DB, seeded via scripts/seed-*)
+    const companiesCount = await initializeCompanies();
+    results.companies = companiesCount === 0
+      ? 'CompanyProfile is empty — run the scripts/seed-company-profiles.ts pipeline'
+      : `CompanyProfile has ${companiesCount} companies`;
 
     // Check and initialize resources
     const resourcesCount = await prisma.spaceResource.count();
@@ -114,7 +111,7 @@ export async function GET() {
       prisma.newsArticle.count(),
       prisma.spaceEvent.count(),
       prisma.blogPost.count(),
-      prisma.spaceCompany.count(),
+      prisma.companyProfile.count(),
       prisma.spaceResource.count(),
       prisma.businessOpportunity.count(),
       prisma.exportClassification.count(),

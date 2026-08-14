@@ -771,6 +771,17 @@ export const adCampaignCreateSchema = z.object({
     .max(10, 'Maximum 10 placements per campaign'),
 });
 
+// Ad checkout schema — pay a draft campaign's budget, or buy a fixed-price
+// weekly-brief sponsorship. Exactly one of campaignId / sponsorship required.
+export const adCheckoutSchema = z
+  .object({
+    campaignId: z.string().min(1).max(100).optional(),
+    sponsorship: z.enum(['single', 'block4'] as const).optional(),
+  })
+  .refine((val) => Boolean(val.campaignId) !== Boolean(val.sponsorship), {
+    message: 'Provide either campaignId or sponsorship (not both)',
+  });
+
 // Ad campaign update schema
 export const adCampaignUpdateSchema = z.object({
   name: z
@@ -780,7 +791,7 @@ export const adCampaignUpdateSchema = z.object({
     .transform((val) => val.trim())
     .optional(),
   status: z
-    .enum(['draft', 'pending_review', 'active', 'paused', 'completed'] as const, {
+    .enum(['draft', 'pending_review', 'active', 'paused', 'completed', 'rejected'] as const, {
       message: 'Invalid campaign status',
     })
     .optional(),
@@ -1071,6 +1082,7 @@ export type PersonnelData = z.infer<typeof personnelSchema>;
 export type AdvertiserRegistrationData = z.infer<typeof advertiserRegistrationSchema>;
 export type AdCampaignCreateData = z.infer<typeof adCampaignCreateSchema>;
 export type AdCampaignUpdateData = z.infer<typeof adCampaignUpdateSchema>;
+export type AdCheckoutData = z.infer<typeof adCheckoutSchema>;
 export type AdImpressionData = z.infer<typeof adImpressionSchema>;
 export type AlertRuleData = z.infer<typeof alertRuleSchema>;
 export type AlertRuleUpdateData = z.infer<typeof alertRuleUpdateSchema>;

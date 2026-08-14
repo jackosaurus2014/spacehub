@@ -9,6 +9,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import DataAsOf from '@/components/ui/DataAsOf';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import { clientLogger } from '@/lib/client-logger';
 import {
   SpectrumAllocation,
@@ -58,18 +59,43 @@ interface SpectrumStats {
   } | null;
 }
 
+// Live FCC ECFS filing, fetched daily via src/lib/fetchers/spectrum-filings-fetcher.ts
+interface RecentSpectrumFiling {
+  filingId: string;
+  title: string;
+  docket: string;
+  proceedingName: string;
+  filer: string;
+  filingType: string;
+  bureau: string;
+  filedDate: string | null;
+  url: string;
+  fetchedAt: string;
+}
+
+interface ModuleFreshness {
+  total: number;
+  active: number;
+  stale: number;
+  expired: number;
+  lastRefreshed: string | null;
+  sourceBreakdown: Record<string, number>;
+}
+
 interface SpectrumData {
   allocations: SpectrumAllocation[];
   filings: SpectrumFiling[];
   stats: SpectrumStats;
+  recentFilings: RecentSpectrumFiling[];
+  recentFilingsFreshness: ModuleFreshness | null;
 }
 
 
 
 // All valid tab IDs for the consolidated page
-type TabId = 'bands' | 'filings' | 'coordination' | 'auctions' | 'freq-bands' | 'operators' | 'challenges' | 'itu-timeline' | 'regulatory' | 'education' | 'lawyers';
+type TabId = 'bands' | 'filings' | 'coordination' | 'recent-filings' | 'auctions' | 'freq-bands' | 'operators' | 'challenges' | 'itu-timeline' | 'regulatory' | 'education' | 'lawyers';
 
-const ALL_TABS: TabId[] = ['bands', 'filings', 'coordination', 'auctions', 'freq-bands', 'operators', 'challenges', 'itu-timeline', 'regulatory', 'education', 'lawyers'];
+const ALL_TABS: TabId[] = ['bands', 'filings', 'coordination', 'recent-filings', 'auctions', 'freq-bands', 'operators', 'challenges', 'itu-timeline', 'regulatory', 'education', 'lawyers'];
 
 
 
@@ -709,6 +735,7 @@ function SpectrumContent() {
             { id: 'bands' as const, label: 'Band Allocations', count: data.allocations.length },
             { id: 'filings' as const, label: 'Active Filings', count: data.filings.length },
             { id: 'coordination' as const, label: 'Coordination' },
+            { id: 'recent-filings' as const, label: 'Recent Filings', count: data.recentFilings.length },
           ] as { id: TabId; label: string; count?: number }[]).map((tab) => (
             <button
               key={tab.id}
@@ -1153,6 +1180,75 @@ function SpectrumContent() {
                 </Link>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ──────────────── RECENT FILINGS TAB (live FCC ECFS feed) ──────────────── */}
+        {activeTab === 'recent-filings' && (
+          <div>
+            <div className="card p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-white font-semibold text-sm mb-1">Live FCC ECFS Filings</h3>
+                <p className="text-slate-400 text-xs">
+                  Satellite/spectrum-relevant filings pulled directly from the FCC&apos;s public Electronic
+                  Comment Filing System, refreshed daily.
+                </p>
+              </div>
+              <DataFreshnessBadge
+                lastUpdated={data.recentFilingsFreshness?.lastRefreshed || null}
+                source="FCC ECFS"
+                refreshInterval="daily"
+              />
+            </div>
+
+            {data.recentFilings.length === 0 ? (
+              <div className="card p-12 text-center max-w-lg mx-auto">
+                <div className="text-5xl mb-4">~</div>
+                <h3 className="text-xl font-semibold text-white mb-2">No Recent Filings Cached Yet</h3>
+                <p className="text-slate-400 text-sm">
+                  This feed pulls live from the FCC&apos;s public ECFS API on a daily cron. Nothing has been
+                  fetched into the cache yet — check back after the next scheduled refresh, or the static
+                  &quot;Active Filings&quot; tab has curated historical filings in the meantime.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {data.recentFilings.map((filing) => (
+                  <div key={filing.filingId} className="card p-5 hover:border-white/15 transition-all">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <h4 className="font-semibold text-white text-sm leading-snug">{filing.title}</h4>
+                      <span className="text-xs font-medium px-2.5 py-1 rounded whitespace-nowrap bg-white/[0.08] text-slate-400">
+                        {filing.filingType}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 mb-3">
+                      <span>Filer: <span className="text-white/90">{filing.filer}</span></span>
+                      {filing.proceedingName && (
+                        <span>Proceeding: <span className="text-white/90">{filing.proceedingName}</span></span>
+                      )}
+                      <span>Bureau: <span className="text-white/90">{filing.bureau}</span></span>
+                      {filing.filedDate && (
+                        <span>Filed: <span className="text-white/90">{formatDate(filing.filedDate)}</span></span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
+                      <a
+                        href={filing.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-white/90 hover:text-white underline underline-offset-2 transition-colors"
+                      >
+                        View on FCC ECFS
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                      <span className="text-xs text-slate-400 font-mono">{filing.filingId}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

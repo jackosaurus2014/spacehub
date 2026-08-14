@@ -18,6 +18,7 @@ import { sendFreshnessAlert } from '@/lib/freshness-alerts';
 import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 import { getArtemisNewsArticles } from '@/lib/artemis-news';
+import { getStarshipNewsArticles } from '@/lib/starship-news';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -266,6 +267,63 @@ async function checkArtemisTrackerFreshness(): Promise<AccuracyCheckOutcome> {
 }
 
 // ---------------------------------------------------------------------------
+// Check 7b — /starship live news rail is alive (freshest match < 7 days)
+// ---------------------------------------------------------------------------
+
+// Reuses the exact same matching logic as the /starship page's live news
+// rail (src/lib/starship-news.ts) so this check and the page can never
+// drift apart — a failing check always means the rail itself is stale.
+async function checkStarshipTrackerFreshness(): Promise<AccuracyCheckOutcome> {
+  const [latest] = await getStarshipNewsArticles(1);
+
+  if (!latest) {
+    return {
+      ok: false,
+      detail: 'No Starship-matching NewsArticle rows found — the /starship live news rail has nothing to show.',
+    };
+  }
+
+  const ageDays = (Date.now() - latest.publishedAt.getTime()) / MS_PER_DAY;
+  const ok = ageDays < 7;
+  return {
+    ok,
+    detail: `Freshest Starship-matching NewsArticle ("${latest.title}") is ${ageDays.toFixed(1)} day(s) old (policy: < 7 days).`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Check 8 — PublishedBrief newest publishedAt < 10 days (brief hub is fresh)
+// ---------------------------------------------------------------------------
+
+// Guarded against the PublishedBrief table not existing yet (it may deploy
+// ahead of `prisma db push`) — treated as a pass so the sentinel doesn't
+// alert before the migration has even run; scripts/backfill-published-briefs.ts
+// and the weekly economy/hiring crons (src/lib/published-briefs.ts) are what
+// keep this table populated once it exists.
+async function checkPublishedBriefsFresh(): Promise<AccuracyCheckOutcome> {
+  let latest: { publishedAt: Date } | null;
+  try {
+    latest = await prisma.publishedBrief.findFirst({
+      orderBy: { publishedAt: 'desc' },
+      select: { publishedAt: true },
+    });
+  } catch {
+    return { ok: true, detail: 'PublishedBrief table not migrated yet — check skipped.' };
+  }
+
+  if (!latest) {
+    return { ok: false, detail: 'No PublishedBrief rows found — run scripts/backfill-published-briefs.ts and confirm the weekly economy/hiring crons are running.' };
+  }
+
+  const ageDays = (Date.now() - latest.publishedAt.getTime()) / MS_PER_DAY;
+  const ok = ageDays < 10;
+  return {
+    ok,
+    detail: `Freshest PublishedBrief.publishedAt is ${ageDays.toFixed(1)} day(s) old (policy: < 10 days).`,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Checklist registry — data-driven, extend by pushing a new entry
 // ---------------------------------------------------------------------------
 
@@ -309,6 +367,51 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     id: 'artemis-tracker-freshness',
     label: '/artemis live news rail is alive (freshest Artemis match < 7 days)',
     run: checkArtemisTrackerFreshness,
+  },
+  {
+    id: 'starship-tracker-freshness',
+    label: '/starship live news rail is alive (freshest Starship match < 7 days)',
+    run: checkStarshipTrackerFreshness,
+  },
+  {
+    id: 'published-briefs-fresh',
+    label: 'Intelligence Brief Hub is fresh (freshest PublishedBrief < 10 days)',
+    run: checkPublishedBriefsFresh,
+  },
+  {
+    id: 'space-stocks-roster-present',
+    label: 'Space Stocks hub has a healthy public-company roster (>= 10 tickers)',
+    run: async (): Promise<AccuracyCheckOutcome> => {
+      const count = await prisma.companyProfile.count({
+        where: { ticker: { not: null }, NOT: { status: 'defunct' } },
+      });
+      return {
+        ok: count >= 10,
+        detail: `${count} non-defunct CompanyProfile rows carry a ticker (policy: >= 10 for /space-stocks).`,
+      };
+    },
+  },
+  {
+    id: 'company-data-monthly-cadence',
+    label: 'Company/funding/investor data refreshed within the monthly cadence',
+    // Founder decision (2026-08-14): the discovery/refresh scripts run on a
+    // monthly cadence. The newest FundingRound row is the best single proxy
+    // for whether that happened — a discovery pass always lands new rounds.
+    run: async (): Promise<AccuracyCheckOutcome> => {
+      const newest = await prisma.fundingRound.findFirst({
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+      });
+      if (!newest) return { ok: false, detail: 'No FundingRound rows exist at all.' };
+      const ageDays = Math.floor((Date.now() - newest.createdAt.getTime()) / 86_400_000);
+      return {
+        ok: ageDays <= 35,
+        detail:
+          ageDays <= 35
+            ? `Newest funding round added ${ageDays}d ago (within monthly cadence).`
+            : `Newest funding round is ${ageDays}d old — run the monthly startup/funding discovery refresh (see scripts/load-discovery-*.ts pattern).`,
+      };
+    },
   },
 ];
 

@@ -4,6 +4,7 @@ import { getStripe, priceIdToTier, priceIdToSponsorTier, mapSubscriptionStatus }
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { generatePaymentFailedEmail, generateSubscriptionConfirmEmail } from '@/lib/stripe-helpers';
+import { AD_CAMPAIGN_PAYMENT_KIND, AD_SPONSORSHIP_PAYMENT_KIND } from '@/lib/ads/ad-billing';
 import { Resend } from 'resend';
 import { createNotification } from '@/lib/notifications/create';
 
@@ -124,6 +125,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Resale ticket purchase flow — short-circuit before subscription / sponsor logic
   if (session.metadata?.kind === 'ticket_resale') {
     await handleResaleTicketCompleted(session);
+    return;
+  }
+
+  // Self-serve ad billing (campaign budget or weekly-brief sponsorship) —
+  // short-circuit before subscription / sponsor logic
+  if (
+    session.metadata?.kind === AD_CAMPAIGN_PAYMENT_KIND ||
+    session.metadata?.kind === AD_SPONSORSHIP_PAYMENT_KIND
+  ) {
+    await handleAdPaymentCompleted(session);
     return;
   }
 
@@ -827,6 +838,129 @@ async function handleResaleTicketCompleted(session: Stripe.Checkout.Session) {
   } catch (err) {
     logger.warn('Failed to create resale notifications', {
       listingId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
+
+/**
+ * Handle checkout.session.completed for self-serve ad payments (campaign
+ * budgets and weekly-brief sponsorships).
+ *
+ * Marks the paid campaign draft -> pending_review. Activation is NOT
+ * automatic: the existing admin approval path (pending_review -> active)
+ * is unchanged, so every paid campaign is still reviewed before it renders.
+ *
+ * Idempotent: the AdCampaign model has no room for a processed-event table
+ * (schema is owned by another workstream), so idempotency is enforced by the
+ * status guard — a campaign only transitions out of "draft" once; duplicate
+ * or retried events log and return without side effects.
+ */
+async function handleAdPaymentCompleted(session: Stripe.Checkout.Session) {
+  const meta = session.metadata || {};
+  const campaignId = meta.campaignId;
+  const payerUserId = meta.userId;
+  const kind = meta.kind;
+  const sessionId = session.id;
+
+  if (!campaignId) {
+    logger.warn('Ad payment checkout completed but no campaignId in metadata', {
+      sessionId,
+      kind,
+    });
+    return;
+  }
+
+  const campaign = await prisma.adCampaign.findUnique({
+    where: { id: campaignId },
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      budget: true,
+      advertiser: { select: { userId: true, companyName: true } },
+    },
+  });
+
+  if (!campaign) {
+    logger.warn('Ad payment checkout completed but campaign not found', {
+      sessionId,
+      campaignId,
+      kind,
+    });
+    return;
+  }
+
+  if (campaign.status !== 'draft') {
+    // Duplicate delivery / Stripe retry — already processed. No-op.
+    logger.info('Ad payment webhook re-run for already-processed campaign', {
+      sessionId,
+      campaignId,
+      status: campaign.status,
+    });
+    return;
+  }
+
+  const amountTotalCents = session.amount_total ?? 0;
+  const paymentIntentId =
+    typeof session.payment_intent === 'string'
+      ? session.payment_intent
+      : session.payment_intent?.id || null;
+
+  await prisma.adCampaign.update({
+    where: { id: campaignId },
+    data: { status: 'pending_review' },
+  });
+
+  logger.info('Ad payment confirmed; campaign moved to pending_review', {
+    campaignId,
+    kind,
+    sessionId,
+    paymentIntentId,
+    amountCents: amountTotalCents,
+    advertiser: campaign.advertiser.companyName,
+  });
+
+  // Best-effort notifications — never fail the webhook over these.
+  const formattedAmount = (amountTotalCents / 100).toLocaleString('en-US', {
+    style: 'currency',
+    currency: (session.currency || 'usd').toUpperCase(),
+  });
+
+  try {
+    const ownerUserId = campaign.advertiser.userId || payerUserId;
+    if (ownerUserId) {
+      await createNotification({
+        userId: ownerUserId,
+        type: 'system',
+        title: kind === AD_SPONSORSHIP_PAYMENT_KIND ? 'Sponsorship Payment Received' : 'Campaign Payment Received',
+        body: `Payment of ${formattedAmount} for "${campaign.name}" is confirmed. It's now in review (within 2 business days). If declined, you'll be refunded in full.`,
+        link: '/advertise/dashboard',
+        relatedContentType: 'ad_campaign',
+        relatedContentId: campaignId,
+      });
+    }
+
+    // Ping admins so review actually happens within the promised window.
+    const admins = await prisma.user.findMany({
+      where: { isAdmin: true },
+      select: { id: true },
+      take: 5,
+    });
+    for (const admin of admins) {
+      await createNotification({
+        userId: admin.id,
+        type: 'system',
+        title: 'Ad campaign awaiting review',
+        body: `${campaign.advertiser.companyName} paid ${formattedAmount} for "${campaign.name}". Review within 2 business days (decline auto-refunds).`,
+        link: '/advertise/dashboard',
+        relatedContentType: 'ad_campaign',
+        relatedContentId: campaignId,
+      });
+    }
+  } catch (err) {
+    logger.warn('Failed to create ad payment notifications', {
+      campaignId,
       error: err instanceof Error ? err.message : String(err),
     });
   }

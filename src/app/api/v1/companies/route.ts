@@ -1,14 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey, addRateLimitHeaders } from '@/lib/api-auth-middleware';
 import prisma from '@/lib/db';
-import { constrainPagination, constrainOffset, safeJsonParse, internalError } from '@/lib/errors';
+import { Prisma } from '@prisma/client';
+import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import {
+  LEGACY_PROFILE_SELECT,
+  profileToLegacyCompany,
+  focusAreaWhere,
+  ROSTER_BASE_WHERE,
+} from '@/lib/company-roster';
 
 export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/v1/companies
  * Public API: Fetch space company profiles.
+ * Backed by CompanyProfile (single source of truth); response keeps the legacy
+ * field names and units (marketCap/valuation in billions USD).
  *
  * Params: limit, offset, sector, search
  */
@@ -25,59 +34,56 @@ export async function GET(req: NextRequest) {
     const sector = searchParams.get('sector') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const where: Record<string, unknown> = {};
+    const where: Prisma.CompanyProfileWhereInput = { AND: [ROSTER_BASE_WHERE] };
+    const and = where.AND as Prisma.CompanyProfileWhereInput[];
 
     if (sector) {
-      where.focusAreas = { contains: sector };
+      and.push(focusAreaWhere(sector));
     }
 
     if (search) {
       where.name = { contains: search, mode: 'insensitive' };
     }
 
-    const [companies, total] = await Promise.all([
-      prisma.spaceCompany.findMany({
+    const [rows, total] = await Promise.all([
+      prisma.companyProfile.findMany({
         where,
-        select: {
-          id: true,
-          slug: true,
-          name: true,
-          description: true,
-          country: true,
-          headquarters: true,
-          founded: true,
-          website: true,
-          isPublic: true,
-          ticker: true,
-          exchange: true,
-          marketCap: true,
-          stockPrice: true,
-          isPreIPO: true,
-          valuation: true,
-          focusAreas: true,
-          subSectors: true,
-          employeeCount: true,
-        },
+        select: LEGACY_PROFILE_SELECT,
         orderBy: [
           { isPublic: 'desc' },
-          { marketCap: 'desc' },
+          { marketCap: { sort: 'desc', nulls: 'last' } },
           { name: 'asc' },
         ],
         take: limit,
         skip: offset,
       }),
-      prisma.spaceCompany.count({ where }),
+      prisma.companyProfile.count({ where }),
     ]);
 
-    const parsedCompanies = companies.map((company) => ({
-      ...company,
-      focusAreas: safeJsonParse(company.focusAreas, []),
-      subSectors: company.subSectors ? safeJsonParse(company.subSectors, null) : null,
+    const data = rows.map(profileToLegacyCompany).map((c) => ({
+      id: c.id,
+      slug: c.slug,
+      name: c.name,
+      description: c.description,
+      country: c.country,
+      headquarters: c.headquarters,
+      founded: c.founded,
+      website: c.website,
+      isPublic: c.isPublic,
+      ticker: c.ticker,
+      exchange: c.exchange,
+      marketCap: c.marketCap,
+      stockPrice: c.stockPrice,
+      isPreIPO: c.isPreIPO,
+      valuation: c.valuation,
+      focusAreas: c.focusAreas,
+      subSectors: c.subSectors,
+      employeeCount: c.employeeCount,
     }));
 
     const response = NextResponse.json({
       success: true,
-      data: parsedCompanies,
+      data,
       pagination: { limit, offset, total },
     });
 

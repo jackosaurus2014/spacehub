@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { PRE_IPO_SLUGS } from '@/lib/company-roster';
 
 /**
  * GET /api/ticker?persona=investor|professional|enthusiast
@@ -18,10 +19,10 @@ export async function GET(request: NextRequest) {
 
     // ── 1. Public space company stock prices (investor + professional) ──
     if (persona === 'investor' || persona === 'professional') {
-      const publicCompanies = await prisma.spaceCompany.findMany({
+      const publicCompanies = await prisma.companyProfile.findMany({
         where: { isPublic: true, stockPrice: { not: null }, ticker: { not: null } },
         select: { name: true, ticker: true, stockPrice: true, priceChange24h: true, marketCap: true },
-        orderBy: { marketCap: 'desc' },
+        orderBy: { marketCap: { sort: 'desc', nulls: 'last' } },
         take: 12,
       });
 
@@ -43,22 +44,24 @@ export async function GET(request: NextRequest) {
 
     // ── 2. Recent funding rounds (investor) ──
     if (persona === 'investor') {
-      const fundedCompanies = await prisma.spaceCompany.findMany({
-        where: {
-          lastFundingAmount: { not: null },
-          lastFundingDate: { not: null },
+      const recentRounds = await prisma.fundingRound.findMany({
+        where: { amount: { not: null } },
+        select: {
+          amount: true,
+          seriesLabel: true,
+          company: { select: { name: true } },
         },
-        select: { name: true, lastFundingRound: true, lastFundingAmount: true, lastFundingDate: true },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { date: 'desc' },
         take: 5,
       });
 
-      for (const co of fundedCompanies) {
-        if (!co.lastFundingAmount) continue;
+      for (const round of recentRounds) {
+        if (!round.amount) continue;
+        const amountM = round.amount / 1_000_000; // FundingRound.amount is USD
         items.push({
           type: 'funding',
-          label: `${co.name}`,
-          value: `$${co.lastFundingAmount >= 1000 ? `${(co.lastFundingAmount / 1000).toFixed(1)}B` : `${co.lastFundingAmount.toFixed(0)}M`} ${co.lastFundingRound || ''}`,
+          label: `${round.company.name}`,
+          value: `$${amountM >= 1000 ? `${(amountM / 1000).toFixed(1)}B` : `${amountM.toFixed(0)}M`} ${round.seriesLabel || ''}`,
           color: 'cyan',
           priority: 2,
         });
@@ -149,18 +152,19 @@ export async function GET(request: NextRequest) {
 
     // ── 7. Pre-IPO companies (investor only) ──
     if (persona === 'investor') {
-      const preIpo = await prisma.spaceCompany.findMany({
-        where: { isPreIPO: true, valuation: { not: null } },
-        select: { name: true, valuation: true, expectedIPODate: true },
-        orderBy: { valuation: 'desc' },
+      const preIpo = await prisma.companyProfile.findMany({
+        where: { slug: { in: PRE_IPO_SLUGS }, isPublic: false, valuation: { not: null } },
+        select: { name: true, valuation: true },
+        orderBy: { valuation: { sort: 'desc', nulls: 'last' } },
         take: 3,
       });
 
       for (const co of preIpo) {
+        const valuationB = co.valuation ? co.valuation / 1_000_000_000 : null; // CompanyProfile.valuation is USD
         items.push({
           type: 'preipo',
           label: 'Pre-IPO',
-          value: `${co.name} — $${co.valuation?.toFixed(1)}B${co.expectedIPODate ? ` (${co.expectedIPODate})` : ''}`,
+          value: `${co.name} — $${valuationB?.toFixed(1)}B`,
           color: 'purple',
           priority: 3,
         });

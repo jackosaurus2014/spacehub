@@ -51,7 +51,7 @@ export async function GET() {
       serviceListings,
       forumThreads,
     ] = await Promise.all([
-      prisma.spaceCompany.count(),
+      prisma.companyProfile.count(),
       prisma.newsArticle.count(),
       prisma.spaceEvent.count(),
       prisma.contactSubmission.count(),

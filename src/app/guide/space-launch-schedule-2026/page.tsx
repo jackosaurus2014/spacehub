@@ -6,6 +6,7 @@ import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 export const revalidate = 3600;
 
@@ -369,6 +370,16 @@ export default function SpaceLaunchSchedule2026Page() {
                   Sign Up Free
                 </Link>
               </div>
+            </section>
+
+            {/* Launch-week email opt-in */}
+            <section>
+              <NewsletterSignup
+                variant="cta"
+                source="launch-week-guide"
+                title="Get the week's launches every Monday"
+                description="Every Monday morning, get a rundown of the week's scheduled launches — vehicle, provider, site, and a direct link back to Mission Control to watch. Part of the SpaceNexus newsletter; unsubscribe anytime."
+              />
             </section>
 
             {/* FAQ */}

@@ -4112,7 +4112,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Create a company watchlist.</strong> Go back to the companies you starred on Day 1 and add them to a formal watchlist. You\'ll receive notifications when there\'s news, funding activity, contract awards, or leadership changes at any watched company.</li>
 <li><strong>Set up launch alerts.</strong> Choose which launches you want to be notified about — by provider, payload type, or destination orbit. Get alerts for schedule changes, countdown milestones, and post-launch status updates.</li>
 <li><strong>Configure news alerts by keyword.</strong> Track specific topics — "debris removal," "lunar lander," "spectrum allocation," or any term relevant to your work. SpaceNexus will surface matching articles as they\'re published.</li>
-<li><strong>Subscribe to the weekly digest.</strong> If you prefer a curated summary over real-time alerts, our <a href="/newsletter-archive">weekly newsletter</a> delivers the top stories, market moves, and upcoming events in a single email every Monday.</li>
+<li><strong>Subscribe to the weekly digest.</strong> If you prefer a curated summary over real-time alerts, our <a href="/intelligence-brief">weekly newsletter</a> delivers the top stories, market moves, and upcoming events in a single email every Monday.</li>
 </ul>
 
 <p><strong>Time investment:</strong> 10-15 minutes.</p>

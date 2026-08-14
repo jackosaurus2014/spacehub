@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getCompanyStats } from '@/lib/companies-data';
+import { getCompanyStats } from '@/lib/company-roster';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';

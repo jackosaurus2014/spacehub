@@ -6,11 +6,17 @@ import { useSearchParams } from 'next/navigation';
 interface NewsletterSignupProps {
   variant?: 'cta' | 'footer';
   source?: string;
+  /** Override the 'cta' variant's headline. Ignored by the 'footer' variant. */
+  title?: string;
+  /** Override the 'cta' variant's supporting copy. Ignored by the 'footer' variant. */
+  description?: string;
 }
 
 export default function NewsletterSignup({
   variant = 'cta',
   source = 'website',
+  title,
+  description,
 }: NewsletterSignupProps) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -143,11 +149,10 @@ export default function NewsletterSignup({
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/[0.04] rounded-full blur-[80px] pointer-events-none" />
       <div className="relative">
         <h2 className="text-display text-3xl md:text-4xl text-white mb-4">
-          Stay Ahead of the Curve
+          {title || 'Stay Ahead of the Curve'}
         </h2>
         <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-          Subscribe to our daily digest and get curated space industry news, AI-powered analysis,
-          and expert insights delivered to your inbox every morning.
+          {description || 'Subscribe to our daily digest and get curated space industry news, AI-powered analysis, and expert insights delivered to your inbox every morning.'}
         </p>
 
         {status === 'success' ? (

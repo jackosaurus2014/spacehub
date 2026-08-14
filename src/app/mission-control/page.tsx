@@ -20,6 +20,7 @@ import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import NewsTicker from '@/components/NewsTicker';
+import NewsletterSignup from '@/components/NewsletterSignup';
 import { BLUR_PLACEHOLDER_1_1 } from '@/lib/blur-placeholder';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
@@ -1276,12 +1277,21 @@ function MissionControlContent() {
           <FeaturedMissionCard mission={featuredMission} />
         </ScrollReveal>
 
-        <div className="flex justify-end -mt-4 mb-6">
+        <div className="flex flex-wrap justify-end gap-x-4 gap-y-1 -mt-4 mb-6">
           <Link
             href="/artemis"
             className="text-xs text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center gap-1.5 transition-colors"
           >
             Full Artemis tracker
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+          <Link
+            href="/starship"
+            className="text-xs text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center gap-1.5 transition-colors"
+          >
+            Full Starship tracker
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
@@ -1620,6 +1630,16 @@ function MissionControlContent() {
             </div>
           </div>
         )}
+
+        {/* Launch-week email opt-in */}
+        <div className="mt-8">
+          <NewsletterSignup
+            variant="cta"
+            source="launch-week-mission-control"
+            title="Get the week's launches every Monday"
+            description="Every Monday morning, get a rundown of the week's scheduled launches — vehicle, provider, site, and a direct link back to Mission Control to watch. Part of the SpaceNexus newsletter; unsubscribe anytime."
+          />
+        </div>
 
             <ScrollReveal>
               <RelatedModules

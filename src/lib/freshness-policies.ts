@@ -59,6 +59,12 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     refreshSource: 'both', // FCC ECFS + Federal Register APIs + AI
     keywords: ['FCC', 'FAA license', 'space law', 'space regulation', 'ITU', 'Artemis Accords', 'space treaty', 'spectrum filing'],
   },
+  'spectrum': {
+    ttlHours: 24,
+    refreshPriority: 'high',
+    refreshSource: 'api', // FCC ECFS public API (recent filings feed)
+    keywords: ['spectrum', 'FCC filing', 'NGSO', 'earth station', 'spectrum sharing', 'satellite constellation'],
+  },
 
   // MODERATE: Changes monthly
   'asteroid-watch': {

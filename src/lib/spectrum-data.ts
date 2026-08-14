@@ -1,5 +1,7 @@
 import prisma from './db';
 import { SpectrumAllocation, SpectrumFiling, SpectrumService, SpectrumFilingStatus } from '@/types';
+import { getModuleContent, getModuleFreshness } from './dynamic-content';
+import type { SpectrumFilingRecord } from './fetchers/spectrum-filings-fetcher';
 
 // Seed data for spectrum allocations
 export const SPECTRUM_ALLOCATIONS_SEED = [
@@ -670,4 +672,34 @@ export async function getSpectrumStats() {
         }
       : null,
   };
+}
+
+// ────────────────────────────────────────
+// Live "Recent Filings" feed (DynamicContent, module='spectrum')
+//
+// Populated by src/lib/fetchers/spectrum-filings-fetcher.ts from the FCC's
+// public ECFS API. Kept separate from the curated SpectrumFiling table above
+// (whose schema requires band/orbit/satellite-count fields that raw ECFS
+// docket filings don't carry).
+// ────────────────────────────────────────
+
+export interface RecentSpectrumFiling extends SpectrumFilingRecord {
+  fetchedAt: string;
+}
+
+export async function getRecentSpectrumFilings(limit = 30): Promise<RecentSpectrumFiling[]> {
+  const items = await getModuleContent<RecentSpectrumFiling>('spectrum', 'recent-filings');
+
+  return items
+    .map((item) => item.data)
+    .sort((a, b) => {
+      const aTime = a.filedDate ? new Date(a.filedDate).getTime() : 0;
+      const bTime = b.filedDate ? new Date(b.filedDate).getTime() : 0;
+      return bTime - aTime;
+    })
+    .slice(0, limit);
+}
+
+export async function getRecentSpectrumFilingsFreshness() {
+  return getModuleFreshness('spectrum');
 }

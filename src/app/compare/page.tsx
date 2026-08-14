@@ -66,6 +66,18 @@ const COMPETITOR_COMPARISONS = [
 
 const INDUSTRY_MATCHUPS = [
   {
+    title: 'SpaceX vs Rocket Lab (Stock)',
+    description: 'SPCX vs RKLB as investments: market cap, revenue growth, backlog, the pending Iridium acquisition, and Neutron\'s path to first flight.',
+    href: '/compare/spcx-vs-rklb-stock',
+    category: 'Space Stocks',
+  },
+  {
+    title: 'Starship vs New Glenn (Status)',
+    description: 'Honest August 2026 status check: Starship flying operational Starlink V3 missions vs New Glenn rebuilding LC-36 after its static-fire explosion.',
+    href: '/compare/starship-vs-new-glenn',
+    category: 'Launch Vehicles',
+  },
+  {
     title: 'SpaceX vs Blue Origin vs Rocket Lab',
     description: 'The three leading commercial launch providers compared: vehicles, pricing, track records, and future roadmaps.',
     href: '/blog/spacex-blue-origin-rocket-lab-comparison-2026',

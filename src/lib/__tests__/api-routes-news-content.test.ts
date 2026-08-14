@@ -26,7 +26,10 @@ jest.mock('@/lib/db', () => ({
       findMany: jest.fn(),
       count: jest.fn(),
     },
-    spaceCompany: {
+    companyProfile: {
+      findMany: jest.fn(),
+    },
+    fundingRound: {
       findMany: jest.fn(),
     },
     spaceEvent: {
@@ -312,25 +315,25 @@ describe('GET /api/ticker', () => {
 
   it('returns stock data for investor persona', async () => {
     // Mock public companies
-    (mockPrisma.spaceCompany.findMany as jest.Mock)
+    (mockPrisma.companyProfile.findMany as jest.Mock)
       .mockResolvedValueOnce([ // publicCompanies query
         {
           name: 'SpaceX',
-          ticker: 'SPACEX',
+          ticker: 'SPCX',
           stockPrice: 120.5,
           priceChange24h: 3.2,
           marketCap: 100000000000,
         },
       ])
-      .mockResolvedValueOnce([ // funded companies query
-        {
-          name: 'Relativity',
-          lastFundingRound: 'Series E',
-          lastFundingAmount: 650,
-          lastFundingDate: new Date('2025-01-15'),
-        },
-      ])
       .mockResolvedValueOnce([]); // preIPO query
+    (mockPrisma.fundingRound.findMany as jest.Mock).mockResolvedValue([
+      // recent funding rounds query (amount in raw USD)
+      {
+        amount: 650_000_000,
+        seriesLabel: 'Series E',
+        company: { name: 'Relativity' },
+      },
+    ]);
 
     (mockPrisma.newsArticle.findMany as jest.Mock).mockResolvedValue([]);
     (mockPrisma.spaceEvent.findMany as jest.Mock).mockResolvedValue([]);

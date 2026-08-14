@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
  * Whitelist of exportable modules mapped to their Prisma model accessors
  */
 const EXPORTABLE_MODULES: Record<string, string> = {
-  companies: 'spaceCompany',
+  companies: 'companyProfile',
   events: 'spaceEvent',
   news: 'newsArticle',
 };

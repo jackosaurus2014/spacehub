@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/db';
-import { constrainPagination, constrainOffset, safeJsonParse, internalError } from '@/lib/errors';
+import { getRosterCompanies } from '@/lib/company-roster';
+import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * GET /api/companies
+ * Market roster for /market-intel and dashboard modules.
+ * Backed by CompanyProfile (single source of truth); the response keeps the
+ * legacy SpaceCompany shape (marketCap/valuation in billions, funding in
+ * millions, ISO-3 countries, snake_case focusAreas).
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -14,89 +21,38 @@ export async function GET(request: Request) {
     const focusArea = searchParams.get('focusArea');
     const minFunding = searchParams.get('minFunding');
     const foundedAfter = searchParams.get('foundedAfter');
-    const limit = constrainPagination(parseInt(searchParams.get('limit') || '50'), 200);
+    const sort = searchParams.get('sort');
+    const limit = constrainPagination(parseInt(searchParams.get('limit') || '50'), 300);
     const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
 
-    const where: Record<string, unknown> = {};
-
-    if (country) {
-      where.country = country;
-    }
-
-    if (isPublic !== null && isPublic !== '') {
-      where.isPublic = isPublic === 'true';
-    }
-
-    if (preIPO === 'true') {
-      where.isPreIPO = true;
-    }
-
-    if (focusArea) {
-      where.focusAreas = {
-        contains: focusArea,
-      };
-    }
-
+    let parsedMinFunding: number | undefined;
     if (minFunding) {
       const min = parseFloat(minFunding);
-      if (!isNaN(min) && min > 0) {
-        where.totalFunding = { gt: 0 };
-      }
+      if (!isNaN(min) && min > 0) parsedMinFunding = min;
     }
 
+    let parsedFoundedAfter: number | undefined;
     if (foundedAfter) {
       const year = parseInt(foundedAfter);
       if (!isNaN(year) && year > 1900 && year <= new Date().getFullYear()) {
-        where.founded = { gte: year };
+        parsedFoundedAfter = year;
       }
     }
 
-    const sort = searchParams.get('sort');
-    const orderBy = sort === 'totalFunding'
-      ? [{ totalFunding: 'desc' as const }, { valuation: 'desc' as const }, { name: 'asc' as const }]
-      : [{ isPublic: 'desc' as const }, { marketCap: 'desc' as const }, { valuation: 'desc' as const }, { name: 'asc' as const }];
-
-    const [companies, total] = await Promise.all([
-      prisma.spaceCompany.findMany({
-        where,
-        select: {
-          id: true,
-          slug: true,
-          name: true,
-          ticker: true,
-          country: true,
-          headquarters: true,
-          founded: true,
-          website: true,
-          isPublic: true,
-          isPreIPO: true,
-          marketCap: true,
-          valuation: true,
-          totalFunding: true,
-          lastFundingRound: true,
-          lastFundingAmount: true,
-          lastFundingDate: true,
-          focusAreas: true,
-          subSectors: true,
-          employeeCount: true,
-          description: true,
-        },
-        orderBy,
-        take: limit,
-        skip: offset,
-      }),
-      prisma.spaceCompany.count({ where }),
-    ]);
-
-    // Parse JSON fields safely
-    const parsedCompanies = companies.map((company) => ({
-      ...company,
-      focusAreas: safeJsonParse(company.focusAreas, []),
-      subSectors: company.subSectors ? safeJsonParse(company.subSectors, null) : null,
-    }));
+    const { companies, total } = await getRosterCompanies({
+      country: country || undefined,
+      isPublic: isPublic !== null && isPublic !== '' ? isPublic === 'true' : undefined,
+      preIPO: preIPO === 'true' ? true : undefined,
+      focusArea: focusArea || undefined,
+      minFunding: parsedMinFunding,
+      foundedAfter: parsedFoundedAfter,
+      sort: sort === 'totalFunding' ? 'totalFunding' : 'default',
+      limit,
+      offset,
+    });
 
     return NextResponse.json({
-      companies: parsedCompanies,
+      companies,
       total,
       hasMore: offset + companies.length < total,
     });

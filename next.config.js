@@ -445,6 +445,13 @@ const nextConfig = {
 
       // ── Artemis Program Tracker (2026-08) ──
       { source: '/artemis-tracker', destination: '/artemis', permanent: true },
+
+      // ── Newsletter/brief surface consolidation (2026-08) ──
+      // /newsletter-archive's hardcoded "past editions" content merged into
+      // the DB-backed /intelligence-brief hub (PublishedBrief). /briefs (live
+      // 7-day digest) and /newsletters-directory (external newsletter
+      // directory) are different, unaffected surfaces.
+      { source: '/newsletter-archive', destination: '/intelligence-brief', permanent: true },
     ];
   },
 }

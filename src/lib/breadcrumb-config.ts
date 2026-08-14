@@ -49,9 +49,13 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/earth-events': 'Earth Events',
   '/satellite-spotting': 'Satellite Spotting Guide',
   '/aurora-forecast': 'Aurora Forecast',
+  '/guide/watch-a-launch-cape-canaveral': 'Watch a Launch: Cape Canaveral',
+  '/guide/watch-a-launch-vandenberg': 'Watch a Launch: Vandenberg',
+  '/guide/watch-a-launch-starbase': 'Watch a Launch: Starbase',
 
   // ── Intelligence ──
   '/market-intel': 'Market Intelligence',
+  '/space-stocks': 'Space Stocks',
   '/industry-trends': 'Industry Trends',
   '/news': 'News',
   '/news-aggregator': 'News Aggregator',
@@ -61,7 +65,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/newsletters-directory': 'Newsletters Directory',
   '/reports': 'Reports',
   '/reports/state-of-space-2026': 'State of Space 2026',
-  '/intelligence-brief': 'Intelligence Brief',
+  '/intelligence-brief': 'Intelligence Brief Hub',
   '/company-profiles': 'Companies',
   '/company-research': 'Company Research',
   '/compare': 'Compare',
@@ -194,7 +198,6 @@ export const ROUTE_LABELS: Record<string, string> = {
 
   // ── New Pages ──
   '/api-access': 'API Access',
-  '/newsletter-archive': 'Newsletter Archive',
   '/newsletter': 'Newsletter',
   '/why-spacenexus': 'Why SpaceNexus',
   '/reports/space-economy-2026': 'Space Economy 2026 Report',
@@ -321,6 +324,9 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/guide/space-industry-market-size': '/learn',
   '/guide/space-launch-cost-comparison': '/learn',
   '/guide/space-launch-schedule-2026': '/learn',
+  '/guide/watch-a-launch-cape-canaveral': '/learn',
+  '/guide/watch-a-launch-vandenberg': '/learn',
+  '/guide/watch-a-launch-starbase': '/learn',
 
   // Enthusiast guide pages
   '/satellite-spotting': '/learn',

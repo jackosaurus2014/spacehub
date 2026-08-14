@@ -1,121 +1,87 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import SocialShare from '@/components/ui/SocialShare';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { clientLogger } from '@/lib/client-logger';
 
-interface BriefSection {
-  category: string;
-  icon: string;
-  headline: string;
-  details: string[];
-}
+type BriefType = 'weekly_intelligence' | 'economy' | 'hiring' | 'special';
 
-interface WeeklyBrief {
+interface PublishedBrief {
   id: string;
-  weekOf: string;
-  dateRange: string;
-  topStory: { headline: string; summary: string };
-  sections: BriefSection[];
-  keyTakeaway: string;
+  slug: string;
+  title: string;
+  briefType: BriefType;
+  summary: string;
+  contentMd: string;
+  publishedAt: string;
+  sourceInsightId: string | null;
 }
 
-const BRIEFS: WeeklyBrief[] = [
-  {
-    id: 'aug-10-2026',
-    weekOf: 'August 10, 2026',
-    dateRange: 'Aug 10 - Aug 16',
-    topStory: {
-      headline: 'Rocket Lab Posts Record Quarter as $8B Iridium Deal Reshapes the Sector',
-      summary: 'Rocket Lab\'s August 10 investor update paired record Q2 revenue of $234M (up 62% YoY) and a record $2.36B backlog with the June agreement to acquire Iridium for $54/share — roughly $8B in enterprise value, expected to close mid-2027. Shares still fell as Q3 margin guidance reflected peak Neutron first-flight spending; the rocket remains on track for pad delivery in Q4 2026.',
-    },
-    sections: [
-      { category: 'Market', icon: '📊', headline: 'SpaceX Priced Like an AI Company; the Mid-Tier Gets Margin Questions', details: ['Argus Research upgraded SpaceX-linked shares to Buy with a $160 target after Elon Musk projected $500B in annual revenue within roughly two years', 'Rocket Lab (RKLB) fell post-earnings despite record revenue as Neutron first-flight spending pressured Q3 margin guidance', 'Firefly Aerospace (FLY) pushed its Alpha Block 2 debut to Q4 2026 and now expects just three Alpha flights this year'] },
-      { category: 'Launches', icon: '🚀', headline: 'SpaceX Reaches 93 Falcon Flights for the Year', details: ['Starlink 17-38 from Vandenberg on Aug 8 was SpaceX\'s 50th West Coast launch of 2026', 'Starlink 10-19 from Cape Canaveral on Aug 11 was the year\'s 93rd Falcon 9 flight and 72nd Starlink mission', 'Starship\'s first orbital Starlink V3 deployment attempt is targeted for late August from Starbase'] },
-      { category: 'Regulatory', icon: '⚖️', headline: 'Golden Dome Faces a 2027 Funding Cliff', details: ['Gen. Michael Guetlein warned that most of Golden Dome\'s initial funding is already committed — and that under a continuing resolution "there is no Golden Dome"', 'Contractors are booking Golden Dome work largely through existing programs of record, keeping the program\'s true cost opaque to Congress', 'A bipartisan Space Superiority Readiness Act was introduced to ensure US military readiness for orbital conflict'] },
-      { category: 'Lunar', icon: '🌕', headline: 'A Quietly Productive Week for the Moon Economy', details: ['NASA declared "wrenches down" on LEMS — the first completed science payload designed for Artemis astronauts to deploy on the lunar surface', 'NASA opened a formal request for input on Moon base health and research needs', 'New research suggests moonquake seismology could help locate lunar ice deposits'] },
-    ],
-    keyTakeaway: 'The launch industry is splitting into two different businesses. One company is being underwritten as an AI-era platform; the rest are being asked about gross margins. Rocket Lab\'s answer — buy Iridium and bolt recurring communications revenue onto the launch stack — is the boldest response yet, and the template rivals will now be measured against.',
-  },
-  {
-    id: 'feb-17-2026',
-    weekOf: 'February 17, 2026',
-    dateRange: 'Feb 17 - Feb 23',
-    topStory: {
-      headline: 'Starship Achieves Rapid Reusability Milestone',
-      summary: 'SpaceX successfully launched and recovered a Starship booster within 48 hours of its previous flight, marking the fastest turnaround for the Super Heavy vehicle. At the time, the company said it aimed for weekly cadence by Q3 2026. (Update, August 2026: weekly Starship cadence has not yet been reached — the program\'s next milestone is a first orbital Starlink V3 deployment attempt in late August.)',
-    },
-    sections: [
-      { category: 'Funding', icon: '💰', headline: '3 Notable Rounds This Week', details: ['Impulse Space raises $175M Series C for orbital transfer vehicles', 'Muon Space closes $45M Series A for climate monitoring satellites', 'Astroforge secures $25M for asteroid mining proof-of-concept mission'] },
-      { category: 'Launches', icon: '🚀', headline: '5 Launches This Week (3 SpaceX, 1 China, 1 Rocket Lab)', details: ['SpaceX Starlink Group 12-4 from Cape Canaveral (60 sats)', 'SpaceX Starlink Group 12-5 from Vandenberg (60 sats)', 'SpaceX Transporter-13 rideshare (42 customer payloads)', 'CZ-2D from Jiuquan (YG-40 reconnaissance constellation)', 'Electron "Data With Destiny" from Mahia (HawkEye 360 cluster)'] },
-      { category: 'Regulatory', icon: '⚖️', headline: 'FCC Approves New Ka-Band Allocation', details: ['New 2GHz allocation in 27.5-28.35 GHz for NGSO systems', 'Expected to benefit Starlink Gen2 and Amazon Kuiper', 'SpaceX and SES filed comments supporting the expansion'] },
-      { category: 'Personnel', icon: '👤', headline: '2 Executive Moves', details: ['Former Blue Origin VP of Mission Operations joins Axiom Space as SVP', 'L3Harris appoints new President of Space & Airborne Systems division'] },
-      { category: 'Market', icon: '📊', headline: 'Space Sector Index Up 2.3%', details: ['Rocket Lab (RKLB) up 8.1% on strong Q4 earnings beat', 'Planet Labs (PL) up 4.2% on new defense contract', 'AST SpaceMobile (ASTS) down 3.5% on dilution concerns'] },
-    ],
-    keyTakeaway: 'Starship rapid reusability changes the economics of everything. At weekly cadence, cost-per-kg to LEO could drop below $100 -- disrupting the entire launch industry and enabling new business models in orbital manufacturing, debris removal, and mega-constellation deployment.',
-  },
-  {
-    id: 'feb-10-2026',
-    weekOf: 'February 10, 2026',
-    dateRange: 'Feb 10 - Feb 16',
-    topStory: {
-      headline: 'Artemis II Crew Completes Final Training Milestone',
-      summary: 'NASA announced the four-person Artemis II crew had completed their final integrated training exercise, including a full mission simulation. (Update: Artemis II launched from Kennedy Space Center on April 1, 2026 and splashed down April 10 after a successful nine-day lunar flyby — the first crewed flight beyond low Earth orbit since Apollo. SpaceNexus\'s live mission coverage is archived.)',
-    },
-    sections: [
-      { category: 'Funding', icon: '💰', headline: 'Relativity Space Closes $200M Growth Round', details: ['Relativity Space raises $200M at $4.2B valuation for Terran R development', 'True Anomaly raises $100M Series B for space domain awareness', 'Inversion Space raises $20M Seed for Earth re-entry capsule delivery'] },
-      { category: 'Launches', icon: '🚀', headline: '4 Launches (2 SpaceX, 1 ULA, 1 Arianespace)', details: ['SpaceX Starlink Group 12-3 from Cape Canaveral', 'SpaceX CRS-32 ISS resupply from Kennedy Space Center', 'ULA Vulcan Centaur carries NRO payload from Vandenberg', 'Ariane 6 commercial debut carries 2 GEO commsats from Kourou'] },
-      { category: 'Regulatory', icon: '⚖️', headline: 'EU Proposes Space Traffic Management Framework', details: ['European Commission publishes draft regulation for STM', 'Would require all EU-licensed satellites to carry tracking beacons', 'Industry reaction mixed -- concerns about cost burden on smallsat operators'] },
-      { category: 'Personnel', icon: '👤', headline: 'New Leadership at Aerojet Rocketdyne Division', details: ['L3Harris names new President of Aerojet Rocketdyne division', 'Replaces interim leadership following 2023 acquisition integration'] },
-      { category: 'Market', icon: '📊', headline: 'Satellite Stocks Rally on Earnings', details: ['SES up 6.3% after beating revenue estimates on O3b mPOWER demand', 'Iridium up 3.8% on IoT subscriber growth (+22% YoY)', 'Maxar Technologies flat after mixed guidance for 2026'] },
-    ],
-    keyTakeaway: 'The Ariane 6 commercial debut is a crucial milestone for European launch autonomy. With Russia no longer available and heavy reliance on SpaceX, Europe needs an independent path to orbit. Watch for pricing competitiveness vs. Falcon 9.',
-  },
-  {
-    id: 'feb-03-2026',
-    weekOf: 'February 3, 2026',
-    dateRange: 'Feb 3 - Feb 9',
-    topStory: {
-      headline: 'Amazon Launches First Kuiper Production Satellites',
-      summary: 'Amazon successfully deployed the first batch of 60 production Kuiper satellites aboard a ULA Atlas V, beginning the build-out of its 3,236-satellite broadband constellation. Service is expected to begin in late 2026.',
-    },
-    sections: [
-      { category: 'Funding', icon: '💰', headline: '2 Seed Rounds in Debris Removal', details: ['ClearSpace raises $30M to fund ClearSpace-2 mission targeting defunct ESA satellite', 'Neumann Space raises $12M for in-orbit refueling and debris management'] },
-      { category: 'Launches', icon: '🚀', headline: '6 Launches (4 SpaceX, 1 China, 1 India)', details: ['SpaceX Starlink (3 missions) from Cape Canaveral and Vandenberg', 'SpaceX launches Kuiper batch on contract from ULA', 'CZ-7A carries Tianzhou cargo to CSS from Wenchang', 'ISRO PSLV carries 7 international smallsats from Sriharikota'] },
-      { category: 'Regulatory', icon: '⚖️', headline: 'ITAR Reform Bill Introduced in Senate', details: ['Bipartisan bill would streamline ITAR licensing for allied nations', 'Would create "trusted partner" fast-track for Five Eyes + Japan + EU', 'Industry groups strongly support -- current process takes 6-12 months'] },
-      { category: 'Personnel', icon: '👤', headline: 'SpaceX VP Moves to Blue Origin', details: ['SpaceX VP of Starlink Engineering departs for Blue Origin as SVP of Project Kuiper competitor response', 'Marks third senior SpaceX departure to Blue Origin in 2026'] },
-      { category: 'Market', icon: '📊', headline: 'Launch Provider Stocks Mixed', details: ['Rocket Lab (RKLB) up 2.1% on Neutron development update', 'Virgin Orbit (VORB) delisted after Chapter 11 proceedings', 'Astra Space (ASTR) down 12% on going-concern warning'] },
-    ],
-    keyTakeaway: 'Amazon entering the LEO broadband race with production Kuiper satellites will intensify competition with Starlink. Watch for pricing wars and government contract battles, especially in underserved markets where both systems will compete for rural broadband subsidies.',
-  },
-];
-
-const CATEGORY_COLORS: Record<string, string> = {
-  Funding: 'border-emerald-500/30 bg-emerald-500/5',
-  Launches: 'border-white/10 bg-white/5',
-  Regulatory: 'border-amber-500/30 bg-amber-500/5',
-  Personnel: 'border-purple-500/30 bg-purple-500/5',
-  Market: 'border-blue-500/30 bg-blue-500/5',
-  Lunar: 'border-cyan-500/30 bg-cyan-500/5',
+const TYPE_LABELS: Record<BriefType, string> = {
+  weekly_intelligence: 'Weekly Intelligence',
+  economy: 'State of the Economy',
+  hiring: "Who's Hiring",
+  special: 'Special Report',
 };
 
-export default function IntelligenceBriefPage() {
-  const [expandedBrief, setExpandedBrief] = useState<string>(BRIEFS[0].id);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+const TYPE_FILTERS: Array<{ value: BriefType | 'all'; label: string }> = [
+  { value: 'all', label: 'All Briefs' },
+  { value: 'weekly_intelligence', label: 'Weekly Intelligence' },
+  { value: 'economy', label: 'State of the Economy' },
+  { value: 'hiring', label: "Who's Hiring" },
+  { value: 'special', label: 'Special' },
+];
 
-  const toggleSection = (key: string) => {
-    setExpandedSections(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
+const TYPE_BADGE_COLORS: Record<BriefType, string> = {
+  weekly_intelligence: 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20',
+  economy: 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20',
+  hiring: 'text-purple-300 bg-purple-500/10 border-purple-500/20',
+  special: 'text-amber-300 bg-amber-500/10 border-amber-500/20',
+};
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+export default function IntelligenceBriefPage() {
+  const [briefs, setBriefs] = useState<PublishedBrief[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<BriefType | 'all'>('all');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const fetchBriefs = useCallback(async (type: BriefType | 'all') => {
+    setLoading(true);
+    setError(false);
+    try {
+      const qs = type === 'all' ? '' : `?type=${type}`;
+      const res = await fetch(`/api/published-briefs${qs}`);
+      if (!res.ok) throw new Error(`Failed to fetch briefs (${res.status})`);
+      const data = await res.json();
+      const list: PublishedBrief[] = data.briefs || [];
+      setBriefs(list);
+      setSelectedId((prev) => (list.some((b) => b.id === prev) ? prev : list[0]?.id ?? null));
+    } catch (err) {
+      clientLogger.error('Failed to fetch published briefs', { error: err instanceof Error ? err.message : String(err) });
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBriefs(typeFilter);
+  }, [typeFilter, fetchBriefs]);
+
+  const selected = briefs.find((b) => b.id === selectedId) || null;
 
   return (
     <div className="min-h-screen py-8">
@@ -123,134 +89,160 @@ export default function IntelligenceBriefPage() {
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <AnimatedPageHeader
-              title="Weekly Intelligence Brief"
-              subtitle="Curated weekly summary of the most important space industry developments. Funding rounds, launches, regulatory changes, executive moves, and market analysis."
+              title="Intelligence Brief Hub"
+              subtitle="Every SpaceNexus brief in one place — weekly intelligence roundups, the data-driven State of the Space Economy, and Who's Hiring in Space. Filterable, newest first."
               icon="📋"
               accentColor="cyan"
             />
           </div>
           <div className="flex items-center gap-2 mt-2 flex-shrink-0">
             <SocialShare
-              title="Weekly Intelligence Brief - SpaceNexus"
-              description="Curated weekly summary of the most important space industry developments."
+              title="Intelligence Brief Hub - SpaceNexus"
+              description="Every SpaceNexus weekly brief — intelligence roundups, economy data, and hiring trends — in one place."
             />
             <ExportPDFButton className="no-print" />
           </div>
         </div>
 
-        {/* Subscribe CTA */}
+        {/* Subscribe + cross-link to /briefs CTA */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-bold text-white">The State of the Space Economy brief ships every Monday</h3>
-              <p className="text-xs text-slate-400 mt-0.5">A weekly data brief built from SpaceNexus&apos;s own tracked news, funding, launch, and hiring data — free.</p>
+              <h3 className="text-sm font-bold text-white">Want this week's live numbers instead?</h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                This hub is the published archive. For a real-time 7-day data digest (launches, news, funding), see the current{' '}
+                <Link href="/briefs" className="text-cyan-400 hover:underline">Space Industry Brief</Link>.
+              </p>
             </div>
-            <Link href="/ai-insights" className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
-              Read the Latest Brief
+            <Link href="/newsletter" className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+              Subscribe Free
             </Link>
           </div>
         </ScrollReveal>
 
-        {/* Brief Selector */}
+        <ScrollReveal delay={0.13}>
+          <p className="text-xs text-slate-500 mb-6">
+            Weekly briefs were paused March–July 2026 and resumed in August 2026 on an automated weekly cadence.
+            Historic editions from before the pause are preserved below.
+          </p>
+        </ScrollReveal>
+
+        {/* Type filter tabs */}
         <ScrollReveal delay={0.15}>
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            {BRIEFS.map(brief => (
-              <button key={brief.id} onClick={() => setExpandedBrief(brief.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${expandedBrief === brief.id ? 'bg-white/10 text-white/90 border border-white/10' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-slate-900'}`}>
-                Week of {brief.weekOf.replace(', 2026', '')}
+            {TYPE_FILTERS.map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setTypeFilter(f.value)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                  typeFilter === f.value
+                    ? 'bg-white/10 text-white/90 border border-white/10'
+                    : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
+                }`}
+              >
+                {f.label}
               </button>
             ))}
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.17}>
-          <p className="text-xs text-slate-500 mb-6">
-            Weekly briefs were paused March–July 2026 and resumed in August 2026 on an automated weekly cadence.
-          </p>
-        </ScrollReveal>
-
-        {/* Brief Content */}
-        {BRIEFS.filter(b => b.id === expandedBrief).map(brief => (
-          <div key={brief.id}>
-            {/* Header */}
-            <ScrollReveal delay={0.2}>
-              <div className="mb-6">
-                <h2 className="text-xl font-bold text-white">Week of {brief.weekOf}</h2>
-                <p className="text-sm text-slate-500">{brief.dateRange}</p>
-              </div>
-            </ScrollReveal>
-
-            {/* Top Story */}
-            <ScrollReveal delay={0.25}>
-              <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.04] border border-white/10 rounded-xl p-6 mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Top Story</span>
-                  <div className="h-px flex-1 bg-white/10" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">{brief.topStory.headline}</h3>
-                <p className="text-sm text-white/70 leading-relaxed">{brief.topStory.summary}</p>
-              </div>
-            </ScrollReveal>
-
-            {/* Sections */}
-            <div className="space-y-3 mb-6">
-              {brief.sections.map((section, i) => {
-                const sectionKey = `${brief.id}-${section.category}`;
-                const isExpanded = expandedSections.has(sectionKey);
-                return (
-                  <ScrollReveal key={section.category} delay={0.3 + i * 0.05}>
-                    <div className={`border rounded-xl overflow-hidden transition-colors ${CATEGORY_COLORS[section.category] || 'border-white/[0.06] bg-white/[0.03]'}`}>
-                      <button onClick={() => toggleSection(sectionKey)}
-                        className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-colors">
-                        <span className="text-xl">{section.icon}</span>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{section.category}</span>
-                          <p className="text-sm font-semibold text-white truncate">{section.headline}</p>
-                        </div>
-                        <svg className={`w-5 h-5 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                      {isExpanded && (
-                        <div className="px-4 pb-4 pt-1 border-t border-white/5">
-                          <ul className="space-y-2">
-                            {section.details.map((detail, j) => (
-                              <li key={j} className="flex items-start gap-2 text-sm text-white/70">
-                                <span className="text-slate-500 mt-1 flex-shrink-0">-</span>
-                                {detail}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </ScrollReveal>
-                );
-              })}
-            </div>
-
-            {/* Key Takeaway */}
-            <ScrollReveal delay={0.55}>
-              <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/30 rounded-xl p-5 mb-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">💡</span>
-                  <span className="text-sm font-bold text-amber-300">Key Takeaway</span>
-                </div>
-                <p className="text-sm text-white/90 leading-relaxed">{brief.keyTakeaway}</p>
-              </div>
-            </ScrollReveal>
+        {loading && (
+          <div className="space-y-3 mb-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 rounded-xl bg-white/[0.03] border border-white/[0.06] animate-pulse" />
+            ))}
           </div>
-        ))}
+        )}
+
+        {!loading && error && (
+          <div className="card p-8 text-center mb-8">
+            <p className="text-sm text-slate-400">Couldn't load briefs right now. Please try again shortly.</p>
+          </div>
+        )}
+
+        {!loading && !error && briefs.length === 0 && (
+          <div className="card p-8 text-center mb-8">
+            <p className="text-sm text-slate-400">
+              No {typeFilter === 'all' ? '' : `${TYPE_LABELS[typeFilter as BriefType]} `}briefs published yet. Check back soon —
+              new editions land automatically every week.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && briefs.length > 0 && (
+          <>
+            {/* Brief Selector */}
+            <ScrollReveal delay={0.17}>
+              <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+                {briefs.map((brief) => (
+                  <button
+                    key={brief.id}
+                    onClick={() => setSelectedId(brief.id)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                      selectedId === brief.id
+                        ? 'bg-white/10 text-white/90 border border-white/10'
+                        : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
+                    }`}
+                  >
+                    {formatDate(brief.publishedAt)}
+                  </button>
+                ))}
+              </div>
+            </ScrollReveal>
+
+            {/* Selected Brief */}
+            {selected && (
+              <div key={selected.id}>
+                <ScrollReveal delay={0.2}>
+                  <div className="mb-4 flex items-center gap-3 flex-wrap">
+                    <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full border ${TYPE_BADGE_COLORS[selected.briefType]}`}>
+                      {TYPE_LABELS[selected.briefType]}
+                    </span>
+                    <span className="text-sm text-slate-500">{formatDate(selected.publishedAt)}</span>
+                  </div>
+                  <h2 className="text-xl font-bold text-white mb-2">{selected.title}</h2>
+                  <p className="text-sm text-white/70 leading-relaxed mb-6">{selected.summary}</p>
+                </ScrollReveal>
+
+                <ScrollReveal delay={0.25}>
+                  <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 mb-8">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({ children }) => <h2 className="text-xl font-bold text-white mt-8 mb-3 first:mt-0">{children}</h2>,
+                        h2: ({ children }) => <h2 className="text-xl font-bold text-white mt-8 mb-3 first:mt-0">{children}</h2>,
+                        h3: ({ children }) => <h3 className="text-lg font-semibold text-white mt-6 mb-2">{children}</h3>,
+                        p: ({ children }) => <p className="text-white/70 leading-relaxed mb-4">{children}</p>,
+                        a: ({ href, children }) => <a href={href} className="text-cyan-400 hover:text-cyan-300 hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+                        ul: ({ children }) => <ul className="list-disc list-inside space-y-1.5 text-white/70 mb-4">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal list-inside space-y-1.5 text-white/70 mb-4">{children}</ol>,
+                        li: ({ children }) => <li className="text-white/70">{children}</li>,
+                        strong: ({ children }) => <strong className="text-white font-semibold">{children}</strong>,
+                        em: ({ children }) => <em className="text-white/90">{children}</em>,
+                        hr: () => <hr className="border-white/[0.08] my-6" />,
+                        table: ({ children }) => <div className="overflow-x-auto my-4"><table className="min-w-full border-collapse">{children}</table></div>,
+                        th: ({ children }) => <th className="border border-white/[0.1] px-3 py-2 bg-white/[0.04] text-left text-white text-sm font-semibold">{children}</th>,
+                        td: ({ children }) => <td className="border border-white/[0.08] px-3 py-2 text-white/70 text-sm">{children}</td>,
+                      }}
+                    >
+                      {selected.contentMd}
+                    </ReactMarkdown>
+                  </div>
+                </ScrollReveal>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Related Links */}
         <ScrollReveal delay={0.6}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
+              { label: 'Live Weekly Digest', href: '/briefs', icon: '📡' },
               { label: 'News Feed', href: '/news', icon: '📰' },
               { label: 'Funding Tracker', href: '/funding-tracker', icon: '💰' },
-              { label: 'Regulatory Hub', href: '/compliance', icon: '⚖️' },
               { label: 'Executive Moves', href: '/executive-moves', icon: '👤' },
-            ].map(link => (
+            ].map((link) => (
               <Link key={link.href} href={link.href}
                 className="flex items-center gap-2 p-3 card hover:border-white/10 transition-colors text-sm text-white/70 hover:text-white">
                 <span>{link.icon}</span>

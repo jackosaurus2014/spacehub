@@ -5,6 +5,8 @@ import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import { getNPCTitle } from '@/lib/game/npc-companies';
 import { formatMoney } from '@/lib/game/formulas';
+import ShareButton from '@/components/ui/ShareButton';
+import { APP_URL } from '@/lib/constants';
 
 // Rank 1-3 reuse existing achievement badge art as holo rank medals — escalating
 // wealth-tier badges read naturally as gold/silver/bronze without new art.
@@ -91,9 +93,16 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
   return (
     <div className="space-y-4">
       {/* Player Rank Summary */}
-      <div className="hud-frame game-panel-glow p-4 text-center">
+      <div className="hud-frame game-panel-glow p-4 text-center relative">
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
+        <div className="absolute top-3 right-3">
+          <ShareButton
+            title="Space Tycoon — Galactic Leaderboard"
+            description="See the top-ranked corporations in Space Tycoon on SpaceNexus."
+            url={`${APP_URL}/space-tycoon/leaderboard`}
+          />
+        </div>
         <p className="game-label text-center">Your Rank</p>
         <p className="game-heading text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">
           #{playerRank}

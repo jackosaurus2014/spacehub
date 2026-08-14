@@ -123,19 +123,36 @@ export default async function BriefsPage() {
         </div>
       </div>
 
+      {/* Cross-link to the published brief archive */}
+      <div className="card-interactive p-4 mb-6 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Looking for past editions?</p>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            This page is the live, real-time digest. Published weekly intelligence briefs, economy reports, and hiring roundups are archived in the Intelligence Brief Hub.
+          </p>
+        </div>
+        <Link href="/intelligence-brief" className="btn-secondary text-xs whitespace-nowrap">
+          Browse Archive
+        </Link>
+      </div>
+
       {/* Subscribe CTA */}
       <div className="rounded-lg p-6 text-center mb-8" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
         <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Get the Brief in Your Inbox</h3>
         <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
           Weekly intelligence digest delivered every Monday. Free for all users.
         </p>
-        <Link href="/newsletters-directory" className="btn-primary text-sm">
+        <Link href="/newsletter" className="btn-primary text-sm">
           Subscribe to Newsletter
         </Link>
       </div>
 
       {/* More data links */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <Link href="/intelligence-brief" className="card-interactive p-4 text-center">
+          <span className="text-lg block mb-1">📋</span>
+          <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Brief Archive</span>
+        </Link>
         <Link href="/news" className="card-interactive p-4 text-center">
           <span className="text-lg block mb-1">📰</span>
           <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Full News Feed</span>

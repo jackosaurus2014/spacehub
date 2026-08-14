@@ -377,7 +377,9 @@ export default function StartupHubPage() {
               IPO Watch
             </h2>
             <p className="text-slate-500 text-xs mb-4">
-              Status reflects public reporting as of {STARTUP_HUB_ASOF}; not investment advice.
+              Status reflects public reporting as of {STARTUP_HUB_ASOF}; not investment advice. Once a company lists,
+              track its live price on the{' '}
+              <Link href="/space-stocks" className="text-cyan-400 hover:text-cyan-300">Space Stocks hub</Link>.
             </p>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
