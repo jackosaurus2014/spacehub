@@ -106,6 +106,11 @@ export function getNewGameState(): GameState {
     // V18 — Flagship Scientific Missions (4X Wave W6, science-missions.ts)
     scienceMissions: [],
     npcProgramContributions: [],
+    // V19 — Leaders 2.0 (4X Wave W8, commanders.ts): xp/level/assignment
+    // live ON each HiredCommander element, not as a new top-level array.
+    // A fresh game has no hiredCommanders yet (undefined until the first
+    // hire), and hireCommander() always stamps new hires with
+    // { xp: 0, level: 1, assignment: null } — no default needed here.
   };
 }
 
@@ -297,6 +302,21 @@ export function loadGame(): GameState | null {
     // tick engine starts processing from here on.
     if (!state.scienceMissions) state.scienceMissions = [];
     if (!state.npcProgramContributions) state.npcProgramContributions = [];
+
+    // V19 fields — Leaders 2.0 (4X Wave W8, commanders.ts). Additive,
+    // per-element migration (new sub-pattern vs V13-V18's whole-new-array
+    // additions): existing hired commanders get xp 0 / level 1 / no
+    // assignment, which is numerically IDENTICAL to the pre-W8 formula
+    // (level 1 adds zero magnitude, unassigned earns zero trait bonus) —
+    // a save reload never silently changes existing bonus totals.
+    if (state.hiredCommanders) {
+      state.hiredCommanders = state.hiredCommanders.map(h => ({
+        ...h,
+        xp: h.xp ?? 0,
+        level: h.level ?? 1,
+        assignment: h.assignment ?? null,
+      }));
+    }
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

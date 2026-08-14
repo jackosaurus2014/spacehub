@@ -31,6 +31,7 @@ import MapContextPanel, { type MapSelection } from './MapContextPanel';
 import GlobalActivityFeed from './GlobalActivityFeed';
 import SpatialStrategyPanel from './SpatialStrategyPanel';
 import { playSound } from '@/lib/game/sound-engine';
+import { updateMusicMood } from '@/lib/game/music-engine';
 import { isFoldedFeatureUnlocked } from '@/lib/game/corporation-tiers';
 
 type Layer = 'solar' | 'galactic';
@@ -92,6 +93,14 @@ export default function MapCommandCenter({
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
   const [showActivity, setShowActivity] = useState(false);
+
+  // W12: the galactic layer steers the adaptive score toward the colder
+  // interstellar palette (hint is only honored while the map tab is active —
+  // see selectMusicMood). Covers both the toggle buttons and the keyboard
+  // layer shortcut, since both funnel through `layer`.
+  useEffect(() => {
+    updateMusicMood(state, { mapLayer: layer });
+  }, [layer, state]);
 
   // 3D/2D renderer selection: environment capability × persisted preference.
   // Starts false (2D) so SSR/first paint never assumes WebGL, then upgrades.

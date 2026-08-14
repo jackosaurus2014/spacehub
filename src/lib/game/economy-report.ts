@@ -173,7 +173,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
 
   const megaBonuses = getMegastructureBonuses(state.megastructures || []);
   const repBonuses = getReputationBonuses(state.reputation || 0);
-  const commanderBonuses = computeCommanderBonuses(state.hiredCommanders);
+  const commanderBonuses = computeCommanderBonuses(state.hiredCommanders, state);
   const eventMultipliers = getActiveMultipliers(state);
 
   const powerData = getPowerByLocation(state.buildings);

@@ -47,8 +47,8 @@ function baseState(overrides: Partial<GameState> = {}): GameState {
 }
 
 describe('commanders — roster shape', () => {
-  it('exactly 60 commanders in the roster', () => {
-    expect(COMMANDER_DEFS).toHaveLength(60);
+  it('exactly 80 commanders in the roster (60 original + 20 W8 scientist/engineer leaders)', () => {
+    expect(COMMANDER_DEFS).toHaveLength(80);
   });
 
   it('exactly 10 legendary commanders with full-body art', () => {
@@ -78,12 +78,12 @@ describe('commanders — roster shape', () => {
     expect(getPortraitUrl(COMMANDER_DEFS[0])).toBe(`/game/commander-${COMMANDER_DEFS[0].id}.webp`);
   });
 
-  it('rarity distribution matches design: 15 / 15 / 12 / 8 / 10', () => {
+  it('rarity distribution matches design: 23 / 22 / 17 / 8 / 10 (post-W8)', () => {
     const counts: Record<string, number> = {};
     for (const c of COMMANDER_DEFS) counts[c.rarity] = (counts[c.rarity] || 0) + 1;
-    expect(counts.common).toBe(15);
-    expect(counts.uncommon).toBe(15);
-    expect(counts.rare).toBe(12);
+    expect(counts.common).toBe(23);
+    expect(counts.uncommon).toBe(22);
+    expect(counts.rare).toBe(17);
     expect(counts.epic).toBe(8);
     expect(counts.legendary).toBe(10);
   });

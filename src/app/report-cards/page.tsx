@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
+import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -136,7 +137,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'Private',
     grade: 'A+',
     sector: 'Launch',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$15.5B',
       backlog: '$30B+',
@@ -163,7 +164,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'RKLB',
     grade: 'A',
     sector: 'Launch',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$234M/qtr',
       backlog: '$2.36B',
@@ -190,7 +191,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'LHX',
     grade: 'B+',
     sector: 'Defense & Prime',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$21B+',
       backlog: '$34B',
@@ -217,7 +218,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'NOC',
     grade: 'B+',
     sector: 'Defense & Prime',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$41B',
       backlog: '$87B',
@@ -244,7 +245,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'BA',
     grade: 'C+',
     sector: 'Defense & Prime',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$5.3B',
       backlog: '$22B',
@@ -272,7 +273,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'Private',
     grade: 'B-',
     sector: 'Launch',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$1.6B',
       backlog: '$11B+',
@@ -300,7 +301,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'PL',
     grade: 'B+',
     sector: 'Satellite & EO',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$308M',
       backlog: '$900M+',
@@ -327,7 +328,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'Private (Advent)',
     grade: 'B+',
     sector: 'Satellite & EO',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$2.1B',
       backlog: '$3.8B',
@@ -354,7 +355,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'Private',
     grade: 'B-',
     sector: 'Launch',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '<$50M',
       backlog: '$1.8B',
@@ -382,7 +383,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'Private',
     grade: 'D+',
     sector: 'Launch',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '~$50M',
       backlog: '$30M',
@@ -409,7 +410,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'SPCE',
     grade: 'C-',
     sector: 'Tourism',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '<$10M',
       backlog: '$120M',
@@ -436,7 +437,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'IRDM',
     grade: 'A-',
     sector: 'Communications',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$880M',
       backlog: '$2.4B',
@@ -464,7 +465,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'SES (EPA)',
     grade: 'B+',
     sector: 'Communications',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$3.7B',
       backlog: '$7.4B',
@@ -491,7 +492,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'TSAT',
     grade: 'C',
     sector: 'Communications',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '<$600M',
       backlog: '$3.2B',
@@ -518,7 +519,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
     ticker: 'Private',
     grade: 'B',
     sector: 'Space Station',
-    quarterAssessed: 'Q2 2026',
+    quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,
     metrics: {
       revenue: '$350M',
       backlog: '$3.5B+',

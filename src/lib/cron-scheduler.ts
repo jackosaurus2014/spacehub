@@ -77,6 +77,10 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 11 * * *',    path: '/api/refresh?type=patents',           label: 'patents-refresh',            maxStaleMinutes: 1560 },
   { schedule: '0 12 * * *',    path: '/api/refresh?type=regulatory-feeds',  label: 'regulatory-feeds',           maxStaleMinutes: 1560 },
   { schedule: '0 14 * * *',    path: '/api/refresh?type=sec-filings',       label: 'sec-filings',                maxStaleMinutes: 1560 },
+  // Content-accuracy sentinel — daily checklist guarding against stale/past-dated
+  // "current" content (featured mission dates, countdown widgets, curated as-of
+  // stamps, ATS/news/AI pipeline liveness). See src/lib/content-accuracy.ts.
+  { schedule: '0 12 * * *',    path: '/api/cron/content-accuracy',          label: 'content-accuracy',           maxStaleMinutes: 1560 },
 
   // Weekly / twice-weekly
   { schedule: '0 9 * * 5',     path: '/api/newsletter/send-weekly-digest',                 label: 'weekly-digest-email',        maxStaleMinutes: 11520 },

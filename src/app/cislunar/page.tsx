@@ -121,9 +121,9 @@ interface InternationalPartner {
 // Seed data so the timeline is never empty
 const ARTEMIS_SEED: ArtemisMission[] = [
   { id: 'a1', name: 'Artemis I', date: 'Nov 2022', status: 'completed', vehicle: 'SLS Block 1 / Orion', crew: 0, objectives: ['Uncrewed test flight around the Moon', 'Validate Orion heat shield at lunar return speed', 'Test SLS performance'], description: 'Successful uncrewed test flight. Orion traveled 1.4 million miles over 25.5 days, farther than any spacecraft designed to carry humans.' },
-  { id: 'a2', name: 'Artemis II', date: 'Late 2025 (targeted)', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', crew: 4, objectives: ['First crewed flight around the Moon since Apollo 17', 'Test Orion life support with crew', 'Validate deep space navigation'], description: 'First crewed lunar flyby in over 50 years. 4 astronauts will orbit the Moon and return to Earth over ~10 days.' },
-  { id: 'a3', name: 'Artemis III', date: '2026-2027 (targeted)', status: 'planned', vehicle: 'SLS Block 1 / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crewed lunar landing since 1972', 'Land near lunar south pole', 'Collect samples from permanently shadowed regions'], description: 'Planned first crewed landing using SpaceX Starship as the Human Landing System. Timeline dependent on Starship readiness.' },
-  { id: 'a4', name: 'Artemis IV', date: '~2028 (planned)', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crew visit to Lunar Gateway', 'Deliver I-Hab module', 'Extended lunar surface operations'], description: 'Planned first mission to dock with the Lunar Gateway station in NRHO. Will include international habitat module.' },
+  { id: 'a2', name: 'Artemis II', date: 'Apr 1-10, 2026', status: 'completed', vehicle: 'SLS Block 1 / Orion', crew: 4, objectives: ['First crewed flight around the Moon since Apollo 17', 'Test Orion life support with crew', 'Validate deep space navigation'], description: 'First crewed lunar flyby in over 50 years, flown successfully April 1-10, 2026. 4 astronauts (Wiseman, Glover, Koch, Hansen) orbited the Moon and returned to Earth.' },
+  { id: 'a3', name: 'Artemis III', date: 'NET late 2027', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', hls: 'SpaceX Starship HLS + Blue Origin Blue Moon', crew: 4, objectives: ['Earth-orbit demonstration of commercial human landing systems', 'Test Orion rendezvous and docking with Starship HLS and Blue Moon', 'Validate crew transfer procedures ahead of a lunar landing'], description: 'Restructured in Feb 2026 from a direct lunar landing to an Earth-orbit demonstration mission. Crew announced Jun 9, 2026 (incl. ESA astronaut Luca Parmitano). Orion/SLS stacking underway as of Aug 2026; NET late 2027.' },
+  { id: 'a4', name: 'Artemis IV', date: '~2028 (planned)', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crewed lunar landing since Apollo 17', 'First crew visit to Lunar Gateway', 'Deliver I-Hab module'], description: 'Now slated to carry the first crewed lunar landing (moved from Artemis III during the Feb 2026 program restructuring), plus the first crew visit to dock with the Lunar Gateway station in NRHO.' },
   { id: 'a5', name: 'Artemis V', date: '~2030 (planned)', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'Blue Origin Blue Moon', crew: 4, objectives: ['Blue Origin HLS first crewed landing', 'Deliver ESPRIT refueling module to Gateway', 'Establish sustained lunar presence'], description: 'Planned first mission using Blue Origin\'s Blue Moon lander. Focus on establishing permanent infrastructure.' },
   { id: 'a6', name: 'Artemis VI', date: '~2031 (planned)', status: 'planned', vehicle: 'SLS Block 2 / Orion', crew: 4, objectives: ['Extended surface stays (30+ days)', 'Deploy surface power system', 'Begin ISRU demonstrations'], description: 'Planned extended duration missions with focus on in-situ resource utilization and sustained surface presence.' },
 ];
@@ -320,7 +320,7 @@ function ArtemisTab() {
               </div>
               <div className="flex justify-between">
                 <span className="text-star-400">Flights to Date:</span>
-                <span className="text-green-400 font-semibold">1 (Artemis I)</span>
+                <span className="text-green-400 font-semibold">2 (Artemis I-II)</span>
               </div>
             </div>
           </div>
@@ -378,7 +378,7 @@ function ArtemisTab() {
               </div>
               <div className="flex justify-between">
                 <span className="text-star-400">First Use:</span>
-                <span className="text-star-200">Artemis III (NET mid-2026)</span>
+                <span className="text-star-200">Artemis III (NET late 2027)</span>
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffec
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
+import { updateMusicMood } from '@/lib/game/music-engine';
 import { getBuildingAsset } from '@/lib/game/assets';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -44,6 +45,12 @@ import RegionBackdrop from '@/components/game/RegionBackdrop';
 import StardustLayer from '@/components/game/StardustLayer';
 import HazardAlertLayer from '@/components/game/HazardAlertLayer';
 import MilestoneVignette from '@/components/game/MilestoneVignette';
+import CinematicOverlay from '@/components/game/CinematicOverlay';
+import {
+  enqueueCinematicMoments, dequeueCinematicMoment,
+  detectCinematicMomentsFromEvents, buildNarrativeChoiceCinematicMoment, buildDiscoveryCinematicMoment,
+  type CinematicMoment,
+} from '@/lib/game/cinematic-moments';
 import FleetPanel from '@/components/game/FleetPanel';
 import CraftingPanel from '@/components/game/CraftingPanel';
 import WorkforcePanel from '@/components/game/WorkforcePanel';
@@ -69,7 +76,7 @@ import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getTierUnlockedTabs, getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
 import GameChat from '@/components/game/GameChat';
 import CommanderPanel from '@/components/game/CommanderPanel';
-import { hireCommander, dismissCommander } from '@/lib/game/commanders';
+import { hireCommander, dismissCommander, assignCommander, unassignCommander } from '@/lib/game/commanders';
 import FactionPanel from '@/components/game/FactionPanel';
 import { sendEnvoy } from '@/lib/game/factions';
 import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
@@ -699,6 +706,15 @@ export default function SpaceTycoonPage() {
   const [offlineEarnings, setOfflineEarnings] = useState<OfflineEarnings | null>(null);
   const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [showFrontierGraduation, setShowFrontierGraduation] = useState(false);
+  // 4X Wave W5 — cinematic presentation queue (client-side only; see
+  // src/lib/game/cinematic-moments.ts). cinematicSeenEventIdsRef baselines
+  // eventLog on mount so a loaded save doesn't replay its whole history as a
+  // wall of overlays (same "capture baseline, only react to what's new"
+  // shape as the Frontier-graduation effect below). cinematicMountedRefs
+  // gate the two watcher effects' very first run for the same reason.
+  const [cinematicQueue, setCinematicQueue] = useState<CinematicMoment[]>([]);
+  const cinematicSeenEventIdsRef = useRef<Set<string> | null>(null);
+  const cinematicPendingChoiceMountedRef = useRef(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevFrontierStatusRef = useRef<GameState['frontierStatus'] | undefined>(undefined);
@@ -974,6 +990,13 @@ export default function SpaceTycoonPage() {
 
   const [showArchetypePicker, setShowArchetypePicker] = useState(false);
 
+  // W12: adaptive music — re-derive the mood whenever the game state or the
+  // player's focus changes (setAmbientRegion precedent: presentation-only,
+  // fire-and-forget). Mood mapping itself is the pure selectMusicMood().
+  useEffect(() => {
+    if (state) updateMusicMood(state, { activeTab: tab });
+  }, [state, tab]);
+
   const handleNewGame = useCallback(() => {
     initAudio();
     // Opens the archetype picker instead of immediately starting a vanilla
@@ -1152,6 +1175,11 @@ export default function SpaceTycoonPage() {
           if (data.success) {
             playSound('milestone');
             toast.success(`First in the world: "${milestoneId.replace(/_/g, ' ')}" — claimed by ${programName}.`, 'Global first!');
+            // 4X Wave W5: the world-first science claim IS the "first ocean
+            // entry, biosignature confirmation" cinematic moment the wave
+            // brief calls out — the overlay plays its own 'cinematic'
+            // stinger when it actually presents.
+            setCinematicQueue(q => enqueueCinematicMoments(q, [buildDiscoveryCinematicMoment(milestoneId, programName)]));
           } else if (data.alreadyClaimed) {
             const beatBy = data.claimedBy || 'another corporation';
             toast.info(`${beatBy} claimed "${milestoneId.replace(/_/g, ' ')}" first — your science still counts, the flag does not.`, 'Milestone race lost');
@@ -1170,6 +1198,44 @@ export default function SpaceTycoonPage() {
         .catch(() => {});
     }
   }, [state?.scienceMissions]);
+
+  // 4X Wave W5 — cinematic queue, eventLog-diff watcher. Detects victory
+  // achievements, megastructure completions, and expedition arrivals/first
+  // contact (all logged via eventLog by their owning systems) plus
+  // narrative chain-head 'info' stages (logged the same way by
+  // advanceNarrativeChains). First run only baselines the seen-ids set —
+  // nothing already in a loaded save's eventLog replays as a cinematic.
+  useEffect(() => {
+    if (!state) return;
+    if (cinematicSeenEventIdsRef.current === null) {
+      cinematicSeenEventIdsRef.current = new Set((state.eventLog || []).map(e => e.id));
+      return;
+    }
+    const seen = cinematicSeenEventIdsRef.current;
+    const newEntries = (state.eventLog || []).filter(e => !seen.has(e.id));
+    if (newEntries.length === 0) return;
+    for (const e of newEntries) seen.add(e.id);
+    const moments = detectCinematicMomentsFromEvents(newEntries);
+    if (moments.length > 0) setCinematicQueue(q => enqueueCinematicMoments(q, moments));
+  }, [state?.eventLog]);
+
+  // 4X Wave W5 — cinematic queue, pendingChoice watcher. Narrative
+  // chain-head 'choice' stages (e.g. the Europa arc opener, Accord Council's
+  // quarterly vote head) never reach eventLog until AFTER the player
+  // resolves them, so they need their own trigger off state.pendingChoice.
+  // The CinematicOverlay renders above EventChoiceModal (z-95 vs z-70), so
+  // when both are queued the player sees the cinematic first, dismisses it,
+  // and the choice modal underneath is immediately available — no extra
+  // gating needed. First run only baselines (skips a pendingChoice the
+  // player was already mid-resolving when the save loaded).
+  useEffect(() => {
+    if (!cinematicPendingChoiceMountedRef.current) {
+      cinematicPendingChoiceMountedRef.current = true;
+      return;
+    }
+    const moment = buildNarrativeChoiceCinematicMoment(state?.pendingChoice ?? null);
+    if (moment) setCinematicQueue(q => enqueueCinematicMoments(q, [moment]));
+  }, [state?.pendingChoice?.eventId]);
 
   // Protected Frontier graduation — detect the active→graduated transition
   // (auto-graduation happens inside processTick in game-engine.ts; manual
@@ -1605,6 +1671,13 @@ export default function SpaceTycoonPage() {
       <HazardAlertLayer state={state} />
       {/* Milestone celebration overlay — tier ascension, first billion, first contact */}
       <MilestoneVignette state={state} />
+      {/* 4X Wave W5 — cinematic presentation queue: narrative chain-heads,
+          science discoveries, expedition arrivals/first contact, victories,
+          megastructure completions. One at a time; never blocks the tick. */}
+      <CinematicOverlay
+        moment={cinematicQueue[0] ?? null}
+        onDismiss={() => setCinematicQueue(q => dequeueCinematicMoment(q))}
+      />
       {/* Hero art background */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
@@ -2019,6 +2092,14 @@ export default function SpaceTycoonPage() {
             onDismiss={(defId) => {
               playSound('click');
               setState(prev => prev ? dismissCommander(prev, defId) : prev);
+            }}
+            onAssign={(defId, postType, targetId) => {
+              playSound('click');
+              setState(prev => prev ? assignCommander(prev, defId, postType, targetId) : prev);
+            }}
+            onUnassign={(defId) => {
+              playSound('click');
+              setState(prev => prev ? unassignCommander(prev, defId) : prev);
             }}
           />
         )}

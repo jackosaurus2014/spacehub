@@ -111,6 +111,19 @@ export interface ChainStage {
   /** Dynamic consequence for 'info' stages (rolled outcomes / flag branches). */
   resolve?: (ctx: ResolveContext) => ChainConsequence;
   choices?: ChainStageChoice[];
+  /** 4X Wave W5 (docs/4X_BASELINE_2026-08.md Part 3.4): presentation hint,
+   *  static data only — no state/save impact. When set to 'cinematic', the
+   *  space-tycoon page's CinematicOverlay queue presents a full-screen
+   *  moment for this stage's arrival instead of (or ahead of, for 'choice'
+   *  stages) the usual toast/modal treatment. Reserved for chain-head
+   *  stages (stageIndex 0) on campaign/quarterly-cadence chains — the
+   *  tactical space_weather_ladder is deliberately left unflagged: it
+   *  escalates almost every eligible month while active, and a full-screen
+   *  stinger on that cadence would violate CLAUDE.md's "don't collapse the
+   *  tempo" principle. Accord Council's vote head IS flagged despite its
+   *  quarterly recurrence — the W5 wave entry explicitly calls out a
+   *  "vote" stinger, and quarterly is rare enough to stay an event. */
+  presentationHint?: 'cinematic';
 }
 
 export type ChainCadence = 'tactical' | 'quarterly' | 'campaign';
@@ -375,7 +388,7 @@ const EUROPA_BIOSIGNATURE_ARC: ChainDefinition = {
   eligibility: (state) => (state.unlockedLocations || []).includes('jupiter_system'),
   stages: [
     {
-      id: 'eu_11', name: 'Ambiguous Chemistry', icon: '🧊', kind: 'choice',
+      id: 'eu_11', name: 'Ambiguous Chemistry', icon: '🧊', kind: 'choice', presentationHint: 'cinematic',
       description: "Europa Clipper II's cryobot returns disequilibrium chemistry from the ice-shell brine — a classic biosignature ambiguity. Could be abiotic serpentinization. Could be something else.",
       choices: [
         { label: 'Announce now', description: 'Go public immediately. Reputational upside if it holds — real risk if it does not.',
@@ -460,7 +473,7 @@ const CONTAMINATION_PROTOCOLS: ChainDefinition = {
   eligibility: (state) => (state.unlockedLocations || []).length >= 4,
   stages: [
     {
-      id: 'cp_16', name: 'Quarantine Scare', icon: '🧪', kind: 'choice',
+      id: 'cp_16', name: 'Quarantine Scare', icon: '🧪', kind: 'choice', presentationHint: 'cinematic',
       description: 'A restricted sample-return canister shows a seal-integrity anomaly on final approach.',
       choices: [
         { label: 'Full BSL-4 hold', description: 'Delay and cost, but zero exposure risk.',
@@ -504,7 +517,7 @@ const ISO_FLYBY: ChainDefinition = {
   minStageGapMonths: 1,
   stages: [
     {
-      id: 'iso_21', name: 'ISO Detected', icon: '☄️', kind: 'info',
+      id: 'iso_21', name: 'ISO Detected', icon: '☄️', kind: 'info', presentationHint: 'cinematic',
       description: "Deep-sky surveys flag an interstellar object on a hyperbolic trajectory — 'Oumuamua/Borisov-class. Trajectory publishes; you have weeks, not months.",
       consequence: { label: 'ISO Detected', reputationPoints: 150 },
     },
@@ -557,7 +570,7 @@ const ACCORD_COUNCIL: ChainDefinition = {
   cooldownMonthsAfterCompletion: 0,
   stages: [
     {
-      id: 'ac_24', name: 'Debris-Mitigation Standard', icon: '🛰️', kind: 'choice',
+      id: 'ac_24', name: 'Debris-Mitigation Standard', icon: '🛰️', kind: 'choice', presentationHint: 'cinematic',
       description: 'The Council votes on a binding debris-mitigation standard for all Accord-signatory operators.',
       choices: [
         { label: 'Support the standard', description: 'Higher deorbit compliance costs, lower Kessler-cascade risk.',
@@ -617,7 +630,7 @@ const SUPERCONDUCTOR_CRISIS: ChainDefinition = {
   startProbabilityPerMonth: 0.02,
   stages: [
     {
-      id: 'sc_31', name: 'Superconductor Replication Claim', icon: '⚛️', kind: 'choice',
+      id: 'sc_31', name: 'Superconductor Replication Claim', icon: '⚛️', kind: 'choice', presentationHint: 'cinematic',
       description: 'A lab claims a room-temperature, ambient-pressure superconductor — LK-99 echoes. Replication attempts are underway across the industry, ties to your own superconductors research.',
       choices: [
         { label: 'License early', description: 'Pay now for exclusive early access. The claim is unverified — same roll for everyone this world-month.',
@@ -644,7 +657,7 @@ const INDUSTRY_SHOCKS: ChainDefinition = {
   minStageGapMonths: 2,
   stages: [
     {
-      id: 'is_32', name: 'Fusion Ignition Milestone', icon: '☢️', kind: 'info',
+      id: 'is_32', name: 'Fusion Ignition Milestone', icon: '☢️', kind: 'info', presentationHint: 'cinematic',
       description: 'A national lab confirms sustained fusion ignition gain — a global research-speed window opens on the power spine.',
       consequence: { label: 'Fusion Ignition Milestone', researchSpeedMultiplier: 1.1, effectDurationMonths: 3, reputationPoints: 300 },
     },
@@ -705,7 +718,7 @@ const CREW_HEALTH_CRISIS: ChainDefinition = {
   minStageGapMonths: 2,
   stages: [
     {
-      id: 'ch_36', name: 'SANS Cluster', icon: '👁️', kind: 'choice',
+      id: 'ch_36', name: 'SANS Cluster', icon: '👁️', kind: 'choice', presentationHint: 'cinematic',
       description: 'A cluster of Spaceflight-Associated Neuro-ocular Syndrome cases appears across your long-duration crews.',
       choices: [
         { label: 'Mitigation protocol', description: 'Fund countermeasures.',
@@ -747,7 +760,7 @@ const GREAT_SILENCE_RECURRENCE: ChainDefinition = {
   startProbabilityPerMonth: 0.01,
   stages: [
     {
-      id: 'gs_41', name: 'Great Silence Recurrence', icon: '🐝', kind: 'info',
+      id: 'gs_41', name: 'Great Silence Recurrence', icon: '🐝', kind: 'info', presentationHint: 'cinematic',
       description: 'Every Hive Collective interface station goes dormant simultaneously — just like 2103. Xenogenic-biomatter trade freezes for the duration; resolution rolls after several months, then traffic resumes as if nothing happened.',
       consequence: { label: 'Great Silence Recurrence', costMultiplier: 1.02, effectDurationMonths: 2, factionRep: { 'hive-collective': 5 }, reputationPoints: 300 },
     },
@@ -762,7 +775,7 @@ const TRITON_ARCHIVE_FOLLOWUP: ChainDefinition = {
   startProbabilityPerMonth: 0.01,
   stages: [
     {
-      id: 'ta_42', name: 'Triton Archive Follow-Up', icon: '🏛️', kind: 'choice',
+      id: 'ta_42', name: 'Triton Archive Follow-Up', icon: '🏛️', kind: 'choice', presentationHint: 'cinematic',
       description: 'Echo Remnants commission a follow-up investigation into the 2149 Triton Archive breach — they want your help tracing the intrusion.',
       choices: [
         { label: 'Assist the investigation', description: 'Espionage-flavored intel work, paid in trust and access.',
@@ -781,7 +794,7 @@ const WANDERER1_ANOMALY: ChainDefinition = {
   startProbabilityPerMonth: 0.01,
   stages: [
     {
-      id: 'w1_43', name: 'Wanderer-1 Data Anomaly', icon: '🛰️', kind: 'info',
+      id: 'w1_43', name: 'Wanderer-1 Data Anomaly', icon: '🛰️', kind: 'info', presentationHint: 'cinematic',
       description: "Re-analysis of Wanderer-1's 2147 Proxima telemetry turns up an unexplained anomaly in the return dataset.",
       resolve: ({ monthIndex }) => {
         const rng = worldRng('wanderer1-anomaly', monthIndex);
@@ -802,7 +815,7 @@ const RING_FIRE_ANNIVERSARY: ChainDefinition = {
   eligibility: (state) => (state.unlockedLocations || []).includes('saturn_system'),
   stages: [
     {
-      id: 'rf_44', name: 'Ring Fire Anniversary Review', icon: '🪐', kind: 'choice',
+      id: 'rf_44', name: 'Ring Fire Anniversary Review', icon: '🪐', kind: 'choice', presentationHint: 'cinematic',
       description: 'The Ring Fire anniversary triggers a mandatory Saturn-operations safety review — 1,800 dead in 2137 is not ancient history out here.',
       choices: [
         { label: 'Fund retrofit', description: 'Real safety investment, real cost.',
@@ -833,6 +846,36 @@ export const CHAIN_MAP = new Map(CHAIN_DEFINITIONS.map(c => [c.id, c]));
 
 /** Total authored event count — 44 per docs/4X_BASELINE_2026-08.md Part 2c. */
 export const TOTAL_NARRATIVE_EVENT_COUNT = CHAIN_DEFINITIONS.reduce((sum, c) => sum + c.stages.length, 0);
+
+/** 4X Wave W5: does this chain stage carry the cinematic presentation hint?
+ *  Pure lookup against static content — used by the page's cinematic-queue
+ *  watcher to decide whether a newly-arrived pendingChoice or eventLog entry
+ *  should enqueue a full-screen CinematicOverlay moment. */
+export function isCinematicChainStage(chainId: string, stageIndex: number): boolean {
+  const def = CHAIN_MAP.get(chainId);
+  return def?.stages[stageIndex]?.presentationHint === 'cinematic';
+}
+
+/** Lookup table from an info-stage's logged event title (`${icon} ${name}`,
+ *  the exact format advanceNarrativeChains uses in narrative-events.ts) to
+ *  its chain context — lets the page's eventLog-diff watcher recognize a
+ *  cinematic info-stage without re-deriving the title format itself. Only
+ *  'info'-kind cinematic stages are included; 'choice'-kind ones surface via
+ *  the pendingChoice watcher instead (they never reach eventLog until the
+ *  player has already resolved them). */
+export const CINEMATIC_INFO_STAGE_TITLES: Map<string, { chainId: string; chainName: string; stageIndex: number; icon: string; name: string; description: string }> = (() => {
+  const map = new Map<string, { chainId: string; chainName: string; stageIndex: number; icon: string; name: string; description: string }>();
+  for (const def of CHAIN_DEFINITIONS) {
+    def.stages.forEach((stage, stageIndex) => {
+      if (stage.presentationHint !== 'cinematic' || stage.kind !== 'info') return;
+      map.set(`${stage.icon} ${stage.name}`, {
+        chainId: def.id, chainName: def.name, stageIndex,
+        icon: stage.icon, name: stage.name, description: stage.description,
+      });
+    });
+  }
+  return map;
+})();
 
 // ─── Progress helpers ────────────────────────────────────────────────────
 

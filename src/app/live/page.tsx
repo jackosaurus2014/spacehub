@@ -655,7 +655,7 @@ function LiveHubContent() {
               </div>
               <div>
                 <h3 className="text-white font-semibold text-lg">NASA Moon Base & Artemis Program</h3>
-                <p className="text-slate-400 text-sm mt-0.5">Artemis II complete. Next up: Starship HLS demo, Gateway launch, and Artemis III crew landing.</p>
+                <p className="text-slate-400 text-sm mt-0.5">Artemis II complete (flown Apr 1-10, 2026). Next up: Artemis III Earth-orbit HLS demonstration, NET late 2027 &mdash; first crewed landing shifts to Artemis IV.</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-3">

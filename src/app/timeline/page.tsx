@@ -340,10 +340,10 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
     icon: '\uD83D\uDEF8',
   },
   {
-    year: 2025,
+    year: 2026,
     title: 'Artemis II Crewed Lunar Flyby',
     description:
-      'Artemis II launched a crew of four astronauts on a trajectory around the Moon, marking humanity\'s first crewed voyage beyond low Earth orbit since Apollo 17 in 1972. This mission validated life support and navigation systems ahead of Artemis III\'s planned lunar landing.',
+      'Artemis II launched a crew of four astronauts (Wiseman, Glover, Koch, Hansen) on a 10-day trajectory around the Moon, flying April 1-10, 2026 and marking humanity\'s first crewed voyage beyond low Earth orbit since Apollo 17 in 1972. This mission validated life support and navigation systems ahead of Artemis III\'s Earth-orbit HLS demonstration, NET late 2027.',
     category: 'Government',
     icon: '\uD83C\uDF15',
   },

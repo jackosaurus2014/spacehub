@@ -1,5 +1,11 @@
 // ─── Space Tycoon: Type Definitions ─────────────────────────────────────────
 
+// W8 (Leaders 2.0): type-only import — commanders.ts imports `type { GameState }`
+// from this file, so this is a type-only circular reference (erased at
+// compile time, safe). Keeps HiredCommander/CommanderPool defined in one
+// place instead of drifting inline copies.
+import type { HiredCommander, CommanderPool } from './commanders';
+
 export interface GameDate {
   year: number;
   month: number; // 1-12
@@ -571,9 +577,10 @@ export interface GameState {
     efficiency: number;
   }[];
 
-  // Commanders (hired crew that grant passive bonuses)
-  hiredCommanders?: { definitionId: string; hiredAtMs: number }[];
-  commanderPool?: { definitionIds: string[]; refreshedAtMs: number };
+  // Commanders (hired crew that grant passive bonuses; W8 Leaders 2.0 adds
+  // xp/level/assignment on HiredCommander itself — see commanders.ts)
+  hiredCommanders?: HiredCommander[];
+  commanderPool?: CommanderPool;
 
   // Faction standing (reputation -100 to +100 per faction)
   factionReputation?: Record<string, number>;

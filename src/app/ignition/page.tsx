@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -57,23 +56,23 @@ interface RelatedArticle {
 const TIMELINE_MILESTONES: TimelineMilestone[] = [
   {
     id: 'artemis-ii',
-    date: 'Apr 2026',
-    title: 'Artemis II crewed lunar flyby',
-    description: 'First crewed mission around the Moon since Apollo 17. Four astronauts will fly around the Moon aboard Orion and return to Earth.',
-    status: 'in-progress',
+    date: 'Apr 1-10, 2026',
+    title: 'Artemis II crewed lunar flyby — complete',
+    description: 'First crewed mission around the Moon since Apollo 17, flown successfully. Four astronauts (Wiseman, Glover, Koch, Hansen) flew around the Moon aboard Orion and returned safely to Earth.',
+    status: 'completed',
   },
   {
     id: 'artemis-iii-test',
-    date: 'Mid 2027',
+    date: 'NET Late 2027',
     title: 'Artemis III Earth-orbit test (Starship HLS + Blue Moon)',
-    description: 'Earth-orbit demonstrations of both SpaceX Starship Human Landing System and Blue Origin Blue Moon lander before crewed lunar landing attempts.',
+    description: 'Restructured in Feb 2026 from a lunar landing to an Earth-orbit demonstration of both the SpaceX Starship Human Landing System and Blue Origin Blue Moon lander. Crew announced Jun 9, 2026; Orion/SLS stacking underway as of Aug 2026.',
     status: 'upcoming',
   },
   {
     id: 'artemis-iv',
-    date: 'Early 2028',
+    date: '~2028 (planned)',
     title: 'Artemis IV first crewed lunar landing',
-    description: 'First crewed landing on the lunar surface since Apollo 17 in 1972, using the SpaceX Starship HLS near the lunar south pole.',
+    description: 'First crewed landing on the lunar surface since Apollo 17 in 1972 (moved from Artemis III during the Feb 2026 restructuring), using the SpaceX Starship HLS near the lunar south pole.',
     status: 'upcoming',
   },
   {
@@ -215,64 +214,14 @@ const STATUS_STYLES: Record<MilestoneStatus, { label: string; color: string; bg:
 };
 
 const ARTEMIS_BADGE_STYLES: Record<string, { color: string; bg: string; border: string }> = {
-  'Ready': { color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500/30' },
-  '2027': { color: 'text-yellow-400', bg: 'bg-yellow-900/20', border: 'border-yellow-500/30' },
+  'Complete': { color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500/30' },
+  'NET 2027': { color: 'text-yellow-400', bg: 'bg-yellow-900/20', border: 'border-yellow-500/30' },
   '2028': { color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500/30' },
 };
 
 // ────────────────────────────────────────
-// Countdown Hook
-// ────────────────────────────────────────
-
-const ARTEMIS_II_TARGET = new Date('2026-04-01T22:24:00Z').getTime(); // April 1, 2026 6:24 PM EDT
-
-function useCountdown(targetMs: number) {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
-  useEffect(() => {
-    function calc() {
-      const diff = targetMs - Date.now();
-      if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-      return {
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((diff / (1000 * 60)) % 60),
-        seconds: Math.floor((diff / 1000) % 60),
-      };
-    }
-    setTimeLeft(calc());
-    const interval = setInterval(() => setTimeLeft(calc()), 1000);
-    return () => clearInterval(interval);
-  }, [targetMs]);
-
-  return timeLeft;
-}
-
-// ────────────────────────────────────────
 // Components
 // ────────────────────────────────────────
-
-function CountdownDisplay() {
-  const countdown = useCountdown(ARTEMIS_II_TARGET);
-
-  return (
-    <div className="flex items-center gap-3 flex-wrap">
-      {[
-        { value: countdown.days, label: 'Days' },
-        { value: countdown.hours, label: 'Hrs' },
-        { value: countdown.minutes, label: 'Min' },
-        { value: countdown.seconds, label: 'Sec' },
-      ].map((unit) => (
-        <div key={unit.label} className="flex flex-col items-center">
-          <span className="text-2xl md:text-3xl font-mono font-bold text-white tabular-nums">
-            {String(unit.value).padStart(2, '0')}
-          </span>
-          <span className="text-[10px] text-star-400 uppercase tracking-widest">{unit.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 function HeroStats() {
   const stats = [
@@ -302,8 +251,8 @@ function HeroStats() {
 
 function LiveStatusSection() {
   const badges = [
-    { mission: 'Artemis II', status: 'Ready' },
-    { mission: 'Artemis III', status: '2027' },
+    { mission: 'Artemis II', status: 'Complete' },
+    { mission: 'Artemis III', status: 'NET 2027' },
     { mission: 'Artemis IV', status: '2028' },
   ];
 
@@ -350,12 +299,15 @@ function LiveStatusSection() {
           </div>
         </div>
 
-        {/* Next Milestone Countdown */}
+        {/* Next Milestone */}
         <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-5">
           <div className="text-sm text-star-300 uppercase tracking-wider mb-2">Next Milestone</div>
-          <h3 className="text-lg font-semibold text-white mb-1">Artemis II Launch</h3>
-          <p className="text-star-400 text-sm mb-4">Crewed lunar flyby — April 2026</p>
-          <CountdownDisplay />
+          <h3 className="text-lg font-semibold text-white mb-1">Artemis III — Earth-Orbit HLS Demo</h3>
+          <p className="text-star-400 text-sm mb-4">Orion docks with Starship HLS &amp; Blue Moon in Earth orbit</p>
+          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-900/20 border border-yellow-500/30">
+            <span className="text-xs font-medium text-yellow-400 uppercase tracking-widest">No Earlier Than</span>
+            <span className="text-lg font-bold text-white">Late 2027</span>
+          </div>
         </div>
       </div>
     </div>

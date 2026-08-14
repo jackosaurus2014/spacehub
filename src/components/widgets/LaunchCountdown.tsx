@@ -14,13 +14,13 @@ const UPCOMING_LAUNCHES = [
     status: 'Go' as const,
   },
   {
-    mission: 'Artemis II',
+    mission: 'Artemis III (NET)',
     provider: 'NASA',
     vehicle: 'SLS Block 1',
-    date: '2026-04-01T12:00:00Z',
+    date: '2027-12-31T12:00:00Z', // NET late 2027 — Earth-orbit HLS demonstration; exact date not yet firm
     site: 'Kennedy Space Center',
-    type: 'Crewed Lunar',
-    status: 'Go' as const,
+    type: 'Earth-Orbit HLS Demo',
+    status: 'TBD' as const,
   },
   {
     mission: 'Falcon 9 - Starlink Group 12-1',

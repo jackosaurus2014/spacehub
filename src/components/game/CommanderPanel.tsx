@@ -8,30 +8,54 @@ import {
   COMMANDER_MAP,
   getPortraitUrl,
   getFullbodyUrl,
+  hasPortraitArt,
   getHireCap,
   canHire,
   ensureFreshPool,
   computeCommanderBonuses,
+  getRosterBucket,
+  getCommanderTraits,
+  getCommanderXpProgress,
+  canAssignToPost,
+  isAssignmentProductive,
+  ASSIGNMENT_POST_LABEL,
   RARITY_LABEL,
   RARITY_ACCENT,
   RARITY_HIRE_COST,
-  RARITY_MAGNITUDE,
   CLASS_LABEL,
   getClassBonusText,
   POOL_REFRESH_MS,
+  MAX_LEVEL,
   type CommanderDefinition,
+  type HiredCommander,
+  type AssignmentPostType,
+  type RosterBucket,
 } from '@/lib/game/commanders';
+import { RESEARCH_CATEGORIES } from '@/lib/game/research-tree';
+import { SCIENCE_PROGRAMS } from '@/lib/game/science-missions';
+import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { INTERSTELLAR_SYSTEM_MAP } from '@/lib/game/interstellar';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 
 interface Props {
   state: GameState;
   onHire: (defId: string) => void;
   onDismiss: (defId: string) => void;
+  onAssign: (defId: string, postType: AssignmentPostType, targetId?: string) => void;
+  onUnassign: (defId: string) => void;
 }
 
-export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
+const BUCKET_FILTERS: { id: RosterBucket | 'all'; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'commander', label: 'Commander' },
+  { id: 'scientist', label: 'Scientist' },
+  { id: 'engineer', label: 'Engineer' },
+];
+
+export default function CommanderPanel({ state, onHire, onDismiss, onAssign, onUnassign }: Props) {
   const [activeTab, setActiveTab] = useState<'roster' | 'recruit'>('roster');
   const [heroView, setHeroView] = useState<string | null>(null);
+  const [rosterFilter, setRosterFilter] = useState<RosterBucket | 'all'>('all');
 
   const hired = state.hiredCommanders || [];
   const cap = getHireCap(state);
@@ -40,10 +64,24 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
   const pool = useMemo(() => ensureFreshPool(state), [state]);
   const poolRefreshIn = Math.max(0, (pool.refreshedAtMs + POOL_REFRESH_MS - Date.now()) / 1000);
 
-  const bonuses = computeCommanderBonuses(hired);
+  const bonuses = computeCommanderBonuses(hired, state);
   const pct = (m: number) => `+${Math.round((m - 1) * 100)}%`;
+  const pt = (v: number) => `${v >= 0 ? '+' : ''}${Math.round(v * 100)}%`;
 
   const heroDef = heroView ? COMMANDER_MAP.get(heroView) : null;
+
+  const filteredHired = useMemo(() => {
+    if (rosterFilter === 'all') return hired;
+    return hired.filter(h => {
+      const def = COMMANDER_MAP.get(h.definitionId);
+      return def && getRosterBucket(def) === rosterFilter;
+    });
+  }, [hired, rosterFilter]);
+
+  // Active/completed expeditions available as an assignment target.
+  const activeExpeditions = (state.expeditions || []).filter(
+    e => e.phase !== 'completed' && e.phase !== 'lost',
+  );
 
   return (
     <div className="space-y-4">
@@ -54,7 +92,7 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
         <div className="flex items-start justify-between gap-4 mb-3">
           <div>
             <h2 className="game-heading text-white text-base font-bold">Commanders</h2>
-            <p className="text-slate-500 text-xs mt-0.5">Hired commanders grant passive global bonuses. Refresh pool every 8 hours.</p>
+            <p className="text-slate-500 text-xs mt-0.5">Hired commanders grant passive global bonuses. Assign them to a post to earn levels. Refresh pool every 8 hours.</p>
           </div>
           <div className="text-right shrink-0">
             <div className="game-label">Roster</div>
@@ -65,12 +103,16 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
 
         {/* Active bonus readout */}
         {hired.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-3 border-t border-white/[0.06]">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 pt-3 border-t border-white/[0.06]">
             <BonusChip label="Revenue" value={pct(bonuses.revenueMultiplier)} />
             <BonusChip label="Build speed" value={pct(bonuses.buildSpeedMultiplier)} />
             <BonusChip label="Research" value={pct(bonuses.researchSpeedMultiplier)} />
             <BonusChip label="Mining" value={pct(bonuses.miningMultiplier)} />
             <BonusChip label="Market" value={pct(bonuses.marketPriceMultiplier)} />
+            <BonusChip label="Transit" value={pt(bonuses.travelSpeedBonus)} />
+            <BonusChip label="Insurance" value={pt(bonuses.insuranceDiscountBonus)} />
+            <BonusChip label="Hazard resist" value={pt(bonuses.hazardResistanceBonus)} />
+            <BonusChip label="Crew morale" value={pt(bonuses.crewMoraleBonus)} />
           </div>
         ) : (
           <div className="text-center text-slate-500 text-xs py-3 border-t border-white/[0.06]">
@@ -110,22 +152,42 @@ export default function CommanderPanel({ state, onHire, onDismiss }: Props) {
               <div className="text-slate-600 text-xs mt-1">Switch to Recruit to hire commanders.</div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {hired.map(h => {
-                const def = COMMANDER_MAP.get(h.definitionId);
-                if (!def) return null;
-                return (
-                  <CommanderCard
-                    key={h.definitionId}
-                    def={def}
-                    actionLabel="Dismiss"
-                    actionTone="danger"
-                    onAction={() => onDismiss(h.definitionId)}
-                    onOpenHero={def.hasFullbody ? () => setHeroView(def.id) : undefined}
-                  />
-                );
-              })}
-            </div>
+            <>
+              {/* Roster filter by class bucket */}
+              <div className="flex gap-1.5 mb-3" role="group" aria-label="Filter roster by class">
+                {BUCKET_FILTERS.map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => setRosterFilter(f.id)}
+                    aria-pressed={rosterFilter === f.id}
+                    className={`min-h-[36px] px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
+                      rosterFilter === f.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.03] text-slate-400 border border-white/[0.06] hover:text-white'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {filteredHired.map(h => {
+                  const def = COMMANDER_MAP.get(h.definitionId);
+                  if (!def) return null;
+                  return (
+                    <HiredCommanderCard
+                      key={h.definitionId}
+                      def={def}
+                      hiredCommander={h}
+                      state={state}
+                      activeExpeditions={activeExpeditions}
+                      onDismiss={() => onDismiss(def.id)}
+                      onAssign={(postType, targetId) => onAssign(def.id, postType, targetId)}
+                      onUnassign={() => onUnassign(def.id)}
+                      onOpenHero={def.hasFullbody ? () => setHeroView(def.id) : undefined}
+                    />
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       )}
@@ -177,6 +239,29 @@ function BonusChip({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Portrait or, for the 20 W8 leaders with no unique art yet, a text-avatar
+ *  fallback (initials on a rarity-tinted field) — never a 404'd <Image>. */
+function Portrait({ def, size }: { def: CommanderDefinition; size: number }) {
+  if (!hasPortraitArt(def)) {
+    const initials = def.name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    const accent = RARITY_ACCENT[def.rarity];
+    return (
+      <div className={`absolute inset-0 w-full h-full flex items-center justify-center ${accent.text}`} style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.06), transparent)' }} aria-hidden="true">
+        <span className="game-heading font-bold" style={{ fontSize: size / 3 }}>{initials || '??'}</span>
+      </div>
+    );
+  }
+  return (
+    <Image
+      src={getPortraitUrl(def)}
+      alt=""
+      width={size}
+      height={size}
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+  );
+}
+
 function CommanderCard({
   def,
   actionLabel,
@@ -210,13 +295,7 @@ function CommanderCard({
       >
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
-        <Image
-          src={getPortraitUrl(def)}
-          alt=""
-          width={256}
-          height={256}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <Portrait def={def} size={256} />
         {/* Rarity badge */}
         <span className={`absolute top-1.5 left-1.5 text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide backdrop-blur-sm ${accent.text}`} style={{ background: 'rgba(0,0,0,0.65)' }}>
           {RARITY_LABEL[def.rarity]}
@@ -254,6 +333,215 @@ function CommanderCard({
             {actionLabel}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** Targets a post type can point at, for the assignment picker. */
+function targetOptionsFor(
+  postType: AssignmentPostType,
+  state: GameState,
+  activeExpeditions: GameState['expeditions'],
+): { id: string; label: string }[] {
+  switch (postType) {
+    case 'research':
+      return RESEARCH_CATEGORIES.map(c => ({ id: c.id, label: `${c.icon} ${c.name}` }));
+    case 'science_program':
+      return SCIENCE_PROGRAMS.map(p => ({ id: p.id, label: `${p.icon} ${p.name}` }));
+    case 'expedition':
+      return (activeExpeditions || []).map(e => ({
+        id: e.id,
+        label: INTERSTELLAR_SYSTEM_MAP.get(e.targetSystemId)?.name || e.targetSystemId,
+      }));
+    case 'zone':
+      return (state.unlockedLocations || []).map(id => ({ id, label: LOCATION_MAP.get(id)?.name || id }));
+    default:
+      return [];
+  }
+}
+
+function targetLabelFor(assignment: { postType: AssignmentPostType; targetId?: string }, state: GameState): string | null {
+  if (!assignment.targetId) return null;
+  switch (assignment.postType) {
+    case 'research':
+      return RESEARCH_CATEGORIES.find(c => c.id === assignment.targetId)?.name || assignment.targetId;
+    case 'science_program':
+      return SCIENCE_PROGRAMS.find(p => p.id === assignment.targetId)?.name || assignment.targetId;
+    case 'expedition':
+      return INTERSTELLAR_SYSTEM_MAP.get(
+        (state.expeditions || []).find(e => e.id === assignment.targetId)?.targetSystemId || '',
+      )?.name || assignment.targetId;
+    case 'zone':
+      return LOCATION_MAP.get(assignment.targetId)?.name || assignment.targetId;
+    default:
+      return null;
+  }
+}
+
+const POST_TYPES: AssignmentPostType[] = ['research', 'science_program', 'expedition', 'zone', 'fleet_ops', 'market_desk'];
+const NEEDS_TARGET: Record<AssignmentPostType, boolean> = {
+  research: true, science_program: true, expedition: true, zone: true, fleet_ops: false, market_desk: false,
+};
+
+function HiredCommanderCard({
+  def,
+  hiredCommander,
+  state,
+  activeExpeditions,
+  onDismiss,
+  onAssign,
+  onUnassign,
+  onOpenHero,
+}: {
+  def: CommanderDefinition;
+  hiredCommander: HiredCommander;
+  state: GameState;
+  activeExpeditions: GameState['expeditions'];
+  onDismiss: () => void;
+  onAssign: (postType: AssignmentPostType, targetId?: string) => void;
+  onUnassign: () => void;
+  onOpenHero?: () => void;
+}) {
+  const accent = RARITY_ACCENT[def.rarity];
+  const { specialty, quirk } = getCommanderTraits(def.id);
+  const xpProgress = getCommanderXpProgress(hiredCommander);
+  const assignment = hiredCommander.assignment;
+  const availablePosts = POST_TYPES.filter(p => canAssignToPost(def, p));
+
+  const [pickerPost, setPickerPost] = useState<AssignmentPostType>(availablePosts[0]);
+  const [pickerTarget, setPickerTarget] = useState<string>('');
+
+  const targetOptions = targetOptionsFor(pickerPost, state, activeExpeditions);
+  const needsTarget = NEEDS_TARGET[pickerPost];
+  const canSubmit = !needsTarget || !!pickerTarget;
+  const isProductive = !!assignment && isAssignmentProductive(state, assignment);
+
+  return (
+    <div className={`rounded-xl overflow-hidden border-2 ${accent.border} shadow-lg ${accent.glow}`} style={{ background: '#0a0a1a' }}>
+      <div className="flex gap-3 p-3">
+        {/* Portrait */}
+        <button
+          type="button"
+          aria-label={onOpenHero ? `View hero portrait for ${def.name}` : `${def.name} portrait`}
+          className="hud-frame holo-sprite relative w-20 h-20 shrink-0 rounded-lg bg-gradient-to-b from-transparent to-black/60 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          onClick={onOpenHero}
+          disabled={!onOpenHero}
+        >
+          <Portrait def={def} size={80} />
+        </button>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-white text-sm font-bold leading-tight truncate">{def.name}</div>
+              <div className="text-slate-500 text-[10px] truncate">{def.title}</div>
+            </div>
+            <span className={`shrink-0 text-[9px] px-1.5 py-0.5 rounded ${accent.text}`} style={{ background: 'rgba(255,255,255,0.05)' }}>
+              {CLASS_LABEL[def.class]}
+            </span>
+          </div>
+
+          {/* Level / XP bar */}
+          <div className="mt-1.5">
+            <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
+              <span>Level {xpProgress.level}{xpProgress.level >= MAX_LEVEL ? ' (max)' : ''}</span>
+              <span>{xpProgress.xpForNextLevel !== null ? `${xpProgress.xp}/${xpProgress.xpForNextLevel} XP` : 'MAX'}</span>
+            </div>
+            <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden" role="progressbar" aria-valuenow={Math.round(xpProgress.pctToNextLevel * 100)} aria-valuemin={0} aria-valuemax={100} aria-label={`${def.name} level progress`}>
+              <div className="h-full bg-cyan-500/70" style={{ width: `${xpProgress.pctToNextLevel * 100}%` }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Trait chips (text tooltips — not color-only) */}
+      <div className="px-3 flex flex-wrap gap-1.5">
+        <span
+          className="text-[9px] px-1.5 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/5"
+          title={`Specialty — ${specialty.name}: ${specialty.description}`}
+        >
+          ★ {specialty.name}
+        </span>
+        <span
+          className="text-[9px] px-1.5 py-0.5 rounded border border-amber-500/30 text-amber-300 bg-amber-500/5"
+          title={`Quirk — ${quirk.name}: ${quirk.description}`}
+        >
+          ◆ {quirk.name}
+        </span>
+      </div>
+
+      {/* Assignment */}
+      <div className="px-3 pt-2 pb-3 mt-2 border-t border-white/[0.06]">
+        {assignment ? (
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-[10px] text-slate-400">
+                Posted: <span className="text-white font-medium">{ASSIGNMENT_POST_LABEL[assignment.postType]}</span>
+                {targetLabelFor(assignment, state) && <> — {targetLabelFor(assignment, state)}</>}
+              </div>
+              <div className={`text-[9px] mt-0.5 ${isProductive ? 'text-emerald-400' : 'text-slate-600'}`}>
+                {isProductive ? 'Active — earning XP this month' : 'Idle — no XP this month (post not producing)'}
+              </div>
+            </div>
+            <button
+              onClick={onUnassign}
+              className="shrink-0 min-h-[36px] px-2.5 py-1 rounded text-[10px] font-medium bg-white/[0.04] text-slate-400 hover:text-white border border-white/[0.08]"
+            >
+              Unassign
+            </button>
+          </div>
+        ) : availablePosts.length === 0 ? (
+          <div className="text-[10px] text-slate-600">No posts available for this class.</div>
+        ) : (
+          <div className="space-y-1.5">
+            <label className="sr-only" htmlFor={`post-${def.id}`}>Assignment post for {def.name}</label>
+            <select
+              id={`post-${def.id}`}
+              value={pickerPost}
+              onChange={e => { setPickerPost(e.target.value as AssignmentPostType); setPickerTarget(''); }}
+              className="w-full min-h-[36px] px-2 rounded bg-white/[0.04] border border-white/[0.08] text-[11px] text-white"
+            >
+              {availablePosts.map(p => (
+                <option key={p} value={p} className="bg-black">{ASSIGNMENT_POST_LABEL[p]}</option>
+              ))}
+            </select>
+            {needsTarget && (
+              <>
+                <label className="sr-only" htmlFor={`target-${def.id}`}>Assignment target for {def.name}</label>
+                <select
+                  id={`target-${def.id}`}
+                  value={pickerTarget}
+                  onChange={e => setPickerTarget(e.target.value)}
+                  className="w-full min-h-[36px] px-2 rounded bg-white/[0.04] border border-white/[0.08] text-[11px] text-white"
+                >
+                  <option value="" className="bg-black">Select target…</option>
+                  {targetOptions.map(o => (
+                    <option key={o.id} value={o.id} className="bg-black">{o.label}</option>
+                  ))}
+                </select>
+              </>
+            )}
+            <button
+              onClick={() => onAssign(pickerPost, pickerTarget || undefined)}
+              disabled={!canSubmit}
+              className={`w-full min-h-[36px] px-2 py-1.5 rounded text-[10px] font-bold transition-colors ${
+                canSubmit ? 'bg-cyan-500 text-black hover:bg-cyan-400' : 'bg-white/[0.04] text-slate-500 cursor-not-allowed'
+              }`}
+            >
+              Assign
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="px-3 pb-3">
+        <button
+          onClick={onDismiss}
+          className="w-full min-h-[36px] px-2 py-1.5 rounded text-[10px] font-medium bg-red-500/15 text-red-300 hover:bg-red-500/25 border border-red-500/30"
+        >
+          Dismiss
+        </button>
       </div>
     </div>
   );

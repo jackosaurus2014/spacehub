@@ -17,7 +17,8 @@ type SoundName =
   | 'notification'
   | 'trade'
   | 'rival_overtake'
-  | 'ambient_ping';
+  | 'ambient_ping'
+  | 'cinematic';
 
 let audioCtx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
@@ -173,6 +174,22 @@ export function playSound(name: SoundName): void {
     case 'ambient_ping':
       // Subtle ethereal ping for atmosphere
       playTone(1200, 0.4, 'sine', { freqEnd: 800, gainStart: 0.03 });
+      break;
+
+    // ─── 4X Wave W5 stinger (docs/4X_BASELINE_2026-08.md Part 3.4/4 W5) ────
+    // Appended-only addition for CinematicOverlay full-screen presentation
+    // moments (narrative chain-heads, science discoveries, expedition
+    // arrivals/first-contact, victories, megastructure completions). Grander
+    // and slower than 'milestone' (a quick chord+shimmer): a rising sub-bass
+    // swell under a widening major triad, capped by a bright top note and a
+    // shimmer tail — reads as "something important is being presented,"
+    // distinct from milestone's "you just earned something." Music/ambient
+    // sections above and below this case are W12's territory — untouched.
+    case 'cinematic':
+      playTone(80, 1.1, 'sine', { freqEnd: 220, gainStart: 0.22, gainEnd: 0.001 });
+      playChord([196.0, 246.9, 293.7], 1.4, 'sine', 0.12); // G major triad swell
+      playTone(587.3, 1.0, 'triangle', { delay: 0.35, gainStart: 0.09 }); // bright top note
+      playTone(880.0, 0.8, 'triangle', { delay: 0.55, gainStart: 0.06 }); // shimmer tail
       break;
   }
 }
@@ -455,4 +472,19 @@ export function toggleAmbient(): boolean {
     startAmbient(ambientRegion);
   }
   return ambientPlaying;
+}
+
+// ─── W12: Music bus hookup (music-engine.ts) ────────────────────────────────
+// Minimal bridge for the generative adaptive-music layer. It exposes the
+// shared AudioContext + master gain so music rides the same mute/master chain
+// as SFX and ambient (toggleMute silences music too). ALL music logic lives
+// in music-engine.ts — keep this section to plumbing only; do not add music
+// code or restructure the ambient system above.
+
+/** Shared audio output for music-engine.ts. Null until the context exists
+ *  (i.e. before the first user gesture — autoplay-policy safe). */
+export function getMusicOutput(): { ctx: AudioContext; master: GainNode } | null {
+  const ctx = getContext();
+  if (!ctx || !masterGain) return null;
+  return { ctx, master: masterGain };
 }

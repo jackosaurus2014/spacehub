@@ -617,6 +617,53 @@ export default function GameStyles() {
       }
 
       /* ═══════════════════════════════════════════════════════════════════
+         CINEMATIC OVERLAY (4X Wave W5) — full-screen presentation moments,
+         generalized from the milestone vignette above: narrative chain-head
+         arrivals, science-mission discoveries, expedition/first-contact
+         arrivals, victories, megastructure completions. One at a time from
+         a client-side queue (src/lib/game/cinematic-moments.ts).
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes cinematic-dim {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      @keyframes cinematic-kenburns {
+        0%   { transform: scale(1.0) translate(0, 0); }
+        100% { transform: scale(1.09) translate(-1.5%, -1%); }
+      }
+      @keyframes cinematic-title-in {
+        0%   { transform: translateY(16px); opacity: 0; letter-spacing: 0.9em; }
+        60%  { opacity: 1; letter-spacing: 0.28em; }
+        100% { transform: translateY(0); opacity: 1; letter-spacing: 0.16em; }
+      }
+      @keyframes cinematic-subtitle-in {
+        0%   { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes cinematic-btn-in {
+        0%   { opacity: 0; transform: translateY(6px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes cinematic-bar-shrink {
+        from { transform: scaleX(1); }
+        to   { transform: scaleX(0); }
+      }
+      .cinematic-overlay    { animation: cinematic-dim 0.45s ease-out both; }
+      .cinematic-art        { animation: cinematic-kenburns 8.2s ease-out both; }
+      .cinematic-title      { animation: cinematic-title-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+      .cinematic-subtitle   { animation: cinematic-subtitle-in 0.7s ease-out 0.55s both; }
+      .cinematic-continue   { animation: cinematic-btn-in 0.6s ease-out 0.8s both; }
+      .cinematic-bar-fill   { animation: cinematic-bar-shrink 8s linear both; transform-origin: left; }
+      @media (prefers-reduced-motion: reduce) {
+        .cinematic-overlay,
+        .cinematic-art,
+        .cinematic-title,
+        .cinematic-subtitle,
+        .cinematic-continue,
+        .cinematic-bar-fill { animation: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
          SPARKLINE — tiny SVG trend line next to the money readout
          ═══════════════════════════════════════════════════════════════════ */
       .sparkline path {

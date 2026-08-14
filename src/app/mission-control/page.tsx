@@ -922,11 +922,36 @@ function LiveStreamEmbed({ event }: { event: SpaceEvent }) {
 }
 
 // ════════════════════════════════════════
-// Artemis II Countdown Component
+// Featured Mission — Live Countdown + Marquee Selection
 // ════════════════════════════════════════
 
-function ArtemisCountdown() {
-  const LAUNCH_DATE = new Date('2026-04-01T00:00:00Z').getTime();
+// Event types eligible to be the marquee "Featured Mission" on this page.
+const MARQUEE_EVENT_TYPES: SpaceEventType[] = ['crewed_mission', 'moon_mission', 'mars_mission'];
+
+// Date-precision values from SpaceEvent.launchDatePrecision that count as
+// "firm" — anything looser (month/quarter/year, or missing) is treated as a
+// NET (No Earlier Than) estimate and gets an honest static label instead of
+// a ticking countdown, so we never imply false precision.
+const FIRM_DATE_PRECISIONS = new Set(['exact', 'hour', 'day']);
+
+// Static fallback for the next major marquee mission, used only when the
+// live events feed has no future-dated crewed/moon/mars mission yet (e.g.
+// Artemis III before NASA commits it to the database with a firm window).
+// Verified as of Aug 2026: NASA restructured Artemis III in Feb 2026 from a
+// lunar landing to an Earth-orbit demonstration of the SpaceX Starship and
+// Blue Origin Blue Moon human landing systems; crew announced Jun 9, 2026;
+// NET (no earlier than) late 2027 per NASA/Ars Technica/Space.com reporting.
+const FALLBACK_MARQUEE_MISSION = {
+  name: 'Artemis III — Earth-Orbit HLS Demonstration',
+  agency: 'NASA',
+  description:
+    'Orion will dock with commercial human landing systems from SpaceX (Starship HLS) and Blue Origin (Blue Moon) in Earth orbit, testing rendezvous and docking ahead of the first crewed lunar landing on Artemis IV.',
+  netLabel: 'NET Late 2027',
+  href: '/ignition',
+};
+
+// Live ticking countdown to a firm target timestamp.
+function LiveCountdown({ targetMs }: { targetMs: number }) {
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -934,7 +959,7 @@ function ArtemisCountdown() {
     return () => clearInterval(timer);
   }, []);
 
-  const diff = Math.max(0, LAUNCH_DATE - now);
+  const diff = Math.max(0, targetMs - now);
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((diff / (1000 * 60)) % 60);
@@ -956,6 +981,111 @@ function ArtemisCountdown() {
         </div>
       ))}
     </div>
+  );
+}
+
+// Picks the next upcoming marquee mission from live events (never a past
+// one — the `> now` date guard is the whole point of this function), and
+// falls back to a static, honestly-labeled NET mission when the live feed
+// doesn't have one dated yet.
+function FeaturedMissionCard({ mission }: { mission: SpaceEvent | null }) {
+  if (!mission) {
+    return (
+      <Link href={FALLBACK_MARQUEE_MISSION.href} className="block mb-8 group">
+        <div className="relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 p-6 sm:p-8 hover:border-cyan-400/40 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+          <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full">Featured Mission</span>
+                <span className="text-xs font-semibold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full">NET — Date Not Firm</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                {FALLBACK_MARQUEE_MISSION.name}
+              </h2>
+              <p className="text-slate-400 text-sm sm:text-base mb-4 max-w-xl">
+                {FALLBACK_MARQUEE_MISSION.description}
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
+                <span className="flex items-center gap-1.5"><span className="text-cyan-400">Agency:</span> {FALLBACK_MARQUEE_MISSION.agency}</span>
+              </div>
+            </div>
+
+            <div className="shrink-0 text-center lg:text-right">
+              <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-medium">No Earlier Than</div>
+              <div className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">{FALLBACK_MARQUEE_MISSION.netLabel}</div>
+              <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 font-medium group-hover:gap-2.5 transition-all">
+                Track program milestones
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
+  const launchDate = new Date(mission.launchDate!);
+  const isFirmDate = !mission.launchDatePrecision || FIRM_DATE_PRECISIONS.has(mission.launchDatePrecision);
+  const href = mission.infoUrl || '/mission-control';
+
+  return (
+    <Link href={href} className="block mb-8 group">
+      <div className="relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 p-6 sm:p-8 hover:border-cyan-400/40 transition-all duration-300">
+        {/* Background glow effect */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+        <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
+          {/* Left: Mission Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full">Featured Mission</span>
+              {!isFirmDate && (
+                <span className="text-xs font-semibold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full">NET — Date Not Firm</span>
+              )}
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white mb-2 group-hover:text-cyan-300 transition-colors">
+              {mission.name}
+            </h2>
+            {mission.description && (
+              <p className="text-slate-400 text-sm sm:text-base mb-4 max-w-xl">
+                {mission.description}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
+              {mission.agency && <span className="flex items-center gap-1.5"><span className="text-cyan-400">Agency:</span> {mission.agency}</span>}
+              {mission.rocket && <span className="flex items-center gap-1.5"><span className="text-cyan-400">Vehicle:</span> {mission.rocket}</span>}
+            </div>
+          </div>
+
+          {/* Right: Countdown */}
+          <div className="shrink-0 text-center lg:text-right">
+            <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-medium">{isFirmDate ? 'Launch Target' : 'No Earlier Than'}</div>
+            {isFirmDate ? (
+              <LiveCountdown targetMs={launchDate.getTime()} />
+            ) : (
+              <div className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
+                {launchDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </div>
+            )}
+            <div className="text-sm text-slate-400 mt-2 font-medium">
+              {launchDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+            </div>
+            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 font-medium group-hover:gap-2.5 transition-all">
+              Mission details
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -1062,6 +1192,16 @@ function MissionControlContent() {
     await fetchEvents();
   }, [fetchEvents]);
 
+  // Next upcoming marquee mission — date guard (`> now`) ensures a past
+  // mission (e.g. a completed Artemis II) can never be featured here.
+  const featuredMission = useMemo(() => {
+    const now = Date.now();
+    const upcoming = events
+      .filter((e) => MARQUEE_EVENT_TYPES.includes(e.type) && e.launchDate && new Date(e.launchDate).getTime() > now)
+      .sort((a, b) => new Date(a.launchDate!).getTime() - new Date(b.launchDate!).getTime());
+    return upcoming[0] || null;
+  }, [events]);
+
   // Filter and group events
   const groupedEvents = useMemo(() => {
     let filtered = events;
@@ -1131,49 +1271,9 @@ function MissionControlContent() {
           />
         </div>
 
-        {/* ═══════ Artemis II Countdown Card ═══════ */}
+        {/* ═══════ Featured Mission Card ═══════ */}
         <ScrollReveal>
-        <Link href="/blog/artemis-ii-moon-mission-everything-you-need-to-know" className="block mb-8 group">
-          <div className="relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 p-6 sm:p-8 hover:border-cyan-400/40 transition-all duration-300">
-            {/* Background glow effect */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-
-            <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
-              {/* Left: Mission Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full">Featured Mission</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white mb-2 group-hover:text-cyan-300 transition-colors">
-                  Artemis II &mdash; Return to the Moon
-                </h2>
-                <p className="text-slate-400 text-sm sm:text-base mb-4 max-w-xl">
-                  First crewed lunar mission in 54 years. Four astronauts will orbit the Moon aboard Orion, paving the way for a sustained human presence on the lunar surface.
-                </p>
-                <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
-                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">Commander:</span> Reid Wiseman</span>
-                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">Pilot:</span> Victor Glover</span>
-                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">MS 1:</span> Christina Koch</span>
-                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">MS 2:</span> Jeremy Hansen</span>
-                </div>
-              </div>
-
-              {/* Right: Countdown */}
-              <div className="shrink-0 text-center lg:text-right">
-                <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-medium">Launch Target</div>
-                <ArtemisCountdown />
-                <div className="text-sm text-slate-400 mt-2 font-medium">April 1, 2026</div>
-                <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 font-medium group-hover:gap-2.5 transition-all">
-                  Read full mission brief
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Link>
+          <FeaturedMissionCard mission={featuredMission} />
         </ScrollReveal>
 
         {error && (

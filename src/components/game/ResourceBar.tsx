@@ -11,6 +11,7 @@ import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMult
 import { getActiveMultipliers } from '@/lib/game/random-events';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from '@/lib/game/sound-engine';
+import { toggleMusic, isMusicPlaying, setMusicVolume, getMusicVolume, initMusicAutoResume } from '@/lib/game/music-engine';
 import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
 
@@ -81,10 +82,17 @@ const SPARKLINE_MAX_POINTS = 30;
 export default function ResourceBar({ state }: ResourceBarProps) {
   const [muted, setMuted] = useState(true);
   const [ambient, setAmbient] = useState(false);
+  const [music, setMusic] = useState(false);
+  const [musicVol, setMusicVol] = useState(0.45);
 
   useEffect(() => {
     setMuted(isMuted());
     setAmbient(isAmbientPlaying());
+    setMusic(isMusicPlaying());
+    setMusicVol(getMusicVolume());
+    // W12: if the player had music on last session, resume it on their first
+    // gesture (autoplay-policy safe — the gesture unlocks the AudioContext).
+    initMusicAutoResume(() => setMusic(true));
   }, []);
 
   // ─── P&L computation — must match game engine exactly ────────────────────
@@ -165,6 +173,15 @@ export default function ResourceBar({ state }: ResourceBarProps) {
     toggleAmbient();
     setAmbient(isAmbientPlaying());
   };
+  const handleToggleMusic = () => {
+    initAudio();
+    toggleMusic();
+    setMusic(isMusicPlaying());
+  };
+  const handleMusicVolume = (v: number) => {
+    setMusicVol(v);
+    setMusicVolume(v);
+  };
 
   return (
     <div className="hud-frame relative bg-black/90 border-b border-cyan-500/10 px-3 sm:px-4 py-2 z-20">
@@ -229,6 +246,28 @@ export default function ResourceBar({ state }: ResourceBarProps) {
 
         {/* Audio Controls */}
         <div className="flex items-center gap-1">
+          <button
+            onClick={handleToggleMusic}
+            aria-label={music ? 'Turn off music' : 'Turn on music'}
+            aria-pressed={music}
+            className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${music ? 'text-cyan-400' : 'text-slate-600 hover:text-slate-400'}`}
+            title={music ? 'Music: On' : 'Music: Off'}
+          >
+            🎼
+          </button>
+          {music && (
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={musicVol}
+              onChange={(e) => handleMusicVolume(parseFloat(e.target.value))}
+              aria-label="Music volume"
+              className="hidden sm:block w-16 accent-cyan-400"
+              title={`Music volume: ${Math.round(musicVol * 100)}%`}
+            />
+          )}
           <button
             onClick={handleToggleAmbient}
             aria-label={ambient ? 'Turn off ambient music' : 'Turn on ambient music'}

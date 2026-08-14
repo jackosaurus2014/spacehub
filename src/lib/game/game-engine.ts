@@ -28,7 +28,7 @@ import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchPr
 import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
-import { computeCommanderBonuses } from './commanders';
+import { computeCommanderBonuses, processCommanderMonthTick } from './commanders';
 import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
 import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
 import { rollMonthlyHazards, applyHazards, forecastSevereHazards } from './hazards';
@@ -132,8 +132,10 @@ export function processTick(state: GameState): GameState {
   // Get reputation bonuses
   const repBonuses = getReputationBonuses(state.reputation || 0);
 
-  // Get commander bonuses (passive stacked bonuses from hired commanders)
-  const commanderBonuses = computeCommanderBonuses(state.hiredCommanders);
+  // Get commander bonuses (passive stacked bonuses from hired commanders).
+  // W8 (Leaders 2.0): pass `state` so trait bonuses can check whether each
+  // assigned commander's post is currently productive.
+  const commanderBonuses = computeCommanderBonuses(state.hiredCommanders, state);
 
   // ─── Audit Wave B: formerly-dead multiplier packs (Change #2 / A3) ────
   // Specializations (§1b): the 10 purchased bonus keys finally apply.
@@ -681,8 +683,12 @@ export function processTick(state: GameState): GameState {
     // updateCrewWellbeing model above, rather than a new input threaded
     // through workforce.ts (out of this wave's file scope). Capped in
     // getResearchBonuses at 0.30 on the 0-1 morale scale.
-    if (resBonuses.crewMoraleBonus > 0) {
-      workforceOut = { ...workforceOut, morale: Math.min(1, (workforceOut.morale ?? 1.0) + resBonuses.crewMoraleBonus) };
+    // W8 (Leaders 2.0): commanderBonuses.crewMoraleBonus is a sibling
+    // additive term from an assigned commander's traits (Radiation
+    // Physiologist / Union Favorite / Workaholic...) — same site, same cap
+    // philosophy, no new engine wiring.
+    if (resBonuses.crewMoraleBonus > 0 || commanderBonuses.crewMoraleBonus !== 0) {
+      workforceOut = { ...workforceOut, morale: Math.min(1, Math.max(0, (workforceOut.morale ?? 1.0) + resBonuses.crewMoraleBonus + commanderBonuses.crewMoraleBonus)) };
     }
     // Surface meaningful morale drops so the stat is discoverable/manageable
     if ((workforceOut.morale ?? 1.0) <= prevMorale - 0.05) {
@@ -718,8 +724,11 @@ export function processTick(state: GameState): GameState {
       // W1 (research effect-authoring pass): insuranceDiscountBonus applied
       // here rather than threaded into economic-sinks.ts's calculateInsurancePremium
       // (out of this wave's file scope) — same math, one multiply. Capped at
-      // 0.40 in getResearchBonuses.
-      const premium = Math.round(getMonthlyInsurancePremium({ ...state, buildings: buildingsFinal }) * (1 - resBonuses.insuranceDiscountBonus));
+      // 0.40 in getResearchBonuses. W8 (Leaders 2.0): commanderBonuses.insuranceDiscountBonus
+      // (Underwriting Analyst / Penny Pincher traits) stacks the same way,
+      // floored so the combined discount can never invert the premium.
+      const totalInsuranceDiscount = Math.max(0, Math.min(0.9, resBonuses.insuranceDiscountBonus + commanderBonuses.insuranceDiscountBonus));
+      const premium = Math.round(getMonthlyInsurancePremium({ ...state, buildings: buildingsFinal }) * (1 - totalInsuranceDiscount));
       if (premium > 0) {
         money -= premium;
         totalSpent += premium;
@@ -933,8 +942,12 @@ export function processTick(state: GameState): GameState {
     // CLAUDE.md's "real risk" invariant; hazards.ts's own MITIGATION_CAP is
     // 0.90 and even that is documented as a "don't delete the risk pillar"
     // compromise.
-    if (resBonuses.hazardResistanceBonus > 0) {
-      hazards = hazards.map(h => ({ ...h, damagePct: Math.max(0, h.damagePct * (1 - resBonuses.hazardResistanceBonus)) }));
+    // W8 (Leaders 2.0): commanderBonuses.hazardResistanceBonus (Risk Officer
+    // / Flight Director traits, or a Risk Taker quirk's negative) stacks
+    // with the research bonus at the same site, same 0-0.9 safety floor.
+    const totalHazardResist = Math.max(0, Math.min(0.9, resBonuses.hazardResistanceBonus + commanderBonuses.hazardResistanceBonus));
+    if (totalHazardResist > 0) {
+      hazards = hazards.map(h => ({ ...h, damagePct: Math.max(0, h.damagePct * (1 - totalHazardResist)) }));
     }
     // W6 (science-missions.ts): standing science-mission benefits trim
     // damage post-roll the same way — Heliophysics Sentinels reduce
@@ -1119,6 +1132,13 @@ export function processFullTick(state: GameState): GameState {
     return { ...workingState, lastTickAt: Date.now() };
   }
 
+  // W8 (Leaders 2.0): month-boundary flag for commander XP accrual, taken
+  // from the calendar change processTick just applied. Assignment-
+  // productivity checks run later (after ships/expeditions/science-missions
+  // are ticked) so they read the freshest state for the month.
+  const commanderMonthAdvanced = newState.gameDate.month !== workingState.gameDate.month
+    || newState.gameDate.year !== workingState.gameDate.year;
+
   // 2. Process NPC companies (can fail safely)
   try {
     if (newState.npcCompanies && newState.npcCompanies.length > 0) {
@@ -1246,6 +1266,10 @@ export function processFullTick(state: GameState): GameState {
       // own `resBonuses` (line ~107) — recomputed here (cheap, pure) so
       // transitSpeedMult below can read travelSpeedBonus.
       const resBonuses = getResearchBonuses(newState.completedResearch);
+      // W8 (Leaders 2.0): same reasoning — recompute commanderBonuses in
+      // this scope so transitSpeedMult can read the Propulsion
+      // Specialist/Cryogenics Engineer/Risk Taker trait contributions.
+      const commanderBonuses = computeCommanderBonuses(newState.hiredCommanders, newState);
       // Audit Wave B: specialization mining_output + fleet_speed (§1b),
       // victory mining bonus (§1b), and alliance miningBonus (A2) now reach
       // ship operations too — previously only building-based mining got any
@@ -1355,6 +1379,9 @@ export function processFullTick(state: GameState): GameState {
             // the same additive-multiplier chain as fleetSpeed/shipEfficiency
             // above. Capped at 0.50 in getResearchBonuses.
             * (1 + resBonuses.travelSpeedBonus)
+            // W8 (Leaders 2.0): commander trait travelSpeedBonus stacks the
+            // same way (small, separately capped in computeCommanderBonuses).
+            * (1 + commanderBonuses.travelSpeedBonus)
           );
           const plannedDuration = Math.max(0, ship.route.arrivalAtMs - ship.route.departedAtMs);
           const effectiveArrivalAtMs = ship.route.departedAtMs + plannedDuration / transitSpeedMult;
@@ -1462,6 +1489,19 @@ export function processFullTick(state: GameState): GameState {
     newState = processScienceMissionTick(newState, Date.now());
   } catch (err) {
     console.error('Science mission tick error (non-fatal):', err);
+  }
+
+  // 6d. Leaders 2.0 (4X Wave W8, commanders.ts): monthly XP accrual for
+  // assigned commanders. Runs after ships/expeditions/science-missions so
+  // isAssignmentProductive reads this month's freshest real state. Gated on
+  // the month boundary (XP is a monthly-loop system per the doc: "assigned
+  // leaders earn XP monthly; unassigned earn none").
+  try {
+    if (commanderMonthAdvanced) {
+      newState = processCommanderMonthTick(newState);
+    }
+  } catch (err) {
+    console.error('Commander XP tick error (non-fatal):', err);
   }
 
   // 7. Check achievements (every 5 ticks to reduce overhead)
