@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import StreamEmbed from '@/components/live/StreamEmbed';
 import TelemetryPanel from '@/components/live/TelemetryPanel';
-import LiveChat from '@/components/live/LiveChat';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -173,7 +172,7 @@ function LiveHubContent() {
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Live Launch Hub"
-          subtitle="Watch rocket launches live with real-time telemetry and community chat"
+          subtitle="Watch rocket launches live with real-time telemetry"
           icon="📡"
           accentColor="cyan"
         />
@@ -423,18 +422,13 @@ function LiveHubContent() {
             )}
           </div>
 
-          {/* Side Column - Telemetry & Chat */}
+          {/* Side Column - Telemetry */}
           <div className="xl:col-span-4 space-y-6">
             {/* Telemetry Panel */}
             <TelemetryPanel
               isLive={selectedStream?.isLive || false}
               scheduledTime={selectedStream?.scheduledTime || new Date().toISOString()}
             />
-
-            {/* Live Chat */}
-            <div className="relative">
-              <LiveChat />
-            </div>
           </div>
         </div>
 
