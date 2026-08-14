@@ -9,6 +9,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { clientLogger } from '@/lib/client-logger';
 import LiveStreamsHeroSection from '@/components/livestreams/LiveStreamsHeroSection';
+import LiveChatPanel from '@/components/livestreams/LiveChatPanel';
 
 interface LiveStream {
   id: string;
@@ -172,7 +173,7 @@ function LiveHubContent() {
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Live Launch Hub"
-          subtitle="Watch rocket launches live with real-time telemetry"
+          subtitle="Watch rocket launches live with real-time telemetry and community chat"
           icon="📡"
           accentColor="cyan"
         />
@@ -422,13 +423,22 @@ function LiveHubContent() {
             )}
           </div>
 
-          {/* Side Column - Telemetry */}
+          {/* Side Column - Telemetry & Chat */}
           <div className="xl:col-span-4 space-y-6">
             {/* Telemetry Panel */}
             <TelemetryPanel
               isLive={selectedStream?.isLive || false}
               scheduledTime={selectedStream?.scheduledTime || new Date().toISOString()}
             />
+
+            {/* Live Chat — real, server-backed, scoped to the selected event */}
+            {selectedStream && (
+              <LiveChatPanel
+                key={selectedStream.id}
+                eventId={selectedStream.id}
+                eventName={selectedStream.launchName || selectedStream.title}
+              />
+            )}
           </div>
         </div>
 
