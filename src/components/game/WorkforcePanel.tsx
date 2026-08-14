@@ -1,17 +1,86 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import type { GameState } from '@/lib/game/types';
 import { WORKER_TYPES, getMonthlyPayroll, getWorkforceBonuses, getHireCost, getCrewCapacity, canHireWorker } from '@/lib/game/workforce';
 import type { WorkerType } from '@/lib/game/workforce';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
+import { buildCareerCrossoverLine } from '@/lib/game/career-crossover';
 
 interface WorkforcePanelProps {
   state: GameState;
   onHire: (workerType: string) => void;
   onDismiss?: (workerType: string) => void;
   onUpdateTrainingBudget?: (perCrewPerMonth: number) => void;
+}
+
+// ─── Career crossover — real-world job count ─────────────────────────────────
+// Module-level cache shared across mounts/tab-switches so re-opening this
+// panel within the hour doesn't refetch. Backed by /api/widgets/jobs, which
+// counts real SpaceJobPosting rows (isActive: true) and is itself cached at
+// the edge for an hour — this just mirrors that TTL client-side.
+let jobCountCache: { count: number; fetchedAt: number } | null = null;
+const JOB_COUNT_TTL_MS = 60 * 60 * 1000; // 1h
+
+/** Live active job-posting count for the career-crossover footer. Returns
+ *  null until a real count is known — the footer stays hidden until then,
+ *  and stays hidden on any fetch failure (never a stale/fabricated number). */
+function useLiveJobCount(): number | null {
+  const [count, setCount] = useState<number | null>(
+    jobCountCache && Date.now() - jobCountCache.fetchedAt < JOB_COUNT_TTL_MS ? jobCountCache.count : null
+  );
+
+  useEffect(() => {
+    if (jobCountCache && Date.now() - jobCountCache.fetchedAt < JOB_COUNT_TTL_MS) return;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch('/api/widgets/jobs', { signal: controller.signal });
+        if (!res.ok) throw new Error(`bad status ${res.status}`);
+        const data = await res.json();
+        const total = typeof data?.totalActive === 'number' ? data.totalActive : null;
+        if (total !== null && total > 0) {
+          jobCountCache = { count: total, fetchedAt: Date.now() };
+          setCount(total);
+        } else {
+          jobCountCache = null;
+          setCount(null);
+        }
+      } catch {
+        jobCountCache = null;
+        setCount(null);
+      }
+    })();
+    return () => controller.abort();
+  }, []);
+
+  return count;
+}
+
+/** Subtle footer: "Your corporation is hiring in {year}. In the real world,
+ *  {N} space-industry jobs are open right now →" linking to /space-talent.
+ *  N is always the live count — never hardcoded. Renders nothing until a
+ *  real count is available. */
+function CareerCrossoverFooter() {
+  const jobCount = useLiveJobCount();
+  const line = buildCareerCrossoverLine(jobCount);
+  if (!line) return null;
+
+  return (
+    <Link
+      href="/space-talent"
+      className="group flex items-center gap-2 px-1 py-2 text-slate-500 hover:text-cyan-300 transition-colors"
+    >
+      <span className="game-label !text-cyan-500/60 shrink-0" aria-hidden="true">Career Crossover</span>
+      <span className="flex-1 min-w-0 truncate text-[11px] normal-case tracking-normal font-normal text-slate-500 group-hover:text-cyan-300">
+        {line}
+      </span>
+      <span aria-hidden="true" className="shrink-0 text-xs group-hover:translate-x-0.5 transition-transform">→</span>
+    </Link>
+  );
 }
 
 export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrainingBudget }: WorkforcePanelProps) {
@@ -258,6 +327,9 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
           })}
         </div>
       </div>
+
+      {/* Real-world career crossover — subtle, honest live count, never a banner. */}
+      <CareerCrossoverFooter />
     </div>
   );
 }

@@ -138,6 +138,10 @@ export default async function PublicLeaderboardPage() {
           player-chosen and already visible in-game to all players. Updated every few minutes.{' '}
           <Link href="/space-tycoon" className="text-cyan-500 hover:underline">Start your own corporation &rarr;</Link>
         </p>
+        <p className="text-slate-600 text-[11px] text-center">
+          <Link href="/space-tycoon/registry" className="text-cyan-500 hover:underline">Corporate Registry &rarr;</Link>{' '}
+          — player-published quarterly reports.
+        </p>
       </div>
     </div>
   );

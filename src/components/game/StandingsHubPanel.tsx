@@ -14,13 +14,14 @@ import { isFoldedFeatureUnlocked, FOLDED_FEATURE_TIERS } from '@/lib/game/corpor
 import LeaguePanel from './LeaguePanel';
 import LeaderboardPanel from './LeaderboardPanel';
 import RivalsPanel from './RivalsPanel';
+import HeritageRegistryPanel from './HeritageRegistryPanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
 
 interface StandingsHubPanelProps {
   state: GameState;
 }
 
-type StandingsTab = 'leagues' | 'ranks' | 'rivals';
+type StandingsTab = 'leagues' | 'ranks' | 'rivals' | 'heritage';
 
 export default function StandingsHubPanel({ state }: StandingsHubPanelProps) {
   const tier = state.corporationTier || 1;
@@ -29,10 +30,14 @@ export default function StandingsHubPanel({ state }: StandingsHubPanelProps) {
 
   const [tab, setTab] = useState<StandingsTab>(leaguesUnlocked ? 'leagues' : 'ranks');
 
+  // Heritage Registry is flavor/browse-only (real-company-derived NPC
+  // dossiers, no economic stakes), so it's available from tier 1 — unlike
+  // Leagues/Rivals it never needs a LockedSubtabNotice.
   const tabs: { id: StandingsTab; label: string; icon: string; locked: boolean }[] = [
     { id: 'leagues', label: 'Leagues', icon: '🏅', locked: !leaguesUnlocked },
     { id: 'ranks', label: 'Ranks', icon: '🏆', locked: false },
     { id: 'rivals', label: 'Rivals', icon: '⚔️', locked: !rivalsUnlocked },
+    { id: 'heritage', label: 'Heritage', icon: '◆', locked: false },
   ];
 
   return (
@@ -56,6 +61,7 @@ export default function StandingsHubPanel({ state }: StandingsHubPanelProps) {
       {tab === 'leagues' && (leaguesUnlocked ? <LeaguePanel /> : <LockedSubtabNotice icon="🏅" label="Leagues" tier={FOLDED_FEATURE_TIERS.leagues} />)}
       {tab === 'ranks' && <LeaderboardPanel state={state} />}
       {tab === 'rivals' && (rivalsUnlocked ? <RivalsPanel /> : <LockedSubtabNotice icon="⚔️" label="Rivals" tier={FOLDED_FEATURE_TIERS.rivals} />)}
+      {tab === 'heritage' && <HeritageRegistryPanel />}
     </div>
   );
 }

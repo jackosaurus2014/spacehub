@@ -54,11 +54,24 @@ export interface LeagueBoostSnapshot {
   boostDurationSeconds: number;
 }
 
+/** Sol Events (real-world feed, src/lib/game/real-world-feed.ts): modest,
+ *  time-bounded, world-shared bonuses derived from real launch-window /
+ *  program-milestone events. Queued by WorldEventsBanner.tsx (public feed,
+ *  no auth required — unlike the rest of this snapshot, which only ever
+ *  arrives via the authenticated sync route) alongside whatever the sync
+ *  pipeline already queued. Deliberately flat, no compounding, no PvP. */
+export interface WorldEventBonusSnapshot {
+  contractPayoutBonus: number;
+  researchSpeedBonus: number;
+  expiresAtMs: number;
+}
+
 export interface ServerEffectsSnapshot {
   allianceBonuses?: AllianceBonusSnapshot | null;
   zoneStandings?: ZoneStandingSnapshot[];
   espionagePerks?: IntelPerkSnapshot[];
   leagueBoost?: LeagueBoostSnapshot | null;
+  worldEventBonuses?: WorldEventBonusSnapshot | null;
   fetchedAtMs: number;
 }
 
@@ -85,6 +98,27 @@ export function clampAllianceBonuses(b: AllianceBonusSnapshot | null | undefined
   };
 }
 
+// Sol Events caps — deliberately small (CLAUDE.md "effects modest"). These
+// are flat flavor bonuses, not stackable per-event-instance; a bugged feed
+// can never exceed +10%.
+export const WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP = 0.10;
+export const WORLD_EVENT_RESEARCH_SPEED_BONUS_CAP = 0.10;
+
+export function clampWorldEventBonuses(
+  b: WorldEventBonusSnapshot | null | undefined,
+  nowMs: number = Date.now(),
+): WorldEventBonusSnapshot | null {
+  if (!b) return null;
+  if (typeof b.expiresAtMs !== 'number' || b.expiresAtMs <= nowMs) return null;
+  const safe = (v: unknown, cap: number) =>
+    typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(cap, v)) : 0;
+  return {
+    contractPayoutBonus: safe(b.contractPayoutBonus, WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP),
+    researchSpeedBonus: safe(b.researchSpeedBonus, WORLD_EVENT_RESEARCH_SPEED_BONUS_CAP),
+    expiresAtMs: b.expiresAtMs,
+  };
+}
+
 /**
  * Apply a server-effects snapshot into game state. Pure + idempotent:
  * re-applying the same snapshot yields the same state (league boosts are
@@ -104,6 +138,13 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     activeIntelPerks: Array.isArray(eff.espionagePerks)
       ? eff.espionagePerks.filter(p => p && typeof p.expiresAtMs === 'number' && p.expiresAtMs > eff.fetchedAtMs)
       : state.activeIntelPerks,
+    // Sol Events (real-world feed): world-shared launch-window / milestone
+    // bonuses, queued independently by WorldEventsBanner.tsx. Re-clamped
+    // (and expiry-checked) here rather than trusted from the snapshot —
+    // same defensive posture as clampAllianceBonuses above.
+    worldEventBonuses: eff.worldEventBonuses !== undefined
+      ? clampWorldEventBonuses(eff.worldEventBonuses, eff.fetchedAtMs)
+      : state.worldEventBonuses,
   };
 
   // Audit §1b "Leagues": grant the promotion boost the league system defines

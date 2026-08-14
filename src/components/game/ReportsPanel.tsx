@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { GameState, GameReport } from '@/lib/game/types';
+import type { QuarterlyReport } from '@/lib/game/quarterly-reports';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import type { ResourceId } from '@/lib/game/resources';
 import { formatMoney, formatGameDate } from '@/lib/game/formulas';
+import { quarterKey } from '@/lib/game/corp-report-registry';
+import { toast } from '@/lib/toast';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -70,6 +73,125 @@ function QuarterlyGrowthChip({ pct }: { pct: number | null }) {
       <span aria-hidden="true">{positive ? '▲' : '▼'}</span>
       {positive ? '+' : ''}{pct.toFixed(1)}% net worth
     </span>
+  );
+}
+
+// ─── Corporate Registry publish button ──────────────────────────────────────
+// Per CLAUDE.md: "Corporate scouting is legitimate gameplay... Quarterly
+// corporate reports. Every corporation produces an automatic public
+// quarterly — revenue, growth rate, notable acquisitions. Fuel for rivalry
+// and narrative." This is the opt-in trigger: nothing is ever published
+// without the player explicitly clicking through the confirm step below.
+// POSTs to /api/space-tycoon/corp-report, which derives corpId/corpName from
+// the player's own session (see that route) — the client never claims an
+// identity, it just sends the report snapshot.
+
+function PublishToRegistry({ report }: { report: QuarterlyReport }) {
+  const [status, setStatus] = useState<'idle' | 'confirming' | 'publishing' | 'published' | 'error'>('idle');
+  const key = quarterKey(report.quarterIndex);
+
+  // Check publish state once per report card mount — cheap, own-corp-only
+  // read (see GET handler in the corp-report route).
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/space-tycoon/corp-report')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.publishedQuarters?.includes(key)) {
+          setStatus('published');
+        }
+      })
+      .catch(() => { /* non-critical — publish button just won't pre-populate */ });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  const handlePublish = async () => {
+    setStatus('publishing');
+    try {
+      const res = await fetch('/api/space-tycoon/corp-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quarterIndex: report.quarterIndex,
+          quarterNumber: report.quarterNumber,
+          gameYear: report.gameYear,
+          quarterOfYear: report.quarterOfYear,
+          gameDate: report.gameDate,
+          revenue: report.revenue,
+          costs: report.costs,
+          profit: report.profit,
+          netWorth: report.netWorth,
+          fleetCount: report.fleetCount,
+          buildingCount: report.buildingCount,
+          corporationTier: report.corporationTier,
+          notableEvents: report.notableEvents,
+          growthRatePct: report.growthRatePct,
+          governorTaxQuarterly: report.governorTaxQuarterly,
+          subsidiaryIncomeQuarterly: report.subsidiaryIncomeQuarterly,
+          insurancePremiumQuarterly: report.insurancePremiumQuarterly,
+          outstandingRepairCost: report.outstandingRepairCost,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || 'Publish failed');
+      }
+      setStatus('published');
+      toast.success('Your Quarter ' + report.quarterNumber + ' report is now visible on the public Corporate Registry.', 'Published');
+    } catch (err) {
+      setStatus('error');
+      toast.error(err instanceof Error ? err.message : 'Failed to publish report', 'Publish failed');
+    }
+  };
+
+  if (status === 'published') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+        <span aria-hidden="true">📡</span> Published to Corporate Registry
+      </span>
+    );
+  }
+
+  if (status === 'confirming') {
+    return (
+      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-2.5 space-y-2">
+        <p className="text-[11px] text-amber-200/90">
+          This report — revenue, profit, net worth, and notable events — becomes publicly visible on the{' '}
+          <span className="font-semibold">SpaceNexus Corporate Registry</span>, linked from your public corp profile.
+          Anyone can view it, no login required.
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handlePublish}
+            className="min-h-[36px] px-3 py-1.5 rounded-md text-[11px] font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-colors"
+          >
+            Confirm &amp; Publish
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatus('idle')}
+            className="min-h-[36px] px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setStatus('confirming')}
+      disabled={status === 'publishing'}
+      aria-busy={status === 'publishing'}
+      className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition-colors disabled:opacity-50"
+    >
+      <span aria-hidden="true">📡</span>
+      {status === 'publishing' ? 'Publishing…' : status === 'error' ? 'Retry publish' : 'Publish to the SpaceNexus Corporate Registry (public)'}
+    </button>
   );
 }
 
@@ -248,6 +370,10 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
                       </ul>
                     </div>
                   )}
+
+                  <div className="mt-3 pt-2 border-t border-white/[0.04]">
+                    <PublishToRegistry report={r} />
+                  </div>
                 </div>
               )}
             </div>

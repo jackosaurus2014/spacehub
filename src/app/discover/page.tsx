@@ -29,10 +29,8 @@ const byRole = [
     description: 'Track launches, spot satellites, learn about space',
     links: [
       { label: 'Launch Schedule', href: '/mission-control' },
-      { label: 'Satellite Spotter Guide', href: '/satellite-spotting' },
       { label: 'Aurora Forecast', href: '/aurora-forecast' },
       { label: 'Space Quiz', href: '/space-quiz' },
-      { label: 'Space Timeline', href: '/timeline' },
       { label: 'Glossary', href: '/glossary' },
     ],
   },
@@ -80,7 +78,6 @@ const byRole = [
     icon: '🤝',
     description: 'Find opportunities, track contracts, research partners',
     links: [
-      { label: 'Procurement', href: '/procurement' },
       { label: 'Business Opportunities', href: '/business-opportunities' },
       { label: 'Marketplace', href: '/marketplace' },
       { label: 'Contract Awards', href: '/contract-awards' },
@@ -101,6 +98,15 @@ const byRole = [
       { label: 'Orbit Guide', href: '/orbit-guide' },
     ],
   },
+];
+
+// Low-traffic modules (≤2 GA4 views/28d as of the 2026-08-14 review), demoted
+// out of the by-role lists above into a single bottom Reference section.
+// Pages stay live; a Sept-14 review decides deletion vs. improvement.
+const referenceModules = [
+  { href: '/satellite-spotting', label: 'Satellite Spotter Guide', description: 'Naked-eye visibility passes' },
+  { href: '/timeline', label: 'Space Timeline', description: 'History of spaceflight' },
+  { href: '/procurement', label: 'Procurement', description: 'SAM.gov & SBIR/STTR tracking' },
 ];
 
 const hiddenGems = [
@@ -201,6 +207,24 @@ export default function DiscoverPage() {
                 >
                   <p className="text-white text-sm font-medium group-hover:text-cyan-300 transition-colors">{gem.label}</p>
                   <p className="text-slate-500 text-xs mt-0.5">{gem.description}</p>
+                </Link>
+              ))}
+            </div>
+          </ScrollReveal>
+
+          {/* Reference — lower-traffic modules, kept addressable but out of the way */}
+          <ScrollReveal>
+            <h2 className="text-lg font-semibold text-white mb-1">Reference</h2>
+            <p className="text-slate-500 text-sm mb-4">Specialized tools still live on the site</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {referenceModules.map((mod) => (
+                <Link
+                  key={mod.href}
+                  href={mod.href}
+                  className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-cyan-500/20 hover:bg-white/[0.04] transition-all text-center group"
+                >
+                  <p className="text-white text-sm font-medium group-hover:text-cyan-300 transition-colors">{mod.label}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{mod.description}</p>
                 </Link>
               ))}
             </div>

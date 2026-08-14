@@ -6576,6 +6576,52 @@ model Lesson {
   @@index([moduleId])
 }
 
+// ─── Space Tycoon: Prediction Exchange ────────────────────────────────────────
+// Weekly in-game prediction market on REAL space events (launches, stock
+// closes, tracked milestones). Game-currency only — no real money, no
+// pay-to-win. Questions are auto-generated (src/lib/game/prediction-exchange.ts
+// + /api/cron/prediction-exchange) from data we already track ourselves
+// (SpaceEvent, a stock quote snapshot taken at question-open time) and
+// resolved server-side against that same tracked data — never fabricated,
+// never client-supplied. Fixed-odds MVP: a correct stake pays 2x, credited
+// via the existing GameLedgerEntry One Wallet ledger.
+model PredictionQuestion {
+  id              String    @id @default(cuid())
+  key             String    @unique // deterministic dedupe key, e.g. 'launch-<spaceEventId>', 'stocks-<mondayISO>-<ticker>'
+  question        String
+  options         Json      // PredictionOption[] — [{ id, label }], MVP is always exactly 2 options
+  category        String    // 'launch' | 'stocks' | 'milestone'
+  closesAt        DateTime  // stakes locked after this instant
+  resolvesAt      DateTime? // earliest the daily resolver will attempt to settle; null = resolve opportunistically once closesAt has passed
+  outcomeOptionId String?   // set once resolved; null while still open
+  sourceHref      String?   // link to the real tracker page (launch-tracker, space-stocks, etc.)
+  sourceRef       Json?     // resolution bookkeeping, e.g. { spaceEventId } or { ticker, basePrice, basePriceAt }
+  resolvedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  stakes PredictionStake[]
+
+  @@index([closesAt])
+  @@index([category])
+  @@index([outcomeOptionId])
+}
+
+model PredictionStake {
+  id         String              @id @default(cuid())
+  questionId String
+  question   PredictionQuestion  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  profileId  String              // GameProfile.id — same server-auth identity as every other game route
+  optionId   String
+  stake      Int                 // game credits, clamped [PREDICTION_STAKE_MIN, PREDICTION_STAKE_MAX] at write time
+  payout     Int?                // set on resolution: 0 if incorrect, stake*multiplier if correct; null until resolved
+  paidOutAt  DateTime?
+  createdAt  DateTime            @default(now())
+
+  @@unique([questionId, profileId])
+  @@index([questionId])
+  @@index([profileId])
+}
+
 model BuildGuide {
   id           String   @id @default(cuid())
   slug         String   @unique
@@ -6593,4 +6639,23 @@ model BuildGuide {
 
   @@index([track])
   @@index([published])
+}
+
+// ─── Space Tycoon: Public Corporate Registry ──────────────────
+// Opt-in, player-published snapshot of a single quarterly report (see
+// src/lib/game/quarterly-reports.ts for how the report itself is generated
+// client-side). Published via POST /api/space-tycoon/corp-report; listed at
+// /space-tycoon/registry. reportJson is sanitized server-side before storage
+// (see src/lib/game/corp-report-registry.ts) -- player-influenced strings
+// (corp name, notable-event titles) are untrusted input.
+model PublishedCorpReport {
+  id          String   @id @default(cuid())
+  corpId      String
+  corpName    String
+  quarter     String
+  reportJson  String   @db.Text
+  publishedAt DateTime @default(now())
+
+  @@unique([corpId, quarter])
+  @@index([publishedAt])
 }

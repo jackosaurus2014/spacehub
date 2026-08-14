@@ -25,6 +25,7 @@ import DailyBonusModal from '@/components/game/DailyBonusModal';
 import AlliancePanel from '@/components/game/AlliancePanel';
 import AllianceHubPanel from '@/components/game/AllianceHubPanel';
 import BountyPanel from '@/components/game/BountyPanel';
+import PredictionExchangePanel from '@/components/game/PredictionExchangePanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
 import { useGameSync } from '@/hooks/useGameSync';
@@ -1681,6 +1682,7 @@ export default function SpaceTycoonPage() {
     { id: 'workforce', label: 'Crew', icon: '👷' },
     { id: 'alliance', label: 'Corporation', icon: '🏢' },
     { id: 'bounties', label: 'Bounties', icon: '📦' },
+    { id: 'predictions', label: 'Predictions', icon: '🔮' },
     { id: 'megaproject', label: 'Mega-Project', icon: '🌍' },
     { id: 'megastructures', label: 'Megastructures', icon: '🛰️' },
     { id: 'espionage', label: 'Intel', icon: '🕵️' },
@@ -2136,6 +2138,7 @@ export default function SpaceTycoonPage() {
         )}
         {tab === 'alliance' && <AllianceHubPanel state={state} />}
         {tab === 'bounties' && <BountyPanel state={state} />}
+        {tab === 'predictions' && <PredictionExchangePanel state={state} />}
         {tab === 'leaderboard' && <StandingsHubPanel state={state} />}
 
         {/* Competitive Multiplayer Panels */}

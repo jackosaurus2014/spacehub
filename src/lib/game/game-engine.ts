@@ -59,7 +59,7 @@ import { getSpecializationBonuses } from './specializations';
 import { getVictoryBonuses } from './victory-conditions';
 import { getTotalSubsidiaryIncome, getSubsidiaryServiceBonus } from './subsidiaries';
 import { getGovernorBenefits, getStakeholderServiceBonus, getMultiZonePenalty, LOCATION_TO_ZONE } from './zone-influence';
-import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses } from './server-effects';
+import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses, clampWorldEventBonuses } from './server-effects';
 import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './modules';
 // 4X Wave W14 (cargo-logistics.ts, audit C1): per-location inventory routing
 // — production at a remote location accrues into that location's local
@@ -167,6 +167,14 @@ export function processTick(state: GameState): GameState {
   // sync → server-effects → state.allianceBonuses. Re-clamped defensively.
   const allianceB = clampAllianceBonuses(state.allianceBonuses) || {
     revenueBonus: 0, miningBonus: 0, researchBonus: 0, buildSpeedBonus: 0,
+  };
+  // Sol Events (real-world feed): modest, time-bounded research-speed bonus
+  // while a real Artemis/Starship program milestone is <7 days old. Applied
+  // at the same waveBResearchMult site as the alliance researchBonus just
+  // above (research queues 1 and 2, further down). Contract-payout half of
+  // this snapshot is consumed separately in contracts.ts applyContractReward.
+  const worldEventB = clampWorldEventBonuses(state.worldEventBonuses) || {
+    contractPayoutBonus: 0, researchSpeedBonus: 0, expiresAtMs: 0,
   };
   // Territory (A7): zone standings (governor / stakeholder) by location.
   const zoneStandingByLocation = new Map<string, { sharePct: number; isGovernor: boolean }>();
@@ -432,7 +440,9 @@ export function processTick(state: GameState): GameState {
     const researchBoostMult = getActiveBoostMultiplier(activeBoosts, 'research');
     // Audit Wave B: + specialization research_speed (§1b), victory research
     // bonus (§1b), alliance researchBonus (A2). Combined new factor cap 2x.
-    const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus));
+    // Sol Events (real-world feed): + worldEventB.researchSpeedBonus while a
+    // real program milestone is fresh (<7 days old, +10% flat).
+    const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus));
     // narrativeResearchMult (V17 / Wave W4): chain-event research boosts
     // ("Radio Science Windfall", "Fusion Ignition Milestone"...) ride the
     // same expiring activeEffects list random events use, aggregated by
@@ -461,7 +471,7 @@ export function processTick(state: GameState): GameState {
   if (activeResearch2 && completedResearch.includes('parallel_research')) {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
-    const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus)); // audit Wave B (same pack as queue 1)
+    const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus)); // audit Wave B (same pack as queue 1) + Sol Events
     const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {

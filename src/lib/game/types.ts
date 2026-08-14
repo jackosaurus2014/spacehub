@@ -810,6 +810,19 @@ export interface GameState {
    *  granted (dedupe cursor for server-effects league boost grants). */
   claimedLeagueBoostSeasonIds?: string[];
 
+  /** Sol Events (real-world feed, src/lib/game/real-world-feed.ts): modest,
+   *  time-bounded, world-shared bonus mirror while a real launch window is
+   *  open or a program milestone is <7 days old. Queued client-side by
+   *  WorldEventsBanner.tsx via server-effects.ts's existing hand-off queue —
+   *  same pattern as allianceBonuses above, but sourced from the public
+   *  /api/space-tycoon/world-feed route rather than the authenticated sync
+   *  route, so it applies even to solo/logged-out play. */
+  worldEventBonuses?: {
+    contractPayoutBonus: number;
+    researchSpeedBonus: number;
+    expiresAtMs: number;
+  } | null;
+
   // Hazards (Phase II) — recent hazard log
   recentHazards?: {
     id: string;
@@ -1226,4 +1239,4 @@ export interface ScienceMissionState {
 // Legacy save tab ids for the six removed values are mapped forward by
 // resolveLegacyTab() in space-tycoon/page.tsx so old saves/links never dead-end.
 // 'science' added in 4X Wave W6 (flagship scientific missions — science-missions.ts).
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'predictions' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance';

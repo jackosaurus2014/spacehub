@@ -549,7 +549,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'SAM.gov contract tracking, SBIR/STTR solicitations, budget analysis, and congressional activity',
     icon: '📋',
     section: 'business',
-    defaultEnabled: true,
+    // Demoted 2026-08-14: ≤2 GA4 views/28d. Route stays live; hidden from
+    // sidebar default/featured lists until the Sept-14 review.
+    defaultEnabled: false,
     defaultPosition: 21,
     isPremium: true,
     parentModuleId: 'business-opportunities-group',
@@ -605,6 +607,14 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Optimal launch windows and mission planning for planetary destinations',
     icon: '🪟',
     section: 'tools',
+    // NOTE: ≤2 GA4 views/28d (2026-08-14 review) but defaultEnabled is
+    // intentionally left true — this moduleId is also a MODULE_COMPONENTS
+    // entry rendered by the homepage bento carousel (ModuleContainer.tsx),
+    // gated by this same flag. Flipping it would silently drop the module
+    // from any user's already-saved homepage preset (module-presets.ts
+    // homeIds), which is out of bounds for this sweep. Demoted instead via
+    // PERSONA_MODULE_PRESETS (removed from all default persona presets) and
+    // the dashboard grid; still appears in the sidebar child preview list.
     defaultEnabled: true,
     defaultPosition: 24,
     isPremium: true,
@@ -627,7 +637,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Technical breakdowns of space hardware - rocket engines, satellite buses, and lunar landers',
     icon: '📐',
     section: 'tools',
-    defaultEnabled: true,
+    // Demoted 2026-08-14: ≤2 GA4 views/28d. Route stays live; hidden from
+    // sidebar default/featured lists until the Sept-14 review.
+    defaultEnabled: false,
     defaultPosition: 26,
     isPremium: true,
     parentModuleId: 'mission-planning',
@@ -638,7 +650,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Estimated costs for orbital habitats, fabrication facilities, depots, solar arrays, and more with detailed BOM',
     icon: '🏗️',
     section: 'tools',
-    defaultEnabled: true,
+    // Demoted 2026-08-14: ≤2 GA4 views/28d. Route stays live; hidden from
+    // sidebar default/featured lists until the Sept-14 review.
+    defaultEnabled: false,
     defaultPosition: 27,
     isPremium: true,
     parentModuleId: 'mission-planning',
@@ -661,6 +675,14 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Orbital slots, population projections, and satellite-based services marketplace',
     icon: '🛰️',
     section: 'business',
+    // NOTE: ≤2 GA4 views/28d (2026-08-14 review) but defaultEnabled is
+    // intentionally left true — this moduleId is also a MODULE_COMPONENTS
+    // entry rendered by the homepage bento carousel (ModuleContainer.tsx),
+    // gated by this same flag. Flipping it would silently drop the module
+    // from any user's already-saved homepage preset (module-presets.ts
+    // homeIds), which is out of bounds for this sweep. Demoted instead via
+    // PERSONA_MODULE_PRESETS (removed from all default persona presets) and
+    // the dashboard grid; still appears in the sidebar child preview list.
     defaultEnabled: true,
     defaultPosition: 28,
     isPremium: true,
@@ -672,7 +694,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Track major satellite constellations - deployments, coverage, and regulatory compliance',
     icon: '🛸',
     section: 'data',
-    defaultEnabled: true,
+    // Demoted 2026-08-14: ≤2 GA4 views/28d. Route stays live; hidden from
+    // sidebar default/featured lists until the Sept-14 review.
+    defaultEnabled: false,
     defaultPosition: 29,
     isPremium: true,
     parentModuleId: 'space-operations',
@@ -694,7 +718,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'ISS, Tiangong, and commercial space stations: crew, modules, visiting vehicles',
     icon: '🏠',
     section: 'tools',
-    defaultEnabled: true,
+    // Demoted 2026-08-14: ≤2 GA4 views/28d. Route stays live; hidden from
+    // sidebar default/featured lists until the Sept-14 review.
+    defaultEnabled: false,
     defaultPosition: 31,
     isPremium: true,
     parentModuleId: 'space-operations',
@@ -705,7 +731,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Spaceport directory, communications networks, DSN status, and relay systems',
     icon: '🏗️',
     section: 'tools',
-    defaultEnabled: true,
+    // Demoted 2026-08-14: ≤2 GA4 views/28d. Route stays live; hidden from
+    // sidebar default/featured lists until the Sept-14 review.
+    defaultEnabled: false,
     defaultPosition: 32,
     isPremium: true,
     parentModuleId: 'space-operations',

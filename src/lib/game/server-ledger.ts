@@ -48,7 +48,9 @@ export type LedgerReason =
   | 'espionage_upgrade'
   | 'league_reward'
   | 'competitive_contract_reward'
-  | 'daily_bonus';
+  | 'daily_bonus'
+  | 'prediction_stake'
+  | 'prediction_payout';
 
 export interface LedgerWrite {
   profileId: string;

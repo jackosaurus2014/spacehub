@@ -1,4 +1,7 @@
 import prisma from '@/lib/db';
+import { getTierDef } from '@/lib/game/corporation-tiers';
+import { estimateTierFromEarnings } from '@/lib/game/public-leaderboard';
+import { parseStoredCorpReport, formatQuarterLabel } from '@/lib/game/corp-report-registry';
 
 /**
  * Weekly "State of the Space Economy" report — generated entirely from our own
@@ -11,6 +14,94 @@ export interface WeeklyEconomyReport {
   slug: string;
   summary: string;
   content: string; // GFM markdown, rendered by /ai-insights/[slug]
+}
+
+// ─── "Meanwhile, in 2150" — Space Tycoon world-state closer ─────────────────
+// Per docs/LORE.md: "The year is 2150 CE" is the canonical in-game present.
+// A short, honest dispatch from the game world appended to the real-world
+// weekly brief — real aggregate stats only, queried server-side. Guarded at
+// every layer: getTycoonWorldStats returns null (never fabricates) if the
+// game tables are empty or any query fails, and buildWeeklyEconomyReport
+// simply omits the section in that case.
+
+export interface TycoonWorldStats {
+  totalCorporations: number;
+  topCorp: { companyName: string; netWorth: number; tier: number } | null;
+  allianceCount: number;
+  newestReport: { corpName: string; quarterLabel: string } | null;
+}
+
+/** Queries the live game tables for a handful of honest, public aggregate
+ *  stats. Returns null — never a fabricated/zeroed stats object — if the
+ *  world is empty (no corporations registered yet) or any query throws
+ *  (e.g. a table doesn't exist yet pre-migration). */
+export async function getTycoonWorldStats(): Promise<TycoonWorldStats | null> {
+  try {
+    const totalCorporations = await prisma.gameProfile.count();
+    if (totalCorporations === 0) return null;
+
+    const [topProfile, allianceCount, newestReportRow] = await Promise.all([
+      prisma.gameProfile.findFirst({
+        orderBy: { netWorth: 'desc' },
+        select: { companyName: true, netWorth: true, totalEarned: true },
+      }),
+      prisma.alliance.count(),
+      prisma.publishedCorpReport
+        .findFirst({
+          orderBy: { publishedAt: 'desc' },
+          select: { corpName: true, reportJson: true },
+        })
+        .catch(() => null), // table may not exist yet pre-migration — non-fatal
+    ]);
+
+    const topCorp = topProfile
+      ? {
+          companyName: topProfile.companyName,
+          netWorth: topProfile.netWorth,
+          tier: estimateTierFromEarnings(topProfile.totalEarned),
+        }
+      : null;
+
+    let newestReport: TycoonWorldStats['newestReport'] = null;
+    if (newestReportRow) {
+      const parsed = parseStoredCorpReport(newestReportRow.reportJson);
+      if (parsed) {
+        newestReport = { corpName: newestReportRow.corpName, quarterLabel: formatQuarterLabel(parsed) };
+      }
+    }
+
+    return { totalCorporations, topCorp, allianceCount, newestReport };
+  } catch {
+    return null; // never fabricate — section is omitted entirely on failure
+  }
+}
+
+/** Pure — builds the markdown section from already-fetched, real stats.
+ *  Never called with fabricated data; callers must have gotten `stats` from
+ *  getTycoonWorldStats() (or, in tests, a hand-built stand-in for it). */
+export function buildMeanwhileIn2150Section(stats: TycoonWorldStats): string {
+  const lines: string[] = [];
+  lines.push('## Meanwhile, in 2150');
+  lines.push('');
+  lines.push("*A dispatch from Space Tycoon, SpaceNexus's free multiplayer space economy game set in the 22nd century.*");
+  lines.push('');
+  const corpWord = stats.totalCorporations === 1 ? 'corporation is' : 'corporations are';
+  lines.push(`- **${stats.totalCorporations.toLocaleString()}** registered ${corpWord} competing across the solar system.`);
+  if (stats.topCorp) {
+    const tierDef = getTierDef(stats.topCorp.tier);
+    lines.push(`- Leading the pack: **${stats.topCorp.companyName}** (${tierDef.name}-tier) at ${fmtMoney(stats.topCorp.netWorth)} net worth.`);
+  }
+  const allianceLine = stats.allianceCount > 0
+    ? `**${stats.allianceCount.toLocaleString()}** player alliance${stats.allianceCount !== 1 ? 's' : ''} active`
+    : null;
+  const reportLine = stats.newestReport
+    ? `latest published quarterly: **${stats.newestReport.corpName}**'s ${stats.newestReport.quarterLabel} report`
+    : null;
+  const trailer = [allianceLine, reportLine].filter(Boolean).join(' · ');
+  if (trailer) lines.push(`- ${trailer[0].toUpperCase()}${trailer.slice(1)}.`);
+  lines.push('');
+  lines.push('[See the full leaderboard](/space-tycoon/leaderboard)');
+  return lines.join('\n');
 }
 
 function fmtMoney(n: number): string {
@@ -236,6 +327,15 @@ export async function buildWeeklyEconomyReport(now = new Date()): Promise<Weekly
   lines.push('- [Space jobs & talent hub](/space-talent)');
   lines.push('- [Company directory](/company-profiles)');
   lines.push('');
+
+  // "Meanwhile, in 2150" — real Space Tycoon world stats, omitted entirely
+  // (never fabricated) if the game world is empty or the query fails.
+  const worldStats = await getTycoonWorldStats();
+  if (worldStats) {
+    lines.push(buildMeanwhileIn2150Section(worldStats));
+    lines.push('');
+  }
+
   lines.push('*This brief is generated automatically every week from live SpaceNexus data.*');
 
   const summary = `Space economy week of ${weekOf}: ${articles.length} tracked stories, ${funding.length} funding rounds${fundingTotal > 0 ? ` totaling ${fmtMoney(fundingTotal)}` : ''}, ${newJobs} new job postings, and ${launches.length} launches on the two-week horizon.`;

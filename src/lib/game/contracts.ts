@@ -5,6 +5,7 @@
 import type { GameState, GameDate } from './types';
 import { getReputationBonuses } from './reputation';
 import { getWorkforceBonuses } from './workforce';
+import { clampWorldEventBonuses } from './server-effects';
 
 export interface ContractRequirement {
   type: 'money_earned' | 'buildings_completed' | 'resources_mined' | 'services_active'
@@ -288,7 +289,11 @@ export function generateContracts(state: GameState): ContractDefinition[] {
  *  Audit Wave B (§1c): reputation `contractRewardMultiplier` (up to +60%)
  *  and negotiator `contractPayBonus` (workforce) were defined but "applied
  *  to no contract payout" — they now scale the cash half of every static
- *  contract reward. Resources are unscaled (they're supply, not payment). */
+ *  contract reward. Resources are unscaled (they're supply, not payment).
+ *
+ *  Sol Events (real-world feed, src/lib/game/real-world-feed.ts): while a
+ *  real launch window is live/imminent, worldEventBonuses.contractPayoutBonus
+ *  (+10% flat, world-shared) rides the same multiplier stack. */
 export function applyContractReward(state: GameState, reward: ContractReward): GameState {
   const resources = { ...state.resources };
   if (reward.resources) {
@@ -298,10 +303,12 @@ export function applyContractReward(state: GameState, reward: ContractReward): G
   }
   const repBonuses = getReputationBonuses(state.reputation || 0);
   const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+  const worldEventB = clampWorldEventBonuses(state.worldEventBonuses);
   const payout = Math.round(
     reward.money
     * repBonuses.contractRewardMultiplier
     * (1 + wfBonuses.contractPayBonus)
+    * (1 + (worldEventB?.contractPayoutBonus || 0))
   );
   return {
     ...state,

@@ -206,15 +206,12 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '\u{1F4E1}', label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { icon: '\u{1F4CB}', label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
   { icon: '\u{1F4B0}', label: 'Investment Tracker', href: '/investment-tracker', description: 'Funding trends, top deals & investors' },
-  { icon: '\u{1F3DB}\uFE0F', label: 'Government Budgets', href: '/government-budgets', description: 'Global space agency budget tracking' },
   { icon: '\u{1F4CB}', label: 'Intelligence Brief', href: '/intelligence-brief', description: 'Weekly curated industry briefing' },
   { icon: '\u{1F464}', label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
   { icon: '\u{1F680}', label: 'Startups & Pre-IPO', href: '/startups', description: 'Private companies, funding rounds & IPO watch' },
   { icon: '\u{1F4CA}', label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
   { icon: '\u{1F4BC}', label: 'Portfolio Tracker', href: '/portfolio-tracker', description: 'Track space investment portfolios' },
-  { icon: '\u{1F4C8}', label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
   { icon: '\u{1F4DC}', label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
-  { icon: '\u{1F52C}', label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
 ];
 
 const BUSINESS_MODULES: ModuleItem[] = [
@@ -234,17 +231,10 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '\u{1F4B0}', label: 'Mission Cost Simulator', href: '/mission-cost', description: 'Estimate launch costs and fees' },
   { icon: '\u{1F680}', label: 'Launch Vehicle Comparison', href: '/launch-vehicles', description: 'Compare rocket specs and costs' },
   { icon: '\u{1F6F0}\uFE0F', label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & weather satellites' },
-  { icon: '\u{1F3D7}\uFE0F', label: 'Space Station Tracker', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
-  { icon: '\u{1F30D}', label: 'Orbital Management', href: '/orbital-slots', description: 'Orbital slots and satellite services' },
-  { icon: '\u2728', label: 'Constellation Tracker', href: '/constellations', description: 'Satellite constellation monitoring' },
   { icon: '\u{1F4E1}', label: 'Ground Stations', href: '/ground-stations', description: 'Global ground station networks' },
-  { icon: '\u{1F3DB}\uFE0F', label: 'Infrastructure Network', href: '/spaceports', description: 'Spaceports & communications networks' },
   { icon: '\u26A1', label: 'Resource Exchange', href: '/resource-exchange', description: 'Space commodity pricing' },
-  { icon: '\u{1F5D3}\uFE0F', label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
   { icon: '\u{1F324}\uFE0F', label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
-  { icon: '\u{1F4D0}', label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
   { icon: '\u{1F9EE}', label: 'Launch Cost Calculator', href: '/launch-cost-calculator', description: 'Estimate launch costs by vehicle & orbit' },
-  { icon: '\u{1F52C}', label: 'Tech Readiness', href: '/tech-readiness', description: 'Emerging technology TRL tracking' },
   { icon: '\u{1F525}', label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine & thruster specifications' },
   { icon: '\u{1F4CD}', label: 'Launch Sites', href: '/launch-sites', description: 'Global spaceport database & capabilities' },
   { icon: '\u{1F4E1}', label: 'Frequency Bands', href: '/frequency-bands', description: 'Space communications RF spectrum reference' },
@@ -256,6 +246,24 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '\u{1F30D}', label: 'Orbital Calculator', href: '/orbital-calculator', description: 'Orbital mechanics calculator' },
   { icon: '\u{1F680}', label: 'Mission Simulator', href: '/mission-simulator', description: 'Simulate and plan space missions' },
   { icon: '\u{1F4D6}', label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
+];
+
+/**
+ * Low-traffic modules (≤2 GA4 views/28d as of the 2026-08-14 review).
+ * Demoted out of the primary Explore/Intelligence/Business/Tools grids into a
+ * collapsed "Reference" group below. Pages stay live; a Sept-14 review
+ * decides deletion vs. improvement. See CLAUDE.md standing protocol.
+ */
+const REFERENCE_MODULES: ModuleItem[] = [
+  { icon: '\u{1F3DB}️', label: 'Government Budgets', href: '/government-budgets', description: 'Global space agency budget tracking' },
+  { icon: '\u{1F4C8}', label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
+  { icon: '\u{1F52C}', label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
+  { icon: '\u{1F3D7}️', label: 'Space Station Tracker', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
+  { icon: '\u{1F30D}', label: 'Orbital Management', href: '/orbital-slots', description: 'Orbital slots and satellite services' },
+  { icon: '✨', label: 'Constellation Tracker', href: '/constellations', description: 'Satellite constellation monitoring' },
+  { icon: '\u{1F3DB}️', label: 'Infrastructure Network', href: '/spaceports', description: 'Spaceports & communications networks' },
+  { icon: '\u{1F5D3}️', label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
+  { icon: '\u{1F4D0}', label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
 ];
 
 /** Animated counter that counts up from 0 to the target value */
@@ -334,6 +342,80 @@ function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
             </StaggerItem>
           ))}
         </StaggerContainer>
+      </div>
+    </ScrollReveal>
+  );
+}
+
+/**
+ * Collapsed-by-default "Reference" group for low-traffic modules. Keeps them
+ * addressable from the dashboard (power-user surface) without occupying
+ * prime real estate above the fold. Keyboard-operable toggle with
+ * aria-expanded/aria-controls; content is only mounted when expanded.
+ */
+function ReferenceModuleSection({ modules, sizeClasses }: {
+  modules: ModuleItem[];
+  sizeClasses: ReturnType<typeof getModuleSizeClasses>;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const panelId = 'dashboard-reference-modules-panel';
+
+  if (modules.length === 0) return null;
+
+  return (
+    <ScrollReveal>
+      <div className="mb-8">
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          className="w-full flex items-center justify-between gap-2 text-left px-1 py-2 group"
+        >
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <span className="text-xl">{'\u{1F4DA}'}</span>
+            Reference
+            <span className="text-xs font-normal text-slate-500 ml-1">
+              ({modules.length} lower-traffic module{modules.length === 1 ? '' : 's'})
+            </span>
+          </h2>
+          <svg
+            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {expanded && (
+          <div id={panelId}>
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-3">
+              {modules.map((mod) => (
+                <StaggerItem key={mod.href}>
+                  <Link
+                    href={mod.href}
+                    className={`group relative card ${sizeClasses.padding} hover:border-white/10 hover:bg-white/[0.06] block`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors truncate">
+                          {mod.label}
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                          {mod.description}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+        )}
       </div>
     </ScrollReveal>
   );
@@ -1133,6 +1215,12 @@ export default function DashboardPage() {
           modules={filteredTools}
           sizeClasses={sizeClasses}
           delay="0.25s"
+        />
+
+        {/* Reference - low-traffic modules, collapsed by default (2026-08-14 sweep) */}
+        <ReferenceModuleSection
+          modules={REFERENCE_MODULES}
+          sizeClasses={sizeClasses}
         />
 
         {/* No results message */}

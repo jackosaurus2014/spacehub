@@ -70,7 +70,11 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     // folded into 'contracts' (already tier-1), 'economy' folded into
     // 'market' (already tier-1) — see FOLDED_FEATURE_TIERS for their
     // subtab-level gating, which still activates at tier 2 as before.
-    unlockedTabs: ['fleet', 'reports', 'modules', 'discoveries', 'specialization'],
+    // Prediction Exchange (weekly real-world prediction market): gated to
+    // tier 2 alongside the rest of the Venture unlocks — a solo tier-1
+    // startup is still learning the basics; by tier 2 players have market
+    // fluency and can reason about stakes.
+    unlockedTabs: ['fleet', 'reports', 'modules', 'discoveries', 'specialization', 'predictions'],
   },
   {
     tier: 3, name: 'Enterprise', icon: '🏢', color: '#a78bfa',

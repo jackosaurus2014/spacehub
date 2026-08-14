@@ -4087,3 +4087,39 @@ export type UpdateDealMemoInput = z.infer<typeof updateDealMemoSchema>;
 export type InvestorHubStage = (typeof INVESTOR_HUB_STAGES)[number];
 export type DealMemoRecommendation = (typeof DEAL_MEMO_RECOMMENDATIONS)[number];
 export type DealMemoVisibility = (typeof DEAL_MEMO_VISIBILITIES)[number];
+
+// ─── Space Tycoon: Corporate Registry (publish quarterly report) ───────────
+// Validates the client-submitted QuarterlyReport (src/lib/game/quarterly-reports.ts)
+// before it is shaped/sanitized (src/lib/game/corp-report-registry.ts) and
+// upserted by POST /api/space-tycoon/corp-report. Numeric bounds are generous
+// (this is a display-only public registry, not a gameplay-authoritative
+// balance) but finite/sane to keep a forged payload from producing garbage
+// on the public page.
+export const publishCorpReportSchema = z.object({
+  quarterIndex: z.number().int().min(0).max(100_000),
+  quarterNumber: z.number().int().min(1).max(100_000),
+  gameYear: z.number().int().min(1900).max(4000),
+  quarterOfYear: z.number().int().min(1).max(4),
+  gameDate: z
+    .object({
+      year: z.number().int().min(1900).max(4000),
+      month: z.number().int().min(1).max(12),
+    })
+    .optional()
+    .nullable(),
+  revenue: z.number().finite(),
+  costs: z.number().finite(),
+  profit: z.number().finite(),
+  netWorth: z.number().finite(),
+  fleetCount: z.number().int().min(0).max(1_000_000),
+  buildingCount: z.number().int().min(0).max(1_000_000),
+  corporationTier: z.number().int().min(1).max(20),
+  notableEvents: z.array(z.string().max(300)).max(5).default([]),
+  growthRatePct: z.number().finite().nullable(),
+  governorTaxQuarterly: z.number().finite().optional(),
+  subsidiaryIncomeQuarterly: z.number().finite().optional(),
+  insurancePremiumQuarterly: z.number().finite().optional(),
+  outstandingRepairCost: z.number().finite().optional(),
+});
+
+export type PublishCorpReportInput = z.infer<typeof publishCorpReportSchema>;

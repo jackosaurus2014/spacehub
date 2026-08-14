@@ -24,6 +24,8 @@ import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import MiniActivitiesWidget from '@/components/game/MiniActivitiesWidget';
 import type { MiniActivityReward } from '@/lib/game/mini-activities';
 import WorldStatusCard from '@/components/game/WorldStatusCard';
+import WorldEventsBanner from '@/components/game/WorldEventsBanner';
+import HistoricalArchiveTicker from '@/components/game/HistoricalArchiveTicker';
 import { useActivityFeed, formatRelativeTime, usePrefersReducedMotion } from '@/hooks/useWorldState';
 
 /** Live countdown timer for research (purple) */
@@ -579,6 +581,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
     <div className="space-y-4">
       {/* Command Center header — corporation identity, mission clock, region readout */}
       <CommandCenterHeader state={state} />
+      {/* Sol Events — real-world space weather / launch / milestone feed, mirrored into the game as archive entries. Renders nothing when no event is active. */}
+      <WorldEventsBanner />
       {/* Quick-nav holo tiles — one-tap access to the panels players touch most, + live alerts strip */}
       <QuickNavGrid state={state} hasPowerDeficit={financials.hasPowerDeficit} onNavigate={onNavigate} />
       {/* The live world — colony races, milestone claims, competitive contracts (audit Change #3) */}
@@ -1201,6 +1205,10 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
           </div>
         ))}
       </div>
+
+      {/* Sol Historical Archive — real site headlines reframed as in-universe
+          history (docs/LORE.md narrative year). Renders nothing on empty/error. */}
+      <HistoricalArchiveTicker />
     </div>
   );
 }

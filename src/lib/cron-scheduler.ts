@@ -158,6 +158,11 @@ const CRON_JOBS: CronJobDef[] = [
   // empty shell). Deterministic ~31-day season calendar — daily polling is far
   // more than sufficient to keep the current/next/previous rows in sync.
   { schedule: '0 6 * * *',    path: '/api/space-tycoon/seasons/cron',              label: 'tycoon-seasons-cron',          maxStaleMinutes: 2880 },
+  // Prediction Exchange — weekly question generation (Mondays 6:30am UTC,
+  // after the seasons cron) + a daily resolve pass that settles any question
+  // past its resolvesAt gate. See src/lib/game/prediction-exchange.ts.
+  { schedule: '30 6 * * 1',   path: '/api/cron/prediction-exchange?action=generate', label: 'tycoon-predictions-generate', maxStaleMinutes: 11520 },
+  { schedule: '0 10 * * *',   path: '/api/cron/prediction-exchange?action=resolve',  label: 'tycoon-predictions-resolve',  maxStaleMinutes: 1560 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

@@ -26,7 +26,14 @@ export const HOMEPAGE_MODULE_IDS: string[] = [
   'orbital-management',
 ];
 
-/** Curated homepage module sets per persona, in display order. */
+/**
+ * Curated homepage module sets per persona, in display order.
+ * Note: 'launch-windows' and 'orbital-management' (low-traffic modules,
+ * ≤2 GA4 views/28d as of the 2026-08-14 review) were removed from every
+ * default preset below. They remain in HOMEPAGE_MODULE_IDS above so a
+ * user's own saved selection (localStorage) keeps rendering them if they
+ * already picked one — only the defaults were demoted.
+ */
 export const PERSONA_MODULE_PRESETS: Record<Persona, string[]> = {
   enthusiast: [
     'mission-control',
@@ -34,15 +41,12 @@ export const PERSONA_MODULE_PRESETS: Record<Persona, string[]> = {
     'blogs-articles',
     'solar-exploration',
     'satellite-tracker',
-    'launch-windows',
     'market-intel',
     'business-opportunities',
   ],
   professional: [
     'mission-control',
     'satellite-tracker',
-    'launch-windows',
-    'orbital-management',
     'regulatory-hub',
     'spectrum-management',
     'resource-exchange',
@@ -56,7 +60,6 @@ export const PERSONA_MODULE_PRESETS: Record<Persona, string[]> = {
     'blogs-articles',
     'news-feed',
     'space-insurance',
-    'orbital-management',
     'solar-exploration',
   ],
   jobseeker: [
@@ -67,7 +70,6 @@ export const PERSONA_MODULE_PRESETS: Record<Persona, string[]> = {
     'market-intel',
     'regulatory-hub',
     'satellite-tracker',
-    'launch-windows',
   ],
 };
 
