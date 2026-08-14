@@ -14,6 +14,7 @@ import {
 } from '@/lib/government-contracts-data';
 import ContractCard from './ContractCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import DataAsOf from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
 
 interface ContractsListProps {
@@ -163,6 +164,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
 
   return (
     <div className="space-y-6">
+      <DataAsOf date="February 2026" note="curated government contract solicitations; not a live SAM.gov feed" />
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -171,7 +171,7 @@ const SPACE_STATS_EXPORT_DATA = [
   { stat: '60%+', category: 'Launch Statistics', label: 'SpaceX Global Launch Share', source: 'Bryce Tech', year: '2024' },
   { stat: '$2,720/kg', category: 'Launch Statistics', label: 'Average LEO Launch Cost (Falcon 9)', source: 'SpaceX / Industry Est.', year: '2025' },
   { stat: '15+', category: 'Launch Statistics', label: 'Active Launch Providers', source: 'Bryce Tech', year: '2024' },
-  { stat: '10,000+', category: 'Satellites', label: 'Active Satellites in Orbit', source: 'UCS Satellite Database', year: '2025' },
+  { stat: '16,000+', category: 'Satellites', label: 'Active Satellites in Orbit', source: 'CelesTrak', year: '2026' },
   { stat: '6,000+', category: 'Satellites', label: 'Starlink Satellites (Active)', source: 'SpaceX', year: '2025' },
   { stat: '2,800+', category: 'Satellites', label: 'Satellites Launched Per Year', source: 'Bryce Tech', year: '2024' },
   { stat: '58%', category: 'Satellites', label: 'LEO Constellation Share', source: 'SIA', year: '2025' },
@@ -191,7 +191,7 @@ const SPACE_STATS_EXPORT_DATA = [
   { stat: '24%', category: 'Workforce', label: 'Women in Space Workforce', source: 'Space Foundation', year: '2024' },
   { stat: '$10B+', category: 'Investment', label: 'Annual VC Investment', source: 'Space Capital', year: '2024' },
   { stat: '500+', category: 'Investment', label: 'Active Space Startups', source: 'Bryce Tech / Space Capital', year: '2025' },
-  { stat: '$10B+', category: 'Investment', label: 'SpaceX Valuation Funding', source: 'Bloomberg / CNBC', year: '2025' },
+  { stat: '~$2T', category: 'Investment', label: 'SpaceX Market Cap (NASDAQ: SPCX)', source: 'NASDAQ', year: '2026' },
   { stat: '15+', category: 'Investment', label: 'Space SPACs (Completed)', source: 'CNBC', year: '2020-2022' },
   { stat: '$2.4B', category: 'Investment', label: 'Sierra Space + Vast Raises (2025)', source: 'TechCrunch / SpaceNews', year: '2025' },
   { stat: '35%', category: 'Investment', label: 'Launch Sector Investment Share', source: 'Space Capital', year: '2024' },
@@ -244,7 +244,7 @@ export default function SpaceStatsPage() {
             <SocialShare
               title="Space Industry Statistics & Facts - SpaceNexus"
               url="https://spacenexus.us/space-stats"
-              description="The definitive collection of space industry data: $626B market, 230+ launches, 10,000+ satellites, and more."
+              description="The definitive collection of space industry data: $626B market, 230+ launches, 16,000+ satellites, and more."
             />
             <div className="mt-4 flex justify-center">
               <ExportButton
@@ -266,7 +266,7 @@ export default function SpaceStatsPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-12 max-w-6xl mx-auto">
             <HeroStat target={626} prefix="$" suffix="B" label="Market Size (2025)" color="blue" />
             <HeroStat target={320} suffix="+" label="Orbital Launches (2025)" color="green" />
-            <HeroStat target={10000} suffix="+" label="Active Satellites" color="purple" />
+            <HeroStat target={16000} suffix="+" label="Active Satellites" color="purple" />
             <HeroStat target={95} prefix="$" suffix="B+" label="Gov. Spending" color="amber" />
             <HeroStat target={360} suffix="K+" label="US Workforce" color="rose" />
             <HeroStat target={10} prefix="$" suffix="B+" label="Annual VC" color="cyan" />
@@ -407,11 +407,11 @@ export default function SpaceStatsPage() {
         <SectionHeader icon="🛰️" title="Satellite Statistics" id="satellite-stats" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
-            number="10,000+"
+            number="16,000+"
             label="Active Satellites in Orbit"
-            description="Over 10,000 active satellites are currently operating in Earth orbit, a number that has more than tripled since 2019 due to mega-constellation deployments."
-            source="UCS Satellite Database"
-            year="2025"
+            description="Over 16,000 active satellites are currently operating in Earth orbit, a number that has grown rapidly since 2019 due to mega-constellation deployments."
+            source="CelesTrak"
+            year="2026"
             color="purple"
           />
           <StatCard
@@ -588,11 +588,11 @@ export default function SpaceStatsPage() {
             color="cyan"
           />
           <StatCard
-            number="$10B+"
-            label="SpaceX Valuation Funding"
-            description="SpaceX's latest private valuation exceeds $350 billion, making it the most valuable private company in the world. The company has raised over $10 billion in total funding."
-            source="Bloomberg / CNBC"
-            year="2025"
+            number="~$2T"
+            label="SpaceX Market Cap (NASDAQ: SPCX)"
+            description="SpaceX went public in June 2026 in the largest IPO in history, debuting at approximately $2 trillion in market capitalization and becoming the most valuable space company on public markets."
+            source="NASDAQ"
+            year="2026"
             color="cyan"
           />
           <StatCard
@@ -804,7 +804,7 @@ export default function SpaceStatsPage() {
             mainEntity: {
               '@type': 'Dataset',
               name: 'Space Industry Statistics',
-              description: 'Key statistics about the global space industry including market size ($626B), launches (230+), active satellites (10,000+), and workforce (360,000+ US).',
+              description: 'Key statistics about the global space industry including market size ($626B), launches (230+), active satellites (16,000+), and workforce (360,000+ US).',
               creator: { '@type': 'Organization', name: 'SpaceNexus' },
             },
           }),

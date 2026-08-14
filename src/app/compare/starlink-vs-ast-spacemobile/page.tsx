@@ -9,12 +9,12 @@ const COMPARISON_DATA = [
   { metric: 'Founded', a: '2015 (Starlink program)', b: '2017' },
   { metric: 'CEO / Founder', a: 'Elon Musk (SpaceX CEO)', b: 'Abel Avellan' },
   { metric: 'Headquarters', a: 'Hawthorne, CA', b: 'Midland, TX' },
-  { metric: 'Publicly Traded', a: 'No (SpaceX private; Starlink IPO discussed)', b: 'Yes (ASTS, Nasdaq)' },
-  { metric: 'Market Cap / Valuation', a: 'SpaceX ~$350B+ (Starlink est. $100B+ portion)', b: '~$7B+ (early 2026)' },
+  { metric: 'Publicly Traded', a: 'Yes (SpaceX: SPCX, Nasdaq, IPO June 2026)', b: 'Yes (ASTS, Nasdaq)' },
+  { metric: 'Market Cap / Valuation', a: 'SpaceX ~$2T (Aug 2026)', b: '~$7B+ (early 2026)' },
   { metric: 'Total Funding', a: 'Part of SpaceX ($10B+ total)', b: '~$1.2B+ (equity + debt)' },
   { metric: 'Technology', a: 'LEO broadband via dish/terminal', b: 'Direct-to-phone via large phased-array satellites' },
   { metric: 'User Equipment Required', a: 'Starlink dish + Wi-Fi router ($599 hardware)', b: 'None — works with standard unmodified smartphones' },
-  { metric: 'Satellites in Orbit', a: '6,500+ (as of early 2026)', b: '5 Block 1 BlueBird satellites' },
+  { metric: 'Satellites in Orbit', a: '10,000+ (as of Aug 2026)', b: '5 Block 1 BlueBird satellites' },
   { metric: 'Target Constellation', a: '12,000 (Gen1) + 30,000 (Gen2) approved', b: '~168 satellites (full constellation)' },
   { metric: 'Orbit', a: 'LEO, 540-570 km (shell 1)', b: 'LEO, ~725 km' },
   { metric: 'Download Speed', a: '50-250 Mbps typical (up to 400+ Mbps)', b: 'Up to 10+ Mbps per user (broadband target)' },
@@ -80,7 +80,7 @@ export default function Page() {
       {/* Technology Comparison */}
       <h2 className="text-display text-xl mb-3">Technology: Dish-Based Broadband vs Direct-to-Phone</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Starlink operates the largest satellite constellation in history, with over 6,500 satellites providing broadband internet through a flat-panel phased-array dish (the Starlink terminal). Users purchase a $599 dish and pay a monthly subscription. The system delivers 50&ndash;250 Mbps download speeds with 20&ndash;40 ms latency, comparable to terrestrial broadband in many areas. Starlink has expanded beyond residential service into maritime, aviation, and enterprise markets, with SpaceX launching dedicated &ldquo;Direct to Cell&rdquo; satellites in partnership with T-Mobile for basic texting to smartphones.
+        Starlink operates the largest satellite constellation in history, with over 10,000 satellites providing broadband internet through a flat-panel phased-array dish (the Starlink terminal). Users purchase a $599 dish and pay a monthly subscription. The system delivers 50&ndash;250 Mbps download speeds with 20&ndash;40 ms latency, comparable to terrestrial broadband in many areas. Starlink has expanded beyond residential service into maritime, aviation, and enterprise markets, with SpaceX launching dedicated &ldquo;Direct to Cell&rdquo; satellites in partnership with T-Mobile for basic texting to smartphones.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         AST SpaceMobile takes a fundamentally different approach: each BlueBird satellite carries a massive phased-array antenna (~64 square meters) powerful enough to communicate directly with standard, unmodified cellular phones. No special hardware, apps, or firmware updates are needed on the user&apos;s device. AST demonstrated voice calls and 4G LTE data on the BlueWalker 3 test satellite in 2023, and the first five commercial Block 1 BlueBird satellites are now in orbit. The trade-off is that each satellite is far larger and more expensive than a Starlink satellite, limiting constellation scale.
@@ -98,7 +98,7 @@ export default function Page() {
       {/* Investment Outlook */}
       <h2 className="text-display text-xl mb-3">Investment &amp; Stock Outlook</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Starlink is not independently publicly traded, but SpaceX&apos;s private valuation exceeds $350 billion, with a potential Starlink IPO widely discussed. Starlink&apos;s profitability inflection is a key driver of SpaceX valuation. AST SpaceMobile (ASTS on Nasdaq) has a market cap of roughly $7 billion as of early 2026, driven by investor enthusiasm around the D2D opportunity. The stock is highly speculative &mdash; AST remains pre-revenue with significant capital needs to deploy its full 168-satellite constellation. Successful commercial service launch with AT&T could be a major catalyst, but execution risk remains substantial given the technical complexity of building and deploying these very large satellites at scale.
+        SpaceX went public on Nasdaq (SPCX) in June 2026, raising $75B and now trading around a $2 trillion market cap, with Starlink&apos;s profitability a key driver of that valuation. AST SpaceMobile (ASTS on Nasdaq) has a market cap of roughly $7 billion as of early 2026, driven by investor enthusiasm around the D2D opportunity. The stock is highly speculative &mdash; AST remains pre-revenue with significant capital needs to deploy its full 168-satellite constellation. Successful commercial service launch with AT&T could be a major catalyst, but execution risk remains substantial given the technical complexity of building and deploying these very large satellites at scale.
       </p>
 
       {/* CTA */}
@@ -141,7 +141,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Starlink LEO broadband and AST SpaceMobile direct-to-phone satellite technology, covering satellites, speeds, revenue, and market strategy.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-25', dateModified: '2026-03-25',
+        datePublished: '2026-03-25', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/starlink-vs-ast-spacemobile',
       }).replace(/</g, '\\u003c') }} />
 

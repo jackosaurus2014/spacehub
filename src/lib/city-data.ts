@@ -132,7 +132,7 @@ export const SPACE_CITIES: SpaceCity[] = [
       { name: 'Boeing Space (El Segundo)', slug: 'boeing', focus: 'Satellites, SLS core stage' },
       { name: 'Raytheon (El Segundo)', slug: 'raytheon', focus: 'Space sensors, missile warning' },
       { name: 'Relativity Space', slug: 'relativity-space', focus: '3D-printed rockets (Terran R)' },
-      { name: 'ABL Space Systems', slug: 'abl-space', focus: 'Responsive launch (RS1)' },
+      { name: 'Long Wall', slug: 'abl-space', focus: 'Missile defense (formerly ABL Space Systems, pivoted from orbital launch in 2025)' },
     ],
     jobMarket: {
       avgSalary: '$130,000',
@@ -140,7 +140,7 @@ export const SPACE_CITIES: SpaceCity[] = [
       topRoles: ['Propulsion Engineer', 'Avionics Engineer', 'Manufacturing Engineer', 'Software Engineer', 'Structures Engineer'],
     },
     whyThisCity: [
-      'SpaceX, Rocket Lab, Relativity, and ABL Space all headquartered in greater LA',
+      'SpaceX, Rocket Lab, and Relativity all headquartered in greater LA',
       'JPL — NASA\'s premier planetary science and robotics center',
       'Space Systems Command — primary military space acquisition organization',
       'The Aerospace Corporation — FFRDC supporting all national security space programs',

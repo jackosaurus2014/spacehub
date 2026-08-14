@@ -170,11 +170,11 @@ const LAUNCH_PROVIDERS: LaunchProviderDetails[] = [
     dedicatedCostM: 10,
     rideshareMinCost: 1000000,
 
-    totalFlights: 6,
-    successfulFlights: 4,
-    reliability: 0.67,
+    totalFlights: 30,
+    successfulFlights: 25,
+    reliability: 0.83,
     firstFlight: '2023-04-20',
-    lastFlight: '2024-11-19',
+    lastFlight: 'Ongoing (Aug 2026)',
 
     reusable: true,
     reusabilityType: 'Fully reusable (booster catch, ship landing)',
@@ -194,7 +194,7 @@ const LAUNCH_PROVIDERS: LaunchProviderDetails[] = [
     diameter: 9,
     liftoffMass: 5000000,
 
-    description: 'The most powerful rocket ever built. Designed for Mars colonization with full reusability.',
+    description: 'The most powerful rocket ever built. Operational since mid-2026 with a fast-growing flight cadence; long-run reliability and cost figures are still maturing. Designed for Mars colonization with full reusability.',
     keyCustomers: ['NASA Artemis', 'Starlink V2', 'Point-to-point transport'],
     upcomingEnhancements: ['Orbital refueling', 'Rapid turnaround operations'],
   },

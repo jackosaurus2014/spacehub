@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -34,18 +34,141 @@ const KP_LEVELS: KpLevel[] = [
   { kp: 9, label: 'Extreme Storm (G5)', color: 'text-fuchsia-400', borderColor: 'border-fuchsia-500/30', bgColor: 'bg-fuchsia-500/10', description: 'Extreme storm, rare and spectacular', visibility: 'Southern US (30 N) — Houston, Atlanta, Los Angeles, Madrid' },
 ];
 
-// Simulated "current" conditions for display purposes
-const SIMULATED_CONDITIONS = {
+type KpTrend = 'rising' | 'falling' | 'steady';
+
+interface Conditions {
+  kpIndex: number;
+  kpTrend: KpTrend;
+  solarWind: number;
+  bz: number;
+  bt: number;
+  density: number;
+  sunspotNumber: number;
+  f107: number;
+  lastUpdate: string | null;
+}
+
+// Sample conditions shown only if the live NOAA SWPC feed is unreachable.
+// Clearly labeled as sample data in the UI when used (see `isLive` state below).
+const SAMPLE_CONDITIONS: Conditions = {
   kpIndex: 4,
-  kpTrend: 'rising' as const,
+  kpTrend: 'rising',
   solarWind: 485,
   bz: -3.2,
   bt: 7.8,
   density: 8.4,
   sunspotNumber: 178,
   f107: 195,
-  lastUpdate: '2026-03-18T14:30:00Z',
+  lastUpdate: null,
 };
+
+interface DynamicContentItem<T = unknown> {
+  contentKey: string;
+  section: string | null;
+  data: T;
+  refreshedAt: string;
+}
+
+/**
+ * Live NOAA SWPC conditions, sourced from the same DynamicContent pipeline
+ * the space-environment weather tab uses (fetched every 30 min via
+ * `fetchAndStoreEnhancedSpaceWeather()` — see src/lib/module-api-fetchers.ts).
+ * Falls back to labeled sample data if the feed hasn't been populated yet.
+ */
+function useLiveAuroraConditions() {
+  const [conditions, setConditions] = useState<Conditions>(SAMPLE_CONDITIONS);
+  const [isLive, setIsLive] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    try {
+      const [kpRes, windRes, fluxRes, regionsRes] = await Promise.all([
+        fetch('/api/content/space-environment?section=kp-index'),
+        fetch('/api/content/space-environment?section=solar-wind'),
+        fetch('/api/content/space-environment?section=solar-flux'),
+        fetch('/api/content/space-environment?section=solar-regions'),
+      ]);
+      const [kpJson, windJson, fluxJson, regionsJson] = await Promise.all([
+        kpRes.json(),
+        windRes.json(),
+        fluxRes.json(),
+        regionsRes.json(),
+      ]);
+
+      const kpItem: DynamicContentItem | undefined = kpJson.items?.[0];
+      const plasmaItem: DynamicContentItem | undefined = windJson.items?.find(
+        (i: DynamicContentItem) => i.contentKey.includes('plasma')
+      );
+      const magItem: DynamicContentItem | undefined = windJson.items?.find(
+        (i: DynamicContentItem) => i.contentKey.includes('mag')
+      );
+      const fluxItem: DynamicContentItem | undefined = fluxJson.items?.[0];
+      const regionsItem: DynamicContentItem | undefined = regionsJson.items?.[0];
+
+      if (!kpItem) {
+        // Feed not populated yet — keep honest sample-data state.
+        setIsLive(false);
+        setLoading(false);
+        return;
+      }
+
+      const kpData = kpItem.data as {
+        currentKp: number;
+        recentReadings?: { kpIndex: number }[];
+      };
+      const plasmaData = plasmaItem?.data as
+        | { latest?: { speed: number | null; density: number | null } }
+        | undefined;
+      const magData = magItem?.data as
+        | {
+            latest?: { bzGsm: number | null; bt: number | null };
+            summary?: { minBz: number | null };
+          }
+        | undefined;
+      const fluxData = fluxItem?.data as { currentFlux: number } | undefined;
+      const regionsData = regionsItem?.data as { totalSunspots: number } | undefined;
+
+      const readings = kpData.recentReadings || [];
+      let trend: 'rising' | 'falling' | 'steady' = 'steady';
+      if (readings.length >= 2) {
+        const diff = readings[readings.length - 1].kpIndex - readings[readings.length - 2].kpIndex;
+        trend = diff > 0.2 ? 'rising' : diff < -0.2 ? 'falling' : 'steady';
+      }
+
+      const refreshTimes = [kpItem, plasmaItem, magItem, fluxItem, regionsItem]
+        .filter((i): i is DynamicContentItem => !!i)
+        .map((i) => new Date(i.refreshedAt).getTime());
+      const lastUpdate = refreshTimes.length > 0
+        ? new Date(Math.max(...refreshTimes)).toISOString()
+        : null;
+
+      setConditions({
+        kpIndex: Math.max(0, Math.min(9, Math.round(kpData.currentKp))),
+        kpTrend: trend,
+        solarWind: plasmaData?.latest?.speed != null ? Math.round(plasmaData.latest.speed) : SAMPLE_CONDITIONS.solarWind,
+        bz: magData?.latest?.bzGsm != null ? Math.round(magData.latest.bzGsm * 10) / 10 : SAMPLE_CONDITIONS.bz,
+        bt: magData?.latest?.bt != null ? Math.round(magData.latest.bt * 10) / 10 : SAMPLE_CONDITIONS.bt,
+        density: plasmaData?.latest?.density != null ? Math.round(plasmaData.latest.density * 10) / 10 : SAMPLE_CONDITIONS.density,
+        sunspotNumber: regionsData?.totalSunspots ?? SAMPLE_CONDITIONS.sunspotNumber,
+        f107: fluxData?.currentFlux != null ? Math.round(fluxData.currentFlux) : SAMPLE_CONDITIONS.f107,
+        lastUpdate,
+      });
+      setIsLive(true);
+    } catch {
+      setIsLive(false);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+    const interval = setInterval(load, 5 * 60 * 1000); // refresh view every 5 min; upstream updates every 30 min
+    return () => clearInterval(interval);
+  }, [load]);
+
+  return { conditions, isLive, loading };
+}
 
 const AURORA_SCIENCE = [
   {
@@ -116,7 +239,15 @@ const VIEWING_TIPS = [
 /* ------------------------------------------------------------------ */
 
 export default function AuroraForecastPage() {
-  const [selectedKp, setSelectedKp] = useState<number>(SIMULATED_CONDITIONS.kpIndex);
+  const { conditions, isLive, loading } = useLiveAuroraConditions();
+  const [selectedKp, setSelectedKp] = useState<number>(SAMPLE_CONDITIONS.kpIndex);
+  const [userSelectedKp, setUserSelectedKp] = useState(false);
+
+  // Default the Kp selector to the live current level once it arrives,
+  // unless the user has already picked their own level to explore.
+  useEffect(() => {
+    if (!userSelectedKp) setSelectedKp(conditions.kpIndex);
+  }, [conditions.kpIndex, userSelectedKp]);
 
   const currentLevel = KP_LEVELS[selectedKp];
 
@@ -125,7 +256,7 @@ export default function AuroraForecastPage() {
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Aurora Forecast & Space Weather"
-          subtitle="Real-time geomagnetic conditions, Kp index, and aurora visibility guide for enthusiasts and photographers"
+          subtitle="Geomagnetic conditions from NOAA SWPC (updated every 30 min), Kp index, and aurora visibility guide for enthusiasts and photographers"
           icon={<span className="text-4xl">&#127752;</span>}
           accentColor="green"
         />
@@ -169,59 +300,82 @@ export default function AuroraForecastPage() {
               Current Conditions
             </h2>
             <p className="text-slate-400 text-sm mb-6">
-              Simulated real-time data based on typical Solar Cycle 25 conditions. Visit{' '}
-              <Link href="/space-weather" className="text-green-400 hover:text-green-300 transition-colors">
-                our full Space Weather dashboard
-              </Link>{' '}
-              for live data from NOAA SWPC.
+              {loading ? (
+                'Loading current conditions…'
+              ) : isLive ? (
+                <>
+                  Live data from NOAA SWPC (Kp index, solar wind, and IMF readings), refreshed every 30 minutes.{' '}
+                  {conditions.lastUpdate && (
+                    <span className="text-slate-500">
+                      Last updated {new Date(conditions.lastUpdate).toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}.
+                    </span>
+                  )}{' '}
+                  Visit{' '}
+                  <Link href="/space-weather" className="text-green-400 hover:text-green-300 transition-colors">
+                    our full Space Weather dashboard
+                  </Link>{' '}
+                  for more detail.
+                </>
+              ) : (
+                <>
+                  <span className="text-yellow-400 font-medium">Sample data</span> — the live NOAA SWPC feed
+                  hasn&apos;t been populated in this environment. Visit{' '}
+                  <Link href="/space-weather" className="text-green-400 hover:text-green-300 transition-colors">
+                    our full Space Weather dashboard
+                  </Link>{' '}
+                  for live data.
+                </>
+              )}
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-green-400">
-                  Kp {SIMULATED_CONDITIONS.kpIndex}
+                  Kp {conditions.kpIndex}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Kp Index</div>
-                <div className="text-xs text-yellow-400 mt-1 flex items-center justify-center gap-1">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                  </svg>
-                  Rising
-                </div>
+                {conditions.kpTrend !== 'steady' && (
+                  <div className={`text-xs mt-1 flex items-center justify-center gap-1 ${conditions.kpTrend === 'rising' ? 'text-yellow-400' : 'text-green-400'}`}>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d={conditions.kpTrend === 'rising' ? 'M5 10l7-7m0 0l7 7m-7-7v18' : 'M19 14l-7 7m0 0l-7-7m7 7V3'} />
+                    </svg>
+                    {conditions.kpTrend === 'rising' ? 'Rising' : 'Falling'}
+                  </div>
+                )}
               </div>
 
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-white">
-                  {SIMULATED_CONDITIONS.solarWind}
+                  {conditions.solarWind}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Solar Wind km/s</div>
               </div>
 
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-red-400">
-                  {SIMULATED_CONDITIONS.bz}
+                <div className={`text-2xl font-bold font-display ${conditions.bz < 0 ? 'text-red-400' : 'text-white'}`}>
+                  {conditions.bz}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Bz (nT)</div>
-                <div className="text-xs text-red-400 mt-1">Southward</div>
+                {conditions.bz < 0 && <div className="text-xs text-red-400 mt-1">Southward</div>}
               </div>
 
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-white">
-                  {SIMULATED_CONDITIONS.bt}
+                  {conditions.bt}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Bt (nT)</div>
               </div>
 
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-yellow-400">
-                  {SIMULATED_CONDITIONS.sunspotNumber}
+                  {conditions.sunspotNumber}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Sunspot #</div>
               </div>
 
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-white">
-                  {SIMULATED_CONDITIONS.f107}
+                  {conditions.f107}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">F10.7 SFU</div>
               </div>
@@ -232,16 +386,16 @@ export default function AuroraForecastPage() {
               <div className="flex items-center gap-3 mb-2">
                 <span className={`w-3 h-3 rounded-full ${currentLevel.bgColor} ${currentLevel.color} animate-pulse`} style={{ boxShadow: '0 0 8px currentColor' }} />
                 <h3 className={`font-semibold ${currentLevel.color}`}>
-                  Kp {SIMULATED_CONDITIONS.kpIndex} — {KP_LEVELS[SIMULATED_CONDITIONS.kpIndex].label}
+                  Kp {conditions.kpIndex} — {KP_LEVELS[conditions.kpIndex].label}
                 </h3>
               </div>
               <p className="text-slate-400 text-sm">
-                {KP_LEVELS[SIMULATED_CONDITIONS.kpIndex].description}.{' '}
-                <span className="text-slate-300">{KP_LEVELS[SIMULATED_CONDITIONS.kpIndex].visibility}</span>.
+                {KP_LEVELS[conditions.kpIndex].description}.{' '}
+                <span className="text-slate-300">{KP_LEVELS[conditions.kpIndex].visibility}</span>.
               </p>
               <p className="text-xs text-slate-500 mt-2">
-                Bz is currently southward ({SIMULATED_CONDITIONS.bz} nT), which is favorable for aurora.
-                Solar wind speed of {SIMULATED_CONDITIONS.solarWind} km/s is above average.
+                Bz is currently {conditions.bz < 0 ? 'southward' : 'northward'} ({conditions.bz} nT){conditions.bz < 0 ? ', which is favorable for aurora' : ''}.
+                Solar wind speed is {conditions.solarWind} km/s.
               </p>
             </div>
           </section>
@@ -264,7 +418,7 @@ export default function AuroraForecastPage() {
               {KP_LEVELS.map((level) => (
                 <button
                   key={level.kp}
-                  onClick={() => setSelectedKp(level.kp)}
+                  onClick={() => { setSelectedKp(level.kp); setUserSelectedKp(true); }}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                     selectedKp === level.kp
                       ? `${level.bgColor} ${level.color} ${level.borderColor}`
@@ -387,7 +541,7 @@ export default function AuroraForecastPage() {
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-white/[0.06]">
                       <span className="text-slate-400">Monthly Sunspot #</span>
-                      <span className="text-white font-mono">~{SIMULATED_CONDITIONS.sunspotNumber}</span>
+                      <span className="text-white font-mono">~{conditions.sunspotNumber}</span>
                     </div>
                     <div className="flex items-center justify-between py-2">
                       <span className="text-slate-400">Expected Peak Window</span>

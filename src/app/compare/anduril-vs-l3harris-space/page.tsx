@@ -24,7 +24,7 @@ const COMPARISON_DATA = [
   { metric: 'Headquarters', a: 'Costa Mesa, CA', b: 'Melbourne, FL' },
   { metric: 'Employees', a: '~4,000+', b: '~47,000+' },
   { metric: 'Revenue (2025)', a: '~$1B+ (estimated, private)', b: '~$21B+' },
-  { metric: 'Valuation', a: '~$28B (2025 Series G)', b: '~$45B market cap (NYSE: LHX)' },
+  { metric: 'Valuation', a: '~$61B (2026 Series H)', b: '~$45B market cap (NYSE: LHX)' },
   { metric: 'Public / Private', a: 'Private', b: 'Public (NYSE: LHX)' },
   { metric: 'Core Approach', a: 'Software-defined, AI-first autonomous systems', b: 'Hardware-centric, full-spectrum space & sensor systems' },
   { metric: 'Space Portfolio', a: 'Lattice AI mesh network, counter-UAS, space C2 software', b: 'ISR satellites, weather satellites, EO/IR sensors, ground systems' },
@@ -108,7 +108,7 @@ export default function Page() {
       {/* Industry Impact */}
       <h2 className="text-display text-xl mb-3">Implications for the Defense Industrial Base</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Anduril&apos;s rise represents a broader shift in how the Pentagon acquires space and defense technology. The company&apos;s $28B valuation on $1B+ in revenue signals investor confidence that software-first defense companies can capture significant market share from traditional primes. L3Harris, for its part, is not standing still &mdash; the company has been investing in AI, autonomous systems, and software-defined architectures. The likely outcome is convergence: Anduril will need to build more hardware expertise (its Arsenal-1 factory is a step), while L3Harris will need to become more software-capable. The space domain, where both companies are investing heavily, will be a primary battleground for this competition.
+        Anduril&apos;s rise represents a broader shift in how the Pentagon acquires space and defense technology. The company&apos;s $61B valuation (Series H, May 2026) on $1B+ in revenue signals investor confidence that software-first defense companies can capture significant market share from traditional primes. L3Harris, for its part, is not standing still &mdash; the company has been investing in AI, autonomous systems, and software-defined architectures. The likely outcome is convergence: Anduril will need to build more hardware expertise (its Arsenal-1 factory is a step), while L3Harris will need to become more software-capable. The space domain, where both companies are investing heavily, will be a primary battleground for this competition.
       </p>
 
       {/* CTA */}
@@ -150,7 +150,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Anduril and L3Harris covering AI-first vs traditional defense, Golden Dome, SDA contracts, and space defense strategy.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-04-15', dateModified: '2026-04-15',
+        datePublished: '2026-04-15', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/anduril-vs-l3harris-space',
       }).replace(/</g, '\\u003c') }} />
 

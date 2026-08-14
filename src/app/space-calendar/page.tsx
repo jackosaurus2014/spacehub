@@ -97,7 +97,7 @@ const CALENDAR_DATA: MonthData[] = [
     year: 2026,
     events: [
       { date: 'Jun 8-10', sortDate: '2026-06-08', title: 'Reuters Space & Satellites', category: 'conference', description: 'Reuters flagship space industry and investment summit', location: 'London, UK', highlight: true },
-      { date: 'Jun TBD', sortDate: '2026-06-15', title: 'SpaceX IPO (Expected)', category: 'business', description: 'Anticipated SpaceX initial public offering, potentially the largest tech IPO in years at $350B+ valuation', highlight: true },
+      { date: 'Jun 12', sortDate: '2026-06-12', title: 'SpaceX IPO (SPCX)', category: 'business', description: 'SpaceX completed its initial public offering, raising $75B at an approximately $1.78T valuation -- one of the largest tech IPOs on record.', highlight: true },
       { date: 'Jun 15-19', sortDate: '2026-06-15', title: 'COPUOS Session', category: 'policy', description: '69th session of the UN Committee on Peaceful Uses of Outer Space', location: 'Vienna, Austria' },
       { date: 'Jun 22-26', sortDate: '2026-06-22', title: 'Paris Air Show 2026', category: 'conference', description: 'Biennial aerospace show (if scheduled; alternates with Farnborough)', location: 'Le Bourget, France' },
     ],
@@ -204,13 +204,14 @@ function isCurrentMonth(monthNum: number, year: number): boolean {
 // ---------------------------------------------------------------------------
 
 function HighlightCards() {
+  const todayStr = new Date().toISOString().slice(0, 10);
   const highlights = CALENDAR_DATA.flatMap((m) =>
-    m.events.filter((e) => e.highlight).map((e) => ({ ...e, monthLabel: m.month }))
+    m.events.filter((e) => e.highlight && e.sortDate >= todayStr).map((e) => ({ ...e, monthLabel: m.month }))
   ).slice(0, 6);
 
   return (
     <div className="mb-8">
-      <h2 className="text-lg font-semibold text-slate-100 mb-4">Top Events of 2026</h2>
+      <h2 className="text-lg font-semibold text-slate-100 mb-4">Upcoming Highlights</h2>
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" staggerDelay={0.06}>
         {highlights.map((event) => (
           <StaggerItem key={event.title}>

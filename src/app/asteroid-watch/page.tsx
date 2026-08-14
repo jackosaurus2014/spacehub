@@ -848,6 +848,123 @@ const FALLBACK_FIREBALL_EVENTS: FireballEvent[] = [
 // Helper Functions
 // ────────────────────────────────────────
 
+const AU_KM = 149597870.7;
+
+/**
+ * The `/api/content/[module]` endpoint wraps each DynamicContent row's data
+ * as a single-element array (it only special-cases rows whose `data` is
+ * already an array). Our live NASA NeoWs / JPL fetchers store single summary
+ * objects (e.g. `{ approaches: [...], totalCount, ... }`), so callers must
+ * unwrap `payload[0]` to reach the real object, then map its field names
+ * onto the shapes this page renders.
+ */
+function unwrapContentObject<T>(payload: unknown): T | null {
+  if (Array.isArray(payload) && payload.length > 0 && payload[0] && typeof payload[0] === 'object') {
+    return payload[0] as T;
+  }
+  return null;
+}
+
+interface LiveCloseApproachesPayload {
+  approaches: Array<{
+    id: string;
+    name: string;
+    magnitude: number;
+    diameterMin: number;
+    diameterMax: number;
+    isPotentiallyHazardous: boolean;
+    approachDate: string;
+    velocityKmH: number;
+    missDistanceKm: number;
+    missDistanceLunar: string;
+  }>;
+}
+
+function mapLiveCloseApproaches(payload: unknown): CloseApproach[] | null {
+  const wrapped = unwrapContentObject<LiveCloseApproachesPayload>(payload);
+  if (!wrapped?.approaches?.length) return null;
+  return wrapped.approaches.map((a) => ({
+    id: a.id,
+    name: a.name,
+    date: a.approachDate,
+    distanceLD: parseFloat(a.missDistanceLunar) || 0,
+    distanceAU: a.missDistanceKm / AU_KM,
+    diameterMin: a.diameterMin,
+    diameterMax: a.diameterMax,
+    velocity: a.velocityKmH / 3600, // km/h -> km/s
+    // NASA NeoWs doesn't publish Torino/Palermo ratings (those are Sentry-specific).
+    // 0 / -10 mirror the "no elevated risk" defaults used across the fallback dataset.
+    torino: 0,
+    palermo: -10,
+    isPHA: a.isPotentiallyHazardous,
+    orbitClass: 'NEO',
+  }));
+}
+
+interface LiveImpactRiskPayload {
+  highestRiskObjects: Array<{
+    designation: string;
+    fullName: string;
+    lastObserved: string;
+    numberOfImpacts: string;
+    impactProbability: string;
+    palermoCumulative: number;
+    palermoMaximum: number;
+    torinoScale: number;
+    velocityInfKmS: number;
+    impactDateRange: string;
+    diameter: string | null;
+  }>;
+}
+
+function mapLiveImpactRisk(payload: unknown): ImpactRiskObject[] | null {
+  const wrapped = unwrapContentObject<LiveImpactRiskPayload>(payload);
+  if (!wrapped?.highestRiskObjects?.length) return null;
+  return wrapped.highestRiskObjects.map((o) => ({
+    des: o.designation,
+    fullname: o.fullName,
+    ip: o.impactProbability,
+    ps_cum: String(o.palermoCumulative),
+    ps_max: String(o.palermoMaximum),
+    v_inf: String(o.velocityInfKmS),
+    last_obs: o.lastObserved,
+    n_imp: o.numberOfImpacts,
+    range: o.impactDateRange,
+    ts_max: String(o.torinoScale),
+    diameter: o.diameter || 'Unknown',
+  }));
+}
+
+interface LiveFireballsPayload {
+  recentFireballs: Array<{
+    date: string | null;
+    latitude: number | null;
+    latitudeDir: string | null;
+    longitude: number | null;
+    longitudeDir: string | null;
+    altitude: number | null;
+    velocityKmS: number | null;
+    totalRadiatedEnergyJ: number | null;
+    impactEnergyKt: number | null;
+  }>;
+  dateRange?: { start: string; end: string };
+}
+
+function mapLiveFireballs(payload: unknown): { events: FireballEvent[]; coverageEnd: string | null } | null {
+  const wrapped = unwrapContentObject<LiveFireballsPayload>(payload);
+  if (!wrapped?.recentFireballs?.length) return null;
+  const events = wrapped.recentFireballs.map((f) => ({
+    date: f.date || '',
+    energy: f.totalRadiatedEnergyJ != null ? String(f.totalRadiatedEnergyJ) : '',
+    impact_e: f.impactEnergyKt != null ? String(f.impactEnergyKt) : '',
+    lat: f.latitude != null ? `${f.latitude}${f.latitudeDir || ''}` : '',
+    lon: f.longitude != null ? `${f.longitude}${f.longitudeDir || ''}` : '',
+    alt: f.altitude != null ? String(f.altitude) : '',
+    vel: f.velocityKmS != null ? String(f.velocityKmS) : '',
+  }));
+  return { events, coverageEnd: wrapped.dateRange?.end || null };
+}
+
 function getTorinoColor(scale: number): { bg: string; text: string; border: string; label: string } {
   if (scale === 0) return { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500', label: 'No Hazard' };
   if (scale === 1) return { bg: 'bg-green-900/30', text: 'text-green-300', border: 'border-green-400', label: 'Normal' };
@@ -985,6 +1102,12 @@ function AsteroidWatchContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  // Which sections are genuinely live (vs. showing curated reference/fallback data) —
+  // used to label freshness honestly instead of implying everything updates live.
+  const [isApproachesLive, setIsApproachesLive] = useState(false);
+  const [isImpactRiskLive, setIsImpactRiskLive] = useState(false);
+  const [isFireballsLive, setIsFireballsLive] = useState(false);
+  const [fireballCoverageEnd, setFireballCoverageEnd] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -1006,7 +1129,14 @@ function AsteroidWatchContent() {
         const [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11] = await Promise.all([
           r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(), r8.json(), r9.json(), r10.json(), r11.json(),
         ]);
-        setCloseApproaches(d1.data?.length > 3 ? d1.data : FALLBACK_CLOSE_APPROACHES);
+        // Live NASA NeoWs / JPL data comes back as a single wrapped summary
+        // object per section (see mapLive* helpers above), not a flat array —
+        // unwrap and field-map it; fall back to curated reference data if the
+        // live feed hasn't populated yet.
+        const liveApproaches = mapLiveCloseApproaches(d1.data);
+        setCloseApproaches(liveApproaches || FALLBACK_CLOSE_APPROACHES);
+        setIsApproachesLive(!!liveApproaches);
+
         if (d2.data?.[0] && d2.data[0].totalNEOs > 0) setNeoStats(d2.data[0]);
         setSizeCategories(d3.data?.length > 2 ? d3.data : FALLBACK_SIZE_CATEGORIES);
         setSpectralDistribution(d4.data?.length > 2 ? d4.data : FALLBACK_SPECTRAL_DISTRIBUTION);
@@ -1015,8 +1145,16 @@ function AsteroidWatchContent() {
         setMiningCompanies(d7.data?.length > 2 ? d7.data : FALLBACK_MINING_COMPANIES);
         setSurveyTelescopes(d8.data?.length > 2 ? d8.data : FALLBACK_SURVEY_TELESCOPES);
         setDiscoveryMilestones(d9.data?.length > 3 ? d9.data : FALLBACK_DISCOVERY_MILESTONES);
-        setImpactRiskObjects(d10.data?.length > 2 ? d10.data : FALLBACK_IMPACT_RISK_OBJECTS);
-        setFireballEvents(d11.data?.length > 2 ? d11.data : FALLBACK_FIREBALL_EVENTS);
+
+        const liveImpactRisk = mapLiveImpactRisk(d10.data);
+        setImpactRiskObjects(liveImpactRisk || FALLBACK_IMPACT_RISK_OBJECTS);
+        setIsImpactRiskLive(!!liveImpactRisk);
+
+        const liveFireballs = mapLiveFireballs(d11.data);
+        setFireballEvents(liveFireballs?.events || FALLBACK_FIREBALL_EVENTS);
+        setIsFireballsLive(!!liveFireballs);
+        setFireballCoverageEnd(liveFireballs?.coverageEnd || null);
+
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
         clientLogger.error('Failed to load asteroid watch data', { error: error instanceof Error ? error.message : String(error) });
@@ -1094,8 +1232,8 @@ function AsteroidWatchContent() {
 
         {/* Quick Stats Banner */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          <StatCard value={NEO_STATS.totalNEOs.toLocaleString()} label="Known NEOs" subValue={`+${NEO_STATS.last30DaysDiscoveries} last 30d`} />
-          <StatCard value={NEO_STATS.totalPHAs.toLocaleString()} label="Known PHAs" valueColor="text-orange-400" />
+          <StatCard value={NEO_STATS.totalNEOs.toLocaleString()} label="Known NEOs" subValue="Approx. catalog total" />
+          <StatCard value={NEO_STATS.totalPHAs.toLocaleString()} label="Known PHAs" valueColor="text-orange-400" subValue="Approx. catalog total" />
           <StatCard value={`${CLOSE_APPROACHES.length}`} label="Tracked Approaches" />
           <StatCard value={`${phaCount}`} label="PHAs in List" valueColor={phaCount > 0 ? 'text-red-400' : 'text-green-400'} />
           <StatCard value={closestApproach ? `${closestApproach.distanceLD.toFixed(1)} LD` : 'N/A'} label="Closest Pass" valueColor={getDistanceColor(closestApproach?.distanceLD || 99)} />
@@ -1215,9 +1353,15 @@ function AsteroidWatchContent() {
               <div className="card p-6 mt-6">
                 <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
                   <span className="text-red-400">&#9888;</span> Impact Risk Assessment
+                  {isImpactRiskLive ? (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">Live</span>
+                  ) : (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-500/10 text-slate-400 border border-slate-500/20">Reference sample</span>
+                  )}
                 </h3>
                 <p className="text-slate-400 text-sm mb-4">
                   Objects with non-zero impact probability tracked by NASA/JPL Sentry system. Most risks are extremely small and decrease with additional observations.
+                  {!isImpactRiskLive && ' The live JPL Sentry feed hasn’t populated in this environment, so this table shows a curated sample.'}
                 </p>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -1277,9 +1421,17 @@ function AsteroidWatchContent() {
               <div className="card p-6 mt-6">
                 <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
                   <span className="text-orange-400">&#9728;</span> Recent Fireball Events
+                  {isFireballsLive ? (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">Live</span>
+                  ) : (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-500/10 text-slate-400 border border-slate-500/20">Reference sample</span>
+                  )}
                 </h3>
                 <p className="text-slate-400 text-sm mb-4">
                   Bright meteors (fireballs) detected by U.S. Government sensors entering Earth&apos;s atmosphere.
+                  {isFireballsLive
+                    ? fireballCoverageEnd && ` Covers the rolling 30-day window through ${fireballCoverageEnd}.`
+                    : ' The live JPL fireball feed hasn’t populated in this environment, so this list shows a curated historical sample (not continuously updated).'}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {FIREBALL_EVENTS.map((fb, idx) => (
@@ -1331,10 +1483,12 @@ function AsteroidWatchContent() {
 
             {/* Data source note */}
             <ScrollReveal><div className="card p-4 border-dashed text-sm text-slate-500">
-              Close approach data sourced from NASA Center for Near-Earth Object Studies (CNEOS) and
-              JPL Small-Body Database. Distances in LD (Lunar Distances, 1 LD = 384,400 km) and AU
-              (Astronomical Units, 1 AU = 149,597,871 km). Torino Scale ratings reflect current
-              impact probability assessments.
+              {isApproachesLive
+                ? 'Close approach data live from NASA NeoWs (refreshed every few hours, 7-day forward window).'
+                : 'The live NASA NeoWs feed hasn’t populated in this environment, so the list below is a curated reference sample, not a live 7-day window.'}
+              {' '}Distances in LD (Lunar Distances, 1 LD = 384,400 km) and AU
+              (Astronomical Units, 1 AU = 149,597,871 km). NeoWs doesn&apos;t publish Torino/Palermo ratings for these
+              objects — see the Impact Risk Assessment table (JPL Sentry) below for objects with a rated impact probability.
             </div></ScrollReveal>
           </div>
         )}
@@ -1342,6 +1496,10 @@ function AsteroidWatchContent() {
         {/* ──────────────── KNOWN OBJECTS TAB ──────────────── */}
         {activeTab === 'known-objects' && (
           <div className="space-y-6">
+            <p className="text-slate-500 text-xs">
+              Catalog totals below are a curated snapshot (approximate, as of early 2026), not a live-updating count.
+              For genuinely live data, see Close Approaches and Impact Risk Assessment on the previous tab.
+            </p>
             {/* NEO Census Overview */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="card p-5 text-center">

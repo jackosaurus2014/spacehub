@@ -43,7 +43,7 @@ const BENTO_ITEMS = [
   },
   {
     title: 'Company Profiles',
-    description: '200+ space companies with financials, leadership, and scoring.',
+    description: `${SITE_STATS.companies} space companies with financials, leadership, and scoring.`,
     href: '/company-profiles',
     badge: 'PRO',
     badgeType: 'pro' as const,

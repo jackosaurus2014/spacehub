@@ -1,4 +1,4 @@
-export type MoveType = 'hired' | 'departed' | 'promoted' | 'appointed';
+export type MoveType = 'hired' | 'departed' | 'promoted' | 'appointed' | 'board_joined';
 
 export interface ExecutiveMove {
   id: string;

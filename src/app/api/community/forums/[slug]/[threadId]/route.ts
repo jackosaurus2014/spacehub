@@ -47,12 +47,12 @@ export async function GET(
       where: { id: threadId },
       include: {
         author: {
-          select: { id: true, name: true, email: true, verifiedBadge: true },
+          select: { id: true, name: true, email: true, verifiedBadge: true, isAdmin: true },
         },
         posts: {
           include: {
             author: {
-              select: { id: true, name: true, email: true, verifiedBadge: true },
+              select: { id: true, name: true, email: true, verifiedBadge: true, isAdmin: true },
             },
           },
           orderBy: { createdAt: 'asc' },
@@ -119,6 +119,8 @@ export async function GET(
           title: thread.title,
           content: thread.content,
           author: thread.author,
+          // Platform/staff-authored content (e.g. seeded threads) is labeled, not hidden.
+          isStaffAuthor: thread.author?.isAdmin === true,
           isPinned: thread.isPinned,
           isLocked: thread.isLocked,
           viewCount: thread.viewCount,
@@ -134,6 +136,7 @@ export async function GET(
         },
         posts: thread.posts.map((p: any) => ({
           ...p,
+          isStaffAuthor: p.author?.isAdmin === true,
           upvoteCount: p.upvoteCount || 0,
           downvoteCount: p.downvoteCount || 0,
           isAccepted: p.isAccepted || false,
@@ -233,7 +236,7 @@ export async function POST(
         },
         include: {
           author: {
-            select: { id: true, name: true, email: true, verifiedBadge: true },
+            select: { id: true, name: true, email: true, verifiedBadge: true, isAdmin: true },
           },
         },
       }),
@@ -327,7 +330,7 @@ export async function POST(
     });
 
     return NextResponse.json(
-      { success: true, data: post },
+      { success: true, data: { ...post, isStaffAuthor: (post as any).author?.isAdmin === true } },
       { status: 201 }
     );
   } catch (error) {

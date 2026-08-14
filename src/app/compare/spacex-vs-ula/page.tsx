@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 const COMPARISON_DATA = [
-  { metric: 'Type', a: 'Private company (SpaceX)', b: 'Acquired by Cerberus Capital and Blue Origin interests (2024); formerly Boeing 50% + Lockheed Martin 50% JV' },
+  { metric: 'Type', a: 'Public company (NASDAQ: SPCX, IPO June 2026)', b: 'Acquired by Cerberus Capital and Blue Origin interests (2024); formerly Boeing 50% + Lockheed Martin 50% JV' },
   { metric: 'Founded', a: '2002', b: '2006' },
   { metric: 'Headquarters', a: 'Hawthorne, CA', b: 'Centennial, CO' },
   { metric: 'Primary Launch Vehicles', a: 'Falcon 9, Falcon Heavy, Starship', b: 'Vulcan Centaur, Atlas V (phasing out), Delta IV Heavy (retired)' },
@@ -122,7 +122,7 @@ export default function Page() {
         description: 'Side-by-side comparison of SpaceX and United Launch Alliance covering reliability, pricing, vehicles, and government launch dominance.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-22', dateModified: '2026-03-22',
+        datePublished: '2026-03-22', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/spacex-vs-ula',
       }).replace(/</g, '\\u003c') }} />
     

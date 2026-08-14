@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const BRIEF_SECTIONS = [
   { title: 'Executive Summary', description: 'Top-line bullet points on the week\'s most significant developments', free: true },
@@ -13,37 +14,13 @@ const BRIEF_SECTIONS = [
   { title: 'Week Ahead', description: 'Key upcoming events, deadlines, launches, and hearings', free: true },
 ];
 
-const PAST_BRIEFS = [
-  {
-    id: 'feb-17-2026',
-    weekOf: 'February 17, 2026',
-    dateRange: 'Feb 17 - Feb 23',
-    topStory: 'Starship Achieves Rapid Reusability Milestone',
-    highlights: ['SpaceX 48-hour booster turnaround', 'Impulse Space $175M Series C', 'FCC Ka-Band allocation'],
-  },
-  {
-    id: 'feb-10-2026',
-    weekOf: 'February 10, 2026',
-    dateRange: 'Feb 10 - Feb 16',
-    topStory: 'Artemis II Crew Completes Final Training Milestone',
-    highlights: ['Relativity Space $200M round', 'Ariane 6 commercial debut', 'EU Space Traffic Management proposal'],
-  },
-  {
-    id: 'feb-03-2026',
-    weekOf: 'February 3, 2026',
-    dateRange: 'Feb 3 - Feb 9',
-    topStory: 'Amazon Launches First Kuiper Production Satellites',
-    highlights: ['60 Kuiper satellites deployed', 'ClearSpace $30M for debris removal', 'ITAR reform bill introduced'],
-  },
-];
-
 export default function NewsletterArchivePage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         <AnimatedPageHeader
           title="Weekly Intelligence Brief Archive"
-          subtitle="Every edition of the SpaceNexus Weekly Intelligence Brief. Curated space industry analysis delivered to 2,000+ professionals every Monday."
+          subtitle="Curated space industry analysis, delivered every Monday. Free weekly delivery with Pro sections for subscribers."
           accentColor="purple"
         />
 
@@ -54,7 +31,7 @@ export default function NewsletterArchivePage() {
               <div>
                 <h2 className="text-lg font-bold text-white mb-1">Get the brief in your inbox every Monday</h2>
                 <p className="text-sm text-slate-400">
-                  Join 2,000+ space industry executives, investors, and engineers. Free weekly delivery with Pro sections for subscribers.
+                  Space industry analysis for executives, investors, and engineers. Free weekly delivery with Pro sections for subscribers.
                 </p>
               </div>
               <Link
@@ -130,41 +107,16 @@ export default function NewsletterArchivePage() {
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Past Editions
             </h2>
-            <div className="space-y-4">
-              {PAST_BRIEFS.map((brief, index) => (
-                <Link
-                  key={brief.id}
-                  href="/intelligence-brief"
-                  className="group block card p-5 hover:border-white/10 hover:bg-white/[0.04] transition-colors"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-sm font-bold text-white group-hover:text-white/90 transition-colors">
-                          Week of {brief.weekOf}
-                        </h3>
-                        <span className="text-xs text-slate-500">{brief.dateRange}</span>
-                      </div>
-                      <p className="text-sm text-slate-400 mb-2">
-                        Top Story: {brief.topStory}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {brief.highlights.map((highlight) => (
-                          <span
-                            key={highlight}
-                            className="text-[10px] text-slate-500 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded"
-                          >
-                            {highlight}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-sm text-slate-400 group-hover:text-white transition-colors whitespace-nowrap">
-                      Read &rarr;
-                    </span>
-                  </div>
-                </Link>
-              ))}
+            <div className="card p-6 border-l-4 border-purple-500/30">
+              <p className="text-sm text-slate-400 leading-relaxed">
+                We publish the Weekly Intelligence Brief on an automated weekly cadence, generated from live
+                platform data and reviewed for accuracy. We don&apos;t maintain a separate archive here yet &mdash;
+                the current and most recent editions live on the{' '}
+                <Link href="/ai-insights" className="text-purple-400 hover:underline">
+                  AI Insights
+                </Link>{' '}
+                page, and you can always read the latest edition below.
+              </p>
             </div>
           </section>
         </ScrollReveal>
@@ -229,8 +181,7 @@ export default function NewsletterArchivePage() {
                 Stay ahead of the space industry every week
               </h2>
               <p className="text-slate-400 mb-6 max-w-xl mx-auto text-sm">
-                The SpaceNexus Weekly Intelligence Brief is trusted by 2,000+ space professionals.
-                Subscribe free and never miss a critical development.
+                Subscribe free and never miss a critical development in the {SITE_STATS.spaceEconomyNow} space economy.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link href="/news" className="btn-primary text-sm py-3 px-6">

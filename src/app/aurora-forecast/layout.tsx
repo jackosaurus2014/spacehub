@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Aurora Forecast & Space Weather for Enthusiasts',
   description:
-    'Real-time aurora forecast with Kp index, geomagnetic activity, and visibility map. Learn when and where to see the Northern Lights during Solar Cycle 25.',
+    'Live aurora forecast with Kp index, geomagnetic activity, and visibility map (NOAA SWPC data, updated every 30 min). Learn when and where to see the Northern Lights during Solar Cycle 25.',
   keywords: [
     'aurora forecast',
     'northern lights forecast',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     title: 'Aurora Forecast & Space Weather for Enthusiasts | SpaceNexus',
     description:
-      'Real-time aurora forecast with Kp index, geomagnetic activity, and visibility guide. See when the Northern Lights will be visible near you.',
+      'Live aurora forecast with Kp index, geomagnetic activity, and visibility guide. See when the Northern Lights will be visible near you.',
     url: 'https://spacenexus.us/aurora-forecast',
     images: [
       {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     creator: '@spacenexus',
     title: 'Aurora Forecast & Space Weather for Enthusiasts | SpaceNexus',
     description:
-      'Real-time aurora forecast with Kp index, geomagnetic activity, and visibility guide.',
+      'Live aurora forecast with Kp index, geomagnetic activity, and visibility guide.',
     images: ['/og-image.png'],
   },
   alternates: {

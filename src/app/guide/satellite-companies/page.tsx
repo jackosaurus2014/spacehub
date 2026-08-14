@@ -5,6 +5,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Satellite Companies 2026: Earth Observation, Communications & Manufacturing',
@@ -21,15 +22,35 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const faqs = [
-  { question: 'How many satellites are in orbit?', answer: 'As of 2026, there are over 13,000 active satellites in orbit, with SpaceX\'s Starlink constellation accounting for more than 6,500. The total number of tracked objects (including debris) exceeds 48,000.' },
+  { question: 'How many satellites are in orbit?', answer: 'As of August 2026, there are over 16,000 active satellites in orbit, with SpaceX\'s Starlink constellation accounting for more than 10,000. The total number of tracked objects (including debris) exceeds 48,000.' },
   { question: 'What companies make satellites?', answer: 'Major satellite manufacturers include Airbus Defence and Space, Lockheed Martin, Boeing, Maxar Technologies, Thales Alenia Space, Northrop Grumman, and Ball Aerospace. For small satellites, companies like York Space Systems, Rocket Lab (Photon), and Terran Orbital lead the market.' },
   { question: 'What is the satellite industry worth?', answer: 'The global satellite industry generates approximately $280 billion annually, including satellite services ($130B), ground equipment ($150B), satellite manufacturing ($15B), and launch services ($8B). The fastest-growing segment is LEO broadband (Starlink, Kuiper).' },
   { question: 'What do earth observation satellites do?', answer: 'Earth observation (EO) satellites capture images and data about Earth\'s surface, atmosphere, and oceans. Applications include agriculture (crop monitoring), insurance (damage assessment), defense (intelligence), climate monitoring, urban planning, and disaster response.' },
 ];
 
+const ARTICLE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Satellite Companies 2026: Earth Observation, Communications & Manufacturing',
+  description: 'Complete guide to satellite companies in 2026. Starlink, Planet Labs, OneWeb, Maxar, and 100+ satellite operators, manufacturers, and service providers.',
+  author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SpaceNexus',
+    logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
+  },
+  datePublished: '2026-02-08T00:00:00Z',
+  dateModified: '2026-08-13T00:00:00Z',
+  mainEntityOfPage: 'https://spacenexus.us/guide/satellite-companies',
+};
+
 export default function SatelliteCompaniesPage() {
   return (
     <div className="min-h-screen bg-space-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA).replace(/</g, '\\u003c') }}
+      />
       <FAQSchema items={faqs} />
       <div className="container mx-auto px-4 pb-16">
         <AnimatedPageHeader
@@ -91,7 +112,7 @@ export default function SatelliteCompaniesPage() {
 
           <ScrollReveal>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
-              <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Track 10,000+ Satellites</Link>
+              <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Track {SITE_STATS.satellites} Satellites</Link>
               <span className="hidden sm:inline text-white/10">|</span>
               <Link href="/constellations" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Constellation Tracker</Link>
               <span className="hidden sm:inline text-white/10">|</span>

@@ -460,16 +460,16 @@ function MarketIntelContent() {
                 <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-lg font-bold">!</span>
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80">Market Alert</span>
-                  <h3 className="text-lg font-bold font-display text-white group-hover:text-amber-300 transition-colors">SpaceX IPO Watch</h3>
+                  <h3 className="text-lg font-bold font-display text-white group-hover:text-amber-300 transition-colors">SpaceX Went Public</h3>
                 </div>
               </div>
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-slate-300 font-medium">
-                  Potential <span className="text-amber-400 font-semibold">$1.5&ndash;1.75T</span> valuation&nbsp;&nbsp;|&nbsp;&nbsp;Expected <span className="text-amber-400 font-semibold">June 2026</span>
+                  <span className="text-amber-400 font-semibold">~$2T</span> market cap&nbsp;&nbsp;|&nbsp;&nbsp;IPO'd <span className="text-amber-400 font-semibold">June 12, 2026</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span className="text-amber-400 font-semibold">NASDAQ: SPCX</span>
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  The largest IPO in history could reshape the space investment landscape
+                  The largest IPO in history reshaped the space investment landscape
                 </p>
               </div>
 
@@ -1339,7 +1339,7 @@ function MarketIntelContent() {
                   trend: 'VC Funding',
                   direction: 'up' as const,
                   label: '$10B+ in 2025',
-                  detail: 'Defense-tech crossover and SpaceX IPO anticipation driving record investor interest.',
+                  detail: 'Defense-tech crossover and the SpaceX IPO aftermath driving record investor interest.',
                   blogHref: '/blog/space-vc-funding-2025-review',
                   blogLabel: 'VC Funding Review',
                 },

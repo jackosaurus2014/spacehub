@@ -134,7 +134,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   {
     company: 'SpaceX',
     profileSlug: 'spacex',
-    ticker: 'Private',
+    ticker: 'SPCX',
     grade: 'A+',
     sector: 'Launch',
     quarterAssessed: REPORT_CARDS_QUARTER_ASSESSED,

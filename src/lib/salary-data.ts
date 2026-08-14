@@ -3,6 +3,8 @@
 // Based on aggregated data from Glassdoor, Levels.fyi, BLS, and industry reports
 // ─────────────────────────────────────────────────────────────────────────────
 
+export const SALARY_DATA_AS_OF = '2026-08';
+
 export type SalaryCategory =
   | 'engineering'
   | 'mission-operations'

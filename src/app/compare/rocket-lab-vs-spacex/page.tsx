@@ -8,8 +8,8 @@ const COMPARISON_DATA = [
   { metric: 'Founded', a: '2006', b: '2002' },
   { metric: 'Founder / CEO', a: 'Peter Beck (CEO)', b: 'Elon Musk (CEO)' },
   { metric: 'Headquarters', a: 'Long Beach, CA (US HQ); Auckland, NZ (operations)', b: 'Hawthorne, CA' },
-  { metric: 'Public / Private', a: 'Public (NASDAQ: RKLB)', b: 'Private' },
-  { metric: 'Market Cap / Valuation', a: '~$12B (early 2026)', b: '~$350B+ (2025 secondary market)' },
+  { metric: 'Public / Private', a: 'Public (NASDAQ: RKLB)', b: 'Public (NASDAQ: SPCX, IPO June 2026)' },
+  { metric: 'Market Cap / Valuation', a: '~$12B (early 2026)', b: '~$2T (market cap, Aug 2026)' },
   { metric: 'Revenue (2024)', a: '~$436M', b: '~$9-10B (est., launch + Starlink)' },
   { metric: 'Employees', a: '~2,000', b: '~13,000' },
   { metric: 'Small Launch Vehicle', a: 'Electron (310 kg to LEO)', b: 'N/A (no small launcher)' },
@@ -83,7 +83,7 @@ export default function Page() {
         SpaceX pioneered the vertically integrated space company model: designing and manufacturing its own engines, structures, avionics, launch vehicles, spacecraft, and even its primary customer (Starlink). By controlling the entire stack, SpaceX achieves cost efficiencies and iteration speeds that traditional aerospace supply chains cannot match. Rocket Lab has been deliberately following a similar playbook at smaller scale. Through a series of acquisitions &mdash; Planetary Systems Corp (separation systems, 2021), Advanced Solutions Inc (flight software, 2021), SolAero (space solar cells, 2022), and others &mdash; Rocket Lab has assembled the components to be a one-stop shop for satellite missions.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        The difference in scale is enormous. SpaceX&apos;s revenue is roughly 20x Rocket Lab&apos;s, and its valuation is roughly 30x larger. But Rocket Lab&apos;s space systems division (which includes spacecraft, solar panels, reaction wheels, star trackers, and separation systems) now generates more revenue than its launch division, making it the rare space company that has diversified beyond launch. Notably, Rocket Lab&apos;s components end up on competitors&apos; satellites: SolAero solar cells have been used on Mars rovers and on satellites that launched on SpaceX rockets.
+        The difference in scale is enormous. SpaceX&apos;s revenue is roughly 20x Rocket Lab&apos;s, and since its June 2026 Nasdaq listing (SPCX) its market cap has run to roughly 150x Rocket Lab&apos;s. But Rocket Lab&apos;s space systems division (which includes spacecraft, solar panels, reaction wheels, star trackers, and separation systems) now generates more revenue than its launch division, making it the rare space company that has diversified beyond launch. Notably, Rocket Lab&apos;s components end up on competitors&apos; satellites: SolAero solar cells have been used on Mars rovers and on satellites that launched on SpaceX rockets.
       </p>
 
       {/* Analysis: Neutron vs Falcon 9 */}
@@ -141,7 +141,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Rocket Lab and SpaceX covering launch vehicles, spacecraft, components, and the vertical integration strategy.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-26', dateModified: '2026-03-26',
+        datePublished: '2026-03-26', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/rocket-lab-vs-spacex',
       }).replace(/</g, '\\u003c') }} />
 

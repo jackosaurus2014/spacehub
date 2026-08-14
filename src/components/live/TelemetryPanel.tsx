@@ -192,7 +192,7 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
   return (
     <div className="bg-gradient-to-br from-space-900/95 via-space-800/95 to-space-900/95 rounded-xl border border-white/[0.06] overflow-hidden" role="region" aria-label="Live telemetry data">
       <span className="sr-only">
-        {`Telemetry: ${telemetry.status}, mission elapsed time ${formatMET(telemetry.missionElapsedTime)}, altitude ${telemetry.altitude.toFixed(1)} km, velocity ${telemetry.velocity.toFixed(0)} m/s, acceleration ${telemetry.acceleration.toFixed(1)} m/s squared, stage ${telemetry.stage}. Milestones: Max-Q ${telemetry.maxQ ? 'complete' : 'pending'}, MECO ${telemetry.mecoComplete ? 'complete' : 'pending'}, stage separation ${telemetry.stageSeparation ? 'complete' : 'pending'}, fairing separation ${telemetry.fairingSeparation ? 'complete' : 'pending'}, SECO ${telemetry.secondEngineCutoff ? 'complete' : 'pending'}, orbit insertion ${telemetry.orbitInsertion ? 'complete' : 'pending'}.`}
+        {`Simulated telemetry (illustrative ascent profile, not live vehicle data): ${telemetry.status}, mission elapsed time ${formatMET(telemetry.missionElapsedTime)}, altitude ${telemetry.altitude.toFixed(1)} km, velocity ${telemetry.velocity.toFixed(0)} m/s, acceleration ${telemetry.acceleration.toFixed(1)} m/s squared, stage ${telemetry.stage}. Milestones: Max-Q ${telemetry.maxQ ? 'complete' : 'pending'}, MECO ${telemetry.mecoComplete ? 'complete' : 'pending'}, stage separation ${telemetry.stageSeparation ? 'complete' : 'pending'}, fairing separation ${telemetry.fairingSeparation ? 'complete' : 'pending'}, SECO ${telemetry.secondEngineCutoff ? 'complete' : 'pending'}, orbit insertion ${telemetry.orbitInsertion ? 'complete' : 'pending'}.`}
       </span>
       {/* Header */}
       <div className="px-4 py-3 border-b border-white/[0.06] bg-space-800/50">
@@ -204,13 +204,25 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
             Live Telemetry
           </h3>
           {isLive && (
-            <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
-              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-              LIVE
+            <span className="flex items-center gap-1.5">
+              <span className="px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-[10px] font-bold uppercase tracking-wider">
+                Simulated
+              </span>
+              <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
+                <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                LIVE
+              </span>
             </span>
           )}
         </div>
       </div>
+      {isLive && (
+        <div className="px-4 py-1.5 bg-yellow-500/5 border-b border-yellow-500/10">
+          <p className="text-[10px] text-yellow-400/80 text-center">
+            Illustrative ascent profile — not live vehicle telemetry.
+          </p>
+        </div>
+      )}
 
       {/* Status Bar */}
       <div className="px-4 py-3 border-b border-white/[0.04] bg-space-800/30">

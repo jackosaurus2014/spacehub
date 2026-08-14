@@ -5,6 +5,7 @@ import { getCity, SPACE_CITIES } from '@/lib/city-data';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const revalidate = 86400;
 
@@ -171,7 +172,7 @@ export default function CityPage({ params }: Props) {
           </div>
           <p className="text-slate-500 text-sm mt-4">
             <Link href="/company-profiles" className="text-white/90 hover:underline">
-              Browse all 200+ space company profiles
+              Browse all {SITE_STATS.companies} space company profiles
             </Link>
           </p>
         </section>

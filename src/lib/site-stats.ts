@@ -15,8 +15,8 @@ export const SITE_STATS = {
   articles: '250+',
   /** Named external data sources — matches /data-sources page inventory */
   dataSources: '26',
-  /** Active satellites tracked via live CelesTrak TLE data */
-  satellites: '10,000+',
+  /** Active satellites tracked via live CelesTrak TLE data (actual ~16,300, Aug 2026) */
+  satellites: '16,000+',
   /** Distinct pages & tools on the platform (actual: 412 routes) */
   pagesAndTools: '400+',
   /** Consolidated content/tool modules */

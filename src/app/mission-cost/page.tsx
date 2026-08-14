@@ -11,6 +11,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataAsOf from '@/components/ui/DataAsOf';
 
 // ────────────────────────────────────────
 // Types
@@ -668,6 +669,8 @@ function MissionCostContent() {
       </div>
 
       <div className="container mx-auto px-4">
+
+        <DataAsOf date="August 2026" note="launch provider specs reviewed periodically" className="mb-4" />
 
         {/* Input Form */}
         <ScrollReveal><div className="card p-6 mb-8">

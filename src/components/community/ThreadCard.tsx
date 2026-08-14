@@ -10,6 +10,7 @@ export interface ThreadData {
   title: string;
   authorName: string;
   authorId: string;
+  isStaffAuthor?: boolean;
   category: string;
   replyCount: number;
   viewCount: number;
@@ -136,6 +137,11 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
                     </span>
                   ) : (
                     <span className="text-slate-400">{thread.authorName}</span>
+                  )}
+                  {thread.isStaffAuthor && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30" title="Posted by the SpaceNexus team">
+                      Staff
+                    </span>
                   )}
                   {thread.authorReputation !== undefined && thread.authorReputation > 0 && (
                     <ReputationBadge reputation={thread.authorReputation} size="sm" />

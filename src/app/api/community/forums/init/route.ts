@@ -1372,6 +1372,15 @@ export async function POST(request: NextRequest) {
       where: { email: 'system@spacenexus.us' },
     });
 
+    if (author && !author.isAdmin) {
+      // Backfill: earlier seed runs didn't flag this account as staff, which
+      // meant platform-authored threads couldn't be labeled in the UI.
+      author = await prisma.user.update({
+        where: { id: author.id },
+        data: { isAdmin: true },
+      });
+    }
+
     if (!author) {
       author = await prisma.user.findFirst({
         where: { isAdmin: true },
@@ -1384,6 +1393,7 @@ export async function POST(request: NextRequest) {
           name: 'SpaceNexus Team',
           email: 'system@spacenexus.us',
           password: '',
+          isAdmin: true,
         },
       });
       logger.info('Created system user for forum seeding');

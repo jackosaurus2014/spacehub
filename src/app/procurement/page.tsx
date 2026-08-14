@@ -12,6 +12,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataAsOf from '@/components/ui/DataAsOf';
 
 // ────────────────────────────────────────
 // Types
@@ -758,6 +759,10 @@ function ProcurementContent() {
           ))}
         </div>
         </ScrollReveal>
+
+        {currentTab !== 'saved' && (
+          <DataAsOf date="February 2026" note="curated solicitation/budget/congressional data; see Awards for live SAM.gov award feed" className="mb-4" />
+        )}
 
         {/* Tab Content */}
         {currentTab === 'opportunities' && (

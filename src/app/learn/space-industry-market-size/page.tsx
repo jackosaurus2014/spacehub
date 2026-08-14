@@ -10,7 +10,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: 'Space Industry Market Size: $1.8 Trillion by 2035 | SpaceNexus',
   description:
-    'The global space economy reached $630 billion in 2025 and is projected to exceed $1.8 trillion by 2035. Explore market segments, growth drivers, top companies by revenue, and investment trends.',
+    'The global space economy exceeds $630 billion as of 2026 — a record $613 billion in 2024 (Space Foundation) — and is projected to exceed $1.8 trillion by 2035. Explore market segments, growth drivers, top companies by revenue, and investment trends.',
   keywords: [
     'space industry market size',
     'space economy size',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Space Industry Market Size: $1.8 Trillion and Growing',
     description:
-      'Global space economy at $630B in 2025, projected $1.8T by 2035. Market segments, growth drivers, and top companies.',
+      'Global space economy at $630B+ as of 2026 (record $613B in 2024), projected $1.8T by 2035. Market segments, growth drivers, and top companies.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/learn/space-industry-market-size',
@@ -128,7 +128,7 @@ const marketSegments = [
 ];
 
 const topCompanies = [
-  { name: 'SpaceX', revenue: '$15B+ (est.)', segment: 'Launch, Satellite Services', marketCap: 'Public ($1T+, SPCX)', slug: 'spacex', highlight: 'Largest launch provider; Starlink has 10M+ subscribers' },
+  { name: 'SpaceX', revenue: '$15B+ (est.)', segment: 'Launch, Satellite Services', marketCap: 'Public (~$2T, SPCX)', slug: 'spacex', highlight: 'Largest launch provider; Starlink has 10M+ subscribers' },
   { name: 'Boeing (Space & Defense)', revenue: '$12.3B', segment: 'Manufacturing, Defense', marketCap: '$115B', slug: 'boeing', highlight: 'SLS prime contractor; Starliner crew vehicle' },
   { name: 'Lockheed Martin (Space)', revenue: '$12.1B', segment: 'Defense, Satellites', marketCap: '$135B', slug: 'lockheed-martin', highlight: 'Orion spacecraft; GPS III; SBIRS missile warning' },
   { name: 'Northrop Grumman (Space)', revenue: '$10.8B', segment: 'Defense, Launch', marketCap: '$80B', slug: 'northrop-grumman', highlight: 'James Webb prime contractor; Cygnus cargo; solid rocket motors' },
@@ -186,9 +186,9 @@ const growthDrivers = [
 const projections = [
   { year: '2020', size: '$371B', label: 'Pre-Starlink scaling' },
   { year: '2022', size: '$424B', label: 'Post-COVID recovery' },
-  { year: '2024', size: '$508B', label: 'Constellation deployments accelerate' },
-  { year: '2025', size: '$630B', label: 'Current baseline' },
-  { year: '2026', size: '$670B (est.)', label: 'Record global launch cadence; SpaceX IPO' },
+  { year: '2024', size: '$613B', label: 'Record year (Space Foundation)' },
+  { year: '2025', size: '$630B (est.)', label: 'Continued commercial expansion' },
+  { year: '2026', size: '$630B+', label: 'Current baseline; record global launch cadence, SpaceX IPO' },
   { year: '2028', size: '$740B (proj.)', label: 'Kuiper constellation online' },
   { year: '2030', size: '$950B (proj.)', label: 'Commercial space stations operational' },
   { year: '2035', size: '$1.8T (proj.)', label: 'Lunar economy emerging' },
@@ -198,7 +198,7 @@ const faqItems = [
   {
     question: 'How big is the global space industry in 2026?',
     answer:
-      'The global space economy is estimated at approximately $670 billion in 2026, up from $630 billion in 2025. This includes satellite services ($193B), ground equipment ($152B), government space budgets ($95B defense + $48B civil), satellite manufacturing ($22B), launch services ($10B), and other segments. The industry is growing at approximately 7-9% CAGR, with launch services and satellite manufacturing growing the fastest at 15-18% annually.',
+      'The global space economy exceeds $630 billion as of 2026, up from a record $613 billion in 2024 (Space Foundation). This includes satellite services ($193B), ground equipment ($152B), government space budgets ($95B defense + $48B civil), satellite manufacturing ($22B), launch services ($10B), and other segments. The industry is growing at approximately 7-9% CAGR, with launch services and satellite manufacturing growing the fastest at 15-18% annually.',
   },
   {
     question: 'What is the largest segment of the space economy?',
@@ -218,7 +218,7 @@ const faqItems = [
   {
     question: 'Is the space industry a good investment?',
     answer:
-      'The space industry has generated strong returns for investors in high-growth segments. SpaceX went public in June 2026 at a valuation above $1 trillion, and Rocket Lab\'s market cap has exceeded $50 billion. However, the sector has seen mixed results for publicly traded companies: some SPACs have underperformed, while established players like L3Harris and Northrop Grumman have delivered steady returns. Key investment themes include satellite broadband, Earth observation, defense modernization, and launch vehicle manufacturing. SpaceNexus tracks space economy trends at /market-intel.',
+      'The space industry has generated strong returns for investors in high-growth segments. SpaceX went public in June 2026 at an IPO valuation of ~$1.78 trillion and has since traded up to roughly $2 trillion in market cap, and Rocket Lab\'s market cap has exceeded $50 billion. However, the sector has seen mixed results for publicly traded companies: some SPACs have underperformed, while established players like L3Harris and Northrop Grumman have delivered steady returns. Key investment themes include satellite broadband, Earth observation, defense modernization, and launch vehicle manufacturing. SpaceNexus tracks space economy trends at /market-intel.',
   },
 ];
 
@@ -281,8 +281,8 @@ export default function SpaceIndustryMarketSizePage() {
         <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-slate-300 mb-1">$630B</div>
-            <div className="text-xs text-slate-400">2025 Market Size</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">$630B+</div>
+            <div className="text-xs text-slate-400">Current Market Size (2026)</div>
           </div>
           <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-slate-300 mb-1">$1.8T</div>
@@ -458,7 +458,7 @@ export default function SpaceIndustryMarketSizePage() {
           </div>
           <p className="text-slate-500 text-sm mt-4">
             <Link href="/company-profiles" className="text-slate-300 hover:underline">
-              Browse all 200+ space company profiles on SpaceNexus
+              Browse all {SITE_STATS.companies} space company profiles on SpaceNexus
             </Link>
           </p>
         </section>

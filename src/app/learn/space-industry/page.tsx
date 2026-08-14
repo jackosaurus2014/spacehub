@@ -49,7 +49,7 @@ const LEARNING_STEPS: LearningStep[] = [
     id: 4,
     title: 'How Many Satellites Are in Space?',
     description:
-      'Over 13,000 active satellites orbit Earth today. Learn about orbit types, mega-constellations, and how satellite numbers have tripled since 2019.',
+      'Over 16,000 active satellites orbit Earth today. Learn about orbit types, mega-constellations, and how satellite numbers have tripled since 2019.',
     href: '/blog/how-many-satellites-in-space-2026',
     cta: 'Start',
     gradient: 'from-teal-500 to-emerald-400',

@@ -196,14 +196,19 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
               <StatusBadge status={telemetry.fairingStatus} type="fairing" />
             </div>
           )}
-          <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium uppercase tracking-wider">
-            Simulated Data
+          <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold uppercase tracking-wider">
+            Simulated
           </span>
           <span className="flex items-center gap-1 text-xs text-green-400">
             <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
             LIVE
           </span>
         </div>
+      </div>
+      <div className="px-4 py-1.5 bg-yellow-500/5 border-b border-yellow-500/10">
+        <p className="text-[10px] text-yellow-400/80 text-center">
+          Illustrative ascent profile — not live vehicle telemetry.
+        </p>
       </div>
 
       {/* Telemetry Grid */}

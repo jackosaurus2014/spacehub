@@ -70,6 +70,7 @@ export default function ForumCategoryPage() {
             title: t.title,
             authorName: t.author?.name || 'Unknown',
             authorId: t.author?.id || '',
+            isStaffAuthor: t.isStaffAuthor || false,
             category: data.category?.name || slug,
             replyCount: t.postCount || 0,
             viewCount: t.viewCount || 0,

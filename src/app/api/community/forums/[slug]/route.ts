@@ -107,7 +107,7 @@ export async function GET(
         where,
         include: {
           author: {
-            select: { id: true, name: true },
+            select: { id: true, name: true, isAdmin: true },
           },
           _count: {
             select: { posts: true },
@@ -126,7 +126,9 @@ export async function GET(
       id: t.id,
       title: t.title,
       content: t.content,
-      author: t.author,
+      author: t.author ? { id: t.author.id, name: t.author.name } : null,
+      // Platform/staff-authored content (e.g. seeded threads) is labeled, not hidden.
+      isStaffAuthor: t.author?.isAdmin === true,
       isPinned: t.isPinned,
       isLocked: t.isLocked,
       viewCount: t.viewCount,

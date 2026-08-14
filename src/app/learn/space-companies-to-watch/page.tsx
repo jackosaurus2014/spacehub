@@ -53,7 +53,7 @@ const launchProviders = [
     hq: 'Hawthorne, CA',
     founded: 2002,
     employees: '13,000+',
-    valuation: '$1T+ (NASDAQ: SPCX)',
+    valuation: '~$2T market cap (NASDAQ: SPCX)',
     whyWatch: 'Dominates global launch: 165 Falcon missions in 2025 — more than the rest of the world combined. Starlink is the world\'s largest satellite constellation (10,000+ satellites, 10M+ subscribers). After its record-setting June 2026 IPO, Wall Street has increasingly priced SpaceX as an AI-infrastructure platform — Starlink-scale connectivity plus the compute workloads that ride on it — while Starship works toward operational flights.',
     keyStats: ['165 Falcon launches in 2025', '22,800 kg to LEO capacity', '10,000+ Starlink satellites', '10M+ Starlink subscribers'],
     recentMilestones: 'Went public on Nasdaq in June 2026. Starlink Direct to Cell service live with T-Mobile. Booster reuse exceeding 30 flights per vehicle.',
@@ -341,7 +341,7 @@ const defenseCompanies = [
     hq: 'Hawthorne, CA',
     founded: 2002,
     employees: '13,000+',
-    valuation: '$1T+ (SPCX)',
+    valuation: '~$2T market cap (SPCX)',
     whyWatch: 'Starshield leverages Starlink technology for national security missions. Proliferated LEO architecture for military communications and ISR. Classified contracts with NRO and Space Force. Potentially the largest new defense space player.',
     keyStats: ['Starshield military constellation', 'NRO classified contracts', 'Leverages Starlink tech', 'Rapid deployment capability'],
     recentMilestones: 'Starshield contracts expanding. NRO satellite launches. Military communications demonstrations.',
@@ -423,7 +423,7 @@ const faqItems = [
   {
     question: 'What are the biggest space companies in 2026?',
     answer:
-      'The largest space companies by space-related revenue are SpaceX (estimated $15B+ including Starlink), Boeing Space & Defense ($12.3B), Lockheed Martin Space ($12.1B), Northrop Grumman Space ($10.8B), and Airbus Defence and Space ($10.2B). By valuation, SpaceX leads at over $1 trillion following its June 2026 IPO, far ahead of the traditional defense primes. Among pure-play commercial space companies, Rocket Lab (~$50B market cap), AST SpaceMobile (~$28B), and Planet Labs ($8B+) are the largest.',
+      'The largest space companies by space-related revenue are SpaceX (estimated $15B+ including Starlink), Boeing Space & Defense ($12.3B), Lockheed Martin Space ($12.1B), Northrop Grumman Space ($10.8B), and Airbus Defence and Space ($10.2B). By valuation, SpaceX leads at roughly $2 trillion market cap following its June 2026 IPO, far ahead of the traditional defense primes. Among pure-play commercial space companies, Rocket Lab (~$50B market cap), AST SpaceMobile (~$28B), and Planet Labs ($8B+) are the largest.',
   },
   {
     question: 'Which space companies are publicly traded?',
@@ -443,7 +443,7 @@ const faqItems = [
   {
     question: 'How do I invest in space companies?',
     answer:
-      'You can invest in space companies through: (1) Individual stocks — Rocket Lab (RKLB), Planet Labs (PL), and defense primes (LMT, NOC, LHX) are publicly traded. (2) Space ETFs — ARKX (ARK Space Exploration), UFO (Procure Space ETF), and ROKT (SPDR S&P Kensho Final Frontiers) provide diversified exposure. (3) Private markets — accredited investors can access SpaceX, Axiom Space, and other private companies through secondary markets or SPV funds. SpaceNexus tracks investment trends at /market-intel and company profiles at /company-profiles.',
+      'You can invest in space companies through: (1) Individual stocks — SpaceX (SPCX), Rocket Lab (RKLB), Planet Labs (PL), and defense primes (LMT, NOC, LHX) are publicly traded. (2) Space ETFs — ARKX (ARK Space Exploration), UFO (Procure Space ETF), and ROKT (SPDR S&P Kensho Final Frontiers) provide diversified exposure. (3) Private markets — accredited investors can access Axiom Space and other still-private companies through secondary markets or SPV funds. SpaceNexus tracks investment trends at /market-intel and company profiles at /company-profiles.',
   },
 ];
 
@@ -722,7 +722,7 @@ export default function SpaceCompaniesPage() {
         <div className="bg-white/[0.06] border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Explore All Company Profiles</h3>
           <p className="text-slate-400 text-sm mb-4">
-            SpaceNexus tracks 200+ space companies with detailed profiles, financial data, satellite
+            SpaceNexus tracks {SITE_STATS.companies} space companies with detailed profiles, financial data, satellite
             assets, facility locations, and recent news. Stay informed on the companies shaping the
             space economy.
           </p>

@@ -163,6 +163,12 @@ export default function IntelligenceBriefPage() {
           </div>
         </ScrollReveal>
 
+        <ScrollReveal delay={0.17}>
+          <p className="text-xs text-slate-500 mb-6">
+            Weekly briefs were paused March–July 2026 and resumed in August 2026 on an automated weekly cadence.
+          </p>
+        </ScrollReveal>
+
         {/* Brief Content */}
         {BRIEFS.filter(b => b.id === expandedBrief).map(brief => (
           <div key={brief.id}>

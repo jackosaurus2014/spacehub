@@ -45,6 +45,7 @@ import {
 } from './data';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataAsOf from '@/components/ui/DataAsOf';
 
 // Lazy-load below-the-fold tab content for better initial bundle size
 const GeoSlotsTab = dynamic(() => import('./GeoSlotsTab'), {
@@ -967,6 +968,10 @@ function OrbitalManagementContent() {
                 </button>
               ))}
             </div>
+
+            {isStaticTab && (
+              <DataAsOf date="February 2026" className="mb-4" />
+            )}
 
             {/* ──────────────── OVERVIEW TAB (Orbital Regimes) ──────────────── */}
             {activeTab === 'overview' && (

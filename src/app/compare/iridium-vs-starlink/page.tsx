@@ -6,10 +6,10 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '1991 (Motorola); restructured 2001 (Ch.11); Iridium NEXT 2017-2019', b: '2015 (SpaceX subsidiary)' },
   { metric: 'Headquarters', a: 'McLean, VA', b: 'Hawthorne, CA (SpaceX)' },
-  { metric: 'Public / Private', a: 'Public (NASDAQ: IRDM)', b: 'Private (SpaceX subsidiary; potential IPO)' },
+  { metric: 'Public / Private', a: 'Public (NASDAQ: IRDM)', b: 'Public (SpaceX subsidiary; SpaceX itself went public June 2026, Nasdaq: SPCX)' },
   { metric: 'Revenue (2024)', a: '~$790M', b: '~$6.6B (est.)' },
-  { metric: 'Market Cap / Valuation', a: '~$3.5B', b: 'Part of SpaceX (~$350B valuation)' },
-  { metric: 'Constellation Size', a: '66 active + 9 on-orbit spares (Iridium NEXT)', b: '~6,000+ (with FCC approval for up to 42,000)' },
+  { metric: 'Market Cap / Valuation', a: '~$3.5B', b: 'Part of SpaceX (~$2T market cap, Aug 2026)' },
+  { metric: 'Constellation Size', a: '66 active + 9 on-orbit spares (Iridium NEXT)', b: '10,000+ (with FCC approval for up to 42,000)' },
   { metric: 'Orbit', a: '780 km LEO, 6 polar planes', b: '~550 km LEO, multiple inclinations (incl. polar)' },
   { metric: 'Frequency Band', a: 'L-band (1616-1626.5 MHz)', b: 'Ka-band & Ku-band (12-75 GHz range)' },
   { metric: 'Data Throughput (User)', a: '~2.4 kbps (voice/SBD) to ~704 kbps (Certus)', b: '~25-220+ Mbps download; 5-25+ Mbps upload' },
@@ -81,7 +81,7 @@ export default function Page() {
         Iridium&apos;s architecture was revolutionary when conceived in the 1990s: 66 satellites in 6 polar orbital planes with inter-satellite links providing true pole-to-pole coverage. The L-band frequency penetrates weather, foliage, and light structures, making Iridium the gold standard for maritime distress (GMDSS-certified), aviation communications, and military users who need connectivity anywhere on Earth regardless of conditions. Iridium&apos;s NEXT constellation, completed in 2019, replaced the original satellites with modern hardware supporting the Certus broadband service (up to ~704 kbps) and Iridium Short Burst Data (SBD) for IoT.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Starlink is designed for an entirely different problem: delivering broadband-class internet at scale. With over 6,000 satellites and growing, Starlink provides 25-220+ Mbps download speeds with latency comparable to terrestrial DSL. The user terminal is a flat-panel phased-array antenna that self-aligns to satellites. Starlink has rapidly become the largest commercial satellite constellation in history and generates an estimated $6.6 billion in annual revenue. While Starlink and Iridium currently serve different markets, SpaceX is developing Starlink Direct-to-Cell (in partnership with T-Mobile) that would enable standard smartphones to connect to Starlink satellites for texting and eventually voice &mdash; a potential threat to Iridium&apos;s consumer satellite phone niche.
+        Starlink is designed for an entirely different problem: delivering broadband-class internet at scale. With over 10,000 satellites and growing, Starlink provides 25-220+ Mbps download speeds with latency comparable to terrestrial DSL. The user terminal is a flat-panel phased-array antenna that self-aligns to satellites. Starlink has rapidly become the largest commercial satellite constellation in history and generates an estimated $6.6 billion in annual revenue. SpaceX itself went public on Nasdaq (SPCX) in June 2026, and Starlink&apos;s Direct-to-Cell service (in partnership with T-Mobile) now enables standard smartphones to connect to Starlink satellites for texting and eventually voice &mdash; a potential threat to Iridium&apos;s consumer satellite phone niche.
       </p>
 
       {/* Analysis: IoT Battleground */}
@@ -139,7 +139,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Iridium and Starlink covering L-band IoT/voice vs broadband, coverage, latency, government contracts, and IoT competition.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-26', dateModified: '2026-03-26',
+        datePublished: '2026-03-26', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/iridium-vs-starlink',
       }).replace(/</g, '\\u003c') }} />
 

@@ -122,6 +122,14 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 17 1 * *',   path: '/api/refresh?type=sam-entities',             label: 'sam-entities-refresh',        maxStaleMinutes: 43200 },
   { schedule: '30 6 * * *',   path: '/api/refresh?type=ats-jobs',                 label: 'ats-jobs-refresh',            maxStaleMinutes: 1560 },
 
+  // ─── Previously-orphaned fetch endpoints (existed but were never scheduled) ──
+  { schedule: '0 5 * * *',    path: '/api/launch-windows/fetch',                  label: 'launch-windows-fetch',        maxStaleMinutes: 1560 },
+  { schedule: '0 */6 * * *',  path: '/api/debris-monitor/fetch',                  label: 'debris-monitor-fetch',        maxStaleMinutes: 480 },
+  { schedule: '0 */6 * * *',  path: '/api/solar-flares/fetch',                    label: 'solar-flares-fetch',          maxStaleMinutes: 480 },
+  // SAM.gov procurement opportunities — fetcher existed for months but was
+  // never scheduled (freshness-audit finding).
+  { schedule: '30 13 * * *',  path: '/api/procurement/opportunities',             label: 'procurement-sam-refresh',     maxStaleMinutes: 1560 },
+
   // ─── Space Tycoon: Competitive Multiplayer Cron Jobs ─────────────────
   // Note: These are non-critical game jobs. Generous staleness thresholds to avoid alert spam.
   // They may fail gracefully when no active players/data exist.

@@ -17,7 +17,7 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
     icon: '\uD83D\uDD0D',
     description: 'Market data, company intelligence, and AI-powered insights',
     items: [
-      { name: 'Company Profiles', href: '/company-profiles', description: '200+ space company profiles with financials' },
+      { name: 'Company Profiles', href: '/company-profiles', description: `${SITE_STATS.companies} space company profiles with financials` },
       { name: 'Market Intelligence', href: '/market-intel', description: 'Real-time space market data and trends' },
       { name: 'Industry Trends', href: '/industry-trends', description: 'Emerging trends and analysis' },
       { name: 'Market Sizing', href: '/market-sizing', description: 'TAM/SAM/SOM analysis for space sectors' },

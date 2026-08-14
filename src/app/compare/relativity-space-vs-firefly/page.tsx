@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2015', b: '2014 (re-founded 2017 after bankruptcy)' },
   { metric: 'Headquarters', a: 'Long Beach, CA', b: 'Cedar Park, TX' },
+  { metric: 'Publicly Traded', a: 'No (private)', b: 'Yes (Nasdaq: FLY)' },
   { metric: 'Primary Vehicle', a: 'Terran R (medium lift, in development)', b: 'Firefly Alpha (small lift, operational)' },
   { metric: 'Previous / Retired Vehicle', a: 'Terran 1 (retired after single flight, 2023)', b: 'N/A (Alpha is primary vehicle)' },
   { metric: 'LEO Payload Capacity', a: 'Terran 1: 1,250 kg (retired); Terran R: ~20,000 kg target', b: 'Alpha: ~1,170 kg to LEO (~1,030 kg to SSO)' },
@@ -122,7 +123,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Relativity Space and Firefly Aerospace small/medium launch vehicles and company strategies.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-22', dateModified: '2026-03-22',
+        datePublished: '2026-03-22', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/relativity-space-vs-firefly',
       }).replace(/</g, '\\u003c') }} />
     

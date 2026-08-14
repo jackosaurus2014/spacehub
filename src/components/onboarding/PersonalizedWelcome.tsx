@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface ModuleRecommendation {
   label: string;
@@ -33,7 +34,7 @@ const ROLE_RECOMMENDATIONS: Record<string, { greeting: string; modules: ModuleRe
   'Policy & Regulatory Analyst': {
     greeting: 'As an analyst, these intelligence modules will accelerate your research:',
     modules: [
-      { label: 'Company Profiles', href: '/company-profiles', description: '200+ space company profiles with SpaceNexus Score' },
+      { label: 'Company Profiles', href: '/company-profiles', description: `${SITE_STATS.companies} space company profiles with SpaceNexus Score` },
       { label: 'Intelligence Brief', href: '/intelligence-brief', description: 'Weekly curated industry briefing' },
       { label: 'Market Map', href: '/market-map', description: 'Visual industry landscape by sector' },
       { label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law and filings' },

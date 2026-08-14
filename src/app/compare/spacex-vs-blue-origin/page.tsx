@@ -24,7 +24,7 @@ const COMPARISON_DATA = [
   { metric: 'Headquarters', spacex: 'Hawthorne, CA', blueOrigin: 'Kent, WA' },
   { metric: 'Employees', spacex: '~13,000', blueOrigin: '~10,000' },
   { metric: 'Total Funding', spacex: '~$10B+', blueOrigin: '~$13B+ (mostly Bezos)' },
-  { metric: 'Valuation', spacex: '~$350B+ (2025)', blueOrigin: 'Private (est. $30B+)' },
+  { metric: 'Valuation', spacex: '~$2T market cap (NASDAQ: SPCX)', blueOrigin: 'Private (est. $30B+)' },
   { metric: 'Primary Vehicle', spacex: 'Falcon 9 / Starship', blueOrigin: 'New Glenn / New Shepard' },
   { metric: 'Orbital Launches (Career)', spacex: '300+', blueOrigin: '2 (New Glenn, 2025)' },
   { metric: 'Reusability', spacex: 'Falcon 9 booster (200+ landings)', blueOrigin: 'New Shepard suborbital' },
@@ -33,7 +33,7 @@ const COMPARISON_DATA = [
   { metric: 'Crewed Missions', spacex: 'Crew Dragon (12+ missions)', blueOrigin: 'New Shepard (6 crewed flights)' },
   { metric: 'NASA Contracts', spacex: 'HLS, CRS, Crew, Mars', blueOrigin: 'Artemis sustaining lander' },
   { metric: 'Revenue Model', spacex: 'Launch services + Starlink', blueOrigin: 'Launch services + Kuiper' },
-  { metric: 'Public/Private', spacex: 'Private (IPO of Starlink possible)', blueOrigin: 'Private' },
+  { metric: 'Public/Private', spacex: 'Public (NASDAQ: SPCX, IPO June 2026)', blueOrigin: 'Private' },
 ];
 
 export default function SpaceXVsBlueOrigin() {
@@ -50,7 +50,7 @@ export default function SpaceXVsBlueOrigin() {
         </nav>
         <h1 className="text-display text-3xl md:text-4xl mb-3">SpaceX vs Blue Origin</h1>
         <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl">
-          A comprehensive side-by-side comparison of the two most prominent private space companies, updated with the latest data from SpaceNexus.
+          A comprehensive side-by-side comparison of the two most prominent space launch companies, updated with the latest data from SpaceNexus.
         </p>
       </div>
 
@@ -152,7 +152,7 @@ export default function SpaceXVsBlueOrigin() {
             author: { '@type': 'Organization', name: 'SpaceNexus' },
             publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
             datePublished: '2026-03-22',
-            dateModified: '2026-03-22',
+            dateModified: '2026-08-13',
             url: 'https://spacenexus.us/compare/spacex-vs-blue-origin',
           }).replace(/</g, '\\u003c'),
         }}

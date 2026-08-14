@@ -555,7 +555,7 @@ export default function EcosystemMapPage() {
                 <div className="text-slate-400 text-xs mt-1">VC Investment (2024)</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">12,000+</div>
+                <div className="text-2xl font-bold text-green-400">{SITE_STATS.satellites}</div>
                 <div className="text-slate-400 text-xs mt-1">Active Satellites</div>
               </div>
             </div>

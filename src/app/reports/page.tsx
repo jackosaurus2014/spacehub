@@ -5,7 +5,7 @@ const PUBLISHED_REPORTS = [
     slug: 'space-economy-2026',
     title: 'The Space Economy in 2026',
     description:
-      'Comprehensive breakdown of the $626B global space economy: market sizing by sector and region, profiles of the top 50 space companies, investment trends, the regulatory landscape, and 5-year growth projections.',
+      'Comprehensive breakdown of the $630B+ current global space economy: market sizing by sector and region, profiles of the top 50 space companies, investment trends, the regulatory landscape, and growth projections toward $1.8T by 2035.',
     tag: 'Annual Report',
     year: '2026',
   },
@@ -13,7 +13,7 @@ const PUBLISHED_REPORTS = [
     slug: 'state-of-space-2026',
     title: 'State of the Space Industry 2026',
     description:
-      'A comprehensive, data-driven analysis of the $1.8 trillion space economy — market sizing, funding trends, launch data, satellite deployments, and forecasts across every major segment.',
+      'A comprehensive, data-driven analysis of today\'s $630B+ space economy — projected to reach $1.8 trillion by 2035. Market sizing, funding trends, launch data, satellite deployments, and forecasts across every major segment.',
     tag: 'Free Report',
     year: '2026',
   },

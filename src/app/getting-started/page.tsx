@@ -319,7 +319,7 @@ export default function GettingStartedPage() {
                 step: 1,
                 title: 'Browse Company Profiles',
                 description:
-                  'Explore 200+ space company profiles with SpaceNexus Scores, funding history, key personnel, competitive positioning, and real-time news. Filter by sector, funding stage, or technology focus to find exactly what you need.',
+                  `Explore ${SITE_STATS.companies} space company profiles with SpaceNexus Scores, funding history, key personnel, competitive positioning, and real-time news. Filter by sector, funding stage, or technology focus to find exactly what you need.`,
                 href: '/company-profiles',
                 gradient: 'from-purple-500/20 to-indigo-500/20',
                 borderColor: 'border-purple-500/20',

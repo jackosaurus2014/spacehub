@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import { trackGA4Event } from '@/lib/analytics';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const CONFETTI_PARTICLES = 40;
 
@@ -56,7 +57,7 @@ const QUICK_START_STEPS = [
   },
   {
     title: 'Browse Company Profiles',
-    description: 'Deep-dive into 200+ space companies with financials, Space Scores, and competitive intel.',
+    description: `Deep-dive into ${SITE_STATS.companies} space companies with financials, Space Scores, and competitive intel.`,
     href: '/company-profiles',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

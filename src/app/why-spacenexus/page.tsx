@@ -24,7 +24,7 @@ const COMPARISON_FEATURES = [
     quilty: 'Partial',
     spacenews: false,
     freeTools: false,
-    spacenexusNote: '200+ interactive profiles',
+    spacenexusNote: `${SITE_STATS.companies} interactive profiles`,
     quiltyNote: 'Select companies in reports',
     spacenewsNote: 'News coverage only',
     freeToolsNote: 'Not available',
@@ -310,7 +310,7 @@ export default function WhySpaceNexusPage() {
                   { title: `${SITE_STATS.companies} Company Profiles`, desc: 'Interactive profiles with financials, satellite assets, competitive positioning, and news.' },
                   { title: `${SITE_STATS.satellites} Tracked Objects`, desc: '3D satellite globe with orbital data, conjunction warnings, and constellation tracking.' },
                   { title: 'Daily AI Insights', desc: 'AI-generated market commentary and opportunity scoring, refreshed every day.' },
-                  { title: 'Weekly Intelligence Brief', desc: '8-section curated brief delivered to your inbox every Monday. Trusted by 2,000+ pros.' },
+                  { title: 'Weekly Intelligence Brief', desc: '8-section curated brief delivered to your inbox every Monday, generated automatically from live data.' },
                 ].map((item) => (
                   <div key={item.title} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
                     <h4 className="text-sm font-semibold text-white mb-1">{item.title}</h4>
@@ -466,8 +466,9 @@ export default function WhySpaceNexusPage() {
                 Ready to consolidate your space intelligence?
               </h2>
               <p className="text-slate-400 mb-6 max-w-xl mx-auto text-sm">
-                Join 10,000+ space professionals who use SpaceNexus for launches, satellites, companies,
-                market data, procurement, and more &mdash; all in one platform.
+                Explore {SITE_STATS.pagesAndTools} tools and {SITE_STATS.companies} company profiles
+                covering launches, satellites, companies, market data, procurement, and more &mdash;
+                all in one platform.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link href="/register" className="btn-primary text-sm py-3 px-6">

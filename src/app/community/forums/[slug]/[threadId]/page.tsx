@@ -29,6 +29,7 @@ interface ForumPost {
   authorId: string;
   authorName: string;
   authorVerifiedBadge?: string | null;
+  isStaffAuthor?: boolean;
   createdAt: string;
   updatedAt: string;
   upvoteCount: number;
@@ -46,6 +47,7 @@ interface ThreadDetail {
   authorId: string;
   authorName: string;
   authorVerifiedBadge?: string | null;
+  isStaffAuthor?: boolean;
   category: string;
   categorySlug: string;
   categoryName: string;
@@ -146,6 +148,7 @@ export default function ThreadDetailPage() {
               authorId: t.author?.id || '',
               authorName: t.author?.name || 'Unknown',
               authorVerifiedBadge: t.author?.verifiedBadge ?? null,
+              isStaffAuthor: t.isStaffAuthor || false,
               category: data.category?.name || slug,
               categorySlug: data.category?.slug || slug,
               categoryName: data.category?.name || slug,
@@ -171,6 +174,7 @@ export default function ThreadDetailPage() {
             authorId: p.author?.id || p.authorId || '',
             authorName: p.author?.name || p.authorName || 'Unknown',
             authorVerifiedBadge: p.author?.verifiedBadge ?? null,
+            isStaffAuthor: p.isStaffAuthor || false,
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
             upvoteCount: p.upvoteCount || 0,
@@ -227,6 +231,7 @@ export default function ThreadDetailPage() {
             content: newPost.content,
             authorId: newPost.author?.id || newPost.authorId || '',
             authorName: newPost.author?.name || newPost.authorName || 'Unknown',
+            isStaffAuthor: newPost.isStaffAuthor || false,
             createdAt: newPost.createdAt,
             updatedAt: newPost.updatedAt || newPost.createdAt,
             upvoteCount: newPost.upvoteCount || 0,
@@ -380,6 +385,11 @@ export default function ThreadDetailPage() {
                     <p className="text-sm font-medium text-white/90 flex items-center gap-1.5">
                       {thread.authorName}
                       <VerifiedBadge badge={thread.authorVerifiedBadge} size="md" />
+                      {thread.isStaffAuthor && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30" title="Posted by the SpaceNexus team">
+                          Staff
+                        </span>
+                      )}
                     </p>
                   )}
                   <p className="text-xs text-slate-500">{formatDate(thread.createdAt)}</p>
@@ -470,6 +480,11 @@ export default function ThreadDetailPage() {
                         <span className="text-sm font-medium text-white/90 flex items-center gap-1.5">
                           {reply.authorName}
                           <VerifiedBadge badge={reply.authorVerifiedBadge} size="sm" />
+                          {reply.isStaffAuthor && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30" title="Posted by the SpaceNexus team">
+                              Staff
+                            </span>
+                          )}
                         </span>
                       )}
                       <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>

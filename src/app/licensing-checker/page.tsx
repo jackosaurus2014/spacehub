@@ -254,7 +254,7 @@ const ACTIVITIES: ActivityOption[] = [
           'Informed Consent Requirements',
         ],
         description:
-          'Space tourism operators must hold a launch/reentry license and comply with Part 460 human spaceflight rules. This includes informed consent from spaceflight participants, crew qualifications, and vehicle safety requirements. Note: the FAA moratorium on further safety regulations (Learning Period) was extended to October 2025.',
+          'Space tourism operators must hold a launch/reentry license and comply with Part 460 human spaceflight rules. This includes informed consent from spaceflight participants, crew qualifications, and vehicle safety requirements. Note: the FAA’s "Learning Period" moratorium on new occupant-safety regulations has been repeatedly extended by Congress since it was first enacted in 2004 (most recently through October 2023, then October 2025). Verify the moratorium’s current status with the FAA before relying on it — this page was last checked in Aug 2026.',
         spacenexusModule: { label: 'Space Tourism', href: '/space-tourism' },
         agencyColor: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
       },

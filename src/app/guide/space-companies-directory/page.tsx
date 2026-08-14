@@ -9,12 +9,12 @@ import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Space Companies Directory 2026: Top 50 Aerospace & Space Companies',
-  description: 'Complete directory of space companies in 2026. SpaceX, Blue Origin, Rocket Lab, Planet Labs, and 200+ aerospace companies with profiles, funding data, and market intelligence.',
+  description: `Complete directory of space companies in 2026. SpaceX, Blue Origin, Rocket Lab, Planet Labs, and ${SITE_STATS.companies} aerospace companies with profiles, funding data, and market intelligence.`,
   keywords: ['space companies', 'aerospace companies', 'space companies list', 'top space companies 2026', 'commercial space companies', 'space startup companies', 'satellite companies'],
   alternates: { canonical: 'https://spacenexus.us/guide/space-companies-directory' },
   openGraph: {
     title: 'Top Space Companies 2026 — Complete Directory',
-    description: 'Browse 200+ space company profiles with funding data, market intelligence, and SpaceNexus Score ratings.',
+    description: `Browse ${SITE_STATS.companies} space company profiles with funding data, market intelligence, and SpaceNexus Score ratings.`,
     url: 'https://spacenexus.us/guide/space-companies-directory',
   },
 };
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const faqs = [
-  { question: 'What are the biggest space companies in 2026?', answer: 'The largest space companies by valuation are SpaceX (~$350B+), Blue Origin, Northrop Grumman, Lockheed Martin, Boeing, Airbus Defence and Space, L3Harris Technologies, Raytheon (RTX), and Rocket Lab. Among startups, Sierra Space, Vast, and Relativity Space have raised the most capital.' },
+  { question: 'What are the biggest space companies in 2026?', answer: 'The largest space companies by valuation are SpaceX (~$2T market cap, NASDAQ: SPCX), Blue Origin, Northrop Grumman, Lockheed Martin, Boeing, Airbus Defence and Space, L3Harris Technologies, Raytheon (RTX), and Rocket Lab. Among startups and recent IPOs, Anduril (~$61B), Firefly Aerospace (Nasdaq: FLY), Sierra Space, Vast, and Relativity Space have raised or been valued at the most capital.' },
   { question: 'How many space companies are there?', answer: 'There are over 10,000 companies worldwide working in the space industry, ranging from multi-billion-dollar primes to early-stage startups. The commercial space sector (NewSpace) includes approximately 2,000+ venture-backed companies.' },
   { question: 'What do space companies do?', answer: 'Space companies operate across the value chain: launch services (SpaceX, Rocket Lab, ULA), satellite manufacturing (Airbus, Maxar), Earth observation (Planet Labs, BlackSky), satellite communications (Starlink, OneWeb), space stations (Axiom, Vast), defense and national security, and more.' },
-  { question: 'How do I invest in space companies?', answer: 'Public space companies can be bought as stocks (RKLB, PL, BKSY, ASTS, RDW, IRDM). Space ETFs include ARKX, UFO, and ITA. Private companies like SpaceX require accredited investor access through secondary markets or space-focused VC funds like Space Capital or Seraphim.' },
+  { question: 'How do I invest in space companies?', answer: 'Public space companies can be bought as stocks (SPCX, RKLB, FLY, VOYG, HAWK, YSS, PL, BKSY, ASTS, RDW, IRDM). Space ETFs include ARKX, UFO, and ITA. Still-private companies like Blue Origin require accredited investor access through secondary markets or space-focused VC funds like Space Capital or Seraphim.' },
 ];
 
 const topCompanies = [

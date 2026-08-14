@@ -240,7 +240,7 @@ export async function fetchAndStoreNeoObjects(): Promise<number> {
     await upsertContent(
       'asteroid-watch:neo-stats-live',
       'asteroid-watch',
-      'stats',
+      'neo-stats',
       {
         weeklyApproachCount: data.element_count,
         hazardousCount: allObjects.filter((o) => o.is_potentially_hazardous_asteroid).length,

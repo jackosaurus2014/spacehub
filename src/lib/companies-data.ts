@@ -213,23 +213,24 @@ const SPACE_COMPANIES: CompanyData[] = [
     revenueEstimate: 3000,
   },
 
-  // US Private Companies
+  // Went public via IPO June 2026 (NASDAQ: SPCX) — kept here rather than
+  // reordered into the public section above to minimize diff churn.
   {
     slug: 'spacex',
     name: 'SpaceX',
-    description: 'Leading private aerospace company developing rockets and spacecraft for orbital and interplanetary missions.',
+    description: 'Leading aerospace company developing rockets and spacecraft for orbital and interplanetary missions.',
     country: 'USA',
     headquarters: 'Hawthorne, CA',
     founded: 2002,
     website: 'https://www.spacex.com',
-    isPublic: false,
-    isPreIPO: true,
-    expectedIPODate: 'TBD - Starlink spinoff possible',
-    lastFundingRound: 'Tender Offer & Equity',
-    lastFundingAmount: 2000,
-    lastFundingDate: '2024',
+    isPublic: true,
+    ticker: 'SPCX',
+    exchange: 'NASDAQ',
+    marketCap: 2000,
+    lastFundingRound: 'IPO',
+    lastFundingDate: '2026-06-12',
     totalFunding: 12000,
-    valuation: 210,
+    valuation: 2000,
     focusAreas: ['launch_provider', 'spacecraft', 'space_broadband', 'interplanetary'],
     subSectors: ['falcon_9', 'falcon_heavy', 'starship', 'starlink', 'dragon'],
     employeeCount: 13000,

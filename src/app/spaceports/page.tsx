@@ -1556,7 +1556,7 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
 
           {/* 3-year launch history comparison */}
           <div>
-            <span className="text-star-300/60 text-xs block mb-2">Launch History</span>
+            <span className="text-star-300/60 text-xs block mb-2">Recent annual launches (2023-2025)</span>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { year: '2023', count: spaceport.recentLaunches2023 },

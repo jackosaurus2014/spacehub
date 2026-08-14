@@ -29,11 +29,15 @@ export async function GET(request: NextRequest) {
     // Cache the successful response for future fallback use
     apiCache.set(CACHE_KEY, data, CacheTTL.DEFAULT);
 
+    // Freshness reflects the underlying DebrisStats snapshot date, not
+    // when this request happened to run.
+    const refreshedAt = (overview.stats?.snapshotDate ?? new Date()).toISOString();
+
     return NextResponse.json({
       ...data,
       _meta: {
         source: 'database' as const,
-        refreshedAt: new Date().toISOString(),
+        refreshedAt,
         ttl: 21600,
       },
     });

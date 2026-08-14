@@ -42,6 +42,27 @@ const LOGO_ASSETS = [
 
 const PRESS_COVERAGE = [
   {
+    title: 'SpaceNexus Launches Real-Time Space Industry Jobs Board',
+    outlet: 'Company Announcement',
+    date: 'August 2026',
+    url: '/space-talent',
+    type: 'Launch',
+  },
+  {
+    title: 'SpaceNexus Debuts Startup & Pre-IPO Hub for Private Space Companies',
+    outlet: 'Company Announcement',
+    date: 'August 2026',
+    url: '/startups',
+    type: 'Launch',
+  },
+  {
+    title: 'Space Tycoon Gets a Full Visual and Gameplay Overhaul',
+    outlet: 'Company Announcement',
+    date: 'August 2026',
+    url: '/space-tycoon',
+    type: 'Launch',
+  },
+  {
     title: 'SpaceNexus: Building the Bloomberg Terminal for the Space Economy',
     outlet: 'Company Blog',
     date: 'March 2026',

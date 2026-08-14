@@ -31,29 +31,6 @@ const VALUES = [
   },
 ];
 
-const OPEN_ROLES = [
-  {
-    title: 'Full-Stack Engineer',
-    department: 'Engineering',
-    location: 'Remote',
-    type: 'Full-time',
-    description: 'Build and scale our Next.js platform serving thousands of space industry professionals.',
-  },
-  {
-    title: 'Space Industry Analyst',
-    department: 'Content & Intelligence',
-    location: 'Remote',
-    type: 'Full-time',
-    description: 'Research and write deep-dive analysis on market trends, company profiles, and regulatory changes.',
-  },
-  {
-    title: 'Growth Marketing Manager',
-    department: 'Marketing',
-    location: 'Remote',
-    type: 'Full-time',
-    description: 'Drive user acquisition and engagement across the space professional community.',
-  },
-];
 
 export default function CareersPage() {
   return (
@@ -68,8 +45,8 @@ export default function CareersPage() {
             Help Build the Future of Space Intelligence
           </h1>
           <p className="text-lg text-white/70 leading-relaxed">
-            SpaceNexus is the premier intelligence platform for the space industry.
-            We&apos;re looking for passionate people to join our mission.
+            SpaceNexus is the premier intelligence platform for the space industry,
+            built by a small team that cares deeply about the mission.
           </p>
         </div>
 
@@ -85,51 +62,15 @@ export default function CareersPage() {
         </div>
 
         {/* Open Positions */}
-        <div className="max-w-3xl mx-auto mb-20">
-          <h2 className="text-2xl font-display font-bold text-white mb-2 text-center">
-            Open Positions
-          </h2>
-          <p className="text-slate-400 text-center mb-8">
-            All roles are remote-friendly. We value talent over location.
-          </p>
-
-          <div className="stagger-grid space-y-4">
-            {OPEN_ROLES.map((role) => (
-              <div key={role.title} className="card p-6 hover:border-white/10 transition-colors group">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                  <h3 className="text-lg font-semibold text-white group-hover:text-white transition-colors">{role.title}</h3>
-                  <div className="flex gap-2 flex-wrap">
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-white/5 text-white/70 border border-white/10">
-                      {role.department}
-                    </span>
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-white/[0.06] text-white/70 border border-white/[0.06]">
-                      {role.location}
-                    </span>
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-white/[0.06] text-white/70 border border-white/[0.06]">
-                      {role.type}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-sm text-slate-400 leading-relaxed">{role.description}</p>
-                <div className="mt-3 flex items-center gap-1 text-xs text-white/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-medium">
-                  Apply for this role
-                  <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA */}
         <div className="card-elevated p-8 md:p-12 text-center max-w-2xl mx-auto">
           <h2 className="text-2xl font-display font-bold text-white mb-3">
-            Don&apos;t See Your Role?
+            We&apos;re Not Actively Hiring Right Now
           </h2>
           <p className="text-white/70 mb-6 leading-relaxed">
-            We&apos;re always looking for exceptional people passionate about space and technology.
-            Send us your resume and tell us how you&apos;d contribute.
+            SpaceNexus is built and run by a lean, founder-led team, and we don&apos;t have open roles
+            posted at the moment. But we&apos;re always interested in hearing from people who are genuinely
+            passionate about the space industry &mdash; reach out and tell us how you&apos;d like to
+            contribute. We keep resumes on file and follow up as the team grows.
           </p>
           <Link
             href="/contact"

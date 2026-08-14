@@ -200,7 +200,7 @@ export default function BloombergComparisonPage() {
                   {[
                     'Need space-specific data: launches, satellites, orbital slots, spectrum',
                     'Want procurement intelligence (SAM.gov, SBIR/STTR contracts)',
-                    'Need company profiles for 200+ space companies',
+                    `Need company profiles for ${SITE_STATS.companies} space companies`,
                     'Are a space startup, defense contractor, or government PM',
                     'Want a free tier or affordable Pro plan ($19.99/mo)',
                     'Need a B2B marketplace for space industry services',

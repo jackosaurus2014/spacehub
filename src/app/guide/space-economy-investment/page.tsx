@@ -587,7 +587,7 @@ export default function SpaceEconomyInvestmentPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
-                  <span><strong className="text-white">Company Profiles</strong> &mdash; Access detailed profiles for 200+ space companies, including financial data, key contracts, and competitive positioning via our <Link href="/company-profiles" className="text-slate-300 hover:underline">Company Directory</Link>.</span>
+                  <span><strong className="text-white">Company Profiles</strong> &mdash; Access detailed profiles for {SITE_STATS.companies} space companies, including financial data, key contracts, and competitive positioning via our <Link href="/company-profiles" className="text-slate-300 hover:underline">Company Directory</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>

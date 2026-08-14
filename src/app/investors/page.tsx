@@ -14,6 +14,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import type { InvestorActivityResult } from '@/lib/investor-sentiment';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataAsOf from '@/components/ui/DataAsOf';
 
 // ────────────────────────────────────────
 // Types
@@ -207,6 +208,8 @@ function InvestorsPageInner() {
           subtitle="Directory of venture capital, private equity, corporate, and government investors active in the space economy"
           accentColor="cyan"
         />
+
+        <DataAsOf date="April 2026" note="AUM and portfolio figures; full re-research pending" className="mb-4" />
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

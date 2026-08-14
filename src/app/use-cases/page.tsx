@@ -4,6 +4,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Space Intelligence Use Cases | SpaceNexus',
@@ -35,7 +36,7 @@ const USE_CASES = [
     problem:
       'Space-focused VCs evaluate 50+ startups per quarter. Teams often drown in fragmented data across pitch decks, SEC filings, and industry reports. Initial screening can take two analysts a full week per deal.',
     modules: [
-      { name: 'Company Profiles', href: '/companies', desc: 'Instant access to 200+ space company dossiers with financials, leadership, and competitive positioning.' },
+      { name: 'Company Profiles', href: '/companies', desc: `Instant access to ${SITE_STATS.companies} space company dossiers with financials, leadership, and competitive positioning.` },
       { name: 'SpaceNexus Score', href: '/companies', desc: 'Proprietary scoring algorithm to rank startups across technology readiness, market fit, and financial health.' },
       { name: 'Funding Tracker', href: '/market-intel', desc: 'Real-time tracking of every funding round, acquisition, and IPO in the space industry.' },
       { name: 'Deal Flow Pipeline', href: '/market-intel', desc: 'Curated pipeline of emerging opportunities with stage, sector, and geography filters.' },

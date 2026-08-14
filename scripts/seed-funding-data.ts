@@ -35,7 +35,7 @@ const SPACE_INVESTORS: InvestorData[] = [
     investmentStage: ['seed', 'series_a', 'series_b', 'growth'],
     sectorFocus: ['satellite', 'earth_observation', 'ground_segment'],
     portfolioCount: 8,
-    notableDeals: ['Rocket Lab (pre-IPO)', 'Spire Global', 'Planet Labs'],
+    notableDeals: ['Rocket Lab (early investor; now public NASDAQ: RKLB)', 'Spire Global', 'Planet Labs'],
   },
   {
     name: 'Founders Fund',
@@ -325,7 +325,7 @@ const SPACE_INVESTORS: InvestorData[] = [
     investmentStage: ['series_b', 'growth'],
     sectorFocus: ['launch', 'in_space'],
     portfolioCount: 3,
-    notableDeals: ['Rocket Lab (pre-IPO)', 'Impulse Space'],
+    notableDeals: ['Rocket Lab (early investor; now public NASDAQ: RKLB)', 'Impulse Space'],
   },
   {
     name: 'Samsung NEXT',

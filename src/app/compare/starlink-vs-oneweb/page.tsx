@@ -21,7 +21,7 @@ const COMPARISON_DATA = [
   { metric: 'Operator', starlink: 'SpaceX (Starlink)', oneWeb: 'Eutelsat OneWeb (merged 2023)' },
   { metric: 'Parent Company', starlink: 'SpaceX', oneWeb: 'Eutelsat Group' },
   { metric: 'Service Launch', starlink: 'Public beta Oct 2020', oneWeb: 'Commercial service 2023' },
-  { metric: 'Satellites Deployed', starlink: '6,000+ (as of early 2026)', oneWeb: '648 (Gen 1 complete)' },
+  { metric: 'Satellites Deployed', starlink: '10,000+ (as of Aug 2026)', oneWeb: '648 (Gen 1 complete)' },
   { metric: 'Total Constellation Planned', starlink: '~42,000 (FCC authorized)', oneWeb: '648 Gen 1 + Gen 2 TBD' },
   { metric: 'Orbital Altitude', starlink: '~340–570 km (Shell 1–5)', oneWeb: '~1,200 km' },
   { metric: 'Inter-Satellite Links (ISLs)', starlink: 'Yes (V1.5+ and all V2 Mini satellites)', oneWeb: 'No (ground relay dependent)' },
@@ -89,7 +89,7 @@ export default function StarlinkVsOneWeb() {
       <div className="prose prose-invert max-w-none mb-12">
         <h2 className="text-display text-xl mb-3">Key Differences</h2>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-          Starlink is the dominant LEO broadband constellation by virtually every measure: satellite count (6,000+ vs. 648), subscriber base (4M+ vs. undisclosed B2B contracts), and consumer market reach. Its vertically integrated model — SpaceX builds both the rockets and the satellites — allows rapid, low-cost deployment. Starlink&apos;s Gen 2 satellites include inter-satellite laser links that enable routing data across the constellation without ground relays, reducing latency on long-distance routes. This capability is absent from OneWeb&apos;s Gen 1 design.
+          Starlink is the dominant LEO broadband constellation by virtually every measure: satellite count (10,000+ vs. 648), subscriber base (4M+ vs. undisclosed B2B contracts), and consumer market reach. Its vertically integrated model — SpaceX builds both the rockets and the satellites — allows rapid, low-cost deployment. Starlink&apos;s Gen 2 satellites include inter-satellite laser links that enable routing data across the constellation without ground relays, reducing latency on long-distance routes. This capability is absent from OneWeb&apos;s Gen 1 design.
         </p>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
           OneWeb, now operating under Eutelsat following a 2023 merger, targets the enterprise and government connectivity market rather than direct-to-consumer broadband. Its higher orbital altitude (~1,200 km vs. Starlink&apos;s ~550 km) provides broader coverage per satellite but adds latency. OneWeb benefits from Eutelsat&apos;s established relationships with telecom operators, governments, and maritime customers. The key competitive question for OneWeb is whether its Gen 2 constellation — whose design and timeline have not been formally announced — will be able to close the gap with Starlink&apos;s continued expansion.
@@ -139,7 +139,7 @@ export default function StarlinkVsOneWeb() {
             author: { '@type': 'Organization', name: 'SpaceNexus' },
             publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
             datePublished: '2026-03-22',
-            dateModified: '2026-03-22',
+            dateModified: '2026-08-13',
             url: 'https://spacenexus.us/compare/starlink-vs-oneweb',
           }).replace(/</g, '\\u003c'),
         }}

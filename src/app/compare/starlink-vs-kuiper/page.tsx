@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 const COMPARISON_DATA = [
   { metric: 'Operator', a: 'SpaceX (Starlink)', b: 'Amazon (Project Kuiper)' },
   { metric: 'Service Start', a: 'Public beta Oct 2020; full service 2021', b: 'Prototype tests 2023; commercial 2025' },
-  { metric: 'Satellites in Orbit (early 2026)', a: '6,000+', b: '~30 (prototype KuiperSat + initial batch)' },
+  { metric: 'Satellites in Orbit (Aug 2026)', a: '10,000+', b: '~30 (prototype KuiperSat + initial batch)' },
   { metric: 'Total Constellation Authorized', a: '~42,000 (FCC Gen 1 + Gen 2)', b: '3,236 (FCC licensed)' },
   { metric: 'Orbital Altitude', a: '~340–570 km', b: '~590–630 km' },
   { metric: 'Inter-Satellite Links', a: 'Yes (laser ISLs on V2 satellites)', b: 'Yes (planned on production satellites)' },
@@ -31,7 +31,7 @@ const COMPARISON_DATA = [
   { metric: 'Download Speed (target)', a: '50–250 Mbps (consumer)', b: 'Up to 400 Mbps (per Amazon claims)' },
   { metric: 'User Terminal', a: 'Starlink dish (phased array)', b: 'Amazon-designed phased array terminal' },
   { metric: 'Consumer Pricing (US)', a: '$120/mo (Residential)', b: 'Not yet announced' },
-  { metric: 'Parent Company Market Cap', a: 'SpaceX private (~$350B+ est. 2026)', b: 'Amazon ~$2T+ (AMZN)' },
+  { metric: 'Parent Company Market Cap', a: 'SpaceX public (~$2T, SPCX)', b: 'Amazon ~$2T+ (AMZN)' },
   { metric: 'FCC Deployment Deadline', a: 'N/A (ongoing expansion)', b: '50% deployed by 2026; 100% by 2029' },
 ];
 
@@ -88,7 +88,7 @@ export default function Page() {
       {/* Analysis */}
       <h2 className="text-display text-xl mb-3">Key Differences</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Starlink holds a commanding first-mover advantage with over 6,000 satellites in orbit and 4 million subscribers generating significant recurring revenue. SpaceX&apos;s vertical integration — building both rockets and satellites — gives it a structural cost advantage that no other operator can easily replicate. Starlink has demonstrated real-world performance across consumer, enterprise, maritime, aviation, and government segments.
+        Starlink holds a commanding first-mover advantage with over 10,000 satellites in orbit and 4 million subscribers generating significant recurring revenue. SpaceX&apos;s vertical integration — building both rockets and satellites — gives it a structural cost advantage that no other operator can easily replicate. Starlink has demonstrated real-world performance across consumer, enterprise, maritime, aviation, and government segments.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         Project Kuiper is backed by Amazon&apos;s balance sheet and benefits from integration with AWS cloud infrastructure, which may give it an advantage in enterprise and government cloud-connectivity use cases. Amazon has secured launch capacity across multiple providers (ULA Vulcan, Blue Origin New Glenn, Arianespace) to diversify risk. Kuiper faces an FCC-mandated deployment schedule requiring 50% of its 3,236-satellite constellation to be operational by mid-2026, creating significant near-term execution pressure.
@@ -134,7 +134,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Starlink and Amazon Project Kuiper satellite internet constellations.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-22', dateModified: '2026-03-22',
+        datePublished: '2026-03-22', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/starlink-vs-kuiper',
       }).replace(/</g, '\\u003c') }} />
     

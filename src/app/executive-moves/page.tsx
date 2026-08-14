@@ -20,7 +20,7 @@ interface ExecutiveMove {
   fromTitle: string | null;
   toCompany: string | null;
   toTitle: string | null;
-  moveType: 'hired' | 'departed' | 'promoted' | 'appointed';
+  moveType: 'hired' | 'departed' | 'promoted' | 'appointed' | 'board_joined';
   date: string;
   source?: string;
   summary?: string;
@@ -33,6 +33,7 @@ const MOVE_TYPE_OPTIONS = [
   { value: 'departed', label: 'Departed' },
   { value: 'promoted', label: 'Promoted' },
   { value: 'appointed', label: 'Appointed' },
+  { value: 'board_joined', label: 'Board' },
 ];
 
 function getMoveTypeBadge(type: string) {
@@ -41,6 +42,7 @@ function getMoveTypeBadge(type: string) {
     departed: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'DEPARTED' },
     promoted: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'PROMOTED' },
     appointed: { bg: 'bg-white/10', text: 'text-white/70', label: 'APPOINTED' },
+    board_joined: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'BOARD' },
   };
   const style = styles[type] || styles.hired;
   return (
@@ -56,6 +58,7 @@ function getMoveTypeIcon(type: string) {
     departed: '<<<',
     promoted: '^^^',
     appointed: '***',
+    board_joined: '###',
   };
   return icons[type] || '---';
 }

@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import DataAsOf from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
 import {
   SpectrumAllocation,
@@ -777,6 +778,10 @@ function SpectrumContent() {
         </div>
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
         </div>
+
+        {isAuctionTab && (
+          <DataAsOf date="February 2026" className="mb-4" />
+        )}
 
         {/* ──────────────── BAND ALLOCATIONS TAB ──────────────── */}
         {activeTab === 'bands' && (

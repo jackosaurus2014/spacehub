@@ -21,6 +21,7 @@ const COMPARISON_DATA = [
   { metric: 'Founded', a: '2017', b: '2012' },
   { metric: 'Headquarters', a: 'San Francisco, CA (offices in Toulouse, France)', b: 'Denver, CO' },
   { metric: 'CEO', a: 'Pierre-Damien Vaujour', b: 'Dirk Wallinger' },
+  { metric: 'Publicly Traded', a: 'No (private)', b: 'Yes (Nasdaq: YSS, since Jan 2026)' },
   { metric: 'Total Funding', a: '~$137M+ (Series B, 2023)', b: '~$60M+ (acquired by Northrop Grumman via SpaceLogistics, now independent again)' },
   { metric: 'Employees', a: '~120+', b: '~200+' },
   { metric: 'Business Model', a: 'Satellite-as-a-service: hosts customer payloads on Loft-owned satellites', b: 'Manufactures and sells tactical satellite buses to government/commercial customers' },
@@ -144,7 +145,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Loft Orbital and York Space covering satellite-as-a-service vs tactical bus manufacturing, customers, missions, and business models.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-04-15', dateModified: '2026-04-15',
+        datePublished: '2026-04-15', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/loft-orbital-vs-york-space',
       }).replace(/</g, '\\u003c') }} />
 

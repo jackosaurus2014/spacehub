@@ -7,9 +7,8 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface SatellitePass {
   name: string;
-  noradId: number;
+  noradId: string;
   elevation: number; // degrees above horizon
-  azimuth: number;
   distance: number; // km
   brightness: string; // "Bright", "Dim", "Faint"
   type: string; // "ISS", "Starlink", "GPS", "Weather", etc.
@@ -20,7 +19,6 @@ interface VisiblePass {
   startTime: Date;
   maxElevation: number;
   duration: number; // minutes
-  direction: string; // "NW to SE"
 }
 
 export default function WhatsOverheadPage() {
@@ -29,6 +27,7 @@ export default function WhatsOverheadPage() {
   const [error, setError] = useState<string | null>(null);
   const [overhead, setOverhead] = useState<SatellitePass[]>([]);
   const [upcomingPasses, setUpcomingPasses] = useState<VisiblePass[]>([]);
+  const [passesCoverage, setPassesCoverage] = useState<string[]>([]);
   const [locationName, setLocationName] = useState('');
 
   const getLocation = useCallback(() => {
@@ -39,15 +38,18 @@ export default function WhatsOverheadPage() {
     setLoading(true);
     setError(null);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-        setLocationName(`${pos.coords.latitude.toFixed(2)}°N, ${pos.coords.longitude.toFixed(2)}°E`);
-        setLoading(false);
-        // Simulate overhead satellites (in production, use SGP4 propagation)
-        generateOverheadSatellites(pos.coords.latitude, pos.coords.longitude);
-        generateUpcomingPasses();
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        setLocation({ lat, lon });
+        setLocationName(`${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E`);
+        try {
+          await loadOverhead(lat, lon);
+        } finally {
+          setLoading(false);
+        }
       },
-      (err) => {
+      () => {
         setError('Unable to get your location. Please allow location access.');
         setLoading(false);
       },
@@ -55,38 +57,28 @@ export default function WhatsOverheadPage() {
     );
   }, []);
 
-  function generateOverheadSatellites(lat: number, lon: number) {
-    // Simulated satellite data — in production, this would use CelesTrak TLEs + SGP4
-    const types = ['Starlink', 'Starlink', 'Starlink', 'GPS', 'Weather', 'ISS', 'OneWeb', 'Iridium', 'Debris', 'CubeSat'];
-    const sats: SatellitePass[] = [];
-    const count = 15 + Math.floor(Math.random() * 10); // 15-25 satellites overhead
-
-    for (let i = 0; i < count; i++) {
-      const type = types[Math.floor(Math.random() * types.length)];
-      const elevation = 10 + Math.random() * 80;
-      sats.push({
-        name: type === 'ISS' ? 'ISS (ZARYA)' : type === 'GPS' ? `GPS BIIR-${2 + i}` : `${type}-${1000 + Math.floor(Math.random() * 5000)}`,
-        noradId: 25544 + i,
-        elevation: Math.round(elevation),
-        azimuth: Math.round(Math.random() * 360),
-        distance: Math.round(400 + Math.random() * 1200),
-        brightness: elevation > 60 ? 'Bright' : elevation > 30 ? 'Dim' : 'Faint',
-        type,
-      });
+  async function loadOverhead(lat: number, lon: number) {
+    try {
+      const res = await fetch(`/api/whats-overhead?lat=${lat}&lon=${lon}`);
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError('Unable to compute overhead satellites right now. Please try again.');
+        return;
+      }
+      const { overhead: overheadData, upcomingPasses: passesData, coverage } = json.data;
+      setOverhead(overheadData || []);
+      setPassesCoverage(coverage?.passesShortlist || []);
+      setUpcomingPasses(
+        (passesData || []).map((p: { name: string; startTime: string; maxElevation: number; durationMinutes: number }) => ({
+          name: p.name,
+          startTime: new Date(p.startTime),
+          maxElevation: p.maxElevation,
+          duration: p.durationMinutes,
+        }))
+      );
+    } catch {
+      setError('Unable to compute overhead satellites right now. Please try again.');
     }
-    sats.sort((a, b) => b.elevation - a.elevation);
-    setOverhead(sats);
-  }
-
-  function generateUpcomingPasses() {
-    const passes: VisiblePass[] = [
-      { name: 'ISS (ZARYA)', startTime: new Date(Date.now() + 2 * 3600000), maxElevation: 67, duration: 5, direction: 'NW to SE' },
-      { name: 'ISS (ZARYA)', startTime: new Date(Date.now() + 14 * 3600000), maxElevation: 34, duration: 4, direction: 'W to E' },
-      { name: 'Starlink Train', startTime: new Date(Date.now() + 5 * 3600000), maxElevation: 52, duration: 3, direction: 'SW to NE' },
-      { name: 'Tiangong', startTime: new Date(Date.now() + 8 * 3600000), maxElevation: 28, duration: 3, direction: 'NW to E' },
-      { name: 'Hubble', startTime: new Date(Date.now() + 20 * 3600000), maxElevation: 41, duration: 4, direction: 'W to SE' },
-    ];
-    setUpcomingPasses(passes);
   }
 
   return (
@@ -99,7 +91,7 @@ export default function WhatsOverheadPage() {
             What&apos;s Overhead Now?
           </h1>
           <p className="text-slate-400 text-sm">
-            See which satellites are above your location right now. Track ISS, Starlink, and thousands more.
+            See which tracked satellites are above your location right now, computed live from CelesTrak orbital data — plus real upcoming visible passes for ISS, Tiangong, and Hubble.
           </p>
         </div>
 
@@ -152,6 +144,11 @@ export default function WhatsOverheadPage() {
               {/* Satellite List */}
               <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
                 <h2 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Currently Overhead</h2>
+                {overhead.length === 0 && (
+                  <p className="text-slate-500 text-xs py-4 text-center">
+                    No tracked objects from CelesTrak&apos;s station/active catalog are currently above your horizon.
+                  </p>
+                )}
                 <div className="space-y-1.5">
                   {overhead.slice(0, 15).map((sat, i) => (
                     <div key={i} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/[0.02] transition-colors">
@@ -180,6 +177,9 @@ export default function WhatsOverheadPage() {
                 {overhead.length > 15 && (
                   <p className="text-slate-500 text-xs mt-2 text-center">+ {overhead.length - 15} more</p>
                 )}
+                <p className="text-slate-600 text-[10px] mt-3">
+                  Computed live from CelesTrak&apos;s tracked station + active-satellite catalog (subset, capped at 500 objects) using your location and current time.
+                </p>
               </div>
 
               {/* Upcoming Visible Passes */}
@@ -187,6 +187,11 @@ export default function WhatsOverheadPage() {
                 <h2 className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-3">
                   🌙 Upcoming Visible Passes (Naked Eye)
                 </h2>
+                {upcomingPasses.length === 0 && (
+                  <p className="text-slate-500 text-xs py-4 text-center">
+                    No qualifying passes (elevation &gt; 10°) in the next 72 hours for this shortlist at your location.
+                  </p>
+                )}
                 <div className="space-y-2">
                   {upcomingPasses.map((pass, i) => (
                     <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-white/[0.02]">
@@ -194,7 +199,7 @@ export default function WhatsOverheadPage() {
                         <p className="text-white text-sm font-medium">{pass.name}</p>
                         <p className="text-slate-500 text-xs">
                           {pass.startTime.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}
-                          {' · '}{pass.direction} · {pass.duration} min
+                          {' · '}{pass.duration} min
                         </p>
                       </div>
                       <div className="text-right">
@@ -207,7 +212,7 @@ export default function WhatsOverheadPage() {
                   ))}
                 </div>
                 <p className="text-slate-600 text-[10px] mt-2">
-                  Visible passes require: dark sky, satellite in sunlight, elevation &gt; 10°
+                  Real pass predictions (CelesTrak TLE + simplified propagator), covering only: {passesCoverage.length > 0 ? passesCoverage.join(', ') : 'ISS, CSS (Tiangong), Hubble'}. Visible passes also require a dark sky and the satellite in sunlight.
                 </p>
               </div>
 

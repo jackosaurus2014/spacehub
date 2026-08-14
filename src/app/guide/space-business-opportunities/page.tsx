@@ -7,6 +7,7 @@ import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const revalidate = 3600;
 
@@ -444,7 +445,7 @@ export default function SpaceBusinessOpportunitiesPage() {
               </p>
               <p className="text-slate-300 text-sm mt-4">
                 <Link href="/company-profiles" className="text-slate-300 hover:underline">
-                  Research 200+ space companies in the SpaceNexus directory &rarr;
+                  Research {SITE_STATS.companies} space companies in the SpaceNexus directory &rarr;
                 </Link>
               </p>
             </section>
@@ -467,7 +468,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
-                  <span><strong className="text-white">Company Intelligence</strong> &mdash; Research potential customers, partners, and competitors in our <Link href="/company-profiles" className="text-slate-300 hover:underline">company database</Link> with 200+ profiles.</span>
+                  <span><strong className="text-white">Company Intelligence</strong> &mdash; Research potential customers, partners, and competitors in our <Link href="/company-profiles" className="text-slate-300 hover:underline">company database</Link> with {SITE_STATS.companies} profiles.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>

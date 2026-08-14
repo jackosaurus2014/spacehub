@@ -35,8 +35,8 @@ const COMPARISON_DATA = [
   { metric: 'Founder', a: 'Elon Musk', b: 'Peter Beck' },
   { metric: 'Headquarters', a: 'Hawthorne, CA, USA', b: 'Long Beach, CA, USA (HQ); Mahia, NZ (operations)' },
   { metric: 'Employees', a: '~13,000', b: '~2,100' },
-  { metric: 'Publicly Traded', a: 'No (private)', b: 'Yes (RKLB, Nasdaq)' },
-  { metric: 'Valuation / Market Cap', a: '~$350B+ (private, 2025)', b: '~$12B+ (market cap, early 2026)' },
+  { metric: 'Publicly Traded', a: 'Yes (SPCX, Nasdaq, IPO June 2026)', b: 'Yes (RKLB, Nasdaq)' },
+  { metric: 'Valuation / Market Cap', a: '~$2T (market cap, Aug 2026)', b: '~$12B+ (market cap, early 2026)' },
   { metric: 'Annual Revenue (est.)', a: '~$15B+ (2025, including Starlink)', b: '~$436M (FY 2025)' },
   { metric: 'Primary Launch Vehicle', a: 'Falcon 9 / Falcon Heavy / Starship', b: 'Electron / Neutron (in development)' },
   { metric: 'Vehicle Class', a: 'Medium, heavy, super-heavy lift', b: 'Small lift (Electron); medium lift (Neutron planned)' },
@@ -145,7 +145,7 @@ export default function Page() {
       {/* Future Outlook */}
       <h2 className="text-display text-xl mb-3">Future Outlook</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        SpaceX&apos;s near-term trajectory is defined by Starship&apos;s operational maturation and Starlink&apos;s revenue growth toward a potential IPO. If Starship achieves reliable operations, it will fundamentally alter the economics of space access with its target cost per kg below $100 to LEO. Rocket Lab&apos;s inflection point is Neutron: a reusable medium-lift vehicle targeting ~$50M per launch that would directly compete for commercial and government missions in the most active segment of the market. Rocket Lab&apos;s stock (RKLB) surged roughly 700% in 2024 on investor enthusiasm for the Neutron program and growing space systems revenue. Both companies represent the clearest examples of new-space execution, though at very different scales.
+        SpaceX&apos;s near-term trajectory is defined by Starship&apos;s operational maturation and Starlink&apos;s continued revenue growth following SpaceX&apos;s June 2026 Nasdaq listing (SPCX), which raised $75B and now trades around a $2T market cap. If Starship achieves reliable operations, it will fundamentally alter the economics of space access with its target cost per kg below $100 to LEO. Rocket Lab&apos;s inflection point is Neutron: a reusable medium-lift vehicle targeting ~$50M per launch that would directly compete for commercial and government missions in the most active segment of the market. Rocket Lab&apos;s stock (RKLB) surged roughly 700% in 2024 on investor enthusiasm for the Neutron program and growing space systems revenue. Both companies represent the clearest examples of new-space execution, though at very different scales.
       </p>
 
       {/* CTA */}
@@ -178,7 +178,7 @@ export default function Page() {
         description: 'Side-by-side comparison of SpaceX and Rocket Lab covering launch vehicles, cadence, revenue, government contracts, and market positioning.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-22', dateModified: '2026-03-25',
+        datePublished: '2026-03-22', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/spacex-vs-rocket-lab',
       }).replace(/</g, '\\u003c') }} />
 

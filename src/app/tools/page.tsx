@@ -165,6 +165,62 @@ const TOOLS = [
     iconColor: 'text-emerald-400',
     hoverRing: 'hover:ring-emerald-500/50',
   },
+  {
+    href: '/radiation-calculator',
+    title: 'Radiation Environment Calculator',
+    description: 'Calculate radiation exposure, shielding, and biological effects across orbits',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      </svg>
+    ),
+    color: 'from-lime-500/20 to-emerald-500/20',
+    borderColor: 'border-lime-500/30',
+    iconColor: 'text-lime-400',
+    hoverRing: 'hover:ring-lime-500/50',
+  },
+  {
+    href: '/thermal-calculator',
+    title: 'Spacecraft Thermal Analysis',
+    description: 'Calculate equilibrium temperatures and hot/cold case power balance',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+      </svg>
+    ),
+    color: 'from-amber-500/20 to-orange-500/20',
+    borderColor: 'border-amber-500/30',
+    iconColor: 'text-amber-400',
+    hoverRing: 'hover:ring-amber-500/50',
+  },
+  {
+    href: '/mission-simulator',
+    title: 'Space Mission Simulator',
+    description: 'Configure mission parameters, delta-V budgets, and cost timelines',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" />
+      </svg>
+    ),
+    color: 'from-cyan-500/20 to-blue-500/20',
+    borderColor: 'border-cyan-500/30',
+    iconColor: 'text-cyan-400',
+    hoverRing: 'hover:ring-cyan-500/50',
+  },
+  {
+    href: '/licensing-checker',
+    title: 'Space Licensing Requirements Checker',
+    description: 'Find the licenses, permits, and authorizations your space activity needs',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    color: 'from-fuchsia-500/20 to-purple-500/20',
+    borderColor: 'border-fuchsia-500/30',
+    iconColor: 'text-fuchsia-400',
+    hoverRing: 'hover:ring-fuchsia-500/50',
+  },
 ];
 
 export default function ToolsHubPage() {

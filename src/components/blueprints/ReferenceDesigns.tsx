@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CUBESAT_STANDARDS, SMALLSAT_PLATFORMS, SUBSYSTEM_CATEGORIES } from './reference-data';
 import type { CubeSatStandard, SmallSatPlatform, SubsystemCategory } from './reference-data';
+import DataAsOf from '@/components/ui/DataAsOf';
 
 // ── CubeSat Standard Card ──
 
@@ -310,6 +311,7 @@ function SubsystemBrowser() {
 export default function ReferenceDesigns() {
   return (
     <div className="space-y-10">
+      <DataAsOf date="February 2026" />
       {/* CubeSat Standards */}
       <section>
         <h2 className="text-2xl font-bold text-white mb-1">CubeSat Standards</h2>

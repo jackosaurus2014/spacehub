@@ -32,6 +32,7 @@ import ItemListSchema from '@/components/seo/ItemListSchema';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 import { clientLogger } from '@/lib/client-logger';
+import { SALARY_DATA_AS_OF } from '@/lib/salary-data';
 import {
   CATEGORY_COLORS,
   SENIORITY_LABELS,
@@ -664,7 +665,7 @@ function GeographicDistributionSection() {
       </div>
 
       <div className="mt-4 pt-3 border-t border-white/[0.06] text-xs text-slate-500">
-        Salary data in USD. International salaries converted at current exchange rates.
+        Salary data in USD. International salaries converted at current exchange rates. Salary data as of {new Date(`${SALARY_DATA_AS_OF}-01`).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}.
       </div>
     </div>
   );

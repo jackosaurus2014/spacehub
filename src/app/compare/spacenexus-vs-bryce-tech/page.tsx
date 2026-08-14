@@ -24,7 +24,7 @@ const COMPARISON_DATA = [
   { metric: 'Data Sources', spaceNexus: 'Aggregated public filings, launch databases, news, regulatory records', bryceTech: 'Primary research, government contracts, proprietary methodology' },
   { metric: 'Update Frequency', spaceNexus: 'Near-real-time (news, launches); regular data refreshes', bryceTech: 'Annual or periodic reports (e.g., State of the Satellite Industry)' },
   { metric: 'API Access', spaceNexus: 'Yes (developer API available)', bryceTech: 'No self-service API' },
-  { metric: 'Company Profiles', spaceNexus: '200+ space companies with financials, metrics, news', bryceTech: 'Covered in reports; no interactive company database' },
+  { metric: 'Company Profiles', spaceNexus: `${SITE_STATS.companies} space companies with financials, metrics, news`, bryceTech: 'Covered in reports; no interactive company database' },
   { metric: 'Satellite Tracking', spaceNexus: 'Yes (constellation data, launch manifests)', bryceTech: 'Covered in reports (e.g., annual satellite industry survey)' },
   { metric: 'Real-Time Data', spaceNexus: 'Yes (launch tracker, news aggregation)', bryceTech: 'No (reports are point-in-time)' },
   { metric: 'Self-Service Access', spaceNexus: 'Yes (web app, dashboards, search)', bryceTech: 'No (outputs are reports and consulting deliverables)' },

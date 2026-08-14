@@ -44,6 +44,15 @@ const roadmapItems: RoadmapItem[] = [
   { title: 'Team Workspaces', description: 'Shared dashboards, saved searches, and collaborative watchlists for organizations', status: 'planned', quarter: 'Q2 2026' },
   { title: 'API v2 with GraphQL', description: 'Flexible query API for developers building on SpaceNexus data', status: 'planned', quarter: 'Q2 2026' },
 
+  // Q3 2026 — Shipped
+  { title: 'Real Jobs Board', description: '6,400+ live listings synced daily from Greenhouse, Lever, and Ashby ATS boards', status: 'shipped', quarter: 'Q3 2026' },
+  { title: 'Startup & Pre-IPO Hub', description: 'Watchlist, funding rounds, and IPO tracker for private space companies', status: 'shipped', quarter: 'Q3 2026' },
+  { title: 'Google-for-Jobs SEO', description: 'JobPosting structured data and a jobs sitemap for search visibility on every listing', status: 'shipped', quarter: 'Q3 2026' },
+  { title: 'Job Alerts', description: 'Saved searches with automated daily email notifications for new matching roles', status: 'shipped', quarter: 'Q3 2026' },
+  { title: 'Hiring Velocity Dashboard', description: 'Company-level hiring trend tracking built from daily job-posting snapshots', status: 'shipped', quarter: 'Q3 2026' },
+  { title: 'Artemis Program Tracker', description: 'Dedicated mission tracker for the Artemis program timeline and milestones', status: 'shipped', quarter: 'Q3 2026' },
+  { title: 'Space Tycoon 4X Overhaul', description: 'Command-center hub UI, region-specific visuals, and an AAA graphics/audio pass across the game', status: 'shipped', quarter: 'Q3 2026' },
+
   // Q3-Q4 2026 — Exploring
   { title: 'Internationalization (i18n)', description: 'Multi-language support starting with Spanish, Mandarin, and French', status: 'exploring', quarter: 'H2 2026' },
   { title: 'Wearable Integration', description: 'Launch alerts and space weather on smartwatches (Wear OS, Apple Watch)', status: 'exploring', quarter: 'H2 2026' },

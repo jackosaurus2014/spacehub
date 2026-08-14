@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { SITE_STATS } from '@/lib/site-stats';
 
 const STORAGE_KEY = 'spacenexus-onboarding';
 const DISMISSED_KEY = 'spacenexus-onboarding-dismissed';
@@ -18,7 +19,7 @@ const STEPS: OnboardingStep[] = [
   {
     id: 'company-profiles',
     title: 'Explore Company Profiles',
-    description: '200+ space companies with SpaceNexus Scores',
+    description: `${SITE_STATS.companies} space companies with SpaceNexus Scores`,
     href: '/company-profiles',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

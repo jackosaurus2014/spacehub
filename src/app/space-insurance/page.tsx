@@ -26,6 +26,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import { sanitizeCommentary } from '@/lib/sanitize';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataAsOf from '@/components/ui/DataAsOf';
 
 // ────────────────────────────────────────
 // Types
@@ -925,6 +926,10 @@ function InsuranceContent() {
               ))}
             </div></ScrollReveal>
 
+            {(activeTab === 'types' || activeTab === 'calculator' || activeTab === 'statistics') && (
+              <DataAsOf date="February 2026" className="mb-4" />
+            )}
+
             {/* ──────────── MARKET OVERVIEW TAB ──────────── */}
             {activeTab === 'market' && (
               <div className="space-y-6">
@@ -1316,7 +1321,7 @@ function InsuranceContent() {
                       <span className="text-2xl">📊</span>
                       <div>
                         <h3 className="text-lg font-semibold text-white">Key Market Statistics</h3>
-                        <p className="text-slate-400 text-sm">Global space insurance market metrics and trends (2025 estimates)</p>
+                        <p className="text-slate-400 text-sm">Global space insurance market metrics and trends (2025, latest available)</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { SITE_STATS } from '@/lib/site-stats';
 
 interface InlineToolCTAProps {
   toolName: string;
@@ -51,7 +52,7 @@ export const TOOL_CTA_MAP: Record<string, InlineToolCTAProps> = {
   'constellation': { toolName: 'Constellation Designer', toolPath: '/constellation-designer', description: 'Design Walker patterns, visualize coverage, and export orbital elements.', icon: '🛸' },
   'space weather': { toolName: 'Space Weather Dashboard', toolPath: '/space-weather', description: 'Monitor solar flares, Kp index, CMEs, and aurora forecasts.', icon: '☀️' },
   'launch schedule': { toolName: 'Mission Control', toolPath: '/mission-control', description: 'Live launch countdowns and mission status for every orbital launch.', icon: '🚀' },
-  'company profiles': { toolName: 'Company Profiles', toolPath: '/company-profiles', description: 'Browse 200+ space company profiles with funding data and SpaceNexus Score.', icon: '🏢' },
+  'company profiles': { toolName: 'Company Profiles', toolPath: '/company-profiles', description: `Browse ${SITE_STATS.companies} space company profiles with funding data and SpaceNexus Score.`, icon: '🏢' },
   'space tycoon': { toolName: 'Space Tycoon Game', toolPath: '/space-tycoon', description: 'Build your space empire — research, launch, mine, and expand across the solar system.', icon: '🎮' },
   'power budget': { toolName: 'Power Budget Calculator', toolPath: '/power-budget-calculator', description: 'Size solar arrays and batteries for your spacecraft.', icon: '⚡' },
   'space mining': { toolName: 'Space Mining Intelligence', toolPath: '/space-mining', description: 'Track asteroid mining companies, lunar resources, and ISRU technology.', icon: '⛏️' },

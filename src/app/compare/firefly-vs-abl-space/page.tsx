@@ -9,6 +9,7 @@ const COMPARISON_DATA = [
   { metric: 'Founder / CEO', a: 'Tom Markusic (founder); CEO: Jason Kim (since Oct 2024)', b: 'Harry O\'Hanley & Dan Piemont' },
   { metric: 'Headquarters', a: 'Cedar Park, TX', b: 'Long Beach, CA (formerly El Segundo)' },
   { metric: 'Employees', a: '~900+', b: '~200 (est., significantly reduced)' },
+  { metric: 'Publicly Traded', a: 'Yes (Nasdaq: FLY)', b: 'No (private, as Long Wall)' },
   { metric: 'Total Funding', a: '~$589M+ (including Northrop Grumman investment)', b: '~$420M+ (incl. Lockheed Martin Ventures investment)' },
   { metric: 'Key Investor / Partner', a: 'Northrop Grumman (strategic investor)', b: 'Lockheed Martin (major customer + equity via LM Ventures)' },
   { metric: 'Primary Vehicle', a: 'Alpha (LEO small launcher)', b: 'RS1 (LEO small launcher)' },
@@ -140,7 +141,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Firefly Alpha and ABL RS1 — development progress, government contracts, and the harsh economics of small launch.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-26', dateModified: '2026-03-26',
+        datePublished: '2026-03-26', dateModified: '2026-08-13',
         url: 'https://spacenexus.us/compare/firefly-vs-abl-space',
       }).replace(/</g, '\\u003c') }} />
 
