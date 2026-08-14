@@ -105,6 +105,57 @@ export const BG_ASSETS = {
   starfield: `${BASE}/bg-starfield.webp`,
 };
 
+// ─── EVENT ILLUSTRATION ASSETS (4X Wave W2) ─────────────────────────────────
+// docs/4X_BASELINE_2026-08.md Part 3.3 "Event illustrations" gap +
+// cinematic-moments.ts's documented art gap. 16:9 mission-imagery-style
+// illustrations, one per narrative chain (src/lib/game/narrative-events.ts
+// chain ids). Only the first 12 chain-heads got an art pass in W2 — this map
+// is intentionally partial. Consumers MUST fall back to PLANET_ASSETS/
+// BG_ASSETS biome art (see cinematic-moments.ts pickNarrativeArt) when a
+// chainId has no entry here, so future chains never render broken art.
+export const EVENT_ART: Record<string, string> = {
+  space_weather_ladder: `${BASE}/event-space_weather_ladder.webp`,
+  europa_biosignature: `${BASE}/event-europa_biosignature.webp`,
+  contamination_protocols: `${BASE}/event-contamination_protocols.webp`,
+  iso_flyby: `${BASE}/event-iso_flyby.webp`,
+  accord_council: `${BASE}/event-accord_council.webp`,
+  superconductor_crisis: `${BASE}/event-superconductor_crisis.webp`,
+  industry_shocks: `${BASE}/event-industry_shocks.webp`,
+  crew_health_crisis: `${BASE}/event-crew_health_crisis.webp`,
+  great_silence_recurrence: `${BASE}/event-great_silence_recurrence.webp`,
+  triton_archive_followup: `${BASE}/event-triton_archive_followup.webp`,
+  wanderer1_anomaly: `${BASE}/event-wanderer1_anomaly.webp`,
+  ring_fire_anniversary: `${BASE}/event-ring_fire_anniversary.webp`,
+};
+
+// ─── MISSION PATCH ASSETS (4X Wave W2) ──────────────────────────────────────
+// docs/4X_BASELINE_2026-08.md Part 3.3 "Mission patches/emblems" gap. Flat
+// insignia-style badges, one per flagship science program
+// (src/lib/game/science-missions.ts SCIENCE_PROGRAMS ids). Consumers must
+// treat this as optional (program.icon emoji is the load-bearing fallback —
+// see getMissionPatchAsset below).
+export const MISSION_PATCH_ASSETS: Record<string, string> = {
+  meridian_observatory: `${BASE}/patch-meridian_observatory.webp`,
+  europa_ocean_access: `${BASE}/patch-europa_ocean_access.webp`,
+  enceladus_plume_sampler: `${BASE}/patch-enceladus_plume_sampler.webp`,
+  venus_aerostat: `${BASE}/patch-venus_aerostat.webp`,
+  mars_deep_drill: `${BASE}/patch-mars_deep_drill.webp`,
+  kinetic_deflection_demo: `${BASE}/patch-kinetic_deflection_demo.webp`,
+  iso_interceptor: `${BASE}/patch-iso_interceptor.webp`,
+  restricted_sample_return: `${BASE}/patch-restricted_sample_return.webp`,
+  heliophysics_sentinels: `${BASE}/patch-heliophysics_sentinels.webp`,
+  titan_rotorcraft: `${BASE}/patch-titan_rotorcraft.webp`,
+  gravitational_wave_array: `${BASE}/patch-gravitational_wave_array.webp`,
+  heliopause_probe: `${BASE}/patch-heliopause_probe.webp`,
+};
+
+/** Get a program's mission patch art, or null if none exists yet (graceful
+ *  fallback — callers should render program.icon instead, never a broken
+ *  image). */
+export function getMissionPatchAsset(programId: string): string | null {
+  return MISSION_PATCH_ASSETS[programId] ?? null;
+}
+
 // ─── TEXTURE ASSETS ──────────────────────────────────────────────────────────
 export const TEXTURE_ASSETS = {
   earth: `${BASE}/texture-earth.webp`,

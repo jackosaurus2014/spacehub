@@ -63,11 +63,14 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
       const total = Math.max(1, s.route.arrivalAtMs - s.route.departedAtMs);
       const elapsed = nowMs - s.route.departedAtMs;
       const pct = Math.max(0, Math.min(100, (elapsed / total) * 100));
+      // W14 (cargo logistics): freight runs show their manifest size — a
+      // loaded hauler is a different order than an empty reposition.
+      const cargoUnits = Object.values(s.route.cargo || {}).reduce((a, b) => a + (b || 0), 0);
       items.push({
         id: `ship-transit-${s.instanceId}`,
-        icon: '🚀',
+        icon: cargoUnits > 0 ? '🚚' : '🚀',
         label: s.name,
-        sub: `→ ${toLoc?.name || s.route.to}`,
+        sub: `→ ${toLoc?.name || s.route.to}${cargoUnits > 0 ? ` · 📦 ${cargoUnits}` : ''}`,
         pct,
         etaSeconds: Math.max(0, (s.route.arrivalAtMs - nowMs) / 1000),
         target: { kind: 'location', id: s.route.to },

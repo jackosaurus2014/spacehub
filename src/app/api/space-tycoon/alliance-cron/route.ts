@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { calculateAlliancePowerScore, getAllianceTier } from '@/lib/game/alliance-events';
+import {
+  calculateAlliancePowerScore,
+  getAllianceTier,
+  getAllianceEventCycleNumber,
+  getAllianceEventSchedule,
+  GLOBAL_ALLIANCE_EVENT_BRACKET,
+  type AllianceEventCategory,
+} from '@/lib/game/alliance-events';
 import { getResearchDurationMs } from '@/lib/game/alliance-research';
 import { awardAllianceXP } from '@/lib/game/alliance-xp';
 
@@ -21,6 +28,8 @@ export const dynamic = 'force-dynamic';
  * 6. Research completion checks
  * 7. Expired perk cleanup
  * 8. Expired diplomacy cleanup
+ * 9. Alliance event generation (4X Wave W3 — closes audit C4: sprint/
+ *    challenge/mega_event AllianceEvent rows on a deterministic rotation)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -44,6 +53,8 @@ export async function POST(request: NextRequest) {
       researchCompleted: 0,
       perksExpired: 0,
       diplomacyExpired: 0,
+      allianceEventsCreated: 0,
+      allianceEventsUpdated: 0,
     };
 
     const now = new Date();
@@ -350,6 +361,58 @@ export async function POST(request: NextRequest) {
       stats.diplomacyExpired++;
     }
 
+    // ── 9. Alliance Event Generation (4X Wave W3, closes audit C4) ─────────
+    // docs/4X_BASELINE_2026-08.md defect ledger #8: AllianceEvent rows have
+    // never had a creation path — GET /alliance-events and POST
+    // /alliance-events/contribute have always been able to read/score them,
+    // but nothing ever wrote them. Deterministic per-category rotation
+    // (sprint/challenge/mega_event — see alliance-events.ts
+    // getAllianceEventSchedule), extending this existing 2h cron rather than
+    // adding a new endpoint. Idempotent: re-running only creates/updates rows
+    // whose computed status actually changed.
+    const categories: AllianceEventCategory[] = ['sprint', 'challenge', 'mega_event'];
+    for (const category of categories) {
+      const cycle = getAllianceEventCycleNumber(category, now);
+      const cyclesToEnsure = Array.from(new Set([cycle - 1, cycle, cycle + 1].filter(c => c >= 1)));
+
+      for (const c of cyclesToEnsure) {
+        const { type, startsAt, endsAt } = getAllianceEventSchedule(category, c);
+        const status = endsAt.getTime() <= nowMs
+          ? 'completed'
+          : startsAt.getTime() <= nowMs
+            ? 'active'
+            : 'upcoming';
+
+        // No compound unique key on AllianceEvent (only @@index) — the
+        // (eventType, bracketId, startsAt) triple is unique in practice
+        // because the schedule is deterministic, but this findFirst is a
+        // best-effort idempotency check rather than a DB-enforced guarantee.
+        const existing = await prisma.allianceEvent.findFirst({
+          where: { eventType: type, bracketId: GLOBAL_ALLIANCE_EVENT_BRACKET, startsAt },
+        });
+
+        if (!existing) {
+          await prisma.allianceEvent.create({
+            data: {
+              eventType: type,
+              eventCategory: category,
+              bracketId: GLOBAL_ALLIANCE_EVENT_BRACKET,
+              startsAt,
+              endsAt,
+              status,
+            },
+          });
+          stats.allianceEventsCreated++;
+        } else if (existing.status !== status) {
+          await prisma.allianceEvent.update({ where: { id: existing.id }, data: { status } });
+          stats.allianceEventsUpdated++;
+          if (status === 'completed' && existing.status !== 'completed') {
+            await settleAllianceEventRanks(existing.id);
+          }
+        }
+      }
+    }
+
     logger.info('Alliance cron completed', stats);
     return NextResponse.json({ success: true, ...stats });
   } catch (error) {
@@ -361,6 +424,23 @@ export async function POST(request: NextRequest) {
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
 const WAR_WINNER_XP = 500;
+
+/** Persist final bracketRank on every AllianceEventScore for a just-completed
+ *  event, ordered by perCapitaScore desc (same ordering the GET route
+ *  already uses live for the standings list). Without this, eventHistory's
+ *  reward preview (getEventRewardXP/getEventRewardBonus, keyed on
+ *  bracketRank) would show blank rewards for every event forever — a
+ *  generated-but-worthless "content" row is not actually content. */
+async function settleAllianceEventRanks(eventId: string): Promise<void> {
+  const scores = await prisma.allianceEventScore.findMany({
+    where: { eventId },
+    orderBy: { perCapitaScore: 'desc' },
+    select: { id: true },
+  });
+  for (let i = 0; i < scores.length; i++) {
+    await prisma.allianceEventScore.update({ where: { id: scores[i].id }, data: { bracketRank: i + 1 } });
+  }
+}
 
 function tierToDays(tier: number): number {
   switch (tier) {

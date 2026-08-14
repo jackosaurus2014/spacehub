@@ -140,6 +140,11 @@ const CRON_JOBS: CronJobDef[] = [
   // Market mean reversion — hourly at :30 (audit Wave E / A5-ii: prices drift back
   // toward baseline via calculateIdleDecay; ~6.6h half-life ≈ one game-month)
   { schedule: '30 * * * *',   path: '/api/space-tycoon/market/mean-revert',         label: 'tycoon-market-mean-revert',   maxStaleMinutes: 1440 },
+  // Seasonal-event generation — daily at 6am UTC (4X Wave W3, closes audit C4:
+  // no cron ever instantiated SeasonalEvent rows, so /seasons was a permanently
+  // empty shell). Deterministic ~31-day season calendar — daily polling is far
+  // more than sufficient to keep the current/next/previous rows in sync.
+  { schedule: '0 6 * * *',    path: '/api/space-tycoon/seasons/cron',              label: 'tycoon-seasons-cron',          maxStaleMinutes: 2880 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

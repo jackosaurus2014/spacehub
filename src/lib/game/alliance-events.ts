@@ -505,3 +505,72 @@ export function getStreakBonus(streak: number): { revenueBonus: number; label: s
   if (streak >= 3) return { revenueBonus: 0.02, label: '3-day streak' };
   return { revenueBonus: 0, label: null };
 }
+
+// ─── Event Generation Schedule (4X Wave W3 — closes audit C4) ──────────────
+// docs/4X_BASELINE_2026-08.md defect ledger #8 covers both SeasonalEvent AND
+// AllianceEvent: neither table has ever had a creation path. GET
+// /alliance-events and POST /alliance-events/contribute have always been
+// able to read/score AllianceEvent rows — nothing ever wrote them. This
+// section is the pure, DB-free half of the fix, mirroring
+// seasonal-events.ts's getSeasonSchedule/getCurrentSeasonNumber pattern:
+// a deterministic per-category calendar so "what event is live right now"
+// is a function of the clock alone, and /api/space-tycoon/alliance-cron
+// (already scheduled every 2h, already CSRF-exempt — see middleware.ts's
+// cron allowlist and the market/mean-revert precedent) can upsert rows
+// idempotently without remembering any rotation state.
+//
+// Durations/cadences match the section header comments already on each
+// category's block above: sprints "5 days, weekly rotation" (7-day period),
+// challenges "7 days, bi-weekly rotation" (14-day period), mega-events
+// "14 days, monthly" (30-day period).
+
+const ALLIANCE_DAY_MS = 24 * 60 * 60 * 1000;
+
+const SPRINT_TYPES: AllianceEventType[] = ['asteroid_rush', 'launch_blitz', 'research_sprint', 'builders_rally', 'trade_volume'];
+const CHALLENGE_TYPES: AllianceEventType[] = ['colony_expedition', 'fleet_mobilization', 'contract_sweep'];
+const MEGA_TYPES: AllianceEventType[] = ['galactic_gold_rush', 'sector_dominance'];
+
+interface CategorySchedule {
+  types: AllianceEventType[];
+  /** Full cycle length in days (active duration + cooldown gap to the next
+   *  cycle's start). */
+  periodDays: number;
+  /** Fixed epoch (UTC ms) cycle 1 starts at — same anchor date as
+   *  seasonal-events.ts's SEASON_CYCLE_ANCHOR_MS for consistency, though the
+   *  two calendars are otherwise independent. */
+  anchorMs: number;
+}
+
+const CATEGORY_SCHEDULES: Record<AllianceEventCategory, CategorySchedule> = {
+  sprint: { types: SPRINT_TYPES, periodDays: 7, anchorMs: Date.UTC(2026, 0, 5) },
+  challenge: { types: CHALLENGE_TYPES, periodDays: 14, anchorMs: Date.UTC(2026, 0, 5) },
+  mega_event: { types: MEGA_TYPES, periodDays: 30, anchorMs: Date.UTC(2026, 0, 5) },
+};
+
+/** Single global competitive pool until alliance-vs-alliance bracket
+ *  matchmaking lands (a future wave — out of this wave's scope). Every
+ *  alliance currently competes in one shared bracket per event. */
+export const GLOBAL_ALLIANCE_EVENT_BRACKET = 'global';
+
+/** Which cycle number is current/upcoming for a category, given the fixed
+ *  anchor+period. Pure and deterministic — "what event is live right now"
+ *  never depends on the cron having run recently. */
+export function getAllianceEventCycleNumber(category: AllianceEventCategory, now: Date = new Date()): number {
+  const sched = CATEGORY_SCHEDULES[category];
+  const elapsedDays = (now.getTime() - sched.anchorMs) / ALLIANCE_DAY_MS;
+  return Math.max(1, Math.floor(elapsedDays / sched.periodDays) + 1);
+}
+
+/** Deterministic schedule for a given category + 1-indexed cycle number. */
+export function getAllianceEventSchedule(
+  category: AllianceEventCategory,
+  cycleNumber: number,
+): { type: AllianceEventType; startsAt: Date; endsAt: Date } {
+  const sched = CATEGORY_SCHEDULES[category];
+  const n = Math.max(1, Math.floor(cycleNumber));
+  const type = sched.types[(n - 1) % sched.types.length];
+  const def = ALLIANCE_EVENT_MAP.get(type)!;
+  const startsAt = new Date(sched.anchorMs + (n - 1) * sched.periodDays * ALLIANCE_DAY_MS);
+  const endsAt = new Date(startsAt.getTime() + def.durationDays * ALLIANCE_DAY_MS);
+  return { type, startsAt, endsAt };
+}

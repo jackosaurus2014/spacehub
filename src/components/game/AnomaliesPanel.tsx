@@ -218,8 +218,8 @@ function ManualTab({ state, setState }: { state: GameState; setState: Props['set
   return (
     <div className="card p-4 space-y-3">
       <p className="text-slate-400 text-xs leading-relaxed">
-        Simulate a survey discovery at one of your unlocked locations. Useful for testing until survey-probe
-        expeditions are wired to this system automatically.
+        Survey probes now roll anomalies automatically on expedition completion. This manual roll is a
+        testing shortcut — a quick way to preview the claim-stake flow without waiting on a real survey.
       </p>
       <div className="flex flex-wrap gap-1.5">
         {unlocked.map(locId => (

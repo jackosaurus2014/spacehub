@@ -82,9 +82,9 @@ function driveChain(chainId: string, start: GameState, startMonth: number, maxMo
 }
 
 describe('narrative-events: content shape', () => {
-  test('44 events across 12 chains (docs/4X_BASELINE_2026-08.md Part 2c)', () => {
-    expect(CHAIN_DEFINITIONS.length).toBe(12);
-    expect(TOTAL_NARRATIVE_EVENT_COUNT).toBe(44);
+  test('44 events across 12 chains from Wave W4 (docs/4X_BASELINE_2026-08.md Part 2c), +1 chain/+1 event from Wave W13 board politics', () => {
+    expect(CHAIN_DEFINITIONS.length).toBe(13);
+    expect(TOTAL_NARRATIVE_EVENT_COUNT).toBe(45);
   });
 
   test('every chain id is unique and present in CHAIN_MAP', () => {

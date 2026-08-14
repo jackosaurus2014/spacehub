@@ -46,6 +46,11 @@ import type { GameState, GameEvent } from './types';
 import { generateId, mulberry32, hashStringToSeed } from './formulas';
 import { shiftReputation, type FactionId } from './factions';
 import { addReputationPoints } from './reputation';
+// 4X Wave W13 (Corporate Doctrine & Board Politics, docs/4X_BASELINE_2026-08.md
+// §1.7): "low approval triggers demands via the existing event/choice
+// channel" — BOARD_POLITICS_DEMAND below is that channel. Read-only use of
+// corporate-doctrine.ts's pure approval selector; no state written there.
+import { getConstituencyApprovals } from './corporate-doctrine';
 
 // ─── Schema ───────────────────────────────────────────────────────────────
 
@@ -827,6 +832,33 @@ const RING_FIRE_ANNIVERSARY: ChainDefinition = {
   ],
 };
 
+// 4X Wave W13 (Corporate Doctrine & Board Politics): the "existing
+// event/choice channel" §1.7 asks low constituency approval to route
+// through. Recurring (cooldown 6 months — a bloc can rise up again after
+// things settle) rather than one-shot like most campaign chains, since
+// board politics is an ongoing pressure, not a single arc.
+const BOARD_POLITICS_DEMAND: ChainDefinition = {
+  id: 'board_politics_demand',
+  name: 'Constituency Demands',
+  cadence: 'campaign',
+  recurring: true,
+  cooldownMonthsAfterCompletion: 6,
+  startProbabilityPerMonth: 0.15,
+  eligibility: (state) => getConstituencyApprovals(state).some(a => a.approval < 35),
+  stages: [
+    {
+      id: 'bp_45', name: 'Constituency Demands', icon: '📢', kind: 'choice',
+      description: 'Approval has fallen sharply within one of your workforce constituencies. Their representatives are asking for a hearing.',
+      choices: [
+        { label: 'Grant concessions', description: 'Fund a relief package — wage top-ups, safety spend, whatever it takes.',
+          consequence: { label: 'Concessions Granted', moneyCost: 50_000_000, moraleDelta: 0.05 } },
+        { label: 'Hold the line', description: 'No concessions. The board backs cost discipline — the workforce notices.',
+          consequence: { label: 'Held the Line', moraleDelta: -0.05, costMultiplier: 1.02, effectDurationMonths: 2 } },
+      ],
+    },
+  ],
+};
+
 export const CHAIN_DEFINITIONS: ChainDefinition[] = [
   SPACE_WEATHER_LADDER,
   EUROPA_BIOSIGNATURE_ARC,
@@ -840,11 +872,15 @@ export const CHAIN_DEFINITIONS: ChainDefinition[] = [
   TRITON_ARCHIVE_FOLLOWUP,
   WANDERER1_ANOMALY,
   RING_FIRE_ANNIVERSARY,
+  BOARD_POLITICS_DEMAND,
 ];
 
 export const CHAIN_MAP = new Map(CHAIN_DEFINITIONS.map(c => [c.id, c]));
 
-/** Total authored event count — 44 per docs/4X_BASELINE_2026-08.md Part 2c. */
+/** Total authored event count — 44 per docs/4X_BASELINE_2026-08.md Part 2c
+ *  (Wave W4's original deliverable), +1 from Wave W13's board_politics_demand
+ *  chain (docs/4X_BASELINE_2026-08.md §1.7's "existing event/choice channel"
+ *  for low constituency approval). */
 export const TOTAL_NARRATIVE_EVENT_COUNT = CHAIN_DEFINITIONS.reduce((sum, c) => sum + c.stages.length, 0);
 
 /** 4X Wave W5: does this chain stage carry the cinematic presentation hint?

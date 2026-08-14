@@ -14,6 +14,7 @@ import { getGlobalGameDate, GAME_START_YEAR } from './server-time';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
 import { advanceNarrativeChains } from './narrative-events';
+import { advanceAccordSenate } from './accord-senate';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
@@ -60,8 +61,19 @@ import { getTotalSubsidiaryIncome, getSubsidiaryServiceBonus } from './subsidiar
 import { getGovernorBenefits, getStakeholderServiceBonus, getMultiZonePenalty, LOCATION_TO_ZONE } from './zone-influence';
 import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses } from './server-effects';
 import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './modules';
+// 4X Wave W14 (cargo-logistics.ts, audit C1): per-location inventory routing
+// — production at a remote location accrues into that location's local
+// stockpile once logistics is unlocked; arriving freight credits its
+// destination. The credit half of the dup-proof debit/credit pair (the debit
+// lives in dispatchShipWithCargo).
+import { routeProductionCredit, creditArrivalCargo, hasFreightCapability } from './cargo-logistics';
 import { updateCrewWellbeing, getTotalCrew, getCrewCapacity } from './workforce';
 import type { ServiceType } from './types';
+// 4X Wave W13 (Corporate Doctrine & Board Politics, docs/4X_BASELINE_2026-08.md
+// §1.7): doctrineBonuses is consumed at the SAME sites resBonuses/
+// commanderBonuses already are (revenue/build/research/hazard/payroll);
+// constituency approval feeds updateCrewWellbeing as one additive input.
+import { getDoctrineBonuses, getConstituencyApprovals, getConstituencyMoraleModifier } from './corporate-doctrine';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -127,6 +139,12 @@ export function processTick(state: GameState): GameState {
   const corpTier = state.corporationTier || 1;
   const tierBonuses = getTierBonuses(corpTier);
 
+  // W13 (Corporate Doctrine & Board Politics): active policy stances turned
+  // into the same small additive/multiplicative terms resBonuses/
+  // commanderBonuses already contribute at the revenue/build/research/
+  // hazard/payroll sites below.
+  const doctrineBonuses = getDoctrineBonuses(state.corporateDoctrine);
+
   // Get megastructure bonuses
   const megaBonuses = getMegastructureBonuses(state.megastructures || []);
 
@@ -174,7 +192,9 @@ export function processTick(state: GameState): GameState {
   };
 
   // ─── 0. Workforce payroll (fractional per tick) ──────────────────
-  const payroll = Math.round(getMonthlyPayroll(workforce) * fraction);
+  // W13: compensation-philosophy policy multiplies payroll (Generous ×1.15 /
+  // Lean ×0.90 / neutral ×1.0).
+  const payroll = Math.round(getMonthlyPayroll(workforce) * fraction * doctrineBonuses.payrollMultiplier);
   if (payroll > 0) {
     money -= payroll;
     totalSpent += payroll;
@@ -269,6 +289,7 @@ export function processTick(state: GameState): GameState {
       * (megaBonuses.revenueMultiplier || 1)
       * repBonuses.revenueMultiplier
       * commanderBonuses.revenueMultiplier
+      * doctrineBonuses.revenueMultiplier  // W13: disclosure policy (Open Science -3% / Proprietary +3%)
       * powerRatio
       * (1 + stationBonus)
       * saturationMult
@@ -359,7 +380,7 @@ export function processTick(state: GameState): GameState {
       * victoryBonuses.buildSpeedMultiplier
       * (1 + allianceB.buildSpeedBonus)
     );
-    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier * waveBBuildSpeedMult * DEV_FAST_MULTIPLIER);
+    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier * doctrineBonuses.buildSpeedMultiplier * waveBBuildSpeedMult * DEV_FAST_MULTIPLIER);
     if (elapsed >= effectiveDuration) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
@@ -416,7 +437,7 @@ export function processTick(state: GameState): GameState {
     // ("Radio Science Windfall", "Fusion Ignition Milestone"...) ride the
     // same expiring activeEffects list random events use, aggregated by
     // getActiveMultipliers into `multipliers.researchSpeedMultiplier`.
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completeResearchDef(activeResearch.definitionId);
@@ -441,7 +462,7 @@ export function processTick(state: GameState): GameState {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
     const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus)); // audit Wave B (same pack as queue 1)
-    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
       completeResearchDef(activeResearch2.definitionId);
@@ -498,6 +519,12 @@ export function processTick(state: GameState): GameState {
 
   // ─── 6. Resource production (fractional per tick, with bonuses) ───
   const resources = { ...(state.resources || {}) };
+  // W14 (cargo-logistics.ts): shallow copy of the per-location stockpile map;
+  // routeProductionCredit copy-on-writes the nested per-location objects.
+  // While the grace ratchet (logisticsUnlocked) is false, every credit still
+  // lands in the global pool — pre-W14 behavior exactly.
+  const locationInventories: Record<string, Record<string, number>> = { ...(state.locationInventories || {}) };
+  const routeLocally = state.logisticsUnlocked === true;
   // Audit Wave B: + specialization mining_output (§1b), victory mining
   // bonus (§1b), alliance miningBonus (A2), and timed 'mining' boosts from
   // mini-activities (§1c — mining_boost was silently dropped before).
@@ -534,16 +561,20 @@ export function processTick(state: GameState): GameState {
       const locationBonus = miningBonuses
         .filter(b => b.locationId === svc.locationId && b.resourceId === resource && b.expiresAtMonth > currentTotalMonths)
         .reduce((sum, b) => sum + b.bonusPct / 100, 0);
-      // Accumulate fractional amounts — only add whole units
+      // Accumulate fractional amounts — only add whole units.
+      // W14: credit routes by the PRODUCING location — mining at Ceres fills
+      // Ceres storage (local stockpile) once logistics is unlocked; home-
+      // cluster and pre-ratchet production still credit the global pool.
+      // Mined-flow market pressure stays global either way (supply is supply).
       const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus) * (1 + locationBonus);
       if (fractionalAmount >= 1) {
         const added = Math.round(fractionalAmount);
-        resources[resource] = (resources[resource] || 0) + added;
+        routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
         minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
       } else if (isMonthEnd) {
         // On month boundary, add at least the monthly total
         const added = Math.round(amountPerMonth * miningMult * (1 + freighterBonus) * (1 + locationBonus));
-        resources[resource] = (resources[resource] || 0) + added;
+        routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
         minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
       }
     }
@@ -556,6 +587,9 @@ export function processTick(state: GameState): GameState {
     totalEarned += passiveInc;
     monthlyRevenue += passiveInc;
   }
+  // W14 note: megastructure passive resources deliberately stay in the
+  // global pool — they're corporate-scale infrastructure output delivered to
+  // HQ, not site production at a mappable location.
   if (megaBonuses.passiveResources) {
     for (const [resId, amt] of Object.entries(megaBonuses.passiveResources)) {
       if (!amt || amt <= 0) continue;
@@ -702,10 +736,17 @@ export function processTick(state: GameState): GameState {
     const oneGameMonthMs = 6 * 60 * 60 * 1000;
     const recentHazardCount = (state.recentHazards || []).filter(h => now - h.occurredAtMs < oneGameMonthMs).length;
     const prevMorale = state.workforce.morale ?? 1.0;
+    // W13: board politics feeds the writer as one additive input, per
+    // docs/4X_BASELINE_2026-08.md §1.7 ("constituencies... whose approval
+    // feeds the existing morale writer instead of a new stat"). Approval is
+    // recomputed here (pure, never persisted) from current doctrine + state.
+    const constituencyApprovals = getConstituencyApprovals(state, now);
+    const constituencyMoraleDelta = getConstituencyMoraleModifier(constituencyApprovals);
     workforceOut = updateCrewWellbeing(state.workforce, {
       utilization,
       recentHazardCount,
       cashNegative: money < 0,
+      constituencyMoraleDelta,
     });
     // W1 (research effect-authoring pass, 4X_BASELINE_2026-08.md Part 2a):
     // crewMoraleBonus is an additive post-hoc adjustment on top of the pure
@@ -716,8 +757,10 @@ export function processTick(state: GameState): GameState {
     // additive term from an assigned commander's traits (Radiation
     // Physiologist / Union Favorite / Workaholic...) — same site, same cap
     // philosophy, no new engine wiring.
-    if (resBonuses.crewMoraleBonus > 0 || commanderBonuses.crewMoraleBonus !== 0) {
-      workforceOut = { ...workforceOut, morale: Math.min(1, Math.max(0, (workforceOut.morale ?? 1.0) + resBonuses.crewMoraleBonus + commanderBonuses.crewMoraleBonus)) };
+    // W13: doctrineBonuses.crewMoraleBonus (compensation policy) joins the
+    // same additive stack.
+    if (resBonuses.crewMoraleBonus > 0 || commanderBonuses.crewMoraleBonus !== 0 || doctrineBonuses.crewMoraleBonus !== 0) {
+      workforceOut = { ...workforceOut, morale: Math.min(1, Math.max(0, (workforceOut.morale ?? 1.0) + resBonuses.crewMoraleBonus + commanderBonuses.crewMoraleBonus + doctrineBonuses.crewMoraleBonus)) };
     }
     // Surface meaningful morale drops so the stat is discoverable/manageable
     if ((workforceOut.morale ?? 1.0) <= prevMorale - 0.05) {
@@ -772,6 +815,14 @@ export function processTick(state: GameState): GameState {
     // player's stockpile ✓.
     const decayed = applyResourceDecay(resources);
     for (const k of Object.keys(decayed)) resources[k] = decayed[k];
+    // W14: remote stockpiles decay by the same rules — otherwise freighting
+    // volatiles OUT of Earth would become a decay-proof hoarding exploit.
+    for (const locId of Object.keys(locationInventories)) {
+      const locDecayed = applyResourceDecay(locationInventories[locId]);
+      if (Object.keys(locDecayed).length > 0) {
+        locationInventories[locId] = { ...locationInventories[locId], ...locDecayed };
+      }
+    }
 
     // (D-3) Hazard auto-repair — the audit A4 "repair-cost money sink".
     // Damaged buildings repair 10 damage-points per month at 30% of
@@ -890,6 +941,21 @@ export function processTick(state: GameState): GameState {
       if (resId === 'platinum_group') dm.platinum_group_mined += mined;
     }
   }
+  // W14: production that accrued into remote local stockpiles this tick is
+  // mined output too — the daily-metric diff must not lose it just because
+  // it no longer lands in the global pool.
+  for (const [locId, inv] of Object.entries(locationInventories)) {
+    const prevInv = (state.locationInventories || {})[locId] || {};
+    for (const [resId, qty] of Object.entries(inv)) {
+      const mined = qty - (prevInv[resId] || 0);
+      if (mined > 0) {
+        dm.units_mined += mined;
+        if (resId === 'iron') dm.iron_mined += mined;
+        if (resId === 'titanium') dm.titanium_mined += mined;
+        if (resId === 'platinum_group') dm.platinum_group_mined += mined;
+      }
+    }
+  }
 
   let out: GameState = {
     ...state,
@@ -906,6 +972,7 @@ export function processTick(state: GameState): GameState {
     doctrineChoices,                // W3 (4X Op4)
     activeServices,
     resources,
+    locationInventories,            // W14 (cargo-logistics per-location inventory)
     activeEffects,
     activeMarketEvents,
     activeBoosts: cleanedBoosts,
@@ -953,6 +1020,27 @@ export function processTick(state: GameState): GameState {
     }
   } catch { /* narrative chains non-critical — never block the tick */ }
 
+  // ─── Accord Council Senate (4X Wave W11, accord-senate.ts) ──────────────
+  // docs/4X_BASELINE_2026-08.md W11: the quarterly vote engine. Independent
+  // of the narrative chains above (no pendingChoice slot contention — the
+  // senate is a passive docket/lobbying panel, never a blocking modal) and
+  // of hazards below. Publishes a new docket at each quarter boundary and
+  // resolves the previous one, applying pass/fail measure effects via
+  // narrative-events.ts's applyChainConsequence (same wired hooks: money,
+  // faction rep, activeEffects multipliers, hazard mitigation, morale).
+  try {
+    if (isMonthEnd) {
+      const monthIndex = globalDate.totalMonths;
+      const senateResult = advanceAccordSenate(out, monthIndex);
+      out = {
+        ...senateResult.state,
+        eventLog: senateResult.events.length > 0
+          ? [...senateResult.events, ...senateResult.state.eventLog].slice(0, MAX_EVENT_LOG)
+          : senateResult.state.eventLog,
+      };
+    }
+  } catch { /* accord senate non-critical — never block the tick */ }
+
   // Hazards v2 (audit Wave D / Change #4 "hazards hurt, insurance pays"):
   // roll once per game-month, seeded per (world month, location, type) —
   // deterministic, shared weather, no save-scumming. Severe events can
@@ -976,7 +1064,10 @@ export function processTick(state: GameState): GameState {
     // W8 (Leaders 2.0): commanderBonuses.hazardResistanceBonus (Risk Officer
     // / Flight Director traits, or a Risk Taker quirk's negative) stacks
     // with the research bonus at the same site, same 0-0.9 safety floor.
-    const totalHazardResist = Math.max(0, Math.min(0.9, resBonuses.hazardResistanceBonus + commanderBonuses.hazardResistanceBonus));
+    // W13: operations-doctrine policy joins the stack (Safety Culture +0.10 /
+    // Aggressive Schedule -0.10) — can cancel out other resist sources but
+    // (per the Math.max(0, ...) floor) never pushes damage above the roll.
+    const totalHazardResist = Math.max(0, Math.min(0.9, resBonuses.hazardResistanceBonus + commanderBonuses.hazardResistanceBonus + doctrineBonuses.hazardResistanceBonus));
     if (totalHazardResist > 0) {
       hazards = hazards.map(h => ({ ...h, damagePct: Math.max(0, h.damagePct * (1 - totalHazardResist)) }));
     }
@@ -1287,6 +1378,12 @@ export function processFullTick(state: GameState): GameState {
       const now = Date.now();
       const shipFraction = 1 / TICKS_PER_GAME_MONTH; // Same fractional rate as revenue
       const resources = { ...(newState.resources || {}) };
+      // W14 (cargo-logistics): per-location stockpiles for ship-mining
+      // accrual + freight arrival credits. Same copy-on-write pattern as
+      // processTick's production block.
+      const shipLocationInventories: Record<string, Record<string, number>> = { ...(newState.locationInventories || {}) };
+      const shipRouteLocally = newState.logisticsUnlocked === true;
+      let cargoDeliveredUnits = 0;
       let shipMoney = newState.money;
       let shipTotalSpent = newState.totalSpent;
       const wfBonuses = getWorkforceBonuses(newState.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
@@ -1381,7 +1478,14 @@ export function processFullTick(state: GameState): GameState {
             const hullDamageFactor = Math.max(0.25, 1 - 0.75 * (ship.hullDamagePct || 0));
             const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * hullDamageFactor * shipFraction);
             if (mined >= 1) {
-              resources[resId] = (resources[resId] || 0) + mined;
+              // W14: ship-mined output accrues at the MINING location's
+              // stockpile once logistics is unlocked (Ceres ore fills Ceres
+              // storage); grace/home routing matches building production.
+              routeProductionCredit(
+                resources, shipLocationInventories,
+                ship.miningOperation.locationId || ship.currentLocation,
+                resId, mined, shipRouteLocally,
+              );
               // Audit Wave E (A5-i): mined units → shared-market pressure.
               shipMinedFlows[resId] = (shipMinedFlows[resId] || 0) + mined;
             }
@@ -1389,12 +1493,16 @@ export function processFullTick(state: GameState): GameState {
         }
 
         // Transit arrival
-        // SECURITY (audit hotlist #5): the old code credited route.cargo into
-        // the resource pool on arrival, but NOTHING ever deducts cargo at
-        // departure — a duplication exploit the moment any UI passes cargo.
-        // Arrival credit is disabled until real cargo logistics (audit C1:
-        // deduct-at-departure, capacity + fuel costs) ships. Both current
-        // dispatch call sites pass empty cargo, so this is behavior-neutral.
+        // SECURITY (audit hotlist #5 → resolved by W14): arrival credit was
+        // disabled in wave A because nothing debited cargo at departure — a
+        // duplication landmine. Real cargo logistics now exists: the ONLY
+        // path that puts cargo on a route is cargo-logistics.ts
+        // dispatchShipWithCargo, which debits the origin inventory and the
+        // Δv-priced fuel bill atomically at departure. The matching credit
+        // below fires exactly once — route.cargo is the sole carrier of the
+        // goods, and the same map-return that credits it also clears the
+        // route, so a second tick can never re-credit (dup-proof
+        // debit/credit ledger pair).
         if (ship.status === 'in_transit' && ship.route) {
           // Audit Wave B (§1b Modules + Specializations fleet_speed, §1c
           // workforce shipEfficiency): transit-speed multipliers shorten the
@@ -1417,16 +1525,43 @@ export function processFullTick(state: GameState): GameState {
           const plannedDuration = Math.max(0, ship.route.arrivalAtMs - ship.route.departedAtMs);
           const effectiveArrivalAtMs = ship.route.departedAtMs + plannedDuration / transitSpeedMult;
           if (now >= effectiveArrivalAtMs) {
+            // W14: deliver the manifest into the DESTINATION inventory
+            // (home cluster → global pool; anywhere else → local stockpile).
+            const delivered = creditArrivalCargo(
+              resources, shipLocationInventories, ship.route.to, ship.route.cargo || {},
+            );
+            if (delivered > 0) {
+              cargoDeliveredUnits += delivered;
+              const destName = LOCATION_MAP.get(ship.route.to)?.name || ship.route.to;
+              shipEvents.push({
+                id: generateId(), date: newState.gameDate, type: 'milestone',
+                title: `📦 Cargo delivered: ${ship.name}`,
+                description: `${delivered} units unloaded at ${destName}.`,
+              });
+            }
             return { ...ship, status: 'idle' as const, currentLocation: ship.route.to, route: undefined };
           }
         }
 
-        // Survey expedition completion — probe is consumed, discovery applied
+        // Survey expedition completion — probe is consumed, discovery applied.
+        // 4X Wave W3 (docs/4X_BASELINE_2026-08.md): one deterministic roll
+        // (seeded off ship + location + expedition start — mulberry32, no
+        // Math.random) now drives BOTH content tables that used to be two
+        // separate, unmerged systems: the guaranteed location-flavored find
+        // (unchanged behavior, moved from ships.ts) and a claimable anomaly
+        // (unchanged 30% kind-weighted gate — previously only reachable via
+        // the AnomaliesPanel "Dev tools" manual-roll button, now a real
+        // outcome of survey expeditions).
         if (ship.isBuilt && ship.status === 'surveying' && ship.surveyExpedition) {
           const elapsed = (now - ship.surveyExpedition.startedAtMs) / 1000;
           if (elapsed >= ship.surveyExpedition.durationSeconds) {
-            const { rollSurveyDiscovery } = require('./ships');
-            const discovery = rollSurveyDiscovery(ship.surveyExpedition.targetLocation);
+            const { rollDiscovery, recordDiscovery } = require('./exploration');
+            const { survey: discovery, anomaly } = rollDiscovery(
+              ship.surveyExpedition.targetLocation,
+              ship.instanceId,
+              ship.surveyExpedition.startedAtMs,
+              now,
+            );
             if (discovery) {
               // Apply discovery rewards
               if (discovery.rewards.money) {
@@ -1469,6 +1604,19 @@ export function processFullTick(state: GameState): GameState {
                 newState = { ...newState, miningBonuses };
               }
             }
+            if (anomaly) {
+              // Adds to the Discoveries tab's unclaimed list; the player
+              // stakes a claim there within 30 days (exploration.ts
+              // stakeClaim) to lock in the reward.
+              newState = recordDiscovery(newState, anomaly);
+              shipEvents.push({
+                id: generateId(),
+                date: newState.gameDate,
+                type: 'random_event',
+                title: `🔭 Anomaly Detected: ${anomaly.title}`,
+                description: `${anomaly.summary} Stake a claim within 30 days from the Discoveries tab to lock in the reward.`,
+              });
+            }
             // Probe is consumed after expedition
             shipsToRemove.push(ship.instanceId);
             return ship; // Will be filtered out below
@@ -1487,6 +1635,13 @@ export function processFullTick(state: GameState): GameState {
         ...newState,
         ships: finalShips,
         resources,
+        locationInventories: shipLocationInventories,  // W14
+        // W14: freight deliveries feed the existing cargo_delivered daily
+        // metric (defined since the metrics system shipped, fed by nothing
+        // until now).
+        dailyMetrics: newState.dailyMetrics && cargoDeliveredUnits > 0
+          ? { ...newState.dailyMetrics, cargo_delivered: newState.dailyMetrics.cargo_delivered + cargoDeliveredUnits }
+          : newState.dailyMetrics,
         // Audit Wave E (A5-i): ship-mined units join the pending flows.
         pendingMarketFlows: accumulateMinedFlows(newState.pendingMarketFlows, shipMinedFlows),
         money: shipMoney,
@@ -1501,6 +1656,26 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Ship processing error (non-fatal):', err);
+  }
+
+  // 6a-bis. W14 grace ratchet: the first time the corporation owns a BUILT
+  // transport/tanker hull, local production accrual switches on — one-way,
+  // persisted, announced. Until then production credits the global pool
+  // exactly as before W14 (the migration grace default).
+  try {
+    if (!newState.logisticsUnlocked && hasFreightCapability(newState)) {
+      newState = {
+        ...newState,
+        logisticsUnlocked: true,
+        eventLog: [{
+          id: generateId(), date: newState.gameDate, type: 'milestone' as const,
+          title: '🚚 Logistics network online',
+          description: 'Your first freight hull is in service. From now on, production at remote locations accrues into LOCAL stockpiles (see the map location panel) — dispatch cargo ships to haul goods to Earth, where the market clears. Freight burns fuel priced by route Δv.',
+        }, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+      };
+    }
+  } catch (err) {
+    console.error('Logistics ratchet error (non-fatal):', err);
   }
 
   // 6b. Interstellar expeditions, colonies, and trade routes (Wave 10).

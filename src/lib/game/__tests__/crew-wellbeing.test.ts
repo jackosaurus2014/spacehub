@@ -159,6 +159,22 @@ describe('engine wiring — monthly wellbeing pass', () => {
     expect(out.workforce!.morale!).toBeLessThan(1.0);
   });
 
+  it('W13: corporate-doctrine constituency approval feeds morale at month end (board politics, no direct engine wiring change to the causes above)', () => {
+    const workforce = {
+      engineers: 4, scientists: 0, miners: 0, operators: 0,
+      morale: 1.0, fatigue: 0, trainingLevel: 0.5, trainingBudgetPerCrew: 0,
+    };
+    const neutral = processTick(monthEndState({ workforce: { ...workforce } }));
+    // Aggressive Schedule + Lean Compensation both hurt Orbital Engineers'
+    // Union approval (corporate-doctrine.ts POLICY_PREFERENCE), which should
+    // pull morale below the neutral-doctrine run given the same crew/hazards.
+    const withBadDoctrine = processTick(monthEndState({
+      workforce: { ...workforce },
+      corporateDoctrine: { activePolicies: { operations: 'aggressive_schedule', compensation: 'lean_compensation' }, lastSwitchedMonth: {} },
+    }));
+    expect(withBadDoctrine.workforce!.morale!).toBeLessThan(neutral.workforce!.morale!);
+  });
+
   it('does not run the writer mid-month', () => {
     const now = Date.now();
     const globalDate = getGlobalGameDate();

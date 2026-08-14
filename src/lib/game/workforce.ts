@@ -234,6 +234,13 @@ export interface CrewWellbeingInputs {
   recentHazardCount: number;
   /** True when the corporation is running a negative cash balance (missed payroll pressure). */
   cashNegative: boolean;
+  /** W13 (Corporate Doctrine & Board Politics): additive morale contribution
+   *  from workforce-constituency approval (corporate-doctrine.ts
+   *  getConstituencyMoraleModifier) — board politics feeding this existing
+   *  writer per docs/4X_BASELINE_2026-08.md §1.7, not a new stat. Optional
+   *  and bounded (±0.05 by the caller); omitted/0 reproduces pre-W13
+   *  behavior exactly. */
+  constituencyMoraleDelta?: number;
 }
 
 /**
@@ -249,7 +256,8 @@ export interface CrewWellbeingInputs {
  *   >70%: +0.03), recovers when slack (<50%: -0.06, else -0.02). Medics
  *   reduce fatigue GROWTH by 10% each (max -50%). Range 0-1.
  * - morale: drifts +0.02/mo toward 1.0; hazards -0.05 each (max -0.10/mo);
- *   negative cash -0.10; fatigue >0.6 -0.03; any training budget +0.01.
+ *   negative cash -0.10; fatigue >0.6 -0.03; any training budget +0.01;
+ *   W13: constituency-approval deviation ±0.05 (corporate-doctrine.ts).
  *   Range 0.5-1.15 (multiplier band 0.8-1.15 in getWorkforceBonuses).
  */
 export function updateCrewWellbeing(
@@ -290,6 +298,8 @@ export function updateCrewWellbeing(
   if (newFatigue > 0.6) moraleDelta -= 0.03;
   if (budget > 0) moraleDelta += 0.01;
   if (newFatigue < 0.2) moraleDelta += 0.01;
+  // W13: board-politics constituency approval, additive and separately bounded.
+  moraleDelta += inputs.constituencyMoraleDelta ?? 0;
   const newMorale = Math.max(0.5, Math.min(1.15, morale + moraleDelta));
 
   return {

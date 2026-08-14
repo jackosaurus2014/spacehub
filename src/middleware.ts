@@ -264,6 +264,9 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/space-tycoon/zones/update', '/api/space-tycoon/leagues/process-week',
         '/api/space-tycoon/alliance-cron', '/api/space-tycoon/market/restock',
         '/api/space-tycoon/market/mean-revert',
+        // 4X Wave W3 (seasonal-event generation cron) — same mean-revert
+        // precedent: a scheduler-invoked internal POST, not a browser mutation.
+        '/api/space-tycoon/seasons/cron',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {

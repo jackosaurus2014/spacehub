@@ -9,6 +9,7 @@ import { DEFAULT_LEGACY, LEGACY_MILESTONES, STRETCH_LEGACIES, getLegacyPower, ge
 import type { LegacyState } from './legacy-system';
 import { checkCorporationTier } from './corporation-tiers';
 import { initializeFrontier } from './frontier';
+import { DEFAULT_DOCTRINE } from './corporate-doctrine';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
@@ -117,6 +118,27 @@ export function getNewGameState(): GameState {
     // chosen = both sides available" and "repeatable starts at level 0".
     doctrineChoices: {},
     repeatableResearchLevels: {},
+    // V21 — Accord Council Senate (4X Wave W11, accord-senate.ts): no
+    // docket has published yet on a fresh game — the first quarter boundary
+    // (processTick's advanceAccordSenate) publishes one.
+    accordDocket: null,
+    accordLobbying: [],
+    accordVoteHistory: [],
+    factionLicenses: [],
+    // V22 — Corporate Doctrine & Board Politics (4X Wave W13,
+    // corporate-doctrine.ts). Fresh corporations run every policy category
+    // neutral (no bonus, no penalty) until the player makes a choice; the
+    // board hasn't issued its first quarterly directive yet (seeded by the
+    // first recordQuarterlyReport call). Constituency approval is NOT
+    // initialized here — it's a pure derived selector, never persisted.
+    corporateDoctrine: { ...DEFAULT_DOCTRINE },
+    boardDirectives: [],
+    // V23 — Cargo logistics + per-location inventory (4X Wave W14,
+    // cargo-logistics.ts). Fresh games start with no remote stockpiles and
+    // the grace ratchet OFF — production credits the global pool until the
+    // first transport/tanker is built (then remote accrual goes local).
+    locationInventories: {},
+    logisticsUnlocked: false,
   };
 }
 
@@ -332,6 +354,43 @@ export function loadGame(): GameState | null {
     // have been completed yet (every repeatable starts fresh at level 0).
     if (!state.doctrineChoices) state.doctrineChoices = {};
     if (!state.repeatableResearchLevels) state.repeatableResearchLevels = {};
+
+    // V21 fields — Accord Council Senate (4X Wave W11, accord-senate.ts).
+    // Additive-only: an existing save with no docket yet just hasn't hit its
+    // first quarter boundary since upgrading — processTick's
+    // advanceAccordSenate publishes one on the next quarter-end tick exactly
+    // like a fresh game would. No lobbying commitments, empty vote history,
+    // no faction licenses purchased — nothing here changes existing bonus
+    // totals on load.
+    if (state.accordDocket === undefined) state.accordDocket = null;
+    if (!state.accordLobbying) state.accordLobbying = [];
+    if (!state.accordVoteHistory) state.accordVoteHistory = [];
+    if (!state.factionLicenses) state.factionLicenses = [];
+
+    // V22 fields — Corporate Doctrine & Board Politics (4X Wave W13,
+    // corporate-doctrine.ts). Additive-only: an existing save with no
+    // doctrine yet means every policy category is neutral (identical to a
+    // fresh game — getDoctrineBonuses(undefined) already returns the
+    // all-1.0/all-0 neutral set, so this migration doesn't even change
+    // bonus totals, just gives the field a stable shape to write into). No
+    // board directive history means the board hasn't set a target yet;
+    // recordQuarterlyReport seeds one on the corporation's next quarterly
+    // report exactly like a fresh game would.
+    if (!state.corporateDoctrine) state.corporateDoctrine = { ...DEFAULT_DOCTRINE };
+    if (!state.boardDirectives) state.boardDirectives = [];
+
+    // V23 fields — Cargo logistics + per-location inventory (4X Wave W14,
+    // cargo-logistics.ts, audit C1). Additive migration per the audit's
+    // prescription: the global pool SEEDS the Earth/home inventory — i.e.
+    // state.resources keeps its full contents and its meaning (Earth pool /
+    // market pool), remote stockpiles simply start empty, and the
+    // logisticsUnlocked ratchet starts false so production keeps crediting
+    // the global pool ("existing behavior") until the corporation owns a
+    // built transport/tanker — the tick engine then flips the ratchet and
+    // remote production starts accruing locally. Nothing a pre-W14 save
+    // owned moves, strands, or duplicates.
+    if (!state.locationInventories) state.locationInventories = {};
+    if (state.logisticsUnlocked === undefined) state.logisticsUnlocked = false;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

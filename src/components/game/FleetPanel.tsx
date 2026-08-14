@@ -14,6 +14,10 @@ import { calculateRushRepairCost } from '@/lib/game/hazards';
 import { getShipTransitSpeedMultiplier } from '@/lib/game/modules';
 import { getSpecializationBonuses } from '@/lib/game/specializations';
 import { getWorkforceBonuses } from '@/lib/game/workforce';
+// W14 (cargo logistics, audit C1): freight quotes + capacity for the
+// transport flow — cargo selection, Δv-priced fuel readouts per destination.
+import { getFreightFuelCost, getShipCargoCapacity, getCargoLoadUnits } from '@/lib/game/cargo-logistics';
+import CargoLoader from './CargoLoader';
 import Image from 'next/image';
 
 interface FleetPanelProps {
@@ -33,6 +37,13 @@ interface FleetPanelProps {
 export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMining, onStartTransport, onLaunchSurvey, onScrapShip, onRushRepairShip }: FleetPanelProps) {
   const [selectedShipyard, setSelectedShipyard] = useState('earth_surface');
   const [selectedShip, setSelectedShip] = useState<string | null>(null);
+  // W14: cargo manifest being loaded for the transport flow. Reset whenever
+  // the selected ship changes (a manifest is origin+hull specific).
+  const [cargoManifest, setCargoManifest] = useState<Record<string, number>>({});
+  const selectShip = useCallback((id: string | null) => {
+    setSelectedShip(id);
+    setCargoManifest({});
+  }, []);
 
   const ships = state.ships || [];
   const builtShips = ships.filter(s => s.isBuilt);
@@ -94,7 +105,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                 >
                 <button
                   type="button"
-                  onClick={() => { playSound('click'); setSelectedShip(isSelected ? null : ship.instanceId); }}
+                  onClick={() => { playSound('click'); selectShip(isSelected ? null : ship.instanceId); }}
                   className="w-full text-left p-3"
                 >
                   <div className="flex items-center justify-between">
@@ -214,7 +225,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                       {selectedShipDef.miningTargets.map(resId => (
                         <button
                           key={resId}
-                          onClick={() => { playSound('build_start'); onStartMining(selectedShipInstance.instanceId, resId); setSelectedShip(null); }}
+                          onClick={() => { playSound('build_start'); onStartMining(selectedShipInstance.instanceId, resId); selectShip(null); }}
                           className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-amber-600/20 text-amber-400 border border-amber-600/30 rounded-lg hover:bg-amber-600/30 transition-colors"
                         >
                           ⛏️ Mine {resId.replace(/_/g, ' ')}
@@ -236,7 +247,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
           {/* Stop mining (for mining ships) */}
           {selectedShipInstance.status === 'mining' && (
             <button
-              onClick={() => { onStopMining(selectedShipInstance.instanceId); setSelectedShip(null); }}
+              onClick={() => { onStopMining(selectedShipInstance.instanceId); selectShip(null); }}
               className="inline-flex items-center justify-center min-h-[44px] px-3 py-1.5 text-xs font-medium bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors mb-3"
             >
               Stop Mining
@@ -255,7 +266,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                   return (
                     <button
                       key={locId}
-                      onClick={() => { playSound('build_start'); onLaunchSurvey(selectedShipInstance.instanceId, locId); setSelectedShip(null); }}
+                      onClick={() => { playSound('build_start'); onLaunchSurvey(selectedShipInstance.instanceId, locId); selectShip(null); }}
                       className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-purple-600/20 text-purple-400 border border-purple-600/30 rounded-lg hover:bg-purple-600/30 transition-colors"
                     >
                       📡 {loc?.name} ({formatDuration(duration)})
@@ -281,26 +292,58 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
             );
             const isBoosted = transitSpeedMult > 1.001;
 
+            // W14 (cargo logistics): manifest loading + Δv-priced fuel
+            // quotes per destination. Effective capacity includes fitted
+            // Extended Cargo Bays; validation is re-run by the dispatch
+            // mutator, so these quotes are honest previews, not gates.
+            const effectiveCapacity = getShipCargoCapacity(state, selectedShipInstance.instanceId);
+            const loadUnits = getCargoLoadUnits(selectedShipDef.role, cargoManifest);
+            const overCapacity = loadUnits > effectiveCapacity;
+
             return (
-              <div>
-                <p className="text-slate-400 text-xs mb-2">Send to location (capacity: {selectedShipDef.cargoCapacity} units):</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {state.unlockedLocations
-                    .filter(locId => locId !== selectedShipInstance.currentLocation)
-                    .map(locId => {
-                      const loc = LOCATION_MAP.get(locId);
-                      const rawTravelTime = getTravelTime(selectedShipInstance.currentLocation, locId);
-                      const travelTime = rawTravelTime / transitSpeedMult;
-                      return (
-                        <button
-                          key={locId}
-                          onClick={() => { playSound('build_start'); onStartTransport(selectedShipInstance.instanceId, locId, {}); setSelectedShip(null); }}
-                          className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
-                        >
-                          🚀 {loc?.name} ({formatDuration(travelTime)}{isBoosted && <span className="text-cyan-300"> ⚡ boosted</span>})
-                        </button>
-                      );
-                    })}
+              <div className="space-y-3">
+                {effectiveCapacity > 0 && (
+                  <CargoLoader
+                    state={state}
+                    shipInstanceId={selectedShipInstance.instanceId}
+                    cargo={cargoManifest}
+                    onChange={setCargoManifest}
+                  />
+                )}
+                <div>
+                  <p className="text-slate-400 text-xs mb-2">
+                    Send to location (loaded: {loadUnits}/{effectiveCapacity} units) — fuel priced by route Δv:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {state.unlockedLocations
+                      .filter(locId => locId !== selectedShipInstance.currentLocation)
+                      .map(locId => {
+                        const loc = LOCATION_MAP.get(locId);
+                        const rawTravelTime = getTravelTime(selectedShipInstance.currentLocation, locId);
+                        const travelTime = rawTravelTime / transitSpeedMult;
+                        const fuelCost = getFreightFuelCost(state, selectedShipInstance.instanceId, selectedShipInstance.currentLocation, locId, cargoManifest);
+                        const canAffordFuel = state.money >= fuelCost;
+                        const disabled = overCapacity || !canAffordFuel;
+                        return (
+                          <button
+                            key={locId}
+                            onClick={() => { playSound('build_start'); onStartTransport(selectedShipInstance.instanceId, locId, cargoManifest); selectShip(null); }}
+                            disabled={disabled}
+                            title={overCapacity ? 'Cargo exceeds capacity' : !canAffordFuel ? 'Insufficient funds for fuel' : undefined}
+                            className={`inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium rounded-lg transition-colors ${
+                              disabled
+                                ? 'bg-white/[0.04] text-slate-600 border border-white/[0.06] cursor-not-allowed'
+                                : 'bg-green-600/20 text-green-400 border border-green-600/30 hover:bg-green-600/30'
+                            }`}
+                          >
+                            🚀 {loc?.name} ({formatDuration(travelTime)}{isBoosted && <span className="text-cyan-300"> ⚡ boosted</span>}) · ⛽ {formatMoney(fuelCost)}
+                          </button>
+                        );
+                      })}
+                  </div>
+                  {overCapacity && (
+                    <p className="text-red-300 text-[10px] mt-1.5" role="alert">Cargo exceeds capacity — unload {Math.ceil(loadUnits - effectiveCapacity)} units to dispatch.</p>
+                  )}
                 </div>
               </div>
             );
@@ -314,7 +357,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                   const scrapValue = Math.round(selectedShipDef.baseCost * 0.3);
                   if (confirm(`Scrap ${selectedShipInstance.name} for ${formatMoney(scrapValue)}? (30% of build cost) This cannot be undone.`)) {
                     onScrapShip(selectedShipInstance.instanceId);
-                    setSelectedShip(null);
+                    selectShip(null);
                   }
                 }}
                 className="w-full inline-flex items-center justify-center min-h-[44px] px-3 py-1.5 text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"

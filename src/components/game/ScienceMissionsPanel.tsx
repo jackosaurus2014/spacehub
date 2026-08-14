@@ -24,6 +24,7 @@ import {
   type ScienceProgramDef, type InstrumentDef,
 } from '@/lib/game/science-missions';
 import { RESEARCH_MAP } from '@/lib/game/research-tree';
+import { getMissionPatchAsset } from '@/lib/game/assets';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '@/lib/game/constants';
 import { useModalA11y } from './useModalA11y';
@@ -194,11 +195,24 @@ function ProgramsTab({ state, onOpenPlanner, onNavigateTab }: {
             <span className="hud-corner-br" aria-hidden="true" />
             <div className="p-3">
               <div className="flex items-start justify-between gap-2 mb-1">
-                <div className="min-w-0">
-                  <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
-                    <span aria-hidden="true">{program.icon}</span> {program.name}
-                  </h3>
-                  <div className="text-[9px] uppercase tracking-wider text-slate-500 mt-0.5">{program.realAnchor}</div>
+                <div className="min-w-0 flex items-start gap-2">
+                  {getMissionPatchAsset(program.id) && (
+                    // Mission patch insignia (4X Wave W2 art batch) — decorative,
+                    // program.icon carries the semantic label so this is aria-hidden.
+                    <img
+                      src={getMissionPatchAsset(program.id)!}
+                      alt=""
+                      aria-hidden="true"
+                      className="w-9 h-9 rounded-full border border-white/10 shrink-0 object-cover"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
+                      <span aria-hidden="true">{program.icon}</span> {program.name}
+                    </h3>
+                    <div className="text-[9px] uppercase tracking-wider text-slate-500 mt-0.5">{program.realAnchor}</div>
+                  </div>
                 </div>
                 <div className={`text-[10px] uppercase tracking-wider font-bold shrink-0 ${
                   active ? 'text-amber-300' : completed ? 'text-emerald-300' : ready ? 'text-cyan-300' : 'text-slate-500'

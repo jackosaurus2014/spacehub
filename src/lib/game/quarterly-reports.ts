@@ -17,6 +17,11 @@ import { STARTING_YEAR } from './constants';
 import { computeEconomyReport } from './economy-report';
 import { computeNetWorth } from './frontier';
 import { generateId, formatMoney } from './formulas';
+// W13 (Corporate Doctrine & Board Politics, docs/4X_BASELINE_2026-08.md
+// §1.7): board directives hook this module's generation point additively —
+// see the bottom of recordQuarterlyReport below.
+import { advanceBoardDirectives } from './corporate-doctrine';
+import { addReputationPoints } from './reputation';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -166,7 +171,7 @@ export function recordQuarterlyReport(state: GameState, now: number = Date.now()
     ? 'first report on file'
     : `${report.growthRatePct >= 0 ? '+' : ''}${report.growthRatePct.toFixed(1)}% net worth vs. last quarter`;
 
-  return {
+  let next: GameState = {
     ...state,
     quarterlyReports: [...(state.quarterlyReports || []), report],
     eventLog: [{
@@ -177,4 +182,39 @@ export function recordQuarterlyReport(state: GameState, now: number = Date.now()
       description: `Net worth ${growthLabel}. Revenue ${formatMoney(report.revenue)}, profit ${formatMoney(report.profit)}.`,
     }, ...(state.eventLog || [])].slice(0, 50),
   };
+
+  // W13 (Corporate Doctrine & Board Politics): additively hook this
+  // generation point — evaluate the directive that governed the quarter
+  // just reported and seed the next one. A fresh corporation's first report
+  // has no pending directive yet (nothing to evaluate), so this only ever
+  // ADDS an eventLog entry from its second report onward; the existing
+  // "does not duplicate a report" guard above is untouched either way.
+  const cycle = advanceBoardDirectives(
+    state,
+    { quarterIndex: report.quarterIndex, profit: report.profit, growthRatePct: report.growthRatePct },
+    now,
+  );
+  next = { ...next, boardDirectives: cycle.boardDirectives };
+  if (cycle.reputationGain > 0) next = addReputationPoints(next, cycle.reputationGain);
+  if (cycle.moraleDelta !== 0 && next.workforce) {
+    const morale = next.workforce.morale ?? 1.0;
+    next = { ...next, workforce: { ...next.workforce, morale: Math.max(0.5, Math.min(1.15, morale + cycle.moraleDelta)) } };
+  }
+  if (cycle.evaluated) {
+    const hit = cycle.evaluated.status === 'hit';
+    next = {
+      ...next,
+      eventLog: [{
+        id: generateId(),
+        date: state.gameDate,
+        type: 'milestone' as const,
+        title: hit ? `✅ Board directive met: ${cycle.evaluated.label}` : `⚠️ Board directive missed: ${cycle.evaluated.label}`,
+        description: hit
+          ? `The board is pleased. +${cycle.reputationGain} reputation.`
+          : 'The board expected better. Crew morale takes a small hit.',
+      }, ...next.eventLog].slice(0, 50),
+    };
+  }
+
+  return next;
 }

@@ -79,7 +79,9 @@ interface MapCommandCenterProps {
   onUnlock: (locId: string) => void;
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
-  onDispatchShip: (shipInstanceId: string, toLocationId: string) => void;
+  /** W14 (cargo logistics): optional manifest — dispatch debits it at the
+   *  origin and the tick engine credits the destination on arrival. */
+  onDispatchShip: (shipInstanceId: string, toLocationId: string, cargo?: Record<string, number>) => void;
   onLaunchExpedition: (req: ExpeditionPlanRequest) => void;
   onNavigateTab: (tab: GameTab) => void;
   /** Drives the shell's region backdrop tint + ambient sound, same contract

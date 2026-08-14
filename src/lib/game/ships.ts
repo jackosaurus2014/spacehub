@@ -122,75 +122,14 @@ export interface ShipInstance {
 // ─── Survey Expedition System ────────────────────────────────────────────────
 // Probes are consumed after a single expedition. They discover resources,
 // anomalies, or location bonuses.
-
-export interface SurveyDiscovery {
-  type: 'resource_deposit' | 'anomaly' | 'cache' | 'signal';
-  title: string;
-  description: string;
-  rewards: {
-    money?: number;
-    resources?: Record<string, number>;
-    miningBonus?: { locationId: string; resourceId: string; bonusPct: number; durationMonths: number };
-  };
-}
-
-// Discovery tables by location tier
-export const SURVEY_DISCOVERIES: Record<string, SurveyDiscovery[]> = {
-  // Tier 1: Near-Earth
-  leo: [
-    { type: 'cache', title: 'Decommissioned Satellite', description: 'Salvaged rare electronics from defunct hardware.', rewards: { resources: { rare_earth: 5, aluminum: 20 } } },
-    { type: 'anomaly', title: 'Orbital Debris Field', description: 'Mapped recyclable materials worth recovering.', rewards: { money: 10_000_000, resources: { iron: 50 } } },
-    { type: 'signal', title: 'Survey Data Package', description: 'Sold orbital mapping data to commercial operators.', rewards: { money: 25_000_000 } },
-  ],
-  geo: [
-    { type: 'cache', title: 'Abandoned Relay Station', description: 'Found intact communications hardware.', rewards: { money: 15_000_000, resources: { rare_earth: 8 } } },
-    { type: 'resource_deposit', title: 'Solar Wind Collection Point', description: 'Identified optimal helium-3 collection orbit.', rewards: { resources: { helium3: 1 }, miningBonus: { locationId: 'geo', resourceId: 'helium3', bonusPct: 15, durationMonths: 24 } } },
-  ],
-
-  // Tier 2: Moon
-  lunar_orbit: [
-    { type: 'anomaly', title: 'Mascon Anomaly', description: 'Mapped a mass concentration useful for orbital mechanics.', rewards: { money: 30_000_000 } },
-    { type: 'resource_deposit', title: 'Ice-Rich Crater', description: 'Discovered a permanently shadowed crater with deep ice.', rewards: { resources: { lunar_water: 100 }, miningBonus: { locationId: 'lunar_surface', resourceId: 'lunar_water', bonusPct: 25, durationMonths: 36 } } },
-  ],
-  lunar_surface: [
-    { type: 'resource_deposit', title: 'Rare Earth Vein', description: 'High-concentration rare earth deposit on the far side.', rewards: { resources: { rare_earth: 30 }, miningBonus: { locationId: 'lunar_surface', resourceId: 'rare_earth', bonusPct: 20, durationMonths: 24 } } },
-    { type: 'cache', title: 'Apollo-era Artifacts', description: 'Located preserved artifacts. Enormous historical value.', rewards: { money: 100_000_000 } },
-    { type: 'resource_deposit', title: 'Helium-3 Hotspot', description: 'Found regolith exceptionally rich in He-3.', rewards: { resources: { helium3: 3 }, miningBonus: { locationId: 'lunar_surface', resourceId: 'helium3', bonusPct: 30, durationMonths: 24 } } },
-  ],
-
-  // Tier 3: Mars & Asteroids
-  mars_orbit: [
-    { type: 'anomaly', title: 'Phobos Cavern', description: 'Discovered a large subsurface cavity in Phobos.', rewards: { money: 50_000_000, resources: { titanium: 40, iron: 100 } } },
-    { type: 'signal', title: 'Martian Atmospheric Data', description: 'Sold atmospheric models to terraforming researchers.', rewards: { money: 75_000_000 } },
-  ],
-  mars_surface: [
-    { type: 'resource_deposit', title: 'Subsurface Aquifer', description: 'Massive underground water reservoir beneath Valles Marineris.', rewards: { resources: { mars_water: 200 }, miningBonus: { locationId: 'mars_surface', resourceId: 'mars_water', bonusPct: 30, durationMonths: 36 } } },
-    { type: 'resource_deposit', title: 'Iron Oxide Megadeposit', description: 'Pure iron oxide formation spanning 200 km.', rewards: { resources: { iron: 500 }, miningBonus: { locationId: 'mars_surface', resourceId: 'iron', bonusPct: 25, durationMonths: 24 } } },
-    { type: 'cache', title: 'Meteorite Impact Zone', description: 'Platinum-rich meteorite fragments scattered across a crater.', rewards: { resources: { platinum_group: 8, gold: 12 } } },
-  ],
-  asteroid_belt: [
-    { type: 'resource_deposit', title: 'Platinum-Core Asteroid', description: 'A 500m metallic asteroid with platinum core.', rewards: { resources: { platinum_group: 20, titanium: 50 }, miningBonus: { locationId: 'asteroid_belt', resourceId: 'platinum_group', bonusPct: 35, durationMonths: 36 } } },
-    { type: 'resource_deposit', title: 'Gold Cluster', description: 'Three nearby asteroids rich in gold deposits.', rewards: { resources: { gold: 30 }, miningBonus: { locationId: 'asteroid_belt', resourceId: 'gold', bonusPct: 25, durationMonths: 24 } } },
-    { type: 'anomaly', title: 'Ancient Collision Site', description: 'Rare mineral formations from a prehistoric impact.', rewards: { resources: { rare_earth: 40, exotic_materials: 2 } } },
-  ],
-
-  // Tier 4: Outer System
-  jupiter_system: [
-    { type: 'resource_deposit', title: 'Europa Ice Shelf', description: 'Mapped ideal drilling location through Europa\'s ice crust.', rewards: { resources: { exotic_materials: 5 }, miningBonus: { locationId: 'jupiter_system', resourceId: 'exotic_materials', bonusPct: 40, durationMonths: 48 } } },
-    { type: 'signal', title: 'Io Volcanic Data', description: 'Unique geological data from Io\'s active volcanoes.', rewards: { money: 200_000_000, resources: { exotic_materials: 3 } } },
-    { type: 'anomaly', title: 'Jovian Magnetic Anomaly', description: 'Discovered concentrated He-3 in Jupiter\'s magnetosphere.', rewards: { resources: { helium3: 5 }, miningBonus: { locationId: 'jupiter_system', resourceId: 'helium3', bonusPct: 30, durationMonths: 36 } } },
-  ],
-  saturn_system: [
-    { type: 'resource_deposit', title: 'Titan Methane Lake', description: 'Identified an easily accessible methane reservoir.', rewards: { resources: { methane: 500, ethane: 200 }, miningBonus: { locationId: 'saturn_system', resourceId: 'methane', bonusPct: 35, durationMonths: 36 } } },
-    { type: 'anomaly', title: 'Ring Particle Analysis', description: 'Discovered pure water ice in Saturn\'s rings.', rewards: { resources: { lunar_water: 300 } } },
-    { type: 'cache', title: 'Enceladus Geyser Sample', description: 'Captured exotic compounds from ocean plumes.', rewards: { resources: { exotic_materials: 8, helium3: 2 } } },
-  ],
-  outer_system: [
-    { type: 'signal', title: 'Interstellar Object', description: 'Tracked a passing interstellar object. Data sold for billions.', rewards: { money: 1_000_000_000 } },
-    { type: 'resource_deposit', title: 'Kuiper Belt Deposit', description: 'Found a trans-Neptunian body rich in exotic materials.', rewards: { resources: { exotic_materials: 15, helium3: 8 }, miningBonus: { locationId: 'outer_system', resourceId: 'exotic_materials', bonusPct: 50, durationMonths: 60 } } },
-    { type: 'anomaly', title: 'Gravitational Anomaly', description: 'Unexplained mass concentration. Research value immeasurable.', rewards: { money: 500_000_000, resources: { exotic_materials: 10 } } },
-  ],
-};
+//
+// 4X Wave W3 (docs/4X_BASELINE_2026-08.md): the discovery content table
+// (SurveyDiscovery / SURVEY_DISCOVERIES) and its roll function used to live
+// here as rollSurveyDiscovery(). They have moved to exploration.ts, merged
+// with the anomaly/claim-stake system into one deterministic
+// rollDiscovery() — see exploration.ts for the content and the unification
+// rationale. SURVEY_DURATION (below) stays here — it's ship-expedition
+// timing, not discovery content.
 
 // Survey expedition duration by location (real seconds)
 export const SURVEY_DURATION: Record<string, number> = {
@@ -205,13 +144,6 @@ export const SURVEY_DURATION: Record<string, number> = {
   saturn_system: 600, // 10 min
   outer_system: 900,  // 15 min
 };
-
-/** Roll a random discovery for a surveyed location */
-export function rollSurveyDiscovery(locationId: string): SurveyDiscovery | null {
-  const table = SURVEY_DISCOVERIES[locationId];
-  if (!table || table.length === 0) return null;
-  return table[Math.floor(Math.random() * table.length)];
-}
 
 // ─── SHIP DEFINITIONS (Balance Pass) ────────────────────────────────────────
 

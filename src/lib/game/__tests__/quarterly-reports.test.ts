@@ -198,6 +198,35 @@ describe('quarterly-reports — recordQuarterlyReport', () => {
   });
 });
 
+// ─── W13 (Corporate Doctrine & Board Politics) — additive hook ─────────────
+// docs/4X_BASELINE_2026-08.md §1.7: board directives hook recordQuarterlyReport's
+// generation point additively. See corporate-doctrine.test.ts for the pure
+// advanceBoardDirectives/evaluateBoardDirective unit coverage; these confirm
+// the wiring at this module's call site specifically.
+
+describe('quarterly-reports — W13 board-directive hook', () => {
+  it('a fresh corporation\'s first report seeds a directive but evaluates nothing (no eventLog noise)', () => {
+    const s = baseState({ gameDate: { year: STARTING_YEAR, month: 4 }, eventLog: [] });
+    const result = recordQuarterlyReport(s, 5000);
+    expect(result.boardDirectives).toHaveLength(1);
+    expect(result.boardDirectives![0].status).toBe('pending');
+    // Only the quarterly-report entry — no board-directive entry yet.
+    expect(result.eventLog.filter(e => e.title.includes('Board directive'))).toHaveLength(0);
+  });
+
+  it('a second quarterly report evaluates the directive seeded by the first', () => {
+    const s = baseState({ gameDate: { year: STARTING_YEAR, month: 4 }, eventLog: [], money: 500_000_000 });
+    const once = recordQuarterlyReport(s, 5000);
+    // Advance three more months to the next quarter boundary.
+    const advanced = { ...once, gameDate: { year: STARTING_YEAR, month: 7 } };
+    const twice = recordQuarterlyReport(advanced, 9000);
+    expect(twice.boardDirectives!.length).toBeGreaterThanOrEqual(1);
+    const evaluatedOne = twice.boardDirectives!.find(d => d.status !== 'pending');
+    expect(evaluatedOne).toBeDefined();
+    expect(twice.eventLog.some(e => e.title.includes('Board directive'))).toBe(true);
+  });
+});
+
 // ─── Save-migration defaulting (additive-state requirement) ────────────────
 
 describe('quarterly-reports — save-migration defaulting', () => {

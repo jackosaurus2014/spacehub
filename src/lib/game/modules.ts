@@ -250,6 +250,26 @@ export function purchaseModule(state: GameState, moduleId: string, now: number =
   };
 }
 
+/** Grant a module directly into inventory with no cost — used by discovery
+ *  and narrative-consequence payoffs (derelict-ship salvage, event chain
+ *  rewards) where the module itself IS the reward, not something bought.
+ *  4X Wave W3 (docs/4X_BASELINE_2026-08.md): wires the exploration.ts
+ *  derelict_ship anomaly's `moduleId` reward, which used to be displayed
+ *  but never applied — see exploration.ts stakeClaim(). */
+export function grantModule(state: GameState, moduleId: string, now: number = Date.now()): GameState {
+  const def = MODULE_MAP.get(moduleId);
+  if (!def) return state;
+  const owned: OwnedModule = {
+    instanceId: generateId(),
+    definitionId: moduleId,
+    acquiredAtMs: now,
+  };
+  return {
+    ...state,
+    moduleInventory: [...(state.moduleInventory || []), owned],
+  };
+}
+
 /** Fit a module to a ship if compatible + slot free. No-op otherwise. */
 export function fitModule(state: GameState, shipInstanceId: string, moduleInstanceId: string): GameState {
   const ship = (state.ships || []).find(s => s.instanceId === shipInstanceId);

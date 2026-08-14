@@ -105,7 +105,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     bonuses: { maintenanceReduction: 0.08, revenueBonus: 0.08, miningBonus: 0.10 },
     // Wave F: 'rivals' folded into 'leaderboard' (Standings hub — subtab
     // gates at tier 4 via FOLDED_FEATURE_TIERS).
-    unlockedTabs: ['alliance', 'bounties', 'factions', 'subsidiaries'],
+    unlockedTabs: ['alliance', 'bounties', 'factions', 'subsidiaries', 'governance'],
   },
   {
     tier: 5, name: 'Conglomerate', icon: '👑', color: '#f97316',

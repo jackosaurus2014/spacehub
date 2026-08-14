@@ -7,6 +7,11 @@ import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { isMarketEventExpired, type ActiveMarketEvent } from '@/lib/game/market-events';
+// W14 (cargo logistics, audit C1): selling requires goods AT Earth/home —
+// `state.resources` IS the Earth pool, so the held counts below are already
+// honest; getResourceTotals surfaces what's sitting in remote stockpiles so
+// the player understands why it isn't sellable yet.
+import { getResourceTotals } from '@/lib/game/cargo-logistics';
 import Image from 'next/image';
 
 interface MarketPrices {
@@ -304,6 +309,9 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
         const held = state.resources[selectedResource] || 0;
         const price = getSellPrice(selectedResource);
         const change = prices[selectedResource]?.change || 0;
+        // W14: goods sitting at remote stockpiles are NOT sellable until
+        // freighted to Earth — say so instead of silently under-counting.
+        const totals = getResourceTotals(state, selectedResource);
         if (!def) return null;
         return (
           <div className="hud-frame relative rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
@@ -325,6 +333,13 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
               )}
             </h3>
             <p className="text-slate-500 text-[10px] mb-2">Selling will push the market price down</p>
+            {totals.remote > 0 && (
+              <p className="text-amber-300/90 text-[10px] mb-2" role="note">
+                📦 {totals.remote.toLocaleString()} more unit{totals.remote === 1 ? '' : 's'} in remote stockpiles
+                {totals.remoteBreakdown[0] ? ` (most at ${totals.remoteBreakdown[0].locationId.replace(/_/g, ' ')})` : ''} —
+                only goods at Earth can clear the market. Freight them home from the Map or Fleet tab.
+              </p>
+            )}
             <div className="flex items-center gap-3 mb-3">
               <div className="flex items-center gap-1">
                 <button onClick={() => setSellQty(Math.max(1, sellQty - 1))} aria-label="Decrease sell quantity by 1" className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-white/[0.06] text-white text-sm hover:bg-white/[0.1] transition-colors">-</button>

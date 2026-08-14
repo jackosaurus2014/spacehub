@@ -691,3 +691,58 @@ export function getSeasonIcon(seasonType: SeasonType): string {
     default: return '\u2B50'; // star
   }
 }
+
+// \u2500\u2500\u2500 Season Generation Schedule (4X Wave W3 \u2014 closes audit C4) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// docs/4X_BASELINE_2026-08.md defect ledger #8: "no cron instantiates
+// SeasonalEvent rows." GET /seasons, /seasons/join, /seasons/leaderboard,
+// and /seasons/progress have always been able to READ the SeasonalEvent
+// table \u2014 nothing ever WROTE it, so the whole seasons feature has been a
+// permanently-empty shell since it shipped. This section is the pure,
+// DB-free half of the fix: a deterministic calendar that answers "which
+// season number is live right now" and "what are its dates" as a function
+// of the clock alone. /api/space-tycoon/seasons/cron (new route) uses it to
+// upsert rows \u2014 because the schedule is a pure function of time (no DB
+// state needed to know what's next), repeated cron runs are naturally
+// idempotent: recomputing season N always yields the same window.
+//
+// All 5 season types share a 28-day durationDays today (SEASON_DEFINITIONS
+// above), so the cycle rotates through them in a fixed order with a fixed
+// cooldown gap between seasons (covers the TALLYING/REWARDS/ARCHIVED tail
+// of getEventPhase before the next season's REGISTRATION phase opens).
+
+const SEASON_CYCLE: SeasonType[] = [
+  'asteroid_rush', 'mars_colony_race', 'solar_storm_crisis', 'helium3_gold_rush', 'fleet_command',
+];
+const SEASON_COOLDOWN_DAYS = 3;
+/** Fixed epoch \u2014 arbitrary but stable. Season 1 (asteroid_rush) starts here;
+ *  every later season number is a deterministic offset from this instant. */
+const SEASON_CYCLE_ANCHOR_MS = Date.UTC(2026, 0, 5);
+
+/** Deterministic schedule for a given 1-indexed season number. Pure \u2014 same
+ *  input always produces the same output, so this needs no persisted
+ *  "what's next" state anywhere. */
+export function getSeasonSchedule(seasonNumber: number): { seasonType: SeasonType; startsAt: Date; endsAt: Date } {
+  const n = Math.max(1, Math.floor(seasonNumber));
+  const seasonType = SEASON_CYCLE[(n - 1) % SEASON_CYCLE.length];
+  // Sum of every prior season's (duration + cooldown) \u2014 walked explicitly
+  // rather than assuming a uniform period, so this stays correct if a
+  // future season type's durationDays diverges from the current 28-day
+  // uniform value.
+  let offsetDays = 0;
+  for (let i = 1; i < n; i++) {
+    const priorType = SEASON_CYCLE[(i - 1) % SEASON_CYCLE.length];
+    offsetDays += SEASON_DEFINITIONS[priorType].durationDays + SEASON_COOLDOWN_DAYS;
+  }
+  const startsAt = new Date(SEASON_CYCLE_ANCHOR_MS + offsetDays * DAY_MS);
+  const endsAt = new Date(startsAt.getTime() + SEASON_DEFINITIONS[seasonType].durationDays * DAY_MS);
+  return { seasonType, startsAt, endsAt };
+}
+
+/** Which season number is current/upcoming right now \u2014 pure + deterministic.
+ *  Bounded walk from season 1 (today's uniform ~31-day cycle means even a
+ *  50-year-old server needs well under 1,000 iterations). */
+export function getCurrentSeasonNumber(now: Date = new Date()): number {
+  let n = 1;
+  while (getSeasonSchedule(n).endsAt.getTime() < now.getTime() && n < 100_000) n++;
+  return n;
+}

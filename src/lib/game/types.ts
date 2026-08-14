@@ -6,6 +6,11 @@
 // place instead of drifting inline copies.
 import type { HiredCommander, CommanderPool } from './commanders';
 
+// W13 (Corporate Doctrine & Board Politics): same type-only circular-import
+// pattern as commanders.ts above — corporate-doctrine.ts imports `type {
+// GameState }` from this file, erased at compile time.
+import type { CorporateDoctrineState, BoardDirective } from './corporate-doctrine';
+
 export interface GameDate {
   year: number;
   month: number; // 1-12
@@ -135,8 +140,9 @@ export type ResearchCategory =
  * travelSpeed, fuelEfficiency, insuranceDiscount, hazardResistance,
  * crewMorale, expeditionRisk. See research-tree.ts's `getResearchBonuses`
  * for aggregation/caps and `game-engine.ts` for which buckets are actually
- * multiplied into gameplay math today (fuelEfficiency and expeditionRisk
- * are declared/aggregated but not yet consumed — see comments there).
+ * multiplied into gameplay math today (fuelEfficiency is consumed by
+ * cargo-logistics.ts freight pricing as of wave W14; expeditionRisk is
+ * declared/aggregated but not yet consumed — see comments there).
  */
 export type ResearchEffectType =
   | 'buildCost'          // reduces building construction cost
@@ -146,7 +152,7 @@ export type ResearchEffectType =
   | 'research'           // increases research speed
   | 'maintenance'        // reduces maintenance / operating cost
   | 'travelSpeed'        // reduces ship transit time (transitSpeedMult)
-  | 'fuelEfficiency'     // reduces fuel consumption (pending cargo-logistics wiring)
+  | 'fuelEfficiency'     // reduces freight fuel bills (wired: cargo-logistics.ts, wave W14)
   | 'insuranceDiscount'  // reduces monthly insurance premium
   | 'hazardResistance'   // reduces hazard damage beyond ship/building mitigation
   | 'crewMorale'         // raises workforce morale
@@ -675,6 +681,18 @@ export interface GameState {
     outstandingRepairCost?: number;
   }[];
 
+  // V22 — Corporate Doctrine & Board Politics (4X Wave W13,
+  // corporate-doctrine.ts). Additive: an absent corporateDoctrine means no
+  // policy has been chosen yet (every category neutral — no bonus, no
+  // penalty); an absent boardDirectives means the board hasn't issued its
+  // first quarterly target yet (seeded the first time recordQuarterlyReport
+  // runs). Constituency approval is deliberately NOT persisted here — it's
+  // a pure function of the fields above plus recentHazards/workforce/money,
+  // recomputed on every read (see corporate-doctrine.ts
+  // getConstituencyApprovals), so it can never drift or need a migration.
+  corporateDoctrine?: CorporateDoctrineState;
+  boardDirectives?: BoardDirective[];
+
   // Starting archetype — the path the player picked at game creation
   startingArchetype?: 'cape_heritage' | 'meridian_signals' | 'tracking_consortium';
 
@@ -935,6 +953,73 @@ export interface GameState {
    *  record, not the source of truth for lock state. */
   doctrineChoices?: Record<string, string>;
 
+  // ─── V21 (4X Wave W11) — Accord Council Senate ───────────────────────────
+  // docs/4X_BASELINE_2026-08.md W11: quarterly vote docket + player lobbying
+  // + faction licensing. Shapes defined in accord-senate.ts (AccordDocket /
+  // LobbyingCommitment / AccordVoteResult) and inlined here (same precedent
+  // as narrativeChains above) to avoid circular imports. factionLicenses
+  // lives here too (its owning module, factions.ts, already imports
+  // GameState from this file).
+
+  /** The current quarter's docket of measures up for a vote — null before
+   *  the first quarter boundary a save has lived through. World-shared:
+   *  every player sees the identical docket for the same quarter index. */
+  accordDocket?: {
+    quarterIndex: number;
+    measureIds: string[];
+    resolved: boolean;
+  } | null;
+
+  /** This quarter's lobbying commitments (one per measure the player chose
+   *  to lobby on). Reset to [] each time a new docket publishes. */
+  accordLobbying?: {
+    measureId: string;
+    stance: 'support' | 'oppose';
+    moneySpent: number;
+    favorFactionId?: string;
+    favorSpent: number;
+    committedAtMonth: number;
+  }[];
+
+  /** Resolved vote history, most-recent-first, capped at 30 entries — the
+   *  Council's public record (CLAUDE.md "public diplomacy feed" spirit). */
+  accordVoteHistory?: {
+    quarterIndex: number;
+    measureId: string;
+    measureName: string;
+    icon: string;
+    category: string;
+    passed: boolean;
+    playerStance: 'support' | 'oppose' | null;
+    publishedOdds: number;
+    finalOdds: number;
+    effectLabel: string;
+  }[];
+
+  /** Purchased faction licensing deals (factions.ts FACTION_LICENSES ids) —
+   *  standing-gated, pay-once unlocks for tech/route access. */
+  factionLicenses?: string[];
+
+  // ─── V23 (4X Wave W14) — Cargo Logistics + Per-Location Inventory ────────
+  // docs/GAME_SYSTEMS_AUDIT_2026-08.md C1. Both fields additive-only; engine
+  // logic + freight mutator live in cargo-logistics.ts.
+
+  /** Local stockpiles: locationId → resourceId → quantity, for every
+   *  NON-home location. The global `resources` pool above remains the
+   *  Earth/home-cluster inventory (earth_surface/leo/geo) — the pool the NPC
+   *  market, build costs, and crafting draw from. Migration (audit C1
+   *  prescription): pre-W14 saves start with {} here — the global pool
+   *  "seeds" the Earth inventory and nothing a player owned is moved. */
+  locationInventories?: Record<string, Record<string, number>>;
+
+  /** One-way ratchet for local production accrual. False = grace default
+   *  (production credits the global pool exactly as before W14). Flips true
+   *  in the tick the first time the corporation owns a built
+   *  transport/tanker hull, and never reverts — from then on, production at
+   *  remote locations accrues into locationInventories and must be
+   *  freighted home (cargo-logistics.ts dispatchShipWithCargo). */
+  logisticsUnlocked?: boolean;
+
   /** Levels completed for each repeatable research program, keyed by
    *  ResearchDefinition.id (e.g. 'launch_cadence_optimization' -> 3).
    *  Repeatable techs deliberately never get pushed into completedResearch
@@ -1141,4 +1226,4 @@ export interface ScienceMissionState {
 // Legacy save tab ids for the six removed values are mapped forward by
 // resolveLegacyTab() in space-tycoon/page.tsx so old saves/links never dead-end.
 // 'science' added in 4X Wave W6 (flagship scientific missions — science-missions.ts).
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance';

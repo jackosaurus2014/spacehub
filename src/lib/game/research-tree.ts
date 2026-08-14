@@ -845,9 +845,9 @@ export interface ResearchBonuses {
   insuranceDiscountBonus: number;  // % less monthly insurance premium (wired: game-engine.ts premium calc)
   hazardResistanceBonus: number;   // % less hazard damage, on top of ship/building mitigation (wired: game-engine.ts hazard post-processing)
   crewMoraleBonus: number;         // additive morale (0-1 scale) added post-hoc to the workforce writer (wired: game-engine.ts workforceOut)
-  fuelEfficiencyBonus: number;     // % less fuel consumption — DECLARED/AGGREGATED, NOT YET CONSUMED: no ship in the engine
-                                    // deducts fuel today (audit finding, confirmed 2026-08-13); wiring awaits the
-                                    // cargo-logistics wave (docs/4X_BASELINE_2026-08.md audit item C1 / wave W14).
+  fuelEfficiencyBonus: number;     // % less fuel consumption — CONSUMED as of wave W14: cargo-logistics.ts
+                                    // getFuelEfficiencyMultiplier multiplies every freight dispatch's Δv-priced
+                                    // fuel bill by (1 − bonus), cap 50% (docs/4X_BASELINE_2026-08.md C1 / W14).
   expeditionRiskBonus: number;     // % less interstellar-expedition hazard damage — DECLARED/AGGREGATED, NOT YET
                                     // CONSUMED as a generic bucket: expeditions.ts currently only recognizes the
                                     // single hardcoded 'heavy_radiation_shielding' research id (HEAVY_SHIELDING_DAMAGE_REDUCTION);
@@ -931,7 +931,7 @@ export function getResearchBonuses(
     insuranceDiscountBonus: Math.min(insuranceDiscountBonus, 0.40), // Cap 40%
     hazardResistanceBonus: Math.min(hazardResistanceBonus, 0.30),   // Cap 30% (risk pillar)
     crewMoraleBonus: Math.min(crewMoraleBonus, 0.30),               // Cap 0.30 on a 0-1 morale scale
-    fuelEfficiencyBonus: Math.min(fuelEfficiencyBonus, 0.50),       // Cap 50% (dormant — see interface comment)
+    fuelEfficiencyBonus: Math.min(fuelEfficiencyBonus, 0.50),       // Cap 50% (consumed by cargo-logistics.ts freight pricing, W14)
     expeditionRiskBonus: Math.min(expeditionRiskBonus, 0.30),       // Cap 30% (risk pillar; dormant as generic bucket — see interface comment)
   };
 }

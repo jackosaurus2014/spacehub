@@ -68,7 +68,11 @@ import MegastructurePanel from '@/components/game/MegastructurePanel';
 import { startMegastructure, advanceMegastructurePhase } from '@/lib/game/personal-megastructures';
 import ReportsPanel from '@/components/game/ReportsPanel';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
-import { SHIP_MAP, getTravelTime, generateShipName } from '@/lib/game/ships';
+import { SHIP_MAP, generateShipName } from '@/lib/game/ships';
+// 4X Wave W14 (audit C1): freight dispatch goes through the one sanctioned
+// cargo mutator — debit-at-departure (origin stock + Δv-priced fuel),
+// credit-at-arrival handled by the tick engine.
+import { dispatchShipWithCargo } from '@/lib/game/cargo-logistics';
 import { CHAIN_MAP } from '@/lib/game/production-chains';
 import { getHireCost, consumeHeadhuntVoucher } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
@@ -81,7 +85,10 @@ import GameChat from '@/components/game/GameChat';
 import CommanderPanel from '@/components/game/CommanderPanel';
 import { hireCommander, dismissCommander, assignCommander, unassignCommander } from '@/lib/game/commanders';
 import FactionPanel from '@/components/game/FactionPanel';
-import { sendEnvoy } from '@/lib/game/factions';
+import AccordSenatePanel from '@/components/game/AccordSenatePanel';
+import { sendEnvoy, purchaseFactionLicense } from '@/lib/game/factions';
+import { commitLobbying } from '@/lib/game/accord-senate';
+import type { LobbyStance } from '@/lib/game/accord-senate';
 import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
 import FrontierGraduationModal from '@/components/game/FrontierGraduationModal';
@@ -106,12 +113,15 @@ import SpecializationPanel from '@/components/game/SpecializationPanel';
 import { purchaseTier, respecSpecialization } from '@/lib/game/specializations';
 import VictoryPanel from '@/components/game/VictoryPanel';
 import { checkVictories } from '@/lib/game/victory-conditions';
-import { shouldGenerateQuarterlyReport, recordQuarterlyReport } from '@/lib/game/quarterly-reports';
+import { shouldGenerateQuarterlyReport, recordQuarterlyReport, getTotalGameMonthsElapsed } from '@/lib/game/quarterly-reports';
 import BuildPanel from '@/components/game/BuildPanel';
 import MapCommandCenter from '@/components/game/MapCommandCenter';
 import ContractsHubPanel from '@/components/game/ContractsHubPanel';
 import StandingsHubPanel from '@/components/game/StandingsHubPanel';
 import MarketHubPanel from '@/components/game/MarketHubPanel';
+// 4X Wave W13 (Corporate Doctrine & Board Politics)
+import GovernancePanel from '@/components/game/GovernancePanel';
+import { switchDoctrinePolicy } from '@/lib/game/corporate-doctrine';
 
 // ─── Research Panel (redesigned — collapsible categories, search, progress) ──
 
@@ -1516,34 +1526,23 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
-  // ─── Dispatch Ship (transit order) ──────────────────────────────────
+  // ─── Dispatch Ship (freight / transit order) ────────────────────────
   // Shared by the Fleet tab's transport flow AND the Wave 9 map command
   // center's "Dispatch ship here" action — one engine call, two entry
-  // points. Sets a route using the existing getTravelTime() system; travel
-  // is real (ships interpolate on the canvas over arrivalAtMs - departedAtMs)
-  // rather than instantaneous.
+  // points. W14 (audit C1): both entry points now route through
+  // dispatchShipWithCargo, the single sanctioned freight mutator — it
+  // validates capacity (hull + cargo modules), debits the manifest from the
+  // ORIGIN inventory and the Δv-priced fuel bill atomically at departure,
+  // and sets the route; the tick engine credits the destination exactly
+  // once on arrival. Travel remains real (getTravelTime inside the mutator;
+  // ships interpolate on the canvas over arrivalAtMs - departedAtMs).
   const handleDispatchShip = useCallback((shipInstanceId: string, toLocation: string, cargo?: Record<string, number>) => {
-    playSound('click');
     setState(prev => {
       if (!prev) return prev;
-      const ships = (prev.ships || []).map(s => {
-        if (s.instanceId !== shipInstanceId) return s;
-        if (s.currentLocation === toLocation) return s; // already there — no-op
-        const travelTime = getTravelTime(s.currentLocation, toLocation);
-        return {
-          ...s,
-          status: 'in_transit' as const,
-          miningOperation: undefined,
-          route: {
-            from: s.currentLocation,
-            to: toLocation,
-            departedAtMs: Date.now(),
-            arrivalAtMs: Date.now() + travelTime * 1000,
-            cargo: cargo || {},
-          },
-        };
-      });
-      return { ...prev, ships };
+      const result = dispatchShipWithCargo(prev, shipInstanceId, toLocation, cargo || {}, Date.now());
+      if (!result.ok) { playSound('error'); return prev; }
+      playSound('click');
+      return result.state;
     });
   }, []);
 
@@ -1698,6 +1697,7 @@ export default function SpaceTycoonPage() {
     { id: 'subsidiaries', label: 'Subsidiaries', icon: '🏭' },
     { id: 'specialization', label: 'Specialize', icon: '🎯' },
     { id: 'victory', label: 'Victory', icon: '🥇' },
+    { id: 'governance', label: 'Governance', icon: '🏛️' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -2179,13 +2179,28 @@ export default function SpaceTycoonPage() {
           />
         )}
         {tab === 'factions' && (
-          <FactionPanel
-            state={state}
-            onSendEnvoy={(id) => {
-              playSound('click');
-              setState(prev => prev ? sendEnvoy(prev, id) : prev);
-            }}
-          />
+          <div className="space-y-4">
+            {/* 4X Wave W11 — Accord Council Senate: docket + lobbying, above
+                the faction roster it draws standing from. */}
+            <AccordSenatePanel
+              state={state}
+              onLobby={(measureId, stance: LobbyStance, moneySpent, favorFactionId, favorSpent) => {
+                playSound('click');
+                setState(prev => prev ? commitLobbying(prev, measureId, stance, moneySpent, favorFactionId, favorSpent) : prev);
+              }}
+            />
+            <FactionPanel
+              state={state}
+              onSendEnvoy={(id) => {
+                playSound('click');
+                setState(prev => prev ? sendEnvoy(prev, id) : prev);
+              }}
+              onPurchaseLicense={(licenseId) => {
+                playSound('click');
+                setState(prev => prev ? purchaseFactionLicense(prev, licenseId) : prev);
+              }}
+            />
+          </div>
         )}
         {tab === 'modules' && <ModulesPanel state={state} setState={setState} />}
         {tab === 'discoveries' && <AnomaliesPanel state={state} setState={setState} />}
@@ -2221,6 +2236,15 @@ export default function SpaceTycoonPage() {
             onDissolve={(subId) => {
               playSound('click');
               setState(prev => prev ? dissolveSubsidiary(prev, subId) : prev);
+            }}
+          />
+        )}
+        {tab === 'governance' && (
+          <GovernancePanel
+            state={state}
+            onSwitchPolicy={(category, policyId) => {
+              playSound('click');
+              setState(prev => prev ? switchDoctrinePolicy(prev, category, policyId, getTotalGameMonthsElapsed(prev.gameDate)) : prev);
             }}
           />
         )}

@@ -22,7 +22,7 @@
 import type { GameEvent } from './types';
 import type { PendingChainChoiceUI } from './narrative-events';
 import { isCinematicChainStage, CINEMATIC_INFO_STAGE_TITLES } from './narrative-events';
-import { PLANET_ASSETS, BG_ASSETS } from './assets';
+import { PLANET_ASSETS, BG_ASSETS, EVENT_ART } from './assets';
 
 export type CinematicMomentKind = 'narrative' | 'discovery' | 'expedition' | 'victory' | 'megastructure';
 
@@ -35,11 +35,12 @@ export interface CinematicMoment {
   icon: string;
   /** Hex accent used for glow/ring/title color. */
   accent: string;
-  /** Backdrop art path (PLANET_ASSETS/BG_ASSETS — see per-moment mapping
-   *  below). Undefined falls back to a plain radial-glow backdrop, same as
-   *  MilestoneVignette. No dedicated 16:9 event-illustration art exists yet
-   *  (docs/4X_BASELINE_2026-08.md Part 3.3's "Event illustrations" gap row
-   *  was never generated) — this is the documented gap for a future wave. */
+  /** Backdrop art path. Narrative moments prefer a dedicated 16:9 event
+   *  illustration (EVENT_ART, generated in 4X Wave W2 — 12 of the 44 event
+   *  chain-heads have one so far) and fall back to thematic PLANET_ASSETS/
+   *  BG_ASSETS biome art for the rest (see pickNarrativeArt below).
+   *  Undefined falls back to a plain radial-glow backdrop, same as
+   *  MilestoneVignette. */
   art?: string;
 }
 
@@ -76,12 +77,13 @@ export function dequeueCinematicMoment(queue: CinematicMoment[]): CinematicMomen
   return queue.slice(1);
 }
 
-// ─── Art selection — "use what exists" (no dedicated event art yet) ────────
+// ─── Art selection — dedicated art first, thematic biome art as fallback ───
 
 /** Thematic backdrop per narrative chain, drawn from the existing
- *  PLANET_ASSETS/BG_ASSETS biome library (src/lib/game/assets.ts) rather
- *  than per-event illustrations, which do not exist (see CinematicMoment.art
- *  doc comment). Picked for tonal fit, not literal accuracy. */
+ *  PLANET_ASSETS/BG_ASSETS biome library (src/lib/game/assets.ts). Used only
+ *  when EVENT_ART has no dedicated illustration for the chain (see
+ *  pickNarrativeArt) — kept as the permanent fallback so a future chain
+ *  added without art still renders something on-theme instead of nothing. */
 const NARRATIVE_CHAIN_ART: Record<string, string> = {
   space_weather_ladder: BG_ASSETS.spaceNebula, // unused today (chain deliberately not cinematic-flagged) — kept for completeness
   europa_biosignature: PLANET_ASSETS.ice,
@@ -98,7 +100,7 @@ const NARRATIVE_CHAIN_ART: Record<string, string> = {
 };
 
 function pickNarrativeArt(chainId: string): string | undefined {
-  return NARRATIVE_CHAIN_ART[chainId];
+  return EVENT_ART[chainId] ?? NARRATIVE_CHAIN_ART[chainId];
 }
 
 // ─── Detection: eventLog diffs → cinematic moments ──────────────────────────

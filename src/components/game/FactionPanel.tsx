@@ -10,17 +10,30 @@ import {
   getStanding,
   STANDING_LABEL,
   STANDING_ACCENT,
+  STANDING_BROKER_MODIFIER,
   getEnvoyCost,
+  getFactionStandingBrokerModifier,
+  isEmbargoed,
+  FACTION_LICENSES,
   type FactionId,
+  type FactionStanding,
 } from '@/lib/game/factions';
 import { formatMoney } from '@/lib/game/formulas';
 
 interface Props {
   state: GameState;
   onSendEnvoy: (id: FactionId) => void;
+  onPurchaseLicense?: (licenseId: string) => void;
 }
 
-export default function FactionPanel({ state, onSendEnvoy }: Props) {
+const STANDING_ORDER: FactionStanding[] = ['allied', 'friendly', 'neutral', 'unfriendly', 'hostile'];
+
+function formatModifierPct(mod: number): string {
+  const pct = Math.round(Math.abs(mod) * 100);
+  return mod >= 0 ? `-${pct}% broker fee` : `+${pct}% broker fee`;
+}
+
+export default function FactionPanel({ state, onSendEnvoy, onPurchaseLicense }: Props) {
   return (
     <div className="space-y-4">
       <div className="card p-4">
@@ -30,6 +43,44 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
         </p>
       </div>
 
+      {/* STATS_DESIGN §12 — standing tiers gate market access/prices */}
+      <div className="card p-4">
+        <h3 className="text-white text-sm font-bold mb-2">Standing Tier Benefits</h3>
+        <p className="text-slate-500 text-[11px] mb-3">
+          Your standing with each faction changes what they charge you on the market — allied partners cut their broker fee, hostile ones tack a surcharge on (or refuse to deal at all).
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[11px]">
+            <thead>
+              <tr className="text-slate-500 text-left border-b border-white/10">
+                <th className="py-1 pr-3 font-hud font-normal">Standing</th>
+                <th className="py-1 pr-3 font-hud font-normal">Reputation Range</th>
+                <th className="py-1 font-hud font-normal">Market Effect</th>
+              </tr>
+            </thead>
+            <tbody>
+              {STANDING_ORDER.map(standing => (
+                <tr key={standing} className="border-b border-white/5 last:border-0">
+                  <td className={`py-1 pr-3 font-bold ${STANDING_ACCENT[standing]}`}>{STANDING_LABEL[standing]}</td>
+                  <td className="py-1 pr-3 text-slate-400 game-number">
+                    {standing === 'allied' && '+50 to +100'}
+                    {standing === 'friendly' && '+10 to +49'}
+                    {standing === 'neutral' && '-9 to +9'}
+                    {standing === 'unfriendly' && '-49 to -10'}
+                    {standing === 'hostile' && '-100 to -50'}
+                  </td>
+                  <td className="py-1 text-slate-300 game-number">
+                    {standing === 'hostile'
+                      ? 'Embargo — licenses unavailable, +25% surcharge'
+                      : formatModifierPct(STANDING_BROKER_MODIFIER[standing])}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {FACTIONS.map(f => {
           const rep = getFactionRep(state, f.id);
@@ -37,6 +88,10 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
           const envoyCost = getEnvoyCost(rep);
           const canAfford = state.money >= envoyCost && rep < 100;
           const rival = FACTION_MAP.get(f.rivalId);
+          const marketMod = getFactionStandingBrokerModifier(rep);
+          const embargoed = isEmbargoed(rep);
+          const licenses = FACTION_LICENSES.filter(l => l.factionId === f.id);
+          const owned = state.factionLicenses || [];
 
           return (
             <div
@@ -125,6 +180,53 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
                     ? 'Maximum Standing Reached'
                     : <>Send Envoy · <span className="game-number">{formatMoney(envoyCost)}</span> · +10 rep</>}
                 </button>
+
+                {/* Market effect readout (STATS_DESIGN §12) */}
+                <div className={`mt-2 text-[10px] px-2 py-1 rounded ${embargoed ? 'bg-red-500/10 text-red-300' : marketMod > 0 ? 'bg-emerald-500/10 text-emerald-300' : marketMod < 0 ? 'bg-amber-500/10 text-amber-300' : 'text-slate-600'}`}>
+                  {embargoed
+                    ? 'Embargoed — this faction will not deal with you'
+                    : marketMod !== 0
+                      ? `Market: ${formatModifierPct(marketMod)} with this faction`
+                      : 'Market: standard broker fee'}
+                </div>
+
+                {/* Faction licensing deals (STATS_DESIGN §12 "faction-locked content") */}
+                {licenses.length > 0 && (
+                  <div className="mt-3 space-y-1.5">
+                    <div className="text-[10px] font-hud text-slate-500 uppercase tracking-wide">Licensing Deals</div>
+                    {licenses.map(l => {
+                      const isOwned = owned.includes(l.id);
+                      const meetsStanding = rep >= l.minStanding && !embargoed;
+                      const affordable = state.money >= l.cost;
+                      const purchasable = !isOwned && meetsStanding && affordable && !!onPurchaseLicense;
+                      return (
+                        <div key={l.id} className="rounded border border-white/10 bg-white/[0.02] p-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[11px] font-bold text-slate-200">{l.name}</span>
+                            {isOwned && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">OWNED</span>}
+                          </div>
+                          <p className="text-[10px] text-slate-500 mt-0.5">{l.description}</p>
+                          <div className="flex items-center justify-between mt-1.5">
+                            <span className="text-[10px] text-slate-500">Requires {STANDING_LABEL[getStanding(l.minStanding)]}+ standing</span>
+                            {!isOwned && (
+                              <button
+                                onClick={purchasable ? () => onPurchaseLicense!(l.id) : undefined}
+                                disabled={!purchasable}
+                                className={`min-h-[32px] px-2 py-1 rounded text-[10px] font-bold ${
+                                  purchasable
+                                    ? `${f.theme.bg} ${f.theme.accent} hover:brightness-125 border ${f.theme.border}`
+                                    : 'bg-white/[0.03] text-slate-600 cursor-not-allowed border border-white/[0.05]'
+                                }`}
+                              >
+                                <span className="game-number">{formatMoney(l.cost)}</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           );

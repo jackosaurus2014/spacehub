@@ -62,7 +62,8 @@
 //
 // NOTE on fuel accounting: research effect buckets fuelEfficiency /
 // expeditionRisk (W1) remain unconsumed here BY SPEC — the doc assigns
-// fuelEfficiency to cargo logistics (audit C1 / wave W14) and expeditionRisk
+// fuelEfficiency to cargo logistics (audit C1 / wave W14 — now consumed
+// there, see cargo-logistics.ts getFuelEfficiencyMultiplier) and expeditionRisk
 // to interstellar expeditions; Part 2b's mission spec defines no fuel line
 // item (program costs are budget-level). Do not consume them here.
 

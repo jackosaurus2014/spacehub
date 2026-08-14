@@ -1,0 +1,146 @@
+[
+  {
+    "id": "event-space_weather_ladder",
+    "prompt": "A dramatic wide cinematic view of a coronal mass ejection erupting from the sun, aurora-like plasma streamers, a small spacecraft silhouetted against the flare, hard-science space weather visualization, no text, no logos",
+    "output": "event-space_weather_ladder.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-europa_biosignature",
+    "prompt": "Europa's cracked icy surface with a nuclear cryobot melt probe descending through a bore-hole into a dark subsurface ocean below, faint chemical bioluminescent glow in the water, mission telemetry readout style, hard-science planetary art, no text",
+    "output": "event-europa_biosignature.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-contamination_protocols",
+    "prompt": "A sealed sample-return canister inside a BSL-4 containment facility, robotic manipulator arms, airlock doors, quarantine warning lights, clinical high-tech aerospace laboratory aesthetic, no text",
+    "output": "event-contamination_protocols.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-iso_flyby",
+    "prompt": "An elongated cigar-shaped interstellar object tumbling through deep space, a small robotic interceptor spacecraft with solar panels approaching for a flyby, dense star field backdrop, sense of scale and mystery, no text",
+    "output": "event-iso_flyby.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-accord_council",
+    "prompt": "A futuristic orbital council chamber with holographic displays showing solar system territories and faction emblem markers, delegate silhouettes seated in a circular forum, diplomatic atmosphere, no text",
+    "output": "event-accord_council.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-superconductor_crisis",
+    "prompt": "A research lab with a small dark crystalline sample levitating above a magnet in a Meissner-effect demonstration, scientists in clean-room suits studying data on floating holographic panels, tense breakthrough-or-fraud atmosphere, no text",
+    "output": "event-superconductor_crisis.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-industry_shocks",
+    "prompt": "An industrial orbital manufacturing platform with cargo ships docking, holographic market price charts overlaid in the foreground, sense of economic tension and opportunity, no text",
+    "output": "event-industry_shocks.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-crew_health_crisis",
+    "prompt": "A cramped high-tech spacecraft medical bay, a crew member undergoing a radiation exposure body scan, medical holograms floating around a diagnostic table, somber clinical lighting, no text",
+    "output": "event-crew_health_crisis.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-great_silence_recurrence",
+    "prompt": "A massive ancient alien interface station drifting in deep space, its glyph-lit surfaces going dark section by section, a small human survey ship dwarfed nearby, eerie vast first-contact aesthetic, no text",
+    "output": "event-great_silence_recurrence.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-triton_archive_followup",
+    "prompt": "Triton's icy cantaloupe-terrain surface with nitrogen geysers erupting under a distant blue Neptune, a robotic excavator uncovering a buried ancient artifact half-encased in ice, cold blue lighting, no text",
+    "output": "event-triton_archive_followup.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-wanderer1_anomaly",
+    "prompt": "An aging Voyager-style interstellar probe drifting through deep space with a faint golden record disc visible, telemetry data streams overlaid as thin light traces, nostalgic yet unsettling anomaly signal mood, no text",
+    "output": "event-wanderer1_anomaly.png",
+    "kind": "event"
+  },
+  {
+    "id": "event-ring_fire_anniversary",
+    "prompt": "Saturn's rings with small mining and industrial platforms operating among icy ring particles, safety inspection drones drifting past, dramatic backlit ringlight, grand epic scale, no text",
+    "output": "event-ring_fire_anniversary.png",
+    "kind": "event"
+  },
+  {
+    "id": "patch-meridian_observatory",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a large space telescope program called Meridian Observatory, depicting a stylized golden telescope aperture and starburst, bold flat colors, gold and cyan on deep indigo, clean vector badge design, no text, no photorealism",
+    "output": "patch-meridian_observatory.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-europa_ocean_access",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a Europa ocean-access cryobot program, depicting a stylized ice moon with a probe descending through a cracked shell into blue water below, bold flat colors, cyan and white on deep indigo, clean vector badge design, no text",
+    "output": "patch-europa_ocean_access.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-enceladus_plume_sampler",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for an Enceladus plume-sampling program, depicting a stylized small moon with geyser plumes fanning upward toward a sample-collector spacecraft, bold flat colors, icy cyan and silver on deep indigo, clean vector badge design, no text",
+    "output": "patch-enceladus_plume_sampler.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-venus_aerostat",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a Venus cloud-layer aerostat balloon program, depicting a stylized balloon platform floating above a golden cloud-wrapped planet, bold flat colors, amber and indigo, clean vector badge design, no text",
+    "output": "patch-venus_aerostat.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-mars_deep_drill",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a Mars deep-drilling subsurface program, depicting a stylized drill string boring into red planet strata with seismic wave rings, bold flat colors, rust orange and cyan on deep indigo, clean vector badge design, no text",
+    "output": "patch-mars_deep_drill.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-kinetic_deflection_demo",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a kinetic asteroid-deflection demonstration program, depicting a stylized impactor spacecraft striking an asteroid with a burst of ejecta, bold flat colors, cyan and white on deep indigo, clean vector badge design, no text",
+    "output": "patch-kinetic_deflection_demo.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-iso_interceptor",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for an interstellar-object rapid-response interceptor program, depicting a stylized spacecraft on an intercept trajectory toward an elongated tumbling object, bold flat colors, violet and cyan on deep indigo, clean vector badge design, no text",
+    "output": "patch-iso_interceptor.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-restricted_sample_return",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a restricted sample-return containment program, depicting a stylized sealed sample canister inside a shield emblem, bold flat colors, gold and deep red hazard accent on indigo, clean vector badge design, no text",
+    "output": "patch-restricted_sample_return.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-heliophysics_sentinels",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a heliophysics sentinel constellation program watching the sun, depicting stylized satellites in a ring formation around a radiant sun symbol, bold flat colors, amber and cyan on deep indigo, clean vector badge design, no text",
+    "output": "patch-heliophysics_sentinels.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-titan_rotorcraft",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a Titan rotorcraft survey program, depicting a stylized dual-rotor drone flying over a hazy orange moon with hydrocarbon lakes, bold flat colors, burnt orange and cyan on deep indigo, clean vector badge design, no text",
+    "output": "patch-titan_rotorcraft.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-gravitational_wave_array",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a deep-space gravitational-wave detector array program, depicting three stylized satellites connected by thin laser interferometry lines forming a triangle, bold flat colors, violet and cyan on deep indigo, clean vector badge design, no text",
+    "output": "patch-gravitational_wave_array.png",
+    "kind": "patch"
+  },
+  {
+    "id": "patch-heliopause_probe",
+    "prompt": "A flat vector NASA-style circular mission patch insignia for a heliopause boundary probe program, depicting a stylized RTG-powered probe crossing a glowing boundary line between the solar bubble and interstellar space, bold flat colors, cyan and deep violet on dark indigo, clean vector badge design, no text",
+    "output": "patch-heliopause_probe.png",
+    "kind": "patch"
+  }
+]

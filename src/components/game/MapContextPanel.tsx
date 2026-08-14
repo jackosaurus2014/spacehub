@@ -33,6 +33,17 @@ import {
 import { LOCATION_TO_ZONE, ZONE_MAP } from '@/lib/game/zone-influence';
 import { getActiveScienceMissions, getScienceMissionProgress, SCIENCE_PROGRAM_MAP } from '@/lib/game/science-missions';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
+// W14 (cargo logistics, audit C1): local-stockpile readout + freight quotes
+// for the map dispatch flow.
+import {
+  getLocationInventory,
+  isHomeLocation,
+  getShipCargoCapacity,
+  getCargoLoadUnits,
+  getFreightFuelCost,
+  getRouteDeltaV,
+} from '@/lib/game/cargo-logistics';
+import CargoLoader from './CargoLoader';
 import { playSound } from '@/lib/game/sound-engine';
 import { REGION_LABELS } from './SolarSystemCanvas';
 import { SYSTEM_RISK_META, RISK_TONE_CLASS } from './GalacticMapView';
@@ -48,7 +59,7 @@ interface MapContextPanelProps {
   onUnlock: (locId: string) => void;
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
-  onDispatchShip: (shipInstanceId: string, toLocationId: string) => void;
+  onDispatchShip: (shipInstanceId: string, toLocationId: string, cargo?: Record<string, number>) => void;
   onLaunchExpedition: (req: ExpeditionPlanRequest) => void;
   onNavigateTab: (tab: GameTab) => void;
 }
@@ -144,7 +155,7 @@ export default function MapContextPanel({
         targetLocationId={locId}
         pickedShip={pickedShip}
         onPick={setPickedShip}
-        onDispatch={(shipId) => { onDispatchShip(shipId, locId); setView('overview'); }}
+        onDispatch={(shipId, cargo) => { onDispatchShip(shipId, locId, cargo); setView('overview'); }}
       />
     );
   }
@@ -389,6 +400,13 @@ function LocationOverview({
               <p className="text-[10px] text-cyan-300 mt-0.5">Output multiplier: {miningInfo.multiplier}x</p>
             </div>
           )}
+
+          {/* W14 (cargo logistics): what's physically stored HERE. Home
+              cluster shows the shared Earth pool (the market inventory);
+              remote locations show their local stockpile, which freight
+              ships must haul home before it can be sold. */}
+          <LocalStockpileBlock state={state} locationId={locationId} />
+
           <div className="grid grid-cols-2 gap-2 text-[10px]">
             <div className="rounded bg-white/[0.02] p-2">
               <div className="text-slate-500">Tier</div>
@@ -427,6 +445,53 @@ function LocationOverview({
               Details — open full Build tab →
             </button>
           </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** W14 (cargo logistics): the location's physical inventory. Home cluster →
+ *  the shared Earth pool (also the NPC market inventory); anywhere else →
+ *  the location's local stockpile (goods must be freighted home to sell). */
+function LocalStockpileBlock({ state, locationId }: { state: GameState; locationId: string }) {
+  const home = isHomeLocation(locationId);
+  const inventory = getLocationInventory(state, locationId);
+  const entries = Object.entries(inventory)
+    .filter(([resId, qty]) => qty > 0 && RESOURCE_MAP.has(resId as ResourceId))
+    .sort((a, b) => b[1] - a[1]);
+
+  // Pre-ratchet saves have nothing local anywhere and no logistics yet —
+  // don't add noise until the mechanic is live for this player.
+  if (entries.length === 0 && !state.logisticsUnlocked) return null;
+
+  return (
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+      <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1 flex items-center gap-1">
+        <span aria-hidden="true">📦</span> {home ? 'Earth Pool (market inventory)' : 'Local Stockpile'}
+      </div>
+      {entries.length === 0 ? (
+        <p className="text-[11px] text-slate-600">
+          Empty{home ? '' : ' — production here accrues locally; dispatch cargo ships to stock or collect'}.
+        </p>
+      ) : (
+        <>
+          <div className="flex flex-wrap gap-1">
+            {entries.slice(0, 8).map(([resId, qty]) => {
+              const res = RESOURCE_MAP.get(resId as ResourceId);
+              return (
+                <span key={resId} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300">
+                  <span aria-hidden="true">{res?.icon}</span> {res?.name || resId.replace(/_/g, ' ')} <span className="font-mono text-cyan-300">{Math.floor(qty).toLocaleString()}</span>
+                </span>
+              );
+            })}
+            {entries.length > 8 && (
+              <span className="text-[10px] px-1.5 py-0.5 text-slate-500">+{entries.length - 8} more</span>
+            )}
+          </div>
+          {!home && (
+            <p className="text-[9px] text-slate-500 mt-1">Goods must be freighted to Earth before they can be sold on the market.</p>
+          )}
         </>
       )}
     </div>
@@ -495,8 +560,12 @@ function DispatchBody({
   targetLocationId: string;
   pickedShip: string | null;
   onPick: (id: string | null) => void;
-  onDispatch: (shipInstanceId: string) => void;
+  onDispatch: (shipInstanceId: string, cargo: Record<string, number>) => void;
 }) {
+  // W14: cargo manifest for the freight leg. Reset when the picked ship
+  // changes (manifest is origin-inventory specific).
+  const [cargoManifest, setCargoManifest] = useState<Record<string, number>>({});
+  useEffect(() => { setCargoManifest({}); }, [pickedShip]);
   const eligibleShips = (state.ships || []).filter(s => s.isBuilt && s.status === 'idle' && s.currentLocation !== targetLocationId);
   const busyShips = (state.ships || []).filter(s => s.isBuilt && s.status !== 'idle' && s.status !== 'in_transit');
 
@@ -557,22 +626,53 @@ function DispatchBody({
         })}
       </div>
 
-      {ship && (
-        <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3 mt-2">
-          <div className="text-[11px] text-slate-300 mb-2">
-            ETA: <span className="text-cyan-300 font-mono">{formatDuration(eta)}</span>
-            {isBoosted && <span className="text-cyan-300 ml-1" aria-label="speed boosted by modules, specialization, or workforce">⚡ boosted</span>}
-            <span className="text-slate-600"> — travel-time system is real; ship snaps to route immediately, position interpolates on the map.</span>
+      {ship && (() => {
+        // W14 freight quote: capacity (hull + cargo modules), load, and the
+        // Δv-priced fuel bill (fuelEfficiency research already applied).
+        const shipDef = SHIP_MAP.get(ship.definitionId);
+        const capacity = getShipCargoCapacity(state, ship.instanceId);
+        const loadUnits = getCargoLoadUnits(shipDef?.role, cargoManifest);
+        const overCapacity = loadUnits > capacity;
+        const fuelCost = getFreightFuelCost(state, ship.instanceId, ship.currentLocation, targetLocationId, cargoManifest);
+        const canAffordFuel = state.money >= fuelCost;
+        const deltaV = getRouteDeltaV(ship.currentLocation, targetLocationId);
+        return (
+          <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3 mt-2 space-y-2">
+            {capacity > 0 && (
+              <CargoLoader
+                state={state}
+                shipInstanceId={ship.instanceId}
+                cargo={cargoManifest}
+                onChange={setCargoManifest}
+              />
+            )}
+            <div className="text-[11px] text-slate-300">
+              ETA: <span className="text-cyan-300 font-mono">{formatDuration(eta)}</span>
+              {isBoosted && <span className="text-cyan-300 ml-1" aria-label="speed boosted by modules, specialization, or workforce">⚡ boosted</span>}
+              <span className="text-slate-500"> · Δv {deltaV.toLocaleString()} m/s</span>
+            </div>
+            <div className="text-[11px] text-slate-300">
+              Fuel bill: <span className={`font-mono ${canAffordFuel ? 'text-amber-300' : 'text-red-300'}`}>{formatMoney(fuelCost)}</span>
+              <span className="text-slate-600"> — logistics cost money; fuel scales with route Δv and load.</span>
+            </div>
+            {overCapacity && (
+              <p className="text-red-300 text-[10px]" role="alert">Cargo exceeds capacity ({loadUnits}/{capacity}) — unload to dispatch.</p>
+            )}
+            <button
+              type="button"
+              disabled={overCapacity || !canAffordFuel}
+              onClick={() => onDispatch(ship.instanceId, cargoManifest)}
+              className={`w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                overCapacity || !canAffordFuel
+                  ? 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
+                  : 'bg-cyan-600 text-white hover:bg-cyan-500'
+              }`}
+            >
+              {Object.keys(cargoManifest).length > 0 ? `Dispatch with ${loadUnits} units` : 'Dispatch (no cargo)'} — {formatMoney(fuelCost)} fuel
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => onDispatch(ship.instanceId)}
-            className="w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold bg-cyan-600 text-white hover:bg-cyan-500 transition-colors"
-          >
-            Confirm Dispatch
-          </button>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

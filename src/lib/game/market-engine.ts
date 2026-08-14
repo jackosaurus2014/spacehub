@@ -162,6 +162,17 @@ export function getEffectiveBrokerFeeRate(opts: {
   commanderMarketMultiplier?: number;
   espionageDiscount?: number;
   diplomacyTradeBonus?: number;
+  /**
+   * 4X Wave W11 (accord-senate.ts / STATS_DESIGN.md §12 "Standing tiers
+   * modify prices"): a SIGNED modifier from faction standing —
+   * factions.getFactionStandingBrokerModifier(rep). Positive = discount
+   * (allied/friendly, folded into the same cut stack as commander/
+   * espionage/diplomacy below); negative = surcharge (unfriendly/hostile —
+   * the one caller-supplied input that can push the effective rate ABOVE
+   * base). Optional and defaults to 0, so every existing caller/test that
+   * omits it is byte-for-byte unchanged.
+   */
+  factionStandingModifier?: number;
 }): number {
   const base = opts.baseRate ?? MARKET_BROKER_FEE_RATE;
   const clampFrac = (v: number | undefined, cap: number) =>
@@ -170,7 +181,13 @@ export function getEffectiveBrokerFeeRate(opts: {
   const espionageCut = clampFrac(opts.espionageDiscount, 0.50);
   const diplomacyCut = clampFrac(opts.diplomacyTradeBonus, 0.50);
   const totalCut = Math.min(0.85, commanderCut + espionageCut + diplomacyCut);
-  return base * (1 - totalCut);
+  // Faction standing applies AFTER the discount-only stack above, as its own
+  // signed multiplier — capped to STATS_DESIGN §12's stated tier range
+  // (+15% allied discount .. -25% hostile surcharge) regardless of what the
+  // caller passes, so a bad input can never zero out or invert the fee.
+  const standingMod = Math.max(-0.25, Math.min(0.15, opts.factionStandingModifier ?? 0));
+  const rate = base * (1 - totalCut) * (1 - standingMod);
+  return Math.max(0, rate);
 }
 
 /**

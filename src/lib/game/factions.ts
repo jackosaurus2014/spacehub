@@ -153,3 +153,139 @@ export function sendEnvoy(state: GameState, id: FactionId): GameState {
   const after = { ...state, money: state.money - cost, totalSpent: state.totalSpent + cost };
   return shiftReputation(after, id, 10);
 }
+
+// ─── 4X Wave W11 — Faction standing economic bite (STATS_DESIGN.md §12) ────
+// "Standing tiers modify prices: Allied = 15% better prices at that
+// faction's services; Hostile = 25% worse or unavailable." Reputation
+// (-100..100, this file) is per-faction and already shifts both ways via
+// shiftReputation — unlike the global XP-like score in reputation.ts, which
+// is explicitly append-only. Standing is therefore the right lever for a
+// spendable/losable economic relationship.
+
+/**
+ * Signed broker-fee modifier for the given standing, per STATS_DESIGN §12's
+ * stated tier range. Fed into market-engine.getEffectiveBrokerFeeRate's
+ * `factionStandingModifier` param — positive = discount, negative =
+ * surcharge. Neutral is exactly 0 (today's behavior, unchanged for players
+ * who never engage a faction's market).
+ */
+export const STANDING_BROKER_MODIFIER: Record<FactionStanding, number> = {
+  allied: 0.15,
+  friendly: 0.07,
+  neutral: 0,
+  unfriendly: -0.10,
+  hostile: -0.25,
+};
+
+export function getFactionStandingBrokerModifier(rep: number): number {
+  return STANDING_BROKER_MODIFIER[getStanding(rep)];
+}
+
+/** Hostile standing ("Hostile = ... unavailable" per STATS_DESIGN §12)
+ *  embargoes that faction's exclusive offerings — gates
+ *  purchaseFactionLicense below and is available for future waves to gate
+ *  faction-exclusive services/contracts the same way. */
+export function isEmbargoed(rep: number): boolean {
+  return getStanding(rep) === 'hostile';
+}
+
+// ─── Faction licensing deals (STATS_DESIGN §12 "faction-locked content") ───
+// Pay-once, standing-gated deals that unlock ongoing tech/route access.
+// `grants` is a forward-compatible flag string (mirrors narrative-events.ts's
+// unlockRareTechId pattern) — the license purchase itself is real (money
+// spent, standing required, hostile factions refuse to deal), while the
+// specific mechanical consumer of each `grants` flag is left for the wave
+// that builds that content (route bonuses, tech gates, etc.) so nothing
+// authored here is lost.
+
+export interface FactionLicenseDefinition {
+  id: string;
+  factionId: FactionId;
+  name: string;
+  description: string;
+  cost: number;
+  /** Minimum standing (rep points) required to be offered this deal. */
+  minStanding: number;
+  /** Forward-compatible unlock flag, stored in state.factionLicenses. */
+  grants: string;
+}
+
+export const FACTION_LICENSES: FactionLicenseDefinition[] = [
+  {
+    id: 'dominion_priority_routing',
+    factionId: 'the-dominion',
+    name: 'Dominion Priority Routing License',
+    description: 'Enforcement-escorted shipping lanes through Dominion-patrolled inner-system space.',
+    cost: 300_000_000,
+    minStanding: 10,
+    grants: 'priority_routing',
+  },
+  {
+    id: 'syndicate_blackmarket_access',
+    factionId: 'the-syndicate',
+    name: 'Syndicate Gray-Market Access',
+    description: 'Discreet logistics and gray-market contract access the Dominion suppresses.',
+    cost: 250_000_000,
+    minStanding: 10,
+    grants: 'blackmarket_access',
+  },
+  {
+    id: 'corsair_safe_passage',
+    factionId: 'void-corsairs',
+    name: 'Void Corsair Safe-Passage Tribute',
+    description: 'A standing tribute agreement — Corsair raids redirect to rivals instead of you.',
+    cost: 180_000_000,
+    minStanding: 10,
+    grants: 'safe_passage',
+  },
+  {
+    id: 'hive_biomaterial_supply',
+    factionId: 'hive-collective',
+    name: 'Hive Biomaterial Supply Agreement',
+    description: 'Ongoing exotic bio-material trade the Collective extends only to trusted partners.',
+    cost: 400_000_000,
+    minStanding: 20,
+    grants: 'biomaterial_supply',
+  },
+  {
+    id: 'reaver_route_charts',
+    factionId: 'nebula-reavers',
+    name: 'Nebula Reaver Route Charts',
+    description: 'Coordinates to resource-rich anomalies and short-cut shipping lanes.',
+    cost: 220_000_000,
+    minStanding: 10,
+    grants: 'route_charts',
+  },
+  {
+    id: 'echo_precursor_access',
+    factionId: 'echo-remnants',
+    name: 'Echo Remnant Precursor Research Access',
+    description: 'Guarded access to precursor-technology research otherwise unreachable.',
+    cost: 500_000_000,
+    minStanding: 25,
+    grants: 'precursor_access',
+  },
+];
+
+export const FACTION_LICENSE_MAP = new Map(FACTION_LICENSES.map(l => [l.id, l]));
+
+/** Purchase a faction license: pay money → gain the deal's `grants` flag.
+ *  No-op (returns the same reference) if: unknown id, already owned,
+ *  standing below the deal's minimum, the faction is hostile (embargo), or
+ *  the player can't afford it. */
+export function purchaseFactionLicense(state: GameState, licenseId: string): GameState {
+  const def = FACTION_LICENSE_MAP.get(licenseId);
+  if (!def) return state;
+  const owned = state.factionLicenses || [];
+  if (owned.includes(licenseId)) return state;
+  const rep = getFactionRep(state, def.factionId);
+  if (isEmbargoed(rep)) return state;
+  if (rep < def.minStanding) return state;
+  if (state.money < def.cost) return state;
+  return {
+    ...state,
+    money: state.money - def.cost,
+    totalSpent: state.totalSpent + def.cost,
+    factionLicenses: [...owned, licenseId],
+  };
+}
