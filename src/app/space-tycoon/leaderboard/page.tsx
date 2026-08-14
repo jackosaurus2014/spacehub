@@ -10,7 +10,9 @@ import { getPublicLeaderboard, getPublicCorporationCount } from '@/lib/game/publ
 // required. Data is fetched directly via prisma (not the client-facing
 // /api/space-tycoon/leaderboard route) so this page can be server-rendered
 // for SEO. Refreshed at most every 5 minutes.
-export const revalidate = 300;
+// Rendered per-request: Railway's build container has no database access, so
+// build-time prerendering (ISR) fails the deploy. The top-50 query is cheap.
+export const dynamic = 'force-dynamic';
 
 const PAGE_URL = `${APP_URL}/space-tycoon/leaderboard`;
 const PAGE_TITLE = 'Space Tycoon Leaderboard — Top Corporations';
