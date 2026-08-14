@@ -413,6 +413,37 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
       };
     },
   },
+  {
+    id: 'feedback-review-cadence',
+    label: 'User feedback is reviewed within 7 days (no stale "new" submissions)',
+    // Guarded against the FeedbackSubmission table not existing yet (code may
+    // deploy ahead of `prisma db push`) — treated as a pass so the sentinel
+    // doesn't alert before the migration has run. Triage happens in
+    // /admin?tab=feedback (statuses: new -> reviewed -> actioned).
+    run: async (): Promise<AccuracyCheckOutcome> => {
+      let oldest: { createdAt: Date } | null;
+      try {
+        oldest = await prisma.feedbackSubmission.findFirst({
+          where: { status: 'new' },
+          orderBy: { createdAt: 'asc' },
+          select: { createdAt: true },
+        });
+      } catch {
+        return { ok: true, detail: 'FeedbackSubmission table not migrated yet — check skipped.' };
+      }
+
+      if (!oldest) {
+        return { ok: true, detail: 'No unreviewed ("new") feedback submissions.' };
+      }
+
+      const ageDays = (Date.now() - oldest.createdAt.getTime()) / MS_PER_DAY;
+      const ok = ageDays <= 7;
+      return {
+        ok,
+        detail: `Oldest "new" FeedbackSubmission is ${ageDays.toFixed(1)} day(s) old (policy: <= 7 days) — triage at /admin?tab=feedback.`,
+      };
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------

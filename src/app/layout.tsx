@@ -50,6 +50,7 @@ const StreakNotification = dynamic(() => import('@/components/marketing/StreakNo
 const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
 // FeedbackButton removed — replaced with /feedback page to avoid blocking left nav
 const FeedbackWidget = dynamic(() => import('@/components/FeedbackWidget'), { ssr: false });
+const FeedbackTab = dynamic(() => import('@/components/FeedbackTab'), { ssr: false });
 const IndustryTicker = dynamic(() => import('@/components/ui/IndustryTicker'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
@@ -337,6 +338,7 @@ export default function RootLayout({
               <ExitIntentPopup />
               <QuickStartGuide />
               <FeedbackWidget />
+              <FeedbackTab />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

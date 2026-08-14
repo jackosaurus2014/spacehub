@@ -27,6 +27,7 @@ jest.mock('@/lib/db', () => ({
     newsArticle: { findFirst: jest.fn() },
     aIInsight: { findFirst: jest.fn() },
     publishedBrief: { findFirst: jest.fn() },
+    feedbackSubmission: { findFirst: jest.fn() },
   },
 }));
 
@@ -58,6 +59,7 @@ const mockPrisma = prisma as unknown as {
   newsArticle: { findFirst: jest.Mock };
   aIInsight: { findFirst: jest.Mock };
   publishedBrief: { findFirst: jest.Mock };
+  feedbackSubmission: { findFirst: jest.Mock };
 };
 
 function getCheck(id: string): AccuracyCheckDef {
@@ -296,6 +298,46 @@ describe('published-briefs-fresh', () => {
     const result = await getCheck('published-briefs-fresh').run();
     expect(result.ok).toBe(true);
     expect(result.detail).toContain('not migrated yet');
+  });
+});
+
+describe('feedback-review-cadence', () => {
+  it('passes when there are no "new" feedback submissions', async () => {
+    mockPrisma.feedbackSubmission.findFirst.mockResolvedValueOnce(null);
+    const result = await getCheck('feedback-review-cadence').run();
+    expect(result.ok).toBe(true);
+    expect(mockPrisma.feedbackSubmission.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { status: 'new' },
+        orderBy: { createdAt: 'asc' },
+      })
+    );
+  });
+
+  it('passes when the oldest "new" submission is within 7 days', async () => {
+    mockPrisma.feedbackSubmission.findFirst.mockResolvedValueOnce({
+      createdAt: new Date(Date.now() - 3 * DAY),
+    });
+    const result = await getCheck('feedback-review-cadence').run();
+    expect(result.ok).toBe(true);
+  });
+
+  it('fails when a "new" submission has sat unreviewed for more than 7 days', async () => {
+    mockPrisma.feedbackSubmission.findFirst.mockResolvedValueOnce({
+      createdAt: new Date(Date.now() - 9 * DAY),
+    });
+    const result = await getCheck('feedback-review-cadence').run();
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain('/admin?tab=feedback');
+  });
+
+  it('skips (passes) when the FeedbackSubmission table is not migrated yet', async () => {
+    mockPrisma.feedbackSubmission.findFirst.mockRejectedValueOnce(
+      new Error('relation "FeedbackSubmission" does not exist')
+    );
+    const result = await getCheck('feedback-review-cadence').run();
+    expect(result.ok).toBe(true);
+    expect(result.detail).toContain('not migrated');
   });
 });
 

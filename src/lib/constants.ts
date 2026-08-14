@@ -11,3 +11,9 @@ export const APP_URL =
 export const BASE_URL =
   process.env.NEXT_PUBLIC_APP_URL ||
   `http://localhost:${process.env.PORT || 3000}`;
+
+/**
+ * Founder / operations inbox. Destination for the weekly CEO brief and
+ * per-submission feedback notifications.
+ */
+export const FOUNDER_EMAIL = 'missionproofcomms@gmail.com';

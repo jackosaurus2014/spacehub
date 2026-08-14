@@ -113,6 +113,9 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 13 * * 1',   path: '/api/cron/weekly-economy-post',             label: 'weekly-economy-post',        maxStaleMinutes: 11520 },
   // This Week in Launches — weekly retention email, Mondays 12:30 UTC (SpaceEvent-sourced, idempotent per calendar week)
   { schedule: '30 12 * * 1',  path: '/api/cron/launch-week-email',               label: 'launch-week-email',          maxStaleMinutes: 11520 },
+  // Weekly CEO brief — founder ops email, Mondays 13:37 UTC (growth vs 10k-MAU
+  // goal + sentinel + cron-fleet health + business signals; idempotent per week)
+  { schedule: '37 13 * * 1',  path: '/api/cron/ceo-brief',                       label: 'ceo-brief',                  maxStaleMinutes: 11520 },
 
   // ─── New Real-Time Data Feed Integrations ────────────────────────────
   { schedule: '0 */6 * * *',  path: '/api/refresh?type=conjunction-alerts',       label: 'conjunction-alerts',          maxStaleMinutes: 480 },

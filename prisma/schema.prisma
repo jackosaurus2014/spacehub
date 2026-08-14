@@ -395,6 +395,28 @@ model UserFeedback {
   @@index([createdAt])
 }
 
+// Structured questionnaire feedback from /feedback (category + free text),
+// distinct from UserFeedback which is the lightweight NPS widget. Rows are
+// triaged by the founder in /admin (Feedback tab): new -> reviewed -> actioned.
+// The content-accuracy sentinel check 'feedback-review-cadence' fails if any
+// 'new' row is older than 7 days.
+model FeedbackSubmission {
+  id       String  @id @default(cuid())
+  category String // bug | idea | content | general | praise
+  message  String  @db.Text
+  page     String? // Auto-captured site path the feedback was about
+  email    String? // Optional contact email (only if the user wants a reply)
+  userId   String? // Optional — set when the submitter is signed in
+  status   String  @default("new") // new | reviewed | actioned
+
+  createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([category])
+  @@index([status, createdAt])
+}
+
 model NewsArticle {
   id          String           @id @default(cuid())
   title       String

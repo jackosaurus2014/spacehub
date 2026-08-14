@@ -9,7 +9,33 @@ import { AVAILABLE_MODULES } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
-type Tab = 'feature' | 'help' | 'data-status';
+type Tab = 'feature' | 'help' | 'feedback' | 'data-status';
+
+// Matches the FeedbackSubmission Prisma model (see prisma/schema.prisma)
+interface FeedbackSubmissionRow {
+  id: string;
+  category: string;
+  message: string;
+  page: string | null;
+  email: string | null;
+  userId: string | null;
+  status: 'new' | 'reviewed' | 'actioned';
+  createdAt: string;
+}
+
+const FEEDBACK_STATUS_META: Record<FeedbackSubmissionRow['status'], { label: string; color: string }> = {
+  new: { label: 'New', color: 'bg-amber-500' },
+  reviewed: { label: 'Reviewed', color: 'bg-sky-600' },
+  actioned: { label: 'Actioned', color: 'bg-emerald-600' },
+};
+
+const FEEDBACK_CATEGORY_ICONS: Record<string, string> = {
+  bug: '🐛',
+  idea: '💡',
+  content: '📊',
+  praise: '🎉',
+  general: '💬',
+};
 
 // Init endpoints for the data status panel
 const INIT_ENDPOINTS = [
@@ -78,7 +104,21 @@ export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('feature');
   const [featureRequests, setFeatureRequests] = useState<FeatureRequest[]>([]);
   const [helpRequests, setHelpRequests] = useState<HelpRequest[]>([]);
+  const [feedbackSubmissions, setFeedbackSubmissions] = useState<FeedbackSubmissionRow[]>([]);
+  const [feedbackTableMissing, setFeedbackTableMissing] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Deep-link support: /admin?tab=feedback (used by notification emails)
+  useEffect(() => {
+    try {
+      const wanted = new URLSearchParams(window.location.search).get('tab');
+      if (wanted === 'feedback' || wanted === 'help' || wanted === 'data-status') {
+        setTab(wanted);
+      }
+    } catch {
+      // Ignore — default tab stands
+    }
+  }, []);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -94,6 +134,13 @@ export default function AdminPage() {
         if (res.ok) {
           const data = await res.json();
           setHelpRequests(data.helpRequests);
+        }
+      } else if (tab === 'feedback') {
+        const res = await fetch('/api/admin/feedback');
+        if (res.ok) {
+          const data = await res.json();
+          setFeedbackSubmissions(data.data?.submissions || []);
+          setFeedbackTableMissing(!!data.data?.tableMissing);
         }
       }
     } catch (err) {
@@ -175,6 +222,16 @@ export default function AdminPage() {
             Help Requests
           </button>
           <button
+            onClick={() => setTab('feedback')}
+            className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+              tab === 'feedback'
+                ? 'border-white/15 text-white'
+                : 'border-transparent text-star-300 hover:text-white'
+            }`}
+          >
+            Feedback
+          </button>
+          <button
             onClick={() => setTab('data-status')}
             className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
               tab === 'data-status'
@@ -194,6 +251,12 @@ export default function AdminPage() {
           </div>
         ) : tab === 'feature' ? (
           <FeatureRequestList items={featureRequests} onUpdate={fetchData} />
+        ) : tab === 'feedback' ? (
+          <FeedbackSubmissionList
+            items={feedbackSubmissions}
+            tableMissing={feedbackTableMissing}
+            onUpdate={fetchData}
+          />
         ) : (
           <HelpRequestList items={helpRequests} onUpdate={fetchData} />
         )}
@@ -639,6 +702,109 @@ function FeatureRequestItem({ item, onUpdate }: { item: FeatureRequest; onUpdate
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
+      </div>
+    </div>
+  );
+}
+
+// --------------- Feedback Submissions ---------------
+
+function FeedbackSubmissionList({
+  items,
+  tableMissing,
+  onUpdate,
+}: {
+  items: FeedbackSubmissionRow[];
+  tableMissing: boolean;
+  onUpdate: () => void;
+}) {
+  if (tableMissing) {
+    return (
+      <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 text-yellow-400 text-sm">
+        The FeedbackSubmission table has not been migrated yet — run <code>npx prisma db push</code> after deploy.
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return <p className="text-star-300 text-center py-12">No feedback submissions yet.</p>;
+  }
+
+  const newCount = items.filter((i) => i.status === 'new').length;
+
+  return (
+    <div>
+      <p className="text-star-300 text-sm mb-4">
+        {items.length} submission{items.length === 1 ? '' : 's'}
+        {newCount > 0 && <span className="text-amber-400"> · {newCount} awaiting review</span>}
+      </p>
+      <StaggerContainer className="space-y-4">
+        {items.map((item) => (
+          <StaggerItem key={item.id}>
+            <FeedbackSubmissionItem item={item} onUpdate={onUpdate} />
+          </StaggerItem>
+        ))}
+      </StaggerContainer>
+    </div>
+  );
+}
+
+function FeedbackSubmissionItem({ item, onUpdate }: { item: FeedbackSubmissionRow; onUpdate: () => void }) {
+  const [saving, setSaving] = useState<string | null>(null);
+
+  const setStatus = async (status: FeedbackSubmissionRow['status']) => {
+    setSaving(status);
+    try {
+      const res = await fetch(`/api/admin/feedback/${item.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) onUpdate();
+    } catch (err) {
+      clientLogger.error('Error updating feedback status', { error: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const statusMeta = FEEDBACK_STATUS_META[item.status] || FEEDBACK_STATUS_META.new;
+
+  return (
+    <div className="card p-5 border border-space-600/50">
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+        <div>
+          <h3 className="text-white font-semibold">
+            <span className="mr-1.5" aria-hidden="true">{FEEDBACK_CATEGORY_ICONS[item.category] || '💬'}</span>
+            {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+          </h3>
+          <p className="text-star-300 text-sm">
+            {new Date(item.createdAt).toLocaleString('en-US', { timeZone: 'UTC' })} UTC
+            {item.email && <> &middot; {item.email}</>}
+            {item.page && <> &middot; <span className="font-mono text-xs">{item.page}</span></>}
+            {item.userId && <> &middot; signed in</>}
+          </p>
+        </div>
+        <span className={`text-xs px-2 py-0.5 rounded ${statusMeta.color} text-white`}>
+          {statusMeta.label}
+        </span>
+      </div>
+      <p className="text-star-200 text-sm mb-4 whitespace-pre-wrap">{item.message}</p>
+      <div className="flex flex-wrap gap-2">
+        {(['new', 'reviewed', 'actioned'] as const).map((status) => (
+          <button
+            key={status}
+            onClick={() => setStatus(status)}
+            disabled={saving !== null || item.status === status}
+            className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+              item.status === status
+                ? 'bg-white/10 border-white/20 text-white cursor-default'
+                : 'bg-space-700/40 border-space-600/40 text-star-300 hover:text-white hover:bg-space-600/40'
+            } disabled:opacity-60`}
+          >
+            {saving === status ? 'Saving...' : `Mark ${FEEDBACK_STATUS_META[status].label.toLowerCase()}`}
+          </button>
+        ))}
       </div>
     </div>
   );

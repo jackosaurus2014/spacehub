@@ -10,6 +10,7 @@ import {
   forbiddenError,
   unauthorizedError,
 } from '@/lib/errors';
+import { feedbackSubmissionSchema, sendFeedbackNotificationEmail } from '@/lib/feedback';
 
 const feedbackSchema = z.object({
   score: z.number().int().min(0).max(10),
@@ -17,32 +18,109 @@ const feedbackSchema = z.object({
   pageUrl: z.string().max(500).optional(),
 });
 
+/** Best-effort userId lookup — anonymous feedback is always fine. */
+async function resolveUserId(): Promise<string | null> {
+  try {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.email) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        select: { id: true },
+      });
+      return user?.id ?? null;
+    }
+  } catch {
+    // Proceed without userId
+  }
+  return null;
+}
+
+/** UTC midnight of "today" — window for the daily notification cap. */
+function utcDayStart(now: Date = new Date()): Date {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+}
+
 /**
- * POST /api/feedback — Submit in-app feedback (NPS score + optional comment)
- * Works for both authenticated and anonymous users.
+ * Handle the structured questionnaire shape from /feedback
+ * ({ category, message, page?, email? }) — stores a FeedbackSubmission row
+ * and sends a capped founder notification email (see src/lib/feedback.ts).
+ */
+async function handleQuestionnaireSubmission(body: unknown): Promise<NextResponse> {
+  const validation = feedbackSubmissionSchema.safeParse(body);
+  if (!validation.success) {
+    return validationError('Invalid feedback data');
+  }
+
+  const userId = await resolveUserId();
+  const { category, message, page, email } = validation.data;
+
+  const submission = await prisma.feedbackSubmission.create({
+    data: {
+      category,
+      message,
+      page: page || null,
+      email: email || null,
+      userId,
+      status: 'new',
+    },
+  });
+
+  logger.info('Feedback submission recorded', {
+    id: submission.id,
+    category,
+    page: page || null,
+    hasEmail: !!email,
+    userId: userId || 'anonymous',
+  });
+
+  // Founder notification — best-effort, capped per UTC day so a burst rolls
+  // into the weekly CEO brief instead of spamming the inbox.
+  try {
+    const submissionNumberToday = await prisma.feedbackSubmission.count({
+      where: { createdAt: { gte: utcDayStart() } },
+    });
+    await sendFeedbackNotificationEmail({
+      id: submission.id,
+      category,
+      message,
+      page,
+      email,
+      userId,
+      submissionNumberToday,
+    });
+  } catch (notifyError) {
+    logger.warn('Feedback: notification step failed (submission stored)', {
+      id: submission.id,
+      error: notifyError instanceof Error ? notifyError.message : String(notifyError),
+    });
+  }
+
+  return NextResponse.json({ success: true, id: submission.id }, { status: 201 });
+}
+
+/**
+ * POST /api/feedback — Submit in-app feedback.
+ *
+ * Accepts two shapes (both work for authenticated and anonymous users):
+ *  - Questionnaire (from /feedback): { category, message, page?, email? }
+ *    → FeedbackSubmission row + capped founder notification email.
+ *  - Legacy NPS widget: { score, comment?, pageUrl? } → UserFeedback row.
  */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
+    // Questionnaire shape is distinguished by the presence of `category`.
+    if (body && typeof body === 'object' && 'category' in body) {
+      return await handleQuestionnaireSubmission(body);
+    }
+
     const validation = feedbackSchema.safeParse(body);
     if (!validation.success) {
       return validationError('Invalid feedback data');
     }
 
-    // Try to get user ID if logged in (but don't require it)
-    let userId: string | null = null;
-    try {
-      const session = await getServerSession(authOptions);
-      if (session?.user?.email) {
-        const user = await prisma.user.findUnique({
-          where: { email: session.user.email },
-          select: { id: true },
-        });
-        userId = user?.id ?? null;
-      }
-    } catch {
-      // Proceed without userId — anonymous feedback is fine
-    }
+    const userId = await resolveUserId();
 
     const userAgent = request.headers.get('user-agent') || undefined;
 

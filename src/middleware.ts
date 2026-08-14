@@ -44,6 +44,10 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/contact')) {
     return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
   }
+  // Feedback submissions (NPS widget + /feedback questionnaire)
+  if (pathname.startsWith('/api/feedback')) {
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
+  }
   // Community rate limits
   if (pathname.startsWith('/api/community/forums')) {
     return { maxRequests: 20, windowMs: 60 * 60 * 1000 }; // 20 forum actions/hour
@@ -156,6 +160,8 @@ function checkRateLimit(
     routeKey = 'auth-verify-email';
   } else if (pathname.startsWith('/api/contact')) {
     routeKey = 'contact';
+  } else if (pathname.startsWith('/api/feedback')) {
+    routeKey = 'feedback';
   } else if (pathname.startsWith('/api/community/forums')) {
     routeKey = 'community-forums';
   } else if (pathname.startsWith('/api/community/reports')) {
