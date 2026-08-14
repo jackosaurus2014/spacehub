@@ -224,6 +224,13 @@ function SpaceLawArtemisTab({ principles, signatories }: { principles: { title: 
   );
 }
 
+// NOTE: `proceedings` is a curated, hand-maintained dataset (see
+// scripts/seed-dynamic-content.ts) rather than a live feed — see the
+// DataAsOf caption rendered above this tab in compliance/page.tsx.
+// FUTURE WORK: wire a scheduled fetcher against public dockets (GAO Bid
+// Protest Docket, FCC EB enforcement actions, DDTC/BIS consent agreements)
+// to keep this current automatically, matching the pattern used for other
+// live-fetched compliance sections (FCC/FAA/ITU/SEC filings).
 function SpaceLawProceedingsTab({ proceedings }: { proceedings: LegalProceeding[] }) {
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');

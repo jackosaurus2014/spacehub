@@ -35,6 +35,9 @@ export const ErrorCodes = {
   INTERNAL_ERROR: 'INTERNAL_ERROR',
   DATABASE_ERROR: 'DATABASE_ERROR',
   EXTERNAL_API_ERROR: 'EXTERNAL_API_ERROR',
+
+  // Service unavailable (503)
+  SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
@@ -226,6 +229,16 @@ export function externalApiError(
     `Failed to communicate with ${service}`,
     500
   );
+}
+
+/**
+ * Service unavailable error helper (503) — for features that are gated
+ * behind a not-yet-launched flag (e.g. self-serve billing not wired up).
+ */
+export function serviceUnavailableError(
+  message: string = 'This feature is not yet available'
+): NextResponse<ApiErrorResponse> {
+  return createErrorResponse(ErrorCodes.SERVICE_UNAVAILABLE, message, 503);
 }
 
 /**

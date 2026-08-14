@@ -6,7 +6,7 @@ import { getRelatedModules } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'State of the Space Industry 2026 | Free Report | SpaceNexus',
-  description: 'Download our comprehensive analysis of the $630B+ space economy, projected to reach $1.8 trillion by 2035. Market sizing, funding trends, launch data, satellite deployments, and forecasts across every segment.',
+  description: 'Read our comprehensive analysis of the $630B+ space economy, projected to reach $1.8 trillion by 2035. Market sizing, funding trends, launch data, satellite deployments, and forecasts across every segment.',
   openGraph: {
     title: 'State of the Space Industry 2026 | Free Report',
     description: 'Comprehensive analysis of the $630B+ space economy (projected to reach $1.8T by 2035) with market sizing, funding trends, and segment forecasts.',
@@ -20,14 +20,14 @@ export const metadata: Metadata = {
 };
 
 const TABLE_OF_CONTENTS = [
-  { chapter: 1, title: 'Executive Summary & Key Findings', pages: '1-6', unlocked: true },
-  { chapter: 2, title: 'Global Space Economy Overview: Market Size & Growth', pages: '7-14', unlocked: true },
-  { chapter: 3, title: 'Launch Services: Vehicles, Cadence & Cost Trends', pages: '15-22', unlocked: false },
-  { chapter: 4, title: 'Satellite Communications & Mega-Constellations', pages: '23-30', unlocked: false },
-  { chapter: 5, title: 'Earth Observation & Geospatial Intelligence', pages: '31-36', unlocked: false },
-  { chapter: 6, title: 'Space Defense & National Security Spending', pages: '37-42', unlocked: false },
-  { chapter: 7, title: 'Venture Capital & Private Investment Analysis', pages: '43-50', unlocked: false },
-  { chapter: 8, title: '2026-2030 Forecasts & Strategic Outlook', pages: '51-58', unlocked: false },
+  { chapter: 1, title: 'Executive Summary & Key Findings' },
+  { chapter: 2, title: 'Global Space Economy Overview: Market Size & Growth' },
+  { chapter: 3, title: 'Launch Services: Vehicles, Cadence & Cost Trends' },
+  { chapter: 4, title: 'Satellite Communications & Mega-Constellations' },
+  { chapter: 5, title: 'Earth Observation & Geospatial Intelligence' },
+  { chapter: 6, title: 'Space Defense & National Security Spending' },
+  { chapter: 7, title: 'Venture Capital & Private Investment Analysis' },
+  { chapter: 8, title: '2026-2030 Forecasts & Strategic Outlook' },
 ];
 
 const KEY_STATS = [
@@ -134,78 +134,27 @@ export default function StateOfSpace2026Page() {
                 {TABLE_OF_CONTENTS.map((item) => (
                   <div
                     key={item.chapter}
-                    className={`flex items-center gap-4 p-3.5 rounded-xl border transition-colors ${
-                      item.unlocked
-                        ? 'bg-black/40 border-white/[0.06] hover:border-white/10'
-                        : 'bg-black/20 border-white/[0.06]'
-                    }`}
+                    className="flex items-center gap-4 p-3.5 rounded-xl border bg-black/40 border-white/[0.06] hover:border-white/10 transition-colors"
                   >
-                    <div
-                      className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
-                        item.unlocked
-                          ? 'bg-white/[0.05] text-white/70'
-                          : 'bg-white/[0.05] text-slate-600'
-                      }`}
-                    >
+                    <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold bg-white/[0.05] text-white/70">
                       {item.chapter}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div
-                        className={`text-sm font-medium truncate ${
-                          item.unlocked ? 'text-white/90' : 'text-slate-500'
-                        }`}
-                      >
+                      <div className="text-sm font-medium truncate text-white/90">
                         {item.title}
                       </div>
-                      <div className="text-xs text-slate-600">pp. {item.pages}</div>
-                    </div>
-                    <div className="flex-shrink-0">
-                      {item.unlocked ? (
-                        <span className="text-xs text-emerald-500 font-medium px-2 py-0.5 bg-emerald-900/20 rounded-full">
-                          Preview
-                        </span>
-                      ) : (
-                        <svg className="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                          />
-                        </svg>
-                      )}
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Blurred preview teaser */}
-              <div className="mt-6 relative">
-                <div className="bg-black/40 border border-white/[0.06] rounded-xl p-6 select-none" style={{ filter: 'blur(4px)' }}>
-                  <div className="h-3 bg-white/[0.06] rounded w-3/4 mb-3" />
-                  <div className="h-2 bg-white/[0.04] rounded w-full mb-2" />
-                  <div className="h-2 bg-white/[0.04] rounded w-5/6 mb-2" />
-                  <div className="h-2 bg-white/[0.04] rounded w-4/6 mb-4" />
-                  <div className="h-3 bg-white/[0.06] rounded w-2/3 mb-3" />
-                  <div className="h-2 bg-white/[0.04] rounded w-full mb-2" />
-                  <div className="h-2 bg-white/[0.04] rounded w-3/4" />
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-black/90 border border-white/[0.08] rounded-lg px-5 py-2.5 flex items-center gap-2">
-                    <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
-                    <span className="text-sm text-white/70 font-medium">
-                      Unlock full report below
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <p className="mt-6 text-sm text-slate-500">
+                This overview draws on live SpaceNexus data. Explore the full detail directly:{' '}
+                <a href="/space-economy" className="text-white/70 hover:text-white underline underline-offset-2">Space Economy dashboard</a>,{' '}
+                <a href="/market-intel" className="text-white/70 hover:text-white underline underline-offset-2">Market Intelligence</a>,{' '}
+                <a href="/space-defense" className="text-white/70 hover:text-white underline underline-offset-2">Space Defense</a>, and{' '}
+                <a href="/startups" className="text-white/70 hover:text-white underline underline-offset-2">Startups &amp; Pre-IPO</a> — no signup required.
+              </p>
             </div>
           </ScrollReveal>
 

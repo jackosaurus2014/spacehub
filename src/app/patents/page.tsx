@@ -36,7 +36,7 @@ interface TechCategory {
   name: string;
   color: string;
   totalPatents: number;
-  growthRate: number; // annual %
+  growthRate?: number; // annual %; omitted when the sample size is too small to compute reliably
   recentFilings: number; // last 2 years
   topHolders: string[];
   description: string;
@@ -823,7 +823,9 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">{formatNumber(cat.totalPatents)}</div>
                 <div className="flex items-center gap-3 text-xs text-slate-400">
-                  <span className="text-green-400 font-medium">+{cat.growthRate}% YoY</span>
+                  {typeof cat.growthRate === 'number' && (
+                    <span className="text-green-400 font-medium">{cat.growthRate >= 0 ? '+' : ''}{cat.growthRate}% YoY</span>
+                  )}
                   <span>{formatNumber(cat.recentFilings)} recent</span>
                 </div>
               </div>
@@ -1176,7 +1178,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
         result.sort((a, b) => b.totalPatents - a.totalPatents);
         break;
       case 'growth':
-        result.sort((a, b) => b.growthRate - a.growthRate);
+        result.sort((a, b) => (b.growthRate ?? -Infinity) - (a.growthRate ?? -Infinity));
         break;
       case 'recent':
         result.sort((a, b) => b.recentFilings - a.recentFilings);
@@ -1288,7 +1290,9 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
                 </div>
                 <div className="text-right flex-shrink-0 ml-6">
                   <div className="text-2xl font-bold text-white">{formatNumber(cat.totalPatents)}</div>
-                  <div className="text-xs text-green-400 font-medium">+{cat.growthRate}% YoY</div>
+                  {typeof cat.growthRate === 'number' && (
+                    <div className="text-xs text-green-400 font-medium">{cat.growthRate >= 0 ? '+' : ''}{cat.growthRate}% YoY</div>
+                  )}
                 </div>
               </div>
 
@@ -1334,7 +1338,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
                       <div className="text-slate-400 text-xs">Last 2yr</div>
                     </div>
                     <div className="bg-white/[0.04] rounded-lg p-2.5 text-center">
-                      <div className="text-white font-bold text-sm">{cat.growthRate}%</div>
+                      <div className="text-white font-bold text-sm">{typeof cat.growthRate === 'number' ? `${cat.growthRate}%` : 'N/A'}</div>
                       <div className="text-slate-400 text-xs">Annual Growth</div>
                     </div>
                   </div>

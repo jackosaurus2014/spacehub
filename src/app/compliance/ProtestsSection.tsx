@@ -5,6 +5,14 @@ import { useState, useMemo } from 'react';
 // ############################################################################
 // BID PROTESTS & CLAIMS - Types, Status Configs
 // ############################################################################
+//
+// NOTE: `protests` is a curated, hand-maintained dataset (see
+// scripts/seed-dynamic-content.ts) rather than a live feed — see the
+// DataAsOf caption rendered above this section in compliance/page.tsx.
+// FUTURE WORK: wire a scheduled fetcher against the GAO Bid Protest Docket
+// (https://www.gao.gov/legal/bid-protests/) and/or COFC's public docket to
+// keep this current automatically, matching the pattern used for other
+// live-fetched compliance sections (FCC/FAA/ITU/SEC filings).
 
 type ProtestOutcome = 'denied' | 'sustained' | 'dismissed' | 'withdrawn' | 'corrective_action' | 'settled';
 type ProtestForum = 'gao' | 'cofc' | 'dc_circuit' | 'district_court';

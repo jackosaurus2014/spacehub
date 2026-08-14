@@ -122,7 +122,7 @@ export default function SpaceEconomy2026Page() {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-              Download our comprehensive analysis of the $626 billion space industry — market sizing, top companies, investment trends, and growth projections.
+              Read our comprehensive analysis of the $626 billion space industry — market sizing, top companies, investment trends, and growth projections. Free to view online, no download required.
             </p>
           </div>
         </div>
@@ -178,12 +178,12 @@ export default function SpaceEconomy2026Page() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Your report is ready!</h3>
+                <h3 className="text-2xl font-bold text-white mb-3">You&apos;re subscribed!</h3>
                 <p className="text-emerald-300 text-base mb-2">
                   We&apos;ve sent a confirmation to your inbox.
                 </p>
                 <p className="text-slate-400 text-sm mb-8">
-                  In the meantime, explore the live data behind the report:
+                  The report content is free to read any time — explore the live data behind it:
                 </p>
                 <Link
                   href="/space-economy"
@@ -208,10 +208,10 @@ export default function SpaceEconomy2026Page() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2">
-                      Get the free report
+                      Get space economy updates
                     </h3>
                     <p className="text-sm text-slate-400">
-                      Enter your details to download the full State of the Space Economy 2026 analysis.
+                      The full State of the Space Economy 2026 analysis is free to read on this page. Enter your details to also get updates by email.
                     </p>
                   </div>
 
@@ -274,7 +274,7 @@ export default function SpaceEconomy2026Page() {
                           Processing...
                         </span>
                       ) : (
-                        'Download Free Report'
+                        'Subscribe for Updates'
                       )}
                     </button>
                   </form>
@@ -285,7 +285,7 @@ export default function SpaceEconomy2026Page() {
                       <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      Free download
+                      Free to read online
                     </span>
                     <span className="flex items-center gap-1.5">
                       <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">

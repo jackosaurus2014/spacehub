@@ -285,18 +285,13 @@ export default function AdvertiserDashboard() {
           </select>
         </div>
 
-        {profile.status === 'approved' && (
-          <Link
-            href="/advertise/dashboard"
-            className="btn-primary inline-flex items-center gap-2 px-4 py-2 text-sm"
-            title="Create a new campaign via API -- see documentation"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Campaign
-          </Link>
-        )}
+        <Link
+          href="/contact"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg border border-white/10 bg-white/[0.04] text-star-300 hover:text-white hover:bg-white/[0.08] transition-colors"
+          title="Self-serve campaign creation is launching soon"
+        >
+          Self-serve campaigns launching soon — contact us
+        </Link>
       </div>
       </ScrollReveal>
 
@@ -308,7 +303,9 @@ export default function AdvertiserDashboard() {
           </svg>
           <h3 className="text-lg font-semibold text-white mb-2">No Campaigns Yet</h3>
           <p className="text-star-300 text-sm mb-4">
-            Create your first campaign to start reaching space industry professionals.
+            Self-serve campaign creation is launching soon.{' '}
+            <Link href="/contact" className="underline hover:text-white">Contact us</Link>{' '}
+            to set up a campaign reaching space industry professionals in the meantime.
           </p>
         </div>
       ) : (

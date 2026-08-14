@@ -93,7 +93,7 @@ export const ROCKET_ENGINES_SEED: BlueprintSeed[] = [
     },
     propellantType: 'RP-1/LOX',
     firstFlight: new Date('2013-09-29'),
-    missionsFlown: 350,
+    missionsFlown: 600,
     keyInnovations: [
       'Pintle injector design for deep throttling',
       'Regeneratively cooled combustion chamber',
@@ -596,7 +596,7 @@ export const SATELLITE_BUSES_SEED: BlueprintSeed[] = [
     slug: 'maxar-1300',
     name: 'SSL 1300 / Maxar 1300',
     category: 'satellite_bus',
-    manufacturer: 'Maxar Technologies',
+    manufacturer: 'Lanteris Space Systems (formerly Maxar)',
     specifications: {
       dryMass: 1500,
       maxPayloadMass: 2000,
@@ -627,7 +627,7 @@ export const SATELLITE_BUSES_SEED: BlueprintSeed[] = [
     slug: 'maxar-500',
     name: 'Maxar 500',
     category: 'satellite_bus',
-    manufacturer: 'Maxar Technologies',
+    manufacturer: 'Lanteris Space Systems (formerly Maxar)',
     specifications: {
       dryMass: 600,
       maxPayloadMass: 500,

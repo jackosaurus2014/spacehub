@@ -7,6 +7,7 @@ import {
   unauthorizedError,
   forbiddenError,
   internalError,
+  serviceUnavailableError,
   constrainPagination,
   constrainOffset,
 } from '@/lib/errors';
@@ -14,6 +15,12 @@ import { adCampaignCreateSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
+
+// Self-serve ad campaign creation is not yet open — there is no billing
+// integration behind it, so campaigns cannot be created (or pushed live)
+// until this is explicitly turned on. Advertising is still available via
+// manual outreach in the meantime (see /contact).
+const SELF_SERVE_ADS_ENABLED = process.env.SELF_SERVE_ADS_ENABLED === 'true';
 
 /**
  * GET /api/ads/campaigns
@@ -99,6 +106,12 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
+    if (!SELF_SERVE_ADS_ENABLED) {
+      return serviceUnavailableError(
+        'Self-serve campaign creation is launching soon. Contact us at /contact to set up a campaign in the meantime.'
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return unauthorizedError();

@@ -670,7 +670,7 @@ function MissionCostContent() {
 
       <div className="container mx-auto px-4">
 
-        <DataAsOf date="August 2026" note="launch provider specs reviewed periodically" className="mb-4" />
+        <DataAsOf date="2024-2025; Starship figures updated August 2026" note="other provider listings reviewed periodically" className="mb-4" />
 
         {/* Input Form */}
         <ScrollReveal><div className="card p-6 mb-8">

@@ -42,11 +42,11 @@ export default function ReportGateForm() {
 
       if (response.ok) {
         setStatus('success');
-        setMessage(data.message || 'Check your email to access the full report!');
+        setMessage(data.message || 'Check your email to confirm your subscription.');
       } else {
         if (data.code === 'ALREADY_SUBSCRIBED') {
           setStatus('success');
-          setMessage('You already have access! Check your inbox for the report link.');
+          setMessage("You're already subscribed.");
         } else {
           setStatus('error');
           setMessage(data.error || 'Something went wrong. Please try again.');
@@ -69,7 +69,7 @@ export default function ReportGateForm() {
         <h3 className="text-2xl font-bold text-white mb-3">You&apos;re In!</h3>
         <p className="text-emerald-300 text-lg mb-2">{message}</p>
         <p className="text-slate-400 text-sm">
-          The full report will be delivered to your inbox shortly.
+          The full analysis is free to read above on this page — no download needed.
         </p>
       </div>
     );
@@ -86,14 +86,14 @@ export default function ReportGateForm() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            Unlock Full Report
+            Free Industry Updates
           </div>
           <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-            Get the Complete Analysis
+            Stay on Top of the Space Economy
           </h3>
           <p className="text-slate-400 max-w-lg mx-auto">
-            Enter your details below to receive the full 45-page State of the Space Industry 2026 report,
-            including all 8 chapters, data tables, and forecasts.
+            The full analysis is free to read on this page — no download required. Enter your details
+            to also get space industry updates by email.
           </p>
         </div>
 
@@ -152,7 +152,7 @@ export default function ReportGateForm() {
                 Processing...
               </span>
             ) : (
-              'Download Free Report'
+              'Subscribe for Updates'
             )}
           </button>
         </form>
@@ -164,7 +164,7 @@ export default function ReportGateForm() {
               <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Get the full report
+              Free to read online
             </span>
             <span className="flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">

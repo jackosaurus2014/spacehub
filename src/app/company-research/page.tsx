@@ -78,10 +78,7 @@ function formatAnswer(text: string): React.ReactNode[] {
         <div key={i} className="flex items-start gap-2 ml-2">
           <span className="text-slate-300 mt-1 flex-shrink-0">&#8226;</span>
           <span>{formattedParts.slice(0).map((p, idx) => <span key={idx}>{typeof p === 'string' ? p.replace(/^[-*]\s/, '') : p}</span>)}</span>
-        
-
-        <RelatedModules modules={PAGE_RELATIONS['company-research']} />
-      </div>
+        </div>
       );
     } else if (line.trim() === '') {
       elements.push(<div key={i} className="h-2" />);
@@ -426,6 +423,8 @@ export default function CompanyResearchPage() {
         </div>
       </div>
       </ScrollReveal>
+
+      <RelatedModules modules={PAGE_RELATIONS['company-research']} />
     </div>
   );
 }

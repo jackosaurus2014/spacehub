@@ -8,11 +8,17 @@ import {
   forbiddenError,
   notFoundError,
   internalError,
+  serviceUnavailableError,
 } from '@/lib/errors';
 import { adCampaignUpdateSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
+
+// Mirrors the flag in /api/ads/campaigns — self-serve ads have no billing
+// integration yet, so campaigns cannot be activated (go live and start
+// serving/counting impressions) until this is explicitly turned on.
+const SELF_SERVE_ADS_ENABLED = process.env.SELF_SERVE_ADS_ENABLED === 'true';
 
 /**
  * Helper to verify campaign ownership.
@@ -141,6 +147,12 @@ export async function PUT(
 
     // Validate status transitions
     if (updateData.status) {
+      if (updateData.status === 'active' && !SELF_SERVE_ADS_ENABLED) {
+        return serviceUnavailableError(
+          'Self-serve campaigns are launching soon and cannot go live yet. Contact us at /contact to run a campaign in the meantime.'
+        );
+      }
+
       const validTransitions: Record<string, string[]> = {
         draft: ['pending_review'],
         pending_review: ['active', 'rejected'],

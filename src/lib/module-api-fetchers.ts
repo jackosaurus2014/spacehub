@@ -698,32 +698,57 @@ export async function refreshPatentMarketIntelligence(): Promise<number> {
 
     await new Promise((r) => setTimeout(r, 1000));
 
-    // 3. Tech categories: Query CPC subclasses within B64G
+    // 3. Tech categories: Query CPC subclasses within B64G, split into two
+    // 12-month windows so growth rate reflects real filing counts rather
+    // than a placeholder. Growth is only reported when the prior-period
+    // sample is large enough (>=3) to avoid divide-by-zero / noisy figures.
     try {
-      const url = `${EXTERNAL_APIS.USPTO_PATENTSVIEW.baseUrl}/patent/?q={"_and":[{"_gte":{"patent_date":"${currentYear - 2}-01-01"}},{"_contains":{"cpc_group_id":"B64G"}}]}&f=["patent_number","cpc_subgroup_id","cpc_subgroup_title"]&o={"page":1,"per_page":100}&s=[{"patent_date":"desc"}]`;
-      const res = await fetchWithRetry(url);
-      const data = await res.json();
+      const now = new Date();
+      const oneYearAgo = new Date(now);
+      oneYearAgo.setFullYear(now.getFullYear() - 1);
+      const twoYearsAgo = new Date(now);
+      twoYearsAgo.setFullYear(now.getFullYear() - 2);
+      const fmt = (d: Date) => d.toISOString().slice(0, 10);
 
-      if (data?.patents?.length) {
-        const catCounts: Record<string, number> = {};
-        for (const p of data.patents) {
+      const fetchCategoryCounts = async (gte: string, lte: string) => {
+        const url = `${EXTERNAL_APIS.USPTO_PATENTSVIEW.baseUrl}/patent/?q={"_and":[{"_gte":{"patent_date":"${gte}"}},{"_lte":{"patent_date":"${lte}"}},{"_contains":{"cpc_group_id":"B64G"}}]}&f=["patent_number","cpc_subgroup_id","cpc_subgroup_title"]&o={"page":1,"per_page":100}&s=[{"patent_date":"desc"}]`;
+        const res = await fetchWithRetry(url);
+        const data = await res.json();
+        const counts: Record<string, number> = {};
+        for (const p of data?.patents || []) {
           const cpc = p.cpcs?.[0];
           if (cpc?.cpc_subgroup_title) {
             const cat = cpc.cpc_subgroup_title.split(';')[0].trim();
-            catCounts[cat] = (catCounts[cat] || 0) + 1;
+            counts[cat] = (counts[cat] || 0) + 1;
           }
         }
+        return counts;
+      };
 
-        const categories = Object.entries(catCounts)
-          .sort(([, a], [, b]) => b - a)
-          .slice(0, 10)
-          .map(([name, count]) => ({
-            id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30),
-            name,
-            totalPatents: count * 50, // Scale to estimated total
-            growthRate: Math.round(Math.random() * 15 + 3), // Placeholder until multi-year trend
-            acceleration: count > 10 ? 'high' : count > 5 ? 'moderate' : 'steady',
-          }));
+      const recentCounts = await fetchCategoryCounts(fmt(oneYearAgo), fmt(now));
+      await new Promise((r) => setTimeout(r, 1000));
+      const priorCounts = await fetchCategoryCounts(fmt(twoYearsAgo), fmt(oneYearAgo));
+
+      const allCategoryNames = new Set([...Object.keys(recentCounts), ...Object.keys(priorCounts)]);
+
+      if (allCategoryNames.size > 0) {
+        const categories = Array.from(allCategoryNames)
+          .map((name) => {
+            const recent = recentCounts[name] || 0;
+            const prior = priorCounts[name] || 0;
+            const count = recent + prior;
+            const growthRate = prior >= 3 ? Math.round(((recent - prior) / prior) * 100) : undefined;
+            return {
+              id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30),
+              name,
+              totalPatents: count * 50, // Scale to estimated total
+              recentFilings: recent,
+              ...(growthRate !== undefined ? { growthRate } : {}),
+              acceleration: count > 10 ? 'high' : count > 5 ? 'moderate' : 'steady',
+            };
+          })
+          .sort((a, b) => b.totalPatents - a.totalPatents)
+          .slice(0, 10);
 
         if (categories.length > 0) {
           await upsertContent(

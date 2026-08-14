@@ -12,6 +12,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { clientLogger } from '@/lib/client-logger';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf from '@/components/ui/DataAsOf';
 import PremiumGate from '@/components/PremiumGate';
 import RelatedModules from '@/components/ui/RelatedModules';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -487,6 +488,9 @@ function RegulatoryHubContent() {
       {activeSubTab === 'risk' && <RiskAssessmentTab />}
 
       {/* Space Law Section (lazy-loaded) */}
+      {activeSection === 'space-law' && activeSubTab === 'proceedings' && (
+        <DataAsOf date="2023" note="curated legal proceedings database, not continuously updated" className="mb-4" />
+      )}
       {activeSection === 'space-law' && (
         <SpaceLawSection
           activeSubTab={activeSubTab}
@@ -512,6 +516,9 @@ function RegulatoryHubContent() {
       )}
 
       {/* Protests Section (lazy-loaded) */}
+      {activeSection === 'protests' && (
+        <DataAsOf date="2024" note="curated bid protest & claims database, not continuously updated" className="mb-4" />
+      )}
       {activeSection === 'protests' && (
         <ProtestsSection
           activeSubTab={activeSubTab}
