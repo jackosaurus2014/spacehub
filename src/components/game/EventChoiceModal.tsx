@@ -7,8 +7,15 @@ interface EventChoiceModalProps {
   eventName: string;
   eventIcon: string;
   eventDescription: string;
-  choices: { label: string; description: string }[];
+  choices: { label: string; description: string; consequencePreview?: string[] }[];
   onChoose: (choiceIndex: number) => void;
+  /** 4X Wave W4 (narrative-events.ts): set when this choice is a stage in a
+   *  multi-stage narrative chain rather than a one-shot random event — shows
+   *  a chain-progress indicator per docs/4X_BASELINE_2026-08.md Part 4 W5
+   *  ("richer layout, chain-progress indicator, consequence preview"). */
+  chainName?: string;
+  stageIndex?: number;
+  totalStages?: number;
 }
 
 /**
@@ -17,8 +24,9 @@ interface EventChoiceModalProps {
  * does not dismiss it (the underlying hook is given a no-op close). We still get Tab
  * focus-trapping between the choice buttons and initial focus placed inside the modal.
  */
-export default function EventChoiceModal({ eventName, eventIcon, eventDescription, choices, onChoose }: EventChoiceModalProps) {
+export default function EventChoiceModal({ eventName, eventIcon, eventDescription, choices, onChoose, chainName, stageIndex, totalStages }: EventChoiceModalProps) {
   const modalRef = useModalA11y<HTMLDivElement>(() => {});
+  const isChain = !!chainName && typeof stageIndex === 'number' && typeof totalStages === 'number' && totalStages > 0;
 
   return (
     <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="alertdialog" aria-modal="true" aria-labelledby="event-title" aria-describedby="event-desc">
@@ -29,6 +37,22 @@ export default function EventChoiceModal({ eventName, eventIcon, eventDescriptio
         <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-amber-500" aria-hidden="true" />
 
         <div className="p-6">
+          {/* Chain progress indicator */}
+          {isChain && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] uppercase tracking-wider text-cyan-400 font-semibold">{chainName}</span>
+                <span className="text-[10px] text-slate-500">Stage {(stageIndex as number) + 1} of {totalStages}</span>
+              </div>
+              <div className="h-1 w-full rounded-full bg-white/[0.06] overflow-hidden" role="progressbar" aria-valuenow={(stageIndex as number) + 1} aria-valuemin={1} aria-valuemax={totalStages} aria-label={`${chainName} progress`}>
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-500 to-amber-500 transition-all"
+                  style={{ width: `${(((stageIndex as number) + 1) / (totalStages as number)) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Event header */}
           <div className="text-center mb-5">
             <span className="text-4xl block mb-3" aria-hidden="true">{eventIcon}</span>
@@ -48,6 +72,15 @@ export default function EventChoiceModal({ eventName, eventIcon, eventDescriptio
                   {choice.label}
                 </p>
                 <p className="text-slate-500 text-xs mt-0.5">{choice.description}</p>
+                {choice.consequencePreview && choice.consequencePreview.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2" aria-label="Expected consequences">
+                    {choice.consequencePreview.map((p, pi) => (
+                      <span key={pi} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] text-slate-400 font-mono">
+                        {p}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </button>
             ))}
           </div>

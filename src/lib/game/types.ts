@@ -122,6 +122,37 @@ export type ResearchCategory =
   | 'exploration'
   | 'economy';
 
+/**
+ * The mechanical bonus buckets an authored research effect can target.
+ * Six original buckets (buildCost..maintenance) plus six added by the
+ * 4X_BASELINE_2026-08.md Part 2a / W1 "research effect-authoring pass":
+ * travelSpeed, fuelEfficiency, insuranceDiscount, hazardResistance,
+ * crewMorale, expeditionRisk. See research-tree.ts's `getResearchBonuses`
+ * for aggregation/caps and `game-engine.ts` for which buckets are actually
+ * multiplied into gameplay math today (fuelEfficiency and expeditionRisk
+ * are declared/aggregated but not yet consumed — see comments there).
+ */
+export type ResearchEffectType =
+  | 'buildCost'          // reduces building construction cost
+  | 'buildSpeed'         // speeds up construction
+  | 'mining'             // increases mining yield
+  | 'revenue'            // increases service revenue
+  | 'research'           // increases research speed
+  | 'maintenance'        // reduces maintenance / operating cost
+  | 'travelSpeed'        // reduces ship transit time (transitSpeedMult)
+  | 'fuelEfficiency'     // reduces fuel consumption (pending cargo-logistics wiring)
+  | 'insuranceDiscount'  // reduces monthly insurance premium
+  | 'hazardResistance'   // reduces hazard damage beyond ship/building mitigation
+  | 'crewMorale'         // raises workforce morale
+  | 'expeditionRisk';    // reduces interstellar-expedition hazard damage
+
+export interface ResearchEffect {
+  type: ResearchEffectType;
+  /** Decimal fraction (0-1). 0.15 = 15%. Capped at 0.30 per effect (research-tree.ts
+   *  PER_EFFECT_CAP) to prevent hyperbolic flavor text from producing broken bonuses. */
+  magnitude: number;
+}
+
 export interface ResearchDefinition {
   id: string;
   name: string;
@@ -137,6 +168,14 @@ export interface ResearchDefinition {
   realResearchSeconds: number;
   /** Resource costs for research (optional, primarily tier 3+) */
   resourceCost?: Record<string, number>;
+  /**
+   * Hand-authored mechanical effects. When present (all 254 techs as of the
+   * W1 effect-authoring pass), this is used as-is by `resolveEffects()` and
+   * takes precedence over the flavor-text keyword parser. Absent only for
+   * mod/legacy content that predates authoring — the parser remains as a
+   * fallback for that case (research-tree.ts `inferEffectsFromFlavor`).
+   */
+  effects?: ResearchEffect[];
 }
 
 export interface ActiveResearch {
@@ -318,8 +357,23 @@ export interface GameState {
   npcMarketPressure?: Record<string, number>;
 
   // Random events & economy
-  activeEffects?: { eventId: string; label: string; expiresAtMonth: number; revenueMultiplier: number; costMultiplier: number }[];
-  pendingChoice?: { eventId: string; eventName: string; eventIcon: string; eventDescription: string; choices: { label: string; description: string }[] } | null;
+  // researchSpeedMultiplier (V17 / Wave W4): additive-optional field so
+  // narrative-events.ts consequences (chain rewards) can grant a temporary
+  // research-speed boost through the SAME expiring-effect mechanism random
+  // events already use, instead of inventing a parallel one. Defaults to 1
+  // wherever unset — see game-engine.ts researchSpeedMult.
+  activeEffects?: { eventId: string; label: string; expiresAtMonth: number; revenueMultiplier: number; costMultiplier: number; researchSpeedMultiplier?: number }[];
+  pendingChoice?: {
+    eventId: string; eventName: string; eventIcon: string; eventDescription: string;
+    choices: { label: string; description: string; consequencePreview?: string[] }[];
+    // V17 / Wave W4 (narrative-events.ts): set when this pendingChoice came
+    // from a chain stage rather than random-events.ts, so the resolution
+    // handler and the modal's chain-progress indicator know how to route it.
+    chainId?: string;
+    chainName?: string;
+    stageIndex?: number;
+    totalStages?: number;
+  } | null;
   incomeHistory?: number[];
 
   // Contracts
@@ -742,6 +796,70 @@ export interface GameState {
     efficiencyMultiplier: number;
     requiredReserve: number;
   };
+
+  // ─── V17 (Wave W4) — Narrative Event Chains ───────────────────────────────
+  // docs/4X_BASELINE_2026-08.md Part 2c: 12 chains / 44 stages, unified under
+  // one schema in narrative-events.ts. Shape defined there (ChainProgressState)
+  // and inlined here (same precedent as npcCompanies/quarterlyReports above)
+  // to avoid circular imports.
+
+  /** Per-chain progress: which stage, whether awaiting a player choice, and
+   *  flag state read by later stages (e.g. did the player announce the
+   *  Europa finding early?). One entry per chain the player has triggered. */
+  narrativeChains?: {
+    chainId: string;
+    stageIndex: number;
+    status: 'active' | 'completed';
+    startedAtMonth: number;
+    lastAdvancedMonth: number;
+    awaitingChoice?: boolean;
+    completedAtMonth?: number;
+    flags?: Record<string, boolean>;
+  }[];
+
+  /** Temporary hazard-mitigation bonuses granted by chain choices (e.g.
+   *  "Emergency shielding spend"). Additive; summed into hazards.ts's
+   *  getShipHazardMitigation / getBuildingHazardMitigation, capped by the
+   *  existing MITIGATION_CAP like every other mitigation source. */
+  chainHazardMitigationBonuses?: { amount: number; expiresAtMs: number; source: string }[];
+
+  /** Forward-compatible rare-tech access flags granted by narrative chains
+   *  (Europa biosignature confirmation, ISO exotic composition, Triton
+   *  Archive follow-up, superconductor replication). research-tree.ts is
+   *  off-limits to this wave (concurrent agent); a future wave (W10 per the
+   *  doc) gates rare techs on this list so nothing discovered here is lost. */
+  unlockedRareTechIds?: string[];
+
+  // ─── V18 (4X Wave W6) — Flagship Scientific Missions ─────────────────────
+  // docs/4X_BASELINE_2026-08.md Part 2b: a missions layer distinct from
+  // economic contracts — multi-phase science programs with real instruments
+  // and discovery payoffs, built on the expeditions.ts template. Shapes
+  // defined below (ScienceMissionState); engine in science-missions.ts.
+  // Monthly/quarterly-loop content per SESSION_DESIGN.md.
+
+  /** Active + historical flagship science missions (one live instance per
+   *  program at a time; failed programs can be restarted as new instances). */
+  scienceMissions?: ScienceMissionState[];
+
+  /** Co-funding stakes in deterministic, world-shared NPC faction science
+   *  programs (NPC_BACKDROP: "NPC demand is visible and forecastable").
+   *  Money flows settle client-side in the tick, mirroring the tick-insurance
+   *  precedent (audit A4: no server-ledger integration for tick flows);
+   *  server-ledger integration is the follow-up when co-funding becomes
+   *  multiplayer-shared. */
+  npcProgramContributions?: {
+    id: string;
+    npcProgramId: string;
+    /** World cycle index of the NPC program run this stake belongs to. */
+    cycleIndex: number;
+    amount: number;
+    contributedAtMonth: number;
+    /** World month-index the stake settles on (deterministic, forecastable). */
+    settlesAtMonth: number;
+    settled: boolean;
+    settledAtMonth?: number;
+    payout?: number;
+  }[];
 }
 
 export interface DeliveryContractState {
@@ -866,6 +984,67 @@ export interface InterstellarTradeRouteState {
   totalDelivered: number;
 }
 
+// ─── Flagship Scientific Missions (4X Wave W6 — science-missions.ts) ────────
+// docs/4X_BASELINE_2026-08.md Part 2b. Defined here (like ExpeditionState /
+// DeliveryContractState) so GameState can reference them without circular
+// imports; all logic lives in science-missions.ts.
+
+export type ScienceMissionPhase =
+  | 'design'        // mission design + instrument integration studies
+  | 'build'         // flight-hardware assembly, integration & test
+  | 'cruise'        // post-launch transit to the science target
+  | 'on_station'    // ISO interceptor only: parked (Sun–Earth L2), awaiting a target
+  | 'science_ops'   // primary science operations — discoveries roll monthly
+  | 'extended_ops'  // open-ended programs after primary ops (benefits persist)
+  | 'completed'     // data returned; one-time completion payout delivered
+  | 'failed';       // lost at launch or in cruise (insurance may have paid)
+
+export interface ScienceMissionDiscoveryRecord {
+  id: string;
+  /** Discovery-table entry id within the program definition. */
+  entryId: string;
+  name: string;
+  /** Mission month-index (monthsElapsed) the discovery landed on. */
+  missionMonth: number;
+  summary: string;
+  /** Human-readable payoff line for the discovery log. */
+  payoffSummary: string;
+}
+
+export interface ScienceMissionState {
+  id: string;
+  programId: string;               // key into SCIENCE_PROGRAMS
+  /** Exactly 3 instrument ids chosen at planning — the meaningful decision.
+   *  Chosen instruments determine which discovery tables can roll. */
+  instrumentIds: string[];
+  phase: ScienceMissionPhase;
+  startedAtMs: number;
+  /** Total game-months since game start (quarterly-reports convention) at program start. */
+  startGameMonth: number;
+  /** Mission months processed so far (advanced by processScienceMissionTick). */
+  monthsElapsed: number;
+  /** Deterministic RNG seed fixed at start — launch, cruise, and discovery
+   *  rolls are replayable and testable (expeditions.ts pattern). */
+  seed: number;
+  insured: boolean;
+  insurancePremiumPaid: number;
+  totalCost: number;
+  /** Set true once the launch roll has been survived (build → cruise). */
+  launched?: boolean;
+  /** ISO interceptor: mission month the intercept window opened (world-shared roll). */
+  interceptWindowMonth?: number;
+  discoveries: ScienceMissionDiscoveryRecord[];
+  /** Dedupe set — each discovery-table entry fires at most once. */
+  discoveredEntryIds: string[];
+  /** Global first-claim milestone this mission has become eligible for
+   *  (server race via /api/space-tycoon/milestones — page posts the claim). */
+  milestoneEligibleId?: string;
+  /** Client bookkeeping: claim POST already attempted (idempotence). */
+  milestoneClaimAttempted?: boolean;
+  completedAtMs?: number;
+  failedReason?: string;
+}
+
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
 // Audit Wave F (docs/GAME_SYSTEMS_AUDIT_2026-08.md §B2-B5): 36 tabs -> 28.
@@ -877,4 +1056,5 @@ export interface InterstellarTradeRouteState {
 // 'spatial' -> 'map' (MapCommandCenter HUD overlay toggle)
 // Legacy save tab ids for the six removed values are mapped forward by
 // resolveLegacyTab() in space-tycoon/page.tsx so old saves/links never dead-end.
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory';
+// 'science' added in 4X Wave W6 (flagship scientific missions — science-missions.ts).
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory';

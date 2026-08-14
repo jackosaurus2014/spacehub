@@ -195,6 +195,21 @@ export function getWorkforceHazardMitigation(state: GameState): number {
   return getWorkforceBonuses(wf).hazardMitigation;
 }
 
+/** V17 (4X Wave W4, narrative-events.ts): sum of non-expired hazard
+ *  mitigation bonuses granted by narrative-chain choices ("Emergency
+ *  shielding spend", "Debris-mitigation standard supported", "Ring Fire
+ *  retrofit"...). Additive-only field; empty array is a no-op. Real-time
+ *  expiry (expiresAtMs) rather than game-month, matching how these bonuses
+ *  are granted (a fixed real-time window from the moment of the choice). */
+export function getChainHazardMitigationBonus(state: GameState, nowMs: number = Date.now()): number {
+  const bonuses = state.chainHazardMitigationBonuses || [];
+  let total = 0;
+  for (const b of bonuses) {
+    if (b.expiresAtMs > nowMs) total += b.amount;
+  }
+  return total;
+}
+
 /**
  * Ship mitigation: EFFECTIVE stats (base + fitted modules via
  * getEffectiveShipStats — audit §1b "Modules": Whipple Shield Plating and
@@ -209,9 +224,10 @@ export function getShipHazardMitigation(
   const eff = getEffectiveShipStats(state, shipInstanceId);
   if (!eff) return 0;
   const wf = getWorkforceHazardMitigation(state);
+  const chainBonus = getChainHazardMitigationBonus(state);
   return Math.min(
     MITIGATION_CAP,
-    eff.shieldingRating + (type === 'pirate_raid' ? eff.pointDefenseRating : 0) + wf,
+    eff.shieldingRating + (type === 'pirate_raid' ? eff.pointDefenseRating : 0) + wf + chainBonus,
   );
 }
 
@@ -224,7 +240,8 @@ export function getBuildingHazardMitigation(
   if (!def) return 0;
   const stats = getBuildingDerivedStats(def);
   const wf = getWorkforceHazardMitigation(state);
-  return Math.min(MITIGATION_CAP, stats.shieldingRating + stats.stabilityRating * 0.2 + wf);
+  const chainBonus = getChainHazardMitigationBonus(state);
+  return Math.min(MITIGATION_CAP, stats.shieldingRating + stats.stabilityRating * 0.2 + wf + chainBonus);
 }
 
 // ─── Hit resolution (pure — unit-testable core) ──────────────────────────────

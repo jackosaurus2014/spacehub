@@ -1119,6 +1119,9 @@ function JobsTab({ companySlug, companyName }: { companySlug: string; companyNam
   return (
     <SectionCard title="Open Positions" count={jobs.length}>
       <HiringTrend companySlug={companySlug} className="mb-4" />
+      <p className="text-[11px] text-slate-500 mb-3">
+        Listings mirror this company&apos;s own careers page, synced daily. Roles posted in multiple locations appear once per location.
+      </p>
       <div className="space-y-3">
         {jobs.map((job, i) => {
           const inner = (

@@ -29,6 +29,8 @@ import { toast } from '@/lib/toast';
 import SolarSystemCanvas from '@/components/game/SolarSystemCanvas';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
 import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
+import { resolveChainChoice } from '@/lib/game/narrative-events';
+import { getGlobalGameDate } from '@/lib/game/server-time';
 import { applyMiniActivityBonus } from '@/lib/game/mini-activities';
 import { setInsuranceActive } from '@/lib/game/economic-sinks';
 import { calculateRushRepairCost } from '@/lib/game/hazards';
@@ -81,6 +83,11 @@ import {
   launchExpedition, establishColony, upgradeColony, establishTradeRoute, setTradeRouteStatus,
   type ExpeditionPlanRequest,
 } from '@/lib/game/expeditions';
+import ScienceMissionsPanel from '@/components/game/ScienceMissionsPanel';
+import {
+  startScienceMission, coFundNpcProgram, markMilestoneClaimAttempted,
+  SCIENCE_PROGRAM_MAP,
+} from '@/lib/game/science-missions';
 import ArchetypePicker from '@/components/game/ArchetypePicker';
 import { applyArchetype, type StartingArchetype } from '@/lib/game/archetypes';
 import SubsidiaryPanel from '@/components/game/SubsidiaryPanel';
@@ -1116,6 +1123,54 @@ export default function SpaceTycoonPage() {
     }
   }, [state?.gameDate.year, state?.gameDate.month]);
 
+  // Science-mission global first-claims (4X Wave W6) — when a mission reaches
+  // its milestone moment (first Europa ocean entry, first ISO intercept...),
+  // the tick sets milestoneEligibleId; this effect posts the server race
+  // claim exactly once per mission (the handleUnlockLocation milestone
+  // pattern: retry once on network failure, surface the outcome, log a
+  // race loss honestly).
+  useEffect(() => {
+    if (!state) return;
+    const eligible = (state.scienceMissions || []).filter(m => m.milestoneEligibleId && !m.milestoneClaimAttempted);
+    if (eligible.length === 0) return;
+    const companyName = state.companyName || 'Untitled Aerospace';
+    // Mark attempted synchronously so re-renders can't double-post.
+    setState(prev => {
+      if (!prev) return prev;
+      let next = prev;
+      for (const m of eligible) next = markMilestoneClaimAttempted(next, m.id);
+      return next;
+    });
+    for (const mission of eligible) {
+      const milestoneId = mission.milestoneEligibleId!;
+      const programName = SCIENCE_PROGRAM_MAP.get(mission.programId)?.name || mission.programId;
+      postWithRetry('/api/space-tycoon/milestones', { milestoneId, companyName, reward: 0 })
+        .then(async res => {
+          if (!res || res.status === 401 || !res.ok) return;
+          const data = await res.json().catch(() => null);
+          if (!data) return;
+          if (data.success) {
+            playSound('milestone');
+            toast.success(`First in the world: "${milestoneId.replace(/_/g, ' ')}" — claimed by ${programName}.`, 'Global first!');
+          } else if (data.alreadyClaimed) {
+            const beatBy = data.claimedBy || 'another corporation';
+            toast.info(`${beatBy} claimed "${milestoneId.replace(/_/g, ' ')}" first — your science still counts, the flag does not.`, 'Milestone race lost');
+            setState(p => p ? {
+              ...p,
+              eventLog: [{
+                id: generateId(),
+                date: p.gameDate,
+                type: 'milestone' as const,
+                title: `Milestone race lost: ${milestoneId.replace(/_/g, ' ')}`,
+                description: `${beatBy} claimed it first. ${programName}'s data remains yours.`,
+              }, ...p.eventLog].slice(0, 50),
+            } : p);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [state?.scienceMissions]);
+
   // Protected Frontier graduation — detect the active→graduated transition
   // (auto-graduation happens inside processTick in game-engine.ts; manual
   // "Graduate Early" goes through the same state field via FrontierBadge
@@ -1402,6 +1457,29 @@ export default function SpaceTycoonPage() {
     setState(prev => (prev ? setTradeRouteStatus(prev, routeId, status) : prev));
   }, []);
 
+  // ─── Flagship scientific missions (4X Wave W6, science-missions.ts) ──────
+  // Same pattern as the expedition handlers: planScienceMission is pure and
+  // quotes/validates inside the panel; these handlers perform the mutation.
+  const handleStartScienceMission = useCallback((programId: string, instrumentIds: string[], insured: boolean) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const result = startScienceMission(prev, { programId, instrumentIds, insured });
+      if (!result.ok) { playSound('error'); return prev; }
+      playSound('milestone');
+      return result.state;
+    });
+  }, []);
+
+  const handleCoFundNpcProgram = useCallback((npcProgramId: string) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const result = coFundNpcProgram(prev, npcProgramId);
+      if (!result.ok) { playSound('error'); return prev; }
+      playSound('money');
+      return result.state;
+    });
+  }, []);
+
   const handleBuyResource = useCallback((resourceId: string, quantity: number, cost: number) => {
     playSound('money');
     setState(prev => {
@@ -1474,6 +1552,7 @@ export default function SpaceTycoonPage() {
     { id: 'factions', label: 'Factions', icon: '🛡️' },
     { id: 'modules', label: 'Modules', icon: '⚙️' },
     { id: 'discoveries', label: 'Discoveries', icon: '🔭' },
+    { id: 'science', label: 'Science', icon: '🧪' },
     { id: 'interstellar', label: 'Interstellar', icon: '✴' },
     { id: 'subsidiaries', label: 'Subsidiaries', icon: '🏭' },
     { id: 'specialization', label: 'Specialize', icon: '🎯' },
@@ -1954,6 +2033,14 @@ export default function SpaceTycoonPage() {
         )}
         {tab === 'modules' && <ModulesPanel state={state} setState={setState} />}
         {tab === 'discoveries' && <AnomaliesPanel state={state} setState={setState} />}
+        {tab === 'science' && (
+          <ScienceMissionsPanel
+            state={state}
+            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onStartMission={handleStartScienceMission}
+            onCoFundNpcProgram={handleCoFundNpcProgram}
+          />
+        )}
         {tab === 'interstellar' && (
           <InterstellarPanel
             state={state}
@@ -2085,17 +2172,27 @@ export default function SpaceTycoonPage() {
         />
       )}
 
-      {/* Random Event Choice Modal */}
+      {/* Random Event / Narrative Chain Choice Modal */}
       {state.pendingChoice && (
         <EventChoiceModal
           eventName={state.pendingChoice.eventName}
           eventIcon={state.pendingChoice.eventIcon}
           eventDescription={state.pendingChoice.eventDescription}
           choices={state.pendingChoice.choices}
+          chainName={state.pendingChoice.chainName}
+          stageIndex={state.pendingChoice.stageIndex}
+          totalStages={state.pendingChoice.totalStages}
           onChoose={(choiceIndex) => {
             playSound('click');
             setState(prev => {
               if (!prev?.pendingChoice) return prev;
+              // 4X Wave W4: chain-sourced choices carry chainId; route to
+              // narrative-events.ts's resolver instead of RANDOM_EVENTS.
+              if (prev.pendingChoice.chainId) {
+                const monthIndex = getGlobalGameDate().totalMonths;
+                const newState = resolveChainChoice(prev, prev.pendingChoice.chainId, choiceIndex, monthIndex);
+                return { ...newState, pendingChoice: null };
+              }
               const eventDef = RANDOM_EVENTS.find(e => e.id === prev.pendingChoice!.eventId);
               const choice = eventDef?.choices?.[choiceIndex];
               if (!choice) return { ...prev, pendingChoice: null };

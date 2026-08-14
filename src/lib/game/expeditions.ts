@@ -41,6 +41,10 @@ import { SHIP_MAP, getShipDerivedStats } from './ships';
 import { RESOURCE_MAP } from './resources';
 import { generateId, formatMoney } from './formulas';
 import { MAX_EVENT_LOG, STARTING_YEAR } from './constants';
+// 4X Wave W6 (science-missions.ts): boundary-charting programs (Meridian
+// exoplanet census, Heliopause Probe, GW array) buff expedition survey
+// payouts and trim transit hazard damage — knowledge de-risks the frontier.
+import { getExpeditionScienceBonuses } from './science-missions';
 
 // ─── Tuning constants ────────────────────────────────────────────────────────
 
@@ -809,6 +813,10 @@ export function processExpeditionTick(state: GameState, now: number = Date.now()
   let ships = state.ships || [];
   let changed = false;
 
+  // W6: standing science-mission bonuses (heliopause chart, exoplanet census,
+  // GW deep-space sensing) — survey data is worth more, transit is safer.
+  const scienceBonuses = getExpeditionScienceBonuses(state);
+
   // ── 1. Expeditions ────────────────────────────────────────────────────────
   const expeditions = (state.expeditions || []).map(exp => {
     if (exp.phase === 'completed' || exp.phase === 'lost' || exp.phase === 'colonizing') return exp;
@@ -830,9 +838,9 @@ export function processExpeditionTick(state: GameState, now: number = Date.now()
       MITIGATION_CAP,
       baseShielding + (e.extraShielding ? EXTRA_SHIELDING_BONUS : 0),
     );
-    const researchDamageMult = state.completedResearch.includes(HEAVY_SHIELDING_RESEARCH_ID)
+    const researchDamageMult = (state.completedResearch.includes(HEAVY_SHIELDING_RESEARCH_ID)
       ? 1 - HEAVY_SHIELDING_DAMAGE_REDUCTION
-      : 1;
+      : 1) * scienceBonuses.hazardDamageMult; // W6: boundary charting trims transit damage
 
     const returnStartMonth = e.outboundMonths + e.exploreMonths;
     const totalMissionMonths = returnStartMonth + e.outboundMonths;
@@ -921,8 +929,10 @@ export function processExpeditionTick(state: GameState, now: number = Date.now()
         e.phase = 'completed';
         e.completedAtMs = now;
         // Deliver: data payout + resource samples enter inventory exactly the
-        // way ship-cargo arrivals do in game-engine step 6.
-        const payout = e.outcome?.surveyDataPayout || 0;
+        // way ship-cargo arrivals do in game-engine step 6. W6: survey data
+        // sells higher when science programs have charted the frontier
+        // (Meridian census / heliopause chart — capped +30% in science-missions).
+        const payout = Math.round((e.outcome?.surveyDataPayout || 0) * scienceBonuses.surveyPayoutMult);
         if (payout > 0) {
           money += payout;
           totalEarned += payout;

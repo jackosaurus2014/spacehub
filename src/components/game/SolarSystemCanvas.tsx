@@ -27,7 +27,9 @@ export const REGION_LABELS: Record<LocationType, string> = {
 };
 
 // Group LOCATIONS by region once at module load — the list is static.
-const LOCATIONS_BY_REGION: { type: LocationType; locations: typeof LOCATIONS }[] = (() => {
+// Exported so the WebGL renderer (SolarMap3D) can present the identical
+// keyboard-accessible Location List — one grouping, two renderers.
+export const LOCATIONS_BY_REGION: { type: LocationType; locations: typeof LOCATIONS }[] = (() => {
   const order: LocationType[] = [];
   const groups = new Map<LocationType, typeof LOCATIONS>();
   for (const loc of LOCATIONS) {

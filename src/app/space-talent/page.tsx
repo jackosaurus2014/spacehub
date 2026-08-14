@@ -2547,6 +2547,9 @@ function SpaceTalentHubContent() {
               </div>
 
               {/* Job Listings */}
+              <p className="text-[11px] text-slate-500 mb-3">
+                Listings mirror company careers pages (Greenhouse, Lever, Ashby), synced daily. Large employers often post the same role in multiple locations.
+              </p>
               {jobsLoading && jobs.length === 0 ? (
                 <div className="flex justify-center py-20">
                   <LoadingSpinner size="lg" />

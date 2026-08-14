@@ -99,6 +99,13 @@ export function getNewGameState(): GameState {
     insuranceActive: true,
     hazardWarnings: [],
     pendingMarketFlows: { mined: {}, npc: {} },
+    // V17 — Narrative Event Chains (4X Wave W4, narrative-events.ts)
+    narrativeChains: [],
+    chainHazardMitigationBonuses: [],
+    unlockedRareTechIds: [],
+    // V18 — Flagship Scientific Missions (4X Wave W6, science-missions.ts)
+    scienceMissions: [],
+    npcProgramContributions: [],
   };
 }
 
@@ -276,6 +283,20 @@ export function loadGame(): GameState | null {
     if (state.prestige !== undefined) {
       delete state.prestige;
     }
+
+    // V17 fields — Narrative Event Chains (4X Wave W4, narrative-events.ts).
+    // Additive-only: existing saves simply have no chains in progress yet;
+    // the tick engine starts rolling for eligible chains from here on.
+    if (!state.narrativeChains) state.narrativeChains = [];
+    if (!state.chainHazardMitigationBonuses) state.chainHazardMitigationBonuses = [];
+    if (!state.unlockedRareTechIds) state.unlockedRareTechIds = [];
+
+    // V18 fields — Flagship Scientific Missions (4X Wave W6,
+    // science-missions.ts). Additive-only: existing saves simply have no
+    // programs running yet; the science tab unlocks per corp tier and the
+    // tick engine starts processing from here on.
+    if (!state.scienceMissions) state.scienceMissions = [];
+    if (!state.npcProgramContributions) state.npcProgramContributions = [];
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

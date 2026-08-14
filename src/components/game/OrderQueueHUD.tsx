@@ -12,6 +12,7 @@ import { BUILDING_MAP } from '@/lib/game/buildings';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { formatCountdown } from '@/lib/game/formulas';
 import { getExpeditionProgress } from '@/lib/game/expeditions';
+import { getActiveScienceMissions, getScienceMissionProgress, SCIENCE_PROGRAM_MAP } from '@/lib/game/science-missions';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '@/lib/game/constants';
 import type { GameState } from '@/lib/game/types';
@@ -114,6 +115,26 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
       pct: Math.round(progress.progressPct * 100),
       etaSeconds,
       target: { kind: 'system', id: exp.targetSystemId },
+    });
+  }
+
+  // Flagship science missions (4X Wave W6) — design/build/cruise/ops phases.
+  // ETA counts to the NEXT PHASE boundary (the weekly-cadence beat players
+  // actually wait on); ISO interceptors on station show as continuous ops.
+  for (const mission of getActiveScienceMissions(state)) {
+    const progress = getScienceMissionProgress(state, mission.id);
+    const program = SCIENCE_PROGRAM_MAP.get(mission.programId);
+    if (!progress || !program) continue;
+    items.push({
+      id: `science-${mission.id}`,
+      icon: program.icon,
+      label: program.name,
+      sub: progress.phaseLabel,
+      pct: Math.round(progress.progressPct * 100),
+      etaSeconds: progress.monthsToNextPhase !== null && progress.monthsToNextPhase > 0
+        ? progress.monthsToNextPhase * REAL_SECONDS_PER_GAME_MONTH
+        : null,
+      target: { kind: 'location', id: program.locationId },
     });
   }
 

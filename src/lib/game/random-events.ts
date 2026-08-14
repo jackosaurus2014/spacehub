@@ -5,6 +5,15 @@ import type { GameState, GameDate } from './types';
 
 export interface RandomEventEffect {
   moneyDelta?: number;
+  /** Honest P&L pair (4X_BASELINE_2026-08.md defect ledger #1 / W1 fix):
+   *  when BOTH are set, cost is debited to totalSpent and reward is
+   *  credited to totalEarned as SEPARATE ledger lines, instead of the old
+   *  single `moneyDelta: +150_000_000` which silently folded a real $150M
+   *  cost and a real $300M reward into one "earned" number — accurate net,
+   *  dishonest P&L (CLAUDE.md "Profit and loss must be tracked and
+   *  visible"). Falls back to moneyDelta when only that is set. */
+  moneyCost?: number;
+  moneyReward?: number;
   revenueMultiplier?: number; // Applied for durationMonths
   costMultiplier?: number;
   resourceGrant?: Record<string, number>;
@@ -35,6 +44,12 @@ export interface ActiveEffect {
   expiresAtMonth: number; // total game months when this expires
   revenueMultiplier: number;
   costMultiplier: number;
+  /** V17 (4X Wave W4 narrative-events.ts): optional research-speed
+   *  multiplier, so chain-event consequences ("Radio Science Windfall",
+   *  "Fusion Ignition Milestone") can grant a temporary research boost
+   *  through this SAME expiring-effect list instead of a parallel one.
+   *  Defaults to 1 (no effect) for every pre-existing entry. */
+  researchSpeedMultiplier?: number;
 }
 
 export const RANDOM_EVENTS: RandomEventDefinition[] = [
@@ -120,7 +135,13 @@ export const RANDOM_EVENTS: RandomEventDefinition[] = [
     description: 'A stranded crew needs emergency rescue. High reward but high cost.',
     probability: 0.02, minTier: 2,
     choices: [
-      { label: 'Accept ($150M cost)', description: 'Launch the rescue mission for $300M reward.', effect: { moneyDelta: 150_000_000 } },
+      // W1 sign-bug fix (4X_BASELINE_2026-08.md defect ledger #1): this used
+      // to be `effect: { moneyDelta: 150_000_000 }` — a flat +$150M grant
+      // that never actually debited the stated $150M mission cost, so the
+      // "high cost" framing was fiction and the P&L showed a phantom $150M
+      // of pure earnings. Same net (+$150M), honest ledger: a real $150M
+      // cost against a real $300M reward, both lines visible.
+      { label: 'Accept ($150M cost)', description: 'Launch the rescue mission for $300M reward.', effect: { moneyCost: 150_000_000, moneyReward: 300_000_000 } },
       { label: 'Decline', description: 'Too risky for your operations.', effect: {} },
     ],
   },
@@ -154,8 +175,19 @@ export function rollRandomEvent(state: GameState): RandomEventDefinition | null 
 export function applyEventEffect(state: GameState, effect: RandomEventEffect, eventLabel: string): GameState {
   const newState = { ...state };
 
-  // Money delta
-  if (effect.moneyDelta) {
+  // Honest cost/reward pair (W1 sign-bug fix — see RandomEventEffect doc
+  // comment). Preferred over moneyDelta when either is set.
+  if (effect.moneyCost || effect.moneyReward) {
+    if (effect.moneyCost) {
+      newState.money -= effect.moneyCost;
+      newState.totalSpent += effect.moneyCost;
+    }
+    if (effect.moneyReward) {
+      newState.money += effect.moneyReward;
+      newState.totalEarned += effect.moneyReward;
+    }
+  } else if (effect.moneyDelta) {
+    // Legacy path: a single net delta with no separate cost/reward lines.
     newState.money += effect.moneyDelta;
     if (effect.moneyDelta > 0) newState.totalEarned += effect.moneyDelta;
     else newState.totalSpent += Math.abs(effect.moneyDelta);
@@ -188,19 +220,21 @@ export function applyEventEffect(state: GameState, effect: RandomEventEffect, ev
 }
 
 /** Get combined multipliers from all active effects */
-export function getActiveMultipliers(state: GameState): { revenueMultiplier: number; costMultiplier: number } {
+export function getActiveMultipliers(state: GameState): { revenueMultiplier: number; costMultiplier: number; researchSpeedMultiplier: number } {
   let rev = 1;
   let cost = 1;
+  let research = 1;
   const totalMonths = state.gameDate.year * 12 + state.gameDate.month;
 
   for (const effect of (state.activeEffects || [])) {
     if (totalMonths < effect.expiresAtMonth) {
       rev *= effect.revenueMultiplier;
       cost *= effect.costMultiplier;
+      research *= effect.researchSpeedMultiplier ?? 1;
     }
   }
 
-  return { revenueMultiplier: rev, costMultiplier: cost };
+  return { revenueMultiplier: rev, costMultiplier: cost, researchSpeedMultiplier: research };
 }
 
 /** Clean up expired effects */

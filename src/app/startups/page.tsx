@@ -509,6 +509,9 @@ export default function StartupHubPage() {
                     );
                   })}
                 </ul>
+                <p className="text-[11px] text-slate-500 mt-4">
+                  Counts mirror each company&apos;s own careers page (Greenhouse/Lever/Ashby), synced daily. Large employers often list the same role in multiple locations.
+                </p>
               </div>
             )}
           </section>

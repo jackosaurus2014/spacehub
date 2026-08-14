@@ -86,7 +86,10 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     bonuses: { maintenanceReduction: 0.05, revenueBonus: 0.05, miningBonus: 0.05 },
     // Wave F: 'intelligence'/'futures' folded into 'market' (subtabs gate at
     // tier 3 via FOLDED_FEATURE_TIERS).
-    unlockedTabs: ['crafting', 'workforce', 'commanders'],
+    // 'science' (4X Wave W6): flagship scientific missions open at Enterprise
+    // scale — monthly/quarterly-loop content whose research prerequisites
+    // (T2-T4 techs) stage the individual programs beyond the tab unlock.
+    unlockedTabs: ['crafting', 'workforce', 'commanders', 'science'],
   },
   {
     tier: 4, name: 'Corporation', icon: '🏛️', color: '#fbbf24',

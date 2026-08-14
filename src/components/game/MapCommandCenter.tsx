@@ -9,11 +9,23 @@
 // down from space-tycoon/page.tsx — this component only manages which
 // location/system is selected and which layer (solar/galactic) is showing.
 
-import { useState, useCallback, useRef, useLayoutEffect } from 'react';
+import { useState, useCallback, useEffect, useRef, useLayoutEffect } from 'react';
+import dynamic from 'next/dynamic';
 import type { GameState, GameTab } from '@/lib/game/types';
 import type { ExpeditionPlanRequest } from '@/lib/game/expeditions';
 import SolarSystemCanvas from './SolarSystemCanvas';
 import GalacticMapView from './GalacticMapView';
+
+// WebGL renderer (4X wave W7) — loaded on demand so three.js lands in an
+// async chunk that mobile / reduced-motion / no-WebGL users never download.
+const SolarMap3D = dynamic(() => import('./SolarMap3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-[#020208]">
+      <span className="text-cyan-300/70 text-xs font-hud animate-pulse">Initializing orbital view…</span>
+    </div>
+  ),
+});
 import OrderQueueHUD, { type OrderQueueTarget } from './OrderQueueHUD';
 import MapContextPanel, { type MapSelection } from './MapContextPanel';
 import GlobalActivityFeed from './GlobalActivityFeed';
@@ -22,6 +34,44 @@ import { playSound } from '@/lib/game/sound-engine';
 import { isFoldedFeatureUnlocked } from '@/lib/game/corporation-tiers';
 
 type Layer = 'solar' | 'galactic';
+
+// ── 3D renderer gating (4X W7) ──────────────────────────────────────────────
+// The WebGL map is the DEFAULT on capable desktops; the 2D canvas remains the
+// renderer for mobile/small viewports, prefers-reduced-motion, missing WebGL2
+// (three r163+ requires WebGL2), and anyone who toggles it off. The user's
+// choice persists in localStorage.
+
+const MAP_RENDERER_KEY = 'tycoon-map-renderer'; // '3d' | '2d'
+
+function detectWebGL2(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2');
+    return !!gl;
+  } catch {
+    return false;
+  }
+}
+
+/** Environment capability — NOT user preference. Re-evaluated on resize and
+ *  reduced-motion changes so the map degrades live, never breaks. */
+function use3DCapable(): boolean {
+  const [capable, setCapable] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const evaluate = () => {
+      setCapable(window.innerWidth >= 768 && !mq.matches && detectWebGL2());
+    };
+    evaluate();
+    window.addEventListener('resize', evaluate);
+    mq.addEventListener('change', evaluate);
+    return () => {
+      window.removeEventListener('resize', evaluate);
+      mq.removeEventListener('change', evaluate);
+    };
+  }, []);
+  return capable;
+}
 
 interface MapCommandCenterProps {
   state: GameState;
@@ -42,6 +92,25 @@ export default function MapCommandCenter({
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
   const [showActivity, setShowActivity] = useState(false);
+
+  // 3D/2D renderer selection: environment capability × persisted preference.
+  // Starts false (2D) so SSR/first paint never assumes WebGL, then upgrades.
+  const capable3D = use3DCapable();
+  const [prefer3D, setPrefer3D] = useState(true);
+  useEffect(() => {
+    try {
+      setPrefer3D(localStorage.getItem(MAP_RENDERER_KEY) !== '2d');
+    } catch { /* storage unavailable → default 3D on capable hardware */ }
+  }, []);
+  const use3D = capable3D && prefer3D;
+  const toggleRenderer = useCallback(() => {
+    playSound('click');
+    setPrefer3D(prev => {
+      const next = !prev;
+      try { localStorage.setItem(MAP_RENDERER_KEY, next ? '3d' : '2d'); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
   // Audit Wave F §B5: Spatial Strategy (lane traffic, orbital-slot occupancy,
   // chokepoints) folded into the map as a HUD overlay — it's geography, so it
   // belongs here per the map-first mandate. Standalone 'spatial' tab removed.
@@ -98,13 +167,21 @@ export default function MapCommandCenter({
       style={{ height: mapHeight ? `${mapHeight}px` : '70vh' }}
     >
       {layer === 'solar' ? (
-        <SolarSystemCanvas
-          state={state}
-          onUnlock={onUnlock}
-          embedded
-          selectedLocationId={selection?.kind === 'location' ? selection.id : null}
-          onSelectLocation={selectLocation}
-        />
+        use3D ? (
+          <SolarMap3D
+            state={state}
+            selectedLocationId={selection?.kind === 'location' ? selection.id : null}
+            onSelectLocation={selectLocation}
+          />
+        ) : (
+          <SolarSystemCanvas
+            state={state}
+            onUnlock={onUnlock}
+            embedded
+            selectedLocationId={selection?.kind === 'location' ? selection.id : null}
+            onSelectLocation={selectLocation}
+          />
+        )
       ) : (
         <GalacticMapView
           state={state}
@@ -142,6 +219,19 @@ export default function MapCommandCenter({
         >
           ✴ Galactic
         </button>
+        {capable3D && layer === 'solar' && (
+          <button
+            type="button"
+            onClick={toggleRenderer}
+            aria-pressed={use3D}
+            title={use3D ? 'Switch to the 2D map (also the keyboard/reduced-motion-friendly renderer)' : 'Switch to the 3D orbital map'}
+            className={`min-h-[44px] px-3 text-[11px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 border-l border-white/[0.08] ${
+              use3D ? 'bg-emerald-500/20 text-emerald-200' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            {use3D ? '◉ 3D' : '◎ 2D'}
+          </button>
+        )}
         <button
           type="button"
           onClick={() => { playSound('click'); setShowActivity(v => !v); }}

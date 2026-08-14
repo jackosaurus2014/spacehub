@@ -13,6 +13,7 @@ import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH, DEV_FAST_MULTIPLIER, DEV_REVENUE_M
 import { getGlobalGameDate, GAME_START_YEAR } from './server-time';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
+import { advanceNarrativeChains } from './narrative-events';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
@@ -43,6 +44,14 @@ import {
 } from './economic-sinks';
 import { accumulateMinedFlows, accumulateNpcFlows, consumeMarketFlowFlush, applyMarketFlowFlush } from './market-pressure';
 import { processExpeditionTick } from './expeditions';
+// 4X Wave W6 (science-missions.ts): flagship science programs — tick beside
+// expeditions; Sentinel constellation extends the hazard forecast horizon and
+// (with the deflection demo) trims hazard damage post-roll (the W1 pattern).
+import {
+  processScienceMissionTick,
+  getForecastHorizonMonths,
+  getScienceHazardDamageMultipliers,
+} from './science-missions';
 import { consumeServerReconciliation, applyReconciliationToState } from './ledger-reconcile';
 // Audit Wave B (Change #2 "dead-multiplier pack" + Change #6 + A10) imports:
 import { getSpecializationBonuses } from './specializations';
@@ -372,7 +381,11 @@ export function processTick(state: GameState): GameState {
     // Audit Wave B: + specialization research_speed (§1b), victory research
     // bonus (§1b), alliance researchBonus (A2). Combined new factor cap 2x.
     const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus));
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult * DEV_FAST_MULTIPLIER;
+    // narrativeResearchMult (V17 / Wave W4): chain-event research boosts
+    // ("Radio Science Windfall", "Fusion Ignition Milestone"...) ride the
+    // same expiring activeEffects list random events use, aggregated by
+    // getActiveMultipliers into `multipliers.researchSpeedMultiplier`.
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completedResearch.push(activeResearch.definitionId);
@@ -397,7 +410,7 @@ export function processTick(state: GameState): GameState {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
     const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus)); // audit Wave B (same pack as queue 1)
-    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult2 * DEV_FAST_MULTIPLIER;
+    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
       completedResearch.push(activeResearch2.definitionId);
@@ -663,6 +676,14 @@ export function processTick(state: GameState): GameState {
       recentHazardCount,
       cashNegative: money < 0,
     });
+    // W1 (research effect-authoring pass, 4X_BASELINE_2026-08.md Part 2a):
+    // crewMoraleBonus is an additive post-hoc adjustment on top of the pure
+    // updateCrewWellbeing model above, rather than a new input threaded
+    // through workforce.ts (out of this wave's file scope). Capped in
+    // getResearchBonuses at 0.30 on the 0-1 morale scale.
+    if (resBonuses.crewMoraleBonus > 0) {
+      workforceOut = { ...workforceOut, morale: Math.min(1, (workforceOut.morale ?? 1.0) + resBonuses.crewMoraleBonus) };
+    }
     // Surface meaningful morale drops so the stat is discoverable/manageable
     if ((workforceOut.morale ?? 1.0) <= prevMorale - 0.05) {
       events.push({
@@ -694,7 +715,11 @@ export function processTick(state: GameState): GameState {
     // BALANCE.md invariants: ongoing sink ✓, scales with empire size ✓,
     // mitigation via opting out / avoiding hazardous locations ✓.
     if (!inFrontier && state.insuranceActive === true) {
-      const premium = getMonthlyInsurancePremium({ ...state, buildings: buildingsFinal });
+      // W1 (research effect-authoring pass): insuranceDiscountBonus applied
+      // here rather than threaded into economic-sinks.ts's calculateInsurancePremium
+      // (out of this wave's file scope) — same math, one multiply. Capped at
+      // 0.40 in getResearchBonuses.
+      const premium = Math.round(getMonthlyInsurancePremium({ ...state, buildings: buildingsFinal }) * (1 - resBonuses.insuranceDiscountBonus));
       if (premium > 0) {
         money -= premium;
         totalSpent += premium;
@@ -863,6 +888,31 @@ export function processTick(state: GameState): GameState {
   out = ensureFreshDeliveryPool(out);
   out = processContractDeadlines(out);
 
+  // ─── Narrative event chains (4X Wave W4, narrative-events.ts) ──────
+  // docs/4X_BASELINE_2026-08.md Part 2c: 12 chains / 44 stages. Additive,
+  // try/catch like every other post-audit subsystem — runs once per
+  // game-month, right beside (and after) the legacy random-events roll
+  // above so it inherits this tick's money/resources/pendingChoice state.
+  // Only claims the single pendingChoice slot when random-events (step 7)
+  // didn't already fill it this tick; deterministic scheduling still
+  // advances non-choice stages regardless, so a full slot delays
+  // presentation by a month rather than skipping the chain outright. Runs
+  // BEFORE hazards below so a chain's "emergency shielding" choice can
+  // protect against a hazard landing later this same tick.
+  try {
+    if (isMonthEnd) {
+      const monthIndex = globalDate.totalMonths;
+      const chainResult = advanceNarrativeChains(out, monthIndex, Date.now(), !out.pendingChoice);
+      out = {
+        ...chainResult.state,
+        pendingChoice: chainResult.pendingChoice || chainResult.state.pendingChoice,
+        eventLog: chainResult.events.length > 0
+          ? [...chainResult.events, ...chainResult.state.eventLog].slice(0, MAX_EVENT_LOG)
+          : chainResult.state.eventLog,
+      };
+    }
+  } catch { /* narrative chains non-critical — never block the tick */ }
+
   // Hazards v2 (audit Wave D / Change #4 "hazards hurt, insurance pays"):
   // roll once per game-month, seeded per (world month, location, type) —
   // deterministic, shared weather, no save-scumming. Severe events can
@@ -873,7 +923,34 @@ export function processTick(state: GameState): GameState {
   // frontier gating tests).
   if (isMonthEnd && !isInFrontier(out)) {
     const monthIndex = globalDate.totalMonths;
-    const hazards = rollMonthlyHazards(out, Date.now(), monthIndex);
+    let hazards = rollMonthlyHazards(out, Date.now(), monthIndex);
+    // W1 (research effect-authoring pass): hazardResistanceBonus is a
+    // research-driven layer on top of the ship/building mitigation already
+    // rolled into each record's damagePct (hazards.ts getShipHazardMitigation
+    // / getBuildingHazardMitigation). Applied here — post-roll, pre-apply —
+    // rather than threaded into hazards.ts (out of this wave's file scope).
+    // Deliberately capped low (0.30 in getResearchBonuses) to preserve
+    // CLAUDE.md's "real risk" invariant; hazards.ts's own MITIGATION_CAP is
+    // 0.90 and even that is documented as a "don't delete the risk pillar"
+    // compromise.
+    if (resBonuses.hazardResistanceBonus > 0) {
+      hazards = hazards.map(h => ({ ...h, damagePct: Math.max(0, h.damagePct * (1 - resBonuses.hazardResistanceBonus)) }));
+    }
+    // W6 (science-missions.ts): standing science-mission benefits trim
+    // damage post-roll the same way — Heliophysics Sentinels reduce
+    // solar-storm damage while operational; the Kinetic Deflection Demo
+    // permanently reduces impact-class damage once demonstrated. Reductions
+    // are capped in getScienceHazardDamageMultipliers (risk pillar stays real).
+    {
+      const sciMults = getScienceHazardDamageMultipliers(out);
+      if (sciMults.solar_storm < 1 || sciMults.micrometeorite < 1) {
+        hazards = hazards.map(h =>
+          h.type === 'solar_storm' || h.type === 'micrometeorite'
+            ? { ...h, damagePct: Math.max(0, h.damagePct * sciMults[h.type]) }
+            : h,
+        );
+      }
+    }
     if (hazards.length > 0) {
       const applied = applyHazards(out, hazards);
       out = {
@@ -885,7 +962,15 @@ export function processTick(state: GameState): GameState {
     // full game-month (6 real hours) ahead — the player can shield, insure,
     // staff security, or relocate BEFORE the hit lands (CLAUDE.md: "players
     // must invest in insurance, redundancy, shielding").
-    const warnings = forecastSevereHazards(out, monthIndex + 1, Date.now());
+    // W6 (science-missions.ts): an operational Heliophysics Sentinel
+    // constellation extends the deterministic forecast horizon from 1 to 2
+    // game-months — additive hook only: forecastSevereHazards itself is
+    // unchanged, we simply ask it about additional future months (honest by
+    // construction: the same seeded draws the real rolls will use).
+    const forecastHorizon = getForecastHorizonMonths(out);
+    const warnings = Array.from({ length: forecastHorizon }, (_, i) =>
+      forecastSevereHazards(out, monthIndex + 1 + i, Date.now()),
+    ).flat();
     const previousWarningIds = new Set((out.hazardWarnings || []).map(w => w.id));
     const warningEvents: GameEvent[] = warnings
       .filter(w => !previousWarningIds.has(w.id))
@@ -1156,6 +1241,11 @@ export function processFullTick(state: GameState): GameState {
       const wfBonuses = getWorkforceBonuses(newState.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
       const shipLegacyBonuses = getLegacyBonuses(newState.legacy || DEFAULT_LEGACY);
       const shipTierBonuses = getTierBonuses(newState.corporationTier || 1);
+      // W1 (research effect-authoring pass): this ship-processing pass lives
+      // in processFullTick, a different function/scope than processTick's
+      // own `resBonuses` (line ~107) — recomputed here (cheap, pure) so
+      // transitSpeedMult below can read travelSpeedBonus.
+      const resBonuses = getResearchBonuses(newState.completedResearch);
       // Audit Wave B: specialization mining_output + fleet_speed (§1b),
       // victory mining bonus (§1b), and alliance miningBonus (A2) now reach
       // ship operations too — previously only building-based mining got any
@@ -1261,6 +1351,10 @@ export function processFullTick(state: GameState): GameState {
             (1 + shipSpecBonuses.fleetSpeed)
             * (1 + wfBonuses.shipEfficiency)
             * getShipTransitSpeedMultiplier(newState, ship.instanceId)
+            // W1 (research effect-authoring pass): travelSpeedBonus folds into
+            // the same additive-multiplier chain as fleetSpeed/shipEfficiency
+            // above. Capped at 0.50 in getResearchBonuses.
+            * (1 + resBonuses.travelSpeedBonus)
           );
           const plannedDuration = Math.max(0, ship.route.arrivalAtMs - ship.route.departedAtMs);
           const effectiveArrivalAtMs = ship.route.departedAtMs + plannedDuration / transitSpeedMult;
@@ -1358,6 +1452,16 @@ export function processFullTick(state: GameState): GameState {
     newState = processExpeditionTick(newState, Date.now());
   } catch (err) {
     console.error('Expedition tick error (non-fatal):', err);
+  }
+
+  // 6c. Flagship scientific missions (4X Wave W6, science-missions.ts).
+  // Monthly/quarterly-loop subsystem on the expeditions template — advances
+  // by game-months with catch-up, no-ops (same state reference) when the
+  // player has no programs or unsettled NPC co-funding stakes.
+  try {
+    newState = processScienceMissionTick(newState, Date.now());
+  } catch (err) {
+    console.error('Science mission tick error (non-fatal):', err);
   }
 
   // 7. Check achievements (every 5 ticks to reduce overhead)
