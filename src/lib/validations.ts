@@ -2902,6 +2902,7 @@ export const PODCAST_CATEGORIES = [
   'interviews',
   'news',
   'general',
+  'ai',
 ] as const;
 export type PodcastCategory = (typeof PODCAST_CATEGORIES)[number];
 

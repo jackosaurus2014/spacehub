@@ -48,7 +48,10 @@ const CRON_JOBS: CronJobDef[] = [
   // SpaceX / EONET / Podcasts
   { schedule: '*/30 * * * *',  path: '/api/spacex',                         label: 'spacex-data-refresh',        maxStaleMinutes: 90 },
   { schedule: '0 */2 * * *',   path: '/api/eonet',                          label: 'eonet-events-refresh',       maxStaleMinutes: 300 },
-  { schedule: '0 */4 * * *',   path: '/api/podcasts',                       label: 'podcast-feed-refresh',       maxStaleMinutes: 360 },
+  // Was pointed at GET /api/podcasts (a read-only directory listing — no-op,
+  // synced nothing). Now hits the real sync route, which upserts episodes
+  // for the N stalest podcasts each run. See src/lib/podcast-sync.ts.
+  { schedule: '0 */4 * * *',   path: '/api/cron/podcasts-sync',             label: 'podcasts-sync',              maxStaleMinutes: 360 },
 
   // Medium-frequency (every 4 hours)
   { schedule: '0 */4 * * *',   path: '/api/refresh?type=blogs',             label: 'blogs-fetch',                maxStaleMinutes: 360 },

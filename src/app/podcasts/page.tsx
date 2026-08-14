@@ -31,6 +31,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   interviews: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30',
   news: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
   general: 'bg-white/10 text-slate-300 border-white/20',
+  ai: 'bg-lime-500/15 text-lime-300 border-lime-500/30',
 };
 
 function formatLastFetched(d: Date | null): string {
