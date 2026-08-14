@@ -1276,6 +1276,18 @@ function MissionControlContent() {
           <FeaturedMissionCard mission={featuredMission} />
         </ScrollReveal>
 
+        <div className="flex justify-end -mt-4 mb-6">
+          <Link
+            href="/artemis"
+            className="text-xs text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center gap-1.5 transition-colors"
+          >
+            Full Artemis tracker
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+        </div>
+
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
             <div className="text-red-400 text-sm font-medium">{error}</div>

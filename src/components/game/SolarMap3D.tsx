@@ -15,6 +15,16 @@
 //   - ship transit arcs interpolated from real departure/arrival times
 //   - hazard rings for recent hazards (<60 s)
 //
+// 4X wave W9 (overlay deepening — read-only state consumption):
+//   - ETA countdown labels on in-transit ships (canvas-sprite, 1 Hz refresh)
+//   - hazard FORECAST telegraphs (state.hazardWarnings): slow-pulse amber
+//     ring + ⚠ glyph, visually distinct from the expanding active-hazard
+//     rings; detail lives in MapContextPanel's existing warning chips
+//   - zone standing tint (state.zoneStandings): governor gold / stakeholder
+//     cyan glow behind every location in the zone, PLUS a ♛/◆ text glyph in
+//     the label so standing is never conveyed by color alone
+//   - science-mission presence: 🔬 instrument glyph on program target bodies
+//
 // Performance: single instanced mesh for the belt, sprite labels (no DOM, no
 // font network fetch), frameloop paused when the tab/page is hidden, DPR
 // capped at 2. Text labels are canvas sprites with sizeAttenuation:false so
@@ -28,6 +38,9 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import type { GameState } from '@/lib/game/types';
 import { LANES } from '@/lib/game/spatial-strategy';
 import { SHIP_MAP } from '@/lib/game/ships';
+import { formatCountdown } from '@/lib/game/formulas';
+import { ZONE_MAP } from '@/lib/game/zone-influence';
+import { getActiveScienceMissions, SCIENCE_PROGRAM_MAP } from '@/lib/game/science-missions';
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
 import { REGION_LABELS, LOCATIONS_BY_REGION } from './SolarSystemCanvas';
@@ -95,35 +108,52 @@ function useSafeTexture(url?: string): THREE.Texture | null {
 
 interface BadgeCounts { buildings: number; npc: number; world: number }
 
+/** W9: zone standing per location — never conveyed by color alone (text
+ *  glyph ♛/◆ rides in the label; the tint sprite is reinforcement only). */
+type ZoneStandingKind = 'governor' | 'stakeholder' | null;
+
 /** Draw a name + badge row into a canvas and return a sprite texture. Labels
  *  are self-contained (no font fetch, no DOM) and match the 2D map's badge
- *  colors: cyan = your buildings, red = NPC presence, purple = other corps. */
-function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts): { tex: THREE.CanvasTexture; aspect: number } {
+ *  colors: cyan = your buildings, red = NPC presence, purple = other corps.
+ *  W9: an optional standing glyph (♛ governor gold / ◆ stakeholder cyan)
+ *  prefixes the name. */
+function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, standing: ZoneStandingKind = null): { tex: THREE.CanvasTexture; aspect: number } {
   const scale = 2; // supersample for crispness
   const font = `600 ${13 * scale}px Inter, system-ui, sans-serif`;
   const badgeFont = `700 ${11 * scale}px Inter, system-ui, sans-serif`;
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
   ctx.font = font;
+  const glyph = standing === 'governor' ? '♛ ' : standing === 'stakeholder' ? '◆ ' : '';
+  const glyphColor = standing === 'governor' ? '#fbbf24' : '#22d3ee';
+  const glyphW = glyph ? ctx.measureText(glyph).width : 0;
   const nameW = ctx.measureText(name).width;
+  const textRowW = glyphW + nameW;
   const badgeEntries: { n: number; color: string }[] = [];
   if (badges.buildings > 0) badgeEntries.push({ n: badges.buildings, color: '#06b6d4' });
   if (badges.npc > 0) badgeEntries.push({ n: badges.npc, color: '#ef4444' });
   if (badges.world > 0) badgeEntries.push({ n: badges.world, color: '#a855f7' });
   const badgeR = 9 * scale;
   const badgeRowW = badgeEntries.length * (badgeR * 2 + 6 * scale);
-  const w = Math.ceil(Math.max(nameW, badgeRowW) + 16 * scale);
+  const w = Math.ceil(Math.max(textRowW, badgeRowW) + 16 * scale);
   const h = Math.ceil((badgeEntries.length > 0 ? 42 : 22) * scale);
   canvas.width = w;
   canvas.height = h;
-  // text
+  // text — composed left-to-right so the standing glyph keeps its own color
   ctx.font = font;
-  ctx.textAlign = 'center';
+  ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
   ctx.shadowColor = 'rgba(0,0,0,0.9)';
   ctx.shadowBlur = 4 * scale;
+  let tx = w / 2 - textRowW / 2;
+  if (glyph) {
+    ctx.fillStyle = glyphColor;
+    ctx.fillText(glyph, tx, 11 * scale);
+    tx += glyphW;
+  }
   ctx.fillStyle = unlocked ? '#e2e8f0' : '#64748b';
-  ctx.fillText(name, w / 2, 11 * scale);
+  ctx.fillText(name, tx, 11 * scale);
+  ctx.textAlign = 'center';
   // badges
   if (badgeEntries.length > 0) {
     ctx.shadowBlur = 0;
@@ -145,10 +175,10 @@ function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts):
 }
 
 /** Screen-constant label sprite under a body/pip. */
-function LabelSprite({ name, unlocked, badges, yOffset }: { name: string; unlocked: boolean; badges: BadgeCounts; yOffset: number }) {
+function LabelSprite({ name, unlocked, badges, yOffset, standing = null }: { name: string; unlocked: boolean; badges: BadgeCounts; yOffset: number; standing?: ZoneStandingKind }) {
   const { tex, aspect } = useMemo(
-    () => makeLabelTexture(name, unlocked, badges),
-    [name, unlocked, badges.buildings, badges.npc, badges.world], // eslint-disable-line react-hooks/exhaustive-deps
+    () => makeLabelTexture(name, unlocked, badges, standing),
+    [name, unlocked, badges.buildings, badges.npc, badges.world, standing], // eslint-disable-line react-hooks/exhaustive-deps
   );
   useEffect(() => () => tex.dispose(), [tex]);
   const hasBadges = badges.buildings > 0 || badges.npc > 0 || badges.world > 0;
@@ -158,6 +188,30 @@ function LabelSprite({ name, unlocked, badges, yOffset }: { name: string; unlock
       <spriteMaterial map={tex} sizeAttenuation={false} transparent depthTest={false} />
     </sprite>
   );
+}
+
+/** Small self-contained glyph sprite texture (⚠ forecast, 🔬 science). Same
+ *  no-DOM/no-font-fetch approach as makeLabelTexture. */
+function makeGlyphTexture(text: string, color: string): { tex: THREE.CanvasTexture; aspect: number } {
+  const scale = 2;
+  const font = `700 ${14 * scale}px Inter, system-ui, sans-serif`;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d')!;
+  ctx.font = font;
+  const w = Math.ceil(ctx.measureText(text).width + 10 * scale);
+  const h = Math.ceil(22 * scale);
+  canvas.width = w;
+  canvas.height = h;
+  ctx.font = font;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0,0,0,0.9)';
+  ctx.shadowBlur = 4 * scale;
+  ctx.fillStyle = color;
+  ctx.fillText(text, w / 2, h / 2);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return { tex, aspect: w / h };
 }
 
 // ── Scene rig — owns scene time and the per-frame position table ─────────────
@@ -271,10 +325,11 @@ interface BodyMeshProps {
   reduced: boolean;
   unlocked: boolean;
   badges: BadgeCounts;
+  standing: ZoneStandingKind;
   onPick: (locId: string) => void;
 }
 
-function BodyMesh({ def, posRef, reduced, unlocked, badges, onPick }: BodyMeshProps) {
+function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, onPick }: BodyMeshProps) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
@@ -332,15 +387,15 @@ function BodyMesh({ def, posRef, reduced, unlocked, badges, onPick }: BodyMeshPr
         </mesh>
       )}
       {def.ring && <PlanetRing texUrl={def.ring.texture} innerScale={def.ring.innerScale} outerScale={def.ring.outerScale} bodyR={r} />}
-      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} yOffset={-(r + 0.45)} />}
+      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} yOffset={-(r + 0.45)} />}
     </group>
   );
 }
 
 // ── Orbital pips (LEO / GEO / belt ops / deep-space relay …) ────────────────
 
-function PipMesh({ pip, posRef, unlocked, badges, onPick }: {
-  pip: OrbitalPip; posRef: PositionsRef; unlocked: boolean; badges: BadgeCounts; onPick: (locId: string) => void;
+function PipMesh({ pip, posRef, unlocked, badges, standing, onPick }: {
+  pip: OrbitalPip; posRef: PositionsRef; unlocked: boolean; badges: BadgeCounts; standing: ZoneStandingKind; onPick: (locId: string) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   useFrame(() => {
@@ -367,7 +422,7 @@ function PipMesh({ pip, posRef, unlocked, badges, onPick }: {
         <sphereGeometry args={[0.5, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} yOffset={-0.5} />
+      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} yOffset={-0.5} />
     </group>
   );
 }
@@ -490,10 +545,18 @@ function LaneLines({ posRef, state, reduced }: { posRef: PositionsRef; state: Ga
 
 type ShipInstanceLike = NonNullable<GameState['ships']>[number];
 
+// Fixed ETA-label canvas geometry — one size for every transit ship so the
+// texture is allocated once per ship and only repainted (1 Hz), never resized.
+const ETA_CANVAS_W = 200;
+const ETA_CANVAS_H = 44;
+
 /** In-transit ship: curved arc + oriented marker, interpolated from the REAL
- *  departure/arrival timestamps — functional motion, identical to the 2D map. */
+ *  departure/arrival timestamps — functional motion, identical to the 2D map.
+ *  W9: an arrival-countdown sprite follows the marker (screen-constant size,
+ *  repainted once per second outside the frame loop). */
 function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: PositionsRef }) {
   const markerRef = useRef<THREE.Mesh>(null);
+  const etaSpriteRef = useRef<THREE.Sprite>(null);
   const lineObj = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(33 * 3), 3));
@@ -503,6 +566,46 @@ function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: Positio
   const def = SHIP_MAP.get(ship.definitionId);
   const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
 
+  // ETA countdown texture — persistent canvas repainted at 1 Hz (no per-frame
+  // allocation; the frame loop only moves the sprite).
+  const etaCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const etaTex = useMemo(() => {
+    const c = document.createElement('canvas');
+    c.width = ETA_CANVAS_W;
+    c.height = ETA_CANVAS_H;
+    etaCanvasRef.current = c;
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }, []);
+  useEffect(() => () => etaTex.dispose(), [etaTex]);
+  const [etaText, setEtaText] = useState('');
+  const arrivalAtMs = ship.route?.arrivalAtMs;
+  useEffect(() => {
+    if (!arrivalAtMs) { setEtaText(''); return; }
+    const compute = () => setEtaText(`ETA ${formatCountdown(Math.max(0, (arrivalAtMs - Date.now()) / 1000))}`);
+    compute();
+    const iv = setInterval(compute, 1000);
+    return () => clearInterval(iv);
+  }, [arrivalAtMs]);
+  useEffect(() => {
+    const c = etaCanvasRef.current;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, c.width, c.height);
+    if (etaText) {
+      ctx.font = '600 22px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = '#67e8f9';
+      ctx.fillText(etaText, c.width / 2, c.height / 2);
+    }
+    etaTex.needsUpdate = true;
+  }, [etaText, etaTex]);
+
   useFrame(() => {
     const route = ship.route;
     if (!route) return;
@@ -510,7 +613,13 @@ function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: Positio
     const from = anchors[route.from];
     const to = anchors[route.to];
     const marker = markerRef.current;
-    if (!from || !to || !marker) { if (marker) marker.visible = false; lineObj.visible = false; return; }
+    const etaLabel = etaSpriteRef.current;
+    if (!from || !to || !marker) {
+      if (marker) marker.visible = false;
+      if (etaLabel) etaLabel.visible = false;
+      lineObj.visible = false;
+      return;
+    }
     marker.visible = true;
     lineObj.visible = true;
     const f = new THREE.Vector3(...from.pos);
@@ -547,6 +656,10 @@ function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: Positio
       .normalize();
     marker.position.copy(pos);
     marker.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent);
+    if (etaLabel) {
+      etaLabel.visible = true;
+      etaLabel.position.set(pos.x, pos.y + 0.55, pos.z);
+    }
   });
 
   return (
@@ -556,6 +669,9 @@ function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: Positio
         <coneGeometry args={[0.12, 0.34, 8]} />
         <meshBasicMaterial color={color} />
       </mesh>
+      <sprite ref={etaSpriteRef} visible={false} scale={[0.05 * (ETA_CANVAS_W / ETA_CANVAS_H), 0.05, 1]} renderOrder={11}>
+        <spriteMaterial map={etaTex} sizeAttenuation={false} transparent depthTest={false} />
+      </sprite>
     </group>
   );
 }
@@ -625,6 +741,169 @@ function HazardRing({ hazard, posRef }: { hazard: NonNullable<GameState['recentH
         </mesh>
       </Billboard>
     </group>
+  );
+}
+
+// ── Hazard FORECAST telegraphs (W9) — state.hazardWarnings ──────────────────
+// Visually distinct from active-hazard rings: those expand outward and fade
+// over 60 s; forecasts hold a constant radius and slow-pulse amber (static
+// under reduced motion). Selecting the location shows the full warning text
+// in MapContextPanel's existing forecast chips.
+
+function ForecastMarkers({ posRef, state, reduced }: { posRef: PositionsRef; state: GameState; reduced: boolean }) {
+  const grouped = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const w of state.hazardWarnings || []) map.set(w.locationId, (map.get(w.locationId) || 0) + 1);
+    return Array.from(map.entries());
+  }, [state.hazardWarnings]);
+  return (
+    <group>
+      {grouped.map(([locId, count]) => (
+        <ForecastRing key={locId} locId={locId} count={count} posRef={posRef} reduced={reduced} />
+      ))}
+    </group>
+  );
+}
+
+function ForecastRing({ locId, count, posRef, reduced }: { locId: string; count: number; posRef: PositionsRef; reduced: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+  const glyphRef = useRef<THREE.Sprite>(null);
+  const glyph = useMemo(() => makeGlyphTexture(count > 1 ? `⚠︎×${count}` : '⚠︎', '#fbbf24'), [count]);
+  useEffect(() => () => glyph.tex.dispose(), [glyph]);
+  useFrame(({ clock }) => {
+    const a = posRef.current.anchors[locId];
+    const g = groupRef.current;
+    const gs = glyphRef.current;
+    if (!a || !g) {
+      if (g) g.visible = false;
+      if (gs) gs.visible = false;
+      return;
+    }
+    g.visible = true;
+    g.position.set(a.pos[0], a.pos[1], a.pos[2]);
+    const wave = reduced ? 0.5 : Math.sin(clock.elapsedTime * 1.8) * 0.5 + 0.5;
+    const s = (a.r + 0.55) * (reduced ? 1 : 1 + (wave - 0.5) * 0.14);
+    g.scale.set(s, s, s);
+    if (matRef.current) matRef.current.opacity = 0.3 + wave * 0.3;
+    if (gs) {
+      gs.visible = true;
+      gs.position.set(a.pos[0], a.pos[1] + a.r + 0.75, a.pos[2]);
+    }
+  });
+  return (
+    <group>
+      <group ref={groupRef} visible={false}>
+        <Billboard>
+          <mesh renderOrder={4}>
+            <ringGeometry args={[0.86, 0.94, 48]} />
+            <meshBasicMaterial ref={matRef} color="#fbbf24" transparent opacity={0.45} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
+          </mesh>
+        </Billboard>
+      </group>
+      <sprite ref={glyphRef} visible={false} scale={[0.038 * glyph.aspect, 0.038, 1]} renderOrder={11}>
+        <spriteMaterial map={glyph.tex} sizeAttenuation={false} transparent depthTest={false} />
+      </sprite>
+    </group>
+  );
+}
+
+// ── Zone standing tint (W9) — state.zoneStandings ───────────────────────────
+// Soft glow behind every location of a zone the player holds standing in:
+// governor gold, stakeholder cyan. Reinforcement only — the ♛/◆ text glyph
+// in the location label carries the information (no color-only state).
+
+function makeTintTexture(rgb: string): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const ctx = c.getContext('2d')!;
+  const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, `rgba(${rgb},0.55)`);
+  g.addColorStop(0.5, `rgba(${rgb},0.18)`);
+  g.addColorStop(1, `rgba(${rgb},0)`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+function ZoneTints({ posRef, tinted }: { posRef: PositionsRef; tinted: { locId: string; kind: 'governor' | 'stakeholder' }[] }) {
+  const goldTex = useMemo(() => makeTintTexture('251,191,36'), []);
+  const cyanTex = useMemo(() => makeTintTexture('34,211,238'), []);
+  useEffect(() => () => { goldTex.dispose(); cyanTex.dispose(); }, [goldTex, cyanTex]);
+  const spritesRef = useRef<(THREE.Sprite | null)[]>([]);
+  useFrame(() => {
+    const anchors = posRef.current.anchors;
+    for (let i = 0; i < tinted.length; i++) {
+      const sp = spritesRef.current[i];
+      if (!sp) continue;
+      const a = anchors[tinted[i].locId];
+      if (!a) { sp.visible = false; continue; }
+      sp.visible = true;
+      sp.position.set(a.pos[0], a.pos[1], a.pos[2]);
+      const s = a.r * 2 + 2.6;
+      sp.scale.set(s, s, 1);
+    }
+  });
+  return (
+    <group>
+      {tinted.map((t, i) => (
+        <sprite key={`${t.locId}-${t.kind}`} ref={el => { spritesRef.current[i] = el; }} visible={false} renderOrder={-2}>
+          <spriteMaterial
+            map={t.kind === 'governor' ? goldTex : cyanTex}
+            transparent
+            opacity={0.3}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+          />
+        </sprite>
+      ))}
+    </group>
+  );
+}
+
+// ── Science-mission presence (W9) — state.scienceMissions ───────────────────
+// Active flagship missions put a 🔬 instrument glyph on their target body.
+// Order Queue HUD rows for the same missions focus the same location, and
+// MapContextPanel lists mission phase details on selection.
+
+function ScienceMarkers({ posRef, state }: { posRef: PositionsRef; state: GameState }) {
+  const grouped = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of getActiveScienceMissions(state)) {
+      const program = SCIENCE_PROGRAM_MAP.get(m.programId);
+      if (!program) continue;
+      map.set(program.locationId, (map.get(program.locationId) || 0) + 1);
+    }
+    return Array.from(map.entries());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.scienceMissions]);
+  return (
+    <group>
+      {grouped.map(([locId, count]) => (
+        <ScienceMarker key={locId} locId={locId} count={count} posRef={posRef} />
+      ))}
+    </group>
+  );
+}
+
+function ScienceMarker({ locId, count, posRef }: { locId: string; count: number; posRef: PositionsRef }) {
+  const spriteRef = useRef<THREE.Sprite>(null);
+  const glyph = useMemo(() => makeGlyphTexture(count > 1 ? `🔬×${count}` : '🔬', '#a5f3fc'), [count]);
+  useEffect(() => () => glyph.tex.dispose(), [glyph]);
+  useFrame(() => {
+    const sp = spriteRef.current;
+    if (!sp) return;
+    const a = posRef.current.anchors[locId];
+    if (!a) { sp.visible = false; return; }
+    sp.visible = true;
+    sp.position.set(a.pos[0] + a.r * 0.9 + 0.3, a.pos[1] + a.r + 0.45, a.pos[2]);
+  });
+  return (
+    <sprite ref={spriteRef} visible={false} scale={[0.04 * glyph.aspect, 0.04, 1]} renderOrder={11}>
+      <spriteMaterial map={glyph.tex} sizeAttenuation={false} transparent depthTest={false} />
+    </sprite>
   );
 }
 
@@ -743,6 +1022,32 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const NO_BADGES: BadgeCounts = useMemo(() => ({ buildings: 0, npc: 0, world: 0 }), []);
   const unlockedSet = useMemo(() => new Set(state.unlockedLocations), [state.unlockedLocations]);
 
+  // W9: zone standing per location (governor beats stakeholder when zones
+  // overlap a location) — drives the label glyph, the tint layer, and the
+  // keyboard Location List annotations.
+  const standingByLoc = useMemo(() => {
+    const out: Record<string, 'governor' | 'stakeholder'> = {};
+    for (const zs of state.zoneStandings || []) {
+      const kind: 'governor' | 'stakeholder' | null = zs.isGovernor ? 'governor' : zs.sharePct >= 1 ? 'stakeholder' : null;
+      if (!kind) continue;
+      const zone = ZONE_MAP.get(zs.zoneSlug);
+      for (const locId of zone?.locations || []) {
+        if (out[locId] !== 'governor') out[locId] = kind;
+      }
+    }
+    return out;
+  }, [state.zoneStandings]);
+  const tintedLocations = useMemo(
+    () => Object.entries(standingByLoc).map(([locId, kind]) => ({ locId, kind })),
+    [standingByLoc],
+  );
+
+  // W9: locations with a severe-hazard forecast (next game-month telegraphs).
+  const warningLocs = useMemo(
+    () => new Set((state.hazardWarnings || []).map(w => w.locationId)),
+    [state.hazardWarnings],
+  );
+
   const ships = (state.ships || []).filter(s => s.isBuilt);
   const transitShips = ships.filter(s => s.status === 'in_transit' && s.route);
   const stationShips = ships.filter(s => !(s.status === 'in_transit' && s.route));
@@ -796,6 +1101,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           <OrbitRing key={`orbit-${b.id}`} aAU={b.aAU!} inclinationDeg={b.inclinationDeg || 0} />
         ))}
         <BeltRocks reduced={reduced} />
+        {tintedLocations.length > 0 && <ZoneTints posRef={posRef} tinted={tintedLocations} />}
         {ORBITAL_BODIES.map(b => (
           <BodyMesh
             key={b.id}
@@ -804,6 +1110,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             reduced={reduced}
             unlocked={b.locationId ? unlockedSet.has(b.locationId) : true}
             badges={(b.locationId && badgesByLoc[b.locationId]) || NO_BADGES}
+            standing={(b.locationId && standingByLoc[b.locationId]) || null}
             onPick={selectLocation}
           />
         ))}
@@ -814,6 +1121,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             posRef={posRef}
             unlocked={unlockedSet.has(p.locationId)}
             badges={badgesByLoc[p.locationId] || NO_BADGES}
+            standing={standingByLoc[p.locationId] || null}
             onPick={selectLocation}
           />
         ))}
@@ -821,6 +1129,8 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} />)}
         {showShips && stationShips.map(s => <StationShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
         <HazardRings posRef={posRef} state={state} />
+        <ForecastMarkers posRef={posRef} state={state} reduced={reduced} />
+        <ScienceMarkers posRef={posRef} state={state} />
         <SelectionMarker posRef={posRef} selectedLocationId={selectedLoc} reduced={reduced} />
         <OrbitControls
           ref={controlsRef}
@@ -905,6 +1215,8 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                   {locations.map(loc => {
                     const unlocked = unlockedSet.has(loc.id);
                     const isSelected = selectedLoc === loc.id;
+                    const standing = standingByLoc[loc.id];
+                    const hasWarning = warningLocs.has(loc.id);
                     return (
                       <button
                         key={loc.id}
@@ -922,9 +1234,14 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                         <span className="flex items-center gap-1">
                           <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
                           <span className="truncate">{loc.name}</span>
+                          {standing === 'governor' && <span aria-hidden="true" className="text-amber-300 shrink-0">♛</span>}
+                          {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
+                          {hasWarning && <span aria-hidden="true" className="text-amber-300 shrink-0">⚠</span>}
                         </span>
                         <span className="sr-only">
                           {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
+                          {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
+                          {hasWarning ? ', severe hazard forecast next month' : ''}
                         </span>
                       </button>
                     );

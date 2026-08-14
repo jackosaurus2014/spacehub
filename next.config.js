@@ -442,6 +442,9 @@ const nextConfig = {
 
       // ── Duplicate company profile merged (2026-08) ──
       { source: '/company-profiles/anduril', destination: '/company-profiles/anduril-industries', permanent: true },
+
+      // ── Artemis Program Tracker (2026-08) ──
+      { source: '/artemis-tracker', destination: '/artemis', permanent: true },
     ];
   },
 }

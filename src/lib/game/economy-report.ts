@@ -161,7 +161,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
   const payroll = getMonthlyPayroll(workforce);
-  const resBonuses = getResearchBonuses(state.completedResearch);
+  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
 
   const legacy = state.legacy || DEFAULT_LEGACY;
   const legacyBonuses = getLegacyBonuses(legacy);

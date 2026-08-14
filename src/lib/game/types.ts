@@ -182,6 +182,54 @@ export interface ResearchDefinition {
    * fallback for that case (research-tree.ts `inferEffectsFromFlavor`).
    */
   effects?: ResearchEffect[];
+
+  // ─── W3/W10 (4X_BASELINE_2026-08.md Part 2a Op4/Op5) ─────────────────────
+
+  /**
+   * MoO2-style mutually exclusive doctrine pick (Op4). Ids of research(es)
+   * that become doctrine-locked once THIS research completes (and
+   * vice-versa — every pair authors `excludes` symmetrically on both
+   * sides). A locked research is still visible and still researchable, but
+   * only at the Op4 override price: 2x baseCostMoney + a 6-month retooling
+   * surcharge (research-tree.ts `getDoctrineOverrideCost`). Checked in
+   * `isDoctrineLocked` / `canResearch` call sites, not enforced by
+   * `resolveEffects` — this field only gates the research UI's start
+   * button, it doesn't change what the tech does once researched.
+   */
+  excludes?: string[];
+
+  /** Groups this research with its doctrine sibling(s) for display/history
+   *  purposes (GameState.doctrineChoices is keyed by this). Present iff
+   *  `excludes` is present. */
+  doctrineGroup?: string;
+
+  /**
+   * Op5 rare tech: hidden from the research tree entirely until its id
+   * appears in GameState.unlockedRareTechIds (granted by narrative-events.ts
+   * chain payoffs or science-missions.ts program discoveries — the W4/W6
+   * grant channel). research-tree.ts `isRareTechVisible` is the single
+   * visibility check; ResearchPanel and canResearch both call it.
+   */
+  rare?: boolean;
+
+  /**
+   * Op5 bounded repeatable program (~6 in the tree, 5 levels each). When
+   * set, completing this research does NOT push its id into
+   * completedResearch (which would permanently hide it) — instead
+   * GameState.repeatableResearchLevels[id] increments, and the research
+   * re-arms for another level at an escalated cost, up to maxLevel.
+   * effectPerLevel is summed once per completed level (not multiplied by
+   * itself) inside getResearchBonuses' existing aggregate caps.
+   */
+  repeatable?: {
+    /** Doc: 5 levels per program. */
+    maxLevel: number;
+    /** Granted once per completed level; doc: "+2% per level". */
+    effectPerLevel: ResearchEffect[];
+    /** Doc: "Cost scales x2.5/level" — next level's money cost is
+     *  baseCostMoney * costMultiplierPerLevel^(levels already completed). */
+    costMultiplierPerLevel: number;
+  };
 }
 
 export interface ActiveResearch {
@@ -867,6 +915,35 @@ export interface GameState {
     settledAtMonth?: number;
     payout?: number;
   }[];
+
+  // ─── V20 (4X Waves W3+W10) — Research Tree 2.0: doctrine gates + ─────────
+  // repeatable programs (docs/4X_BASELINE_2026-08.md Part 2a Op4/Op5).
+  // Both fields are additive-only; a save with neither field behaves exactly
+  // like today (no doctrine chosen = both sides of every pair stay
+  // available; no repeatable levels = every repeatable starts at level 0).
+
+  /** Which side of each mutually-exclusive doctrine pair the corporation
+   *  originally committed to, keyed by ResearchDefinition.doctrineGroup
+   *  (e.g. 'propulsion_doctrine' -> 'nuclear_thermal'). Recorded the first
+   *  time either side of a pair completes, and never overwritten — so the
+   *  original choice stays visible in the UI even after a player later pays
+   *  the 2x-cost/6-month-retool override to research the locked sibling too
+   *  (both ids end up in completedResearch, but this map still remembers
+   *  which one was "the doctrine"). research-tree.ts's isDoctrineLocked /
+   *  getDoctrineLockedBy / getDoctrineOverrideCost read `excludes` +
+   *  completedResearch directly, so this map is purely a display/history
+   *  record, not the source of truth for lock state. */
+  doctrineChoices?: Record<string, string>;
+
+  /** Levels completed for each repeatable research program, keyed by
+   *  ResearchDefinition.id (e.g. 'launch_cadence_optimization' -> 3).
+   *  Repeatable techs deliberately never get pushed into completedResearch
+   *  (that would permanently hide them from the research UI after the first
+   *  completion) — this map is their only completion state, capped at
+   *  def.repeatable.maxLevel. getResearchBonuses(completedResearchIds,
+   *  repeatableResearchLevels) sums def.repeatable.effectPerLevel once per
+   *  completed level, inside the same aggregate caps as every other bonus. */
+  repeatableResearchLevels?: Record<string, number>;
 }
 
 export interface DeliveryContractState {

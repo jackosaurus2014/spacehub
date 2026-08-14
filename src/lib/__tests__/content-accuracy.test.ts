@@ -29,6 +29,11 @@ jest.mock('@/lib/db', () => ({
   },
 }));
 
+const mockGetArtemisNewsArticles = jest.fn();
+jest.mock('@/lib/artemis-news', () => ({
+  getArtemisNewsArticles: (...args: unknown[]) => mockGetArtemisNewsArticles(...args),
+}));
+
 import prisma from '@/lib/db';
 import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
@@ -204,6 +209,32 @@ describe('ai-insights-fresh', () => {
     mockPrisma.aIInsight.findFirst.mockResolvedValueOnce({ generatedAt: new Date(Date.now() - 72 * HOUR) });
     const result = await getCheck('ai-insights-fresh').run();
     expect(result.ok).toBe(false);
+  });
+});
+
+describe('artemis-tracker-freshness', () => {
+  it('passes when the freshest Artemis-matching article is under 7 days old', async () => {
+    mockGetArtemisNewsArticles.mockResolvedValueOnce([
+      { title: 'Artemis III milestone update', publishedAt: new Date(Date.now() - 2 * DAY) },
+    ]);
+    const result = await getCheck('artemis-tracker-freshness').run();
+    expect(result.ok).toBe(true);
+    expect(mockGetArtemisNewsArticles).toHaveBeenCalledWith(1);
+  });
+
+  it('fails when the freshest Artemis-matching article is over 7 days old', async () => {
+    mockGetArtemisNewsArticles.mockResolvedValueOnce([
+      { title: 'Artemis III milestone update', publishedAt: new Date(Date.now() - 10 * DAY) },
+    ]);
+    const result = await getCheck('artemis-tracker-freshness').run();
+    expect(result.ok).toBe(false);
+  });
+
+  it('fails when there are no Artemis-matching articles at all', async () => {
+    mockGetArtemisNewsArticles.mockResolvedValueOnce([]);
+    const result = await getCheck('artemis-tracker-freshness').run();
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain('No Artemis-matching NewsArticle rows found');
   });
 });
 

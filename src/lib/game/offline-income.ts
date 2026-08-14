@@ -44,7 +44,7 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
   const multipliers = getActiveMultipliers(state);
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
-  const resBonuses = getResearchBonuses(state.completedResearch);
+  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
   // Wave F: prestige.ts deleted (deprecated, superseded by legacy-system.ts).
   // Offline income now applies the live Legacy bonuses instead — the tick
   // engine already does this (game-engine.ts), so this also fixes a latent

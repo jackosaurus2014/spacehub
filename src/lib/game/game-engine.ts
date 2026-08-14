@@ -111,8 +111,9 @@ export function processTick(state: GameState): GameState {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
 
-  // Get research bonuses (category-specific bonuses from completed research)
-  const resBonuses = getResearchBonuses(state.completedResearch);
+  // Get research bonuses (category-specific bonuses from completed research).
+  // W3 (4X Op5 repeatables): also sums levels from state.repeatableResearchLevels.
+  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
 
   // Get legacy bonuses (replaces prestige)
   const legacy = state.legacy || DEFAULT_LEGACY;
@@ -376,6 +377,34 @@ export function processTick(state: GameState): GameState {
   // ─── 4. Research progress (real wall-clock time) ──────────────────
   let activeResearch = state.activeResearch;
   const completedResearch = [...state.completedResearch];
+  // W3+W10 (4X Op4/Op5): repeatable-program levels and doctrine-choice
+  // history. Mutated in place by completeResearchDef below, then threaded
+  // into `out` at the bottom of this function (both are additive-only V20
+  // state — see save-load.ts / types.ts GameState comments).
+  const repeatableResearchLevels: Record<string, number> = { ...(state.repeatableResearchLevels || {}) };
+  const doctrineChoices: Record<string, string> = { ...(state.doctrineChoices || {}) };
+
+  /** Shared completion handler for both research queues. Repeatable
+   *  programs (Op5) never enter `completedResearch` — completing one just
+   *  increments its level and lets it re-arm at the next (escalated) cost,
+   *  which handleStartResearch computes via getResearchDisplayState. Every
+   *  other research pushes to completedResearch as before; if it's one side
+   *  of a doctrine pair (Op4) and no choice has been recorded yet for that
+   *  group, this is the corporation's doctrine — recorded once, never
+   *  overwritten (so a later override-unlock of the locked sibling doesn't
+   *  erase which side was chosen first). */
+  const completeResearchDef = (id: string) => {
+    const def = RESEARCH_MAP.get(id);
+    if (def?.repeatable) {
+      const next = (repeatableResearchLevels[id] || 0) + 1;
+      repeatableResearchLevels[id] = Math.min(next, def.repeatable.maxLevel);
+      return;
+    }
+    completedResearch.push(id);
+    if (def?.doctrineGroup && !doctrineChoices[def.doctrineGroup]) {
+      doctrineChoices[def.doctrineGroup] = id;
+    }
+  };
 
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
@@ -390,7 +419,7 @@ export function processTick(state: GameState): GameState {
     const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
-      completedResearch.push(activeResearch.definitionId);
+      completeResearchDef(activeResearch.definitionId);
       stats.researchCompleted++;
       const def = RESEARCH_MAP.get(activeResearch.definitionId);
       events.push({
@@ -415,7 +444,7 @@ export function processTick(state: GameState): GameState {
     const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
-      completedResearch.push(activeResearch2.definitionId);
+      completeResearchDef(activeResearch2.definitionId);
       stats.researchCompleted++;
       const def2 = RESEARCH_MAP.get(activeResearch2.definitionId);
       events.push({
@@ -873,6 +902,8 @@ export function processTick(state: GameState): GameState {
     completedResearch,
     activeResearch,
     activeResearch2,
+    repeatableResearchLevels,       // W3 (4X Op5)
+    doctrineChoices,                // W3 (4X Op4)
     activeServices,
     resources,
     activeEffects,
@@ -1265,7 +1296,7 @@ export function processFullTick(state: GameState): GameState {
       // in processFullTick, a different function/scope than processTick's
       // own `resBonuses` (line ~107) — recomputed here (cheap, pure) so
       // transitSpeedMult below can read travelSpeedBonus.
-      const resBonuses = getResearchBonuses(newState.completedResearch);
+      const resBonuses = getResearchBonuses(newState.completedResearch, newState.repeatableResearchLevels);
       // W8 (Leaders 2.0): same reasoning — recompute commanderBonuses in
       // this scope so transitSpeedMult can read the Propulsion
       // Specialist/Cryogenics Engineer/Risk Taker trait contributions.

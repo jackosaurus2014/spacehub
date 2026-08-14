@@ -17,6 +17,7 @@ import { logger } from '@/lib/logger';
 import { sendFreshnessAlert } from '@/lib/freshness-alerts';
 import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
+import { getArtemisNewsArticles } from '@/lib/artemis-news';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -240,6 +241,31 @@ async function checkAIInsightsFresh(): Promise<AccuracyCheckOutcome> {
 }
 
 // ---------------------------------------------------------------------------
+// Check 7 — /artemis live news rail feed is alive (freshest match < 7 days)
+// ---------------------------------------------------------------------------
+
+// Reuses the exact same matching logic as the /artemis page's live news
+// rail (src/lib/artemis-news.ts) so this check and the page can never
+// drift apart — a failing check always means the rail itself is stale.
+async function checkArtemisTrackerFreshness(): Promise<AccuracyCheckOutcome> {
+  const [latest] = await getArtemisNewsArticles(1);
+
+  if (!latest) {
+    return {
+      ok: false,
+      detail: 'No Artemis-matching NewsArticle rows found — the /artemis live news rail has nothing to show.',
+    };
+  }
+
+  const ageDays = (Date.now() - latest.publishedAt.getTime()) / MS_PER_DAY;
+  const ok = ageDays < 7;
+  return {
+    ok,
+    detail: `Freshest Artemis-matching NewsArticle ("${latest.title}") is ${ageDays.toFixed(1)} day(s) old (policy: < 7 days).`,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Checklist registry — data-driven, extend by pushing a new entry
 // ---------------------------------------------------------------------------
 
@@ -278,6 +304,11 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     id: 'ai-insights-fresh',
     label: 'AI insight pipeline is alive (freshest insight < 48h)',
     run: checkAIInsightsFresh,
+  },
+  {
+    id: 'artemis-tracker-freshness',
+    label: '/artemis live news rail is alive (freshest Artemis match < 7 days)',
+    run: checkArtemisTrackerFreshness,
   },
 ];
 

@@ -19,6 +19,16 @@ export default function ArtemisIIBlogPage() {
             </Link>
             <span className="text-slate-600">/</span>
             <span className="text-sm text-white font-medium">Artemis II Live Blog</span>
+            <span className="text-slate-600">/</span>
+            <Link
+              href="/artemis"
+              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+            >
+              Program tracker
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3 mb-4">

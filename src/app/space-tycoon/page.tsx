@@ -7,7 +7,10 @@ import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
 import { BUILDINGS, BUILDING_MAP, scaledBuildTime } from '@/lib/game/buildings';
-import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect, getResearchBonuses } from '@/lib/game/research-tree';
+import {
+  RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect, getResearchBonuses,
+  isRareTechVisible, getResearchDisplayState, type ResearchDisplayState,
+} from '@/lib/game/research-tree';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
@@ -112,19 +115,41 @@ import MarketHubPanel from '@/components/game/MarketHubPanel';
 
 // ─── Research Panel (redesigned — collapsible categories, search, progress) ──
 
+/** W3/W10 (4X Op4/Op5): a doctrine-choice confirm message, shared by the
+ *  suggestion tiles and the category grid so both routes ask the same
+ *  question before committing/overriding a doctrine pick. Returns null if
+ *  `r` isn't part of a doctrine pair (no confirm needed). */
+function getDoctrineConfirmMessage(r: typeof RESEARCH[number], disp: ResearchDisplayState): string | null {
+  if (!r.doctrineGroup) return null;
+  if (disp.doctrineLocked) {
+    const lockedBy = disp.lockedBySiblingId ? RESEARCH_MAP.get(disp.lockedBySiblingId) : null;
+    return `"${r.name}" is doctrine-locked — you already chose "${lockedBy?.name || disp.lockedBySiblingId}". Unlocking it now costs ${formatMoney(disp.effectiveMoneyCost)} (2x normal price) and ${disp.effectiveTotalMonths} in-game months (+6-month retooling surcharge) instead of the usual ${formatMoney(r.baseCostMoney)} / ${r.baseTimeMonths} months. Proceed with the override?`;
+  }
+  const siblingNames = (r.excludes || []).map(id => RESEARCH_MAP.get(id)?.name).filter(Boolean).join(', ');
+  return `Doctrine choice: researching "${r.name}" locks "${siblingNames}" unless you later pay a 2x-cost, 6-month-retooling override to unlock it too. Commit to this doctrine?`;
+}
+
 /** Pick up to 3 suggested researches that unlock progression and the player can start */
 function getSuggestedResearch(state: GameState): typeof RESEARCH[number][] {
   const completed = new Set(state.completedResearch);
   const activeId = state.activeResearch?.definitionId;
   const activeId2 = state.activeResearch2?.definitionId;
 
-  // All researches the player could potentially start (prereqs met, not completed, not active)
-  const available = RESEARCH.filter(r =>
-    !completed.has(r.id) &&
-    r.id !== activeId &&
-    r.id !== activeId2 &&
-    r.prerequisites.every(p => completed.has(p))
-  );
+  // All researches the player could potentially start (prereqs met, not
+  // completed/maxed, not active, visible, and not doctrine-locked — locked
+  // techs need the override confirm flow, so they're excluded from quick
+  // one-click suggestions and only start-able from the main category grid).
+  const available = RESEARCH.filter(r => {
+    const disp = getResearchDisplayState(r, state);
+    return (
+      disp.visible &&
+      !disp.completed &&
+      !disp.doctrineLocked &&
+      r.id !== activeId &&
+      r.id !== activeId2 &&
+      r.prerequisites.every(p => completed.has(p))
+    );
+  });
 
   // Count how many OTHER researches depend on each research (gateway value)
   const dependentCount = new Map<string, number>();
@@ -145,9 +170,11 @@ function getSuggestedResearch(state: GameState): typeof RESEARCH[number][] {
   // Score each available research
   const scored = available.map(r => {
     let score = 0;
+    // Repeatables (W3): use the escalated next-level cost, not baseCostMoney.
+    const effectiveCost = getResearchDisplayState(r, state).effectiveMoneyCost;
 
     // Can afford (money + resources) — strong signal
-    const canAffordMoney = state.money >= r.baseCostMoney;
+    const canAffordMoney = state.money >= effectiveCost;
     const hasResources = !r.resourceCost || Object.entries(r.resourceCost).every(
       ([resId, qty]) => (state.resources[resId] || 0) >= qty
     );
@@ -167,7 +194,7 @@ function getSuggestedResearch(state: GameState): typeof RESEARCH[number][] {
     score += (6 - r.tier) * 5;
 
     // Cheaper = more actionable
-    if (r.baseCostMoney <= state.money * 0.5) score += 10;
+    if (effectiveCost <= state.money * 0.5) score += 10;
 
     return { research: r, score, canAfford: canAffordMoney && hasResources };
   });
@@ -182,7 +209,13 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'available' | 'completed'>('all');
 
-  const totalResearch = RESEARCH.length;
+  // W10: rare techs the player hasn't discovered yet don't count toward the
+  // visible denominator (can't complete what you can't see).
+  const visibleResearch = useMemo(
+    () => RESEARCH.filter(r => isRareTechVisible(r, state.unlockedRareTechIds)),
+    [state.unlockedRareTechIds],
+  );
+  const totalResearch = visibleResearch.length;
   const completedCount = state.completedResearch.length;
   const progressPct = Math.round((completedCount / totalResearch) * 100);
 
@@ -210,7 +243,8 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {suggestions.map(r => {
-              const canAffordMoney = state.money >= r.baseCostMoney;
+              const disp = getResearchDisplayState(r, state);
+              const canAffordMoney = state.money >= disp.effectiveMoneyCost;
               const hasRes = !r.resourceCost || Object.entries(r.resourceCost).every(
                 ([resId, qty]) => (state.resources[resId] || 0) >= qty
               );
@@ -222,7 +256,12 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
               return (
                 <button
                   key={r.id}
-                  onClick={() => { if (canStart) onStartResearch(r.id); }}
+                  onClick={() => {
+                    if (!canStart) return;
+                    const confirmMsg = getDoctrineConfirmMessage(r, disp);
+                    if (confirmMsg && !confirm(confirmMsg)) return;
+                    onStartResearch(r.id);
+                  }}
                   disabled={!canStart}
                   className={`text-left p-3 rounded-lg border transition-all ${
                     canStart
@@ -248,10 +287,10 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                   )}
                   <div className="flex items-center justify-between mt-1.5">
                     <span className={`text-[10px] font-mono ${canAffordMoney ? 'text-green-400/80' : 'text-red-400/80'}`}>
-                      {formatMoney(r.baseCostMoney)}
+                      {formatMoney(disp.effectiveMoneyCost)}
                     </span>
                     <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-                      T{r.tier} · {formatDuration(r.realResearchSeconds)}
+                      T{r.tier} · {formatDuration(disp.effectiveRealDurationSeconds)}
                     </span>
                   </div>
                 </button>
@@ -359,8 +398,10 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
 
       {/* Category Accordion */}
       {RESEARCH_CATEGORIES.map(cat => {
-        const allItems = RESEARCH.filter(r => r.category === cat.id);
-        const catCompleted = allItems.filter(r => state.completedResearch.includes(r.id)).length;
+        // W10: rare techs stay entirely out of the tree (and the category
+        // count denominator) until unlocked via state.unlockedRareTechIds.
+        const allItems = RESEARCH.filter(r => r.category === cat.id && isRareTechVisible(r, state.unlockedRareTechIds));
+        const catCompleted = allItems.filter(r => getResearchDisplayState(r, state).completed).length;
         const catPct = allItems.length > 0 ? Math.round((catCompleted / allItems.length) * 100) : 0;
         const isExpanded = expandedCat === cat.id;
 
@@ -371,9 +412,9 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
           items = items.filter(r => r.name.toLowerCase().includes(q) || r.effect.toLowerCase().includes(q));
         }
         if (filterMode === 'available') {
-          items = items.filter(r => !state.completedResearch.includes(r.id) && r.prerequisites.every(p => state.completedResearch.includes(p)));
+          items = items.filter(r => !getResearchDisplayState(r, state).completed && r.prerequisites.every(p => state.completedResearch.includes(p)));
         } else if (filterMode === 'completed') {
-          items = items.filter(r => state.completedResearch.includes(r.id));
+          items = items.filter(r => getResearchDisplayState(r, state).completed);
         }
 
         if (searchQuery && items.length === 0) return null;
@@ -407,17 +448,22 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
             {(isExpanded || searchQuery) && items.length > 0 && (
               <div className="p-2 grid md:grid-cols-2 gap-2">
                 {items.map(r => {
-                  const completed = state.completedResearch.includes(r.id);
+                  const disp = getResearchDisplayState(r, state);
+                  const completed = disp.completed;
                   const active = state.activeResearch?.definitionId === r.id || state.activeResearch2?.definitionId === r.id;
                   const prereqsMet = r.prerequisites.every(p => state.completedResearch.includes(p));
                   const hasResCost = !r.resourceCost || Object.entries(r.resourceCost).every(
                     ([resId, qty]) => (state.resources[resId] || 0) >= qty
                   );
-                  const canAffordMoney = state.money >= r.baseCostMoney;
+                  const canAffordMoney = state.money >= disp.effectiveMoneyCost;
+                  // W3: a doctrine-locked tech is still start-able (via the
+                  // override confirm below) as long as prereqs/afford hold —
+                  // it just isn't "canStart"-styled the same as a free pick.
                   const canStart = !completed && !active && anyQueueFree && prereqsMet && canAffordMoney && hasResCost;
                   const locked = !prereqsMet && !completed;
                   // Unlocked (prereqs met) but missing money or resources
                   const unlockedCantAfford = !completed && !active && prereqsMet && (!canAffordMoney || !hasResCost);
+                  const isRepeatable = !!r.repeatable;
 
                   const tierBadgeClass = `game-badge-t${Math.max(1, Math.min(5, r.tier))}`;
                   return (
@@ -427,29 +473,47 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                         completed ? 'border-green-500/20 bg-green-500/5' :
                         active ? 'border-purple-500/30 bg-purple-500/10 game-glow-pulse' :
                         locked ? 'border-white/[0.03] bg-white/[0.01] opacity-40' :
+                        disp.doctrineLocked ? 'border-amber-500/25 bg-amber-500/[0.04] hover:border-amber-500/50 cursor-pointer' :
                         canStart ? 'border-purple-500/30 bg-purple-500/5 hover:border-purple-500/50 hover:bg-purple-500/10 cursor-pointer ring-1 ring-purple-500/10' :
                         unlockedCantAfford ? 'border-amber-500/15 bg-amber-500/[0.03]' :
                         'border-white/[0.06] bg-white/[0.02]'
                       }`}
-                      onClick={() => { if (canStart) onStartResearch(r.id); }}
+                      onClick={() => {
+                        if (!canStart) return;
+                        const confirmMsg = getDoctrineConfirmMessage(r, disp);
+                        if (confirmMsg && !confirm(confirmMsg)) return;
+                        onStartResearch(r.id);
+                      }}
                     >
                       <div className="flex justify-between items-start mb-1">
                         <div className="flex items-center gap-1.5">
                           {completed && <span className="text-green-400 text-xs">✓</span>}
                           {active && <span className="text-purple-400 text-xs animate-pulse motion-reduce:animate-none">◉</span>}
                           {locked && <span className="text-slate-600 text-xs">🔒</span>}
-                          {canStart && <span className="text-purple-400 text-xs">▶</span>}
+                          {!locked && disp.doctrineLocked && <span className="text-amber-400 text-xs">⚖</span>}
+                          {canStart && !disp.doctrineLocked && <span className="text-purple-400 text-xs">▶</span>}
                           {unlockedCantAfford && <span className="text-amber-400/70 text-xs">◎</span>}
                           <span className={`text-xs font-medium ${
                             completed ? 'text-green-300' :
                             locked ? 'text-slate-500' :
+                            disp.doctrineLocked ? 'text-amber-200/90' :
                             canStart ? 'text-purple-200' :
                             unlockedCantAfford ? 'text-amber-200/80' :
                             'text-white'
                           }`}>{r.name}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          {canStart && anyQueueFree && (
+                          {isRepeatable && (
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-semibold">
+                              LVL {disp.repeatableLevel}/{r.repeatable!.maxLevel}
+                            </span>
+                          )}
+                          {disp.doctrineLocked && (
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-medium">
+                              Doctrine locked — chose {RESEARCH_MAP.get(disp.lockedBySiblingId!)?.name || disp.lockedBySiblingId}
+                            </span>
+                          )}
+                          {canStart && anyQueueFree && !disp.doctrineLocked && (
                             <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">READY</span>
                           )}
                           {unlockedCantAfford && (
@@ -493,18 +557,18 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                       {!completed && !active && !locked && (
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-[10px]">
-                            <span className={canAffordMoney ? 'text-green-400/80' : 'text-red-400/80'}>{formatMoney(r.baseCostMoney)}</span>
+                            <span className={canAffordMoney ? 'text-green-400/80' : 'text-red-400/80'}>{formatMoney(disp.effectiveMoneyCost)}</span>
                             <span className="text-slate-600">·</span>
-                            <span className="text-slate-500">{formatDuration(r.realResearchSeconds)}</span>
+                            <span className="text-slate-500">{formatDuration(disp.effectiveRealDurationSeconds)}</span>
                           </div>
                           {canStart && (
-                            <span className="px-2.5 py-1 rounded text-[10px] font-semibold bg-purple-600 text-white hover:bg-purple-500 transition-colors">
-                              Research
+                            <span className={`px-2.5 py-1 rounded text-[10px] font-semibold text-white transition-colors ${disp.doctrineLocked ? 'bg-amber-600 hover:bg-amber-500' : 'bg-purple-600 hover:bg-purple-500'}`}>
+                              {disp.doctrineLocked ? 'Override' : isRepeatable ? `Research Lvl ${disp.repeatableLevel + 1}` : 'Research'}
                             </span>
                           )}
                           {unlockedCantAfford && !canAffordMoney && (
                             <span className="text-[9px] text-amber-400/60">
-                              Need {formatMoney(r.baseCostMoney - state.money)} more
+                              Need {formatMoney(disp.effectiveMoneyCost - state.money)} more
                             </span>
                           )}
                         </div>
@@ -805,7 +869,7 @@ export default function SpaceTycoonPage() {
       // largest keyword bucket in the research effect system — all
       // cost-reducing rocketry/propulsion/infrastructure/crew/ships research)
       // previously computed but was never applied to the actual build cost.
-      const { buildCostReduction } = getResearchBonuses(prev.completedResearch);
+      const { buildCostReduction } = getResearchBonuses(prev.completedResearch, prev.repeatableResearchLevels);
       const cost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
       if (prev.money < cost) { playSound('error'); return prev; }
 
@@ -857,7 +921,13 @@ export default function SpaceTycoonPage() {
     setState(prev => {
       if (!prev) return prev;
       const def = RESEARCH_MAP.get(researchId);
-      if (!def || prev.money < def.baseCostMoney) { playSound('error'); return prev; }
+      if (!def) { playSound('error'); return prev; }
+
+      // W10: rare techs can't be started before they're discovered — defense
+      // in depth, the UI already hides these entirely.
+      const disp = getResearchDisplayState(def, prev);
+      if (!disp.visible || disp.completed) { playSound('error'); return prev; }
+      if (prev.money < disp.effectiveMoneyCost) { playSound('error'); return prev; }
 
       // Check resource costs
       if (def.resourceCost) {
@@ -881,21 +951,26 @@ export default function SpaceTycoonPage() {
         }
       }
 
-      const realDuration = def.realResearchSeconds;
+      // W3: doctrine-locked techs and repeatable next-levels both use
+      // disp's effective cost/duration (2x+6mo override, or the escalated
+      // 2.5x/level repeatable cost) instead of def.baseCostMoney/realResearchSeconds.
       const researchEntry = {
         definitionId: researchId,
         startDate: prev.gameDate,
         progressMonths: 0,
-        totalMonths: scaledResearchTime(def.baseTimeMonths, def.tier),
+        totalMonths: scaledResearchTime(disp.effectiveTotalMonths, def.tier),
         startedAtMs: Date.now(),
-        realDurationSeconds: realDuration,
+        realDurationSeconds: disp.effectiveRealDurationSeconds,
       };
 
       const queueLabel = queue1Free ? '' : ' (Q2)';
+      const lockedByDef = disp.doctrineLocked && disp.lockedBySiblingId ? RESEARCH_MAP.get(disp.lockedBySiblingId) : null;
+      const overrideNote = lockedByDef ? ` (doctrine override — was locked by ${lockedByDef.name})` : '';
+      const levelNote = def.repeatable ? ` (Level ${disp.repeatableLevel + 1}/${def.repeatable.maxLevel})` : '';
       return {
         ...prev,
-        money: prev.money - def.baseCostMoney,
-        totalSpent: prev.totalSpent + def.baseCostMoney,
+        money: prev.money - disp.effectiveMoneyCost,
+        totalSpent: prev.totalSpent + disp.effectiveMoneyCost,
         resources: newResources,
         activeResearch: queue1Free ? researchEntry : prev.activeResearch,
         activeResearch2: queue1Free ? prev.activeResearch2 : researchEntry,
@@ -903,8 +978,8 @@ export default function SpaceTycoonPage() {
           id: generateId(),
           date: prev.gameDate,
           type: 'research_complete' as const,
-          title: `Research Started${queueLabel}: ${def.name}`,
-          description: `Ready in ${formatDuration(realDuration)}. Cost: ${formatMoney(def.baseCostMoney)}.`,
+          title: `Research Started${queueLabel}: ${def.name}${overrideNote}${levelNote}`,
+          description: `Ready in ${formatDuration(disp.effectiveRealDurationSeconds)}. Cost: ${formatMoney(disp.effectiveMoneyCost)}.`,
         }, ...prev.eventLog].slice(0, 50),
       };
     });

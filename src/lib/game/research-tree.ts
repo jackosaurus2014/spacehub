@@ -1,7 +1,11 @@
-// ─── Space Tycoon: Research Tree (254 Researches) ───────────────────────────
-// 254 researches across 17 categories and 5 tiers. Every tech has hand-authored
-// effects[] (see EFFECTS_BY_ID) — the flavor-keyword parser below remains only
-// as a fallback for future/legacy content that lacks authored effects.
+// ─── Space Tycoon: Research Tree (272 Researches) ───────────────────────────
+// 254 base researches (W1 pass) + 18 from Waves W3+W10 (4X_BASELINE Part 2a
+// Op4/Op5): 4 new doctrine-pair techs (+2 existing techs re-pointed into a
+// 3rd doctrine pair, not counted twice), 6 repeatable programs, 8 rare
+// techs — 272 total across 17 categories and 5 tiers. Every tech has
+// hand-authored effects[] (see EFFECTS_BY_ID) — the flavor-keyword parser
+// below remains only as a fallback for future/legacy content that lacks
+// authored effects.
 // Each research has realistic costs, prerequisites, and meaningful gameplay effects.
 
 import type { ResearchDefinition, ResearchEffect, ResearchEffectType } from './types';
@@ -40,7 +44,7 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'super_heavy_lift', name: 'Super Heavy Lift', category: 'rocketry', tier: 3, description: '100+ ton payload to LEO.', effect: 'Enables Mars and asteroid missions', baseCostMoney: 2_000_000_000, baseTimeMonths: 24, prerequisites: ['rapid_launch_cadence'], unlocks: ['launch_pad_heavy'] },
   { id: 'fairing_recovery', name: 'Fairing Recovery', category: 'rocketry', tier: 2, description: 'Recover and reuse payload fairings.', effect: '-15% per-launch cost', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['reusable_boosters'], unlocks: [] },
   { id: 'orbital_refueling', name: 'Orbital Refueling', category: 'rocketry', tier: 3, description: 'Refuel spacecraft in orbit from tanker vehicles.', effect: 'Enables deep space with smaller rockets', baseCostMoney: 1_500_000_000, baseTimeMonths: 20, prerequisites: ['super_heavy_lift'], unlocks: [] },
-  { id: 'nuclear_thermal', name: 'Nuclear Thermal Propulsion', category: 'rocketry', tier: 4, description: 'Nuclear reactor-heated propellant.', effect: '-30% outer planet travel time', baseCostMoney: 15_000_000_000, baseTimeMonths: 36, prerequisites: ['super_heavy_lift'], unlocks: [] },
+  { id: 'nuclear_thermal', name: 'Nuclear Thermal Propulsion', category: 'rocketry', tier: 4, description: 'Nuclear reactor-heated propellant — NTR doctrine: thrust now. W3 doctrine gate (4X_BASELINE Op4 #1, "NTR-first vs NEP-first"): mutually exclusive with Nuclear Electric Propulsion. Choosing NTR keeps the fusion_drive -> jump_drive interstellar chain open immediately; choosing NEP first locks this until a 2x-cost/6-month-retool override.', effect: '-30% outer planet travel time', baseCostMoney: 15_000_000_000, baseTimeMonths: 36, prerequisites: ['super_heavy_lift'], unlocks: [], excludes: ['nuclear_electric'], doctrineGroup: 'propulsion_doctrine' },
   { id: 'launch_abort_systems', name: 'Launch Abort Systems', category: 'rocketry', tier: 1, description: 'Crew escape during launch failure.', effect: 'Enables crewed launches, +20% safety', baseCostMoney: 150_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
   { id: 'propellant_depots', name: 'Propellant Depot Design', category: 'rocketry', tier: 3, description: 'Long-term fuel storage in orbit.', effect: '-30% fuel costs for deep space', baseCostMoney: 2_500_000_000, baseTimeMonths: 22, prerequisites: ['orbital_refueling'], unlocks: [] },
   { id: 'mass_driver', name: 'Electromagnetic Mass Driver', category: 'rocketry', tier: 4, description: 'Launch cargo from Moon/Mars without rockets.', effect: '$0 marginal launch cost from surfaces', baseCostMoney: 20_000_000_000, baseTimeMonths: 40, prerequisites: ['propellant_depots'], unlocks: [] },
@@ -206,7 +210,7 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'heavy_radiation_shielding', name: 'Heavy Radiation Shielding', category: 'defense', tier: 5, description: 'Multi-layer magnetohydrodynamic shielding rated for white-dwarf accretion environments.', effect: 'Enables high-radiation routes (Sirius); -25% expedition hazard damage', baseCostMoney: 120_000_000_000, baseTimeMonths: 48, prerequisites: ['radiation_hardening'], unlocks: [] },
   { id: 'interstellar_colonization', name: 'Interstellar Colonization', category: 'terraforming', tier: 5, description: 'Closed-loop generational settlement systems for worlds beyond Sol.', effect: 'Enables Colony Ark ships and interstellar colonies', baseCostMoney: 300_000_000_000, baseTimeMonths: 72, prerequisites: ['jump_drive', 'generation_ships'], unlocks: [] },
   { id: 'mpd_thruster', name: 'MPD Thruster', category: 'propulsion', tier: 2, description: 'Magnetoplasmadynamic thruster for cargo.', effect: '+30% cargo ship speed', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['hall_thrusters'], unlocks: [] },
-  { id: 'nuclear_electric', name: 'Nuclear Electric Propulsion', category: 'propulsion', tier: 4, description: 'Nuclear reactor powers ion engines.', effect: '-30% outer planet travel time', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['nuclear_thermal'], unlocks: [] },
+  { id: 'nuclear_electric', name: 'Nuclear Electric Propulsion', category: 'propulsion', tier: 4, description: 'Nuclear reactor powers ion engines — NEP doctrine: efficiency forever. W3 doctrine gate (4X_BASELINE Op4 #1, "NTR-first vs NEP-first"): mutually exclusive with Nuclear Thermal Propulsion. Cheaper and faster to research than NTR, but locks the fusion_drive -> jump_drive interstellar chain (both require nuclear_thermal) until a 2x-cost/6-month-retool override.', effect: '-30% outer planet travel time', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['super_heavy_lift'], unlocks: [], excludes: ['nuclear_thermal'], doctrineGroup: 'propulsion_doctrine' },
   { id: 'photon_sail_station_keeping', name: 'Photon-Sail Station-Keeping', category: 'propulsion', tier: 4, description: 'Radiation-pressure trim for GEO assets using thin-film reflective sails — flown: IKAROS (2010) demonstrated solar-sail propulsion in deep space. Op2 replacement for the debunked EM Drive (reactionless thrust was a measured thermal artifact, not new physics).', effect: '+10% station-keeping efficiency (radiation-pressure trim, IKAROS-heritage)', baseCostMoney: 5_000_000_000, baseTimeMonths: 20, prerequisites: ['vasimr'], unlocks: [] },
   { id: 'laser_propulsion', name: 'Laser-Pushed Lightsails', category: 'propulsion', tier: 4, description: 'Ground-based laser pushes lightsails.', effect: 'Enables fast interplanetary probes', baseCostMoney: 15_000_000_000, baseTimeMonths: 30, prerequisites: ['solar_sails_adv'], unlocks: [] },
   { id: 'magnetic_sail', name: 'Magnetic Sail (Magsail)', category: 'propulsion', tier: 3, description: 'Use magnetic field to brake in solar wind.', effect: '-30% deceleration fuel needs', baseCostMoney: 1_500_000_000, baseTimeMonths: 16, prerequisites: ['vasimr'], unlocks: [] },
@@ -360,6 +364,48 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'tax_optimization', name: 'Tax Optimization Strategy', category: 'economy', tier: 1, description: 'Minimize operational tax burden.', effect: '-10% all costs', baseCostMoney: 50_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
   { id: 'brand_management', name: 'Brand & Reputation', category: 'economy', tier: 1, description: 'Build corporate reputation.', effect: '+10% contract win rate', baseCostMoney: 40_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
   { id: 'merger_acquisition', name: 'M&A Strategy', category: 'economy', tier: 4, description: 'Acquire competitor assets.', effect: 'Enables corporate acquisitions', baseCostMoney: 10_000_000_000, baseTimeMonths: 24, prerequisites: ['venture_capital'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DOCTRINE CHOICES (Waves W3+W10 — 4X_BASELINE Part 2a Op4) — 4 new techs.
+  // MoO2-style mutually exclusive picks. `nuclear_thermal`/`nuclear_electric`
+  // above (rocketry/propulsion sections) form the 3rd pair — both were
+  // re-pointed to share the `super_heavy_lift` branch point and got
+  // `excludes`/`doctrineGroup` added in place, so they stay in their
+  // original category sections rather than being duplicated here.
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'crewed_forward_doctrine', name: 'Crewed-Forward Doctrine', category: 'crew', tier: 3, description: 'Corporate bet: humans remain the primary operational asset — exoskeletons, SANS mitigation, and crew augmentation take budget priority over further automation. W3 doctrine gate (4X_BASELINE Op4 #2, "Crewed-forward vs Robotic-forward" — mirrors the real Moon-vs-robots budget fight). Mutually exclusive with the Robotic-Forward doctrine.', effect: '-15% crew-spine maintenance cost, +10% crew morale', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['crew_training'], unlocks: [], excludes: ['robotic_forward_doctrine'], doctrineGroup: 'workforce_doctrine' },
+  { id: 'robotic_forward_doctrine', name: 'Robotic-Forward Doctrine', category: 'ai_chips', tier: 3, description: 'Corporate bet: autonomy and robotics absorb operational load ahead of further crewed investment — telerobotics and autonomous habitat/ops management take budget priority over crew expansion. W3 doctrine gate (4X_BASELINE Op4 #2). Mutually exclusive with the Crewed-Forward doctrine.', effect: '+15% automation-spine build speed, -10% maintenance via autonomous ops', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['crew_training'], unlocks: [], excludes: ['crewed_forward_doctrine'], doctrineGroup: 'workforce_doctrine' },
+  { id: 'proprietary_research_doctrine', name: 'Proprietary Research Doctrine', category: 'economy', tier: 3, description: 'Keep discoveries in-house — faster internal R&D, no faction science-standing dividend or cheap licensing-in deals. W3 doctrine gate (4X_BASELINE Op4 #3, "Proprietary vs Open Science" — doubles as the internal-politics seed, CLAUDE.md §1.7). Mutually exclusive with the Open Science doctrine; the faction-standing half of this tradeoff awaits the Accord Council wave (W11) — this wave wires the research-speed/licensing-cost half only.', effect: '+15% research speed', baseCostMoney: 1_500_000_000, baseTimeMonths: 16, prerequisites: ['market_analytics'], unlocks: [], excludes: ['open_science_doctrine'], doctrineGroup: 'research_doctrine' },
+  { id: 'open_science_doctrine', name: 'Open Science Doctrine', category: 'economy', tier: 3, description: 'Publish discoveries openly — cheaper technology licensing and modest ongoing revenue from shared research, at the cost of proprietary research speed. W3 doctrine gate (4X_BASELINE Op4 #3). Mutually exclusive with the Proprietary Research doctrine.', effect: '+10% licensing revenue, -10% operating cost from shared tooling', baseCostMoney: 1_500_000_000, baseTimeMonths: 16, prerequisites: ['market_analytics'], unlocks: [], excludes: ['proprietary_research_doctrine'], doctrineGroup: 'research_doctrine' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // REPEATABLE PROGRAMS (Wave W3 — 4X_BASELINE Part 2a Op5) — 6 bounded
+  // programs, 5 levels each. Never enter completedResearch (see
+  // ResearchDefinition.repeatable doc comment in types.ts) — completion
+  // increments GameState.repeatableResearchLevels[id] and the research
+  // re-arms at 2.5x cost (doc formula) for the next level, up to level 5.
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'launch_cadence_optimization', name: 'Launch Cadence Optimization Program', category: 'rocketry', tier: 4, description: 'Bounded process-improvement program — each completed cycle trims launch-pad turnaround further. W3 repeatable (4X_BASELINE Op5): re-arms after each completion for another level, up to 5, at 2.5x cost per level (doc formula). Level 5 caps at +10% cumulative build speed on launch-dependent construction.', effect: '+2% launch-cadence build speed per completed level (cap 5 levels / +10%)', baseCostMoney: 1_200_000_000, baseTimeMonths: 20, prerequisites: ['rapid_launch_cadence'], unlocks: [], repeatable: { maxLevel: 5, effectPerLevel: [{ type: 'buildSpeed', magnitude: 0.02 }], costMultiplierPerLevel: 2.5 } },
+  { id: 'yield_learning_curve_program', name: 'Yield Learning Curve Program', category: 'mining', tier: 4, description: 'Manufacturing/extraction learning-curve program — real industrial learning, bounded and re-armable. W3 repeatable (4X_BASELINE Op5): 5 levels, 2.5x cost per level, +2% mining output per level (cap +10%).', effect: '+2% mining output per completed level (cap 5 levels / +10%)', baseCostMoney: 1_000_000_000, baseTimeMonths: 18, prerequisites: ['regolith_processing'], unlocks: [], repeatable: { maxLevel: 5, effectPerLevel: [{ type: 'mining', magnitude: 0.02 }], costMultiplierPerLevel: 2.5 } },
+  { id: 'ops_automation_program', name: 'Ops Automation Program', category: 'ai_chips', tier: 4, description: 'Iterative automation rollout across stations and mines — each cycle trims a little more manual overhead. W3 repeatable (4X_BASELINE Op5): 5 levels, 2.5x cost per level, -2% maintenance per level (cap -10%).', effect: '-2% maintenance cost per completed level (cap 5 levels / -10%)', baseCostMoney: 1_300_000_000, baseTimeMonths: 20, prerequisites: ['autonomous_ops'], unlocks: [], repeatable: { maxLevel: 5, effectPerLevel: [{ type: 'maintenance', magnitude: 0.02 }], costMultiplierPerLevel: 2.5 } },
+  { id: 'radiation_hardening_program', name: 'Radiation Hardening Program', category: 'defense', tier: 4, description: 'Ongoing shielding-material refinement across the fleet and habitats. W3 repeatable (4X_BASELINE Op5): 5 levels, 2.5x cost per level, +2% hazard resistance per level (cap +10%, inside the risk-pillar 30% aggregate cap).', effect: '+2% hazard resistance per completed level (cap 5 levels / +10%)', baseCostMoney: 1_500_000_000, baseTimeMonths: 22, prerequisites: ['radiation_hardening'], unlocks: [], repeatable: { maxLevel: 5, effectPerLevel: [{ type: 'hazardResistance', magnitude: 0.02 }], costMultiplierPerLevel: 2.5 } },
+  { id: 'logistics_research_program', name: 'Logistics Research Program', category: 'ships', tier: 4, description: 'Continuous route-planning and fleet-scheduling refinement. W3 repeatable (4X_BASELINE Op5): 5 levels, 2.5x cost per level, +2% ship transit speed per level (cap +10%).', effect: '+2% ship transit speed per completed level (cap 5 levels / +10%)', baseCostMoney: 1_100_000_000, baseTimeMonths: 18, prerequisites: ['supply_chain_opt'], unlocks: [], repeatable: { maxLevel: 5, effectPerLevel: [{ type: 'travelSpeed', magnitude: 0.02 }], costMultiplierPerLevel: 2.5 } },
+  { id: 'deep_space_network_expansion', name: 'Deep Space Network Expansion', category: 'satellite_components', tier: 4, description: 'Incremental DSN-heritage relay capacity buildout — real NASA program precedent (the Deep Space Network has expanded in phases for six decades). W3 repeatable (4X_BASELINE Op5): 5 levels, 2.5x cost per level, +2% comms/data service revenue per level (cap +10%).', effect: '+2% relay/data service revenue per completed level (cap 5 levels / +10%)', baseCostMoney: 1_400_000_000, baseTimeMonths: 20, prerequisites: ['inter_satellite_links'], unlocks: [], repeatable: { maxLevel: 5, effectPerLevel: [{ type: 'revenue', magnitude: 0.02 }], costMultiplierPerLevel: 2.5 } },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RARE TECHS (Wave W10 — 4X_BASELINE Part 2a Op5) — 8 discovery-gated
+  // techs. Hidden from the tree (isRareTechVisible) until their id lands in
+  // GameState.unlockedRareTechIds — the W4 (narrative-events.ts) / W6
+  // (science-missions.ts) grant channel that predates this wave.
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'europan_biochemistry', name: 'Europan Biochemistry', category: 'exploration', tier: 5, description: 'Confirmed subsurface disequilibrium biosignature chemistry from Europa. W10 rare tech (4X_BASELINE Op5) — hidden until a Europa Clipper II Ocean Access discovery or the Europa biosignature narrative chain grants access via state.unlockedRareTechIds; not researchable from the tree before that.', effect: '+20% mining output (exotic biomatter extraction), +15% service revenue (biosignature data licensing)', baseCostMoney: 60_000_000_000, baseTimeMonths: 48, prerequisites: ['ice_penetrator'], unlocks: [], rare: true },
+  { id: 'xenobiochemistry', name: 'Xenobiochemistry', category: 'exploration', tier: 5, description: 'Chirality-anomaly follow-up research into non-terrestrial biochemical pathways. W10 rare tech (4X_BASELINE Op5) — hidden until an ISO/deep-drill chirality-anomaly discovery grants access via state.unlockedRareTechIds.', effect: '+25% mining output (exotic biomatter/xenogenic resource yield)', baseCostMoney: 65_000_000_000, baseTimeMonths: 50, prerequisites: ['deep_drilling'], unlocks: [], rare: true },
+  { id: 'deep_biosphere_ecology', name: 'Deep-Biosphere Ecology', category: 'exploration', tier: 5, description: 'Subsurface aquifer ecosystem modeling from Mars Deep Drill-class programs. W10 rare tech (4X_BASELINE Op5) — hidden until a Mars aquifer-biosphere discovery grants access via state.unlockedRareTechIds.', effect: '+20% mining output (aquifer resource access), +10% hazard resistance (contamination-protocol maturity)', baseCostMoney: 55_000_000_000, baseTimeMonths: 46, prerequisites: ['deep_drilling'], unlocks: [], rare: true },
+  { id: 'iso_materials_analysis', name: 'ISO Materials Analysis', category: 'materials', tier: 5, description: 'Exotic-composition analysis from an intercepted interstellar object. W10 rare tech (4X_BASELINE Op5) — hidden until an ISO Rapid-Response Interceptor exotic-composition result grants access via state.unlockedRareTechIds.', effect: '+20% mining output (exotic materials processing), +15% research speed', baseCostMoney: 70_000_000_000, baseTimeMonths: 50, prerequisites: ['infrared_telescope'], unlocks: [], rare: true },
+  { id: 'precursor_studies', name: 'Precursor Studies', category: 'exploration', tier: 5, description: 'Systematic analysis of the Triton Archive precursor artifacts (LORE.md, Echo Remnants arc, 2149 breach). W10 rare tech (4X_BASELINE Op5) — hidden until the Triton Archive investigation chain grants access via state.unlockedRareTechIds; finally gives the long-dangling "precursor_studies" id (referenced by exploration.ts survey rewards since before this wave) a real research anchor.', effect: '+20% research speed, +10% service revenue (artifact-derived licensing)', baseCostMoney: 75_000_000_000, baseTimeMonths: 52, prerequisites: ['gravitational_wave_det'], unlocks: [], rare: true },
+  { id: 'vacuum_metallurgy_breakthrough', name: 'Vacuum Metallurgy Breakthrough', category: 'materials', tier: 5, description: "Post-replication industrial process built on a confirmed room-temperature superconductor claim (the LK-99-pattern replication-crisis event chain). W10 rare tech (4X_BASELINE Op5) — hidden until the superconductor replication chain resolves in the claim's favor and grants access via state.unlockedRareTechIds.", effect: '-20% building cost, -10% maintenance cost', baseCostMoney: 58_000_000_000, baseTimeMonths: 46, prerequisites: ['superconductors'], unlocks: [], rare: true },
+  { id: 'hive_pattern_mathematics', name: 'Hive Pattern Mathematics', category: 'ai_chips', tier: 5, description: 'Non-human mathematical formalism recovered from Hive Collective contact. W10 rare tech (4X_BASELINE Op5) — hidden until a Hive Collective first-contact/pattern-recognition discovery grants access via state.unlockedRareTechIds.', effect: '+25% research speed', baseCostMoney: 62_000_000_000, baseTimeMonths: 48, prerequisites: ['quantum_ml'], unlocks: [], rare: true },
+  { id: 'metric_engineering_refinements', name: 'Metric Engineering Refinements', category: 'propulsion', tier: 5, description: 'Post-Breakthrough refinements to Alcubierre-class warp-bubble metric engineering. W10 rare tech (4X_BASELINE Op5) — hidden until a jump-drive-era discovery grants access via state.unlockedRareTechIds; a capstone refinement of the one licensed miracle (LORE.md 2147 Breakthrough), not a new one.', effect: '+25% ship transit speed, +15% fuel efficiency', baseCostMoney: 80_000_000_000, baseTimeMonths: 56, prerequisites: ['jump_drive'], unlocks: [], rare: true },
 ];
 
 // ─── Authored per-tech effects (4X_BASELINE_2026-08.md Part 2a / Wave W1) ───
@@ -626,6 +672,32 @@ export const EFFECTS_BY_ID: Record<string, ResearchEffect[]> = {
   merger_acquisition: [{ type: 'revenue', magnitude: 0.04 }, { type: 'maintenance', magnitude: 0.04 }],
   photon_sail_station_keeping: [{ type: 'maintenance', magnitude: 0.1 }],
   aerostat_technology: [{ type: 'mining', magnitude: 0.03 }, { type: 'revenue', magnitude: 0.03 }],
+
+  // ─── Waves W3+W10 additions (4X_BASELINE Part 2a Op4/Op5) ────────────────
+  // Doctrine choices (Op4) — magnitudes match each tech's flavor exactly.
+  crewed_forward_doctrine: [{ type: 'maintenance', magnitude: 0.15 }, { type: 'crewMorale', magnitude: 0.1 }],
+  robotic_forward_doctrine: [{ type: 'buildSpeed', magnitude: 0.15 }, { type: 'maintenance', magnitude: 0.1 }],
+  proprietary_research_doctrine: [{ type: 'research', magnitude: 0.15 }],
+  open_science_doctrine: [{ type: 'revenue', magnitude: 0.1 }, { type: 'maintenance', magnitude: 0.1 }],
+  // Repeatable programs (Op5) — per-level magnitude (0.02 = doc's "+2% per
+  // level"); getResearchBonuses multiplies this by levels completed, not
+  // resolveEffects (repeatables never enter completedResearchIds), but the
+  // entry here still drives getResearchMechanicalEffect's per-level display.
+  launch_cadence_optimization: [{ type: 'buildSpeed', magnitude: 0.02 }],
+  yield_learning_curve_program: [{ type: 'mining', magnitude: 0.02 }],
+  ops_automation_program: [{ type: 'maintenance', magnitude: 0.02 }],
+  radiation_hardening_program: [{ type: 'hazardResistance', magnitude: 0.02 }],
+  logistics_research_program: [{ type: 'travelSpeed', magnitude: 0.02 }],
+  deep_space_network_expansion: [{ type: 'revenue', magnitude: 0.02 }],
+  // Rare techs (Op5) — magnitudes match each tech's flavor exactly.
+  europan_biochemistry: [{ type: 'mining', magnitude: 0.2 }, { type: 'revenue', magnitude: 0.15 }],
+  xenobiochemistry: [{ type: 'mining', magnitude: 0.25 }],
+  deep_biosphere_ecology: [{ type: 'mining', magnitude: 0.2 }, { type: 'hazardResistance', magnitude: 0.1 }],
+  iso_materials_analysis: [{ type: 'mining', magnitude: 0.2 }, { type: 'research', magnitude: 0.15 }],
+  precursor_studies: [{ type: 'research', magnitude: 0.2 }, { type: 'revenue', magnitude: 0.1 }],
+  vacuum_metallurgy_breakthrough: [{ type: 'buildCost', magnitude: 0.2 }, { type: 'maintenance', magnitude: 0.1 }],
+  hive_pattern_mathematics: [{ type: 'research', magnitude: 0.25 }],
+  metric_engineering_refinements: [{ type: 'travelSpeed', magnitude: 0.25 }, { type: 'fuelEfficiency', magnitude: 0.15 }],
 };
 
 // Apply real-time durations and resource costs
@@ -784,7 +856,10 @@ export interface ResearchBonuses {
 }
 
 /** Aggregate gameplay bonuses from all completed research */
-export function getResearchBonuses(completedResearchIds: string[]): ResearchBonuses {
+export function getResearchBonuses(
+  completedResearchIds: string[],
+  repeatableLevels?: Record<string, number>,
+): ResearchBonuses {
   let buildCostReduction = 0;
   let buildSpeedBonus = 0;
   let miningOutputBonus = 0;
@@ -798,23 +873,43 @@ export function getResearchBonuses(completedResearchIds: string[]): ResearchBonu
   let fuelEfficiencyBonus = 0;
   let expeditionRiskBonus = 0;
 
+  const applyEffect = (eff: ResearchEffect) => {
+    switch (eff.type) {
+      case 'buildCost':          buildCostReduction      += eff.magnitude; break;
+      case 'buildSpeed':         buildSpeedBonus         += eff.magnitude; break;
+      case 'mining':             miningOutputBonus       += eff.magnitude; break;
+      case 'revenue':            serviceRevenueBonus     += eff.magnitude; break;
+      case 'research':           researchSpeedBonus      += eff.magnitude; break;
+      case 'maintenance':        maintenanceReduction    += eff.magnitude; break;
+      case 'travelSpeed':        travelSpeedBonus        += eff.magnitude; break;
+      case 'insuranceDiscount':  insuranceDiscountBonus  += eff.magnitude; break;
+      case 'hazardResistance':   hazardResistanceBonus   += eff.magnitude; break;
+      case 'crewMorale':         crewMoraleBonus         += eff.magnitude; break;
+      case 'fuelEfficiency':     fuelEfficiencyBonus     += eff.magnitude; break;
+      case 'expeditionRisk':     expeditionRiskBonus     += eff.magnitude; break;
+    }
+  };
+
   for (const resId of completedResearchIds) {
     const def = RESEARCH_MAP.get(resId);
     if (!def) continue;
-    for (const eff of resolveEffects(def)) {
-      switch (eff.type) {
-        case 'buildCost':          buildCostReduction      += eff.magnitude; break;
-        case 'buildSpeed':         buildSpeedBonus         += eff.magnitude; break;
-        case 'mining':             miningOutputBonus       += eff.magnitude; break;
-        case 'revenue':            serviceRevenueBonus     += eff.magnitude; break;
-        case 'research':           researchSpeedBonus      += eff.magnitude; break;
-        case 'maintenance':        maintenanceReduction    += eff.magnitude; break;
-        case 'travelSpeed':        travelSpeedBonus        += eff.magnitude; break;
-        case 'insuranceDiscount':  insuranceDiscountBonus  += eff.magnitude; break;
-        case 'hazardResistance':   hazardResistanceBonus   += eff.magnitude; break;
-        case 'crewMorale':         crewMoraleBonus         += eff.magnitude; break;
-        case 'fuelEfficiency':     fuelEfficiencyBonus     += eff.magnitude; break;
-        case 'expeditionRisk':     expeditionRiskBonus     += eff.magnitude; break;
+    for (const eff of resolveEffects(def)) applyEffect(eff);
+  }
+
+  // W3 (4X_BASELINE Op5): repeatable program levels. These never appear in
+  // completedResearchIds (see ResearchDefinition.repeatable doc comment), so
+  // they're summed separately here — once per completed level, additive,
+  // inside the SAME aggregate caps below (the doc's "fill toward the cap,
+  // never past it" design; a maxed 5-level repeatable contributing 10% can't
+  // push an already-capped bucket any higher than 50%/30%/etc.).
+  if (repeatableLevels) {
+    for (const [id, level] of Object.entries(repeatableLevels)) {
+      if (!level || level <= 0) continue;
+      const def = RESEARCH_MAP.get(id);
+      if (!def?.repeatable) continue;
+      const levels = Math.min(level, def.repeatable.maxLevel);
+      for (let i = 0; i < levels; i++) {
+        for (const eff of def.repeatable.effectPerLevel) applyEffect(eff);
       }
     }
   }
@@ -838,6 +933,129 @@ export function getResearchBonuses(completedResearchIds: string[]): ResearchBonu
     crewMoraleBonus: Math.min(crewMoraleBonus, 0.30),               // Cap 0.30 on a 0-1 morale scale
     fuelEfficiencyBonus: Math.min(fuelEfficiencyBonus, 0.50),       // Cap 50% (dormant — see interface comment)
     expeditionRiskBonus: Math.min(expeditionRiskBonus, 0.30),       // Cap 30% (risk pillar; dormant as generic bucket — see interface comment)
+  };
+}
+
+// ─── W3 (4X_BASELINE Op4) — Doctrine gates ──────────────────────────────────
+
+/** True once ANY research listed in `def.excludes` has been completed — the
+ *  doctrine-locked state. A locked research is still visible and still
+ *  startable, just at the override price (`getDoctrineOverrideCost`). */
+export function isDoctrineLocked(def: ResearchDefinition, completedResearchIds: string[]): boolean {
+  if (!def.excludes || def.excludes.length === 0) return false;
+  const completed = new Set(completedResearchIds);
+  return def.excludes.some(id => completed.has(id));
+}
+
+/** The already-completed sibling responsible for locking `def`, if any —
+ *  used to render "Doctrine locked — chose X" in the research UI. */
+export function getDoctrineLockedBy(def: ResearchDefinition, completedResearchIds: string[]): ResearchDefinition | null {
+  if (!def.excludes) return null;
+  const completed = new Set(completedResearchIds);
+  const lockId = def.excludes.find(id => completed.has(id));
+  return lockId ? RESEARCH_MAP.get(lockId) || null : null;
+}
+
+/** Op4: "picking one locks the sibling for a real cost to unlock later (2x
+ *  price + 6-month retooling), not forever." The 6-month surcharge is added
+ *  to real-time duration proportionally to the tech's own month:real-second
+ *  ratio, so higher-tier (longer) techs pay a proportionally longer retool. */
+export function getDoctrineOverrideCost(def: ResearchDefinition): { money: number; realDurationSeconds: number; totalMonths: number } {
+  const RETOOL_MONTHS = 6;
+  const retoolSeconds = def.baseTimeMonths > 0
+    ? Math.round((RETOOL_MONTHS / def.baseTimeMonths) * def.realResearchSeconds)
+    : 0;
+  return {
+    money: def.baseCostMoney * 2,
+    realDurationSeconds: def.realResearchSeconds + retoolSeconds,
+    totalMonths: def.baseTimeMonths + RETOOL_MONTHS,
+  };
+}
+
+// ─── W10 (4X_BASELINE Op5) — Rare-tech visibility ───────────────────────────
+
+/** Rare techs (`def.rare`) are invisible until their id is granted into
+ *  GameState.unlockedRareTechIds by a narrative chain (narrative-events.ts)
+ *  or science-mission discovery (science-missions.ts). Non-rare techs are
+ *  always visible — this is the single gate ResearchPanel and any
+ *  research-start validation must check before showing/starting a tech. */
+export function isRareTechVisible(def: ResearchDefinition, unlockedRareTechIds: string[] | undefined): boolean {
+  if (!def.rare) return true;
+  return !!unlockedRareTechIds && unlockedRareTechIds.includes(def.id);
+}
+
+// ─── W3 (4X_BASELINE Op5) — Repeatable programs ─────────────────────────────
+
+/** Levels already completed for a repeatable program (0 if never started or
+ *  not a repeatable). */
+export function getRepeatableLevel(id: string, repeatableLevels: Record<string, number> | undefined): number {
+  return repeatableLevels?.[id] || 0;
+}
+
+/** True once a repeatable has reached def.repeatable.maxLevel (the doc's
+ *  cap-5 bound) — the only "completed"/hidden-forever state a repeatable
+ *  has, since it never enters completedResearchIds before that. */
+export function isRepeatableMaxed(def: ResearchDefinition, repeatableLevels: Record<string, number> | undefined): boolean {
+  if (!def.repeatable) return false;
+  return getRepeatableLevel(def.id, repeatableLevels) >= def.repeatable.maxLevel;
+}
+
+/** Cost/duration for the NEXT level of a repeatable, given levels already
+ *  completed. Doc formula: money scales `costMultiplierPerLevel` (2.5) per
+ *  level already completed; duration is left flat (cost, not time, is the
+ *  doc's designated sink). */
+export function getRepeatableNextCost(def: ResearchDefinition, currentLevel: number): { money: number; realDurationSeconds: number; totalMonths: number } {
+  const mult = def.repeatable ? Math.pow(def.repeatable.costMultiplierPerLevel, currentLevel) : 1;
+  return {
+    money: Math.round(def.baseCostMoney * mult),
+    realDurationSeconds: def.realResearchSeconds,
+    totalMonths: def.baseTimeMonths,
+  };
+}
+
+// ─── W3+W10 — Consolidated per-tech display/start state ───────────────────
+
+/** Everything a research-UI list item (or a start-research validator) needs
+ *  to know about one tech, given the player's current state. Single source
+ *  of truth so the panel's rendering and handleStartResearch's charging
+ *  logic can never drift apart. */
+export interface ResearchDisplayState {
+  /** false => hidden rare tech; don't render this item at all. */
+  visible: boolean;
+  /** Fully done — for a repeatable, means maxed out (isRepeatableMaxed). */
+  completed: boolean;
+  doctrineLocked: boolean;
+  lockedBySiblingId?: string;
+  /** 0 if not a repeatable. */
+  repeatableLevel: number;
+  effectiveMoneyCost: number;
+  effectiveRealDurationSeconds: number;
+  effectiveTotalMonths: number;
+}
+
+export function getResearchDisplayState(
+  def: ResearchDefinition,
+  state: { completedResearch: string[]; unlockedRareTechIds?: string[]; repeatableResearchLevels?: Record<string, number> },
+): ResearchDisplayState {
+  const visible = isRareTechVisible(def, state.unlockedRareTechIds);
+  const repLevel = getRepeatableLevel(def.id, state.repeatableResearchLevels);
+  const isRepeatable = !!def.repeatable;
+  const completed = isRepeatable
+    ? isRepeatableMaxed(def, state.repeatableResearchLevels)
+    : state.completedResearch.includes(def.id);
+  const lockedBy = !isRepeatable ? getDoctrineLockedBy(def, state.completedResearch) : null;
+  const overrideCost = lockedBy ? getDoctrineOverrideCost(def) : null;
+  const repCost = isRepeatable ? getRepeatableNextCost(def, repLevel) : null;
+
+  return {
+    visible,
+    completed,
+    doctrineLocked: !!lockedBy,
+    lockedBySiblingId: lockedBy?.id,
+    repeatableLevel: repLevel,
+    effectiveMoneyCost: repCost ? repCost.money : (overrideCost ? overrideCost.money : def.baseCostMoney),
+    effectiveRealDurationSeconds: repCost ? repCost.realDurationSeconds : (overrideCost ? overrideCost.realDurationSeconds : def.realResearchSeconds),
+    effectiveTotalMonths: repCost ? repCost.totalMonths : (overrideCost ? overrideCost.totalMonths : def.baseTimeMonths),
   };
 }
 

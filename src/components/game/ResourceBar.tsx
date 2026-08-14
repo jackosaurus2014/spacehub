@@ -98,7 +98,7 @@ export default function ResourceBar({ state }: ResourceBarProps) {
   // ─── P&L computation — must match game engine exactly ────────────────────
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
-  const resBonuses = getResearchBonuses(state.completedResearch);
+  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
   const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
   const tierBonuses = getTierBonuses(state.corporationTier || 1);
   const multipliers = getActiveMultipliers(state);

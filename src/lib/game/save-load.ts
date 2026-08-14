@@ -111,6 +111,12 @@ export function getNewGameState(): GameState {
     // A fresh game has no hiredCommanders yet (undefined until the first
     // hire), and hireCommander() always stamps new hires with
     // { xp: 0, level: 1, assignment: null } — no default needed here.
+    // V20 — Research Tree 2.0: doctrine gates + repeatable programs (4X
+    // Waves W3+W10, research-tree.ts). No doctrine chosen yet / no
+    // repeatable levels completed on a fresh game — matching "no doctrine
+    // chosen = both sides available" and "repeatable starts at level 0".
+    doctrineChoices: {},
+    repeatableResearchLevels: {},
   };
 }
 
@@ -317,6 +323,15 @@ export function loadGame(): GameState | null {
         assignment: h.assignment ?? null,
       }));
     }
+
+    // V20 fields — Research Tree 2.0: doctrine gates + repeatable programs
+    // (4X Waves W3+W10, research-tree.ts). Additive-only: an existing save
+    // with neither field means no doctrine has been chosen yet (both sides
+    // of every pair stay available — isDoctrineLocked reads
+    // completedResearch directly, not this map) and no repeatable levels
+    // have been completed yet (every repeatable starts fresh at level 0).
+    if (!state.doctrineChoices) state.doctrineChoices = {};
+    if (!state.repeatableResearchLevels) state.repeatableResearchLevels = {};
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

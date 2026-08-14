@@ -5,7 +5,8 @@ import type { GameState, LocationType } from '@/lib/game/types';
 import { LOCATIONS } from '@/lib/game/solar-system';
 import { LANES } from '@/lib/game/spatial-strategy';
 import { SHIP_MAP } from '@/lib/game/ships';
-import { formatMoney } from '@/lib/game/formulas';
+import { formatMoney, formatCountdown } from '@/lib/game/formulas';
+import { ZONE_MAP } from '@/lib/game/zone-influence';
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
 
@@ -261,6 +262,26 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   // Resolve a location id to its layout, if present.
   const layoutOf = useCallback((locationId: string) => LOCATION_LAYOUT[locationId], []);
 
+  // W9 parity subset: zone standing glyph per location (♛ governor / ◆
+  // stakeholder — text glyph, not color-only) and severe-hazard forecast
+  // locations for the amber telegraph markers below.
+  const standingByLoc = useMemo(() => {
+    const out: Record<string, 'governor' | 'stakeholder'> = {};
+    for (const zs of state.zoneStandings || []) {
+      const kind: 'governor' | 'stakeholder' | null = zs.isGovernor ? 'governor' : zs.sharePct >= 1 ? 'stakeholder' : null;
+      if (!kind) continue;
+      const zone = ZONE_MAP.get(zs.zoneSlug);
+      for (const locId of zone?.locations || []) {
+        if (out[locId] !== 'governor') out[locId] = kind;
+      }
+    }
+    return out;
+  }, [state.zoneStandings]);
+  const warningLocs = useMemo(
+    () => new Set((state.hazardWarnings || []).map(w => w.locationId)),
+    [state.hazardWarnings],
+  );
+
   const draw = useCallback((timestampMs: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -488,11 +509,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       ctx.arc(lx, ly, r, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Label — bigger and bolder
+      // Label — bigger and bolder. W9: zone-standing text glyph prefix
+      // (♛ governor / ◆ stakeholder) so standing is never color-only.
+      const standing = standingByLoc[loc.id];
+      const labelText = standing === 'governor' ? `♛ ${loc.name}` : standing === 'stakeholder' ? `◆ ${loc.name}` : loc.name;
       ctx.fillStyle = unlocked ? '#e2e8f0' : '#64748b';
       ctx.font = `${10 * zoom}px Inter, sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText(loc.name, lx, ly + r + 14 * zoom);
+      ctx.fillText(labelText, lx, ly + r + 14 * zoom);
 
       // Building count badge
       if (completedHere > 0) {
@@ -639,6 +663,18 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         const spriteUrl = def ? SHIP_SPRITE[def.role] : undefined;
         const shipSprite = spriteUrl ? imgs.cache.get(spriteUrl) : undefined;
         drawShip(ctx, bx, by, heading, color, 4 * zoom, shipSprite);
+
+        // W9: arrival-countdown label above the transit marker (2D parity
+        // with the 3D map's ETA sprites — cheap text draw, no allocation).
+        const etaSec = Math.max(0, (arrAt - nowMs) / 1000);
+        ctx.save();
+        ctx.font = `600 ${9 * zoom}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.85)';
+        ctx.shadowBlur = 3;
+        ctx.fillStyle = 'rgba(103,232,249,0.95)';
+        ctx.fillText(`ETA ${formatCountdown(etaSec)}`, bx, by - 12 * zoom);
+        ctx.restore();
       }
     }
 
@@ -656,8 +692,39 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       ctx.stroke();
     }
 
+    // ─── Hazard FORECAST telegraphs (W9 parity subset) ────────────
+    // Next-month severe warnings: constant-radius dashed amber ring with a
+    // slow pulse (static under reduced motion) + ⚠ glyph — distinct from the
+    // expanding active-hazard rings above. Full warning text lives in the
+    // context panel / selected-location details.
+    const forecastWarnings = state.hazardWarnings || [];
+    if (forecastWarnings.length > 0) {
+      const drawnWarn = new Set<string>();
+      for (const wng of forecastWarnings) {
+        if (drawnWarn.has(wng.locationId)) continue;
+        drawnWarn.add(wng.locationId);
+        const px = locationPx[wng.locationId];
+        const layout = layoutOf(wng.locationId);
+        if (!px || !layout) continue;
+        const wave = reducedMotion ? 0.5 : Math.sin(tSec * 1.8) * 0.5 + 0.5;
+        const alpha = 0.35 + wave * 0.35;
+        const rr = (layout.radius * zoom + 9) * (reducedMotion ? 1 : 1 + (wave - 0.5) * 0.12);
+        ctx.strokeStyle = `rgba(251,191,36,${alpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.arc(px.x, px.y, rr, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.font = `bold ${10 * zoom}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(251,191,36,0.95)';
+        ctx.fillText('⚠', px.x, px.y - rr - 4);
+      }
+    }
+
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -787,6 +854,8 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                 {locations.map(loc => {
                   const unlocked = state.unlockedLocations.includes(loc.id);
                   const isSelected = selectedLoc === loc.id;
+                  const standing = standingByLoc[loc.id];
+                  const hasWarning = warningLocs.has(loc.id);
                   return (
                     <button
                       key={loc.id}
@@ -804,9 +873,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                       <span className="flex items-center gap-1">
                         <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
                         <span className="truncate">{loc.name}</span>
+                        {standing === 'governor' && <span aria-hidden="true" className="text-amber-300 shrink-0">♛</span>}
+                        {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
+                        {hasWarning && <span aria-hidden="true" className="text-amber-300 shrink-0">⚠</span>}
                       </span>
                       <span className="sr-only">
                         {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
+                        {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
+                        {hasWarning ? ', severe hazard forecast next month' : ''}
                       </span>
                     </button>
                   );

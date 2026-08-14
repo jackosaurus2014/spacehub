@@ -23,12 +23,15 @@ import {
   planExpedition,
   getExpeditionCapableShips,
   getExpeditionProgress,
+  getTotalGameMonths,
   GAME_MONTHS_PER_LY,
   COLONY_CAPABLE_SHIP_IDS,
   type ExpeditionPlanRequest,
   type ExpeditionPlan,
   type ExpeditionPlanError,
 } from '@/lib/game/expeditions';
+import { LOCATION_TO_ZONE, ZONE_MAP } from '@/lib/game/zone-influence';
+import { getActiveScienceMissions, getScienceMissionProgress, SCIENCE_PROGRAM_MAP } from '@/lib/game/science-missions';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { playSound } from '@/lib/game/sound-engine';
 import { REGION_LABELS } from './SolarSystemCanvas';
@@ -240,11 +243,62 @@ function LocationOverview({
   // Wave F UI surfacing (b): hazard forecast chips for this location.
   const warningsHere = (state.hazardWarnings || []).filter(w => w.locationId === locationId);
 
+  // W9: zone standing for the zone this location belongs to (matches the
+  // map's ♛/◆ label glyph + tint) — glyph + text, never color alone.
+  const zoneSlug = LOCATION_TO_ZONE.get(locationId);
+  const standingHere = zoneSlug
+    ? (state.zoneStandings || []).find(z => z.zoneSlug === zoneSlug && (z.isGovernor || z.sharePct >= 1))
+    : undefined;
+  const zoneName = zoneSlug ? ZONE_MAP.get(zoneSlug)?.name || zoneSlug : '';
+
+  // W9: active flagship science missions targeting this body (matches the
+  // map's 🔬 instrument glyph marker).
+  const missionsHere = getActiveScienceMissions(state).filter(
+    m => SCIENCE_PROGRAM_MAP.get(m.programId)?.locationId === locationId,
+  );
+
   return (
     <div className="space-y-3">
       <p className="text-slate-400 text-[11px] leading-relaxed">{loc.description}</p>
 
       <WorldPresenceBlock locationId={locationId} />
+
+      {standingHere && (
+        <div
+          className={`flex items-center gap-1.5 text-[10px] px-2 py-1.5 rounded-lg border ${
+            standingHere.isGovernor
+              ? 'bg-amber-500/10 border-amber-500/25 text-amber-300'
+              : 'bg-cyan-500/10 border-cyan-500/25 text-cyan-300'
+          }`}
+        >
+          <span aria-hidden="true">{standingHere.isGovernor ? '♛' : '◆'}</span>
+          <span>
+            {standingHere.isGovernor ? 'Governor' : 'Stakeholder'} — {zoneName} · {standingHere.sharePct.toFixed(1)}% influence
+          </span>
+        </div>
+      )}
+
+      {missionsHere.length > 0 && (
+        <div className="space-y-1">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Science Missions Here</div>
+          {missionsHere.map(m => {
+            const progress = getScienceMissionProgress(state, m.id);
+            const program = SCIENCE_PROGRAM_MAP.get(m.programId);
+            if (!progress || !program) return null;
+            return (
+              <div key={m.id} className="flex items-center justify-between gap-2 text-[11px] px-2 py-1.5 rounded-lg border border-cyan-500/15 bg-cyan-500/5">
+                <span className="text-slate-200 truncate flex items-center gap-1.5">
+                  <span aria-hidden="true">🔬</span> {program.name}
+                </span>
+                <span className="text-cyan-300/90 text-[10px] shrink-0">
+                  {progress.phaseLabel}
+                  {progress.monthsToNextPhase !== null && progress.monthsToNextPhase > 0 && ` · ${Math.ceil(progress.monthsToNextPhase)} mo`}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {warningsHere.length > 0 && (
         <div className="space-y-1" role="status" aria-live="polite">
@@ -544,6 +598,9 @@ function GalacticBody({
   const localExpeditions = (state.expeditions || []).filter(e => e.targetSystemId === systemId && e.phase !== 'completed' && e.phase !== 'lost');
   const colony = (state.interstellarColonies || []).find(c => c.systemId === systemId);
   const eligibleShips = getExpeditionCapableShips(state);
+  // W9: trade routes shipping from this system's colony back to Sol.
+  const routesHere = (state.interstellarTradeRoutes || []).filter(r => r.systemId === systemId);
+  const currentMonth = getTotalGameMonths(state.gameDate);
 
   return (
     <div className="space-y-3">
@@ -612,7 +669,7 @@ function GalacticBody({
         </div>
       )}
 
-      {/* Colony summary */}
+      {/* Colony summary — W9: production glyphs match the map's colony chip */}
       {colony && (
         <div className="rounded-lg border border-purple-500/25 bg-purple-500/5 p-2.5 text-[11px]">
           <div className="text-purple-300 font-semibold mb-1">🏙️ {colony.name}</div>
@@ -620,6 +677,44 @@ function GalacticBody({
             <span>Population: <span className="text-white font-mono">{Math.floor(colony.population).toLocaleString()}</span></span>
             <span>Infrastructure: <span className="text-white font-mono">L{colony.infrastructureLevel}</span></span>
           </div>
+          {colony.localResources.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1 mt-1.5">
+              <span className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Produces</span>
+              {colony.localResources.map(r => {
+                const res = RESOURCE_MAP.get(r as ResourceId);
+                return (
+                  <span key={r} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300">
+                    <span aria-hidden="true">{res?.icon}</span> {res?.name || r.replace(/_/g, ' ')}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* W9: trade routes — shipment progress detail behind the map's amber
+          flow lines (colony → Sol). */}
+      {routesHere.length > 0 && (
+        <div className="space-y-1">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Trade Routes → Sol</div>
+          {routesHere.map(r => {
+            const res = RESOURCE_MAP.get(r.resourceId as ResourceId);
+            const inbound = r.inTransit.length;
+            const nextDep = Math.max(0, r.nextDepartureGameMonth - currentMonth);
+            return (
+              <div key={r.id} className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-2 text-[11px] flex items-center justify-between gap-2">
+                <span className="text-amber-200 truncate">
+                  <span aria-hidden="true">{res?.icon}</span> {res?.name || r.resourceId.replace(/_/g, ' ')}
+                </span>
+                <span className="text-slate-400 text-[10px] font-mono shrink-0">
+                  {r.status === 'suspended'
+                    ? 'SUSPENDED'
+                    : `${inbound} in transit · next dep. ${nextDep} mo`}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
 

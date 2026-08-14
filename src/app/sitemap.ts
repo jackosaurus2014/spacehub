@@ -37,6 +37,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Ignition Tracker — flagship program tracker
     { url: `${BASE_URL}/ignition`, changeFrequency: 'daily' as const, priority: 1.0 },
+    { url: `${BASE_URL}/artemis`, changeFrequency: 'daily' as const, priority: 0.7 },
 
     // Main modules
     { url: `${BASE_URL}/mission-control`, changeFrequency: 'hourly' as const, priority: 0.9 },

@@ -6,7 +6,7 @@ import { formatMoney, formatGameDate, formatCountdown } from '@/lib/game/formula
 import { BUILDING_MAP, getPowerByLocation } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { SHIP_MAP } from '@/lib/game/ships';
-import { RESEARCH, getResearchBonuses, getResearchMechanicalEffect } from '@/lib/game/research-tree';
+import { RESEARCH, getResearchBonuses, getResearchMechanicalEffect, isRareTechVisible } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
@@ -446,6 +446,9 @@ function QuickNavGrid({
   const resourceUnits = Object.values(state.resources || {}).reduce((a, b) => a + b, 0);
   const activeContracts = (state.activeContracts || []).length;
   const researchDone = state.completedResearch.length;
+  // W10: rare techs the corp hasn't discovered yet don't count toward the
+  // visible denominator (matches ResearchPanel's own progress bar).
+  const visibleResearchCount = RESEARCH.filter(r => isRareTechVisible(r, state.unlockedRareTechIds)).length;
 
   const tiles: { id: string; label: string; icon: string; stat: string }[] = [
     { id: 'market', label: 'Market', icon: '📈', stat: `${resourceUnits.toLocaleString()} units held` },
@@ -453,7 +456,7 @@ function QuickNavGrid({
     { id: 'build', label: 'Build', icon: '🏗️', stat: `${inProgressCount} under construction` },
     { id: 'alliance', label: 'Corporation', icon: '🏢', stat: `${tierDef.icon} ${tierDef.name}` },
     { id: 'contracts', label: 'Contracts', icon: '📋', stat: `${activeContracts} active` },
-    { id: 'research', label: 'Research', icon: '🔬', stat: `${researchDone}/${RESEARCH.length} complete` },
+    { id: 'research', label: 'Research', icon: '🔬', stat: `${researchDone}/${visibleResearchCount} complete` },
   ];
 
   const alerts: { icon: string; label: string; tone: 'red' | 'amber' | 'cyan' }[] = [];
@@ -517,6 +520,9 @@ function QuickNavGrid({
 export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate, onSetInsuranceActive }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void; onSetInsuranceActive?: (active: boolean) => void }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
+  // W10: rare techs the corp hasn't discovered yet don't count toward the
+  // visible denominator (matches ResearchPanel's own progress bar).
+  const visibleResearchCount = RESEARCH.filter(r => isRareTechVisible(r, state.unlockedRareTechIds)).length;
 
   // Power balance per location (for revenue penalty display)
   const powerData = useMemo(() => getPowerByLocation(state.buildings), [state.buildings]);
@@ -525,7 +531,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
   const financials = useMemo(() => {
     const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
     const wfBonuses = getWorkforceBonuses(workforce);
-    const resBonuses = getResearchBonuses(state.completedResearch);
+    const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
     const payroll = getMonthlyPayroll(workforce);
 
     const priceMults = state.servicePriceMultipliers || {};
@@ -611,7 +617,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
           },
           {
             label: 'Research',
-            value: `${state.completedResearch.length}/${RESEARCH.length}`,
+            value: `${state.completedResearch.length}/${visibleResearchCount}`,
             color: 'text-purple-400',
             bgGlow: 'bg-purple-500/5',
             borderColor: 'border-purple-500/20',

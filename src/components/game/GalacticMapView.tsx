@@ -14,12 +14,23 @@
 // months (same numbers the engine uses — no invented physics). Expeditions
 // holding at their destination ('exploring') show as a pulse ring on the
 // system node instead of a duplicate hit-target.
+//
+// 4X wave W9 (galactic restage — parity with the W7 solar overlays):
+//   - expedition routes become curved progress ARCS: faint dashed full
+//     route + bright stroke up to the ship's position, ETA chip under the
+//     transit glyph (the solar map's transit-arc treatment at galactic scale)
+//   - colony markers grow production glyphs (the colony's localResources)
+//   - active interstellar trade routes render as amber flow lines with
+//     shipment dots positioned by real departure/arrival game-months
+// All positions derive from existing engine state — no new mechanics; every
+// interactive element remains a real <button> (a11y by construction).
 
 import Image from 'next/image';
 import type { GameState, ExpeditionState } from '@/lib/game/types';
 import { INTERSTELLAR_SYSTEMS, getJumpPrerequisites } from '@/lib/game/interstellar';
-import { getExpeditionProgress } from '@/lib/game/expeditions';
+import { getExpeditionProgress, getTotalGameMonths } from '@/lib/game/expeditions';
 import { SHIP_MAP } from '@/lib/game/ships';
+import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { BG_ASSETS } from '@/lib/game/assets';
 
 // Fixed layout (percent of container), hand-placed for readable spacing —
@@ -55,8 +66,32 @@ const ACTIVE_PHASES: ExpeditionState['phase'][] = ['outbound', 'exploring', 'ret
 
 const SOL_POS = { x: 0.5, y: 0.5 };
 
-function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * Math.max(0, Math.min(1, t));
+interface Pt { x: number; y: number }
+
+/** W9: shared curved-route geometry — a quadratic bezier with the control
+ *  point lifted perpendicular to the chord, mirroring the solar map's
+ *  transit arcs. Everything is in 0-1 layout space (×100 for the SVG). */
+function routeCurve(from: Pt, to: Pt): { cx: number; cy: number } {
+  const mx = (from.x + to.x) / 2;
+  const my = (from.y + to.y) / 2;
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+  const k = Math.min(0.055, len * 0.18);
+  return { cx: mx - (dy / len) * k, cy: my + (dx / len) * k };
+}
+
+function bezierPoint(from: Pt, ctrl: { cx: number; cy: number }, to: Pt, tRaw: number): Pt {
+  const t = Math.max(0, Math.min(1, tRaw));
+  const u = 1 - t;
+  return {
+    x: u * u * from.x + 2 * u * t * ctrl.cx + t * t * to.x,
+    y: u * u * from.y + 2 * u * t * ctrl.cy + t * t * to.y,
+  };
+}
+
+function routePathD(from: Pt, ctrl: { cx: number; cy: number }, to: Pt): string {
+  return `M ${from.x * 100} ${from.y * 100} Q ${ctrl.cx * 100} ${ctrl.cy * 100} ${to.x * 100} ${to.y * 100}`;
 }
 
 interface GalacticMapViewProps {
@@ -71,7 +106,8 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
   const exploringSystemIds = new Set(expeditions.filter(e => e.phase === 'exploring').map(e => e.targetSystemId));
   const colonizedSystemIds = new Set((state.interstellarColonies || []).map(c => c.systemId));
 
-  // In-transit expeditions (outbound/returning) — position along the Sol↔system line.
+  // In-transit expeditions (outbound/returning) — position along a curved
+  // Sol↔system arc (W9: bezier progress arcs, parity with the solar map).
   const transitMarkers = expeditions
     .filter(e => e.phase === 'outbound' || e.phase === 'returning')
     .map(e => {
@@ -80,8 +116,8 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
       const progress = getExpeditionProgress(state, e.id);
       const shipDef = SHIP_MAP.get(e.shipDefinitionId);
       let t: number;
-      let from = SOL_POS;
-      let to = layout;
+      let from: Pt = SOL_POS;
+      let to: Pt = layout;
       if (e.phase === 'outbound') {
         t = e.outboundMonths > 0 ? e.monthsElapsed / e.outboundMonths : 1;
       } else {
@@ -91,29 +127,86 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
         from = layout;
         to = SOL_POS;
       }
-      const pos = { x: lerp(from.x, to.x, t), y: lerp(from.y, to.y, t) };
-      return { expedition: e, pos, from, to: layout, shipDef, progress };
+      const ctrl = routeCurve(from, to);
+      const tClamped = Math.max(0, Math.min(1, t));
+      const pos = bezierPoint(from, ctrl, to, tClamped);
+      return { expedition: e, pos, from, to, ctrl, t: tClamped, shipDef, progress };
     })
     .filter((m): m is NonNullable<typeof m> => m !== null);
+
+  // W9: interstellar trade routes — amber flow lines colony → Sol with one
+  // dot per shipment, positioned by real departure/arrival game-months.
+  const currentMonth = getTotalGameMonths(state.gameDate);
+  const colonyBySystem = new Map((state.interstellarColonies || []).map(c => [c.systemId, c]));
+  const tradeFlows = (state.interstellarTradeRoutes || [])
+    .map(r => {
+      const layout = SYSTEM_LAYOUT[r.systemId];
+      if (!layout) return null;
+      if (r.status !== 'active' && r.inTransit.length === 0) return null;
+      const ctrl = routeCurve(layout, SOL_POS);
+      const shipments = r.inTransit.map(s => {
+        const total = Math.max(1, s.arrivesGameMonth - s.departedGameMonth);
+        const t = Math.max(0, Math.min(1, (currentMonth - s.departedGameMonth) / total));
+        return { pos: bezierPoint(layout, ctrl, SOL_POS, t), quantity: s.quantity };
+      });
+      return { route: r, from: layout as Pt, ctrl, shipments };
+    })
+    .filter((f): f is NonNullable<typeof f> => f !== null);
+  const inboundBySystem = new Map<string, number>();
+  for (const f of tradeFlows) {
+    inboundBySystem.set(f.route.systemId, (inboundBySystem.get(f.route.systemId) || 0) + f.route.inTransit.length);
+  }
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-[#020208]">
       <Image src={BG_ASSETS.starfield} alt="" fill className="object-cover opacity-30" priority={false} />
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/20 to-black/70" />
 
-      {/* Route lines — one dashed line per system with an in-transit expedition */}
-      {transitMarkers.length > 0 && (
+      {/* Route arcs — expedition progress arcs + trade flow lines (W9) */}
+      {(transitMarkers.length > 0 || tradeFlows.length > 0) && (
         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          {/* Trade flow lines first — under the expedition arcs */}
+          {tradeFlows.map(f => (
+            <g key={`trade-${f.route.id}`}>
+              <path
+                d={routePathD(f.from, f.ctrl, SOL_POS)}
+                fill="none"
+                stroke={f.route.status === 'active' ? 'rgba(251,191,36,0.28)' : 'rgba(251,191,36,0.12)'}
+                strokeWidth={0.3}
+                vectorEffect="non-scaling-stroke"
+              />
+              {f.shipments.map((s, i) => (
+                <circle
+                  key={i}
+                  cx={s.pos.x * 100}
+                  cy={s.pos.y * 100}
+                  r={0.7}
+                  fill="rgba(251,191,36,0.9)"
+                />
+              ))}
+            </g>
+          ))}
+          {/* Expedition arcs: faint dashed full route + bright progress stroke */}
           {transitMarkers.map(m => (
-            <line
-              key={`route-${m.expedition.id}`}
-              x1={SOL_POS.x * 100} y1={SOL_POS.y * 100}
-              x2={m.to.x * 100} y2={m.to.y * 100}
-              stroke="rgba(34,211,238,0.28)"
-              strokeWidth={0.35}
-              strokeDasharray="1.6 1.6"
-              vectorEffect="non-scaling-stroke"
-            />
+            <g key={`route-${m.expedition.id}`}>
+              <path
+                d={routePathD(m.from, m.ctrl, m.to)}
+                fill="none"
+                stroke="rgba(34,211,238,0.2)"
+                strokeWidth={0.35}
+                strokeDasharray="1.6 1.6"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d={routePathD(m.from, m.ctrl, m.to)}
+                fill="none"
+                stroke="rgba(34,211,238,0.65)"
+                strokeWidth={0.45}
+                pathLength={1}
+                strokeDasharray={`${m.t} 1`}
+                vectorEffect="non-scaling-stroke"
+              />
+            </g>
           ))}
         </svg>
       )}
@@ -135,6 +228,11 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
         const isSelected = selectedSystemId === sys.id;
         const isExploring = exploringSystemIds.has(sys.id);
         const isColonized = colonizedSystemIds.has(sys.id);
+        const colony = colonyBySystem.get(sys.id);
+        const inbound = inboundBySystem.get(sys.id) || 0;
+        const producesText = colony && colony.localResources.length > 0
+          ? ` — colony producing ${colony.localResources.map(r => RESOURCE_MAP.get(r as ResourceId)?.name || r.replace(/_/g, ' ')).join(', ')}`
+          : '';
 
         return (
           <button
@@ -142,7 +240,7 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
             type="button"
             onClick={() => onSelectSystem(isSelected ? null : sys.id)}
             aria-pressed={isSelected}
-            aria-label={`${sys.name}${isExploring ? ' — expedition on site' : ''}${isColonized ? ' — colonized' : ''}`}
+            aria-label={`${sys.name}${isExploring ? ' — expedition on site' : ''}${isColonized ? ' — colonized' : ''}${producesText}${inbound > 0 ? `, ${inbound} shipment${inbound === 1 ? '' : 's'} inbound to Sol` : ''}`}
             className="absolute flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center focus:outline-none group"
             style={{ left: `${layout.x * 100}%`, top: `${layout.y * 100}%`, transform: 'translate(-50%, -50%)' }}
           >
@@ -172,14 +270,27 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
                 {ready ? 'READY' : 'LOCKED'}
               </span>
             </span>
+            {/* W9: colony production glyphs + inbound-shipment count (text
+                lives in the button's aria-label above) */}
+            {colony && colony.localResources.length > 0 && (
+              <span className="flex items-center gap-0.5 text-[9px] bg-black/50 px-1 py-0.5 rounded backdrop-blur-sm" aria-hidden="true">
+                <span>🏙️</span>
+                {colony.localResources.slice(0, 4).map(r => (
+                  <span key={r}>{RESOURCE_MAP.get(r as ResourceId)?.icon || '▪'}</span>
+                ))}
+                {inbound > 0 && <span className="ml-0.5 text-amber-300 font-mono">→{inbound}</span>}
+              </span>
+            )}
           </button>
         );
       })}
 
-      {/* In-transit expedition glyphs */}
+      {/* In-transit expedition glyphs — W9: visible ETA chip under the glyph
+          (same information the solar map's transit ETA sprites carry) */}
       {transitMarkers.map(m => {
         const icon = m.shipDef?.icon || '🌠';
-        const label = m.progress ? `${m.progress.phaseLabel} · ${m.progress.systemName} · ${Math.max(0, Math.round(m.progress.monthsRemaining))} months remaining` : m.expedition.targetSystemId;
+        const monthsLeft = m.progress ? Math.max(0, Math.round(m.progress.monthsRemaining)) : null;
+        const label = m.progress ? `${m.progress.phaseLabel} · ${m.progress.systemName} · ${monthsLeft} months remaining` : m.expedition.targetSystemId;
         return (
           <button
             key={m.expedition.id}
@@ -191,6 +302,14 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
             style={{ left: `${m.pos.x * 100}%`, top: `${m.pos.y * 100}%`, transform: 'translate(-50%, -50%)', boxShadow: '0 0 10px 2px rgba(34,211,238,0.35)' }}
           >
             <span aria-hidden="true">{icon}</span>
+            {monthsLeft !== null && (
+              <span
+                className="absolute top-full mt-0.5 left-1/2 -translate-x-1/2 text-[8px] font-mono text-cyan-200 bg-black/60 px-1 rounded whitespace-nowrap pointer-events-none"
+                aria-hidden="true"
+              >
+                {monthsLeft} mo
+              </span>
+            )}
           </button>
         );
       })}
