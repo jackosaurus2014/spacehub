@@ -5,7 +5,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import {
-  generateWeeklyEventQuestions, buildStockQuestionSpec, selectWeeklyTicker,
+  generateWeeklyEventQuestions, buildStockQuestionSpec, weeklyTickerRotation,
   resolveSpaceEventOutcome, resolveStockOutcome, computePayout,
   LAUNCH_CANDIDATE_WINDOW_DAYS,
   type LaunchCandidate, type TickerCandidate, type GeneratedQuestionSpec,
@@ -90,16 +90,21 @@ async function runGenerate(now: Date) {
       seen.add(c.ticker);
       tickers.push({ ticker: c.ticker, name: c.name });
     }
-    const picked = selectWeeklyTicker(tickers, now);
-    if (picked) {
+    // Foreign-listed roster tickers (ADX, TSE, ...) often aren't quotable on
+    // Yahoo — walk this week's deterministic rotation until one quotes.
+    for (const picked of weeklyTickerRotation(tickers, now, 5)) {
       stockPick = { ticker: picked.ticker };
-      const quote = await yahooFinance.quote(picked.ticker);
-      const price = quote.regularMarketPrice;
-      if (typeof price === 'number' && price > 0) {
-        const stockSpec = buildStockQuestionSpec(picked, now, price);
-        if (stockSpec) specs.push(stockSpec);
-      } else {
+      try {
+        const quote = await yahooFinance.quote(picked.ticker);
+        const price = quote.regularMarketPrice;
+        if (typeof price === 'number' && price > 0) {
+          const stockSpec = buildStockQuestionSpec(picked, now, price);
+          if (stockSpec) specs.push(stockSpec);
+          break;
+        }
         stockPick.error = 'No live price returned';
+      } catch (quoteError) {
+        stockPick.error = String(quoteError);
       }
     }
   } catch (error) {

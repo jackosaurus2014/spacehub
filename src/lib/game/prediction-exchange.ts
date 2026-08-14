@@ -217,10 +217,25 @@ export function nextFridayCloseUTC(now: Date): Date {
  * week if the cron retries).
  */
 export function selectWeeklyTicker(tickers: TickerCandidate[], now: Date): TickerCandidate | null {
-  if (tickers.length === 0) return null;
+  return weeklyTickerRotation(tickers, now, 1)[0] ?? null;
+}
+
+/**
+ * The first `limit` candidates in this week's deterministic rotation order.
+ * The roster includes foreign-listed tickers Yahoo can't quote (e.g. ADX- or
+ * TSE-listed symbols), so the caller tries these in order and uses the first
+ * one that returns a live price — still fully deterministic for a given
+ * week + roster.
+ */
+export function weeklyTickerRotation(tickers: TickerCandidate[], now: Date, limit = 5): TickerCandidate[] {
+  if (tickers.length === 0) return [];
   const sorted = [...tickers].sort((a, b) => a.ticker.localeCompare(b.ticker));
   const epochWeek = Math.floor(now.getTime() / (7 * 86_400_000));
-  return sorted[epochWeek % sorted.length];
+  const out: TickerCandidate[] = [];
+  for (let i = 0; i < Math.min(limit, sorted.length); i++) {
+    out.push(sorted[(epochWeek + i) % sorted.length]);
+  }
+  return out;
 }
 
 /**

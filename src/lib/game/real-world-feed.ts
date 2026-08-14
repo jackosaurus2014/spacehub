@@ -202,6 +202,28 @@ export interface MilestoneCandidate {
 /** A milestone only counts as "recent" inside this window. */
 const MILESTONE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+/**
+ * Program coverage includes plenty of fluff (merch, opinion, pop-culture
+ * pieces). Only headlines with genuine mission-progress language may fire
+ * the milestone event — otherwise the research bonus would be permanently
+ * on, since Starship/Artemis articles appear nearly every week.
+ */
+const MILESTONE_KEYWORDS = [
+  'launch', 'launches', 'launched', 'liftoff', 'lift-off',
+  'landing', 'lands', 'landed', 'splashdown', 'touchdown',
+  'flight', 'test fire', 'static fire', 'hot fire', 'engine test',
+  'docking', 'docked', 'undocking', 'orbit', 'orbital', 'deorbit',
+  'catch', 'caught', 'booster', 'propellant transfer', 'refueling', 'refuelling',
+  'milestone', 'success', 'successful', 'completes', 'completed',
+  'crewed', 'crew-', 'astronauts', 'rollout', 'rolls out', 'stacking', 'stacked',
+  'wet dress', 'countdown', 'reentry', 're-entry', 'demo',
+];
+
+export function isMilestoneHeadline(title: string): boolean {
+  const t = title.toLowerCase();
+  return MILESTONE_KEYWORDS.some((k) => t.includes(k));
+}
+
 const MILESTONE_HREF: Record<MilestoneProgram, string> = {
   artemis: '/artemis',
   starship: '/starship',
@@ -218,6 +240,7 @@ export function deriveMilestoneEvent(
 ): WorldEvent | null {
   const fresh = candidates
     .filter((c) => nowMs - c.publishedAtMs <= MILESTONE_MAX_AGE_MS && nowMs - c.publishedAtMs >= 0)
+    .filter((c) => isMilestoneHeadline(c.title))
     .sort((a, b) => b.publishedAtMs - a.publishedAtMs);
   if (fresh.length === 0) return null;
 

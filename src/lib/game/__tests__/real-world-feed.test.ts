@@ -196,6 +196,27 @@ describe('deriveMilestoneEvent', () => {
     ).toBeNull();
   });
 
+  it('ignores fluff coverage without mission-progress language', () => {
+    expect(
+      deriveMilestoneEvent(
+        [candidate({ title: 'Cards Against Humanity wants to erect a monument near Starbase' })],
+        NOW,
+      ),
+    ).toBeNull();
+  });
+
+  it('falls through fluff to an older genuine milestone', () => {
+    const evt = deriveMilestoneEvent(
+      [
+        candidate({ title: 'Elon Musk memes about Mars', publishedAtMs: NOW - 1 * 24 * 60 * 60 * 1000 }),
+        candidate({ title: 'Starship completes static fire ahead of Flight 14', program: 'starship', publishedAtMs: NOW - 3 * 24 * 60 * 60 * 1000 }),
+      ],
+      NOW,
+    );
+    expect(evt).not.toBeNull();
+    expect(evt!.headline).toContain('static fire');
+  });
+
   it('ignores a bogus future-dated article', () => {
     expect(
       deriveMilestoneEvent([candidate({ publishedAtMs: NOW + 60_000 })], NOW),
