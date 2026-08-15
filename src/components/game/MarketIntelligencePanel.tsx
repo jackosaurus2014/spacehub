@@ -10,6 +10,8 @@ import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
 import type { ResourceId } from '@/lib/game/resources';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { formatMoney } from '@/lib/game/formulas';
+import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { CATEGORY_LABELS } from '@/lib/game/demand-pools';
 import { useModalA11y } from './useModalA11y';
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
@@ -54,7 +56,21 @@ interface CorporationRow {
   rank: number;
 }
 
-type IntelTab = 'market' | 'corporations' | 'flows' | 'share';
+type IntelTab = 'market' | 'corporations' | 'flows' | 'share' | 'demand';
+
+// Wave E4 (Finite Demand Pools — docs/ECONOMY_PVP_2026-08.md §E4): the
+// demand map's row shape, as served by GET /api/space-tycoon/demand-pools.
+interface DemandPoolRowView {
+  locationId: string;
+  category: string;
+  mult: number;
+  dTotal: number;
+  dNpc: number;
+  cSupply: number;
+  playerShare: number;
+  topShares: number[];
+  supplierCount: number;
+}
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -82,6 +98,9 @@ export default function MarketIntelligencePanel() {
           <TabButton active={tab === 'share'} onClick={() => setTab('share')} icon="leaderboard">
             Market Share
           </TabButton>
+          <TabButton active={tab === 'demand'} onClick={() => setTab('demand')} icon="services">
+            Demand
+          </TabButton>
         </div>
       </ConsolePanel>
 
@@ -89,6 +108,7 @@ export default function MarketIntelligencePanel() {
       {tab === 'corporations' && <CorporationsTab />}
       {tab === 'flows' && <SupplyFlowsTab />}
       {tab === 'share' && <MarketShareTab />}
+      {tab === 'demand' && <DemandMapTab />}
     </div>
   );
 }
@@ -869,6 +889,143 @@ function ShareTable({ entries }: { entries: ShareEntry[] }) {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+// ─── Demand Map Tab (Wave E4 — Finite Demand Pools) ──────────────────────────
+// docs/ECONOMY_PVP_2026-08.md §E4 visibility: pool size, saturation, YOUR
+// share, and anonymized competitor pressure per (location, category) market.
+// Mobile-first semantic table (screen-reader order first, heat second);
+// saturation state is always conveyed by TEXT + numbers, never color alone
+// (accessibility canon).
+
+function demandStatus(mult: number, dTotal: number, cSupply: number): { label: string; cls: string } {
+  if (dTotal <= 0) return { label: 'No market', cls: 'text-slate-500' };
+  if (cSupply > dTotal) {
+    const pct = Math.round((1 - mult) * 100);
+    return { label: `Saturated −${pct}%`, cls: 'text-amber-300' };
+  }
+  if (mult > 1.005) {
+    const pct = Math.round((mult - 1) * 100);
+    return { label: `Undersupplied +${pct}%`, cls: 'text-cyan-300' };
+  }
+  return { label: 'Balanced', cls: 'text-slate-300' };
+}
+
+function DemandMapTab() {
+  const [pools, setPools] = useState<DemandPoolRowView[]>([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/space-tycoon/demand-pools')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (cancelled || !data) return;
+        setPools(Array.isArray(data.pools) ? data.pools : []);
+        setLoggedIn(!!data.loggedIn);
+        setLastUpdatedAt(typeof data.lastUpdatedAt === 'number' ? data.lastUpdatedAt : null);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const byLocation = useMemo(() => {
+    const m = new Map<string, DemandPoolRowView[]>();
+    for (const p of pools) {
+      const list = m.get(p.locationId) || [];
+      list.push(p);
+      m.set(p.locationId, list);
+    }
+    m.forEach(list => list.sort((a: DemandPoolRowView, b: DemandPoolRowView) => b.dTotal - a.dTotal));
+    // Order locations by total pool size, biggest markets first.
+    const total = (rows: DemandPoolRowView[]) => rows.reduce((s, p) => s + p.dTotal, 0);
+    return Array.from(m.entries()).sort((a, b) => total(b[1]) - total(a[1]));
+  }, [pools]);
+
+  if (loading) return <div className="card p-8 text-center text-slate-500 text-sm">Loading demand map…</div>;
+
+  if (pools.length === 0) {
+    return (
+      <div className="card p-8 text-center text-slate-500 text-sm">
+        Demand pools have not been computed yet — the hourly market survey runs soon.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="card p-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+          <div className="text-white text-sm font-bold flex items-center gap-1.5">
+            <GameIcon name="services" size={14} /> Service Demand Map
+          </div>
+          {lastUpdatedAt && (
+            <span className="text-[10px] text-slate-500">
+              Surveyed {new Date(lastUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
+        </div>
+        <p className="text-slate-500 text-[11px]">
+          Every service market has a finite demand pool per location. Suppliers split the pool by capacity
+          share: saturated markets pay each supplier less (competitors take customers), underserved locations
+          pay up to +25%. Top supplier shares are anonymized — deeper intel is earned, never free.
+          {!loggedIn && ' Sign in and sync your game to see your own market shares.'}
+        </p>
+      </div>
+
+      {byLocation.map(([locationId, rows]) => {
+        const locName = LOCATION_MAP.get(locationId)?.name || locationId.replace(/_/g, ' ');
+        return (
+          <div key={locationId} className="card p-3">
+            <div className="text-cyan-300 text-xs font-bold uppercase tracking-wider mb-2">{locName}</div>
+            <div className="overflow-x-auto -mx-1">
+              <table className="w-full text-[11px]" role="table" aria-label={`Demand pools at ${locName}`}>
+                <thead>
+                  <tr className="text-slate-500 text-left">
+                    <th scope="col" className="px-1 py-1 font-medium">Market</th>
+                    <th scope="col" className="px-1 py-1 font-medium text-right">Pool /mo</th>
+                    <th scope="col" className="px-1 py-1 font-medium text-right">Supply /mo</th>
+                    <th scope="col" className="px-1 py-1 font-medium text-right">Payout</th>
+                    <th scope="col" className="px-1 py-1 font-medium">Status</th>
+                    <th scope="col" className="px-1 py-1 font-medium text-right">Suppliers</th>
+                    <th scope="col" className="px-1 py-1 font-medium text-right">Top shares</th>
+                    {loggedIn && <th scope="col" className="px-1 py-1 font-medium text-right">Your share</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map(p => {
+                    const status = demandStatus(p.mult, p.dTotal, p.cSupply);
+                    const label = (CATEGORY_LABELS as Record<string, string>)[p.category] || p.category;
+                    return (
+                      <tr key={`${p.locationId}:${p.category}`} className="border-t border-white/[0.05]">
+                        <td className="px-1 py-1.5 text-white">{label}</td>
+                        <td className="px-1 py-1.5 text-right font-mono text-slate-300">{formatMoney(p.dTotal)}</td>
+                        <td className="px-1 py-1.5 text-right font-mono text-slate-300">{formatMoney(p.cSupply)}</td>
+                        <td className={`px-1 py-1.5 text-right font-mono font-bold ${status.cls}`}>{Math.round(p.mult * 100)}%</td>
+                        <td className={`px-1 py-1.5 whitespace-nowrap ${status.cls}`}>{status.label}</td>
+                        <td className="px-1 py-1.5 text-right font-mono text-slate-400">{p.supplierCount}</td>
+                        <td className="px-1 py-1.5 text-right font-mono text-slate-400 whitespace-nowrap">
+                          {p.topShares.length > 0 ? p.topShares.map(s => `${Math.round(s * 100)}%`).join(' · ') : '—'}
+                        </td>
+                        {loggedIn && (
+                          <td className="px-1 py-1.5 text-right font-mono text-emerald-400">
+                            {p.playerShare > 0 ? `${Math.round(p.playerShare * 100)}%` : '—'}
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

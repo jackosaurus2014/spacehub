@@ -39,7 +39,6 @@ export function useGameSync(
   state: GameState | null,
   intervalMs: number = 60_000,
   onServerData?: (data: {
-    servicePriceMultipliers?: Record<string, number>;
     globalMilestones?: Record<string, string>;
     /** One Wallet (audit A1): pending server-side deltas + new ack cursor. */
     ledger?: LedgerReconciliation;
@@ -196,13 +195,18 @@ export function useGameSync(
         // `allianceBonuses` and dropped them on the floor — "the entire
         // alliance bonus pipeline is severed one hop before the player's
         // tick" (audit §4).
-        if (data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost || data.mentorshipBonuses) {
+        if (data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost || data.mentorshipBonuses || data.demandPools) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
             zoneStandings: Array.isArray(data.zoneStandings) ? data.zoneStandings : undefined,
             espionagePerks: Array.isArray(data.espionagePerks) ? data.espionagePerks : undefined,
             leagueBoost: data.leagueBoost || null,
             mentorshipBonuses: data.mentorshipBonuses || null,
+            // Wave E4 (Finite Demand Pools): per-(location, category) pool
+            // snapshot rides the same server-effects hop as zone standings —
+            // applied atomically inside processFullTick, with prevPlayerShare
+            // stamped for the Situation Log's share-drop alerts.
+            demandPools: data.demandPools || undefined,
             fetchedAtMs: Date.now(),
           });
         }
@@ -210,7 +214,6 @@ export function useGameSync(
         // Pass server-side pricing and milestone data back to the game
         if (onServerData) {
           onServerData({
-            servicePriceMultipliers: data.servicePriceMultipliers || undefined,
             globalMilestones: data.globalMilestones || undefined,
             ledger: data.ledger || undefined,
             reconciledMoney: typeof data.reconciledMoney === 'number' ? data.reconciledMoney : undefined,

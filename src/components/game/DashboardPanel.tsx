@@ -13,6 +13,10 @@ import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMult
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { LOCATIONS } from '@/lib/game/solar-system';
 import { getFrontierSummary, FRONTIER_GRADUATION_NET_WORTH } from '@/lib/game/frontier';
+// Wave E4 (Finite Demand Pools): dashboard P&L reads THE tick's multiplier
+// source — never a stale copy of the retired log-decay map.
+import { getServiceDemandMultiplier } from '@/lib/game/service-pricing';
+import { gameDateToMonthIndex } from '@/lib/game/demand-pools';
 import {
   computeInsuredAssetValue,
   countInsuranceRiskLocations,
@@ -548,7 +552,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
     const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
     const payroll = getMonthlyPayroll(workforce);
 
-    const priceMults = state.servicePriceMultipliers || {};
+    const demandMonthIndex = gameDateToMonthIndex(state.gameDate);
+    const collectedDemandMults: number[] = [];
     let revenue = 0, opCosts = 0, maintenance = 0;
     let hasPowerDeficit = false;
     for (const svc of state.activeServices) {
@@ -556,7 +561,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       if (!def) continue;
       const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
       const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-      const supplyMult = priceMults[svc.definitionId] ?? 1.0;
+      const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, demandMonthIndex);
+      collectedDemandMults.push(supplyMult);
       // Power factor: underpowered locations reduce revenue
       const locPower = powerData[svc.locationId];
       const powerRatio = locPower ? locPower.ratio : 1;
@@ -579,15 +585,15 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
       maintenance += Math.round(def.maintenanceCostPerMonth * maintMult * (1 - resBonuses.maintenanceReduction));
     }
-    // Check if any services are supply-impacted
-    const hasSupplyPenalty = Object.values(priceMults).some(m => m < 0.99);
-    const avgSupplyMult = Object.keys(priceMults).length > 0
-      ? Object.values(priceMults).reduce((a, b) => a + b, 0) / Object.values(priceMults).length
+    // Check if any services are demand-pool-impacted (Wave E4)
+    const hasSupplyPenalty = collectedDemandMults.some(m => m < 0.99);
+    const avgSupplyMult = collectedDemandMults.length > 0
+      ? collectedDemandMults.reduce((a, b) => a + b, 0) / collectedDemandMults.length
       : 1.0;
 
     const costs = opCosts + maintenance + payroll;
     return { revenue, costs, opCosts, maintenance, payroll, net: revenue - costs, wfBonuses, resBonuses, hasSupplyPenalty, avgSupplyMult, hasPowerDeficit };
-  }, [state.activeServices, state.buildings, state.workforce, state.completedResearch, state.servicePriceMultipliers, powerData]);
+  }, [state, powerData]);
 
   return (
     <div className="space-y-4">
@@ -1017,7 +1023,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
                 if (!def) continue;
                 const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
                 const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-                const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+                const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, gameDateToMonthIndex(state.gameDate));
                 const locPower = powerData[svc.locationId];
                 const powerRatio = locPower ? locPower.ratio : 1;
                 const stnBonus = stationBonusByLoc[svc.locationId] || 0;

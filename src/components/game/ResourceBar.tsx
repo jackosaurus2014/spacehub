@@ -15,6 +15,9 @@ import { toggleMusic, isMusicPlaying, setMusicVolume, getMusicVolume, initMusicA
 import { isHapticsEnabled, toggleHaptics, vibrate } from '@/lib/game/haptics';
 import { toggleGameDensity, type GameDensity } from '@/lib/game/density';
 import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
+// Wave E4 (Finite Demand Pools): projection reads THE tick's multiplier source.
+import { getServiceDemandMultiplier } from '@/lib/game/service-pricing';
+import { gameDateToMonthIndex } from '@/lib/game/demand-pools';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
 import GameIcon from './GameIcon';
 import HoloTip, { Concept } from './HoloTip';
@@ -129,7 +132,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
     if (!def) continue;
     const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+    const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, gameDateToMonthIndex(state.gameDate));
     revenue += def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost
       * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * legacyBonuses.revenueMultiplier * (1 + tierBonuses.revenueBonus) * supplyMult;
     costs += def.operatingCostPerMonth * multipliers.costMultiplier * legacyBonuses.costMultiplier * (1 - tierBonuses.maintenanceReduction);

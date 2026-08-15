@@ -111,6 +111,14 @@ import { getActiveEraModifiers, completeCurrentEra } from './corporate-eras';
 // identical consumption); per-building supply efficiency (0.5 soft floor)
 // multiplies that building's service revenue and mining output below.
 import { advanceConsumptionToMonth, consumeConsumptionFlush, applyConsumptionFlush } from './consumption';
+// Economic PvP Wave E4 "Finite Demand Pools" (docs/ECONOMY_PVP_2026-08.md
+// §2.1/§E4): service revenue is now gated by finite per-(location, category)
+// demand pools — suppliers split the pool by capacity share, so saturation
+// means competitors take customers and undersupply pays a scarcity premium
+// (≤ +25%). Replaces the retired global log10 instance-count decay
+// (state.servicePriceMultipliers). Same helper serves away-operations.ts —
+// identical state ⇒ identical multiplier on either path.
+import { getServiceDemandMultiplier } from './service-pricing';
 
 /** Get or create today's daily metrics tracker */
 function getDailyMetrics(state: GameState): NonNullable<GameState['dailyMetrics']> {
@@ -305,8 +313,10 @@ export function processTick(state: GameState): GameState {
     const saturationMult = serviceSaturationMultiplier(saturationPosition);
     const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    // Dynamic service pricing: server-reported multiplier based on global supply
-    const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+    // Wave E4: finite demand pool multiplier for this service's
+    // (location, category) market — server snapshot when fresh, else the
+    // deterministic local pool. Includes phase-in + Frontier shield.
+    const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, globalDate.totalMonths);
     // Power factor: underpowered locations reduce revenue proportionally
     const locPower = powerByLocation[svc.locationId];
     const powerRatio = locPower ? locPower.ratio : 1; // Earth/unlisted = full power

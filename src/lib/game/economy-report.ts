@@ -31,6 +31,9 @@ import { getTotalSubsidiaryIncome } from './subsidiaries';
 import { getGovernorBenefits, getMultiZonePenalty } from './zone-influence';
 import { getMonthlyInsurancePremium } from './economic-sinks';
 import { calculateRushRepairCost } from './hazards';
+// Wave E4 (Finite Demand Pools): the P&L reads THE tick's multiplier source.
+import { getServiceDemandMultiplier } from './service-pricing';
+import { gameDateToMonthIndex } from './demand-pools';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -189,7 +192,11 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   const eventMultipliers = getActiveMultipliers(state);
 
   const powerData = getPowerByLocation(state.buildings);
-  const priceMults = state.servicePriceMultipliers || {};
+  // Wave E4 (Finite Demand Pools): per-service demand-pool multipliers —
+  // same helper the live tick uses, so the P&L never disagrees with actual
+  // tick behavior. Collected per instance for the supply-pressure summary.
+  const demandMonthIndex = gameDateToMonthIndex(state.gameDate);
+  const collectedDemandMults: number[] = [];
 
   // ─── Revenue multiplier breakdown (applies globally to every service) ──
   const revMult: RevenueMultiplierBreakdown = {
@@ -237,7 +244,8 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     const powerRatio = locPower ? locPower.ratio : 1;
     if (powerRatio < 1) hasPowerDeficit = true;
 
-    const supplyMult = priceMults[svc.definitionId] ?? 1.0;
+    const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, demandMonthIndex);
+    collectedDemandMults.push(supplyMult);
 
     // Station bonus at this location (capped at +50%)
     let stationBonus = 0;
@@ -427,9 +435,9 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   };
 
   // ─── Supply pressure ───────────────────────────────────────────────────
-  const hasSupplyPenalty = Object.values(priceMults).some(m => m < 0.99);
-  const avgSupplyMultiplier = Object.keys(priceMults).length > 0
-    ? Object.values(priceMults).reduce((a, b) => a + b, 0) / Object.values(priceMults).length
+  const hasSupplyPenalty = collectedDemandMults.some(m => m < 0.99);
+  const avgSupplyMultiplier = collectedDemandMults.length > 0
+    ? collectedDemandMults.reduce((a, b) => a + b, 0) / collectedDemandMults.length
     : 1.0;
 
   // ─── Historical contract performance (last up-to-100) ──────────────────

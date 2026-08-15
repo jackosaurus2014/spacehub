@@ -16,6 +16,11 @@ import type { CorporateDoctrineState, BoardDirective } from './corporate-doctrin
 // so this is a compile-time-erased edge — no runtime cycle.
 import type { MarketSnapshot } from './spot-price';
 
+// E4 (Finite Demand Pools): type-only import of the per-(location, category)
+// demand-pool snapshot the sync route delivers — same pattern as
+// MarketSnapshot above (demand-pools.ts never value-imports types.ts).
+import type { DemandPoolSnapshot } from './demand-pools';
+
 export interface GameDate {
   year: number;
   month: number; // 1-12
@@ -581,7 +586,11 @@ export interface GameState {
   availableBoosts?: { id: string; type: 'construction' | 'research' | 'mining'; multiplier: number; durationSeconds: number; source: string; label: string }[];
   activeBoosts?: { boostId: string; type: 'construction' | 'research' | 'mining'; multiplier: number; activatedAtMs: number; expiresAtMs: number; label: string }[];
 
-  // Dynamic service pricing (from server — multiplier per service ID)
+  // DEPRECATED (E4 — Finite Demand Pools): the old global log10-decay
+  // multipliers per service ID. No longer written by the sync route and no
+  // longer read by any revenue path (getServiceDemandMultiplier replaced
+  // every consumer); kept on the type so pre-V33 exported saves still parse,
+  // and cleared to {} by the V33 migration so stale decay stops persisting.
   servicePriceMultipliers?: Record<string, number>;
 
   // One Wallet (audit A1): highest server ledger seq already applied into
@@ -1251,6 +1260,24 @@ export interface GameState {
      *  the One-Wallet ledger like any MarketPanel trade. */
     pendingProcurement: Record<string, number>;
   };
+
+  /** V33 — Wave E4 "Finite Demand Pools" (docs/ECONOMY_PVP_2026-08.md
+   *  §2.1/§E4, engine: demand-pools.ts + service-pricing.ts). The last
+   *  per-(location, serviceCategory) demand-pool snapshot the server
+   *  delivered via sync — pool size, saturation multiplier, this player's
+   *  capacity share, anonymized top-supplier shares. The deterministic tick
+   *  reads it (never a live network call); null/absent or stale (> 7 days)
+   *  = the deterministic local pool fallback (own activity vs authored NPC
+   *  floor). Delivered through server-effects.ts exactly like
+   *  allianceBonuses. */
+  demandPools?: DemandPoolSnapshot | null;
+
+  /** V33 — world-month index (server-time totalMonths convention) when
+   *  demand pools began phasing in for this save. Existing saves get the
+   *  migration month (pool effect ramps 25%→100% over 3 game-months — the
+   *  same grandfather ramp E3's consumption used); null = full effect
+   *  (fresh games — new corps are Frontier-shielded anyway). */
+  demandPoolPhaseInStartMonth?: number | null;
 }
 
 /** One chapter act's live/catch-up progress marker (0..acts.length-1 while

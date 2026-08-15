@@ -370,6 +370,33 @@ model MarketResource {
   @@index([category])
 }
 
+// Economic PvP Wave E4 "Finite Demand Pools" (docs/ECONOMY_PVP_2026-08.md
+// §2.1/§E4): server-shared demand market per (location, serviceCategory).
+// Written by the hourly demand-pools cron (EMA-smoothed on a 7-day horizon);
+// read by sync/route.ts (per-player snapshot) and the Market Intelligence
+// demand map. Additive — no existing table is touched.
+model LocationDemandPool {
+  id         String @id @default(cuid())
+  locationId String
+  category   String
+  // NPC backdrop floor demand ($/mo), already population-scaled (§2.9).
+  dNpc     Float @default(0)
+  // Demand derived from real player activity at the location ($/mo).
+  dDerived Float @default(0)
+  // Total supplier capacity ($/mo) — synced players + NPC backdrop.
+  cSupply  Float @default(0)
+  // Top-3 supplier capacity shares (anonymized fractions) + supplier count —
+  // the free intel tier ("competitor pressure" without named detail).
+  topShares     Json @default("[]")
+  supplierCount Int  @default(0)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([locationId, category])
+  @@index([locationId])
+}
+
 model MarketOrder {
   id         String         @id @default(cuid())
   profileId  String

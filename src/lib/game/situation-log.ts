@@ -31,6 +31,12 @@ import { BUILDING_MAP } from './buildings';
 import { getMissionCalendarEntries, type CalendarCategory } from './world-calendar';
 import { calendarCategoryIcon, type IconName } from './icons';
 import type { OrderQueueTarget } from './order-queue';
+// Wave E4 (Finite Demand Pools): market-share drop alerts — "competitor
+// undercutting at X". Pure read of state.demandPools (prevPlayerShare is
+// stamped by server-effects.mergeDemandPoolSnapshot when a new snapshot
+// lands), keeping this module's DB-free contract intact.
+import { CATEGORY_LABELS, getServiceCategory, demandPoolKey } from './demand-pools';
+import { LOCATION_MAP } from './solar-system';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -40,6 +46,10 @@ export type SituationCategory =
   // Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): building recipe inputs ran
   // short — the facility is browned out toward the 0.5 efficiency floor.
   | 'supply_shortfall'
+  // Wave E4 (docs/ECONOMY_PVP_2026-08.md §E4): this player's capacity share
+  // of a demand market dropped since the previous snapshot — a competitor
+  // is taking customers ("competitor undercutting at X").
+  | 'demand_shift'
   // Outliner-only sources (deriveAttentionItems, outliner.ts) — included in
   // the shared union so both modules can emit/consume the same item shape.
   | 'building_damage' | 'ship_damage' | 'ship_idle' | 'queue_stalled';
@@ -234,6 +244,40 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
       severity: eff <= 0.55 ? 'critical' : 'warning',
       tab: 'build',
     });
+  }
+
+  // ── Demand-pool share drops (Wave E4 — demand-pools.ts) ─────────────────
+  // "Competitor undercutting at X": the player's capacity share of a market
+  // they actually supply fell ≥ 5 points between the last two server
+  // snapshots. Recency-gated on the snapshot timestamp (48h) so a stale
+  // save doesn't nag forever; severity escalates when the market is also
+  // saturated (multiplier below ~0.75 — rivals are visibly eating revenue).
+  const demandSnapshot = state.demandPools;
+  if (demandSnapshot?.pools && typeof demandSnapshot.asOf === 'number' && nowMs - demandSnapshot.asOf <= 48 * 60 * 60 * 1000) {
+    const suppliedKeys = new Set<string>();
+    for (const svc of state.activeServices || []) {
+      const cat = getServiceCategory(svc.definitionId);
+      if (cat) suppliedKeys.add(demandPoolKey(svc.locationId, cat));
+    }
+    for (const [key, entry] of Object.entries(demandSnapshot.pools)) {
+      if (!suppliedKeys.has(key)) continue;
+      const prev = entry.prevPlayerShare;
+      if (typeof prev !== 'number' || prev <= 0) continue;
+      const drop = prev - entry.playerShare;
+      if (drop < 0.05) continue;
+      const locName = LOCATION_MAP.get(entry.locationId)?.name || entry.locationId;
+      const catLabel = CATEGORY_LABELS[entry.category] || entry.category;
+      items.push({
+        id: `sit-demand-${key}`,
+        category: 'demand_shift',
+        icon: 'market',
+        label: `Competitor undercutting at ${locName}`,
+        detail: `Your ${catLabel.toLowerCase()} market share fell ${Math.round(prev * 100)}% → ${Math.round(entry.playerShare * 100)}% (${entry.supplierCount} suppliers, pool pays ${Math.round(entry.mult * 100)}%). Expand capacity, or redeploy to an underserved market.`,
+        severity: entry.mult <= 0.75 ? 'warning' : 'info',
+        atMs: demandSnapshot.asOf,
+        tab: 'market',
+      });
+    }
   }
 
   // ── Queue idle warning (wasted automation capacity) ─────────────────────

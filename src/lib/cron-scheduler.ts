@@ -178,6 +178,12 @@ const CRON_JOBS: CronJobDef[] = [
   // Market mean reversion — hourly at :30 (audit Wave E / A5-ii: prices drift back
   // toward baseline via calculateIdleDecay; ~6.6h half-life ≈ one game-month)
   { schedule: '30 * * * *',   path: '/api/space-tycoon/market/mean-revert',         label: 'tycoon-market-mean-revert',   maxStaleMinutes: 1440 },
+  // Finite demand pools — hourly at :15 (Economic PvP Wave E4, docs/
+  // ECONOMY_PVP_2026-08.md §2.1/§E4: aggregates every synced profile's
+  // buildings/services/ships into per-(location, category) demand pools,
+  // EMA-smoothed on a 7-day horizon; offset so it interleaves with the :00
+  // restock and :30 mean-revert)
+  { schedule: '15 * * * *',   path: '/api/space-tycoon/demand-pools/update',        label: 'tycoon-demand-pools',         maxStaleMinutes: 1440 },
   // Seasonal-event generation — daily at 6am UTC (4X Wave W3, closes audit C4:
   // no cron ever instantiated SeasonalEvent rows, so /seasons was a permanently
   // empty shell). Deterministic ~31-day season calendar — daily polling is far

@@ -192,6 +192,14 @@ export function getNewGameState(): GameState {
     // (lastProcessedMonth null → advanceConsumptionToMonth anchors without
     // retro-consuming).
     consumptionState: { ...DEFAULT_CONSUMPTION_STATE },
+    // V33 — Economic PvP Wave E4 "Finite Demand Pools" (docs/
+    // ECONOMY_PVP_2026-08.md §E4). A fresh save holds no pool snapshot yet —
+    // the first authenticated sync delivers one; until then the tick uses
+    // the deterministic local pool (own activity vs the authored NPC floor).
+    // No phase-in for fresh games (pools are migration grace, not a
+    // new-game mechanic; new corporations are Frontier-shielded anyway).
+    demandPools: null,
+    demandPoolPhaseInStartMonth: null,
   };
 }
 
@@ -564,6 +572,30 @@ export function loadGame(): GameState | null {
     // event, mirroring the V15 insurance announcement.
     if (!state.consumptionState) {
       applyGrandfatherGrace(state, getGlobalGameDate().totalMonths);
+    }
+
+    // V33 — Economic PvP Wave E4 "Finite Demand Pools" (docs/
+    // ECONOMY_PVP_2026-08.md §E4 [SAVE] + §7). Additive with the same
+    // grandfather ramp E3 used: existing saves anchor a 25%→100% pool
+    // phase-in at the CURRENT world month, so service revenue shifts to the
+    // finite-pool regime over 3 game-months instead of overnight (the
+    // multiplier is also floored at 0.35 — nobody's economy craters). The
+    // retired global log-decay multipliers are cleared so stale penalties
+    // stop round-tripping forever; the pool snapshot itself arrives via the
+    // next authenticated sync (until then: deterministic local pools,
+    // which at migration-time capacity are ≥ the old decay for any real
+    // save). One-shot explainer event mirrors the V15/V32 announcements.
+    if (state.demandPools === undefined) {
+      state.demandPools = null;
+      state.demandPoolPhaseInStartMonth = getGlobalGameDate().totalMonths;
+      state.servicePriceMultipliers = {};
+      state.eventLog = [{
+        id: 'evt_v33_demand_pools',
+        date: state.gameDate,
+        type: 'random_event' as const,
+        title: '📊 Finite demand pools activated',
+        description: 'Every service market now has a finite demand pool per location. Suppliers split the pool by capacity share — crowded markets pay less per instance (competitors take customers), underserved locations pay up to +25%. Pools phase in over the next 3 game months. See Market Intelligence → Demand for pool sizes, your share, and competitor pressure.',
+      }, ...(state.eventLog || [])].slice(0, 50);
     }
 
     state.tickSpeed = 1; // Always 1x for fairness

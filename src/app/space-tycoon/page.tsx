@@ -901,7 +901,8 @@ export default function SpaceTycoonPage() {
       if (!prev) return prev;
       return {
         ...prev,
-        servicePriceMultipliers: serverData.servicePriceMultipliers || prev.servicePriceMultipliers,
+        // Wave E4: servicePriceMultipliers retired — demand pools arrive via
+        // queueServerEffects → processFullTick (state.demandPools).
         // Wave E2 (§2.5): stash the live spot snapshot so the deterministic
         // tick can value delivery contracts and NPC settlement at spot.
         marketSnapshot: serverData.marketSnapshot || prev.marketSnapshot,

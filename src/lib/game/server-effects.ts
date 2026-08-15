@@ -18,6 +18,8 @@
 
 import type { GameState } from './types';
 import { MENTOR_REVENUE_BONUS_CAP, MENTEE_BOOST_CAP } from './constants';
+import type { DemandPoolSnapshot, DemandPoolEntry } from './demand-pools';
+import { clampDemandMultiplier } from './service-pricing';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -86,7 +88,52 @@ export interface ServerEffectsSnapshot {
   leagueBoost?: LeagueBoostSnapshot | null;
   worldEventBonuses?: WorldEventBonusSnapshot | null;
   mentorshipBonuses?: MentorshipBonusSnapshot | null;
+  /** Wave E4 (Finite Demand Pools, §2.1/§E4): per-(location, category) pool
+   *  snapshot — mult, pool size, this player's share, anonymized top-supplier
+   *  shares. Applied via mergeDemandPoolSnapshot (re-clamped; previous
+   *  playerShare stamped so the Situation Log can flag share drops). */
+  demandPools?: DemandPoolSnapshot | null;
   fetchedAtMs: number;
+}
+
+// ─── Wave E4: demand-pool snapshot merge ────────────────────────────────────
+
+/**
+ * Sanitize an incoming demand-pool snapshot and stamp each entry's
+ * prevPlayerShare from the previous snapshot — the delta the Situation Log's
+ * "competitor undercutting at X" items key off. Pure; defensive clamps on
+ * every numeric field (same posture as clampAllianceBonuses: server data is
+ * trusted more than client data, but a bugged aggregate must never explode
+ * the revenue product).
+ */
+export function mergeDemandPoolSnapshot(
+  prev: DemandPoolSnapshot | null | undefined,
+  next: DemandPoolSnapshot | null | undefined,
+): DemandPoolSnapshot | null {
+  if (!next || typeof next.asOf !== 'number' || !next.pools || typeof next.pools !== 'object') return prev ?? null;
+  const share = (v: unknown): number =>
+    typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0;
+  const money = (v: unknown): number =>
+    typeof v === 'number' && Number.isFinite(v) && v > 0 ? Math.round(v) : 0;
+  const pools: Record<string, DemandPoolEntry> = {};
+  for (const [key, e] of Object.entries(next.pools)) {
+    if (!e || typeof e !== 'object') continue;
+    const prevEntry = prev?.pools?.[key];
+    pools[key] = {
+      locationId: String(e.locationId || key.split(':')[0] || ''),
+      category: e.category,
+      mult: clampDemandMultiplier(e.mult),
+      dTotal: money(e.dTotal),
+      dNpc: money(e.dNpc),
+      cSupply: money(e.cSupply),
+      playerShare: share(e.playerShare),
+      prevPlayerShare: prevEntry ? share(prevEntry.playerShare) : share(e.playerShare),
+      topShares: Array.isArray(e.topShares) ? e.topShares.slice(0, 3).map(share) : [],
+      supplierCount: typeof e.supplierCount === 'number' && Number.isFinite(e.supplierCount)
+        ? Math.max(0, Math.floor(e.supplierCount)) : 0,
+    };
+  }
+  return { pools, asOf: next.asOf };
 }
 
 // ─── Safety clamps (BALANCE.md "design invariants") ──────────────────────────
@@ -182,6 +229,11 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     mentorshipBonuses: eff.mentorshipBonuses !== undefined
       ? clampMentorshipBonuses(eff.mentorshipBonuses)
       : state.mentorshipBonuses,
+    // Wave E4: finite demand pools reach the tick the same hop the alliance
+    // bonuses do. Merge stamps prevPlayerShare for share-drop alerts.
+    demandPools: eff.demandPools !== undefined
+      ? mergeDemandPoolSnapshot(state.demandPools, eff.demandPools)
+      : state.demandPools,
   };
 
   // Audit §1b "Leagues": grant the promotion boost the league system defines

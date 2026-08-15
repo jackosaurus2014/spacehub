@@ -58,6 +58,10 @@ import { rollMonthlyHazards, applyHazards } from './hazards';
 // lastProcessedMonth cursor guarantees live play and away catch-up can never
 // double-consume, and identical elapsed time always consumes identically.
 import { advanceConsumptionToMonth } from './consumption';
+// Wave E4 (Finite Demand Pools): away catch-up uses THE SAME demand-pool
+// multiplier helper as the live tick (game-engine.ts) — identical state ⇒
+// identical multiplier, the away-catch-up-parity invariant.
+import { getServiceDemandMultiplier } from './service-pricing';
 // Live-Service Wave LS6 (docs/LIVE_SERVICE_2026-08.md §LS6): programs.ts's
 // advancePrograms is the SAME function the live tick calls — a pure
 // wall-clock discrete-event chain, so calling it here with `now` correctly
@@ -213,7 +217,9 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       && BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId)
     );
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    const supplyMult = (working.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+    const supplyMult = getServiceDemandMultiplier(
+      working, svc.definitionId, svc.locationId, getTotalGameMonths(working.gameDate), now,
+    );
     revenuePerTick += Math.round(
       def.revenuePerMonth * fraction
       * svc.revenueMultiplier

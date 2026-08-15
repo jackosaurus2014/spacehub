@@ -4,7 +4,12 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { getGlobalGameDate, formatServerDate } from '@/lib/game/server-time';
-import { getAllServicePriceMultipliers } from '@/lib/game/service-pricing';
+// Wave E4 (Finite Demand Pools): the global log-decay multipliers are
+// retired — the sync now delivers per-(location, category) demand pools
+// built from the hourly LocationDemandPool aggregates.
+import { buildDemandPoolSnapshot } from '@/lib/game/service-pricing';
+import type { DemandPoolSnapshot } from '@/lib/game/demand-pools';
+import { getCurrentSeasonNumber } from '@/lib/game/seasonal-events';
 import {
   calculateMetricScore,
   getMetricDefinition,
@@ -636,11 +641,10 @@ export async function POST(request: Request) {
     // Include canonical server game date so clients stay in sync
     const serverGameDate = getGlobalGameDate();
 
-    // Compute global service counts for dynamic pricing
-    // Count how many instances of each service exist across ALL players.
-    // Audit Wave B (A7): the same pass also accumulates per-ZONE monthly
-    // service base revenue — the governor tax base returned in zoneStandings.
-    let servicePriceMultipliers: Record<string, number> = {};
+    // Audit Wave B (A7): accumulate per-ZONE monthly service base revenue —
+    // the governor tax base returned in zoneStandings. (This pass used to
+    // also feed the global log-decay servicePriceMultipliers; Wave E4
+    // retired that decay — finite demand pools below replace it.)
     const zoneServiceRevenueBase: Record<string, number> = {};
     try {
       const { SERVICE_MAP } = await import('@/lib/game/services');
@@ -649,13 +653,9 @@ export async function POST(request: Request) {
         select: { activeServicesData: true },
         where: { lastSyncAt: { gt: new Date(Date.now() - 7 * 24 * 3600_000) } }, // Active in last 7 days
       });
-      const globalServiceCounts: Record<string, number> = {};
       for (const p of allProfiles) {
         const services = (p.activeServicesData as { definitionId: string; locationId?: string }[] | null) || [];
         for (const svc of services) {
-          if (svc.definitionId) {
-            globalServiceCounts[svc.definitionId] = (globalServiceCounts[svc.definitionId] || 0) + 1;
-          }
           // Governor tax base (audit A7): zone-wide service activity
           if (svc.definitionId && svc.locationId) {
             const zoneSlug = LOCATION_TO_ZONE.get(svc.locationId);
@@ -666,8 +666,35 @@ export async function POST(request: Request) {
           }
         }
       }
-      servicePriceMultipliers = getAllServicePriceMultipliers(globalServiceCounts);
     } catch { /* non-critical — fall back to no adjustment */ }
+
+    // ── Wave E4 (§2.1/§E4): finite demand pools ─────────────────────────────
+    // Read the hourly-cron-maintained LocationDemandPool aggregates and build
+    // this player's bounded snapshot: pool multiplier per (location,
+    // category), pool size, THEIR capacity share, anonymized top-supplier
+    // shares. The season super-cycle modifier is applied at read time inside
+    // buildDemandPoolSnapshot, and every multiplier is clamped to
+    // [0.35, 1.25] before send (a hostile client can neither be fed nor
+    // forge an absurd pool). Delivered via server-effects like zone
+    // standings; absent (schema lag / cron never ran) = client falls back to
+    // its deterministic local pool.
+    let demandPools: DemandPoolSnapshot | null = null;
+    try {
+      const poolRows = await prisma.locationDemandPool.findMany({
+        select: { locationId: true, category: true, dNpc: true, dDerived: true, cSupply: true, topShares: true, supplierCount: true },
+      });
+      if (poolRows.length > 0) {
+        const ownServices = (safeServices as { definitionId?: string; locationId?: string }[])
+          .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
+          .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string }));
+        demandPools = buildDemandPoolSnapshot(
+          poolRows.map(r => ({ ...r, topShares: r.topShares as unknown })),
+          ownServices,
+          getCurrentSeasonNumber(),
+          Date.now(),
+        );
+      }
+    } catch { /* demand pools non-critical (schema may lag deploy) */ }
 
     // ── Audit Wave B (A7): the player's zone standings for the tick ─────────
     // Governor benefits and stakeholder service bonuses were "defined, never
@@ -798,7 +825,10 @@ export async function POST(request: Request) {
       mentorshipBonuses,
       openBounties,
       globalMilestones,
-      servicePriceMultipliers,
+      // Wave E4 (§2.1/§E4): finite demand pools — replaces the retired
+      // log-decay servicePriceMultipliers. Additive field; older clients
+      // simply fall back to their deterministic local pools.
+      demandPools,
       // Wave E2 (§2.5 "one price truth"): band-clamped live spot per resource,
       // the single price the client tick now uses to value delivery contracts
       // (spot-at-acceptance) and settle the NPC backdrop. Additive field —
