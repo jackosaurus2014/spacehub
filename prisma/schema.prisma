@@ -5017,6 +5017,15 @@ model SeasonalEvent {
 
   metadata Json? // Season-specific config
 
+  // Live-Service Wave LS7 (docs/LIVE_SERVICE_2026-08.md §LS7, "Season
+  // Chronicle"): sealed SeasonChronicleRecord JSON (season-chronicle.ts),
+  // written ONCE by the seasons cron when a season's status flips to
+  // "completed" and never overwritten again — the permanent public record
+  // (top-3 placements, super-cycle theme/headlines, alliance charter
+  // outcomes, notable events). Null until sealed. Additive/nullable: no
+  // migration risk for existing rows.
+  results Json?
+
   participations   SeasonParticipation[]
   seasonChallenges SeasonChallenge[]
 

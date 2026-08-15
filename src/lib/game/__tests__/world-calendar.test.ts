@@ -12,6 +12,8 @@ import {
   getMissionCalendarEntries, groupCalendarEntriesByDay, getNextWeeklyUtcOccurrence,
 } from '../world-calendar';
 import { SERVER_EPOCH_MS, REAL_SECONDS_PER_GAME_MONTH } from '../server-time';
+import { getCurrentSeasonNumber, getSeasonSchedule } from '../seasonal-events';
+import { getSuperCycleForSeason, SUPER_CYCLE_ANNOUNCE_LEAD_MS } from '../economic-seasons';
 
 const NOW = Date.UTC(2026, 7, 14, 12, 0, 0); // Friday, 2026-08-14 12:00 UTC
 
@@ -186,6 +188,47 @@ describe('corporate era entry (Live-Service Wave LS4)', () => {
     });
     const entries = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: 14 });
     expect(entries.some(e => e.category === 'corporate_era')).toBe(false);
+  });
+});
+
+describe('economic super-cycle announcement entry (Live-Service Wave LS7)', () => {
+  it('surfaces the next season super-cycle exactly SUPER_CYCLE_ANNOUNCE_LEAD_MS before that season starts', () => {
+    const currentN = getCurrentSeasonNumber(new Date(NOW));
+    const next = getSeasonSchedule(currentN + 1);
+    const announceMs = next.startsAt.getTime() - SUPER_CYCLE_ANNOUNCE_LEAD_MS;
+    const horizonDays = Math.ceil((announceMs - NOW) / (24 * 60 * 60 * 1000)) + 1;
+    const state = baseState();
+    const entries = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: Math.max(14, horizonDays) });
+    const entry = entries.find(e => e.category === 'economic_cycle');
+    expect(entry).toBeDefined();
+    expect(entry!.atMs).toBe(announceMs);
+    expect(entry!.worldShared).toBe(true);
+    expect(entry!.kind).toBe('opens');
+
+    const theme = getSuperCycleForSeason(currentN + 1);
+    expect(entry!.title).toContain(theme.name);
+  });
+
+  it('is deterministic — same nowMs always yields the same announcement entry', () => {
+    const state = baseState();
+    const a = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: 90 })
+      .find(e => e.category === 'economic_cycle');
+    const b = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: 90 })
+      .find(e => e.category === 'economic_cycle');
+    expect(a).toEqual(b);
+  });
+
+  it('omits the entry once the announcement instant falls outside the horizon', () => {
+    const state = baseState();
+    const entries = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: 1 });
+    // With a 1-day horizon, the announcement (fires ~7 days before a
+    // ~31-day-out season start) is virtually never in-window.
+    const currentN = getCurrentSeasonNumber(new Date(NOW));
+    const next = getSeasonSchedule(currentN + 1);
+    const announceMs = next.startsAt.getTime() - SUPER_CYCLE_ANNOUNCE_LEAD_MS;
+    if (announceMs > NOW + 1 * 24 * 60 * 60 * 1000) {
+      expect(entries.some(e => e.category === 'economic_cycle')).toBe(false);
+    }
   });
 });
 

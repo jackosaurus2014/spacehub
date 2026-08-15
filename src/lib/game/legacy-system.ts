@@ -379,6 +379,24 @@ export const LEGACY_MILESTONES: LegacyMilestone[] = [
     bonusCategory: 'crewCapacity', bonusValue: 3,
     check: (s) => (s.corporateEras?.completedEras?.length || 0) >= 10,
   },
+
+  // ── Live-Service Wave LS6: leader-legacy milestone family (additive) ────
+  // docs/LIVE_SERVICE_2026-08.md §LS6: "retirement grants... legacy effects
+  // per spec." Reads state.retiredLeaders directly (types.ts) — same
+  // no-circular-import pattern the LS4 era family above uses for
+  // corporateEras.
+  {
+    id: 'legacy_first_retirement', name: 'A Distinguished Career', tier: 1,
+    description: 'Your first leader retires after two months of steady service.',
+    bonusCategory: 'costReduction', bonusValue: 2,
+    check: (s) => (s.retiredLeaders?.length || 0) >= 1,
+  },
+  {
+    id: 'legacy_veteran_bench', name: 'A Veteran Bench', tier: 3,
+    description: 'A run of leaders have served their term and stepped aside for the next generation.',
+    bonusCategory: 'crewCapacity', bonusValue: 3,
+    check: (s) => (s.retiredLeaders?.length || 0) >= 5,
+  },
 ];
 
 /** Fast lookup map: milestoneId -> definition */
@@ -428,6 +446,16 @@ export const STRETCH_LEGACIES: StretchLegacy[] = [
     bonusCategory: 'crewCapacity', basePercent: 2,
     getRequirement: (n) => 10 * n, // 10 * N total ship builds
     getProgress: (s) => s.legacy?.trackers.totalShipsBuilt || (s.ships?.filter(sh => sh.isBuilt).length || 0),
+  },
+  {
+    // Live-Service Wave LS6: ongoing progression beyond the two fixed leader
+    // milestones above — every generation of retired leaders compounds a
+    // small permanent revenue bonus (institutional memory).
+    id: 'stretch_leader_legacy', name: 'Leadership Dynasty',
+    description: 'Every leader who serves a full term leaves the corporation stronger.',
+    bonusCategory: 'revenue', basePercent: 3,
+    getRequirement: (n) => 3 * n, // 3 * N retired leaders
+    getProgress: (s) => s.retiredLeaders?.length || 0,
   },
 ];
 

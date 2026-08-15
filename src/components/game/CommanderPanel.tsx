@@ -15,7 +15,9 @@ import {
   computeCommanderBonuses,
   getRosterBucket,
   getCommanderTraits,
+  getCommanderBonusTrait,
   getCommanderXpProgress,
+  getRetirementEtaMs,
   canAssignToPost,
   isAssignmentProductive,
   ASSIGNMENT_POST_LABEL,
@@ -469,6 +471,17 @@ function HiredCommanderCard({
         >
           ◆ {quirk.name}
         </span>
+        {hiredCommander.secondTraitSlot && (() => {
+          const bonusTrait = getCommanderBonusTrait(def.id);
+          return (
+            <span
+              className="text-[9px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5"
+              title={`Program-earned specialty — ${bonusTrait.name}: ${bonusTrait.description}`}
+            >
+              ★★ {bonusTrait.name}
+            </span>
+          );
+        })()}
       </div>
 
       {/* Assignment */}
@@ -483,6 +496,16 @@ function HiredCommanderCard({
               <div className={`text-[9px] mt-0.5 ${isProductive ? 'text-emerald-400' : 'text-slate-600'}`}>
                 {isProductive ? 'Active — earning XP this month' : 'Idle — no XP this month (post not producing)'}
               </div>
+              {(() => {
+                const etaMs = getRetirementEtaMs(hiredCommander);
+                if (etaMs === null) return null;
+                const daysLeft = Math.max(0, Math.ceil((etaMs - Date.now()) / (24 * 60 * 60 * 1000)));
+                return (
+                  <div className="text-[9px] mt-0.5 text-fuchsia-400">
+                    🎖️ Retires in {daysLeft}d — reassigning to a different post resets this clock
+                  </div>
+                );
+              })()}
             </div>
             <button
               onClick={onUnassign}

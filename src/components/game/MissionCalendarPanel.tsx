@@ -37,6 +37,9 @@ const CATEGORY_LABEL: Partial<Record<CalendarCategory, string>> = {
   real_launch: 'Real Launch',
   alliance_charter: 'Season Charter',
   corporate_era: 'Corporate Era', // Live-Service Wave LS4
+  economic_cycle: 'Super-Cycle', // Live-Service Wave LS7
+  program: 'Training Program', // Live-Service Wave LS6
+  leader_retirement: 'Leader Retirement', // Live-Service Wave LS6
 };
 
 const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
@@ -51,6 +54,9 @@ const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
   real_launch: 'border-orange-500/25 bg-orange-500/[0.03]',
   alliance_charter: 'border-teal-500/25 bg-teal-500/[0.03]',
   corporate_era: 'border-yellow-500/25 bg-yellow-500/[0.03]', // Live-Service Wave LS4
+  economic_cycle: 'border-lime-500/25 bg-lime-500/[0.03]', // Live-Service Wave LS7
+  program: 'border-sky-500/25 bg-sky-500/[0.03]', // Live-Service Wave LS6
+  leader_retirement: 'border-fuchsia-500/25 bg-fuchsia-500/[0.03]', // Live-Service Wave LS6
 };
 const FALLBACK_CATEGORY_LABEL = 'Event';
 const FALLBACK_CATEGORY_FRAME = 'border-slate-500/25 bg-slate-500/[0.03]';

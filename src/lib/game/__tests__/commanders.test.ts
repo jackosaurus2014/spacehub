@@ -17,6 +17,12 @@ import {
   hireCommander,
   dismissCommander,
   getClassBonusText,
+  assignCommander,
+  unassignCommander,
+  isRetirementEligible,
+  getRetirementEtaMs,
+  processLeaderRetirements,
+  RETIREMENT_SERVICE_MS,
 } from '../commanders';
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
@@ -350,5 +356,171 @@ describe('commanders — class bonus text', () => {
   it('magnitude matches rarity', () => {
     expect(getClassBonusText('diplomat', 'common')).toMatch(/\+2%/);
     expect(getClassBonusText('diplomat', 'legendary')).toMatch(/\+20%/);
+  });
+});
+
+// ─── Live-Service Wave LS6 — Leader Retirement + Legacy ─────────────────────
+
+describe('commanders — LS6 assignedSinceMs tracking', () => {
+  const NOW = 1_700_000_000_000;
+
+  it('assignCommander stamps assignedSinceMs on a fresh posting', () => {
+    let s = baseState({ money: 1_000_000_000, hiredCommanders: [{ definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: null }] });
+    s = assignCommander(s, 'rookie-alpha', 'fleet_ops', undefined, NOW);
+    const h = s.hiredCommanders!.find(x => x.definitionId === 'rookie-alpha')!;
+    expect(h.assignedSinceMs).toBe(NOW);
+  });
+
+  it('reassigning to a DIFFERENT post resets the clock', () => {
+    let s = baseState({ money: 1_000_000_000, hiredCommanders: [{ definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: null }] });
+    s = assignCommander(s, 'rookie-alpha', 'fleet_ops', undefined, NOW);
+    s = assignCommander(s, 'rookie-alpha', 'market_desk', undefined, NOW + 10_000);
+    const h = s.hiredCommanders!.find(x => x.definitionId === 'rookie-alpha')!;
+    expect(h.assignedSinceMs).toBe(NOW + 10_000);
+  });
+
+  it('re-submitting the SAME post keeps the existing clock', () => {
+    let s = baseState({ money: 1_000_000_000, hiredCommanders: [{ definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: null }] });
+    s = assignCommander(s, 'rookie-alpha', 'fleet_ops', undefined, NOW);
+    s = assignCommander(s, 'rookie-alpha', 'fleet_ops', undefined, NOW + 10_000);
+    const h = s.hiredCommanders!.find(x => x.definitionId === 'rookie-alpha')!;
+    expect(h.assignedSinceMs).toBe(NOW);
+  });
+
+  it('unassignCommander clears assignedSinceMs — a benched leader stops aging', () => {
+    let s = baseState({ money: 1_000_000_000, hiredCommanders: [{ definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: null }] });
+    s = assignCommander(s, 'rookie-alpha', 'fleet_ops', undefined, NOW);
+    s = unassignCommander(s, 'rookie-alpha');
+    const h = s.hiredCommanders!.find(x => x.definitionId === 'rookie-alpha')!;
+    expect(h.assignment).toBeNull();
+    expect(h.assignedSinceMs).toBeUndefined();
+  });
+});
+
+describe('commanders — LS6 retirement eligibility', () => {
+  const NOW = 1_700_000_000_000;
+
+  it('is never eligible while unassigned', () => {
+    const h = { definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: null };
+    expect(isRetirementEligible(h, NOW)).toBe(false);
+    expect(getRetirementEtaMs(h)).toBeNull();
+  });
+
+  it('is not eligible before RETIREMENT_SERVICE_MS elapses', () => {
+    const h = { definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: { postType: 'fleet_ops' as const }, assignedSinceMs: NOW - (RETIREMENT_SERVICE_MS - 1000) };
+    expect(isRetirementEligible(h, NOW)).toBe(false);
+  });
+
+  it('is eligible once RETIREMENT_SERVICE_MS has elapsed', () => {
+    const h = { definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: { postType: 'fleet_ops' as const }, assignedSinceMs: NOW - RETIREMENT_SERVICE_MS };
+    expect(isRetirementEligible(h, NOW)).toBe(true);
+    expect(getRetirementEtaMs(h)).toBe(NOW - RETIREMENT_SERVICE_MS + RETIREMENT_SERVICE_MS);
+  });
+});
+
+describe('commanders — LS6 processLeaderRetirements', () => {
+  const NOW = 1_700_000_000_000;
+
+  it('is a no-op with nothing eligible', () => {
+    const s = baseState({ hiredCommanders: [{ definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: null }] });
+    const result = processLeaderRetirements(s, NOW);
+    expect(result).toBe(s); // same reference — cheap no-op
+  });
+
+  it('retires an eligible commander: removes from roster, records a RetiredLeaderRecord, grants a mentor boost, logs an event', () => {
+    const s = baseState({
+      hiredCommanders: [
+        { definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: { postType: 'fleet_ops' as const }, assignedSinceMs: NOW - RETIREMENT_SERVICE_MS },
+      ],
+    });
+    const result = processLeaderRetirements(s, NOW);
+    expect(result.hiredCommanders).toHaveLength(0);
+    expect(result.retiredLeaders).toHaveLength(1);
+    expect(result.retiredLeaders![0].definitionId).toBe('rookie-alpha');
+    expect(result.retiredLeaders![0].class).toBe('commander');
+    expect(result.leaderMentorBoosts).toHaveLength(1);
+    expect(result.leaderMentorBoosts![0].class).toBe('commander');
+    expect(result.eventLog[0].title).toContain('retired');
+  });
+
+  it('leaves ineligible commanders untouched alongside a retiring one', () => {
+    const s = baseState({
+      hiredCommanders: [
+        { definitionId: 'rookie-alpha', hiredAtMs: 0, xp: 0, level: 1, assignment: { postType: 'fleet_ops' as const }, assignedSinceMs: NOW - RETIREMENT_SERVICE_MS },
+        { definitionId: 'rookie-beta', hiredAtMs: 0, xp: 0, level: 1, assignment: { postType: 'fleet_ops' as const }, assignedSinceMs: NOW - 1000 },
+      ],
+    });
+    const result = processLeaderRetirements(s, NOW);
+    expect(result.hiredCommanders).toHaveLength(1);
+    expect(result.hiredCommanders![0].definitionId).toBe('rookie-beta');
+  });
+});
+
+describe('commanders — LS6 mentor boost consumption on hire', () => {
+  it('hireCommander grants bonus starting XP when a matching mentor boost is active', () => {
+    const s = baseState({
+      money: 1_000_000_000,
+      leaderMentorBoosts: [{ class: 'commander', bonusXp: 4, expiresAtMs: 2_000_000_000_000 }],
+    });
+    const result = hireCommander(s, 'rookie-alpha', 1_700_000_000_000);
+    const h = result.hiredCommanders!.find(x => x.definitionId === 'rookie-alpha')!;
+    expect(h.xp).toBe(4);
+    expect(result.leaderMentorBoosts).toHaveLength(0); // one-shot, consumed
+  });
+
+  it('does not consume an expired mentor boost', () => {
+    const s = baseState({
+      money: 1_000_000_000,
+      leaderMentorBoosts: [{ class: 'commander', bonusXp: 4, expiresAtMs: 100 }],
+    });
+    const result = hireCommander(s, 'rookie-alpha', 1_700_000_000_000);
+    const h = result.hiredCommanders!.find(x => x.definitionId === 'rookie-alpha')!;
+    expect(h.xp).toBe(0);
+    expect(result.leaderMentorBoosts).toHaveLength(1); // untouched
+  });
+
+  it('does not consume a boost of a different class', () => {
+    const s = baseState({
+      money: 1_000_000_000,
+      leaderMentorBoosts: [{ class: 'scientist', bonusXp: 4, expiresAtMs: 2_000_000_000_000 }],
+    });
+    const result = hireCommander(s, 'rookie-alpha', 1_700_000_000_000); // class: commander
+    const h = result.hiredCommanders!.find(x => x.definitionId === 'rookie-alpha')!;
+    expect(h.xp).toBe(0);
+    expect(result.leaderMentorBoosts).toHaveLength(1);
+  });
+});
+
+describe('commanders — LS6 secondTraitSlot bonus trait', () => {
+  it('contributes zero when unset', () => {
+    const s = baseState({
+      hiredCommanders: [{ definitionId: 'surveyor', hiredAtMs: 0, xp: 0, level: 1, assignment: { postType: 'zone' as const, targetId: 'earth_surface' } }],
+      unlockedLocations: ['earth_surface'],
+    });
+    const withoutSlot = computeCommanderBonuses(s.hiredCommanders, s);
+
+    const sWithSlot = { ...s, hiredCommanders: [{ ...s.hiredCommanders![0], secondTraitSlot: true }] };
+    const withSlot = computeCommanderBonuses(sWithSlot.hiredCommanders, sWithSlot);
+
+    // Adding the second trait slot can only ever help or hold steady on any
+    // given field (all specialty traits are additive-positive) — the two
+    // results should differ on at least one field.
+    expect(withSlot).not.toEqual(withoutSlot);
+  });
+
+  it('never breaks the trait aggregate cap even with a second slot', () => {
+    // Hire and productively assign several commanders with secondTraitSlot,
+    // all posted to a fleet_ops post (always productive once ships exist).
+    const hired = COMMANDER_DEFS.slice(0, 6).map(def => ({
+      definitionId: def.id, hiredAtMs: 0, xp: 0, level: 1,
+      assignment: { postType: 'fleet_ops' as const }, secondTraitSlot: true,
+    }));
+    const s = baseState({ hiredCommanders: hired, ships: [{ instanceId: 'x', definitionId: 'x', isBuilt: true } as never] });
+    const bonuses = computeCommanderBonuses(hired, s);
+    // TRAIT_BONUS_CAP is 0.15 — every trait-sourced field must stay within it.
+    expect(bonuses.travelSpeedBonus).toBeLessThanOrEqual(0.15);
+    expect(bonuses.hazardResistanceBonus).toBeLessThanOrEqual(0.15);
+    expect(bonuses.crewMoraleBonus).toBeLessThanOrEqual(0.15);
+    expect(bonuses.insuranceDiscountBonus).toBeLessThanOrEqual(0.15);
   });
 });

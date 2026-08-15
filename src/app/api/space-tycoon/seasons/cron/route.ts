@@ -1,9 +1,82 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { Prisma } from '@prisma/client';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { getCurrentSeasonNumber, getSeasonSchedule, SEASON_DEFINITIONS } from '@/lib/game/seasonal-events';
+import { assembleSeasonChronicle, type AllianceCharterOutcome } from '@/lib/game/season-chronicle';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Live-Service Wave LS7 (docs/LIVE_SERVICE_2026-08.md §LS7): seal a
+ * completed season's permanent Season Chronicle record. Runs once per
+ * season — only when `results` is still null, so a sealed record is never
+ * overwritten (the whole point of a "permanent archive"). Best-effort: any
+ * failure here is caught by the caller and logged, never allowed to break
+ * the status upsert this cron already exists to do.
+ */
+async function sealSeasonChronicle(seasonNumber: number, seasonType: string, now: Date): Promise<boolean> {
+  const event = await prisma.seasonalEvent.findUnique({
+    where: { seasonType_seasonNumber: { seasonType, seasonNumber } },
+  });
+  if (!event || event.status !== 'completed' || event.results !== null) return false;
+
+  const [participations, charters] = await Promise.all([
+    prisma.seasonParticipation.findMany({
+      where: { eventId: event.id },
+      orderBy: { totalScore: 'desc' },
+      take: 10,
+      select: {
+        profileId: true,
+        totalScore: true,
+        bracket: true,
+        profile: { select: { companyName: true, title: true } },
+      },
+    }),
+    prisma.allianceCharter.findMany({
+      where: { seasonNumber, status: 'completed' },
+      select: {
+        charterType: true,
+        grade: true,
+        alliance: { select: { name: true, tag: true } },
+      },
+    }),
+  ]);
+
+  const participantCount = await prisma.seasonParticipation.count({ where: { eventId: event.id } });
+
+  const allianceOutcomes: AllianceCharterOutcome[] = charters.map(c => ({
+    allianceName: c.alliance.name,
+    allianceTag: c.alliance.tag,
+    charterType: c.charterType,
+    grade: c.grade,
+  }));
+
+  const record = assembleSeasonChronicle({
+    seasonNumber,
+    seasonType,
+    title: event.title,
+    startsAt: event.startsAt.getTime(),
+    endsAt: event.endsAt.getTime(),
+    participantCount,
+    placements: participations.map(p => ({
+      profileId: p.profileId,
+      companyName: p.profile.companyName,
+      title: p.profile.title,
+      totalScore: p.totalScore,
+      bracket: p.bracket,
+    })),
+    allianceOutcomes,
+    nowMs: now.getTime(),
+  });
+
+  await prisma.seasonalEvent.update({
+    where: { id: event.id },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: { results: record as any },
+  });
+  return true;
+}
 
 /**
  * POST /api/space-tycoon/seasons/cron
@@ -80,8 +153,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    logger.info('Seasons cron completed', { currentSeasonNumber: currentN, processed: seasonNumbers, changes: changes.length });
-    return NextResponse.json({ success: true, currentSeasonNumber: currentN, changes });
+    // LS7: seal the Season Chronicle for any season in this window that just
+    // completed and hasn't been sealed yet. Cheap no-op for every other
+    // season (sealSeasonChronicle short-circuits on status/results checks).
+    let sealed = 0;
+    for (const n of seasonNumbers) {
+      const { seasonType } = getSeasonSchedule(n);
+      try {
+        if (await sealSeasonChronicle(n, seasonType, now)) sealed++;
+      } catch (err) {
+        logger.error('Season Chronicle seal failed', { seasonNumber: n, seasonType, error: String(err) });
+      }
+    }
+
+    logger.info('Seasons cron completed', { currentSeasonNumber: currentN, processed: seasonNumbers, changes: changes.length, sealed });
+    return NextResponse.json({ success: true, currentSeasonNumber: currentN, changes, sealed });
   } catch (error) {
     logger.error('Seasons cron error', { error: String(error) });
     return NextResponse.json({ error: 'Seasons cron failed' }, { status: 500 });

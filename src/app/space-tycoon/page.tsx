@@ -61,6 +61,7 @@ import {
 import FleetPanel from '@/components/game/FleetPanel';
 import CraftingPanel from '@/components/game/CraftingPanel';
 import WorkforcePanel from '@/components/game/WorkforcePanel';
+import ProgramsPanel from '@/components/game/ProgramsPanel';
 import SeasonPanel from '@/components/game/SeasonPanel';
 import AllianceEventsPanel from '@/components/game/AllianceEventsPanel';
 import AllianceProjectsPanel from '@/components/game/AllianceProjectsPanel';
@@ -2129,6 +2130,11 @@ export default function SpaceTycoonPage() {
             return { ...prev, workforce };
           });
         }} />}
+        {tab === 'workforce' && (
+          <div className="mt-4">
+            <ProgramsPanel state={state} onUpdateState={fn => setState(prev => prev ? fn(prev) : prev)} />
+          </div>
+        )}
         {tab === 'market' && (
           <MarketHubPanel
             state={state}

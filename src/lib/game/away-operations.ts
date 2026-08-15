@@ -51,6 +51,16 @@ import { getTotalGameMonths } from './expeditions';
 import { simulateCommandQueueCatchUp } from './command-queue';
 import { processDirectivesForMonth } from './standing-directives';
 import { rollMonthlyHazards, applyHazards } from './hazards';
+// Live-Service Wave LS6 (docs/LIVE_SERVICE_2026-08.md §LS6): programs.ts's
+// advancePrograms is the SAME function the live tick calls — a pure
+// wall-clock discrete-event chain, so calling it here with `now` correctly
+// completes/chains multiple programs across a long absence (the "training
+// continues while away" requirement) with no separate catch-up code path to
+// keep in sync. processLeaderRetirements is likewise a pure wall-clock
+// check, safe to call here so a retirement that happened while away
+// surfaces in this ledger's message instead of silently on the next tick.
+import { advanceProgramsDetailed, getEffectiveWorkforceForBonuses, mergeProgramWorkforceBonuses } from './programs';
+import { processLeaderRetirements } from './commanders';
 
 const TICK_INTERVAL_MS = TICK_INTERVALS[1]; // 2000ms — 1x speed (same as offline-income.ts)
 const MIN_AWAY_MS = 30_000; // same "don't bother" threshold offline-income.ts used
@@ -172,7 +182,10 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   //       revenue while away, exactly like a live tick). ───────────────────
   const multipliers = getActiveMultipliers(working);
   const workforce = working.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
-  const wfBonuses = getWorkforceBonuses(workforce);
+  // LS6: effective workforce (reserved cohort headcount subtracted) +
+  // completed-cohort bonuses merged in — same treatment as the live tick, so
+  // an away window with an active/completed cohort projects honestly.
+  const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(working)), working);
   const resBonuses = getResearchBonuses(working.completedResearch, working.repeatableResearchLevels);
   const legacyBonuses = getLegacyBonuses(working.legacy || DEFAULT_LEGACY);
   // LS4: away catch-up must agree with the live tick's era focus bonus/malus
@@ -289,6 +302,21 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   const queueResult = simulateCommandQueueCatchUp(working, now);
   working = queueResult.state;
 
+  // ── 3b. Programs Queue (LS6) — training/leader-posting chaining across
+  //        the away window, same discrete-event pattern as the command
+  //        queue just above (advancePrograms IS the catch-up path — see
+  //        this file's LS6 import comment). ─────────────────────────────
+  const programsResult = advanceProgramsDetailed(working, now);
+  working = programsResult.state;
+  const programsCompleted = programsResult.completedCount;
+
+  // ── 3c. Leader retirement (LS6) — pure wall-clock check; surfaces here so
+  //        a retirement that happened while away appears in THIS ledger
+  //        rather than silently on the player's next live tick. ──────────
+  const hiredBeforeRetirement = (working.hiredCommanders || []).length;
+  working = processLeaderRetirements(working, now);
+  const leadersRetired = hiredBeforeRetirement - (working.hiredCommanders || []).length;
+
   // ── Ledger ───────────────────────────────────────────────────────────
   const hours = Math.floor(timeAwayMs / 3_600_000);
   const minutes = Math.floor((timeAwayMs % 3_600_000) / 60_000);
@@ -308,6 +336,12 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   }
   if (hazardsApplied.length > 0) {
     messageParts.push(`${hazardsApplied.length} forecasted hazard${hazardsApplied.length === 1 ? '' : 's'} struck while you were away.`);
+  }
+  if (programsCompleted > 0) {
+    messageParts.push(`${programsCompleted} training program${programsCompleted === 1 ? '' : 's'} completed.`);
+  }
+  if (leadersRetired > 0) {
+    messageParts.push(`${leadersRetired} leader${leadersRetired === 1 ? '' : 's'} retired while you were away.`);
   }
 
   const ledger: AwayLedger = {

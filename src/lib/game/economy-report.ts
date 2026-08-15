@@ -12,6 +12,10 @@ import { LOCATION_MAP } from './solar-system';
 import { RESOURCE_MAP } from './resources';
 import { SHIP_MAP } from './ships';
 import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
+// LS6 (Programs Queue): same effective-workforce + program-bonus merge as
+// game-engine.ts's live tick, so the P&L report never disagrees with actual
+// tick behavior while a crew cohort is enrolled/completed.
+import { getEffectiveWorkforceForBonuses, mergeProgramWorkforceBonuses } from './programs';
 import { getResearchBonuses } from './research-tree';
 import { DEFAULT_LEGACY, getLegacyBonuses } from './legacy-system';
 import { getActiveEraModifiers } from './corporate-eras';
@@ -162,7 +166,7 @@ export interface EconomyReport {
 export function computeEconomyReport(state: GameState, now: number = Date.now()): EconomyReport {
   // All the bonus sources, in the same order as game-engine.ts
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
-  const wfBonuses = getWorkforceBonuses(workforce);
+  const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(state)), state);
   const payroll = getMonthlyPayroll(workforce);
   const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
 

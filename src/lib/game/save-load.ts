@@ -159,6 +159,13 @@ export function getNewGameState(): GameState {
     // era yet (Tier 3+ gate) — no active era, no completed eras, nothing to
     // publish to the Chronicle.
     corporateEras: { ...DEFAULT_CORPORATE_ERAS },
+    // V27 — Live-Service Wave LS6 "Programs Queue" (docs/
+    // LIVE_SERVICE_2026-08.md §LS6). A fresh corporation has no programs
+    // queued yet (all three track queues empty, no cohort completions), no
+    // retirement history, and no pending mentor boosts.
+    programs: { queues: { crew_cohort: [], leader_development: [], rd_residency: [] }, completedCohortDefIds: [] },
+    retiredLeaders: [],
+    leaderMentorBoosts: [],
   };
 }
 
@@ -440,6 +447,29 @@ export function loadGame(): GameState | null {
     if (!state.corporateEras) state.corporateEras = { ...DEFAULT_CORPORATE_ERAS };
     if (!state.corporateEras.completedEras) state.corporateEras.completedEras = [];
     if (state.corporateEras.currentEra === undefined) state.corporateEras.currentEra = null;
+
+    // V27 fields — Live-Service Wave LS6 "Programs Queue" (docs/
+    // LIVE_SERVICE_2026-08.md §LS6). Additive-only: an existing save with no
+    // programs state simply has never queued a training program (numerically
+    // identical to a fresh game — getProgramWorkforceBonuses returns the
+    // zero set, getEffectiveWorkforceForBonuses is a no-op with nothing
+    // reserved). No retirement history and no pending mentor boosts either —
+    // existing hired commanders simply aren't on the retirement clock yet
+    // (assignedSinceMs is undefined on any pre-LS6 HiredCommander, which
+    // isRetirementEligible already treats as "not currently assigned for
+    // retirement purposes" even if `assignment` is set — the clock only
+    // starts the next time assignCommander() runs).
+    if (!state.programs) {
+      state.programs = { queues: { crew_cohort: [], leader_development: [], rd_residency: [] }, completedCohortDefIds: [] };
+    } else {
+      if (!state.programs.queues) state.programs.queues = { crew_cohort: [], leader_development: [], rd_residency: [] };
+      if (!state.programs.queues.crew_cohort) state.programs.queues.crew_cohort = [];
+      if (!state.programs.queues.leader_development) state.programs.queues.leader_development = [];
+      if (!state.programs.queues.rd_residency) state.programs.queues.rd_residency = [];
+      if (!state.programs.completedCohortDefIds) state.programs.completedCohortDefIds = [];
+    }
+    if (!state.retiredLeaders) state.retiredLeaders = [];
+    if (!state.leaderMentorBoosts) state.leaderMentorBoosts = [];
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

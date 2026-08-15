@@ -29,7 +29,16 @@ import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchPr
 import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
-import { computeCommanderBonuses, processCommanderMonthTick } from './commanders';
+import { computeCommanderBonuses, processCommanderMonthTick, processLeaderRetirements } from './commanders';
+// Live-Service Wave LS6 (docs/LIVE_SERVICE_2026-08.md §LS6): programs.ts
+// merges crew-cohort completion bonuses into the SAME wfBonuses shape
+// workforce.ts already produces (mergeProgramWorkforceBonuses), and
+// getEffectiveWorkforceForBonuses subtracts any actively-enrolled cohort's
+// reserved headcount before that computation — both applied at the single
+// existing getWorkforceBonuses(workforce) call site below (and its sibling
+// at the ship-processing block further down), rather than a new multiplier
+// threaded through every revenue/research/mining site.
+import { advancePrograms, getEffectiveWorkforceForBonuses, mergeProgramWorkforceBonuses } from './programs';
 import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
 import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
 import { rollMonthlyHazards, applyHazards, forecastSevereHazards } from './hazards';
@@ -134,7 +143,10 @@ export function processTick(state: GameState): GameState {
 
   // Get workforce bonuses (build speed, research speed, mining output, revenue)
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
-  const wfBonuses = getWorkforceBonuses(workforce);
+  // LS6: payroll below still reads the FULL `workforce` (a cohort's crew are
+  // off-shift, not off-payroll) — only the BONUS calculation subtracts the
+  // reserved headcount, then adds back any completed-cohort bonus.
+  const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(state)), state);
 
   // Get research bonuses (category-specific bonuses from completed research).
   // W3 (4X Op5 repeatables): also sums levels from state.repeatableResearchLevels.
@@ -1208,6 +1220,17 @@ export function processTick(state: GameState): GameState {
     }
   } catch { /* command queue non-critical — never block the tick */ }
 
+  // Live-Service Wave LS6 "Programs Queue" (docs/LIVE_SERVICE_2026-08.md
+  // §LS6): advance every program track every tick — starts the next queued
+  // crew cohort / leader posting the instant its track frees, completes
+  // whatever's due. Cheap no-op when every track is empty.
+  try {
+    const ps = out.programs;
+    if (ps && (ps.queues.crew_cohort.length > 0 || ps.queues.leader_development.length > 0 || ps.queues.rd_residency.length > 0)) {
+      out = advancePrograms(out, now);
+    }
+  } catch { /* programs queue non-critical — never block the tick */ }
+
   return out;
 }
 
@@ -1457,7 +1480,9 @@ export function processFullTick(state: GameState): GameState {
       let cargoDeliveredUnits = 0;
       let shipMoney = newState.money;
       let shipTotalSpent = newState.totalSpent;
-      const wfBonuses = getWorkforceBonuses(newState.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+      // LS6: same effective-workforce + program-bonus merge as processTick's
+      // own wfBonuses above — ships shouldn't see a different crew picture.
+      const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(newState)), newState);
       const shipLegacyBonuses = getLegacyBonuses(newState.legacy || DEFAULT_LEGACY);
       const shipTierBonuses = getTierBonuses(newState.corporationTier || 1);
       // W1 (research effect-authoring pass): this ship-processing pass lives
@@ -1899,6 +1924,17 @@ export function processFullTick(state: GameState): GameState {
     newState = completeCurrentEra(newState);
   } catch (err) {
     console.error('Corporate era completion error (non-fatal):', err);
+  }
+
+  // 7b3. Live-Service Wave LS6: retire any commander whose current
+  // assignment has run RETIREMENT_SERVICE_MS+ (a pure wall-clock check —
+  // same reasoning as 7b2 above, no cadence gate). Also runs from
+  // away-operations.ts's catch-up pass so a retirement that happened while
+  // the player was away surfaces in the debrief, not silently on next tick.
+  try {
+    newState = processLeaderRetirements(newState, Date.now());
+  } catch (err) {
+    console.error('Leader retirement error (non-fatal):', err);
   }
 
   // 7c. Check megastructure phase completion

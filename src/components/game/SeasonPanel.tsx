@@ -14,6 +14,12 @@ import {
   type SeasonType,
 } from '@/lib/game/seasonal-events';
 import { SEASONAL_ASSETS, getActiveHoliday } from '@/lib/game/assets';
+// Live-Service Wave LS7 (docs/LIVE_SERVICE_2026-08.md §LS7): commodity
+// super-cycle theme banner + Season Chronicle history tab. Both derivers are
+// pure/DB-free — safe to call client-side, same as the seasonal-events
+// imports above.
+import { getSuperCycleForSeason, getThemeHeadlines } from '@/lib/game/economic-seasons';
+import type { SeasonChronicleRecord, PrestigeTitle } from '@/lib/game/season-chronicle';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,7 +108,12 @@ interface LeaderboardData {
   brackets: { number: number; label: string; count: number }[];
 }
 
-type PanelTab = 'overview' | 'challenges' | 'pass' | 'leaderboard';
+type PanelTab = 'overview' | 'challenges' | 'pass' | 'leaderboard' | 'history';
+
+interface ChronicleData {
+  records: SeasonChronicleRecord[];
+  myTitles: PrestigeTitle[];
+}
 
 interface SeasonPanelProps {
   state: GameState;
@@ -114,6 +125,7 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
   const [activeTab, setActiveTab] = useState<PanelTab>('overview');
   const [seasonData, setSeasonData] = useState<SeasonData | null>(null);
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardData | null>(null);
+  const [chronicleData, setChronicleData] = useState<ChronicleData | null>(null);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [countdown, setCountdown] = useState('');
@@ -160,6 +172,25 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
       fetchLeaderboard();
     }
   }, [activeTab, fetchLeaderboard]);
+
+  // Fetch Season Chronicle history (LS7)
+  const fetchChronicle = useCallback(async () => {
+    try {
+      const res = await fetch('/api/space-tycoon/seasons/chronicle');
+      if (res.ok) {
+        const data = await res.json();
+        setChronicleData({ records: data.records || [], myTitles: data.myTitles || [] });
+      }
+    } catch {
+      // Silently fail for chronicle — non-critical history view
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'history' && !chronicleData) {
+      fetchChronicle();
+    }
+  }, [activeTab, chronicleData, fetchChronicle]);
 
   // Countdown timer
   useEffect(() => {
@@ -243,6 +274,7 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
     { id: 'challenges', label: 'Challenges', icon: '\u2694\uFE0F' },
     { id: 'pass', label: 'Season Pass', icon: '\uD83C\uDFC6' },
     { id: 'leaderboard', label: 'Leaderboard', icon: '\uD83D\uDCCA' },
+    { id: 'history', label: 'History', icon: '\uD83D\uDCDC' },
   ];
 
   return (
@@ -410,6 +442,9 @@ export default function SeasonPanel({ state }: SeasonPanelProps) {
           accent={accent}
         />
       )}
+      {activeTab === 'history' && (
+        <HistoryTab data={chronicleData} />
+      )}
     </div>
   );
 }
@@ -426,9 +461,39 @@ function OverviewTab({
   accent: ReturnType<typeof getSeasonAccentClasses>;
 }) {
   const def = event.seasonDefinition;
+  const superCycle = getSuperCycleForSeason(event.seasonNumber);
+  const headlines = getThemeHeadlines(superCycle);
 
   return (
     <div className="space-y-3">
+      {/* Commodity Super-Cycle (Live-Service Wave LS7) */}
+      <div className="rounded-lg border border-lime-500/25 bg-lime-500/5 p-3">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-base" aria-hidden="true">{superCycle.icon}</span>
+          <h4 className="text-lime-300 text-xs font-bold">{superCycle.name} Super-Cycle</h4>
+        </div>
+        <p className="text-slate-300 text-xs leading-relaxed mb-2">{superCycle.description}</p>
+        {headlines.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {headlines.map(h => (
+              <span
+                key={h.resourceId}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-medium border ${
+                  h.bias > 0
+                    ? 'text-green-400 border-green-500/30 bg-green-500/10'
+                    : 'text-red-400 border-red-500/30 bg-red-500/10'
+                }`}
+              >
+                {h.label}
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="text-slate-500 text-[10px] mt-2">
+          Announced world-wide one week ahead of the season — bounded ±25%, applied via mean-reversion. Position inventory before it lands.
+        </p>
+      </div>
+
       {/* Unique Mechanic */}
       {def && (
         <div className={`rounded-lg border ${accent.border} ${accent.bg} p-3`}>
@@ -924,6 +989,98 @@ function LeaderboardTab({
       <div className="text-center text-[10px] text-slate-500">
         Showing top {data.entries.length} of {data.totalParticipants} participants
       </div>
+    </div>
+  );
+}
+
+// ─── History Tab (Live-Service Wave LS7 — Season Chronicle) ─────────────────
+
+const CHRONICLE_RANK_ICON: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
+
+function HistoryTab({ data }: { data: ChronicleData | null }) {
+  if (!data) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-pulse space-y-2">
+          <div className="h-4 bg-slate-800/50 rounded w-40 mx-auto" />
+          <div className="h-24 bg-slate-800/50 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* This player's earned prestige titles — cosmetic only, never a
+          mechanical edge (CLAUDE.md "no pay-to-win"). */}
+      {data.myTitles.length > 0 && (
+        <div className="rounded-lg border border-purple-500/25 bg-purple-500/5 p-3">
+          <h4 className="text-purple-300 text-xs font-bold mb-2">Your Prestige Titles</h4>
+          <div className="flex flex-wrap gap-1.5">
+            {data.myTitles.map(t => (
+              <span
+                key={t.id}
+                title={t.seasonTitle}
+                className="px-2 py-1 rounded-full text-[10px] font-medium border border-purple-500/30 bg-purple-500/10 text-purple-200"
+              >
+                {t.icon} {t.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {data.records.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-slate-400 text-sm">No seasons have concluded yet. The chronicle fills in after the first season finale.</p>
+        </div>
+      ) : (
+        data.records.map(record => (
+          <div key={record.seasonNumber} className="rounded-lg border border-slate-700/50 bg-slate-800/30 p-3">
+            <div className="flex items-start justify-between mb-1.5">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span aria-hidden="true">{record.themeIcon}</span>
+                  <h4 className="text-white text-xs font-bold">{record.title}</h4>
+                </div>
+                <p className="text-lime-300 text-[10px] mt-0.5">{record.themeName} Super-Cycle</p>
+              </div>
+              <span className="text-slate-500 text-[10px] whitespace-nowrap">
+                {record.participantCount} participant{record.participantCount !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {record.topPlacements.length > 0 && (
+              <div className="space-y-1 mb-2">
+                {record.topPlacements.map(p => (
+                  <div key={p.rank} className="flex items-center gap-2 text-[11px]">
+                    <span className="w-5">{CHRONICLE_RANK_ICON[p.rank] || p.rank}</span>
+                    <span className="flex-1 text-slate-300 truncate">{p.companyName}</span>
+                    <span className="text-slate-500">{Math.round(p.totalScore).toLocaleString()} pts</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {record.allianceOutcomes.length > 0 && (
+              <div className="mb-2 flex flex-wrap gap-1.5">
+                {record.allianceOutcomes.map((a, i) => (
+                  <span
+                    key={`${a.allianceTag}_${i}`}
+                    className="px-1.5 py-0.5 rounded text-[9px] font-medium border border-teal-500/30 bg-teal-500/10 text-teal-300"
+                  >
+                    [{a.allianceTag}] {a.charterType} &middot; {a.grade || 'incomplete'}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <p className="text-slate-500 text-[10px] leading-relaxed">
+              {record.notableEvents[0]}
+            </p>
+          </div>
+        ))
+      )}
     </div>
   );
 }

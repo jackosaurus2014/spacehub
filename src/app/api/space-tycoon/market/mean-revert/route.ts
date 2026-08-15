@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { calculateIdleDecay } from '@/lib/game/market-engine';
+import { getCurrentSeasonNumber } from '@/lib/game/seasonal-events';
+import { getSeasonalMeanRevertTarget } from '@/lib/game/economic-seasons';
 
 /**
  * POST /api/space-tycoon/market/mean-revert
@@ -11,11 +13,20 @@ import { calculateIdleDecay } from '@/lib/game/market-engine';
  *
  * Hourly cron (cron-scheduler 'tycoon-market-mean-revert', offset :30 so it
  * interleaves with the :00 restock) that drifts every resource's
- * currentPrice back toward basePrice via calculateIdleDecay. Each call
+ * currentPrice back toward a target via calculateIdleDecay. Each call
  * moves the price ≤10% of the remaining gap → reversion half-life of ~6.6
  * real hours ≈ one game-month: crashes and squeezes stay tradeable for a
  * session, then the market heals ("prices should feel alive on an empty
  * server" — CLAUDE.md NPC backdrop).
+ *
+ * Live-Service Wave LS7 (docs/LIVE_SERVICE_2026-08.md §LS7): the target is
+ * no longer always raw basePrice. economic-seasons.ts's
+ * getSeasonalMeanRevertTarget() shifts it by the CURRENT season's announced
+ * commodity super-cycle bias (bounded ±25%, world-shared, deterministic
+ * from the season number alone) — so idle prices heal toward THIS season's
+ * economic reality, not last season's. This is the "existing
+ * demand/mean-reversion machinery" hook the spec calls for: no new pricing
+ * path, just a season-aware target for the one that already existed.
  *
  * Recent-trade protection: rows updated in the last 5 minutes (trades touch
  * updatedAt) are skipped by calculateIdleDecay's own guard, so active price
@@ -38,10 +49,18 @@ export async function POST(request: Request) {
 
   try {
     const resources = await prisma.marketResource.findMany();
+    const seasonNumber = getCurrentSeasonNumber();
     let reverted = 0;
 
     for (const resource of resources) {
-      if (resource.currentPrice === resource.basePrice) continue;
+      const seasonalTarget = getSeasonalMeanRevertTarget(
+        resource.basePrice,
+        resource.slug,
+        resource.category,
+        seasonNumber,
+      );
+
+      if (resource.currentPrice === seasonalTarget) continue;
 
       const minutesSinceUpdate = (Date.now() - resource.updatedAt.getTime()) / 60_000;
       // Cap at 60 idle minutes per call — one hour of decay maximum.
@@ -49,7 +68,7 @@ export async function POST(request: Request) {
 
       const newPrice = calculateIdleDecay(
         resource.currentPrice,
-        resource.basePrice,
+        seasonalTarget,
         idleMinutes,
         resource.minPrice,
         resource.maxPrice,
@@ -68,6 +87,7 @@ export async function POST(request: Request) {
       success: true,
       reverted,
       resourceCount: resources.length,
+      seasonNumber,
     });
   } catch (error) {
     return NextResponse.json(

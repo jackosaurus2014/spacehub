@@ -34,6 +34,14 @@ import type { GameState, ExpeditionState } from './types';
 import { getGlobalGameDate, SERVER_EPOCH_MS, REAL_SECONDS_PER_GAME_MONTH } from './server-time';
 import { getWeeklyMetric } from './league-system';
 import { getCurrentSeasonNumber, getSeasonSchedule, SEASON_DEFINITIONS } from './seasonal-events';
+// Live-Service Wave LS7 (docs/LIVE_SERVICE_2026-08.md §LS7): commodity
+// super-cycle announcement entry — a SEPARATE deriver (superCycleEntries
+// below), following this file's one-function-per-system convention.
+// getSuperCycleForSeason is pure/DB-free (economic-seasons.ts), so the
+// announcement fires purely off the clock — no season row needs to exist
+// yet for players to see it coming, same "forecastable from the schedule
+// alone" property seasonEntries already has.
+import { getSuperCycleForSeason, getThemeHeadlines, SUPER_CYCLE_ANNOUNCE_LEAD_MS } from './economic-seasons';
 import {
   getAllianceEventCycleNumber, getAllianceEventSchedule, ALLIANCE_EVENT_MAP,
   type AllianceEventCategory,
@@ -44,6 +52,12 @@ import { RESEARCH_MAP } from './research-tree';
 import { BUILDING_MAP } from './buildings';
 import { getUpcomingAppointmentEvents } from './appointment-events';
 import type { UpcomingLaunchLite } from './real-world-feed';
+// Live-Service Wave LS6 (docs/LIVE_SERVICE_2026-08.md §LS6): program
+// completion ETAs + leader retirement dates, following the exact
+// queueEntries precedent below (personal, non-world-shared, derived from
+// the save's own wall-clock timestamps — no new scheduling state).
+import { getProgramQueue, PROGRAM_DEF_MAP } from './programs';
+import { COMMANDER_MAP, getRetirementEtaMs } from './commanders';
 // Live-Service Wave LS4 (docs/LIVE_SERVICE_2026-08.md §LS4): era-end entry —
 // a small additive deriver following this file's existing pattern exactly
 // (personal/non-world-shared, wall-clock atMs, no new scheduling state; the
@@ -68,7 +82,7 @@ const MS_PER_GAME_MONTH = REAL_SECONDS_PER_GAME_MONTH * 1000;
 export type CalendarCategory =
   | 'senate' | 'league' | 'season' | 'alliance_event' | 'npc_program'
   | 'expedition' | 'queue' | 'appointment_event' | 'real_launch' | 'corporate_era'
-  | 'alliance_charter';
+  | 'alliance_charter' | 'economic_cycle' | 'program' | 'leader_retirement';
 
 export type CalendarEntryKind =
   | 'lock' | 'opens' | 'closes' | 'starts' | 'ends' | 'returns' | 'completes' | 'transition';
@@ -227,6 +241,37 @@ function seasonEntries(nowMs: number, horizonMs: number): CalendarEntry[] {
   }
 
   return entries;
+}
+
+/** LS7: the upcoming season's commodity super-cycle, announced
+ *  SUPER_CYCLE_ANNOUNCE_LEAD_MS (7 real days) before that season starts —
+ *  "positioning inventory before the announced cycle is the intelligence-
+ *  layer play" (spec). One entry, fired once per season transition; if the
+ *  horizon window is shorter than the lead time (e.g. the default 14-day
+ *  view opened mid-lead) it still surfaces because the announcement instant
+ *  itself, not the season start, is what's being scheduled here. */
+function superCycleEntries(nowMs: number, horizonMs: number): CalendarEntry[] {
+  const n = getCurrentSeasonNumber(new Date(nowMs));
+  const next = getSeasonSchedule(n + 1);
+  const announceMs = next.startsAt.getTime() - SUPER_CYCLE_ANNOUNCE_LEAD_MS;
+  if (announceMs < nowMs || announceMs > nowMs + horizonMs) return [];
+
+  const theme = getSuperCycleForSeason(n + 1);
+  const def = SEASON_DEFINITIONS[next.seasonType];
+  const headlines = getThemeHeadlines(theme).slice(0, 3).map(h => h.label).join(', ');
+
+  return [{
+    id: `super_cycle_announce_${n + 1}`,
+    category: 'economic_cycle',
+    title: `${theme.name} super-cycle announced`,
+    icon: theme.icon,
+    atMs: announceMs,
+    kind: 'opens',
+    worldShared: true,
+    detail: headlines
+      ? `Ahead of ${def.name} (Season ${n + 1}): ${headlines}. Bounded ±25% — position inventory now.`
+      : `Ahead of ${def.name} (Season ${n + 1}): ${theme.description}`,
+  }];
 }
 
 const ALLIANCE_EVENT_CATEGORIES: AllianceEventCategory[] = ['sprint', 'challenge', 'mega_event'];
@@ -493,6 +538,59 @@ function realLaunchEntries(
     }));
 }
 
+/** LS6 — the active head of each program track (personal, wall-clock —
+ *  same pattern as queueEntries above for research/build). Queued-but-not-
+ *  started instances have no ETA yet, so only startedAtMs !== null heads
+ *  produce an entry. */
+function programEntries(state: GameState, nowMs: number, horizonMs: number): CalendarEntry[] {
+  const entries: CalendarEntry[] = [];
+  for (const track of ['crew_cohort', 'leader_development', 'rd_residency'] as const) {
+    const head = getProgramQueue(state, track)[0];
+    if (!head || head.startedAtMs === null) continue;
+    const atMs = head.startedAtMs + head.durationMs;
+    if (atMs < nowMs || atMs > nowMs + horizonMs) continue;
+    const def = PROGRAM_DEF_MAP.get(head.defId);
+    const commanderName = head.targetCommanderId ? COMMANDER_MAP.get(head.targetCommanderId)?.name : undefined;
+    entries.push({
+      id: `program_${track}_${head.id}`,
+      category: 'program',
+      title: commanderName ? `${commanderName}: ${head.label} complete` : `${head.label} complete`,
+      icon: def?.icon || '🎓',
+      atMs,
+      kind: 'completes',
+      worldShared: false,
+      detail: track === 'crew_cohort'
+        ? 'Cohort certification completes — the workforce bonus goes live.'
+        : 'Posting completes — XP and any trait unlock apply, then re-assign them.',
+    });
+  }
+  return entries;
+}
+
+/** LS6 — a currently-assigned leader's retirement ETA (personal). Only
+ *  fires for commanders actually on the clock — see commanders.ts's
+ *  getRetirementEtaMs / the assignedSinceMs field-header trade-off note
+ *  (benched commanders never retire, so they never appear here). */
+function leaderRetirementEntries(state: GameState, nowMs: number, horizonMs: number): CalendarEntry[] {
+  const entries: CalendarEntry[] = [];
+  for (const h of state.hiredCommanders || []) {
+    const etaMs = getRetirementEtaMs(h);
+    if (etaMs === null || etaMs < nowMs || etaMs > nowMs + horizonMs) continue;
+    const def = COMMANDER_MAP.get(h.definitionId);
+    entries.push({
+      id: `leader_retirement_${h.definitionId}`,
+      category: 'leader_retirement',
+      title: `${def?.name || h.definitionId} approaches retirement`,
+      icon: '🎖️',
+      atMs: etaMs,
+      kind: 'completes',
+      worldShared: false,
+      detail: 'Two real months of continuous assignment complete — they retire with a legacy grant and a mentor boost for their successor. Reassigning them to a different post resets this clock.',
+    });
+  }
+  return entries;
+}
+
 // ─── Orchestrator ──────────────────────────────────────────────────────────
 
 const DEFAULT_HORIZON_DAYS = 14;
@@ -511,6 +609,7 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...senateEntries(state, nowMs, horizonMs),
     ...leagueEntries(nowMs, horizonMs),
     ...seasonEntries(nowMs, horizonMs),
+    ...superCycleEntries(nowMs, horizonMs),
     ...allianceEventEntries(nowMs, horizonMs),
     ...npcProgramEntries(nowMs, horizonMs),
     ...expeditionEntries(state, nowMs, horizonMs),
@@ -519,6 +618,8 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...charterEntries(opts.myAllianceCharter, nowMs, horizonMs),
     ...appointmentEventEntries(nowMs, horizonDays),
     ...realLaunchEntries(opts.upcomingLaunches, nowMs, horizonMs),
+    ...programEntries(state, nowMs, horizonMs),
+    ...leaderRetirementEntries(state, nowMs, horizonMs),
   ];
 
   return entries

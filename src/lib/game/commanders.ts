@@ -97,6 +97,23 @@ export interface HiredCommander {
   level?: number;
   /** W8 — current post, or null/undefined if unassigned. */
   assignment?: CommanderAssignment | null;
+  /** LS6 (Programs Queue / retirement) — wall-clock timestamp the CURRENT
+   *  uninterrupted assignment began. Cleared (undefined) whenever the
+   *  commander is unassigned or enrolled in a leader_development/
+   *  rd_residency program; reset to "now" whenever assignCommander() posts
+   *  it to a DIFFERENT post. Retirement (processLeaderRetirements) fires at
+   *  assignedSinceMs + RETIREMENT_SERVICE_MS — so a benched (unassigned)
+   *  commander never ages out, and reassigning resets the clock. This is a
+   *  deliberate trade-off, not an oversight: keeping a legendary bench-warmer
+   *  forever costs you its bonus the whole time it sits idle. */
+  assignedSinceMs?: number;
+  /** LS6 (Programs Queue) — grants ONE extra deterministic specialty trait
+   *  (see getCommanderTraits) once true. Set by a completed
+   *  leader_development program (chance roll) or a completed rd_residency
+   *  program (guaranteed). Still gated on isAssignmentProductive and still
+   *  clamped by TRAIT_BONUS_CAP — this cannot break the existing trait cap,
+   *  it just adds one more contributor inside it. */
+  secondTraitSlot?: boolean;
 }
 
 export interface CommanderPool {
@@ -301,6 +318,21 @@ export function getCommanderTraits(definitionId: string): { specialty: TraitDef;
   const specialty = SPECIALTY_TRAITS[Math.floor(rng() * SPECIALTY_TRAITS.length) % SPECIALTY_TRAITS.length];
   const quirk = QUIRK_TRAITS[Math.floor(rng() * QUIRK_TRAITS.length) % QUIRK_TRAITS.length];
   return { specialty, quirk };
+}
+
+/** LS6 (Programs Queue) — the extra specialty trait unlocked by
+ *  HiredCommander.secondTraitSlot. Seeded from `${definitionId}_bonus` so it
+ *  is (a) deterministic/reproducible, (b) usually different from the
+ *  commander's primary specialty (not guaranteed distinct — a repeat is a
+ *  harmless no-op, just a bigger dose of the same bonus), and (c) never
+ *  drifts if the roster or trait tables change shape elsewhere, since it
+ *  only reads definitionId. Specialty-only (no quirk downside) — the
+ *  program's real cost is the money + opportunity-cost paid to earn the
+ *  slot in the first place, not a second stacked malus. */
+export function getCommanderBonusTrait(definitionId: string): TraitDef {
+  const seed = hashStringToSeed(`${definitionId}_bonus`);
+  const rng = mulberry32(seed);
+  return SPECIALTY_TRAITS[Math.floor(rng() * SPECIALTY_TRAITS.length) % SPECIALTY_TRAITS.length];
 }
 
 // ─── Commander Roster (80 entries: 60 original + 20 W8 science/eng leaders) ─
@@ -573,6 +605,16 @@ export function computeCommanderBonuses(hired: HiredCommander[] | undefined, sta
       for (const [field, delta] of Object.entries(quirk.bonuses)) {
         traitTotals[field as TraitBonusField] = (traitTotals[field as TraitBonusField] || 0) + (delta as number);
       }
+      // LS6 — a completed leader_development/rd_residency program can grant
+      // a second, independent specialty trait. Still gated on the SAME
+      // isAssignmentProductive check above and the SAME TRAIT_BONUS_CAP
+      // clamp below — this can add a contributor but can never break the cap.
+      if (h.secondTraitSlot) {
+        const bonusTrait = getCommanderBonusTrait(def.id);
+        for (const [field, delta] of Object.entries(bonusTrait.bonuses)) {
+          traitTotals[field as TraitBonusField] = (traitTotals[field as TraitBonusField] || 0) + (delta as number);
+        }
+      }
     }
     const clamp = (v: number) => Math.max(-TRAIT_BONUS_CAP, Math.min(TRAIT_BONUS_CAP, v));
     result.revenueMultiplier += clamp(traitTotals.revenueMultiplier || 0);
@@ -618,6 +660,7 @@ export function assignCommander(
   defId: string,
   postType: AssignmentPostType,
   targetId?: string,
+  now: number = Date.now(),
 ): GameState {
   const def = COMMANDER_MAP.get(defId);
   if (!def) return state;
@@ -629,20 +672,110 @@ export function assignCommander(
   const idx = hired.findIndex(h => h.definitionId === defId);
   if (idx === -1) return state;
 
+  // LS6: a DIFFERENT post (or a fresh posting after being unassigned/benched)
+  // starts a fresh service clock — re-posting to the SAME post (e.g. the UI
+  // re-submitting an unchanged form) keeps the existing clock running so a
+  // stable, long-held post can still reach retirement.
+  const prev = hired[idx];
+  const isSamePost = !!prev.assignment && prev.assignment.postType === postType && prev.assignment.targetId === targetId;
+  const assignedSinceMs = isSamePost ? prev.assignedSinceMs : now;
+
   const updated = [...hired];
-  updated[idx] = { ...updated[idx], assignment: { postType, targetId } };
+  updated[idx] = { ...updated[idx], assignment: { postType, targetId }, assignedSinceMs };
   return { ...state, hiredCommanders: updated };
 }
 
 /** W8 — clear a hired commander's assignment. Any level already earned is
- *  kept (passive); only future XP accrual stops. */
+ *  kept (passive); only future XP accrual stops. LS6: also clears
+ *  assignedSinceMs — an unassigned (benched) commander's retirement clock
+ *  stops, per the file-header trade-off note on that field. */
 export function unassignCommander(state: GameState, defId: string): GameState {
   const hired = state.hiredCommanders || [];
   const idx = hired.findIndex(h => h.definitionId === defId);
   if (idx === -1) return state;
   const updated = [...hired];
-  updated[idx] = { ...updated[idx], assignment: null };
+  updated[idx] = { ...updated[idx], assignment: null, assignedSinceMs: undefined };
   return { ...state, hiredCommanders: updated };
+}
+
+// ─── LS6 — Leader Retirement + Legacy ────────────────────────────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS6: "leaders retire after ~2 real months of
+// assigned service with a legacy grant." Pure wall-clock check (no per-month
+// simulation needed — unlike hazards/directives, "has enough real time
+// passed" needs no discrete-event stepping), so the SAME function is correct
+// whether called from a live tick or from away-operations.ts's catch-up pass.
+
+/** ~2 real months of continuous assignment. */
+export const RETIREMENT_SERVICE_MS = 60 * 24 * 60 * 60 * 1000;
+
+/** How long, in real days, a mentor boost stays claimable after a leader of
+ *  that class retires. */
+const MENTOR_BOOST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+/** XP granted to the next same-class hire while a mentor boost is active —
+ *  a meaningful head start (roughly one level, per LEVEL_XP_THRESHOLDS)
+ *  without approaching MAX_LEVEL for free. */
+const MENTOR_BOOST_XP = 4;
+
+/** Retirement-eligible = currently assigned AND that assignment has run
+ *  continuously for RETIREMENT_SERVICE_MS+. */
+export function isRetirementEligible(h: HiredCommander, now: number = Date.now()): boolean {
+  return !!h.assignment && !!h.assignedSinceMs && now - h.assignedSinceMs >= RETIREMENT_SERVICE_MS;
+}
+
+/** Wall-clock ms until a currently-assigned commander is retirement-eligible,
+ *  or null if not currently on the retirement clock (unassigned). Used by
+ *  the UI (CommanderPanel) and the Mission Calendar deriver. */
+export function getRetirementEtaMs(h: HiredCommander): number | null {
+  if (!h.assignment || !h.assignedSinceMs) return null;
+  return h.assignedSinceMs + RETIREMENT_SERVICE_MS;
+}
+
+/** Retire every eligible commander: remove from the roster, append a
+ *  permanent RetiredLeaderRecord (feeds legacy-system.ts's leader-legacy
+ *  stretch family), grant a same-class mentor boost for the next hire, and
+ *  log it. Pure/deterministic — no RNG, safe to call unconditionally every
+ *  tick (cheap no-op when nothing is eligible) and from away catch-up. */
+export function processLeaderRetirements(state: GameState, now: number = Date.now()): GameState {
+  const hired = state.hiredCommanders || [];
+  if (hired.length === 0) return state;
+  const eligible = hired.filter(h => isRetirementEligible(h, now));
+  if (eligible.length === 0) return state;
+
+  const remaining = hired.filter(h => !isRetirementEligible(h, now));
+  const retiredRecords = [...(state.retiredLeaders || [])];
+  const mentorBoosts = [...(state.leaderMentorBoosts || [])];
+  const events: GameState['eventLog'] = [];
+
+  for (const h of eligible) {
+    const def = COMMANDER_MAP.get(h.definitionId);
+    if (!def) continue;
+    const monthsServed = Math.round((now - (h.assignedSinceMs || now)) / (30 * 24 * 60 * 60 * 1000));
+    retiredRecords.push({
+      definitionId: def.id,
+      name: def.name,
+      class: def.class,
+      rarity: def.rarity,
+      retiredAtMs: now,
+      monthsServed,
+    });
+    mentorBoosts.push({ class: def.class, bonusXp: MENTOR_BOOST_XP, expiresAtMs: now + MENTOR_BOOST_WINDOW_MS });
+    events.push({
+      id: `evt_retire_${def.id}_${now}`,
+      date: state.gameDate,
+      type: 'milestone',
+      title: `🎖️ ${def.name} has retired`,
+      description: `${def.title} steps down after distinguished service. Their example carries forward — the next ${CLASS_LABEL[def.class]} you hire starts with a head start.`,
+    });
+  }
+
+  return {
+    ...state,
+    hiredCommanders: remaining,
+    retiredLeaders: retiredRecords,
+    leaderMentorBoosts: mentorBoosts,
+    eventLog: [...events, ...state.eventLog].slice(0, 50),
+  };
 }
 
 // ─── Recruitment Pool ────────────────────────────────────────────────────────
@@ -720,18 +853,32 @@ export function canHire(state: GameState, defId: string): { ok: boolean; reason?
   return { ok: true };
 }
 
-/** Hire a commander if eligible. Returns updated state (unchanged if ineligible). */
+/** Hire a commander if eligible. Returns updated state (unchanged if ineligible).
+ *  LS6: consumes the first unexpired same-class mentor boost, if any — a
+ *  retired leader's "successor" grant, giving the new hire a small head
+ *  start (bonus starting XP, still well below MAX_LEVEL). */
 export function hireCommander(state: GameState, defId: string, now: number = Date.now()): GameState {
   const def = COMMANDER_MAP.get(defId);
   if (!def) return state;
   const check = canHire(state, defId);
   if (!check.ok) return state;
   const cost = RARITY_HIRE_COST[def.rarity];
+
+  const mentorBoosts = state.leaderMentorBoosts || [];
+  const boostIdx = mentorBoosts.findIndex(b => b.class === def.class && b.expiresAtMs > now);
+  const startingXp = boostIdx >= 0 ? mentorBoosts[boostIdx].bonusXp : 0;
+  const remainingBoosts = boostIdx >= 0
+    ? [...mentorBoosts.slice(0, boostIdx), ...mentorBoosts.slice(boostIdx + 1)]
+    : mentorBoosts;
+
   return {
     ...state,
     money: state.money - cost,
     totalSpent: state.totalSpent + cost,
-    hiredCommanders: [...(state.hiredCommanders || []), { definitionId: defId, hiredAtMs: now, xp: 0, level: 1, assignment: null }],
+    hiredCommanders: [...(state.hiredCommanders || []), {
+      definitionId: defId, hiredAtMs: now, xp: startingXp, level: getLevelFromXp(startingXp), assignment: null,
+    }],
+    leaderMentorBoosts: remainingBoosts,
   };
 }
 

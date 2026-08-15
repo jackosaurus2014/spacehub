@@ -1106,6 +1106,26 @@ export interface GameState {
   // fresh game — getActiveEraModifiers(undefined) returns the neutral 1.0
   // multiplier set used throughout game-engine.ts/economy-report.ts).
   corporateEras?: CorporateErasState;
+
+  // ─── V27 (Live-Service Wave LS6 "Programs Queue") ────────────────────────
+  // docs/LIVE_SERVICE_2026-08.md §LS6. Wall-clock crew certification cohorts
+  // + leader development/R&D residency postings, queued EVE-style (up to 3
+  // ahead per track), plus leader retirement after ~2 real months of
+  // continuous assignment. All fields additive/optional; see save-load.ts's
+  // V27 migration block and programs.ts / commanders.ts.
+
+  /** Three independent single-channel program queues. Null/absent = no
+   *  programs ever queued (identical to a fresh game — getProgramWorkforceBonuses
+   *  returns the zero set). */
+  programs?: ProgramsState;
+
+  /** Permanent retirement history — see RetiredLeaderRecord. Also the
+   *  progress source for legacy-system.ts's leader-legacy stretch family. */
+  retiredLeaders?: RetiredLeaderRecord[];
+
+  /** Active mentor boosts waiting to be consumed by the next matching hire.
+   *  See LeaderMentorBoost. */
+  leaderMentorBoosts?: LeaderMentorBoost[];
 }
 
 /** One re-engagement objective inside a ReturningCommanderTrack — one per
@@ -1515,4 +1535,79 @@ export interface CompletedCorporateEra {
 export interface CorporateErasState {
   currentEra: ActiveCorporateEra | null;
   completedEras: CompletedCorporateEra[];
+}
+
+// ─── Live-Service Wave LS6 — Programs Queue (crew/leader training, the EVE
+// skill-queue trick) ─────────────────────────────────────────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS6. Types live here (GameState references
+// them) per the CommandQueueOrder/StandingDirective/CorporateEra precedent
+// above; engine logic lives in programs.ts, retirement logic in
+// commanders.ts. `class`/`rarity` below are stored as plain strings (not
+// commanders.ts's CommanderClass/CommanderRarity unions) to avoid a
+// types.ts -> commanders.ts circular import (commanders.ts already imports
+// GameState from this file).
+
+export type ProgramTrack = 'crew_cohort' | 'leader_development' | 'rd_residency';
+
+/** One program instance sitting in a track's FIFO queue. Unlike
+ *  CommandQueueOrder (which shares a multi-channel pool — 2 research slots,
+ *  N build slots), each ProgramTrack is exactly ONE channel: only
+ *  queues[track][0] can ever be "active" (startedAtMs set); everything
+ *  behind it waits. `startedAtMs === null` means still queued. */
+export interface ProgramInstance {
+  id: string;
+  track: ProgramTrack;
+  defId: string;
+  /** Display label captured at enqueue time (same rationale as
+   *  CommandQueueOrder.label — survives a later content rename/removal). */
+  label: string;
+  createdAtMs: number;
+  startedAtMs: number | null;
+  /** Effective wall-clock duration in ms, captured at enqueue time from the
+   *  program definition (durationDays * 86_400_000). */
+  durationMs: number;
+  /** leader_development / rd_residency: the hired commander this program is
+   *  posted to. Cleared from any assignment for the duration — the
+   *  opportunity cost the spec calls for. */
+  targetCommanderId?: string;
+  /** rd_residency only: the ResearchCategory id the residency is themed on
+   *  (display/flavor — see programs.ts header for why the compounding bonus
+   *  itself is not literally category-scoped this wave). */
+  targetCategory?: string;
+}
+
+export interface ProgramsState {
+  queues: Record<ProgramTrack, ProgramInstance[]>;
+  /** One entry per completed crew_cohort program (duplicates allowed — a
+   *  cohort can be re-run for a repeated, capped contribution). Drives
+   *  getProgramWorkforceBonuses(); crew_cohort completions ONLY — leader
+   *  programs grant their effects directly onto the HiredCommander record,
+   *  not through this list. */
+  completedCohortDefIds: string[];
+}
+
+/** A permanent record of a retired leader — commanders.ts's
+ *  processLeaderRetirements() appends one and removes the commander from
+ *  hiredCommanders. Feeds legacy-system.ts's leader-legacy stretch family
+ *  (state.retiredLeaders.length) and the (future) Chronicle. */
+export interface RetiredLeaderRecord {
+  definitionId: string;
+  name: string;
+  /** CommanderClass, stored as a plain string — see file-header note. */
+  class: string;
+  /** CommanderRarity, stored as a plain string — see file-header note. */
+  rarity: string;
+  retiredAtMs: number;
+  monthsServed: number;
+}
+
+/** A time-boxed onboarding boost for the NEXT hire of a matching class,
+ *  granted when a leader of that class retires (the spec's "mentor bonuses
+ *  to successors"). One-shot: hireCommander() consumes (removes) the first
+ *  matching unexpired entry it finds. */
+export interface LeaderMentorBoost {
+  /** CommanderClass, stored as a plain string — see file-header note. */
+  class: string;
+  bonusXp: number;
+  expiresAtMs: number;
 }
