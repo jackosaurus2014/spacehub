@@ -1120,7 +1120,7 @@ export default function ConstellationTrackerPage() {
               <RelatedModules
                 modules={[
               { name: 'Satellite Tracker', description: `Track ${SITE_STATS.satellites} objects in real-time orbit`, href: '/satellites', icon: '🛰️' },
-              { name: 'Orbital Slots', description: 'GEO/MEO/LEO slot allocations and services', href: '/orbital-slots', icon: '📡' },
+              { name: 'Orbital Slots', description: 'GEO/MEO/LEO slot allocations and services', href: '/spectrum?tab=geo-slots', icon: '📡' },
               { name: 'Space Environment', description: 'Space weather, debris, and situational awareness', href: '/space-environment', icon: '🌍' },
               { name: 'Launch Vehicles', description: 'Compare launch providers and capabilities', href: '/launch-vehicles', icon: '🚀' },
                 ]}

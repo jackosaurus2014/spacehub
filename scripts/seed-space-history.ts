@@ -445,6 +445,216 @@ const SEED: Seed[] = [
     featured: true,
     sourceUrls: ['https://www.nasa.gov/mission/artemis-i/'],
   },
+
+  // --- Gap-fill pass (ported from the retired static /timeline page) ---
+  {
+    slug: 'salyut-1-launch-1971',
+    title: 'Salyut 1 — First space station launched',
+    description:
+      'The Soviet Union launched Salyut 1, the world\'s first crewed space station. The Soyuz 11 crew lived aboard for 23 days, but tragically perished during re-entry due to a cabin depressurization.',
+    eventDate: '1971-04-19',
+    category: 'launch',
+    sourceUrls: ['https://www.nasa.gov/history/'],
+  },
+  {
+    slug: 'apollo-soyuz-test-project-1975',
+    title: 'Apollo-Soyuz Test Project docking',
+    description:
+      'American and Soviet spacecraft docked in orbit for the first international crewed spaceflight, symbolizing a thaw in Cold War tensions and laying the groundwork for future cooperative missions.',
+    eventDate: '1975-07-17',
+    category: 'mission',
+    sourceUrls: ['https://www.nasa.gov/history/'],
+  },
+  {
+    slug: 'dennis-tito-first-space-tourist-2001',
+    title: 'Dennis Tito — First space tourist',
+    description:
+      'American businessman Dennis Tito became the world\'s first paying space tourist when he visited the ISS aboard a Russian Soyuz, reportedly paying $20 million for the eight-day trip.',
+    eventDate: '2001-04-28',
+    category: 'milestone',
+    sourceUrls: ['https://www.nasa.gov/history/'],
+  },
+  {
+    slug: 'spaceshipone-x-prize-2004',
+    title: 'SpaceShipOne wins the Ansari X Prize',
+    description:
+      'SpaceShipOne, funded by Paul Allen and designed by Burt Rutan, completed its second qualifying suborbital flight within two weeks to win the $10 million Ansari X Prize, proving private companies could reach space.',
+    eventDate: '2004-10-04',
+    category: 'milestone',
+    sourceUrls: ['https://www.nasa.gov/history/'],
+  },
+  {
+    slug: 'falcon-1-first-launch-2006',
+    title: 'SpaceX Falcon 1 — First launch attempt',
+    description:
+      'SpaceX attempted its first Falcon 1 launch from Kwajalein Atoll in the Pacific. The rocket failed 25 seconds after liftoff due to a fuel line leak, marking SpaceX\'s debut as a launch provider.',
+    eventDate: '2006-03-24',
+    category: 'launch',
+    sourceUrls: ['https://www.spacex.com/'],
+  },
+  {
+    slug: 'falcon-1-reaches-orbit-2008',
+    title: 'Falcon 1 becomes first privately developed rocket to reach orbit',
+    description:
+      'On its fourth attempt, SpaceX\'s Falcon 1 became the first privately developed liquid-fueled rocket to reach orbit, proving a startup could build an orbital-class launch vehicle.',
+    eventDate: '2008-09-28',
+    category: 'milestone',
+    sourceUrls: ['https://www.spacex.com/'],
+  },
+  {
+    slug: 'dragon-first-orbit-recovery-2010',
+    title: 'Dragon becomes first commercial spacecraft recovered from orbit',
+    description:
+      'SpaceX\'s Dragon capsule became the first commercially built and operated spacecraft to be recovered from orbit, a watershed moment for commercial spaceflight previously reserved for governments.',
+    eventDate: '2010-12-08',
+    category: 'milestone',
+    sourceUrls: ['https://www.nasa.gov/mission/spacex-demo-1/'],
+  },
+  {
+    slug: 'sts-135-final-shuttle-mission-2011',
+    title: 'STS-135 — Final Space Shuttle mission launches',
+    description:
+      'Space Shuttle Atlantis launched on the 135th and final Shuttle mission. The 30-year program carried 355 people to space, built the ISS, and deployed Hubble before closing this chapter of spaceflight.',
+    eventDate: '2011-07-08',
+    category: 'mission',
+    sourceUrls: ['https://www.nasa.gov/mission/sts-135/'],
+  },
+  {
+    slug: 'dragon-docks-iss-2012',
+    title: 'Dragon becomes first commercial spacecraft to dock with the ISS',
+    description:
+      'SpaceX\'s Dragon (COTS Demo Flight 2) became the first commercial spacecraft to berth with the International Space Station, validating NASA\'s strategy of partnering with private companies for ISS resupply.',
+    eventDate: '2012-05-25',
+    category: 'milestone',
+    sourceUrls: ['https://www.nasa.gov/mission/spacex-demo-2/'],
+  },
+  {
+    slug: 'rosetta-comet-landing-2014',
+    title: 'Rosetta\'s Philae lander touches down on a comet',
+    description:
+      'ESA\'s Rosetta mission deployed the Philae lander onto Comet 67P/Churyumov-Gerasimenko, achieving the first-ever soft landing on a comet and providing unprecedented data on cometary composition.',
+    eventDate: '2014-11-12',
+    category: 'landing',
+    sourceUrls: ['https://www.esa.int/'],
+  },
+  {
+    slug: 'new-horizons-pluto-flyby-2015',
+    title: 'New Horizons flies past Pluto',
+    description:
+      'NASA\'s New Horizons spacecraft flew past Pluto after a nine-year, three-billion-mile journey, revealing Pluto\'s heart-shaped nitrogen ice plain and complex geology.',
+    eventDate: '2015-07-14',
+    category: 'mission',
+    sourceUrls: ['https://www.nasa.gov/mission/new-horizons/'],
+  },
+  {
+    slug: 'falcon-9-first-booster-landing-2015',
+    title: 'SpaceX lands a Falcon 9 booster for the first time',
+    description:
+      'SpaceX successfully landed a Falcon 9 first stage at Cape Canaveral after delivering 11 ORBCOMM satellites to orbit, proving rocket reusability and beginning to transform launch economics.',
+    eventDate: '2015-12-21',
+    category: 'milestone',
+    sourceUrls: ['https://www.spacex.com/'],
+  },
+  {
+    slug: 'blue-origin-first-booster-reuse-2016',
+    title: 'Blue Origin reflies a booster for the first time',
+    description:
+      'Blue Origin reflew its New Shepard booster, making it the first rocket to vertically launch, reach space, and land for a second flight — demonstrating reusable suborbital vehicles.',
+    eventDate: '2016-01-22',
+    category: 'milestone',
+    sourceUrls: ['https://www.blueorigin.com/'],
+  },
+  {
+    slug: 'first-black-hole-image-2019',
+    title: 'First direct image of a black hole released',
+    description:
+      'The Event Horizon Telescope collaboration released the first direct image of a black hole\'s shadow, in galaxy M87, using a planet-scale array of eight radio telescopes to confirm predictions of general relativity.',
+    eventDate: '2019-04-10',
+    category: 'discovery',
+    sourceUrls: ['https://eventhorizontelescope.org/'],
+  },
+  {
+    slug: 'beresheet-lunar-attempt-2019',
+    title: 'Beresheet — First privately funded lunar landing attempt',
+    description:
+      'Israel\'s SpaceIL attempted to land Beresheet, the first privately funded lunar lander, which crashed during descent — but demonstrated that nations and private entities beyond traditional space powers could attempt lunar missions.',
+    eventDate: '2019-04-11',
+    category: 'mission',
+    sourceUrls: ['https://www.spaceil.com/'],
+  },
+  {
+    slug: 'us-space-force-established-2019',
+    title: 'US Space Force established',
+    description:
+      'The United States Space Force was signed into law as the sixth branch of the US military, consolidating military space operations under a dedicated service branch.',
+    eventDate: '2019-12-20',
+    category: 'policy',
+    sourceUrls: ['https://www.spaceforce.mil/'],
+  },
+  {
+    slug: 'artemis-accords-signed-2020',
+    title: 'Artemis Accords signed',
+    description:
+      'Eight founding nations signed the Artemis Accords, establishing principles for the peaceful exploration of the Moon, Mars, and beyond, building on the Outer Space Treaty for responsible resource utilization.',
+    eventDate: '2020-10-13',
+    category: 'policy',
+    sourceUrls: ['https://www.nasa.gov/artemis-accords/'],
+  },
+  {
+    slug: 'suborbital-tourism-begins-2021',
+    title: 'Commercial suborbital tourism begins',
+    description:
+      'Virgin Galactic launched founder Richard Branson aboard VSS Unity, followed days later by Blue Origin launching founder Jeff Bezos aboard New Shepard, inaugurating the era of commercial suborbital space tourism.',
+    eventDate: '2021-07-11',
+    category: 'milestone',
+    sourceUrls: ['https://www.virgingalactic.com/', 'https://www.blueorigin.com/'],
+  },
+  {
+    slug: 'starship-first-integrated-flight-2023',
+    title: 'Starship\'s first integrated flight test',
+    description:
+      'SpaceX launched the fully stacked Starship/Super Heavy vehicle for the first time from Boca Chica, Texas. The rocket was destroyed minutes after launch, but the test provided invaluable data for the world\'s most powerful rocket.',
+    eventDate: '2023-04-20',
+    category: 'launch',
+    sourceUrls: ['https://www.spacex.com/'],
+  },
+  {
+    slug: 'chandrayaan-3-landing-2023',
+    title: 'Chandrayaan-3 lands near the lunar south pole',
+    description:
+      'India\'s Chandrayaan-3 successfully soft-landed near the lunar south pole, making India the fourth country to land on the Moon. The Pragyan rover conducted in-situ chemical analysis of the lunar regolith.',
+    eventDate: '2023-08-23',
+    category: 'landing',
+    sourceUrls: ['https://www.isro.gov.in/'],
+  },
+  {
+    slug: 'starliner-crewed-test-flight-2024',
+    title: 'Boeing Starliner\'s first crewed test flight',
+    description:
+      'Boeing\'s CST-100 Starliner launched its first crewed mission to the ISS, carrying astronauts Butch Wilmore and Suni Williams. Thruster issues led NASA to extend their stay and return them on a SpaceX Crew Dragon instead.',
+    eventDate: '2024-06-05',
+    category: 'mission',
+    sourceUrls: ['https://www.nasa.gov/mission/starliner-crew-flight-test/'],
+  },
+  {
+    slug: 'starship-achieves-orbit-2024',
+    title: 'Starship completes first fully successful orbital-class flight',
+    description:
+      'SpaceX\'s Starship completed its fourth integrated flight test, achieving a full orbital-class trajectory with a successful controlled splashdown of both the booster and upper stage for the first time.',
+    eventDate: '2024-06-06',
+    category: 'milestone',
+    sourceUrls: ['https://www.spacex.com/'],
+  },
+  {
+    slug: 'artemis-ii-crewed-lunar-flyby-2026',
+    title: 'Artemis II — First crewed lunar flyby since Apollo',
+    description:
+      'Artemis II launched a crew of four astronauts (Wiseman, Glover, Koch, Hansen) on a trajectory around the Moon, marking humanity\'s first crewed voyage beyond low Earth orbit since Apollo 17 in 1972 and validating life support and navigation systems ahead of Artemis III.',
+    eventDate: '2026-04-01',
+    category: 'mission',
+    featured: true,
+    sourceUrls: ['https://www.nasa.gov/mission/artemis-ii/'],
+  },
 ];
 
 async function main() {

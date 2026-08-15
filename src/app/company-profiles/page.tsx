@@ -509,6 +509,14 @@ export default function CompanyProfilesPage() {
               <option value="dataCompleteness-desc">Sort: Most Complete</option>
             </select>
 
+            {/* Deep link to the dedicated Private / Pre-IPO hub */}
+            <Link
+              href="/startups"
+              className="px-3 py-2 h-11 min-h-[44px] flex items-center rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors text-sm font-medium whitespace-nowrap"
+            >
+              Private / Pre-IPO →
+            </Link>
+
             {/* View Toggle */}
             <div className="flex bg-white/[0.04] border border-white/[0.06] rounded-lg overflow-hidden">
               <button
@@ -747,7 +755,7 @@ export default function CompanyProfilesPage() {
             <ScrollReveal>
               <RelatedModules
                 modules={[
-              { name: 'Market Intelligence', description: 'Space industry market data and trends', href: '/market-intel', icon: '📈' },
+              { name: 'Space Stocks', description: 'Live prices for public space companies', href: '/space-stocks', icon: '📈' },
               { name: 'Funding Tracker', description: 'VC deals and investment rounds', href: '/funding-tracker', icon: '💰' },
               { name: 'Investment Tracker', description: 'Space sector investment analysis', href: '/investment-tracker', icon: '📊' },
               { name: 'Space Talent Hub', description: 'Jobs and workforce intelligence', href: '/space-talent', icon: '👥' },

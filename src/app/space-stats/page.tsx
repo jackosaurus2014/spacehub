@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import SocialShare from '@/components/ui/SocialShare';
 import ExportButton from '@/components/ui/ExportButton';
+import { SITE_STATS } from '@/lib/site-stats';
 
 /* ─── Animated Counter Hook ─────────────────────────────────────────────── */
 function useAnimatedCounter(target: number, duration = 1800, prefix = '', suffix = '') {
@@ -159,13 +160,13 @@ function SectionHeader({ icon, title, id }: { icon: string; title: string; id: s
 
 /* ─── Page ──────────────────────────────────────────────────────────────── */
 const SPACE_STATS_EXPORT_DATA = [
-  { stat: '$626B', category: 'Market Size', label: 'Global Space Economy (2025)', source: 'Space Foundation', year: '2025' },
+  { stat: SITE_STATS.spaceEconomyNow, category: 'Market Size', label: 'Global Space Economy (2025)', source: 'Space Foundation', year: '2025' },
   { stat: '$1T+', category: 'Market Size', label: 'Projected Market Size by 2034', source: 'Morgan Stanley / BofA', year: '2034 projection' },
   { stat: '$1.8T', category: 'Market Size', label: 'Projected Market Size by 2035', source: 'Space Foundation', year: '2035 projection' },
   { stat: '9%', category: 'Market Size', label: 'Annual Growth Rate (CAGR)', source: 'Euroconsult', year: '2020-2025' },
   { stat: '78%', category: 'Market Size', label: 'Commercial Share of Space Economy', source: 'Space Foundation', year: '2025' },
   { stat: '$14B', category: 'Market Size', label: 'Launch Services Market', source: 'Bryce Tech', year: '2025' },
-  { stat: '320+', category: 'Launch Statistics', label: 'Orbital Launches (2025)', source: 'Space Launch Report', year: '2025' },
+  { stat: SITE_STATS.launches2025, category: 'Launch Statistics', label: 'Orbital Launch Attempts (2025)', source: 'Space Launch Report', year: '2025' },
   { stat: '96%', category: 'Launch Statistics', label: 'Overall Launch Success Rate', source: 'FAA / AST', year: '2025' },
   { stat: '165+', category: 'Launch Statistics', label: 'SpaceX Falcon 9 Launches', source: 'SpaceX', year: '2025' },
   { stat: '60%+', category: 'Launch Statistics', label: 'SpaceX Global Launch Share', source: 'Bryce Tech', year: '2024' },
@@ -191,7 +192,7 @@ const SPACE_STATS_EXPORT_DATA = [
   { stat: '24%', category: 'Workforce', label: 'Women in Space Workforce', source: 'Space Foundation', year: '2024' },
   { stat: '$10B+', category: 'Investment', label: 'Annual VC Investment', source: 'Space Capital', year: '2024' },
   { stat: '500+', category: 'Investment', label: 'Active Space Startups', source: 'Bryce Tech / Space Capital', year: '2025' },
-  { stat: '~$2T', category: 'Investment', label: 'SpaceX Market Cap (NASDAQ: SPCX)', source: 'NASDAQ', year: '2026' },
+  { stat: '~$1.84T', category: 'Investment', label: 'SpaceX Market Cap (NASDAQ: SPCX)', source: 'NASDAQ', year: '2026' },
   { stat: '15+', category: 'Investment', label: 'Space SPACs (Completed)', source: 'CNBC', year: '2020-2022' },
   { stat: '$2.4B', category: 'Investment', label: 'Sierra Space + Vast Raises (2025)', source: 'TechCrunch / SpaceNews', year: '2025' },
   { stat: '35%', category: 'Investment', label: 'Launch Sector Investment Share', source: 'Space Capital', year: '2024' },
@@ -244,7 +245,7 @@ export default function SpaceStatsPage() {
             <SocialShare
               title="Space Industry Statistics & Facts - SpaceNexus"
               url="https://spacenexus.us/space-stats"
-              description="The definitive collection of space industry data: $626B market, 230+ launches, 16,000+ satellites, and more."
+              description={`The definitive collection of space industry data: ${SITE_STATS.spaceEconomyNow} market, ${SITE_STATS.launches2025} launch attempts, ${SITE_STATS.satellites} satellites, and more.`}
             />
             <div className="mt-4 flex justify-center">
               <ExportButton
@@ -264,8 +265,8 @@ export default function SpaceStatsPage() {
 
           {/* Hero Stats - Animated Counters */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-12 max-w-6xl mx-auto">
-            <HeroStat target={626} prefix="$" suffix="B" label="Market Size (2025)" color="blue" />
-            <HeroStat target={320} suffix="+" label="Orbital Launches (2025)" color="green" />
+            <HeroStat target={630} prefix="$" suffix="B" label="Market Size (2025)" color="blue" />
+            <HeroStat target={324} label="Orbital Launch Attempts (2025)" color="green" />
             <HeroStat target={16000} suffix="+" label="Active Satellites" color="purple" />
             <HeroStat target={95} prefix="$" suffix="B+" label="Gov. Spending" color="amber" />
             <HeroStat target={360} suffix="K+" label="US Workforce" color="rose" />
@@ -297,7 +298,7 @@ export default function SpaceStatsPage() {
         <SectionHeader icon="💰" title="Space Economy Market Size" id="market-size" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
-            number="$626B"
+            number={SITE_STATS.spaceEconomyNow}
             label="Global Space Economy (2025)"
             description="Total revenue generated by the global space economy including satellite services, ground equipment, launch services, and government budgets."
             source="Space Foundation"
@@ -352,9 +353,9 @@ export default function SpaceStatsPage() {
         <SectionHeader icon="🚀" title="Launch Statistics" id="launch-stats" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
-            number="320+"
-            label="Orbital Launches (2025)"
-            description="Over 320 orbital launch attempts globally in 2025, more than double the pace of five years ago. This represents an all-time annual record."
+            number={SITE_STATS.launches2025}
+            label="Orbital Launch Attempts (2025)"
+            description="324 orbital launch attempts globally in 2025 — a 25% jump over 2024 and more than double the pace of five years ago. This represents an all-time annual record; see the separate success-rate stat below for the reliability figure."
             source="Space Launch Report"
             year="2025"
             color="green"
@@ -588,9 +589,9 @@ export default function SpaceStatsPage() {
             color="cyan"
           />
           <StatCard
-            number="~$2T"
+            number="~$1.84T"
             label="SpaceX Market Cap (NASDAQ: SPCX)"
-            description="SpaceX went public in June 2026 in the largest IPO in history, debuting at approximately $2 trillion in market capitalization and becoming the most valuable space company on public markets."
+            description="SpaceX went public in June 2026 in the largest IPO in history, debuting at approximately $2 trillion in market capitalization and has since traded around $1.84 trillion, remaining the most valuable space company on public markets."
             source="NASDAQ"
             year="2026"
             color="cyan"
@@ -804,7 +805,7 @@ export default function SpaceStatsPage() {
             mainEntity: {
               '@type': 'Dataset',
               name: 'Space Industry Statistics',
-              description: 'Key statistics about the global space industry including market size ($626B), launches (230+), active satellites (16,000+), and workforce (360,000+ US).',
+              description: `Key statistics about the global space industry including market size (${SITE_STATS.spaceEconomyNow}), launch attempts (${SITE_STATS.launches2025}), active satellites (${SITE_STATS.satellites}), and workforce (360,000+ US).`,
               creator: { '@type': 'Organization', name: 'SpaceNexus' },
             },
           }),

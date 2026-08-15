@@ -7,6 +7,7 @@ import { toast } from '@/lib/toast';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { API_CATEGORIES, ALL_ENDPOINTS } from '@/lib/openapi-spec';
 
 // ============================================================
 // Types
@@ -553,7 +554,10 @@ export default function DeveloperPortalPage() {
               <h2 className="text-2xl font-bold mb-6">API Features</h2>
               <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
-                  { title: '10 Core Endpoints', desc: 'News, launches, companies, satellites, regulatory, market, weather, contracts, vehicles, opportunities' },
+                  {
+                    title: `${ALL_ENDPOINTS.length} Endpoints`,
+                    desc: API_CATEGORIES.map((c) => c.name).join(', '),
+                  },
                   { title: 'RESTful JSON API', desc: 'Standard REST conventions with consistent JSON response format' },
                   { title: 'OpenAPI 3.0 Spec', desc: 'Full OpenAPI specification for code generation and documentation' },
                   { title: 'Rate Limiting', desc: 'Transparent rate limits with X-RateLimit headers on every response' },
@@ -861,23 +865,12 @@ export default function DeveloperPortalPage() {
                     </tr>
                   </thead>
                   <tbody className="text-white/70">
-                    {[
-                      { path: '/api/v1/news', desc: 'Space news articles', tier: 'All' },
-                      { path: '/api/v1/launches', desc: 'Upcoming launches', tier: 'All' },
-                      { path: '/api/v1/companies', desc: 'Company profiles', tier: 'All' },
-                      { path: '/api/v1/satellites', desc: 'Satellite data', tier: 'All' },
-                      { path: '/api/v1/regulatory', desc: 'Regulatory intelligence', tier: 'All' },
-                      { path: '/api/v1/market', desc: 'Market/stock data', tier: 'All' },
-                      { path: '/api/v1/space-weather', desc: 'Space weather conditions', tier: 'All' },
-                      { path: '/api/v1/contracts', desc: 'Government contracts', tier: 'All' },
-                      { path: '/api/v1/launch-vehicles', desc: 'Launch vehicle specs', tier: 'All' },
-                      { path: '/api/v1/opportunities', desc: 'Business opportunities', tier: 'Pro' },
-                    ].map((ep) => (
-                      <tr key={ep.path} className="border-b border-white/[0.06]">
+                    {ALL_ENDPOINTS.map((ep) => (
+                      <tr key={ep.operationId} className="border-b border-white/[0.06]">
                         <td className="py-2 pr-4">
-                          <code className="text-white/70">{ep.path}</code>
+                          <code className="text-white/70">/api/v1{ep.path}</code>
                         </td>
-                        <td className="py-2 pr-4">{ep.desc}</td>
+                        <td className="py-2 pr-4">{ep.summary}</td>
                         <td className="py-2">
                           <span className={`text-xs px-2 py-0.5 rounded-full ${ep.tier === 'Pro' ? 'bg-purple-500/20 text-purple-400' : 'bg-green-500/20 text-green-400'}`}>
                             {ep.tier}

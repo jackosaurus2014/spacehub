@@ -3,13 +3,23 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
-  getNotifications,
-  markAsRead,
-  markAllAsRead,
   formatRelativeTime,
   type Notification,
   type NotificationType,
 } from '@/lib/notifications';
+
+// Maps an AlertDelivery row (source of truth: prisma.AlertDelivery, same table
+// backing /alerts?tab=notifications) onto the dropdown's NotificationType.
+function alertDeliveryToType(d: {
+  source?: string;
+  alertRule?: { triggerType?: string } | null;
+}): NotificationType {
+  if (d.source === 'watchlist') return 'watchlist';
+  const triggerType = d.alertRule?.triggerType;
+  if (triggerType === 'launch_status') return 'launch';
+  if (triggerType === 'price_threshold') return 'price_alert';
+  return 'news';
+}
 
 // Notification type icons as SVG components
 function RocketIcon({ className }: { className?: string }) {
@@ -103,26 +113,28 @@ export default function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load notifications on mount — merge localStorage + server-side watchlist alerts + community notifications
+  // Load notifications on mount — merge AlertDelivery rows (same source as
+  // /alerts?tab=notifications, includes both alert-rule and watchlist-sourced
+  // deliveries) + community notifications.
   useEffect(() => {
     const loadNotifications = async () => {
-      const localNotifs = getNotifications();
-
-      // Fetch server-side watchlist alerts (if authenticated)
+      // Fetch alert deliveries (if authenticated) — canonical source, matches
+      // the /alerts hub's Notifications tab so unread counts stay in sync.
       let serverNotifs: Notification[] = [];
       try {
-        const res = await fetch('/api/alerts/watchlist?limit=20');
+        const res = await fetch('/api/alerts/deliveries?limit=20');
         if (res.ok) {
-          const data = await res.json();
-          serverNotifs = (data.alerts || []).map((alert: any) => ({
-            id: `srv_${alert.id}`,
-            type: 'watchlist' as NotificationType,
-            title: alert.title,
-            message: alert.message,
-            timestamp: alert.createdAt,
-            read: !!alert.readAt,
-            link: alert.data?.link || undefined,
-            metadata: alert.data || undefined,
+          const json = await res.json();
+          const deliveries = json.data?.deliveries || [];
+          serverNotifs = deliveries.map((d: any) => ({
+            id: `srv_${d.id}`,
+            type: alertDeliveryToType(d),
+            title: d.title,
+            message: d.message,
+            timestamp: d.createdAt,
+            read: !!d.readAt || d.status === 'read',
+            link: d.data?.link || undefined,
+            metadata: d.data || undefined,
           }));
         }
       } catch {
@@ -150,9 +162,8 @@ export default function NotificationCenter() {
         // Not authenticated or fetch failed — ignore
       }
 
-      // Merge: community + server alerts + local, deduplicated by id
-      const merged = [...communityNotifs, ...serverNotifs, ...localNotifs];
-      // Sort by timestamp descending
+      // Merge: community + alert deliveries, sorted by timestamp descending
+      const merged = [...communityNotifs, ...serverNotifs];
       merged.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       // Keep max 50
       const capped = merged.slice(0, 50);
@@ -163,19 +174,10 @@ export default function NotificationCenter() {
 
     loadNotifications();
 
-    // Poll for new community notifications every 30 seconds
+    // Poll for new notifications every 30 seconds
     const pollInterval = setInterval(loadNotifications, 30000);
 
-    // Listen for storage changes (for cross-tab sync)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'spacenexus_notifications') {
-        loadNotifications();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       clearInterval(pollInterval);
     };
   }, []);
@@ -201,23 +203,34 @@ export default function NotificationCenter() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ read: true }),
       }).catch(() => {});
-      // Update local state
-      const allUpdated = notifications.map(n =>
-        n.id === notificationId ? { ...n, read: true } : n
-      );
-      setNotifications(allUpdated);
-      setUnreadCount(allUpdated.filter(n => !n.read).length);
-      return;
+    } else if (notificationId.startsWith('srv_')) {
+      // Alert deliveries (same table as /alerts?tab=notifications)
+      const realId = notificationId.replace('srv_', '');
+      fetch('/api/alerts/deliveries', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: [realId] }),
+      }).catch(() => {});
     }
-    const updated = markAsRead(notificationId);
-    setNotifications(updated);
-    setUnreadCount(updated.filter(n => !n.read).length);
+    const allUpdated = notifications.map(n =>
+      n.id === notificationId ? { ...n, read: true } : n
+    );
+    setNotifications(allUpdated);
+    setUnreadCount(allUpdated.filter(n => !n.read).length);
   };
 
   const handleMarkAllAsRead = () => {
-    const updated = markAllAsRead();
-    // Also mark server-side watchlist alerts as read
-    fetch('/api/alerts/watchlist', { method: 'PUT' }).catch(() => {});
+    // Mark unread alert deliveries as read (same endpoint the /alerts hub uses)
+    const unreadDeliveryIds = notifications
+      .filter(n => !n.read && n.id.startsWith('srv_'))
+      .map(n => n.id.replace('srv_', ''));
+    if (unreadDeliveryIds.length > 0) {
+      fetch('/api/alerts/deliveries', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: unreadDeliveryIds }),
+      }).catch(() => {});
+    }
     // Also mark community notifications as read
     fetch('/api/notifications/read-all', { method: 'POST' }).catch(() => {});
     // Update all notifications including server-side ones
@@ -341,7 +354,7 @@ export default function NotificationCenter() {
           {/* Footer */}
           <div className="border-t border-white/[0.08] px-4 py-2">
             <Link
-              href="/notifications"
+              href="/alerts?tab=notifications"
               onClick={() => {
                 handleMarkAllAsRead();
                 setIsOpen(false);

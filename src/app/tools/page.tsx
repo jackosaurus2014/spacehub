@@ -361,7 +361,7 @@ export default function ToolsHubPage() {
               </StaggerItem>
               <StaggerItem>
               <Link
-                href="/blueprints"
+                href="/propulsion-database"
                 className="card p-5 hover:ring-2 hover:ring-white/15 transition-all group"
               >
                 <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors mb-1">

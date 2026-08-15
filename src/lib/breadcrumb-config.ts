@@ -20,7 +20,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/dashboard/builder': 'Dashboard Builder',
   '/dashboard/templates': 'Dashboard Templates',
   '/search': 'Search',
-  '/notifications': 'Notifications',
   '/messages': 'Messages',
   '/changelog': "What's New",
   '/getting-started': 'Getting Started',
@@ -40,21 +39,18 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/constellations': 'Constellations',
   '/constellation-designer': 'Constellation Designer',
   '/space-events': 'Space Events',
-  '/timeline': 'Space Timeline',
   '/solar-exploration': 'Solar Exploration',
   '/mars-planner': 'Mars Mission Planner',
   '/cislunar': 'Cislunar Ecosystem',
   '/asteroid-watch': 'Asteroid Watch',
   '/space-environment': 'Space Environment',
   '/earth-events': 'Earth Events',
-  '/satellite-spotting': 'Satellite Spotting Guide',
   '/aurora-forecast': 'Aurora Forecast',
   '/guide/watch-a-launch-cape-canaveral': 'Watch a Launch: Cape Canaveral',
   '/guide/watch-a-launch-vandenberg': 'Watch a Launch: Vandenberg',
   '/guide/watch-a-launch-starbase': 'Watch a Launch: Starbase',
 
   // ── Intelligence ──
-  '/market-intel': 'Market Intelligence',
   '/space-stocks': 'Space Stocks',
   '/industry-trends': 'Industry Trends',
   '/news': 'News',
@@ -115,7 +111,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/launch-cost-calculator': 'Launch Cost Calculator',
   '/mission-cost': 'Mission Cost Simulator',
   '/orbital-costs': 'Orbital Costs',
-  '/blueprints': 'Blueprints',
   '/propulsion-database': 'Propulsion Database',
   '/materials-database': 'Materials Database',
   '/tech-readiness': 'Technology Readiness Assessment',
@@ -140,7 +135,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/legal-resources': 'Legal Resources',
 
   // ── Space Operations ──
-  '/orbital-slots': 'Orbital Slots',
   '/spaceports': 'Spaceports',
   '/ground-stations': 'Ground Stations',
   '/space-edge-computing': 'Space Edge Computing',
@@ -154,7 +148,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   // ── Procurement ──
   '/procurement': 'Procurement',
   '/procurement/awards': 'Contract Awards',
-  '/government-budgets': 'Government Budgets',
 
   // ── Community ──
   '/community': 'Community',
@@ -197,7 +190,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/accessibility': 'Accessibility Statement',
 
   // ── New Pages ──
-  '/api-access': 'API Access',
   '/newsletter': 'Newsletter',
   '/why-spacenexus': 'Why SpaceNexus',
   '/reports/space-economy-2026': 'Space Economy 2026 Report',
@@ -215,7 +207,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   // ── Daily Digest ──
 
   // ── New Pages (Wave) ──
-  '/satellite-2026': 'SATELLITE 2026',
   '/advertise': 'Advertise',
   '/help': 'Help Center',
   '/checkout/success': 'Checkout Success',
@@ -236,7 +227,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   // ── Guides ──
   '/guide/space-industry': 'Space Industry Guide',
   '/learn': 'Learn',
-  '/learn/space-industry': 'Space Industry Learning Path',
 };
 
 // ─── Route Parents ───────────────────────────────────────────────────────────
@@ -299,7 +289,6 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/standards-reference': '/tools',
   '/orbit-guide': '/tools',
   '/glossary': '/tools',
-  '/blueprints': '/tools',
 
   // Regulatory tools → compliance parent
   '/licensing-checker': '/compliance',
@@ -328,14 +317,11 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/guide/watch-a-launch-starbase': '/learn',
 
   // Enthusiast guide pages
-  '/satellite-spotting': '/learn',
   '/aurora-forecast': '/space-environment',
 
   // Learn sub-pages
   '/learn/how-to-track-satellites': '/learn',
-  '/learn/satellite-launch-cost': '/learn',
   '/learn/space-companies-to-watch': '/learn',
-  '/learn/space-industry': '/learn',
   '/learn/space-industry-market-size': '/learn',
 
   // Checkout pages

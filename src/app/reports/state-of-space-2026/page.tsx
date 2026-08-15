@@ -3,6 +3,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import ReportGateForm from '@/components/marketing/ReportGateForm';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'State of the Space Industry 2026 | Free Report | SpaceNexus',
@@ -32,11 +33,11 @@ const TABLE_OF_CONTENTS = [
 
 const KEY_STATS = [
   { value: '$630B+', label: 'Global Space Economy (Current)', trend: '+9% YoY' },
-  { value: '238', label: 'Orbital Launches (2025)', trend: '+18% YoY' },
+  { value: SITE_STATS.launches2025, label: 'Orbital Launch Attempts (2025)', trend: '+25% YoY (record)' },
   { value: '$14.2B', label: 'Venture Funding (2024-2025)', trend: 'Across 340+ deals' },
-  { value: '10,000+', label: 'Active Satellites in Orbit', trend: '3x since 2020' },
+  { value: SITE_STATS.satellites, label: 'Active Satellites in Orbit', trend: '3x since 2020' },
   { value: '$55B', label: 'U.S. Government Space Budget', trend: 'FY2026 estimate' },
-  { value: '1,200+', label: 'Space Companies Tracked', trend: 'Across 45 countries' },
+  { value: SITE_STATS.companies, label: 'Space Companies Tracked', trend: 'Across 45 countries' },
 ];
 
 export default function StateOfSpace2026Page() {

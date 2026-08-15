@@ -7,11 +7,13 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import AlertRuleBuilder from '@/components/alerts/AlertRuleBuilder';
+import SatellitePassesTab from '@/components/alerts/SatellitePassesTab';
 import PremiumGate from '@/components/PremiumGate';
 import { toast } from '@/lib/toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
+import Modal from '@/components/ui/Modal';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================
@@ -71,9 +73,15 @@ interface SavedSearch {
   alertEnabled: boolean;
   createdAt: string;
   updatedAt: string;
+  // Present on `global_search` rows (unified /search UI) — decorated by the API
+  // from the `filters` JSON blob.
+  type?: string;
+  notifyVia?: string;
+  lastRunAt?: string | null;
+  lastResultCount?: number;
 }
 
-type Tab = 'alerts' | 'notifications' | 'saved-searches' | 'webhooks' | 'preferences';
+type Tab = 'alerts' | 'notifications' | 'saved-searches' | 'satellite-passes' | 'webhooks' | 'preferences';
 
 interface AlertPreferences {
   alertDigestMode: 'instant' | 'hourly' | 'daily' | 'weekly';
@@ -152,13 +160,38 @@ const SEARCH_TYPE_LABELS: Record<string, string> = {
   company_directory: 'Company Directory',
   marketplace_listings: 'Marketplace Listings',
   marketplace_rfqs: 'RFQ Search',
+  global_search: 'Global Search',
 };
 
 const SEARCH_TYPE_ROUTES: Record<string, string> = {
   company_directory: '/company-profiles',
   marketplace_listings: '/marketplace/search',
   marketplace_rfqs: '/marketplace/search?tab=rfqs',
+  global_search: '/search',
 };
+
+// Category options for `global_search`-type saved searches (unified /search UI).
+const GLOBAL_SEARCH_TYPE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'all', label: 'All categories' },
+  { value: 'news', label: 'News' },
+  { value: 'companies', label: 'Companies' },
+  { value: 'jobs', label: 'Jobs' },
+  { value: 'investors', label: 'Investors' },
+  { value: 'marketplace', label: 'Marketplace' },
+  { value: 'forum', label: 'Community' },
+  { value: 'blog', label: 'Blog' },
+  { value: 'podcast', label: 'Podcasts' },
+];
+
+const GLOBAL_SEARCH_TYPE_LABELS: Record<string, string> = Object.fromEntries(
+  GLOBAL_SEARCH_TYPE_OPTIONS.map((o) => [o.value, o.label])
+);
+
+const SAVED_SEARCH_NOTIFY_OPTIONS: { value: string; label: string; description: string }[] = [
+  { value: 'notification', label: 'In-app only', description: 'Notification bell only' },
+  { value: 'email', label: 'Email only', description: 'Daily digest email' },
+  { value: 'both', label: 'In-app + email', description: 'Both channels' },
+];
 
 // ============================================================
 // Inner component (uses searchParams)
@@ -188,6 +221,25 @@ function AlertsPageInner() {
   const [deletingRuleId, setDeletingRuleId] = useState<string | null>(null);
   const [togglingRuleId, setTogglingRuleId] = useState<string | null>(null);
   const [deletingSavedSearchId, setDeletingSavedSearchId] = useState<string | null>(null);
+  const [savedSearchTier, setSavedSearchTier] = useState<string>('free');
+  const [savedSearchLimit, setSavedSearchLimit] = useState<number | null>(null);
+  const [runningSavedSearchId, setRunningSavedSearchId] = useState<string | null>(null);
+
+  // Saved search create modal state (global_search rows only)
+  const [showSavedSearchModal, setShowSavedSearchModal] = useState(false);
+  const [newSsName, setNewSsName] = useState('');
+  const [newSsQuery, setNewSsQuery] = useState('');
+  const [newSsType, setNewSsType] = useState('all');
+  const [newSsNotify, setNewSsNotify] = useState('notification');
+  const [savingNewSs, setSavingNewSs] = useState(false);
+
+  // Saved search edit modal state (global_search rows only)
+  const [editingSavedSearch, setEditingSavedSearch] = useState<SavedSearch | null>(null);
+  const [editSsName, setEditSsName] = useState('');
+  const [editSsQuery, setEditSsQuery] = useState('');
+  const [editSsType, setEditSsType] = useState('all');
+  const [editSsNotify, setEditSsNotify] = useState('notification');
+  const [savingEditSs, setSavingEditSs] = useState(false);
 
   // Webhook state
   const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
@@ -270,6 +322,8 @@ function AlertsPageInner() {
       if (res.ok) {
         const json = await res.json();
         setSavedSearches(json.data.savedSearches || []);
+        setSavedSearchTier(json.data.tier || 'free');
+        setSavedSearchLimit(json.data.limit ?? null);
       }
     } catch {
       // silently fail
@@ -462,6 +516,123 @@ function AlertsPageInner() {
     }
   };
 
+  const savedSearchAtLimit =
+    savedSearchLimit !== null && savedSearches.length >= savedSearchLimit;
+
+  const openNewSavedSearchModal = () => {
+    if (savedSearchAtLimit) {
+      toast.error(
+        `You've reached the maximum of ${savedSearchLimit} saved searches on the ${savedSearchTier} tier. Upgrade to Pro for unlimited.`
+      );
+      return;
+    }
+    setNewSsName('');
+    setNewSsQuery('');
+    setNewSsType('all');
+    setNewSsNotify('notification');
+    setShowSavedSearchModal(true);
+  };
+
+  const createSavedSearch = async () => {
+    if (!newSsName.trim() || !newSsQuery.trim()) {
+      toast.error('Name and query are required');
+      return;
+    }
+    setSavingNewSs(true);
+    try {
+      const res = await fetch('/api/saved-searches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newSsName.trim(),
+          query: newSsQuery.trim(),
+          type: newSsType,
+          notifyVia: newSsNotify,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        toast.error(json.error?.message || 'Failed to save search');
+        return;
+      }
+      toast.success('Saved search created');
+      setShowSavedSearchModal(false);
+      fetchSavedSearches();
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setSavingNewSs(false);
+    }
+  };
+
+  const openEditSavedSearchModal = (search: SavedSearch) => {
+    setEditingSavedSearch(search);
+    setEditSsName(search.name);
+    setEditSsQuery(search.query || '');
+    setEditSsType(search.type || 'all');
+    setEditSsNotify(search.notifyVia || 'notification');
+  };
+
+  const saveEditedSavedSearch = async () => {
+    if (!editingSavedSearch) return;
+    if (!editSsName.trim() || !editSsQuery.trim()) {
+      toast.error('Name and query are required');
+      return;
+    }
+    setSavingEditSs(true);
+    try {
+      const res = await fetch(`/api/saved-searches/${editingSavedSearch.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editSsName.trim(),
+          query: editSsQuery.trim(),
+          type: editSsType,
+          notifyVia: editSsNotify,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        toast.error(json.error?.message || 'Failed to update saved search');
+        return;
+      }
+      toast.success('Saved search updated');
+      setEditingSavedSearch(null);
+      fetchSavedSearches();
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setSavingEditSs(false);
+    }
+  };
+
+  const runSavedSearchNow = async (search: SavedSearch) => {
+    setRunningSavedSearchId(search.id);
+    try {
+      const res = await fetch(`/api/saved-searches/${search.id}/run`, { method: 'POST' });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        toast.error(json.error?.message || 'Failed to run search');
+        return;
+      }
+      const data = json.data as { results: unknown[]; newCount: number; lastRunAt?: string };
+      toast.success(
+        `Ran "${search.name}": ${data.results.length} ${data.results.length === 1 ? 'result' : 'results'}, ${data.newCount} new`
+      );
+      setSavedSearches((prev) =>
+        prev.map((s) =>
+          s.id === search.id
+            ? { ...s, lastRunAt: data.lastRunAt || new Date().toISOString(), lastResultCount: data.results.length }
+            : s
+        )
+      );
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setRunningSavedSearchId(null);
+    }
+  };
+
   // ============================================================
   // Webhook actions
   // ============================================================
@@ -615,24 +786,36 @@ function AlertsPageInner() {
     if (search.query) {
       params.set('q', search.query);
     }
-    // Add filter params
-    const filters = search.filters as Record<string, unknown>;
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && value !== '') {
-          if (Array.isArray(value)) {
-            if (value.length > 0) params.set(key, value.join(','));
-          } else {
-            params.set(key, String(value));
+    if (search.searchType === 'global_search') {
+      // `filters` holds alert bookkeeping (notifyVia/lastRunAt/lastResultIds), not
+      // query filters — only the category type belongs on the URL.
+      if (search.type && search.type !== 'all') {
+        params.set('type', search.type);
+      }
+    } else {
+      // Add filter params
+      const filters = search.filters as Record<string, unknown>;
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && value !== '') {
+            if (Array.isArray(value)) {
+              if (value.length > 0) params.set(key, value.join(','));
+            } else {
+              params.set(key, String(value));
+            }
           }
-        }
-      });
+        });
+      }
     }
     const qs = params.toString();
     return qs ? `${base}${base.includes('?') ? '&' : '?'}${qs}` : base;
   };
 
   const getFilterSummary = (search: SavedSearch): string => {
+    if (search.searchType === 'global_search') {
+      const category = GLOBAL_SEARCH_TYPE_LABELS[search.type || 'all'] || 'All categories';
+      return search.query ? `"${search.query}" — ${category}` : category;
+    }
     const parts: string[] = [];
     if (search.query) parts.push(`"${search.query}"`);
     const filters = search.filters as Record<string, unknown>;
@@ -1092,6 +1275,31 @@ function AlertsPageInner() {
 
   const renderSavedSearchesTab = () => (
     <div>
+      {/* Header bar: tier/limit + new saved search */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <div className="text-sm text-slate-500">
+          <span className="text-white font-medium">{savedSearches.length}</span>
+          {savedSearchLimit !== null ? (
+            <>
+              {' / '}
+              <span>{savedSearchLimit}</span>{' '}
+              <span className="text-slate-500">saved searches on the {savedSearchTier} tier</span>
+            </>
+          ) : (
+            <span> saved searches — unlimited on {savedSearchTier}</span>
+          )}
+        </div>
+        <button
+          onClick={openNewSavedSearchModal}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-900 text-sm font-medium rounded-lg transition-colors self-start sm:self-auto"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          New Saved Search
+        </button>
+      </div>
+
       {savedSearches.length === 0 ? (
         <div className="text-center py-20 bg-black/50 border border-white/[0.06] rounded-xl">
           <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/20 flex items-center justify-center mb-6">
@@ -1117,13 +1325,19 @@ function AlertsPageInner() {
             Enable alerts on any saved search to be notified automatically when new results appear.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link
-              href="/company-profiles"
+            <button
+              onClick={openNewSavedSearchModal}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm font-medium rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
+              New Saved Search
+            </button>
+            <Link
+              href="/company-profiles"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-white/[0.1] text-white text-sm font-medium rounded-lg transition-colors"
+            >
               Browse Companies
             </Link>
             <Link
@@ -1167,7 +1381,7 @@ function AlertsPageInner() {
                     {getFilterSummary(search)}
                   </p>
 
-                  <div className="flex items-center gap-3 ml-6.5">
+                  <div className="flex items-center gap-3 ml-6.5 flex-wrap">
                     {/* Re-run link */}
                     <Link
                       href={buildSearchUrl(search)}
@@ -1176,11 +1390,37 @@ function AlertsPageInner() {
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
-                      Run Search
+                      Open
                     </Link>
+                    <span className="text-slate-700">|</span>
+                    <button
+                      onClick={() => runSavedSearchNow(search)}
+                      disabled={runningSavedSearchId === search.id}
+                      className="inline-flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      {runningSavedSearchId === search.id ? 'Running…' : 'Run Now'}
+                    </button>
+                    {search.searchType === 'global_search' && (
+                      <>
+                        <span className="text-slate-700">|</span>
+                        <button
+                          onClick={() => openEditSavedSearchModal(search)}
+                          className="inline-flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
+                        >
+                          Edit
+                        </button>
+                      </>
+                    )}
                     <span className="text-slate-700">|</span>
                     <span className="text-xs text-slate-500">
                       Saved {formatRelativeTime(search.createdAt)}
+                      {search.lastRunAt ? ` · Last run ${formatRelativeTime(search.lastRunAt)}` : ''}
+                      {typeof search.lastResultCount === 'number' && search.lastRunAt
+                        ? ` (${search.lastResultCount} result${search.lastResultCount !== 1 ? 's' : ''})`
+                        : ''}
                     </span>
                   </div>
                 </div>
@@ -1239,6 +1479,170 @@ function AlertsPageInner() {
           ))}
         </div>
       )}
+
+      {/* Create modal (global_search rows) */}
+      <Modal isOpen={showSavedSearchModal} onClose={() => setShowSavedSearchModal(false)} title="New saved search">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Name</label>
+            <input
+              value={newSsName}
+              onChange={(e) => setNewSsName(e.target.value)}
+              maxLength={200}
+              placeholder="e.g. SpaceX news"
+              className="w-full px-3 py-2 text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Query</label>
+            <input
+              value={newSsQuery}
+              onChange={(e) => setNewSsQuery(e.target.value)}
+              maxLength={500}
+              placeholder="What to search for"
+              className="w-full px-3 py-2 text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Category</label>
+            <select
+              value={newSsType}
+              onChange={(e) => setNewSsType(e.target.value)}
+              className="w-full px-3 py-2 text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+            >
+              {GLOBAL_SEARCH_TYPE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value} className="bg-black">
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Notify via</label>
+            <div className="space-y-1.5">
+              {SAVED_SEARCH_NOTIFY_OPTIONS.map((o) => (
+                <label
+                  key={o.value}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer transition-all ${
+                    newSsNotify === o.value
+                      ? 'bg-white/10 border-white/15'
+                      : 'bg-white/[0.04] border-white/[0.06] hover:border-white/10'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="newSsNotify"
+                    value={o.value}
+                    checked={newSsNotify === o.value}
+                    onChange={() => setNewSsNotify(o.value)}
+                    className="accent-white"
+                  />
+                  <div>
+                    <div className="text-sm text-white">{o.label}</div>
+                    <div className="text-xs text-slate-500">{o.description}</div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <button
+              onClick={() => setShowSavedSearchModal(false)}
+              className="px-3 py-2 text-sm rounded-lg bg-white/[0.04] text-slate-300 border border-white/[0.06] hover:text-white hover:border-white/10 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={createSavedSearch}
+              disabled={savingNewSs}
+              className="px-4 py-2 text-sm rounded-lg bg-white hover:bg-slate-100 disabled:opacity-50 text-slate-900 font-medium transition-all"
+            >
+              {savingNewSs ? 'Saving…' : 'Save search'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit modal (global_search rows) */}
+      <Modal isOpen={editingSavedSearch !== null} onClose={() => setEditingSavedSearch(null)} title="Edit saved search">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Name</label>
+            <input
+              value={editSsName}
+              onChange={(e) => setEditSsName(e.target.value)}
+              maxLength={200}
+              className="w-full px-3 py-2 text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Query</label>
+            <input
+              value={editSsQuery}
+              onChange={(e) => setEditSsQuery(e.target.value)}
+              maxLength={500}
+              className="w-full px-3 py-2 text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Category</label>
+            <select
+              value={editSsType}
+              onChange={(e) => setEditSsType(e.target.value)}
+              className="w-full px-3 py-2 text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+            >
+              {GLOBAL_SEARCH_TYPE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value} className="bg-black">
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1.5">Notify via</label>
+            <div className="space-y-1.5">
+              {SAVED_SEARCH_NOTIFY_OPTIONS.map((o) => (
+                <label
+                  key={o.value}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer transition-all ${
+                    editSsNotify === o.value
+                      ? 'bg-white/10 border-white/15'
+                      : 'bg-white/[0.04] border-white/[0.06] hover:border-white/10'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="editSsNotify"
+                    value={o.value}
+                    checked={editSsNotify === o.value}
+                    onChange={() => setEditSsNotify(o.value)}
+                    className="accent-white"
+                  />
+                  <div>
+                    <div className="text-sm text-white">{o.label}</div>
+                    <div className="text-xs text-slate-500">{o.description}</div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <button
+              onClick={() => setEditingSavedSearch(null)}
+              className="px-3 py-2 text-sm rounded-lg bg-white/[0.04] text-slate-300 border border-white/[0.06] hover:text-white hover:border-white/10 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={saveEditedSavedSearch}
+              disabled={savingEditSs}
+              className="px-4 py-2 text-sm rounded-lg bg-white hover:bg-slate-100 disabled:opacity-50 text-slate-900 font-medium transition-all"
+            >
+              {savingEditSs ? 'Saving…' : 'Save changes'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 
@@ -1634,6 +2038,29 @@ function AlertsPageInner() {
         </div>
         </ScrollReveal>
 
+        {/* Intro / cross-link strip — one hub for every alert type */}
+        <ScrollReveal delay={0.12}>
+        <div className="mb-6 p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-slate-400">
+          <p className="text-white/70 font-medium mb-1">Never miss a launch, storm, or funding round</p>
+          <p>
+            Launch reminders, space weather warnings, funding &amp; contract alerts, and regulatory filings all flow
+            through this page. Prefer to set alerts from where you&apos;re already browsing? Use{' '}
+            <Link href="/mission-control" className="text-white/70 hover:text-white underline underline-offset-2">
+              Mission Control
+            </Link>{' '}
+            for launches,{' '}
+            <Link href="/space-weather" className="text-white/70 hover:text-white underline underline-offset-2">
+              Space Weather
+            </Link>{' '}
+            for solar storms, or{' '}
+            <Link href="/my-watchlists" className="text-white/70 hover:text-white underline underline-offset-2">
+              Watchlists
+            </Link>{' '}
+            for company-specific tracking — they all show up here too.
+          </p>
+        </div>
+        </ScrollReveal>
+
         {/* Stats Cards */}
         {stats && (
           <ScrollReveal delay={0.15}>
@@ -1726,6 +2153,22 @@ function AlertsPageInner() {
           </button>
           <button
             role="tab"
+            aria-selected={currentTab === 'satellite-passes'}
+            onClick={() => setTab('satellite-passes')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              currentTab === 'satellite-passes'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.25 12h19.5M12 2.25a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+            </svg>
+            Satellite Passes
+          </button>
+          <button
+            role="tab"
             aria-selected={currentTab === 'webhooks'}
             onClick={() => setTab('webhooks')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -1768,6 +2211,7 @@ function AlertsPageInner() {
         {currentTab === 'alerts' && renderAlertsTab()}
         {currentTab === 'notifications' && renderNotificationsTab()}
         {currentTab === 'saved-searches' && renderSavedSearchesTab()}
+        {currentTab === 'satellite-passes' && <SatellitePassesTab />}
         {currentTab === 'webhooks' && renderWebhooksTab()}
         {currentTab === 'preferences' && renderPreferencesTab()}
         </ScrollReveal>

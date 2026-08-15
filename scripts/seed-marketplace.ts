@@ -1181,6 +1181,12 @@ async function main() {
         leadTime: listing.leadTime || null,
         capacity: listing.capacity || null,
         coverageArea: listing.coverageArea || null,
+        // Platform-curated catalog listing, not provider-submitted — mirrors the
+        // isEditorial marker migrate-orbital-to-marketplace.ts already sets for its
+        // rows. (2026-08: found unset on ~41 prod rows from earlier runs of this
+        // script — needs a one-time backfill; see marketplace honesty-badge audit.)
+        isEditorial: true,
+        sourceService: 'catalog-seed-2026-02',
         status: 'active',
         featured: listing.featured || false,
         viewCount: Math.floor(Math.random() * 500) + 10,

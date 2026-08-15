@@ -550,7 +550,7 @@ export default function SpaceWeatherTab() {
                 <div className="text-sm font-medium text-white group-hover:text-white">&#128752; Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Solar storms can alter debris orbits</p>
               </Link>
-              <Link href="/orbital-slots" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
+              <Link href="/spectrum?tab=geo-slots" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
                 <div className="text-sm font-medium text-white group-hover:text-white">&#128225; Orbital Slots</div>
                 <p className="text-xs text-slate-400 mt-1">Check satellite exposure to solar events</p>
               </Link>
@@ -561,6 +561,10 @@ export default function SpaceWeatherTab() {
               <Link href="/mission-control" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
                 <div className="text-sm font-medium text-white group-hover:text-white">&#127919; Mission Control</div>
                 <p className="text-xs text-slate-400 mt-1">Solar weather impacts launch windows</p>
+              </Link>
+              <Link href="/aurora-forecast" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-white">&#127761; Aurora Forecast</div>
+                <p className="text-xs text-slate-400 mt-1">Aurora visibility guide</p>
               </Link>
             </div>
           </div>

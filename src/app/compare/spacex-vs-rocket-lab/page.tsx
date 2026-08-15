@@ -36,7 +36,7 @@ const COMPARISON_DATA = [
   { metric: 'Headquarters', a: 'Hawthorne, CA, USA', b: 'Long Beach, CA, USA (HQ); Mahia, NZ (operations)' },
   { metric: 'Employees', a: '~13,000', b: '~2,100' },
   { metric: 'Publicly Traded', a: 'Yes (SPCX, Nasdaq, IPO June 2026)', b: 'Yes (RKLB, Nasdaq)' },
-  { metric: 'Valuation / Market Cap', a: '~$2T (market cap, Aug 2026)', b: '~$12B+ (market cap, early 2026)' },
+  { metric: 'Valuation / Market Cap', a: '~$1.84T (market cap, Aug 2026)', b: '~$51B (market cap, Aug 2026)' },
   { metric: 'Annual Revenue (est.)', a: '~$15B+ (2025, including Starlink)', b: '~$436M (FY 2025)' },
   { metric: 'Primary Launch Vehicle', a: 'Falcon 9 / Falcon Heavy / Starship', b: 'Electron / Neutron (in development)' },
   { metric: 'Vehicle Class', a: 'Medium, heavy, super-heavy lift', b: 'Small lift (Electron); medium lift (Neutron planned)' },
@@ -68,9 +68,10 @@ export default function Page() {
         <span className="text-zinc-300">SpaceX vs Rocket Lab</span>
       </nav>
       <h1 className="text-display text-3xl md:text-4xl mb-3">SpaceX vs Rocket Lab</h1>
-      <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl mb-8">
+      <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl mb-2">
         Comparing the world&apos;s most prolific launch provider against the leading small-launch company — heavy lift and mega-constellation versus dedicated rideshare, responsive launch, and growing space systems business.
       </p>
+      <p className="text-xs mb-8" style={{ color: 'var(--text-tertiary)' }}>Figures as of Aug 2026.</p>
 
       {/* Terminal table */}
       <div className="card-terminal mb-8">
@@ -145,7 +146,7 @@ export default function Page() {
       {/* Future Outlook */}
       <h2 className="text-display text-xl mb-3">Future Outlook</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        SpaceX&apos;s near-term trajectory is defined by Starship&apos;s operational maturation and Starlink&apos;s continued revenue growth following SpaceX&apos;s June 2026 Nasdaq listing (SPCX), which raised $75B and now trades around a $2T market cap. If Starship achieves reliable operations, it will fundamentally alter the economics of space access with its target cost per kg below $100 to LEO. Rocket Lab&apos;s inflection point is Neutron: a reusable medium-lift vehicle targeting ~$50M per launch that would directly compete for commercial and government missions in the most active segment of the market. Rocket Lab&apos;s stock (RKLB) surged roughly 700% in 2024 on investor enthusiasm for the Neutron program and growing space systems revenue. Both companies represent the clearest examples of new-space execution, though at very different scales.
+        SpaceX&apos;s near-term trajectory is defined by Starship&apos;s operational maturation and Starlink&apos;s continued revenue growth following SpaceX&apos;s June 2026 Nasdaq listing (SPCX), which raised $75B and now trades around a $1.84T market cap. If Starship achieves reliable operations, it will fundamentally alter the economics of space access with its target cost per kg below $100 to LEO. Rocket Lab&apos;s inflection point is Neutron: a reusable medium-lift vehicle targeting ~$50M per launch that would directly compete for commercial and government missions in the most active segment of the market. Rocket Lab&apos;s stock (RKLB) surged roughly 700% in 2024 on investor enthusiasm for the Neutron program and growing space systems revenue, and its market cap has continued climbing through 2026 to roughly $51B. Both companies represent the clearest examples of new-space execution, though at very different scales.
       </p>
 
       {/* CTA */}
@@ -178,7 +179,7 @@ export default function Page() {
         description: 'Side-by-side comparison of SpaceX and Rocket Lab covering launch vehicles, cadence, revenue, government contracts, and market positioning.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-22', dateModified: '2026-08-13',
+        datePublished: '2026-03-22', dateModified: '2026-08-14',
         url: 'https://spacenexus.us/compare/spacex-vs-rocket-lab',
       }).replace(/</g, '\\u003c') }} />
 

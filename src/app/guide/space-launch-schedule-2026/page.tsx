@@ -74,7 +74,7 @@ const LAUNCH_SITES = [
 const FAQ_ITEMS = [
   {
     question: 'How many rocket launches are expected in 2026?',
-    answer: '2026 is on track to exceed the record 324 orbital launch attempts set in 2025. SpaceX alone completed roughly 80 Falcon 9 missions before mid-2026 and is on pace for 150 or more this year, with China conducting 90+ launches and Europe, India, and emerging providers adding the rest.',
+    answer: `2026 is on track to exceed the record ${SITE_STATS.launches2025} orbital launch attempts set in 2025. SpaceX alone completed roughly 80 Falcon 9 missions before mid-2026 and is on pace for 150 or more this year, with China conducting 90+ launches and Europe, India, and emerging providers adding the rest.`,
   },
   {
     question: 'Where can I watch rocket launches live?',
@@ -90,7 +90,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What launch vehicles are new in 2026?',
-    answer: 'Starship reached a major operational milestone in July 2026, deploying its first functioning payloads (Starlink V3) and recovering both stages. Rocket Lab Neutron is targeting its first flight late in the year, Blue Origin New Glenn is ramping commercial cadence after its 2025 debut, and Relativity Space Terran R and several small launchers from Firefly and international startups round out the new entrants.',
+    answer: 'Starship reached a major operational milestone in July 2026, deploying its first functioning payloads (Starlink V3). Both the Super Heavy booster and the Starship upper stage completed controlled ocean splashdowns on that flight, though recovery/salvage of the floating ship stage was not confirmed. Rocket Lab Neutron is targeting its first flight late in the year, Blue Origin New Glenn is ramping commercial cadence after its 2025 debut, and Relativity Space Terran R and several small launchers from Firefly and international startups round out the new entrants.',
   },
 ];
 
@@ -145,7 +145,7 @@ export default function SpaceLaunchSchedule2026Page() {
               <h2 className="text-2xl font-bold text-white mb-4">Launch Activity Overview</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 2026 is the busiest year in spaceflight history. 2025 set the standing record with{' '}
-                <strong className="text-slate-300">324 orbital launch attempts</strong> — a 25 percent
+                <strong className="text-slate-300">{SITE_STATS.launches2025} orbital launch attempts</strong> — a 25 percent
                 jump over 2024 — and 2026 is running ahead of that pace. SpaceX completed roughly 80
                 Falcon 9 missions before mid-year and is on pace for 150 or more, accounting for close
                 to half of global launches, while China maintains a robust 90+ launch campaign.
@@ -153,10 +153,11 @@ export default function SpaceLaunchSchedule2026Page() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 The year has already delivered historic milestones: Artemis II carried a crew around
                 the Moon in April, and Starship deployed its first operational payloads — 20 Starlink
-                V3 satellites — in July while recovering both stages. Blue Origin&apos;s New Glenn is
-                ramping toward operational cadence, Ariane 6 is flying regularly in Europe, and the
-                mega-constellation buildout continues with Starlink, OneWeb, and Amazon&apos;s Project
-                Kuiper all requiring dozens of flights.
+                V3 satellites — in July. Both the booster and upper stage completed controlled ocean
+                splashdowns on that flight, though recovery of the floating ship stage was not
+                confirmed. Blue Origin&apos;s New Glenn is ramping toward operational cadence, Ariane 6
+                is flying regularly in Europe, and the mega-constellation buildout continues with
+                Starlink, OneWeb, and Amazon&apos;s Project Kuiper all requiring dozens of flights.
               </p>
               <div className="bg-white/[0.04] border border-white/10 rounded-lg p-4">
                 <p className="text-white/90 text-sm">
@@ -308,7 +309,7 @@ export default function SpaceLaunchSchedule2026Page() {
               <ul className="space-y-3 mb-6">
                 {[
                   'Artemis II — NASA’s first crewed lunar flyby since Apollo, flown April 2026',
-                  'Starship Flight 13 — first operational payload deployment (20 Starlink V3 satellites) with both stages recovered, July 2026',
+                  'Starship Flight 13 — first operational payload deployment (20 Starlink V3 satellites); booster and upper stage both completed controlled ocean splashdowns, though ship-stage recovery was not confirmed, July 2026',
                   'SpaceX’s ~80th Falcon 9 mission of the year before mid-2026 — a record cadence',
                 ].map((milestone) => (
                   <li key={milestone} className="flex items-start gap-3">

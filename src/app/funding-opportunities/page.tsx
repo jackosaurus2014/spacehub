@@ -165,6 +165,17 @@ function getDeadlineInfo(deadline: string | null, status: string): { text: strin
   return { text: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), urgency: 'normal' };
 }
 
+// Credibility guard: the API already excludes stale rows from the default
+// 'open' list, but this page also renders results for status=all/closed and
+// caches client-side, so the status badge must never contradict the deadline
+// shown right below it. A row whose deadline has passed reads as "Closed"
+// regardless of what the raw status column says (rolling/no-deadline rows
+// are unaffected — they have no deadline to compare against).
+function getEffectiveStatus(status: string, deadline: string | null): string {
+  if (status === 'rolling' || status === 'closed' || !deadline) return status;
+  return new Date(deadline) < new Date() ? 'closed' : status;
+}
+
 function getStatusBadge(status: string) {
   const styles: Record<string, { bg: string; text: string; label: string }> = {
     open: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'OPEN' },
@@ -231,7 +242,8 @@ function getAgencyIcon(agency: string): string {
 // ---------- Components ----------
 
 function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: number }) {
-  const deadlineInfo = getDeadlineInfo(opp.deadline, opp.status);
+  const effectiveStatus = getEffectiveStatus(opp.status, opp.deadline);
+  const deadlineInfo = getDeadlineInfo(opp.deadline, effectiveStatus);
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -271,7 +283,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-          {getStatusBadge(opp.status)}
+          {getStatusBadge(effectiveStatus)}
         </div>
       </div>
 

@@ -163,7 +163,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
             <div className="flex flex-wrap gap-2 mt-2">
               {primaryIsOperator && (
                 <Link
-                  href="/orbital-slots?tab=operators"
+                  href="/spectrum?tab=geo-slots"
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
                 >
                   View {event.primaryObject} operator &rarr;
@@ -171,7 +171,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               )}
               {secondaryIsOperator && (
                 <Link
-                  href="/orbital-slots?tab=operators"
+                  href="/spectrum?tab=geo-slots"
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
                 >
                   View {event.secondaryObject} operator &rarr;
@@ -259,7 +259,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
           </div>
           {isActivePayload && (
             <Link
-              href="/orbital-slots?tab=operators"
+              href="/spectrum?tab=geo-slots"
               className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
             >
               View in Operator Registry &rarr;
@@ -647,7 +647,7 @@ export default function DebrisTrackingTab() {
                 scenarios based on real-world debris events and orbital mechanics. Object counts align with
                 ESA Space Environment Report and USSPACECOM public catalog data.
               </p>
-              <Link href="/orbital-slots" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap">
+              <Link href="/spectrum?tab=geo-slots" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap">
                 See tracked operators &rarr;
               </Link>
             </div>

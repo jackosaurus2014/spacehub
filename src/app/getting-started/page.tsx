@@ -59,7 +59,7 @@ const QUICK_START_STEPS = [
 const USE_CASES = [
   {
     title: 'Track Launches & Satellites',
-    description: 'Real-time orbital tracking, launch schedules, constellation mapping',
+    description: `Real-time orbital tracking of ${SITE_STATS.satellites} objects, launch schedules, constellation mapping`,
     href: '/satellites',
     icon: (
       <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -339,7 +339,7 @@ export default function GettingStartedPage() {
                 step: 3,
                 title: 'Monitor Space News',
                 description:
-                  'Stay current with aggregated news from 53+ RSS feeds, categorized by topic: launches, policy, defense, commercial, science, and more. Save articles to your reading list and get AI-powered summaries.',
+                  `Stay current with aggregated news from ${SITE_STATS.newsFeeds} RSS feeds, categorized by topic: launches, policy, defense, commercial, science, and more. Save articles to your reading list and get AI-powered summaries.`,
                 href: '/news',
                 gradient: 'from-emerald-500/20 to-teal-500/20',
                 borderColor: 'border-emerald-500/20',
@@ -509,7 +509,7 @@ export default function GettingStartedPage() {
                   Live Digest
                 </h3>
                 <p className="text-slate-300 text-sm leading-relaxed">
-                  Get a curated daily briefing of the most important space industry news, launches, and market moves.
+                  Get a curated weekly briefing of the most important space industry news, launches, and market moves.
                 </p>
                 <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-slate-300 group-hover:gap-2 transition-all">
                   View Digest
@@ -568,6 +568,37 @@ export default function GettingStartedPage() {
               </Link>
             </StaggerItem>
           </StaggerContainer>
+
+          {/* More tools & resources — ported from the retired /discover page's
+              "Worth Exploring" and "Reference" sections */}
+          <div className="max-w-5xl mx-auto mt-10">
+            <p className="text-slate-500 text-sm text-center mb-4">
+              Popular features you might not have found yet
+            </p>
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-3 content-auto">
+              {[
+                { href: '/space-quiz', label: 'Space Quiz', description: 'Test your knowledge daily' },
+                { href: '/reading-list', label: 'Reading List', description: 'Save articles for later' },
+                { href: '/my-watchlists', label: 'Watchlists', description: 'Track companies and get alerts' },
+                { href: '/podcasts', label: 'Space Podcasts', description: '25+ shows in one directory' },
+                { href: '/year-in-review', label: 'Year in Review', description: '2026 platform milestones' },
+                { href: '/ecosystem-map', label: 'Industry Map', description: '8 sectors, 30+ companies visualized' },
+                { href: '/satellite-spotting', label: 'Satellite Spotter Guide', description: 'Naked-eye visibility passes' },
+                { href: '/timeline', label: 'Space Timeline', description: 'History of spaceflight' },
+                { href: '/procurement', label: 'Procurement', description: 'SAM.gov & SBIR/STTR tracking' },
+              ].map((item) => (
+                <StaggerItem key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="block h-full p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-cyan-500/20 hover:bg-white/[0.04] transition-all text-center group"
+                  >
+                    <p className="text-white text-sm font-medium group-hover:text-cyan-300 transition-colors">{item.label}</p>
+                    <p className="text-slate-500 text-xs mt-0.5">{item.description}</p>
+                  </Link>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
         </div>
       </section>
 

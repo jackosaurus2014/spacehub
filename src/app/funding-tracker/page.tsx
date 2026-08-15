@@ -424,9 +424,17 @@ function FundingTrackerPageInner() {
                         </div>
                         <div className="text-slate-500 text-xs">
                           {formatDate(r.date)}
-                          {r.leadInvestor
-                            ? ` -- Led by ${r.leadInvestor}`
-                            : ''}
+                          {r.leadInvestor && (
+                            <>
+                              {' -- Led by '}
+                              <Link
+                                href={`/investors?search=${encodeURIComponent(r.leadInvestor)}`}
+                                className="text-white/70 hover:text-white transition-colors"
+                              >
+                                {r.leadInvestor}
+                              </Link>
+                            </>
+                          )}
                         </div>
                       </div>
                       <div className="text-right">
@@ -697,7 +705,13 @@ function FundingTrackerPageInner() {
                         </span>
                         {round.leadInvestor && (
                           <span className="text-white/70 text-xs font-medium">
-                            {round.leadInvestor} (lead)
+                            <Link
+                              href={`/investors?search=${encodeURIComponent(round.leadInvestor)}`}
+                              className="hover:text-white transition-colors"
+                            >
+                              {round.leadInvestor}
+                            </Link>
+                            {' (lead)'}
                           </span>
                         )}
                         {round.investors.filter(
@@ -707,7 +721,17 @@ function FundingTrackerPageInner() {
                             {round.leadInvestor ? ', ' : ''}
                             {round.investors
                               .filter((inv) => inv !== round.leadInvestor)
-                              .join(', ')}
+                              .map((inv, i, arr) => (
+                                <span key={inv}>
+                                  <Link
+                                    href={`/investors?search=${encodeURIComponent(inv)}`}
+                                    className="hover:text-white transition-colors"
+                                  >
+                                    {inv}
+                                  </Link>
+                                  {i < arr.length - 1 ? ', ' : ''}
+                                </span>
+                              ))}
                           </span>
                         )}
                       </div>

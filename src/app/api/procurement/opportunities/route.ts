@@ -52,6 +52,18 @@ export async function GET(request: Request) {
     }
     if (deadlineAfter) {
       where.responseDeadline = { gte: deadlineAfter };
+    } else {
+      // Credibility guard: don't surface an opportunity as active once its
+      // response deadline has passed. The daily status-transition cron
+      // (POST handler below) flips these to isActive=false, but this
+      // query-time guard closes the gap between cron runs. Rows without a
+      // responseDeadline (e.g. type='award', which has no response window)
+      // are never considered stale. Skipped when the caller explicitly asks
+      // for deadlineAfter — that param already scopes the deadline.
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
+        { OR: [{ responseDeadline: null }, { responseDeadline: { gte: new Date() } }] },
+      ];
     }
 
     const [opportunities, total] = await Promise.all([
@@ -189,13 +201,27 @@ export async function POST(request: Request) {
       }
     }
 
+    // Close opportunities whose response deadline has passed. The SAM.gov
+    // sync above only creates/updates rows — it never expired old ones,
+    // which let isActive=true solicitations sit past their responseDeadline
+    // indefinitely (credibility fix). Rows without a responseDeadline (e.g.
+    // type='award', which has no response window) are exempt.
+    const expired = await prisma.procurementOpportunity.updateMany({
+      where: {
+        isActive: true,
+        responseDeadline: { lt: new Date() },
+      },
+      data: { isActive: false },
+    });
+
     logger.info('SAM.gov sync completed', {
       totalFetched: result.totalRecords,
       created,
       updated,
+      expiredClosed: expired.count,
     });
 
-    return createSuccessResponse({ created, updated, totalFetched: result.totalRecords });
+    return createSuccessResponse({ created, updated, totalFetched: result.totalRecords, expiredClosed: expired.count });
   } catch (error) {
     logger.error('Failed to sync SAM.gov data', {
       error: error instanceof Error ? error.message : String(error),

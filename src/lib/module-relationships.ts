@@ -11,13 +11,13 @@ export interface RelatedModuleConfig {
 // Reusable module definitions
 const MODULES: Record<string, RelatedModuleConfig> = {
   // ── Market Intelligence ──
-  marketIntel: { name: 'Market Intelligence', description: 'Industry analysis & trends', href: '/market-intel', icon: '📊' },
+  marketIntel: { name: 'Space Stocks & Markets', description: 'Live quotes, ETFs & benchmarks', href: '/space-stocks', icon: '📊' },
   spaceStocks: { name: 'Space Stocks', description: 'Live public space-company quotes', href: '/space-stocks', icon: '📈' },
   companyProfiles: { name: 'Company Profiles', description: 'Space industry directory', href: '/company-profiles', icon: '🏢' },
   companyResearch: { name: 'Company Research', description: 'AI-powered research', href: '/company-research', icon: '🔬' },
-  spaceEconomy: { name: 'Space Economy', description: 'Economic indicators', href: '/market-intel', icon: '💰' },
+  spaceEconomy: { name: 'Space Economy', description: 'Economic indicators', href: '/space-stocks', icon: '💰' },
   spaceCapital: { name: 'Space Capital', description: 'Investment landscape', href: '/funding-tracker', icon: '🏦' },
-  marketSizing: { name: 'Market Sizing', description: 'TAM/SAM/SOM analysis', href: '/market-intel', icon: '📏' },
+  marketSizing: { name: 'Market Sizing', description: 'TAM/SAM/SOM analysis', href: '/space-stocks', icon: '📏' },
   fundingTracker: { name: 'Funding Tracker', description: 'Investment rounds', href: '/funding-tracker', icon: '💸' },
   investors: { name: 'Investor Directory', description: 'Space investors & VCs', href: '/investors', icon: '👤' },
   investmentTracker: { name: 'Investment Tracker', description: 'Deal tracking dashboard', href: '/funding-tracker', icon: '📈' },
@@ -25,7 +25,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   maTracker: { name: 'M&A Tracker', description: 'Mergers & acquisitions', href: '/funding-tracker', icon: '🔄' },
   startupTracker: { name: 'Startup Tracker', description: 'Emerging companies', href: '/startups', icon: '🚀' },
   reportCards: { name: 'Report Cards', description: 'Company performance grades', href: '/report-cards', icon: '📝' },
-  marketMap: { name: 'Market Map', description: 'Industry landscape', href: '/market-intel', icon: '🗺️' },
+  marketMap: { name: 'Market Map', description: 'Industry landscape', href: '/space-stocks', icon: '🗺️' },
   ecosystemMap: { name: 'Ecosystem Map', description: 'Industry connections', href: '/ecosystem-map', icon: '🌐' },
   industryTrends: { name: 'Industry Trends', description: 'Trend analysis', href: '/industry-trends', icon: '📈' },
   spaceScore: { name: 'Space Score', description: 'Company scoring', href: '/space-score', icon: '⭐' },
@@ -36,7 +36,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   blogs: { name: 'Blogs & Articles', description: 'Industry analysis', href: '/blogs', icon: '✍️' },
   spaceDefense: { name: 'Space Defense', description: 'Defense & security', href: '/space-defense', icon: '🛡️' },
   aiInsights: { name: 'AI Insights', description: 'AI-generated analysis', href: '/ai-insights', icon: '🤖' },
-  newsDigest: { name: 'Daily Digest', description: 'Curated headlines', href: '/daily-digest', icon: '📋' },
+  newsDigest: { name: 'Live Digest', description: 'Rolling 7-day digest', href: '/briefs', icon: '📋' },
   intelligenceBrief: { name: 'Intelligence Brief', description: 'Weekly briefing', href: '/intelligence-brief', icon: '📑' },
   podcasts: { name: 'Podcasts', description: 'Industry podcasts', href: '/podcasts', icon: '🎙️' },
   resources: { name: 'Resources', description: 'Curated content', href: '/resources', icon: '📚' },
@@ -53,7 +53,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   contractAwards: { name: 'Contract Awards', description: 'Recent awards', href: '/procurement', icon: '🏆' },
   fundingOpportunities: { name: 'Funding Opportunities', description: 'Grants & programs', href: '/funding-opportunities', icon: '💡' },
   fundingRounds: { name: 'Funding Rounds', description: 'Investment rounds DB', href: '/funding-tracker', icon: '💵' },
-  govBudgets: { name: 'Government Budgets', description: 'Agency spending', href: '/government-budgets', icon: '🏛️' },
+  govBudgets: { name: 'Government Budgets', description: 'Global agency spending', href: '/procurement?tab=global-budgets', icon: '🏛️' },
 
   // ── Mission Planning ──
   missionCost: { name: 'Mission Planner', description: 'Cost estimation', href: '/mission-cost', icon: '🧮' },
@@ -61,7 +61,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   resourceExchange: { name: 'Resource Exchange', description: 'Trade & barter', href: '/marketplace', icon: '🔄' },
   launchWindows: { name: 'Launch Windows', description: 'Optimal timing', href: '/launch-windows', icon: '🪟' },
   launchVehicles: { name: 'Launch Vehicles', description: 'Rocket database', href: '/launch-vehicles', icon: '🚀' },
-  blueprints: { name: 'Blueprints', description: 'Technical designs', href: '/blueprints', icon: '📐' },
+  blueprints: { name: 'Propulsion Database', description: 'Engines, buses & landers', href: '/propulsion-database', icon: '📐' },
   orbitalCosts: { name: 'Orbital Costs', description: 'Cost analysis', href: '/orbital-costs', icon: '💲' },
   orbitalCalc: { name: 'Orbital Calculator', description: 'Mechanics calculator', href: '/orbital-calculator', icon: '🔢' },
   constellationDesigner: { name: 'Constellation Designer', description: 'Design tool', href: '/constellation-designer', icon: '✨' },
@@ -80,7 +80,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
 
   // ── Space Operations ──
   satellites: { name: 'Satellite Tracker', description: 'Orbital tracking', href: '/satellites', icon: '🛰️' },
-  orbitalSlots: { name: 'Orbital Slots', description: 'Slot management', href: '/orbital-slots', icon: '🎯' },
+  orbitalSlots: { name: 'GEO Slots', description: 'GEO slot allocations', href: '/spectrum?tab=geo-slots', icon: '🎯' },
   constellations: { name: 'Constellations', description: 'Constellation data', href: '/constellations', icon: '⭐' },
   groundStations: { name: 'Ground Stations', description: 'Station network', href: '/ground-stations', icon: '📡' },
   spaceStations: { name: 'Space Stations', description: 'Orbital habitats', href: '/space-stations', icon: '🏠' },
@@ -128,7 +128,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   earthEvents: { name: 'Earth Events', description: 'NASA EONET disasters', href: '/earth-events', icon: '🌎' },
 
   // ── Enthusiast Guides ──
-  satelliteSpotting: { name: 'Satellite Spotting Guide', description: 'How to see satellites', href: '/satellite-spotting', icon: '&#127776;' },
+  satelliteSpotting: { name: 'Satellite Spotting Guide', description: 'How to see satellites', href: '/whats-overhead', icon: '&#127776;' },
   auroraForecast: { name: 'Aurora Forecast', description: 'Northern lights guide', href: '/aurora-forecast', icon: '&#127752;' },
 
   // ── Tourism & Misc ──
@@ -158,7 +158,8 @@ const MODULES: Record<string, RelatedModuleConfig> = {
 
   // ── Learning & Reference ──
   glossary: { name: 'Glossary', description: 'Industry terms', href: '/glossary', icon: '📖' },
-  timeline: { name: 'Timeline', description: 'Space history', href: '/timeline', icon: '⏳' },
+  history: { name: 'Space History Timeline', description: 'Searchable space history database', href: '/history', icon: '⏳' },
+  thisDayInSpace: { name: 'This Day in Space', description: 'On this date in space history', href: '/this-day-in-space', icon: '📅' },
   orbitGuide: { name: 'Orbit Guide', description: 'Orbit types', href: '/orbit-guide', icon: '🌀' },
   techReadiness: { name: 'Tech Readiness', description: 'TRL tracker', href: '/tech-readiness', icon: '🔬' },
   conferences: { name: 'Conferences', description: 'Industry events', href: '/space-calendar', icon: '🎤' },
@@ -224,7 +225,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'mission-cost': [MODULES.launchCostCalc, MODULES.orbitalCosts, MODULES.launchVehicles, MODULES.spaceInsurance, MODULES.missionSimulator],
   'space-insurance': [MODULES.missionCost, MODULES.spaceInsurance.href === '/space-insurance' ? MODULES.regulatoryRisk : MODULES.regulatoryRisk, MODULES.launchVehicles],
   'resource-exchange': [MODULES.marketplace, MODULES.supplyChain, MODULES.businessOps],
-  'launch-windows': [MODULES.launchManifest, MODULES.launchVehicles, MODULES.launchSites, MODULES.missionCost],
+  'launch-windows': [MODULES.launchManifest, MODULES.launchVehicles, MODULES.launchSites, MODULES.marsPlanner, MODULES.cislunar],
   'launch-vehicles': [MODULES.launchCostCalc, MODULES.launchEconomics, MODULES.launchSites, MODULES.missionCost, MODULES.launchManifest],
   'blueprints': [MODULES.manufacturing, MODULES.tools, MODULES.constellationDesigner, MODULES.materialsDB],
   'orbital-costs': [MODULES.missionCost, MODULES.launchCostCalc, MODULES.launchEconomics, MODULES.orbitalCalc],
@@ -238,7 +239,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'launch-manifest': [MODULES.launchWindows, MODULES.launchVehicles, MODULES.launchSites, MODULES.missionPipeline],
   'launch-sites': [MODULES.spaceports, MODULES.launchVehicles, MODULES.launchManifest, MODULES.launchWindows],
   'mission-simulator': [MODULES.missionCost, MODULES.orbitalCalc, MODULES.launchVehicles, MODULES.missionPipeline],
-  'mission-heritage': [MODULES.missionStats, MODULES.timeline, MODULES.missionPipeline, MODULES.spaceAgencies],
+  'mission-heritage': [MODULES.missionStats, MODULES.history, MODULES.missionPipeline, MODULES.spaceAgencies],
   'mission-pipeline': [MODULES.launchManifest, MODULES.missionStats, MODULES.missionHeritage, MODULES.launchVehicles],
   'mission-stats': [MODULES.missionHeritage, MODULES.missionPipeline, MODULES.launchVehicles, MODULES.govBudgets],
   'unit-economics': [MODULES.missionCost, MODULES.launchEconomics, MODULES.marketSizing, MODULES.businessOps],
@@ -283,7 +284,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Solar System Expansion cluster ──
   'solar-exploration': [MODULES.marsPlanner, MODULES.cislunar, MODULES.asteroidWatch, MODULES.isru, MODULES.missionPipeline],
   'mars-planner': [MODULES.solarExploration, MODULES.isru, MODULES.missionCost, MODULES.launchWindows],
-  'cislunar': [MODULES.solarExploration, MODULES.spaceStations, MODULES.isru, MODULES.marsPlanner],
+  'cislunar': [MODULES.solarExploration, MODULES.spaceStations, MODULES.isru, MODULES.marsPlanner, MODULES.launchWindows],
   'asteroid-watch': [MODULES.solarExploration, MODULES.spaceMining, MODULES.debrisCatalog, MODULES.spaceEnvironment],
   'isru': [MODULES.spaceMining, MODULES.marsPlanner, MODULES.cislunar, MODULES.solarExploration],
 
@@ -305,9 +306,8 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'pricing': [MODULES.marketplace, MODULES.businessOps],
 
   // ── Learning & Reference ──
-  'glossary': [MODULES.acronyms, MODULES.learn, MODULES.orbitGuide, MODULES.timeline],
+  'glossary': [MODULES.acronyms, MODULES.learn, MODULES.orbitGuide, MODULES.history],
   'acronyms': [MODULES.glossary, MODULES.learn, MODULES.standardsRef, MODULES.orbitGuide],
-  'timeline': [MODULES.missionHeritage, MODULES.missionStats, MODULES.glossary, MODULES.spaceAgencies],
   'orbit-guide': [MODULES.orbitalCalc, MODULES.satellites, MODULES.glossary, MODULES.constellations],
   'tech-readiness': [MODULES.patentLandscape, MODULES.industryTrends, MODULES.companyResearch, MODULES.techReadiness.href === '/tech-readiness' ? MODULES.marketIntel : MODULES.marketIntel],
   'conferences': [MODULES.spaceEvents, MODULES.news, MODULES.resources, MODULES.podcasts],
@@ -363,7 +363,6 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'widgets': [MODULES.satellites, MODULES.spaceWeather, MODULES.launchManifest, MODULES.marketIntel, MODULES.news],
 
   // ── Community / Event Pages ──
-  'satellite-2026': [MODULES.spaceEvents, MODULES.conferences, MODULES.news, MODULES.companyProfiles, MODULES.marketplace],
   'help': [MODULES.glossary, MODULES.learn, MODULES.tools, MODULES.news],
 
   // ── Careers & Solutions ──
@@ -397,7 +396,6 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'newsletter': [MODULES.intelligenceBrief, MODULES.newsDigest, MODULES.news, MODULES.newsletters, MODULES.blogs],
 
   // ── Enthusiast Guide Pages ──
-  'satellite-spotting': [MODULES.satellites, MODULES.spaceWeather, MODULES.learn, MODULES.orbitGuide, MODULES.auroraForecast],
   'aurora-forecast': [MODULES.spaceWeather, MODULES.spaceEnvironment, MODULES.solarExploration, MODULES.satellites, MODULES.satelliteSpotting],
 
   // ── Alternatives & Competitors ──
@@ -522,13 +520,16 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'sectors/[slug]': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.industryTrends, MODULES.marketMap],
 
   // ── This Day in Space ──
-  'this-day-in-space': [MODULES.timeline, MODULES.missionHeritage, MODULES.news, MODULES.learn, MODULES.spaceAgencies],
+  'this-day-in-space': [MODULES.history, MODULES.missionHeritage, MODULES.news, MODULES.learn, MODULES.spaceAgencies],
+
+  // ── History ──
+  'history': [MODULES.thisDayInSpace, MODULES.missionHeritage, MODULES.missionStats, MODULES.glossary, MODULES.spaceAgencies],
 
   // ── Videos ──
   'videos': [MODULES.news, MODULES.podcasts, MODULES.blogs, MODULES.resources, MODULES.learn],
 
   // ── What's Overhead ──
-  'whats-overhead': [MODULES.satellites, MODULES.satelliteSpotting, MODULES.spaceWeather, MODULES.orbitGuide, MODULES.constellations],
+  'whats-overhead': [MODULES.satellites, MODULES.auroraForecast, MODULES.spaceWeather, MODULES.orbitGuide, MODULES.constellations],
 
   // ── Year in Review ──
   'year-in-review': [MODULES.spaceEconomy, MODULES.industryTrends, MODULES.missionStats, MODULES.fundingTracker, MODULES.govBudgets],

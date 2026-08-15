@@ -4,11 +4,23 @@ import prisma from '@/lib/db';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
+import DataAsOf from '@/components/ui/DataAsOf';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { RECENT_IPOS } from '@/lib/startup-hub-data';
 import { SITE_STATS } from '@/lib/site-stats';
 import { logger } from '@/lib/logger';
 import SpaceStocksTables, { type StockRow, type IpoRow } from './SpaceStocksTables';
+
+// Curated industry cost/spend benchmarks — salvaged from the retired /market-intel
+// and /industry-trends pages during the 2026-08 market-intel merge. Hand-maintained,
+// not DB-driven; refresh alongside quarterly editorial passes.
+const INDUSTRY_BENCHMARKS: { label: string; value: string; note: string }[] = [
+  { label: 'Falcon 9 cost/kg (2025)', value: '~$2,700', note: 'Reuse-driven launch economics, current baseline' },
+  { label: 'Starship target cost/kg', value: '<$100', note: 'SpaceX long-term target for full reusability' },
+  { label: 'US Space Force budget (FY26)', value: '$30B+', note: 'FY2026 budget request, national security space' },
+  { label: 'NASA CLD program funding', value: '$415M', note: 'Commercial LEO Destinations, across 4 providers' },
+  { label: 'ADR market forecast (2030)', value: '$3.5B', note: 'Active debris removal & sustainability services' },
+];
 
 // Live roster pulled from CompanyProfile on every request (revalidated hourly) —
 // new IPOs and ticker updates show up without a code deploy.
@@ -235,7 +247,7 @@ export default async function SpaceStocksPage() {
             </div>
             <div className="shrink-0 flex flex-col gap-2">
               <Link href="/startups" className="text-xs text-amber-400 hover:text-amber-300 font-medium">IPO Watch on Startups Hub →</Link>
-              <Link href="/market-intel" className="text-xs text-slate-400 hover:text-white font-medium">Full Market Intel →</Link>
+              <Link href="/industry-trends" className="text-xs text-slate-400 hover:text-white font-medium">Full Industry Trends →</Link>
             </div>
           </div>
         </div>
@@ -246,6 +258,29 @@ export default async function SpaceStocksPage() {
           primes={roster.primes}
           satelliteEO={roster.satelliteEO}
         />
+
+        {/* Industry Benchmarks — curated cost/spend reference points, salvaged from /market-intel merge */}
+        <div className="card p-6 mb-10">
+          <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+            <h3 className="text-white font-semibold">Industry Benchmarks</h3>
+            <Link href="/industry-trends" className="text-xs text-cyan-400 hover:text-cyan-300">
+              Full Industry Trends →
+            </Link>
+          </div>
+          <p className="text-slate-400 text-sm mb-4">
+            Reference cost, budget, and market-size figures cited across SpaceNexus coverage. Curated by the editorial team, not live-market data.
+          </p>
+          <DataAsOf date="Q3 2026" note="curated editorial benchmarks; refreshed quarterly" className="mb-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {INDUSTRY_BENCHMARKS.map((b) => (
+              <div key={b.label} className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.06]">
+                <div className="text-lg font-bold text-amber-400">{b.value}</div>
+                <div className="text-xs text-white mt-1">{b.label}</div>
+                <div className="text-[11px] text-slate-500 mt-1 leading-snug">{b.note}</div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Compare tools */}
         <div className="card p-6 mb-10">

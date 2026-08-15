@@ -3,7 +3,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Main module routes (10 main modules) ──
   'mission-control': '/mission-control',
   'news-media': '/news',
-  'space-market-intelligence': '/market-intel',
+  'space-market-intelligence': '/space-stocks',
   'business-opportunities-group': '/business-opportunities',
   'mission-planning': '/mission-cost',
   'space-operations': '/satellites',
@@ -19,12 +19,12 @@ export const MODULE_ROUTES: Record<string, string> = {
   'ai-insights': '/ai-insights',
 
   // ── Space Market Intelligence children ──
-  'market-intel': '/market-intel',
+  'market-intel': '/space-stocks',
   'company-research': '/company-research',
-  'space-economy': '/market-intel',
+  'space-economy': '/space-stocks',
   'space-capital': '/funding-tracker',
   'company-profiles': '/company-profiles',
-  'market-sizing': '/market-intel',
+  'market-sizing': '/space-stocks',
   'funding-tracker': '/funding-tracker',
   'investor-directory': '/investors',
 
@@ -43,7 +43,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   'resource-exchange': '/marketplace',
   'launch-windows': '/launch-windows',
   'launch-vehicles': '/launch-vehicles',
-  'blueprints': '/blueprints',
+  'blueprints': '/propulsion-database',
   'orbital-costs': '/orbital-costs',
   'orbital-calculator': '/orbital-calculator',
   'constellation-designer': '/constellation-designer',
@@ -53,7 +53,7 @@ export const MODULE_ROUTES: Record<string, string> = {
 
   // ── Space Operations children ──
   'satellite-tracker': '/satellites',
-  'orbital-management': '/orbital-slots',
+  'orbital-management': '/spectrum?tab=geo-slots',
   'constellation-tracker': '/constellations',
   'ground-station-map': '/ground-stations',
   'space-stations': '/space-stations',
@@ -87,10 +87,10 @@ export const MODULE_ROUTES: Record<string, string> = {
 
   // ── Intelligence & Analytics ──
   'investment-tracker': '/funding-tracker',
-  'market-map': '/market-intel',
+  'market-map': '/space-stocks',
   'intelligence-brief': '/intelligence-brief',
   'mission-stats': '/mission-stats',
-  'government-budgets': '/government-budgets',
+  'government-budgets': '/procurement?tab=global-budgets',
 
   // ── Pipeline & Resources ──
   'mission-pipeline': '/mission-control',
@@ -101,7 +101,7 @@ export const MODULE_ROUTES: Record<string, string> = {
 
   // ── Resources & Reference ──
   'glossary': '/glossary',
-  'timeline': '/timeline',
+  'timeline': '/history',
   'comparison-tools': '/compare',
   'satellite-comparison': '/compare/satellites',
 

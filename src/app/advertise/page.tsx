@@ -8,6 +8,12 @@ import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import AdvertiseInquiryForm from './AdvertiseInquiryForm';
+import {
+  isSelfServeAdsEnabled,
+  SPONSORSHIP_PRODUCTS,
+  SELF_SERVE_MIN_BUDGET_USD,
+  SELF_SERVE_MAX_BUDGET_USD,
+} from '@/lib/ads/ad-billing';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,13 +36,17 @@ const sponsorshipOptions = [
   {
     name: 'State of the Space Economy',
     description: 'A weekly, data-driven brief published every Monday, built directly from our own market and news data — not AI-generated. Sponsor a placement in the brief.',
-    cta: 'Live every Monday',
+    price: `$${(SPONSORSHIP_PRODUCTS.single.amountCents / 100).toLocaleString()}/issue`,
+    priceDetail: `or $${(SPONSORSHIP_PRODUCTS.block4.amountCents / 100).toLocaleString()} for a 4-issue block`,
+    cta: 'Sponsor an issue',
+    selfServe: true,
     color: 'cyan',
   },
   {
     name: "Who's Hiring in Space",
     description: "A weekly article generated entirely from live SpaceJobPosting data synced from company ATS boards. Sponsor a placement alongside the week's hiring roundup.",
-    cta: 'Live weekly',
+    cta: 'Inquire',
+    selfServe: false,
     color: 'purple',
   },
   {
@@ -44,12 +54,16 @@ const sponsorshipOptions = [
     description: 'Our embeddable live jobs widget is used by third-party sites. Sponsor branded attribution on the widget and job feed.',
     cta: 'See the widget',
     href: '/widgets/jobs',
+    selfServe: false,
     color: 'emerald',
   },
   {
-    name: 'Site Display',
-    description: 'Logo and banner placement across relevant SpaceNexus pages — market intelligence, jobs, and news sections.',
-    cta: 'Sponsorships open',
+    name: 'Site Display Campaign',
+    description: 'Logo and banner placement across relevant SpaceNexus pages — market intelligence, jobs, and news sections. Set your own budget and launch it yourself.',
+    price: `$${SELF_SERVE_MIN_BUDGET_USD}–$${SELF_SERVE_MAX_BUDGET_USD.toLocaleString()}`,
+    priceDetail: 'self-serve, you set the budget',
+    cta: 'Start a campaign',
+    selfServe: true,
     color: 'amber',
   },
 ];
@@ -102,6 +116,7 @@ const CARD_ACCENTS: Record<string, string> = {
 
 export default async function AdvertisePage() {
   const { activeJobs, companies } = await getLiveCounts();
+  const selfServeEnabled = isSelfServeAdsEnabled();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0a0a0a] to-black">
@@ -169,36 +184,67 @@ export default async function AdvertisePage() {
             What&apos;s Available to Sponsor
           </h2>
           <p className="text-slate-400 text-center mb-8 max-w-2xl mx-auto">
-            Sponsorships are open. Pricing is still in research — inquire below and our team will follow up
-            with options and a tailored proposal.
+            {selfServeEnabled
+              ? 'Published rates below for the weekly brief and self-serve display campaigns — pay online and your campaign goes to review immediately. Larger or custom placements are quoted directly.'
+              : 'Sponsorships are open. Inquire below and our team will follow up with options and a tailored proposal.'}
           </p>
         </ScrollReveal>
 
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16" staggerDelay={0.12}>
-          {sponsorshipOptions.map((option) => (
-            <StaggerItem key={option.name}>
-              <div className="card p-8 h-full flex flex-col">
-                <h3 className="text-xl font-bold text-white mb-2">{option.name}</h3>
-                <p className="text-slate-300 text-sm leading-relaxed mb-6 flex-1">{option.description}</p>
-                {option.href ? (
-                  <Link
-                    href={option.href}
-                    className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${CARD_ACCENTS[option.color]} bg-clip-text text-transparent`}
-                  >
-                    {option.cta} →
-                  </Link>
-                ) : (
-                  <a
-                    href="#contact"
-                    className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${CARD_ACCENTS[option.color]} bg-clip-text text-transparent`}
-                  >
-                    {option.cta} →
-                  </a>
-                )}
-              </div>
-            </StaggerItem>
-          ))}
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" staggerDelay={0.12}>
+          {sponsorshipOptions.map((option) => {
+            const showSelfServeCta = option.selfServe && selfServeEnabled;
+            return (
+              <StaggerItem key={option.name}>
+                <div className="card p-8 h-full flex flex-col">
+                  <h3 className="text-xl font-bold text-white mb-2">{option.name}</h3>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-4 flex-1">{option.description}</p>
+                  {option.price && (
+                    <div className="mb-4">
+                      <span className="text-2xl font-bold text-white">{option.price}</span>
+                      {option.priceDetail && (
+                        <span className="block text-xs text-slate-400 mt-0.5">{option.priceDetail}</span>
+                      )}
+                    </div>
+                  )}
+                  {option.href ? (
+                    <Link
+                      href={option.href}
+                      className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${CARD_ACCENTS[option.color]} bg-clip-text text-transparent`}
+                    >
+                      {option.cta} →
+                    </Link>
+                  ) : showSelfServeCta ? (
+                    <Link
+                      href="/advertise/dashboard"
+                      className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${CARD_ACCENTS[option.color]} bg-clip-text text-transparent`}
+                    >
+                      {option.cta} →
+                    </Link>
+                  ) : (
+                    <a
+                      href="#contact"
+                      className={`inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${CARD_ACCENTS[option.color]} bg-clip-text text-transparent`}
+                    >
+                      Inquire →
+                    </a>
+                  )}
+                </div>
+              </StaggerItem>
+            );
+          })}
         </StaggerContainer>
+
+        {selfServeEnabled && (
+          <ScrollReveal className="mb-16">
+            <p className="text-center text-sm text-slate-500 max-w-2xl mx-auto">
+              Self-serve sponsorships require a free advertiser account. Register and pay from the{' '}
+              <Link href="/advertise/dashboard" className="underline hover:text-white">
+                advertiser dashboard
+              </Link>
+              ; every campaign is reviewed within 2 business days and declined campaigns are refunded in full.
+            </p>
+          </ScrollReveal>
+        )}
 
         {/* Why Advertise With Us */}
         <ScrollReveal className="mb-4">
@@ -232,11 +278,12 @@ export default async function AdvertisePage() {
         <ScrollReveal className="mb-16">
           <div className="max-w-2xl mx-auto" id="contact">
             <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center">
-              Sponsorships Open — Inquire
+              {selfServeEnabled ? 'Custom & Larger Placements — Inquire' : 'Sponsorships Open — Inquire'}
             </h2>
             <p className="text-slate-400 text-center mb-8">
-              Tell us about your sponsorship goals and our team will reach out with options. Pricing is still
-              in research, so proposals are tailored per conversation.
+              {selfServeEnabled
+                ? `Weekly-brief and self-serve display rates are published above (self-serve display campaigns run $${SELF_SERVE_MIN_BUDGET_USD}–$${SELF_SERVE_MAX_BUDGET_USD.toLocaleString()}). For Who's Hiring placements, jobs-widget attribution, larger budgets, or anything custom, tell us about your goals here and our team will follow up.`
+                : 'Tell us about your sponsorship goals and our team will reach out with options.'}
             </p>
             <AdvertiseInquiryForm />
           </div>

@@ -1,23 +1,38 @@
 'use client';
 
-import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import {
-  KEY_GEO_SLOTS,
-  COUNTRY_FLAGS,
-  type GeoSlotInfo,
-} from './data';
+import DataAsOf from '@/components/ui/DataAsOf';
+import { KEY_GEO_SLOTS, GEO_SLOT_COUNTRY_FLAGS } from './data';
 
-interface GeoSlotsTabProps {
-  filteredGeoSlots: GeoSlotInfo[];
-  searchQuery: string;
-  geoSortBy: 'longitude' | 'value' | 'operator';
-  setGeoSortBy: (v: 'longitude' | 'value' | 'operator') => void;
+// Ported from the retired /orbital-slots module's GEO Slots tab (2026-08-14).
+// Self-contained: owns its own sort state so it can be dropped into the
+// Spectrum Management tab set with a single render-block registration.
+
+type SortKey = 'longitude' | 'value' | 'operator';
+
+function parseValue(v: string): number {
+  const num = parseFloat(v.replace(/[^0-9.]/g, ''));
+  return v.includes('B') ? num * 1000 : num;
 }
 
-export default function GeoSlotsTab({ filteredGeoSlots, geoSortBy, setGeoSortBy }: GeoSlotsTabProps) {
+export default function GeoSlotsTab() {
+  const [sortBy, setSortBy] = useState<SortKey>('longitude');
+
+  const sortedSlots = useMemo(() => {
+    const list = [...KEY_GEO_SLOTS];
+    list.sort((a, b) => {
+      if (sortBy === 'longitude') return a.longitude - b.longitude;
+      if (sortBy === 'operator') return a.operator.localeCompare(b.operator);
+      return parseValue(b.estimatedValue) - parseValue(a.estimatedValue);
+    });
+    return list;
+  }, [sortBy]);
+
   return (
     <div className="space-y-6">
+      <DataAsOf date="February 2026" className="mb-2" />
+
       {/* GEO Introduction */}
       <div className="card p-5">
         <div className="flex items-start gap-4">
@@ -27,9 +42,11 @@ export default function GeoSlotsTab({ filteredGeoSlots, geoSortBy, setGeoSortBy 
           <div>
             <h3 className="text-lg font-semibold text-white mb-1">Geostationary Orbital Slots</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              GEO slots at 35,786 km altitude are among the most commercially valuable positions in space. With approximately 1,800 usable positions
-              (at 0.2{'\u00B0'} spacing), these slots are coordinated by the ITU and assigned to national administrations. A single
-              premium GEO slot can be worth hundreds of millions of dollars in broadcast and communications revenue.
+              GEO slots at 35,786 km altitude are among the most commercially valuable positions in space. With
+              approximately 1,800 usable positions (at 0.2{'°'} spacing), these slots are coordinated by the
+              ITU and assigned to national administrations &mdash; the same ITU coordination process covered in the
+              Coordination tab. A single premium GEO slot can be worth hundreds of millions of dollars in broadcast
+              and communications revenue.
             </p>
           </div>
         </div>
@@ -46,9 +63,9 @@ export default function GeoSlotsTab({ filteredGeoSlots, geoSortBy, setGeoSortBy 
           ]).map((option) => (
             <button
               key={option.value}
-              onClick={() => setGeoSortBy(option.value)}
+              onClick={() => setSortBy(option.value)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                geoSortBy === option.value
+                sortBy === option.value
                   ? 'bg-white/10 text-white/90 border border-white/10'
                   : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/[0.1]'
               }`}
@@ -57,15 +74,15 @@ export default function GeoSlotsTab({ filteredGeoSlots, geoSortBy, setGeoSortBy 
             </button>
           ))}
           <span className="ml-auto text-slate-500 text-sm">
-            {filteredGeoSlots.length} slot{filteredGeoSlots.length !== 1 ? 's' : ''}
+            {sortedSlots.length} slot{sortedSlots.length !== 1 ? 's' : ''}
           </span>
         </div>
       </div>
 
       {/* GEO Slot Cards */}
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredGeoSlots.map((slot) => {
-          const flag = COUNTRY_FLAGS[slot.country] || '\u{1F30D}';
+        {sortedSlots.map((slot) => {
+          const flag = GEO_SLOT_COUNTRY_FLAGS[slot.country] || '\u{1F30D}';
           return (
             <StaggerItem key={slot.position}>
               <div className="card p-5 hover:border-white/10 transition-colors h-full flex flex-col">
@@ -128,25 +145,12 @@ export default function GeoSlotsTab({ filteredGeoSlots, geoSortBy, setGeoSortBy 
                   {slot.launchYear && (
                     <span className="text-slate-500 text-xs">Launch: {slot.launchYear}</span>
                   )}
-                  <Link
-                    href="/spectrum"
-                    className="inline-flex items-center gap-1 text-xs text-white/90 hover:text-white transition-colors"
-                  >
-                    Spectrum Filings &rarr;
-                  </Link>
                 </div>
               </div>
             </StaggerItem>
           );
         })}
       </StaggerContainer>
-
-      {filteredGeoSlots.length === 0 && (
-        <div className="text-center py-16">
-          <h3 className="text-xl font-semibold text-white mb-2">No Matching GEO Slots</h3>
-          <p className="text-slate-400">Try adjusting your search.</p>
-        </div>
-      )}
 
       {/* GEO Slot Explainer */}
       <div className="card p-5 border-dashed">
@@ -169,7 +173,8 @@ export default function GeoSlotsTab({ filteredGeoSlots, geoSortBy, setGeoSortBy 
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
               The filing enters a coordination phase where potentially affected administrations are identified.
-              Bilateral negotiations resolve interference issues (can take 2-7 years).
+              Bilateral negotiations resolve interference issues (can take 2-7 years). See the Coordination tab
+              for the full process.
             </p>
           </div>
           <div>

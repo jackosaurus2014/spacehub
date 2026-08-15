@@ -39,12 +39,12 @@ const PERSONA_SIDEBAR_DEFAULTS: Record<Persona, string[]> = {
     '/space-weather', '/tools', '/workforce-analytics', '/space-tycoon',
   ],
   investor: [
-    '/mission-control', '/market-intel', '/company-profiles', '/funding-tracker',
+    '/mission-control', '/space-stocks', '/company-profiles', '/funding-tracker',
     '/startup-directory', '/deal-rooms', '/deal-flow', '/space-tycoon',
   ],
   jobseeker: [
     '/mission-control', '/space-talent', '/company-profiles', '/news',
-    '/blog', '/market-intel', '/funding-tracker', '/space-tycoon',
+    '/blog', '/space-stocks', '/funding-tracker', '/space-tycoon',
   ],
 };
 

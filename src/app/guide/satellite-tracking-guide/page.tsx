@@ -353,7 +353,7 @@ export default function SatelliteTrackingGuidePage() {
                 and speeds.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/orbital-slots" className="text-slate-300 hover:underline">
+                <Link href="/spectrum?tab=geo-slots" className="text-slate-300 hover:underline">
                   Explore orbital slot allocations and availability on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -446,7 +446,33 @@ export default function SatelliteTrackingGuidePage() {
                   <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Envisat</strong> &mdash; The largest piece of space debris (8 tons), defunct since 2012, tracked closely due to collision risk.</span>
                 </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
+                  <span><strong className="text-white">GPS Constellation</strong> &mdash; 31 active satellites in MEO (~20,200 km). Too faint to see, but your phone uses signals from 4+ of them simultaneously for positioning.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
+                  <span><strong className="text-white">GOES Weather Satellites</strong> &mdash; Geostationary satellites (GOES-18, GOES-19) that supply the imagery behind most weather forecasts. Fixed in the sky; telescope only.</span>
+                </li>
               </ul>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
+                  <h4 className="text-white font-semibold mb-2">Best Viewing Times</h4>
+                  <p className="text-slate-300 text-sm">
+                    The ideal window is 30-90 minutes after sunset or before sunrise, when the sky
+                    is dark enough to see faint objects but the satellite is still sunlit.
+                  </p>
+                </div>
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
+                  <h4 className="text-white font-semibold mb-2">Iridium Flares</h4>
+                  <p className="text-slate-300 text-sm">
+                    The original Iridium satellites produced brilliant flares (magnitude -8,
+                    brighter than Venus) when their antenna panels caught sunlight. That
+                    constellation has been deorbited, but Iridium NEXT satellites can still produce
+                    fainter reflections.
+                  </p>
+                </div>
+              </div>
             </section>
 
             {/* Conjunction Assessments */}

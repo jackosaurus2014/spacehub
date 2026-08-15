@@ -62,7 +62,7 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
       { id: 'launch-vehicles', label: 'Launch Vehicles', icon: 'rocket', href: '/launch-vehicles' },
       { id: 'resource-exchange', label: 'Resource Exchange', icon: 'exchange', href: '/resource-exchange' },
       { id: 'launch-windows', label: 'Launch Windows', icon: 'calendar', href: '/launch-windows' },
-      { id: 'blueprints', label: 'Blueprints', icon: 'clipboard', href: '/blueprints' },
+      { id: 'blueprints', label: 'Blueprints', icon: 'clipboard', href: '/propulsion-database' },
     ],
   },
   {
@@ -70,7 +70,7 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
     items: [
       { id: 'satellites', label: 'Satellites', icon: 'satellite', href: '/satellites' },
       { id: 'space-stations', label: 'Space Stations', icon: 'satellite', href: '/space-stations' },
-      { id: 'orbital-management', label: 'Orbital Management', icon: 'orbit', href: '/orbital-slots' },
+      { id: 'orbital-management', label: 'Orbital Management', icon: 'orbit', href: '/spectrum?tab=geo-slots' },
       { id: 'constellations', label: 'Constellations', icon: 'orbit', href: '/constellations' },
       { id: 'ground-stations', label: 'Ground Stations', icon: 'satellite', href: '/ground-stations' },
       { id: 'infrastructure', label: 'Infrastructure', icon: 'rocket', href: '/spaceports' },

@@ -812,7 +812,7 @@ function LaunchWindowsContent() {
                   Debris Monitor
                 </Link>
                 <Link
-                  href="/orbital-slots"
+                  href="/spectrum?tab=geo-slots"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/70 hover:bg-slate-100/20 transition-colors"
                 >
                   <span>🛰️</span>

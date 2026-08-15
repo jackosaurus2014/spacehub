@@ -31,6 +31,17 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    // Credibility guard: never surface a row as "open"/"upcoming" once its
+    // deadline has passed. The daily status-transition cron (POST handler
+    // below, scheduled 09:00 UTC via src/lib/cron-scheduler.ts) flips stale
+    // rows to status='closed', but this query-time guard closes the gap
+    // between cron runs. Explicit 'all' / 'closed' requests bypass it so
+    // stale rows are still reachable. Rolling-deadline and no-deadline rows
+    // are never considered stale.
+    if (status !== 'all' && status !== 'closed') {
+      where.AND = [{ OR: [{ deadline: null }, { deadline: { gte: new Date() } }] }];
+    }
+
     const [opportunities, total] = await Promise.all([
       prisma.fundingOpportunity.findMany({
         where,
@@ -146,12 +157,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Close expired opportunities
+    // Close expired opportunities. `recurring` describes the *program*
+    // (e.g. NASA SBIR runs every cycle), not whether the specific deadline
+    // on this row is still valid — a recurring program's row with a lapsed
+    // deadline is still stale and must close; the next aggregation pass
+    // creates/refreshes the row for the next cycle. status='rolling' rows
+    // (no fixed deadline) are exempt by construction, not by this filter.
     const expired = await prisma.fundingOpportunity.updateMany({
       where: {
         deadline: { lt: new Date() },
         status: 'open',
-        recurring: false,
       },
       data: { status: 'closed' },
     });

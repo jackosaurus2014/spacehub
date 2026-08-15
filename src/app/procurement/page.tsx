@@ -13,12 +13,13 @@ import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import DataAsOf from '@/components/ui/DataAsOf';
+import GlobalBudgetsTab from './GlobalBudgetsTab';
 
 // ────────────────────────────────────────
 // Types
 // ────────────────────────────────────────
 
-type Tab = 'opportunities' | 'sbir' | 'budget' | 'congressional' | 'saved';
+type Tab = 'opportunities' | 'sbir' | 'budget' | 'global-budgets' | 'congressional' | 'saved';
 
 interface ProcurementOpportunity {
   id: string;
@@ -234,10 +235,22 @@ function OpportunityCard({ opp }: { opp: ProcurementOpportunity }) {
                 {opp.setAside}
               </span>
             )}
-            {isUrgent && (
-              <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded animate-pulse">
-                {days}d left
-              </span>
+            {/* Days-remaining badge — always shown when a deadline exists so
+                the card never looks live once its window has closed. */}
+            {days !== null && (
+              isPast ? (
+                <span className="text-xs bg-slate-600/30 text-slate-400 px-2 py-0.5 rounded">
+                  Closed
+                </span>
+              ) : isUrgent ? (
+                <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded animate-pulse">
+                  {days}d left
+                </span>
+              ) : (
+                <span className="text-xs bg-white/[0.06] text-slate-300 px-2 py-0.5 rounded">
+                  {days}d left
+                </span>
+              )
             )}
           </div>
 
@@ -697,6 +710,7 @@ function ProcurementContent() {
     { id: 'opportunities', label: 'Contract Opportunities', icon: '📋', count: stats?.overview.activeOpportunities },
     { id: 'sbir', label: 'SBIR/STTR', icon: '🔬', count: stats?.sbir.active },
     { id: 'budget', label: 'Budget Tracker', icon: '💰' },
+    { id: 'global-budgets', label: 'Global Budgets', icon: '🌐' },
     { id: 'congressional', label: 'Congressional', icon: '🏛️', count: stats?.congressional.totalActivities },
     { id: 'saved', label: 'Saved Searches', icon: '🔖' },
   ];
@@ -760,7 +774,7 @@ function ProcurementContent() {
         </div>
         </ScrollReveal>
 
-        {currentTab !== 'saved' && (
+        {currentTab !== 'saved' && currentTab !== 'global-budgets' && (
           <DataAsOf date="February 2026" note="curated solicitation/budget/congressional data; see Awards for live SAM.gov award feed" className="mb-4" />
         )}
 
@@ -974,6 +988,8 @@ function ProcurementContent() {
             )}
           </div>
         )}
+
+        {currentTab === 'global-budgets' && <GlobalBudgetsTab />}
 
         {currentTab === 'congressional' && (
           <div>

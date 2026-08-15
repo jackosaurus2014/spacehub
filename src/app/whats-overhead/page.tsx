@@ -5,6 +5,149 @@ import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
+/* ------------------------------------------------------------------ */
+/*  Spotting Guide data (ported from the retired /satellite-spotting)  */
+/* ------------------------------------------------------------------ */
+
+interface SpottableSatellite {
+  name: string;
+  magnitude: string;
+  description: string;
+  bestTime: string;
+  difficulty: 'Easy' | 'Moderate' | 'Advanced';
+}
+
+const BEST_SATELLITES: SpottableSatellite[] = [
+  {
+    name: 'International Space Station (ISS)',
+    magnitude: '-3.5 to -6',
+    description:
+      'The brightest artificial object in the sky. At magnitude -6, the ISS outshines Venus and is unmistakable as it crosses the sky in 4-6 minutes. It orbits at ~408 km altitude and can cast visible shadows at peak brightness.',
+    bestTime: 'Dawn & dusk, year-round',
+    difficulty: 'Easy',
+  },
+  {
+    name: 'Starlink Satellite Trains',
+    magnitude: '+1 to +3',
+    description:
+      'Shortly after SpaceX launches a batch, Starlink satellites travel in a "train" formation — a stunning string of lights moving across the sky in sequence. They become fainter as they raise orbit, but fresh trains are unforgettable.',
+    bestTime: '1-3 weeks after launch, dawn/dusk',
+    difficulty: 'Easy',
+  },
+  {
+    name: 'Hubble Space Telescope',
+    magnitude: '+1 to +2',
+    description:
+      'Orbiting at ~540 km in a 28.5-degree inclination, Hubble is visible from mid-latitudes and appears as a steady, moderately bright star gliding across the sky. Best spotted when the sun angle is just right.',
+    bestTime: 'Dawn/dusk from mid-latitudes',
+    difficulty: 'Moderate',
+  },
+  {
+    name: 'Tiangong Space Station',
+    magnitude: '-1 to -3',
+    description:
+      'China\'s modular space station orbits at ~390 km and can rival Jupiter in brightness. Its 41.5-degree inclination means it\'s best observed from latitudes between 42 N and 42 S.',
+    bestTime: 'Dawn/dusk from lower latitudes',
+    difficulty: 'Moderate',
+  },
+  {
+    name: 'Iridium Flares (Legacy)',
+    magnitude: 'Up to -8',
+    description:
+      'The original Iridium constellation was famous for producing brief but incredibly bright "flares" as sunlight reflected off their door-sized antennas. Most have deorbited, but a few remain and still produce spectacular predictable flashes.',
+    bestTime: 'Predicted events at dusk/dawn',
+    difficulty: 'Advanced',
+  },
+];
+
+const DIFFICULTY_COLORS: Record<string, string> = {
+  Easy: 'bg-green-500/20 text-green-400 border-green-500/30',
+  Moderate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  Advanced: 'bg-red-500/20 text-red-400 border-red-500/30',
+};
+
+const VIEWING_TIPS: { title: string; description: string }[] = [
+  {
+    title: 'Dark-Adapt Your Eyes',
+    description:
+      'Avoid looking at your phone for at least 10-15 minutes before observing. Use a red flashlight if you need light. Your pupils need time to fully dilate for maximum sensitivity.',
+  },
+  {
+    title: 'Face South (Northern Hemisphere)',
+    description:
+      'Most satellite passes arc from west to east. Facing south gives you the widest view of the transit arc. In the southern hemisphere, face north instead.',
+  },
+  {
+    title: 'Be Patient',
+    description:
+      'Satellite passes are brief — typically 2 to 6 minutes. Arrive a few minutes early, get comfortable, and watch the predicted direction. If you miss one pass, another is usually within a day or two.',
+  },
+  {
+    title: 'Bring Binoculars',
+    description:
+      'Standard 7x50 or 10x50 binoculars dramatically improve your experience. They reveal fainter satellites, show color differences, and let you see the ISS as more than just a dot. A tripod adapter helps for steady viewing.',
+  },
+  {
+    title: 'Choose Dark Skies',
+    description:
+      'Light pollution washes out fainter satellites. Even moving to a suburban park can help. The ISS is visible from cities, but Starlink trains and Hubble need darker skies for best results.',
+  },
+  {
+    title: 'Check the Weather',
+    description:
+      'Clear skies are essential. Cloud cover blocks even the brightest satellites. Check your local forecast and have a backup date planned. Thin cirrus clouds can reduce brightness by several magnitudes.',
+  },
+];
+
+const APPS_AND_TOOLS: { name: string; description: string; url: string | null; highlight: boolean }[] = [
+  {
+    name: 'SpaceNexus Satellite Tracker',
+    description:
+      'Our built-in live tracker shows real-time positions of the ISS, Starlink, weather satellites, and more on an interactive map. Filter by orbit type and search by name or NORAD ID.',
+    url: '/satellites',
+    highlight: true,
+  },
+  {
+    name: 'Heavens-Above',
+    description:
+      'Classic web-based tool for predicting satellite passes from your location. Provides sky charts, exact pass times, brightness predictions, and Iridium flare forecasts.',
+    url: 'https://heavens-above.com',
+    highlight: false,
+  },
+  {
+    name: 'ISS Detector (Mobile)',
+    description:
+      'Mobile app for Android and iOS that sends push notifications before bright ISS passes. Includes a compass mode that points you at the satellite in real time.',
+    url: null,
+    highlight: false,
+  },
+  {
+    name: 'N2YO',
+    description:
+      'Web-based satellite tracking with 3D visualization. Tracks over 20,000 objects and provides 10-day pass predictions for your location.',
+    url: 'https://n2yo.com',
+    highlight: false,
+  },
+  {
+    name: 'Stellarium',
+    description:
+      'Free open-source planetarium that includes satellite overlays. Use it to preview exactly where a satellite will appear against the stars from your backyard.',
+    url: 'https://stellarium.org',
+    highlight: false,
+  },
+];
+
+const PHOTO_SETTINGS: { label: string; value: string }[] = [
+  { label: 'Camera Mode', value: 'Manual / Bulb' },
+  { label: 'ISO', value: '800-3200' },
+  { label: 'Aperture', value: 'f/2.8 or wider' },
+  { label: 'Shutter Speed', value: '10-30 seconds' },
+  { label: 'Focus', value: 'Manual, set to infinity on a bright star' },
+  { label: 'Tripod', value: 'Essential — no handheld long exposures' },
+  { label: 'Timer/Remote', value: '2-second delay or intervalometer' },
+  { label: 'Format', value: 'RAW for maximum post-processing flexibility' },
+];
+
 interface SatellitePass {
   name: string;
   noradId: string;
@@ -247,12 +390,124 @@ export default function WhatsOverheadPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
             <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Full Satellite Tracker</Link>
             <span className="hidden sm:inline text-white/10">|</span>
-            <Link href="/satellite-spotting" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Spotting Guide</Link>
+            <a href="#spotting-guide" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Spotting Guide</a>
             <span className="hidden sm:inline text-white/10">|</span>
             <Link href="/night-sky-guide" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Night Sky Guide</Link>
             <span className="hidden sm:inline text-white/10">|</span>
             <Link href="/aurora-forecast" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Aurora Forecast</Link>
           </div>
+
+          {/* ============================================================ */}
+          {/* Spotting Guide (ported from the retired /satellite-spotting)  */}
+          {/* ============================================================ */}
+          <section id="spotting-guide" className="pt-10 mt-6 border-t border-white/[0.06] scroll-mt-20">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300 mb-2">
+                How to Spot Satellites
+              </h2>
+              <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+                Your complete guide to seeing satellites with the naked eye — from the brilliant ISS to stunning Starlink trains.
+              </p>
+            </div>
+
+            {/* Best Satellites to Spot */}
+            <div className="mb-10">
+              <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">1</span>
+                Best Satellites to Spot
+              </h3>
+              <p className="text-slate-400 text-xs mb-4">
+                Ranked by brightness and ease of spotting. Magnitude is a measure of brightness — lower (more negative) numbers mean brighter objects.
+              </p>
+              <div className="space-y-3">
+                {BEST_SATELLITES.map((sat) => (
+                  <div key={sat.name} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
+                      <div>
+                        <h4 className="text-white font-semibold text-sm">{sat.name}</h4>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs text-slate-500">Magnitude: <span className="text-cyan-400 font-mono">{sat.magnitude}</span></span>
+                          <span className="text-xs text-slate-500">Best: <span className="text-slate-300">{sat.bestTime}</span></span>
+                        </div>
+                      </div>
+                      <span className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border ${DIFFICULTY_COLORS[sat.difficulty]}`}>
+                        {sat.difficulty}
+                      </span>
+                    </div>
+                    <p className="text-slate-400 text-sm leading-relaxed">{sat.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tips for Beginners */}
+            <div className="mb-10">
+              <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">2</span>
+                Tips for Beginners
+              </h3>
+              <p className="text-slate-400 text-xs mb-4">Maximize your chances of a successful sighting.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {VIEWING_TIPS.map((tip) => (
+                  <div key={tip.title} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                    <h4 className="text-white font-semibold text-sm mb-1">{tip.title}</h4>
+                    <p className="text-slate-400 text-sm leading-relaxed">{tip.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Apps & Tools */}
+            <div className="mb-10">
+              <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">3</span>
+                Apps &amp; Tools
+              </h3>
+              <p className="text-slate-400 text-xs mb-4">These tools predict exactly when and where satellites will appear from your location.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {APPS_AND_TOOLS.map((app) => (
+                  <div key={app.name} className={`rounded-xl border p-4 ${app.highlight ? 'border-cyan-500/30 bg-cyan-500/[0.04]' : 'border-white/[0.06] bg-white/[0.02]'}`}>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <h4 className="text-white font-semibold text-sm">{app.name}</h4>
+                      {app.highlight && (
+                        <span className="shrink-0 px-2 py-0.5 rounded text-xs font-medium bg-cyan-500/20 text-cyan-400">Ours</span>
+                      )}
+                    </div>
+                    <p className="text-slate-400 text-sm leading-relaxed mb-2">{app.description}</p>
+                    {app.url && (
+                      <Link
+                        href={app.url}
+                        className="text-cyan-400 text-xs font-medium hover:text-cyan-300 transition-colors inline-flex items-center gap-1"
+                        {...(app.url.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      >
+                        {app.highlight ? 'Open Tracker' : 'Visit'} &rarr;
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Photography Tips */}
+            <div>
+              <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">4</span>
+                Photography Tips
+              </h3>
+              <p className="text-slate-400 text-xs mb-4">Capture satellite trails and ISS passes with a DSLR or mirrorless camera.</p>
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <h4 className="text-white font-semibold text-sm mb-3">Recommended Camera Settings</h4>
+                <div className="space-y-1.5">
+                  {PHOTO_SETTINGS.map((setting) => (
+                    <div key={setting.label} className="flex items-center justify-between py-1.5 border-b border-white/[0.06] last:border-b-0">
+                      <span className="text-slate-400 text-sm">{setting.label}</span>
+                      <span className="text-white text-sm font-mono">{setting.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
 
           <RelatedModules modules={PAGE_RELATIONS['whats-overhead']} />
         </div>

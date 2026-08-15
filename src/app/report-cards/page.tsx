@@ -1021,7 +1021,7 @@ export default function ReportCardsPage() {
         <ScrollReveal delay={0.25}>
           <div className="mt-8 mb-4">
             <h3 className="text-sm text-slate-400 uppercase tracking-wider mb-3">Related Pages</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               <Link
                 href="/company-profiles"
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
@@ -1041,21 +1041,30 @@ export default function ReportCardsPage() {
               </Link>
 
               <Link
-                href="/market-intel"
+                href="/space-stocks"
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">📈</div>
-                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Market Intel</div>
-                <div className="text-xs text-slate-500">Space market intelligence</div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Space Stocks</div>
+                <div className="text-xs text-slate-500">Live public-market prices</div>
               </Link>
 
               <Link
-                href="/investment-tracker"
+                href="/funding-tracker"
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">💰</div>
-                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Investment Tracker</div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Funding Tracker</div>
                 <div className="text-xs text-slate-500">Funding rounds and deals</div>
+              </Link>
+
+              <Link
+                href="/reports"
+                className="card p-4 hover:border-white/10 transition-colors group text-center"
+              >
+                <div className="text-2xl mb-1">📑</div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Industry Reports</div>
+                <div className="text-xs text-slate-500">In-depth quarterly &amp; annual reports</div>
               </Link>
             </div>
           </div>

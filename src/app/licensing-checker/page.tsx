@@ -95,7 +95,7 @@ const ACTIVITIES: ActivityOption[] = [
         ],
         description:
           'FCC space station authorization is required to operate any satellite using radio frequencies from U.S.-licensed spacecraft. Includes orbital debris mitigation plan, spectrum coordination with existing operators, and post-mission disposal requirements (5-year rule).',
-        spacenexusModule: { label: 'Orbital Slots', href: '/orbital-slots' },
+        spacenexusModule: { label: 'Orbital Slots', href: '/spectrum?tab=geo-slots' },
         agencyColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
       },
       {

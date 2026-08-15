@@ -109,7 +109,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
               <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 flex items-start gap-3">
                 <span className="text-lg">📋</span>
                 <div>
-                  <div className="text-sm font-medium text-purple-300">Editorial Listing</div>
+                  <div className="text-sm font-medium text-purple-300">Platform-curated Listing</div>
                   <p className="text-xs text-slate-400 mt-1">
                     This listing was curated by SpaceNexus from public data. Are you the provider?{' '}
                     <Link href={`/company-profiles/${listing.company.slug}`} className="text-white/70 hover:underline">

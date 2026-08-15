@@ -100,7 +100,7 @@ export default function OrbitalSlotsModule() {
           Orbital Slots
         </h2>
         <Link
-          href="/orbital-slots"
+          href="/spectrum?tab=geo-slots"
           className="text-white/90 hover:text-white transition-colors text-sm"
         >
           Full Dashboard →

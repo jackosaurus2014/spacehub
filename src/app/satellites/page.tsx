@@ -12,6 +12,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { clientLogger } from '@/lib/client-logger';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 type OrbitClass = 'LEO' | 'MEO' | 'GEO' | 'HEO';
@@ -443,7 +444,7 @@ export default function SatellitesPage() {
       <FAQSchema items={[
         { question: 'How accurate is SpaceNexus satellite tracking?', answer: 'SpaceNexus uses NORAD Two-Line Element (TLE) data updated multiple times per day, providing positional accuracy within a few kilometers for most active satellites in LEO, MEO, and GEO orbits.' },
         { question: 'Can I track the International Space Station in real-time?', answer: 'Yes. The live tracker map on this page shows the ISS position — latitude, longitude, altitude, and velocity — updated every 30 seconds using live orbital data.' },
-        { question: 'How many satellites are currently in orbit?', answer: 'As of 2026, there are over 10,000 active satellites in orbit, with the majority in Low Earth Orbit (LEO). SpaceNexus tracks satellites across LEO, MEO, GEO, and HEO orbits.' },
+        { question: 'How many satellites are currently in orbit?', answer: `As of 2026, there are ${SITE_STATS.satellites} active satellites in orbit, with the majority in Low Earth Orbit (LEO). SpaceNexus tracks satellites across LEO, MEO, GEO, and HEO orbits.` },
         { question: 'What is the difference between LEO, MEO, and GEO orbits?', answer: 'LEO (Low Earth Orbit) is 160-2,000 km altitude, used for imaging and broadband. MEO (Medium Earth Orbit) is 2,000-35,786 km, used for navigation like GPS. GEO (Geostationary Orbit) is approximately 35,786 km, used for communications and weather satellites.' },
       ]} />
 
@@ -950,7 +951,7 @@ export default function SatellitesPage() {
             modules={
               PAGE_RELATIONS['satellites'] || [
                 { name: 'Space Environment', description: 'Weather & debris tracking', href: '/space-environment', icon: '🌍' },
-                { name: 'Orbital Slots', description: 'Slot management', href: '/orbital-slots', icon: '🎯' },
+                { name: 'Orbital Slots', description: 'Slot management', href: '/spectrum?tab=geo-slots', icon: '🎯' },
                 { name: 'Constellations', description: 'Constellation data', href: '/constellations', icon: '⭐' },
                 { name: 'Ground Stations', description: 'Ground station map', href: '/ground-stations', icon: '📡' },
               ]

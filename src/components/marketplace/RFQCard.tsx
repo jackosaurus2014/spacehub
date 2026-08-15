@@ -17,6 +17,7 @@ interface RFQSummary {
   status: string;
   isPublic: boolean;
   createdAt: string;
+  isPlatformCurated?: boolean;
   _count?: { proposals: number };
 }
 
@@ -48,6 +49,14 @@ const RFQCard = memo(function RFQCard({ rfq, index = 0 }: RFQCardProps) {
             <div className="flex items-center gap-2 text-xs text-slate-400">
               <span>{getCategoryIcon(rfq.category)}</span>
               <span>{getCategoryLabel(rfq.category)}</span>
+              {rfq.isPlatformCurated && (
+                <span
+                  className="text-[9px] px-1 py-0.5 bg-purple-500/15 text-purple-400 rounded font-medium"
+                  title="Posted by SpaceNexus as a sample RFQ, not a live buyer request"
+                >
+                  Platform-curated
+                </span>
+              )}
             </div>
             <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
               {statusInfo.label}

@@ -1394,7 +1394,7 @@ export default function GroundStationsPage() {
             <Link href="/spectrum" className="btn-secondary text-sm">
               {String.fromCodePoint(0x1F4E1)} Spectrum Tracker
             </Link>
-            <Link href="/orbital-slots" className="btn-secondary text-sm">
+            <Link href="/spectrum?tab=geo-slots" className="btn-secondary text-sm">
               {String.fromCodePoint(0x1F310)} Orbital Services
             </Link>
             <Link href="/space-environment?tab=debris" className="btn-secondary text-sm">
@@ -1439,7 +1439,7 @@ export default function GroundStationsPage() {
               { name: 'Satellite Tracker', description: 'Real-time orbital tracking and pass predictions', href: '/satellites', icon: '🛰️' },
               { name: 'Space Communications', description: 'RF systems and link budget analysis', href: '/space-comms', icon: '📡' },
               { name: 'Spectrum Management', description: 'Frequency allocations and coordination', href: '/spectrum', icon: '📻' },
-              { name: 'Orbital Slots', description: 'GEO/MEO/LEO slot allocations', href: '/orbital-slots', icon: '🌐' },
+              { name: 'Orbital Slots', description: 'GEO/MEO/LEO slot allocations', href: '/spectrum?tab=geo-slots', icon: '🌐' },
                 ]}
               />
             </ScrollReveal>

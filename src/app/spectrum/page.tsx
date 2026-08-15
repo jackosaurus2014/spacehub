@@ -42,6 +42,8 @@ import {
 } from './data';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import GeoSlotsTab from './GeoSlotsTab';
+import { KEY_GEO_SLOTS } from './data';
 
 // ────────────────────────────────────────
 // Types
@@ -93,9 +95,9 @@ interface SpectrumData {
 
 
 // All valid tab IDs for the consolidated page
-type TabId = 'bands' | 'filings' | 'coordination' | 'recent-filings' | 'auctions' | 'freq-bands' | 'operators' | 'challenges' | 'itu-timeline' | 'regulatory' | 'education' | 'lawyers';
+type TabId = 'bands' | 'filings' | 'coordination' | 'recent-filings' | 'geo-slots' | 'auctions' | 'freq-bands' | 'operators' | 'challenges' | 'itu-timeline' | 'regulatory' | 'education' | 'lawyers';
 
-const ALL_TABS: TabId[] = ['bands', 'filings', 'coordination', 'recent-filings', 'auctions', 'freq-bands', 'operators', 'challenges', 'itu-timeline', 'regulatory', 'education', 'lawyers'];
+const ALL_TABS: TabId[] = ['bands', 'filings', 'coordination', 'recent-filings', 'geo-slots', 'auctions', 'freq-bands', 'operators', 'challenges', 'itu-timeline', 'regulatory', 'education', 'lawyers'];
 
 
 
@@ -321,17 +323,17 @@ function FilingCard({ filing }: { filing: SpectrumFiling }) {
         <span className="text-xs font-mono text-slate-400">{filing.filingId}</span>
       </div>
 
-      {/* Cross-module link: operator -> orbital slots */}
+      {/* Cross-module link: operator -> GEO slots */}
       {isKnownSatelliteOperator(filing.operator) && (
         <div className="mt-3 pt-3 border-t border-white/[0.06]">
           <Link
-            href="/orbital-slots?tab=operators"
+            href={`/market-intel?search=${encodeURIComponent(filing.operator)}`}
             className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
           >
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-            View {filing.operator} orbital slots
+            View {filing.operator} company intel
           </Link>
         </div>
       )}
@@ -736,6 +738,7 @@ function SpectrumContent() {
             { id: 'filings' as const, label: 'Active Filings', count: data.filings.length },
             { id: 'coordination' as const, label: 'Coordination' },
             { id: 'recent-filings' as const, label: 'Recent Filings', count: data.recentFilings.length },
+            { id: 'geo-slots' as const, label: 'GEO Slots', count: KEY_GEO_SLOTS.length },
           ] as { id: TabId; label: string; count?: number }[]).map((tab) => (
             <button
               key={tab.id}
@@ -1167,13 +1170,13 @@ function SpectrumContent() {
                   FCC/ITU Regulations
                 </Link>
                 <Link
-                  href="/orbital-slots?tab=operators"
+                  href="/spectrum?tab=geo-slots"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
                   </svg>
-                  Orbital Slot Operators
+                  GEO Slot Directory
                 </Link>
                 <Link
                   href="/compliance"
@@ -1257,6 +1260,9 @@ function SpectrumContent() {
             )}
           </div>
         )}
+
+        {/* ──────────────── GEO SLOTS TAB (ported from retired /orbital-slots) ──────────────── */}
+        {activeTab === 'geo-slots' && <GeoSlotsTab />}
 
         {/* ═══════════════════ AUCTIONS TAB ═══════════════════ */}
         {activeTab === 'auctions' && (
@@ -1978,13 +1984,13 @@ function SpectrumContent() {
                   International Treaties
                 </Link>
                 <Link
-                  href="/orbital-slots"
+                  href="/spectrum?tab=geo-slots"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
                   </svg>
-                  Orbital Slot Management
+                  GEO Slot Directory
                 </Link>
               </div>
             </div>
@@ -2048,13 +2054,13 @@ function SpectrumContent() {
                   Compliance Dashboard
                 </Link>
                 <Link
-                  href="/orbital-slots?tab=operators"
+                  href="/spectrum?tab=geo-slots"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
                   </svg>
-                  Orbital Slot Operators
+                  GEO Slot Directory
                 </Link>
               </div>
             </div>

@@ -354,7 +354,15 @@ export default function StartupHubPage() {
                         )}
                       </div>
                       {round.leadInvestor && (
-                        <div className="text-slate-500 text-xs mt-0.5">Led by {round.leadInvestor}</div>
+                        <div className="text-slate-500 text-xs mt-0.5">
+                          Led by{' '}
+                          <Link
+                            href={`/investors?search=${encodeURIComponent(round.leadInvestor)}`}
+                            className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                          >
+                            {round.leadInvestor}
+                          </Link>
+                        </div>
                       )}
                     </div>
                     <div className="text-right sm:w-32 flex-shrink-0">
@@ -369,6 +377,14 @@ export default function StartupHubPage() {
                 ))}
               </div>
             )}
+            <div className="mt-4 text-center">
+              <Link
+                href="/funding-tracker"
+                className="inline-flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                View full Funding Tracker →
+              </Link>
+            </div>
           </section>
 
           {/* ── IPO Watch ── */}

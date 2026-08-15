@@ -33,6 +33,14 @@ export const SITE_STATS = {
   spaceEconomyProjection: '$1.8T by 2035',
   /** Artemis Accords signatory nations (actual: 70, asOf mid-2026) */
   accordsNations: '70',
+  /**
+   * Orbital launch ATTEMPTS worldwide in 2025 (the record-setting year), per the
+   * space-launch-schedule-2026 guide's sourcing. This is an attempts count, not a
+   * successes count — see space-stats' separate "96% Overall Launch Success Rate"
+   * stat for the reliability figure. Do not fork this number elsewhere; cite both
+   * precisely if a page needs to distinguish attempts from successes.
+   */
+  launches2025: '324',
 } as const;
 
 export type SiteStatKey = keyof typeof SITE_STATS;

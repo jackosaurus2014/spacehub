@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 const COMPARISON_DATA = [
   { metric: 'Operator', a: 'SpaceX (Starlink)', b: 'Amazon (Project Kuiper)' },
   { metric: 'Service Start', a: 'Public beta Oct 2020; full service 2021', b: 'Prototype tests 2023; commercial 2025' },
-  { metric: 'Satellites in Orbit (Aug 2026)', a: '10,000+', b: '~30 (prototype KuiperSat + initial batch)' },
+  { metric: 'Satellites in Orbit (Aug 2026)', a: '10,000+', b: 'Small in-orbit fleet — production launches began 2025 but the 50%-by-2026 FCC deadline was waived to 2029, so build-out is still early. See our live Constellations tracker for the current count.' },
   { metric: 'Total Constellation Authorized', a: '~42,000 (FCC Gen 1 + Gen 2)', b: '3,236 (FCC licensed)' },
   { metric: 'Orbital Altitude', a: '~340–570 km', b: '~590–630 km' },
   { metric: 'Inter-Satellite Links', a: 'Yes (laser ISLs on V2 satellites)', b: 'Yes (planned on production satellites)' },
@@ -31,8 +31,8 @@ const COMPARISON_DATA = [
   { metric: 'Download Speed (target)', a: '50–250 Mbps (consumer)', b: 'Up to 400 Mbps (per Amazon claims)' },
   { metric: 'User Terminal', a: 'Starlink dish (phased array)', b: 'Amazon-designed phased array terminal' },
   { metric: 'Consumer Pricing (US)', a: '$120/mo (Residential)', b: 'Not yet announced' },
-  { metric: 'Parent Company Market Cap', a: 'SpaceX public (~$2T, SPCX)', b: 'Amazon ~$2T+ (AMZN)' },
-  { metric: 'FCC Deployment Deadline', a: 'N/A (ongoing expansion)', b: '50% deployed by 2026; 100% by 2029' },
+  { metric: 'Parent Company Market Cap', a: 'SpaceX public (~$1.84T, SPCX, Aug 2026)', b: 'Amazon ~$2T+ (AMZN)' },
+  { metric: 'FCC Deployment Deadline', a: 'N/A (ongoing expansion)', b: 'Original 50%-by-2026 deadline granted a waiver extension to 2029' },
 ];
 
 export default function Page() {
@@ -47,9 +47,10 @@ export default function Page() {
         <span className="text-zinc-300">Starlink vs Project Kuiper</span>
       </nav>
       <h1 className="text-display text-3xl md:text-4xl mb-3">Starlink vs Project Kuiper</h1>
-      <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl mb-8">
+      <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl mb-2">
         The dominant incumbent LEO broadband network versus Amazon&apos;s well-funded challenger — comparing constellation scale, technical approach, pricing, and commercial readiness.
       </p>
+      <p className="text-xs mb-8" style={{ color: 'var(--text-tertiary)' }}>Figures as of Aug 2026.</p>
 
       {/* Terminal table */}
       <div className="card-terminal mb-8">
@@ -91,7 +92,7 @@ export default function Page() {
         Starlink holds a commanding first-mover advantage with over 10,000 satellites in orbit and 4 million subscribers generating significant recurring revenue. SpaceX&apos;s vertical integration — building both rockets and satellites — gives it a structural cost advantage that no other operator can easily replicate. Starlink has demonstrated real-world performance across consumer, enterprise, maritime, aviation, and government segments.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Project Kuiper is backed by Amazon&apos;s balance sheet and benefits from integration with AWS cloud infrastructure, which may give it an advantage in enterprise and government cloud-connectivity use cases. Amazon has secured launch capacity across multiple providers (ULA Vulcan, Blue Origin New Glenn, Arianespace) to diversify risk. Kuiper faces an FCC-mandated deployment schedule requiring 50% of its 3,236-satellite constellation to be operational by mid-2026, creating significant near-term execution pressure.
+        Project Kuiper is backed by Amazon&apos;s balance sheet and benefits from integration with AWS cloud infrastructure, which may give it an advantage in enterprise and government cloud-connectivity use cases. Amazon has secured launch capacity across multiple providers (ULA Vulcan, Blue Origin New Glenn, Arianespace) to diversify risk. Kuiper&apos;s original FCC-mandated deadline required 50% of its 3,236-satellite constellation operational by mid-2026; that deadline has since been granted a waiver extension to 2029, easing near-term regulatory pressure but leaving the in-orbit fleet still in an early build-out phase — see our live Constellations tracker for the current satellite count.
       </p>
 
       {/* CTA */}
@@ -134,7 +135,7 @@ export default function Page() {
         description: 'Side-by-side comparison of Starlink and Amazon Project Kuiper satellite internet constellations.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-03-22', dateModified: '2026-08-13',
+        datePublished: '2026-03-22', dateModified: '2026-08-14',
         url: 'https://spacenexus.us/compare/starlink-vs-kuiper',
       }).replace(/</g, '\\u003c') }} />
     

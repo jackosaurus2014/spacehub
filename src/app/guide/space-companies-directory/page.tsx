@@ -94,6 +94,38 @@ export default function SpaceCompaniesDirectoryPage() {
             </div>
           </ScrollReveal>
 
+          {/* Emerging Startups */}
+          <ScrollReveal>
+            <div className="card p-6">
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-slate-300 to-cyan-400 bg-clip-text text-transparent mb-2">Emerging Startups to Watch</h2>
+              <p className="text-slate-400 text-sm mb-4">
+                Beyond the established players above, these companies are tackling some of the
+                hardest problems in space with novel approaches — many founded by alumni of
+                SpaceX, Blue Origin, and other established players.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { name: 'Relativity Space', focus: '3D-printed rockets', description: 'Building Terran R, a fully reusable, largely 3D-printed rocket, now led by former Google CEO Eric Schmidt.' },
+                  { name: 'Impulse Space', focus: 'In-space transportation', description: 'Orbital transfer vehicles and Mars landers; Mira kick stage for last-mile satellite delivery.' },
+                  { name: 'Stoke Space', focus: 'Fully reusable rocket', description: 'A fully reusable launch vehicle with a novel second-stage recovery system, backed by leading VC firms.' },
+                  { name: 'Phantom Space', focus: 'Affordable small launch', description: 'Low-cost Daytona rocket for dedicated small-satellite launch, with vertically integrated satellite manufacturing.' },
+                  { name: 'Turion Space', focus: 'In-space services', description: 'Droid spacecraft for proximity operations, satellite servicing, and DARPA-funded debris management.' },
+                  { name: 'True Anomaly', focus: 'Space domain awareness', description: 'Jackal autonomous orbital vehicles and the Mosaic software platform for military space domain awareness.' },
+                  { name: 'Muon Space', focus: 'Climate monitoring', description: 'Microwave radiometer satellites addressing data gaps in methane emissions and extreme weather.' },
+                  { name: 'K2 Space', focus: 'Large satellite buses', description: 'Very large, low-cost satellite buses enabled by Starship-class payload capacity.' },
+                ].map((s) => (
+                  <div key={s.name} className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <h3 className="text-white text-sm font-semibold">{s.name}</h3>
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-cyan-300 border border-white/15 shrink-0">{s.focus}</span>
+                    </div>
+                    <p className="text-slate-400 text-xs leading-relaxed">{s.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+
           {/* FAQ */}
           <ScrollReveal>
             <div className="card p-6">

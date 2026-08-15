@@ -40,6 +40,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataAsOf, { oldestAsOfDate } from '@/components/ui/DataAsOf';
 
 // ────────────────────────────────────────
 // Types
@@ -1081,6 +1082,7 @@ function SpaceMiningContent() {
   // Mining targets from DynamicContent system
   const [miningTargets, setMiningTargets] = useState<MiningTarget[]>(FALLBACK_MINING_TARGETS);
   const [miningTargetsLoading, setMiningTargetsLoading] = useState(false);
+  const [dataAsOf, setDataAsOf] = useState<string | null>(null);
 
   // Search
   const [searchTerm, setSearchTerm] = useState('');
@@ -1187,6 +1189,7 @@ function SpaceMiningContent() {
           return (b.profit ?? 0) - (a.profit ?? 0);
         });
         setMiningTargets(targets.length >= 5 ? targets : FALLBACK_MINING_TARGETS);
+        setDataAsOf(oldestAsOfDate([json.meta?.oldestRefreshed]));
       } catch (err) {
         clientLogger.error('Failed to fetch mining targets', { error: err instanceof Error ? err.message : String(err) });
         setMiningTargets(FALLBACK_MINING_TARGETS);
@@ -1303,6 +1306,8 @@ function SpaceMiningContent() {
 
   return (
     <div className="space-y-6">
+      {dataAsOf && <DataAsOf date={dataAsOf} note="oldest of this page's AI-researched sections" />}
+
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

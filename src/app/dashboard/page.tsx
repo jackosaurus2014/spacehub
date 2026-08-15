@@ -255,15 +255,15 @@ const TOOLS_MODULES: ModuleItem[] = [
  * decides deletion vs. improvement. See CLAUDE.md standing protocol.
  */
 const REFERENCE_MODULES: ModuleItem[] = [
-  { icon: '\u{1F3DB}️', label: 'Government Budgets', href: '/government-budgets', description: 'Global space agency budget tracking' },
+  { icon: '\u{1F3DB}️', label: 'Government Budgets', href: '/procurement?tab=global-budgets', description: 'Global space agency budget tracking' },
   { icon: '\u{1F4C8}', label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
   { icon: '\u{1F52C}', label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
   { icon: '\u{1F3D7}️', label: 'Space Station Tracker', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
-  { icon: '\u{1F30D}', label: 'Orbital Management', href: '/orbital-slots', description: 'Orbital slots and satellite services' },
+  { icon: '\u{1F30D}', label: 'Orbital Management', href: '/spectrum?tab=geo-slots', description: 'Orbital slots and satellite services' },
   { icon: '✨', label: 'Constellation Tracker', href: '/constellations', description: 'Satellite constellation monitoring' },
   { icon: '\u{1F3DB}️', label: 'Infrastructure Network', href: '/spaceports', description: 'Spaceports & communications networks' },
   { icon: '\u{1F5D3}️', label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
-  { icon: '\u{1F4D0}', label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
+  { icon: '\u{1F4D0}', label: 'Blueprint Series', href: '/propulsion-database', description: 'Technical hardware breakdowns' },
 ];
 
 /** Animated counter that counts up from 0 to the target value */

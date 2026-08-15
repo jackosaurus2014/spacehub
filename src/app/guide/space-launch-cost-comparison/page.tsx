@@ -50,6 +50,7 @@ const TOC = [
   { id: 'government-pricing', label: 'Government Contract Pricing' },
   { id: 'hidden-costs', label: 'Hidden Costs & Total Mission Cost' },
   { id: 'cost-trends', label: 'Cost Trends & Future Outlook' },
+  { id: 'reducing-costs', label: 'How to Reduce Launch Costs' },
   { id: 'choosing', label: 'Choosing a Launch Provider' },
   { id: 'spacenexus', label: 'Plan Missions on SpaceNexus' },
 ];
@@ -768,6 +769,59 @@ export default function SpaceLaunchCostComparisonPage() {
                     <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track launch market trends on SpaceNexus Market Intelligence
                     </Link>
+                  </p>
+                </div>
+              </section>
+
+              {/* ──────────────────────────────────── */}
+              {/* 8b. How to Reduce Launch Costs        */}
+              {/* ──────────────────────────────────── */}
+              <section id="reducing-costs" className="mb-16 scroll-mt-24">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
+                  How to Reduce Your Satellite Launch Cost
+                </h2>
+                <div className="space-y-4 text-star-200 leading-relaxed text-lg">
+                  <p>
+                    Beyond choosing a vehicle, satellite operators have several practical levers to
+                    reduce total mission cost:
+                  </p>
+                  <ol className="space-y-4">
+                    <li>
+                      <strong className="text-white">1. Choose rideshare over dedicated launch.</strong>{' '}
+                      If your orbit requirements are flexible, rideshare missions can save 50-80%
+                      versus a dedicated launch. SpaceX Transporter missions launch roughly every
+                      2-3 months to sun-synchronous orbit.
+                    </li>
+                    <li>
+                      <strong className="text-white">2. Optimize satellite mass.</strong> Every
+                      kilogram matters when paying $5,000-$25,000/kg on a small-launch vehicle.
+                      Lightweight materials, miniaturized components, and efficient propulsion all
+                      reduce launch mass and cost.
+                    </li>
+                    <li>
+                      <strong className="text-white">3. Consider emerging launch providers.</strong>{' '}
+                      New entrants such as Firefly Aerospace (Alpha Block 2), Stoke Space, and
+                      India&apos;s ISRO (PSLV, a highly reliable small-to-medium vehicle with 55+
+                      consecutive successes) often offer competitive first-flight pricing to build
+                      their manifest.
+                    </li>
+                    <li>
+                      <strong className="text-white">4. Book early, stay flexible on schedule.</strong>{' '}
+                      Launch providers offer better rates for bookings made 12-24 months in
+                      advance. Willingness to shift 1-3 months can unlock lower pricing tiers.
+                    </li>
+                    <li>
+                      <strong className="text-white">5. Use a launch broker or aggregator.</strong>{' '}
+                      Companies like Spaceflight Inc., Exolaunch, and D-Orbit aggregate smallsat
+                      payloads and negotiate bulk rates with launch providers, passing savings on
+                      to individual customers.
+                    </li>
+                  </ol>
+                  <p className="mt-4">
+                    Cost per kilogram also varies significantly by target orbit: LEO missions
+                    typically run $2,500-$25,000/kg, sun-synchronous orbit (favored by Earth
+                    observation satellites) $5,000-$15,000/kg, MEO (GPS, Galileo) $5,000-$35,000/kg,
+                    and GEO -- the most energy-intensive -- $8,000-$67,000/kg.
                   </p>
                 </div>
               </section>

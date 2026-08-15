@@ -217,7 +217,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
         </a>
         {satellite.status === 'active' && (
           <Link
-            href={`/orbital-slots?tab=operators&search=${encodeURIComponent(satellite.operator)}`}
+            href={`/market-intel?search=${encodeURIComponent(satellite.operator)}`}
             className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-slate-50 text-slate-400 hover:bg-slate-100 transition-colors ml-auto"
           >
             View Operator

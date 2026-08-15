@@ -517,7 +517,7 @@ function SearchContent() {
           </div>
           <div className="flex items-center gap-2">
             <Link
-              href="/saved-searches"
+              href="/alerts?tab=saved-searches"
               className="hidden sm:inline-flex items-center text-xs text-star-300 hover:text-white transition-colors"
             >
               My saved searches →

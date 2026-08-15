@@ -1694,7 +1694,7 @@ function ManufacturingAndImageryContent() {
             <Link href="/space-mining" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Space Mining
             </Link>
-            <Link href="/orbital-slots" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
+            <Link href="/spectrum?tab=geo-slots" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Orbital Services
             </Link>
             <Link href="/space-capital" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">

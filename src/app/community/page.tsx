@@ -54,11 +54,9 @@ const SECTIONS = [
 ];
 
 export default function CommunityPage() {
-  const [stats, setStats] = useState<CommunityStats>({
-    totalMembers: 1247,
-    activeThreads: 89,
-    messagesSent: 5632,
-  });
+  // null until the real endpoint responds — the stats bar renders nothing on
+  // failure rather than falling back to invented numbers.
+  const [stats, setStats] = useState<CommunityStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,10 +65,10 @@ export default function CommunityPage() {
         const res = await fetch('/api/community/stats');
         if (res.ok) {
           const data = await res.json();
-          setStats(data);
+          if (typeof data.totalMembers === 'number') setStats(data);
         }
       } catch {
-        // Use fallback stats
+        // Leave stats null — bar stays hidden
       } finally {
         setLoading(false);
       }
@@ -87,35 +85,37 @@ export default function CommunityPage() {
           icon={<span>{"👥"}</span>}
         />
 
-        {/* Stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="grid grid-cols-3 gap-4 mb-8"
-        >
-          {[
-            { label: 'Members', value: stats.totalMembers, icon: '👤' },
-            { label: 'Active Threads', value: stats.activeThreads, icon: '💬' },
-            { label: 'Messages Sent', value: stats.messagesSent, icon: '✉️' },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="card px-4 py-3 text-center"
-            >
-              {loading ? (
-                <div className="flex justify-center py-2">
-                  <LoadingSpinner size="sm" />
-                </div>
-              ) : (
-                <>
-                  <p className="text-2xl font-bold text-white">{stat.value.toLocaleString()}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{stat.label}</p>
-                </>
-              )}
-            </div>
-          ))}
-        </motion.div>
+        {/* Stats bar — real counts only; hidden entirely if the endpoint fails */}
+        {(loading || stats) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="grid grid-cols-3 gap-4 mb-8"
+          >
+            {[
+              { label: 'Members', value: stats?.totalMembers, icon: '👤' },
+              { label: 'Discussion Threads', value: stats?.activeThreads, icon: '💬' },
+              { label: 'Posts', value: stats?.messagesSent, icon: '✉️' },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="card px-4 py-3 text-center"
+              >
+                {loading || stat.value === undefined ? (
+                  <div className="flex justify-center py-2">
+                    <LoadingSpinner size="sm" />
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold text-white">{stat.value.toLocaleString()}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{stat.label}</p>
+                  </>
+                )}
+              </div>
+            ))}
+          </motion.div>
+        )}
 
         {/* Main sections */}
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">

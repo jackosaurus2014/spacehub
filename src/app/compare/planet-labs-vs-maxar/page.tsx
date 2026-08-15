@@ -5,12 +5,12 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'Planet Labs vs Maxar Technologies: Complete Comparison 2026',
-  description: 'Compare Planet Labs (PL) and Maxar Technologies side by side — constellation size, resolution, revenue, customers, data products, and business model. Updated data from SpaceNexus.',
-  keywords: ['Planet Labs vs Maxar', 'earth observation comparison', 'PlanetScope vs WorldView', 'satellite imagery companies', 'geospatial data comparison'],
+  title: 'Planet Labs vs Maxar (Vantor / Lanteris): Complete Comparison 2026',
+  description: 'Compare Planet Labs (PL) and the former Maxar Technologies — now split into Vantor (Earth observation/intelligence) and Lanteris Space Systems (satellite manufacturing) — side by side: constellation size, resolution, revenue, customers, data products, and business model.',
+  keywords: ['Planet Labs vs Maxar', 'Planet Labs vs Vantor', 'Lanteris Space Systems', 'earth observation comparison', 'PlanetScope vs WorldView', 'satellite imagery companies', 'geospatial data comparison'],
   openGraph: {
-    title: 'Planet Labs vs Maxar Technologies: Complete Comparison 2026 | SpaceNexus',
-    description: 'Side-by-side comparison of Planet Labs and Maxar Technologies with real data on constellation size, resolution, revenue, and customers.',
+    title: 'Planet Labs vs Maxar (Vantor / Lanteris): Complete Comparison 2026 | SpaceNexus',
+    description: 'Side-by-side comparison of Planet Labs and the former Maxar Technologies businesses (now Vantor and Lanteris Space Systems) with real data on constellation size, resolution, revenue, and customers.',
     url: 'https://spacenexus.us/compare/planet-labs-vs-maxar',
     type: 'article',
   },
@@ -43,10 +43,11 @@ export default function PlanetLabsVsMaxar() {
           <span className="mx-2">/</span>
           <span className="text-zinc-300">Planet Labs vs Maxar</span>
         </nav>
-        <h1 className="text-display text-3xl md:text-4xl mb-3">Planet Labs vs Maxar Technologies</h1>
-        <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl">
-          A comprehensive side-by-side comparison of two leading Earth observation companies, representing contrasting approaches to satellite imagery: high-frequency small-sat coverage vs. ultra-high-resolution large-format imaging.
+        <h1 className="text-display text-3xl md:text-4xl mb-3">Planet Labs vs Maxar (Vantor / Lanteris)</h1>
+        <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl mb-2">
+          A comprehensive side-by-side comparison of two leading Earth observation companies, representing contrasting approaches to satellite imagery: high-frequency small-sat coverage vs. ultra-high-resolution large-format imaging. In October 2025, Maxar Technologies split into Vantor (Earth observation imagery and geospatial intelligence) and Lanteris Space Systems (satellite manufacturing and robotics); this comparison covers the combined former-Maxar business lines against Planet Labs.
         </p>
+        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Figures as of Aug 2026.</p>
       </div>
 
       {/* Comparison Table */}
@@ -67,7 +68,7 @@ export default function PlanetLabsVsMaxar() {
               <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                 <th className="py-2 sm:py-3 px-2 sm:px-4 text-left text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-tertiary)' }}>Metric</th>
                 <th className="py-2 sm:py-3 px-2 sm:px-4 text-center text-[11px] sm:text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Planet Labs</th>
-                <th className="py-2 sm:py-3 px-2 sm:px-4 text-center text-[11px] sm:text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Maxar Technologies</th>
+                <th className="py-2 sm:py-3 px-2 sm:px-4 text-center text-[11px] sm:text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Maxar (Vantor / Lanteris)</th>
               </tr>
             </thead>
             <tbody>
@@ -90,7 +91,7 @@ export default function PlanetLabsVsMaxar() {
           Planet Labs and Maxar represent two distinct philosophies in Earth observation. Planet operates the world&apos;s largest commercial Earth-imaging constellation by satellite count, with 200+ small satellites providing daily global coverage at 3–5 m resolution (PlanetScope) and 50 cm resolution on-demand (SkySat). Its model prioritizes temporal frequency — the ability to detect change anywhere on Earth every day — over raw resolution. This approach serves agriculture monitoring, deforestation tracking, financial intelligence, and broad-area change detection at scale.
         </p>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-          Maxar (formerly DigitalGlobe) occupies the opposite end of the spectrum: a small fleet of large, expensive satellites delivering sub-30 cm native resolution imagery that is unmatched commercially. Maxar is the primary supplier of high-resolution satellite imagery to the U.S. government under EnhancedView and follow-on contracts with the NGA and NRO, giving it a reliable and large government revenue base. Taken private by Advent International in 2023, Maxar is now focused on building its Legion constellation of next-generation high-resolution satellites while continuing to operate its WorldView and GeoEye assets.
+          Maxar (formerly DigitalGlobe) occupied the opposite end of the spectrum: a small fleet of large, expensive satellites delivering sub-30 cm native resolution imagery that is unmatched commercially, and the primary supplier of high-resolution satellite imagery to the U.S. government under EnhancedView and follow-on contracts with the NGA and NRO. Taken private by Advent International in 2023, the company built out its Legion constellation of next-generation high-resolution satellites. In October 2025, Maxar split into Vantor — which carries the WorldView/GeoEye/Legion imagery business and the NGA/NRO relationships compared here — and Lanteris Space Systems, which took the satellite manufacturing and robotics side of the business.
         </p>
       </div>
 
@@ -132,12 +133,12 @@ export default function PlanetLabsVsMaxar() {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Article',
-            headline: 'Planet Labs vs Maxar Technologies: Complete Comparison 2026',
-            description: 'Side-by-side comparison of Planet Labs and Maxar Technologies with data on constellation size, resolution, revenue, and customers.',
+            headline: 'Planet Labs vs Maxar (Vantor / Lanteris): Complete Comparison 2026',
+            description: 'Side-by-side comparison of Planet Labs and the former Maxar Technologies businesses (now Vantor and Lanteris Space Systems, split October 2025) with data on constellation size, resolution, revenue, and customers.',
             author: { '@type': 'Organization', name: 'SpaceNexus' },
             publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
             datePublished: '2026-03-22',
-            dateModified: '2026-03-22',
+            dateModified: '2026-08-14',
             url: 'https://spacenexus.us/compare/planet-labs-vs-maxar',
           }).replace(/</g, '\\u003c'),
         }}

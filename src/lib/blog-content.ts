@@ -1480,7 +1480,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Communications:</strong> GEO satellites can provide continuous coverage of a fixed region. Three satellites can cover nearly the entire globe (excluding polar regions). Companies like SES, Intelsat, and Viasat operate large GEO fleets.</li>
 <li><strong>Weather monitoring:</strong> GOES (U.S.), Meteosat (Europe), and Himawari (Japan) provide continuous weather imagery from GEO.</li>
 <li><strong>Early warning:</strong> Military early warning satellites in GEO detect missile launches using infrared sensors.</li>
-<li><strong>Orbital slot allocation:</strong> GEO orbital positions are allocated by the ITU and are extremely valuable. Explore allocation data in the <a href="/orbital-slots">SpaceNexus Orbital Slots module</a>.</li>
+<li><strong>Orbital slot allocation:</strong> GEO orbital positions are allocated by the ITU and are extremely valuable. Explore allocation data in the <a href="/spectrum?tab=geo-slots">SpaceNexus Orbital Slots module</a>.</li>
 </ul>
 
 <h3>Other Notable Orbits</h3>
@@ -1506,7 +1506,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The <a href="/satellites">SpaceNexus Satellite Tracker</a> visualizes 19,000+ tracked objects on an interactive 3D globe with real-time positions calculated from the latest CelesTrak TLE data using SGP4 propagation. Filter satellites by orbit type, operator, constellation, or mission type. Click any satellite to see its orbital parameters, ground track, and operator information.</p>
 
-<p>Beyond tracking, SpaceNexus integrates satellite data with our broader intelligence platform. See which companies operate which satellites through <a href="/company-profiles">Company Profiles</a>. Monitor constellation deployment progress. Track orbital slot utilization in <a href="/orbital-slots">Orbital Slots</a>. And monitor the space environment — debris density, collision risk, and reentry predictions — in our <a href="/space-environment">Space Environment module</a>.</p>
+<p>Beyond tracking, SpaceNexus integrates satellite data with our broader intelligence platform. See which companies operate which satellites through <a href="/company-profiles">Company Profiles</a>. Monitor constellation deployment progress. Track orbital slot utilization in <a href="/spectrum?tab=geo-slots">Orbital Slots</a>. And monitor the space environment — debris density, collision risk, and reentry predictions — in our <a href="/space-environment">Space Environment module</a>.</p>
 
 <p><a href="/register">Start tracking satellites for free</a> with SpaceNexus.</p>
 `,
@@ -6369,7 +6369,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>For the private sector, the budget signals continued opportunity in commercial services but growing pressure to deliver on fixed-price commitments. Companies that can execute on cost and schedule \u2014 as SpaceX has demonstrated repeatedly \u2014 will capture disproportionate share of NASA\'s commercial portfolio. Those that cannot will find the agency less patient than in the cost-plus era.</p>
 
-<p>Monitor NASA budget allocations, contract awards, SBIR opportunities, and procurement forecasts with <a href="/government-budgets">SpaceNexus Government Budgets</a> \u2014 including real-time tracking of congressional appropriations and agency spending by directorate.</p>
+<p>Monitor NASA budget allocations, contract awards, SBIR opportunities, and procurement forecasts with <a href="/procurement?tab=global-budgets">SpaceNexus Government Budgets</a> \u2014 including real-time tracking of congressional appropriations and agency spending by directorate.</p>
 `,
   },
   {
@@ -8005,7 +8005,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Budget growth:</strong> Global government space spending exceeded $110 billion in 2025, with the U.S., China, and Europe accounting for over 85% of total spending.</li>
 </ol>
 
-<p>Explore detailed profiles, budget data, and mission timelines for all major space agencies on the <a href="/space-agencies">SpaceNexus Space Agencies</a> module, and track government spending trends with our <a href="/government-budgets">Government Budgets</a> dashboard.</p>
+<p>Explore detailed profiles, budget data, and mission timelines for all major space agencies on the <a href="/space-agencies">SpaceNexus Space Agencies</a> module, and track government spending trends with our <a href="/procurement?tab=global-budgets">Government Budgets</a> dashboard.</p>
 `,
   },
   {
@@ -9930,7 +9930,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="track-geo-satellites">Track GEO Satellites Live</h2>
 
-<p>SpaceNexus\'s <a href="/satellites">Satellite Tracker</a> lets you visualize all 565+ active GEO satellites in real time, filter by operator and mission type, and explore orbital slot assignments. Combined with our <a href="/orbital-slots">Orbital Slots</a> module, you can see which slots are occupied, contested, or available.</p>
+<p>SpaceNexus\'s <a href="/satellites">Satellite Tracker</a> lets you visualize all 565+ active GEO satellites in real time, filter by operator and mission type, and explore orbital slot assignments. Combined with our <a href="/spectrum?tab=geo-slots">Orbital Slots</a> module, you can see which slots are occupied, contested, or available.</p>
 
 <p><a href="/satellites">Explore the GEO belt on SpaceNexus</a></p>
 `,
@@ -10179,7 +10179,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="explore-space-defense">Explore Space Defense on SpaceNexus</h2>
 
-<p>SpaceNexus\'s <a href="/space-defense">Space Defense module</a> covers military space programs, budgets, ASAT capabilities, allied space operations, and the evolving threat landscape. Combined with our <a href="/government-budgets">Government Budgets</a> tracker and <a href="/procurement">Procurement Intelligence</a>, you can follow Space Force acquisitions, contract awards, and strategic priorities in real time.</p>
+<p>SpaceNexus\'s <a href="/space-defense">Space Defense module</a> covers military space programs, budgets, ASAT capabilities, allied space operations, and the evolving threat landscape. Combined with our <a href="/procurement?tab=global-budgets">Government Budgets</a> tracker and <a href="/procurement">Procurement Intelligence</a>, you can follow Space Force acquisitions, contract awards, and strategic priorities in real time.</p>
 
 <p><a href="/space-defense">Explore Space Defense on SpaceNexus</a></p>
 `,
@@ -15377,7 +15377,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Track satellite positions, explore the geostationary arc, and monitor orbital slot utilization with SpaceNexus.</p>
 
-<p><a href="/orbital-slots">Explore SpaceNexus Orbital Slots</a></p>
+<p><a href="/spectrum?tab=geo-slots">Explore SpaceNexus Orbital Slots</a></p>
 `,
   },
   {
@@ -17615,7 +17615,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Track defense space spending, contract awards, and program milestones on SpaceNexus.</p>
 
-<p><a href="/government-budgets">Explore SpaceNexus Government Budgets</a></p>
+<p><a href="/procurement?tab=global-budgets">Explore SpaceNexus Government Budgets</a></p>
 `,
   },
   {

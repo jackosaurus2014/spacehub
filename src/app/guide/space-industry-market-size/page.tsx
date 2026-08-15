@@ -52,6 +52,8 @@ const TOC = [
   { id: 'growth-drivers', label: 'Growth Drivers' },
   { id: 'forecasts', label: 'Market Forecasts' },
   { id: 'investment-flows', label: 'Investment Flows' },
+  { id: 'top-companies', label: 'Top Companies by Revenue' },
+  { id: 'growth-timeline', label: 'Growth Timeline: 2020-2035' },
   { id: 'methodology', label: 'Data Sources & Methodology' },
   { id: 'spacenexus', label: 'Track Market Data on SpaceNexus' },
 ];
@@ -901,7 +903,111 @@ export default function SpaceIndustryMarketSizePage() {
               </section>
 
               {/* ──────────────────────────────────── */}
-              {/* 12. Data Sources & Methodology       */}
+              {/* 12. Top Companies by Revenue         */}
+              {/* ──────────────────────────────────── */}
+              <section id="top-companies" className="mb-16 scroll-mt-24">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
+                  Top Space Companies by Revenue
+                </h2>
+                <div className="space-y-4 text-star-200 leading-relaxed text-lg">
+                  <p>
+                    The largest space companies by space-related revenue represent a mix of
+                    traditional defense primes and newer commercial players. SpaceX leads the
+                    field, though its Starlink and launch revenue are not broken out in public
+                    filings prior to its 2026 listing.
+                  </p>
+                  <div className="card p-6 my-8 overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-white/10 text-left">
+                          <th className="py-2 pr-4 text-star-300 font-medium">Company</th>
+                          <th className="py-2 pr-4 text-star-300 font-medium text-right">Space Revenue</th>
+                          <th className="py-2 text-star-300 font-medium">Segment</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-star-200">
+                        {[
+                          { name: 'SpaceX', revenue: '$15B+ (est.)', segment: 'Launch, Satellite Services' },
+                          { name: 'Boeing (Space & Defense)', revenue: '$12.3B', segment: 'Manufacturing, Defense' },
+                          { name: 'Lockheed Martin (Space)', revenue: '$12.1B', segment: 'Defense, Satellites' },
+                          { name: 'Northrop Grumman (Space)', revenue: '$10.8B', segment: 'Defense, Launch' },
+                          { name: 'Airbus Defence and Space', revenue: '$10.2B', segment: 'Manufacturing, Services' },
+                          { name: 'L3Harris Technologies', revenue: '$8.4B', segment: 'Defense, Sensors' },
+                          { name: 'Raytheon (RTX) Space', revenue: '$5.2B', segment: 'Defense, Sensors' },
+                          { name: 'SES', revenue: '$2.0B', segment: 'Satellite Services' },
+                          { name: 'Rocket Lab', revenue: '$0.6B', segment: 'Launch, Components' },
+                          { name: 'Planet Labs', revenue: '$0.26B', segment: 'Earth Observation' },
+                        ].map((c) => (
+                          <tr key={c.name} className="border-b border-white/10">
+                            <td className="py-2 pr-4">{c.name}</td>
+                            <td className="py-2 pr-4 text-right text-slate-300 font-semibold">{c.revenue}</td>
+                            <td className="py-2 text-star-300/80">{c.segment}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p className="text-star-300/60 text-xs mt-4">
+                      Estimates based on public filings, investor presentations, and industry analyst data. Rounded.
+                    </p>
+                  </div>
+                  <p className="mt-4">
+                    <Link href="/company-profiles" className="text-slate-300 hover:text-white underline underline-offset-2">
+                      Browse full company profiles on SpaceNexus
+                    </Link>
+                  </p>
+                </div>
+              </section>
+
+              {/* ──────────────────────────────────── */}
+              {/* 13. Growth Timeline 2020-2035        */}
+              {/* ──────────────────────────────────── */}
+              <section id="growth-timeline" className="mb-16 scroll-mt-24">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
+                  Growth Timeline: 2020-2035
+                </h2>
+                <div className="space-y-4 text-star-200 leading-relaxed text-lg">
+                  <p>
+                    The space economy has nearly doubled since 2020, and consensus projections
+                    indicate continued acceleration through the mid-2030s as Starship reaches
+                    operational cadence, Kuiper comes online, and commercial space stations begin
+                    replacing the ISS.
+                  </p>
+                  <div className="card p-6 my-8 overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-white/10 text-left">
+                          <th className="py-2 pr-4 text-star-300 font-medium">Year</th>
+                          <th className="py-2 pr-4 text-star-300 font-medium">Market Size</th>
+                          <th className="py-2 text-star-300 font-medium">Milestone</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-star-200">
+                        {[
+                          { year: '2020', size: '$371B', label: 'Pre-Starlink scaling' },
+                          { year: '2022', size: '$424B', label: 'Post-COVID recovery' },
+                          { year: '2024', size: '$613B', label: 'Record year (Space Foundation)' },
+                          { year: '2026', size: '$630B+', label: 'Current baseline; SpaceX IPO' },
+                          { year: '2028', size: '$740B (proj.)', label: 'Kuiper constellation online' },
+                          { year: '2030', size: '$950B (proj.)', label: 'Commercial space stations operational' },
+                          { year: '2035', size: '$1.8T (proj.)', label: 'Lunar economy emerging' },
+                        ].map((p) => (
+                          <tr key={p.year} className="border-b border-white/10">
+                            <td className="py-2 pr-4 text-white font-medium">{p.year}</td>
+                            <td className="py-2 pr-4 text-slate-300 font-semibold">{p.size}</td>
+                            <td className="py-2 text-star-300/80">{p.label}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p className="text-star-300/60 text-xs mt-4">
+                      Sources: SIA State of the Satellite Industry Report, Space Foundation, Morgan Stanley, Bank of America. Projections represent consensus estimates.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* ──────────────────────────────────── */}
+              {/* 14. Data Sources & Methodology       */}
               {/* ──────────────────────────────────── */}
               <section id="methodology" className="mb-16 scroll-mt-24">
                 <h2 className="text-display text-2xl md:text-3xl text-white mb-6">

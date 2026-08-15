@@ -31,6 +31,7 @@ jest.mock('@/lib/db', () => ({
       count: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn(),
       groupBy: jest.fn(),
       aggregate: jest.fn(),
     },
@@ -66,6 +67,7 @@ jest.mock('@/lib/db', () => ({
       count: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn(),
       groupBy: jest.fn(),
       aggregate: jest.fn(),
     },
@@ -433,6 +435,7 @@ describe('POST /api/procurement/opportunities', () => {
     });
     (prisma.procurementOpportunity.findUnique as jest.Mock).mockResolvedValue(null);
     (prisma.procurementOpportunity.create as jest.Mock).mockResolvedValue(mockOpp);
+    (prisma.procurementOpportunity.updateMany as jest.Mock).mockResolvedValue({ count: 0 });
 
     const req = new NextRequest('http://example.com/api/procurement/opportunities', {
       method: 'POST',
@@ -460,6 +463,7 @@ describe('POST /api/procurement/opportunities', () => {
     });
     (prisma.procurementOpportunity.findUnique as jest.Mock).mockResolvedValue({ id: 'existing-id' });
     (prisma.procurementOpportunity.update as jest.Mock).mockResolvedValue(mockOpp);
+    (prisma.procurementOpportunity.updateMany as jest.Mock).mockResolvedValue({ count: 0 });
 
     const req = new NextRequest('http://example.com/api/procurement/opportunities', {
       method: 'POST',
@@ -471,6 +475,37 @@ describe('POST /api/procurement/opportunities', () => {
     expect(res.status).toBe(200);
     expect(body.data.created).toBe(0);
     expect(body.data.updated).toBe(1);
+
+    process.env.CRON_SECRET = originalEnv;
+  });
+
+  it('closes active opportunities whose response deadline has passed', async () => {
+    // Credibility fix: SAM.gov sync only creates/updates rows — nothing
+    // previously expired stale isActive=true solicitations. Rows without a
+    // responseDeadline (e.g. type='award') are exempt by construction (the
+    // updateMany where-clause only ever matches rows with a set deadline).
+    const originalEnv = process.env.CRON_SECRET;
+    process.env.CRON_SECRET = 'test-secret';
+
+    mockFetchSAM.mockResolvedValue({ opportunities: [], totalRecords: 0 });
+    (prisma.procurementOpportunity.updateMany as jest.Mock).mockResolvedValue({ count: 4 });
+
+    const req = new NextRequest('http://example.com/api/procurement/opportunities', {
+      method: 'POST',
+      headers: { authorization: 'Bearer test-secret' },
+    });
+    const res = await opportunitiesPOST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.data.expiredClosed).toBe(4);
+    expect(prisma.procurementOpportunity.updateMany).toHaveBeenCalledWith({
+      where: {
+        isActive: true,
+        responseDeadline: { lt: expect.any(Date) },
+      },
+      data: { isActive: false },
+    });
 
     process.env.CRON_SECRET = originalEnv;
   });

@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
               message,
               relatedContentType: 'satellite_pass_alert',
               relatedContentId: alert.id,
-              linkUrl: '/satellite-alerts',
+              linkUrl: '/alerts?tab=satellite-passes',
             },
           });
 

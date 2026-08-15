@@ -157,7 +157,7 @@ export default async function BriefsPage() {
           <span className="text-lg block mb-1">📰</span>
           <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Full News Feed</span>
         </Link>
-        <Link href="/launch-manifest" className="card-interactive p-4 text-center">
+        <Link href="/mission-control" className="card-interactive p-4 text-center">
           <span className="text-lg block mb-1">🚀</span>
           <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Launch Manifest</span>
         </Link>

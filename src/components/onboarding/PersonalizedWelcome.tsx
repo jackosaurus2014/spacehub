@@ -26,7 +26,7 @@ const ROLE_RECOMMENDATIONS: Record<string, { greeting: string; modules: ModuleRe
     modules: [
       { label: 'Tools & Calculators', href: '/tools', description: 'Mission cost, link budget and orbital calculators' },
       { label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink and weather satellites' },
-      { label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns and schematics' },
+      { label: 'Blueprint Series', href: '/propulsion-database', description: 'Technical hardware breakdowns and schematics' },
       { label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine and thruster specifications' },
       { label: 'Constellation Designer', href: '/constellation-designer', description: 'Design satellite constellations' },
     ],

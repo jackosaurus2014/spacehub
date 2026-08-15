@@ -310,7 +310,7 @@ export default function SpaceAgenciesPage() {
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Related Resources</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {[
-                { href: '/government-budgets', label: 'Government Space Budgets', desc: 'Detailed budget analysis and trends', icon: '\u{1F4B0}' },
+                { href: '/procurement?tab=global-budgets', label: 'Government Space Budgets', desc: 'Detailed budget analysis and trends', icon: '\u{1F4B0}' },
                 { href: '/compliance', label: 'Regulatory & Compliance', desc: 'Space treaties and regulatory filings', icon: '\u{1F4DC}' },
                 { href: '/regulations', label: 'Space Regulations', desc: 'International space law framework', icon: '\u{2696}\u{FE0F}' },
                 { href: '/glossary', label: 'Space Glossary', desc: 'Key terms and acronyms', icon: '\u{1F4D6}' },

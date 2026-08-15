@@ -1898,7 +1898,7 @@ export default function TechReadinessPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { href: '/patents', label: 'Patent Tracker', icon: '\u{1F4DC}', desc: 'Space technology patents and filings' },
-                { href: '/blueprints', label: 'Blueprints', icon: '\u{1F4D0}', desc: 'Technical blueprints and schematics' },
+                { href: '/propulsion-database', label: 'Blueprints', icon: '\u{1F4D0}', desc: 'Technical blueprints and schematics' },
                 { href: '/tools', label: 'Tools', icon: '\u{1F6E0}\u{FE0F}', desc: 'Mission planning and analysis tools' },
                 { href: '/glossary', label: 'Glossary', icon: '\u{1F4D6}', desc: 'Space industry terminology' },
               ].map((link) => (

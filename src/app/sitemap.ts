@@ -43,7 +43,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Main modules
     { url: `${BASE_URL}/mission-control`, changeFrequency: 'hourly' as const, priority: 0.9 },
     { url: `${BASE_URL}/news`, changeFrequency: 'daily' as const, priority: 1.0 },
-    { url: `${BASE_URL}/market-intel`, changeFrequency: 'hourly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/history`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-stocks`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/spcx-vs-rklb-stock`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/starship-vs-new-glenn`, changeFrequency: 'monthly' as const, priority: 0.8 },
@@ -78,7 +78,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/mars-planner`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/mission-stats`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/asteroid-watch`, changeFrequency: 'daily' as const, priority: 0.7 },
-    { url: `${BASE_URL}/orbital-slots`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/spectrum`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/patents`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-manufacturing`, changeFrequency: 'weekly' as const, priority: 0.7 },
@@ -87,7 +86,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/supply-chain`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-mining`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-insurance`, changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/blueprints`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/orbital-costs`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/procurement`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-tourism`, changeFrequency: 'weekly' as const, priority: 0.7 },
@@ -154,11 +152,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Learning Center
     { url: `${BASE_URL}/learn`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/learn/satellite-launch-cost`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/learn/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/learn/how-to-track-satellites`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/learn/space-companies-to-watch`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/learn/space-industry`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Regulation explainers index
     { url: `${BASE_URL}/regulation-explainers`, changeFrequency: 'monthly' as const, priority: 0.7 },
@@ -252,7 +245,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/developer`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/advertise`, changeFrequency: 'monthly' as const, priority: 0.4 },
-    { url: `${BASE_URL}/satellite-2026`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/contact`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${BASE_URL}/press`, changeFrequency: 'monthly' as const, priority: 0.4 },
@@ -302,7 +294,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Additional content pages
     { url: `${BASE_URL}/ecosystem-map`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/executive-moves`, changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/government-budgets`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/intelligence-brief`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/regulatory-calendar`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/reports`, changeFrequency: 'weekly' as const, priority: 0.6 },

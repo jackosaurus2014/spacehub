@@ -42,6 +42,10 @@ interface WidgetConfig {
   description: string;
   embedCode: string;
   preview: PreviewData;
+  /** Overrides the default `/widgets/{slug}` link target when the widget lives elsewhere. */
+  href?: string;
+  /** Overrides the default `spacenexus.us/widgets/{slug}` browser-chrome label. */
+  displayUrl?: string;
 }
 
 const widgets: WidgetConfig[] = [
@@ -99,6 +103,23 @@ const widgets: WidgetConfig[] = [
       label: 'Space Industry Jobs',
       totalActive: '6,300+',
       atPrivateCompanies: '4,800+',
+    },
+  },
+  {
+    name: 'Custom Mission Countdown',
+    slug: 'countdown',
+    href: '/countdown',
+    displayUrl: 'spacenexus.us/embed/countdown/your-mission-slug',
+    description: 'Create a countdown to any mission, launch, or event of your own choosing and embed it anywhere. Choose dark, light, minimal, or retro themes. Free — no account required to embed once created.',
+    embedCode: '<iframe src="https://spacenexus.us/embed/countdown/YOUR-SLUG" width="400" height="200" frameborder="0" style="border-radius:12px;overflow:hidden;"></iframe>',
+    preview: {
+      type: 'launch',
+      label: 'Custom Countdown',
+      mission: 'Your Mission Name',
+      countdown: 'T-14d 06h 22m',
+      rocket: 'Any vehicle',
+      agency: 'Any provider',
+      location: 'Any site',
     },
   },
 ];
@@ -275,7 +296,7 @@ export default function WidgetsLandingPage() {
                       <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
                       <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
                       <span className="ml-3 text-[10px] text-slate-500 font-mono">
-                        spacenexus.us/widgets/{widget.slug}
+                        {widget.displayUrl || `spacenexus.us/widgets/${widget.slug}`}
                       </span>
                     </div>
                   </div>
@@ -286,10 +307,10 @@ export default function WidgetsLandingPage() {
                   </div>
                   <div className="px-5 pb-4 text-center">
                     <Link
-                      href={`/widgets/${widget.slug}`}
+                      href={widget.href || `/widgets/${widget.slug}`}
                       className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
                     >
-                      View live widget &rarr;
+                      {widget.href ? 'Create your own' : 'View live widget'} &rarr;
                     </Link>
                   </div>
                 </div>
@@ -314,15 +335,20 @@ export default function WidgetsLandingPage() {
                     <div className="bg-black/40 border border-white/[0.08] rounded-lg p-3 font-mono text-xs text-slate-300 break-all leading-relaxed select-all">
                       {widget.embedCode}
                     </div>
+                    {widget.href && (
+                      <p className="text-xs text-slate-500 mt-2">
+                        Replace <code className="text-cyan-400">YOUR-SLUG</code> with the slug from a countdown you create.
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-3">
                     <CopyButton text={widget.embedCode} />
                     <Link
-                      href={`/widgets/${widget.slug}`}
+                      href={widget.href || `/widgets/${widget.slug}`}
                       className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-colors"
                     >
-                      Preview
+                      {widget.href ? 'Create yours' : 'Preview'}
                     </Link>
                   </div>
                 </div>

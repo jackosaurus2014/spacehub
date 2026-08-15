@@ -859,7 +859,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             )}
             {event.type === 'satellite' && (
               <Link
-                href="/orbital-slots?tab=operators"
+                href="/spectrum?tab=geo-slots"
                 className="text-xs text-white/90 hover:text-white bg-white/10 px-3 py-2 rounded transition-colors"
               >
                 Orbital slots
@@ -1619,13 +1619,17 @@ function MissionControlContent() {
                 <div className="text-sm font-medium text-white/90 group-hover:text-white">🛰️ Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Track orbital debris near missions</p>
               </Link>
-              <Link href="/orbital-slots" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
+              <Link href="/spectrum?tab=geo-slots" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
                 <div className="text-sm font-medium text-white/90 group-hover:text-white">📡 Orbital Slots</div>
                 <p className="text-xs text-slate-400 mt-1">Satellite registry and congestion</p>
               </Link>
               <Link href="/space-insurance" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
                 <div className="text-sm font-medium text-white/90 group-hover:text-white">🛡️ Space Insurance</div>
                 <p className="text-xs text-slate-400 mt-1">Mission risk and coverage data</p>
+              </Link>
+              <Link href="/space-calendar" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
+                <div className="text-sm font-medium text-white/90 group-hover:text-white">📅 Space Calendar</div>
+                <p className="text-xs text-slate-400 mt-1">Full industry calendar: conferences, policy, business events</p>
               </Link>
             </div>
           </div>

@@ -335,7 +335,7 @@ const nextConfig = {
       { source: '/operational-awareness', destination: '/space-environment?tab=operations', permanent: true },
       { source: '/space-law', destination: '/compliance?tab=treaties', permanent: true },
       { source: '/regulatory-filings', destination: '/compliance?tab=filings', permanent: true },
-      { source: '/orbital-services', destination: '/orbital-slots?tab=services', permanent: true },
+      { source: '/orbital-services', destination: '/marketplace', permanent: true },
       // /space-comms now has its own standalone page
       { source: '/imagery-marketplace', destination: '/space-manufacturing?tab=imagery', permanent: true },
       { source: '/bid-protests', destination: '/compliance?tab=protests-overview', permanent: true },
@@ -348,7 +348,7 @@ const nextConfig = {
       { source: '/case-studies', destination: '/why-spacenexus', permanent: true },
       // Retired user-triggered AI features
       { source: '/marketplace/copilot', destination: '/marketplace/rfq/new', permanent: true },
-      { source: '/investment-thesis', destination: '/market-intel', permanent: true },
+      { source: '/investment-thesis', destination: '/space-stocks', permanent: true },
 
       // ── URL consolidation (2026-08) — funding & investment ──
       { source: '/deals', destination: '/funding-tracker', permanent: true },
@@ -358,7 +358,7 @@ const nextConfig = {
       { source: '/investment-tracker', destination: '/funding-tracker', permanent: true },
       { source: '/space-capital', destination: '/funding-tracker', permanent: true },
       { source: '/space-investors', destination: '/investors', permanent: true },
-      { source: '/portfolio-tracker', destination: '/market-intel', permanent: true },
+      { source: '/portfolio-tracker', destination: '/space-stocks', permanent: true },
       { source: '/startup-directory', destination: '/startups', permanent: true },
       // ── URL consolidation (2026-08) — duplicate/overlapping pages ──
       { source: '/space-map', destination: '/ecosystem-map', permanent: true },
@@ -375,11 +375,11 @@ const nextConfig = {
       { source: '/education-pathways', destination: '/space-talent?tab=insights', permanent: true },
 
       // ── URL consolidation — market intelligence ──
-      { source: '/space-economy', destination: '/market-intel', permanent: true },
-      { source: '/market-sizing', destination: '/market-intel', permanent: true },
-      { source: '/market-segments', destination: '/market-intel', permanent: true },
-      { source: '/market-map', destination: '/market-intel', permanent: true },
-      { source: '/industry-scorecard', destination: '/market-intel', permanent: true },
+      { source: '/space-economy', destination: '/space-stocks', permanent: true },
+      { source: '/market-sizing', destination: '/space-stocks', permanent: true },
+      { source: '/market-segments', destination: '/space-stocks', permanent: true },
+      { source: '/market-map', destination: '/space-stocks', permanent: true },
+      { source: '/industry-scorecard', destination: '/space-stocks', permanent: true },
 
       // ── URL consolidation — supply chain & operations ──
       { source: '/supply-chain-map', destination: '/supply-chain', permanent: true },
@@ -456,6 +456,36 @@ const nextConfig = {
       // /daily-digest retired (2026-08-14, founder decision): it was a thin
       // restyling of /news's top-5; /briefs is the canonical live digest.
       { source: '/daily-digest', destination: '/briefs', permanent: true },
+      // SATELLITE 2026 ran Mar 23-26, 2026 — the event landing page was still
+      // collecting meeting requests + offering a promo code 5 months later.
+      { source: '/satellite-2026', destination: '/space-calendar', permanent: true },
+
+      // ── Consolidation wave (2026-08-14): merges + declutter ──
+      // Static/duplicate surfaces folded into stronger hubs.
+      { source: '/timeline', destination: '/history', permanent: true },
+      { source: '/satellite-spotting', destination: '/whats-overhead', permanent: true },
+      { source: '/discover', destination: '/getting-started', permanent: true },
+      // Legacy static /learn articles superseded by /guide counterparts
+      { source: '/learn/space-industry', destination: '/guide/space-industry', permanent: true },
+      { source: '/learn/space-industry-market-size', destination: '/guide/space-industry-market-size', permanent: true },
+      { source: '/learn/satellite-launch-cost', destination: '/guide/space-launch-cost-comparison', permanent: true },
+      { source: '/learn/how-to-track-satellites', destination: '/guide/satellite-tracking-guide', permanent: true },
+      { source: '/learn/space-companies-to-watch', destination: '/guide/space-companies-directory', permanent: true },
+      // Alerts family consolidated onto the /alerts hub
+      { source: '/launch-alerts', destination: '/alerts', permanent: true },
+      { source: '/saved-searches', destination: '/alerts?tab=saved-searches', permanent: true },
+      { source: '/notifications', destination: '/alerts?tab=notifications', permanent: true },
+      { source: '/satellite-alerts', destination: '/alerts?tab=satellite-passes', permanent: true },
+      // Developer surfaces 4 -> 2
+      { source: '/api-access', destination: '/developer', permanent: true },
+      { source: '/integrations', destination: '/data-sources', permanent: true },
+      // /market-intel merged into /space-stocks (last consumer of the
+      // abandoned SpaceCompany table; ETFs + benchmarks ported over)
+      { source: '/market-intel', destination: '/space-stocks', permanent: true },
+      // Demoted-module salvage merges (content ported into hub tabs)
+      { source: '/orbital-slots', destination: '/spectrum?tab=geo-slots', permanent: true },
+      { source: '/government-budgets', destination: '/procurement?tab=global-budgets', permanent: true },
+      { source: '/blueprints', destination: '/propulsion-database', permanent: true },
     ];
   },
 }

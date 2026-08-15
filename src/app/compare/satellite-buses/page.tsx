@@ -962,7 +962,7 @@ export default function SatelliteBusComparisonPage() {
               Compare Satellites
             </Link>
             <Link
-              href="/blueprints"
+              href="/propulsion-database"
               className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
             >
               Satellite Blueprints

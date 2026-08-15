@@ -477,7 +477,10 @@ describe('POST /api/funding-opportunities', () => {
     expect(body.errors).toBe(1);
   });
 
-  it('closes expired non-recurring opportunities', async () => {
+  it('closes expired open opportunities regardless of recurring flag', async () => {
+    // A recurring *program* (e.g. NASA SBIR) can still have a specific row
+    // whose listed deadline has lapsed — that row is stale and must close;
+    // 'recurring' describes the program, not the freshness of this deadline.
     (mockAggregate as jest.Mock).mockResolvedValue([]);
     (mockPrisma.fundingOpportunity.updateMany as jest.Mock).mockResolvedValue({ count: 5 });
 
@@ -491,7 +494,6 @@ describe('POST /api/funding-opportunities', () => {
       where: {
         deadline: { lt: expect.any(Date) },
         status: 'open',
-        recurring: false,
       },
       data: { status: 'closed' },
     });

@@ -102,6 +102,14 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
             <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
               {statusInfo.label}
             </span>
+            {rfqData.isPlatformCurated && (
+              <span
+                className="text-[9px] px-1 py-0.5 bg-purple-500/15 text-purple-400 rounded font-medium"
+                title="Posted by SpaceNexus as a sample RFQ, not a live buyer request"
+              >
+                Platform-curated
+              </span>
+            )}
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">{rfqData.title}</h1>
           <div className="flex items-center gap-3 text-xs text-slate-500">

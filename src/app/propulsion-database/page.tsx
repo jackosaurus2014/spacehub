@@ -6,6 +6,16 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import SpacecraftTab from './SpacecraftTab';
+import ReferenceDesigns from '@/components/blueprints/ReferenceDesigns';
+import MissionPlanner from '@/components/blueprints/MissionPlanner';
+
+// Top-level page tab. 'systems' is the original propulsion database
+// (rocket engines/thrusters). 'spacecraft', 'reference', and 'planner' were
+// ported from the retired /blueprints module (2026-08-14) — its "engine"
+// tab duplicated this database, but its bus/lander specs, CubeSat/SmallSat
+// reference designs, and mission planner did not.
+type PageTab = 'systems' | 'spacecraft' | 'reference' | 'planner';
 
 // ────────────────────────────────────────
 // Types
@@ -520,6 +530,7 @@ function statusDot(status: PropulsionStatus): string {
 // ────────────────────────────────────────
 
 export default function PropulsionDatabasePage() {
+  const [pageTab, setPageTab] = useState<PageTab>('systems');
   const [typeFilter, setTypeFilter] = useState<PropulsionType | 'All'>('All');
   const [statusFilter, setStatusFilter] = useState<PropulsionStatus | 'All'>('All');
   const [sortBy, setSortBy] = useState<SortKey>('name');
@@ -591,6 +602,37 @@ export default function PropulsionDatabasePage() {
           accentColor="amber"
         />
 
+        {/* Page-level Tabs */}
+        <div role="tablist" className="flex flex-wrap gap-2 mb-8 bg-black/40 p-1.5 rounded-xl border border-white/[0.06]">
+          {([
+            { id: 'systems' as const, label: 'Propulsion Systems', icon: '\u{1F525}' },
+            { id: 'spacecraft' as const, label: 'Satellite Buses & Landers', icon: '\u{1F6F0}\u{FE0F}' },
+            { id: 'reference' as const, label: 'Reference Designs', icon: '\u{1F4D0}' },
+            { id: 'planner' as const, label: 'Mission Planner', icon: '\u{1F9EE}' },
+          ]).map(tab => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={pageTab === tab.id}
+              onClick={() => setPageTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                pageTab === tab.id
+                  ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {pageTab === 'spacecraft' && <SpacecraftTab />}
+        {pageTab === 'reference' && <ReferenceDesigns />}
+        {pageTab === 'planner' && <MissionPlanner />}
+
+        {pageTab === 'systems' && (
+        <>
         {/* Summary Stats */}
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -911,12 +953,6 @@ export default function PropulsionDatabasePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 {
-                  href: '/blueprints',
-                  title: 'Spacecraft Blueprints',
-                  description: 'Technical drawings and system diagrams',
-                  icon: '\u{1F4D0}',
-                },
-                {
                   href: '/launch-vehicles',
                   title: 'Launch Vehicles',
                   description: 'Rocket database and performance comparison',
@@ -953,13 +989,15 @@ export default function PropulsionDatabasePage() {
           </div>
         </ScrollReveal>
 
-        <RelatedModules modules={PAGE_RELATIONS['propulsion-database']} />
-
         {/* Footer note */}
         <div className="text-center text-xs text-slate-500 py-8">
           Data compiled from manufacturer specifications, NASA technical reports, and ESA documentation.
           Specifications may vary by configuration and mission profile.
         </div>
+        </>
+        )}
+
+        <RelatedModules modules={PAGE_RELATIONS['propulsion-database']} />
       </div>
     </main>
   );

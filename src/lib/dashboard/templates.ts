@@ -73,7 +73,7 @@ export const DASHBOARD_TEMPLATES: DashboardTemplate[] = [
     widgets: [
       { id: 'market-overview', type: 'chart', title: 'Space Economy Overview', size: 'large', link: '/space-economy' },
       { id: 'top-news', type: 'feed', title: 'Top Headlines', size: 'medium', link: '/news' },
-      { id: 'key-metrics', type: 'stats', title: 'Key Industry Metrics', size: 'medium', link: '/market-intel' },
+      { id: 'key-metrics', type: 'stats', title: 'Key Industry Metrics', size: 'medium', link: '/space-stocks' },
       { id: 'executive-moves', type: 'list', title: 'Executive Moves', size: 'medium', link: '/executive-moves' },
       { id: 'events-calendar', type: 'list', title: 'Upcoming Events', size: 'small', link: '/space-calendar' },
       { id: 'ai-insights', type: 'feed', title: 'AI Insights', size: 'medium', link: '/ai-insights' },

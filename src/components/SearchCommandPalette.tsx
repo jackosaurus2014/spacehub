@@ -265,9 +265,9 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
   },
   {
     id: 'orbital-management',
-    label: 'Orbital Management',
-    description: 'Orbital slots and satellite services',
-    href: '/orbital-slots',
+    label: 'GEO Slots',
+    description: 'GEO slot allocations and ITU coordination',
+    href: '/spectrum?tab=geo-slots',
     icon: <CircleStackIcon />,
     type: 'module',
     category: 'Tools',

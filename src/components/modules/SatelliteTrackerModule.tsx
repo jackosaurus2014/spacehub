@@ -301,7 +301,7 @@ export default function SatelliteTrackerModule() {
       {/* Cross-module links */}
       <div className="flex flex-wrap gap-2">
         <Link
-          href="/orbital-slots"
+          href="/spectrum?tab=geo-slots"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
         >
           View Orbital Slots &rarr;

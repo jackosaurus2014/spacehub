@@ -27,9 +27,31 @@ interface QuoteData {
   price?: number;
   change?: number;
   changePercent?: number;
+  change30D?: number;
   marketCap?: number;
   success: boolean;
 }
+
+// Ported from the retired /market-intel page (2026-08 merge) — the only place
+// on the site that tracks space-focused ETFs & funds alongside individual stocks.
+interface SpaceETF {
+  ticker: string;
+  name: string;
+  category: 'pure_space' | 'aerospace_defense';
+  expenseRatio: number;
+  leveraged?: boolean;
+}
+
+const SPACE_ETFS: SpaceETF[] = [
+  { ticker: 'UFO', name: 'Procure Space ETF', category: 'pure_space', expenseRatio: 0.75 },
+  { ticker: 'ARKX', name: 'ARK Space Exploration & Innovation ETF', category: 'pure_space', expenseRatio: 0.75 },
+  { ticker: 'ROKT', name: 'SPDR S&P Kensho Final Frontiers ETF', category: 'pure_space', expenseRatio: 0.45 },
+  { ticker: 'ITA', name: 'iShares U.S. Aerospace & Defense ETF', category: 'aerospace_defense', expenseRatio: 0.38 },
+  { ticker: 'XAR', name: 'SPDR S&P Aerospace & Defense ETF', category: 'aerospace_defense', expenseRatio: 0.35 },
+  { ticker: 'PPA', name: 'Invesco Aerospace & Defense ETF', category: 'aerospace_defense', expenseRatio: 0.58 },
+  { ticker: 'DFEN', name: 'Direxion Daily A&D Bull 3X Shares', category: 'aerospace_defense', expenseRatio: 0.95, leveraged: true },
+  { ticker: 'FITE', name: 'SPDR S&P Kensho Future Security ETF', category: 'aerospace_defense', expenseRatio: 0.45 },
+];
 
 function formatUSD(n: number | null | undefined): string {
   if (n === null || n === undefined || !isFinite(n) || n <= 0) return '—';
@@ -198,15 +220,17 @@ export default function SpaceStocksTables({
   const allTickers = Array.from(
     new Set([...ipoClass, ...pureplay, ...primes, ...satelliteEO].map((r) => r.ticker))
   );
+  const etfTickers = SPACE_ETFS.map((e) => e.ticker);
 
   const [quotes, setQuotes] = useState<Record<string, QuoteData>>({});
+  const [etfFilter, setEtfFilter] = useState<'all' | 'pure_space' | 'aerospace_defense'>('all');
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/stocks?tickers=${allTickers.join(',')}`);
+      const res = await fetch(`/api/stocks?tickers=${[...allTickers, ...etfTickers].join(',')}`);
       const data = await res.json();
       if (Array.isArray(data.stocks)) {
         const map: Record<string, QuoteData> = {};
@@ -280,6 +304,80 @@ export default function SpaceStocksTables({
             Satellite operators, geospatial intelligence, and Earth-observation constellations.
           </p>
           <StockTable rows={satelliteEO} quotes={quotes} loading={loading} />
+        </section>
+
+        <section className="mb-10" aria-labelledby="etf-heading">
+          <h2 id="etf-heading" className="text-xl font-semibold text-white mb-1 flex items-center gap-2">
+            <span className="text-purple-400">📊</span> Space ETFs &amp; Funds
+          </h2>
+          <p className="text-slate-400 text-sm mb-4">
+            Diversified exposure to the sector via pure-play space ETFs and aerospace &amp; defense funds with significant space revenue.
+          </p>
+
+          <div className="flex gap-2 mb-4">
+            {[
+              { value: 'all' as const, label: 'All' },
+              { value: 'pure_space' as const, label: 'Pure Space' },
+              { value: 'aerospace_defense' as const, label: 'Aerospace & Defense' },
+            ].map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setEtfFilter(tab.value)}
+                className={`px-4 py-2 min-h-[44px] rounded-lg text-sm font-medium transition-colors ${
+                  etfFilter === tab.value
+                    ? 'bg-white text-slate-900'
+                    : 'bg-white/[0.06] text-slate-300 hover:bg-white/[0.08]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {SPACE_ETFS.filter((etf) => etfFilter === 'all' || etf.category === etfFilter).map((etf) => {
+              const data = quotes[etf.ticker];
+              const isPositive = (data?.changePercent ?? 0) >= 0;
+              return (
+                <div key={etf.ticker} className="card p-4 hover:border-white/15 transition-all relative">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
+                      etf.category === 'pure_space' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'
+                    }`}>
+                      {etf.category === 'pure_space' ? 'Pure Space' : 'A&D'}
+                    </span>
+                    {etf.leveraged && (
+                      <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">3x Leveraged</span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="font-mono text-sm font-bold text-white/90">{etf.ticker}</div>
+                    {data?.success ? (
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded ${isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                        {isPositive ? '+' : ''}{(data.changePercent ?? 0).toFixed(2)}%
+                      </span>
+                    ) : (
+                      <div className="h-4 w-12 bg-white/[0.08] rounded animate-pulse" />
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-500 mb-2 line-clamp-1">{etf.name}</div>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    {data?.success ? (
+                      <>
+                        <span className="text-xl font-bold text-white">${(data.price ?? 0).toFixed(2)}</span>
+                        <span className={`text-xs ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                          {isPositive ? '+' : ''}{(data.change ?? 0).toFixed(2)}
+                        </span>
+                      </>
+                    ) : (
+                      <div className="h-6 w-16 bg-white/[0.08] rounded animate-pulse" />
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-500">ER: {etf.expenseRatio}%</div>
+                </div>
+              );
+            })}
+          </div>
         </section>
       </div>
     </PullToRefresh>

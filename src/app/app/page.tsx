@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'Get the App - SpaceNexus on Google Play',
@@ -33,7 +34,7 @@ const appFeatures = [
       </svg>
     ),
     title: 'Satellite Tracker',
-    description: 'Track 10,000+ satellites including Starlink, ISS, and classified payloads in real time.',
+    description: `Track ${SITE_STATS.satellites} satellites including Starlink, ISS, and classified payloads in real time.`,
   },
   {
     icon: (
@@ -60,7 +61,7 @@ const appFeatures = [
       </svg>
     ),
     title: 'News & Analysis',
-    description: '160+ articles, AI insights, daily digests, and aggregated news from 12+ RSS feeds.',
+    description: `160+ articles, AI insights, daily digests, and aggregated news from ${SITE_STATS.newsFeeds} RSS feeds.`,
   },
   {
     icon: (

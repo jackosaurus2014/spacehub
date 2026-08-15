@@ -10,7 +10,6 @@ import { useSubscription } from './SubscriptionProvider';
 import { useHighContrast } from '@/hooks/useHighContrast';
 import NotificationCenter from './NotificationCenter';
 import DensityToggle from '@/components/ui/DensityToggle';
-import NotificationBell from '@/components/ui/NotificationBell';
 import RecentlyViewed from './ui/RecentlyViewed';
 import { usePlatformModifier } from '@/hooks/useKeyboardShortcut';
 import { trackGA4Event } from '@/lib/analytics';
@@ -45,8 +44,9 @@ const NEWS_ITEMS: DropdownItem[] = [
   { label: 'Industry Reports', href: '/reports', description: 'In-depth research reports & market analysis' },
   { label: 'AI Insights & Analysis', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
-  { label: 'Industry Blogs', href: '/blogs', description: 'Expert industry insights' },
+  { label: 'Industry Voices', href: '/blogs', description: 'Curated third-party expert blogs' },
   { label: 'Live Digest', href: '/briefs', description: 'Rolling 7-day space news digest' },
+  { label: 'Brief Archive', href: '/intelligence-brief', description: 'Past weekly intelligence briefs' },
   { label: 'Podcasts', href: '/podcasts', description: 'Space podcast directory' },
   { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
   { label: 'Newsletter', href: '/newsletter', description: 'Weekly intelligence brief' },
@@ -54,15 +54,17 @@ const NEWS_ITEMS: DropdownItem[] = [
 ];
 
 const MARKETS_ITEMS: DropdownItem[] = [
-  { label: 'Market Intelligence', href: '/market-intel', description: 'Companies and stock tracking' },
+  { label: 'Space Stocks & Markets', href: '/space-stocks', description: 'Live quotes, ETFs & industry benchmarks' },
   { label: 'Company Profiles', href: '/company-profiles', description: `${SITE_STATS.companies} space company profiles` },
-  { label: 'Funding & Deals', href: '/funding-tracker', description: 'Live funding rounds & M&A' },
+  { label: 'Funding Rounds & M&A', href: '/funding-tracker', description: 'Live funding rounds & deals' },
   { label: 'Investors', href: '/investors', description: 'Investor directory & deal flow' },
   { label: 'Startups & Pre-IPO', href: '/startups', description: 'Private companies, funding & IPO watch' },
   { label: 'Report Cards', href: '/report-cards', description: 'Quarterly company grades' },
   { label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes' },
   { label: 'Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain intel' },
   { label: 'Industry Stats', href: '/space-stats', description: 'Key space industry statistics' },
+  { label: 'Constellations', href: '/constellations', description: 'Mega-constellation operator intel' },
+  { label: 'My Watchlists', href: '/my-watchlists', description: 'Track companies & topics you follow' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -90,6 +92,8 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Launch Vehicles', href: '/launch-vehicles', description: 'Compare rocket specs & costs' },
   { label: 'Aurora Forecast', href: '/aurora-forecast', description: 'Northern lights & Kp index' },
   { label: 'Tools & Calculators', href: '/tools', description: 'All calculators & analysis tools' },
+  { label: 'Learning Zone', href: '/learn', description: 'Interactive courses & lessons' },
+  { label: 'Space History', href: '/history', description: 'Searchable historical milestones' },
   { label: 'Glossary', href: '/glossary', description: 'Key space terms defined' },
   { label: 'Community Forums', href: '/community/forums', description: 'Discuss with professionals' },
   { label: 'Mentors', href: '/mentors', description: 'Industry advisors & office hours' },
@@ -586,8 +590,8 @@ export default function Navigation() {
             </button>
             {/* Keyboard Shortcuts — hidden for cleaner toolbar */}
             {/* Utility buttons moved to profile/settings for cleaner toolbar */}
-            {/* Notification Center */}
-            <NotificationBell />
+            {/* Notification Center (single bell — the old NotificationBell
+                called nonexistent /api/notifications endpoints) */}
             <NotificationCenter />
             {/* Messages */}
             {session && (
@@ -653,7 +657,6 @@ export default function Navigation() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
-            <NotificationBell />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/70 hover:text-white"

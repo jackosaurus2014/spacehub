@@ -796,6 +796,211 @@ export const IMPACT_STYLES: Record<string, { bg: string; text: string }> = {
   low: { bg: 'bg-green-500/20', text: 'text-green-400' },
 };
 
+// ────────────────────────────────────────
+// GEO Slots (ported from the retired /orbital-slots module, 2026-08-14 —
+// see the "GEO Slots" tab. /orbital-slots and /spectrum cross-linked
+// heavily on GEO/ITU coordination, so this content now lives here.)
+// ────────────────────────────────────────
+
+export interface GeoSlotInfo {
+  position: string;
+  longitude: number;
+  operator: string;
+  satelliteName: string;
+  country: string;
+  use: string;
+  band: string;
+  coverageRegion: string;
+  launchYear: number | null;
+  estimatedValue: string;
+  status: 'active' | 'planned' | 'transitioning';
+  notes: string;
+}
+
+export const KEY_GEO_SLOTS: GeoSlotInfo[] = [
+  {
+    position: '77°W',
+    longitude: -77,
+    operator: 'DirecTV / AT&T',
+    satelliteName: 'DirecTV-14, DirecTV-15',
+    country: 'USA',
+    use: 'Direct Broadcast Satellite TV',
+    band: 'Ku-band, Ka-band',
+    coverageRegion: 'Continental USA',
+    launchYear: 2014,
+    estimatedValue: '$500M+',
+    status: 'active',
+    notes: 'Primary slot for DirecTV residential service to North America.',
+  },
+  {
+    position: '101°W',
+    longitude: -101,
+    operator: 'DirecTV / AT&T',
+    satelliteName: 'DirecTV-10, DirecTV-12',
+    country: 'USA',
+    use: 'Direct Broadcast Satellite TV',
+    band: 'Ka-band',
+    coverageRegion: 'Continental USA',
+    launchYear: 2007,
+    estimatedValue: '$400M+',
+    status: 'active',
+    notes: 'High-definition and local channel delivery for DirecTV subscribers.',
+  },
+  {
+    position: '137°E',
+    longitude: 137,
+    operator: 'JSAT (SKY Perfect JSAT)',
+    satelliteName: 'JCSAT-2B',
+    country: 'Japan',
+    use: 'Communications & Broadcasting',
+    band: 'C-band, Ku-band',
+    coverageRegion: 'Asia-Pacific',
+    launchYear: 2016,
+    estimatedValue: '$300M+',
+    status: 'active',
+    notes: 'Key broadcasting slot for Japanese and Asia-Pacific markets.',
+  },
+  {
+    position: '13°E',
+    longitude: 13,
+    operator: 'Eutelsat',
+    satelliteName: 'Hot Bird 13F, 13G',
+    country: 'France',
+    use: 'Direct-to-Home Television',
+    band: 'Ku-band',
+    coverageRegion: 'Europe, North Africa, Middle East',
+    launchYear: 2022,
+    estimatedValue: '$800M+',
+    status: 'active',
+    notes: 'One of the most valuable orbital positions in the world. Serves 1,000+ TV channels to 135M homes.',
+  },
+  {
+    position: '28.2°E',
+    longitude: 28.2,
+    operator: 'SES',
+    satelliteName: 'Astra 2E, 2F, 2G',
+    country: 'Luxembourg',
+    use: 'Direct-to-Home Television',
+    band: 'Ku-band',
+    coverageRegion: 'UK, Ireland, Europe',
+    launchYear: 2013,
+    estimatedValue: '$600M+',
+    status: 'active',
+    notes: 'Primary position for UK Sky TV platform and Freesat. Serves 13M+ households.',
+  },
+  {
+    position: '9°E',
+    longitude: 9,
+    operator: 'Eutelsat',
+    satelliteName: 'Ka-Sat, Eutelsat 9B',
+    country: 'France',
+    use: 'Broadband Internet & Broadcasting',
+    band: 'Ka-band, Ku-band',
+    coverageRegion: 'Europe, Mediterranean',
+    launchYear: 2010,
+    estimatedValue: '$450M+',
+    status: 'active',
+    notes: 'High-throughput Ka-band satellite delivering broadband across Europe with 90 Gbps capacity.',
+  },
+  {
+    position: '19.2°E',
+    longitude: 19.2,
+    operator: 'SES',
+    satelliteName: 'Astra 1KR, 1L, 1M, 1N',
+    country: 'Luxembourg',
+    use: 'Direct-to-Home Television',
+    band: 'Ku-band',
+    coverageRegion: 'Central Europe, Germany',
+    launchYear: 2006,
+    estimatedValue: '$700M+',
+    status: 'active',
+    notes: 'Premier European TV position. Primary platform for German and Central European broadcasters with 118M+ TV homes.',
+  },
+  {
+    position: '95°W',
+    longitude: -95,
+    operator: 'SES / DISH Network',
+    satelliteName: 'SES-11 / EchoStar-105',
+    country: 'USA',
+    use: 'Television & Government',
+    band: 'C-band, Ku-band',
+    coverageRegion: 'North America',
+    launchYear: 2017,
+    estimatedValue: '$350M+',
+    status: 'active',
+    notes: 'Shared satellite serving DISH Network TV and government/enterprise C-band customers.',
+  },
+  {
+    position: '105.5°E',
+    longitude: 105.5,
+    operator: 'APT Satellite (AsiaSat)',
+    satelliteName: 'AsiaSat 7',
+    country: 'China',
+    use: 'Broadcasting & Communications',
+    band: 'C-band, Ku-band',
+    coverageRegion: 'Asia-Pacific',
+    launchYear: 2011,
+    estimatedValue: '$250M+',
+    status: 'active',
+    notes: 'Serves major broadcasters across Asia including CCTV, Star TV, and regional networks.',
+  },
+  {
+    position: '74°W',
+    longitude: -74,
+    operator: 'Star One (Embratel)',
+    satelliteName: 'Star One D2',
+    country: 'USA',
+    use: 'Broadcasting & Broadband',
+    band: 'C-band, Ku-band, Ka-band',
+    coverageRegion: 'Latin America',
+    launchYear: 2022,
+    estimatedValue: '$300M+',
+    status: 'active',
+    notes: 'Primary position for Brazilian and Latin American broadcast and broadband services.',
+  },
+  {
+    position: '108.2°E',
+    longitude: 108.2,
+    operator: 'Telkom Indonesia',
+    satelliteName: 'Telkom 4 (Merah Putih)',
+    country: 'India',
+    use: 'Communications & Broadcasting',
+    band: 'C-band',
+    coverageRegion: 'Indonesia, South Asia',
+    launchYear: 2018,
+    estimatedValue: '$200M+',
+    status: 'active',
+    notes: 'Critical connectivity infrastructure for the Indonesian archipelago.',
+  },
+  {
+    position: '75°E',
+    longitude: 75,
+    operator: 'ISRO (Indian Space Research Organisation)',
+    satelliteName: 'GSAT-15',
+    country: 'India',
+    use: 'Broadcasting & Navigation (GAGAN)',
+    band: 'Ku-band',
+    coverageRegion: 'Indian Subcontinent',
+    launchYear: 2015,
+    estimatedValue: '$150M+',
+    status: 'active',
+    notes: 'Supports DTH television and the GPS-Aided Geo Augmented Navigation (GAGAN) system.',
+  },
+];
+
+export const GEO_SLOT_COUNTRY_FLAGS: Record<string, string> = {
+  USA: '\u{1F1FA}\u{1F1F8}',
+  UK: '\u{1F1EC}\u{1F1E7}',
+  China: '\u{1F1E8}\u{1F1F3}',
+  France: '\u{1F1EB}\u{1F1F7}',
+  Luxembourg: '\u{1F1F1}\u{1F1FA}',
+  Germany: '\u{1F1E9}\u{1F1EA}',
+  Japan: '\u{1F1EF}\u{1F1F5}',
+  India: '\u{1F1EE}\u{1F1F3}',
+  Russia: '\u{1F1F7}\u{1F1FA}',
+  Canada: '\u{1F1E8}\u{1F1E6}',
+};
+
 export const CONGESTION_STYLES: Record<string, { label: string; bg: string; text: string; barColor: string; percent: number }> = {
   low: { label: 'Low', bg: 'bg-green-500/20', text: 'text-green-400', barColor: 'bg-green-500', percent: 20 },
   medium: { label: 'Medium', bg: 'bg-yellow-500/20', text: 'text-yellow-400', barColor: 'bg-yellow-500', percent: 50 },

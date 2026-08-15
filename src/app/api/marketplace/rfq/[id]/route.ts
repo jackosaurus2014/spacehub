@@ -14,6 +14,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const rfq = await prisma.rFQ.findFirst({
       where: { OR: [{ id: params.id }, { slug: params.id }] },
       include: {
+        // Buyer's isAdmin flag identifies the 12 founder-batch RFQs seeded via
+        // scripts/seed-marketplace.ts — never surfaced beyond the computed
+        // isPlatformCurated boolean below.
+        buyer: { select: { isAdmin: true } },
         proposals: {
           orderBy: { submittedAt: 'desc' },
         },
@@ -73,6 +77,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       status: rfq.status,
       isPublic: rfq.isPublic,
       createdAt: rfq.createdAt,
+      isPlatformCurated: rfq.buyer?.isAdmin === true,
       proposalCount: rfq._count.proposals,
       clarificationCount: await prisma.rFQClarification.count({ where: { rfqId: rfq.id, isPublic: true } }),
     };

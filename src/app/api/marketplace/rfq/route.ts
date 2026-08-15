@@ -42,12 +42,21 @@ export async function GET(request: NextRequest) {
           status: true,
           createdAt: true,
           _count: { select: { proposals: true } },
+          // Buyer's isAdmin flag is the marker for the 12 founder-batch RFQs
+          // seeded via scripts/seed-marketplace.ts (all posted by the admin
+          // account as a system buyer) — never surfaced beyond this boolean.
+          buyer: { select: { isAdmin: true } },
         },
       }),
       prisma.rFQ.count({ where: where as any }),
     ]);
 
-    return NextResponse.json({ rfqs, total, limit, offset });
+    const rfqsWithBadge = rfqs.map(({ buyer, ...rfq }) => ({
+      ...rfq,
+      isPlatformCurated: buyer?.isAdmin === true,
+    }));
+
+    return NextResponse.json({ rfqs: rfqsWithBadge, total, limit, offset });
   } catch (error) {
     logger.error('List RFQs error', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to fetch RFQs');

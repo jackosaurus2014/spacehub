@@ -5,7 +5,7 @@ import Link from 'next/link';
 const TRENDING_ITEMS = [
   { title: 'Artemis II Launch Prep', href: '/blog/artemis-ii-moon-mission-everything-you-need-to-know' },
   { title: 'SpaceX IPO Watch', href: '/blog/spacex-ipo-what-it-means-for-space-investors' },
-  { title: 'SATELLITE 2026 Conference', href: '/satellite-2026' },
+  { title: 'Space Industry Calendar', href: '/space-calendar' },
   { title: 'Space Station Funding Boom', href: '/blog/sierra-space-vast-billion-dollar-raises-2026' },
   { title: '$626B Space Economy', href: '/space-economy' },
 ];

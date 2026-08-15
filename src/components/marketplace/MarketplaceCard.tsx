@@ -70,7 +70,12 @@ const MarketplaceCard = memo(function MarketplaceCard({ listing, index = 0 }: Ma
                   </>
                 )}
                 {listing.isEditorial && (
-                  <span className="text-[9px] px-1 py-0.5 bg-purple-500/15 text-purple-400 rounded font-medium">Editorial</span>
+                  <span
+                    className="text-[9px] px-1 py-0.5 bg-purple-500/15 text-purple-400 rounded font-medium"
+                    title="Curated by SpaceNexus from public data, not submitted by the provider"
+                  >
+                    Platform-curated
+                  </span>
                 )}
               </div>
             </div>

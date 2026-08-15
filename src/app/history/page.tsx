@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import HistoryTimeline from './HistoryTimeline';
@@ -127,6 +129,8 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
             }}
           />
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['history']} />
       </div>
     </div>
   );
