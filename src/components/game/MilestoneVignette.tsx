@@ -5,6 +5,8 @@ import type { GameState } from '@/lib/game/types';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { playSound } from '@/lib/game/sound-engine';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import GameIcon from './GameIcon';
+import { resolveIcon, type IconName } from '@/lib/game/icons';
 
 /**
  * MilestoneVignette — full-screen celebration overlay that fires when the
@@ -28,7 +30,7 @@ type Celebration = {
   headline: string;
   subtitle: string;
   accent: string; // hex color for the ring + glow
-  icon: string;
+  icon: IconName;
 };
 
 const STORAGE_KEY = 'spacetycoon_milestones_seen';
@@ -76,9 +78,9 @@ export default function MilestoneVignette({ state }: MilestoneVignetteProps) {
         queue.push({
           id,
           headline: 'CORPORATE TIER ASCENDED',
-          subtitle: `${tierDef.icon}  ${tierDef.name.toUpperCase()}`,
+          subtitle: tierDef.name.toUpperCase(),
           accent: tierDef.color,
-          icon: tierDef.icon,
+          icon: resolveIcon(tierDef.icon, 'victory'),
         });
       }
     }
@@ -92,7 +94,7 @@ export default function MilestoneVignette({ state }: MilestoneVignetteProps) {
         headline: 'FIRST BILLION CLEARED',
         subtitle: 'YOUR TREASURY · $1,000,000,000',
         accent: '#fbbf24',
-        icon: '💎',
+        icon: 'resource-precious',
       });
     }
 
@@ -108,7 +110,7 @@ export default function MilestoneVignette({ state }: MilestoneVignetteProps) {
         headline: 'FIRST CONTACT ESTABLISHED',
         subtitle: 'HUMANITY IS NO LONGER ALONE',
         accent: '#a78bfa',
-        icon: '👽',
+        icon: 'alien',
       });
     }
 
@@ -163,7 +165,7 @@ export default function MilestoneVignette({ state }: MilestoneVignetteProps) {
       />
 
       <div className="text-center relative">
-        <div className="text-6xl mb-5" aria-hidden="true">{active.icon}</div>
+        <div className="mb-5 flex justify-center"><GameIcon name={active.icon} size={72} glow="amber" /></div>
         <h1
           className="milestone-headline font-hud text-3xl sm:text-5xl font-black mb-3"
           style={{

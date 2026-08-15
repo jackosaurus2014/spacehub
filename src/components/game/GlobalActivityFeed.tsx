@@ -7,23 +7,25 @@
 // from the map HUD and (in ticker form) inline in the Command Center header.
 
 import { useActivityFeed, formatRelativeTime, type ActivityEntry } from '@/hooks/useWorldState';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // Icon per activity type — falls back to a generic pulse glyph for types
 // added later without needing a UI change here.
-const ACTIVITY_ICON: Record<string, string> = {
-  colony_claimed: '🏙️',
-  milestone_claimed: '🏆',
-  competitive_contract_claimed: '📜',
-  league_promotion: '⬆️',
-  league_demotion: '⬇️',
-  bounty_filled: '💰',
-  bid_won: '🎯',
-  alliance_war: '⚔️',
-  alliance_treaty: '🤝',
+const ACTIVITY_ICON: Record<string, IconName> = {
+  colony_claimed: 'city',
+  milestone_claimed: 'leaderboard',
+  competitive_contract_claimed: 'scroll',
+  league_promotion: 'arrow-up',
+  league_demotion: 'arrow-down',
+  bounty_filled: 'money',
+  bid_won: 'target',
+  alliance_war: 'swords',
+  alliance_treaty: 'handshake',
 };
 
-function iconFor(type: string): string {
-  return ACTIVITY_ICON[type] || '📡';
+function iconFor(type: string): IconName {
+  return ACTIVITY_ICON[type] || 'activity';
 }
 
 interface GlobalActivityFeedProps {
@@ -49,7 +51,7 @@ export default function GlobalActivityFeed({ limit = 20, compact = false, classN
     <div className={className}>
       {!compact && (
         <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span aria-hidden="true">📡</span> Galactic Activity
+          <GameIcon name="activity" size={14} glow="cyan" /> Galactic Activity
         </h3>
       )}
       <div
@@ -67,7 +69,7 @@ export default function GlobalActivityFeed({ limit = 20, compact = false, classN
         )}
         {activities.map((a: ActivityEntry) => (
           <div key={a.id} className="flex items-start gap-2 text-[11px] py-1.5 px-2 rounded-lg hover:bg-white/[0.03] border-b border-white/[0.03] last:border-0">
-            <span className="shrink-0 mt-0.5" aria-hidden="true">{iconFor(a.type)}</span>
+            <span className="shrink-0 mt-0.5"><GameIcon name={iconFor(a.type)} size={13} /></span>
             <div className="min-w-0 flex-1">
               <p className="text-slate-200 leading-snug">{a.title}</p>
               {a.description && <p className="text-slate-500 text-[10px] mt-0.5">{a.description}</p>}

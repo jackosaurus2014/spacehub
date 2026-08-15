@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { APP_URL } from '@/lib/constants';
 import GameStyles from '@/components/game/GameStyles';
+import GameIcon from '@/components/game/GameIcon';
 import {
   assembleEpochAddress,
   getCurrentRealignmentEpoch,
@@ -149,7 +150,7 @@ export default function EpochAddressPage() {
             href="/space-tycoon"
             className="game-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
           >
-            🚀 Build your space empire
+            <GameIcon name="fleet" size={16} /> Build your space empire
           </Link>
         </div>
       </div>

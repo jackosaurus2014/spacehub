@@ -3,14 +3,22 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { APP_URL } from '@/lib/constants';
 import GameStyles from '@/components/game/GameStyles';
+import GameIcon from '@/components/game/GameIcon';
 import ShareButton from '@/components/ui/ShareButton';
 import { formatMoney } from '@/lib/game/formulas';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { getPublicCorp } from '@/lib/game/public-leaderboard';
 import { getCorpChronicle } from '@/lib/game/public-era-chronicle';
 import { ERA_CHARTER_MAP } from '@/lib/game/corporate-eras';
-import { ERA_MEDAL_LABEL, ERA_MEDAL_ICON } from '@/lib/game/corp-era-registry';
+import { ERA_MEDAL_LABEL } from '@/lib/game/corp-era-registry';
 import { ACHIEVEMENTS } from '@/lib/game/achievements';
+import { resolveIcon, type IconName } from '@/lib/game/icons';
+
+// V1: shape-distinct medal (medal vs medal-outline), color is reinforcement
+// — same pattern as CorporateEraPanel.tsx's MEDAL_ICON.
+const MEDAL_ICON: Record<string, IconName> = {
+  platinum: 'medal', gold: 'medal', silver: 'medal', bronze: 'medal', filed: 'medal-outline',
+};
 
 // Public corporation profile — SEO-indexable, no login required. Only
 // public-safe scalar fields are ever selected server-side (see
@@ -156,7 +164,7 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
             <ul className="space-y-2">
               {corp.globalMilestones.map((m) => (
                 <li key={m.milestoneId} className="flex items-center justify-between text-sm">
-                  <span className="text-slate-200">🏆 {formatMilestoneLabel(m.milestoneId)}</span>
+                  <span className="text-slate-200 inline-flex items-center gap-1.5"><GameIcon name="leaderboard" size={13} /> {formatMilestoneLabel(m.milestoneId)}</span>
                   <span className="text-slate-500 text-xs">
                     {new Date(m.claimedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
                   </span>
@@ -183,10 +191,10 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
                   <li key={`${era.eraIndex}`} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="text-sm text-white font-medium flex items-center gap-1.5">
-                        <span aria-hidden="true">{charter?.icon || '🏛️'}</span> Era {era.eraIndex + 1}: {charter?.name || era.charterId}
+                        <GameIcon name={resolveIcon(charter?.icon, 'governance')} size={12} /> Era {era.eraIndex + 1}: {charter?.name || era.charterId}
                       </span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold flex items-center gap-1">
-                        <span aria-hidden="true">{ERA_MEDAL_ICON[era.medal]}</span> {ERA_MEDAL_LABEL[era.medal]}
+                        <GameIcon name={MEDAL_ICON[era.medal] || 'medal'} size={11} /> {ERA_MEDAL_LABEL[era.medal]}
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-1">
@@ -210,7 +218,7 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
             href="/space-tycoon"
             className="game-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
           >
-            🚀 Build your space empire
+            <GameIcon name="fleet" size={16} /> Build your space empire
           </Link>
           <p className="mt-3 text-slate-600 text-[11px]">
             <Link href="/space-tycoon/leaderboard" className="text-cyan-500 hover:underline">

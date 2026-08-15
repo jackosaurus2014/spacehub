@@ -21,6 +21,8 @@ import {
   type CalendarEntry, type CalendarCategory, type CalendarCharterLite,
 } from '@/lib/game/world-calendar';
 import type { UpcomingLaunchLite } from '@/lib/game/real-world-feed';
+import GameIcon from '@/components/game/GameIcon';
+import { calendarCategoryIcon } from '@/lib/game/icons';
 
 const POLL_MS = 5 * 60 * 1000; // matches world-feed route's 5-minute cache TTL
 const TICK_MS = 30 * 1000; // countdown refresh — text only, no animation
@@ -187,7 +189,7 @@ export default function MissionCalendarPanel({ state }: Props) {
         style={{ minHeight: 44 }}
       >
         <span className="flex items-center gap-2">
-          <span className="text-lg" aria-hidden="true">🗓️</span>
+          <GameIcon name="calendar" size={18} glow="cyan" />
           <span className="game-label text-cyan-300">Mission Calendar</span>
           <span className="text-[10px] text-slate-500 font-hud uppercase tracking-wide">Next 14 days</span>
         </span>
@@ -234,7 +236,13 @@ function CalendarRow({ entry, now, compact }: { entry: CalendarEntry; now: numbe
       className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[11px] border ${CATEGORY_FRAME[entry.category] ?? FALLBACK_CATEGORY_FRAME}`}
       style={{ minHeight: 44 }}
     >
-      <span className="text-base shrink-0" aria-hidden="true">{entry.icon}</span>
+      {/* V1: icon keyed by CATEGORY (not entry.icon) — per-entry emoji is
+          authored deep in season/event/program data files outside this
+          wave's src/components/game/ sweep scope; the category-level icon
+          set (world-calendar.ts CalendarCategory, 16 entries) is what the
+          spec's icon inventory calls for and keeps every row's glyph
+          sourced from this file's own registry. */}
+      <span className="shrink-0"><GameIcon name={calendarCategoryIcon(entry.category)} size={16} /></span>
       <span className="min-w-0 flex-1">
         <span className="game-label mr-2">{CATEGORY_LABEL[entry.category] ?? FALLBACK_CATEGORY_LABEL}</span>
         <span className="text-slate-200">{entry.title}</span>

@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface UnlockInfo {
   id: string;
   name: string;
-  icon: string;
+  icon: IconName;
   description: string;
   tab: string;
 }
@@ -15,56 +17,56 @@ const FEATURE_UNLOCKS: Record<string, UnlockInfo> = {
   services: {
     id: 'services',
     name: 'Services',
-    icon: '💼',
+    icon: 'services',
     description: 'View your active revenue streams and income breakdown.',
     tab: 'services',
   },
   fleet: {
     id: 'fleet',
     name: 'Fleet',
-    icon: '🚢',
+    icon: 'fleet',
     description: 'Build ships to mine resources, transport cargo, and survey locations.',
     tab: 'fleet',
   },
   crafting: {
     id: 'crafting',
     name: 'Crafting',
-    icon: '🔨',
+    icon: 'crafting',
     description: 'Refine raw resources into high-value products for advanced construction.',
     tab: 'crafting',
   },
   workforce: {
     id: 'workforce',
     name: 'Crew',
-    icon: '👷',
+    icon: 'workforce',
     description: 'Hire operators, scientists, miners, and engineers to boost your empire.',
     tab: 'workforce',
   },
   market: {
     id: 'market',
     name: 'Market',
-    icon: '📈',
+    icon: 'market',
     description: 'Buy and sell resources on the global multiplayer market.',
     tab: 'market',
   },
   contracts: {
     id: 'contracts',
     name: 'Contracts',
-    icon: '📋',
+    icon: 'contracts',
     description: 'Complete goals to earn money and speed boosts for construction/research.',
     tab: 'contracts',
   },
   alliance: {
     id: 'alliance',
     name: 'Alliance',
-    icon: '🤝',
+    icon: 'alliance',
     description: 'Join or create an alliance for shared revenue, mining, and research bonuses.',
     tab: 'alliance',
   },
   bounties: {
     id: 'bounties',
     name: 'Bounties',
-    icon: '📦',
+    icon: 'bounties',
     description: 'Post and fill resource bounties with other players for profit.',
     tab: 'bounties',
   },
@@ -130,8 +132,8 @@ export default function FeatureUnlockToast({ availableTabsKey, availableTabs, on
       <div className="rounded-lg overflow-hidden shadow-xl" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--accent-primary)', boxShadow: '0 0 20px rgba(99, 102, 241, 0.15)' }}>
         {/* Header */}
         <div className="px-4 py-2 flex items-center justify-between" style={{ background: 'rgba(99, 102, 241, 0.1)', borderBottom: '1px solid rgba(99, 102, 241, 0.15)' }}>
-          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-            <span aria-hidden="true">✨ </span>New Feature Unlocked
+          <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--accent-primary)' }}>
+            <GameIcon name="sparkle" size={12} glow="purple" />New Feature Unlocked
           </span>
           <button
             onClick={() => setVisible(false)}
@@ -139,14 +141,14 @@ export default function FeatureUnlockToast({ availableTabsKey, availableTabs, on
             className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs"
             style={{ color: 'var(--text-muted)' }}
           >
-            <span aria-hidden="true">✕</span>
+            <GameIcon name="close" size={14} />
           </button>
         </div>
 
         {/* Content */}
         <div className="px-4 py-3">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-xl" aria-hidden="true">{currentUnlock.icon}</span>
+            <GameIcon name={currentUnlock.icon} size={22} glow="cyan" />
             <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{currentUnlock.name}</span>
           </div>
           <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--text-secondary)' }}>

@@ -14,6 +14,7 @@ import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from 
 import { toggleMusic, isMusicPlaying, setMusicVolume, getMusicVolume, initMusicAutoResume } from '@/lib/game/music-engine';
 import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
+import GameIcon from './GameIcon';
 
 interface ResourceBarProps {
   state: GameState;
@@ -253,7 +254,7 @@ export default function ResourceBar({ state }: ResourceBarProps) {
             className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${music ? 'text-cyan-400' : 'text-slate-600 hover:text-slate-400'}`}
             title={music ? 'Music: On' : 'Music: Off'}
           >
-            🎼
+            <GameIcon name="music" size={14} />
           </button>
           {music && (
             <input
@@ -275,7 +276,7 @@ export default function ResourceBar({ state }: ResourceBarProps) {
             className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${ambient ? 'text-purple-400' : 'text-slate-600 hover:text-slate-400'}`}
             title={ambient ? 'Ambient: On' : 'Ambient: Off'}
           >
-            🎵
+            <GameIcon name="ambient" size={14} />
           </button>
           <button
             onClick={handleToggleMute}
@@ -284,7 +285,7 @@ export default function ResourceBar({ state }: ResourceBarProps) {
             className="min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs text-slate-500 hover:text-white transition-colors"
             title={muted ? 'Unmute SFX' : 'Mute SFX'}
           >
-            {muted ? '🔇' : '🔊'}
+            <GameIcon name={muted ? 'mute' : 'unmute'} size={14} />
           </button>
         </div>
       </div>

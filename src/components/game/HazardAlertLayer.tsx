@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from '@/components/game/GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 /**
  * HazardAlertLayer — watches state.recentHazards for newly-appended entries
@@ -21,16 +23,17 @@ interface HazardAlertLayerProps {
 type AlertEntry = {
   id: string;
   title: string;
+  icon: IconName;
   detail: string;
   severity: 'warning' | 'loss';
   createdAtMs: number;
 };
 
-const HAZARD_META: Record<string, { label: string; icon: string }> = {
-  solar_storm:        { label: 'Solar storm',        icon: '☀' },
-  micrometeorite:     { label: 'Micrometeorite',     icon: '☄' },
-  pirate_raid:        { label: 'Pirate raid',        icon: '⚔' },
-  equipment_failure:  { label: 'Equipment failure',  icon: '⚙' },
+const HAZARD_META: Record<string, { label: string; icon: IconName }> = {
+  solar_storm:        { label: 'Solar storm',        icon: 'hazard-solar-storm' },
+  micrometeorite:     { label: 'Micrometeorite',     icon: 'hazard-micrometeorite' },
+  pirate_raid:        { label: 'Pirate raid',        icon: 'hazard-pirate-raid' },
+  equipment_failure:  { label: 'Equipment failure',  icon: 'hazard-equipment-failure' },
 };
 
 export default function HazardAlertLayer({ state }: HazardAlertLayerProps) {
@@ -53,12 +56,13 @@ export default function HazardAlertLayer({ state }: HazardAlertLayerProps) {
     for (const h of hazards) {
       if (seenIds.current.has(h.id)) continue;
       seenIds.current.add(h.id);
-      const meta = HAZARD_META[h.type] || { label: h.type, icon: '⚠' };
+      const meta = HAZARD_META[h.type] || { label: h.type, icon: 'hazard-generic' as IconName };
       const loc = LOCATION_MAP.get(h.locationId);
       const severity: 'warning' | 'loss' = h.destroyed ? 'loss' : 'warning';
       fresh.push({
         id: h.id,
-        title: `${meta.icon}  ${meta.label.toUpperCase()}`,
+        title: meta.label.toUpperCase(),
+        icon: meta.icon,
         detail: h.destroyed
           ? `Asset lost at ${loc?.name || h.locationId}`
           : `${Math.round(h.damagePct * 100)}% damage at ${loc?.name || h.locationId}${
@@ -133,7 +137,7 @@ export default function HazardAlertLayer({ state }: HazardAlertLayerProps) {
               >
                 {a.severity === 'loss' ? 'LOSS' : 'WARNING'}
               </span>
-              {a.title}
+              <GameIcon name={a.icon} size={12} /> {a.title}
             </div>
             <div className="text-[11px] opacity-90 mt-0.5 max-w-[260px]">{a.detail}</div>
           </div>

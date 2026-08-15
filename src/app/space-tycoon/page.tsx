@@ -19,6 +19,8 @@ import { getBuildingAsset } from '@/lib/game/assets';
 import Link from 'next/link';
 import Image from 'next/image';
 import ResourceBar from '@/components/game/ResourceBar';
+import GameIcon from '@/components/game/GameIcon';
+import type { IconName } from '@/lib/game/icons';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
 import DailyBonusModal from '@/components/game/DailyBonusModal';
@@ -255,7 +257,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm">💡</span>
+            <GameIcon name="idea" size={16} />
             <h3 className="font-hud text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>Suggested Research</h3>
             <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>— best for your current progress</span>
           </div>
@@ -330,7 +332,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
             <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-lg animate-pulse motion-reduce:animate-none">🔬</span>
+                <span className="animate-pulse motion-reduce:animate-none"><GameIcon name="research" size={20} glow="purple" /></span>
                 <div>
                   <span className="text-white text-sm font-semibold">{def.name}</span>
                   {hasQueue2 && <span className="text-slate-500 text-[9px] ml-1.5">Q1</span>}
@@ -359,7 +361,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
             <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-lg animate-pulse motion-reduce:animate-none">🔬</span>
+                <span className="animate-pulse motion-reduce:animate-none"><GameIcon name="research" size={20} glow="purple" /></span>
                 <div>
                   <span className="text-white text-sm font-semibold">{def2.name}</span>
                   <span className="text-slate-500 text-[9px] ml-1.5">Q2</span>
@@ -505,10 +507,10 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                     >
                       <div className="flex justify-between items-start mb-1">
                         <div className="flex items-center gap-1.5">
-                          {completed && <span className="text-green-400 text-xs">✓</span>}
+                          {completed && <span className="text-green-400"><GameIcon name="check" size={12} /></span>}
                           {active && <span className="text-purple-400 text-xs animate-pulse motion-reduce:animate-none">◉</span>}
-                          {locked && <span className="text-slate-600 text-xs">🔒</span>}
-                          {!locked && disp.doctrineLocked && <span className="text-amber-400 text-xs">⚖</span>}
+                          {locked && <span className="text-slate-600"><GameIcon name="lock" size={12} /></span>}
+                          {!locked && disp.doctrineLocked && <span className="text-amber-400"><GameIcon name="balance" size={12} /></span>}
                           {canStart && !disp.doctrineLocked && <span className="text-purple-400 text-xs">▶</span>}
                           {unlockedCantAfford && <span className="text-amber-400/70 text-xs">◎</span>}
                           <span className={`text-xs font-medium ${
@@ -549,10 +551,10 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                             const pDef = RESEARCH_MAP.get(p);
                             const pDone = state.completedResearch.includes(p);
                             return (
-                              <span key={p} className={`text-[8px] px-1.5 py-0.5 rounded ${
+                              <span key={p} className={`inline-flex items-center gap-0.5 text-[8px] px-1.5 py-0.5 rounded ${
                                 pDone ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
                               }`}>
-                                {pDone ? '✓' : '✗'} {pDef?.name || p}
+                                <GameIcon name={pDone ? 'check' : 'close'} size={9} /> {pDef?.name || p}
                               </span>
                             );
                           })}
@@ -691,7 +693,7 @@ function ServicesPanel({ state }: { state: GameState }) {
           {artSrc ? (
             <Image src={artSrc} alt="" width={56} height={56} className="w-12 h-12 object-contain drop-shadow-[0_0_6px_rgba(34,211,238,0.3)]" />
           ) : (
-            <span className="text-2xl">💰</span>
+            <GameIcon name="money" size={28} />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -1694,38 +1696,41 @@ export default function SpaceTycoonPage() {
   //   rivals, leagues         -> leaderboard (StandingsHubPanel)
   //   intelligence, economy, futures -> market (MarketHubPanel)
   //   spatial                 -> map (MapCommandCenter HUD overlay toggle)
-  const TAB_CATALOG: { id: GameTab; label: string; icon: string }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'build', label: 'Build', icon: '🏗️' },
-    { id: 'research', label: 'Research', icon: '🔬' },
-    { id: 'map', label: 'Map', icon: '🗺️' },
-    { id: 'services', label: 'Services', icon: '💰' },
-    { id: 'fleet', label: 'Fleet', icon: '🚀' },
-    { id: 'reports', label: 'Reports', icon: '📬' },
-    { id: 'contracts', label: 'Contracts', icon: '📋' },
-    { id: 'crafting', label: 'Craft', icon: '🔨' },
-    { id: 'market', label: 'Markets', icon: '📈' },
-    { id: 'workforce', label: 'Crew', icon: '👷' },
-    { id: 'alliance', label: 'Corporation', icon: '🏢' },
-    { id: 'bounties', label: 'Bounties', icon: '📦' },
-    { id: 'predictions', label: 'Predictions', icon: '🔮' },
-    { id: 'megaproject', label: 'Mega-Project', icon: '🌍' },
-    { id: 'megastructures', label: 'Megastructures', icon: '🛰️' },
-    { id: 'espionage', label: 'Intel', icon: '🕵️' },
-    { id: 'territory', label: 'Territory', icon: '🗺️' },
-    { id: 'speedruns', label: 'Speed Run', icon: '⏱️' },
-    { id: 'seasons', label: 'Seasons', icon: '🌟' },
-    { id: 'leaderboard', label: 'Standings', icon: '🏆' },
-    { id: 'commanders', label: 'Commanders', icon: '🎖️' },
-    { id: 'factions', label: 'Factions', icon: '🛡️' },
-    { id: 'modules', label: 'Modules', icon: '⚙️' },
-    { id: 'discoveries', label: 'Discoveries', icon: '🔭' },
-    { id: 'science', label: 'Science', icon: '🧪' },
-    { id: 'interstellar', label: 'Interstellar', icon: '✴' },
-    { id: 'subsidiaries', label: 'Subsidiaries', icon: '🏭' },
-    { id: 'specialization', label: 'Specialize', icon: '🎯' },
-    { id: 'victory', label: 'Victory', icon: '🥇' },
-    { id: 'governance', label: 'Governance', icon: '🏛️' },
+  // Icon ids are IconName keys from src/lib/game/icons.tsx, deliberately
+  // named identically to their tab id (Wave V1, docs/VISUAL_DEPTH_2026-08.md
+  // §V1) — see icons.test.ts's tab-id resolution guard.
+  const TAB_CATALOG: { id: GameTab; label: string; icon: IconName }[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+    { id: 'build', label: 'Build', icon: 'build' },
+    { id: 'research', label: 'Research', icon: 'research' },
+    { id: 'map', label: 'Map', icon: 'map' },
+    { id: 'services', label: 'Services', icon: 'services' },
+    { id: 'fleet', label: 'Fleet', icon: 'fleet' },
+    { id: 'reports', label: 'Reports', icon: 'reports' },
+    { id: 'contracts', label: 'Contracts', icon: 'contracts' },
+    { id: 'crafting', label: 'Craft', icon: 'crafting' },
+    { id: 'market', label: 'Markets', icon: 'market' },
+    { id: 'workforce', label: 'Crew', icon: 'workforce' },
+    { id: 'alliance', label: 'Corporation', icon: 'alliance' },
+    { id: 'bounties', label: 'Bounties', icon: 'bounties' },
+    { id: 'predictions', label: 'Predictions', icon: 'predictions' },
+    { id: 'megaproject', label: 'Mega-Project', icon: 'megaproject' },
+    { id: 'megastructures', label: 'Megastructures', icon: 'megastructures' },
+    { id: 'espionage', label: 'Intel', icon: 'espionage' },
+    { id: 'territory', label: 'Territory', icon: 'territory' },
+    { id: 'speedruns', label: 'Speed Run', icon: 'speedruns' },
+    { id: 'seasons', label: 'Seasons', icon: 'seasons' },
+    { id: 'leaderboard', label: 'Standings', icon: 'leaderboard' },
+    { id: 'commanders', label: 'Commanders', icon: 'commanders' },
+    { id: 'factions', label: 'Factions', icon: 'factions' },
+    { id: 'modules', label: 'Modules', icon: 'modules' },
+    { id: 'discoveries', label: 'Discoveries', icon: 'discoveries' },
+    { id: 'science', label: 'Science', icon: 'science' },
+    { id: 'interstellar', label: 'Interstellar', icon: 'interstellar' },
+    { id: 'subsidiaries', label: 'Subsidiaries', icon: 'subsidiaries' },
+    { id: 'specialization', label: 'Specialize', icon: 'specialization' },
+    { id: 'victory', label: 'Victory', icon: 'victory' },
+    { id: 'governance', label: 'Governance', icon: 'governance' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -1818,7 +1823,7 @@ export default function SpaceTycoonPage() {
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
               } ${isTutorialTarget ? 'game-tutorial-pulse' : ''}`}
             >
-              <span className="mr-0.5 sm:mr-1">{t.icon}</span><span className="hidden sm:inline">{t.label}</span>
+              <span className="mr-0.5 sm:mr-1"><GameIcon name={t.icon} size={14} /></span><span className="hidden sm:inline">{t.label}</span>
             </button>
             );
           })}
@@ -1836,7 +1841,7 @@ export default function SpaceTycoonPage() {
               }`}
             >
               {activeInSecondary ? (
-                <><span className="mr-0.5 sm:mr-1">{activeInSecondary.icon}</span><span className="hidden sm:inline">{activeInSecondary.label}</span></>
+                <><span className="mr-0.5 sm:mr-1"><GameIcon name={activeInSecondary.icon} size={14} /></span><span className="hidden sm:inline">{activeInSecondary.label}</span></>
               ) : (
                 <>
                   <span className="mr-0.5">•••</span><span className="hidden sm:inline">More</span>
@@ -1859,7 +1864,7 @@ export default function SpaceTycoonPage() {
                       tab === t.id ? 'text-white bg-white/[0.06]' : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
-                    <span>{t.icon}</span>
+                    <GameIcon name={t.icon} size={14} />
                     <span>{t.label}</span>
                     {t.id === 'reports' && unreadReports > 0 && (
                       <span className="ml-auto px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
@@ -1886,35 +1891,35 @@ export default function SpaceTycoonPage() {
           className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors whitespace-nowrap shrink-0"
           title="How to Play"
         >
-          <span className="sm:hidden">❓</span><span className="hidden sm:inline">FAQ</span>
+          <span className="sm:hidden"><GameIcon name="help" size={14} label="FAQ" /></span><span className="hidden sm:inline">FAQ</span>
         </Link>
         <button
           onClick={() => { playSound('click'); setShowAchievements(true); }}
           className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
           title="Achievements"
         >
-          🏆<span className="hidden sm:inline"> {unlockedAchievements.length}</span>
+          <GameIcon name="leaderboard" size={14} /><span className="hidden sm:inline"> {unlockedAchievements.length}</span>
         </button>
         <button
           onClick={() => { saveGame(state); playSound('click'); }}
           className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-white transition-colors whitespace-nowrap shrink-0"
           title="Save Game"
         >
-          💾<span className="hidden sm:inline"> Save</span>
+          <GameIcon name="save" size={14} /><span className="hidden sm:inline"> Save</span>
         </button>
         <button
           onClick={handleRestartGame}
-          className="hidden sm:block px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
+          className="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
           title="Restart Game"
         >
-          🔄 Restart
+          <GameIcon name="restart" size={14} /> Restart
         </button>
         <button
           onClick={handleDeleteSave}
-          className="hidden sm:block px-2 py-1 text-[10px] text-slate-500 hover:text-red-400 transition-colors whitespace-nowrap shrink-0"
+          className="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] text-slate-500 hover:text-red-400 transition-colors whitespace-nowrap shrink-0"
           title="Quit to Menu"
         >
-          🚪 Quit
+          <GameIcon name="quit" size={14} /> Quit
         </button>
       </div>
 

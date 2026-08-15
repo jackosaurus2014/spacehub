@@ -2,9 +2,17 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { APP_URL } from '@/lib/constants';
 import GameStyles from '@/components/game/GameStyles';
+import GameIcon from '@/components/game/GameIcon';
+import { resolveIcon, type IconName } from '@/lib/game/icons';
 import { getRecentChronicleEntries, getPublishedChronicleCount } from '@/lib/game/public-era-chronicle';
 import { ERA_CHARTER_MAP } from '@/lib/game/corporate-eras';
-import { ERA_MEDAL_LABEL, ERA_MEDAL_ICON } from '@/lib/game/corp-era-registry';
+import { ERA_MEDAL_LABEL } from '@/lib/game/corp-era-registry';
+
+// V1: shape-distinct medal (medal vs medal-outline), color is reinforcement
+// — same pattern as CorporateEraPanel.tsx's MEDAL_ICON.
+const MEDAL_ICON: Record<string, IconName> = {
+  platinum: 'medal', gold: 'medal', silver: 'medal', bronze: 'medal', filed: 'medal-outline',
+};
 
 // Public, crawlable listing of player-published Corporate Eras — Live-Service
 // Wave LS4 (docs/LIVE_SERVICE_2026-08.md §LS4). Opt-in only, mirroring the
@@ -68,7 +76,7 @@ export default async function CorporateChroniclePage() {
               href="/space-tycoon"
               className="game-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
             >
-              🚀 Build your space empire
+              <GameIcon name="fleet" size={16} /> Build your space empire
             </Link>
           </div>
         </div>
@@ -78,7 +86,7 @@ export default async function CorporateChroniclePage() {
           <div className="hud-frame game-panel relative text-center py-16 rounded-xl">
             <span className="hud-corner-bl" aria-hidden="true" />
             <span className="hud-corner-br" aria-hidden="true" />
-            <div className="text-4xl mb-3">🏛️</div>
+            <div className="mb-3 flex justify-center"><GameIcon name="governance" size={40} /></div>
             <h2 className="font-hud text-lg font-semibold text-white mb-1">No Eras Chronicled Yet</h2>
             <p className="text-sm text-slate-400 max-w-md mx-auto">
               Corporations at Tier 3+ charter 90-day eras from the Governance tab. When one completes, publish it
@@ -103,11 +111,13 @@ export default async function CorporateChroniclePage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h2 className="text-sm font-semibold text-white truncate">{entry.corpName}</h2>
                         <span className="text-[10px] px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold flex items-center gap-1 shrink-0">
-                          <span aria-hidden="true">{ERA_MEDAL_ICON[entry.era.medal]}</span> {ERA_MEDAL_LABEL[entry.era.medal]}
+                          <GameIcon name={MEDAL_ICON[entry.era.medal] || 'medal'} size={11} /> {ERA_MEDAL_LABEL[entry.era.medal]}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        {charter ? `${charter.icon} ${charter.name}` : entry.era.charterId} · Era {entry.era.eraIndex + 1} ·
+                      <p className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1 flex-wrap">
+                        {charter ? (
+                          <span className="inline-flex items-center gap-1"><GameIcon name={resolveIcon(charter.icon, 'governance')} size={11} /> {charter.name}</span>
+                        ) : entry.era.charterId} · Era {entry.era.eraIndex + 1} ·
                         {' '}Published {formatPublishedDate(entry.publishedAt)}
                       </p>
                     </div>

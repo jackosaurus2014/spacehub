@@ -27,14 +27,16 @@ import {
 } from '@/lib/game/standing-directives';
 import { getAwayEfficiencyInvestmentBonus, getAwayEfficiencyTierForHours } from '@/lib/game/away-operations';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from '@/components/game/GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface StandingOrdersPanelProps {
   state: GameState;
   onUpdateState: (updater: (prev: GameState) => GameState) => void;
 }
 
-const QUEUE_ICON: Record<string, string> = {
-  research: '🔬', build: '🏗️', ship_dispatch: '🚀', craft: '⚙️', service_activate: '📡',
+const QUEUE_ICON: Record<string, IconName> = {
+  research: 'research', build: 'build', ship_dispatch: 'fleet', craft: 'crafting', service_activate: 'services',
 };
 
 const AWAY_PREVIEW_HOURS = [1, 24, 72, 200]; // ~1h, 1d, 3d, 8d — one sample per tier
@@ -155,7 +157,7 @@ export default function StandingOrdersPanel({ state, onUpdateState }: StandingOr
           <ul className="space-y-1.5 mb-3" aria-label="Queued orders">
             {queue.map((order, idx) => (
               <li key={order.id} className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-black/20 px-2.5 py-1.5">
-                <span aria-hidden="true">{QUEUE_ICON[order.kind] || '•'}</span>
+                <GameIcon name={QUEUE_ICON[order.kind] || 'clock'} size={14} />
                 <span className="flex-1 min-w-0">
                   <span className="text-white text-xs truncate block">{idx + 1}. {order.label}</span>
                   <span className="text-slate-500 text-[10px] capitalize">{order.kind.replace('_', ' ')}{order.locationId ? ` · ${LOCATION_MAP.get(order.locationId)?.name || order.locationId}` : ''}</span>

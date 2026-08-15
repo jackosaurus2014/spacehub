@@ -25,13 +25,15 @@ import { deriveWorldEventBonuses } from '@/lib/game/real-world-feed';
 import { deriveAppointmentEventBonuses } from '@/lib/game/appointment-events';
 import { queueServerEffects } from '@/lib/game/server-effects';
 import { usePrefersReducedMotion } from '@/hooks/useWorldState';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 const POLL_MS = 5 * 60 * 1000; // 5 minutes — matches the route's cache TTL
 
-const TYPE_ICON: Record<WorldEventType, string> = {
-  'solar-storm': '⚡',
-  'launch-window': '🚀',
-  milestone: '🛰️',
+const TYPE_ICON: Record<WorldEventType, IconName> = {
+  'solar-storm': 'hazard-solar-storm',
+  'launch-window': 'fleet',
+  milestone: 'megastructures',
 };
 
 const TYPE_LABEL: Record<WorldEventType, string> = {
@@ -117,7 +119,7 @@ export default function WorldEventsBanner() {
         >
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
-          <span className="text-base shrink-0" aria-hidden="true">{TYPE_ICON[evt.type]}</span>
+          <span className="shrink-0"><GameIcon name={TYPE_ICON[evt.type]} size={16} /></span>
           <span className="min-w-0 flex-1">
             <span className="game-label mr-2">{TYPE_LABEL[evt.type]}</span>
             <span className="text-slate-200">{evt.headline}</span>

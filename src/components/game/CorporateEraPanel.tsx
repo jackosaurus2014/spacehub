@@ -8,9 +8,19 @@ import {
   ERA_CHARTERS, ERA_MIN_CORPORATION_TIER, formatFocusTerm,
   canCharterEra, getEraProgress,
 } from '@/lib/game/corporate-eras';
-import { eraKey, ERA_MEDAL_LABEL, ERA_MEDAL_ICON } from '@/lib/game/corp-era-registry';
+import { eraKey, ERA_MEDAL_LABEL } from '@/lib/game/corp-era-registry';
 import { playSound } from '@/lib/game/sound-engine';
 import { toast } from '@/lib/toast';
+import GameIcon from '@/components/game/GameIcon';
+import { resolveIcon, type IconName } from '@/lib/game/icons';
+
+// V1: medal tiers are shape-distinct (medal vs medal-outline for the
+// unearned "filed" state) — color (MEDAL_COLOR below) is reinforcement
+// only, never the sole signal, and the tier LABEL (ERA_MEDAL_LABEL) is
+// always rendered alongside per the colorblind-safety invariant.
+const MEDAL_ICON: Record<string, IconName> = {
+  platinum: 'medal', gold: 'medal', silver: 'medal', bronze: 'medal', filed: 'medal-outline',
+};
 
 // ─── Live-Service Wave LS4 — Corporate Eras panel ───────────────────────────
 // docs/LIVE_SERVICE_2026-08.md §LS4. Lives inside GovernancePanel.tsx per the
@@ -94,7 +104,7 @@ function PublishEraToChronicle({ era }: { era: CompletedCorporateEra }) {
   if (status === 'published') {
     return (
       <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-        <span aria-hidden="true">📜</span> On the Chronicle
+        <GameIcon name="scroll" size={12} /> On the Chronicle
       </span>
     );
   }
@@ -133,7 +143,7 @@ function PublishEraToChronicle({ era }: { era: CompletedCorporateEra }) {
       aria-busy={status === 'publishing'}
       className="min-h-[32px] inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-semibold border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition-colors disabled:opacity-50"
     >
-      <span aria-hidden="true">📜</span>
+      <GameIcon name="scroll" size={12} />
       {status === 'publishing' ? 'Publishing…' : status === 'error' ? 'Retry publish' : 'Publish to Chronicle'}
     </button>
   );
@@ -158,10 +168,10 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
         <div className="rounded-lg bg-white/[0.03] p-3 mb-3">
           <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
             <span className="text-[12px] text-white font-semibold flex items-center gap-1.5">
-              <span aria-hidden="true">{progress.charter.icon}</span> {progress.charter.name}
+              <GameIcon name={resolveIcon(progress.charter.icon, 'scroll')} size={12} /> {progress.charter.name}
             </span>
             <span className={`text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[progress.liveMedal]}`}>
-              <span aria-hidden="true">{ERA_MEDAL_ICON[progress.liveMedal]}</span> Currently {ERA_MEDAL_LABEL[progress.liveMedal]}
+              <GameIcon name={MEDAL_ICON[progress.liveMedal] || 'medal'} size={11} /> Currently {ERA_MEDAL_LABEL[progress.liveMedal]}
             </span>
           </div>
           <p className="text-[10px] text-slate-400 mb-2">{progress.charter.tagline}</p>
@@ -235,7 +245,7 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
                   }`}
                 >
                   <div className="flex items-center gap-1.5 mb-1">
-                    <span aria-hidden="true">{charter.icon}</span>
+                    <GameIcon name={resolveIcon(charter.icon, 'scroll')} size={12} />
                     <span className="text-[11px] font-medium text-white">{charter.name}</span>
                   </div>
                   <p className="text-[9px] text-slate-400 mb-1.5">{charter.description}</p>
@@ -264,10 +274,10 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
               <div key={era.eraIndex} className="rounded-lg bg-white/[0.03] p-2.5">
                 <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
                   <span className="text-[10px] text-white font-medium flex items-center gap-1.5">
-                    <span aria-hidden="true">{charter?.icon || '🏛️'}</span> Era {era.eraIndex + 1}: {charter?.name || era.charterId}
+                    <GameIcon name={resolveIcon(charter?.icon, 'governance')} size={12} /> Era {era.eraIndex + 1}: {charter?.name || era.charterId}
                   </span>
                   <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[era.medal]}`}>
-                    <span aria-hidden="true">{ERA_MEDAL_ICON[era.medal]}</span> {ERA_MEDAL_LABEL[era.medal]}
+                    <GameIcon name={MEDAL_ICON[era.medal] || 'medal'} size={11} /> {ERA_MEDAL_LABEL[era.medal]}
                   </span>
                 </div>
                 {charter && (

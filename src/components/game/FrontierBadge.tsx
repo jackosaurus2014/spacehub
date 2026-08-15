@@ -10,6 +10,7 @@ import {
 } from '@/lib/game/frontier';
 import { formatMoney } from '@/lib/game/formulas';
 import { useModalA11y } from './useModalA11y';
+import GameIcon from './GameIcon';
 
 interface Props {
   state: GameState;
@@ -45,7 +46,7 @@ export default function FrontierBadge({ state, onGraduate }: Props) {
             : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-200'
         }`}
       >
-        <span aria-hidden="true">🛡</span>
+        <GameIcon name="shield" size={12} glow={urgent ? 'amber' : 'green'} />
         <span className="font-bold uppercase tracking-wider text-[10px] shrink-0">Protected Frontier</span>
         <span className="text-slate-300 shrink-0">·</span>
         <span className="font-mono shrink-0">
@@ -99,7 +100,7 @@ function FrontierDetailModal({
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
               <h3 id="frontier-title" className="text-white text-xl font-bold flex items-center gap-2">
-                <span aria-hidden="true">🛡</span> Protected Frontier
+                <GameIcon name="shield" size={20} glow="green" /> Protected Frontier
               </h3>
               <p className="text-slate-400 text-xs mt-1 leading-relaxed">
                 As a new corporation, you're shielded from the worst of the open economy for your first 30 real-world days
@@ -111,7 +112,7 @@ function FrontierDetailModal({
               aria-label="Close Protected Frontier details"
               className="min-w-[44px] min-h-[44px] rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
             >
-              <span aria-hidden="true">✕</span>
+              <GameIcon name="close" size={16} />
             </button>
           </div>
 
@@ -167,10 +168,10 @@ function FrontierDetailModal({
           <div className="rounded-lg bg-emerald-500/5 border border-emerald-500/20 p-3 mb-4">
             <div className="text-[10px] uppercase tracking-wider text-emerald-300 font-bold mb-1.5">While Protected</div>
             <ul className="text-[11px] text-slate-300 space-y-1">
-              <li>✓ Rivals cannot target your assets</li>
-              <li>✓ Espionage against you is blocked</li>
-              <li>✓ NPC piracy and sabotage events are suppressed</li>
-              <li>✓ Starter contracts pay +{Math.round((FRONTIER_CONTRACT_PAYOUT_MULTIPLIER - 1) * 100)}% more</li>
+              <li className="flex items-center gap-1.5"><GameIcon name="check" size={11} /> Rivals cannot target your assets</li>
+              <li className="flex items-center gap-1.5"><GameIcon name="check" size={11} /> Espionage against you is blocked</li>
+              <li className="flex items-center gap-1.5"><GameIcon name="check" size={11} /> NPC piracy and sabotage events are suppressed</li>
+              <li className="flex items-center gap-1.5"><GameIcon name="check" size={11} /> Starter contracts pay +{Math.round((FRONTIER_CONTRACT_PAYOUT_MULTIPLIER - 1) * 100)}% more</li>
             </ul>
           </div>
 

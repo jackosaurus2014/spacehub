@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { APP_URL } from '@/lib/constants';
 import GameStyles from '@/components/game/GameStyles';
+import GameIcon, { type GameIconGlow } from '@/components/game/GameIcon';
 import { getSealedSeasonChronicle } from '@/lib/game/public-season-chronicle';
 
 // Public, crawlable Season Chronicle page for one concluded season —
@@ -13,7 +14,9 @@ import { getSealedSeasonChronicle } from '@/lib/game/public-season-chronicle';
 // (same gotcha as the leaderboard/registry/chronicle pages).
 export const dynamic = 'force-dynamic';
 
-const RANK_MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
+// V1: shape (medal) + visible "#N" text always render together — color
+// (RANK_GLOW) is reinforcement only, never the sole rank signal.
+const RANK_GLOW: Record<number, GameIconGlow> = { 1: 'amber', 2: 'cyan', 3: 'purple' };
 
 interface PageProps {
   params: Promise<{ n: string }>;
@@ -71,7 +74,7 @@ export default async function SeasonChroniclePage({ params }: PageProps) {
               href="/space-tycoon"
               className="game-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
             >
-              🚀 Build your space empire
+              <GameIcon name="fleet" size={16} /> Build your space empire
             </Link>
           </div>
         </div>
@@ -120,7 +123,10 @@ export default async function SeasonChroniclePage({ params }: PageProps) {
               ) : (
                 record.topPlacements.map(p => (
                   <div key={p.rank} role="row" className="flex items-center gap-3 px-3 sm:px-4 py-3 border-t border-white/5">
-                    <span role="cell" className="w-12 text-lg">{RANK_MEDAL[p.rank] || `#${p.rank}`}</span>
+                    <span role="cell" className="w-12 flex items-center gap-1">
+                      {RANK_GLOW[p.rank] ? <GameIcon name="medal" size={17} glow={RANK_GLOW[p.rank]} /> : null}
+                      <span className="game-number text-sm">#{p.rank}</span>
+                    </span>
                     <div role="cell" className="flex-1 min-w-0">
                       <span className="text-white font-medium truncate block">{p.companyName}</span>
                       {p.title && <span className="text-purple-400 text-xs">{p.title}</span>}

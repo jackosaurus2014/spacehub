@@ -1,5 +1,7 @@
 'use client';
 
+import GameIcon from '@/components/game/GameIcon';
+
 export default function SpaceTycoonError({ reset }: { reset: () => void }) {
   const handleClearSave = () => {
     try {
@@ -13,7 +15,7 @@ export default function SpaceTycoonError({ reset }: { reset: () => void }) {
   return (
     <div className="min-h-screen bg-[#050510] flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <span className="text-5xl block mb-4">🚀💥</span>
+        <span className="mb-4 flex justify-center"><GameIcon name="hazard-generic" size={48} glow="red" /></span>
         <h2 className="text-xl font-bold text-white mb-2">Mission Failure</h2>
         <p className="text-slate-400 text-sm mb-6">
           Something went wrong with the simulation. This can happen when the game updates and your old save is incompatible.

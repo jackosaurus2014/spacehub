@@ -2,9 +2,11 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { APP_URL } from '@/lib/constants';
 import GameStyles from '@/components/game/GameStyles';
+import GameIcon from '@/components/game/GameIcon';
 import { formatMoney } from '@/lib/game/formulas';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { getPublicLeaderboard, getPublicCorporationCount } from '@/lib/game/public-leaderboard';
+import type { GameIconGlow } from '@/components/game/GameIcon';
 
 // Public, crawlable snapshot of the live Space Tycoon leaderboard — no login
 // required. Data is fetched directly via prisma (not the client-facing
@@ -36,7 +38,9 @@ export const metadata: Metadata = {
   },
 };
 
-const RANK_MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
+// V1: shape (the medal glyph) is always paired with the visible "#N" text —
+// color (RANK_GLOW) is reinforcement only, never the sole rank signal.
+const RANK_GLOW: Record<number, GameIconGlow> = { 1: 'amber', 2: 'cyan', 3: 'purple' };
 
 export default async function PublicLeaderboardPage() {
   const [entries, totalCorporations] = await Promise.all([
@@ -65,7 +69,7 @@ export default async function PublicLeaderboardPage() {
               href="/space-tycoon"
               className="game-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
             >
-              🚀 Build your space empire
+              <GameIcon name="fleet" size={16} /> Build your space empire
             </Link>
           </div>
         </div>
@@ -96,8 +100,11 @@ export default async function PublicLeaderboardPage() {
                   className="holo-row flex items-center gap-3 border-t border-white/[0.04] px-3 sm:px-4 py-3 hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="w-12 flex items-center" role="cell">
-                    {RANK_MEDAL[entry.rank] ? (
-                      <span className="text-xl" title={`Rank #${entry.rank}`} aria-hidden="true">{RANK_MEDAL[entry.rank]}</span>
+                    {RANK_GLOW[entry.rank] ? (
+                      <span className="inline-flex items-center gap-1" title={`Rank #${entry.rank}`}>
+                        <GameIcon name="medal" size={18} glow={RANK_GLOW[entry.rank]} />
+                        <span className="game-number text-slate-300 text-xs">#{entry.rank}</span>
+                      </span>
                     ) : (
                       <span className="game-number text-slate-500 text-xs">#{entry.rank}</span>
                     )}

@@ -16,6 +16,8 @@ import { getActiveScienceMissions, getScienceMissionProgress, SCIENCE_PROGRAM_MA
 import { SHIP_MAP } from '@/lib/game/ships';
 import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '@/lib/game/constants';
 import type { GameState } from '@/lib/game/types';
+import GameIcon from './GameIcon';
+import { resolveIcon, type IconName } from '@/lib/game/icons';
 
 /** Real seconds per game-month at 1x speed (30 ticks × 2s/tick) — same
  *  convention documented in constants.ts and expeditions.ts. */
@@ -25,7 +27,7 @@ export type OrderQueueTarget = { kind: 'location'; id: string } | { kind: 'syste
 
 interface OrderQueueItem {
   id: string;
-  icon: string;
+  icon: IconName;
   label: string;
   sub: string;
   pct: number | null;      // null = no completion percentage (continuous op)
@@ -47,7 +49,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
     const pct = Math.max(0, Math.min(100, (elapsed / total) * 100));
     items.push({
       id: `build-${b.instanceId}`,
-      icon: '🏗️',
+      icon: 'build',
       label: def?.name || 'Building',
       sub: loc?.name || b.locationId,
       pct,
@@ -68,7 +70,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
       const cargoUnits = Object.values(s.route.cargo || {}).reduce((a, b) => a + (b || 0), 0);
       items.push({
         id: `ship-transit-${s.instanceId}`,
-        icon: cargoUnits > 0 ? '🚚' : '🚀',
+        icon: cargoUnits > 0 ? 'cargo-truck' : 'fleet',
         label: s.name,
         sub: `→ ${toLoc?.name || s.route.to}${cargoUnits > 0 ? ` · 📦 ${cargoUnits}` : ''}`,
         pct,
@@ -79,7 +81,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
       const loc = LOCATION_MAP.get(s.miningOperation.locationId);
       items.push({
         id: `ship-mining-${s.instanceId}`,
-        icon: '⛏️',
+        icon: 'ship-mining',
         label: s.name,
         sub: `Mining ${s.miningOperation.resourceId.replace(/_/g, ' ')} · ${loc?.name || s.miningOperation.locationId}`,
         pct: null,
@@ -93,7 +95,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
       const pct = Math.max(0, Math.min(100, (elapsed / total) * 100));
       items.push({
         id: `ship-survey-${s.instanceId}`,
-        icon: '📡',
+        icon: 'ship-survey',
         label: s.name,
         sub: `Surveying ${loc?.name || s.surveyExpedition.targetLocation}`,
         pct,
@@ -112,7 +114,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
     const etaSeconds = progress.monthsRemaining > 0 ? progress.monthsRemaining * REAL_SECONDS_PER_GAME_MONTH : null;
     items.push({
       id: `expedition-${exp.id}`,
-      icon: shipDef?.icon || '🌠',
+      icon: resolveIcon(shipDef?.icon, 'comet'),
       label: shipDef?.name || 'Expedition',
       sub: `${progress.phaseLabel} · ${progress.systemName}`,
       pct: Math.round(progress.progressPct * 100),
@@ -130,7 +132,7 @@ function buildOrderQueue(state: GameState): OrderQueueItem[] {
     if (!progress || !program) continue;
     items.push({
       id: `science-${mission.id}`,
-      icon: program.icon,
+      icon: resolveIcon(program.icon, 'science'),
       label: program.name,
       sub: progress.phaseLabel,
       pct: Math.round(progress.progressPct * 100),
@@ -174,7 +176,7 @@ export default function OrderQueueHUD({ state, onSelect, className }: OrderQueue
             className="shrink-0 min-h-[44px] flex items-center gap-1.5 px-2 py-1 rounded-lg border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/30 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-cyan-400"
             title={`${item.label} — ${item.sub}`}
           >
-            <span aria-hidden="true" className="text-sm">{item.icon}</span>
+            <GameIcon name={item.icon} size={15} />
             <span className="flex flex-col leading-tight">
               <span className="text-[10px] text-white font-medium truncate max-w-[110px]">{item.label}</span>
               <span className="text-[9px] text-slate-400 truncate max-w-[110px]">

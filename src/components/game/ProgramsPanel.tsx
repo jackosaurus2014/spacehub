@@ -21,6 +21,8 @@ import { COMMANDER_MAP, RARITY_LABEL, CLASS_LABEL, getRetirementEtaMs } from '@/
 import { RESEARCH_CATEGORIES } from '@/lib/game/research-tree';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from '@/components/game/GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface ProgramsPanelProps {
   state: GameState;
@@ -33,8 +35,8 @@ const TRACK_LABEL: Record<ProgramTrack, string> = {
   rd_residency: 'R&D Residency',
 };
 
-const TRACK_ICON: Record<ProgramTrack, string> = {
-  crew_cohort: '🎓', leader_development: '🎖️', rd_residency: '🧪',
+const TRACK_ICON: Record<ProgramTrack, IconName> = {
+  crew_cohort: 'track-crew-cohort', leader_development: 'track-leader-development', rd_residency: 'track-rd-residency',
 };
 
 const BONUS_FIELD_LABEL: Record<string, string> = {
@@ -104,7 +106,7 @@ export default function ProgramsPanel({ state, onUpdateState }: ProgramsPanelPro
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
-          <span className="text-base" aria-hidden="true">🎓</span>
+          <GameIcon name="track-crew-cohort" size={16} />
           <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Programs</span>
         </div>
         <span className="text-[10px] text-slate-500">Wall-clock training — ticks while you&apos;re away</span>
@@ -133,7 +135,7 @@ export default function ProgramsPanel({ state, onUpdateState }: ProgramsPanelPro
             onClick={() => setTrack(t)}
             className={`px-3 py-1.5 text-xs min-h-[36px] flex items-center gap-1.5 ${track === t ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 hover:text-slate-200'}`}
           >
-            <span aria-hidden="true">{TRACK_ICON[t]}</span>
+            <GameIcon name={TRACK_ICON[t]} size={14} />
             {TRACK_LABEL[t]}
           </button>
         ))}
@@ -159,7 +161,7 @@ export default function ProgramsPanel({ state, onUpdateState }: ProgramsPanelPro
               const etaMs = isActive ? (inst.startedAtMs as number) + inst.durationMs - now : null;
               return (
                 <li key={inst.id} className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-black/20 px-2.5 py-1.5">
-                  <span aria-hidden="true">{TRACK_ICON[track]}</span>
+                  <GameIcon name={TRACK_ICON[track]} size={14} />
                   <span className="flex-1 min-w-0">
                     <span className="text-white text-xs truncate block">
                       {idx + 1}. {commanderName ? `${commanderName} — ${inst.label}` : inst.label}
