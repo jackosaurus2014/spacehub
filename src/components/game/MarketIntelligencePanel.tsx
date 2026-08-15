@@ -10,6 +10,9 @@ import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { formatMoney } from '@/lib/game/formulas';
 import { useModalA11y } from './useModalA11y';
+import { ConsolePanel } from './chrome';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -59,31 +62,24 @@ export default function MarketIntelligencePanel() {
 
   return (
     <div className="space-y-4">
-      <div className="card p-4">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div>
-            <h2 className="text-white text-base font-bold flex items-center gap-2">
-              <span className="text-cyan-400">⟁</span> Market Intelligence
-            </h2>
-            <p className="text-slate-500 text-xs mt-0.5">
-              Real-time commodity prices, corporate standings, and supply flows. Data access is gameplay — invest in intelligence to compete.
-            </p>
-          </div>
-        </div>
-
+      <ConsolePanel
+        title="Market Intelligence"
+        icon="activity"
+        subtitle="Real-time commodity prices, corporate standings, and supply flows. Data access is gameplay — invest in intelligence to compete."
+      >
         {/* Tab nav */}
-        <div className="flex gap-1">
-          <TabButton active={tab === 'market'} onClick={() => setTab('market')}>
-            📊 Markets
+        <div className="game-tab-bar flex gap-1 overflow-x-auto">
+          <TabButton active={tab === 'market'} onClick={() => setTab('market')} icon="market">
+            Markets
           </TabButton>
-          <TabButton active={tab === 'corporations'} onClick={() => setTab('corporations')}>
-            🏢 Corporations
+          <TabButton active={tab === 'corporations'} onClick={() => setTab('corporations')} icon="alliance">
+            Corporations
           </TabButton>
-          <TabButton active={tab === 'flows'} onClick={() => setTab('flows')}>
-            🌐 Supply Flows
+          <TabButton active={tab === 'flows'} onClick={() => setTab('flows')} icon="globe">
+            Supply Flows
           </TabButton>
         </div>
-      </div>
+      </ConsolePanel>
 
       {tab === 'market' && <MarketsTab />}
       {tab === 'corporations' && <CorporationsTab />}
@@ -92,14 +88,15 @@ export default function MarketIntelligencePanel() {
   );
 }
 
-function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function TabButton({ active, onClick, icon, children }: { active: boolean; onClick: () => void; icon: IconName; children: React.ReactNode }) {
   return (
     <button
       onClick={onClick}
-      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-        active ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
+      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+        active ? 'game-tab-active text-cyan-300' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
       }`}
     >
+      <GameIcon name={icon} size={13} />
       {children}
     </button>
   );
@@ -167,7 +164,7 @@ function MarketsTab() {
               <div className="mt-2 h-10">
                 <Sparkline resourceSlug={r.id} />
               </div>
-              <div className="mt-1 text-[9px] text-slate-600 flex justify-between">
+              <div className="mt-1 text-[10px] text-slate-600 flex justify-between">
                 <span>Supply: {(p?.available ?? 0).toLocaleString()}</span>
                 <span className="text-cyan-500/70 opacity-0 group-hover:opacity-100 transition-opacity">Click for chart →</span>
               </div>
@@ -202,7 +199,7 @@ function Sparkline({ resourceSlug }: { resourceSlug: string }) {
   }, [resourceSlug]);
 
   if (candles.length === 0) {
-    return <div className="h-full flex items-center justify-center text-[9px] text-slate-700">— no history —</div>;
+    return <div className="h-full flex items-center justify-center text-[10px] text-slate-700">— no history —</div>;
   }
 
   const data = candles.map(c => ({ t: c.t, p: c.c }));
@@ -317,7 +314,7 @@ function DeepDiveModal({
               aria-label={`Close ${resource.name} price chart`}
               className="min-w-[44px] min-h-[44px] rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm"
             >
-              <span aria-hidden="true">✕</span>
+              <GameIcon name="close" size={16} />
             </button>
           </div>
 
@@ -426,7 +423,7 @@ function Stat({ label, value, accent }: { label: string; value: string | number;
   const color = accent === 'emerald' ? 'text-emerald-400' : accent === 'red' ? 'text-red-400' : 'text-cyan-300';
   return (
     <div className="rounded-lg bg-white/[0.03] border border-white/[0.05] p-2">
-      <div className="text-[9px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
       <div className={`font-mono text-sm font-bold ${color}`}>{value}</div>
     </div>
   );
@@ -521,26 +518,26 @@ function CorporationsTab() {
                   <div className="flex items-center gap-2">
                     <span className="text-white text-sm font-bold truncate">{c.companyName}</span>
                     {c.allianceTag && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
                         [{c.allianceTag}]
                       </span>
                     )}
                     {c.title && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 italic">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 italic">
                         {c.title}
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] text-slate-500 flex gap-2 mt-0.5">
-                    <span>🏗️ {c.buildingCount}</span>
-                    <span>🔬 {c.researchCount}</span>
-                    <span>💼 {c.serviceCount}</span>
-                    <span>🗺️ {c.locationsUnlocked}</span>
+                  <div className="text-[10px] text-slate-500 flex gap-2.5 mt-0.5">
+                    <span className="inline-flex items-center gap-0.5"><GameIcon name="build" size={11} /> {c.buildingCount}</span>
+                    <span className="inline-flex items-center gap-0.5"><GameIcon name="research" size={11} /> {c.researchCount}</span>
+                    <span className="inline-flex items-center gap-0.5"><GameIcon name="services" size={11} /> {c.serviceCount}</span>
+                    <span className="inline-flex items-center gap-0.5"><GameIcon name="map" size={11} /> {c.locationsUnlocked}</span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-cyan-300 font-mono font-bold text-sm">{formatMoney(c.netWorth)}</div>
-                  <div className="text-[9px] text-slate-500">net worth</div>
+                  <div className="text-[10px] text-slate-500">net worth</div>
                 </div>
               </button>
             ))}
@@ -579,7 +576,7 @@ function CorporationDetail({ corp, onClose }: { corp: CorporationRow; onClose: (
               aria-label={`Close ${corp.companyName} profile`}
               className="min-w-[44px] min-h-[44px] rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
             >
-              <span aria-hidden="true">✕</span>
+              <GameIcon name="close" size={16} />
             </button>
           </div>
 
@@ -661,21 +658,21 @@ function SupplyFlowsTab() {
           subtitle="price > +10% above base"
           color="emerald"
           resources={overbought}
-          icon="📈"
+          icon="trending-up"
         />
         <FlowBucket
           title="Balanced"
           subtitle="within ±10% of base"
           color="slate"
           resources={stable}
-          icon="⚖️"
+          icon="balance"
         />
         <FlowBucket
           title="Oversupplied"
           subtitle="price < -10% below base"
           color="red"
           resources={undersold}
-          icon="📉"
+          icon="trending-down"
         />
       </div>
     </div>
@@ -689,14 +686,14 @@ function FlowBucket({
   subtitle: string;
   color: 'emerald' | 'slate' | 'red';
   resources: { id: string; name: string; ratio: number; effectivePrice: number; supply: number }[];
-  icon: string;
+  icon: IconName;
 }) {
   const accent = color === 'emerald' ? 'text-emerald-300 border-emerald-500/30' : color === 'red' ? 'text-red-300 border-red-500/30' : 'text-slate-300 border-slate-500/30';
   return (
     <div className={`rounded-lg border ${accent} bg-white/[0.02] p-2.5 mb-2`}>
       <div className="flex items-baseline justify-between mb-1.5">
         <div className="flex items-baseline gap-2">
-          <span>{icon}</span>
+          <GameIcon name={icon} size={13} />
           <span className="text-sm font-bold">{title}</span>
           <span className="text-[10px] text-slate-500">{subtitle}</span>
         </div>

@@ -29,6 +29,34 @@ import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '@/lib/game/constants';
 import { useModalA11y } from './useModalA11y';
 import { playSound } from '@/lib/game/sound-engine';
+import { ConsolePanel, DataChip } from './chrome';
+import GameIcon, { type GameIconGlow } from './GameIcon';
+import { resolveIcon, type IconName } from '@/lib/game/icons';
+
+// ─── Program badge (Wave V5 mission-patch wiring) ───────────────────────────
+// Every flagship program renders the same way wherever it's listed/selected:
+// the W2 mission-patch art when one exists for this program id, falling back
+// gracefully to the program's authored emoji glyph routed through the V1
+// icon registry. Centralizes the fallback contract documented in assets.ts
+// (getMissionPatchAsset) instead of re-deriving it at each call site.
+function ProgramBadge({ programId, iconGlyph, size = 20, glow = 'none' }: {
+  programId: string; iconGlyph: string | undefined; size?: number; glow?: GameIconGlow;
+}) {
+  const patch = getMissionPatchAsset(programId);
+  if (patch) {
+    return (
+      <img
+        src={patch}
+        alt=""
+        aria-hidden="true"
+        className="rounded-full border border-white/10 shrink-0 object-cover"
+        style={{ width: size, height: size }}
+        loading="lazy"
+      />
+    );
+  }
+  return <GameIcon name={resolveIcon(iconGlyph, 'science')} size={size} glow={glow} />;
+}
 
 const REAL_SECONDS_PER_GAME_MONTH = TICKS_PER_GAME_MONTH * (TICK_INTERVALS[1] / 1000);
 
@@ -54,53 +82,44 @@ export default function ScienceMissionsPanel({ state, onNavigateTab, onStartMiss
 
   const plannerProgram = plannerProgramId ? SCIENCE_PROGRAM_MAP.get(plannerProgramId) : null;
 
+  const subTabs: { id: SubTab; label: string; icon: IconName; count: number }[] = [
+    { id: 'programs', label: 'Programs', icon: 'fleet', count: SCIENCE_PROGRAMS.length },
+    { id: 'active', label: 'Missions', icon: 'megastructures', count: activeMissions.length },
+    { id: 'discoveries', label: 'Discovery Log', icon: 'discoveries', count: allDiscoveries.length },
+    { id: 'npc', label: 'NPC Programs', icon: 'handshake', count: npcStatuses.filter(s => s.coFundOpen).length },
+  ];
+
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="hud-frame relative rounded-2xl border border-cyan-500/20 p-4" style={{ background: '#050510' }}>
-        <span className="hud-corner-bl" aria-hidden="true" />
-        <span className="hud-corner-br" aria-hidden="true" />
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div>
-            <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
-              <span className="text-cyan-400" aria-hidden="true">🔬</span> Science Mission Control
-            </h2>
-            <p className="text-slate-400 text-xs mt-0.5 max-w-2xl">
-              Flagship science programs — real instruments, multi-phase timelines, discovery payoffs.
-              Instrument selection decides what each mission can find: a mass spectrometer reads chemistry,
-              radar reads structure, a seismometer reads interiors. Choose {INSTRUMENTS_PER_MISSION}, fly, and learn.
-            </p>
-          </div>
+      <ConsolePanel
+        title="Science Mission Control"
+        icon="research"
+        subtitle={`Flagship science programs — real instruments, multi-phase timelines, discovery payoffs. Instrument selection decides what each mission can find: a mass spectrometer reads chemistry, radar reads structure, a seismometer reads interiors. Choose ${INSTRUMENTS_PER_MISSION}, fly, and learn.`}
+        right={
           <div className="text-right shrink-0">
-            <div className="game-label text-[9px]">Active programs</div>
-            <div className="font-hud text-cyan-300 text-lg font-bold">{activeMissions.length}</div>
+            <div className="game-label text-[10px]">Active programs</div>
+            <div className="font-hud text-cyan-300 text-lg font-bold game-number">{activeMissions.length}</div>
           </div>
+        }
+      >
+        {/* Sub-tab navigation */}
+        <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto" role="tablist" aria-label="Science mission sections">
+          {subTabs.map(t => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              onClick={() => setSubTab(t.id)}
+              aria-selected={subTab === t.id}
+              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+                subTab === t.id ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <GameIcon name={t.icon} size={13} /> {t.label} <span className="text-slate-500">({t.count})</span>
+            </button>
+          ))}
         </div>
-      </div>
-
-      {/* Sub-tab navigation */}
-      <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto" role="tablist" aria-label="Science mission sections">
-        {([
-          { id: 'programs' as SubTab, label: 'Programs', icon: '🚀', count: SCIENCE_PROGRAMS.length },
-          { id: 'active' as SubTab, label: 'Missions', icon: '🛰️', count: activeMissions.length },
-          { id: 'discoveries' as SubTab, label: 'Discovery Log', icon: '🔭', count: allDiscoveries.length },
-          { id: 'npc' as SubTab, label: 'NPC Programs', icon: '🤝', count: npcStatuses.filter(s => s.coFundOpen).length },
-        ]).map(t => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setSubTab(t.id)}
-            aria-pressed={subTab === t.id}
-            className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
-              subTab === t.id
-                ? 'game-tab-active bg-cyan-500/20 text-cyan-200 border border-cyan-500/30'
-                : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
-            }`}
-          >
-            <span aria-hidden="true">{t.icon}</span> {t.label} <span className="text-slate-500">({t.count})</span>
-          </button>
-        ))}
-      </div>
+      </ConsolePanel>
 
       {subTab === 'programs' && (
         <ProgramsTab
@@ -115,32 +134,34 @@ export default function ScienceMissionsPanel({ state, onNavigateTab, onStartMiss
       )}
 
       {subTab === 'discoveries' && (
-        <div className="space-y-2">
-          {allDiscoveries.length === 0 && (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center text-slate-500 text-xs">
-              No discoveries yet. Discoveries roll monthly during science operations — and only
-              instruments you flew can make them.
-            </div>
-          )}
-          {allDiscoveries.map(d => {
-            const program = SCIENCE_PROGRAM_MAP.get(d.programId);
-            return (
-              <div key={d.id} className="hud-frame relative rounded-xl border border-white/[0.08] bg-white/[0.02] p-3">
-                <span className="hud-corner-bl" aria-hidden="true" />
-                <span className="hud-corner-br" aria-hidden="true" />
-                <div className="flex items-start gap-2">
-                  <span className="text-lg shrink-0" aria-hidden="true">{program?.icon || '🔬'}</span>
-                  <div className="min-w-0">
-                    <div className="text-white text-xs font-bold font-hud">{d.name}</div>
-                    <div className="text-[10px] text-slate-500 mb-1">{program?.name} · mission month {d.missionMonth}</div>
-                    <p className="text-slate-400 text-[11px] leading-relaxed">{d.summary}</p>
-                    <div className="text-[10px] text-emerald-300 mt-1">{d.payoffSummary}</div>
+        <ConsolePanel title="Discovery Log" icon="discoveries" subtitle="Every finding your flown instruments have rolled, most recent mission-month first.">
+          <div className="space-y-2">
+            {allDiscoveries.length === 0 && (
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center text-slate-500 text-xs">
+                No discoveries yet. Discoveries roll monthly during science operations — and only
+                instruments you flew can make them.
+              </div>
+            )}
+            {allDiscoveries.map(d => {
+              const program = SCIENCE_PROGRAM_MAP.get(d.programId);
+              return (
+                <div key={d.id} className="hud-frame relative rounded-xl border border-white/[0.08] bg-white/[0.02] p-3">
+                  <span className="hud-corner-bl" aria-hidden="true" />
+                  <span className="hud-corner-br" aria-hidden="true" />
+                  <div className="flex items-start gap-2">
+                    <ProgramBadge programId={d.programId} iconGlyph={program?.icon} size={22} glow="cyan" />
+                    <div className="min-w-0">
+                      <div className="text-white text-xs font-bold font-hud">{d.name}</div>
+                      <div className="text-[10px] text-slate-500 mb-1">{program?.name} · mission month {d.missionMonth}</div>
+                      <p className="text-slate-400 text-[11px] leading-relaxed">{d.summary}</p>
+                      <div className="text-[10px] text-emerald-300 mt-1">{d.payoffSummary}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </ConsolePanel>
       )}
 
       {subTab === 'npc' && (
@@ -171,7 +192,12 @@ function ProgramsTab({ state, onOpenPlanner, onNavigateTab }: {
   onNavigateTab: (tab: GameTab) => void;
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <ConsolePanel
+      title="Flagship Science Programs"
+      icon="research"
+      subtitle="Twelve real, multi-phase programs — instrument selection determines what each mission can find."
+      bodyClassName="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1"
+    >
       {SCIENCE_PROGRAMS.map(program => {
         const missingResearch = program.requiredResearch.filter(id => !state.completedResearch.includes(id));
         const tierBlocked = !!program.minCorporationTier && (state.corporationTier || 1) < program.minCorporationTier;
@@ -196,28 +222,22 @@ function ProgramsTab({ state, onOpenPlanner, onNavigateTab }: {
             <div className="p-3">
               <div className="flex items-start justify-between gap-2 mb-1">
                 <div className="min-w-0 flex items-start gap-2">
-                  {getMissionPatchAsset(program.id) && (
-                    // Mission patch insignia (4X Wave W2 art batch) — decorative,
-                    // program.icon carries the semantic label so this is aria-hidden.
-                    <img
-                      src={getMissionPatchAsset(program.id)!}
-                      alt=""
-                      aria-hidden="true"
-                      className="w-9 h-9 rounded-full border border-white/10 shrink-0 object-cover"
-                      loading="lazy"
-                    />
-                  )}
+                  {/* Mission patch insignia (4X Wave W2 art batch), falling back to
+                      the program's icon glyph — program.name carries the semantic
+                      label so this is decorative either way. */}
+                  <ProgramBadge programId={program.id} iconGlyph={program.icon} size={36} glow={active ? 'amber' : ready ? 'cyan' : 'none'} />
                   <div className="min-w-0">
                     <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
-                      <span aria-hidden="true">{program.icon}</span> {program.name}
+                      {program.name}
                     </h3>
-                    <div className="text-[9px] uppercase tracking-wider text-slate-500 mt-0.5">{program.realAnchor}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-slate-500 mt-0.5">{program.realAnchor}</div>
                   </div>
                 </div>
                 <div className={`text-[10px] uppercase tracking-wider font-bold shrink-0 ${
                   active ? 'text-amber-300' : completed ? 'text-emerald-300' : ready ? 'text-cyan-300' : 'text-slate-500'
                 }`}>
-                  {active ? 'IN FLIGHT' : completed ? 'FLOWN ✓' : ready ? 'READY' : 'LOCKED'}
+                  {active ? 'IN FLIGHT' : completed ? 'FLOWN' : ready ? 'READY' : 'LOCKED'}
+                  {completed && <GameIcon name="check" size={11} className="inline-block ml-0.5 align-[-1px]" />}
                 </div>
               </div>
 
@@ -232,7 +252,7 @@ function ProgramsTab({ state, onOpenPlanner, onNavigateTab }: {
                   { label: program.waitsForIsoWindow ? 'Wait+Ops' : 'Ops', months: program.opsMonths },
                 ].map(ph => (
                   <div key={ph.label} className="flex-1 rounded bg-white/[0.03] border border-white/[0.06] px-1.5 py-1 text-center">
-                    <div className="game-label text-[8px]">{ph.label}</div>
+                    <div className="game-label text-[10px]">{ph.label}</div>
                     <div className="font-hud text-[10px] text-cyan-200 font-bold">
                       {ph.months} mo{program.openEnded && ph.label === 'Ops' ? '+' : ''}
                       {program.waitsForIsoWindow && ph.label === 'Wait+Ops' ? '?' : ''}
@@ -247,28 +267,21 @@ function ProgramsTab({ state, onOpenPlanner, onNavigateTab }: {
                   const met = state.completedResearch.includes(id);
                   const def = RESEARCH_MAP.get(id);
                   return (
-                    <span
-                      key={id}
-                      className={`text-[9px] px-1.5 py-0.5 rounded border ${
-                        met ? 'border-emerald-500/30 text-emerald-300 bg-emerald-500/5' : 'border-red-500/30 text-red-300 bg-red-500/5'
-                      }`}
-                    >
-                      {met ? '✓' : '✗'} {def?.name || id}
-                    </span>
+                    <DataChip key={id} tone={met ? 'good' : 'bad'} icon={met ? 'check' : 'close'}>
+                      {def?.name || id}
+                    </DataChip>
                   );
                 })}
                 {program.minCorporationTier && (
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded border ${
-                    tierBlocked ? 'border-red-500/30 text-red-300 bg-red-500/5' : 'border-emerald-500/30 text-emerald-300 bg-emerald-500/5'
-                  }`}>
-                    {tierBlocked ? '✗' : '✓'} Corp tier {program.minCorporationTier}+
-                  </span>
+                  <DataChip tone={tierBlocked ? 'bad' : 'good'} icon={tierBlocked ? 'close' : 'check'}>
+                    Corp tier {program.minCorporationTier}+
+                  </DataChip>
                 )}
               </div>
 
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <div className="game-label text-[9px]">Program budget (before instruments)</div>
+                  <div className="game-label text-[10px]">Program budget (before instruments)</div>
                   <div className="font-hud text-white text-sm font-bold">{formatMoney(program.baseCost)}</div>
                 </div>
                 {active ? (
@@ -301,7 +314,7 @@ function ProgramsTab({ state, onOpenPlanner, onNavigateTab }: {
           </div>
         );
       })}
-    </div>
+    </ConsolePanel>
   );
 }
 
@@ -313,22 +326,24 @@ function ActiveMissionsTab({ state, onOpenPrograms }: { state: GameState; onOpen
   const missions = (state.scienceMissions || []).slice().sort((a, b) => b.startedAtMs - a.startedAtMs);
   if (missions.length === 0) {
     return (
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-        <p className="text-slate-400 text-xs mb-3">No science programs started yet.</p>
-        <button
-          type="button"
-          onClick={onOpenPrograms}
-          className="min-h-[44px] px-4 py-2 rounded-lg text-xs font-semibold bg-cyan-600 text-white hover:bg-cyan-500 transition-colors"
-        >
-          Browse the 12 flagship programs →
-        </button>
-      </div>
+      <ConsolePanel title="Active Missions" icon="megastructures">
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
+          <p className="text-slate-400 text-xs mb-3">No science programs started yet.</p>
+          <button
+            type="button"
+            onClick={onOpenPrograms}
+            className="min-h-[44px] px-4 py-2 rounded-lg text-xs font-semibold bg-cyan-600 text-white hover:bg-cyan-500 transition-colors"
+          >
+            Browse the 12 flagship programs →
+          </button>
+        </div>
+      </ConsolePanel>
     );
   }
   return (
-    <div className="space-y-3">
+    <ConsolePanel title="Active Missions" icon="megastructures" subtitle="Design, build, cruise and science operations — every program you've committed to, live." bodyClassName="space-y-3 mt-1">
       {missions.map(m => <MissionCard key={m.id} state={state} mission={m} />)}
-    </div>
+    </ConsolePanel>
   );
 }
 
@@ -353,9 +368,11 @@ function MissionCard({ state, mission }: { state: GameState; mission: ScienceMis
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
-        <div className="min-w-0">
+        <div className="min-w-0 flex items-start gap-2">
+          <ProgramBadge programId={program.id} iconGlyph={program.icon} size={28} glow={mission.phase === 'failed' ? 'red' : terminal ? 'green' : 'amber'} />
+          <div className="min-w-0">
           <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
-            <span aria-hidden="true">{program.icon}</span> {program.name}
+            {program.name}
           </h3>
           <div className="text-[10px] text-slate-500">
             {progress.phaseLabel}
@@ -363,10 +380,11 @@ function MissionCard({ state, mission }: { state: GameState; mission: ScienceMis
             {' · '}{mission.insured ? 'insured' : 'uninsured'}
             {' · '}{formatMoney(mission.totalCost)} committed
           </div>
+          </div>
         </div>
         {!terminal && progress.monthsToNextPhase !== null && progress.monthsToNextPhase > 0 && (
           <div className="text-right shrink-0">
-            <div className="game-label text-[9px]">Next phase</div>
+            <div className="game-label text-[10px]">Next phase</div>
             <div className="font-hud text-cyan-300 text-xs font-bold">
               {formatCountdown(progress.monthsToNextPhase * REAL_SECONDS_PER_GAME_MONTH)}
             </div>
@@ -374,7 +392,7 @@ function MissionCard({ state, mission }: { state: GameState; mission: ScienceMis
         )}
         {mission.phase === 'on_station' && (
           <div className="text-right shrink-0">
-            <div className="game-label text-[9px]">Status</div>
+            <div className="game-label text-[10px]">Status</div>
             <div className="font-hud text-amber-300 text-xs font-bold">Awaiting ISO detection</div>
           </div>
         )}
@@ -394,8 +412,8 @@ function MissionCard({ state, mission }: { state: GameState; mission: ScienceMis
                   : 'border-white/[0.06] bg-white/[0.02] text-slate-500'
                 }`}
               >
-                <span className="text-[9px] font-hud font-bold uppercase tracking-wider">
-                  {isDone ? '✓ ' : ''}{label}
+                <span className="text-[10px] font-hud font-bold uppercase tracking-wider inline-flex items-center gap-0.5">
+                  {isDone && <GameIcon name="check" size={9} />}{label}
                 </span>
               </div>
             </li>
@@ -417,17 +435,16 @@ function MissionCard({ state, mission }: { state: GameState; mission: ScienceMis
         {mission.instrumentIds.map(id => {
           const inst = program.instruments.find(i => i.id === id);
           return (
-            <span key={id} className="text-[9px] px-1.5 py-0.5 rounded border border-cyan-500/20 text-cyan-200 bg-cyan-500/5">
-              {inst?.name || id}
-            </span>
+            <DataChip key={id} tone="info">{inst?.name || id}</DataChip>
           );
         })}
       </div>
 
       {/* Milestone + discoveries summary */}
       {mission.milestoneEligibleId && (
-        <div className="text-[10px] text-amber-300 mb-1">
-          🏁 Milestone: {mission.milestoneEligibleId.replace(/_/g, ' ')}
+        <div className="text-[10px] text-amber-300 mb-1 flex items-center gap-1">
+          <GameIcon name="territory" size={11} glow="amber" />
+          Milestone: {mission.milestoneEligibleId.replace(/_/g, ' ')}
           {mission.milestoneClaimAttempted ? ' — claim submitted to the global race' : ' — claiming…'}
         </div>
       )}
@@ -514,13 +531,12 @@ function NpcProgramsTab({ legacyContributions }: {
   const unsettledLegacy = legacyContributions.filter(c => !c.settled);
 
   return (
-    <div className="space-y-3">
-      <p className="text-slate-500 text-[11px]">
-        NPC factions run public science programs on fixed, published schedules — co-fund an open window
-        for a share of the settlement. Every player&apos;s stake counts toward the SAME world-shared pool
-        (real money, real server ledger). Settlement pays a program-wide multiplier one full cycle later:
-        positive expected value, real downside, faction standing on top.
-      </p>
+    <ConsolePanel
+      title="NPC Co-Funding Board"
+      icon="handshake"
+      subtitle="NPC factions run public science programs on fixed, published schedules — co-fund an open window for a share of the settlement. Every player's stake counts toward the SAME world-shared pool (real money, real server ledger). Settlement pays a program-wide multiplier one full cycle later: positive expected value, real downside, faction standing on top."
+      bodyClassName="space-y-3 mt-1"
+    >
       {error && (
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2 text-red-300 text-[11px]">{error}</div>
       )}
@@ -545,36 +561,36 @@ function NpcProgramsTab({ legacyContributions }: {
                 <span className="hud-corner-bl" aria-hidden="true" />
                 <span className="hud-corner-br" aria-hidden="true" />
                 <div className="flex items-start justify-between gap-2 mb-1">
-                  <div>
-                    <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
-                      <span aria-hidden="true">{def.icon}</span> {def.name}
-                    </h3>
-                    <div className="text-[9px] uppercase tracking-wider text-slate-500">{def.factionLabel}</div>
+                  <div className="flex items-start gap-2">
+                    <GameIcon name={resolveIcon(def.icon, 'handshake')} size={20} glow="purple" />
+                    <div>
+                      <h3 className="font-hud text-white text-sm font-bold">{def.name}</h3>
+                      <div className="text-[10px] uppercase tracking-wider text-slate-500">{def.factionLabel}</div>
+                    </div>
                   </div>
-                  <span className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${
-                    s.coFundOpen ? 'border-indigo-500/40 text-indigo-200 bg-indigo-500/10' : 'border-white/[0.08] text-slate-400 bg-white/[0.03]'
-                  }`}>
+                  <DataChip tone={s.coFundOpen ? 'info' : 'neutral'} className="uppercase tracking-wider font-bold">
                     {s.phaseLabel}
-                  </span>
+                  </DataChip>
                 </div>
                 <p className="text-slate-400 text-[11px] leading-relaxed mb-2">{def.description}</p>
                 <div className="grid grid-cols-3 gap-1.5 text-center mb-2">
                   <div className="rounded bg-white/[0.03] p-1.5">
-                    <div className="game-label text-[8px]">Stake</div>
+                    <div className="game-label text-[10px]">Stake</div>
                     <div className="font-hud text-[10px] text-white font-bold">{formatMoney(def.coFundCost)}</div>
                   </div>
                   <div className="rounded bg-white/[0.03] p-1.5">
-                    <div className="game-label text-[8px]">World pool</div>
+                    <div className="game-label text-[10px]">World pool</div>
                     <div className="font-hud text-[10px] text-cyan-200 font-bold">{formatMoney(s.totalStaked)} ({s.stakerCount})</div>
                   </div>
                   <div className="rounded bg-white/[0.03] p-1.5">
-                    <div className="game-label text-[8px]">Settles in</div>
+                    <div className="game-label text-[10px]">Settles in</div>
                     <div className="font-hud text-[10px] text-amber-200 font-bold">{s.monthsToSettlement} mo</div>
                   </div>
                 </div>
                 {s.myStake ? (
-                  <div className="text-[10px] text-emerald-300">
-                    ✓ Staked {formatMoney(s.myStake.amount)} this cycle{s.myStake.settled ? ` — settled for ${formatMoney(s.myStake.payout || 0)}` : ` — settles at world month ${s.settlesAtMonth}`}
+                  <div className="text-[10px] text-emerald-300 flex items-center gap-1">
+                    <GameIcon name="check" size={11} glow="green" />
+                    Staked {formatMoney(s.myStake.amount)} this cycle{s.myStake.settled ? ` — settled for ${formatMoney(s.myStake.payout || 0)}` : ` — settles at world month ${s.settlesAtMonth}`}
                   </div>
                 ) : s.coFundOpen ? (
                   <button
@@ -597,7 +613,7 @@ function NpcProgramsTab({ legacyContributions }: {
           })}
         </div>
       )}
-    </div>
+    </ConsolePanel>
   );
 }
 
@@ -652,22 +668,25 @@ function InstrumentPickerModal({ state, program, onClose, onLaunch }: {
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="sticky top-0 z-10 flex items-start justify-between gap-2 p-4 pb-3 border-b border-white/[0.06]" style={{ background: '#050510' }}>
-          <div>
-            <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
-              <span aria-hidden="true">{program.icon}</span> {program.name} — Instrument Selection
-            </h3>
-            <p className="text-[10px] text-slate-500 mt-0.5">
-              Fly exactly {INSTRUMENTS_PER_MISSION} instruments within the {program.massBudgetKg.toLocaleString()} kg payload budget.
-              What you fly determines what you can find.
-            </p>
+          <div className="flex items-start gap-2 min-w-0">
+            <ProgramBadge programId={program.id} iconGlyph={program.icon} size={28} glow="cyan" />
+            <div className="min-w-0">
+              <h3 className="font-hud text-white text-sm font-bold">
+                {program.name} — Instrument Selection
+              </h3>
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Fly exactly {INSTRUMENTS_PER_MISSION} instruments within the {program.massBudgetKg.toLocaleString()} kg payload budget.
+                What you fly determines what you can find.
+              </p>
+            </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close instrument selection"
-            className="min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors text-lg"
+            className="min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center shrink-0"
           >
-            ✕
+            <GameIcon name="close" size={16} />
           </button>
         </div>
 
@@ -710,15 +729,16 @@ function InstrumentPickerModal({ state, program, onClose, onLaunch }: {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <div className="text-xs text-white font-semibold">
-                          {isSelected ? '☑' : '☐'} {inst.name}
+                        <div className="text-xs text-white font-semibold flex items-center gap-1">
+                          {isSelected && <GameIcon name="check" size={12} glow="cyan" />}
+                          {inst.name}
                         </div>
-                        <div className="text-[9px] uppercase tracking-wider text-slate-500">{inst.heritage}</div>
+                        <div className="text-[10px] uppercase tracking-wider text-slate-500">{inst.heritage}</div>
                         <p className="text-[10px] text-slate-400 mt-0.5">{inst.finds}</p>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-hud text-[10px] text-cyan-200 font-bold">{inst.massKg.toLocaleString()} kg</div>
-                        <div className="text-[9px] text-slate-500">{formatMoney(inst.cost)}</div>
+                        <div className="text-[10px] text-slate-500">{formatMoney(inst.cost)}</div>
                       </div>
                     </div>
                   </button>
@@ -729,7 +749,7 @@ function InstrumentPickerModal({ state, program, onClose, onLaunch }: {
 
           {/* Discovery table preview — published probabilities */}
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-            <div className="game-label text-[9px] mb-1.5">Discovery table with this loadout (published odds, per ops month)</div>
+            <div className="game-label text-[10px] mb-1.5">Discovery table with this loadout (published odds, per ops month)</div>
             <ul className="space-y-1">
               {reachable.map(({ entry, reachable: ok }) => (
                 <li key={entry.id} className={`text-[10px] flex items-start gap-1.5 ${ok ? 'text-emerald-200' : 'text-slate-600'}`}>
@@ -744,8 +764,9 @@ function InstrumentPickerModal({ state, program, onClose, onLaunch }: {
               ))}
             </ul>
             {program.milestone && (
-              <div className="text-[10px] text-amber-300 mt-1.5">
-                🏁 Global first-claim: “{program.milestone.label}”
+              <div className="text-[10px] text-amber-300 mt-1.5 flex items-center gap-1">
+                <GameIcon name="territory" size={11} glow="amber" />
+                Global first-claim: “{program.milestone.label}”
                 {program.milestone.requiresInstrument && ` — requires ${program.instruments.find(i => i.id === program.milestone!.requiresInstrument)?.name}`}
               </div>
             )}
@@ -805,7 +826,7 @@ function InstrumentPickerModal({ state, program, onClose, onLaunch }: {
 function QuoteCell({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div className="rounded bg-white/[0.03] p-1.5">
-      <div className="game-label text-[8px]">{label}</div>
+      <div className="game-label text-[10px]">{label}</div>
       <div className={`font-hud text-[11px] font-bold ${strong ? 'text-cyan-200' : 'text-white'}`}>{value}</div>
     </div>
   );

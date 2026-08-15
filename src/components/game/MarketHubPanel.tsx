@@ -17,6 +17,9 @@ import MarketIntelligencePanel from './MarketIntelligencePanel';
 import EconomyPanel from './EconomyPanel';
 import FuturesPanel from './FuturesPanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
+import { ConsolePanel } from './chrome';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface MarketHubPanelProps {
   state: GameState;
@@ -35,31 +38,35 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
 
   const [tab, setTab] = useState<MarketTab>('spot');
 
-  const tabs: { id: MarketTab; label: string; icon: string; locked: boolean }[] = [
-    { id: 'spot', label: 'Spot & Orders', icon: '📈', locked: false },
-    { id: 'analytics', label: 'Analytics', icon: '📊', locked: !analyticsUnlocked },
-    { id: 'economy', label: 'Economy', icon: '🌐', locked: !economyUnlocked },
-    { id: 'futures', label: 'Futures', icon: '🔮', locked: !futuresUnlocked },
+  const tabs: { id: MarketTab; label: string; icon: IconName; locked: boolean }[] = [
+    { id: 'spot', label: 'Spot & Orders', icon: 'market', locked: false },
+    { id: 'analytics', label: 'Analytics', icon: 'activity', locked: !analyticsUnlocked },
+    { id: 'economy', label: 'Economy', icon: 'globe', locked: !economyUnlocked },
+    { id: 'futures', label: 'Futures', icon: 'predictions', locked: !futuresUnlocked },
   ];
 
   return (
     <div className="space-y-3">
-      <div className="flex rounded-lg overflow-hidden border border-white/[0.06] w-fit flex-wrap" role="tablist" aria-label="Markets view">
-        {tabs.map(t => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.id}
-            onClick={() => setTab(t.id)}
-            className={`min-h-[44px] px-3 py-1.5 text-[11px] font-medium transition-colors ${
-              tab === t.id ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
-            }`}
-          >
-            {t.icon} {t.label}{t.locked ? ' 🔒' : ''}
-          </button>
-        ))}
-      </div>
+      <ConsolePanel title="Markets" icon="market" subtitle="Spot prices, order books, macro intelligence and futures — one place to answer &ldquo;what should I trade?&rdquo;">
+        <div className="game-tab-bar flex gap-1 overflow-x-auto" role="tablist" aria-label="Markets view">
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.id}
+              onClick={() => setTab(t.id)}
+              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+                tab === t.id ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <GameIcon name={t.icon} size={13} />
+              {t.label}
+              {t.locked && <GameIcon name="lock" size={11} label="Locked" />}
+            </button>
+          ))}
+        </div>
+      </ConsolePanel>
 
       {tab === 'spot' && (
         <div className="space-y-4">

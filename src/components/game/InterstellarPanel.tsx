@@ -21,11 +21,14 @@ import {
 } from '@/lib/game/expeditions';
 import { FACTION_MAP, getFactionArtUrl, type FactionId } from '@/lib/game/factions';
 import { formatMoney } from '@/lib/game/formulas';
-import { PLANET_ASSETS } from '@/lib/game/assets';
+import { PLANET_ASSETS, getRegionArt, getSystemVista, getArtVariant } from '@/lib/game/assets';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { SYSTEM_RISK_META, RISK_TONE_CLASS } from './GalacticMapView';
 import { useModalA11y } from './useModalA11y';
+import { ConsolePanel, HoloCard, DataChip } from './chrome';
+import GameIcon from './GameIcon';
+import { resolveIcon, resourceCategoryIcon, type IconName } from '@/lib/game/icons';
 
 interface Props {
   state: GameState;
@@ -36,9 +39,10 @@ interface Props {
   onSetTradeRouteStatus: (routeId: string, status: 'active' | 'suspended') => void;
 }
 
-/** Thematic biome art per destination system — narrative-matched to each system's
- *  description (habitable zones, frozen worlds, anomalies, dangerous binaries). */
-const SYSTEM_ART: Record<string, string> = {
+/** Thematic biome art fallback per destination system — narrative-matched to each
+ *  system's description (habitable zones, frozen worlds, anomalies, dangerous
+ *  binaries). Used only when no Wave V6 system vista exists yet (getSystemVista). */
+const SYSTEM_BIOME_FALLBACK: Record<string, string> = {
   proxima_centauri: PLANET_ASSETS.terrestrial,
   barnards_star: PLANET_ASSETS.ice,
   wolf_359: PLANET_ASSETS.anomaly,
@@ -65,77 +69,70 @@ export default function InterstellarPanel({
   const selectedSystem = selectedSystemId ? INTERSTELLAR_SYSTEMS.find(s => s.id === selectedSystemId) : null;
   const firstContact = selectedSystemId ? FIRST_CONTACT_EVENTS[selectedSystemId] : null;
 
+  const interstellarRegionVista = getRegionArt('interstellar');
+  const interstellarRegionArt = interstellarRegionVista ? getArtVariant(interstellarRegionVista, 512) : undefined;
+
   return (
     <div className="space-y-4">
-      <div className="hud-frame hud-frame-purple relative rounded-2xl border border-indigo-500/20 overflow-hidden" style={{ background: '#0a0a1a' }}>
-        <span className="hud-corner-bl" aria-hidden="true" />
-        <span className="hud-corner-br" aria-hidden="true" />
-        <div className="relative h-20 sm:h-24 overflow-hidden holo-sprite">
-          <Image src={PLANET_ASSETS.nebula} alt="" fill className="object-cover opacity-50" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] via-[#0a0a1a]/40 to-transparent" />
-        </div>
-        <div className="p-4 -mt-6 relative">
-          <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
-            <div>
-              <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
-                <span className="text-indigo-400">✴</span> Interstellar Gateway — Mission Control
-              </h2>
-              <p className="text-slate-400 text-xs mt-0.5 max-w-2xl">
-                Every active expedition, colony, and trade route beyond the heliopause. Planning and launch happen
-                from the Galactic Map — select a system there to quote and launch a mission.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onNavigateTab('map')}
-              className="min-h-[44px] shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
-            >
-              🗺️ Open Galactic Map →
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <PrereqChip
-              label="Jump Drive research"
-              met={hasJumpDrive}
-              help={`T${JUMP_DRIVE_RESEARCH.tier} propulsion; requires fusion_drive + metallic_hydrogen first.`}
-            />
-            <PrereqChip
-              label="Exotic Matter Refining"
-              met={hasExoticRefining}
-              help={`T${EXOTIC_MATTER_REFINING_RESEARCH.tier} materials; unlocks exotic_fuel production.`}
-            />
-            <PrereqChip
-              label={`Exotic fuel reserve (have ${Math.floor(exoticFuel)})`}
-              met={exoticFuel >= 500}
-              help="Exotic-matter fuel units. Minimum 500 for the nearest system (Proxima)."
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Sub-tab navigation */}
-      <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto">
-        {([
-          { id: 'expeditions' as SubTab, label: 'Expeditions', icon: '🌠', count: expeditions.length },
-          { id: 'colonies' as SubTab, label: 'Colonies', icon: '🏙️', count: colonies.length },
-          { id: 'trade' as SubTab, label: 'Trade Routes', icon: '🛰️', count: tradeRoutes.length },
-          { id: 'destinations' as SubTab, label: 'Destinations', icon: '✴', count: INTERSTELLAR_SYSTEMS.length },
-        ]).map(t => (
+      <ConsolePanel
+        title="Interstellar Gateway — Mission Control"
+        icon="interstellar"
+        subtitle="Every active expedition, colony, and trade route beyond the heliopause. Planning and launch happen from the Galactic Map — select a system there to quote and launch a mission."
+        accent="purple"
+        art={interstellarRegionArt}
+        right={
           <button
-            key={t.id}
-            onClick={() => setSubTab(t.id)}
-            aria-pressed={subTab === t.id}
-            className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
-              subTab === t.id
-                ? 'game-tab-active bg-indigo-500/20 text-indigo-200 border border-indigo-500/30'
-                : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
-            }`}
+            type="button"
+            onClick={() => onNavigateTab('map')}
+            className="min-h-[44px] shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors flex items-center gap-1.5"
           >
-            {t.icon} {t.label} <span className="text-slate-500">({t.count})</span>
+            <GameIcon name="map" size={14} /> Open Galactic Map →
           </button>
-        ))}
-      </div>
+        }
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+          <PrereqChip
+            label="Jump Drive research"
+            met={hasJumpDrive}
+            help={`T${JUMP_DRIVE_RESEARCH.tier} propulsion; requires fusion_drive + metallic_hydrogen first.`}
+          />
+          <PrereqChip
+            label="Exotic Matter Refining"
+            met={hasExoticRefining}
+            help={`T${EXOTIC_MATTER_REFINING_RESEARCH.tier} materials; unlocks exotic_fuel production.`}
+          />
+          <PrereqChip
+            label={`Exotic fuel reserve (have ${Math.floor(exoticFuel)})`}
+            met={exoticFuel >= 500}
+            help="Exotic-matter fuel units. Minimum 500 for the nearest system (Proxima)."
+          />
+        </div>
+
+        {/* Sub-tab navigation */}
+        <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto" role="tablist" aria-label="Interstellar view">
+          {([
+            { id: 'expeditions' as SubTab, label: 'Expeditions', icon: 'comet' as IconName, count: expeditions.length },
+            { id: 'colonies' as SubTab, label: 'Colonies', icon: 'city' as IconName, count: colonies.length },
+            { id: 'trade' as SubTab, label: 'Trade Routes', icon: 'cargo-truck' as IconName, count: tradeRoutes.length },
+            { id: 'destinations' as SubTab, label: 'Destinations', icon: 'interstellar' as IconName, count: INTERSTELLAR_SYSTEMS.length },
+          ]).map(t => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={subTab === t.id}
+              onClick={() => setSubTab(t.id)}
+              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                subTab === t.id
+                  ? 'game-tab-active bg-indigo-500/20 text-indigo-200 border border-indigo-500/30'
+                  : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <GameIcon name={t.icon} size={13} /> {t.label} <span className="text-slate-500">({t.count})</span>
+            </button>
+          ))}
+        </div>
+      </ConsolePanel>
 
       {subTab === 'expeditions' && (
         <ExpeditionsTab state={state} onNavigateTab={onNavigateTab} />
@@ -168,28 +165,29 @@ export default function InterstellarPanel({
             const fc = FIRST_CONTACT_EVENTS[system.id];
             const faction = fc?.factionId ? FACTION_MAP.get(fc.factionId as FactionId) : null;
             const risk = SYSTEM_RISK_META[system.id] || { label: 'Unknown risk', glyph: '?', tone: 'moderate' as const };
+            const vista = getSystemVista(system.id);
+            const thumbSrc = faction
+              ? getFactionArtUrl(fc!.factionId as FactionId)
+              : vista ? getArtVariant(vista, 512) : (SYSTEM_BIOME_FALLBACK[system.id] || PLANET_ASSETS.nebula);
 
             return (
-              <div
+              <HoloCard
                 key={system.id}
-                className={`hud-frame relative rounded-2xl border overflow-hidden transition-all ${
-                  anyBlockers ? 'border-white/[0.06]' : 'hud-frame-purple border-indigo-500/40 shadow-lg shadow-indigo-500/20'
-                }`}
-                style={{ background: '#0a0a1a' }}
+                accent={anyBlockers ? 'cyan' : 'purple'}
+                className={`rounded-2xl overflow-hidden transition-all ${anyBlockers ? '' : 'shadow-lg shadow-indigo-500/20'}`}
               >
-                <span className="hud-corner-bl" aria-hidden="true" />
-                <span className="hud-corner-br" aria-hidden="true" />
                 <div className="relative h-16 overflow-hidden holo-sprite">
                   <Image
-                    src={faction ? getFactionArtUrl(fc!.factionId as FactionId) : (SYSTEM_ART[system.id] || PLANET_ASSETS.nebula)}
+                    src={thumbSrc}
                     alt=""
                     fill
+                    loading="lazy"
                     className="object-cover opacity-60"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
                   {faction && (
                     <div className="absolute inset-x-0 bottom-0 p-2">
-                      <div className={`text-[9px] uppercase tracking-wider ${faction.theme.accent}`}>First contact: {faction.name}</div>
+                      <div className={`text-[10px] uppercase tracking-wider ${faction.theme.accent}`}>First contact: {faction.name}</div>
                     </div>
                   )}
                 </div>
@@ -216,8 +214,8 @@ export default function InterstellarPanel({
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] mb-2">
                     <div className="rounded bg-white/[0.03] p-1.5">
                       <div className="game-label">Fuel needed</div>
-                      <div className={`game-number font-bold ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>
-                        {fuelMissing && <span aria-hidden="true">⚠ </span>}
+                      <div className={`game-number font-bold flex items-center gap-1 ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>
+                        {fuelMissing && <GameIcon name="warning" size={11} />}
                         {system.jumpFuelRequired.toLocaleString()}
                       </div>
                     </div>
@@ -244,11 +242,11 @@ export default function InterstellarPanel({
                       type="button"
                       onClick={() => onNavigateTab('map')}
                       disabled={anyBlockers}
-                      className={`min-h-[44px] flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                      className={`min-h-[44px] flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 ${
                         anyBlockers ? 'bg-white/[0.04] text-slate-600 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-500'
                       }`}
                     >
-                      🌠 Plan on Map
+                      <GameIcon name="comet" size={13} /> Plan on Map
                     </button>
                     {fc && (
                       <button
@@ -261,7 +259,7 @@ export default function InterstellarPanel({
                     )}
                   </div>
                 </div>
-              </div>
+              </HoloCard>
             );
           })}
         </div>
@@ -285,7 +283,9 @@ function PrereqChip({ label, met, help }: { label: string; met: boolean; help: s
       title={help}
     >
       <div className="flex items-center gap-1.5">
-        <span className={met ? 'text-emerald-300' : 'text-slate-500'} aria-hidden="true">{met ? '✓' : '○'}</span>
+        <span className={met ? 'text-emerald-300' : 'text-slate-500'}>
+          <GameIcon name={met ? 'check' : 'lock'} size={12} />
+        </span>
         <span className={`text-[11px] font-medium ${met ? 'text-emerald-200' : 'text-slate-400'}`}>{label}</span>
       </div>
     </div>
@@ -304,7 +304,7 @@ function ExpeditionsTab({ state, onNavigateTab }: { state: GameState; onNavigate
   if (expeditions.length === 0) {
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
-        <p className="text-4xl mb-3">🌠</p>
+        <p className="mb-3 flex justify-center"><GameIcon name="comet" size={40} glow="purple" /></p>
         <p className="text-white font-semibold text-lg">No expeditions launched yet</p>
         <p className="text-slate-400 text-sm mt-2 max-w-md mx-auto">
           Build a Starfarer Explorer or Colony Ark (Fleet tab), then select a ready system on the Galactic Map to
@@ -352,7 +352,7 @@ function ActiveExpeditionCard({ state, exp }: { state: GameState; exp: Expeditio
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between gap-2 mb-1.5">
         <span className="text-white font-semibold text-sm flex items-center gap-1.5">
-          <span aria-hidden="true">{shipDef?.icon || '🌠'}</span> {progress.systemName}
+          <GameIcon name={resolveIcon(shipDef?.icon, 'comet')} size={14} /> {progress.systemName}
         </span>
         <span className="text-[10px] uppercase tracking-wider font-bold text-cyan-300">{progress.phaseLabel}</span>
       </div>
@@ -364,11 +364,11 @@ function ActiveExpeditionCard({ state, exp }: { state: GameState; exp: Expeditio
         <span className="font-mono">{Math.max(0, Math.round(progress.monthsRemaining))} months left</span>
       </div>
       <div className="flex flex-wrap gap-1.5 mt-2">
-        <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${exp.insured ? 'border-emerald-500/30 text-emerald-300 bg-emerald-500/5' : 'border-red-500/30 text-red-300 bg-red-500/5'}`}>
-          {exp.insured ? '✓ Insured' : '⚠ Uninsured'}
-        </span>
-        {exp.extraShielding && <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-cyan-500/30 text-cyan-300 bg-cyan-500/5">✓ Hardened shielding</span>}
-        <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-white/10 text-slate-400">Hull {(exp.hullIntegrity * 100).toFixed(0)}%</span>
+        <DataChip icon={exp.insured ? 'check' : 'warning'} tone={exp.insured ? 'good' : 'bad'}>
+          {exp.insured ? 'Insured' : 'Uninsured'}
+        </DataChip>
+        {exp.extraShielding && <DataChip icon="check" tone="info">Hardened shielding</DataChip>}
+        <DataChip tone="neutral">Hull {(exp.hullIntegrity * 100).toFixed(0)}%</DataChip>
       </div>
     </div>
   );
@@ -382,29 +382,37 @@ function ExpeditionHistoryCard({ state, exp, onNavigateTab }: { state: GameState
   const fcEvent = system ? FIRST_CONTACT_EVENTS[system.id] : null;
   const isLost = exp.phase === 'lost';
   const isColonizing = exp.phase === 'colonizing';
+  const systemVista = !faction && system ? getSystemVista(system.id) : null;
 
   return (
     <div className="intel-dossier relative rounded-xl border border-white/[0.08] overflow-hidden">
       <span className={`dossier-stamp ${isLost ? '' : 'hidden'}`}>Lost</span>
       {faction && (
         <div className="relative h-16 overflow-hidden holo-sprite">
-          <Image src={getFactionArtUrl(contactFactionId as FactionId)} alt="" fill className="object-cover opacity-60" />
+          <Image src={getFactionArtUrl(contactFactionId as FactionId)} alt="" fill loading="lazy" className="object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-2">
-            <div className={`text-[9px] uppercase tracking-wider font-bold ${faction.theme.accent}`}>First Contact: {faction.name}</div>
+            <div className={`text-[10px] uppercase tracking-wider font-bold ${faction.theme.accent}`}>First Contact: {faction.name}</div>
           </div>
+        </div>
+      )}
+      {!faction && systemVista && (
+        <div className="relative h-16 overflow-hidden holo-sprite">
+          <Image src={getArtVariant(systemVista, 512)} alt="" fill loading="lazy" className="object-cover opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
       )}
       <div className="p-3">
         <div className="flex items-start justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-1.5">
-            <span aria-hidden="true">{shipDef?.icon || '🌠'}</span>
+            <GameIcon name={resolveIcon(shipDef?.icon, 'comet')} size={14} />
             <span className="text-white font-semibold text-sm">{system?.name || exp.targetSystemId}</span>
           </div>
-          <span className={`text-[10px] uppercase tracking-wider font-bold ${
+          <span className={`text-[10px] uppercase tracking-wider font-bold flex items-center gap-1 ${
             isLost ? 'text-red-300' : isColonizing ? 'text-purple-300' : 'text-emerald-300'
           }`}>
-            {isLost ? '☄ Lost with all hands' : isColonizing ? '🏙 Colony founded' : '🏠 Returned'}
+            <GameIcon name={isLost ? 'hazard-micrometeorite' : isColonizing ? 'city' : 'check'} size={12} />
+            {isLost ? 'Lost with all hands' : isColonizing ? 'Colony founded' : 'Returned'}
           </span>
         </div>
 
@@ -429,11 +437,15 @@ function ExpeditionHistoryCard({ state, exp, onNavigateTab }: { state: GameState
 
         {exp.outcome && Object.keys(exp.outcome.resourceSamples).length > 0 && !isLost && (
           <div className="flex flex-wrap gap-1 mb-2">
-            {Object.entries(exp.outcome.resourceSamples).map(([id, qty]) => (
-              <span key={id} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300">
-                {RESOURCE_MAP.get(id as ResourceId)?.icon} {qty} {RESOURCE_MAP.get(id as ResourceId)?.name || id}
-              </span>
-            ))}
+            {Object.entries(exp.outcome.resourceSamples).map(([id, qty]) => {
+              const res = RESOURCE_MAP.get(id as ResourceId);
+              return (
+                <span key={id} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300 inline-flex items-center gap-1">
+                  <GameIcon name={res ? resourceCategoryIcon(res.category) : 'resource-generic'} size={11} />
+                  {qty} {res?.name || id}
+                </span>
+              );
+            })}
           </div>
         )}
 
@@ -491,7 +503,7 @@ function ColoniesTab({
   if (colonies.length === 0 && holdingArks.length === 0) {
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
-        <p className="text-4xl mb-3">🏙️</p>
+        <p className="mb-3 flex justify-center"><GameIcon name="city" size={40} glow="purple" /></p>
         <p className="text-white font-semibold text-lg">No colonies yet</p>
         <p className="text-slate-400 text-sm mt-2 max-w-md mx-auto">
           Launch a Colony Ark to a system with the <span className="text-white">interstellar_colonization</span> research
@@ -526,12 +538,20 @@ function EstablishColonyCard({
   const system = INTERSTELLAR_SYSTEM_MAP.get(exp.targetSystemId);
   const [name, setName] = useState(system ? `${system.name} Colony` : '');
   const canAfford = state.money >= COLONY_FOUNDING_COST;
+  const vista = system ? getSystemVista(system.id) : null;
 
   return (
     <div className="hud-frame hud-frame-purple relative rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
-      <div className="text-purple-300 font-semibold text-sm mb-1">🛸 Colony Ark holding at {system?.name || exp.targetSystemId}</div>
+      <div className="text-purple-300 font-semibold text-sm mb-1 flex items-center gap-2">
+        {vista && (
+          <span className="sprite-frame w-8 h-8 shrink-0 overflow-hidden rounded">
+            <Image src={getArtVariant(vista, 128)} alt="" width={32} height={32} loading="lazy" className="w-8 h-8 object-cover" />
+          </span>
+        )}
+        <GameIcon name="fleet" size={14} /> Colony Ark holding at {system?.name || exp.targetSystemId}
+      </div>
       <p className="text-slate-400 text-[11px] mb-3">
         Suitability {((exp.outcome?.colonySuitability ?? 0.6) * 100).toFixed(0)}%. Founding costs {formatMoney(COLONY_FOUNDING_COST)}
         and permanently commits the ark and its {exp.crew} crew — they become the colony's founding cadre and will not return.
@@ -574,15 +594,23 @@ function ColonyCard({
   const popThreshold = popCap * COLONY_UPGRADE_POP_THRESHOLD;
   const popReady = colony.population >= popThreshold;
   const canAffordUpgrade = upgradeCost !== null && state.money >= upgradeCost;
+  const vista = system ? getSystemVista(system.id) : null;
 
   return (
     <div className="hud-frame relative rounded-xl border border-purple-500/20 bg-white/[0.02] p-4">
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
-        <div>
-          <div className="text-white font-bold text-sm flex items-center gap-1.5">🏙️ {colony.name}</div>
-          <div className="text-[10px] text-slate-500">{system?.name || colony.systemId} · founded month {colony.foundedGameMonth}</div>
+        <div className="flex items-center gap-2">
+          {vista && (
+            <span className="sprite-frame w-8 h-8 shrink-0 overflow-hidden rounded">
+              <Image src={getArtVariant(vista, 128)} alt="" width={32} height={32} loading="lazy" className="w-8 h-8 object-cover" />
+            </span>
+          )}
+          <div>
+            <div className="text-white font-bold text-sm flex items-center gap-1.5"><GameIcon name="city" size={14} /> {colony.name}</div>
+            <div className="text-[10px] text-slate-500">{system?.name || colony.systemId} · founded month {colony.foundedGameMonth}</div>
+          </div>
         </div>
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-bold">
           Infrastructure L{colony.infrastructureLevel}/{COLONY_MAX_INFRASTRUCTURE}
@@ -622,7 +650,9 @@ function ColonyCard({
             const res = RESOURCE_MAP.get(resId as ResourceId);
             return (
               <div key={resId} className="flex items-center justify-between text-[11px] px-2 py-1 rounded bg-white/[0.02]">
-                <span className="text-slate-300">{res?.icon} {res?.name || resId}</span>
+                <span className="text-slate-300 inline-flex items-center gap-1">
+                  <GameIcon name={res ? resourceCategoryIcon(res.category) : 'resource-generic'} size={12} /> {res?.name || resId}
+                </span>
                 <span className="text-slate-400 font-mono">
                   ~{estMonthly}/mo · stock <span className="text-white">{Math.floor(stock).toLocaleString()}</span>
                 </span>
@@ -635,8 +665,8 @@ function ColonyCard({
 
       {colony.upgradeInProgress ? (
         <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-2.5 text-[11px]">
-          <div className="phase-track-node phase-track-node-current text-amber-300 font-semibold mb-1">
-            🏗️ Expanding to Level {colony.upgradeInProgress.targetLevel}
+          <div className="phase-track-node phase-track-node-current text-amber-300 font-semibold mb-1 flex items-center gap-1.5">
+            <GameIcon name="build" size={13} /> Expanding to Level {colony.upgradeInProgress.targetLevel}
           </div>
           <p className="text-slate-400 text-[10px]">Completes at game-month {colony.upgradeInProgress.completesAtGameMonth}.</p>
         </div>
@@ -677,7 +707,7 @@ function TradeRoutesTab({
   if (colonies.length === 0) {
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
-        <p className="text-4xl mb-3">🛰️</p>
+        <p className="mb-3 flex justify-center"><GameIcon name="cargo-truck" size={40} glow="purple" /></p>
         <p className="text-white font-semibold text-lg">No colonies to route from</p>
         <p className="text-slate-400 text-sm mt-2 max-w-md mx-auto">
           Trade routes ship a colony's local production back to Sol on a recurring schedule. Found a colony first.
@@ -718,14 +748,16 @@ function TradeRoutesTab({
                   return (
                     <tr key={route.id} className="holo-row border-t border-white/[0.04]">
                       <td className="py-2 px-3">
-                        <span className="text-white">{res?.icon} {res?.name || route.resourceId}</span>
+                        <span className="text-white inline-flex items-center gap-1">
+                          <GameIcon name={res ? resourceCategoryIcon(res.category) : 'resource-generic'} size={12} /> {res?.name || route.resourceId}
+                        </span>
                         <div className="text-[10px] text-slate-500">{colony?.name || route.colonyId} · {route.transitMonths}mo transit · {route.cycleMonths}mo cycle</div>
                       </td>
                       <td className="py-2 px-3">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-bold uppercase tracking-wider inline-flex items-center gap-1 ${
                           route.status === 'active' ? 'border-emerald-500/30 text-emerald-300 bg-emerald-500/5' : 'border-amber-500/30 text-amber-300 bg-amber-500/5'
                         }`}>
-                          {route.status === 'active' ? '● Active' : '⏸ Suspended'}
+                          <GameIcon name={route.status === 'active' ? 'check' : 'idle'} size={10} /> {route.status === 'active' ? 'Active' : 'Suspended'}
                         </span>
                       </td>
                       <td className="py-2 px-3 text-right font-mono text-slate-300">{formatMoney(route.logisticsFeePerShipment)}</td>
@@ -770,11 +802,11 @@ function TradeRoutesTab({
                         type="button"
                         disabled={!canAfford}
                         onClick={() => onEstablishTradeRoute(colony.id, resId)}
-                        className={`min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                        className={`min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 ${
                           canAfford ? 'border-indigo-500/30 bg-indigo-500/5 text-indigo-200 hover:bg-indigo-500/15' : 'border-white/[0.06] text-slate-600 cursor-not-allowed'
                         }`}
                       >
-                        {res?.icon} Route {res?.name || resId} — {formatMoney(TRADE_ROUTE_SETUP_COST)}
+                        <GameIcon name={res ? resourceCategoryIcon(res.category) : 'resource-generic'} size={12} /> Route {res?.name || resId} — {formatMoney(TRADE_ROUTE_SETUP_COST)}
                       </button>
                     );
                   })}
@@ -802,6 +834,7 @@ function FirstContactModal({
 }) {
   const modalRef = useModalA11y<HTMLDivElement>(onClose);
   const faction = event.factionId ? FACTION_MAP.get(event.factionId as FactionId) : null;
+  const vista = !faction ? getSystemVista(system.id) : null;
 
   return (
     <div
@@ -821,7 +854,7 @@ function FirstContactModal({
 
         {faction && (
           <div className="relative aspect-[3/1] overflow-hidden">
-            <Image src={getFactionArtUrl(event.factionId as FactionId)} alt="" fill className="object-cover" />
+            <Image src={getFactionArtUrl(event.factionId as FactionId)} alt="" fill loading="lazy" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-4">
               <div className={`text-[10px] uppercase tracking-wider font-bold ${faction.theme.accent}`}>First Contact: {faction.name}</div>
@@ -831,8 +864,19 @@ function FirstContactModal({
           </div>
         )}
 
+        {!faction && vista && (
+          <div className="relative aspect-[3/1] overflow-hidden">
+            <Image src={getArtVariant(vista, 512)} alt="" fill loading="lazy" className="object-cover opacity-70" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-4">
+              <h3 id="fc-title" className="text-white text-2xl font-bold">{event.title}</h3>
+              <p className="text-slate-400 text-xs mt-0.5">{system.name} · {system.distanceLy.toFixed(2)} ly</p>
+            </div>
+          </div>
+        )}
+
         <div className="p-5">
-          {!faction && (
+          {!faction && !vista && (
             <div className="mb-3">
               <h3 id="fc-title" className="text-white text-2xl font-bold">{event.title}</h3>
               <p className="text-slate-400 text-xs">{system.name} · {system.distanceLy.toFixed(2)} ly</p>

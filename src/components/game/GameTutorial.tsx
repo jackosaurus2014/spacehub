@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface TutorialStep {
   title: string;
   description: string;
-  icon: string;
+  icon: IconName;
   action: string;
   tab?: string;
   tip?: string;
@@ -18,7 +20,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Welcome, Commander!',
     description: 'You\'re the CEO of a new space company with $100M in starting capital. Your goal: build infrastructure, generate revenue, research technologies, and expand across the solar system. This is a multiplayer game — other players are building right now.',
-    icon: '🚀',
+    icon: 'fleet',
     action: 'Click "Next" to learn the basics',
     tip: 'Check the Leaderboard tab later to see how you stack up against other players globally.',
     phase: 'early',
@@ -26,7 +28,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Build Your First Facility',
     description: 'Go to the Build tab. You start with Earth Surface and LEO unlocked. Build a Ground Station ($30M, 3 min) — it\'s the cheapest and fastest building, earning $1.4M/month net profit as soon as it completes.',
-    icon: '🏗️',
+    icon: 'build',
     action: 'Build a Ground Station on Earth Surface',
     tab: 'build',
     tip: 'Click "Why build this?" on any building card to see exactly how much money it makes and when to build it.',
@@ -35,7 +37,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Track Your Progress',
     description: 'Your building is now under construction! Go to the Dashboard tab to see it. The Dashboard shows everything at a glance: construction countdowns, active research timers, your income breakdown, net worth, and the Empire Overview bar showing how far across the solar system you\'ve expanded.',
-    icon: '📊',
+    icon: 'dashboard',
     action: 'Switch to the Dashboard to watch your building progress',
     tab: 'dashboard',
     tip: 'The Dashboard is your command center. Check it often — it shows revenue/costs, speed boosts you can activate, active effects, and your event log.',
@@ -44,7 +46,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Stack Your Income (Construction Limit)',
     description: 'Important: You can only have 2 construction projects running at the same time to start. You\'ll see a "Construction Queues" bar at the top of the Build tab showing your slots. Build a Small Launch Pad ($50M) as your second slot. Once either build finishes, queue up LEO Telecom Satellites ($15M each) — they earn $2.3M/month and are cheap and fast.',
-    icon: '💰',
+    icon: 'money',
     action: 'Build a Small Launch Pad (your 2nd slot), then satellites after a slot opens',
     tab: 'build',
     tip: 'You start with 2 construction slots. Research "Orbital Assembly", "Space Dock", and "3D Printing in Space" to unlock up to 5 slots total. If all slots are full, build buttons are disabled — wait for a build to finish, then queue the next one.',
@@ -53,7 +55,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'How Services Work',
     description: 'When a building completes, it automatically activates a revenue service (if you have the required research). The Services tab shows all your active income streams. Each service has revenue, operating costs, and net profit.',
-    icon: '💼',
+    icon: 'services',
     action: 'Check the Services tab after your first building completes',
     tab: 'services',
     tip: 'The Dashboard "Income Breakdown" panel shows your total revenue including workforce bonuses, research bonuses, and market supply effects.',
@@ -62,7 +64,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Earn Cash from Contracts',
     description: 'Once you have 2 completed buildings, the Contracts tab unlocks. Go there now and look for "Launch Provider Certification" — it requires 2 active services, which you should already have from your Ground Station and Launch Pad. Accept it! When completed, it awards $60M cash — a huge boost toward your first research.',
-    icon: '📋',
+    icon: 'contracts',
     action: 'Open Contracts tab → Accept "Launch Provider Certification"',
     tab: 'contracts',
     tip: 'You can have multiple contracts active at the same time, so accept every contract you qualify for. Check back often — new contracts appear as you progress. Contracts also reward speed boosts that accelerate construction and research.',
@@ -71,7 +73,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Start Research',
     description: 'Now go to the Research tab. With your $60M contract reward, you\'re closer to affording research. Open the "Rocketry" category dropdown and look for "Reusable Boosters" ($200M) — it unlocks the Medium Launch Pad and Moon access. Research is expensive, so you may need to wait for more revenue. Check the suggested researches at the top for affordable options.',
-    icon: '🔬',
+    icon: 'research',
     action: 'Open Rocketry category → Start "Reusable Boosters" when you can afford it',
     tab: 'research',
     tip: 'Research is organized into categories (Rocketry, Mining, Spacecraft, etc.). Click any category to expand it. If you can\'t afford Reusable Boosters yet, try cheaper researches like Triple Junction ($60M) or High-Res Optical ($100M) — they unlock new buildings too.',
@@ -80,7 +82,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Explore the Solar System',
     description: 'The Map tab shows all locations from Earth to the Outer System. Each requires research and money to unlock. Unlock GEO orbit first ($50M, no research) for premium telecom satellites earning $5.5M/month net each.',
-    icon: '🗺️',
+    icon: 'map',
     action: 'Unlock GEO orbit and build a GEO Telecom Satellite',
     tab: 'map',
     tip: 'Each location has unique buildings and resources. The Moon has water ice, Mars has iron/aluminum, and the Asteroid Belt has precious metals.',
@@ -91,7 +93,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Hire Your Crew',
     description: 'After 3 buildings, the Crew tab unlocks. Hire Operators — each one boosts ALL service revenue by +10%. At $10M+ monthly revenue, Operators earn more than their $450K/month salary. Scientists speed up research by 15%.',
-    icon: '👷',
+    icon: 'workforce',
     action: 'Hire 1-2 Operators, then a Scientist',
     tab: 'workforce',
     tip: 'Miners boost resource production by 20% each. Hire them when you start mining on the Moon.',
@@ -100,7 +102,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Start Mining Resources',
     description: 'Research "Resource Prospecting" to unlock Lunar Ice Mining. Unlock the Lunar Surface ($2B) and build a mine there. The mine requires iron, aluminum, and titanium — buy these on the Market tab first! Mining then produces resources every game month.',
-    icon: '⛏️',
+    icon: 'bld-mining',
     action: 'Buy resources on the Market, then build a Lunar Ice Mine',
     tip: 'The Market tab opens once you have any resources OR enough buildings. Buy the 80 iron + 40 aluminum + 15 titanium needed for the Lunar Ice Mine. Prices vary by supply — buy when cheap!',
     phase: 'mid',
@@ -108,7 +110,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Build Your Fleet',
     description: 'The Fleet tab lets you build ships. Mining Drones ($15M) extract iron/aluminum at 8 units/minute. Survey Probes ($25M, single-use) discover hidden bonuses worth $10M-$1B at any location. Cargo Shuttles move resources between locations.',
-    icon: '🚢',
+    icon: 'fleet',
     action: 'Build Mining Drones for resources, Survey Probes for bonuses',
     tab: 'fleet',
     tip: 'To START mining: select an idle mining ship → choose a resource → it mines automatically. To TRANSPORT: select a ship → pick a destination.',
@@ -117,7 +119,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Complete Contracts',
     description: 'The Contracts tab (unlocks at 2 buildings) offers goals that reward money AND speed boosts. Speed boosts accelerate construction or research by 1.5-3x for a limited time. Accept contracts you\'re close to completing.',
-    icon: '📋',
+    icon: 'contracts',
     action: 'Accept contracts and check which you\'re close to finishing',
     tab: 'contracts',
     tip: 'Speed boosts appear on the Dashboard. Activate them BEFORE starting expensive builds or research to save hours of wait time.',
@@ -126,7 +128,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Trade on the Market',
     description: 'Once you have resources, the Market tab opens. Prices are dynamic and multiplayer — they change based on supply and demand across ALL players. Sell excess resources for cash, or buy what you need for construction.',
-    icon: '📈',
+    icon: 'market',
     action: 'Sell some resources you don\'t need, buy what you do',
     tab: 'market',
     tip: 'Market events randomly change prices for specific resources. Buy low during crashes, sell high during shortages. Watch the event log for announcements.',
@@ -137,7 +139,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Crafting & Production Chains',
     description: 'Build an Orbital Fabrication Lab (requires "Orbital Assembly" research) to unlock the Crafting tab. Here you refine raw resources into higher-value products: steel ingots, electronics, solar panels, and station modules.',
-    icon: '🔨',
+    icon: 'crafting',
     action: 'Build a Fabrication Lab → open the Crafting tab',
     tab: 'crafting',
     tip: 'Crafted products are needed for advanced construction. The production chain goes: raw ore → processed material → component → finished product.',
@@ -146,7 +148,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Join or Create an Alliance',
     description: 'After 5 buildings, the Alliance tab unlocks. Join an existing alliance or create your own. Alliance members share bonuses: +5% revenue per member (max +25%), plus mining and research speed boosts.',
-    icon: '🤝',
+    icon: 'alliance',
     action: 'Join an alliance or create one with a name and 3-5 character tag',
     tab: 'alliance',
     tip: 'Alliance bonuses stack on top of your workforce and research bonuses. A full 5-member alliance gives +25% revenue, +12.5% mining, and +7.5% research.',
@@ -155,7 +157,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Post and Fill Bounties',
     description: 'The Bounties tab (unlocks with resources) is a player-to-player trading board. Post a bounty for resources you need — your money goes into escrow. Other players fulfill bounties to earn your posted price. Great for getting rare resources.',
-    icon: '📦',
+    icon: 'bounties',
     action: 'Post a bounty for a resource you need, or fill one that\'s posted',
     tab: 'bounties',
     tip: 'Bounties have a time limit. If no one fills your bounty before it expires, your escrowed money is returned automatically.',
@@ -164,7 +166,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Competitive Multiplayer Contracts',
     description: 'Beyond regular contracts, there are competitive contracts with limited winner slots. The first players to complete them win exclusive titles and massive rewards. Check the Contracts tab for "competitive" entries — they\'re races against other players.',
-    icon: '🏆',
+    icon: 'leaderboard',
     action: 'Look for competitive contracts and race to complete them',
     tab: 'contracts',
     tip: 'Top rewards: "Titan Baron" title ($8B), "Jovian Pioneer" ($5B), "Antimatter Sovereign" ($20B). Only 1-5 players can win each.',
@@ -173,7 +175,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'Legacy & Permanent Progression',
     description: 'As you complete buildings, research, contracts, and ships, you earn Legacy milestones and stretch bonuses — permanent revenue, build-speed, research-speed, mining, and crew-capacity bonuses that never reset. Your Legacy Power score unlocks the deepest endgame tiers.',
-    icon: '⭐',
+    icon: 'medal',
     action: 'Check your Legacy progress from the Dashboard as your corporation grows',
     tip: 'Legacy bonuses stack forever — no resets required. The higher your Legacy Power, the higher your corporation tier ceiling (Speed Runs and the Interstellar era both gate on it).',
     phase: 'late',
@@ -181,7 +183,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     title: 'You\'re a Space Tycoon!',
     description: 'You now know every system in the game. Build infrastructure, research tech, mine resources, trade on the market, craft products, join alliances, complete contracts, and expand to the Outer System. Your ultimate goal: reach the Kuiper Belt with fusion technology.',
-    icon: '🌌',
+    icon: 'interstellar',
     action: 'Go build your space empire!',
     tip: 'Top revenue buildings to aim for: Titan Harvester ($105M/mo net), Europa Drill ($75M/mo), Mars Habitat ($45M/mo). Good luck, Commander!',
     phase: 'late',
@@ -312,7 +314,7 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
             </div>
             <span className="card-terminal__path">spacenexus:~/tutorial</span>
           </div>
-          <button onClick={handleSkip} className="min-h-[44px] px-2 text-[9px] uppercase tracking-wider hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
+          <button onClick={handleSkip} className="min-h-[44px] px-2 text-[10px] uppercase tracking-wider hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
             Skip All
           </button>
         </div>
@@ -329,7 +331,7 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
           {/* Phase + step counter */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
                 style={{ background: `${phaseColors[currentStep.phase || 'early']}15`, color: phaseColors[currentStep.phase || 'early'] }}>
                 {phaseLabels[currentStep.phase || 'early']}
               </span>
@@ -338,7 +340,7 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
               </span>
             </div>
             {currentStep.tab && (
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ color: 'var(--text-tertiary)', background: 'var(--bg-hover)' }}>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded" style={{ color: 'var(--text-tertiary)', background: 'var(--bg-hover)' }}>
                 {currentStep.tab}
               </span>
             )}
@@ -346,7 +348,9 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
 
           {/* Content */}
           <div className="flex items-start gap-3 mb-3" aria-live="polite">
-            <span className="text-2xl shrink-0" aria-hidden="true">{currentStep.icon}</span>
+            <span className="shrink-0 mt-0.5" aria-hidden="true">
+              <GameIcon name={currentStep.icon} size={26} glow={phaseColors[currentStep.phase || 'early'] === '#2DCCFF' ? 'cyan' : phaseColors[currentStep.phase || 'early'] === '#56F000' ? 'green' : 'amber'} />
+            </span>
             <div>
               <h3 className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{currentStep.title}</h3>
               <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{currentStep.description}</p>
@@ -385,7 +389,11 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
               className="flex-1 min-h-[44px] py-2 text-xs font-semibold text-white rounded transition-all"
               style={{ background: phaseColors[currentStep.phase || 'early'] === '#2DCCFF' ? 'var(--accent-primary)' : phaseColors[currentStep.phase || 'early'] }}
             >
-              {isLast ? '🌌 Start Playing!' : 'Next →'}
+              {isLast ? (
+                <span className="inline-flex items-center justify-center gap-1.5">
+                  <GameIcon name="interstellar" size={13} /> Start Playing!
+                </span>
+              ) : 'Next →'}
             </button>
           </div>
         </div>

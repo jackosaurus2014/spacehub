@@ -30,6 +30,17 @@ import ReturningCommanderWidget from '@/components/game/ReturningCommanderWidget
 import MissionCalendarPanel from '@/components/game/MissionCalendarPanel';
 import HistoricalArchiveTicker from '@/components/game/HistoricalArchiveTicker';
 import { useActivityFeed, formatRelativeTime, usePrefersReducedMotion } from '@/hooks/useWorldState';
+import { ConsolePanel, HoloCard, DataChip } from '@/components/game/chrome';
+import GameIcon, { type GameIconGlow } from '@/components/game/GameIcon';
+import type { IconName } from '@/lib/game/icons';
+
+/** state.recentHazards[].type → icon (mirrors HazardAlertLayer.tsx's HAZARD_META mapping). */
+const HAZARD_ICON: Record<string, IconName> = {
+  solar_storm: 'hazard-solar-storm',
+  micrometeorite: 'hazard-micrometeorite',
+  pirate_raid: 'hazard-pirate-raid',
+  equipment_failure: 'hazard-equipment-failure',
+};
 
 /** Live countdown timer for research (purple) */
 function ResearchCountdown({ startedAtMs, durationSeconds }: { startedAtMs: number; durationSeconds: number }) {
@@ -140,21 +151,26 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
     Megacorp: '#FF3838',
   };
 
-  const metrics = [
-    { icon: '🏗️', value: completedBuildings, label: 'Buildings' },
-    { icon: '🗺️', value: locations, label: 'Locations' },
-    { icon: '🔬', value: research, label: 'Research' },
-    { icon: '💰', value: services, label: 'Services' },
-    { icon: '🚢', value: ships, label: 'Ships' },
-    { icon: '👷', value: workers, label: 'Crew' },
+  const metrics: { icon: IconName; value: number; label: string }[] = [
+    { icon: 'build', value: completedBuildings, label: 'Buildings' },
+    { icon: 'map', value: locations, label: 'Locations' },
+    { icon: 'research', value: research, label: 'Research' },
+    { icon: 'services', value: services, label: 'Services' },
+    { icon: 'fleet', value: ships, label: 'Ships' },
+    { icon: 'workforce', value: workers, label: 'Crew' },
   ];
 
   return (
-    <div className="rounded-lg overflow-hidden mb-4" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
-      {/* Empire header */}
-      <div className="flex items-center justify-between px-4 py-2.5" style={{ background: 'var(--bg-void)', borderBottom: '1px solid var(--border-subtle)' }}>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold" style={{ color: tierColors[tier] || '#71717a' }}>{tier}</span>
+    <ConsolePanel
+      title="Empire Overview"
+      icon="globe"
+      subtitle="Tier standing, reach, and infrastructure power status."
+      right={<span className="text-[10px] font-mono text-slate-500">{formatGameDate(state.gameDate)}</span>}
+    >
+      <div className="space-y-3">
+      {/* Tier + company name */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-sm font-bold" style={{ color: tierColors[tier] || '#71717a' }}>{tier}</span>
           {editingName && onUpdateCompanyName ? (
             <form className="flex items-center gap-1" onSubmit={(e) => { e.preventDefault(); const trimmed = nameInput.trim(); if (trimmed) { onUpdateCompanyName(trimmed); } setEditingName(false); }}>
               <input
@@ -164,39 +180,35 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
                 maxLength={30}
                 autoFocus
                 onBlur={() => { const trimmed = nameInput.trim(); if (trimmed && onUpdateCompanyName) { onUpdateCompanyName(trimmed); } setEditingName(false); }}
-                className="h-5 px-1.5 text-[9px] uppercase tracking-wider font-mono bg-white/[0.08] border border-cyan-500/30 rounded text-white focus:outline-none focus:ring-1 focus:ring-cyan-500/30 w-32"
+                className="h-5 px-1.5 text-[10px] uppercase tracking-wider font-mono bg-white/[0.08] border border-cyan-500/30 rounded text-white focus:outline-none focus:ring-1 focus:ring-cyan-500/30 w-32"
               />
             </form>
           ) : (
             <button
               onClick={() => { if (onUpdateCompanyName) { setNameInput(state.companyName || ''); setEditingName(true); } }}
-              className="text-[9px] uppercase tracking-wider font-mono hover:text-cyan-400 transition-colors cursor-pointer inline-flex items-center min-h-[44px] px-1"
+              className="text-[10px] uppercase tracking-wider font-mono hover:text-cyan-400 transition-colors cursor-pointer inline-flex items-center gap-1 min-h-[44px] px-1"
               style={{ color: 'var(--text-muted)' }}
               title="Click to rename"
               aria-label={`Rename company (currently ${state.companyName || 'Your Company'})`}
             >
-              {state.companyName || 'Your Company'} ✎
+              {state.companyName || 'Your Company'} <GameIcon name="edit" size={11} />
             </button>
           )}
-        </div>
-        <span className="text-[9px] font-mono" style={{ color: 'var(--text-muted)' }}>
-          {formatGameDate(state.gameDate)}
-        </span>
       </div>
 
       {/* Visual metrics grid */}
-      <div className="grid grid-cols-6 divide-x" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-y-2 sm:gap-0 sm:divide-x rounded-lg overflow-hidden" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-void)' }}>
         {metrics.map(m => (
           <div key={m.label} className="flex flex-col items-center py-2.5 px-1">
-            <span className="text-sm mb-0.5">{m.icon}</span>
+            <span className="mb-0.5 text-slate-400"><GameIcon name={m.icon} size={15} /></span>
             <span className="text-sm font-bold font-mono" style={{ color: 'var(--text-primary)' }}>{m.value}</span>
-            <span className="text-[8px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{m.label}</span>
+            <span className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{m.label}</span>
           </div>
         ))}
       </div>
 
       {/* Location progress bar — visual of how far across the solar system */}
-      <div className="px-4 py-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+      <div>
         <div className="flex items-center gap-1">
           {['earth_surface', 'leo', 'geo', 'lunar_orbit', 'lunar_surface', 'mars_orbit', 'mars_surface', 'asteroid_belt', 'jupiter_system', 'saturn_system', 'outer_system'].map(loc => {
             const unlocked = state.unlockedLocations.includes(loc);
@@ -211,8 +223,8 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
           })}
         </div>
         <div className="flex justify-between mt-1">
-          <span className="text-[7px]" style={{ color: 'var(--text-muted)' }}>Earth</span>
-          <span className="text-[7px]" style={{ color: 'var(--text-muted)' }}>Outer System</span>
+          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Earth</span>
+          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Outer System</span>
         </div>
       </div>
 
@@ -223,10 +235,10 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
         if (entries.length === 0) return null;
         const hasDeficit = entries.some(([, data]) => data.ratio < 1);
         return (
-          <div className="px-4 py-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <div className="pt-2 border-t border-white/[0.06]">
             <div className="flex items-center gap-1 mb-1.5">
-              <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Power Grid</span>
-              {hasDeficit && <span className="text-[8px] text-red-400 font-semibold ml-1">DEFICIT</span>}
+              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Power Grid</span>
+              {hasDeficit && <span className="text-[10px] text-red-400 font-semibold ml-1">DEFICIT</span>}
             </div>
             <div className="space-y-1">
               {entries.map(([loc, data]) => {
@@ -245,7 +257,7 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
                   : data.ratio >= 0.6
                     ? 'bg-amber-400'
                     : 'bg-red-400';
-                const statusGlyph = data.ratio >= 1 ? '✓' : data.ratio >= 0.6 ? '⚠' : '✗';
+                const statusIcon: IconName = data.ratio >= 1 ? 'check' : data.ratio >= 0.6 ? 'warning' : 'close';
                 const locName = loc.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
                 const shortName = locName.replace('Surface', 'Sfc').replace('System', 'Sys').replace('Orbit', 'Orb').trim();
                 const revenuePenalty = data.ratio < 1 ? Math.round((1 - data.ratio) * 100) : 0;
@@ -256,13 +268,15 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
                     title={`${locName}: ${data.generated} MW generated / ${data.required} MW required (${Math.round(data.ratio * 100)}% efficiency)`}
                   >
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-[9px] font-medium" style={{ color: 'var(--text-secondary)' }}>{shortName}</span>
+                      <span className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>{shortName}</span>
                       <div className="flex items-center gap-1.5">
-                        <span className={`text-[10px] font-mono ${color}`}>
-                          {'\u26A1'} <span aria-hidden="true">{statusGlyph}</span> {data.generated}/{data.required} MW
+                        <span className={`text-[10px] font-mono ${color} inline-flex items-center gap-1`}>
+                          <GameIcon name="power" size={11} />
+                          <GameIcon name={statusIcon} size={11} />
+                          {data.generated}/{data.required} MW
                         </span>
                         {revenuePenalty > 0 && (
-                          <span className="text-[9px] font-mono text-red-400 bg-red-500/20 px-1 rounded">
+                          <span className="text-[10px] font-mono text-red-400 bg-red-500/20 px-1 rounded">
                             -{revenuePenalty}% rev
                           </span>
                         )}
@@ -279,14 +293,15 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
               })}
             </div>
             {hasDeficit && (
-              <p className="text-[9px] mt-1.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-[10px] mt-1.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
                 Underpowered facilities operate at reduced efficiency. Revenue is proportionally reduced. Build solar farms or nuclear reactors to restore full output.
               </p>
             )}
           </div>
         );
       })()}
-    </div>
+      </div>
+    </ConsolePanel>
   );
 }
 
@@ -346,7 +361,7 @@ function ActivityTicker() {
     <div className="mt-2 pt-2 border-t border-white/[0.06]" aria-live="polite" role="status">
       <p className="game-label !text-cyan-400/70 mb-1">Galactic Activity</p>
       <p key={current.id} className="text-[10px] text-slate-300 truncate animate-reveal-up">
-        <span aria-hidden="true">📡</span> {current.title}
+        <GameIcon name="activity" size={11} /> {current.title}
         <span className="text-slate-600"> · {formatRelativeTime(current.createdAt)}</span>
       </p>
     </div>
@@ -378,7 +393,7 @@ function CommandCenterHeader({ state }: { state: GameState }) {
               {state.companyName || 'Your Company'}
             </h1>
             <span
-              className="text-[9px] font-hud font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border shrink-0"
+              className="text-[10px] font-hud font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border shrink-0"
               style={{ color: tierDef.color, borderColor: `${tierDef.color}40`, background: `${tierDef.color}14` }}
             >
               {tierDef.icon} {tierDef.name}
@@ -392,8 +407,8 @@ function CommandCenterHeader({ state }: { state: GameState }) {
           </div>
           <div className="text-right">
             <p className="game-label">Region</p>
-            <p className="font-hud text-[11px] sm:text-xs text-cyan-300 whitespace-nowrap">
-              {'🌍'} Earth HQ{showFrontier ? ` · Frontier: ${frontier!.name}` : ''}
+            <p className="font-hud text-[11px] sm:text-xs text-cyan-300 whitespace-nowrap inline-flex items-center gap-1">
+              <GameIcon name="globe" size={12} /> Earth HQ{showFrontier ? ` · Frontier: ${frontier!.name}` : ''}
             </p>
           </div>
         </div>
@@ -401,9 +416,9 @@ function CommandCenterHeader({ state }: { state: GameState }) {
 
       {showFrontierMeter && (
         <div className="mt-2 pt-2 border-t border-white/[0.06]">
-          <div className="flex items-center justify-between text-[9px] mb-1 gap-2">
+          <div className="flex items-center justify-between text-[10px] mb-1 gap-2">
             <span className="text-emerald-300/80 font-hud font-semibold uppercase tracking-wider flex items-center gap-1 shrink-0">
-              <span aria-hidden="true">🛡</span> Frontier Graduation
+              <GameIcon name="shield" size={11} /> Frontier Graduation
             </span>
             <span className="text-slate-400 font-mono truncate">
               {formatMoney(frontierSummary.netWorth)} / {formatMoney(FRONTIER_GRADUATION_NET_WORTH)}
@@ -455,70 +470,64 @@ function QuickNavGrid({
   // visible denominator (matches ResearchPanel's own progress bar).
   const visibleResearchCount = RESEARCH.filter(r => isRareTechVisible(r, state.unlockedRareTechIds)).length;
 
-  const tiles: { id: string; label: string; icon: string; stat: string }[] = [
-    { id: 'market', label: 'Market', icon: '📈', stat: `${resourceUnits.toLocaleString()} units held` },
-    { id: 'fleet', label: 'Fleet', icon: '🚀', stat: `${builtShips} ship${builtShips !== 1 ? 's' : ''} active` },
-    { id: 'build', label: 'Build', icon: '🏗️', stat: `${inProgressCount} under construction` },
-    { id: 'alliance', label: 'Corporation', icon: '🏢', stat: `${tierDef.icon} ${tierDef.name}` },
-    { id: 'contracts', label: 'Contracts', icon: '📋', stat: `${activeContracts} active` },
-    { id: 'research', label: 'Research', icon: '🔬', stat: `${researchDone}/${visibleResearchCount} complete` },
+  const tiles: { id: string; label: string; icon: IconName; stat: string }[] = [
+    { id: 'market', label: 'Market', icon: 'market', stat: `${resourceUnits.toLocaleString()} units held` },
+    { id: 'fleet', label: 'Fleet', icon: 'fleet', stat: `${builtShips} ship${builtShips !== 1 ? 's' : ''} active` },
+    { id: 'build', label: 'Build', icon: 'build', stat: `${inProgressCount} under construction` },
+    { id: 'alliance', label: 'Corporation', icon: 'alliance', stat: `${tierDef.icon} ${tierDef.name}` },
+    { id: 'contracts', label: 'Contracts', icon: 'contracts', stat: `${activeContracts} active` },
+    { id: 'research', label: 'Research', icon: 'research', stat: `${researchDone}/${visibleResearchCount} complete` },
   ];
 
-  const alerts: { icon: string; label: string; tone: 'red' | 'amber' | 'cyan' }[] = [];
-  if (hasPowerDeficit) alerts.push({ icon: '⚡', label: 'Power deficit active', tone: 'red' });
+  const alerts: { icon: IconName; label: string; tone: 'red' | 'amber' | 'cyan' }[] = [];
+  if (hasPowerDeficit) alerts.push({ icon: 'power', label: 'Power deficit active', tone: 'red' });
   const unreadReports = (state.reports || []).filter(r => !r.read).length;
-  if (unreadReports > 0) alerts.push({ icon: '📬', label: `${unreadReports} unread report${unreadReports !== 1 ? 's' : ''}`, tone: 'cyan' });
+  if (unreadReports > 0) alerts.push({ icon: 'reports', label: `${unreadReports} unread report${unreadReports !== 1 ? 's' : ''}`, tone: 'cyan' });
   const recentHazard = (state.recentHazards || []).find(h => Date.now() - h.occurredAtMs < 10 * 60 * 1000);
-  if (recentHazard) alerts.push({ icon: '☢️', label: `Recent hazard: ${recentHazard.type.replace(/_/g, ' ')}`, tone: 'amber' });
+  if (recentHazard) alerts.push({ icon: HAZARD_ICON[recentHazard.type] || 'hazard-generic', label: `Recent hazard: ${recentHazard.type.replace(/_/g, ' ')}`, tone: 'amber' });
   // Wave F UI surfacing (b): forecast warnings for next game-month, distinct
   // from recentHazard above (which is a hazard that already struck).
   const hazardWarningCount = (state.hazardWarnings || []).length;
   const severeHazardWarning = (state.hazardWarnings || []).some(w => w.severity === 'severe');
   if (hazardWarningCount > 0) {
     alerts.push({
-      icon: '⚠️',
+      icon: 'warning',
       label: `${hazardWarningCount} hazard warning${hazardWarningCount !== 1 ? 's' : ''} forecast next month`,
       tone: severeHazardWarning ? 'red' : 'amber',
     });
   }
 
   return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {tiles.map(t => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => onNavigate?.(t.id)}
-            className="hud-frame game-card game-card-interactive relative rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 text-left min-h-[44px] transition-colors hover:border-white/[0.18] focus:outline-none focus:ring-2 focus:ring-cyan-400"
-          >
-            <span className="hud-corner-bl" aria-hidden="true" />
-            <span className="hud-corner-br" aria-hidden="true" />
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-base" aria-hidden="true">{t.icon}</span>
-              <span className="game-label">{t.label}</span>
-            </div>
-            <p className="game-number text-white text-[11px]">{t.stat}</p>
-          </button>
-        ))}
-      </div>
-      {alerts.length > 0 && (
-        <div className="flex flex-wrap gap-1.5" role="status" aria-live="polite">
-          {alerts.map((a, i) => (
-            <span
-              key={i}
-              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium border ${
-                a.tone === 'red' ? 'bg-red-500/10 text-red-300 border-red-500/25' :
-                a.tone === 'amber' ? 'bg-amber-500/10 text-amber-300 border-amber-500/25' :
-                'bg-cyan-500/10 text-cyan-300 border-cyan-500/25'
-              }`}
+    <ConsolePanel title="Quick Access" icon="dashboard" subtitle="One-tap access to the systems you touch most.">
+      <div className="space-y-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {tiles.map(t => (
+            <HoloCard
+              key={t.id}
+              as="button"
+              interactive
+              onClick={() => onNavigate?.(t.id)}
+              className="p-3 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-cyan-400"
             >
-              <span aria-hidden="true">{a.icon}</span> {a.label}
-            </span>
+              <div className="flex items-center gap-1.5 mb-1">
+                <GameIcon name={t.icon} size={16} />
+                <span className="game-label">{t.label}</span>
+              </div>
+              <p className="game-number text-white text-[11px]">{t.stat}</p>
+            </HoloCard>
           ))}
         </div>
-      )}
-    </div>
+        {alerts.length > 0 && (
+          <div className="flex flex-wrap gap-1.5" role="status" aria-live="polite">
+            {alerts.map((a, i) => (
+              <DataChip key={i} icon={a.icon} tone={a.tone === 'red' ? 'bad' : a.tone === 'amber' ? 'warn' : 'info'}>
+                {a.label}
+              </DataChip>
+            ))}
+          </div>
+        )}
+      </div>
+    </ConsolePanel>
   );
 }
 
@@ -602,15 +611,17 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       <DashboardVizBlock state={state} />
 
       {/* Hero Stats */}
+      <ConsolePanel title="Key Metrics" icon="dashboard" subtitle="Monthly financial and infrastructure snapshot.">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
+        {([
           {
             label: 'Revenue/mo',
             value: formatMoney(financials.revenue),
             color: 'text-green-400',
             bgGlow: 'bg-green-500/5',
             borderColor: 'border-green-500/20',
-            icon: '📈',
+            icon: 'trending-up',
+            glow: 'green',
           },
           {
             label: 'Costs/mo',
@@ -618,7 +629,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             color: 'text-red-400',
             bgGlow: 'bg-red-500/5',
             borderColor: 'border-red-500/20',
-            icon: '📉',
+            icon: 'trending-down',
+            glow: 'red',
           },
           {
             label: 'Buildings',
@@ -626,7 +638,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             color: 'text-cyan-400',
             bgGlow: 'bg-cyan-500/5',
             borderColor: 'border-cyan-500/20',
-            icon: '🏗️',
+            icon: 'build',
+            glow: 'cyan',
           },
           {
             label: 'Research',
@@ -634,20 +647,22 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             color: 'text-purple-400',
             bgGlow: 'bg-purple-500/5',
             borderColor: 'border-purple-500/20',
-            icon: '🔬',
+            icon: 'research',
+            glow: 'purple',
           },
-        ].map(s => (
+        ] as { label: string; value: string; color: string; bgGlow: string; borderColor: string; icon: IconName; glow: GameIconGlow }[]).map(s => (
           <div key={s.label} className={`relative overflow-hidden rounded-xl border ${s.borderColor} ${s.bgGlow} p-3`}>
             <div className="flex items-start justify-between">
               <div>
                 <p className={`text-lg font-bold ${s.color} font-mono`}>{s.value}</p>
                 <p className="text-slate-500 text-[10px] uppercase tracking-wider mt-0.5">{s.label}</p>
               </div>
-              <span className="text-lg opacity-50">{s.icon}</span>
+              <span className={`${s.color} opacity-50`}><GameIcon name={s.icon} size={20} glow={s.glow} /></span>
             </div>
           </div>
         ))}
       </div>
+      </ConsolePanel>
 
       {/* Active Research with real-time countdown — promoted to top for visibility */}
       {state.activeResearch && (() => {
@@ -655,14 +670,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
         const hasRealTime = state.activeResearch!.startedAtMs && state.activeResearch!.realDurationSeconds;
         const hasQ2 = state.completedResearch.includes('parallel_research');
         return (
-          <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3">
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm">🔬</span>
-                <span className="text-white text-xs font-semibold">{def?.name || 'Research'}</span>
-                {hasQ2 && <span className="text-[9px] text-purple-400 font-mono">Q1</span>}
-              </div>
-            </div>
+          <ConsolePanel accent="purple" compact icon="research" title={def?.name || 'Research'} right={hasQ2 ? <DataChip tone="info">Q1</DataChip> : undefined}>
             {hasRealTime ? (
               <ResearchCountdown startedAtMs={state.activeResearch!.startedAtMs!} durationSeconds={state.activeResearch!.realDurationSeconds!} />
             ) : (
@@ -670,21 +678,14 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
                 <div className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style={{ width: '50%' }} />
               </div>
             )}
-          </div>
+          </ConsolePanel>
         );
       })()}
       {state.activeResearch2 && state.completedResearch.includes('parallel_research') && (() => {
         const def2 = RESEARCH.find(r => r.id === state.activeResearch2!.definitionId);
         const hasRealTime2 = state.activeResearch2!.startedAtMs && state.activeResearch2!.realDurationSeconds;
         return (
-          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3">
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm">🔬</span>
-                <span className="text-white text-xs font-semibold">{def2?.name || 'Research'}</span>
-                <span className="text-[9px] text-cyan-400 font-mono">Q2</span>
-              </div>
-            </div>
+          <ConsolePanel accent="cyan" compact icon="research" title={def2?.name || 'Research'} right={<DataChip tone="info">Q2</DataChip>}>
             {hasRealTime2 ? (
               <ResearchCountdown startedAtMs={state.activeResearch2!.startedAtMs!} durationSeconds={state.activeResearch2!.realDurationSeconds!} />
             ) : (
@@ -692,17 +693,19 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
                 <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full" style={{ width: '50%' }} />
               </div>
             )}
-          </div>
+          </ConsolePanel>
         );
       })()}
 
       {/* Under Construction — promoted to top for visibility */}
       {inProgress.length > 0 && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-          <h3 className="text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse motion-reduce:animate-none" />
-            Building ({inProgress.length})
-          </h3>
+        <ConsolePanel
+          accent="amber"
+          compact
+          icon="build"
+          title={`Building (${inProgress.length})`}
+          right={<span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse motion-reduce:animate-none" aria-hidden="true" />}
+        >
           <div className="space-y-2">
             {inProgress.slice(0, 3).map(bld => {
               const def = BUILDING_MAP.get(bld.definitionId);
@@ -723,39 +726,39 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             })}
             {inProgress.length > 3 && <p className="text-slate-600 text-[10px]">+{inProgress.length - 3} more</p>}
           </div>
-        </div>
+        </ConsolePanel>
       )}
 
       {/* Net Income Banner */}
-      <div className={`rounded-xl p-3 border flex items-center justify-between ${
-        financials.net >= 0
-          ? 'border-green-500/20 bg-green-500/5'
-          : 'border-red-500/20 bg-red-500/5'
-      }`}>
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-            financials.net >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'
-          }`}>
-            <span className={`text-sm font-bold ${financials.net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {financials.net >= 0 ? '▲' : '▼'}
-            </span>
+      <ConsolePanel
+        compact
+        accent={financials.net >= 0 ? 'cyan' : 'red'}
+        icon={financials.net >= 0 ? 'trending-up' : 'trending-down'}
+        title="Net Income"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+              financials.net >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'
+            }`}>
+              <GameIcon name={financials.net >= 0 ? 'trending-up' : 'trending-down'} size={16} className={financials.net >= 0 ? 'text-green-400' : 'text-red-400'} />
+            </div>
+            <div>
+              <p className="text-white text-sm font-semibold">
+                <span className={financials.net >= 0 ? 'text-green-400' : 'text-red-400'}>{formatMoney(financials.net)}/mo</span>
+              </p>
+              <p className="text-slate-500 text-[10px]">
+                {state.activeServices.length} active service{state.activeServices.length !== 1 ? 's' : ''} · {state.unlockedLocations.length} location{state.unlockedLocations.length !== 1 ? 's' : ''}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-white text-sm font-semibold">
-              Net Income: <span className={financials.net >= 0 ? 'text-green-400' : 'text-red-400'}>{formatMoney(financials.net)}/mo</span>
-            </p>
-            <p className="text-slate-500 text-[10px]">
-              {state.activeServices.length} active service{state.activeServices.length !== 1 ? 's' : ''} · {state.unlockedLocations.length} location{state.unlockedLocations.length !== 1 ? 's' : ''}
-            </p>
-          </div>
+          <MiniSparkline positive={financials.net >= 0} />
         </div>
-        <MiniSparkline positive={financials.net >= 0} />
-      </div>
+      </ConsolePanel>
 
       {/* Cost Breakdown — so players see workforce, research bonuses, and all line items */}
       {(financials.payroll > 0 || financials.wfBonuses.serviceRevenue > 0 || financials.resBonuses.serviceRevenueBonus > 0) && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-          <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Income Breakdown</h3>
+        <ConsolePanel icon="money" title="Income Breakdown">
           <div className="space-y-1 text-[11px]">
             <div className="flex justify-between">
               <span className="text-slate-400">Base service revenue</span>
@@ -786,7 +789,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             )}
             {financials.hasPowerDeficit && (
               <div className="flex justify-between">
-                <span className="text-red-400/80">{'\u26A1'} Power deficit penalty</span>
+                <span className="text-red-400/80 inline-flex items-center gap-1"><GameIcon name="power" size={10} /> Power deficit penalty</span>
                 <span className="text-red-400 font-mono text-[10px]">Build solar/nuclear!</span>
               </div>
             )}
@@ -806,7 +809,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
               </div>
             )}
           </div>
-        </div>
+        </ConsolePanel>
       )}
 
       {/* Income History Chart */}
@@ -829,10 +832,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
 
       {/* Speed Boosts — available and active */}
       {((state.availableBoosts && state.availableBoosts.length > 0) || (state.activeBoosts && state.activeBoosts.length > 0)) && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-          <h3 className="text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1">
-            <span>⚡</span> Speed Boosts
-          </h3>
+        <ConsolePanel compact accent="amber" icon="power" title="Speed Boosts">
           {/* Active boosts with countdown */}
           {state.activeBoosts && state.activeBoosts.filter(b => b.expiresAtMs > Date.now()).map(b => (
             <div key={b.boostId} className="flex items-center justify-between text-[11px] mb-1">
@@ -863,36 +863,41 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
                       // This requires a setState callback from the parent — use window event
                       window.dispatchEvent(new CustomEvent('activate-boost', { detail: { boostId: b.id, activeBoost } }));
                     }}
-                    className="min-h-[44px] inline-flex items-center justify-center px-3 text-[9px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded hover:bg-amber-500/30 transition-colors"
+                    className="min-h-[44px] inline-flex items-center justify-center px-3 text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded hover:bg-amber-500/30 transition-colors"
                   >
                     Activate
                   </button>
                 </div>
               ))}
               {state.availableBoosts.length > 5 && (
-                <p className="text-slate-600 text-[9px]">+{state.availableBoosts.length - 5} more</p>
+                <p className="text-slate-600 text-[10px]">+{state.availableBoosts.length - 5} more</p>
               )}
             </div>
           )}
-        </div>
+        </ConsolePanel>
       )}
 
       {/* Active Effects (from random events) */}
       {state.activeEffects && state.activeEffects.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {state.activeEffects.map((eff, i) => (
-            <div key={i} className={`px-2.5 py-1 rounded-lg text-[10px] font-medium border ${
-              eff.revenueMultiplier > 1 ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-              eff.costMultiplier > 1 ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-              eff.revenueMultiplier < 1 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-              'bg-white/[0.04] text-slate-400 border-white/[0.06]'
-            }`}>
-              {eff.label}
-              {eff.revenueMultiplier !== 1 && ` (${eff.revenueMultiplier > 1 ? '+' : ''}${Math.round((eff.revenueMultiplier - 1) * 100)}% rev)`}
-              {eff.costMultiplier !== 1 && ` (${eff.costMultiplier > 1 ? '+' : ''}${Math.round((eff.costMultiplier - 1) * 100)}% cost)`}
-            </div>
-          ))}
-        </div>
+        <ConsolePanel compact icon="sparkle" title="Active Effects">
+          <div className="flex flex-wrap gap-2">
+            {state.activeEffects.map((eff, i) => (
+              <DataChip
+                key={i}
+                tone={
+                  eff.revenueMultiplier > 1 ? 'good' :
+                  eff.costMultiplier > 1 ? 'bad' :
+                  eff.revenueMultiplier < 1 ? 'warn' :
+                  'neutral'
+                }
+              >
+                {eff.label}
+                {eff.revenueMultiplier !== 1 && ` (${eff.revenueMultiplier > 1 ? '+' : ''}${Math.round((eff.revenueMultiplier - 1) * 100)}% rev)`}
+                {eff.costMultiplier !== 1 && ` (${eff.costMultiplier > 1 ? '+' : ''}${Math.round((eff.costMultiplier - 1) * 100)}% cost)`}
+              </DataChip>
+            ))}
+          </div>
+        </ConsolePanel>
       )}
 
       {/* Active Research with real-time countdown */}
@@ -901,15 +906,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
         const hasRealTime = state.activeResearch!.startedAtMs && state.activeResearch!.realDurationSeconds;
         const hasQ2 = state.completedResearch.includes('parallel_research');
         return (
-          <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full border border-purple-500/30 flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse motion-reduce:animate-none" />
-                </div>
-                <span className="text-white text-sm font-medium">Researching{hasQ2 ? ' (Q1)' : ''}: {def?.name}</span>
-              </div>
-            </div>
+          <ConsolePanel accent="purple" icon="research" title={`Researching${hasQ2 ? ' (Q1)' : ''}: ${def?.name || ''}`}>
             {hasRealTime ? (
               <ResearchCountdown
                 startedAtMs={state.activeResearch!.startedAtMs!}
@@ -922,7 +919,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             )}
             <p className="text-slate-500 text-[10px] mt-1">{def?.effect}</p>
             {def && <p className="text-cyan-300/80 text-[10px] font-mono mt-0.5">→ {getResearchMechanicalEffect(def)}</p>}
-          </div>
+          </ConsolePanel>
         );
       })()}
       {/* Second Research Queue on Dashboard */}
@@ -930,15 +927,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
         const def2 = RESEARCH.find(r => r.id === state.activeResearch2!.definitionId);
         const hasRealTime2 = state.activeResearch2!.startedAtMs && state.activeResearch2!.realDurationSeconds;
         return (
-          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full border border-cyan-500/30 flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" />
-                </div>
-                <span className="text-white text-sm font-medium">Researching (Q2): {def2?.name}</span>
-              </div>
-            </div>
+          <ConsolePanel accent="cyan" icon="research" title={`Researching (Q2): ${def2?.name || ''}`}>
             {hasRealTime2 ? (
               <ResearchCountdown
                 startedAtMs={state.activeResearch2!.startedAtMs!}
@@ -951,17 +940,18 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             )}
             <p className="text-slate-500 text-[10px] mt-1">{def2?.effect}</p>
             {def2 && <p className="text-cyan-300/80 text-[10px] font-mono mt-0.5">→ {getResearchMechanicalEffect(def2)}</p>}
-          </div>
+          </ConsolePanel>
         );
       })()}
 
       {/* Under Construction */}
       {inProgress.length > 0 && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-          <h3 className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse motion-reduce:animate-none" />
-            Under Construction ({inProgress.length})
-          </h3>
+        <ConsolePanel
+          accent="amber"
+          icon="build"
+          title={`Under Construction (${inProgress.length})`}
+          right={<span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse motion-reduce:animate-none" aria-hidden="true" />}
+        >
           <div className="space-y-2">
             {inProgress.slice(0, 5).map(bld => {
               const def = BUILDING_MAP.get(bld.definitionId);
@@ -984,14 +974,14 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             })}
             {inProgress.length > 5 && <p className="text-slate-600 text-[10px]">+{inProgress.length - 5} more</p>}
           </div>
-        </div>
+        </ConsolePanel>
       )}
 
       {/* Active Services */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
-          Active Services ({new Set(state.activeServices.map(s => s.definitionId)).size} types, {state.activeServices.length} total)
-        </h3>
+      <ConsolePanel
+        icon="services"
+        title={`Active Services (${new Set(state.activeServices.map(s => s.definitionId)).size} types, ${state.activeServices.length} total)`}
+      >
         {state.activeServices.length === 0 ? (
           <p className="text-slate-500 text-xs">Build infrastructure to enable revenue-generating services.</p>
         ) : (
@@ -1056,20 +1046,20 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
                 <div key={id} className="flex items-center justify-between text-xs py-1 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                   <span className="text-slate-300">
                     {g.def!.name}
-                    {g.count > 1 && <span className="text-cyan-400 ml-1 text-[9px] font-mono">x{g.count}</span>}
+                    {g.count > 1 && <span className="text-cyan-400 ml-1 text-[10px] font-mono">x{g.count}</span>}
                     {g.isPowerReduced && (
-                      <span className="text-red-400/70 ml-1 text-[9px]" title={`Power deficit reduces revenue`}>
-                        {'\u26A1'}{Math.round(g.minPowerRatio * 100)}%
+                      <span className="text-red-400/70 ml-1 text-[10px] inline-flex items-center gap-0.5" title={`Power deficit reduces revenue`}>
+                        <GameIcon name="power" size={9} />{Math.round(g.minPowerRatio * 100)}%
                       </span>
                     )}
                     {g.maxStationBonus > 0 && (
-                      <span className="text-green-400/70 ml-1 text-[9px]" title={`Station presence boosts revenue by +${Math.round(g.maxStationBonus * 100)}%`}>
-                        {'\uD83C\uDFE0'}+{Math.round(g.maxStationBonus * 100)}%
+                      <span className="text-green-400/70 ml-1 text-[10px] inline-flex items-center gap-0.5" title={`Station presence boosts revenue by +${Math.round(g.maxStationBonus * 100)}%`}>
+                        <GameIcon name="bld-space-station" size={9} />+{Math.round(g.maxStationBonus * 100)}%
                       </span>
                     )}
                     {g.maxFreighterBonus > 0 && (
-                      <span className="text-blue-400/70 ml-1 text-[9px]" title={`Freighter logistics bonus: +${Math.round(g.maxFreighterBonus * 100)}% mining output`}>
-                        {'\uD83D\uDE80'}+{Math.round(g.maxFreighterBonus * 100)}%
+                      <span className="text-blue-400/70 ml-1 text-[10px] inline-flex items-center gap-0.5" title={`Freighter logistics bonus: +${Math.round(g.maxFreighterBonus * 100)}% mining output`}>
+                        <GameIcon name="ship-transport" size={9} />+{Math.round(g.maxFreighterBonus * 100)}%
                       </span>
                     )}
                   </span>
@@ -1079,25 +1069,22 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             })()}
           </div>
         )}
-      </div>
+      </ConsolePanel>
 
       {/* Risk & Reserves — Wave F UI surfacing (b/d): insurance toggle
           (economic-sinks.ts), hazard warnings (state.hazardWarnings), and
           the T5+ cash-reserve meter (state.reserveStatus). CLAUDE.md "no
           combat — but real risk": these are the risk-management decisions
           hazards/insurance were designed to create. */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider">
-          Risk &amp; Reserves
-        </h3>
+      <ConsolePanel icon="shield" title="Risk & Reserves" bodyClassName="space-y-3">
 
         {/* Insurance */}
         <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
           <div>
             <div className="flex items-center gap-1.5">
-              <span aria-hidden="true">🛡️</span>
+              <GameIcon name="shield" size={13} />
               <span className="text-xs font-semibold text-white">Hazard Insurance</span>
-              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${state.insuranceActive !== false ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-500/15 text-slate-400'}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase ${state.insuranceActive !== false ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-500/15 text-slate-400'}`}>
                 {state.insuranceActive !== false ? 'Active' : 'Uninsured'}
               </span>
             </div>
@@ -1130,9 +1117,9 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
           }`}>
             <div>
               <div className="flex items-center gap-1.5">
-                <span aria-hidden="true">🏦</span>
+                <GameIcon name="money" size={13} />
                 <span className="text-xs font-semibold text-white">Cash Reserve</span>
-                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
                   state.reserveStatus.status === 'critical' ? 'bg-red-500/20 text-red-300'
                     : state.reserveStatus.status === 'warning' ? 'bg-amber-500/20 text-amber-300'
                     : 'bg-emerald-500/15 text-emerald-300'
@@ -1153,7 +1140,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
         {/* Hazard warnings — forecast for next game-month */}
         {(state.hazardWarnings || []).length > 0 && (
           <div className="space-y-1">
-            <p className="text-[9px] text-slate-500 uppercase tracking-wider">Hazard Forecast</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider">Hazard Forecast</p>
             {(state.hazardWarnings || []).slice(0, 4).map(w => (
               <div
                 key={w.id}
@@ -1163,20 +1150,17 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
                     : 'bg-white/[0.03] border-white/[0.06] text-slate-400'
                 }`}
               >
-                <span aria-hidden="true">⚠️</span>
+                <GameIcon name="warning" size={11} />
                 <span>{w.summary}</span>
-                <span className="ml-auto font-mono text-[9px] text-slate-500">{LOCATION_MAP.get(w.locationId)?.name || w.locationId}</span>
+                <span className="ml-auto font-mono text-[10px] text-slate-500">{LOCATION_MAP.get(w.locationId)?.name || w.locationId}</span>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </ConsolePanel>
 
       {/* Event Log */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
-          Event Log
-        </h3>
+      <ConsolePanel icon="reports" title="Event Log">
         <div className="space-y-1 max-h-52 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
           {state.eventLog
             .filter(evt => !(evt.type === 'npc_activity' && evt.title?.includes('market activity')))
@@ -1191,7 +1175,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
               >
                 <span className="text-slate-600 font-mono shrink-0 w-16">{formatGameDate(evt.date)}</span>
                 <div>
-                  {isNPC && <span className="text-red-400/60 mr-1">🤖</span>}
+                  {isNPC && <GameIcon name="npc" size={11} className="text-red-400/60 mr-1" />}
                   <span className={isNPC ? 'text-slate-500' : 'text-slate-300'}>{evt.title}</span>
                   {evt.description && <span className="text-slate-600 ml-1">— {evt.description}</span>}
                 </div>
@@ -1199,9 +1183,10 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
             );
           })}
         </div>
-      </div>
+      </ConsolePanel>
 
       {/* Game Stats Footer */}
+      <ConsolePanel compact icon="money" title="Corporate Ledger">
       <div className="grid grid-cols-3 gap-2">
         {[
           { label: 'Total Earned', value: formatMoney(state.totalEarned), color: 'text-green-400/70' },
@@ -1210,10 +1195,11 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
         ].map(s => (
           <div key={s.label} className="text-center p-2 rounded-lg bg-white/[0.02]">
             <p className={`text-xs font-mono ${s.color}`}>{s.value}</p>
-            <p className="text-slate-600 text-[9px] uppercase tracking-wider">{s.label}</p>
+            <p className="text-slate-600 text-[10px] uppercase tracking-wider">{s.label}</p>
           </div>
         ))}
       </div>
+      </ConsolePanel>
 
       {/* Sol Historical Archive — real site headlines reframed as in-universe
           history (docs/LORE.md narrative year). Renders nothing on empty/error. */}

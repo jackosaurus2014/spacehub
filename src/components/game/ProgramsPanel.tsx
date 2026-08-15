@@ -23,6 +23,7 @@ import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import GameIcon from '@/components/game/GameIcon';
 import type { IconName } from '@/lib/game/icons';
+import HoloTip, { Concept } from '@/components/game/HoloTip';
 
 interface ProgramsPanelProps {
   state: GameState;
@@ -107,7 +108,9 @@ export default function ProgramsPanel({ state, onUpdateState }: ProgramsPanelPro
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
           <GameIcon name="track-crew-cohort" size={16} />
-          <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Programs</span>
+          <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+            <Concept id="program-track">Programs</Concept>
+          </span>
         </div>
         <span className="text-[10px] text-slate-500">Wall-clock training — ticks while you&apos;re away</span>
       </div>
@@ -115,7 +118,9 @@ export default function ProgramsPanel({ state, onUpdateState }: ProgramsPanelPro
       {/* Active workforce bonuses from completed cohorts */}
       {activeBonusEntries.length > 0 && (
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-          <p className="text-white text-xs font-bold mb-2">Completed Cohort Bonuses</p>
+          <p className="text-white text-xs font-bold mb-2">
+            <Concept id="workforce-bonus">Completed Cohort Bonuses</Concept>
+          </p>
           <div className="flex flex-wrap gap-2">
             {activeBonusEntries.map(([field, val]) => (
               <span key={field} className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">
@@ -147,7 +152,16 @@ export default function ProgramsPanel({ state, onUpdateState }: ProgramsPanelPro
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-2">
           <p className="text-cyan-300 text-xs uppercase tracking-wider font-semibold">{TRACK_LABEL[track]} Queue</p>
-          <span className="game-number text-xs text-slate-400">{queue.length}/{capacity} slots</span>
+          <HoloTip
+            underline={false}
+            content={{
+              title: 'Track Capacity',
+              icon: TRACK_ICON[track],
+              body: 'Each program track runs one wall-clock channel per queued slot — training ticks in real time whether or not you\'re logged in, up to this track\'s slot capacity.',
+            }}
+          >
+            <span className="game-number text-xs text-slate-400">{queue.length}/{capacity} slots</span>
+          </HoloTip>
         </div>
 
         {queue.length === 0 ? (
@@ -285,7 +299,9 @@ export default function ProgramsPanel({ state, onUpdateState }: ProgramsPanelPro
         <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
-          <p className="text-fuchsia-300 text-xs uppercase tracking-wider font-semibold mb-2">Retirement Watch</p>
+          <p className="text-fuchsia-300 text-xs uppercase tracking-wider font-semibold mb-2">
+            <Concept id="leader-retirement">Retirement Watch</Concept>
+          </p>
           <ul className="space-y-1">
             {hired.filter(h => getRetirementEtaMs(h) !== null).map(h => {
               const def = COMMANDER_MAP.get(h.definitionId);

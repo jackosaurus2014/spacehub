@@ -6,6 +6,7 @@ import { formatMoney } from '@/lib/game/formulas';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import type { GameState } from '@/lib/game/types';
 import Image from 'next/image';
+import HoloTip, { Concept } from '@/components/game/HoloTip';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -234,9 +235,18 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
               </span>
             )}
             {book.spread && (
-              <span className="text-slate-500">
-                Spread: {formatMoney(book.spread.absolute)} ({book.spread.percentage}%)
-              </span>
+              <HoloTip
+                underline={false}
+                content={{
+                  title: 'Bid-Ask Spread',
+                  icon: 'market',
+                  body: 'The gap between the best (highest) buy order and the best (lowest) sell order. A tighter spread means the market is more liquid — you can trade near the last price without moving it much.',
+                }}
+              >
+                <span className="text-slate-500">
+                  Spread: {formatMoney(book.spread.absolute)} ({book.spread.percentage}%)
+                </span>
+              </HoloTip>
             )}
             <span className="text-slate-500">Vol 24h: {book.volume24h}</span>
           </div>
@@ -276,7 +286,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
               {/* Bids (Buy Orders) */}
               <div role="table" aria-label="Buy orders (bids)">
                 <div className="font-hud text-[10px] text-green-400 font-bold uppercase tracking-wider mb-2">
-                  ▲ Bids (Buy)
+                  <Concept id="order-book-depth">▲ Bids (Buy)</Concept>
                 </div>
                 <div className="space-y-0.5">
                   {book.bids.length === 0 ? (
@@ -442,7 +452,12 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                 <span className="text-white font-mono">{formatMoney(totalCost)}</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-slate-400">Fee (2%)</span>
+                <HoloTip
+                  underline={false}
+                  content={{ title: 'Order Escrow', icon: 'lock', body: <Concept id="escrow" /> }}
+                >
+                  <span className="text-slate-400">Fee (2%)</span>
+                </HoloTip>
                 <span className="text-amber-400 font-mono">{formatMoney(feeAmount)}</span>
               </div>
               <div className="flex justify-between text-xs border-t border-white/[0.06] pt-1">

@@ -6,6 +6,7 @@ import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound } from '@/lib/game/sound-engine';
 import GameIcon from '@/components/game/GameIcon';
 import type { IconName } from '@/lib/game/icons';
+import HoloTip, { Concept } from '@/components/game/HoloTip';
 
 /**
  * HazardAlertLayer — watches state.recentHazards for newly-appended entries
@@ -130,13 +131,24 @@ export default function HazardAlertLayer({ state }: HazardAlertLayerProps) {
             <span className="hud-corner-bl" aria-hidden="true" />
             <span className="hud-corner-br" aria-hidden="true" />
             <div className="font-hud font-bold tracking-widest flex items-center gap-1.5">
-              <span
-                className={`text-[8px] px-1 py-0.5 rounded ${
-                  a.severity === 'loss' ? 'bg-red-500/40 text-red-100' : 'bg-amber-500/40 text-amber-100'
-                }`}
+              <HoloTip
+                underline={false}
+                content={{
+                  title: a.title,
+                  icon: a.icon,
+                  iconGlow: a.severity === 'loss' ? 'red' : 'amber',
+                  body: <Concept id="hazard-damage" />,
+                  rows: [{ label: a.severity === 'loss' ? 'Outcome' : 'Insurance', value: <Concept id="insurance" /> }],
+                }}
               >
-                {a.severity === 'loss' ? 'LOSS' : 'WARNING'}
-              </span>
+                <span
+                  className={`text-[8px] px-1 py-0.5 rounded ${
+                    a.severity === 'loss' ? 'bg-red-500/40 text-red-100' : 'bg-amber-500/40 text-amber-100'
+                  }`}
+                >
+                  {a.severity === 'loss' ? 'LOSS' : 'WARNING'}
+                </span>
+              </HoloTip>
               <GameIcon name={a.icon} size={12} /> {a.title}
             </div>
             <div className="text-[11px] opacity-90 mt-0.5 max-w-[260px]">{a.detail}</div>

@@ -16,6 +16,8 @@ import ContractsPanel from './ContractsPanel';
 import DiplomacyPanel from './DiplomacyPanel';
 import BiddingPanel from './BiddingPanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
+import { ConsolePanel } from './chrome';
+import GameIcon from './GameIcon';
 
 interface ContractsHubPanelProps {
   state: GameState;
@@ -36,28 +38,28 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
   const [pveSection, setPveSection] = useState<PveSection>(deliveriesUnlocked ? 'deliveries' : 'standard');
 
   const TopTabs = (
-    <div className="flex rounded-lg overflow-hidden border border-white/[0.06] w-fit" role="tablist" aria-label="Contracts view">
+    <div className="game-tab-bar flex gap-1 overflow-x-auto" role="tablist" aria-label="Contracts view">
       <button
         type="button"
         role="tab"
         aria-selected={hubTab === 'pve'}
         onClick={() => setHubTab('pve')}
-        className={`min-h-[44px] px-3 py-1.5 text-[11px] font-medium transition-colors ${
-          hubTab === 'pve' ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          hubTab === 'pve' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
         }`}
       >
-        📋 PVE Contracts
+        <GameIcon name="contracts" size={13} /> PVE Contracts
       </button>
       <button
         type="button"
         role="tab"
         aria-selected={hubTab === 'pvp'}
         onClick={() => setHubTab('pvp')}
-        className={`min-h-[44px] px-3 py-1.5 text-[11px] font-medium transition-colors ${
-          hubTab === 'pvp' ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          hubTab === 'pvp' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
         }`}
       >
-        🎯 PVP Bidding{!biddingUnlocked ? ' 🔒' : ''}
+        <GameIcon name="target" size={13} /> PVP Bidding{!biddingUnlocked && <GameIcon name="lock" size={11} label="Locked" />}
       </button>
     </div>
   );
@@ -65,7 +67,7 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
   if (hubTab === 'pvp') {
     return (
       <div className="space-y-3">
-        {TopTabs}
+        <ConsolePanel title="Contracts" icon="contracts" subtitle="PVE delivery work and PVP competitive bidding.">{TopTabs}</ConsolePanel>
         {biddingUnlocked
           ? <BiddingPanel state={state} />
           : <LockedSubtabNotice icon="🎯" label="PVP Bidding" tier={FOLDED_FEATURE_TIERS.bidding} />}
@@ -84,30 +86,34 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
         role="tab"
         aria-selected={pveSection === 'deliveries'}
         onClick={() => setPveSection('deliveries')}
-        className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors ${
+        className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors flex items-center gap-1 ${
           pveSection === 'deliveries' ? 'bg-white/[0.06] text-white' : 'text-slate-500 hover:text-white'
         }`}
       >
-        ⚐ Faction Deliveries{!deliveriesUnlocked ? ' 🔒' : ''}
+        <GameIcon name="handshake" size={11} /> Faction Deliveries{!deliveriesUnlocked && <GameIcon name="lock" size={10} label="Locked" />}
       </button>
       <button
         type="button"
         role="tab"
         aria-selected={pveSection === 'standard'}
         onClick={() => setPveSection('standard')}
-        className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors ${
+        className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors flex items-center gap-1 ${
           pveSection === 'standard' ? 'bg-white/[0.06] text-white' : 'text-slate-500 hover:text-white'
         }`}
       >
-        📋 Standard Contracts
+        <GameIcon name="contracts" size={11} /> Standard Contracts
       </button>
     </div>
   );
 
   return (
     <div className="space-y-3">
-      {TopTabs}
-      {SubSections}
+      <ConsolePanel title="Contracts" icon="contracts" subtitle="PVE delivery work and PVP competitive bidding.">
+        <div className="space-y-2">
+          {TopTabs}
+          {SubSections}
+        </div>
+      </ConsolePanel>
       {pveSection === 'deliveries' ? (
         deliveriesUnlocked
           ? <DiplomacyPanel state={state} onAccept={onAcceptDelivery} onDeliver={onDeliverContract} />

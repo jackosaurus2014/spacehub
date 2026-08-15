@@ -15,6 +15,7 @@ import { toggleMusic, isMusicPlaying, setMusicVolume, getMusicVolume, initMusicA
 import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
 import GameIcon from './GameIcon';
+import HoloTip, { Concept } from './HoloTip';
 
 interface ResourceBarProps {
   state: GameState;
@@ -209,26 +210,54 @@ export default function ResourceBar({ state }: ResourceBarProps) {
             </span>
           </div>
 
-          <div
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-mono font-medium transition-colors ${
-              net >= 0
-                ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                : 'bg-red-500/10 text-red-400 border border-red-500/20'
-            }`}
-            title={`Revenue ${formatMoney(Math.round(revenue))}/mo · Costs ${formatMoney(Math.round(costs))}/mo`}
+          <HoloTip
+            as="div"
+            underline={false}
+            content={{
+              title: 'Net Income',
+              icon: 'money',
+              iconGlow: net >= 0 ? 'green' : 'red',
+              body: <>Everything you earn minus everything you spend, per in-game month. <span className="text-slate-400">See</span> <Concept id="net-income" /> for the full breakdown.</>,
+              rows: [
+                { label: 'Revenue', value: `+${formatMoney(Math.round(revenue))}/mo` },
+                { label: 'Costs', value: `-${formatMoney(Math.round(costs))}/mo` },
+              ],
+              source: 'ResourceBar.tsx — recomputed live from services, buildings, workforce, ships',
+            }}
           >
-            {net >= 0 ? '▲' : '▼'} {formatMoney(Math.abs(net))}/mo
-          </div>
+            <div
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-mono font-medium transition-colors ${
+                net >= 0
+                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                  : 'bg-red-500/10 text-red-400 border border-red-500/20'
+              }`}
+            >
+              {net >= 0 ? '▲' : '▼'} {formatMoney(Math.abs(net))}/mo
+            </div>
+          </HoloTip>
 
           {/* Corporation Tier Badge */}
-          <div
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border transition-colors"
-            style={{ borderColor: `${tierDef.color}40`, background: `${tierDef.color}15`, color: tierDef.color }}
-            title={`Corporation Tier ${corpTier}: ${tierDef.name}`}
+          <HoloTip
+            as="div"
+            underline={false}
+            content={{
+              title: `Tier ${corpTier}: ${tierDef.name}`,
+              icon: 'alliance',
+              body: <Concept id="corporation-tier" />,
+              rows: [
+                { label: 'Revenue bonus', value: `+${Math.round(tierBonuses.revenueBonus * 100)}%` },
+                { label: 'Maintenance reduction', value: `-${Math.round(tierBonuses.maintenanceReduction * 100)}%` },
+              ],
+            }}
           >
-            <span>{tierDef.icon}</span>
-            <span className="hidden sm:inline">{tierDef.name}</span>
-          </div>
+            <div
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border transition-colors"
+              style={{ borderColor: `${tierDef.color}40`, background: `${tierDef.color}15`, color: tierDef.color }}
+            >
+              <span>{tierDef.icon}</span>
+              <span className="hidden sm:inline">{tierDef.name}</span>
+            </div>
+          </HoloTip>
         </div>
 
         {/* Date + Live indicator */}

@@ -9,16 +9,23 @@ import type { ResourceId } from '@/lib/game/resources';
 import { formatMoney, formatGameDate } from '@/lib/game/formulas';
 import { quarterKey } from '@/lib/game/corp-report-registry';
 import { toast } from '@/lib/toast';
+import { ConsolePanel, DataChip } from './chrome';
+import GameIcon, { type GameIconGlow } from './GameIcon';
+import { resolveIcon, type IconName } from '@/lib/game/icons';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function getReportIcon(type: GameReport['type']): string {
-  switch (type) {
-    case 'probe_discovery': return '🛰️';
-    case 'system_alert': return '⚠️';
-    case 'milestone': return '🏆';
-  }
-}
+const REPORT_TYPE_ICON: Record<GameReport['type'], IconName> = {
+  probe_discovery: 'megastructures',
+  system_alert: 'warning',
+  milestone: 'leaderboard',
+};
+
+const REPORT_TYPE_GLOW: Record<GameReport['type'], GameIconGlow> = {
+  probe_discovery: 'cyan',
+  system_alert: 'amber',
+  milestone: 'purple',
+};
 
 function getReportAccent(type: GameReport['type']): string {
   switch (type) {
@@ -70,7 +77,7 @@ function QuarterlyGrowthChip({ pct }: { pct: number | null }) {
           : 'text-red-300 border-red-500/30 bg-red-500/10'
       }`}
     >
-      <span aria-hidden="true">{positive ? '▲' : '▼'}</span>
+      <GameIcon name={positive ? 'arrow-up' : 'arrow-down'} size={10} />
       {positive ? '+' : ''}{pct.toFixed(1)}% net worth
     </span>
   );
@@ -147,9 +154,9 @@ function PublishToRegistry({ report }: { report: QuarterlyReport }) {
 
   if (status === 'published') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-        <span aria-hidden="true">📡</span> Published to Corporate Registry
-      </span>
+      <DataChip tone="good" icon="services" className="rounded-full px-2 py-1">
+        Published to Corporate Registry
+      </DataChip>
     );
   }
 
@@ -189,7 +196,7 @@ function PublishToRegistry({ report }: { report: QuarterlyReport }) {
       aria-busy={status === 'publishing'}
       className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition-colors disabled:opacity-50"
     >
-      <span aria-hidden="true">📡</span>
+      <GameIcon name="services" size={13} />
       {status === 'publishing' ? 'Publishing…' : status === 'error' ? 'Retry publish' : 'Publish to the SpaceNexus Corporate Registry (public)'}
     </button>
   );
@@ -201,16 +208,11 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
 
   if (reports.length === 0) {
     return (
-      <div className="hud-frame relative text-center py-16 rounded-xl border border-white/[0.06] bg-white/[0.02]">
-        <span className="hud-corner-bl" aria-hidden="true" />
-        <span className="hud-corner-br" aria-hidden="true" />
-        <div className="text-4xl mb-3">📊</div>
-        <h3 className="font-hud text-lg font-semibold text-white mb-1">No Quarterly Reports Yet</h3>
-        <p className="text-sm text-slate-400 max-w-md mx-auto">
-          Your first automatic corporate quarterly generates once a full in-game quarter (3 game-months) has elapsed
-          since founding — revenue, profit, net worth, and growth rate, all summarized here.
-        </p>
-      </div>
+      <ConsolePanel
+        title="No Quarterly Reports Yet"
+        icon="market"
+        subtitle="Your first automatic corporate quarterly generates once a full in-game quarter (3 game-months) has elapsed since founding — revenue, profit, net worth, and growth rate, all summarized here."
+      />
     );
   }
 
@@ -220,10 +222,7 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
   return (
     <div className="space-y-4">
       {/* Era timeline — one node per completed quarter */}
-      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-        <span className="hud-corner-bl" aria-hidden="true" />
-        <span className="hud-corner-br" aria-hidden="true" />
-        <h3 className="game-label mb-2">Corporate Era Timeline</h3>
+      <ConsolePanel title="Corporate Era Timeline" icon="cal-corporate-era" compact asH3>
         <div
           className="flex items-center gap-1.5 overflow-x-auto pb-1"
           role="list"
@@ -257,7 +256,7 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
         <p className="text-[10px] text-slate-500 mt-2">
           {reports.length} quarter{reports.length !== 1 ? 's' : ''} on record · latest is Q{reports[reports.length - 1].quarterNumber}, {formatGameDate(reports[reports.length - 1].gameDate)}
         </p>
-      </div>
+      </ConsolePanel>
 
       {/* Report cards, newest first */}
       <div className="space-y-2">
@@ -279,9 +278,9 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
                       Quarter {r.quarterNumber} Report
                     </h3>
                     {r.id === latestId && (
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300">
+                      <DataChip tone="warn" className="rounded-full font-bold uppercase tracking-wider">
                         Latest
-                      </span>
+                      </DataChip>
                     )}
                   </div>
                   <p className="text-[10px] text-slate-500 mt-0.5">{formatGameDate(r.gameDate)} · Tier {r.corporationTier}</p>
@@ -302,25 +301,25 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
                 <div className="px-3 pb-3 border-t border-white/[0.04]">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
                     <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2">
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Revenue</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Revenue</p>
                       <p className="game-number text-emerald-300 text-sm font-bold">{formatMoney(r.revenue)}</p>
                     </div>
                     <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-2">
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Costs</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Costs</p>
                       <p className="game-number text-red-300 text-sm font-bold">{formatMoney(r.costs)}</p>
                     </div>
                     <div className={`rounded-lg border p-2 ${r.profit >= 0 ? 'border-cyan-500/20 bg-cyan-500/5' : 'border-amber-500/20 bg-amber-500/5'}`}>
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Profit</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Profit</p>
                       <p className={`game-number text-sm font-bold ${r.profit >= 0 ? 'text-cyan-300' : 'text-amber-300'}`}>{formatMoney(r.profit)}</p>
                     </div>
                     <div className="rounded-lg border border-purple-500/20 bg-purple-500/5 p-2">
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Net Worth</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Net Worth</p>
                       <p className="game-number text-purple-300 text-sm font-bold">{formatMoney(r.netWorth)}</p>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-3 mt-2 text-[11px] text-slate-400">
-                    <span>🚀 {r.fleetCount} ship{r.fleetCount !== 1 ? 's' : ''}</span>
-                    <span>🏗️ {r.buildingCount} building{r.buildingCount !== 1 ? 's' : ''}</span>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    <DataChip icon="fleet">{r.fleetCount} ship{r.fleetCount !== 1 ? 's' : ''}</DataChip>
+                    <DataChip icon="build">{r.buildingCount} building{r.buildingCount !== 1 ? 's' : ''}</DataChip>
                   </div>
 
                   {/* Wave F (h): previously-invisible P&L lines. Older stored
@@ -414,250 +413,236 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
 
   // Top-level tab strip — shared between Mail and Quarterly sub-views
   const TopTabs = (
-    <div className="flex rounded-lg overflow-hidden border border-white/[0.06] w-fit" role="tablist" aria-label="Reports view">
+    <div className="game-tab-bar flex gap-1" role="tablist" aria-label="Reports view">
       <button
         type="button"
         role="tab"
         aria-selected={topTab === 'mail'}
         onClick={() => setTopTab('mail')}
-        className={`min-h-[44px] px-3 py-1.5 text-[11px] font-medium transition-colors ${
-          topTab === 'mail' ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          topTab === 'mail' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
         }`}
       >
-        📬 Mail{unreadCount > 0 ? ` (${unreadCount})` : ''}
+        <GameIcon name="reports" size={13} /> Mail{unreadCount > 0 ? ` (${unreadCount})` : ''}
       </button>
       <button
         type="button"
         role="tab"
         aria-selected={topTab === 'quarterly'}
         onClick={() => setTopTab('quarterly')}
-        className={`min-h-[44px] px-3 py-1.5 text-[11px] font-medium transition-colors ${
-          topTab === 'quarterly' ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          topTab === 'quarterly' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
         }`}
       >
-        📊 Quarterly{(state.quarterlyReports || []).length > 0 ? ` (${(state.quarterlyReports || []).length})` : ''}
+        <GameIcon name="market" size={13} /> Quarterly{(state.quarterlyReports || []).length > 0 ? ` (${(state.quarterlyReports || []).length})` : ''}
       </button>
     </div>
   );
 
-  if (topTab === 'quarterly') {
-    return (
-      <div className="space-y-3">
-        {TopTabs}
-        <QuarterlyReportsView state={state} />
-      </div>
-    );
-  }
-
-  if (reports.length === 0) {
-    return (
-      <div className="space-y-4">
-        {TopTabs}
-        <div className="hud-frame relative text-center py-16 rounded-xl border border-white/[0.06] bg-white/[0.02]">
-          <span className="hud-corner-bl" aria-hidden="true" />
-          <span className="hud-corner-br" aria-hidden="true" />
-          <div className="text-4xl mb-3">📬</div>
-          <h3 className="font-hud text-lg font-semibold text-white mb-1">No Reports Yet</h3>
-          <p className="text-sm text-slate-400 max-w-md mx-auto">
-            Send survey probes to explore locations. When they complete their expeditions, detailed discovery reports will appear here with rewards and recommendations.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-3">
-      {TopTabs}
-      {/* Header bar */}
-      <div className="hud-frame relative flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <span className="hud-corner-bl" aria-hidden="true" />
-        <span className="hud-corner-br" aria-hidden="true" />
-        <div className="flex items-center gap-3">
-          <h2 className="font-hud text-sm font-semibold text-white">📬 Reports &amp; Mail</h2>
-          {unreadCount > 0 && (
-            <span aria-live="polite" className="game-number px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              {unreadCount} unread
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Filter toggle */}
-          <div className="flex rounded-lg overflow-hidden border border-white/[0.06]">
-            <button
-              onClick={() => setFilter('all')}
-              aria-pressed={filter === 'all'}
-              className={`min-h-[44px] px-3 py-1 text-[10px] font-medium transition-colors ${
-                filter === 'all'
-                  ? 'bg-white/[0.08] text-white'
-                  : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
-              }`}
-            >
-              All ({reports.length})
-            </button>
-            <button
-              onClick={() => setFilter('unread')}
-              aria-pressed={filter === 'unread'}
-              className={`min-h-[44px] px-3 py-1 text-[10px] font-medium transition-colors ${
-                filter === 'unread'
-                  ? 'bg-white/[0.08] text-white'
-                  : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
-              }`}
-            >
-              Unread ({unreadCount})
-            </button>
-          </div>
-          {unreadCount > 0 && (
-            <button
-              onClick={onMarkAllRead}
-              className="min-h-[44px] px-2 py-1 text-[10px] text-slate-400 hover:text-cyan-400 transition-colors"
-            >
-              Mark all read
-            </button>
-          )}
-        </div>
-      </div>
+      <ConsolePanel
+        title="Reports & Mail"
+        icon="reports"
+        subtitle="Mission dispatches, discovery reports and automated quarterly corporate filings."
+        right={TopTabs}
+      />
 
-      {/* Reports list */}
-      {filteredReports.length === 0 && filter === 'unread' && (
-        <div className="text-center py-8">
-          <p className="text-sm text-slate-500">All reports have been read.</p>
-        </div>
-      )}
-
-      <div className="space-y-2">
-        {filteredReports.map(report => {
-          const isExpanded = expandedId === report.id;
-          const accent = getReportAccent(report.type);
-          const locName = report.locationId ? LOCATION_MAP.get(report.locationId)?.name : null;
-
-          return (
-            <div
-              key={report.id}
-              className="holo-row rounded-lg transition-all"
-              style={{
-                background: isExpanded ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
-                border: `1px solid ${!report.read ? accent + '40' : 'rgba(255,255,255,0.06)'}`,
-              }}
-            >
-              {/* Report header */}
-              <button
-                type="button"
-                onClick={() => handleExpand(report)}
-                aria-expanded={isExpanded}
-                className="w-full flex items-start gap-3 px-3 py-2.5 text-left"
-              >
-                {/* Unread indicator + icon */}
-                <div className="relative flex-shrink-0 mt-0.5">
-                  <span className="text-lg">{getReportIcon(report.type)}</span>
-                  {!report.read && (
-                    <span
-                      className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
-                      style={{ background: accent, boxShadow: `0 0 6px ${accent}` }}
-                    />
-                  )}
-                </div>
-
-                {/* Title + meta */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3
-                      className="text-xs font-semibold truncate"
-                      style={{ color: !report.read ? '#fff' : 'rgba(255,255,255,0.6)' }}
-                    >
-                      {report.title}
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    {locName && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)' }}>
-                        {locName}
-                      </span>
-                    )}
-                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                      {formatTimeAgo(report.createdAt)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Rewards summary (collapsed) */}
-                {!isExpanded && report.rewards && (
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {report.rewards.money && (
-                      <span className="game-number text-[10px] text-emerald-400">
-                        {formatRewardMoney(report.rewards.money)}
-                      </span>
-                    )}
-                    {report.rewards.miningBonus && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        Mining Bonus
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Expand chevron */}
-                <svg
-                  className={`w-4 h-4 transition-transform flex-shrink-0 mt-0.5 ${isExpanded ? 'rotate-180' : ''}`}
-                  style={{ color: 'rgba(255,255,255,0.3)' }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  aria-hidden="true"
+      {topTab === 'quarterly' ? (
+        <QuarterlyReportsView state={state} />
+      ) : reports.length === 0 ? (
+        <ConsolePanel
+          title="No Reports Yet"
+          icon="reports"
+          subtitle="Send survey probes to explore locations. When they complete their expeditions, detailed discovery reports will appear here with rewards and recommendations."
+        />
+      ) : (
+        <ConsolePanel
+          title="Mailbox"
+          icon="reports"
+          compact
+          right={
+            <>
+              {unreadCount > 0 && (
+                <span aria-live="polite" className="game-number px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                  {unreadCount} unread
+                </span>
+              )}
+              <div className="flex rounded-lg overflow-hidden border border-white/[0.06]">
+                <button
+                  onClick={() => setFilter('all')}
+                  aria-pressed={filter === 'all'}
+                  className={`min-h-[44px] px-3 py-1 text-[10px] font-medium transition-colors ${
+                    filter === 'all'
+                      ? 'bg-white/[0.08] text-white'
+                      : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+                  }`}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+                  All ({reports.length})
+                </button>
+                <button
+                  onClick={() => setFilter('unread')}
+                  aria-pressed={filter === 'unread'}
+                  className={`min-h-[44px] px-3 py-1 text-[10px] font-medium transition-colors ${
+                    filter === 'unread'
+                      ? 'bg-white/[0.08] text-white'
+                      : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+                  }`}
+                >
+                  Unread ({unreadCount})
+                </button>
+              </div>
+              {unreadCount > 0 && (
+                <button
+                  onClick={onMarkAllRead}
+                  className="min-h-[44px] px-2 py-1 text-[10px] text-slate-400 hover:text-cyan-400 transition-colors"
+                >
+                  Mark all read
+                </button>
+              )}
+            </>
+          }
+        >
+          {/* Reports list */}
+          {filteredReports.length === 0 && filter === 'unread' && (
+            <div className="text-center py-8">
+              <p className="text-sm text-slate-500">All reports have been read.</p>
+            </div>
+          )}
 
-              {/* Expanded body */}
-              {isExpanded && (
-                <div className="px-3 pb-3 border-t border-white/[0.04]">
-                  {/* Report body text */}
-                  <pre
-                    className="text-xs leading-relaxed mt-2 whitespace-pre-wrap font-sans"
-                    style={{ color: 'rgba(255,255,255,0.65)' }}
+          <div className="space-y-2">
+            {filteredReports.map(report => {
+              const isExpanded = expandedId === report.id;
+              const accent = getReportAccent(report.type);
+              const locName = report.locationId ? LOCATION_MAP.get(report.locationId)?.name : null;
+
+              return (
+                <div
+                  key={report.id}
+                  className="holo-row rounded-lg transition-all"
+                  style={{
+                    background: isExpanded ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
+                    border: `1px solid ${!report.read ? accent + '40' : 'rgba(255,255,255,0.06)'}`,
+                  }}
+                >
+                  {/* Report header */}
+                  <button
+                    type="button"
+                    onClick={() => handleExpand(report)}
+                    aria-expanded={isExpanded}
+                    className="w-full flex items-start gap-3 px-3 py-2.5 text-left"
                   >
-                    {report.body}
-                  </pre>
+                    {/* Unread indicator + icon */}
+                    <div className="relative flex-shrink-0 mt-0.5">
+                      <GameIcon name={REPORT_TYPE_ICON[report.type]} size={20} glow={REPORT_TYPE_GLOW[report.type]} />
+                      {!report.read && (
+                        <span
+                          className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
+                          style={{ background: accent, boxShadow: `0 0 6px ${accent}` }}
+                        />
+                      )}
+                    </div>
 
-                  {/* Rewards breakdown */}
-                  {report.rewards && (
-                    <div className="mt-3 p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">Rewards Received</p>
-                      <div className="flex flex-wrap gap-2">
-                        {report.rewards.money && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            💰 {formatRewardMoney(report.rewards.money)}
-                          </span>
+                    {/* Title + meta */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3
+                          className="text-xs font-semibold truncate"
+                          style={{ color: !report.read ? '#fff' : 'rgba(255,255,255,0.6)' }}
+                        >
+                          {report.title}
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {locName && (
+                          <DataChip tone="neutral">{locName}</DataChip>
                         )}
-                        {report.rewards.resources && Object.entries(report.rewards.resources).map(([resId, qty]) => {
-                          const res = RESOURCE_MAP.get(resId as ResourceId);
-                          return (
-                            <span
-                              key={resId}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                            >
-                              {res?.icon || '📦'} {qty} {res?.name || resId}
-                            </span>
-                          );
-                        })}
+                        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                          {formatTimeAgo(report.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Rewards summary (collapsed) */}
+                    {!isExpanded && report.rewards && (
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {report.rewards.money && (
+                          <DataChip tone="good" icon="money" className="game-number">
+                            {formatRewardMoney(report.rewards.money)}
+                          </DataChip>
+                        )}
                         {report.rewards.miningBonus && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            ⛏️ +{report.rewards.miningBonus.bonusPct}%{' '}
-                            {RESOURCE_MAP.get(report.rewards.miningBonus.resourceId as ResourceId)?.name || report.rewards.miningBonus.resourceId}{' '}
-                            for {report.rewards.miningBonus.durationMonths}mo
-                          </span>
+                          <DataChip tone="warn" icon="ship-mining">Mining Bonus</DataChip>
                         )}
                       </div>
+                    )}
+
+                    {/* Expand chevron */}
+                    <svg
+                      className={`w-4 h-4 transition-transform flex-shrink-0 mt-0.5 ${isExpanded ? 'rotate-180' : ''}`}
+                      style={{ color: 'rgba(255,255,255,0.3)' }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Expanded body */}
+                  {isExpanded && (
+                    <div className="px-3 pb-3 border-t border-white/[0.04]">
+                      {/* Report body text */}
+                      <pre
+                        className="text-xs leading-relaxed mt-2 whitespace-pre-wrap font-sans"
+                        style={{ color: 'rgba(255,255,255,0.65)' }}
+                      >
+                        {report.body}
+                      </pre>
+
+                      {/* Rewards breakdown */}
+                      {report.rewards && (
+                        <div className="mt-3 p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                          <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">Rewards Received</p>
+                          <div className="flex flex-wrap gap-2">
+                            {report.rewards.money && (
+                              <DataChip tone="good" icon="money" className="text-[11px] font-mono px-2 py-1">
+                                {formatRewardMoney(report.rewards.money)}
+                              </DataChip>
+                            )}
+                            {report.rewards.resources && Object.entries(report.rewards.resources).map(([resId, qty]) => {
+                              const res = RESOURCE_MAP.get(resId as ResourceId);
+                              return (
+                                <DataChip
+                                  key={resId}
+                                  tone="info"
+                                  icon={resolveIcon(res?.icon, 'package')}
+                                  className="text-[11px] font-mono px-2 py-1"
+                                >
+                                  {qty} {res?.name || resId}
+                                </DataChip>
+                              );
+                            })}
+                            {report.rewards.miningBonus && (
+                              <DataChip tone="warn" icon="ship-mining" className="text-[11px] px-2 py-1">
+                                +{report.rewards.miningBonus.bonusPct}%{' '}
+                                {RESOURCE_MAP.get(report.rewards.miningBonus.resourceId as ResourceId)?.name || report.rewards.miningBonus.resourceId}{' '}
+                                for {report.rewards.miningBonus.durationMonths}mo
+                              </DataChip>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
+        </ConsolePanel>
+      )}
     </div>
   );
 }

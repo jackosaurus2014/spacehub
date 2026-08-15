@@ -4,6 +4,20 @@
  * AAA-quality game CSS styles, animations, and visual effects.
  * Implements glassmorphism, neon glow, particle shimmer, and
  * cinematic micro-interactions for a premium game feel.
+ *
+ * Panel taxonomy (Wave V5, docs/VISUAL_DEPTH_2026-08.md §V5) — three tiers,
+ * codified as wrapper components in src/components/game/chrome.tsx so new
+ * surfaces compose instead of re-deriving Tailwind stacks by hand:
+ *   1. ConsolePanel — hud-frame + corner brackets + `.hub-section-header`
+ *      header band (icon + title + optional subtitle/right-slot) + optional
+ *      `.console-art-keyline` art backdrop. The top-level hub/section wrapper.
+ *   2. HoloCard — `.holo-card` game-panel surface + hover lift, for repeated
+ *      items inside a ConsolePanel (building cards, roster rows, queue items).
+ *   3. DataChip — small inline pill for a labeled stat/status readout,
+ *      replacing ad-hoc `text-[9px] px-1.5` chip spans.
+ * Type floor (rides with V8): display 18 / HUD 12 / body 11 / label 10 /
+ * micro 9 (tooltip-backed only) — nothing routed through chrome.tsx goes
+ * below 10px for load-bearing text.
  */
 export default function GameStyles() {
   return (
@@ -232,6 +246,14 @@ export default function GameStyles() {
 
       /* ═══════════════════════════════════════════════════════════════════
          TOOLTIPS — game-style with neon border
+         DEPRECATED (Wave V2, docs/VISUAL_DEPTH_2026-08.md §V2): superseded
+         by the portal-rendered <HoloTip> component (HoloTip.tsx) — a real
+         element instead of an attr(data-tooltip) ::before string, so it can
+         hold rich content and nested concept expansion. No remaining
+         consumers of .game-tooltip in src/ as of V2; kept here (unused,
+         harmless) rather than deleted in case an external/uncommitted
+         surface still references it — safe to remove in a follow-up sweep.
+         New tooltip adoption should use HoloTip, not this class.
          ═══════════════════════════════════════════════════════════════════ */
       .game-tooltip {
         position: relative;
@@ -912,6 +934,98 @@ export default function GameStyles() {
       }
 
       /* ═══════════════════════════════════════════════════════════════════
+         WAVE V5 — PANEL MATERIALITY UNIFICATION CHROME (chrome.tsx)
+         Shared header-band / keyline / card classes consumed by
+         <ConsolePanel>/<HoloCard>/<DataChip> so every hub + LS surface reads
+         as the same command-center console instead of re-deriving its own
+         Tailwind stack. Type floor here matches V8's documented scale
+         (display 18 / HUD 12 / body 11 / label 10) — no 8-9px load-bearing
+         text in anything routed through these classes.
+         ═══════════════════════════════════════════════════════════════════ */
+      .hub-section-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .hub-section-header-compact {
+        padding-bottom: 6px;
+        margin-bottom: 8px;
+        align-items: center;
+      }
+      .hub-section-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: rgba(6, 182, 212, 0.08);
+        border: 1px solid rgba(6, 182, 212, 0.15);
+        color: #22d3ee;
+      }
+      .hub-section-header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+      }
+
+      /* Faint full-bleed art keyline behind a ConsolePanel — region banners,
+         system vistas. Always decorative (alt=""); content sits on a dark
+         wash so text contrast never depends on the image. */
+      .console-art-keyline {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        border-radius: inherit;
+      }
+      .console-art-keyline img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.16;
+      }
+      .console-art-keyline::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(5,5,16,0.55) 0%, rgba(5,5,16,0.88) 70%, rgba(5,5,16,0.96) 100%);
+      }
+
+      /* HoloCard hover lift — mirrors .game-card but scoped so chrome.tsx
+         doesn't have to also apply .game-card by hand. */
+      .holo-card {
+        transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1), border-color 0.2s ease, background 0.2s ease;
+      }
+      @media (hover: hover) {
+        button.holo-card:hover, div.holo-card[role="button"]:hover {
+          background: rgba(255, 255, 255, 0.035);
+        }
+      }
+      @media (max-width: 640px) {
+        .hub-section-header {
+          padding-bottom: 8px;
+          margin-bottom: 8px;
+        }
+        .hub-section-icon {
+          width: 26px;
+          height: 26px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .holo-card { transition: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
          WAVE 7 — REDUCED MOTION GUARDS for animation classes defined above
          that predate the prefers-reduced-motion sweep. Disabling the
          animation leaves the element at its default (fully visible, no
@@ -936,6 +1050,40 @@ export default function GameStyles() {
         .phase-track-node-current {
           animation: none !important;
         }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE V2 — HOLOTIP: unified tooltip + nested concept layer
+         (docs/VISUAL_DEPTH_2026-08.md §V2). Portal-rendered panel — see
+         HoloTip.tsx. Self-contained reduced-motion guard (does not need to
+         join the WAVE 7 list above since it's a new class, not a legacy one).
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes holotip-pop-in {
+        from { opacity: 0; transform: scale(0.96) translateY(4px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      .holotip-panel {
+        animation: holotip-pop-in 0.12s ease-out both;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .holotip-panel { animation: none; }
+      }
+      .holotip-trigger {
+        cursor: pointer;
+      }
+      .holotip-trigger:focus-visible {
+        outline: 1.5px solid rgba(34, 211, 238, 0.6);
+        outline-offset: 2px;
+        border-radius: 3px;
+      }
+      .holo-concept-term {
+        text-decoration: underline dotted rgba(34, 211, 238, 0.55);
+        text-underline-offset: 2px;
+        color: #67e8f9;
+      }
+      .holo-concept-term:hover,
+      .holo-concept-term:focus-visible {
+        color: #a5f3fc;
       }
     `}</style>
   );

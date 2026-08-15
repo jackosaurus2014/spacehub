@@ -13,6 +13,7 @@ import { playSound } from '@/lib/game/sound-engine';
 import { toast } from '@/lib/toast';
 import GameIcon from '@/components/game/GameIcon';
 import { resolveIcon, type IconName } from '@/lib/game/icons';
+import HoloTip, { Concept } from '@/components/game/HoloTip';
 
 // V1: medal tiers are shape-distinct (medal vs medal-outline for the
 // unearned "filed" state) — color (MEDAL_COLOR below) is reinforcement
@@ -158,7 +159,9 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
     <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
-      <p className="font-hud text-white text-xs font-bold mb-1 uppercase tracking-wider">Corporate Eras</p>
+      <p className="font-hud text-white text-xs font-bold mb-1 uppercase tracking-wider">
+        <Concept id="era-charter">Corporate Eras</Concept>
+      </p>
       <p className="text-[10px] text-slate-500 mb-3">
         Charter a 90-real-day epoch with a declared focus. A bonus and a malus, paired — never a free win. Finished
         eras earn a permanent medal and can be published to your public Chronicle.
@@ -170,18 +173,33 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
             <span className="text-[12px] text-white font-semibold flex items-center gap-1.5">
               <GameIcon name={resolveIcon(progress.charter.icon, 'scroll')} size={12} /> {progress.charter.name}
             </span>
-            <span className={`text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[progress.liveMedal]}`}>
-              <GameIcon name={MEDAL_ICON[progress.liveMedal] || 'medal'} size={11} /> Currently {ERA_MEDAL_LABEL[progress.liveMedal]}
-            </span>
+            <HoloTip
+              underline={false}
+              content={{ title: 'Era Medal', icon: 'medal', body: <Concept id="era-medal" /> }}
+            >
+              <span className={`text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[progress.liveMedal]}`}>
+                <GameIcon name={MEDAL_ICON[progress.liveMedal] || 'medal'} size={11} /> Currently {ERA_MEDAL_LABEL[progress.liveMedal]}
+              </span>
+            </HoloTip>
           </div>
           <p className="text-[10px] text-slate-400 mb-2">{progress.charter.tagline}</p>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-              {formatFocusTerm(progress.charter.bonus)}
-            </span>
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-300">
-              {formatFocusTerm(progress.charter.malus)}
-            </span>
+            <HoloTip
+              underline={false}
+              content={{ title: 'Era Bonus', icon: 'trending-up', iconGlow: 'green', body: 'The upside half of this era\'s charter — always paired with a stated malus below. See Era Charter for the full trade-off design.' }}
+            >
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                {formatFocusTerm(progress.charter.bonus)}
+              </span>
+            </HoloTip>
+            <HoloTip
+              underline={false}
+              content={{ title: 'Era Malus', icon: 'trending-down', iconGlow: 'red', body: 'The stated cost of this era\'s charter — every chartered bonus is paired with a malus, never a free win.' }}
+            >
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-300">
+                {formatFocusTerm(progress.charter.malus)}
+              </span>
+            </HoloTip>
           </div>
 
           <div className="mb-2">
@@ -276,9 +294,14 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
                   <span className="text-[10px] text-white font-medium flex items-center gap-1.5">
                     <GameIcon name={resolveIcon(charter?.icon, 'governance')} size={12} /> Era {era.eraIndex + 1}: {charter?.name || era.charterId}
                   </span>
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[era.medal]}`}>
-                    <GameIcon name={MEDAL_ICON[era.medal] || 'medal'} size={11} /> {ERA_MEDAL_LABEL[era.medal]}
-                  </span>
+                  <HoloTip
+                    underline={false}
+                    content={{ title: 'Era Medal', icon: 'medal', body: <Concept id="era-medal" /> }}
+                  >
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[era.medal]}`}>
+                      <GameIcon name={MEDAL_ICON[era.medal] || 'medal'} size={11} /> {ERA_MEDAL_LABEL[era.medal]}
+                    </span>
+                  </HoloTip>
                 </div>
                 {charter && (
                   <p className="text-[9px] text-slate-500 mb-1.5">

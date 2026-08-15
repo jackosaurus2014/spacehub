@@ -19,6 +19,9 @@ import {
   type EconomicCycle,
   type CompetitiveContract,
 } from '@/lib/game/economic-systems';
+import { ConsolePanel } from './chrome';
+import GameIcon from './GameIcon';
+import { resourceCategoryIcon, type IconName } from '@/lib/game/icons';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,19 +39,19 @@ type EconomyTab = 'cycle' | 'contracts' | 'reputation' | 'scarcity';
 
 // ─── Static Display Meta ─────────────────────────────────────────────────────
 
-const PHASE_META: Record<EconomicCycle['phase'], { icon: string; label: string; accent: string; bar: string; badge: string }> = {
-  boom: { icon: '📈', label: 'Boom', accent: 'text-green-400', bar: 'bg-green-500', badge: 'bg-green-500/15 text-green-300 border-green-500/30' },
-  growth: { icon: '🌱', label: 'Growth', accent: 'text-cyan-400', bar: 'bg-cyan-500', badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30' },
-  stable: { icon: '⚖️', label: 'Stable', accent: 'text-slate-300', bar: 'bg-slate-400', badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30' },
-  contraction: { icon: '📉', label: 'Contraction', accent: 'text-amber-400', bar: 'bg-amber-500', badge: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
-  recession: { icon: '🔻', label: 'Recession', accent: 'text-red-400', bar: 'bg-red-500', badge: 'bg-red-500/15 text-red-300 border-red-500/30' },
+const PHASE_META: Record<EconomicCycle['phase'], { icon: IconName; label: string; accent: string; bar: string; badge: string }> = {
+  boom: { icon: 'trending-up', label: 'Boom', accent: 'text-green-400', bar: 'bg-green-500', badge: 'bg-green-500/15 text-green-300 border-green-500/30' },
+  growth: { icon: 'arrow-up', label: 'Growth', accent: 'text-cyan-400', bar: 'bg-cyan-500', badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30' },
+  stable: { icon: 'balance', label: 'Stable', accent: 'text-slate-300', bar: 'bg-slate-400', badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30' },
+  contraction: { icon: 'trending-down', label: 'Contraction', accent: 'text-amber-400', bar: 'bg-amber-500', badge: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+  recession: { icon: 'arrow-down', label: 'Recession', accent: 'text-red-400', bar: 'bg-red-500', badge: 'bg-red-500/15 text-red-300 border-red-500/30' },
 };
 
-const CATEGORY_META: Record<CompetitiveContract['category'], { icon: string; accent: string }> = {
-  government: { icon: '🏛️', accent: 'border-cyan-500/40 bg-cyan-500/5 text-cyan-300' },
-  commercial: { icon: '💼', accent: 'border-emerald-500/40 bg-emerald-500/5 text-emerald-300' },
-  scientific: { icon: '🔬', accent: 'border-purple-500/40 bg-purple-500/5 text-purple-300' },
-  military: { icon: '🛡️', accent: 'border-red-500/40 bg-red-500/5 text-red-300' },
+const CATEGORY_META: Record<CompetitiveContract['category'], { icon: IconName; accent: string }> = {
+  government: { icon: 'governance', accent: 'border-cyan-500/40 bg-cyan-500/5 text-cyan-300' },
+  commercial: { icon: 'handshake', accent: 'border-emerald-500/40 bg-emerald-500/5 text-emerald-300' },
+  scientific: { icon: 'science', accent: 'border-purple-500/40 bg-purple-500/5 text-purple-300' },
+  military: { icon: 'shield', accent: 'border-red-500/40 bg-red-500/5 text-red-300' },
 };
 
 // ─── Helpers (display-only — the engine functions themselves are untouched) ──
@@ -173,59 +176,53 @@ export default function EconomyPanel({ state }: Props) {
   return (
     <div className="space-y-4">
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <div className={`hud-frame relative rounded-xl border p-4 ${
-        currentCycle.phase === 'boom' || currentCycle.phase === 'growth' ? 'hud-frame-amber border-cyan-500/20 bg-cyan-500/5' :
-        currentCycle.phase === 'recession' || currentCycle.phase === 'contraction' ? 'hud-frame-red border-red-500/20 bg-red-500/5' :
-        'border-white/[0.06] bg-white/[0.02]'
-      }`}>
-        <span className="hud-corner-bl" aria-hidden="true" />
-        <span className="hud-corner-br" aria-hidden="true" />
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-          <div>
-            <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
-              <span className="text-cyan-400">🌐</span> Economic Systems
-            </h2>
-            <p className="text-slate-500 text-xs mt-1 max-w-lg">
-              The galactic economy moves through boom-to-recession cycles that scale everyone&apos;s revenue and
-              costs, government contracts reward capability build-out, and reputation unlocks access &amp; pricing.
-            </p>
-          </div>
+      <ConsolePanel
+        title="Economic Systems"
+        icon="globe"
+        subtitle="The galactic economy moves through boom-to-recession cycles that scale everyone's revenue and costs, government contracts reward capability build-out, and reputation unlocks access & pricing."
+        accent={
+          currentCycle.phase === 'boom' || currentCycle.phase === 'growth' ? 'amber' :
+          currentCycle.phase === 'recession' || currentCycle.phase === 'contraction' ? 'red' : 'cyan'
+        }
+        right={
           <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold shrink-0 ${PHASE_META[currentCycle.phase].badge}`}>
-            <span aria-hidden="true">{PHASE_META[currentCycle.phase].icon}</span>
+            <GameIcon name={PHASE_META[currentCycle.phase].icon} size={13} />
             {PHASE_META[currentCycle.phase].label} Phase
           </div>
+        }
+      >
+        {/* ── Sub-Tab Navigation ─────────────────────────────────────────────── */}
+        <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto" role="tablist" aria-label="Economic Systems view">
+          {([
+            { id: 'cycle' as EconomyTab, label: 'Economic Cycle', icon: 'restart' as IconName },
+            { id: 'contracts' as EconomyTab, label: `Gov Contracts (${GOVERNMENT_CONTRACTS.length})`, icon: 'governance' as IconName },
+            { id: 'reputation' as EconomyTab, label: 'Reputation', icon: 'medal' as IconName },
+            { id: 'scarcity' as EconomyTab, label: 'Scarcity', icon: 'ship-mining' as IconName },
+          ]).map(t => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.id}
+              onClick={() => setTab(t.id)}
+              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                tab === t.id
+                  ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                  : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <GameIcon name={t.icon} size={13} /> {t.label}
+            </button>
+          ))}
         </div>
-      </div>
-
-      {/* ── Sub-Tab Navigation ─────────────────────────────────────────────── */}
-      <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto">
-        {([
-          { id: 'cycle' as EconomyTab, label: 'Economic Cycle', icon: '🔄' },
-          { id: 'contracts' as EconomyTab, label: `Gov Contracts (${GOVERNMENT_CONTRACTS.length})`, icon: '🏛️' },
-          { id: 'reputation' as EconomyTab, label: 'Reputation', icon: '🎖️' },
-          { id: 'scarcity' as EconomyTab, label: 'Scarcity', icon: '⛏️' },
-        ]).map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
-              tab === t.id
-                ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
-            }`}
-          >
-            {t.icon} {t.label}
-          </button>
-        ))}
-      </div>
+      </ConsolePanel>
 
       {/* ── ECONOMIC CYCLE ──────────────────────────────────────────────────── */}
       {tab === 'cycle' && (
         <div className="space-y-4">
           {/* Current phase multipliers */}
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <h3 className="text-white font-semibold text-sm mb-3">Active Multipliers</h3>
-            <div className="grid grid-cols-3 gap-2">
+          <ConsolePanel title="Active Multipliers" icon="activity" compact asH3>
+            <div className="grid grid-cols-3 gap-2 mt-2">
               <div className="bg-white/[0.03] rounded-lg p-3 text-center">
                 <p className="text-slate-500 text-[10px] uppercase tracking-wider">Revenue</p>
                 <p className={`font-bold text-lg ${currentCycle.revenueMultiplier >= 1 ? 'text-green-400' : 'text-red-400'}`}>
@@ -249,12 +246,11 @@ export default function EconomyPanel({ state }: Props) {
               Month {phaseProgress.monthsElapsedInPhase + 1} of {currentCycle.durationMonths} in this phase —
               {' '}{phaseProgress.monthsRemainingInPhase} month{phaseProgress.monthsRemainingInPhase === 1 ? '' : 's'} remaining
             </p>
-          </div>
+          </ConsolePanel>
 
           {/* Cycle track — season-node style, mirrors Mega-Project phase segments */}
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <h3 className="text-white font-semibold text-sm mb-3">Cycle Track</h3>
-            <div className="flex gap-1">
+          <ConsolePanel title="Cycle Track" icon="restart" compact asH3>
+            <div className="flex gap-1 mt-2">
               {ECONOMIC_CYCLES.map(cycle => {
                 const isCurrent = cycle.phase === currentCycle.phase;
                 const pct = isCurrent
@@ -263,8 +259,8 @@ export default function EconomyPanel({ state }: Props) {
                 const meta = PHASE_META[cycle.phase];
                 return (
                   <div key={cycle.phase} className="flex-1 min-w-0">
-                    <div className={`text-[10px] text-center mb-0.5 truncate ${isCurrent ? meta.accent + ' font-bold' : 'text-slate-500'}`}>
-                      {meta.icon} {meta.label}
+                    <div className={`text-[10px] text-center mb-0.5 truncate flex items-center justify-center gap-1 ${isCurrent ? meta.accent + ' font-bold' : 'text-slate-500'}`}>
+                      <GameIcon name={meta.icon} size={11} /> {meta.label}
                     </div>
                     <div className={`season-node h-2 bg-slate-800 rounded-full overflow-hidden border border-white/[0.04] ${isCurrent ? 'season-node-current' : ''}`}>
                       <div
@@ -272,7 +268,7 @@ export default function EconomyPanel({ state }: Props) {
                         style={{ width: `${isCurrent ? pct : 0}%` }}
                       />
                     </div>
-                    <div className="text-[9px] text-slate-600 text-center mt-0.5">{cycle.durationMonths}mo</div>
+                    <div className="text-[10px] text-slate-600 text-center mt-0.5">{cycle.durationMonths}mo</div>
                   </div>
                 );
               })}
@@ -280,7 +276,7 @@ export default function EconomyPanel({ state }: Props) {
             <p className="text-slate-600 text-[10px] mt-3 text-center">
               The economy cycles deterministically through all five phases on a repeating {ECONOMIC_CYCLES.reduce((s, c) => s + c.durationMonths, 0)}-month clock, affecting every player equally.
             </p>
-          </div>
+          </ConsolePanel>
         </div>
       )}
 
@@ -303,21 +299,21 @@ export default function EconomyPanel({ state }: Props) {
                 >
                   <span className="dossier-stamp" aria-hidden="true">{met ? 'Eligible' : 'Locked'}</span>
                   <div className="flex items-start gap-2 mb-2 pr-14">
-                    <span className="w-8 h-8 flex items-center justify-center text-sm bg-black/30 rounded border border-white/[0.08] shrink-0" aria-hidden="true">
-                      {meta.icon}
+                    <span className="w-8 h-8 flex items-center justify-center bg-black/30 rounded border border-white/[0.08] shrink-0">
+                      <GameIcon name={meta.icon} size={16} />
                     </span>
                     <div className="min-w-0">
-                      <div className="text-[9px] uppercase tracking-wider font-bold opacity-80">{contract.category}</div>
+                      <div className="text-[10px] uppercase tracking-wider font-bold opacity-80">{contract.category}</div>
                       <h3 className="text-white text-sm font-bold leading-tight">{contract.title}</h3>
                     </div>
                   </div>
                   <p className="text-slate-400 text-[11px] leading-relaxed mb-2">{contract.description}</p>
 
                   <div className="rounded bg-black/30 p-2 mb-2 space-y-0.5">
-                    <div className="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-1">Requirements</div>
+                    <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Requirements</div>
                     {details.map((d, i) => (
                       <div key={i} className="flex items-center gap-1.5 text-[10px]">
-                        <span aria-hidden="true">{d.met ? '✓' : '○'}</span>
+                        <GameIcon name={d.met ? 'check' : 'lock'} size={11} />
                         <span className={d.met ? 'text-green-300' : 'text-slate-400'}>{d.label}</span>
                       </div>
                     ))}
@@ -346,8 +342,8 @@ export default function EconomyPanel({ state }: Props) {
             <span className="hud-corner-bl" aria-hidden="true" />
             <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-lg" aria-hidden="true">
-                🎖️
+              <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                <GameIcon name="medal" size={22} glow="amber" />
               </div>
               <div>
                 <p className="text-amber-300 font-bold text-lg">{repTier.name}</p>
@@ -375,9 +371,8 @@ export default function EconomyPanel({ state }: Props) {
             )}
           </div>
 
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <h3 className="text-white text-sm font-semibold mb-3">Reputation Ladder</h3>
-            <div className="space-y-2">
+          <ConsolePanel title="Reputation Ladder" icon="leaderboard" compact asH3>
+            <div className="space-y-2 mt-2">
               {REPUTATION_TIERS.map((tier, i) => {
                 const reached = i <= repTierIndex;
                 const isCurrent = i === repTierIndex;
@@ -393,7 +388,7 @@ export default function EconomyPanel({ state }: Props) {
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
                       reached ? 'bg-green-500 text-white' : 'bg-slate-700 text-slate-500'
                     }`}>
-                      {reached ? '✓' : i}
+                      {reached ? <GameIcon name="check" size={12} /> : i}
                     </span>
                     <div className="flex-1 min-w-0">
                       <span className={`font-medium ${isCurrent ? 'text-amber-300' : reached ? 'text-green-400' : 'text-slate-500'}`}>
@@ -408,19 +403,18 @@ export default function EconomyPanel({ state }: Props) {
                 );
               })}
             </div>
-          </div>
+          </ConsolePanel>
         </div>
       )}
 
       {/* ── SCARCITY HEAT-LIST ──────────────────────────────────────────────── */}
       {tab === 'scarcity' && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <h3 className="text-white text-sm font-semibold mb-1">Most-Scarce Resources</h3>
-          <p className="text-slate-500 text-[10px] mb-3">
-            Ranked by live market supply vs. baseline, run through the same Abundant → Exhausted tier curve mining
-            depletion uses. Lower output multiplier means every unit is harder to extract profitably right now.
-          </p>
-          <div className="space-y-2">
+        <ConsolePanel
+          title="Most-Scarce Resources"
+          icon="ship-mining"
+          subtitle="Ranked by live market supply vs. baseline, run through the same Abundant → Exhausted tier curve mining depletion uses. Lower output multiplier means every unit is harder to extract profitably right now."
+        >
+          <div className="space-y-2 mt-2">
             {scarcityList.map(item => {
               const pct = Math.round(item.multiplier * 100);
               const barColor = item.multiplier >= 0.85 ? 'bg-green-500' :
@@ -430,9 +424,9 @@ export default function EconomyPanel({ state }: Props) {
                 <div key={item.resource.id} className="holo-row flex items-center gap-3 p-2 rounded-lg">
                   <div className="sprite-frame w-8 h-8 flex-shrink-0 flex items-center justify-center">
                     {RESOURCE_ASSETS[item.resource.id] ? (
-                      <Image src={RESOURCE_ASSETS[item.resource.id]} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover" />
+                      <Image src={RESOURCE_ASSETS[item.resource.id]} alt="" width={32} height={32} loading="lazy" className="w-8 h-8 rounded object-cover" />
                     ) : (
-                      <span className="text-sm">{item.resource.icon}</span>
+                      <GameIcon name={resourceCategoryIcon(item.resource.category)} size={16} />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -453,7 +447,7 @@ export default function EconomyPanel({ state }: Props) {
               );
             })}
           </div>
-        </div>
+        </ConsolePanel>
       )}
     </div>
   );

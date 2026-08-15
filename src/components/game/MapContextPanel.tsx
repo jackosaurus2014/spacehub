@@ -44,6 +44,7 @@ import {
   getRouteDeltaV,
 } from '@/lib/game/cargo-logistics';
 import CargoLoader from './CargoLoader';
+import { Concept } from './HoloTip';
 import { playSound } from '@/lib/game/sound-engine';
 import { REGION_LABELS } from './SolarSystemCanvas';
 import { SYSTEM_RISK_META, RISK_TONE_CLASS } from './GalacticMapView';
@@ -649,10 +650,10 @@ function DispatchBody({
             <div className="text-[11px] text-slate-300">
               ETA: <span className="text-cyan-300 font-mono">{formatDuration(eta)}</span>
               {isBoosted && <span className="text-cyan-300 ml-1" aria-label="speed boosted by modules, specialization, or workforce">⚡ boosted</span>}
-              <span className="text-slate-500"> · Δv {deltaV.toLocaleString()} m/s</span>
+              <span className="text-slate-500"> · <Concept id="delta-v">Δv {deltaV.toLocaleString()} m/s</Concept></span>
             </div>
             <div className="text-[11px] text-slate-300">
-              Fuel bill: <span className={`font-mono ${canAffordFuel ? 'text-amber-300' : 'text-red-300'}`}>{formatMoney(fuelCost)}</span>
+              <Concept id="freight-cost">Fuel bill</Concept>: <span className={`font-mono ${canAffordFuel ? 'text-amber-300' : 'text-red-300'}`}>{formatMoney(fuelCost)}</span>
               <span className="text-slate-600"> — logistics cost money; fuel scales with route Δv and load.</span>
             </div>
             {overCapacity && (

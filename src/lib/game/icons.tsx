@@ -70,7 +70,8 @@ export type IconName =
   | 'trending-down' | 'handshake' | 'package' | 'target' | 'swords'
   | 'scroll' | 'sparkle' | 'external-link' | 'arrow-up' | 'arrow-down'
   | 'calendar' | 'clock' | 'shield' | 'city' | 'comet' | 'cargo-truck'
-  | 'lock' | 'idea' | 'balance' | 'alien';
+  | 'lock' | 'idea' | 'balance' | 'alien' | 'archive' | 'globe' | 'wrench' | 'idle'
+  | 'edit' | 'power' | 'npc';
 
 type El =
   | { e: 'path'; d: string; fill?: 'currentColor' | 'none' }
@@ -234,6 +235,13 @@ export const ICONS: Record<IconName, IconDef> = {
   idea: { meaning: 'Suggestion / tip', els: [p('M9 18h6'), p('M10 21h4'), p('M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z')] },
   balance: { meaning: 'Governed by corporate doctrine', els: [l(12, 3, 12, 19), l(6, 7, 18, 7), p('M6 7l-3 6a3 3 0 0 0 6 0z'), p('M18 7l-3 6a3 3 0 0 0 6 0z'), l(9, 20, 15, 20)] },
   alien: { meaning: 'First contact / extraterrestrial', els: [p('M12 3C7 3 4 7 4 11c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10 0-4-3-8-8-8z'), c(9, 11, 1.2, 'currentColor'), c(15, 11, 1.2, 'currentColor')] },
+  archive: { meaning: 'Historical registry / archive', els: [r(4, 4, 16, 5, 1), r(5, 9, 14, 11, 1), l(10, 12, 14, 12)] },
+  globe: { meaning: 'Global / economy-wide scope', els: [c(12, 12, 9, 'none'), p('M3 12h18'), p('M12 3c3 2.5 4.5 6 4.5 9s-1.5 6.5-4.5 9c-3-2.5-4.5-6-4.5-9s1.5-6.5 4.5-9z')] },
+  wrench: { meaning: 'Repair / maintenance action', els: [p('M14.5 3a4.5 4.5 0 0 0-5.7 5.7L3 14.5 6.5 18l5.8-5.8A4.5 4.5 0 0 0 18 6.5l-3 3-2.5-2.5z')] },
+  idle: { meaning: 'Idle / awaiting orders', els: [p('M19 13a7 7 0 1 1-8-9.9A7 7 0 0 0 19 13z')] },
+  edit: { meaning: 'Edit / rename', els: [p('M15 3l6 6-11 11H4v-6z'), l(14, 4, 20, 10)] },
+  power: { meaning: 'Electrical power / energy grid', els: [pg('13,2 4,14 11,14 9,22 20,9 12,9 13,2')] },
+  npc: { meaning: 'Automated NPC / AI-driven activity', els: [r(6, 8, 12, 9, 2), l(9, 8, 9, 5), l(15, 8, 15, 5), c(9.5, 12.5, 1, 'currentColor'), c(14.5, 12.5, 1, 'currentColor'), l(3, 12, 6, 12), l(18, 12, 21, 12)] },
 };
 
 /** Best-effort emoji → IconName bridge for data-sourced glyphs (season

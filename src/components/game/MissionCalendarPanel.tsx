@@ -23,6 +23,7 @@ import {
 import type { UpcomingLaunchLite } from '@/lib/game/real-world-feed';
 import GameIcon from '@/components/game/GameIcon';
 import { calendarCategoryIcon } from '@/lib/game/icons';
+import HoloTip, { Concept } from '@/components/game/HoloTip';
 
 const POLL_MS = 5 * 60 * 1000; // matches world-feed route's 5-minute cache TTL
 const TICK_MS = 30 * 1000; // countdown refresh — text only, no animation
@@ -64,6 +65,17 @@ const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
 };
 const FALLBACK_CATEGORY_LABEL = 'Event';
 const FALLBACK_CATEGORY_FRAME = 'border-slate-500/25 bg-slate-500/[0.03]';
+
+// V2: not every calendar category maps to a glossary concept (some, like
+// real_launch or queue, are self-explanatory from their row content) — only
+// wire the ones with a documented mechanic behind them.
+const CATEGORY_CONCEPT: Partial<Record<CalendarCategory, string>> = {
+  senate: 'senate-docket',
+  economic_cycle: 'super-cycle',
+  corporate_era: 'era-charter',
+  alliance_charter: 'alliance-charter',
+  queue: 'command-queue',
+};
 
 function formatCountdown(msRemaining: number): string {
   if (msRemaining <= 0) return 'Now';
@@ -244,7 +256,13 @@ function CalendarRow({ entry, now, compact }: { entry: CalendarEntry; now: numbe
           sourced from this file's own registry. */}
       <span className="shrink-0"><GameIcon name={calendarCategoryIcon(entry.category)} size={16} /></span>
       <span className="min-w-0 flex-1">
-        <span className="game-label mr-2">{CATEGORY_LABEL[entry.category] ?? FALLBACK_CATEGORY_LABEL}</span>
+        {CATEGORY_CONCEPT[entry.category] ? (
+          <Concept id={CATEGORY_CONCEPT[entry.category]!}>
+            <span className="game-label mr-2">{CATEGORY_LABEL[entry.category] ?? FALLBACK_CATEGORY_LABEL}</span>
+          </Concept>
+        ) : (
+          <span className="game-label mr-2">{CATEGORY_LABEL[entry.category] ?? FALLBACK_CATEGORY_LABEL}</span>
+        )}
         <span className="text-slate-200">{entry.title}</span>
         {!compact && entry.detail && (
           <span className="block text-slate-500 text-[10px] mt-0.5">{entry.detail}</span>

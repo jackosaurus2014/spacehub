@@ -29,6 +29,7 @@ import { getAwayEfficiencyInvestmentBonus, getAwayEfficiencyTierForHours } from 
 import { playSound } from '@/lib/game/sound-engine';
 import GameIcon from '@/components/game/GameIcon';
 import type { IconName } from '@/lib/game/icons';
+import HoloTip, { Concept } from '@/components/game/HoloTip';
 
 interface StandingOrdersPanelProps {
   state: GameState;
@@ -119,7 +120,9 @@ export default function StandingOrdersPanel({ state, onUpdateState }: StandingOr
       <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
-        <p className="text-cyan-300 text-xs uppercase tracking-wider font-semibold mb-2">Away Efficiency</p>
+        <p className="text-cyan-300 text-xs uppercase tracking-wider font-semibold mb-2">
+          <Concept id="away-efficiency">Away Efficiency</Concept>
+        </p>
         <p className="text-slate-400 text-xs mb-3">
           No time cap — longer absences run your economy at a lower rate instead of freezing it. Automation research and workforce mix raise the ceiling.
         </p>
@@ -147,7 +150,9 @@ export default function StandingOrdersPanel({ state, onUpdateState }: StandingOr
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-2">
-          <p className="text-cyan-300 text-xs uppercase tracking-wider font-semibold">Command Queue</p>
+          <p className="text-cyan-300 text-xs uppercase tracking-wider font-semibold">
+            <Concept id="command-queue">Command Queue</Concept>
+          </p>
           <span className="game-number text-xs text-slate-400">{queue.length}/{capacity} slots</span>
         </div>
 
@@ -234,10 +239,25 @@ export default function StandingOrdersPanel({ state, onUpdateState }: StandingOr
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-2">
-          <p className="text-cyan-300 text-xs uppercase tracking-wider font-semibold">Standing Directives</p>
-          <span className={`game-number text-xs ${currentFee > 0 ? 'text-red-400' : 'text-slate-400'}`}>
-            {formatMoney(currentFee)}/mo ops overhead
-          </span>
+          <p className="text-cyan-300 text-xs uppercase tracking-wider font-semibold">
+            <Concept id="standing-directive">Standing Directives</Concept>
+          </p>
+          <HoloTip
+            underline={false}
+            content={{
+              title: 'Directive Ops Fee',
+              icon: 'money',
+              body: <Concept id="directive-ops-fee" />,
+              rows: [
+                { label: 'Current (all active)', value: `${formatMoney(currentFee)}/mo` },
+                { label: 'Next directive would cost', value: `${formatMoney(nextFee)}/mo` },
+              ],
+            }}
+          >
+            <span className={`game-number text-xs ${currentFee > 0 ? 'text-red-400' : 'text-slate-400'}`}>
+              {formatMoney(currentFee)}/mo ops overhead
+            </span>
+          </HoloTip>
         </div>
         <p className="text-slate-500 text-[10px] mb-3">
           Priced automation — each active directive raises the overhead fee for ALL of them (superlinear). Automating everything is never free.

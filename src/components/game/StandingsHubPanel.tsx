@@ -16,6 +16,9 @@ import LeaderboardPanel from './LeaderboardPanel';
 import RivalsPanel from './RivalsPanel';
 import HeritageRegistryPanel from './HeritageRegistryPanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
+import { ConsolePanel } from './chrome';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface StandingsHubPanelProps {
   state: GameState;
@@ -33,31 +36,35 @@ export default function StandingsHubPanel({ state }: StandingsHubPanelProps) {
   // Heritage Registry is flavor/browse-only (real-company-derived NPC
   // dossiers, no economic stakes), so it's available from tier 1 — unlike
   // Leagues/Rivals it never needs a LockedSubtabNotice.
-  const tabs: { id: StandingsTab; label: string; icon: string; locked: boolean }[] = [
-    { id: 'leagues', label: 'Leagues', icon: '🏅', locked: !leaguesUnlocked },
-    { id: 'ranks', label: 'Ranks', icon: '🏆', locked: false },
-    { id: 'rivals', label: 'Rivals', icon: '⚔️', locked: !rivalsUnlocked },
-    { id: 'heritage', label: 'Heritage', icon: '◆', locked: false },
+  const tabs: { id: StandingsTab; label: string; icon: IconName; locked: boolean }[] = [
+    { id: 'leagues', label: 'Leagues', icon: 'leaderboard', locked: !leaguesUnlocked },
+    { id: 'ranks', label: 'Ranks', icon: 'leaderboard', locked: false },
+    { id: 'rivals', label: 'Rivals', icon: 'swords', locked: !rivalsUnlocked },
+    { id: 'heritage', label: 'Heritage', icon: 'archive', locked: false },
   ];
 
   return (
     <div className="space-y-3">
-      <div className="flex rounded-lg overflow-hidden border border-white/[0.06] w-fit" role="tablist" aria-label="Standings view">
-        {tabs.map(t => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.id}
-            onClick={() => setTab(t.id)}
-            className={`min-h-[44px] px-3 py-1.5 text-[11px] font-medium transition-colors ${
-              tab === t.id ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
-            }`}
-          >
-            {t.icon} {t.label}{t.locked ? ' 🔒' : ''}
-          </button>
-        ))}
-      </div>
+      <ConsolePanel title="Standings" icon="leaderboard" subtitle="Leagues, ranks and rivalries — how your corporation compares.">
+        <div className="game-tab-bar flex gap-1 overflow-x-auto" role="tablist" aria-label="Standings view">
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.id}
+              onClick={() => setTab(t.id)}
+              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+                tab === t.id ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <GameIcon name={t.icon} size={13} />
+              {t.label}
+              {t.locked && <GameIcon name="lock" size={11} label="Locked" />}
+            </button>
+          ))}
+        </div>
+      </ConsolePanel>
       {tab === 'leagues' && (leaguesUnlocked ? <LeaguePanel /> : <LockedSubtabNotice icon="🏅" label="Leagues" tier={FOLDED_FEATURE_TIERS.leagues} />)}
       {tab === 'ranks' && <LeaderboardPanel state={state} />}
       {tab === 'rivals' && (rivalsUnlocked ? <RivalsPanel /> : <LockedSubtabNotice icon="⚔️" label="Rivals" tier={FOLDED_FEATURE_TIERS.rivals} />)}

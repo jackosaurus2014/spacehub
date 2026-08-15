@@ -9,6 +9,8 @@ import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { ZONE_MAP } from '@/lib/game/zone-influence';
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
+import GameIcon from './GameIcon';
+import { ConsolePanel, DataChip } from './chrome';
 
 // Friendly group labels for the keyboard-accessible Location List, keyed by
 // SolarSystemLocation.type. Mirrors the bodies actually present in LOCATIONS.
@@ -838,7 +840,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         className="w-full flex items-center justify-between gap-2 px-3 py-2.5 min-h-[44px] text-left rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400"
       >
         <span className="font-hud text-xs font-semibold text-white flex items-center gap-2">
-          <span aria-hidden="true">📜</span> Location List
+          <GameIcon name="scroll" size={13} /> Location List
           <span className="text-slate-500 font-normal text-[10px] hidden sm:inline">— keyboard-accessible alternative to the map</span>
         </span>
         <span aria-hidden="true" className={`text-slate-400 transition-transform ${listExpanded ? 'rotate-180' : ''}`}>▾</span>
@@ -871,7 +873,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                       }`}
                     >
                       <span className="flex items-center gap-1">
-                        <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
+                        {!unlocked && <GameIcon name="lock" size={10} />}
                         <span className="truncate">{loc.name}</span>
                         {standing === 'governor' && <span aria-hidden="true" className="text-amber-300 shrink-0">♛</span>}
                         {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
@@ -913,19 +915,23 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         <div ref={containerRef} className="absolute inset-0 pointer-events-none" />
 
         {/* Zoom controls */}
-        <div className="absolute top-2 right-2 flex flex-col gap-1 z-20">
+        <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 right-2 z-20">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <button onClick={() => setZoom(z => Math.min(3, z + 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
           <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
-          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[9px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
         </div>
 
         {/* Layer toggles — moved to bottom-right in map-command mode so the
             top-left corner stays free for the Order Queue HUD strip. */}
-        <div className="absolute bottom-2 right-2 flex flex-col gap-1 z-20">
+        <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute bottom-2 right-2 z-20">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <button
             onClick={() => setShowLanes(v => !v)}
             aria-pressed={showLanes}
-            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -934,7 +940,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           <button
             onClick={() => setShowShips(v => !v)}
             aria-pressed={showShips}
-            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -945,14 +951,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             aria-pressed={showWorld}
             disabled={!worldAvailable}
             title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}
-            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
               worldLayerActive ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
             {worldLayerActive ? '● World' : '○ World'}
           </button>
           {!worldAvailable && (
-            <p className="text-[8px] text-slate-600 text-right max-w-[110px] leading-tight">Sign in to see the live world</p>
+            <p className="text-[10px] text-slate-600 text-right max-w-[110px] leading-tight">Sign in to see the live world</p>
           )}
         </div>
 
@@ -965,8 +971,8 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         </div>
 
         {shipsInTransit.length > 0 && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 text-[9px] text-emerald-300 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm pointer-events-none">
-            ⚡ {shipsInTransit.length} in transit
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+            <DataChip icon="ship-transport" tone="good">{shipsInTransit.length} in transit</DataChip>
           </div>
         )}
 
@@ -998,18 +1004,22 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         />
 
         {/* Zoom controls */}
-        <div className="absolute top-2 right-2 flex flex-col gap-1">
+        <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 right-2">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <button onClick={() => setZoom(z => Math.min(3, z + 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
           <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
-          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[9px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
         </div>
 
         {/* Layer toggles */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 left-2">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
           <button
             onClick={() => setShowLanes(v => !v)}
             aria-pressed={showLanes}
-            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -1018,7 +1028,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           <button
             onClick={() => setShowShips(v => !v)}
             aria-pressed={showShips}
-            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -1029,7 +1039,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             aria-pressed={showWorld}
             disabled={!worldAvailable}
             title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}
-            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
               worldLayerActive ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -1038,28 +1048,16 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         </div>
 
         {/* Legend + activity */}
-        <div className="absolute bottom-2 left-2 flex flex-wrap gap-2 text-[9px] text-slate-400">
-          <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" /> Your buildings
-          </span>
-          <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400" /> NPC presence
-          </span>
+        <div className="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
+          <DataChip><span className="w-1.5 h-1.5 rounded-full bg-cyan-400" /> Your buildings</DataChip>
+          <DataChip><span className="w-1.5 h-1.5 rounded-full bg-red-400" /> NPC presence</DataChip>
           {worldAvailable && (
-            <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400" /> Other corporations
-            </span>
+            <DataChip><span className="w-1.5 h-1.5 rounded-full bg-purple-400" /> Other corporations</DataChip>
           )}
-          <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> Mining ship
-          </span>
-          <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" /> Survey ship
-          </span>
+          <DataChip><span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> Mining ship</DataChip>
+          <DataChip><span className="w-1.5 h-1.5 rounded-full bg-purple-400" /> Survey ship</DataChip>
           {shipsInTransit.length > 0 && (
-            <span className="flex items-center gap-1 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm text-emerald-300">
-              ⚡ {shipsInTransit.length} in transit
-            </span>
+            <DataChip icon="ship-transport" tone="good">{shipsInTransit.length} in transit</DataChip>
           )}
         </div>
       </div>
@@ -1075,63 +1073,65 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
       {/* Selected Location Details */}
       {selectedLocData && (
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-white font-semibold text-sm">{selectedLocData.name}</h3>
-              <p className="text-slate-400 text-xs mt-0.5">{selectedLocData.description}</p>
-              {isUnlocked && (
-                <div className="flex items-center gap-3 mt-2 text-xs">
-                  <span className="text-cyan-400">{buildingsAtSelected.filter(b => b.isComplete).length} buildings</span>
-                  {buildingsAtSelected.filter(b => !b.isComplete).length > 0 && (
-                    <span className="text-amber-400">{buildingsAtSelected.filter(b => !b.isComplete).length} building</span>
-                  )}
-                  {shipsAtSelected.length > 0 && (
-                    <span className="text-purple-300">{shipsAtSelected.length} ship{shipsAtSelected.length === 1 ? '' : 's'}</span>
-                  )}
-                </div>
+        <ConsolePanel
+          title={selectedLocData.name}
+          subtitle={selectedLocData.description}
+          icon="map"
+          accent="cyan"
+          compact
+          right={
+            isUnlocked ? (
+              <span className="text-green-400 text-xs px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20">Unlocked</span>
+            ) : canUnlock ? (
+              <button
+                onClick={() => { playSound('location_unlock'); onUnlock(selectedLoc!); }}
+                className="min-h-[44px] px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+                Unlock {formatMoney(selectedLocData.unlockCost)}
+              </button>
+            ) : (
+              <span className="text-slate-500 text-xs px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06]">Locked</span>
+            )
+          }
+        >
+          {isUnlocked && (
+            <div className="flex items-center gap-3 mt-2 text-xs">
+              <span className="text-cyan-400">{buildingsAtSelected.filter(b => b.isComplete).length} buildings</span>
+              {buildingsAtSelected.filter(b => !b.isComplete).length > 0 && (
+                <span className="text-amber-400">{buildingsAtSelected.filter(b => !b.isComplete).length} building</span>
               )}
-              {!isUnlocked && (
-                <div className="mt-2 text-xs">
-                  <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Requirements to unlock</div>
-                  <ul className="space-y-0.5 text-slate-400 pl-4" style={{ listStyle: 'disc' }}>
-                    <li>Pay <span className="text-white font-mono">{formatMoney(selectedLocData.unlockCost)}</span></li>
-                    {selectedLocData.requiredResearch.length > 0 && (
-                      <li>Research: {selectedLocData.requiredResearch.map(r => r.replace(/_/g, ' ')).join(', ')}</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-              {npcCountAtSelected > 0 && (
-                <div className="mt-2 text-[10px] text-slate-500 italic">
-                  🤖 {npcCountAtSelected} NPC {npcCountAtSelected === 1 ? 'competitor already operates' : 'competitors already operate'} here — informational only, not a gate
-                </div>
-              )}
-              {worldCountAtSelected > 0 && (
-                <div className="mt-2 text-[10px] text-purple-300/90">
-                  🌐 {worldCountAtSelected} corporation{worldCountAtSelected === 1 ? '' : 's'} operating here{worldNamesAtSelected[0] ? ` — first mover: ${worldNamesAtSelected[0]}` : ''}
-                </div>
-              )}
-              {!worldAvailable && (
-                <div className="mt-2 text-[10px] text-slate-600 italic">🌐 Sign in to see the live world</div>
+              {shipsAtSelected.length > 0 && (
+                <span className="text-purple-300">{shipsAtSelected.length} ship{shipsAtSelected.length === 1 ? '' : 's'}</span>
               )}
             </div>
-            <div>
-              {isUnlocked ? (
-                <span className="text-green-400 text-xs px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20">Unlocked</span>
-              ) : canUnlock ? (
-                <button
-                  onClick={() => { playSound('location_unlock'); onUnlock(selectedLoc!); }}
-                  className="min-h-[44px] px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
-                >
-                  Unlock {formatMoney(selectedLocData.unlockCost)}
-                </button>
-              ) : (
-                <span className="text-slate-500 text-xs px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06]">Locked</span>
-              )}
+          )}
+          {!isUnlocked && (
+            <div className="mt-2 text-xs">
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Requirements to unlock</div>
+              <ul className="space-y-0.5 text-slate-400 pl-4" style={{ listStyle: 'disc' }}>
+                <li>Pay <span className="text-white font-mono">{formatMoney(selectedLocData.unlockCost)}</span></li>
+                {selectedLocData.requiredResearch.length > 0 && (
+                  <li>Research: {selectedLocData.requiredResearch.map(r => r.replace(/_/g, ' ')).join(', ')}</li>
+                )}
+              </ul>
             </div>
-          </div>
-        </div>
+          )}
+          {npcCountAtSelected > 0 && (
+            <div className="mt-2 text-[10px] text-slate-500 italic flex items-center gap-1">
+              <GameIcon name="alliance" size={11} /> {npcCountAtSelected} NPC {npcCountAtSelected === 1 ? 'competitor already operates' : 'competitors already operate'} here — informational only, not a gate
+            </div>
+          )}
+          {worldCountAtSelected > 0 && (
+            <div className="mt-2 text-[10px] text-purple-300/90 flex items-center gap-1">
+              <GameIcon name="globe" size={11} /> {worldCountAtSelected} corporation{worldCountAtSelected === 1 ? '' : 's'} operating here{worldNamesAtSelected[0] ? ` — first mover: ${worldNamesAtSelected[0]}` : ''}
+            </div>
+          )}
+          {!worldAvailable && (
+            <div className="mt-2 text-[10px] text-slate-600 italic flex items-center gap-1">
+              <GameIcon name="globe" size={11} /> Sign in to see the live world
+            </div>
+          )}
+        </ConsolePanel>
       )}
 
       <p id="solar-system-canvas-hint" className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag to pan, scroll to zoom. Toggle lanes and ships with the top-left buttons. This canvas is mouse/touch-only — use the Location List below to browse and select every location by keyboard.</p>

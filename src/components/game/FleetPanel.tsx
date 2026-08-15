@@ -19,6 +19,22 @@ import { getWorkforceBonuses } from '@/lib/game/workforce';
 import { getFreightFuelCost, getShipCargoCapacity, getCargoLoadUnits } from '@/lib/game/cargo-logistics';
 import CargoLoader from './CargoLoader';
 import Image from 'next/image';
+import { ConsolePanel } from './chrome';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
+
+/** Ship role → registry icon. Ship definitions (ships.ts) carry their own
+ *  decorative `icon` emoji (a data file — out of this wave's sweep scope per
+ *  icons.tsx's header contract), so the panel-side chrome renders the role
+ *  instead, which is both more semantically accurate and already registered. */
+function shipRoleIcon(role: string): IconName {
+  switch (role) {
+    case 'mining': return 'ship-mining';
+    case 'survey': return 'ship-survey';
+    case 'tanker': return 'ship-tanker';
+    default: return 'ship-transport';
+  }
+}
 
 interface FleetPanelProps {
   state: GameState;
@@ -65,25 +81,26 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
   return (
     <div className="space-y-4">
       {/* Fleet Overview */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
-          <p className="text-cyan-400 text-lg font-bold">{builtShips.length}</p>
-          <p className="text-slate-500 text-xs">Active Ships</p>
+      <ConsolePanel title="Fleet" icon="fleet" subtitle="Every ship you operate, at a glance.">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
+            <p className="text-cyan-400 text-lg font-bold game-number">{builtShips.length}</p>
+            <p className="text-slate-500 text-xs">Active Ships</p>
+          </div>
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
+            <p className="text-amber-400 text-lg font-bold game-number">{builtShips.filter(s => s.status === 'mining').length}</p>
+            <p className="text-slate-500 text-xs">Mining</p>
+          </div>
+          <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
+            <p className="text-green-400 text-lg font-bold game-number">{builtShips.filter(s => s.status === 'in_transit').length}</p>
+            <p className="text-slate-500 text-xs">In Transit</p>
+          </div>
         </div>
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
-          <p className="text-amber-400 text-lg font-bold">{builtShips.filter(s => s.status === 'mining').length}</p>
-          <p className="text-slate-500 text-xs">Mining</p>
-        </div>
-        <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
-          <p className="text-green-400 text-lg font-bold">{builtShips.filter(s => s.status === 'in_transit').length}</p>
-          <p className="text-slate-500 text-xs">In Transit</p>
-        </div>
-      </div>
+      </ConsolePanel>
 
       {/* Active Ships */}
       {builtShips.length > 0 && (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Your Fleet</h3>
+        <ConsolePanel title="Your Fleet" icon="fleet">
           <div className="space-y-2">
             {builtShips.map(ship => {
               const def = SHIP_MAP.get(ship.definitionId);
@@ -125,15 +142,16 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                      <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${
                         ship.status === 'mining' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
                         ship.status === 'in_transit' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
                         ship.status === 'idle' ? 'bg-white/[0.06] text-slate-400 border border-white/[0.06]' :
                         'bg-purple-500/10 text-purple-400 border border-purple-500/20'
                       }`}>
-                        {ship.status === 'mining' ? '⛏️ Mining' :
-                         ship.status === 'in_transit' ? '🚀 In Transit' :
-                         ship.status === 'idle' ? '💤 Idle' :
+                        <GameIcon name={ship.status === 'mining' ? 'ship-mining' : ship.status === 'in_transit' ? 'fleet' : ship.status === 'idle' ? 'idle' : 'activity'} size={11} />
+                        {ship.status === 'mining' ? 'Mining' :
+                         ship.status === 'in_transit' ? 'In Transit' :
+                         ship.status === 'idle' ? 'Idle' :
                          ship.status}
                       </span>
                     </div>
@@ -147,7 +165,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                           ? 'bg-red-500/10 text-red-400 border-red-500/30'
                           : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
                       }`}>
-                        <span aria-hidden="true">⚠️</span> Hull damage {Math.round((ship.hullDamagePct || 0) * 100)}%
+                        <GameIcon name="warning" size={10} /> Hull damage {Math.round((ship.hullDamagePct || 0) * 100)}%
                       </span>
                     </div>
                   )}
@@ -187,9 +205,9 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); playSound('click'); onRushRepairShip(ship.instanceId); }}
-                      className="w-full inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors"
+                      className="w-full inline-flex items-center justify-center gap-1 min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors"
                     >
-                      🔧 Rush Repair — {formatMoney(repairCost)}
+                      <GameIcon name="wrench" size={11} /> Rush Repair — {formatMoney(repairCost)}
                     </button>
                   </div>
                 )}
@@ -197,15 +215,12 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
               );
             })}
           </div>
-        </div>
+        </ConsolePanel>
       )}
 
       {/* Ship Actions (when a ship is selected and idle or mining) */}
       {selectedShipInstance && selectedShipDef && (selectedShipInstance.status === 'idle' || selectedShipInstance.status === 'mining') && (
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
-          <h3 className="text-white text-sm font-semibold mb-3">
-            {selectedShipDef.icon} {selectedShipInstance.name} — Commands
-          </h3>
+        <ConsolePanel title={`${selectedShipInstance.name} — Commands`} icon={shipRoleIcon(selectedShipDef.role)} accent="cyan">
 
           {/* Mining action (for idle mining ships at valid mining locations) */}
           {selectedShipInstance.status === 'idle' && selectedShipDef.role === 'mining' && selectedShipDef.miningTargets && (() => {
@@ -220,15 +235,15 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                       Start Mining at {LOCATION_MAP.get(currentLoc)?.name || currentLoc}
                       {locInfo && <span className="text-amber-400 ml-1">({locInfo.multiplier}x output)</span>}
                     </p>
-                    <p className="text-slate-500 text-[9px] mb-2">{locInfo?.description}</p>
+                    <p className="text-slate-500 text-[10px] mb-2">{locInfo?.description}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedShipDef.miningTargets.map(resId => (
                         <button
                           key={resId}
                           onClick={() => { playSound('build_start'); onStartMining(selectedShipInstance.instanceId, resId); selectShip(null); }}
-                          className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-amber-600/20 text-amber-400 border border-amber-600/30 rounded-lg hover:bg-amber-600/30 transition-colors"
+                          className="inline-flex items-center justify-center gap-1 min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-amber-600/20 text-amber-400 border border-amber-600/30 rounded-lg hover:bg-amber-600/30 transition-colors"
                         >
-                          ⛏️ Mine {resId.replace(/_/g, ' ')}
+                          <GameIcon name="ship-mining" size={11} /> Mine {resId.replace(/_/g, ' ')}
                         </button>
                       ))}
                     </div>
@@ -237,7 +252,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                   <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20">
                     <p className="text-red-400 text-xs font-semibold mb-1">Cannot mine at {LOCATION_MAP.get(currentLoc)?.name || currentLoc}</p>
                     <p className="text-red-300/60 text-[10px] mb-2">Mining ships must be at a celestial body (Moon, Mars, asteroids, etc.). Send this ship to a mining location first.</p>
-                    <p className="text-slate-500 text-[9px]">Valid locations: {Object.entries(MINING_LOCATIONS).map(([id, info]) => info.name).join(', ')}</p>
+                    <p className="text-slate-500 text-[10px]">Valid locations: {Object.entries(MINING_LOCATIONS).map(([id, info]) => info.name).join(', ')}</p>
                   </div>
                 )}
               </div>
@@ -267,9 +282,9 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     <button
                       key={locId}
                       onClick={() => { playSound('build_start'); onLaunchSurvey(selectedShipInstance.instanceId, locId); selectShip(null); }}
-                      className="inline-flex items-center justify-center min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-purple-600/20 text-purple-400 border border-purple-600/30 rounded-lg hover:bg-purple-600/30 transition-colors"
+                      className="inline-flex items-center justify-center gap-1 min-h-[38px] px-2.5 py-1 text-[10px] font-medium bg-purple-600/20 text-purple-400 border border-purple-600/30 rounded-lg hover:bg-purple-600/30 transition-colors"
                     >
-                      📡 {loc?.name} ({formatDuration(duration)})
+                      <GameIcon name="ship-survey" size={11} /> {loc?.name} ({formatDuration(duration)})
                     </button>
                   );
                 })}
@@ -336,7 +351,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                                 : 'bg-green-600/20 text-green-400 border border-green-600/30 hover:bg-green-600/30'
                             }`}
                           >
-                            🚀 {loc?.name} ({formatDuration(travelTime)}{isBoosted && <span className="text-cyan-300"> ⚡ boosted</span>}) · ⛽ {formatMoney(fuelCost)}
+                            <GameIcon name="fleet" size={11} className="mr-1" /> {loc?.name} ({formatDuration(travelTime)}{isBoosted && <span className="text-cyan-300 inline-flex items-center gap-0.5"> <GameIcon name="sparkle" size={10} /> boosted</span>}) · <GameIcon name="resource-hydrocarbon" size={11} className="mx-1" />{formatMoney(fuelCost)}
                           </button>
                         );
                       })}
@@ -366,50 +381,50 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
               </button>
             </div>
           )}
-        </div>
+        </ConsolePanel>
       )}
 
       {/* Ships Under Construction */}
       {buildingShips.length > 0 && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-          <h3 className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-3">
-            Under Construction ({buildingShips.length})
-          </h3>
+        <ConsolePanel title={`Under Construction (${buildingShips.length})`} icon="build" accent="amber">
           {buildingShips.map(ship => {
             const def = SHIP_MAP.get(ship.definitionId);
             const elapsed = ship.buildStartedAtMs ? (Date.now() - ship.buildStartedAtMs) / 1000 : 0;
             const remaining = (ship.buildDurationSeconds || 0) - elapsed;
             return (
               <div key={ship.instanceId} className="flex items-center justify-between text-xs mb-1">
-                <span className="text-white">{def?.icon} {ship.name}</span>
+                <span className="text-white flex items-center gap-1.5">
+                  <GameIcon name={shipRoleIcon(def?.role || 'transport')} size={13} /> {ship.name}
+                </span>
                 <span className="text-amber-400 font-mono">{formatCountdown(Math.max(0, remaining))}</span>
               </div>
             );
           })}
-        </div>
+        </ConsolePanel>
       )}
 
       {/* Shipyard Capacity */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-white text-xs font-bold uppercase tracking-wider">Shipyard</span>
-          <span className={`text-xs font-mono ${canBuild ? 'text-cyan-400' : 'text-amber-400'}`}>
+      <ConsolePanel
+        title="Shipyard"
+        icon="bld-launch-pad"
+        right={
+          <span className={`game-number text-xs ${canBuild ? 'text-cyan-400' : 'text-amber-400'}`}>
             {activeBuilds}/{shipyardSlots} slots
           </span>
-        </div>
+        }
+      >
         <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
           <div className={`h-full rounded-full transition-all ${canBuild ? 'bg-cyan-500' : 'bg-amber-500'}`} style={{ width: `${(activeBuilds / Math.max(1, shipyardSlots)) * 100}%` }} />
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-0.5">
           {shipyardBreakdown.map(b => (
-            <span key={b.label} className={`text-[9px] ${b.active ? 'text-cyan-400/70' : 'text-zinc-600'}`}>{b.label}</span>
+            <span key={b.label} className={`text-[10px] ${b.active ? 'text-cyan-400/70' : 'text-zinc-600'}`}>{b.label}</span>
           ))}
         </div>
-      </div>
+      </ConsolePanel>
 
       {/* Build New Ships */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Build Ships</h3>
+      <ConsolePanel title="Build Ships" icon="build">
         {!canBuild && (
           <div className="mb-3 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
             <p className="text-amber-400 text-xs">Shipyard full — wait for a ship to finish before starting another.</p>
@@ -440,7 +455,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     </div>
                     <div>
                       <h4 className="text-white text-xs font-semibold">{ship.name}</h4>
-                      <span className={`text-[9px] px-1 py-0.5 rounded ${
+                      <span className={`text-[10px] px-1 py-0.5 rounded ${
                         ship.role === 'mining' ? 'bg-amber-500/10 text-amber-400' :
                         ship.role === 'transport' ? 'bg-green-500/10 text-green-400' :
                         ship.role === 'tanker' ? 'bg-blue-500/10 text-blue-400' :
@@ -452,7 +467,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
 
                   {/* Tooltip — expandable gameplay guidance */}
                   <details className="mb-2 group/tip">
-                    <summary className="text-[9px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">
+                    <summary className="text-[10px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">
                       Why build this? ▾
                     </summary>
                     <div className="mt-1.5 p-2 rounded-md bg-cyan-500/5 border border-cyan-500/10 text-[10px] text-slate-300 leading-relaxed">
@@ -461,7 +476,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                   </details>
 
                   {/* Stats */}
-                  <div className="flex gap-3 text-[9px] text-slate-400 mb-2 flex-wrap">
+                  <div className="flex gap-3 text-[10px] text-slate-400 mb-2 flex-wrap">
                     <span>Cargo: {ship.cargoCapacity}</span>
                     {ship.miningRate && <span>Mining: {ship.miningRate}/min</span>}
                     <span>Build: {formatDuration(ship.buildTimeSeconds)}</span>
@@ -473,10 +488,10 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     const s = getShipDerivedStats(ship);
                     return (
                       <details className="mb-2 group/deep">
-                        <summary className="text-[9px] text-slate-500 cursor-pointer hover:text-slate-300 transition-colors select-none">
+                        <summary className="text-[10px] text-slate-500 cursor-pointer hover:text-slate-300 transition-colors select-none">
                           Detailed specs ▾
                         </summary>
-                        <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px] text-slate-400">
+                        <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-slate-400">
                           <span>Sublight: {s.sublightSpeed.toLocaleString()} m/s</span>
                           <span>Warp: {s.warpFactor.toFixed(1)}×</span>
                           <span>Fuel: {s.fuelCapacity} ({s.fuelBurnRate}/hr)</span>
@@ -500,7 +515,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                       {Object.entries(ship.resourceCost).map(([resId, qty]) => {
                         const have = state.resources[resId] || 0;
                         return (
-                          <span key={resId} className={`text-[8px] px-1 py-0.5 rounded border ${
+                          <span key={resId} className={`text-[10px] px-1 py-0.5 rounded border ${
                             have >= qty ? 'text-slate-400 border-white/[0.06]' : 'text-red-400 border-red-500/20'
                           }`}>{resId.replace(/_/g, ' ')} {have}/{qty}</span>
                         );
@@ -530,7 +545,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
             })}
           </div>
         )}
-      </div>
+      </ConsolePanel>
     </div>
   );
 }

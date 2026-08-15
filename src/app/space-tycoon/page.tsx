@@ -20,6 +20,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ResourceBar from '@/components/game/ResourceBar';
 import GameIcon from '@/components/game/GameIcon';
+import HoloTip, { Concept } from '@/components/game/HoloTip';
 import type { IconName } from '@/lib/game/icons';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
@@ -524,14 +525,24 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                         </div>
                         <div className="flex items-center gap-1">
                           {isRepeatable && (
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-semibold">
-                              LVL {disp.repeatableLevel}/{r.repeatable!.maxLevel}
-                            </span>
+                            <HoloTip
+                              underline={false}
+                              content={{ title: 'Repeatable Research', icon: 'research', body: <Concept id="repeatable-research" /> }}
+                            >
+                              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-semibold">
+                                LVL {disp.repeatableLevel}/{r.repeatable!.maxLevel}
+                              </span>
+                            </HoloTip>
                           )}
                           {disp.doctrineLocked && (
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-medium">
-                              Doctrine locked — chose {RESEARCH_MAP.get(disp.lockedBySiblingId!)?.name || disp.lockedBySiblingId}
-                            </span>
+                            <HoloTip
+                              underline={false}
+                              content={{ title: 'Doctrine Locked', icon: 'balance', iconGlow: 'amber', body: <Concept id="doctrine-lock" /> }}
+                            >
+                              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-medium">
+                                Doctrine locked — chose {RESEARCH_MAP.get(disp.lockedBySiblingId!)?.name || disp.lockedBySiblingId}
+                              </span>
+                            </HoloTip>
                           )}
                           {canStart && anyQueueFree && !disp.doctrineLocked && (
                             <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">READY</span>
@@ -539,7 +550,12 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                           {unlockedCantAfford && (
                             <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400/70 font-medium">NEED $</span>
                           )}
-                          <span className={`font-hud text-[9px] px-1.5 py-0.5 rounded-full ${tierBadgeClass}`}>T{r.tier}</span>
+                          <HoloTip
+                            underline={false}
+                            content={{ title: `Tier ${r.tier} Research`, icon: 'research', body: 'Higher tiers require deeper prerequisite chains and cost more — the tree gates progression so late-game techs are earned, not stumbled into early.' }}
+                          >
+                            <span className={`font-hud text-[9px] px-1.5 py-0.5 rounded-full ${tierBadgeClass}`}>T{r.tier}</span>
+                          </HoloTip>
                         </div>
                       </div>
                       <p className="text-slate-400 text-[10px] mb-0.5 leading-relaxed">{r.effect}</p>

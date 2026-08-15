@@ -19,6 +19,8 @@ import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction } from '@/lib/game/construction-slots';
 import { calculateRushRepairCost } from '@/lib/game/hazards';
 import Image from 'next/image';
+import { ConsolePanel } from './chrome';
+import GameIcon from './GameIcon';
 
 interface BuildPanelProps {
   state: GameState;
@@ -52,73 +54,77 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
 
   return (
     <div className="space-y-4">
-      {/* Construction Slots indicator */}
-      <div className="flex items-center justify-between px-3 py-2 rounded-lg" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Construction Queues</span>
-          <div className="flex gap-1">
-            {Array.from({ length: totalSlots }).map((_, i) => (
-              <div
-                key={i}
-                className="w-5 h-2 rounded-sm transition-colors"
-                style={{ background: i < activeBuilds ? 'var(--accent-primary)' : 'var(--border-subtle)' }}
-                title={i < activeBuilds ? 'Active build' : 'Open slot'}
-              />
-            ))}
+      <ConsolePanel
+        title="Construction"
+        icon="build"
+        subtitle="Queue new buildings, monitor active construction slots and pick a location."
+        right={
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1" aria-hidden="true">
+              {Array.from({ length: totalSlots }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-5 h-2 rounded-sm transition-colors"
+                  style={{ background: i < activeBuilds ? 'var(--accent-primary)' : 'var(--border-subtle)' }}
+                  title={i < activeBuilds ? 'Active build' : 'Open slot'}
+                />
+              ))}
+            </div>
+            <span className="game-number text-[11px]" style={{ color: activeBuilds >= totalSlots ? '#FFB302' : 'var(--text-tertiary)' }}>
+              {activeBuilds}/{totalSlots} slots
+            </span>
           </div>
-          <span className="text-[10px] font-mono" style={{ color: activeBuilds >= totalSlots ? '#FFB302' : 'var(--text-tertiary)' }}>
-            {activeBuilds}/{totalSlots}
-          </span>
-        </div>
+        }
+      >
         {!slotsAvailable && (
-          <span className="text-[9px] font-medium px-2 py-0.5 rounded" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}>
+          <span className="inline-block text-[10px] font-medium px-2 py-0.5 rounded" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}>
             QUEUE FULL — wait for a build to finish
           </span>
         )}
         {totalSlots < 5 && slotsAvailable && (
-          <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
+          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
             Research to unlock more slots
           </span>
         )}
-      </div>
 
-      {/* Location Selector — shows building count per location. Hidden when
-          lockLocation is set (the map context panel already told us where). */}
-      {!lockLocation && (
-        <div>
-          <p className="text-slate-500 text-[10px] mb-1.5">Select a location to see available buildings:</p>
-          <div className="flex flex-wrap gap-2">
-            {state.unlockedLocations.map(locId => {
-              const loc = LOCATION_MAP.get(locId);
-              const buildableCount = BUILDINGS.filter(b =>
-                b.requiredLocation === locId &&
-                b.requiredResearch.every(r => state.completedResearch.includes(r))
-              ).length;
-              return (
-                <button
-                  key={locId}
-                  onClick={() => setSelectedLocation(locId)}
-                  className={`relative px-3 py-1.5 rounded-lg text-xs font-medium transition-colors overflow-hidden ${
-                    selectedLocation === locId
-                      ? 'bg-cyan-500 text-white'
-                      : 'bg-white/[0.06] text-slate-400 hover:text-white'
-                  }`}
-                >
-                  {LOCATION_ASSETS[locId] && (
-                    <Image src={LOCATION_ASSETS[locId]} alt="" width={80} height={40} className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none" />
-                  )}
-                  <span className="relative">{loc?.name || locId}</span>
-                  {buildableCount > 0 && (
-                    <span className={`relative ml-1.5 px-1 py-0.5 rounded text-[9px] ${
-                      selectedLocation === locId ? 'bg-white/20' : 'bg-cyan-500/20 text-cyan-400'
-                    }`}>{buildableCount}</span>
-                  )}
-                </button>
-              );
-            })}
+        {/* Location Selector — shows building count per location. Hidden when
+            lockLocation is set (the map context panel already told us where). */}
+        {!lockLocation && (
+          <div className="mt-3">
+            <p className="text-slate-500 text-[10px] mb-1.5">Select a location to see available buildings:</p>
+            <div className="flex flex-wrap gap-2">
+              {state.unlockedLocations.map(locId => {
+                const loc = LOCATION_MAP.get(locId);
+                const buildableCount = BUILDINGS.filter(b =>
+                  b.requiredLocation === locId &&
+                  b.requiredResearch.every(r => state.completedResearch.includes(r))
+                ).length;
+                return (
+                  <button
+                    key={locId}
+                    onClick={() => setSelectedLocation(locId)}
+                    className={`relative px-3 py-1.5 rounded-lg text-xs font-medium transition-colors overflow-hidden ${
+                      selectedLocation === locId
+                        ? 'bg-cyan-500 text-white'
+                        : 'bg-white/[0.06] text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {LOCATION_ASSETS[locId] && (
+                      <Image src={LOCATION_ASSETS[locId]} alt="" width={80} height={40} className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none" loading="lazy" />
+                    )}
+                    <span className="relative">{loc?.name || locId}</span>
+                    {buildableCount > 0 && (
+                      <span className={`relative ml-1.5 px-1 py-0.5 rounded text-[10px] ${
+                        selectedLocation === locId ? 'bg-white/20' : 'bg-cyan-500/20 text-cyan-400'
+                      }`}>{buildableCount}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </ConsolePanel>
 
       {/* Building Cards */}
       {availableBuildings.length === 0 ? (
@@ -163,7 +169,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 {/* Strategy tooltip */}
                 {bld.tooltip && (
                   <details className="mb-2 group/tip">
-                    <summary className="text-[9px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">
+                    <summary className="text-[10px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">
                       Why build this? ▾
                     </summary>
                     <div className="mt-1 p-2 rounded-md bg-cyan-500/5 border border-cyan-500/10 text-[10px] text-slate-300 leading-relaxed">
@@ -189,10 +195,10 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                   if (s.synergyTags.length > 0)        rows.push(['Synergy', `${s.synergyTags.join(', ')} (${s.synergyRange})`]);
                   return (
                     <details className="mb-2 group/deep">
-                      <summary className="text-[9px] text-slate-500 cursor-pointer hover:text-slate-300 transition-colors select-none">
+                      <summary className="text-[10px] text-slate-500 cursor-pointer hover:text-slate-300 transition-colors select-none">
                         Detailed specs ▾
                       </summary>
-                      <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px] text-slate-400">
+                      <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-slate-400">
                         {rows.map(([k, v]) => <span key={k}>{k}: <span className="text-slate-300">{v}</span></span>)}
                       </div>
                     </details>
@@ -223,7 +229,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       const have = state.resources[resId] || 0;
                       const enough = have >= qty;
                       return (
-                        <span key={resId} className={`group relative text-[9px] px-1.5 py-0.5 rounded border cursor-help ${
+                        <span key={resId} className={`group relative text-[10px] px-1.5 py-0.5 rounded border cursor-help ${
                           enough ? 'text-slate-400 border-white/[0.06] bg-white/[0.02]' : 'text-red-400 border-red-500/20 bg-red-500/5'
                         }`}>
                           {resId.replace(/_/g, ' ')} {have}/{qty}
@@ -300,18 +306,18 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       <span className="text-white text-xs">{def.name}</span>
                       <div className="flex items-center gap-1.5">
                         {hasDamage && (
-                          <span className={`inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-full border font-semibold ${
+                          <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold ${
                             isSevere
                               ? 'bg-red-500/10 text-red-400 border-red-500/30'
                               : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
                           }`}>
-                            <span aria-hidden="true">⚠️</span> {Math.round((bld.damagePct || 0) * 100)}% dmg
+                            <GameIcon name="warning" size={10} /> {Math.round((bld.damagePct || 0) * 100)}% dmg
                           </span>
                         )}
                         {onSellBuilding && (
                           <button
                             onClick={() => { if (confirm(`Sell ${def.name} for ${formatMoney(sellPrice)}? (40% of build cost)`)) onSellBuilding(bld.instanceId); }}
-                            className="text-[9px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                            className="text-[10px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
                           >
                             Sell ({formatMoney(sellPrice)})
                           </button>
@@ -321,9 +327,9 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     {hasDamage && onRushRepairBuilding && (
                       <button
                         onClick={() => onRushRepairBuilding(bld.instanceId)}
-                        className="mt-1 w-full min-h-[28px] text-[9px] px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                        className="mt-1 w-full min-h-[28px] text-[10px] px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors flex items-center justify-center gap-1"
                       >
-                        🔧 Rush Repair — {formatMoney(repairCost)}
+                        <GameIcon name="wrench" size={11} /> Rush Repair — {formatMoney(repairCost)}
                       </button>
                     )}
                   </div>
