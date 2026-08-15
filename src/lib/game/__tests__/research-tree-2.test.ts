@@ -309,6 +309,7 @@ describe('W3 property test — repeatables stay inside the SAME aggregate caps a
       hazardResistanceBonus: 0.30,
       crewMoraleBonus: 0.30,
       fuelEfficiencyBonus: 0.50,
+      consumptionReductionBonus: 0.40,
       expeditionRiskBonus: 0.30,
     };
     for (const [key, cap] of Object.entries(caps) as Array<[keyof ResearchBonuses, number]>) {

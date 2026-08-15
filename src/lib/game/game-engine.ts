@@ -104,6 +104,13 @@ import { processDirectivesForMonth } from './standing-directives';
 // bonuses below; era completion is a wall-clock check (`now >= endsAtMs`),
 // safe to run unconditionally every tick — see corporate-eras.ts's header.
 import { getActiveEraModifiers, completeCurrentEra } from './corporate-eras';
+// Economic PvP Wave E3 "The Consumption Engine" (docs/ECONOMY_PVP_2026-08.md
+// §2.2/§E3): buildings draw recipe inputs each world-month on the same
+// deterministic month grid hazards/directives use. advanceConsumptionToMonth
+// is shared with away-operations.ts's catch-up loop (identical elapsed time ⇒
+// identical consumption); per-building supply efficiency (0.5 soft floor)
+// multiplies that building's service revenue and mining output below.
+import { advanceConsumptionToMonth, consumeConsumptionFlush, applyConsumptionFlush } from './consumption';
 
 /** Get or create today's daily metrics tracker */
 function getDailyMetrics(state: GameState): NonNullable<GameState['dailyMetrics']> {
@@ -269,6 +276,11 @@ export function processTick(state: GameState): GameState {
   let monthlyRevenue = 0;
   let monthlyCosts = 0;
 
+  // Wave E3: per-building supply efficiency from the latest consumption pass
+  // (0.5..1; absent instance = fully supplied). Read once — multiplied into
+  // service revenue and mining output at their existing sites.
+  const consumptionEff = state.consumptionState?.efficiency || {};
+
   // Market saturation counters — one per (definitionId, locationId) bucket.
   // Each iteration increments the bucket so the Nth duplicate earns less than
   // the (N-1)th. See serviceSaturationMultiplier for the curve.
@@ -336,6 +348,9 @@ export function processTick(state: GameState): GameState {
     // it off — "building revenue penalty until repaired". 50% damage ≈ -37%
     // revenue; floor 0.25 so a crippled facility still limps.
     const hazardDamageFactor = Math.max(0.25, 1 - 0.75 * (linkedBld?.damagePct || 0));
+    // Wave E3 (§2.2): supply shortfall browns the building out — linear down
+    // to the 0.5 soft floor, never a hard stop (the powerRatio precedent).
+    const supplyEfficiency = linkedBld ? (consumptionEff[linkedBld.instanceId] ?? 1) : 1;
     const revenue = Math.round(
       def.revenuePerMonth * fraction
       * svc.revenueMultiplier
@@ -357,6 +372,7 @@ export function processTick(state: GameState): GameState {
       * wfBonuses.moraleMultiplier
       * waveBRevenueMult
       * hazardDamageFactor        // audit Wave D (A4)
+      * supplyEfficiency          // Wave E3 (§2.2 consumption soft floor)
       * reserveEfficiencyMult     // audit Wave E (C5 §7)
       * returningCommanderRevMult // LS2: decaying re-entry boost, 1.3x -> 1.0x over 14 days
       * DEV_REVENUE_MULTIPLIER
@@ -611,6 +627,11 @@ export function processTick(state: GameState): GameState {
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
+    // Wave E3: hauler-fuel shortfall on the linked mining building scales
+    // output down to the 0.5 soft floor (same factor as its service revenue).
+    const svcSupplyEff = svc.linkedBuildingIds?.length
+      ? (consumptionEff[svc.linkedBuildingIds[0]] ?? 1)
+      : 1;
     // Logistics bonus from freighters/transports at this mining location
     const freighterBonus = (() => {
       let count = 0;
@@ -632,14 +653,14 @@ export function processTick(state: GameState): GameState {
       // Ceres storage (local stockpile) once logistics is unlocked; home-
       // cluster and pre-ratchet production still credit the global pool.
       // Mined-flow market pressure stays global either way (supply is supply).
-      const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus) * (1 + locationBonus);
+      const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
       if (fractionalAmount >= 1) {
         const added = Math.round(fractionalAmount);
         routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
         minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
       } else if (isMonthEnd) {
         // On month boundary, add at least the monthly total
-        const added = Math.round(amountPerMonth * miningMult * (1 + freighterBonus) * (1 + locationBonus));
+        const added = Math.round(amountPerMonth * miningMult * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff);
         routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
         minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
       }
@@ -1120,6 +1141,21 @@ export function processTick(state: GameState): GameState {
     }
   } catch { /* standing directives non-critical — never block the tick */ }
 
+  // Economic PvP Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): monthly building
+  // consumption on the world-month grid. advanceConsumptionToMonth processes
+  // every unprocessed month up to the current one (dedupe via
+  // consumptionState.lastProcessedMonth — the same cursor the away-operations
+  // catch-up loop advances, so live play and away catch-up can never
+  // double-consume or diverge). Runs AFTER standing directives (auto-restock
+  // buys land before this month's draw) and BEFORE hazards (a hazard that
+  // destroys stock this tick shouldn't retroactively starve a pass that
+  // already ran on this month's grid).
+  try {
+    if (isMonthEnd) {
+      out = advanceConsumptionToMonth(out, globalDate.totalMonths);
+    }
+  } catch { /* consumption non-critical — never block the tick */ }
+
   // Hazards v2 (audit Wave D / Change #4 "hazards hurt, insurance pays"):
   // roll once per game-month, seeded per (world month, location, type) —
   // deterministic, shared weather, no save-scumming. Severe events can
@@ -1344,6 +1380,18 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Market flow flush error (non-fatal):', err);
+  }
+
+  // 0d. Wave E3: drain the consumption sync flush (demand telemetry +
+  // procurement requests a successful sync just transmitted) — same
+  // single-slot hand-off pattern as the market flows above.
+  try {
+    const cFlush = consumeConsumptionFlush();
+    if (cFlush) {
+      workingState = applyConsumptionFlush(workingState, cFlush);
+    }
+  } catch (err) {
+    console.error('Consumption flush error (non-fatal):', err);
   }
 
   // 1. Process player tick

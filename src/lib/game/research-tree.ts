@@ -171,6 +171,8 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'autonomous_excavation', name: 'Autonomous Excavation', category: 'mining', tier: 3, description: 'Self-driving mining equipment.', effect: '-30% mining labor costs', baseCostMoney: 2_500_000_000, baseTimeMonths: 22, prerequisites: ['regolith_processing', 'autonomous_ops'], unlocks: [] },
   { id: 'magnetic_separation', name: 'Magnetic Ore Separation', category: 'mining', tier: 2, description: 'Sort ore by magnetic properties.', effect: '+30% metal purity', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['isru_metals'], unlocks: [] },
   { id: 'zero_g_refining', name: 'Zero-G Refining', category: 'mining', tier: 3, description: 'Purify materials in microgravity.', effect: '+30% product purity', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['orbital_assembly'], unlocks: [] },
+  // ─── Wave E3 "The Consumption Engine" new techs (docs/ECONOMY_PVP_2026-08.md §4.3) ───
+  { id: 'sabatier_process', name: 'Sabatier Process', category: 'mining', tier: 2, description: 'Methanation reactors crack CH4 into launch-grade propellant — the methane route to rocket fuel on Mars and Titan.', effect: 'Unlocks the Sabatier methane→rocket fuel refining recipe; -10% freight fuel bills', baseCostMoney: 800_000_000, baseTimeMonths: 14, prerequisites: ['isru_water'], unlocks: [] },
   { id: 'self_replicating_miners', name: 'Self-Replicating Miners', category: 'mining', tier: 5, description: 'Mining robots that build copies of themselves — self-replicating industry remains theoretical at any scale (no working demonstration exists); treat as a capstone extrapolation, not near-term engineering.', effect: 'Exponential mining capacity growth', baseCostMoney: 120_000_000_000, baseTimeMonths: 60, prerequisites: ['automated_mining_fleet'], unlocks: [] },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -188,6 +190,8 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'modular_station', name: 'Modular Station Expansion', category: 'infrastructure', tier: 2, description: 'Add new modules to existing stations.', effect: '+4 module slots per station', baseCostMoney: 500_000_000, baseTimeMonths: 12, prerequisites: ['orbital_assembly'], unlocks: [] },
   { id: 'pressurized_rovers', name: 'Pressurized Rovers', category: 'infrastructure', tier: 2, description: 'Mobile habitats for surface exploration.', effect: '+30% surface area coverage', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['lunar_base_design'], unlocks: [] },
   { id: '3d_printing_space', name: 'Space 3D Printing', category: 'infrastructure', tier: 2, description: 'Additive manufacturing in orbit/surface.', effect: '-30% component import costs', baseCostMoney: 450_000_000, baseTimeMonths: 12, prerequisites: ['orbital_assembly'], unlocks: [] },
+  // Wave E3 (§4.3): unlocks the belt-anchored Orbital Refinery — passive T1 refining throughput.
+  { id: 'orbital_refining_complex', name: 'Orbital Refining Complex', category: 'infrastructure', tier: 3, description: 'Belt-scale bulk refining architecture: continuous smelters that run without a fabrication queue.', effect: 'Unlocks the Orbital Refinery (passive iron/aluminum → ingots/alloy throughput at the Belt)', baseCostMoney: 3_500_000_000, baseTimeMonths: 22, prerequisites: ['orbital_assembly', 'zero_g_refining'], unlocks: ['orbital_refinery'] },
   { id: 'atmospheric_processing', name: 'Atmospheric Processing', category: 'infrastructure', tier: 3, description: 'Extract gases from planetary atmospheres.', effect: 'Enables Venus and Titan colonies', baseCostMoney: 6_000_000_000, baseTimeMonths: 24, prerequisites: ['mars_base_design'], unlocks: [] },
   { id: 'radiation_hardening', name: 'Radiation Hardening', category: 'infrastructure', tier: 3, description: 'Protect habitats from intense radiation.', effect: 'Enables Mercury and Io colonies', baseCostMoney: 5_000_000_000, baseTimeMonths: 24, prerequisites: ['radiation_shielding'], unlocks: [] },
   { id: 'extreme_thermal', name: 'Extreme Thermal Management', category: 'infrastructure', tier: 3, description: 'Survive -270C to +430C.', effect: 'Enables Mercury and Io surface ops', baseCostMoney: 8_000_000_000, baseTimeMonths: 30, prerequisites: ['radiation_hardening'], unlocks: [] },
@@ -283,6 +287,8 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'greenhouse_engineering', name: 'Greenhouse Gas Engineering', category: 'terraforming', tier: 3, description: 'Deploy orbital mirrors and greenhouse gases.', effect: '+25% colony habitability on Mars', baseCostMoney: 5_000_000_000, baseTimeMonths: 30, prerequisites: ['atmospheric_analysis'], unlocks: [] },
   { id: 'mars_warming', name: 'Mars Atmospheric Warming', category: 'terraforming', tier: 4, description: 'Begin warming Mars atmosphere — peer-reviewed models (Jakosky & Edwards 2018) find Mars lacks enough accessible CO2 for full warming with current techniques and put realistic timelines in the centuries; treat as a multi-generational project.', effect: '+30% Mars colony capacity', baseCostMoney: 30_000_000_000, baseTimeMonths: 48, prerequisites: ['greenhouse_engineering'], unlocks: [] },
   { id: 'oxygen_production', name: 'Industrial O2 Production', category: 'terraforming', tier: 3, description: 'Large-scale oxygen from CO2/water.', effect: '+30% colony oxygen production', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['isru_oxygen'], unlocks: [] },
+  // Wave E3 (§4.3): unlocks the Agricultural Dome — the organics leg of the life-support chain (§3.1 chain E).
+  { id: 'hydroponic_agriculture', name: 'Hydroponic Agriculture', category: 'terraforming', tier: 2, description: 'Closed-loop soil-free crop systems sized for dome farming on Luna and Mars.', effect: 'Unlocks the Agricultural Dome; -10% building recipe input consumption', baseCostMoney: 600_000_000, baseTimeMonths: 12, prerequisites: ['resource_prospecting'], unlocks: ['agri_dome'] },
   { id: 'soil_creation', name: 'Synthetic Soil Engineering', category: 'terraforming', tier: 3, description: 'Convert regolith to fertile soil.', effect: '+30% food production on Mars', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['space_agriculture'], unlocks: [] },
   { id: 'dome_construction', name: 'Pressurized Dome Construction', category: 'terraforming', tier: 3, description: 'Large transparent pressure domes.', effect: '+30% colony capacity', baseCostMoney: 2_500_000_000, baseTimeMonths: 20, prerequisites: ['mars_base_design'], unlocks: [] },
   { id: 'magnetic_shield', name: 'Artificial Magnetosphere', category: 'terraforming', tier: 5, description: 'Protect Mars atmosphere from solar wind — an artificial Mars magnetosphere is a real NASA workshop proposal (2017) but remains unbuilt at any scale.', effect: 'Prerequisite for full terraforming', baseCostMoney: 100_000_000_000, baseTimeMonths: 60, prerequisites: ['mars_warming'], unlocks: [] },
@@ -698,6 +704,13 @@ export const EFFECTS_BY_ID: Record<string, ResearchEffect[]> = {
   vacuum_metallurgy_breakthrough: [{ type: 'buildCost', magnitude: 0.2 }, { type: 'maintenance', magnitude: 0.1 }],
   hive_pattern_mathematics: [{ type: 'research', magnitude: 0.25 }],
   metric_engineering_refinements: [{ type: 'travelSpeed', magnitude: 0.25 }, { type: 'fuelEfficiency', magnitude: 0.15 }],
+  // ─── Wave E3 new techs (docs/ECONOMY_PVP_2026-08.md §4.3) — effects on the
+  // new supply chains, wired through the same authored-effects system.
+  // Primary value of all three is their gate (recipe/building unlocks);
+  // magnitudes stay modest per PER_EFFECT_CAP discipline.
+  sabatier_process: [{ type: 'fuelEfficiency', magnitude: 0.10 }],
+  orbital_refining_complex: [{ type: 'mining', magnitude: 0.05 }, { type: 'maintenance', magnitude: 0.05 }],
+  hydroponic_agriculture: [{ type: 'consumptionReduction', magnitude: 0.10 }],
 };
 
 // Apply real-time durations and resource costs
@@ -848,6 +861,9 @@ export interface ResearchBonuses {
   fuelEfficiencyBonus: number;     // % less fuel consumption — CONSUMED as of wave W14: cargo-logistics.ts
                                     // getFuelEfficiencyMultiplier multiplies every freight dispatch's Δv-priced
                                     // fuel bill by (1 − bonus), cap 50% (docs/4X_BASELINE_2026-08.md C1 / W14).
+  consumptionReductionBonus: number; // Wave E3 (§4.1): % less building recipe input draw — CONSUMED by
+                                    // consumption.ts processConsumptionForMonth (effective required inputs are
+                                    // multiplied by (1 − bonus)); cap 0.40 per §4.1.
   expeditionRiskBonus: number;     // % less interstellar-expedition hazard damage — DECLARED/AGGREGATED, NOT YET
                                     // CONSUMED as a generic bucket: expeditions.ts currently only recognizes the
                                     // single hardcoded 'heavy_radiation_shielding' research id (HEAVY_SHIELDING_DAMAGE_REDUCTION);
@@ -871,6 +887,7 @@ export function getResearchBonuses(
   let hazardResistanceBonus = 0;
   let crewMoraleBonus = 0;
   let fuelEfficiencyBonus = 0;
+  let consumptionReductionBonus = 0;
   let expeditionRiskBonus = 0;
 
   const applyEffect = (eff: ResearchEffect) => {
@@ -886,6 +903,7 @@ export function getResearchBonuses(
       case 'hazardResistance':   hazardResistanceBonus   += eff.magnitude; break;
       case 'crewMorale':         crewMoraleBonus         += eff.magnitude; break;
       case 'fuelEfficiency':     fuelEfficiencyBonus     += eff.magnitude; break;
+      case 'consumptionReduction': consumptionReductionBonus += eff.magnitude; break;
       case 'expeditionRisk':     expeditionRiskBonus     += eff.magnitude; break;
     }
   };
@@ -932,6 +950,7 @@ export function getResearchBonuses(
     hazardResistanceBonus: Math.min(hazardResistanceBonus, 0.30),   // Cap 30% (risk pillar)
     crewMoraleBonus: Math.min(crewMoraleBonus, 0.30),               // Cap 0.30 on a 0-1 morale scale
     fuelEfficiencyBonus: Math.min(fuelEfficiencyBonus, 0.50),       // Cap 50% (consumed by cargo-logistics.ts freight pricing, W14)
+    consumptionReductionBonus: Math.min(consumptionReductionBonus, 0.40), // Cap 40% (§4.1; consumed by consumption.ts, wave E3)
     expeditionRiskBonus: Math.min(expeditionRiskBonus, 0.30),       // Cap 30% (risk pillar; dormant as generic bucket — see interface comment)
   };
 }
@@ -1086,6 +1105,7 @@ export function getResearchMechanicalEffect(def: ResearchDefinition): string {
       case 'hazardResistance':  return `-${pct(e.magnitude)} hazard damage`;
       case 'crewMorale':        return `+${pct(e.magnitude)} crew morale`;
       case 'fuelEfficiency':    return `-${pct(e.magnitude)} fuel consumption`;
+      case 'consumptionReduction': return `-${pct(e.magnitude)} building input consumption`;
       case 'expeditionRisk':    return `-${pct(e.magnitude)} expedition hazard damage`;
     }
   }).join(' · ');

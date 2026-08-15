@@ -98,6 +98,9 @@ export async function placeLimitOrder(
   quantity: number,
   pricePerUnit: number,
   expiresInHours: number = 24,
+  /** Wave E3: 'standing' marks server-placed auto-procurement bids
+   *  (§E3 — real, visible demand on the shared book). Default 'manual'. */
+  source: 'manual' | 'standing' = 'manual',
 ): Promise<{
   success: boolean;
   order?: { id: string; status: string; filledQty: number; remainingQty: number };
@@ -184,6 +187,7 @@ export async function placeLimitOrder(
         pricePerUnit,
         escrowAmount,
         status: 'open',
+        source,
         expiresAt,
       },
     });
@@ -648,6 +652,84 @@ export async function getNPCMarketMakerOrders(
     ask: { price: npcAskPrice, quantity: volume },
     spreadHalf: quote.spreadHalf,
   };
+}
+
+// ─── Wave E3: standing auto-procurement orders (§E3/§2.2) ────────────────────
+
+/** Max resources one sync's procurement pass will touch (bounded server work;
+ *  the client caps at 8 too — PROCUREMENT_RESOURCE_CAP in consumption.ts). */
+const STANDING_MAX_RESOURCES_PER_SYNC = 6;
+/** Max units per standing order (mirrors consumption.ts PROCUREMENT_QTY_CAP). */
+const STANDING_MAX_QTY = 250;
+/** Standing bids price at spot × (1 + this), band-clamped — crosses the NPC
+ *  maker's ask at its resting half-spread (0.06 + 0.10×capUsed), so supplied
+ *  resources fill immediately at "live market price + spread + 2% fee" while
+ *  player-only goods (life_support_pack etc.) REST as visible demand other
+ *  players can see, front-run, and supply — §E3's PvP-surface unlock. */
+const STANDING_BID_PREMIUM = 0.10;
+
+/**
+ * Place/refresh the standing buy orders behind a profile's auto-procurement
+ * requests (per-building `supplyPolicy: 'market'` shortfalls aggregated by
+ * the client's consumption pass and delivered via sync as
+ * `procurementRequests`). Cancel-and-replace per (profile, resource) each
+ * cycle — at most ONE standing order per resource, so the book shows current
+ * real demand, not stale history. Escrow is charged through placeLimitOrder's
+ * existing One-Wallet ledger flow (the same money path MarketPanel trades
+ * use); insufficient funds ⇒ the order is simply not placed
+ * (cancel-on-insolvency, §7) and the building keeps running degraded.
+ */
+export async function placeStandingProcurementOrders(
+  profileId: string,
+  requests: Record<string, number>,
+): Promise<{ placed: number; skipped: number }> {
+  let placed = 0;
+  let skipped = 0;
+
+  const entries = Object.entries(requests || {})
+    .filter(([slug, qty]) => typeof qty === 'number' && Number.isFinite(qty) && qty >= 1 && !!getResourceDef(slug))
+    .slice(0, STANDING_MAX_RESOURCES_PER_SYNC);
+
+  for (const [slug, rawQty] of entries) {
+    try {
+      const resourceDef = getResourceDef(slug)!;
+      const qty = Math.min(STANDING_MAX_QTY, Math.floor(rawQty));
+
+      // Cancel-and-replace: retire this profile's previous standing bid for
+      // the slug (refunds remaining escrow via the ledger).
+      const existing = await prisma.marketLimitOrder.findFirst({
+        where: { profileId, resourceSlug: slug, side: 'buy', source: 'standing', status: { in: ['open', 'partial'] } },
+        select: { id: true },
+      });
+      if (existing) {
+        await cancelOrder(existing.id, profileId);
+      }
+
+      // Live spot from the shared row; refresh the NPC maker so backstop ask
+      // liquidity (within its per-resource caps — zero for player-only goods)
+      // is resting before we bid.
+      const row = await prisma.marketResource.findUnique({
+        where: { slug },
+        select: { currentPrice: true },
+      });
+      const spot = row && row.currentPrice > 0 ? row.currentPrice : resourceDef.baseMarketPrice;
+      await getNPCMarketMakerOrders(slug, spot).catch(() => null);
+
+      const band = validatePriceBand(
+        Math.round(spot * (1 + STANDING_BID_PREMIUM)),
+        resourceDef.baseMarketPrice, resourceDef.minPrice, resourceDef.maxPrice,
+      );
+      const bidPrice = Math.max(band.min, Math.min(band.max, Math.round(spot * (1 + STANDING_BID_PREMIUM))));
+
+      const result = await placeLimitOrder(profileId, slug, 'buy', qty, bidPrice, 26, 'standing');
+      if (result.success) placed++;
+      else skipped++; // typically insufficient escrow funds — building runs degraded
+    } catch {
+      skipped++;
+    }
+  }
+
+  return { placed, skipped };
 }
 
 /**

@@ -13,6 +13,10 @@ import {
 } from '@/lib/game/server-effects';
 import type { MarketSnapshot } from '@/lib/game/spot-price';
 import { queueMarketFlowFlush } from '@/lib/game/market-pressure';
+// Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): consumption demand telemetry +
+// standing-order procurement requests ride the sync like the market flows —
+// snapshot, send, flush-on-200 (amounts accrued mid-flight survive).
+import { queueConsumptionFlush, PROCUREMENT_RESOURCE_CAP } from '@/lib/game/consumption';
 
 interface SyncStatus {
   lastSyncAt: number | null;
@@ -80,6 +84,14 @@ export function useGameSync(
       // was transmitted after a 200 (amounts accrued mid-flight survive).
       const minedFlows = { ...(state.pendingMarketFlows?.mined || {}) };
       const npcFlows = { ...(state.pendingMarketFlows?.npc || {}) };
+      // Wave E3: snapshot the consumption accumulators the same way.
+      const demandFlows = { ...(state.consumptionState?.pendingDemandFlows || {}) };
+      const procurement: Record<string, number> = {};
+      for (const [res, qty] of Object.entries(state.consumptionState?.pendingProcurement || {})) {
+        if (qty >= 1 && Object.keys(procurement).length < PROCUREMENT_RESOURCE_CAP) {
+          procurement[res] = Math.floor(qty);
+        }
+      }
 
       const payload = {
         money: state.money,
@@ -130,6 +142,13 @@ export function useGameSync(
         // Audit Wave E (A5-iv): NPC trade flow — the formerly write-only
         // npcMarketPressure accumulator, now a real price input server-side.
         npcMarketFlows: npcFlows,
+        // Wave E3 (§2.2): building-recipe consumption → background buy flow +
+        // MarketResource.totalDemand (derived demand is what makes supply
+        // chains PvP).
+        consumedThisTick: demandFlows,
+        // Wave E3 (§E3): market-policy shortfalls → server-side standing buy
+        // orders on the shared book (source 'standing').
+        procurementRequests: procurement,
       };
 
       const res = await fetch('/api/space-tycoon/sync', {
@@ -146,6 +165,11 @@ export function useGameSync(
         // so the engine subtracts exactly what was sent on the next tick.
         if (Object.keys(minedFlows).length > 0 || Object.keys(npcFlows).length > 0) {
           queueMarketFlowFlush({ mined: minedFlows, npc: npcFlows });
+        }
+        // Wave E3: the consumption payload was delivered — queue its flush so
+        // the engine subtracts exactly what was sent on the next tick.
+        if (Object.keys(demandFlows).length > 0 || Object.keys(procurement).length > 0) {
+          queueConsumptionFlush({ demand: demandFlows, procurement });
         }
         setStatus({
           lastSyncAt: Date.now(),

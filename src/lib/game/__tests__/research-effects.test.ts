@@ -30,8 +30,8 @@ import type { ResearchDefinition, ResearchEffectType } from '../types';
 // ─── 1. Completeness ────────────────────────────────────────────────────────
 
 describe('W1 completeness — every tech has authored effects', () => {
-  test('research tree has exactly 272 techs across 17 categories (header claim — 254 W1 base + 18 from Waves W3+W10)', () => {
-    expect(RESEARCH.length).toBe(272);
+  test('research tree has exactly 275 techs across 17 categories (254 W1 base + 18 from Waves W3+W10 + 3 from Economy Wave E3 §4.3)', () => {
+    expect(RESEARCH.length).toBe(275);
     expect(RESEARCH_CATEGORIES.length).toBe(17);
     const actualCategories = new Set(RESEARCH.map(r => r.category));
     expect(actualCategories.size).toBe(17);
@@ -93,6 +93,7 @@ describe('W1 property test — effects and aggregate bonuses stay within caps', 
       hazardResistanceBonus: 0.30,
       crewMoraleBonus: 0.30,
       fuelEfficiencyBonus: 0.50,
+      consumptionReductionBonus: 0.40,
       expeditionRiskBonus: 0.30,
     };
     for (const [key, cap] of Object.entries(caps) as Array<[keyof ResearchBonuses, number]>) {

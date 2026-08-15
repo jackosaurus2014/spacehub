@@ -56,6 +56,11 @@ export async function POST(request: Request) {
       companyName = 'Untitled Aerospace',
       minedThisTick = {},
       npcMarketFlows = {},
+      // Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): building-recipe
+      // consumption since last sync (aggregate demand telemetry) and
+      // market-policy shortfall procurement requests (standing buy orders).
+      consumedThisTick = {},
+      procurementRequests = {},
       // Full state for multiplayer visibility
       buildings = [],
       activeServices = [],
@@ -318,6 +323,53 @@ export async function POST(request: Request) {
           }
         }
       } catch { /* NPC flow pressure is non-critical */ }
+    }
+
+    // Wave E3 (§2.2 "aggregate demand telemetry"): building-recipe
+    // consumption posts as background BUY flow — the mining-pressure pipe
+    // sign-flipped (negative qty = demand, price up) — and accrues into
+    // MarketResource.totalDemand, so widespread datacenter construction
+    // genuinely raises electronics prices for everyone. Per-sync clamp keeps
+    // forged payloads in "gentle nudges" territory (client data is
+    // client-claimed; POLICY.md).
+    const CONSUMED_PER_SYNC_CAP = 500;
+    if (consumedThisTick && typeof consumedThisTick === 'object') {
+      try {
+        const { calculatePriceAfterBackgroundFlow } = await import('@/lib/game/market-engine');
+        for (const [slug, qty] of Object.entries(consumedThisTick)) {
+          if (typeof qty !== 'number' || !Number.isFinite(qty) || qty <= 0) continue;
+          const safeQty = Math.min(CONSUMED_PER_SYNC_CAP, Math.ceil(qty));
+          const resource = await prisma.marketResource.findUnique({ where: { slug } });
+          if (!resource) continue;
+          const newPrice = calculatePriceAfterBackgroundFlow(
+            resource.currentPrice, resource.basePrice, -safeQty, // negative = buy-side demand
+            resource.volatility, resource.minPrice, resource.maxPrice,
+          );
+          await prisma.marketResource.update({
+            where: { id: resource.id },
+            data: {
+              currentPrice: newPrice,
+              // Consumed goods came out of the player's own stock, not the
+              // market's — record demand only; totalSupply is untouched.
+              totalDemand: resource.totalDemand + safeQty,
+            },
+          });
+        }
+      } catch { /* demand telemetry is non-critical */ }
+    }
+
+    // Wave E3 (§E3 auto-procurement): place/refresh this profile's standing
+    // buy orders for market-policy building shortfalls. Real MarketLimitOrder
+    // rows (source 'standing') on the shared book — visible demand other
+    // players can see, front-run, and supply. Escrow flows through the same
+    // One-Wallet ledger as every manual trade; the fills/refunds reconcile
+    // back to the client on subsequent syncs. Bounded + band-limited +
+    // cancel-on-insolvency inside the helper.
+    if (procurementRequests && typeof procurementRequests === 'object' && Object.keys(procurementRequests).length > 0) {
+      try {
+        const { placeStandingProcurementOrders } = await import('@/lib/game/market-orderbook');
+        await placeStandingProcurementOrders(profile.id, procurementRequests as Record<string, number>);
+      } catch { /* standing procurement is non-critical (schema may lag) */ }
     }
 
     // ── League Metric Tracking ──────────────────────────────────────────────

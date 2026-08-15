@@ -5219,6 +5219,11 @@ model MarketLimitOrder {
   pricePerUnit Int // Integer cents to avoid float issues
   escrowAmount Int       @default(0) // Money or resources locked
   status       String    @default("open") // open, partial, filled, cancelled, expired
+  // Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): "manual" (player-placed) or
+  // "standing" (auto-procurement bids the sync route places for building
+  // recipe shortfalls — visible demand on the shared book, refreshed
+  // cancel-and-replace each cycle, band-limited, cancel-on-insolvency).
+  source       String    @default("manual")
   expiresAt    DateTime?
 
   fills        MarketFill[] @relation("orderFills")

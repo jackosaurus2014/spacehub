@@ -28,6 +28,8 @@ import HoloTip, { Concept } from '@/components/game/HoloTip';
 import type { IconName } from '@/lib/game/icons';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
+import SupplyStatusStrip from '@/components/game/SupplyStatusStrip';
+import { setBuildingSupplyPolicy } from '@/lib/game/consumption';
 import DailyBonusModal from '@/components/game/DailyBonusModal';
 import AlliancePanel from '@/components/game/AlliancePanel';
 import AllianceHubPanel from '@/components/game/AllianceHubPanel';
@@ -1592,6 +1594,15 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
+  // ─── Wave E3: building input-sourcing policy ─────────────────────────
+  // The vertical-integration-vs-market toggle (docs/ECONOMY_PVP_2026-08.md
+  // §2.2): 'local' = own stock only, run degraded when short; 'market' =
+  // shortfalls become server-side standing buy orders on the shared book.
+  const handleSetSupplyPolicy = useCallback((instanceId: string, policy: 'local' | 'market') => {
+    playSound('click');
+    setState(prev => (prev ? setBuildingSupplyPolicy(prev, instanceId, policy) : prev));
+  }, []);
+
   // ─── Dismiss Worker ────────────────────────────────────────────────
   const handleDismissWorker = useCallback((workerType: string) => {
     playSound('click');
@@ -2080,6 +2091,7 @@ export default function SpaceTycoonPage() {
             stageLayout.overlayOpen ? 'relative flex-1 min-h-0 outline-none' : 'flex-1'
           }`}
         >
+        {tab === 'dashboard' && <SupplyStatusStrip state={state} />}
         {tab === 'dashboard' && <DashboardPanel
           state={state}
           onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)}
@@ -2092,7 +2104,7 @@ export default function SpaceTycoonPage() {
             setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
           }}
         />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onRushRepairBuilding={(instanceId) => {
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onRushRepairBuilding={(instanceId) => {
           setState(prev => {
             if (!prev) return prev;
             const bld = prev.buildings.find(b => b.instanceId === instanceId);

@@ -51,6 +51,13 @@ import { getTotalGameMonths } from './expeditions';
 import { simulateCommandQueueCatchUp } from './command-queue';
 import { processDirectivesForMonth } from './standing-directives';
 import { rollMonthlyHazards, applyHazards } from './hazards';
+// Economic PvP Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): building
+// consumption is a world-month-grid system like directives/hazards, so the
+// away catch-up loop advances it per elapsed month using the SAME
+// advanceConsumptionToMonth the live tick's isMonthEnd hook calls — the
+// lastProcessedMonth cursor guarantees live play and away catch-up can never
+// double-consume, and identical elapsed time always consumes identically.
+import { advanceConsumptionToMonth } from './consumption';
 // Live-Service Wave LS6 (docs/LIVE_SERVICE_2026-08.md §LS6): programs.ts's
 // advancePrograms is the SAME function the live tick calls — a pure
 // wall-clock discrete-event chain, so calling it here with `now` correctly
@@ -282,6 +289,11 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     working = dResult.state; // already carries its own events merged into eventLog
     directiveFeesCharged += dResult.feeCharged;
     directiveActions.push(...dResult.actions);
+
+    // Wave E3: consume this elapsed month's building recipes (after
+    // directives — auto-restock buys land before the draw, matching the live
+    // tick's ordering). Events/efficiency merge into `working` internally.
+    working = advanceConsumptionToMonth(working, m);
 
     // Only hazards that were ALREADY forecast (severe, visible at logout)
     // may strike while away — everything else defers to the first live tick

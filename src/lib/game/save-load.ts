@@ -11,6 +11,8 @@ import { checkCorporationTier } from './corporation-tiers';
 import { initializeFrontier } from './frontier';
 import { DEFAULT_DOCTRINE } from './corporate-doctrine';
 import { DEFAULT_CORPORATE_ERAS } from './corporate-eras';
+import { DEFAULT_CONSUMPTION_STATE, applyGrandfatherGrace } from './consumption';
+import { getGlobalGameDate } from './server-time';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
@@ -182,6 +184,14 @@ export function getNewGameState(): GameState {
     // contracts and NPC settlement fall back to static baseMarketPrice
     // (identical to pre-E2 behavior).
     marketSnapshot: null,
+    // V32 — Economic PvP Wave E3 "The Consumption Engine" (docs/
+    // ECONOMY_PVP_2026-08.md §E3). Fresh games run recipes at FULL rate
+    // (phaseInStartMonth null — the phase-in ramp is migration grace, not a
+    // new-game mechanic; new corporations are Frontier-shielded anyway) and
+    // anchor the world-month consumption cursor on their first tick
+    // (lastProcessedMonth null → advanceConsumptionToMonth anchors without
+    // retro-consuming).
+    consumptionState: { ...DEFAULT_CONSUMPTION_STATE },
   };
 }
 
@@ -539,6 +549,21 @@ export function loadGame(): GameState | null {
       state.craftedProducts = {};
     } else if (!state.craftedProducts) {
       state.craftedProducts = {};
+    }
+
+    // V32 — Economic PvP Wave E3 "The Consumption Engine" (docs/
+    // ECONOMY_PVP_2026-08.md §E3 [SAVE] + §7 grandfathering). Additive, with
+    // an explicit grace program rather than a bare field-default: existing
+    // saves get (a) a one-time 6-game-month input stockpile credited per
+    // affected completed building, delivered into that building's own draw
+    // pool, and (b) a 25%→100% recipe phase-in over 3 game-months anchored at
+    // the CURRENT world month — so nobody's economy craters on update. The
+    // consumption cursor also anchors at the current world month: months
+    // before migration are never retro-billed. applyGrandfatherGrace mutates
+    // in place (loadGame's house style) and posts the one-shot explainer
+    // event, mirroring the V15 insurance announcement.
+    if (!state.consumptionState) {
+      applyGrandfatherGrace(state, getGlobalGameDate().totalMonths);
     }
 
     state.tickSpeed = 1; // Always 1x for fairness

@@ -18,9 +18,61 @@ import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction } from '@/lib/game/construction-slots';
 import { calculateRushRepairCost } from '@/lib/game/hazards';
+// Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): recipe display + per-building
+// supply efficiency + the vertical-integration-vs-market sourcing toggle.
+import { describeRecipeLine, getBuildingConsumptionEfficiency, hasRecipe } from '@/lib/game/consumption';
+import { RESOURCE_MAP } from '@/lib/game/resources';
+import type { ResourceId } from '@/lib/game/resources';
+import { resourceCategoryIcon } from '@/lib/game/icons';
 import Image from 'next/image';
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
+import HoloTip, { Concept } from './HoloTip';
+
+/** Compact "consumes → produces" chip row for a building recipe. */
+function RecipeChips({ consumes, produces }: { consumes?: Record<string, number>; produces?: Record<string, number> }) {
+  if (!consumes && !produces) return null;
+  const chip = (resourceId: string, perMonth: number, kind: 'in' | 'out') => {
+    const def = RESOURCE_MAP.get(resourceId as ResourceId);
+    const qty = perMonth < 1 ? perMonth.toFixed(2).replace(/0+$/, '').replace(/\.$/, '') : String(perMonth);
+    return (
+      <span
+        key={`${kind}-${resourceId}`}
+        className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border ${
+          kind === 'in'
+            ? 'text-amber-300/90 border-amber-500/20 bg-amber-500/5'
+            : 'text-emerald-300/90 border-emerald-500/20 bg-emerald-500/5'
+        }`}
+        title={`${def?.name || resourceId}: ${qty}/mo ${kind === 'in' ? 'consumed' : 'produced'}`}
+      >
+        <GameIcon name={resourceCategoryIcon(def?.category || 'generic')} size={10} />
+        {qty} {def?.name || resourceId.replace(/_/g, ' ')}
+      </span>
+    );
+  };
+  return (
+    <div className="flex flex-wrap items-center gap-1 mb-2">
+      <HoloTip
+        content={{
+          title: 'Building Recipe',
+          icon: 'package',
+          body: (
+            <p>
+              Drawn from this building&apos;s location inventory every game month. Shortfall lowers{' '}
+              <Concept id="supply-efficiency">supply efficiency</Concept> toward the 50% floor — cover it
+              locally or with a <Concept id="standing-order">standing market order</Concept>.
+            </p>
+          ),
+        }}
+      >
+        <span className="text-[10px] uppercase tracking-wider text-slate-500">Recipe/mo</span>
+      </HoloTip>
+      {describeRecipeLine(consumes).map(r => chip(r.resourceId, r.perMonth, 'in'))}
+      {produces && Object.keys(produces).length > 0 && <span className="text-slate-600 text-[10px]">→</span>}
+      {describeRecipeLine(produces).map(r => chip(r.resourceId, r.perMonth, 'out'))}
+    </div>
+  );
+}
 
 interface BuildPanelProps {
   state: GameState;
@@ -36,9 +88,13 @@ interface BuildPanelProps {
    *  calculateRushRepairCost(damagePct, baseCost) money. Rush Repair button
    *  only renders when this is provided. */
   onRushRepairBuilding?: (instanceId: string) => void;
+  /** Wave E3: set a built structure's input-sourcing policy ('local' =
+   *  vertical integration, run degraded when short; 'market' = standing buy
+   *  orders on the shared book). Toggle only renders when provided. */
+  onSetSupplyPolicy?: (instanceId: string, policy: 'local' | 'market') => void;
 }
 
-export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding }: BuildPanelProps) {
+export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy }: BuildPanelProps) {
   const [selectedLocation, setSelectedLocation] = useState(initialLocationId || state.unlockedLocations[0] || 'earth_surface');
   const totalSlots = getConstructionSlots(state);
   const activeBuilds = getActiveConstructions(state);
@@ -219,8 +275,13 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     </div>
                   );
                 })()}
-                {bld.enabledServices.length === 0 && (
+                {bld.enabledServices.length === 0 && !bld.producesPerMonth && (
                   <p className="text-slate-600 text-[10px] mb-2">Support building — no direct revenue</p>
+                )}
+                {/* Wave E3: recipe (consumes → produces) chips */}
+                <RecipeChips consumes={bld.consumesPerMonth} produces={bld.producesPerMonth} />
+                {bld.producesPerMonth && bld.enabledServices.length === 0 && (
+                  <p className="text-emerald-400/70 text-[10px] mb-2">Producer building — passive monthly output, no service revenue</p>
                 )}
                 {/* Resource costs */}
                 {bld.resourceCost && Object.keys(bld.resourceCost).length > 0 && (
@@ -300,11 +361,43 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 const hasDamage = !!bld.damagePct && bld.damagePct > 0;
                 const isSevere = !!bld.damagePct && bld.damagePct >= 0.5;
                 const repairCost = calculateRushRepairCost(bld.damagePct, def.baseCost);
+                // Wave E3: supply efficiency + sourcing policy for recipe buildings
+                const recipeActive = hasRecipe(def) && !!def.consumesPerMonth;
+                const supplyEff = getBuildingConsumptionEfficiency(state, bld.instanceId);
+                const isShort = (state.consumptionState?.shortfallResources?.[bld.instanceId] || []).length > 0;
+                const policy = bld.supplyPolicy || 'local';
                 return (
                   <div key={bld.instanceId} className="py-1 px-2 rounded hover:bg-white/[0.02]">
                     <div className="flex items-center justify-between">
                       <span className="text-white text-xs">{def.name}</span>
                       <div className="flex items-center gap-1.5">
+                        {recipeActive && (
+                          <HoloTip
+                            underline={false}
+                            content={{
+                              title: 'Supply Efficiency',
+                              icon: 'activity',
+                              body: (
+                                <p>
+                                  Last month this facility ran at {Math.round(supplyEff * 100)}% —{' '}
+                                  <Concept id="supply-efficiency">supply efficiency</Concept> scales revenue and
+                                  output down to a 50% floor when recipe inputs run short.
+                                  {isShort && (
+                                    <> Short on: {(state.consumptionState?.shortfallResources?.[bld.instanceId] || []).map(r => r.replace(/_/g, ' ')).join(', ')}.</>
+                                  )}
+                                </p>
+                              ),
+                            }}
+                          >
+                            <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold cursor-help ${
+                              isShort
+                                ? (supplyEff <= 0.55 ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30')
+                                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                            }`}>
+                              <GameIcon name="package" size={10} /> {Math.round(supplyEff * 100)}%{isShort ? ' SHORT' : ''}
+                            </span>
+                          </HoloTip>
+                        )}
                         {hasDamage && (
                           <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold ${
                             isSevere
@@ -331,6 +424,47 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       >
                         <GameIcon name="wrench" size={11} /> Rush Repair — {formatMoney(repairCost)}
                       </button>
+                    )}
+                    {/* Wave E3: sourcing policy — the vertical-integration-vs-market choice */}
+                    {recipeActive && onSetSupplyPolicy && (
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <HoloTip
+                          content={{
+                            title: 'Input Sourcing',
+                            icon: 'market',
+                            body: (
+                              <p>
+                                <strong>Supply locally</strong>: draw only your own stock — zero cash cost, full
+                                logistics burden, runs degraded when short. <strong>Standing market order</strong>:
+                                shortfalls become real buy orders on the shared book at live spot (+2% fee) —{' '}
+                                <Concept id="standing-order">visible demand</Concept> rivals can supply or front-run.
+                              </p>
+                            ),
+                          }}
+                        >
+                          <span className="text-[10px] text-slate-500">Sourcing</span>
+                        </HoloTip>
+                        <div className="flex rounded overflow-hidden border border-white/[0.08]" role="group" aria-label={`${def.name} input sourcing`}>
+                          <button
+                            onClick={() => policy !== 'local' && onSetSupplyPolicy(bld.instanceId, 'local')}
+                            aria-pressed={policy === 'local'}
+                            className={`min-h-[28px] px-2 py-0.5 text-[10px] transition-colors ${
+                              policy === 'local' ? 'bg-cyan-600 text-white' : 'bg-white/[0.03] text-slate-400 hover:text-white'
+                            }`}
+                          >
+                            Supply locally
+                          </button>
+                          <button
+                            onClick={() => policy !== 'market' && onSetSupplyPolicy(bld.instanceId, 'market')}
+                            aria-pressed={policy === 'market'}
+                            className={`min-h-[28px] px-2 py-0.5 text-[10px] transition-colors ${
+                              policy === 'market' ? 'bg-amber-600 text-white' : 'bg-white/[0.03] text-slate-400 hover:text-white'
+                            }`}
+                          >
+                            Standing market order
+                          </button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 );

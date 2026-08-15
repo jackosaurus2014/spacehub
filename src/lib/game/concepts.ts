@@ -231,6 +231,26 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
     body: 'Each weekly league season groups players into brackets so standings compare you against peers of similar scale rather than the whole server — new players are protected from being ranked against veterans, matching the game\'s new-player on-ramp commitment.',
   }),
 
+  // ── Supply chains (Wave E3 — docs/ECONOMY_PVP_2026-08.md §2.2/§E3) ──────
+  'building-recipe': c({
+    id: 'building-recipe', name: 'Building Recipe', icon: 'package',
+    short: 'Monthly inputs a building consumes (and outputs it produces)',
+    body: 'Each game-month a completed building draws its recipe inputs — propellant for launch pads, life-support packs for crews, electronics spares for datacenters — from the inventory at its own location. Producer buildings (propellant plants, agri domes, refineries) credit their outputs the same way. Recipes make every facility a real customer and every mine a real supplier.',
+    related: ['supply-efficiency', 'standing-order'],
+  }),
+  'supply-efficiency': c({
+    id: 'supply-efficiency', name: 'Supply Efficiency', icon: 'activity',
+    short: 'How fully supplied a building ran last month (50-100%)',
+    body: 'When recipe inputs run short, the building browns out: efficiency scales down linearly with the missing share to a floor of 50% — it never hard-stops. Efficiency multiplies the building\'s service revenue and production output until supply recovers. Life-support shortfalls also wear on crew morale.',
+    related: ['building-recipe', 'standing-order'],
+  }),
+  'standing-order': c({
+    id: 'standing-order', name: 'Standing Market Order', icon: 'market',
+    short: 'Auto-buy recipe shortfalls at live spot on the shared book',
+    body: 'A building set to "Standing market order" turns its monthly input shortfall into a real buy order on the shared order book, placed server-side at live spot (+2% fee) within the anti-cornering price band. Your bids are visible demand other corporations can see, front-run, and supply — buying convenience for market exposure. The alternative is vertical integration: produce and freight your own inputs.',
+    related: ['building-recipe', 'order-book-depth', 'escrow'],
+  }),
+
   // ── Legacy / progression ─────────────────────────────────────────────────
   legacy: c({
     id: 'legacy', name: 'Legacy', icon: 'scroll',

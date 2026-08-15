@@ -41,6 +41,17 @@ export const PRODUCTION_CHAINS: ProductDefinition[] = [
     timeSeconds: 90, requiredResearch: ['resource_prospecting'], requiredBuilding: 'fabrication_orbital',
     marketValue: 120_000,
   },
+  // Sabatier methane route (Wave E3 — docs/ECONOMY_PVP_2026-08.md §3.1 chain
+  // A / §4.3): the methane→propellant alternative to water cracking, unlocked
+  // by the sabatier_process tech. Runs at the Mars Manufacturing Plant —
+  // Titan methane freighted to Mars (or Mars-local sources) becomes fuel
+  // without touching the water chain.
+  {
+    id: 'sabatier_methane_fuel', name: 'Sabatier: Methane → Rocket Fuel', icon: '⛽', tier: 1,
+    inputs: { methane: 12 }, outputId: 'rocket_fuel', outputQuantity: 10,
+    timeSeconds: 100, requiredResearch: ['sabatier_process'], requiredBuilding: 'fabrication_mars',
+    marketValue: 120_000,
+  },
   // Refined rare earth
   {
     id: 'refine_rare_earth', name: 'Refine Rare Earth Oxides', icon: '🔬', tier: 1,

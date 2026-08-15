@@ -27,6 +27,7 @@
 // doesn't exist. Deferred, documented, not silently dropped.
 
 import type { GameState, GameTab } from './types';
+import { BUILDING_MAP } from './buildings';
 import { getMissionCalendarEntries, type CalendarCategory } from './world-calendar';
 import { calendarCategoryIcon, type IconName } from './icons';
 import type { OrderQueueTarget } from './order-queue';
@@ -36,6 +37,9 @@ export type SituationSeverity = 'critical' | 'warning' | 'info';
 export type SituationCategory =
   | 'hazard_recent' | 'hazard_forecast' | 'contract' | 'senate' | 'charter'
   | 'story_chapter' | 'economic_cycle' | 'queue_idle' | 'mail'
+  // Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): building recipe inputs ran
+  // short — the facility is browned out toward the 0.5 efficiency floor.
+  | 'supply_shortfall'
   // Outliner-only sources (deriveAttentionItems, outliner.ts) — included in
   // the shared union so both modules can emit/consume the same item shape.
   | 'building_damage' | 'ship_damage' | 'ship_idle' | 'queue_stalled';
@@ -205,6 +209,30 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
       severity: urgencySeverity(remaining),
       atMs: entry.atMs,
       tab: CALENDAR_CATEGORY_TAB[entry.category],
+    });
+  }
+
+  // ── Supply shortfalls (Wave E3 consumption engine — consumption.ts) ─────
+  // "supply shortfall at X": every building whose last monthly consumption
+  // pass came up short gets a persistent item; at (or near) the 0.5 floor it
+  // escalates to critical. State is a pure read of consumptionState — no new
+  // derivation logic here.
+  const shortfalls = state.consumptionState?.shortfallResources || {};
+  const effMap = state.consumptionState?.efficiency || {};
+  for (const [instanceId, missing] of Object.entries(shortfalls)) {
+    if (!missing || missing.length === 0) continue;
+    const bld = state.buildings.find(b => b.instanceId === instanceId);
+    if (!bld) continue;
+    const def = BUILDING_MAP.get(bld.definitionId);
+    const eff = effMap[instanceId] ?? 1;
+    items.push({
+      id: `sit-supply-${instanceId}`,
+      category: 'supply_shortfall',
+      icon: 'package',
+      label: `Supply shortfall at ${def?.name || bld.definitionId}`,
+      detail: `Running at ${Math.round(eff * 100)}% efficiency — short on ${missing.map(r => r.replace(/_/g, ' ')).join(', ')}. Stock the site, freight supplies, or enable standing market buys.`,
+      severity: eff <= 0.55 ? 'critical' : 'warning',
+      tab: 'build',
     });
   }
 
