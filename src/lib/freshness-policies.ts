@@ -140,12 +140,15 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
 
   // NOTE: 'business-opportunities' entry removed here (2026-08-14
   // orphaned-pipeline cleanup). The /business-opportunities page reads the
-  // BusinessOpportunity Prisma model via /api/opportunities (seeded +
-  // refreshed weekly by src/lib/opportunities-data.ts runAIAnalysis) —
-  // never this DynamicContent module. Its two AI-research/API keys
+  // BusinessOpportunity Prisma model via /api/opportunities, seeded from
+  // SEED_OPPORTUNITIES in src/lib/opportunities-data.ts — never this
+  // DynamicContent module. Its two AI-research/API keys
   // (business-opportunities:sam-gov-all, :sbir-sttr, written by
   // src/lib/fetchers/business-opportunities-fetcher.ts) have zero readers.
   // See report for why the fetcher file itself was not deleted.
+  // (2026-08-14 update: the weekly runAIAnalysis refresh mentioned in the
+  // original note has since been disabled — see opportunities-data.ts —
+  // because it generated undisclosed speculative "ai_generated" rows.)
 
   // Space Environment (Enhanced NOAA + DONKI)
   'space-environment': {

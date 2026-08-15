@@ -87,6 +87,9 @@ interface CompanyDetail {
   longDescription: string | null; logoUrl: string | null; ceo: string | null;
   cto: string | null; linkedinUrl: string | null; twitterUrl: string | null;
   isPublic: boolean; marketCap: number | null; stockPrice: number | null;
+  priceChange24h: number | null;
+  stockDataSource?: 'live' | 'db';
+  stockDataAsOf?: string | null;
   status: string; sector: string | null; subsector: string | null;
   tags: string[]; tier: number; totalFunding: number | null;
   lastFundingRound: string | null; valuation: number | null;
@@ -592,6 +595,11 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
                 <span className="text-slate-300">{value}</span>
               </div>
             ))}
+            {company.isPublic && company.ticker && company.stockDataSource === 'db' && company.stockDataAsOf && (
+              <div className="pt-1 text-xs text-amber-500/80">
+                Live quote unavailable — showing last verified price as of {fmtDate(company.stockDataAsOf)}
+              </div>
+            )}
           </div>
         </SectionCard>
       </div>

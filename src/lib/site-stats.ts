@@ -9,8 +9,8 @@
  * When a number changes materially, update it here once.
  */
 export const SITE_STATS = {
-  /** Company profiles in the directory (actual: 123) */
-  companies: '120+',
+  /** Company profiles in the directory (actual: 319 CompanyProfile rows after the Aug 2026 DB merge) */
+  companies: '300+',
   /** Original articles: blog posts + published AI insights (actual: ~270) */
   articles: '250+',
   /** Named external data sources — matches /data-sources page inventory */
@@ -23,14 +23,16 @@ export const SITE_STATS = {
   modules: '40+',
   /** Automated data-refresh jobs (cron roster, actual: 56 scheduled jobs) */
   automatedFeeds: '50+',
-  /** Live ATS-synced job listings (actual: ~6,400 active, resyncs daily) */
-  jobListings: '6,000+',
+  /** Live ATS-synced job listings (actual: ~6,540 active Aug 2026, resyncs daily) */
+  jobListings: '6,500+',
   /** RSS/news feeds ingested (actual: 63 in news-fetcher RSS_FEEDS after Aug 2026 dead-feed prune) */
   newsFeeds: '60+',
   /** Global space economy, current (single canonical figure — do not fork) */
   spaceEconomyNow: '$630B',
   /** Global space economy, projected — always cite with the year */
   spaceEconomyProjection: '$1.8T by 2035',
+  /** Artemis Accords signatory nations (actual: 70, asOf mid-2026) */
+  accordsNations: '70',
 } as const;
 
 export type SiteStatKey = keyof typeof SITE_STATS;

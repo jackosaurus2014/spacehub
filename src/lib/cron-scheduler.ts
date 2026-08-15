@@ -86,6 +86,10 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 11 * * *',    path: '/api/refresh?type=patents',           label: 'patents-refresh',            maxStaleMinutes: 1560 },
   { schedule: '0 12 * * *',    path: '/api/refresh?type=regulatory-feeds',  label: 'regulatory-feeds',           maxStaleMinutes: 1560 },
   { schedule: '0 14 * * *',    path: '/api/refresh?type=sec-filings',       label: 'sec-filings',                maxStaleMinutes: 1560 },
+  // Daily stock-price/market-cap sync for public CompanyProfile rows (fixes
+  // the stock-price split-brain vs. /api/stocks). Weekdays, after US market
+  // close. Generous maxStaleMinutes tolerates the Fri-close -> Mon-close gap.
+  { schedule: '30 21 * * 1-5', path: '/api/cron/stock-sync',                label: 'stock-sync',                 maxStaleMinutes: 4320 },
   // Content-accuracy sentinel — daily checklist guarding against stale/past-dated
   // "current" content (featured mission dates, countdown widgets, curated as-of
   // stamps, ATS/news/AI pipeline liveness). See src/lib/content-accuracy.ts.
@@ -96,7 +100,17 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 10 * * 5',    path: '/api/newsletter/intelligence-brief?action=generate', label: 'weekly-intelligence-brief', maxStaleMinutes: 11520 },
   { schedule: '30 11 * * 6',   path: '/api/refresh?type=patents-market-intel',    label: 'patents-market-intel',       maxStaleMinutes: 11520 },
   { schedule: '0 9 * * 1',     path: '/api/refresh?type=company-digests',         label: 'company-digests',            maxStaleMinutes: 11520 },
-  { schedule: '0 10 * * 0,3',  path: '/api/refresh?type=opportunities-analysis',  label: 'opportunities-analysis',     maxStaleMinutes: 7200 },
+  // 'opportunities-analysis' cron removed (2026-08-14 data-integrity fix):
+  // it called runAIAnalysis() to fabricate speculative BusinessOpportunity
+  // rows (sourceType 'ai_generated', e.g. "Orbital Bio-Enhancement Clinics")
+  // that sat mixed in with real sam_gov/news_analysis intelligence on
+  // /business-opportunities with fabricated-precision valuations and no
+  // disclosure. Founder decision: retire AI-generated opportunities
+  // entirely rather than badge them. The 91 existing ai_generated rows
+  // were archived in prod; getOpportunities()/getOpportunityStats() in
+  // src/lib/opportunities-data.ts now hard-exclude sourceType
+  // 'ai_generated' regardless of status. The manual trigger
+  // (POST /api/opportunities/analyze) is also disabled — see that route.
   { schedule: '0 6 * * 2',     path: '/api/refresh?type=market-commentary',       label: 'market-commentary-generation', maxStaleMinutes: 11520 },
 
   // Win-back emails for inactive users (daily at 10am UTC)

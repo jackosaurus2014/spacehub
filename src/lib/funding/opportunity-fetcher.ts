@@ -35,17 +35,76 @@ export interface FundingOpportunityInput {
   recurring?: boolean;
 }
 
-// Space-related keywords for filtering
+// Space-related keywords for filtering.
+//
+// IMPORTANT: bare generic words ('space', 'orbit', 'launch', 'debris',
+// 'navigation', 'constellation', 'payload', 'mars', 'lunar' on their own)
+// were removed from this list (2026-08-14 data-integrity fix). They
+// substring-matched federal grants that have nothing to do with the space
+// industry — e.g. USDA's "Community Forest and Open Space Conservation
+// Program" (matched bare 'space') and the State Department's "Enhancing and
+// Supporting the Network of American Spaces in Armenia" (cultural centers,
+// matched bare 'space'/'spaces'), both of which surfaced at the top of
+// /funding-opportunities. 'orbit'/'launch' have the same trap ("launching a
+// program", "orbit of influence" in policy-speak) and 'mars'/'lunar' alone
+// false-positive on things like "Marshall"/"Marseille" or Lunar New Year
+// cultural grants. Every entry below is either a compound phrase specific
+// enough to be unambiguous, or (via isSpaceRelated's agency check) requires
+// the funding agency to be a space-relevant one.
 const SPACE_KEYWORDS = [
-  'space', 'satellite', 'orbit', 'launch', 'rocket', 'propulsion', 'spacecraft',
-  'lunar', 'mars', 'asteroid', 'telescope', 'remote sensing', 'earth observation',
-  'GPS', 'navigation', 'cislunar', 'deep space', 'LEO', 'GEO', 'debris',
-  'constellation', 'spaceport', 'microgravity', 'in-space', 'payload',
+  'space technology', 'space station', 'space telescope', 'space debris',
+  'space weather', 'space domain awareness', 'space situational awareness',
+  'space propulsion', 'space exploration', 'space launch', 'space force',
+  'outer space', 'spacecraft', 'spaceport', 'satellite', 'orbital',
+  'in-space', 'cislunar', 'deep space', 'low earth orbit',
+  'geostationary orbit', 'launch vehicle', 'launch pad', 'launch site',
+  'launch services', 'rocket propulsion', 'reusable rocket',
+  'remote sensing', 'earth observation', 'lunar lander', 'lunar surface',
+  'lunar exploration', 'lunar orbit', 'lunar mission', 'mars mission',
+  'mars exploration', 'mars sample', 'asteroid detection',
+  'asteroid deflection', 'asteroid mining', 'planetary defense',
+  'planetary science', 'astrophysics', 'astronomical sciences',
+  'small satellite', 'cubesat', 'satellite constellation',
+  'satellite payload', 'satellite navigation', 'gps satellite',
+  'microgravity',
 ];
 
-function isSpaceRelated(text: string): boolean {
+// Titles/descriptions containing these phrases are excluded even if a
+// SPACE_KEYWORDS phrase also matches — known false-positive patterns for
+// federal grant listings (e.g. HRSA "satellite clinic" grants, NEA/State
+// Dept "open space" and "American Spaces" cultural-center programs).
+const EXCLUDE_PHRASES = [
+  'satellite campus', 'satellite office', 'satellite clinic',
+  'satellite location', 'satellite center', 'satellite facility',
+  'open space', 'space conservation', 'parking space', 'green space',
+  'community space', 'gallery space', 'exhibition space', 'workspace',
+  'coworking space', 'maker space', 'american spaces', 'cultural space',
+  'event space', 'retail space',
+];
+
+// Agencies whose grants are presumed space-relevant even without a keyword
+// hit (e.g. a NASA solicitation whose title doesn't literally say "space",
+// or ESA's NAVISP GNSS programme whose title says "Navigation Innovation"
+// without the word "satellite"). National/international space agencies are
+// space-relevant by definition; DARPA is included narrowly since its space
+// portfolio (Blackjack, DRACO, NOM4D — see STATE_INCENTIVES 'darpa-space'
+// below) is a small fraction of its overall docket, but its grant titles
+// reliably mention the program name, which the phrase list above catches.
+const SPACE_AGENCIES = [
+  'NASA', 'SPACE FORCE', 'SPACEWERX', 'AFWERX', 'DARPA',
+  'ESA', 'EUROPEAN SPACE AGENCY', 'UK SPACE AGENCY', 'CANADIAN SPACE AGENCY',
+  'JAXA', 'CNES', 'DLR', 'ISRO',
+];
+
+function isSpaceRelated(text: string, agency?: string): boolean {
   const lower = text.toLowerCase();
-  return SPACE_KEYWORDS.some(kw => lower.includes(kw));
+  if (EXCLUDE_PHRASES.some(p => lower.includes(p))) return false;
+  if (SPACE_KEYWORDS.some(kw => lower.includes(kw))) return true;
+  if (agency) {
+    const upperAgency = agency.toUpperCase();
+    if (SPACE_AGENCIES.some(a => upperAgency.includes(a))) return true;
+  }
+  return false;
 }
 
 // Category classifier based on text content
@@ -123,7 +182,7 @@ export async function fetchGrantsGov(): Promise<FundingOpportunityInput[]> {
 
     const opps = response?.data?.oppHits || response?.oppHits || [];
     for (const opp of opps) {
-      if (!isSpaceRelated(`${opp.title || ''} ${opp.synopsis || ''}`)) continue;
+      if (!isSpaceRelated(`${opp.title || ''} ${opp.synopsis || ''}`, opp.agency || opp.agencyCode)) continue;
       results.push({
         externalId: `grants-${opp.id}`,
         title: opp.title || 'Untitled',
@@ -173,7 +232,7 @@ export async function fetchSamGovOpportunities(): Promise<FundingOpportunityInpu
       for (const opp of data?.opportunitiesData || []) {
         const extId = `sam-${opp.noticeId}`;
         if (results.some(r => r.externalId === extId)) continue;
-        if (!isSpaceRelated(`${opp.title || ''} ${opp.description || ''}`)) continue;
+        if (!isSpaceRelated(`${opp.title || ''} ${opp.description || ''}`, opp.department || opp.subtier)) continue;
         results.push({
           externalId: extId,
           title: opp.title || 'Untitled',
@@ -254,7 +313,7 @@ export async function fetchSBIROpportunities(): Promise<FundingOpportunityInput[
 
       for (const item of items) {
         if (!item.title) continue;
-        if (!isSpaceRelated(`${item.title} ${item.desc} ${agency}`)) continue;
+        if (!isSpaceRelated(`${item.title} ${item.desc}`, agency)) continue;
         results.push({
           externalId: `sbir-${item.id}`,
           title: item.title || 'Untitled SBIR Topic',

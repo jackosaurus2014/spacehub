@@ -24,6 +24,18 @@ export interface SeedPodcast {
   websiteUrl: string;
   author: string;
   category: PodcastRosterCategory;
+  /**
+   * True for shows that aren't space-native but are kept in the directory
+   * for their relevance to the AI/compute buildout (space-based datacenters,
+   * launch economics, etc). Used by the /podcasts page to route a show into
+   * the "AI & Adjacent Tech" section instead of the main space-shows grid.
+   * All `category: 'ai'` shows are adjacent by definition; this flag exists
+   * for the handful of shows filed under a space-native-sounding category
+   * (business, interviews) that are nonetheless not space-native content —
+   * e.g. All-In and Moonshots, which are general tech/VC shows that touch
+   * space coverage rather than space shows proper.
+   */
+  isAdjacent?: boolean;
 }
 
 export const PODCAST_ROSTER: SeedPodcast[] = [
@@ -187,6 +199,7 @@ export const PODCAST_ROSTER: SeedPodcast[] = [
     websiteUrl: 'https://www.allin.com/',
     author: 'All-In Podcast, LLC',
     category: 'business',
+    isAdjacent: true,
   },
   {
     name: 'Moonshots with Peter Diamandis',
@@ -196,6 +209,7 @@ export const PODCAST_ROSTER: SeedPodcast[] = [
     websiteUrl: 'https://www.diamandis.com/podcast',
     author: 'Peter H. Diamandis',
     category: 'interviews',
+    isAdjacent: true,
   },
 
   // ─── AI podcasts (relevant to space-based datacenters / AI compute) ─────
@@ -272,6 +286,19 @@ export const PODCAST_ROSTER: SeedPodcast[] = [
     category: 'ai',
   },
 ];
+
+/**
+ * Names of shows that belong in the "AI & Adjacent Tech" section of the
+ * /podcasts directory rather than the main space-shows grid — every
+ * `category: 'ai'` show plus any show explicitly flagged `isAdjacent`.
+ * Matched by name against DB rows (seeded from this roster) since the
+ * Podcast model doesn't carry an isAdjacent column.
+ */
+export const ADJACENT_TECH_SHOW_NAMES = new Set(
+  PODCAST_ROSTER.filter((show) => show.category === 'ai' || show.isAdjacent).map(
+    (show) => show.name,
+  ),
+);
 
 export interface RosterValidationResult {
   valid: boolean;

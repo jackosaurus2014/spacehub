@@ -8,6 +8,7 @@ import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import HowToSchema from '@/components/seo/HowToSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const revalidate = 3600;
 
@@ -445,7 +446,7 @@ export default function SpaceRegulatoryCompliancePage() {
               <h3 className="text-xl font-bold text-white mb-3 mt-6">The Artemis Accords (2020)</h3>
               <p className="text-slate-300 leading-relaxed mb-4">
                 A set of bilateral agreements establishing norms for civil exploration of the Moon, Mars,
-                and beyond. As of mid-2026, 70 nations have signed. Key provisions include commitments
+                and beyond. As of mid-2026, {SITE_STATS.accordsNations} nations have signed. Key provisions include commitments
                 to transparency, interoperability, emergency assistance, registration of space objects,
                 release of scientific data, preservation of heritage sites, and prevention of harmful
                 interference. The Accords are particularly relevant for companies involved in lunar

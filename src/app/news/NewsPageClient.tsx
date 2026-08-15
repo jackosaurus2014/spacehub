@@ -227,7 +227,7 @@ function NewsContent() {
             : 'No articles available. Try refreshing the page.'}
           suggestions={[
             { label: 'Blog & Analysis', href: '/blog' },
-            { label: 'Daily Digest', href: '/daily-digest' },
+            { label: 'Live Digest', href: '/briefs' },
             { label: 'AI Insights', href: '/ai-insights' },
           ]}
         />
@@ -370,22 +370,22 @@ export default function NewsPageClient({ featuredBlogPosts }: NewsPageClientProp
             <TrendingSidebar />
             {/* Artemis II Sidebar CTA */}
             <Link
-              href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
-              className="block mt-4 card p-4 border border-cyan-500/20 bg-gradient-to-b from-cyan-500/[0.04] to-purple-500/[0.04] hover:border-cyan-500/30 transition-all group"
+              href="/artemis"
+              className="block mt-4 card p-4 border border-slate-500/20 bg-gradient-to-b from-slate-500/[0.04] to-purple-500/[0.04] hover:border-cyan-500/30 transition-all group"
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold border border-cyan-500/20">
-                  LIVE Apr 1
+                <span className="px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-300 text-xs font-semibold border border-slate-500/20">
+                  MISSION COMPLETE
                 </span>
               </div>
               <h4 className="text-sm font-semibold text-white group-hover:text-cyan-50 transition-colors mb-1">
-                How to Watch Artemis II Launch
+                How Artemis II Flew
               </h4>
               <p className="text-xs text-slate-400 mb-2">
-                Stream links, crew profiles, mission timeline &mdash; your complete viewing guide.
+                Relive the crewed lunar flyby &mdash; mission recap, crew profiles, and what comes next on the Artemis timeline.
               </p>
               <span className="text-xs font-medium text-cyan-400/70 group-hover:text-cyan-400 transition-colors flex items-center gap-1">
-                Read Guide
+                Read the Recap
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -498,7 +499,7 @@ const REGULATIONS: Regulation[] = [
     effectiveDate: '2020-10-13',
     status: 'active',
     summary:
-      'Bilateral accords establishing principles for cooperative civil space exploration consistent with the Outer Space Treaty. 70 nations have signed as of mid-2026, supporting sustainable lunar exploration.',
+      `Bilateral accords establishing principles for cooperative civil space exploration consistent with the Outer Space Treaty. ${SITE_STATS.accordsNations} nations have signed as of mid-2026, supporting sustainable lunar exploration.`,
     keyProvisions: [
       'Peaceful purposes and transparency of space activities',
       'Interoperability of space systems',

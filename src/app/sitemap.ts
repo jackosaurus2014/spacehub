@@ -446,7 +446,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/newsletter`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
     // Daily Digest
-    { url: `${BASE_URL}/daily-digest`, changeFrequency: 'daily' as const, priority: 0.7 },
 
     // Alternatives & Competitors
     { url: `${BASE_URL}/alternatives`, changeFrequency: 'monthly' as const, priority: 0.7 },

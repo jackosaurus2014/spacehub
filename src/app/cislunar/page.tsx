@@ -11,6 +11,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import DataAsOf, { oldestAsOfDate } from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
+import { SITE_STATS } from '@/lib/site-stats';
 
 // ────────────────────────────────────────
 // Types
@@ -259,7 +260,7 @@ function HeroStats() {
     { label: 'Artemis Missions', value: '6+', icon: '🚀', sub: 'Planned through 2030s' },
     { label: 'CLPS Deliveries', value: `${CLPS_MISSIONS.length}`, icon: '🌙', sub: 'Missions awarded' },
     { label: 'Cislunar Investment', value: '$93B+', icon: '💰', sub: 'NASA Artemis total' },
-    { label: 'Accords Signatories', value: '~47', icon: '🌐', sub: 'Nations as of early 2026' },
+    { label: 'Accords Signatories', value: SITE_STATS.accordsNations, icon: '🌐', sub: 'Nations as of mid-2026' },
   ];
 
   return (

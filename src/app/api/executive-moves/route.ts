@@ -2,14 +2,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EXECUTIVE_MOVES, ExecutiveMove } from '@/lib/executive-moves-data';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { isLikelyPersonName, isLikelyTitle, isLikelyOrg } from '@/lib/fetchers/executive-moves-fetcher';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Server-side display guard (defense in depth): a DB row is only rendered
+ * if every populated field passes the same shape validators the fetcher
+ * uses to decide what to write. This protects the page even if a bad row
+ * ever slips into the table again (manual insert, future extractor bug,
+ * migration, etc.) — see the 2026-08 incident where 156/170 rows were
+ * garbled sentence fragments, not real personnel moves.
+ */
+function passesDisplayValidation(row: {
+  personName: string;
+  fromTitle: string | null;
+  fromCompany: string | null;
+  toTitle: string | null;
+  toCompany: string | null;
+}): boolean {
+  if (!isLikelyPersonName(row.personName)) return false;
+  if (row.fromTitle && !isLikelyTitle(row.fromTitle)) return false;
+  if (row.fromCompany && !isLikelyOrg(row.fromCompany)) return false;
+  if (row.toTitle && !isLikelyTitle(row.toTitle)) return false;
+  if (row.toCompany && !isLikelyOrg(row.toCompany)) return false;
+  return true;
+}
 
 /**
  * Merge the static seed/backfill list with the live ExecutiveMove table
  * (populated daily by executive-moves-fetcher.ts, cron 14:00 UTC).
  * DB rows are authoritative on conflict since they reflect live news scans;
- * static rows fill in history the fetcher predates.
+ * static rows fill in history the fetcher predates. Curated static rows
+ * (id prefix "em-") are trusted and always shown; DB rows are re-validated
+ * here before merging so a bad row can never render, even if it somehow
+ * made it into the table.
  */
 async function getMergedMoves(): Promise<ExecutiveMove[]> {
   const byKey = new Map<string, ExecutiveMove>();
@@ -28,6 +55,8 @@ async function getMergedMoves(): Promise<ExecutiveMove[]> {
     });
 
     for (const row of dbMoves) {
+      if (!passesDisplayValidation(row)) continue;
+
       const move: ExecutiveMove = {
         id: row.id,
         personName: row.personName,
@@ -91,8 +120,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Sort by date (newest first)
-    filtered.sort((a, b) => b.date.localeCompare(a.date));
+    // Sort by date (newest first); on a date tie, show curated/trusted
+    // entries (static seed rows, id prefix "em-") ahead of live-scanned
+    // DB rows.
+    filtered.sort((a, b) => {
+      const dateCmp = b.date.localeCompare(a.date);
+      if (dateCmp !== 0) return dateCmp;
+      const aCurated = a.id.startsWith('em-') ? 0 : 1;
+      const bCurated = b.id.startsWith('em-') ? 0 : 1;
+      return aCurated - bCurated;
+    });
 
     const total = filtered.length;
     const totalPages = Math.ceil(total / limit);

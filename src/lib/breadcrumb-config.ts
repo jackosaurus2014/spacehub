@@ -213,7 +213,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/space-stats': 'Space Industry Statistics',
 
   // ── Daily Digest ──
-  '/daily-digest': 'Daily Digest',
 
   // ── New Pages (Wave) ──
   '/satellite-2026': 'SATELLITE 2026',

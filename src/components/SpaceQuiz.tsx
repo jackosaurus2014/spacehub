@@ -396,7 +396,7 @@ export default function SpaceQuiz() {
       {/* Daily Digest CTA */}
       <div className="mt-3 pt-3 border-t border-white/[0.06]">
         <Link
-          href="/daily-digest"
+          href="/briefs"
           className="inline-flex items-center gap-1.5 text-[11px] text-violet-400 hover:text-violet-300 font-medium transition-colors"
         >
           Read today&apos;s Space Digest

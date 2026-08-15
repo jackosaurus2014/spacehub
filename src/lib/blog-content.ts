@@ -1836,15 +1836,15 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="artemis-program-restructuring">Artemis Program Restructuring: What Changed</h2>
 
-<p>The original Artemis plan called for a lunar surface landing on Artemis III, which would have used SpaceX\'s Starship Human Landing System (HLS). However, NASA announced a <strong>significant restructuring</strong> of the program timeline in late 2025:</p>
+<p>The original Artemis plan called for a lunar surface landing on Artemis III, which would have used SpaceX\'s Starship Human Landing System (HLS). However, NASA announced a <strong>significant restructuring</strong> of the program timeline in February 2026:</p>
 
 <ul>
-<li><strong>Artemis III</strong> is now planned as an <strong>orbital mission to the Gateway lunar station</strong>, rather than a surface landing. The crew will dock with Gateway (if its initial modules are in place) or perform an extended lunar orbit mission testing rendezvous and docking procedures.</li>
-<li><strong>Artemis IV</strong> has been designated as the <strong>first crewed lunar landing</strong>, currently targeted for 2028-2029. This mission will use Starship HLS, which must complete an uncrewed lunar landing demonstration before being certified for crew.</li>
+<li><strong>Artemis III</strong> is now planned as a <strong>crewed Earth-orbit demonstration</strong>, rather than a surface landing. Orion will dock in Earth orbit with commercial human landing systems from both SpaceX (Starship HLS) and Blue Origin (Blue Moon), rehearsing the rendezvous and crew-transfer procedures the eventual landing will require.</li>
+<li><strong>Artemis IV</strong> has been designated as the <strong>first crewed lunar landing</strong>, currently targeted for approximately 2028. This mission will use Starship HLS, which must complete an uncrewed lunar landing demonstration before being certified for crew, and also begins Gateway assembly.</li>
 <li><strong>Blue Origin\'s HLS variant</strong> (selected as the second lunar lander provider) is expected to support Artemis V or VI.</li>
 </ul>
 
-<p>The restructuring reflects NASA\'s pragmatic assessment that Starship HLS development — while progressing well — requires additional time for the uncrewed demo landing, orbital refueling demonstrations, and crew certification. Rather than delay Artemis III indefinitely, NASA chose to maximize the value of each mission by flying orbital objectives while the landing system matures.</p>
+<p>The restructuring reflects NASA\'s pragmatic assessment that Starship HLS development — while progressing well — requires additional time for the uncrewed demo landing, orbital refueling demonstrations, and crew certification. Rather than delay Artemis III indefinitely, NASA chose to maximize the value of each mission by flying an orbital docking rehearsal while the landing system matures.</p>
 
 <h2 id="commercial-space-ecosystem">What This Means for the Commercial Space Ecosystem</h2>
 
@@ -1857,7 +1857,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>As the prime contractor for Orion, Lockheed Martin has the most direct revenue exposure to Artemis II\'s success. The company has contracts for Orion production through Artemis VII, representing approximately $13 billion in cumulative value. A successful crewed flight validates their deep space vehicle in a way that uncrewed Artemis I could not.</p>
 
 <h3>Boeing and Northrop Grumman</h3>
-<p>Boeing builds the SLS core stage, while Northrop Grumman provides the solid rocket boosters. Both companies have ongoing production contracts. Additionally, Northrop Grumman is building the <strong>HALO</strong> (Habitation and Logistics Outpost) module for the Gateway station, which becomes relevant once Artemis III orbital objectives are confirmed.</p>
+<p>Boeing builds the SLS core stage, while Northrop Grumman provides the solid rocket boosters. Both companies have ongoing production contracts. Additionally, Northrop Grumman is building the <strong>HALO</strong> (Habitation and Logistics Outpost) module for the Gateway station, which becomes relevant once Gateway assembly begins with Artemis IV.</p>
 
 <h3>International Partners</h3>
 <p>Artemis II\'s international crew (with Canadian astronaut Jeremy Hansen) reinforces the Artemis Accords framework, now signed by over 45 nations. ESA\'s service module contribution, CSA\'s Canadarm3, and JAXA\'s planned Gateway contributions create a web of international commitments that make the program more politically resilient and commercially diverse.</p>
@@ -3540,7 +3540,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>NASA\'s <strong>Artemis II</strong> mission is arguably the most significant crewed spaceflight since the Apollo program. The mission will send four astronauts — Reid Wiseman, Victor Glover, Christina Koch, and Jeremy Hansen — on a roughly 10-day journey around the Moon aboard the Orion spacecraft, launched by the Space Launch System (SLS). This is the first crewed flight beyond low Earth orbit since Apollo 17 in 1972.</p>
 
-<p>The mission serves as a critical shakedown of the Orion spacecraft\'s life support systems, navigation, and communication capabilities with crew aboard, paving the way for Artemis III\'s lunar surface landing. The launch window is targeted for <strong>mid-to-late 2026</strong> from Kennedy Space Center\'s Launch Complex 39B.</p>
+<p>The mission serves as a critical shakedown of the Orion spacecraft\'s life support systems, navigation, and communication capabilities with crew aboard, paving the way for Artemis III\'s Earth-orbit HLS demonstration and, eventually, Artemis IV\'s lunar surface landing. The launch window is targeted for <strong>mid-to-late 2026</strong> from Kennedy Space Center\'s Launch Complex 39B.</p>
 
 <h3>Starship V3 — The Next Leap in Heavy Lift</h3>
 
@@ -4593,7 +4593,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Artemis II is the first crewed flight of the Artemis program, NASA\'s initiative to return humans to the Moon and establish a sustainable presence for long-term exploration. The mission profile is a free-return trajectory around the Moon \u2014 similar to Apollo 8 and Apollo 13 \u2014 that will take the crew farther from Earth than any human has traveled since Apollo 17 in 1972.</p>
 
-<p>Unlike the uncrewed Artemis I test flight in 2022, Artemis II will validate all crew life support systems, manual piloting capabilities, and deep space communication links with astronauts aboard. The data from this mission is essential for planning Artemis III, which will land astronauts on the lunar surface.</p>
+<p>Unlike the uncrewed Artemis I test flight in 2022, Artemis II will validate all crew life support systems, manual piloting capabilities, and deep space communication links with astronauts aboard. The data from this mission is essential for planning Artemis III\'s Earth-orbit HLS docking demonstration and, ultimately, the Artemis IV mission that will land astronauts on the lunar surface.</p>
 
 <p>For a comprehensive overview of the mission objectives, vehicle specifications, and program history, read our in-depth article: <a href="/blog/artemis-ii-moon-mission-everything-you-need-to-know">Artemis II Moon Mission: Everything You Need to Know</a>.</p>
 
@@ -4952,7 +4952,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     content: `
 <p>NASA\'s <strong>Artemis II</strong> mission is set to launch on <strong>April 1, 2026</strong>, sending four astronauts around the Moon for the first time since Apollo 17 in 1972. This is the most anticipated crewed space launch in a generation, and whether you plan to watch from your couch or from the shores of the Kennedy Space Center, this guide has everything you need to make the most of it.</p>
 
-<p>Artemis II is a 10-day mission that will send Commander Reid Wiseman, Pilot Victor Glover, Mission Specialist Christina Koch, and Canadian Space Agency astronaut Jeremy Hansen on a free-return trajectory around the Moon. They will fly farther from Earth than any humans in history, reaching a maximum distance of approximately 370,000 kilometers. The crew will not land on the lunar surface — that milestone is reserved for Artemis III — but they will test every critical system of the Orion spacecraft and Space Launch System (SLS) rocket with humans aboard for the first time.</p>
+<p>Artemis II is a 10-day mission that will send Commander Reid Wiseman, Pilot Victor Glover, Mission Specialist Christina Koch, and Canadian Space Agency astronaut Jeremy Hansen on a free-return trajectory around the Moon. They will fly farther from Earth than any humans in history, reaching a maximum distance of approximately 370,000 kilometers. The crew will not land on the lunar surface — that milestone now belongs to Artemis IV, after a February 2026 restructuring turned Artemis III into an Earth-orbit HLS demonstration — but they will test every critical system of the Orion spacecraft and Space Launch System (SLS) rocket with humans aboard for the first time.</p>
 
 <h2 id="when-to-watch">When to Watch</h2>
 
@@ -5043,7 +5043,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="mission-significance">Why This Mission Matters</h2>
 
-<p>Artemis II is more than a test flight. It represents humanity\'s return to deep space after a 54-year hiatus. The crew is the most diverse ever sent beyond low Earth orbit, including the first woman (Koch) and first Canadian (Hansen) to fly to the Moon. A successful mission clears the path for Artemis III, which will land the first woman and first person of color on the lunar surface, and for the long-term Artemis program goal of establishing a sustained human presence at the Moon.</p>
+<p>Artemis II is more than a test flight. It represents humanity\'s return to deep space after a 54-year hiatus. The crew is the most diverse ever sent beyond low Earth orbit, including the first woman (Koch) and first Canadian (Hansen) to fly to the Moon. A successful mission clears the path for Artemis III\'s Earth-orbit HLS demonstration and, from there, Artemis IV — which will land the first woman and first person of color on the lunar surface — and for the long-term Artemis program goal of establishing a sustained human presence at the Moon.</p>
 
 <p>For the space industry, Artemis II validates the SLS-Orion architecture for crewed deep space missions, demonstrates the Orion spacecraft\'s life support systems for extended duration flights, and generates enormous public interest that drives political support and funding for future exploration programs.</p>
 
@@ -6290,7 +6290,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 </ul>
 
 <h3>Artemis Timeline Pressure</h3>
-<p>The budget reflects the reality that Artemis is entering its most expensive phase. Artemis II (the crewed lunar flyby) is targeted for 2026. Artemis III (the first crewed landing since Apollo 17) depends on Starship HLS readiness. Each mission requires concurrent development of hardware for future missions, creating overlapping cost peaks. The fundamental tension in Artemis is between schedule ambition and budget reality \u2014 every delay adds cost, but budget constraints make schedule compression difficult.</p>
+<p>The budget reflects the reality that Artemis is entering its most expensive phase. Artemis II (the crewed lunar flyby) is targeted for 2026. Artemis III — restructured in February 2026 into a crewed Earth-orbit Starship HLS docking demonstration — has ceded the first crewed landing since Apollo 17 to Artemis IV, whose schedule still depends on Starship HLS readiness. Each mission requires concurrent development of hardware for future missions, creating overlapping cost peaks. The fundamental tension in Artemis is between schedule ambition and budget reality \u2014 every delay adds cost, but budget constraints make schedule compression difficult.</p>
 
 <h2 id="science-directorate">Science: Flagships Under Pressure</h2>
 
@@ -11725,7 +11725,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Artemis I (2022):</strong> Uncrewed test flight of the Space Launch System (SLS) and Orion spacecraft around the Moon — a 25-day mission that validated the hardware</li>
 <li><strong>Artemis II (2026):</strong> The first crewed flight around the Moon since Apollo 17, carrying four astronauts on a 10-day lunar flyby</li>
-<li><strong>Artemis III (planned):</strong> The first crewed lunar landing since 1972, using SpaceX\'s Starship as the lunar lander. Will land the first woman and first person of color on the Moon</li>
+<li><strong>Artemis III (restructured, NET late 2027):</strong> Following a February 2026 program restructuring, Artemis III is now a crewed Earth-orbit demonstration in which Orion docks with the SpaceX Starship and Blue Origin Blue Moon landers, rehearsing the procedures the actual landing will require</li>
+<li><strong>Artemis IV (planned, ~2028):</strong> The first crewed lunar landing since 1972, using SpaceX\'s Starship as the lunar lander. Will land the first woman and first person of color on the Moon, and also begins Lunar Gateway assembly</li>
 <li><strong>Lunar Gateway:</strong> A small space station in lunar orbit, serving as a staging point for surface missions and deep space exploration</li>
 </ul>
 
@@ -19375,7 +19376,7 @@ ISS (ZARYA)
     category: 'guide', author: 'SpaceNexus Team', authorRole: 'Editorial',
     publishedAt: '2026-03-19T16:00:00Z', readingTime: 7,
     keywords: ['artemis program', 'nasa moon mission', 'artemis timeline', 'sls rocket', 'lunar gateway'],
-    content: `<p>The Artemis program is NASA's flagship human spaceflight initiative — a multi-mission campaign to establish sustainable human presence on and around the Moon. Named after the twin sister of Apollo in Greek mythology, Artemis aims to land astronauts on the lunar surface for the first time since Apollo 17 in December 1972.</p><h2 id="architecture">Mission Architecture</h2><ul><li><strong>SLS (Space Launch System):</strong> NASA's super-heavy lift rocket. Block 1 can deliver 27 metric tons to trans-lunar injection. The most powerful rocket to fly since Saturn V</li><li><strong>Orion:</strong> Crew capsule built by Lockheed Martin, with ESA providing the European Service Module. Carries 4 astronauts</li><li><strong>HLS (Human Landing System):</strong> SpaceX Starship selected for Artemis III and IV. Blue Origin's Blue Moon selected for Artemis V</li><li><strong>Gateway:</strong> Small space station in lunar orbit. Modules from NASA, ESA, JAXA, and CSA. Enables sustained lunar surface access</li></ul><h2 id="missions">Mission Timeline</h2><ul><li><strong>Artemis I (Nov 2022):</strong> Completed. Uncrewed Orion flight around the Moon — 25.5 day mission testing all systems</li><li><strong>Artemis II (2025-2026):</strong> First crewed Orion flight. 4 astronauts will fly around the Moon without landing — first humans beyond LEO since 1972</li><li><strong>Artemis III (2026-2027):</strong> First lunar landing since Apollo 17. 2 astronauts descend to the surface near the lunar south pole using SpaceX Starship HLS</li><li><strong>Artemis IV+:</strong> Gateway assembly begins. Regular surface missions with increasing duration and capability</li></ul><h2 id="industry-impact">Industry Impact</h2><p>Artemis involves over 1,100 companies across all 50 US states, plus international partners from 61 nations through the Artemis Accords. The program is driving development in areas including lunar rovers, surface habitats, ISRU (in-situ resource utilization), and cislunar communications infrastructure.</p><p>Track Artemis missions at <a href="/mission-control">SpaceNexus Mission Control</a>.</p>`,
+    content: `<p>The Artemis program is NASA's flagship human spaceflight initiative — a multi-mission campaign to establish sustainable human presence on and around the Moon. Named after the twin sister of Apollo in Greek mythology, Artemis aims to land astronauts on the lunar surface for the first time since Apollo 17 in December 1972.</p><h2 id="architecture">Mission Architecture</h2><ul><li><strong>SLS (Space Launch System):</strong> NASA's super-heavy lift rocket. Block 1 can deliver 27 metric tons to trans-lunar injection. The most powerful rocket to fly since Saturn V</li><li><strong>Orion:</strong> Crew capsule built by Lockheed Martin, with ESA providing the European Service Module. Carries 4 astronauts</li><li><strong>HLS (Human Landing System):</strong> SpaceX Starship HLS docks with Orion for Artemis III's Earth-orbit demonstration and lands crew on Artemis IV. Blue Origin's Blue Moon also participates in the Artemis III docking demo and is slated for Artemis V</li><li><strong>Gateway:</strong> Small space station in lunar orbit. Modules from NASA, ESA, JAXA, and CSA. Enables sustained lunar surface access</li></ul><h2 id="missions">Mission Timeline</h2><ul><li><strong>Artemis I (Nov 2022):</strong> Completed. Uncrewed Orion flight around the Moon — 25.5 day mission testing all systems</li><li><strong>Artemis II (Apr 2026):</strong> Completed. First crewed Orion flight. 4 astronauts flew around the Moon without landing — first humans beyond LEO since 1972</li><li><strong>Artemis III (NET late 2027):</strong> Restructured in February 2026 from a lunar landing into a crewed Earth-orbit demonstration — Orion docks with both the SpaceX Starship HLS and Blue Origin Blue Moon landers, rehearsing procedures for the landing to come</li><li><strong>Artemis IV (~2028):</strong> First lunar landing since Apollo 17, using Starship HLS to descend to the surface near the lunar south pole. Also the first Gateway-era mission, beginning station assembly</li></ul><h2 id="industry-impact">Industry Impact</h2><p>Artemis involves over 1,100 companies across all 50 US states, plus international partners from 61 nations through the Artemis Accords. The program is driving development in areas including lunar rovers, surface habitats, ISRU (in-situ resource utilization), and cislunar communications infrastructure.</p><p>Track Artemis missions at <a href="/mission-control">SpaceNexus Mission Control</a>.</p>`,
   },
   {
     slug: 'reusable-rockets-history-future-2026',
@@ -19411,7 +19412,7 @@ ISS (ZARYA)
     category: 'technology', author: 'SpaceNexus Team', authorRole: 'Engineering',
     publishedAt: '2026-03-19T20:00:00Z', readingTime: 7,
     keywords: ['spacex starship', 'starship rocket', 'super heavy booster', 'starship specs'],
-    content: `<p>SpaceX's Starship is the tallest and most powerful launch vehicle ever built — standing 121 meters tall and producing 74 MN (16.7 million pounds) of thrust at liftoff. Designed to be fully reusable and capable of carrying 150 metric tons to LEO, Starship represents a paradigm shift in space transportation.</p><h2 id="specs">Key Specifications</h2><ul><li><strong>Height:</strong> 121 m (397 ft) — full stack (Super Heavy + Starship upper stage)</li><li><strong>Diameter:</strong> 9 m (30 ft)</li><li><strong>Super Heavy booster:</strong> 33 Raptor engines, ~74 MN thrust at liftoff</li><li><strong>Starship upper stage:</strong> 6 Raptor engines (3 sea-level, 3 vacuum), capable of orbital insertion and landing</li><li><strong>Payload to LEO:</strong> ~150 metric tons (fully reusable), ~250 metric tons (expendable)</li><li><strong>Payload to Moon surface:</strong> ~100 metric tons (with orbital refueling)</li><li><strong>Propellant:</strong> Liquid methane (CH4) and liquid oxygen (LOX) — chosen for manufacturability on Mars</li></ul><h2 id="reusability">Full Reusability</h2><p>Both stages are designed to be caught and reused. The Super Heavy booster returns to the launch site and is caught by mechanical arms ("Mechazilla") on the launch tower — eliminating the need for landing legs and saving mass. The Starship upper stage performs a belly-flop reentry and propulsive landing. SpaceX demonstrated the first successful booster catch in 2025.</p><h2 id="missions">Mission Applications</h2><ul><li><strong>Artemis HLS:</strong> Starship is NASA's selected Human Landing System for Artemis III (first lunar landing) and Artemis IV</li><li><strong>Starlink deployment:</strong> Starship's large fairing will deploy 60+ next-gen Starlink satellites per launch vs. 23 on Falcon 9</li><li><strong>Point-to-point Earth:</strong> Theoretical 30-minute flights between any two cities on Earth (not yet demonstrated)</li><li><strong>Mars colonization:</strong> SpaceX's long-term vision — Starship designed from the start for Mars transit with ISRU propellant production</li></ul><p>Track Starship launches and SpaceX missions at <a href="/mission-control">SpaceNexus Mission Control</a>.</p>`,
+    content: `<p>SpaceX's Starship is the tallest and most powerful launch vehicle ever built — standing 121 meters tall and producing 74 MN (16.7 million pounds) of thrust at liftoff. Designed to be fully reusable and capable of carrying 150 metric tons to LEO, Starship represents a paradigm shift in space transportation.</p><h2 id="specs">Key Specifications</h2><ul><li><strong>Height:</strong> 121 m (397 ft) — full stack (Super Heavy + Starship upper stage)</li><li><strong>Diameter:</strong> 9 m (30 ft)</li><li><strong>Super Heavy booster:</strong> 33 Raptor engines, ~74 MN thrust at liftoff</li><li><strong>Starship upper stage:</strong> 6 Raptor engines (3 sea-level, 3 vacuum), capable of orbital insertion and landing</li><li><strong>Payload to LEO:</strong> ~150 metric tons (fully reusable), ~250 metric tons (expendable)</li><li><strong>Payload to Moon surface:</strong> ~100 metric tons (with orbital refueling)</li><li><strong>Propellant:</strong> Liquid methane (CH4) and liquid oxygen (LOX) — chosen for manufacturability on Mars</li></ul><h2 id="reusability">Full Reusability</h2><p>Both stages are designed to be caught and reused. The Super Heavy booster returns to the launch site and is caught by mechanical arms ("Mechazilla") on the launch tower — eliminating the need for landing legs and saving mass. The Starship upper stage performs a belly-flop reentry and propulsive landing. SpaceX demonstrated the first successful booster catch in 2025.</p><h2 id="missions">Mission Applications</h2><ul><li><strong>Artemis HLS:</strong> Starship is NASA's selected Human Landing System, docking with Orion for Artemis III's restructured Earth-orbit demonstration and landing crew on the Moon for Artemis IV (first lunar landing since Apollo 17)</li><li><strong>Starlink deployment:</strong> Starship's large fairing will deploy 60+ next-gen Starlink satellites per launch vs. 23 on Falcon 9</li><li><strong>Point-to-point Earth:</strong> Theoretical 30-minute flights between any two cities on Earth (not yet demonstrated)</li><li><strong>Mars colonization:</strong> SpaceX's long-term vision — Starship designed from the start for Mars transit with ISRU propellant production</li></ul><p>Track Starship launches and SpaceX missions at <a href="/mission-control">SpaceNexus Mission Control</a>.</p>`,
   },
   {
     slug: 'space-mining-asteroid-resources-2026',
@@ -22922,43 +22923,43 @@ ISS (ZARYA)
 {
   slug: 'artemis-program-update-what-comes-after-artemis-ii',
   title: 'Artemis Program Update: What Comes After Artemis II',
-  excerpt: 'With Artemis II complete, NASA\'s lunar program enters its most ambitious phase. Here is a detailed look at what comes next — from the first crewed lunar landing on Artemis III to the Lunar Gateway, commercial lander programs, and the long-term vision for a sustained presence on the Moon.',
+  excerpt: 'With Artemis II complete, NASA\'s lunar program enters its most ambitious phase. Here is a detailed look at what comes next — from Artemis III\'s restructured Earth-orbit HLS demonstration to Artemis IV\'s first crewed lunar landing, the Lunar Gateway, commercial lander programs, and the long-term vision for a sustained presence on the Moon.',
   category: 'analysis',
   author: 'SpaceNexus Team',
   authorRole: 'Editorial',
   publishedAt: '2026-04-15T00:00:00Z',
   readingTime: 10,
   featured: true,
-  keywords: ['Artemis III', 'NASA moon base', 'lunar gateway', 'Starship HLS', 'Artemis program timeline', 'lunar landing 2027', 'moon base procurement'],
+  keywords: ['Artemis III', 'NASA moon base', 'lunar gateway', 'Starship HLS', 'Artemis program timeline', 'Artemis III restructuring', 'lunar landing 2028', 'moon base procurement'],
   content: `
 <p>Artemis II marked a historic milestone: the first crewed mission beyond low Earth orbit since Apollo 17 in 1972. The four-person crew aboard Orion successfully completed a lunar flyby, validating life support systems, navigation, and communication capabilities that are prerequisites for everything that follows. But Artemis II was always the prologue. The real story of the Artemis program — crewed lunar landings, the Gateway orbital station, commercial surface operations, and the eventual establishment of a sustained human presence on the Moon — begins now. Here is where things stand and what comes next.</p>
 
-<h2>Artemis III: The First Crewed Landing</h2>
+<h2>Artemis III: The Restructured Mission</h2>
 
-<p>Artemis III is the mission that defines the program's ambition: the first crewed lunar landing since 1972 and the first to put a woman and a person of color on the lunar surface. The mission architecture is substantially more complex than Apollo:</p>
-
-<ul>
-<li><strong>Orion + SLS:</strong> The crew launches aboard Orion on the Space Launch System to a near-rectilinear halo orbit (NRHO) around the Moon.</li>
-<li><strong>Starship HLS:</strong> SpaceX's Human Landing System — a lunar-optimized variant of Starship — pre-positions in NRHO. This is a fully reusable lander that is significantly larger than the Apollo Lunar Module, capable of delivering approximately 100 metric tons of payload to the lunar surface.</li>
-<li><strong>Crew transfer:</strong> The Orion crew transfers to Starship HLS in NRHO, descends to the lunar surface for a planned surface stay of approximately 6.5 days, then ascends back to NRHO for rendezvous with Orion and return to Earth.</li>
-</ul>
-
-<p>The current target date for Artemis III is mid-to-late 2027, though this depends on several development milestones that have not yet been achieved. The most significant dependencies are:</p>
+<p>In February 2026, NASA restructured Artemis III. Rather than sending a crew directly to the lunar surface, the agency judged that Starship HLS's development pace — orbital refueling, in particular — had not caught up to a landing on the original schedule. Rather than let the whole program stall waiting on a single lander, NASA moved the milestone: Artemis III is now a crewed <strong>Earth-orbit demonstration</strong>, and the first crewed lunar landing since 1972 moves to Artemis IV.</p>
 
 <ul>
-<li><strong>Starship orbital refueling demonstration:</strong> Starship HLS requires multiple orbital refueling operations before it can depart for the Moon. SpaceX must demonstrate reliable propellant transfer in orbit — a capability that has never been attempted at this scale. Initial propellant transfer tests are planned for 2026, with a full-scale demonstration required before the crewed landing.</li>
-<li><strong>Uncrewed Starship HLS demonstration landing:</strong> Before a crewed landing, SpaceX must perform an uncrewed Starship HLS landing on the lunar surface, demonstrating precision landing, surface operations, and ascent.</li>
-<li><strong>Spacesuit readiness:</strong> Axiom Space is developing the next-generation Exploration Extravehicular Mobility Unit (xEMU) spacesuits for Artemis III. The suits must be qualified for lunar surface operations including dust mitigation, thermal management, and extended EVA duration.</li>
+<li><strong>Orion + SLS:</strong> The crew still launches aboard Orion on the Space Launch System, but this time to Earth orbit rather than lunar orbit.</li>
+<li><strong>Dual HLS docking rehearsal:</strong> In Earth orbit, Orion docks with commercial human landing systems from both SpaceX (Starship HLS) and Blue Origin (Blue Moon), rehearsing rendezvous and crew-transfer procedures that Artemis IV will need to actually put boots on the Moon.</li>
+<li><strong>Crew:</strong> The Artemis III crew, announced June 9, 2026, includes ESA astronaut Luca Parmitano — NASA's first non-U.S. crew assignment on an Artemis mission.</li>
 </ul>
 
-<h2>Artemis IV: Gateway Assembly Begins</h2>
+<p>The current target date for Artemis III is NET (no earlier than) late 2027, though this depends on several development milestones that have not yet been achieved. The most significant dependencies — for both Artemis III's demonstration and the Artemis IV landing that follows it — are:</p>
 
-<p>Artemis IV, currently planned for approximately 2028, adds a transformative element: the <strong>Lunar Gateway</strong>. This mission will deliver the first modules of Gateway to NRHO, establishing a permanent orbital outpost that fundamentally changes the logistics of lunar operations.</p>
+<ul>
+<li><strong>Starship orbital refueling demonstration:</strong> Starship HLS requires multiple orbital refueling operations before it can depart for the Moon. SpaceX must demonstrate reliable propellant transfer in orbit — a capability that has never been attempted at this scale. Initial propellant transfer tests are planned for 2026, with a full-scale demonstration required before any crewed lunar landing.</li>
+<li><strong>Uncrewed Starship HLS demonstration landing:</strong> Before any crew descends to the surface, SpaceX must perform an uncrewed Starship HLS landing on the lunar surface, demonstrating precision landing, surface operations, and ascent.</li>
+<li><strong>Spacesuit readiness:</strong> Axiom Space is developing the AxEMU (Axiom Extravehicular Mobility Unit) — derived from NASA's xEMU reference design — for lunar surface operations. The suits must be qualified for dust mitigation, thermal management, and extended EVA duration ahead of the Artemis IV landing.</li>
+</ul>
+
+<h2>Artemis IV: The First Crewed Landing and Gateway Assembly</h2>
+
+<p>With the landing milestone moved off Artemis III, Artemis IV — currently planned for approximately 2028 — now carries the double distinction of being both the first crewed lunar landing since Apollo 17 and the first Gateway-era mission. A crew descends to the lunar south pole aboard Starship HLS, delivering the first boots on the Moon in over half a century and the first woman and person of color to walk on the lunar surface, while the mission also delivers the first modules of the <strong>Lunar Gateway</strong> to NRHO, establishing a permanent orbital outpost that fundamentally changes the logistics of lunar operations.</p>
 
 <h3>Gateway Architecture</h3>
 
 <ul>
-<li><strong>PPE (Power and Propulsion Element):</strong> Built by Maxar Technologies, the PPE provides solar electric propulsion, power generation, and communications for the station. It uses advanced Hall-effect thrusters that are significantly more efficient than chemical propulsion for station-keeping in NRHO.</li>
+<li><strong>PPE (Power and Propulsion Element):</strong> Built by Lanteris Space Systems (formerly Maxar), the PPE provides solar electric propulsion, power generation, and communications for the station. It uses advanced Hall-effect thrusters that are significantly more efficient than chemical propulsion for station-keeping in NRHO.</li>
 <li><strong>HALO (Habitation and Logistics Outpost):</strong> Built by Northrop Grumman, HALO provides living quarters, docking ports, and command-and-control capabilities. It is a compact habitation module designed for periodic crew visits rather than permanent habitation.</li>
 <li><strong>International modules:</strong> ESA is contributing the I-HAB (International Habitation Module) and the ESPRIT refueling module. The Canadian Space Agency is providing the Canadarm3 robotic arm for Gateway. JAXA (Japan) is contributing life support components and may provide a habitation module.</li>
 </ul>

@@ -132,7 +132,7 @@ export const SPACE_CITIES: SpaceCity[] = [
       { name: 'Boeing Space (El Segundo)', slug: 'boeing', focus: 'Satellites, SLS core stage' },
       { name: 'Raytheon (El Segundo)', slug: 'raytheon', focus: 'Space sensors, missile warning' },
       { name: 'Relativity Space', slug: 'relativity-space', focus: '3D-printed rockets (Terran R)' },
-      { name: 'Long Wall', slug: 'abl-space', focus: 'Missile defense (formerly ABL Space Systems, pivoted from orbital launch in 2025)' },
+      { name: 'Long Wall', slug: 'abl-space-systems', focus: 'Missile defense (formerly ABL Space Systems, pivoted from orbital launch in 2025)' },
     ],
     jobMarket: {
       avgSalary: '$130,000',

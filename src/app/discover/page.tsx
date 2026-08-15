@@ -110,7 +110,7 @@ const referenceModules = [
 ];
 
 const hiddenGems = [
-  { href: '/daily-digest', label: 'Daily Digest', description: 'Curated morning briefing' },
+  { href: '/briefs', label: 'Live Digest', description: 'Rolling 7-day space news digest' },
   { href: '/space-quiz', label: 'Space Quiz', description: 'Test your knowledge daily' },
   { href: '/reading-list', label: 'Reading List', description: 'Save articles for later' },
   { href: '/my-watchlists', label: 'Watchlists', description: 'Track companies and get alerts' },

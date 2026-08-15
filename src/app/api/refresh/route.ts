@@ -264,11 +264,19 @@ export async function POST(request: Request) {
     // orphaned DynamicContent keys nobody reads (the real /business-opportunities
     // page is served by the Opportunity model via /api/opportunities).
 
-    if (type === 'opportunities-analysis') {
-      const { runAIAnalysis } = await import('@/lib/opportunities-data');
-      const analysisResult = await runAIAnalysis();
-      results.opportunitiesAnalysis = analysisResult;
-    }
+    // 'opportunities-analysis' type disabled (2026-08-14 data-integrity fix):
+    // this used to call runAIAnalysis() to generate speculative
+    // BusinessOpportunity rows (sourceType 'ai_generated') that were mixed
+    // in with real sam_gov/news_analysis opportunities on
+    // /business-opportunities with fabricated-precision valuations and no
+    // disclosure. Founder decision: retire AI-generated opportunities
+    // entirely. The cron entry that called this type was removed from
+    // src/lib/cron-scheduler.ts; the manual trigger at
+    // POST /api/opportunities/analyze is also disabled. Existing
+    // ai_generated rows were archived in prod, and
+    // getOpportunities()/getOpportunityStats() in
+    // src/lib/opportunities-data.ts hard-exclude sourceType 'ai_generated'
+    // regardless of status as a second line of defense.
 
     if (type === 'patents') {
       const { fetchAndStorePatents } = await import('@/lib/module-api-fetchers');

@@ -407,7 +407,7 @@ function BusinessOpportunitiesContent() {
         <div className="container mx-auto px-4 pt-6">
           <AnimatedPageHeader
             title="Business Opportunities"
-            subtitle="AI-powered discovery of space industry opportunities for entrepreneurs, investors, and students"
+            subtitle="Curated government contracts and market intelligence for space industry entrepreneurs, investors, and students"
             icon="💼"
             accentColor="amber"
           />
@@ -658,16 +658,15 @@ function BusinessOpportunitiesContent() {
             <ScrollReveal>
               <div className="card p-6 mt-8 border-dashed">
                 <div className="text-center">
-                  <span className="text-4xl block mb-3">🤖</span>
+                  <span className="text-4xl block mb-3">💼</span>
                   <h3 className="text-lg font-semibold text-white mb-2">
-                    About AI-Powered Opportunities
+                    About These Opportunities
                   </h3>
                   <p className="text-slate-400 text-sm max-w-3xl mx-auto">
-                    Every week, our AI system automatically analyzes news sources, government solicitations,
-                    company reports, and market trends to discover new business opportunities in the
-                    space industry. Fresh opportunities are added each week. Confidence scores indicate
-                    how strongly the AI believes in the opportunity based on available data.
-                    Always conduct your own due diligence before pursuing any opportunity.
+                    Opportunities here are sourced from active government solicitations (SAM.gov) and
+                    editorial market analysis of documented industry trends — not AI speculation.
+                    Confidence scores reflect how strongly the underlying source data supports the
+                    opportunity. Always conduct your own due diligence before pursuing any opportunity.
                   </p>
                 </div>
               </div>

@@ -612,9 +612,9 @@ const SPACE_INVESTORS: InvestorData[] = [
     notableDeals: ['Blue Origin (co-invest)'],
   },
   {
-    name: 'Bond (formerly ICONIQ Capital)',
+    name: 'Bond Capital',
     type: 'pe',
-    description: 'Wealth management and venture firm managing capital for notable tech founders.',
+    description: 'Growth-stage venture firm founded by Mary Meeker (formerly of Kleiner Perkins), investing in internet and technology growth companies including space.',
     website: 'https://bond.vc',
     headquarters: 'San Francisco, CA',
     foundedYear: 2011,

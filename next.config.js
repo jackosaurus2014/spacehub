@@ -411,7 +411,7 @@ const nextConfig = {
       { source: '/isru', destination: '/space-mining', permanent: true },
       { source: '/resource-exchange', destination: '/marketplace', permanent: true },
       { source: '/imagery-providers', destination: '/company-profiles', permanent: true },
-      { source: '/news-digest', destination: '/daily-digest', permanent: true },
+      { source: '/news-digest', destination: '/briefs', permanent: true },
       { source: '/watchlists', destination: '/my-watchlists', permanent: true },
       { source: '/materials-db', destination: '/materials-database', permanent: true },
       { source: '/clean-room', destination: '/clean-room-reference', permanent: true },
@@ -442,6 +442,7 @@ const nextConfig = {
 
       // ── Duplicate company profile merged (2026-08) ──
       { source: '/company-profiles/anduril', destination: '/company-profiles/anduril-industries', permanent: true },
+      { source: '/company-profiles/abl-space', destination: '/company-profiles/abl-space-systems', permanent: true },
 
       // ── Artemis Program Tracker (2026-08) ──
       { source: '/artemis-tracker', destination: '/artemis', permanent: true },
@@ -452,6 +453,9 @@ const nextConfig = {
       // 7-day digest) and /newsletters-directory (external newsletter
       // directory) are different, unaffected surfaces.
       { source: '/newsletter-archive', destination: '/intelligence-brief', permanent: true },
+      // /daily-digest retired (2026-08-14, founder decision): it was a thin
+      // restyling of /news's top-5; /briefs is the canonical live digest.
+      { source: '/daily-digest', destination: '/briefs', permanent: true },
     ];
   },
 }

@@ -497,7 +497,7 @@ export default function GettingStartedPage() {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto content-auto">
             <StaggerItem>
               <Link
-                href="/daily-digest"
+                href="/briefs"
                 className="block h-full rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-orange-500/10 p-6 hover:scale-[1.02] transition-transform group"
               >
                 <div className="text-amber-400 mb-4">
@@ -506,7 +506,7 @@ export default function GettingStartedPage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-white transition-colors">
-                  Daily Digest
+                  Live Digest
                 </h3>
                 <p className="text-slate-300 text-sm leading-relaxed">
                   Get a curated daily briefing of the most important space industry news, launches, and market moves.

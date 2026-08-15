@@ -7,6 +7,7 @@ import type { CompanyForScoring } from '@/lib/company-completeness';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
+import { getLiveQuoteSafe } from '@/lib/stock-quote';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,8 @@ const CORE_SCALAR_SELECT = {
   verificationLevel: true,
   contactEmail: true,
   claimedByUserId: true,
+  priceChange24h: true,
+  lastVerified: true,
 };
 
 // Newer fields added in later versions — may not exist if db push failed
@@ -205,6 +208,28 @@ export async function GET(
       return notFoundError('Company profile');
     }
 
+    // Prefer a live Yahoo Finance quote over the (potentially months-stale)
+    // DB fields for public companies with a ticker. getLiveQuoteSafe has its
+    // own short timeout + circuit breaker and never throws -- on any failure
+    // we fall back to the DB values and label them with lastVerified so the
+    // UI can be honest about staleness instead of silently rendering old
+    // numbers as if they were current.
+    let stockDataSource: 'live' | 'db' = 'db';
+    let stockDataAsOf: string | null = company.lastVerified
+      ? new Date(company.lastVerified).toISOString()
+      : null;
+
+    if (company.isPublic && company.ticker) {
+      const liveQuote = await getLiveQuoteSafe(company.ticker);
+      if (liveQuote) {
+        company.stockPrice = liveQuote.stockPrice;
+        if (liveQuote.marketCap !== null) company.marketCap = liveQuote.marketCap;
+        if (liveQuote.priceChange24h !== null) company.priceChange24h = liveQuote.priceChange24h;
+        stockDataSource = 'live';
+        stockDataAsOf = new Date().toISOString();
+      }
+    }
+
     // Calculate summary stats
     const totalContractValue = (company.contracts || []).reduce(
       (sum: number, c: { value?: number | null }) => sum + (c.value || 0), 0
@@ -267,6 +292,8 @@ export async function GET(
 
     return NextResponse.json({
       ...company,
+      stockDataSource,
+      stockDataAsOf,
       jobPostingsCount: company._count?.jobPostings ?? 0,
       summary: {
         totalContractValue,

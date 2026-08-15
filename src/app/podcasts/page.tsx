@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger';
 import AdSlot from '@/components/ads/AdSlot';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { ADJACENT_TECH_SHOW_NAMES } from '@/lib/podcast-roster';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,7 @@ interface PodcastListItem {
   category: string | null;
   episodeCount: number;
   lastFetchedAt: Date | null;
+  latestEpisodeAt: Date | null;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -34,16 +36,71 @@ const CATEGORY_COLORS: Record<string, string> = {
   ai: 'bg-lime-500/15 text-lime-300 border-lime-500/30',
 };
 
-function formatLastFetched(d: Date | null): string {
-  if (!d) return 'Pending sync';
+function formatLatestEpisode(d: Date | null): string {
+  if (!d) return 'No episodes yet';
   const date = new Date(d);
-  const now = Date.now();
-  const diffH = Math.floor((now - date.getTime()) / (1000 * 60 * 60));
-  if (diffH < 1) return 'Updated just now';
-  if (diffH < 24) return `Updated ${diffH}h ago`;
-  const diffD = Math.floor(diffH / 24);
-  if (diffD < 30) return `Updated ${diffD}d ago`;
-  return `Updated ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  const now = new Date();
+  const sameYear = date.getFullYear() === now.getFullYear();
+  const formatted = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    ...(sameYear ? {} : { year: 'numeric' }),
+  });
+  return `Latest episode: ${formatted}`;
+}
+
+function PodcastCard({ p }: { p: PodcastListItem }) {
+  const categoryClass = CATEGORY_COLORS[p.category || 'general'] || CATEGORY_COLORS.general;
+  return (
+    <Link
+      href={`/podcasts/${p.slug}`}
+      className="card p-5 hover:border-white/20 transition-all group block"
+    >
+      <div className="flex items-start gap-4">
+        {p.artworkUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={p.artworkUrl}
+            alt=""
+            className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-white/10"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-xl bg-white/[0.06] flex items-center justify-center flex-shrink-0 border border-white/10">
+            <svg className="w-7 h-7 text-white/50" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM7 12a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.93V22h-2v-3.07A7 7 0 0 1 5 12h2z" />
+            </svg>
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
+            {p.category && (
+              <span className={`text-[10px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded border ${categoryClass}`}>
+                {p.category}
+              </span>
+            )}
+            <span className="text-xs text-slate-500">
+              {p.episodeCount} {p.episodeCount === 1 ? 'episode' : 'episodes'}
+            </span>
+          </div>
+          <h3 className="font-semibold text-white text-base leading-snug line-clamp-2 group-hover:text-white/90 transition-colors">
+            {p.name}
+          </h3>
+          {p.author && (
+            <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{p.author}</p>
+          )}
+        </div>
+      </div>
+      {p.description && (
+        <p className="text-slate-400 text-sm mt-3 line-clamp-2">
+          {p.description}
+        </p>
+      )}
+      <p className="text-xs text-slate-500 mt-3">
+        {formatLatestEpisode(p.latestEpisodeAt)}
+      </p>
+    </Link>
+  );
 }
 
 interface PageProps {
@@ -76,7 +133,7 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
       where.category = category;
     }
 
-    podcasts = await prisma.podcast.findMany({
+    const rows = await prisma.podcast.findMany({
       where: where as never,
       orderBy: [{ episodeCount: 'desc' }, { name: 'asc' }],
       select: {
@@ -90,8 +147,17 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
         category: true,
         episodeCount: true,
         lastFetchedAt: true,
+        episodes: {
+          orderBy: { publishedAt: { sort: 'desc', nulls: 'last' } },
+          take: 1,
+          select: { publishedAt: true },
+        },
       },
     });
+    podcasts = rows.map((r) => ({
+      ...r,
+      latestEpisodeAt: r.episodes[0]?.publishedAt ?? null,
+    }));
   } catch (e) {
     error = e instanceof Error ? e.message : 'Failed to load podcasts';
     logger.error('[Podcasts Page] Failed to load directory', { error });
@@ -104,6 +170,12 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
     categoryCounts[c] = (categoryCounts[c] || 0) + 1;
   }
   const knownCategories = Object.keys(categoryCounts).sort();
+
+  // Space-native shows lead the page; AI/adjacent-tech shows (kept for their
+  // relevance to space-based compute/datacenter coverage) get their own
+  // clearly-labeled section below rather than being mixed into the main grid.
+  const spaceShows = podcasts.filter((p) => !ADJACENT_TECH_SHOW_NAMES.has(p.name));
+  const adjacentShows = podcasts.filter((p) => ADJACENT_TECH_SHOW_NAMES.has(p.name));
 
   return (
     <div className="min-h-screen">
@@ -224,63 +296,31 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {podcasts.map((p) => {
-              const categoryClass =
-                CATEGORY_COLORS[p.category || 'general'] || CATEGORY_COLORS.general;
-              return (
-                <Link
-                  key={p.id}
-                  href={`/podcasts/${p.slug}`}
-                  className="card p-5 hover:border-white/20 transition-all group block"
-                >
-                  <div className="flex items-start gap-4">
-                    {p.artworkUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={p.artworkUrl}
-                        alt=""
-                        className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-white/10"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 rounded-xl bg-white/[0.06] flex items-center justify-center flex-shrink-0 border border-white/10">
-                        <svg className="w-7 h-7 text-white/50" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM7 12a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.93V22h-2v-3.07A7 7 0 0 1 5 12h2z" />
-                        </svg>
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        {p.category && (
-                          <span className={`text-[10px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded border ${categoryClass}`}>
-                            {p.category}
-                          </span>
-                        )}
-                        <span className="text-xs text-slate-500">
-                          {p.episodeCount} {p.episodeCount === 1 ? 'episode' : 'episodes'}
-                        </span>
-                      </div>
-                      <h3 className="font-semibold text-white text-base leading-snug line-clamp-2 group-hover:text-white/90 transition-colors">
-                        {p.name}
-                      </h3>
-                      {p.author && (
-                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{p.author}</p>
-                      )}
-                    </div>
-                  </div>
-                  {p.description && (
-                    <p className="text-slate-400 text-sm mt-3 line-clamp-2">
-                      {p.description}
-                    </p>
-                  )}
-                  <p className="text-xs text-slate-500 mt-3">
-                    {formatLastFetched(p.lastFetchedAt)}
-                  </p>
-                </Link>
-              );
-            })}
-          </div>
+          <>
+            {spaceShows.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {spaceShows.map((p) => (
+                  <PodcastCard key={p.id} p={p} />
+                ))}
+              </div>
+            )}
+
+            {adjacentShows.length > 0 && (
+              <section className="mt-10">
+                <h2 className="text-xl font-bold text-white mb-1">AI &amp; Adjacent Tech</h2>
+                <p className="text-slate-400 text-sm mb-4 max-w-2xl">
+                  Not space-native, but kept in the directory for their relevance to the
+                  AI/compute buildout increasingly intertwined with the space economy —
+                  space-based datacenters, launch economics, and infrastructure investment.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {adjacentShows.map((p) => (
+                    <PodcastCard key={p.id} p={p} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         )}
 
         <div className="mt-8">

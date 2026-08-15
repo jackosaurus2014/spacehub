@@ -389,6 +389,15 @@ export async function getOpportunities(options?: {
 }) {
   const where: Record<string, unknown> = {
     status: 'active',
+    // AI-generated opportunities are retired (2026-08-14 data-integrity fix):
+    // sourceType 'ai_generated' rows were speculative scenarios (e.g.
+    // "Orbital Bio-Enhancement Clinics") mixed in with real sam_gov/
+    // news_analysis opportunities, with fabricated-precision valuations and
+    // no disclosure. Hard-excluded here regardless of `status` as a second
+    // line of defense — the generation cron/endpoint is disabled, and the
+    // 91 existing rows were archived in prod, but this filter keeps the
+    // page honest even if a stray row is reintroduced (e.g. re-seeding).
+    sourceType: { not: 'ai_generated' },
   };
 
   if (options?.type) {
@@ -464,6 +473,9 @@ export async function getOpportunities(options?: {
 
 // Get opportunity stats
 export async function getOpportunityStats() {
+  // See getOpportunities() above: sourceType 'ai_generated' is retired and
+  // hard-excluded from every stat, regardless of `status`.
+  const notAiGenerated = { sourceType: { not: 'ai_generated' } };
   const [
     total,
     byType,
@@ -471,21 +483,22 @@ export async function getOpportunityStats() {
     featured,
     recentCount,
   ] = await Promise.all([
-    prisma.businessOpportunity.count({ where: { status: 'active' } }),
+    prisma.businessOpportunity.count({ where: { status: 'active', ...notAiGenerated } }),
     prisma.businessOpportunity.groupBy({
       by: ['type'],
-      where: { status: 'active' },
+      where: { status: 'active', ...notAiGenerated },
       _count: { type: true },
     }),
     prisma.businessOpportunity.groupBy({
       by: ['category'],
-      where: { status: 'active' },
+      where: { status: 'active', ...notAiGenerated },
       _count: { category: true },
     }),
-    prisma.businessOpportunity.count({ where: { status: 'active', featured: true } }),
+    prisma.businessOpportunity.count({ where: { status: 'active', featured: true, ...notAiGenerated } }),
     prisma.businessOpportunity.count({
       where: {
         status: 'active',
+        ...notAiGenerated,
         discoveredAt: {
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
         },
@@ -503,6 +516,12 @@ export async function getOpportunityStats() {
 }
 
 // AI Analysis function - generates new opportunities based on news and trends
+// NOT CURRENTLY CALLED (2026-08-14): the cron (opportunities-analysis) and
+// manual trigger (POST /api/opportunities/analyze) that invoked this were
+// both disabled per founder decision to retire AI-generated speculative
+// opportunities from /business-opportunities. Left in place only so
+// getRecentAnalysisRuns() below still resolves and in case generation is
+// reinstated (with disclosure/badging) in the future.
 export async function runAIAnalysis(focusAreas?: string[]): Promise<{
   success: boolean;
   opportunitiesFound: number;

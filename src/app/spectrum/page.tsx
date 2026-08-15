@@ -866,6 +866,12 @@ function SpectrumContent() {
         {/* ──────────────── ACTIVE FILINGS TAB ──────────────── */}
         {activeTab === 'filings' && (
           <div>
+            <DataAsOf
+              date="2015-2024"
+              note="historical filings — for live FCC ECFS activity see the Recent Filings tab"
+              className="mb-4"
+            />
+
             {/* Filters */}
             <div className="card p-4 mb-6">
               <div className="flex flex-wrap items-center gap-3">

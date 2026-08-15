@@ -136,8 +136,10 @@ export default async function LearnPage() {
             Learning Zone
           </h1>
           <p className="text-lg text-white/70 leading-relaxed">
-            Six tracks. Courses, lessons, built-in calculators and quizzes. Learn the math and
-            policy behind every mission — from Kepler to frequency coordination.
+            Three live tracks — Orbital Mechanics, Rocket Propulsion, and Space Law — with
+            courses, lessons, built-in calculators and quizzes. Learn the math and policy behind
+            every mission, from Kepler to frequency coordination. Supply Chain, Space
+            Communications, and Space for Kids are in development.
           </p>
         </header>
 

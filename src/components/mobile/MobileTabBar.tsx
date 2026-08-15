@@ -29,7 +29,7 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
       { id: 'reading-list', label: 'Reading List', icon: 'newspaper', href: '/reading-list' },
       { id: 'my-watchlists', label: 'Watchlists', icon: 'chart', href: '/my-watchlists' },
       { id: 'alerts', label: 'Alerts', icon: 'bell', href: '/alerts' },
-      { id: 'daily-digest', label: 'Daily Digest', icon: 'newspaper', href: '/daily-digest' },
+      { id: 'briefs', label: 'Live Digest', icon: 'newspaper', href: '/briefs' },
       { id: 'blog', label: '180+ Articles', icon: 'newspaper', href: '/blog' },
     ],
   },

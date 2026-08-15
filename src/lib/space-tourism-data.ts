@@ -210,7 +210,7 @@ export const SPACE_TOURISM_OFFERINGS: SpaceTourismOffering[] = [
     duration: '90 minutes total',
     altitude: 90,
     altitudeDisplay: '~90 km',
-    description: 'Virgin Galactic\'s SpaceShipTwo offers a unique air-launch suborbital experience. The spaceplane is carried to 15km by the WhiteKnightTwo mothership, then released to ignite its hybrid rocket motor for a thrilling climb to space. Passengers experience up to 6 minutes of weightlessness with panoramic Earth views before a gliding runway landing.',
+    description: 'Virgin Galactic\'s air-launch suborbital experience: the spaceplane is carried to 15km by the WhiteKnightTwo mothership, then released to ignite its hybrid rocket motor for a thrilling climb to space, with up to 6 minutes of weightlessness and panoramic Earth views before a gliding runway landing. VSS Unity, the vehicle that flew this profile, retired from commercial service in June 2024 after completing its flight campaign. Virgin Galactic is currently between vehicles while it builds its next-generation Delta-class spaceships, with commercial service targeted to resume around 2026-2027.',
     features: [
       'Air-launched from WhiteKnightTwo carrier',
       'Up to 6 minutes of weightlessness',
@@ -229,20 +229,20 @@ export const SPACE_TOURISM_OFFERINGS: SpaceTourismOffering[] = [
       'Multi-day Spaceport America training',
       'Not pregnant or recently had surgery',
     ],
-    status: 'active',
+    status: 'upcoming',
     logoIcon: 'VG',
     maxPassengers: 6,
     trainingDuration: '3-4 days',
     launchSite: 'Spaceport America, New Mexico',
-    vehicleName: 'SpaceShipTwo (VSS Unity/Imagine)',
+    vehicleName: 'Delta-class SpaceShip (in development; VSS Unity retired June 2024)',
     firstFlight: '2021',
     websiteUrl: 'https://www.virgingalactic.com',
     gForces: '3.5G max during boost, 6G during re-entry',
     weightlessDuration: '5-6 minutes',
-    totalFlights: 7,
+    totalFlights: null,
     founded: 2004,
     headquarters: 'Las Cruces, New Mexico',
-    safetyRecord: '7 crewed flights, 1 fatal test accident (2014)',
+    safetyRecord: '12 spaceflights (7 commercial, Galactic 01-07, 2023-2024) before VSS Unity\'s retirement; 1 fatal test accident (2014). No commercial flights while Delta-class vehicles are in development.',
   },
   {
     id: 'blue-origin-new-shepard',
@@ -773,7 +773,7 @@ export interface ComparisonRow {
 }
 
 export const QUICK_COMPARISON_TABLE: ComparisonRow[] = [
-  { provider: 'Virgin Galactic', vehicle: 'SpaceShipTwo', type: 'suborbital', altitude: '~90 km', duration: '90 min total', gForces: '3.5-6G', training: '3-4 days', price: '$450K', seats: 6, status: 'active' },
+  { provider: 'Virgin Galactic', vehicle: 'Delta-class (in development)', type: 'suborbital', altitude: '~90 km', duration: '90 min total', gForces: '3.5-6G', training: '3-4 days', price: '$450K', seats: 6, status: 'upcoming' },
   { provider: 'Blue Origin', vehicle: 'New Shepard', type: 'suborbital', altitude: '100+ km', duration: '11 min', gForces: '3-5G', training: '1 day', price: '$200-300K', seats: 6, status: 'active' },
   { provider: 'SpaceX', vehicle: 'Crew Dragon', type: 'orbital', altitude: '200-575 km', duration: '3-10 days', gForces: '3-6G', training: '4-6 months', price: '~$55M', seats: 4, status: 'active' },
   { provider: 'SpaceX', vehicle: 'Starship', type: 'orbital', altitude: '100-400+ km', duration: 'Hours-days', gForces: '~3G', training: 'TBD', price: '$100K-$10M', seats: 100, status: 'future' },

@@ -184,7 +184,7 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '\u{1F4DA}', label: 'Resources & Podcasts', href: '/resources', description: 'Curated content, podcasts & newsletters' },
   { icon: '\u{1F52E}', label: 'Mission Pipeline', href: '/mission-pipeline', description: 'Upcoming missions 2025-2030' },
   { icon: '\u{1F4C8}', label: 'Mission Statistics', href: '/mission-stats', description: 'Launch provider leaderboards & data' },
-  { icon: '\u{1F4D1}', label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
+  { icon: '\u{1F4D1}', label: 'Live Digest', href: '/briefs', description: 'Rolling 7-day space news digest' },
   { icon: '\u{1F30D}', label: 'Orbit Guide', href: '/orbit-guide', description: 'Visual guide to orbital mechanics & orbit types' },
   { icon: '\u{1F3AF}', label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
   { icon: '\u{1F524}', label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },

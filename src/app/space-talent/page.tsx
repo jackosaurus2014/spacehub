@@ -2657,6 +2657,12 @@ function SpaceTalentHubContent() {
                 </div>
               ) : (
                 <>
+                  <DataAsOf
+                    date="Q4 2025"
+                    note="hand-seeded historical series; live daily hiring data already powers the jobs board above — this quarterly series resumes for 2026 once enough daily snapshot history has accumulated to derive it"
+                    className="mb-4"
+                  />
+
                   {/* Summary banner */}
                   <div className="card p-5 mb-6">
                     <div className="flex items-center justify-between mb-3">

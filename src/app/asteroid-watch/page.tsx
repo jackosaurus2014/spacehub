@@ -411,7 +411,7 @@ const FALLBACK_MINING_TARGETS: MiningTarget[] = [
     resources: ['Iron', 'Nickel', 'Gold', 'Platinum', 'Copper'],
     accessibility: 'Difficult',
     accessColor: 'text-orange-400',
-    notes: 'Believed to be the exposed iron core of a protoplanet. NASA Psyche spacecraft arrived October 2029. Contains enough iron to satisfy Earth demand for millions of years.',
+    notes: 'Believed to be the exposed iron core of a protoplanet. NASA Psyche spacecraft arrival targeted for October 2029. Contains enough iron to satisfy Earth demand for millions of years.',
   },
   {
     id: 'ryugu',

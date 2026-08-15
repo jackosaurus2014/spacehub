@@ -15,6 +15,21 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 type EventCategory = 'launch' | 'conference' | 'policy' | 'milestone' | 'business';
 
+// An `outcome` reconciles a past projection with what actually happened,
+// per our own trackers (starship-news, artemis-news, launch-vehicles,
+// constellations). 'occurred' = it happened (possibly at a different date
+// than projected, noted in `note`); 'delayed' = still expected but slipped
+// past its original window; 'not-occurred' = the projection did not
+// materialize as described. Every past-dated launch/milestone entry should
+// carry one so readers never see stale "TBD" speculation presented as
+// still-pending.
+interface EventOutcome {
+  status: 'occurred' | 'delayed' | 'not-occurred';
+  note: string;
+  href?: string;
+  linkLabel?: string;
+}
+
 interface CalendarEvent {
   date: string; // display string e.g. "Mar 20"
   sortDate: string; // YYYY-MM-DD for sorting
@@ -23,6 +38,7 @@ interface CalendarEvent {
   description: string;
   location?: string;
   highlight?: boolean;
+  outcome?: EventOutcome;
 }
 
 interface MonthData {
@@ -43,7 +59,16 @@ const CALENDAR_DATA: MonthData[] = [
     year: 2026,
     events: [
       { date: 'Jan 13-15', sortDate: '2026-01-13', title: 'AIAA SciTech Forum', category: 'conference', description: 'Premier aerospace research conference', location: 'San Diego, CA' },
-      { date: 'Jan TBD', sortDate: '2026-01-15', title: 'Starship V3 Test Flight #2', category: 'launch', description: 'SpaceX continues rapid Starship iteration' },
+      {
+        date: 'Jan TBD', sortDate: '2026-01-15', title: 'Starship V3 Test Flight #2', category: 'launch',
+        description: 'SpaceX continues rapid Starship iteration',
+        outcome: {
+          status: 'not-occurred',
+          note: 'Did not occur as projected — no Starship flight took place between the 2023-2025 test campaign and Flight 13 (Jul 24, 2026), which turned out to be the vehicle\'s next flight and first operational payload.',
+          href: '/starship',
+          linkLabel: 'See verified flight history',
+        },
+      },
       { date: 'Jan 27', sortDate: '2026-01-27', title: 'FCC Space Bureau Q1 Meeting', category: 'policy', description: 'Spectrum allocation and debris rule updates' },
     ],
   },
@@ -54,7 +79,16 @@ const CALENDAR_DATA: MonthData[] = [
     events: [
       { date: 'Feb 2-5', sortDate: '2026-02-02', title: 'SmallSat Symposium', category: 'conference', description: 'Small satellite industry gathering', location: 'Mountain View, CA' },
       { date: 'Feb 10', sortDate: '2026-02-10', title: 'ESA Ministerial Review', category: 'policy', description: 'Mid-term review of ESA program commitments' },
-      { date: 'Feb TBD', sortDate: '2026-02-15', title: 'Blue Origin New Glenn Flight 2', category: 'launch', description: 'Second orbital flight of New Glenn heavy-lift vehicle' },
+      {
+        date: 'Feb TBD', sortDate: '2026-02-15', title: 'Blue Origin New Glenn Flight 2', category: 'launch',
+        description: 'Second orbital flight of New Glenn heavy-lift vehicle',
+        outcome: {
+          status: 'occurred',
+          note: 'Occurred earlier than projected — New Glenn\'s second flight, which landed its booster, actually flew in November 2025, before this window.',
+          href: '/launch-vehicles',
+          linkLabel: 'See launch vehicle database',
+        },
+      },
       { date: 'Feb 23-25', sortDate: '2026-02-23', title: 'Global Space Conference', category: 'conference', description: 'Abu Dhabi space industry summit', location: 'Abu Dhabi, UAE' },
     ],
   },
@@ -64,7 +98,16 @@ const CALENDAR_DATA: MonthData[] = [
     year: 2026,
     events: [
       { date: 'Mar 9-12', sortDate: '2026-03-09', title: 'Satellite Innovation', category: 'conference', description: 'Satellite technology conference', location: 'London, UK' },
-      { date: 'Mar 20', sortDate: '2026-03-20', title: 'Artemis II Rollout to Pad', category: 'milestone', description: 'SLS/Orion stack rolls out to LC-39B for final preparations', location: 'Kennedy Space Center, FL', highlight: true },
+      {
+        date: 'Mar 20', sortDate: '2026-03-20', title: 'Artemis II Rollout to Pad', category: 'milestone',
+        description: 'SLS/Orion stack rolls out to LC-39B for final preparations', location: 'Kennedy Space Center, FL', highlight: true,
+        outcome: {
+          status: 'occurred',
+          note: 'Confirmed — SLS/Orion rolled out to LC-39B ahead of the successful Apr 1 Artemis II launch.',
+          href: '/artemis',
+          linkLabel: 'See Artemis mission timeline',
+        },
+      },
       { date: 'Mar 23-26', sortDate: '2026-03-23', title: 'SATELLITE 2026', category: 'conference', description: 'The largest satellite industry conference in the world, with 15,000+ attendees', location: 'Washington, DC', highlight: true },
       { date: 'Mar 30-31', sortDate: '2026-03-30', title: 'Space Symposium Preview', category: 'conference', description: 'Pre-symposium workshops and briefings', location: 'Colorado Springs, CO' },
     ],
@@ -74,9 +117,27 @@ const CALENDAR_DATA: MonthData[] = [
     monthNum: 4,
     year: 2026,
     events: [
-      { date: 'Apr ~1', sortDate: '2026-04-01', title: 'Artemis II Launch', category: 'launch', description: 'First crewed Artemis mission: 4 astronauts on a lunar flyby. First humans beyond LEO since 1972.', location: 'Kennedy Space Center, FL', highlight: true },
+      {
+        date: 'Apr ~1', sortDate: '2026-04-01', title: 'Artemis II Launch', category: 'launch',
+        description: 'First crewed Artemis mission: 4 astronauts on a lunar flyby. First humans beyond LEO since 1972.', location: 'Kennedy Space Center, FL', highlight: true,
+        outcome: {
+          status: 'occurred',
+          note: 'Confirmed — Artemis II flew Apr 1-10, 2026, carrying Reid Wiseman, Victor Glover, Christina Koch, and Jeremy Hansen around the Moon and safely home.',
+          href: '/artemis',
+          linkLabel: 'Read the full mission archive',
+        },
+      },
       { date: 'Apr 6-9', sortDate: '2026-04-06', title: 'Space Symposium', category: 'conference', description: '41st annual Space Symposium hosted by Space Foundation', location: 'Colorado Springs, CO', highlight: true },
-      { date: 'Apr TBD', sortDate: '2026-04-15', title: 'Starship V3 Operational Flight', category: 'launch', description: 'SpaceX targets first Starship V3 operational Starlink deployment' },
+      {
+        date: 'Apr TBD', sortDate: '2026-04-15', title: 'Starship V3 Operational Flight', category: 'launch',
+        description: 'SpaceX targets first Starship V3 operational Starlink deployment',
+        outcome: {
+          status: 'occurred',
+          note: 'Occurred later than projected — flew as Flight 13 on Jul 24, 2026, deploying the first operational batch of next-generation Starlink V3 satellites.',
+          href: '/starship',
+          linkLabel: 'See Flight 13 details',
+        },
+      },
       { date: 'Apr 20-22', sortDate: '2026-04-20', title: 'COPUOS Legal Subcommittee', category: 'policy', description: 'UN Committee on Peaceful Uses of Outer Space legal session', location: 'Vienna, Austria' },
     ],
   },
@@ -86,9 +147,27 @@ const CALENDAR_DATA: MonthData[] = [
     year: 2026,
     events: [
       { date: 'May 4-8', sortDate: '2026-05-04', title: 'GEOINT Symposium', category: 'conference', description: 'Geospatial intelligence conference with space focus', location: 'Denver, CO' },
-      { date: 'May TBD', sortDate: '2026-05-10', title: 'Rocket Lab Neutron First Flight', category: 'launch', description: 'Maiden orbital flight of Neutron medium-lift vehicle', highlight: true },
+      {
+        date: 'May TBD', sortDate: '2026-05-10', title: 'Rocket Lab Neutron First Flight', category: 'launch',
+        description: 'Maiden orbital flight of Neutron medium-lift vehicle', highlight: true,
+        outcome: {
+          status: 'delayed',
+          note: 'Delayed — Neutron had not yet flown as of Aug 2026; still listed as targeting a maiden flight later in 2026 from Wallops Island.',
+          href: '/launch-vehicles',
+          linkLabel: 'See launch vehicle database',
+        },
+      },
       { date: 'May 18-22', sortDate: '2026-05-18', title: 'ISS Research Conference', category: 'conference', description: 'Annual ISS research and development conference', location: 'Boston, MA' },
-      { date: 'May TBD', sortDate: '2026-05-25', title: 'Kuiper Operational Tranche', category: 'launch', description: 'Amazon Kuiper first operational satellite batch deployment' },
+      {
+        date: 'May TBD', sortDate: '2026-05-25', title: 'Kuiper Operational Tranche', category: 'launch',
+        description: 'Amazon Kuiper first operational satellite batch deployment',
+        outcome: {
+          status: 'delayed',
+          note: 'Delayed — as of Aug 2026, Amazon had only its 2 Kuiper prototype satellites active; the FCC\'s 50%-deployment deadline was waived out to 2029.',
+          href: '/constellations',
+          linkLabel: 'See constellation tracker',
+        },
+      },
     ],
   },
   {
@@ -108,7 +187,16 @@ const CALENDAR_DATA: MonthData[] = [
     year: 2026,
     events: [
       { date: 'Jul 14-18', sortDate: '2026-07-14', title: 'Farnborough Airshow', category: 'conference', description: 'Major aerospace trade show with growing space pavilion', location: 'Farnborough, UK' },
-      { date: 'Jul TBD', sortDate: '2026-07-20', title: 'Lunar Gateway Module Launch', category: 'launch', description: 'PPE/HALO module launch for International Lunar Gateway', highlight: true },
+      {
+        date: 'Jul TBD', sortDate: '2026-07-20', title: 'Lunar Gateway Module Launch', category: 'launch',
+        description: 'PPE/HALO module launch for International Lunar Gateway',
+        outcome: {
+          status: 'not-occurred',
+          note: 'Did not occur as projected — NASA\'s Feb 2026 Artemis restructuring pushed the first Gateway-era mission out to Artemis IV (targeted ~2028); no Gateway module has launched.',
+          href: '/artemis',
+          linkLabel: 'See Artemis mission timeline',
+        },
+      },
       { date: 'Jul 28-30', sortDate: '2026-07-28', title: 'NewSpace Europe', category: 'conference', description: 'European new space industry conference', location: 'Luxembourg' },
     ],
   },
@@ -129,7 +217,7 @@ const CALENDAR_DATA: MonthData[] = [
     events: [
       { date: 'Sep 8-10', sortDate: '2026-09-08', title: 'World Satellite Business Week', category: 'conference', description: 'Premier satellite business networking event', location: 'Paris, France', highlight: true },
       { date: 'Sep 14-18', sortDate: '2026-09-14', title: 'AMOS Conference', category: 'conference', description: 'Advanced Maui Optical and Space Surveillance conference', location: 'Maui, HI' },
-      { date: 'Sep TBD', sortDate: '2026-09-20', title: 'Vulcan Centaur Cert. Mission', category: 'launch', description: 'ULA Vulcan Centaur national security certification mission' },
+      { date: 'Sep TBD', sortDate: '2026-09-20', title: 'Vulcan Centaur National Security Mission', category: 'launch', description: 'ULA Vulcan Centaur national security launch. (Vulcan earned its NSSL certification back in Oct 2024 — this is a routine mission in the ongoing assured-access cadence, not a certification flight.)' },
     ],
   },
   {
@@ -138,7 +226,7 @@ const CALENDAR_DATA: MonthData[] = [
     year: 2026,
     events: [
       { date: 'Oct 5-9', sortDate: '2026-10-05', title: 'IAC 2026', category: 'conference', description: '77th International Astronautical Congress, the world\'s premier space conference', location: 'Milan, Italy', highlight: true },
-      { date: 'Oct TBD', sortDate: '2026-10-15', title: 'Ariane 6 Heavy Mission', category: 'launch', description: 'Ariane 6 first heavy-lift configuration mission' },
+      { date: 'Oct TBD', sortDate: '2026-10-15', title: 'Ariane 6 Heavy (A64) Mission', category: 'launch', description: 'Continued Ariane 6 A64 heavy-lift cadence. (The A64 variant already debuted in Feb 2026 with an Amazon Kuiper launch — this is a follow-on mission, not the first.)' },
       { date: 'Oct 19-21', sortDate: '2026-10-19', title: 'Silicon Valley Space Week', category: 'conference', description: 'Space startup and investor networking week', location: 'San Jose, CA' },
     ],
   },
@@ -181,6 +269,38 @@ function getCategoryBadge(category: EventCategory) {
   return (
     <span className={`inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full border ${config.bgColor} ${config.color}`}>
       {config.label}
+    </span>
+  );
+}
+
+const OUTCOME_CONFIG: Record<EventOutcome['status'], { label: string; color: string; bgColor: string; textColor: string }> = {
+  occurred: { label: 'Confirmed', color: 'text-emerald-400', bgColor: 'bg-emerald-500/15 border-emerald-500/30', textColor: 'text-emerald-300/90' },
+  delayed: { label: 'Delayed', color: 'text-amber-400', bgColor: 'bg-amber-500/15 border-amber-500/30', textColor: 'text-amber-300/90' },
+  'not-occurred': { label: 'Did not occur as projected', color: 'text-rose-400', bgColor: 'bg-rose-500/15 border-rose-500/30', textColor: 'text-rose-300/90' },
+};
+
+// Small badge that distinguishes a resolved past projection from an
+// unresolved one — every past-dated launch/milestone entry should carry
+// an outcome so readers never see stale speculation presented as pending.
+function getOutcomeBadge(outcome: EventOutcome) {
+  const config = OUTCOME_CONFIG[outcome.status];
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${config.bgColor} ${config.color}`}>
+      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8">
+        <circle cx="4" cy="4" r="4" />
+      </svg>
+      {config.label}
+    </span>
+  );
+}
+
+// For future launch/milestone entries with no resolved outcome yet — marks
+// them visually as a forecast, not a confirmed date, mirroring the NET
+// ("No Earlier Than") framing used on /starship and /artemis.
+function getProjectedBadge() {
+  return (
+    <span className="inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-full border bg-slate-500/10 border-slate-500/25 text-slate-400">
+      Projected
     </span>
   );
 }
@@ -242,6 +362,7 @@ function HighlightCards() {
 function MonthCard({ data }: { data: MonthData }) {
   const isCurrent = isCurrentMonth(data.monthNum, data.year);
   const isFuture = isCurrentOrFutureMonth(data.monthNum, data.year);
+  const todayStr = new Date().toISOString().slice(0, 10);
 
   return (
     <div className={`card p-5 ${isCurrent ? 'ring-1 ring-cyan-500/40' : ''} ${!isFuture ? 'opacity-60' : ''}`}>
@@ -260,7 +381,16 @@ function MonthCard({ data }: { data: MonthData }) {
       </div>
 
       <div className="space-y-3">
-        {data.events.map((event) => (
+        {data.events.map((event) => {
+          // Unresolved launch/milestone entries dated in the future are a
+          // forecast, not a confirmed date — flag them as "Projected" so
+          // they read differently from resolved past entries below.
+          const isProjection =
+            !event.outcome &&
+            event.sortDate >= todayStr &&
+            (event.category === 'launch' || event.category === 'milestone');
+
+          return (
           <div
             key={event.title}
             className={`flex items-start gap-3 p-2.5 rounded-lg ${event.highlight ? 'bg-white/[0.04]' : ''}`}
@@ -274,14 +404,30 @@ function MonthCard({ data }: { data: MonthData }) {
                   {event.title}
                 </span>
                 {getCategoryBadge(event.category)}
+                {event.outcome && getOutcomeBadge(event.outcome)}
+                {isProjection && getProjectedBadge()}
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed">{event.description}</p>
+              {event.outcome && (
+                <p className={`text-[11px] leading-relaxed mt-1 ${OUTCOME_CONFIG[event.outcome.status].textColor}`}>
+                  {event.outcome.note}
+                  {event.outcome.href && (
+                    <>
+                      {' '}
+                      <Link href={event.outcome.href} className="underline hover:text-white transition-colors">
+                        {event.outcome.linkLabel ?? 'Learn more'}
+                      </Link>
+                    </>
+                  )}
+                </p>
+              )}
               {event.location && (
                 <p className="text-[10px] text-slate-500 mt-1">{event.location}</p>
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

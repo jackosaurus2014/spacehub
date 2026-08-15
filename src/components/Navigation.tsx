@@ -46,7 +46,7 @@ const NEWS_ITEMS: DropdownItem[] = [
   { label: 'AI Insights & Analysis', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
   { label: 'Industry Blogs', href: '/blogs', description: 'Expert industry insights' },
-  { label: 'Daily Digest', href: '/daily-digest', description: 'Curated daily headlines' },
+  { label: 'Live Digest', href: '/briefs', description: 'Rolling 7-day space news digest' },
   { label: 'Podcasts', href: '/podcasts', description: 'Space podcast directory' },
   { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
   { label: 'Newsletter', href: '/newsletter', description: 'Weekly intelligence brief' },

@@ -6,7 +6,7 @@ import Link from 'next/link';
 const REPORT_CONTENTS = [
   {
     title: 'Market Sizing & Valuation',
-    description: 'Comprehensive breakdown of the $626B global space economy by sector, region, and growth trajectory.',
+    description: 'Comprehensive breakdown of the $630B global space economy by sector, region, and growth trajectory.',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -122,7 +122,7 @@ export default function SpaceEconomy2026Page() {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-              Read our comprehensive analysis of the $626 billion space industry — market sizing, top companies, investment trends, and growth projections. Free to view online, no download required.
+              Read our comprehensive analysis of the $630 billion space industry — market sizing, top companies, investment trends, and growth projections. Free to view online, no download required.
             </p>
           </div>
         </div>

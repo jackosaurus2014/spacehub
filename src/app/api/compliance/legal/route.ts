@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getLegalSources, getLegalUpdates } from '@/lib/compliance-data';
+import { filterRegulatoryRelevant } from '@/lib/legal-relevance';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -21,14 +22,23 @@ export async function GET(request: Request) {
       return NextResponse.json({ sources });
     }
 
-    // Default to updates
-    const { updates, total } = await getLegalUpdates({
+    // Default to updates. The upstream LegalUpdate table is ingested
+    // indiscriminately from feeds like Space Policy Online and mixes real
+    // regulatory/legal items with generic space news (e.g. launch-failure
+    // reports). Pull a larger pool than requested, apply the regulatory
+    // relevance filter, then paginate over the filtered set so callers only
+    // ever see items with genuine regulatory/legal substance.
+    const POOL_SIZE = Math.min(Math.max(limit * 5, 100), 200);
+    const { updates: pool } = await getLegalUpdates({
       sourceId,
-      limit,
-      offset,
+      limit: POOL_SIZE,
+      offset: 0,
     });
 
-    return NextResponse.json({ updates, total });
+    const relevant = filterRegulatoryRelevant(pool);
+    const updates = relevant.slice(offset, offset + limit);
+
+    return NextResponse.json({ updates, total: relevant.length });
   } catch (error) {
     logger.error('Failed to fetch legal data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
