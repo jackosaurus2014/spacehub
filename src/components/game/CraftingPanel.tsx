@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { PRODUCTION_CHAINS, getCraftedProductValue } from '@/lib/game/production-chains';
+import { PRODUCTION_CHAINS, CRAFTED_PRODUCT_IDS, getCraftedProductValue } from '@/lib/game/production-chains';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
+import { RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { BUILDING_ASSETS } from '@/lib/game/assets';
@@ -12,15 +13,67 @@ import Image from 'next/image';
 interface CraftingPanelProps {
   state: GameState;
   onStartCrafting: (recipeId: string) => void;
+  /**
+   * Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2): the sell
+   * affordance. Crafted products are now first-class RESOURCE_MAP entries
+   * held in `state.resources` (same pool the Market tab sells from), so this
+   * reuses the SAME handler page.tsx already wires to MarketPanel — no new
+   * state-update path, just a second surface that can call it.
+   */
+  onSellResource?: (resourceId: string, quantity: number, revenue: number) => void;
 }
 
-export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelProps) {
+export default function CraftingPanel({ state, onStartCrafting, onSellResource }: CraftingPanelProps) {
   const [, setTick] = useState(0);
+  const [sellingId, setSellingId] = useState<string | null>(null);
   // Re-render every second for countdown timers
   useEffect(() => {
     const t = setInterval(() => setTick(n => n + 1), 1000);
     return () => clearInterval(t);
   }, []);
+
+  // Crafted-goods inventory sitting in the shared resource pool (post Wave
+  // E2 / save-load.ts V31, everything a player has crafted lives in
+  // `state.resources` alongside mined resources).
+  const craftedHeld = CRAFTED_PRODUCT_IDS
+    .map(id => ({ id, qty: state.resources[id as never] || 0 }))
+    .filter(r => r.qty > 0);
+
+  // Sell affordance: same server trade route MarketPanel uses (live spot,
+  // −3% broker fee), so a player doesn't have to tab-switch after a craft
+  // completes. Falls back to the live-spot-priced client estimate if the
+  // request fails (parity with MarketPanel's offline fallback).
+  const handleSellCrafted = useCallback(async (resourceId: string, qty: number) => {
+    if (!onSellResource || qty <= 0 || sellingId) return;
+    setSellingId(resourceId);
+    try {
+      const res = await fetch('/api/space-tycoon/market/trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'sell', resourceSlug: resourceId, quantity: qty }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        playSound('money');
+        onSellResource(resourceId, qty, data.trade.totalCost);
+      } else {
+        const price = getCraftedProductValue(
+          { outputId: resourceId, marketValue: RESOURCE_MAP.get(resourceId as never)?.baseMarketPrice || 0 },
+          state.marketSnapshot?.prices,
+        );
+        playSound('money');
+        onSellResource(resourceId, qty, Math.round(qty * price * 0.97));
+      }
+    } catch {
+      const price = getCraftedProductValue(
+        { outputId: resourceId, marketValue: RESOURCE_MAP.get(resourceId as never)?.baseMarketPrice || 0 },
+        state.marketSnapshot?.prices,
+      );
+      playSound('money');
+      onSellResource(resourceId, qty, Math.round(qty * price * 0.97));
+    }
+    setSellingId(null);
+  }, [onSellResource, sellingId, state.marketSnapshot]);
 
   const allResources = { ...(state.resources || {}), ...(state.craftedProducts || {}) };
   const completedBuildingIds = state.buildings.filter(b => b.isComplete).map(b => b.definitionId);
@@ -75,6 +128,52 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
           {fabCount > 1 && (
             <span className="text-cyan-500/60 text-[10px]">+{Math.round((craftingSpeedMult - 1) * 100)}% faster crafting</span>
           )}
+        </div>
+      )}
+
+      {/* Wave E2 "Goods on the Book" — sell affordance for finished crafted
+          goods, right where you made them. Same live-spot / −3% broker sell
+          the Market tab offers (state.resources is the one shared pool). */}
+      {craftedHeld.length > 0 && (
+        <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <h3 className="font-hud text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <span>📦</span> Finished Goods — Sell to Market
+          </h3>
+          <div className="space-y-1.5">
+            {craftedHeld.map(({ id, qty }) => {
+              const recipe = PRODUCTION_CHAINS.find(c => c.outputId === id);
+              const def = RESOURCE_MAP.get(id as never);
+              const unitPrice = getCraftedProductValue(
+                { outputId: id, marketValue: recipe?.marketValue ?? def?.baseMarketPrice ?? 0 },
+                state.marketSnapshot?.prices,
+              );
+              const revenue = Math.round(qty * unitPrice * 0.97); // −3% broker, matches server
+              const busy = sellingId === id;
+              return (
+                <div key={id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm" aria-hidden="true">{recipe?.icon || def?.icon || '📦'}</span>
+                    <div>
+                      <span className="text-white text-xs">{def?.name || id.replace(/_/g, ' ')}</span>
+                      <span className="text-slate-500 text-[10px] ml-1.5">×{qty}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="game-number text-slate-400 text-[10px]">{formatMoney(unitPrice)}/u</span>
+                    <button
+                      onClick={() => { if (!busy) { playSound('build_start'); handleSellCrafted(id, qty); } }}
+                      disabled={busy || !onSellResource}
+                      className="min-h-[44px] px-2 py-1 rounded text-[10px] font-semibold text-white bg-green-600 hover:bg-green-500 disabled:opacity-50 transition-colors"
+                    >
+                      {busy ? 'Selling…' : `Sell All for ${formatMoney(revenue)}`}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

@@ -5246,12 +5246,22 @@ model MarketFill {
   fee             Int    @default(0) // 2% transaction fee
   buyerProfileId  String
   sellerProfileId String
+  // Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): denormalized from the parent
+  // order at fill time (matchOrders() in market-orderbook.ts already has the
+  // resourceSlug in scope) so market-share.ts can group/aggregate directly on
+  // MarketFill without a relation join. Safe to add as a required column —
+  // prod has 0 MarketFill rows as of this wave's ground truth (§0), so there
+  // is nothing to backfill.
+  resourceSlug String @default("")
 
   createdAt DateTime @default(now())
 
   @@index([orderId])
   @@index([counterOrderId])
   @@index([createdAt])
+  @@index([resourceSlug, createdAt])
+  @@index([buyerProfileId])
+  @@index([sellerProfileId])
 }
 
 model MarketPriceCandle {
@@ -5298,6 +5308,31 @@ model MarketAuditLog {
   @@index([eventType])
   @@index([profileId])
   @@index([createdAt])
+}
+
+// â”€â”€ Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): Market Share Telemetry â”€â”€â”€â”€â”€â”€â”€
+// Per-profile, per-resource, per-day rollup of MarketFill activity. This is
+// the "cached sensibly" layer market-share.ts's rollupTradeStatsForDay()
+// writes to so per-resource/overall share reports don't have to re-scan raw
+// MarketFill on every request once volume grows past the current near-zero
+// prod baseline (§0). Optional/best-effort: market-share.ts always falls
+// back to a live MarketFill scan when a day's rollup hasn't been written yet
+// (e.g. before the rollup cron is wired up), so this table's absence or
+// staleness never breaks a telemetry read â€” it only makes it slower.
+model TradeStatDaily {
+  id           String   @id @default(cuid())
+  profileId    String
+  resourceSlug String
+  day          DateTime // UTC-truncated to 00:00:00 for the rollup day
+  buyVol       Int      @default(0)
+  sellVol      Int      @default(0)
+  buyValue     Int      @default(0)
+  sellValue    Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([profileId, resourceSlug, day])
+  @@index([resourceSlug, day])
+  @@index([profileId, day])
 }
 
 // â”€â”€ Mechanic 7: Territory/Zone Influence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

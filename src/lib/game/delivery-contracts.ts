@@ -315,6 +315,84 @@ export function ensureFreshDeliveryPool(state: GameState, now: number = Date.now
   };
 }
 
+// ─── Daily completion cap (founder directive, 2026-08) ─────────────────────
+// "whenever I finish the open market contracts it immediately refreshes the
+// contracts. We should only allow X number of contracts to be completed
+// every 24 hours." Full derivation of the numbers below lives in
+// docs/BALANCE.md ("Delivery contract daily completion cap"). Short version:
+// contracts are the no-fee channel (Wave 4, BALANCE.md) and now pay full
+// live-spot value (E2) — with no completion limit a player grinding
+// contracts could out-earn a diversified same-tier corporation. The cap
+// keeps contracts a strong supplement (~30-40% of a diversified player's
+// daily income), never the dominant printer.
+//
+// Rolling 24h window, computed from data ALREADY persisted on the save —
+// completedDeliveries entries carry `completedAtMs` and are capped to the
+// most recent 100 (see deliverContract below), which comfortably outlives
+// the cap window at these magnitudes. No new state field / save migration
+// is needed: the "timestamps array" the window is computed from already
+// exists as a side effect of the existing history log.
+export const DELIVERY_CAP_WINDOW_MS = 24 * 60 * 60 * 1000;
+/** Base completions allowed per rolling 24h window. */
+export const DELIVERY_CAP_BASE = 4;
+/** Space Logistics Network (research-tree.ts id 'space_logistics' — "Regular
+ *  cargo delivery routes") grants +1. Reused directly by id rather than
+ *  routed through the generic ResearchEffectType system: that system sums
+ *  fractional (0-1) magnitudes onto continuous multipliers, but this is a
+ *  flat +1 integer slot — same shape mismatch that COMMAND_QUEUE_AUTOMATION_
+ *  RESEARCH_ID (constants.ts) already solves with a direct
+ *  completedResearch.includes() check, so this mirrors that established
+ *  pattern instead of inventing a new effect type for one consumer. */
+export const DELIVERY_CAP_RESEARCH_BONUS_ID = 'space_logistics';
+export const DELIVERY_CAP_RESEARCH_BONUS = 1;
+/** Corporation Tier 5 "Conglomerate" grants +1 — mirrors
+ *  COMMAND_QUEUE_TIER5_BONUS's threshold/shape (constants.ts): at this scale
+ *  a corporation runs enough parallel logistics across locations to
+ *  realistically service more simultaneous delivery contracts. */
+export const DELIVERY_CAP_TIER_THRESHOLD = 5;
+export const DELIVERY_CAP_TIER_BONUS = 1;
+
+/** Total delivery-contract completions allowed per rolling 24h window.
+ *  Never purchasable — earned only via research or corporation tier. */
+export function getDailyDeliveryCap(state: GameState): number {
+  let cap = DELIVERY_CAP_BASE;
+  if ((state.completedResearch || []).includes(DELIVERY_CAP_RESEARCH_BONUS_ID)) cap += DELIVERY_CAP_RESEARCH_BONUS;
+  if ((state.corporationTier || 1) >= DELIVERY_CAP_TIER_THRESHOLD) cap += DELIVERY_CAP_TIER_BONUS;
+  return cap;
+}
+
+/** Completed (not defaulted) deliveries within the rolling 24h window. */
+export function getRecentDeliveryCompletions(state: GameState, now: number = Date.now()): DeliveryContract[] {
+  return (state.completedDeliveries || []).filter(
+    c => c.status === 'completed' && typeof c.completedAtMs === 'number' && now - c.completedAtMs < DELIVERY_CAP_WINDOW_MS,
+  );
+}
+
+export interface DeliveryCapStatus {
+  /** Completions counted within the current rolling 24h window. */
+  completed: number;
+  /** Total allowed this window (base + research + tier). */
+  cap: number;
+  atCap: boolean;
+  /** ms until the oldest counted completion rolls off the window and frees a
+   *  slot. 0 when not at cap. */
+  resetInMs: number;
+}
+
+export function getDeliveryCapStatus(state: GameState, now: number = Date.now()): DeliveryCapStatus {
+  const recent = getRecentDeliveryCompletions(state, now);
+  const cap = getDailyDeliveryCap(state);
+  const atCap = recent.length >= cap;
+  let resetInMs = 0;
+  if (atCap && recent.length > 0) {
+    // The oldest completion still inside the window is the one that must
+    // roll off before a new completion is allowed again.
+    const oldest = recent.reduce((min, c) => (c.completedAtMs! < min ? c.completedAtMs! : min), recent[0].completedAtMs!);
+    resetInMs = Math.max(0, oldest + DELIVERY_CAP_WINDOW_MS - now);
+  }
+  return { completed: recent.length, cap, atCap, resetInMs };
+}
+
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 export function acceptDelivery(state: GameState, contractId: string, now: number = Date.now()): GameState {
@@ -363,6 +441,15 @@ export function deliverContract(state: GameState, contractId: string, now: numbe
   const contract = active.find(c => c.id === contractId);
   if (!contract || contract.status !== 'accepted') return state;
   if (!canDeliver(state, contractId)) return state;
+  // Founder-directive daily cap (see block above / docs/BALANCE.md). Quiet
+  // no-op, matching this function's existing early-return shape — the UI is
+  // expected to check getDeliveryCapStatus() first and disable the action
+  // with a clear reason (DiplomacyPanel's ContractCard), but this guard is
+  // authoritative regardless of what the UI does: even a hand-crafted
+  // dispatch cannot complete more than the cap allows, since the check reads
+  // straight off persisted completedDeliveries state, not client-trusted
+  // input.
+  if (getDeliveryCapStatus(state, now).atCap) return state;
 
   // Deduct resources, pay money, record completion, shift reputation.
   // Frontier-protected players earn the FRONTIER_CONTRACT_PAYOUT_MULTIPLIER bonus.

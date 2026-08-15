@@ -6,6 +6,7 @@ import { logger } from '@/lib/logger';
 import { validateBody, publishCorpReportSchema } from '@/lib/validations';
 import { validationError, unauthorizedError, internalError } from '@/lib/errors';
 import { shapeCorpReportForStorage, quarterKey } from '@/lib/game/corp-report-registry';
+import { computeServerTradeSummary } from '@/lib/game/market-share';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,7 +87,12 @@ export async function POST(request: NextRequest) {
       return validationError(firstError, validation.errors);
     }
 
-    const shaped = shapeCorpReportForStorage(validation.data);
+    // Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): server-verified trade
+    // telemetry, computed here from MarketFill — NOT accepted from the
+    // client payload (publishCorpReportSchema has no such field). See
+    // corp-report-registry.ts's file header for the trust-boundary note.
+    const serverTrade = await computeServerTradeSummary(profile.id);
+    const shaped = shapeCorpReportForStorage(validation.data, Date.now(), serverTrade);
     const quarter = quarterKey(shaped.quarterIndex);
     // companyName is already tag-stripped/length-capped at write time by
     // /api/space-tycoon/sync — trusted as far as that route trusts it.

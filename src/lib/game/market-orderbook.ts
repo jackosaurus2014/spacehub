@@ -16,7 +16,17 @@ const NPC_SPREAD_HALF = 0.10; // 10% each side = 20% total NPC spread
 const MAX_OPEN_ORDERS = 20; // Base max open orders per player
 const NPC_PROFILE_ID = '__NPC_MARKET_MAKER__';
 
-/** NPC daily volume caps by resource category */
+/**
+ * NPC daily volume caps by resource. A key present with value `0` means the
+ * NPC maker places NO standing orders at all for that resource (checked via
+ * `Object.prototype.hasOwnProperty`, NOT `||`, below — `0 || 50` would
+ * silently resurrect a "zero" cap to the 50 default, which is exactly the
+ * free-money-printer bug Wave E2's [BAL] note warns about: an NPC standing
+ * BUY order pays real money out of nowhere on every fill (see matchOrders —
+ * the NPC counterparty has no real wallet), so a top-of-chain crafted good
+ * with unlimited NPC buy liquidity would be a mint. Keys absent entirely
+ * fall back to the 50-unit default below.
+ */
 const NPC_VOLUME_CAPS: Record<string, number> = {
   // Common
   iron: 200, aluminum: 200, lunar_water: 200, methane: 200, ethane: 200,
@@ -24,7 +34,38 @@ const NPC_VOLUME_CAPS: Record<string, number> = {
   titanium: 50, gold: 50, rare_earth: 50, platinum_group: 50, mars_water: 50,
   // Exotic
   exotic_materials: 10, helium3: 10,
+
+  // ─── Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2) ─────
+  // Adopted colony orphan slugs — real NPC colony production exists
+  // (colonies.ts COLONY_MINING_PRODUCTION), so these get ordinary caps
+  // scaled to their rarity tier (mirrors the raw-resource tiers above).
+  sulfur: 150, ammonia: 120, solar_concentrate: 80,
+  organic_compounds: 15, deuterium: 8, bio_samples: 5, antimatter_precursors: 3,
+
+  // Crafted goods — no NPC production yet (E3 lands it), so caps are tight
+  // by design, tapering to zero at the top of the chain. Tier 1 (refined):
+  steel_ingots: 25, aluminum_alloy: 25, rocket_fuel: 20, refined_rare_earth: 15,
+  // Tier 2 (components) — "tight" per spec:
+  structural_beams: 8, electronics_package: 6, solar_panel_array: 6,
+  propulsion_unit: 4, life_support_pack: 0,
+  // Tier 3 (products) — tighter still, real scarcity:
+  station_module: 2, satellite_bus: 2, ai_compute_cluster: 2,
+  // Tier 4 (top-of-chain products) — zero: player-only markets, no NPC
+  // buyer/seller, per the MINED_ONLY precedent.
+  fusion_core: 0, habitat_pod: 0,
+
+  // exotic_fuel/xenogenic_biomatter are MINED_ONLY (interstellar-only
+  // production) — explicit zero rather than falling through to the default.
+  exotic_fuel: 0, xenogenic_biomatter: 0,
 };
+
+/** `0` is a valid, meaningful cap (see NPC_VOLUME_CAPS doc comment) — only an
+ *  absent key falls back to the default. */
+function getNpcVolumeCap(resourceSlug: string): number {
+  return Object.prototype.hasOwnProperty.call(NPC_VOLUME_CAPS, resourceSlug)
+    ? NPC_VOLUME_CAPS[resourceSlug]
+    : 50;
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -291,10 +332,15 @@ export async function matchOrders(resourceSlug: string): Promise<{
       const fee = Math.round(totalValue * FEE_RATE);
 
       // Create fill record
+      // Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): resourceSlug is denormalized
+      // onto the fill (already in scope as this function's own parameter) so
+      // market-share.ts can aggregate/group directly on MarketFill without a
+      // relation join to MarketLimitOrder.
       await tx.marketFill.create({
         data: {
           orderId: bestBuy.id,
           counterOrderId: bestSell.id,
+          resourceSlug,
           quantity: fillQty,
           pricePerUnit: executionPrice,
           totalValue,
@@ -506,7 +552,20 @@ export async function getNPCMarketMakerOrders(
   const basePrice = resourceDef?.baseMarketPrice ?? 0;
   const minPrice = resourceDef?.minPrice ?? 1;
   const maxPrice = resourceDef?.maxPrice ?? Number.MAX_SAFE_INTEGER;
-  const volume = NPC_VOLUME_CAPS[resourceSlug] || 50;
+  const volume = getNpcVolumeCap(resourceSlug);
+
+  // Wave E2 [BAL]: a zero cap (top-of-chain crafted products, MINED_ONLY
+  // resources) means the NPC maker provides NO liquidity at all for this
+  // resource — skip order placement entirely rather than resting a
+  // quantity:0 order pair. Any pre-existing NPC orders are still cleaned up
+  // (a resource can transition to zero-cap between calls).
+  if (volume <= 0) {
+    await prisma.marketLimitOrder.updateMany({
+      where: { profileId: NPC_PROFILE_ID, resourceSlug, status: { in: ['open', 'partial'] } },
+      data: { status: 'cancelled' },
+    });
+    return { bid: { price: 0, quantity: 0 }, ask: { price: 0, quantity: 0 }, spreadHalf: 0 };
+  }
 
   // Live spot: prefer the caller-supplied (already-clamped) reference, else
   // the maintained shared currentPrice, else base.

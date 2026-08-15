@@ -13,6 +13,7 @@ import { ERA_CHARTER_MAP } from '@/lib/game/corporate-eras';
 import { ERA_MEDAL_LABEL } from '@/lib/game/corp-era-registry';
 import { ACHIEVEMENTS } from '@/lib/game/achievements';
 import { resolveIcon, type IconName } from '@/lib/game/icons';
+import { computeServerTradeSummary, DEFAULT_SHARE_WINDOW_DAYS } from '@/lib/game/market-share';
 
 // V1: shape-distinct medal (medal vs medal-outline), color is reinforcement
 // — same pattern as CorporateEraPanel.tsx's MEDAL_ICON.
@@ -62,6 +63,14 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
     getCorpChronicle(params.id),
   ]);
   if (!corp) notFound();
+
+  // Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): server-verified trade
+  // telemetry, computed live from MarketFill — distinct from (and more
+  // trustworthy than) the self-reported financials in a published quarterly
+  // report; see corp-report-registry.ts's file header on that trust
+  // boundary. "Never free, never perfect" per canon — this public view is
+  // the free-tier summary (top categories only, no participant table).
+  const tradeSummary = await computeServerTradeSummary(corp.id, DEFAULT_SHARE_WINDOW_DAYS);
 
   const tierDef = getTierDef(corp.tier);
   const url = `${APP_URL}/space-tycoon/corp/${corp.id}`;
@@ -132,6 +141,35 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
             ))}
           </div>
         </div>
+
+        {/* Market Activity — Wave E6, server-verified from MarketFill (not
+            self-reported). Only rendered when the corp has actually traded
+            on the shared order book. */}
+        {tradeSummary.tradeVolumeValue > 0 && (
+          <div className="hud-frame game-panel p-4 sm:p-5">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <div className="flex items-center justify-between mb-1">
+              <p className="game-label">Market Activity (Server-Verified)</p>
+              <span className="text-[10px] text-slate-500">{tradeSummary.windowDays}-day window</span>
+            </div>
+            <p className="game-number text-lg font-bold text-emerald-300 mb-2">
+              {formatMoney(tradeSummary.tradeVolumeValue)} traded
+            </p>
+            {tradeSummary.topCategories.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {tradeSummary.topCategories.map((c) => (
+                  <span
+                    key={c.category}
+                    className="text-[10px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                  >
+                    {c.category} · {c.sharePct.toFixed(1)}% of category volume
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Achievements */}
         {corp.achievements.length > 0 && (

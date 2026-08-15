@@ -62,6 +62,12 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
     short: 'Crew mix modifies revenue, output, and upkeep',
     body: 'Your hired engineers, scientists, miners, and operators each contribute a different passive multiplier (service revenue, research speed, mining output, maintenance reduction). The mix you hire is a real allocation decision, not just a headcount.',
   }),
+  'delivery-cap': c({
+    id: 'delivery-cap', name: 'Daily Delivery Cap', icon: 'clock',
+    short: 'Contracts pay full price, no broker fee — capped per rolling 24h',
+    body: 'Delivery contracts pay their full spot-linked value with no market broker cut, so an uncapped stream of them would out-earn a diversified corporation. Completions are capped on a rolling 24-hour window: a base of 4, +1 for researching Space Logistics Network, +1 at Corporation Tier 5 (Conglomerate) — 6 at most. Contracts stay a strong supplement to services, markets, and megaprojects, never the dominant income source.',
+    related: ['net-income', 'corporation-tier'],
+  }),
 
   // ── Standing Orders / Away Efficiency (LS1) ─────────────────────────────
   'away-efficiency': c({

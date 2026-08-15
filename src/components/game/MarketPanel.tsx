@@ -12,6 +12,7 @@ import { isMarketEventExpired, type ActiveMarketEvent } from '@/lib/game/market-
 // honest; getResourceTotals surfaces what's sitting in remote stockpiles so
 // the player understands why it isn't sellable yet.
 import { getResourceTotals } from '@/lib/game/cargo-logistics';
+import { MINED_ONLY_RESOURCE_IDS as MINED_ONLY_RESOURCE_ID_LIST } from '@/lib/game/economic-sinks';
 import Image from 'next/image';
 
 interface MarketPrices {
@@ -34,10 +35,13 @@ interface MarketPanelProps {
   onBuyResource?: (resourceId: string, quantity: number, cost: number) => void;
 }
 
-/** Resources that only come from mining operations — never stocked by NPC
+/** Resources that only come from mining/crafting — never stocked by NPC
  *  brokers on the open market. Buy flow is disabled for these; sell flow
- *  (surplus from mining) stays fully functional. */
-const MINED_ONLY_RESOURCE_IDS = new Set(['exotic_fuel', 'xenogenic_biomatter']);
+ *  stays fully functional. Wave E2: now sourced from the single
+ *  economic-sinks.ts list (also enforced server-side in market/trade/route.ts)
+ *  instead of a locally-duplicated set, so the UI and server can't drift —
+ *  it also picks up the 13 crafted products + life_support_pack for free. */
+const MINED_ONLY_RESOURCE_IDS = new Set(MINED_ONLY_RESOURCE_ID_LIST);
 
 export default function MarketPanel({ state, onSellResource, onBuyResource }: MarketPanelProps) {
   const [prices, setPrices] = useState<MarketPrices>({});

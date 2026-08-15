@@ -18,6 +18,7 @@ import {
 } from '@/lib/game/league-system';
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { resolveMetricCurrentValue } from '@/lib/game/market-share';
 
 export const dynamic = 'force-dynamic';
 
@@ -286,25 +287,26 @@ export async function POST(request: NextRequest) {
         });
 
         // Create entries for each player in this bracket
-        // Get the metric's profile field for snapshot
         const metricDef = getMetricDefinition(metric.slug);
-        const profileField = metricDef?.profileField ?? 'netWorth';
 
         for (const playerId of bracketPlayerIds) {
           const player = activePlayers.find(p => p.id === playerId);
           if (!player) continue;
 
-          // Snapshot the start value from the player's current state
-          let startValue = 0;
-          switch (profileField) {
-            case 'netWorth': startValue = player.netWorth; break;
-            case 'totalEarned': startValue = player.totalEarned; break;
-            case 'buildingCount': startValue = player.buildingCount; break;
-            case 'researchCount': startValue = player.researchCount; break;
-            case 'serviceCount': startValue = player.serviceCount; break;
-            case 'locationsUnlocked': startValue = player.locationsUnlocked; break;
-            default: startValue = player.netWorth;
-          }
+          // Snapshot the start value from the player's current state.
+          // Wave E6: for serverComputed metrics (trade_volume,
+          // market_share_delta) this reads real MarketFill telemetry
+          // instead of a GameProfile scalar — see resolveMetricCurrentValue
+          // (market-share.ts).
+          const startValue = await resolveMetricCurrentValue(metricDef, {
+            profileId: player.id,
+            netWorth: player.netWorth,
+            totalEarned: player.totalEarned,
+            buildingCount: player.buildingCount,
+            researchCount: player.researchCount,
+            serviceCount: player.serviceCount,
+            locationsUnlocked: player.locationsUnlocked,
+          });
 
           await prisma.leagueBracketEntry.create({
             data: {

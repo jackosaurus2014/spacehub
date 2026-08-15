@@ -2265,7 +2265,7 @@ export default function SpaceTycoonPage() {
               eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Crafting: ${recipe.name}`, description: `Producing ${recipe.outputQuantity}x ${recipe.outputId.replace(/_/g, ' ')}.` }, ...prev.eventLog].slice(0, 50),
             };
           });
-        }} />}
+        }} onSellResource={handleSellResource} />}
         {tab === 'workforce' && <WorkforcePanel state={state} onHire={(workerType) => {
           setState(prev => {
             if (!prev) return prev;

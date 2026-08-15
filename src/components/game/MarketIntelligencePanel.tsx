@@ -7,6 +7,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
 } from 'recharts';
 import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
+import type { ResourceId } from '@/lib/game/resources';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { formatMoney } from '@/lib/game/formulas';
 import { useModalA11y } from './useModalA11y';
@@ -53,7 +54,7 @@ interface CorporationRow {
   rank: number;
 }
 
-type IntelTab = 'market' | 'corporations' | 'flows';
+type IntelTab = 'market' | 'corporations' | 'flows' | 'share';
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -78,12 +79,16 @@ export default function MarketIntelligencePanel() {
           <TabButton active={tab === 'flows'} onClick={() => setTab('flows')} icon="globe">
             Supply Flows
           </TabButton>
+          <TabButton active={tab === 'share'} onClick={() => setTab('share')} icon="leaderboard">
+            Market Share
+          </TabButton>
         </div>
       </ConsolePanel>
 
       {tab === 'market' && <MarketsTab />}
       {tab === 'corporations' && <CorporationsTab />}
       {tab === 'flows' && <SupplyFlowsTab />}
+      {tab === 'share' && <MarketShareTab />}
     </div>
   );
 }
@@ -713,6 +718,157 @@ function FlowBucket({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Market Share Tab ───────────────────────────────────────────────────────
+// Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6) — closes §1d: "No market-share
+// telemetry of any kind exists." Free tier (always visible): top-5 traders
+// overall + per traded resource. Earned tier (active `market_spy`
+// espionage intel): full participant table — never free, never perfect.
+
+interface ShareEntry {
+  profileId: string;
+  companyName: string | null;
+  isNpc: boolean;
+  totalVolume: number;
+  totalValue: number;
+  sharePct: number;
+}
+
+interface OverallShareResponse {
+  earnedTier: boolean;
+  windowDays: number;
+  totalTradedValue: number;
+  participantCount: number;
+  entries: ShareEntry[];
+  full: boolean;
+}
+
+interface ResourceTopReport {
+  resourceSlug: string;
+  totalTradedValue: number;
+  entries: ShareEntry[];
+}
+
+function MarketShareTab() {
+  const [overall, setOverall] = useState<OverallShareResponse | null>(null);
+  const [byResource, setByResource] = useState<ResourceTopReport[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      fetch('/api/space-tycoon/market/share').then(r => r.ok ? r.json() : null),
+      fetch('/api/space-tycoon/market/share?all=1').then(r => r.ok ? r.json() : null),
+    ]).then(([overallData, allData]) => {
+      if (cancelled) return;
+      if (overallData) setOverall(overallData);
+      if (allData?.resources) setByResource(allData.resources);
+    }).catch(() => {}).finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) return <div className="card p-8 text-center text-slate-500 text-sm">Loading market share…</div>;
+
+  const hasActivity = (overall?.totalTradedValue ?? 0) > 0;
+
+  return (
+    <div className="space-y-3">
+      <div className="card p-3">
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-white text-sm font-bold flex items-center gap-1.5">
+            <GameIcon name="leaderboard" size={14} /> Overall Trade Leaders
+          </div>
+          <span className="text-[10px] text-slate-500">{overall?.windowDays ?? 30}-day window</span>
+        </div>
+        <p className="text-slate-500 text-[11px] mb-3">
+          Ranked by traded value (buy + sell) across the shared order book, NPC Market Maker included — data
+          access is gameplay. Top 5 are always public; the full table unlocks with an active Market Reconnaissance
+          espionage report.
+        </p>
+
+        {!hasActivity ? (
+          <div className="text-[11px] text-slate-600 italic py-4 text-center">
+            No trades executed on the shared order book yet in this window. Be the first mover.
+          </div>
+        ) : (
+          <ShareTable entries={overall?.entries ?? []} />
+        )}
+
+        {overall && !overall.full && hasActivity && (
+          <p className="mt-2 text-[10px] text-purple-300/80 flex items-center gap-1">
+            <GameIcon name="target" size={11} /> Full participant table + rival standing-order demand: earned via
+            a successful Market Reconnaissance espionage report (Espionage panel).
+          </p>
+        )}
+      </div>
+
+      {byResource.length > 0 && (
+        <div className="card p-3">
+          <div className="text-white text-sm font-bold mb-1 flex items-center gap-1.5">
+            <GameIcon name="market" size={14} /> Per-Resource Leaders
+          </div>
+          <p className="text-slate-500 text-[11px] mb-3">Top 5 traders in each resource with activity this window.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {byResource.map((r) => {
+              const def = RESOURCE_MAP.get(r.resourceSlug as ResourceId);
+              const leader = r.entries[0];
+              return (
+                <div key={r.resourceSlug} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                  <div className="flex items-center justify-between text-[11px] mb-1">
+                    <span className="text-slate-300 font-medium">{def?.name ?? r.resourceSlug}</span>
+                    <span className="text-slate-500">{formatMoney(r.totalTradedValue)} traded</span>
+                  </div>
+                  {leader && (
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className={`truncate ${leader.isNpc ? 'text-slate-500 italic' : 'text-cyan-300'}`}>
+                        {leader.companyName ?? 'Unknown'}
+                      </span>
+                      <span className="font-mono font-bold text-emerald-400 shrink-0">{leader.sharePct.toFixed(1)}%</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ShareTable({ entries }: { entries: ShareEntry[] }) {
+  if (entries.length === 0) {
+    return <div className="text-[11px] text-slate-600 italic py-2 text-center">No participants yet.</div>;
+  }
+  return (
+    <div className="overflow-x-auto -mx-1">
+      <table className="w-full text-[11px]" role="table" aria-label="Market share leaderboard">
+        <thead>
+          <tr className="text-slate-500 text-left">
+            <th scope="col" className="px-1 py-1 font-medium">#</th>
+            <th scope="col" className="px-1 py-1 font-medium">Corporation</th>
+            <th scope="col" className="px-1 py-1 font-medium text-right">Volume</th>
+            <th scope="col" className="px-1 py-1 font-medium text-right">Value</th>
+            <th scope="col" className="px-1 py-1 font-medium text-right">Share</th>
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map((e, i) => (
+            <tr key={e.profileId} className="border-t border-white/[0.05]">
+              <td className="px-1 py-1.5 text-slate-500">{i + 1}</td>
+              <td className={`px-1 py-1.5 truncate max-w-[140px] ${e.isNpc ? 'text-slate-500 italic' : 'text-white'}`}>
+                {e.companyName ?? 'Unknown'}
+              </td>
+              <td className="px-1 py-1.5 text-right font-mono text-slate-300">{e.totalVolume.toLocaleString()}</td>
+              <td className="px-1 py-1.5 text-right font-mono text-slate-300">{formatMoney(e.totalValue)}</td>
+              <td className="px-1 py-1.5 text-right font-mono font-bold text-emerald-400">{e.sharePct.toFixed(1)}%</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

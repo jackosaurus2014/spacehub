@@ -13,8 +13,18 @@ import {
   getDeliveryPool,
   getActiveDeliveries,
   getCompletedDeliveries,
+  getDailyDeliveryCap,
+  getRecentDeliveryCompletions,
+  getDeliveryCapStatus,
+  DELIVERY_CAP_BASE,
+  DELIVERY_CAP_WINDOW_MS,
+  DELIVERY_CAP_RESEARCH_BONUS_ID,
+  DELIVERY_CAP_RESEARCH_BONUS,
+  DELIVERY_CAP_TIER_THRESHOLD,
+  DELIVERY_CAP_TIER_BONUS,
   POOL_SIZE,
 } from '../delivery-contracts';
+import type { DeliveryContract } from '../delivery-contracts';
 import { RESOURCE_MAP, type ResourceId } from '../resources';
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
@@ -268,5 +278,179 @@ describe('delivery-contracts — accessors', () => {
     expect(getDeliveryPool(s)).toEqual([]);
     expect(getActiveDeliveries(s)).toEqual([]);
     expect(getCompletedDeliveries(s)).toEqual([]);
+  });
+});
+
+// ─── Daily completion cap (founder directive) ──────────────────────────────
+
+/** Build a fake completed-delivery history entry at a given completion time. */
+function completedAt(ms: number, overrides: Partial<DeliveryContract> = {}): DeliveryContract {
+  return {
+    ...generateContract('the-dominion', ms, ms),
+    status: 'completed',
+    completedAtMs: ms,
+    ...overrides,
+  };
+}
+
+describe('delivery-contracts — daily cap derivation', () => {
+  it('base cap is 4 with no research/tier bonuses', () => {
+    expect(getDailyDeliveryCap(baseState())).toBe(DELIVERY_CAP_BASE);
+    expect(DELIVERY_CAP_BASE).toBe(4);
+  });
+
+  it('+1 for the Space Logistics Network research', () => {
+    const s = baseState({ completedResearch: [DELIVERY_CAP_RESEARCH_BONUS_ID] });
+    expect(getDailyDeliveryCap(s)).toBe(DELIVERY_CAP_BASE + DELIVERY_CAP_RESEARCH_BONUS);
+  });
+
+  it('+1 at Corporation Tier 5 (Conglomerate)', () => {
+    const s = baseState({ corporationTier: DELIVERY_CAP_TIER_THRESHOLD });
+    expect(getDailyDeliveryCap(s)).toBe(DELIVERY_CAP_BASE + DELIVERY_CAP_TIER_BONUS);
+  });
+
+  it('does not grant the tier bonus below the threshold', () => {
+    const s = baseState({ corporationTier: DELIVERY_CAP_TIER_THRESHOLD - 1 });
+    expect(getDailyDeliveryCap(s)).toBe(DELIVERY_CAP_BASE);
+  });
+
+  it('research + tier bonuses stack to the max of 6', () => {
+    const s = baseState({
+      completedResearch: [DELIVERY_CAP_RESEARCH_BONUS_ID],
+      corporationTier: DELIVERY_CAP_TIER_THRESHOLD,
+    });
+    expect(getDailyDeliveryCap(s)).toBe(6);
+  });
+
+  it('the bonus is earned, never purchasable — no money-gated path exists in getDailyDeliveryCap', () => {
+    // Sanity check on the function's inputs: only completedResearch and
+    // corporationTier are read, never money/totalEarned/subscription state.
+    const s = baseState({ money: 999_999_999_999 });
+    expect(getDailyDeliveryCap(s)).toBe(DELIVERY_CAP_BASE);
+  });
+});
+
+describe('delivery-contracts — rolling 24h window math', () => {
+  it('counts only completions inside the window', () => {
+    const now = 10 * DELIVERY_CAP_WINDOW_MS;
+    const s = baseState({
+      completedDeliveries: [
+        completedAt(now - 1000),                       // just now — in window
+        completedAt(now - DELIVERY_CAP_WINDOW_MS + 1),  // just inside — in window
+        completedAt(now - DELIVERY_CAP_WINDOW_MS),      // exactly at the edge — excluded (strict <)
+        completedAt(now - DELIVERY_CAP_WINDOW_MS - 1),  // just outside — excluded
+      ],
+    });
+    expect(getRecentDeliveryCompletions(s, now)).toHaveLength(2);
+  });
+
+  it('excludes defaulted contracts from the count', () => {
+    const now = 10_000;
+    const s = baseState({
+      completedDeliveries: [
+        completedAt(now - 1000, { status: 'defaulted', defaultedAtMs: now - 1000 }),
+      ],
+    });
+    expect(getRecentDeliveryCompletions(s, now)).toHaveLength(0);
+  });
+
+  it('the window rolls forward as time passes — a completion frees its slot 24h later', () => {
+    const t0 = 1_000_000;
+    const s = baseState({
+      completedDeliveries: Array.from({ length: DELIVERY_CAP_BASE }, (_, i) => completedAt(t0 + i)),
+    });
+    // Immediately after: all 4 count, at cap.
+    expect(getDeliveryCapStatus(s, t0 + DELIVERY_CAP_BASE).atCap).toBe(true);
+    // Just before the oldest rolls off: still at cap.
+    const justBefore = t0 + DELIVERY_CAP_WINDOW_MS - 1;
+    expect(getDeliveryCapStatus(s, justBefore).atCap).toBe(true);
+    // The moment the oldest completion (t0) is >= 24h old: it drops out, freeing a slot.
+    const justAfter = t0 + DELIVERY_CAP_WINDOW_MS;
+    expect(getDeliveryCapStatus(s, justAfter).atCap).toBe(false);
+    expect(getDeliveryCapStatus(s, justAfter).completed).toBe(DELIVERY_CAP_BASE - 1);
+  });
+
+  it('resetInMs counts down to when the oldest counted completion rolls off', () => {
+    const now = 5_000_000;
+    const s = baseState({
+      completedDeliveries: [
+        completedAt(now - 1000),
+        completedAt(now - 500),
+        completedAt(now - 200),
+        completedAt(now - 100), // oldest of these 4 is (now - 1000)
+      ],
+    });
+    const status = getDeliveryCapStatus(s, now);
+    expect(status.atCap).toBe(true);
+    expect(status.resetInMs).toBe(DELIVERY_CAP_WINDOW_MS - 1000);
+  });
+
+  it('resetInMs is 0 when not at cap', () => {
+    const s = baseState({ completedDeliveries: [completedAt(1000)] });
+    expect(getDeliveryCapStatus(s, 2000).resetInMs).toBe(0);
+    expect(getDeliveryCapStatus(s, 2000).atCap).toBe(false);
+  });
+});
+
+describe('delivery-contracts — cap enforcement in deliverContract', () => {
+  function stateAtCap(now: number, extra: Partial<GameState> = {}): GameState {
+    return baseState({
+      completedDeliveries: Array.from({ length: DELIVERY_CAP_BASE }, (_, i) => completedAt(now - 1000 - i)),
+      ...extra,
+    });
+  }
+
+  it('blocks completion once the cap is hit, even with sufficient inventory', () => {
+    const now = 10_000_000;
+    const c = { ...generateContract('the-dominion', 20, now - 500), status: 'accepted' as const };
+    const s = stateAtCap(now, {
+      activeDeliveries: [c],
+      resources: { [c.resourceId]: c.quantity + 50 },
+      money: 100,
+    });
+    const after = deliverContract(s, c.id, now);
+    expect(after).toBe(s); // unchanged — quiet no-op, matching the existing early-return shape
+    expect(after.activeDeliveries).toHaveLength(1);
+  });
+
+  it('allows completion again once a slot rolls off the 24h window', () => {
+    const now = 10_000_000;
+    const c = { ...generateContract('the-dominion', 20, now - 500), status: 'accepted' as const };
+    const s = stateAtCap(now, {
+      activeDeliveries: [c],
+      resources: { [c.resourceId]: c.quantity + 50 },
+      money: 100,
+    });
+    const later = now + DELIVERY_CAP_WINDOW_MS + 1;
+    const after = deliverContract(s, c.id, later);
+    expect(after.activeDeliveries).toHaveLength(0);
+    expect(after.completedDeliveries!.some(d => d.id === c.id && d.status === 'completed')).toBe(true);
+  });
+
+  it('a research/tier bonus slot lets one more completion through at the base cap', () => {
+    const now = 10_000_000;
+    const c = { ...generateContract('the-dominion', 20, now - 500), status: 'accepted' as const };
+    const s = stateAtCap(now, {
+      activeDeliveries: [c],
+      resources: { [c.resourceId]: c.quantity + 50 },
+      money: 100,
+      completedResearch: [DELIVERY_CAP_RESEARCH_BONUS_ID],
+    });
+    const after = deliverContract(s, c.id, now);
+    expect(after.activeDeliveries).toHaveLength(0);
+    expect(after.money).toBe(100 + c.paymentMoney);
+  });
+
+  it('does not block accepting new contracts or normal deadline processing while at cap', () => {
+    const now = 10_000_000;
+    const open = generateContract('the-syndicate', 1, now);
+    const s = stateAtCap(now, { availableDeliveries: [open] });
+    const afterAccept = acceptDelivery(s, open.id, now);
+    expect(afterAccept.activeDeliveries).toHaveLength(1);
+
+    const overdue = { ...generateContract('the-dominion', 2, now - 5000), status: 'accepted' as const, deadlineAtMs: now - 1 };
+    const s2 = stateAtCap(now, { activeDeliveries: [overdue] });
+    const afterDeadline = processContractDeadlines(s2, now);
+    expect(afterDeadline.completedDeliveries![0].status).toBe('defaulted');
   });
 });

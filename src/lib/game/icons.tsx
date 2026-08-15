@@ -40,6 +40,10 @@ export type IconName =
   | 'resource-water' | 'resource-metal' | 'resource-precious'
   | 'resource-rare-earth' | 'resource-hydrocarbon' | 'resource-exotic'
   | 'resource-generic'
+  // Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2) — crafted-
+  // goods tiers + adopted colony-resource categories.
+  | 'resource-refined' | 'resource-component' | 'resource-product'
+  | 'resource-industrial' | 'resource-energy'
   // ── Ship roles (ships.ts ShipRole) ──────────────────────────────────────
   | 'ship-transport' | 'ship-mining' | 'ship-survey' | 'ship-tanker'
   // ── Building categories (buildings.ts) ──────────────────────────────────
@@ -138,6 +142,14 @@ export const ICONS: Record<IconName, IconDef> = {
   'resource-hydrocarbon': { meaning: 'Hydrocarbon/fuel resources', els: [r(8, 8, 8, 13, 1), l(8, 11, 16, 11), p('M10 8V5h4v3')] },
   'resource-exotic': { meaning: 'Exotic-matter resources', els: [p('M12 2l1.6 5.4L19 9l-5.4 1.6L12 16l-1.6-5.4L5 9l5.4-1.6z'), c(18, 18, 1.6, 'currentColor')] },
   'resource-generic': { meaning: 'Generic resource/commodity', els: [r(5, 9, 14, 10, 1), l(5, 13, 19, 13), p('M9 9V6a3 3 0 0 1 6 0v3')] },
+
+  // Wave E2 "Goods on the Book" — crafted-goods tiers + adopted colony
+  // resource categories.
+  'resource-refined': { meaning: 'Refined (tier-1) crafted resources — ingot', els: [pg('7,4 17,4 20,10 17,20 7,20 4,10'), l(7, 4, 4, 10), l(17, 4, 20, 10)] },
+  'resource-component': { meaning: 'Component (tier-2) crafted resources — gear', els: [c(12, 12, 4, 'none'), p('M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1')] },
+  'resource-product': { meaning: 'Product (tier-3/4) crafted resources — assembled module', els: [r(4, 7, 16, 12, 1), l(4, 11, 20, 11), l(9, 7, 9, 3), l(15, 7, 15, 3)] },
+  'resource-industrial': { meaning: 'Industrial (adopted colony) resources — barrel', els: [r(7, 5, 10, 15, 2), l(7, 10, 17, 10), l(7, 15, 17, 15)] },
+  'resource-energy': { meaning: 'Energy (adopted colony) resources — bolt', els: [pg('13,2 4,14 11,14 9,22 20,10 13,10')] },
 
   // ── Ship roles ────────────────────────────────────────────────────────
   'ship-transport': { meaning: 'Transport ship role', els: [p('M3 16l2-6h10l3 6z'), r(4, 16, 16, 3, 1), c(8, 19.5, 1.3, 'none'), c(16, 19.5, 1.3, 'none')] },

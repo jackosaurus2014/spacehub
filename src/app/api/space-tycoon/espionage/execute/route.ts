@@ -18,6 +18,7 @@ import {
   type TargetGameProfile,
 } from '@/lib/game/espionage-system';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { getRecentTradesForEspionage } from '@/lib/game/market-share';
 
 /**
  * POST /api/space-tycoon/espionage/execute
@@ -284,6 +285,19 @@ export async function POST(request: NextRequest) {
       targetData,
       attackerGameProfile.id,
     );
+
+    // Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): market_spy's recent-orders
+    // feed was a hardcoded stub (`recentOrders: []`, see the audit at §1d).
+    // executeEspionageAction() is pure (no DB access), so the real feed is
+    // patched in here, server-side, from the target's own MarketFill
+    // history — best-effort: a telemetry read failure (e.g. pre-migration)
+    // silently leaves the stubbed-empty array rather than failing the whole
+    // mission.
+    if (validActionType === 'market_spy' && result.succeeded && result.intelGathered) {
+      try {
+        result.intelGathered.recentOrders = await getRecentTradesForEspionage(targetId, 10, 14);
+      } catch { /* leave stubbed empty array */ }
+    }
 
     // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
     const ledgerOn = await isLedgerAvailable();

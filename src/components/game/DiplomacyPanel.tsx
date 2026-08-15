@@ -8,12 +8,15 @@ import {
   getCompletedDeliveries,
   canDeliver,
   formatDeadline,
+  getDeliveryCapStatus,
   type DeliveryContract,
+  type DeliveryCapStatus,
 } from '@/lib/game/delivery-contracts';
 import { FACTION_MAP, getFactionArtUrl, type FactionId } from '@/lib/game/factions';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { formatMoney } from '@/lib/game/formulas';
+import { Concept } from './HoloTip';
 import Image from 'next/image';
 
 interface Props {
@@ -37,6 +40,7 @@ export default function DiplomacyPanel({ state, onAccept, onDeliver }: Props) {
   const pool       = getDeliveryPool(state);
   const active     = getActiveDeliveries(state);
   const completed  = getCompletedDeliveries(state);
+  const capStatus  = getDeliveryCapStatus(state, now);
 
   return (
     <div className="space-y-4">
@@ -55,7 +59,7 @@ export default function DiplomacyPanel({ state, onAccept, onDeliver }: Props) {
           </div>
         </div>
 
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap items-center">
           <TabButton active={tab === 'market'} onClick={() => setTab('market')}>
             📄 Open Market ({pool.length})
           </TabButton>
@@ -65,6 +69,7 @@ export default function DiplomacyPanel({ state, onAccept, onDeliver }: Props) {
           <TabButton active={tab === 'history'} onClick={() => setTab('history')}>
             📚 History ({completed.length})
           </TabButton>
+          <DeliveryCapBadge capStatus={capStatus} now={now} />
         </div>
       </div>
 
@@ -72,9 +77,30 @@ export default function DiplomacyPanel({ state, onAccept, onDeliver }: Props) {
         <MarketTab state={state} pool={pool} now={now} onAccept={onAccept} />
       )}
       {tab === 'active' && (
-        <ActiveTab state={state} active={active} now={now} onDeliver={onDeliver} />
+        <ActiveTab state={state} active={active} now={now} onDeliver={onDeliver} capStatus={capStatus} />
       )}
       {tab === 'history' && <HistoryTab completed={completed} />}
+    </div>
+  );
+}
+
+// ─── Daily completion cap badge ────────────────────────────────────────────
+
+function DeliveryCapBadge({ capStatus, now }: { capStatus: DeliveryCapStatus; now: number }) {
+  const { completed, cap, atCap, resetInMs } = capStatus;
+  return (
+    <div
+      className={`ml-auto min-h-[38px] px-2.5 py-1.5 rounded-lg text-[11px] font-medium flex items-center gap-1.5 border ${
+        atCap
+          ? 'bg-amber-500/10 border-amber-500/40 text-amber-300'
+          : 'bg-white/[0.04] border-white/[0.08] text-slate-400'
+      }`}
+    >
+      {atCap && <span aria-hidden="true">⚠</span>}
+      <Concept id="delivery-cap">
+        Contracts completed: <span className="font-mono">{completed}/{cap}</span>
+        {atCap && <> — resets in {formatDeadline(now + resetInMs, now)}</>}
+      </Concept>
     </div>
   );
 }
@@ -154,7 +180,11 @@ function FactionChip({ active, onClick, label, accent }: { active: boolean; onCl
 
 // ─── Active Tab ───────────────────────────────────────────────────────────────
 
-function ActiveTab({ state, active, now, onDeliver }: { state: GameState; active: DeliveryContract[]; now: number; onDeliver: (id: string) => void }) {
+function ActiveTab({
+  state, active, now, onDeliver, capStatus,
+}: {
+  state: GameState; active: DeliveryContract[]; now: number; onDeliver: (id: string) => void; capStatus: DeliveryCapStatus;
+}) {
   if (active.length === 0) {
     return (
       <div className="card p-8 text-center">
@@ -170,9 +200,14 @@ function ActiveTab({ state, active, now, onDeliver }: { state: GameState; active
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {sorted.map(c => {
-        const deliverable = canDeliver(state, c.id);
+        const haveEnough = canDeliver(state, c.id);
+        // At cap: even a fully-stocked contract can't be completed right now
+        // — deliverContract() itself refuses (see delivery-contracts.ts), so
+        // the button reflects that instead of offering a dead action.
+        const deliverable = haveEnough && !capStatus.atCap;
         const have = state.resources[c.resourceId as ResourceId] || 0;
         const overdue = c.deadlineAtMs <= now;
+        const capBlocked = haveEnough && capStatus.atCap && !overdue;
         return (
           <ContractCard
             key={c.id}
@@ -190,7 +225,9 @@ function ActiveTab({ state, active, now, onDeliver }: { state: GameState; active
               </div>
             }
             action={{
-              label: deliverable ? 'Deliver & Collect' : overdue ? 'Overdue — will default' : `Need ${(c.quantity - have).toLocaleString()} more`,
+              label: capBlocked
+                ? `⚠ Daily cap reached (${capStatus.completed}/${capStatus.cap}) — next slot in ${formatDeadline(now + capStatus.resetInMs, now)}`
+                : deliverable ? 'Deliver & Collect' : overdue ? 'Overdue — will default' : `Need ${(c.quantity - have).toLocaleString()} more`,
               onClick: deliverable ? () => onDeliver(c.id) : undefined,
               tone: deliverable ? 'primary' : overdue ? 'danger' : 'disabled',
             }}

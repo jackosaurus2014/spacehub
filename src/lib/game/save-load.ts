@@ -514,6 +514,33 @@ export function loadGame(): GameState | null {
     // baseMarketPrice until the first authenticated sync populates it).
     if (state.marketSnapshot === undefined) state.marketSnapshot = null;
 
+    // V31 — Economic PvP Wave E2 "Goods on the Book" (docs/
+    // ECONOMY_PVP_2026-08.md §E2, [SAVE] note). Crafted products
+    // (production-chains.ts CRAFTED_PRODUCT_IDS) are now first-class
+    // RESOURCE_MAP/`state.resources` entries — tradeable on the shared
+    // market exactly like any raw resource. `craftedProducts` predates that
+    // promotion and is no longer written to (game-engine.ts's refining-
+    // completion credit and the crafting sell path both target `resources`
+    // now); this is a ONE-TIME move of any stockpile a save is still
+    // carrying in the old field into the new one, additive
+    // (`(resources[id]||0) + (craftedProducts[id]||0)`, so nothing is lost
+    // or double-counted on repeated loads since craftedProducts is cleared
+    // immediately after). `craftedProducts` itself is kept on the type as a
+    // deprecated alias — CraftingPanel/page.tsx still merge it into their
+    // "do I have enough inputs" checks — but after this migration runs once
+    // it stays empty, so it costs nothing going forward.
+    if (state.craftedProducts && Object.keys(state.craftedProducts).length > 0) {
+      const merged = { ...(state.resources || {}) };
+      for (const [resId, qty] of Object.entries(state.craftedProducts)) {
+        if (typeof qty !== 'number' || !Number.isFinite(qty) || qty === 0) continue;
+        merged[resId] = (merged[resId] || 0) + qty;
+      }
+      state.resources = merged;
+      state.craftedProducts = {};
+    } else if (!state.craftedProducts) {
+      state.craftedProducts = {};
+    }
+
     state.tickSpeed = 1; // Always 1x for fairness
     return state;
   } catch {

@@ -157,6 +157,26 @@ export default async function CorporateRegistryPage() {
                       {entry.report.notableEvents.slice(0, 2).join(' · ')}
                     </p>
                   )}
+
+                  {/* Wave E6: server-verified trade telemetry — computed
+                      from MarketFill at publish time, not self-reported
+                      like the figures above. Absent on pre-E6 reports or a
+                      corp with zero trade activity. */}
+                  {entry.report.serverTrade && entry.report.serverTrade.tradeVolumeValue > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                        {formatMoney(entry.report.serverTrade.tradeVolumeValue)} traded (server-verified)
+                      </span>
+                      {entry.report.serverTrade.topCategories.slice(0, 2).map((c) => (
+                        <span
+                          key={c.category}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-400 border border-white/[0.08]"
+                        >
+                          {c.category} {c.sharePct.toFixed(1)}%
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </Link>
               );
             })}

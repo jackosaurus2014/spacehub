@@ -111,7 +111,14 @@ function formatTimeRemaining(ms: number): string {
   return `${minutes}m remaining`;
 }
 
-function formatScore(score: number, scoreType: 'percentage' | 'absolute'): string {
+// Wave E6: 'absolute' scoreType metrics are unitless by default (buildings,
+// research counts, etc. — a bare number is correct for those). The two
+// serverComputed metrics carry real units the bare `.toFixed(1)` would
+// misrepresent — trade_volume is a $ delta, market_share_delta is basis
+// points (10000 = 100.00%) — so those slugs get their own formatting.
+function formatScore(score: number, scoreType: 'percentage' | 'absolute', metricSlug?: string): string {
+  if (metricSlug === 'trade_volume') return formatMoney(score);
+  if (metricSlug === 'market_share_delta') return `${(score / 100).toFixed(2)}pp`;
   if (scoreType === 'percentage') return `${score.toFixed(2)}%`;
   return score.toFixed(1);
 }
@@ -338,15 +345,19 @@ function WeeklyChallengeCard({
           <div className="bg-white/[0.04] rounded-lg p-2 text-center">
             <p className="game-label">Your Score</p>
             <p className="game-number text-white font-bold text-sm">
-              {formatScore(myEntry.score, metric.scoreType)}
+              {formatScore(myEntry.score, metric.scoreType, metric.slug)}
             </p>
           </div>
           <div className="bg-white/[0.04] rounded-lg p-2 text-center">
             <p className="game-label">Delta</p>
             <p className={`game-number font-bold text-sm ${delta >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-              {delta >= 0 ? '+' : ''}{metric.scoreType === 'percentage'
+              {delta >= 0 ? '+' : ''}{metric.slug === 'trade_volume'
                 ? formatMoney(delta)
-                : delta.toFixed(0)}
+                : metric.slug === 'market_share_delta'
+                  ? `${(delta / 100).toFixed(2)}pp`
+                  : metric.scoreType === 'percentage'
+                    ? formatMoney(delta)
+                    : delta.toFixed(0)}
             </p>
           </div>
           <div className="bg-white/[0.04] rounded-lg p-2 text-center">
@@ -486,7 +497,7 @@ function BracketStandings({
               </div>
               <div className="text-right" role="cell">
                 <span className={`game-number text-xs ${entry.isYou ? 'text-cyan-300' : 'text-white'}`}>
-                  {formatScore(entry.score, metric.scoreType)}
+                  {formatScore(entry.score, metric.scoreType, metric.slug)}
                 </span>
               </div>
               <div className="hidden sm:block w-20" role="cell">

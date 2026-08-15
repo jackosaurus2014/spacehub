@@ -42,17 +42,33 @@ export type MetricSlug =
   | 'services'
   | 'contracts'
   | 'exploration'
-  | 'total_earned';
+  | 'total_earned'
+  | 'market_share_delta';
 
 export interface MetricDefinition {
   slug: MetricSlug;
   name: string;
   description: string;
   icon: string;
-  /** How to extract the "current value" from a GameProfile for snapshotting */
+  /** How to extract the "current value" from a GameProfile for snapshotting.
+   *  Ignored when `serverComputed` is true — see below. Kept as a documented
+   *  fallback field (not read) so this interface stays a valid, pure,
+   *  client-bundle-safe description of the metric even for server-computed
+   *  slugs. */
   profileField: string;
   /** 'percentage' = (current - start) / start, 'absolute' = current - start */
   scoreType: 'percentage' | 'absolute';
+  /**
+   * Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): when true, this metric's
+   * "current value" is NOT read off a client-synced GameProfile scalar —
+   * it's resolved server-side from real MarketFill telemetry via
+   * `resolveMetricCurrentValue()` in market-share.ts (kept out of this file
+   * so league-system.ts, which is bundled into client components via
+   * corporate-eras.ts, never imports Prisma). Closes the audit finding at
+   * §1d: "League `trade_volume` metric: no real trade volume is measured
+   * despite `MarketFill` carrying buyer/seller/quantity/value."
+   */
+  serverComputed?: boolean;
 }
 
 export const METRICS: MetricDefinition[] = [
@@ -101,8 +117,12 @@ export const METRICS: MetricDefinition[] = [
     name: 'Trade Volume',
     description: 'Execute the highest trading volume on the market.',
     icon: '📊',
+    // Wave E6: was `totalEarned` (the audited fake proxy — "nobody can win
+    // 'trade' by trading"). profileField is now ignored for this slug;
+    // real value = Σ MarketFill value as buyer+seller (serverComputed below).
     profileField: 'totalEarned',
     scoreType: 'absolute',
+    serverComputed: true,
   },
   {
     slug: 'services',
@@ -135,6 +155,23 @@ export const METRICS: MetricDefinition[] = [
     icon: '🏦',
     profileField: 'totalEarned',
     scoreType: 'percentage',
+  },
+  {
+    // Wave E6 (§5 item 2): "new rotation entries `market_share_delta` and
+    // `freight_volume`." freight_volume is deferred — cargo-logistics.ts
+    // has no persisted per-fill freight ledger yet (that's E5/E7 territory,
+    // see docs/ECONOMY_PVP_2026-08.md's file lists), so there is no real
+    // data source for it today; shipping a metric with no real signal would
+    // just be a second fake proxy, which is exactly what this wave is
+    // fixing. market_share_delta ships now because market-share.ts gives it
+    // a real one.
+    slug: 'market_share_delta',
+    name: 'Market Dominance',
+    description: 'Grow your share of the traded market the most this week.',
+    icon: '🧭',
+    profileField: 'netWorth', // unused fallback — see serverComputed
+    scoreType: 'absolute', // score = share-now minus share-at-week-start, in basis points
+    serverComputed: true,
   },
 ];
 

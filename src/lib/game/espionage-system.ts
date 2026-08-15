@@ -450,7 +450,12 @@ export function getIntelReward(
         intelData: {
           companyName: targetProfile.companyName,
           resources: targetProfile.resources,
-          // In a full implementation, recent MarketOrders would be fetched
+          // Placeholder — this function is pure (no DB access). The real
+          // feed (Wave E6, docs/ECONOMY_PVP_2026-08.md §E6) is patched onto
+          // `intelGathered.recentOrders` by the caller
+          // (/api/space-tycoon/espionage/execute/route.ts) from the
+          // target's actual MarketFill history via
+          // getRecentTradesForEspionage() in market-share.ts.
           recentOrders: [],
         },
       };

@@ -459,6 +459,16 @@ export interface GameState {
 
   // Refining / Production
   activeRefining?: { recipeId: string; startedAtMs: number; durationSeconds: number } | null;
+  /**
+   * @deprecated Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2,
+   * save-load.ts V31): crafted-product stock now lives in `resources` — every
+   * CRAFTED_PRODUCT_IDS slug is a first-class RESOURCE_MAP entry, tradeable
+   * on the shared market like any raw resource. `loadGame` one-time-merges
+   * any pre-V31 stockpile here into `resources` and clears this field.
+   * Kept on the type (empty after migration) only because CraftingPanel/
+   * page.tsx still spread it into their input-availability checks —
+   * additive-safe, never written to again.
+   */
   craftedProducts?: Record<string, number>; // Product inventory (steel_ingots, etc.)
 
   // Workforce

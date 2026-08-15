@@ -397,12 +397,33 @@ export function rollMonthlyDisaster(state: GameState, monthIndex: number): Disas
  * (interstellar colonies / expeditions) or bought from other players via the
  * P2P order book — exactly the §5 "MUST mine these yourself or trade with
  * other players" contract, mapped onto the resource ids that actually exist.
- * (The §5 table's deuterium/antimatter_precursors/bio_samples were never
- * registered as resources; exotic_fuel and xenogenic_biomatter are their
- * live-schema equivalents, produced only by the interstellar end-game.)
+ * (The §5 table's deuterium/antimatter_precursors/bio_samples are now
+ * registered resources too — Wave E2 adopted them from colonies.ts's
+ * COLONY_RESOURCES — but they keep real NPC colony production
+ * (COLONY_MINING_PRODUCTION) and so are NOT mined-only; exotic_fuel and
+ * xenogenic_biomatter remain the interstellar-only equivalents.)
  * Enforced in market/trade/route.ts.
+ *
+ * Wave E2 (docs/ECONOMY_PVP_2026-08.md §E2 "Goods on the Book"): every
+ * crafted production-chain output (production-chains.ts
+ * CRAFTED_PRODUCT_IDS) plus the new life_support_pack is added here too —
+ * none of them has NPC production yet (that lands with E3's consumption/
+ * production engine), so the same "craft it or trade player-to-player"
+ * contract applies. Selling is NOT blocked — only buying from the NPC-backed
+ * curve — so the crafting→market sell path (this wave's whole point) stays
+ * open. [BAL] this is also what keeps the order-book's NPC maker safe:
+ * market-orderbook.ts's NPC_VOLUME_CAPS gives these zero/tight caps, so no
+ * standing NPC buy order can launder crafted output into free money.
  */
-export const MINED_ONLY_RESOURCE_IDS: string[] = ['exotic_fuel', 'xenogenic_biomatter'];
+export const MINED_ONLY_RESOURCE_IDS: string[] = [
+  'exotic_fuel', 'xenogenic_biomatter',
+  // Crafted products (production-chains.ts CRAFTED_PRODUCT_IDS)
+  'steel_ingots', 'aluminum_alloy', 'rocket_fuel', 'refined_rare_earth',
+  'structural_beams', 'electronics_package', 'solar_panel_array', 'propulsion_unit',
+  'station_module', 'satellite_bus', 'ai_compute_cluster', 'fusion_core', 'habitat_pod',
+  // New in Wave E2 — no recipe yet (E3 lands life_support_works)
+  'life_support_pack',
+];
 
 /** Reserve requirement (§7) applies from this corporation tier up (audit C5:
  *  "reserve requirements for T5+ — efficiency penalty below 3-month runway"). */

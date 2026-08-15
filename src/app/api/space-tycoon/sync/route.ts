@@ -15,6 +15,7 @@ import { getCurrentWeekId } from '@/lib/game/weekly-events';
 import { reconcileBalance, applyResourceDeltas, clampPlausibleMoney, type LedgerEntryLite } from '@/lib/game/ledger-reconcile';
 import { buildMarketSnapshot } from '@/lib/game/spot-price';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
+import { resolveMetricCurrentValue } from '@/lib/game/market-share';
 
 /**
  * POST /api/space-tycoon/sync
@@ -353,18 +354,15 @@ export async function POST(request: Request) {
         });
 
         if (bracketEntry) {
-          // Determine current metric value from profile fields
+          // Determine current metric value. Wave E6: serverComputed metrics
+          // (trade_volume, market_share_delta) resolve from real MarketFill
+          // telemetry instead of a client-synced profile scalar — see
+          // resolveMetricCurrentValue (market-share.ts).
           const metricDef = getMetricDefinition(activeSeason.metricSlug);
-          let currentMetricValue = 0;
-          switch (metricDef?.profileField) {
-            case 'netWorth': currentMetricValue = netWorth; break;
-            case 'totalEarned': currentMetricValue = totalEarned; break;
-            case 'buildingCount': currentMetricValue = buildingCount; break;
-            case 'researchCount': currentMetricValue = researchCount; break;
-            case 'serviceCount': currentMetricValue = serviceCount; break;
-            case 'locationsUnlocked': currentMetricValue = locationsUnlocked; break;
-            default: currentMetricValue = netWorth;
-          }
+          const currentMetricValue = await resolveMetricCurrentValue(metricDef, {
+            profileId: profile.id,
+            netWorth, totalEarned, buildingCount, researchCount, serviceCount, locationsUnlocked,
+          });
 
           const score = metricDef
             ? calculateMetricScore(metricDef, bracketEntry.startValue, currentMetricValue)
