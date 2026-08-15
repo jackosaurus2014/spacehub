@@ -51,7 +51,7 @@ export const TICKS_PER_GAME_MONTH = 30;
  *  NOTE (docs/LIVE_SERVICE_2026-08.md appendix defect #9): this literal has
  *  stayed at 1 since the earliest builds. The REAL migration ledger is the
  *  inline "V<n>" comments inside save-load.ts's getNewGameState()/loadGame()
- *  (currently V12 -> V24 as of Wave LS1). Two numbering schemes coexist —
+ *  (currently V12 -> V25 as of Wave LS2). Two numbering schemes coexist —
  *  this constant is NOT what future agents should bump for a new migration;
  *  add a new additive "V<n> fields" block to save-load.ts instead, following
  *  the existing V-comment convention. */
@@ -100,6 +100,57 @@ export const AWAY_EFFICIENCY_TIERS: AwayEfficiencyTier[] = [
  *  2-4 toward this cap — never to 1.0. Logging in must always beat staying
  *  away (MMO invariant, docs/LIVE_SERVICE_2026-08.md §2.2). */
 export const AWAY_EFFICIENCY_INVESTMENT_CAP = 0.85;
+
+// ─── Live-Service Wave LS2 "Operations Debrief" ─────────────────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS2. Debrief presentation tiers (§2.2 item 5)
+// and the Returning Commander re-onboarding track (≥14-day lapse).
+
+/** Below this away-duration, away-operations.ts still computes a ledger (its
+ *  own floor is 30s) but the debrief renders as a minimal, non-blocking
+ *  toast rather than a modal — "not everything is a full-screen
+ *  interruption." */
+export const DEBRIEF_COMPACT_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
+/** At/above this away-duration the debrief gets the full cinematic
+ *  treatment (Ken-Burns art band, reusing CinematicOverlay's CSS). */
+export const DEBRIEF_CINEMATIC_THRESHOLD_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+
+/** A lapse at/beyond this duration triggers the Returning Commander track —
+ *  the veteran re-onboarding flow (LS2 mechanic 2), distinct from the
+ *  brand-new-player onramp (frontier.ts / catchup-mechanics.ts newcomer
+ *  functions, which key off ACCOUNT age, not absence). */
+export const RETURNING_COMMANDER_LAPSE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
+
+/** The 7-day re-engagement window (§LS2: "7-day re-engagement objectives,
+ *  one per loop"). Objectives stop being trackable once this expires, but a
+ *  returning player is never blocked from anything — this only affects
+ *  whether the widget/objectives display. */
+export const RETURNING_COMMANDER_TRACK_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** The temporary earnings boost decays from +30% (1.3x) to +0% (1.0x)
+ *  linearly over 14 real days — reuses getNewcomerMultiplier's SHAPE
+ *  (catchup-mechanics.ts: 2.0x day-1 newcomer boost decaying to 1.0x) at a
+ *  deliberately smaller magnitude, since a RETURNING veteran already owns an
+ *  established empire (CLAUDE.md: catch-up narrows the gap, never inverts
+ *  it — a lapsed veteran should not out-earn an always-online veteran). */
+export const RETURNING_COMMANDER_BOOST_INITIAL = 0.3;
+export const RETURNING_COMMANDER_BOOST_DECAY_MS = 14 * 24 * 60 * 60 * 1000;
+
+/** One-time re-entry stipend, scaled by how long the player was gone (more
+ *  catch-up for a longer lapse), flat-capped so it can never rival active
+ *  play — deterministic, no P2W (CLAUDE.md: "never direct money... faster
+ *  than earnable progression" governs PURCHASES, not this free, earnable-
+ *  equivalent catch-up grant, same class as the pioneer bonus it mirrors in
+ *  shape). */
+export const RETURNING_COMMANDER_STIPEND_PER_DAY = 5_000_000;
+export const RETURNING_COMMANDER_STIPEND_CAP = 250_000_000;
+
+/** Mentorship (LS2 mechanic 3 — wiring catchup-mechanics.ts's previously
+ *  dead-code calculateMentorshipRewards through a real server pairing).
+ *  Caps mirror the values already authored there: mentor +5% revenue while
+ *  active, mentee +20% revenue/mining/research while mentored. */
+export const MENTOR_REVENUE_BONUS_CAP = 0.05;
+export const MENTEE_BOOST_CAP = 0.20;
+export const MAX_MENTEES_PER_MENTOR = 3;
 
 /** localStorage key */
 export const SAVE_KEY = 'spacetycoon_save';

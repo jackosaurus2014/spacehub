@@ -41,9 +41,11 @@ import { setInsuranceActive } from '@/lib/game/economic-sinks';
 import { calculateRushRepairCost } from '@/lib/game/hazards';
 import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/game/contracts';
 import { createContractBoost } from '@/lib/game/speed-boosts';
-import WelcomeBackModal from '@/components/game/WelcomeBackModal';
+import OperationsDebriefModal from '@/components/game/OperationsDebriefModal';
+import ReturningCommanderWidget from '@/components/game/ReturningCommanderWidget';
 import { calculateAwayOperations, applyAwayOperations } from '@/lib/game/away-operations';
-import type { AwayLedger } from '@/lib/game/types';
+import { assembleOperationsDebrief, type OperationsDebrief } from '@/lib/game/debrief';
+import { isLapsedReturn, startReturningCommanderTrack } from '@/lib/game/returning-commander';
 import StandingOrdersPanel from '@/components/game/StandingOrdersPanel';
 import GameStyles from '@/components/game/GameStyles';
 import RegionBackdrop from '@/components/game/RegionBackdrop';
@@ -779,7 +781,11 @@ export default function SpaceTycoonPage() {
   const [showMenu, setShowMenu] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
-  const [offlineEarnings, setOfflineEarnings] = useState<AwayLedger | null>(null);
+  // Live-Service Wave LS2: replaces the old AwayLedger-only offlineEarnings
+  // state with the fully-assembled OperationsDebrief (debrief.ts) — see the
+  // load effect below, which now also starts a Returning Commander track on
+  // a >=14-day lapse before assembling the debrief.
+  const [operationsDebrief, setOperationsDebrief] = useState<OperationsDebrief | null>(null);
   const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [showFrontierGraduation, setShowFrontierGraduation] = useState(false);
   // 4X Wave W5 — cinematic presentation queue (client-side only; see
@@ -816,12 +822,25 @@ export default function SpaceTycoonPage() {
       // chaining, forecast hazards) — the modal below is purely a debrief
       // display, not a "claim" gate. State is loaded post-catch-up either way.
       const awayResult = calculateAwayOperations(saved);
-      const loadedState = awayResult ? applyAwayOperations(saved, awayResult) : saved;
+      let loadedState = awayResult ? applyAwayOperations(saved, awayResult) : saved;
       if (awayResult) {
         const ledger = awayResult.ledger;
+        // Live-Service Wave LS2 mechanic 2: a >=14-day lapse starts the
+        // Returning Commander track (stipend + decaying boost + 7-day
+        // objectives) BEFORE the debrief is assembled, so the debrief can
+        // report the stipend that was just granted.
+        if (isLapsedReturn(ledger.timeAwayMs)) {
+          const track = startReturningCommanderTrack(loadedState, ledger.timeAwayMs);
+          loadedState = track.state;
+        }
         const hadResourceGain = Object.values(ledger.resourcesDelta).some(v => v > 0);
         if (ledger.moneyDelta !== 0 || hadResourceGain || ledger.queueExecuted.length > 0 || ledger.hazardsApplied.length > 0) {
-          setOfflineEarnings(ledger);
+          // Live-Service Wave LS2 mechanic 1: assemble the full multi-section
+          // debrief (world deltas + next actions) from the ledger + the
+          // BEFORE state (`saved`, for baselining what the player already
+          // knew — e.g. the senate docket they last saw) + the AFTER state
+          // (`loadedState`, post catch-up AND post Returning Commander grant).
+          setOperationsDebrief(assembleOperationsDebrief(saved, ledger, loadedState));
         }
       }
       setState(loadedState);
@@ -2358,12 +2377,14 @@ export default function SpaceTycoonPage() {
       />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
-      {/* Away-Operations Debrief (LS1 "Night Shift") — state is already
-          applied on load; this is a display-only dismiss. */}
-      {offlineEarnings && (
-        <WelcomeBackModal
-          earnings={offlineEarnings}
-          onCollect={() => setOfflineEarnings(null)}
+      {/* Operations Debrief (LS2) — state (including any Returning Commander
+          stipend) is already applied on load; this is a display-only
+          dismiss. Tiered toast/compact/full presentation — see debrief.ts. */}
+      {operationsDebrief && (
+        <OperationsDebriefModal
+          debrief={operationsDebrief}
+          onDismiss={() => setOperationsDebrief(null)}
+          onNavigate={(t) => setTab(resolveLegacyTab(t))}
         />
       )}
 

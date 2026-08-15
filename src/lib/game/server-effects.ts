@@ -17,6 +17,7 @@
 // undefined and every consumer falls back to neutral multipliers.
 
 import type { GameState } from './types';
+import { MENTOR_REVENUE_BONUS_CAP, MENTEE_BOOST_CAP } from './constants';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -66,12 +67,25 @@ export interface WorldEventBonusSnapshot {
   expiresAtMs: number;
 }
 
+/** Mentorship (LS2 mechanic 3 — docs/LIVE_SERVICE_2026-08.md §LS2): wires
+ *  catchup-mechanics.ts's previously dead-code calculateMentorshipRewards
+ *  through a real server pairing (GameMentorship, prisma schema). Computed
+ *  in sync/route.ts exactly like allianceBonuses (§1) — a profile is either
+ *  a mentor (revenueBonus only, up to +5%) or a mentee (all three, up to
+ *  +20%), never both at once. */
+export interface MentorshipBonusSnapshot {
+  revenueBonus: number;
+  miningBonus: number;
+  researchBonus: number;
+}
+
 export interface ServerEffectsSnapshot {
   allianceBonuses?: AllianceBonusSnapshot | null;
   zoneStandings?: ZoneStandingSnapshot[];
   espionagePerks?: IntelPerkSnapshot[];
   leagueBoost?: LeagueBoostSnapshot | null;
   worldEventBonuses?: WorldEventBonusSnapshot | null;
+  mentorshipBonuses?: MentorshipBonusSnapshot | null;
   fetchedAtMs: number;
 }
 
@@ -119,6 +133,24 @@ export function clampWorldEventBonuses(
   };
 }
 
+export function clampMentorshipBonuses(b: MentorshipBonusSnapshot | null | undefined): MentorshipBonusSnapshot | null {
+  if (!b) return null;
+  const safe = (v: unknown, cap: number) =>
+    typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(cap, v)) : 0;
+  // A mentor's revenueBonus and a mentee's revenueBonus share the same field
+  // but different caps depending on role; the server never sends both roles
+  // in one snapshot, so clamping to the WIDER cap here is safe — the
+  // narrower per-role cap is already enforced where the snapshot is built
+  // (sync/route.ts), this is only a defensive ceiling against a bugged
+  // aggregate, same posture as clampAllianceBonuses.
+  const wideCap = Math.max(MENTOR_REVENUE_BONUS_CAP, MENTEE_BOOST_CAP);
+  return {
+    revenueBonus: safe(b.revenueBonus, wideCap),
+    miningBonus: safe(b.miningBonus, MENTEE_BOOST_CAP),
+    researchBonus: safe(b.researchBonus, MENTEE_BOOST_CAP),
+  };
+}
+
 /**
  * Apply a server-effects snapshot into game state. Pure + idempotent:
  * re-applying the same snapshot yields the same state (league boosts are
@@ -145,6 +177,11 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     worldEventBonuses: eff.worldEventBonuses !== undefined
       ? clampWorldEventBonuses(eff.worldEventBonuses, eff.fetchedAtMs)
       : state.worldEventBonuses,
+    // LS2 mechanic 3: mentorship bonuses reach the tick the same hop
+    // allianceBonuses does.
+    mentorshipBonuses: eff.mentorshipBonuses !== undefined
+      ? clampMentorshipBonuses(eff.mentorshipBonuses)
+      : state.mentorshipBonuses,
   };
 
   // Audit §1b "Leagues": grant the promotion boost the league system defines

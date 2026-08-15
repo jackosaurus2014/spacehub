@@ -235,6 +235,16 @@ model GameProfile {
   dailyBonusLastClaim DateTime?
   dailyBonusStreak    Int       @default(0)
 
+  // Live-Service Wave LS2 (docs/LIVE_SERVICE_2026-08.md §LS2 mechanic 3):
+  // mentorship — wires catchup-mechanics.ts's previously dead-code
+  // calculateMentorshipRewards through a real pairing. A profile opts in as
+  // a mentor (browsable by prospective mentees); GameMentorship rows record
+  // accepted mentor<->mentee pairs (see below). CLAUDE.md "mentorship
+  // rewards" onramp commitment, additive column.
+  mentorOptIn Boolean @default(false)
+  mentorshipsAsMentor GameMentorship[] @relation("mentorOf")
+  mentorshipsAsMentee GameMentorship[] @relation("menteeOf")
+
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
@@ -271,6 +281,34 @@ model GameLedgerEntry {
 
   @@index([profileId, seq])
   @@index([profileId, appliedAt])
+}
+
+// Live-Service Wave LS2 (docs/LIVE_SERVICE_2026-08.md §LS2 mechanic 3):
+// mentor<->mentee pairing. calculateMentorshipRewards (catchup-mechanics.ts)
+// already authored the bonus math (mentor +5% revenue while active, mentee
+// +20% revenue/mining/research while mentored) but had zero call sites —
+// this table + src/app/api/space-tycoon/mentorship/route.ts is the real
+// pairing that finally wires it in, delivered to the client the same
+// sync -> server-effects hop as alliance bonuses (server-effects.ts
+// MentorshipBonusSnapshot). A pending request has status "pending" until
+// the mentor accepts/declines; only one "active" pairing per mentee at a
+// time (MAX_MENTEES_PER_MENTOR caps the mentor side, enforced in the route).
+model GameMentorship {
+  id              String      @id @default(cuid())
+  mentorProfileId String
+  mentorProfile   GameProfile @relation("mentorOf", fields: [mentorProfileId], references: [id], onDelete: Cascade)
+  menteeProfileId String
+  menteeProfile   GameProfile @relation("menteeOf", fields: [menteeProfileId], references: [id], onDelete: Cascade)
+
+  status    String    @default("pending") // pending | active | declined | ended
+  startedAt DateTime  @default(now()) // when the request was made; re-stamped on accept
+  endedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mentorProfileId, status])
+  @@index([menteeProfileId, status])
 }
 
 // Persistent game chat (audit hotlist #7 - was per-lambda module memory)

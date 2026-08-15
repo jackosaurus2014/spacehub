@@ -9,6 +9,7 @@ import {
   type ZoneStandingSnapshot,
   type IntelPerkSnapshot,
   type LeagueBoostSnapshot,
+  type MentorshipBonusSnapshot,
 } from '@/lib/game/server-effects';
 import { queueMarketFlowFlush } from '@/lib/game/market-pressure';
 
@@ -47,6 +48,8 @@ export function useGameSync(
     espionagePerks?: IntelPerkSnapshot[];
     /** Audit Wave B (§1b Leagues): last finalized league promotion boost. */
     leagueBoost?: LeagueBoostSnapshot | null;
+    /** Live-Service Wave LS2 (§LS2 mechanic 3): mentor/mentee bonus. */
+    mentorshipBonuses?: MentorshipBonusSnapshot | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -166,12 +169,13 @@ export function useGameSync(
         // `allianceBonuses` and dropped them on the floor — "the entire
         // alliance bonus pipeline is severed one hop before the player's
         // tick" (audit §4).
-        if (data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost) {
+        if (data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost || data.mentorshipBonuses) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
             zoneStandings: Array.isArray(data.zoneStandings) ? data.zoneStandings : undefined,
             espionagePerks: Array.isArray(data.espionagePerks) ? data.espionagePerks : undefined,
             leagueBoost: data.leagueBoost || null,
+            mentorshipBonuses: data.mentorshipBonuses || null,
             fetchedAtMs: Date.now(),
           });
         }
@@ -187,6 +191,7 @@ export function useGameSync(
             zoneStandings: Array.isArray(data.zoneStandings) ? data.zoneStandings : undefined,
             espionagePerks: Array.isArray(data.espionagePerks) ? data.espionagePerks : undefined,
             leagueBoost: data.leagueBoost || undefined,
+            mentorshipBonuses: data.mentorshipBonuses || undefined,
           });
         }
 

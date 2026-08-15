@@ -476,6 +476,41 @@ export async function POST(request: Request) {
       }
     } catch { /* alliance lookup non-critical */ }
 
+    // Live-Service Wave LS2 (§LS2 mechanic 3): mentorship bonuses — the same
+    // "compute server-side, deliver via server-effects" shape as the
+    // alliance block above. A profile is either a mentor (revenueBonus only,
+    // capped at MENTOR_REVENUE_BONUS_CAP total across all active mentees —
+    // NOT per-mentee, so taking on more mentees never compounds past the
+    // authored +5%) or a mentee (all three fields, capped at
+    // MENTEE_BOOST_CAP) — never both. See mentorship/route.ts's doc comment
+    // for why "newness" here is mentorship tenure, not raw account age.
+    let mentorshipBonuses: { revenueBonus: number; miningBonus: number; researchBonus: number } | null = null;
+    try {
+      const { calculateMentorshipRewards } = await import('@/lib/game/catchup-mechanics');
+      const { MENTOR_REVENUE_BONUS_CAP, MENTEE_BOOST_CAP } = await import('@/lib/game/constants');
+
+      const menteePairing = await prisma.gameMentorship.findFirst({
+        where: { menteeProfileId: profile.id, status: 'active' },
+      });
+      if (menteePairing) {
+        const tenureDays = Math.max(0, (Date.now() - menteePairing.startedAt.getTime()) / 86_400_000);
+        const { menteeBoost } = calculateMentorshipRewards(tenureDays, 0);
+        const boost = Math.min(MENTEE_BOOST_CAP, menteeBoost);
+        mentorshipBonuses = { revenueBonus: boost, miningBonus: boost, researchBonus: boost };
+      } else {
+        const mentorPairings = await prisma.gameMentorship.findMany({
+          where: { mentorProfileId: profile.id, status: 'active' },
+        });
+        if (mentorPairings.length > 0) {
+          const total = mentorPairings.reduce((sum, p) => {
+            const tenureDays = Math.max(0, (Date.now() - p.startedAt.getTime()) / 86_400_000);
+            return sum + calculateMentorshipRewards(tenureDays, 0).mentorRevenueBonus;
+          }, 0);
+          mentorshipBonuses = { revenueBonus: Math.min(MENTOR_REVENUE_BONUS_CAP, total), miningBonus: 0, researchBonus: 0 };
+        }
+      }
+    } catch { /* mentorship non-critical */ }
+
     // Get count of open bounties
     let openBounties = 0;
     try {
@@ -655,6 +690,7 @@ export async function POST(request: Request) {
       allianceName,
       allianceTag,
       allianceBonuses,
+      mentorshipBonuses,
       openBounties,
       globalMilestones,
       servicePriceMultipliers,

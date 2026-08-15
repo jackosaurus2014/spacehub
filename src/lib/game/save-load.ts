@@ -146,6 +146,13 @@ export function getNewGameState(): GameState {
     commandQueue: [],
     standingDirectives: [],
     awayLedger: null,
+    // V25 — Live-Service Wave LS2 "Operations Debrief" (docs/
+    // LIVE_SERVICE_2026-08.md §LS2). A fresh corporation has never lapsed,
+    // so no Returning Commander track; mentorship bonuses arrive only via
+    // the server sync hop (server-effects.ts), same pattern as
+    // allianceBonuses — null until a sync response actually carries one.
+    returningCommanderTrack: null,
+    mentorshipBonuses: null,
   };
 }
 
@@ -409,6 +416,15 @@ export function loadGame(): GameState | null {
     if (!state.commandQueue) state.commandQueue = [];
     if (!state.standingDirectives) state.standingDirectives = [];
     if (state.awayLedger === undefined) state.awayLedger = null;
+
+    // V25 fields — Live-Service Wave LS2 "Operations Debrief" (docs/
+    // LIVE_SERVICE_2026-08.md §LS2). Additive-only: an existing save with no
+    // returningCommanderTrack simply hasn't triggered one yet (the very next
+    // load runs the lapse check the same way a fresh game never would);
+    // mentorshipBonuses null means "no active mentorship pairing reported by
+    // the last sync" — numerically identical to a fresh game (zero bonus).
+    if (state.returningCommanderTrack === undefined) state.returningCommanderTrack = null;
+    if (state.mentorshipBonuses === undefined) state.mentorshipBonuses = null;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

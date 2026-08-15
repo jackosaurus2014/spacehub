@@ -1069,6 +1069,66 @@ export interface GameState {
    *  Consumed by the (LS2) Operations Debrief; LS1 only guarantees the data
    *  exists. Cleared to null once the player has seen it. */
   awayLedger?: AwayLedger | null;
+
+  // ─── V25 (Live-Service Wave LS2 "Operations Debrief") ────────────────────
+  // docs/LIVE_SERVICE_2026-08.md §LS2. All fields additive/optional; see
+  // save-load.ts's V25 migration block, returning-commander.ts, debrief.ts.
+
+  /** Active Returning Commander re-onboarding track — set once when a lapse
+   *  of RETURNING_COMMANDER_LAPSE_MS+ is detected on load (returning-
+   *  commander.ts's startReturningCommanderTrack), null otherwise. Drives a
+   *  7-day objective checklist and a 14-day decaying earnings boost; never
+   *  persists a stored multiplier — every read recomputes from
+   *  `startedAtMs` so it can never drift (same determinism discipline as
+   *  the away-efficiency curve). */
+  returningCommanderTrack?: ReturningCommanderTrack | null;
+
+  /** Server-aggregated mentorship bonus (LS2 mechanic 3 — wiring catchup-
+   *  mechanics.ts's previously dead-code calculateMentorshipRewards through
+   *  a real GameMentorship pairing). Delivered via the SAME sync ->
+   *  server-effects -> tick hand-off as allianceBonuses (server-effects.ts);
+   *  re-clamped defensively on apply. A profile is either a mentor (only
+   *  revenueBonus set, from mentorRevenueBonus) or a mentee (all three set,
+   *  from menteeBoost) — never both in the same snapshot. */
+  mentorshipBonuses?: {
+    revenueBonus: number;
+    miningBonus: number;
+    researchBonus: number;
+  } | null;
+}
+
+/** One re-engagement objective inside a ReturningCommanderTrack — one per
+ *  CLAUDE.md time loop (tactical/daily/weekly/monthly), evaluated live from
+ *  GameState deltas against the track's baseline (returning-commander.ts's
+ *  getReturningCommanderObjectives) rather than stored as mutable state, so
+ *  it can never desync from the actual save. */
+export interface ReturningCommanderObjective {
+  id: string;
+  loop: 'tactical' | 'daily' | 'weekly' | 'monthly';
+  label: string;
+  done: boolean;
+}
+
+export interface ReturningCommanderTrack {
+  startedAtMs: number;
+  /** 7-day objective window end (RETURNING_COMMANDER_TRACK_DURATION_MS). */
+  expiresAtMs: number;
+  /** How long the player was away, for display ("welcome back after N
+   *  days"). Captured once at track creation — the lapse that TRIGGERED it. */
+  lapseDays: number;
+  /** Snapshot of cumulative counters at track creation — objectives compare
+   *  current state against this, never against zero, so partial progress
+   *  made before the lapse doesn't retroactively complete an objective. */
+  baseline: {
+    researchCompleted: number;
+    buildingsComplete: number;
+    completedContracts: number;
+    earnedAchievements: number;
+    claimedMilestones: number;
+  };
+  /** One-time re-entry stipend already granted when the track started
+   *  (informational — the money was already applied to state.money). */
+  stipendGranted: number;
 }
 
 export interface DeliveryContractState {

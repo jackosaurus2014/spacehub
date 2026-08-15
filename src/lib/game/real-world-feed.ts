@@ -188,6 +188,62 @@ export function deriveLaunchWindowEvent(
   };
 }
 
+// ─── 2b. Upcoming launch schedule (LS3 Mission Calendar) ──────────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS3 "real-launch bonus hours ... pulling from
+// the SpaceEvent-backed feed". deriveLaunchWindowEvent above only surfaces a
+// launch once it's within ~1h of T-0 (the "live now" banner). The calendar
+// needs the full forward schedule — every real launch coming up in the next
+// N days — so players can plan around it in advance, not just get a flash
+// notice at T-0. Same SpaceEvent table, same "never fabricate real-world
+// facts" rule; this is purely a wider time window over the same query shape.
+
+export interface UpcomingLaunchLite {
+  id: string;
+  name: string;
+  agency: string | null;
+  launchDateMs: number;
+  status: string | null;
+}
+
+/**
+ * Reads upcoming SpaceEvent rows (future launches only, bounded by
+ * horizonDays) for the Mission Calendar. Isolated try/catch like the rest of
+ * this module's orchestrator sources — a DB hiccup here degrades the
+ * calendar's real-launch entries to empty, never breaks the game.
+ */
+export async function getUpcomingLaunchSchedule(
+  horizonDays: number = 14,
+  nowMs: number = Date.now(),
+): Promise<UpcomingLaunchLite[]> {
+  try {
+    const { default: prisma } = await import('@/lib/db');
+    const rows = await prisma.spaceEvent.findMany({
+      where: {
+        launchDate: {
+          gte: new Date(nowMs),
+          lte: new Date(nowMs + horizonDays * 24 * 60 * 60 * 1000),
+        },
+        status: { in: Array.from(LIVE_LAUNCH_STATUSES) },
+      },
+      select: { id: true, name: true, agency: true, launchDate: true, status: true },
+      orderBy: { launchDate: 'asc' },
+      take: 30,
+    });
+
+    return rows
+      .filter(r => r.launchDate !== null)
+      .map(r => ({
+        id: r.id,
+        name: r.name,
+        agency: r.agency,
+        launchDateMs: new Date(r.launchDate as Date).getTime(),
+        status: r.status,
+      }));
+  } catch {
+    return [];
+  }
+}
+
 // ─── 3. Program milestone (Artemis / Starship news) ───────────────────────────
 
 export type MilestoneProgram = 'artemis' | 'starship';

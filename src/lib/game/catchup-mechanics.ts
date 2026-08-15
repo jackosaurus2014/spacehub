@@ -205,6 +205,21 @@ export function getEarlyGameBoosts(accountAgeDays: number): {
 // ─── 6. Mentorship System ────────────────────────────────────────────────────
 // Veterans earn bonuses for helping new players.
 // Creates incentive for experienced players to be welcoming.
+//
+// WIRED (Live-Service Wave LS2, docs/LIVE_SERVICE_2026-08.md §LS2 mechanic
+// 3 / appendix defect #3): this was dead code — zero call sites — until
+// LS2. calculateMentorshipRewards below is now called from
+// src/app/api/space-tycoon/sync/route.ts against a real GameMentorship
+// server pairing (prisma/schema.prisma; opt-in/request/accept flow in
+// src/app/api/space-tycoon/mentorship/route.ts), delivered to the client
+// via the same sync -> server-effects -> tick hop as alliance bonuses
+// (server-effects.ts's MentorshipBonusSnapshot, folded into game-engine.ts's
+// revenue/mining/research formulas). One deliberate adaptation: the
+// `menteeAccountAgeDays` parameter is fed the mentee's TENURE IN THIS
+// MENTORSHIP (days since the pairing went active), not raw account age —
+// see the sync route's comment for why, since "mentee = new OR
+// lapsed-returning" (an old account) needed one decay curve that covers
+// both cases.
 
 export interface MentorshipBonus {
   mentorId: string;

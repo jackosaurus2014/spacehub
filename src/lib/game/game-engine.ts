@@ -59,7 +59,8 @@ import { getSpecializationBonuses } from './specializations';
 import { getVictoryBonuses } from './victory-conditions';
 import { getTotalSubsidiaryIncome, getSubsidiaryServiceBonus } from './subsidiaries';
 import { getGovernorBenefits, getStakeholderServiceBonus, getMultiZonePenalty, LOCATION_TO_ZONE } from './zone-influence';
-import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses, clampWorldEventBonuses } from './server-effects';
+import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses, clampWorldEventBonuses, clampMentorshipBonuses } from './server-effects';
+import { getReturningCommanderMultiplier } from './returning-commander';
 import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './modules';
 // 4X Wave W14 (cargo-logistics.ts, audit C1): per-location inventory routing
 // — production at a remote location accrues into that location's local
@@ -183,6 +184,20 @@ export function processTick(state: GameState): GameState {
   const worldEventB = clampWorldEventBonuses(state.worldEventBonuses) || {
     contractPayoutBonus: 0, researchSpeedBonus: 0, expiresAtMs: 0,
   };
+  // Live-Service Wave LS2 (§LS2 mechanic 3): mentorship bonuses — server-
+  // aggregated via the same sync → server-effects hop as allianceBonuses. A
+  // mentor's snapshot carries only revenueBonus (+5% cap); a mentee's
+  // carries all three (+20% cap each) — see server-effects.ts's
+  // clampMentorshipBonuses for why one clamp function covers both roles.
+  const mentorshipB = clampMentorshipBonuses(state.mentorshipBonuses) || {
+    revenueBonus: 0, miningBonus: 0, researchBonus: 0,
+  };
+  // Live-Service Wave LS2 (§LS2 mechanic 2): Returning Commander re-entry
+  // boost — 1.3x decaying linearly to 1.0x over 14 real days. Purely a
+  // function of wall-clock time since the track started in
+  // returningCommanderTrack.startedAtMs; never stored as a number, so it
+  // can't drift regardless of tick cadence.
+  const returningCommanderRevMult = getReturningCommanderMultiplier(state);
   // Territory (A7): zone standings (governor / stakeholder) by location.
   const zoneStandingByLocation = new Map<string, { sharePct: number; isGovernor: boolean }>();
   if ((state.zoneStandings || []).length > 0) {
@@ -285,6 +300,7 @@ export function processTick(state: GameState): GameState {
       * (1 + allianceB.revenueBonus)
       * (1 + (subsidiaryBonusByType.get(def.type) || 0))
       * (1 + zoneBonusPct / 100)
+      * (1 + mentorshipB.revenueBonus) // LS2: mentor/mentee revenue share
     );
     // Audit Wave D (A4): hazard damage on the enabling building penalizes
     // service revenue until auto-repair (month-end money sink below) works
@@ -312,6 +328,7 @@ export function processTick(state: GameState): GameState {
       * waveBRevenueMult
       * hazardDamageFactor        // audit Wave D (A4)
       * reserveEfficiencyMult     // audit Wave E (C5 §7)
+      * returningCommanderRevMult // LS2: decaying re-entry boost, 1.3x -> 1.0x over 14 days
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
@@ -449,7 +466,7 @@ export function processTick(state: GameState): GameState {
     // bonus (§1b), alliance researchBonus (A2). Combined new factor cap 2x.
     // Sol Events (real-world feed): + worldEventB.researchSpeedBonus while a
     // real program milestone is fresh (<7 days old, +10% flat).
-    const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus));
+    const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus)); // LS2: mentee research share
     // narrativeResearchMult (V17 / Wave W4): chain-event research boosts
     // ("Radio Science Windfall", "Fusion Ignition Milestone"...) ride the
     // same expiring activeEffects list random events use, aggregated by
@@ -478,7 +495,7 @@ export function processTick(state: GameState): GameState {
   if (activeResearch2 && completedResearch.includes('parallel_research')) {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
-    const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus)); // audit Wave B (same pack as queue 1) + Sol Events
+    const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus)); // audit Wave B (same pack as queue 1) + Sol Events + LS2 mentee share
     const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
@@ -550,6 +567,7 @@ export function processTick(state: GameState): GameState {
     (1 + specBonuses.miningOutput)
     * victoryBonuses.miningMultiplier
     * (1 + allianceB.miningBonus)
+    * (1 + mentorshipB.miningBonus) // LS2: mentee mining share
     * getActiveBoostMultiplier(activeBoosts, 'mining')
   );
   const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;

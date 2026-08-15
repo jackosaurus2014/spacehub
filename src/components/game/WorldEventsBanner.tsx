@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { WorldEvent, WorldEventType, WorldEventSeverity } from '@/lib/game/real-world-feed';
 import { deriveWorldEventBonuses } from '@/lib/game/real-world-feed';
+import { deriveAppointmentEventBonuses } from '@/lib/game/appointment-events';
 import { queueServerEffects } from '@/lib/game/server-effects';
 import { usePrefersReducedMotion } from '@/hooks/useWorldState';
 
@@ -68,8 +69,24 @@ export default function WorldEventsBanner() {
         // Hand off the modest world-shared bonus to the tick engine. Always
         // queued (even when null) so an event that just expired correctly
         // clears any stale bonus rather than leaving it stuck.
+        //
+        // LS3 (docs/LIVE_SERVICE_2026-08.md §LS3): fixed-UTC appointment
+        // world events (Belt Rush Weekend etc., src/lib/game/
+        // appointment-events.ts) contribute through this SAME already-wired,
+        // already-capped pipe (see appointment-events.ts header for why) —
+        // merged additively with the Sol Events bonus before the engine's
+        // clampWorldEventBonuses applies the final safety cap.
+        const solBonus = deriveWorldEventBonuses(active);
+        const apptBonus = deriveAppointmentEventBonuses(Date.now());
+        const merged = solBonus || apptBonus
+          ? {
+              contractPayoutBonus: (solBonus?.contractPayoutBonus || 0) + (apptBonus?.contractPayoutBonus || 0),
+              researchSpeedBonus: (solBonus?.researchSpeedBonus || 0) + (apptBonus?.researchSpeedBonus || 0),
+              expiresAtMs: Math.max(solBonus?.expiresAtMs || 0, apptBonus?.expiresAtMs || 0),
+            }
+          : null;
         queueServerEffects({
-          worldEventBonuses: deriveWorldEventBonuses(active),
+          worldEventBonuses: merged,
           fetchedAtMs: Date.now(),
         });
       } catch {

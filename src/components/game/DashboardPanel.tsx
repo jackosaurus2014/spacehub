@@ -25,6 +25,8 @@ import MiniActivitiesWidget from '@/components/game/MiniActivitiesWidget';
 import type { MiniActivityReward } from '@/lib/game/mini-activities';
 import WorldStatusCard from '@/components/game/WorldStatusCard';
 import WorldEventsBanner from '@/components/game/WorldEventsBanner';
+import ReturningCommanderWidget from '@/components/game/ReturningCommanderWidget';
+import MissionCalendarPanel from '@/components/game/MissionCalendarPanel';
 import HistoricalArchiveTicker from '@/components/game/HistoricalArchiveTicker';
 import { useActivityFeed, formatRelativeTime, usePrefersReducedMotion } from '@/hooks/useWorldState';
 
@@ -583,6 +585,10 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       <CommandCenterHeader state={state} />
       {/* Sol Events — real-world space weather / launch / milestone feed, mirrored into the game as archive entries. Renders nothing when no event is active. */}
       <WorldEventsBanner />
+      {/* Returning Commander (LS2) — 7-day re-entry objectives + decaying earnings boost after a >=14-day lapse. Renders nothing when no track is active. */}
+      <ReturningCommanderWidget state={state} />
+      {/* Mission Calendar (LS3) — unified forward view: league lock, senate docket close, season transitions, alliance event windows, NPC co-fund windows, expedition returns, queue completions, appointment world events, real launch windows. Renders nothing when the 14-day horizon is empty. */}
+      <MissionCalendarPanel state={state} />
       {/* Quick-nav holo tiles — one-tap access to the panels players touch most, + live alerts strip */}
       <QuickNavGrid state={state} hasPowerDeficit={financials.hasPowerDeficit} onNavigate={onNavigate} />
       {/* The live world — colony races, milestone claims, competitive contracts (audit Change #3) */}
