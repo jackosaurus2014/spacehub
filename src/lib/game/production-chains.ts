@@ -114,6 +114,29 @@ export const PRODUCTION_CHAINS: ProductDefinition[] = [
 
 export const CHAIN_MAP = new Map(PRODUCTION_CHAINS.map(c => [c.id, c]));
 
+/**
+ * Wave E2 (docs/ECONOMY_PVP_2026-08.md §2.5 "one price truth"): the per-unit
+ * market value a crafted product sells for. Prefers the LIVE SPOT for the
+ * product's slug when the market snapshot carries it, falling back to the
+ * recipe's static `marketValue`.
+ *
+ * Today crafted products are not yet first-class `RESOURCE_MAP` entries (that
+ * lands in the "Goods on the Book" wave), so no product slug is present in
+ * the snapshot and this returns `marketValue` unchanged — but every crafting
+ * value read now routes through the ONE spot function, so the moment crafted
+ * goods gain MarketResource rows their sale proceeds price at spot with zero
+ * further wiring. `spotPrices` is the client's last-synced
+ * `state.marketSnapshot.prices`.
+ */
+export function getCraftedProductValue(
+  recipe: Pick<ProductDefinition, 'outputId' | 'marketValue'>,
+  spotPrices?: Record<string, number>,
+): number {
+  const spot = spotPrices?.[recipe.outputId];
+  if (typeof spot === 'number' && Number.isFinite(spot) && spot > 0) return spot;
+  return recipe.marketValue;
+}
+
 // All crafted product IDs (for inventory tracking)
 export const CRAFTED_PRODUCT_IDS = [
   'steel_ingots', 'aluminum_alloy', 'rocket_fuel', 'refined_rare_earth',

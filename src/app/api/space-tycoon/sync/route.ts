@@ -13,6 +13,7 @@ import {
 } from '@/lib/game/league-system';
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
 import { reconcileBalance, applyResourceDeltas, clampPlausibleMoney, type LedgerEntryLite } from '@/lib/game/ledger-reconcile';
+import { buildMarketSnapshot } from '@/lib/game/spot-price';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 
 /**
@@ -175,11 +176,17 @@ export async function POST(request: Request) {
       ledgerInfo = null;
     }
 
-    // Calculate net worth using live market prices (over reconciled holdings)
+    // Calculate net worth using live market prices (over reconciled holdings).
+    // Wave E2 (§2.5 "one price truth"): the same single MarketResource read
+    // also builds the band-clamped `marketSnapshot` delivered to the client
+    // below — the spot price that now values delivery contracts, NPC
+    // settlement, and mega-project contributions is the same live price shown
+    // here in net worth.
     let resourceValue = 0;
+    let marketSnapshot: { prices: Record<string, number>; base?: Record<string, number>; asOf: number } | null = null;
     try {
       const marketResources = await prisma.marketResource.findMany({
-        select: { slug: true, currentPrice: true },
+        select: { slug: true, currentPrice: true, basePrice: true, minPrice: true, maxPrice: true },
       });
       const priceMap = new Map(marketResources.map(r => [r.slug, r.currentPrice]));
       for (const [id, qty] of Object.entries(reconciledResources)) {
@@ -187,6 +194,16 @@ export async function POST(request: Request) {
           resourceValue += qty * (priceMap.get(id) || 50_000);
         }
       }
+      marketSnapshot = buildMarketSnapshot(
+        marketResources.map(r => ({
+          slug: r.slug,
+          currentPrice: r.currentPrice,
+          basePrice: r.basePrice,
+          minPrice: r.minPrice,
+          maxPrice: r.maxPrice,
+        })),
+        Date.now(),
+      );
     } catch {
       // Fallback to flat $50K/unit
       for (const qty of Object.values(reconciledResources)) {
@@ -732,6 +749,11 @@ export async function POST(request: Request) {
       openBounties,
       globalMilestones,
       servicePriceMultipliers,
+      // Wave E2 (§2.5 "one price truth"): band-clamped live spot per resource,
+      // the single price the client tick now uses to value delivery contracts
+      // (spot-at-acceptance) and settle the NPC backdrop. Additive field —
+      // absent on older clients simply means base-price fallback.
+      marketSnapshot,
       rivals: rivalsSummary,
       leagueInfo,
       // Audit Wave B: server-computed effects consumed by the client tick

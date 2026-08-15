@@ -11,6 +11,7 @@ import {
   type LeagueBoostSnapshot,
   type MentorshipBonusSnapshot,
 } from '@/lib/game/server-effects';
+import type { MarketSnapshot } from '@/lib/game/spot-price';
 import { queueMarketFlowFlush } from '@/lib/game/market-pressure';
 
 interface SyncStatus {
@@ -50,6 +51,8 @@ export function useGameSync(
     leagueBoost?: LeagueBoostSnapshot | null;
     /** Live-Service Wave LS2 (§LS2 mechanic 3): mentor/mentee bonus. */
     mentorshipBonuses?: MentorshipBonusSnapshot | null;
+    /** Wave E2 (§2.5 "one price truth"): band-clamped live spot snapshot. */
+    marketSnapshot?: MarketSnapshot | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -192,6 +195,7 @@ export function useGameSync(
             espionagePerks: Array.isArray(data.espionagePerks) ? data.espionagePerks : undefined,
             leagueBoost: data.leagueBoost || undefined,
             mentorshipBonuses: data.mentorshipBonuses || undefined,
+            marketSnapshot: data.marketSnapshot || undefined,
           });
         }
 

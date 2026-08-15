@@ -1419,7 +1419,7 @@ export function processFullTick(state: GameState): GameState {
   // 2. Process NPC companies (can fail safely)
   try {
     if (newState.npcCompanies && newState.npcCompanies.length > 0) {
-      const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate, npcBias);
+      const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate, npcBias, newState.marketSnapshot?.prices || {});
       newState = {
         ...newState,
         npcCompanies: npcResult.npcs,

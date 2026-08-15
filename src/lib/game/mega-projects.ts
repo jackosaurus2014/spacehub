@@ -247,24 +247,37 @@ export const MEGA_PROJECT_MAP = new Map(
 
 /**
  * Calculate Mega-Project Points earned from a contribution.
- * Resources get a 1.5x multiplier over their base market price.
+ * Resources get a 1.5x multiplier over their market price.
  * Cash has a 1.0x multiplier.
+ *
+ * Wave E2 (docs/ECONOMY_PVP_2026-08.md §2.5 "one price truth"): resources are
+ * valued at LIVE SPOT when the caller supplies `priceOverrides` (the server
+ * contribute route builds a band-clamped spot map from the shared
+ * MarketResource rows), falling back to the static baseMarketPrice per
+ * resource when no override is present. This finally makes "contribute during
+ * a glut / withhold during scarcity" a real strategy — dumping a crashed
+ * commodity into a mega-project now earns proportionally less MPP.
  */
 export function calculateMPP(
   moneyContributed: number,
   resourcesContributed: Partial<Record<ResourceId, number>>,
+  priceOverrides?: Partial<Record<string, number>>,
 ): number {
   let mpp = 0;
 
   // Cash MPP
   mpp += moneyContributed * MEGA_PROJECT_CASH_MULTIPLIER;
 
-  // Resource MPP
+  // Resource MPP — spot when provided, else static base.
   for (const [resourceId, quantity] of Object.entries(resourcesContributed)) {
     if (!quantity || quantity <= 0) continue;
     const resource = RESOURCE_MAP.get(resourceId as ResourceId);
     if (!resource) continue;
-    mpp += quantity * resource.baseMarketPrice * MEGA_PROJECT_RESOURCE_MULTIPLIER;
+    const override = priceOverrides?.[resourceId];
+    const unitPrice = typeof override === 'number' && Number.isFinite(override) && override > 0
+      ? override
+      : resource.baseMarketPrice;
+    mpp += quantity * unitPrice * MEGA_PROJECT_RESOURCE_MULTIPLIER;
   }
 
   return mpp;
@@ -280,8 +293,9 @@ export function calculateMPPWithBonuses(
   projectTotalRequirementMpp: number,
   streakMultiplier: number = 1.0,
   isFirstEverContribution: boolean = false,
+  priceOverrides?: Partial<Record<string, number>>,
 ): { baseMpp: number; finalMpp: number; smallBonus: boolean } {
-  const baseMpp = calculateMPP(moneyContributed, resourcesContributed);
+  const baseMpp = calculateMPP(moneyContributed, resourcesContributed, priceOverrides);
 
   const isSmallContributor = playerTotalMpp < projectTotalRequirementMpp * SMALL_CONTRIBUTOR_THRESHOLD;
   const smallContributorMultiplier = isSmallContributor ? SMALL_CONTRIBUTOR_BONUS : 1.0;

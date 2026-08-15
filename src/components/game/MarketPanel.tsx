@@ -376,6 +376,14 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             // Ask = what you actually pay (scarcity-adjusted) — this is what the server charges.
             const ask = priceData?.effectivePrice || current;
             const change = priceData?.change || 0;
+            // Wave E2 (§2.5 "one price truth"): the live spot (`current`) is
+            // now the single price that values contracts, NPC settlement, and
+            // mega-project contributions — so show how far it has drifted from
+            // its static base reference. Colorblind-safe: explicit "vs base"
+            // label + signed number, not color alone.
+            const spotDevPct = r.baseMarketPrice > 0
+              ? Math.round(((current - r.baseMarketPrice) / r.baseMarketPrice) * 100)
+              : 0;
             const mineOnly = MINED_ONLY_RESOURCE_IDS.has(r.id);
             const scarcity = priceData?.supplyMultiplier;
             return (
@@ -421,6 +429,14 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                           ×{scarcity.toFixed(2)}
                         </span>
                       )}
+                    </div>
+                    <div
+                      className={`text-[10px] font-mono ${
+                        spotDevPct > 0 ? 'text-green-400/80' : spotDevPct < 0 ? 'text-red-400/80' : 'text-slate-500'
+                      }`}
+                      title={`Live spot vs base reference (${formatMoney(r.baseMarketPrice)}). Spot is the one price that now pays contracts, NPC settlement, and mega-project contributions.`}
+                    >
+                      spot {spotDevPct > 0 ? '+' : ''}{spotDevPct}% vs base
                     </div>
                   </div>
                   <div className="flex gap-1">

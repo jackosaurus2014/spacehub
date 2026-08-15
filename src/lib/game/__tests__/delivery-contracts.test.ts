@@ -14,8 +14,8 @@ import {
   getActiveDeliveries,
   getCompletedDeliveries,
   POOL_SIZE,
-  DELIVERY_ARBITRAGE_SPREAD,
 } from '../delivery-contracts';
+import { RESOURCE_MAP, type ResourceId } from '../resources';
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
   return {
@@ -146,7 +146,12 @@ describe('delivery-contracts — canDeliver / deliverContract', () => {
     expect(canDeliver(sWithoutInventory, c.id)).toBe(false);
   });
 
-  it('deliverContract pays money (minus the E1 arbitrage spread), deducts resources, records completion', () => {
+  it('deliverContract pays the full contract price (no E1 haircut), deducts resources, records completion', () => {
+    // Wave E2 supersedes E1's flat 15% haircut: contracts are the no-fee
+    // channel (BALANCE.md) and the arbitrage is closed by spot-at-acceptance
+    // (below), not by friction. This player accepted with no snapshot (base
+    // pricing) and has no Frontier / rep / workforce bonuses (all default
+    // multipliers 1), so the payout is exactly the contract price.
     const c = { ...generateContract('the-dominion', 20, 1000), status: 'accepted' as const };
     const s = baseState({
       activeDeliveries: [c],
@@ -154,39 +159,55 @@ describe('delivery-contracts — canDeliver / deliverContract', () => {
       money: 100,
     });
     const after = deliverContract(s, c.id, 5000);
-    // Wave E1: payout is c.paymentMoney * (1 - DELIVERY_ARBITRAGE_SPREAD), not
-    // the raw static price — this player is not in Frontier and has no rep/
-    // workforce bonuses (both default multipliers are 1), so the expected
-    // payout is exact modulo rounding.
-    const expectedPayment = Math.round(c.paymentMoney * (1 - DELIVERY_ARBITRAGE_SPREAD));
-    expect(after.money).toBe(100 + expectedPayment);
-    expect(after.money).toBeLessThan(100 + c.paymentMoney); // never the full static price
+    expect(after.money).toBe(100 + c.paymentMoney);
     expect(after.resources[c.resourceId]).toBe(50);
     expect(after.activeDeliveries).toHaveLength(0);
     expect(after.completedDeliveries).toHaveLength(1);
     expect(after.completedDeliveries![0].status).toBe('completed');
   });
 
-  it('E1 regression: delivery payout is haircut by DELIVERY_ARBITRAGE_SPREAD, closing the static-price risk-free flip', () => {
-    // Regression for docs/ECONOMY_PVP_2026-08.md §E1 exploit #4: before the
-    // fix, a player who crashed the live market price for a resource (via
-    // market/trade), bought it back cheap on the crashed market, then
-    // delivered it here, was paid the FULL static baseMarketPrice-derived
-    // contract.paymentMoney — a risk-free flip. The spread guard doesn't
-    // require live market data (delivery contracts have no server endpoint
-    // to compare against), but it does guarantee the payout is now strictly
-    // less than the static contract price on every delivery, every time.
-    for (let seed = 1; seed <= 10; seed++) {
-      const c = { ...generateContract('the-syndicate', seed, 1000), status: 'accepted' as const };
+  it('E2 spot-lock: accepting on a crashed market reprices the payout down, closing the static-price flip', () => {
+    // Regression for docs/ECONOMY_PVP_2026-08.md §2.3 / §1e-4. Before E2 a
+    // player could crash a resource's live price, buy it back cheap, and
+    // deliver at the FULL static base price. Now acceptDelivery locks the live
+    // spot: with the market crashed to 40% of base, the accepted payout is
+    // ~40% of the base-priced preview — there is no static-vs-live gap to flip.
+    for (let seed = 1; seed <= 8; seed++) {
+      const open = generateContract('the-syndicate', seed, 1000);
+      const base = RESOURCE_MAP.get(open.resourceId as ResourceId)!.baseMarketPrice;
+      const crashedSpot = Math.round(base * 0.4);
       const s = baseState({
-        activeDeliveries: [c],
-        resources: { [c.resourceId]: c.quantity },
-        money: 0,
+        availableDeliveries: [open],
+        marketSnapshot: { prices: { [open.resourceId]: crashedSpot }, asOf: 1000 },
       });
-      const after = deliverContract(s, c.id, 5000);
-      expect(after.money).toBeGreaterThan(0);
-      expect(after.money).toBeLessThanOrEqual(Math.round(c.paymentMoney * (1 - DELIVERY_ARBITRAGE_SPREAD)));
+      const accepted = acceptDelivery(s, open.id, 2000);
+      const active = accepted.activeDeliveries![0];
+      expect(active.spotUnitAtAcceptance).toBe(crashedSpot);
+      // Payout rescaled by spot/base (~0.4×) — strictly below the static preview.
+      expect(active.paymentMoney).toBeLessThan(open.paymentMoney);
+      expect(active.paymentMoney).toBe(Math.round(open.paymentMoney * (crashedSpot / base)));
     }
+  });
+
+  it('E2 spot-lock: accepting during a rally locks the higher spot (forward hedging)', () => {
+    const open = generateContract('hive-collective', 7, 1000);
+    const base = RESOURCE_MAP.get(open.resourceId as ResourceId)!.baseMarketPrice;
+    const rallySpot = Math.round(base * 2.2);
+    const s = baseState({
+      availableDeliveries: [open],
+      marketSnapshot: { prices: { [open.resourceId]: rallySpot }, asOf: 1000 },
+    });
+    const accepted = acceptDelivery(s, open.id, 2000);
+    const active = accepted.activeDeliveries![0];
+    expect(active.spotUnitAtAcceptance).toBe(rallySpot);
+    expect(active.paymentMoney).toBe(Math.round(open.paymentMoney * (rallySpot / base)));
+    // Delivering later pays the locked (higher) price in full — a forward.
+    const delivered = deliverContract(
+      { ...accepted, resources: { [open.resourceId]: active.quantity } },
+      active.id,
+      5000,
+    );
+    expect(delivered.money).toBe(active.paymentMoney);
   });
 
   it('deliverContract shifts faction reputation on complete', () => {

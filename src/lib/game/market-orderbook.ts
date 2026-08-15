@@ -6,6 +6,7 @@ import prisma from '@/lib/db';
 import { RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
 import { validatePriceBand } from './price-band';
+import { computeNpcMakerQuote } from './market-engine';
 import { recordLedger, isLedgerAvailable } from './server-ledger';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -485,16 +486,61 @@ export async function cancelOrder(
 
 /**
  * Generate NPC Market Maker orders for a resource.
- * Creates one bid and one ask with 20% total spread around the current price.
+ *
+ * Wave E2 (docs/ECONOMY_PVP_2026-08.md §2.5): the maker now quotes around
+ * LIVE SPOT (`MarketResource.currentPrice`), not the static base, with an
+ * inventory-aware half-spread `0.06 + 0.10 × capUsedFraction` that widens as
+ * the maker's rolling 24h volume cap is spent — so it sells into spikes and
+ * buys into crashes (the market floor) without being one-directional free
+ * money after a price move. Quotes are band-clamped to base×0.3 .. base×3.0.
+ *
+ * `referenceSpot` may be passed (already band-clamped spot from the sync
+ * snapshot); when omitted the maker reads the resource's currentPrice.
  * NPC orders are permanent backstop liquidity.
  */
 export async function getNPCMarketMakerOrders(
   resourceSlug: string,
-  basePrice: number,
-): Promise<{ bid: { price: number; quantity: number }; ask: { price: number; quantity: number } }> {
-  const npcBidPrice = Math.round(basePrice * (1 - NPC_SPREAD_HALF));
-  const npcAskPrice = Math.round(basePrice * (1 + NPC_SPREAD_HALF));
+  referenceSpot?: number,
+): Promise<{ bid: { price: number; quantity: number }; ask: { price: number; quantity: number }; spreadHalf: number }> {
+  const resourceDef = getResourceDef(resourceSlug);
+  const basePrice = resourceDef?.baseMarketPrice ?? 0;
+  const minPrice = resourceDef?.minPrice ?? 1;
+  const maxPrice = resourceDef?.maxPrice ?? Number.MAX_SAFE_INTEGER;
   const volume = NPC_VOLUME_CAPS[resourceSlug] || 50;
+
+  // Live spot: prefer the caller-supplied (already-clamped) reference, else
+  // the maintained shared currentPrice, else base.
+  let spot = typeof referenceSpot === 'number' && Number.isFinite(referenceSpot) && referenceSpot > 0
+    ? referenceSpot
+    : basePrice;
+  if (referenceSpot === undefined) {
+    const row = await prisma.marketResource.findUnique({
+      where: { slug: resourceSlug },
+      select: { currentPrice: true },
+    });
+    if (row && row.currentPrice > 0) spot = row.currentPrice;
+  }
+
+  // Inventory awareness: how much of the maker's daily volume cap has already
+  // been consumed by its fills in the trailing 24h. Fuller cap → wider spread.
+  let capUsedFraction = 0;
+  try {
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const npcFills = await prisma.marketFill.findMany({
+      where: {
+        createdAt: { gte: since },
+        OR: [{ buyerProfileId: NPC_PROFILE_ID }, { sellerProfileId: NPC_PROFILE_ID }],
+        order: { resourceSlug },
+      },
+      select: { quantity: true },
+    });
+    const used = npcFills.reduce((s, f) => s + (f.quantity || 0), 0);
+    capUsedFraction = volume > 0 ? Math.min(1, used / volume) : 0;
+  } catch { /* inventory read best-effort — default to base spread */ }
+
+  const quote = computeNpcMakerQuote({ spotPrice: spot, basePrice, minPrice, maxPrice, capUsedFraction });
+  const npcBidPrice = quote.bid;
+  const npcAskPrice = quote.ask;
 
   // Clean up any existing NPC orders for this resource
   await prisma.marketLimitOrder.updateMany({
@@ -541,6 +587,7 @@ export async function getNPCMarketMakerOrders(
   return {
     bid: { price: npcBidPrice, quantity: volume },
     ask: { price: npcAskPrice, quantity: volume },
+    spreadHalf: quote.spreadHalf,
   };
 }
 

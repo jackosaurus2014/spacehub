@@ -176,6 +176,12 @@ export function getNewGameState(): GameState {
     // Realignment epoch announced — the next tick's clock check announces
     // the current epoch exactly once, same as a save that just migrated in.
     lastSeenRealignmentEpoch: null,
+    // V30 — Economic PvP Wave E2 "One Price Truth" (docs/
+    // ECONOMY_PVP_2026-08.md §2.5). A fresh save holds no market snapshot yet
+    // — the first authenticated sync delivers one; until then delivery
+    // contracts and NPC settlement fall back to static baseMarketPrice
+    // (identical to pre-E2 behavior).
+    marketSnapshot: null,
   };
 }
 
@@ -500,6 +506,13 @@ export function loadGame(): GameState | null {
     // never retroactively "catches up" on epochs the save missed while it
     // didn't exist).
     if (state.lastSeenRealignmentEpoch === undefined) state.lastSeenRealignmentEpoch = null;
+
+    // V30 fields — Economic PvP Wave E2 "One Price Truth" (docs/
+    // ECONOMY_PVP_2026-08.md §2.5). Additive-only: an existing save with no
+    // marketSnapshot just hasn't received one from a sync yet (numerically
+    // identical to a fresh game — spot consumers fall back to static
+    // baseMarketPrice until the first authenticated sync populates it).
+    if (state.marketSnapshot === undefined) state.marketSnapshot = null;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

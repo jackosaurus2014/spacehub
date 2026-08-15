@@ -18,6 +18,7 @@ import {
   type PhaseRequirement,
 } from '@/lib/game/mega-projects';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { computeSpotPrice } from '@/lib/game/spot-price';
 
 /**
  * POST /api/space-tycoon/mega-projects/contribute
@@ -189,6 +190,32 @@ export async function POST(request: Request) {
     const projectTotalReq = calculateProjectTotalRequirement(definition);
     const existingMpp = existingContribution?.totalMPP || 0;
 
+    // Wave E2 (§2.5 "one price truth"): value the contributed resources at
+    // LIVE SPOT, not the static base. Build a band-clamped spot map from the
+    // shared MarketResource rows for exactly the slugs being contributed, so
+    // contributing a crashed commodity earns proportionally less MPP (and a
+    // scarce one earns more). The project *requirement* (calculateProjectTotal
+    // Requirement) stays base-anchored — it's the reference weight, not a
+    // payout — so only the earned MPP floats with the market.
+    const spotOverrides: Record<string, number> = {};
+    try {
+      const contributedSlugs = Object.keys(resourceContributions);
+      if (contributedSlugs.length > 0) {
+        const rows = await prisma.marketResource.findMany({
+          where: { slug: { in: contributedSlugs } },
+          select: { slug: true, currentPrice: true, basePrice: true, minPrice: true, maxPrice: true },
+        });
+        for (const row of rows) {
+          spotOverrides[row.slug] = computeSpotPrice({
+            currentPrice: row.currentPrice,
+            basePrice: row.basePrice,
+            minPrice: row.minPrice,
+            maxPrice: row.maxPrice,
+          });
+        }
+      }
+    } catch { /* spot map best-effort — falls back to base pricing in calculateMPP */ }
+
     const { finalMpp, smallBonus } = calculateMPPWithBonuses(
       cashAmount,
       resourceContributions,
@@ -196,6 +223,7 @@ export async function POST(request: Request) {
       projectTotalReq,
       1.0, // streak multiplier (simplified for now)
       isFirstEverContribution,
+      spotOverrides,
     );
 
     // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.

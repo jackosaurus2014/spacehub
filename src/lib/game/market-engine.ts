@@ -123,6 +123,54 @@ export function calculateIdleDecay(
   return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
 }
 
+// ─── NPC Market-Maker Quotes (Wave E2, §2.5) ────────────────────────────────
+// The NPC maker used to quote a FIXED ±10% around the static base price —
+// meaning after any real price move the maker was free money in one direction
+// (docs/ECONOMY_PVP_2026-08.md §2.5). It now quotes around LIVE SPOT with an
+// inventory-aware spread that widens as the maker's daily volume cap is spent:
+// `spreadHalf = 0.06 + 0.10 × capUsedFraction`. As the maker sells into a
+// spike (or buys into a crash) its cap fills, the spread widens against
+// further accumulation — the NPC floor that bounds cornering (§2.9 invariant:
+// NPCs are an infinite counterparty inside their caps, not a free pump).
+
+/** Base half-spread when the maker's daily cap is untouched. */
+export const NPC_MAKER_SPREAD_BASE = 0.06;
+/** Additional half-spread at a fully-spent daily cap. */
+export const NPC_MAKER_SPREAD_CAP_SLOPE = 0.10;
+
+/** Inventory-aware half-spread. capUsedFraction is clamped to [0,1]. */
+export function computeNpcMakerSpreadHalf(capUsedFraction: number): number {
+  const frac = Number.isFinite(capUsedFraction) ? Math.max(0, Math.min(1, capUsedFraction)) : 0;
+  return NPC_MAKER_SPREAD_BASE + NPC_MAKER_SPREAD_CAP_SLOPE * frac;
+}
+
+/**
+ * Compute the NPC maker's bid/ask quote around live spot, inventory-aware and
+ * band-clamped to the resource's price band (never quotes outside base×0.3 ..
+ * base×3.0 or the hard min/max). Pure — unit-tested without a database.
+ */
+export function computeNpcMakerQuote(params: {
+  spotPrice: number;
+  basePrice: number;
+  minPrice: number;
+  maxPrice: number;
+  capUsedFraction: number;
+}): { bid: number; ask: number; spreadHalf: number } {
+  const { spotPrice, basePrice, minPrice, maxPrice, capUsedFraction } = params;
+  const spreadHalf = computeNpcMakerSpreadHalf(capUsedFraction);
+  const ref =
+    Number.isFinite(spotPrice) && spotPrice > 0 ? spotPrice : basePrice;
+  // Band bounds around the static base (anti-cornering anchor).
+  const bandMin = Math.max(minPrice, Math.round(basePrice * 0.3));
+  const bandMax = Math.min(maxPrice, Math.round(basePrice * 3.0));
+  const clamp = (p: number) => Math.max(bandMin, Math.min(bandMax, Math.round(p)));
+  return {
+    bid: clamp(ref * (1 - spreadHalf)),
+    ask: clamp(ref * (1 + spreadHalf)),
+    spreadHalf,
+  };
+}
+
 // ─── Supply-Based Pricing ──────────────────────────────────────────────────
 
 /** Minimum units always available on the market (at extreme scarcity premium) */

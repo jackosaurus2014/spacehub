@@ -11,6 +11,11 @@ import type { HiredCommander, CommanderPool } from './commanders';
 // GameState }` from this file, erased at compile time.
 import type { CorporateDoctrineState, BoardDirective } from './corporate-doctrine';
 
+// E2 (One Price Truth): type-only import of the bounded market snapshot the
+// server sends each sync. spot-price.ts is a pure module (price-band only),
+// so this is a compile-time-erased edge — no runtime cycle.
+import type { MarketSnapshot } from './spot-price';
+
 export interface GameDate {
   year: number;
   month: number; // 1-12
@@ -1165,6 +1170,14 @@ export interface GameState {
    *  = never announced one yet (identical to a fresh game — the next tick's
    *  clock check announces the current epoch exactly once). */
   lastSeenRealignmentEpoch?: number | null;
+
+  /** E2 (One Price Truth — docs/ECONOMY_PVP_2026-08.md §2.5): the last
+   *  market snapshot the server delivered via sync. The deterministic client
+   *  tick reads this (never a live network call) to value delivery contracts
+   *  at spot-at-acceptance and settle the NPC backdrop at spot. Null/absent =
+   *  never synced (solo / logged-out) — consumers fall back to static
+   *  baseMarketPrice, identical to pre-E2 behavior. */
+  marketSnapshot?: MarketSnapshot | null;
 }
 
 /** One chapter act's live/catch-up progress marker (0..acts.length-1 while
@@ -1264,6 +1277,10 @@ export interface DeliveryContractState {
   acceptedAtMs?: number;
   completedAtMs?: number;
   defaultedAtMs?: number;
+  /** E2 (§2.3): the live spot price per unit locked in when the contract was
+   *  accepted — a genuine forward (lock today's spot, deliver in 72h). Absent
+   *  = accepted before a snapshot was available (base-priced). */
+  spotUnitAtAcceptance?: number;
 }
 
 // ─── Interstellar era (Wave 10 — expeditions.ts) ────────────────────────────

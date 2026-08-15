@@ -18,6 +18,7 @@ import { getWorkforceBonuses } from './workforce';
 // imports this module, so no cycle).
 import { computeFactionPostures, getCurrentRealignmentEpoch, type FactionPosture } from './realignment';
 import type { ResourceCategory } from './economic-seasons';
+import { getSpotPrice } from './spot-price';
 
 /** Public type alias — the persisted DeliveryContractState is the contract. */
 export type DeliveryContract = DeliveryContractState;
@@ -131,24 +132,24 @@ export const POOL_SIZE = 8;
 const POOL_TARGET_SIZE = POOL_SIZE;
 const POOL_REFRESH_MS = 4 * 60 * 60 * 1000; // 4 hours
 
-// Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1, exploit #4 / §1c "three price
-// surfaces that never meet"): `paymentMoney` is fixed at generation time off
-// the STATIC `resource.baseMarketPrice` constant and never revisited — it
-// never sees the shared, player-movable `MarketResource.currentPrice`. That
-// makes delivery contracts a risk-free flip: crash a resource's live market
-// price (market/trade sell), buy it back cheap on the crashed market, then
-// deliver at the contract's untouched static price for pure profit.
-//
-// The full fix (spot-linked pricing via the server `marketSnapshot` sync
-// pipe, §2) is later-wave infrastructure — delivery contracts currently have
-// no server endpoint at all (100% client-simulated), so there is nothing to
-// cross-check a live price against without first building that pipe. As the
-// E1 stopgap, a flat settlement spread is deducted from every delivery
-// payout, shrinking (not eliminating) the exploitable margin — the same
-// "friction cost" role MARKET_BROKER_FEE_RATE plays on live market sells.
-// Real per-delivery money is also bounded (as a backstop) by the sync-route
-// client-money plausibility clamp (exploit #5, ledger-reconcile.ts).
-export const DELIVERY_ARBITRAGE_SPREAD = 0.15; // 15% haircut on payout
+// Wave E2 (docs/ECONOMY_PVP_2026-08.md §2.3 / §2.5 "one price truth"):
+// SUPERSEDES the E1 stopgap. E1 could only apply a flat 15% haircut
+// (DELIVERY_ARBITRAGE_SPREAD) to shrink the static-price arbitrage margin,
+// because delivery contracts are 100% client-simulated and there was no spot
+// pipe to price against. E2 builds that pipe — the server delivers a
+// band-clamped `marketSnapshot` every sync (spot-price.ts) — so delivery
+// contracts now price at LIVE SPOT AT ACCEPTANCE (§2.3): the payout is
+// rescaled from its base-price preview to the spot the client last saw when
+// the contract is accepted, and that price is locked onto the contract as a
+// genuine forward (lock today's spot, deliver in 72h — free hedging
+// gameplay). This closes the flip WITHOUT a flat haircut: crash the market
+// and the contract you accept now pays the crashed spot, so there is no
+// static-vs-live gap to arbitrage. The flat spread is therefore removed;
+// contracts pay full (the no-fee channel BALANCE.md intends) with the
+// arbitrage closed by the spot lock instead of by friction. Solo /
+// never-synced players (no snapshot) keep base pricing — they never touch
+// the shared book, so there is nothing to arbitrage. Real per-delivery money
+// remains bounded by the sync-route plausibility clamp (§E1 #5).
 
 export function getDeliveryPool(state: GameState): DeliveryContract[] {
   return state.availableDeliveries || [];
@@ -321,10 +322,26 @@ export function acceptDelivery(state: GameState, contractId: string, now: number
   const contract = pool.find(c => c.id === contractId);
   if (!contract || contract.status !== 'open') return state;
 
+  // E2 (§2.3): lock the LIVE SPOT AT ACCEPTANCE. The generated paymentMoney is
+  // a base-price preview (basePrice × qty × faction × posture × noise); we
+  // rescale it by spot/base so faction/posture/noise are preserved exactly
+  // while the resource is valued at the price the client last saw. Absent a
+  // snapshot (solo / never-synced), the base-priced preview stands.
+  let paymentMoney = contract.paymentMoney;
+  let spotUnitAtAcceptance: number | undefined;
+  const spot = getSpotPrice(state.marketSnapshot, contract.resourceId);
+  const base = RESOURCE_MAP.get(contract.resourceId as ResourceId)?.baseMarketPrice;
+  if (spot && spot > 0 && base && base > 0) {
+    paymentMoney = Math.round(contract.paymentMoney * (spot / base));
+    spotUnitAtAcceptance = spot;
+  }
+
   const accepted: DeliveryContract = {
     ...contract,
     status: 'accepted',
     acceptedAtMs: now,
+    paymentMoney,
+    spotUnitAtAcceptance,
   };
 
   return {
@@ -358,9 +375,12 @@ export function deliverContract(state: GameState, contractId: string, now: numbe
   // payouts, same as static contract rewards (contracts.applyContractReward).
   const repBonuses = getReputationBonuses(state.reputation || 0);
   const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+  // E2: no arbitrage haircut — contract.paymentMoney was already locked at
+  // live spot on acceptance (§2.3), which closes the static-price flip. Full
+  // payout (the no-fee channel, BALANCE.md), scaled only by the earned
+  // frontier / reputation / workforce multipliers.
   const payment = Math.round(
     contract.paymentMoney
-    * (1 - DELIVERY_ARBITRAGE_SPREAD)
     * frontierBonus
     * repBonuses.contractRewardMultiplier
     * (1 + wfBonuses.contractPayBonus)

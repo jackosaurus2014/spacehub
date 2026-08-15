@@ -75,6 +75,13 @@ export function processNPCTick(
   // import chain; the caller (game-engine.ts) computes it once per tick from
   // NPC_SEEDS' factionId and passes the small lookup in.
   npcFactionBias: Record<string, number> = {},
+  // Wave E2 (docs/ECONOMY_PVP_2026-08.md §2.5 / §2.9 "one price truth"): the
+  // last-synced live spot per resource slug. NPCs now settle their backdrop
+  // buys/sells at SPOT instead of a static base map, so a super-cycle that
+  // moves the shared price also moves what the NPC floor pays — one economy,
+  // not two. Deterministic: the snapshot is a fixed input to this tick.
+  // Omitted/empty = base-price fallback (identical to pre-E2 behavior).
+  spotPrices: Record<string, number> = {},
 ): { npcs: NPCCompanyState[]; events: GameEvent[]; marketActions: NPCMarketAction[] } {
   const allEvents: GameEvent[] = [];
   const allMarketActions: NPCMarketAction[] = [];
@@ -193,7 +200,7 @@ export function processNPCTick(
           if (sellQty > 0 && sellQty < 100) { // Cap sells to prevent price crashes
             marketActions.push({ npcId: n.id, npcName: n.name, resourceId, quantity: sellQty });
             n.resources[resourceId] = qty - sellQty;
-            const revenue = sellQty * getBasePrice(resourceId);
+            const revenue = sellQty * npcSettlePrice(resourceId, spotPrices);
             n.money += revenue;
             n.totalEarned += revenue;
           }
@@ -205,7 +212,7 @@ export function processNPCTick(
     if (n.monthsPlayed % 7 === (NPC_SEEDS_INDEX.get(n.id) || 0) % 7 && n.money > 10_000_000) {
       const buyResource = NPC_BUY_RESOURCES[n.monthsPlayed % NPC_BUY_RESOURCES.length];
       const buyQty = Math.round((5 + Math.random() * 15) * bias); // Buy ~5-20 units, epoch-biased
-      const cost = buyQty * getBasePrice(buyResource);
+      const cost = buyQty * npcSettlePrice(buyResource, spotPrices);
       if (n.money > cost * 3) { // Only buy if we can easily afford it
         n.resources[buyResource] = (n.resources[buyResource] || 0) + buyQty;
         n.money -= cost;
@@ -250,11 +257,20 @@ export function applyNPCMarketActions(
 import { NPC_SEEDS } from './npc-companies';
 const NPC_SEEDS_INDEX = new Map(NPC_SEEDS.map((s, i) => [s.id, i]));
 
-// Helper: base prices for NPC revenue estimation
-function getBasePrice(resourceId: string): number {
-  const prices: Record<string, number> = {
-    lunar_water: 50_000, mars_water: 80_000, iron: 5_000, aluminum: 8_000,
-    titanium: 25_000, methane: 15_000, ethane: 20_000,
-  };
-  return prices[resourceId] || 5_000;
+// Helper: base prices for NPC revenue estimation (fallback when no live spot).
+const NPC_BASE_PRICES: Record<string, number> = {
+  lunar_water: 50_000, mars_water: 80_000, iron: 5_000, aluminum: 8_000,
+  titanium: 25_000, methane: 15_000, ethane: 20_000,
+};
+
+/**
+ * Wave E2 (§2.5): the price the NPC backdrop settles a buy/sell at. Prefers
+ * the last-synced LIVE SPOT for the resource; falls back to the static base
+ * map when no snapshot is available (solo / never-synced) — preserving exact
+ * pre-E2 behavior. Exported for unit testing.
+ */
+export function npcSettlePrice(resourceId: string, spotPrices: Record<string, number> = {}): number {
+  const spot = spotPrices[resourceId];
+  if (typeof spot === 'number' && Number.isFinite(spot) && spot > 0) return spot;
+  return NPC_BASE_PRICES[resourceId] || 5_000;
 }

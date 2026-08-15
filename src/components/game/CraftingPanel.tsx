@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { PRODUCTION_CHAINS } from '@/lib/game/production-chains';
+import { PRODUCTION_CHAINS, getCraftedProductValue } from '@/lib/game/production-chains';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
 import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
@@ -154,7 +154,7 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
                         <div className="text-[10px] text-slate-500">
                           {craftingSpeedMult > 1 ? (
                             <><span className="line-through opacity-50">{formatDuration(recipe.timeSeconds)}</span>{' '}<span className="text-cyan-400">{formatDuration(Math.round(recipe.timeSeconds / craftingSpeedMult))}</span></>
-                          ) : formatDuration(recipe.timeSeconds)} · Sells for {formatMoney(recipe.marketValue)}/u
+                          ) : formatDuration(recipe.timeSeconds)} · Sells for {formatMoney(getCraftedProductValue(recipe, state.marketSnapshot?.prices))}/u
                         </div>
                         <button
                           onClick={() => { if (canCraft) { playSound('build_start'); onStartCrafting(recipe.id); } }}
