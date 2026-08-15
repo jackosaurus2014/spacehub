@@ -232,6 +232,27 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Race guard: generation takes ~60s, and the cron runner retries on
+    // timeout — on 8/14 and 8/15 two overlapping invocations both passed the
+    // count guard above (no rows written yet) and produced near-duplicate
+    // article pairs. A unique-key creation lock makes the second caller bail.
+    const lockKey = `ai-insights:generation-lock:${todayStart.toISOString().slice(0, 10)}`;
+    try {
+      await prisma.dynamicContent.create({
+        data: {
+          contentKey: lockKey,
+          module: 'ai-insights',
+          section: 'generation-lock',
+          data: JSON.stringify({ startedAt: new Date().toISOString() }),
+          sourceType: 'system',
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+      });
+    } catch {
+      logger.info('AI insights generation already in progress or done for today (lock exists), skipping', { lockKey });
+      return NextResponse.json({ success: true, skipped: true, message: 'Generation lock held — another run is in progress or completed today' });
+    }
+
     // Fetch recent content for analysis
     const thirtysSixHoursAgo = new Date(Date.now() - 36 * 60 * 60 * 1000);
     let newsArticles = await prisma.newsArticle.findMany({
@@ -467,7 +488,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
       factCheckNote: string | null;
     }> = [];
 
-    // Process each insight: fact-check, then save as pending_review
+    // Process each insight: fact-check, then auto-publish or hold
     for (const insight of parsed.insights) {
       const slug = generateSlug(insight.title);
       const category = validCategories.has(insight.category) ? insight.category : 'market';
@@ -480,22 +501,26 @@ Respond with valid JSON in this exact format (no markdown code fences):
         insight.sources || []
       );
 
-      // ALL articles require manual admin review before publishing
+      // Founder decision 2026-08-15: articles that PASS the fact-check
+      // (pass / minor_issues) auto-publish; only major_issues are held for
+      // manual admin review. The daily email remains as a published-digest +
+      // held-articles notice rather than a required approval step.
       const finalContent = insight.content;
       let factCheckNote: string | null = null;
 
       if (factCheck.overallVerdict === 'major_issues') {
         factCheckNote = `MAJOR ISSUES: ${factCheck.notes}\nCorrections needed: ${factCheck.corrections.join('; ')}`;
-        logger.warn('AI insight has major fact-check issues', { slug, notes: factCheck.notes });
+        logger.warn('AI insight has major fact-check issues — held for review', { slug, notes: factCheck.notes });
       } else if (factCheck.overallVerdict === 'minor_issues') {
         factCheckNote = `Minor notes: ${factCheck.notes}${factCheck.corrections.length > 0 ? `\nSuggestions: ${factCheck.corrections.join('; ')}` : ''}`;
       } else {
         factCheckNote = factCheck.notes || 'Passed fact-check';
       }
 
-      // Always generate review token — all articles need admin approval
+      // Review token still generated for every article — admins can unpublish
+      // or edit via the same review links even after auto-publish.
       const reviewToken = crypto.randomUUID();
-      const publishStatus = 'pending_review';
+      const publishStatus = factCheck.overallVerdict === 'major_issues' ? 'pending_review' : 'published';
 
       try {
         // status, factCheckNote, reviewToken are new schema fields — cast for Prisma client compat
@@ -543,34 +568,38 @@ Respond with valid JSON in this exact format (no markdown code fences):
       }
     }
 
-    // ALL articles require admin approval — send a review email covering the
-    // FULL pending_review backlog (not just today's batch). A missed review
-    // email one day would otherwise silently drop that day's articles from
-    // the reviewer's inbox once the next day's email replaces it, which is
-    // how articles were getting stuck in pending_review for multiple days
-    // straight and never reaching readers.
+    // Fact-check-passed articles auto-publish (founder decision 8/15). The
+    // daily email is now a notice: it lists what auto-published today plus
+    // the FULL held-for-review backlog (major_issues only) with review links.
+    // Including the whole backlog every time means a missed email never
+    // silently buries a held article.
     if (upsertedInsights.length > 0) {
       const allPending = await (prisma.aIInsight as any).findMany({
         where: { status: 'pending_review' },
         select: { title: true, slug: true, summary: true, category: true, content: true, factCheckNote: true, reviewToken: true },
         orderBy: { generatedAt: 'asc' },
       });
-      await sendReviewEmail(
-        allPending.map((i: any) => ({
-          title: i.title,
-          slug: i.slug,
-          summary: i.summary,
-          category: i.category,
-          content: i.content,
-          factCheckNote: i.factCheckNote,
-          reviewToken: i.reviewToken || '',
-        }))
-      );
+      if (allPending.length > 0) {
+        await sendReviewEmail(
+          allPending.map((i: any) => ({
+            title: i.title,
+            slug: i.slug,
+            summary: i.summary,
+            category: i.category,
+            content: i.content,
+            factCheckNote: i.factCheckNote,
+            reviewToken: i.reviewToken || '',
+          }))
+        );
+      }
     }
 
-    logger.info('AI insights generated — all pending admin approval', {
+    const autoPublished = upsertedInsights.filter((i) => (i as { status?: string }).status !== 'pending_review').length;
+    const heldForReview = upsertedInsights.length - autoPublished;
+    logger.info('AI insights generated', {
       total: upsertedInsights.length,
-      pendingReview: upsertedInsights.length,
+      autoPublished,
+      heldForReview,
       categories: upsertedInsights.map((i) => i.category),
       factCheckResults: upsertedInsights.map((i) => ({
         slug: i.slug,
@@ -581,9 +610,9 @@ Respond with valid JSON in this exact format (no markdown code fences):
     return NextResponse.json({
       success: true,
       count: upsertedInsights.length,
-      autoPublished: 0,
-      pendingReview: upsertedInsights.length,
-      message: `${upsertedInsights.length} insight(s) generated and sent for admin approval at ${process.env.ADMIN_EMAIL || 'ADMIN_EMAIL not set'}`,
+      autoPublished,
+      pendingReview: heldForReview,
+      message: `${autoPublished} insight(s) auto-published (fact-check passed); ${heldForReview} held for admin review`,
       insights: upsertedInsights.map((i) => ({
         id: i.id,
         title: i.title,
