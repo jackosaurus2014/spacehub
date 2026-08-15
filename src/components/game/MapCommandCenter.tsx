@@ -87,10 +87,17 @@ interface MapCommandCenterProps {
   /** Drives the shell's region backdrop tint + ambient sound, same contract
    *  SolarSystemCanvas's onSelectLocation always had. */
   onRegionFocus: (locId: string | null) => void;
+  /** Wave V3 (docs/VISUAL_DEPTH_2026-08.md §V3): an external deep-link
+   *  request — the Outliner's rows call this via page.tsx (setTab('map') +
+   *  this) instead of a new selection mechanic. `token` is a monotonic
+   *  nonce (Date.now() at request time) so requesting the SAME location
+   *  twice in a row while already on the map tab still re-triggers the
+   *  selection effect below (a plain value-equality prop wouldn't). */
+  focusRequest?: { target: OrderQueueTarget; token: number } | null;
 }
 
 export default function MapCommandCenter({
-  state, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus,
+  state, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest,
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
@@ -170,6 +177,17 @@ export default function MapCommandCenter({
       selectLocation(target.id);
     }
   }, [layer, selectLocation, selectSystem]);
+
+  // Wave V3: consume an external focus request (Outliner deep-link) — the
+  // EXACT same selection logic OrderQueueHUD's own chips use, just fed by a
+  // prop instead of a click. Guarded by `token` so it fires once per request
+  // (including re-requesting the same target while already on this tab).
+  const lastFocusTokenRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!focusRequest || focusRequest.token === lastFocusTokenRef.current) return;
+    lastFocusTokenRef.current = focusRequest.token;
+    handleOrderQueueSelect(focusRequest.target);
+  }, [focusRequest, handleOrderQueueSelect]);
 
   return (
     <div

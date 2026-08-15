@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { GameState, GameReport } from '@/lib/game/types';
+import type { GameState, GameReport, GameTab } from '@/lib/game/types';
 import type { QuarterlyReport } from '@/lib/game/quarterly-reports';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP } from '@/lib/game/resources';
@@ -12,6 +12,11 @@ import { toast } from '@/lib/toast';
 import { ConsolePanel, DataChip } from './chrome';
 import GameIcon, { type GameIconGlow } from './GameIcon';
 import { resolveIcon, type IconName } from '@/lib/game/icons';
+// Wave V3 (docs/VISUAL_DEPTH_2026-08.md §V3): "A unified Situation Log
+// replaces scattered alerts... lives as the promoted content of the Reports
+// tab (Reports remains the tab id — no IA change for mechanics)."
+import SituationLog from './SituationLog';
+import type { OrderQueueTarget } from '@/lib/game/order-queue';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -389,12 +394,20 @@ interface ReportsPanelProps {
   state: GameState;
   onMarkRead: (reportId: string) => void;
   onMarkAllRead: () => void;
+  /** Wave V3: Situation Log row navigation — same tab-switch + map-focus
+   *  handlers the Outliner uses (page.tsx wires both to the identical
+   *  setTab/setMapFocusRequest pair, so a click does the same thing from
+   *  either surface). */
+  onNavigateTab: (tab: GameTab) => void;
+  onFocusMap: (target: OrderQueueTarget) => void;
 }
 
-export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: ReportsPanelProps) {
+export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavigateTab, onFocusMap }: ReportsPanelProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
-  const [topTab, setTopTab] = useState<'mail' | 'quarterly'>('mail');
+  // 'log' (Situation Log) is the promoted default — it's the surface the
+  // Outliner's Attention section deep-links into.
+  const [topTab, setTopTab] = useState<'log' | 'mail' | 'quarterly'>('log');
 
   const reports = [...(state.reports || [])].reverse(); // newest first
   const filteredReports = filter === 'unread' ? reports.filter(r => !r.read) : reports;
@@ -411,9 +424,20 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
     }
   };
 
-  // Top-level tab strip — shared between Mail and Quarterly sub-views
+  // Top-level tab strip — shared between Log, Mail, and Quarterly sub-views
   const TopTabs = (
     <div className="game-tab-bar flex gap-1" role="tablist" aria-label="Reports view">
+      <button
+        type="button"
+        role="tab"
+        aria-selected={topTab === 'log'}
+        onClick={() => setTopTab('log')}
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          topTab === 'log' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        }`}
+      >
+        <GameIcon name="warning" size={13} /> Situation Log
+      </button>
       <button
         type="button"
         role="tab"
@@ -444,11 +468,13 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead }: Repor
       <ConsolePanel
         title="Reports & Mail"
         icon="reports"
-        subtitle="Mission dispatches, discovery reports and automated quarterly corporate filings."
+        subtitle="The Situation Log surfaces everything that needs a decision; Mail holds discovery reports and dispatches; Quarterly holds automated corporate filings."
         right={TopTabs}
       />
 
-      {topTab === 'quarterly' ? (
+      {topTab === 'log' ? (
+        <SituationLog state={state} onNavigate={onNavigateTab} onFocusMap={onFocusMap} compact />
+      ) : topTab === 'quarterly' ? (
         <QuarterlyReportsView state={state} />
       ) : reports.length === 0 ? (
         <ConsolePanel

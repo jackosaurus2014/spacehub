@@ -1085,6 +1085,27 @@ export default function GameStyles() {
       .holo-concept-term:focus-visible {
         color: #a5f3fc;
       }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE V7 — ORDER ACKNOWLEDGMENT & WORLD FEEDBACK (juice pass)
+         (docs/VISUAL_DEPTH_2026-08.md §V7). Map-ping visuals themselves are
+         driven by lib/game/map-ping.ts's pure lifetime math (JS-computed
+         opacity/scale per frame, not CSS keyframes — see SolarSystemCanvas /
+         SolarMap3D / GalacticMapView), so this section only carries the two
+         genuinely CSS-only pieces: the tab cross-fade (replacing the blanket
+         animate-reveal-up "pop" remount on tab switch) and the haptics
+         toggle's icon-swap transition.
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes tab-crossfade-in {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .tab-crossfade {
+        animation: tab-crossfade-in 0.12s ease-out both;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .tab-crossfade { animation: none; }
+      }
     `}</style>
   );
 }

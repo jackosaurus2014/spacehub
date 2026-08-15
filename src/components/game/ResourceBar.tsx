@@ -12,6 +12,7 @@ import { getActiveMultipliers } from '@/lib/game/random-events';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from '@/lib/game/sound-engine';
 import { toggleMusic, isMusicPlaying, setMusicVolume, getMusicVolume, initMusicAutoResume } from '@/lib/game/music-engine';
+import { isHapticsEnabled, toggleHaptics, vibrate } from '@/lib/game/haptics';
 import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
 import GameIcon from './GameIcon';
@@ -86,12 +87,19 @@ export default function ResourceBar({ state }: ResourceBarProps) {
   const [ambient, setAmbient] = useState(false);
   const [music, setMusic] = useState(false);
   const [musicVol, setMusicVol] = useState(0.45);
+  // Wave V7 — haptics toggle. Only rendered when the device actually exposes
+  // navigator.vibrate (desktop mice never do) so the control isn't clutter
+  // on hardware it can't affect.
+  const [hapticsSupported, setHapticsSupported] = useState(false);
+  const [haptics, setHaptics] = useState(false);
 
   useEffect(() => {
     setMuted(isMuted());
     setAmbient(isAmbientPlaying());
     setMusic(isMusicPlaying());
     setMusicVol(getMusicVolume());
+    setHapticsSupported(typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function');
+    setHaptics(isHapticsEnabled());
     // W12: if the player had music on last session, resume it on their first
     // gesture (autoplay-policy safe — the gesture unlocks the AudioContext).
     initMusicAutoResume(() => setMusic(true));
@@ -183,6 +191,11 @@ export default function ResourceBar({ state }: ResourceBarProps) {
   const handleMusicVolume = (v: number) => {
     setMusicVol(v);
     setMusicVolume(v);
+  };
+  const handleToggleHaptics = () => {
+    const next = toggleHaptics();
+    setHaptics(next);
+    if (next) vibrate(10); // confirm the toggle itself with a tap, once enabled
   };
 
   return (
@@ -316,6 +329,17 @@ export default function ResourceBar({ state }: ResourceBarProps) {
           >
             <GameIcon name={muted ? 'mute' : 'unmute'} size={14} />
           </button>
+          {hapticsSupported && (
+            <button
+              onClick={handleToggleHaptics}
+              aria-label={haptics ? 'Turn off haptic feedback' : 'Turn on haptic feedback'}
+              aria-pressed={haptics}
+              className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${haptics ? 'text-cyan-400' : 'text-slate-600 hover:text-slate-400'}`}
+              title={haptics ? 'Haptics: On' : 'Haptics: Off'}
+            >
+              <GameIcon name={haptics ? 'haptics' : 'haptics-off'} size={14} />
+            </button>
+          )}
         </div>
       </div>
     </div>

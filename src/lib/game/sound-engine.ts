@@ -18,7 +18,10 @@ type SoundName =
   | 'trade'
   | 'rival_overtake'
   | 'ambient_ping'
-  | 'cinematic';
+  | 'cinematic'
+  | 'calendar_tick'
+  | 'medal_sting'
+  | 'program_complete';
 
 let audioCtx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
@@ -190,6 +193,34 @@ export function playSound(name: SoundName): void {
       playChord([196.0, 246.9, 293.7], 1.4, 'sine', 0.12); // G major triad swell
       playTone(587.3, 1.0, 'triangle', { delay: 0.35, gainStart: 0.09 }); // bright top note
       playTone(880.0, 0.8, 'triangle', { delay: 0.55, gainStart: 0.06 }); // shimmer tail
+      break;
+
+    // ─── Wave V7 stingers (docs/VISUAL_DEPTH_2026-08.md §V7) — juice pass
+    // sound hooks for LS surfaces. Each is deliberately distinct from its
+    // nearest existing cousin so a player who's learned the sound language
+    // doesn't confuse them: calendar_tick is urgent/percussive (vs. the
+    // near-silent 'tick'), medal_sting is bright/metallic (vs. milestone's
+    // warm major chord), program_complete is a soft two-note chime (vs.
+    // notification's slower bell and trade's cash-register tap).
+    case 'calendar_tick':
+      // Two sharp descending blips — "the clock just crossed a threshold."
+      playTone(1800, 0.06, 'square', { gainStart: 0.12, freqEnd: 1400 });
+      playTone(1600, 0.06, 'square', { delay: 0.09, gainStart: 0.1, freqEnd: 1200 });
+      break;
+
+    case 'medal_sting':
+      // Bright ascending fifth + metallic shimmer — reads as "engraved," not
+      // "earned money" (milestone's territory).
+      playTone(660, 0.12, 'triangle', { gainStart: 0.16 });
+      playTone(990, 0.35, 'triangle', { delay: 0.1, gainStart: 0.14 });
+      playTone(1980, 0.5, 'sine', { delay: 0.18, gainStart: 0.06, gainEnd: 0.001 });
+      break;
+
+    case 'program_complete':
+      // Soft two-note chime, gentler than 'notification' — a queue emptying,
+      // not an alert.
+      playTone(1046.5, 0.18, 'sine', { gainStart: 0.1 });
+      playTone(1318.5, 0.22, 'sine', { delay: 0.12, gainStart: 0.09 });
       break;
   }
 }

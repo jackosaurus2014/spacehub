@@ -9,8 +9,20 @@ import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { ZONE_MAP } from '@/lib/game/zone-influence';
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
+import { onMapPing, getPingVisual, hexToRgba, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
 import GameIcon from './GameIcon';
 import { ConsolePanel, DataChip } from './chrome';
+
+/** Quadratic-bezier point at parameter u — shared by the ship-transit
+ *  polyline and its engine-trail sample points (Wave V7). */
+function quadPoint(x0: number, y0: number, cx: number, cy: number, x1: number, y1: number, u: number): { x: number; y: number } {
+  const mu = Math.max(0, Math.min(1, u));
+  const inv = 1 - mu;
+  return {
+    x: inv * inv * x0 + 2 * inv * mu * cx + mu * mu * x1,
+    y: inv * inv * y0 + 2 * inv * mu * cy + mu * mu * y1,
+  };
+}
 
 // Friendly group labels for the keyboard-accessible Location List, keyed by
 // SolarSystemLocation.type. Mirrors the bodies actually present in LOCATIONS.
@@ -233,6 +245,22 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
   }, []);
+
+  // Wave V7 (docs/VISUAL_DEPTH_2026-08.md §V7) — order-ack / completion pings.
+  // Subscribed once; only location-targeted pings are relevant to this
+  // renderer (system-targeted pings belong to GalacticMapView). Pruned every
+  // draw() frame against a fixed lifetime — bounded list, no accumulation.
+  const pingsRef = useRef<MapPingEvent[]>([]);
+  useEffect(() => onMapPing(ping => {
+    if (ping.target.kind !== 'location') return;
+    pingsRef.current = [...pingsRef.current, ping];
+  }), []);
+
+  // Narrow-viewport flag for the phone perf budget (engine trails capped at
+  // 3 concurrent ships on <768px — spec V7). Updated in the canvas-sizing
+  // resize effect below, not window.innerWidth, since that's the actual
+  // rendering surface width.
+  const narrowRef = useRef(false);
 
   // Preload every planet sprite + every ship role sprite + nebula bg. Safe to
   // render before these resolve — we fall back to procedural circles/chevrons.
@@ -597,6 +625,12 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     if (showShips) {
       const ships = state.ships || [];
       const nowMs = Date.now();
+      // Wave V7 — engine trails (EFFECT_ASSETS.engineTrail concept, rendered
+      // here as a fading polyline per the spec's 2D treatment). Capped at 3
+      // concurrent ships on narrow viewports (phone perf budget); off under
+      // reduced motion (functional route-line trail above stays — this is
+      // the purely decorative "exhaust" layer).
+      let enginetrailsDrawn = 0;
       for (const ship of ships) {
         if (!ship.isBuilt) continue;
         if (!ship.route || ship.status !== 'in_transit') {
@@ -659,6 +693,32 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         ctx.quadraticCurveTo(ctrlX, ctrlY, bx, by);
         ctx.stroke();
 
+        // Wave V7 — engine trail: a short fading polyline immediately behind
+        // the ship (distinct from the full-route trail above), sampled
+        // directly from the same bezier — no per-frame history buffer, so
+        // no accumulation risk.
+        if (!reducedMotion && (!narrowRef.current || enginetrailsDrawn < 3)) {
+          enginetrailsDrawn++;
+          const TRAIL_SEGMENTS = 6;
+          const SPACING = 0.018;
+          ctx.lineCap = 'round';
+          for (let k = 1; k <= TRAIL_SEGMENTS; k++) {
+            const u1 = t - (k - 1) * SPACING;
+            const u2 = t - k * SPACING;
+            if (u2 <= 0) break;
+            const p1 = quadPoint(fx, fy, ctrlX, ctrlY, tx, ty, u1);
+            const p2 = quadPoint(fx, fy, ctrlX, ctrlY, tx, ty, u2);
+            const fade = 1 - k / (TRAIL_SEGMENTS + 1);
+            ctx.strokeStyle = `rgba(103,232,249,${0.4 * fade})`;
+            ctx.lineWidth = (2 * fade + 0.4) * zoom;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+          ctx.lineCap = 'butt';
+        }
+
         // Ship marker
         const def = SHIP_MAP.get(ship.definitionId);
         const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
@@ -678,6 +738,31 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         ctx.fillText(`ETA ${formatCountdown(etaSec)}`, bx, by - 12 * zoom);
         ctx.restore();
       }
+    }
+
+    // ─── Wave V7: order-ack / completion pings ─────────────────────
+    // Expanding ring at the target location — cyan for a just-issued order,
+    // green for a just-finished one. Reduced motion collapses to a single
+    // static-radius opacity blink (getPingVisual handles both cases).
+    {
+      const nowPing = Date.now();
+      const stillAlive: MapPingEvent[] = [];
+      for (const ping of pingsRef.current) {
+        const visual = getPingVisual(ping, nowPing, reducedMotion);
+        if (!visual) continue;
+        stillAlive.push(ping);
+        const px = locationPx[ping.target.id];
+        const layout = layoutOf(ping.target.id);
+        if (!px || !layout) continue;
+        const baseR = layout.radius * zoom;
+        const radius = baseR + 6 + visual.radiusProgress * 34;
+        ctx.strokeStyle = hexToRgba(PING_COLOR[ping.kind], visual.alpha);
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.arc(px.x, px.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      pingsRef.current = stillAlive;
     }
 
     // ─── Recent hazard indicators ────────────────────────────────
@@ -742,6 +827,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       canvas.style.height = `${rect.height}px`;
       const ctx = canvas.getContext('2d');
       if (ctx) ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      narrowRef.current = rect.width < 768;
     };
 
     resize();

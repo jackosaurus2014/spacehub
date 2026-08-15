@@ -64,7 +64,7 @@ export type IconName =
   // ── Program tracks (programs.ts ProgramTrack) ───────────────────────────
   | 'track-crew-cohort' | 'track-leader-development' | 'track-rd-residency'
   // ── Misc HUD ─────────────────────────────────────────────────────────────
-  | 'save' | 'mute' | 'unmute' | 'music' | 'ambient' | 'restart' | 'quit'
+  | 'save' | 'mute' | 'unmute' | 'music' | 'ambient' | 'haptics' | 'haptics-off' | 'restart' | 'quit'
   | 'help' | 'more' | 'close' | 'chevron-up' | 'chevron-down' | 'check'
   | 'warning' | 'info' | 'activity' | 'money' | 'trending-up'
   | 'trending-down' | 'handshake' | 'package' | 'target' | 'swords'
@@ -202,6 +202,11 @@ export const ICONS: Record<IconName, IconDef> = {
   unmute: { meaning: 'Sound on', els: [pg('3,9 7,9 12,5 12,19 7,15 3,15'), p('M16 8a5 5 0 0 1 0 8'), p('M18.5 5.5a9 9 0 0 1 0 13')] },
   music: { meaning: 'Music toggle', els: [c(6, 18, 2.2, 'none'), c(16, 16, 2.2, 'none'), l(8, 18, 8, 5), l(18, 16, 18, 3), l(8, 5, 18, 3)] },
   ambient: { meaning: 'Ambient audio toggle', els: [p('M4 14a8 8 0 0 1 16 0'), l(4, 14, 4, 18), l(20, 14, 20, 18), r(2, 14, 4, 6, 1), r(18, 14, 4, 6, 1)] },
+  // Wave V7 (docs/VISUAL_DEPTH_2026-08.md §V7): haptics toggle in ResourceBar —
+  // a phone body with a pulse/motion mark; 'haptics-off' adds a strike-through
+  // so the on/off state is never conveyed by color alone (mirrors mute/unmute).
+  haptics: { meaning: 'Haptic feedback toggle — on', els: [r(8, 2, 8, 20, 2), l(11, 19, 13, 19), p('M4 9l1.5 1.5L4 12l1.5 1.5L4 15', 'none'), p('M20 9l-1.5 1.5L20 12l-1.5 1.5L20 15', 'none')] },
+  'haptics-off': { meaning: 'Haptic feedback toggle — off', els: [r(8, 2, 8, 20, 2), l(11, 19, 13, 19), l(4, 4, 20, 20)] },
   restart: { meaning: 'Restart game', els: [p('M4 12a8 8 0 1 1 2.3 5.6'), pl('4,17 4,12 9,12')] },
   quit: { meaning: 'Quit to menu', els: [p('M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5'), l(9, 12, 21, 12), pl('17,8 21,12 17,16')] },
   help: { meaning: 'Help / how to play', els: [c(12, 12, 9, 'none'), p('M9 9a3 3 0 1 1 4 2.8c-.8.5-1 1-1 2.2'), c(12, 17, 0.6, 'currentColor')] },

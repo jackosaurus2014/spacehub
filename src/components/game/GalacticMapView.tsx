@@ -25,13 +25,50 @@
 // All positions derive from existing engine state — no new mechanics; every
 // interactive element remains a real <button> (a11y by construction).
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import type { GameState, ExpeditionState } from '@/lib/game/types';
 import { INTERSTELLAR_SYSTEMS, getJumpPrerequisites } from '@/lib/game/interstellar';
 import { getExpeditionProgress, getTotalGameMonths } from '@/lib/game/expeditions';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
-import { BG_ASSETS } from '@/lib/game/assets';
+import { BG_ASSETS, EFFECT_ASSETS } from '@/lib/game/assets';
+import { onMapPing, getPingVisual, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
+
+/** Self-contained reduced-motion flag — this view has no parent-supplied one
+ *  (unlike SolarMap3D/SolarSystemCanvas, which track it for orbit/pulse
+ *  animation). Only Wave V7's warp-flash/arrival-ping effects consume it. */
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReduced(mq.matches);
+    const onChange = () => setReduced(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return reduced;
+}
+
+/** Wave V7 — system-targeted map pings (expedition launch warp-flash at Sol,
+ *  arrival/return pings at the destination node). Location-targeted pings
+ *  from the same bus belong to the solar renderers, not here. */
+function useSystemPings(reduced: boolean): MapPingEvent[] {
+  const [pings, setPings] = useState<MapPingEvent[]>([]);
+  useEffect(() => onMapPing(ping => {
+    if (ping.target.kind !== 'system') return;
+    setPings(prev => [...prev, ping]);
+  }), []);
+  useEffect(() => {
+    if (pings.length === 0) return;
+    const iv = setInterval(() => {
+      const now = Date.now();
+      setPings(prev => prev.filter(p => getPingVisual(p, now, reduced) !== null));
+    }, 80);
+    return () => clearInterval(iv);
+  }, [pings.length, reduced]);
+  return pings;
+}
 
 // Fixed layout (percent of container), hand-placed for readable spacing —
 // same pattern as SolarSystemCanvas's LOCATION_LAYOUT table.
@@ -101,6 +138,21 @@ interface GalacticMapViewProps {
 }
 
 export default function GalacticMapView({ state, selectedSystemId, onSelectSystem }: GalacticMapViewProps) {
+  // Wave V7 — warp-jump flash at Sol on expedition launch + arrival/return
+  // ping at the destination node. See map-ping.ts; page.tsx's
+  // handleLaunchExpedition/GlobalEffectsLayer are the emitters.
+  const reducedMotion = usePrefersReducedMotion();
+  const systemPings = useSystemPings(reducedMotion);
+  const nowPing = Date.now();
+  type VisualPing = { ping: MapPingEvent; visual: NonNullable<ReturnType<typeof getPingVisual>> };
+  const withVisual = (kind: MapPingEvent['kind']): VisualPing[] =>
+    systemPings
+      .filter(p => p.kind === kind)
+      .map(p => ({ ping: p, visual: getPingVisual(p, nowPing, reducedMotion) }))
+      .filter((x): x is VisualPing => x.visual !== null);
+  const warpPings = withVisual('warp');
+  const completePings = withVisual('complete');
+
   const exoticFuel = state.resources?.exotic_fuel || 0;
   const expeditions = (state.expeditions || []).filter(e => ACTIVE_PHASES.includes(e.phase));
   const exploringSystemIds = new Set(expeditions.filter(e => e.phase === 'exploring').map(e => e.targetSystemId));
@@ -218,6 +270,24 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
       >
         <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-200 to-amber-500" style={{ boxShadow: '0 0 24px 8px rgba(251,191,36,0.5)' }} aria-hidden="true" />
         <span className="text-[10px] text-amber-200 font-medium bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">Sol (home)</span>
+        {/* Wave V7 — warp-jump flash on expedition launch (EFFECT_ASSETS.warpJump,
+            previously unused on the map). Non-visual twin: the launch already
+            plays 'milestone' + appends an eventLog entry (handleLaunchExpedition,
+            page.tsx), so this is reinforcement, not the only signal. */}
+        {warpPings.map(({ ping, visual }) => (
+          <div
+            key={ping.id}
+            className="absolute pointer-events-none"
+            style={{
+              width: 64, height: 64, left: '50%', top: '50%',
+              transform: `translate(-50%, -50%) scale(${0.7 + visual.radiusProgress * 0.9})`,
+              opacity: visual.alpha,
+            }}
+            aria-hidden="true"
+          >
+            <Image src={EFFECT_ASSETS.warpJump} alt="" fill className="object-contain" />
+          </div>
+        ))}
       </div>
 
       {INTERSTELLAR_SYSTEMS.map(sys => {
@@ -251,6 +321,21 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
                 aria-hidden="true"
               />
             )}
+            {/* Wave V7 — expedition arrival/return completion ping (green,
+                distinct from the persistent cyan "on site" ring above). */}
+            {completePings.filter(cp => cp.ping.target.id === sys.id).map(({ ping, visual }) => (
+              <span
+                key={ping.id}
+                className="absolute rounded-full"
+                style={{
+                  width: `${28 + visual.radiusProgress * 40}px`,
+                  height: `${28 + visual.radiusProgress * 40}px`,
+                  border: `2px solid ${PING_COLOR.complete}`,
+                  opacity: visual.alpha,
+                }}
+                aria-hidden="true"
+              />
+            ))}
             <span
               className={`w-4 h-4 rounded-full transition-transform group-hover:scale-125 ${isSelected ? 'scale-125' : ''}`}
               style={{

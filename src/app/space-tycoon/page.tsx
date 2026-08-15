@@ -19,6 +19,9 @@ import { getBuildingAsset } from '@/lib/game/assets';
 import Link from 'next/link';
 import Image from 'next/image';
 import ResourceBar from '@/components/game/ResourceBar';
+import GlobalEffectsLayer from '@/components/game/GlobalEffectsLayer'; // Wave V7 — map pings/sound/haptics on order completion, mounted tab-independent
+import { mapPing } from '@/lib/game/map-ping'; // Wave V7 — order-ack beacon event bus
+import { hapticAck } from '@/lib/game/haptics'; // Wave V7 — order-ack haptic tap
 import GameIcon from '@/components/game/GameIcon';
 import HoloTip, { Concept } from '@/components/game/HoloTip';
 import type { IconName } from '@/lib/game/icons';
@@ -126,6 +129,12 @@ import { checkVictories } from '@/lib/game/victory-conditions';
 import { shouldGenerateQuarterlyReport, recordQuarterlyReport, getTotalGameMonthsElapsed } from '@/lib/game/quarterly-reports';
 import BuildPanel from '@/components/game/BuildPanel';
 import MapCommandCenter from '@/components/game/MapCommandCenter';
+// Wave V3 (docs/VISUAL_DEPTH_2026-08.md §V3) — persistent right-rail
+// Outliner + the Situation Log it deep-links into (absorbed by
+// ReportsPanel below). Pure lenses over GameState — see
+// src/lib/game/{outliner,situation-log,order-queue}.ts.
+import Outliner from '@/components/game/Outliner';
+import type { OrderQueueTarget } from '@/lib/game/order-queue';
 import ContractsHubPanel from '@/components/game/ContractsHubPanel';
 import StandingsHubPanel from '@/components/game/StandingsHubPanel';
 import MarketHubPanel from '@/components/game/MarketHubPanel';
@@ -800,6 +809,13 @@ export default function SpaceTycoonPage() {
   // Region focus drives the shell's background tint + planet texture overlay.
   // Set when the user clicks a location on the map, null = neutral palette.
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  // Wave V3 (docs/VISUAL_DEPTH_2026-08.md §V3): the Outliner's deep-link
+  // target for the map — "a `focusTarget` piece of UI state threaded to
+  // MapCommandCenter (extends the existing onNavigateTab pattern)". A
+  // monotonic `token` (not just the target) so re-requesting the SAME
+  // location twice in a row (already on the map tab) still re-triggers
+  // MapCommandCenter's selection effect.
+  const [mapFocusRequest, setMapFocusRequest] = useState<{ target: OrderQueueTarget; token: number } | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
@@ -951,6 +967,8 @@ export default function SpaceTycoonPage() {
 
       const completionDate = advanceDate(prev.gameDate, def.buildTimeMonths);
       const realDuration = scaledBuildTime(def.realBuildSeconds, count);
+      mapPing({ kind: 'location', id: locationId }, 'ack'); // Wave V7 — order-ack beacon at the build site
+      hapticAck();
       return {
         ...prev,
         money: prev.money - cost,
@@ -1594,9 +1612,12 @@ export default function SpaceTycoonPage() {
   const handleDispatchShip = useCallback((shipInstanceId: string, toLocation: string, cargo?: Record<string, number>) => {
     setState(prev => {
       if (!prev) return prev;
+      const origin = prev.ships?.find(s => s.instanceId === shipInstanceId)?.currentLocation;
       const result = dispatchShipWithCargo(prev, shipInstanceId, toLocation, cargo || {}, Date.now());
       if (!result.ok) { playSound('error'); return prev; }
       playSound('click');
+      if (origin) mapPing({ kind: 'location', id: origin }, 'ack'); // Wave V7 — ack ring at the departure point
+      hapticAck();
       return result.state;
     });
   }, []);
@@ -1613,6 +1634,8 @@ export default function SpaceTycoonPage() {
       const result = launchExpedition(prev, req);
       if (!result.ok) { playSound('error'); return prev; }
       playSound('milestone');
+      mapPing({ kind: 'system', id: req.targetSystemId }, 'warp'); // Wave V7 — warp-jump flash in GalacticMapView
+      hapticAck();
       return result.state;
     });
   }, []);
@@ -1811,6 +1834,8 @@ export default function SpaceTycoonPage() {
       </div>
       {/* Animated nebula background — subtle color drift behind game content */}
       <div className="game-nebula-bg" />
+      {/* Wave V7 — tab-independent order-completion feedback (map pings, sound, haptics) */}
+      <GlobalEffectsLayer state={state} />
       {/* Resource Bar */}
       <ResourceBar state={state} />
 
@@ -1939,6 +1964,14 @@ export default function SpaceTycoonPage() {
         </button>
       </div>
 
+      {/* Wave V3 — the map-or-tabs column and the persistent Outliner rail
+          are now siblings in a row, so the rail can dock real layout width
+          on desktop (>=1280px) instead of overlaying content. min-h-0 is
+          required here (flexbox gotcha) so the map-height measurement and
+          the tab-content column's own overflow-y-auto still work exactly
+          as before — this wrapper adds no sizing behavior of its own. */}
+      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 min-w-0 flex flex-col">
       {/* Panel Content — the map tab gets the full-viewport command center
           (Wave 9); every other tab keeps the scrollable card layout.
           key={tab} on the scrollable branch triggers the reveal animation
@@ -1953,9 +1986,12 @@ export default function SpaceTycoonPage() {
           onLaunchExpedition={handleLaunchExpedition}
           onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
           onRegionFocus={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }}
+          focusRequest={mapFocusRequest}
         />
       ) : (
-      <div key={tab} className="flex-1 overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full animate-reveal-up game-scroll">
+      // Wave V7 — tab-crossfade replaces the blanket animate-reveal-up "pop"
+      // remount with a shorter cross-fade + slide (GameStyles.tsx).
+      <div key={tab} className="flex-1 overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full tab-crossfade game-scroll">
         {tab === 'dashboard' && <DashboardPanel
           state={state}
           onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)}
@@ -2351,10 +2387,30 @@ export default function SpaceTycoonPage() {
                 return { ...prev, reports };
               });
             }}
+            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onFocusMap={(target) => {
+              playSound('click');
+              setTab('map');
+              setMapFocusRequest({ target, token: Date.now() });
+            }}
           />
         )}
       </div>
       )}
+      </div>
+      {/* Wave V3 — persistent Corporate Outliner, mounted OUTSIDE the
+          tab/map branch above so it survives every tab switch. */}
+      <Outliner
+        state={state}
+        activeTab={tab}
+        onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+        onFocusMap={(target) => {
+          playSound('click');
+          setTab('map');
+          setMapFocusRequest({ target, token: Date.now() });
+        }}
+      />
+      </div>
 
       {/* Daily Login Bonus */}
       <DailyBonusModal

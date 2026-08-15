@@ -43,6 +43,8 @@ import { ZONE_MAP } from '@/lib/game/zone-influence';
 import { getActiveScienceMissions, SCIENCE_PROGRAM_MAP } from '@/lib/game/science-missions';
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
+import { onMapPing, getPingVisual, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
+import { EFFECT_ASSETS } from '@/lib/game/assets';
 import { REGION_LABELS, LOCATIONS_BY_REGION } from './SolarSystemCanvas';
 import {
   ORBITAL_BODIES,
@@ -550,13 +552,24 @@ type ShipInstanceLike = NonNullable<GameState['ships']>[number];
 const ETA_CANVAS_W = 200;
 const ETA_CANVAS_H = 44;
 
+// Wave V7 — engine trail: fixed-count sprite ribbon trailing every in-transit
+// ship (EFFECT_ASSETS.engineTrail, previously unused in the scene — the
+// audit's headline orphaned-asset finding). Sampled directly from the same
+// bezier the marker uses (no per-frame history buffer — bounded allocation,
+// fixed lifetime by construction).
+const ENGINE_TRAIL_COUNT = 6;
+const ENGINE_TRAIL_SPACING = 0.014;
+
 /** In-transit ship: curved arc + oriented marker, interpolated from the REAL
  *  departure/arrival timestamps — functional motion, identical to the 2D map.
  *  W9: an arrival-countdown sprite follows the marker (screen-constant size,
- *  repainted once per second outside the frame loop). */
-function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: PositionsRef }) {
+ *  repainted once per second outside the frame loop). V7: an engine-trail
+ *  sprite ribbon (off under reduced motion — purely decorative). */
+function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef: PositionsRef; reduced: boolean }) {
   const markerRef = useRef<THREE.Mesh>(null);
   const etaSpriteRef = useRef<THREE.Sprite>(null);
+  const trailRefs = useRef<(THREE.Sprite | null)[]>(Array(ENGINE_TRAIL_COUNT).fill(null));
+  const engineTrailTex = useSafeTexture(EFFECT_ASSETS.engineTrail);
   const lineObj = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(33 * 3), 3));
@@ -660,6 +673,25 @@ function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: Positio
       etaLabel.visible = true;
       etaLabel.position.set(pos.x, pos.y + 0.55, pos.z);
     }
+    // V7: engine trail — 6 sprites sampled behind the marker along the same
+    // bezier, fading in opacity/scale. Off under reduced motion.
+    for (let k = 0; k < ENGINE_TRAIL_COUNT; k++) {
+      const spr = trailRefs.current[k];
+      if (!spr) continue;
+      if (reduced) { spr.visible = false; continue; }
+      const u = prog - (k + 1) * ENGINE_TRAIL_SPACING;
+      if (u <= 0) { spr.visible = false; continue; }
+      spr.visible = true;
+      const tp = new THREE.Vector3()
+        .addScaledVector(f, (1 - u) * (1 - u))
+        .addScaledVector(ctrl, 2 * (1 - u) * u)
+        .addScaledVector(t3, u * u);
+      spr.position.copy(tp);
+      const fade = 1 - (k + 1) / (ENGINE_TRAIL_COUNT + 1);
+      (spr.material as THREE.SpriteMaterial).opacity = fade * 0.55;
+      const s = 0.16 * fade + 0.05;
+      spr.scale.set(s, s, 1);
+    }
   });
 
   return (
@@ -672,6 +704,16 @@ function TransitShip({ ship, posRef }: { ship: ShipInstanceLike; posRef: Positio
       <sprite ref={etaSpriteRef} visible={false} scale={[0.05 * (ETA_CANVAS_W / ETA_CANVAS_H), 0.05, 1]} renderOrder={11}>
         <spriteMaterial map={etaTex} sizeAttenuation={false} transparent depthTest={false} />
       </sprite>
+      {Array.from({ length: ENGINE_TRAIL_COUNT }).map((_, k) => (
+        <sprite
+          key={k}
+          ref={el => { trailRefs.current[k] = el; }}
+          visible={false}
+          renderOrder={9}
+        >
+          <spriteMaterial map={engineTrailTex ?? undefined} color={color} transparent depthTest={false} opacity={0} />
+        </sprite>
+      ))}
     </group>
   );
 }
@@ -738,6 +780,61 @@ function HazardRing({ hazard, posRef }: { hazard: NonNullable<GameState['recentH
         <mesh>
           <ringGeometry args={[0.92, 1, 48]} />
           <meshBasicMaterial ref={matRef} color={hazard.destroyed ? '#ef4444' : '#fbbf24'} transparent side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+      </Billboard>
+    </group>
+  );
+}
+
+// ── Wave V7: order-ack / completion map pings ────────────────────────────────
+// Same event bus as the 2D canvas (lib/game/map-ping.ts) — only location-
+// targeted pings render here (system-targeted pings belong to
+// GalacticMapView). Managed as React state (not a ref-only loop like the
+// ships above) because pings are rare, bursty events, not per-frame data;
+// pruning runs on a slow interval, same precedent as HazardRings above.
+
+function MapPings3D({ posRef, reduced }: { posRef: PositionsRef; reduced: boolean }) {
+  const [pings, setPings] = useState<MapPingEvent[]>([]);
+  useEffect(() => onMapPing(ping => {
+    if (ping.target.kind !== 'location') return;
+    setPings(prev => [...prev, ping]);
+  }), []);
+  useEffect(() => {
+    if (pings.length === 0) return;
+    const iv = setInterval(() => {
+      const now = Date.now();
+      setPings(prev => prev.filter(p => getPingVisual(p, now, reduced) !== null));
+    }, 250);
+    return () => clearInterval(iv);
+  }, [pings.length, reduced]);
+  return (
+    <group>
+      {pings.map(p => <MapPingRing key={p.id} ping={p} posRef={posRef} reduced={reduced} />)}
+    </group>
+  );
+}
+
+function MapPingRing({ ping, posRef, reduced }: { ping: MapPingEvent; posRef: PositionsRef; reduced: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+  useFrame(() => {
+    const a = posRef.current.anchors[ping.target.id];
+    const g = groupRef.current;
+    if (!a || !g) { if (g) g.visible = false; return; }
+    const visual = getPingVisual(ping, Date.now(), reduced);
+    if (!visual) { g.visible = false; return; }
+    g.visible = true;
+    g.position.set(a.pos[0], a.pos[1], a.pos[2]);
+    const s = a.r + 0.35 + visual.radiusProgress * 1.6;
+    g.scale.set(s, s, s);
+    if (matRef.current) matRef.current.opacity = visual.alpha;
+  });
+  return (
+    <group ref={groupRef}>
+      <Billboard>
+        <mesh>
+          <ringGeometry args={[0.9, 1, 40]} />
+          <meshBasicMaterial ref={matRef} color={PING_COLOR[ping.kind]} transparent side={THREE.DoubleSide} depthWrite={false} />
         </mesh>
       </Billboard>
     </group>
@@ -1126,8 +1223,9 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           />
         ))}
         {showLanes && <LaneLines posRef={posRef} state={state} reduced={reduced} />}
-        {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} />)}
+        {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
         {showShips && stationShips.map(s => <StationShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
+        <MapPings3D posRef={posRef} reduced={reduced} />
         <HazardRings posRef={posRef} state={state} />
         <ForecastMarkers posRef={posRef} state={state} reduced={reduced} />
         <ScienceMarkers posRef={posRef} state={state} />
