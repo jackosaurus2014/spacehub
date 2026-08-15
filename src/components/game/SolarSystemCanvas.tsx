@@ -10,6 +10,7 @@ import { ZONE_MAP } from '@/lib/game/zone-influence';
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
 import { onMapPing, getPingVisual, hexToRgba, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
+import { computeModeVisuals, type MapMode } from '@/lib/game/map-modes';
 import GameIcon from './GameIcon';
 import { ConsolePanel, DataChip } from './chrome';
 
@@ -74,6 +75,15 @@ interface SolarSystemCanvasProps {
    *  highlighted location from the Order Queue HUD or the context panel's
    *  close button, staying in sync with clicks/keyboard selection made here. */
   selectedLocationId?: string | null;
+  /** Wave V4 — active map lens (Standard / Economy / Hazard / Territory /
+   *  Logistics). Pure recolor + re-badge of existing data, derived by the
+   *  SAME map-modes.ts functions the 3D renderer uses (parity requirement —
+   *  this canvas is the a11y renderer). */
+  mapMode?: MapMode;
+  /** Wave V4 — freeze rendering entirely (desktop map-as-stage: the map is
+   *  fully covered by a panel overlay; parity with SolarMap3D's `active`).
+   *  The last painted frame is retained — no per-frame work while covered. */
+  active?: boolean;
 }
 
 // Visual layout: positions, radius, color, emoji per location.
@@ -194,7 +204,7 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
   return { cache: cacheRef.current, loaded };
 }
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
@@ -310,6 +320,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   const warningLocs = useMemo(
     () => new Set((state.hazardWarnings || []).map(w => w.locationId)),
     [state.hazardWarnings],
+  );
+
+  // Wave V4 — mode lens derivation (pure, shared with SolarMap3D). Recomputed
+  // only on state/mode change; the draw loop does per-draw color lookups
+  // against this record — no extra passes (60Hz phone budget).
+  const modeVisuals = useMemo(
+    () => computeModeVisuals(state, mapMode, Date.now()),
+    [state, mapMode],
   );
 
   const draw = useCallback((timestampMs: number) => {
@@ -468,14 +486,46 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         ctx.fill();
       }
 
-      // Selection ring — animated pulse
+      // Selection reticle (Wave V4) — rotating dashed ring + steady outer
+      // ring, replacing the color-only pulse. Static under reduced motion.
       if (isSelected) {
-        const pulse = reducedMotion ? 1 : 1 + Math.sin(tSec * 3) * 0.12;
+        const pulse = reducedMotion ? 1 : 1 + Math.sin(tSec * 3) * 0.08;
+        ctx.save();
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 2;
+        ctx.setLineDash([7, 5]);
+        ctx.lineDashOffset = reducedMotion ? 0 : -tSec * 14;
         ctx.beginPath();
         ctx.arc(lx, ly, (r + 6) * pulse, 0, Math.PI * 2);
         ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.strokeStyle = 'rgba(34,211,238,0.35)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(lx, ly, r + 11, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Wave V4 — mode-lens ring (Economy / Hazard / Territory / Logistics).
+      // Color is reinforcement only: the glyph/badge text rows below carry
+      // the information (colorblind-safe, per-draw lookup — no extra pass).
+      const modeVis = modeVisuals[loc.id];
+      if (modeVis) {
+        ctx.save();
+        ctx.strokeStyle = hexToRgba(modeVis.tint, 0.35 + modeVis.intensity * 0.6);
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(lx, ly, r + 4, 0, Math.PI * 2);
+        ctx.stroke();
+        const modeGlow = ctx.createRadialGradient(lx, ly, r, lx, ly, r * 2.4 + 8);
+        modeGlow.addColorStop(0, hexToRgba(modeVis.tint, 0.18 * modeVis.intensity + 0.06));
+        modeGlow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = modeGlow;
+        ctx.beginPath();
+        ctx.arc(lx, ly, r * 2.4 + 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
 
       // Body — prefer sprite (circular-clipped) when loaded, else gradient sphere.
@@ -542,11 +592,23 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       // Label — bigger and bolder. W9: zone-standing text glyph prefix
       // (♛ governor / ◆ stakeholder) so standing is never color-only.
       const standing = standingByLoc[loc.id];
-      const labelText = standing === 'governor' ? `♛ ${loc.name}` : standing === 'stakeholder' ? `◆ ${loc.name}` : loc.name;
+      // Wave V4 — mode glyph rides IN the label text (shape + text, never
+      // color alone), and the mode badge draws as a second text row.
+      const modeGlyphSuffix = modeVis?.glyph ? ` ${modeVis.glyph}` : '';
+      const labelText = (standing === 'governor' ? `♛ ${loc.name}` : standing === 'stakeholder' ? `◆ ${loc.name}` : loc.name) + modeGlyphSuffix;
       ctx.fillStyle = unlocked ? '#e2e8f0' : '#64748b';
       ctx.font = `${10 * zoom}px Inter, sans-serif`;
       ctx.textAlign = 'center';
       ctx.fillText(labelText, lx, ly + r + 14 * zoom);
+      if (modeVis?.badge) {
+        ctx.save();
+        ctx.font = `600 ${9 * zoom}px Inter, sans-serif`;
+        ctx.shadowColor = 'rgba(0,0,0,0.85)';
+        ctx.shadowBlur = 3;
+        ctx.fillStyle = hexToRgba(modeVis.tint, 0.95);
+        ctx.fillText(modeVis.badge, lx, ly + r + 25 * zoom);
+        ctx.restore();
+      }
 
       // Building count badge
       if (completedHere > 0) {
@@ -811,7 +873,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -844,11 +906,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     };
   }, []);
 
-  // Animation loop
+  // Animation loop. Wave V4: fully paused while `active` is false (desktop
+  // map-as-stage — the map is covered by a panel overlay; the last frame is
+  // retained by the canvas, no per-frame work). Draws once on reactivation.
   useEffect(() => {
+    if (!active) return;
     animRef.current = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(animRef.current);
-  }, [draw]);
+  }, [draw, active]);
 
   // Shared selection logic — used by both the canvas click handler and the
   // keyboard-focusable Location List buttons below, so the two entry points
@@ -944,6 +1009,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                   const isSelected = selectedLoc === loc.id;
                   const standing = standingByLoc[loc.id];
                   const hasWarning = warningLocs.has(loc.id);
+                  const modeVis = modeVisuals[loc.id];
                   return (
                     <button
                       key={loc.id}
@@ -964,11 +1030,13 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                         {standing === 'governor' && <span aria-hidden="true" className="text-amber-300 shrink-0">♛</span>}
                         {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
                         {hasWarning && <span aria-hidden="true" className="text-amber-300 shrink-0">⚠</span>}
+                        {modeVis?.glyph && <span aria-hidden="true" className="text-slate-300 shrink-0">{modeVis.glyph}</span>}
                       </span>
                       <span className="sr-only">
                         {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
                         {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
                         {hasWarning ? ', severe hazard forecast next month' : ''}
+                        {modeVis ? `, ${modeVis.srText}` : ''}
                       </span>
                     </button>
                   );

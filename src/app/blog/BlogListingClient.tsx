@@ -149,7 +149,7 @@ function BlogListingContent({ posts }: BlogListingClientProps) {
               <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
                 <ol className="space-y-3">
                   {[
-                    { num: 1, title: 'The Top 50 Space Companies to Watch in 2026', slug: 'top-50-space-companies-to-watch-2026' },
+                    { num: 1, title: 'The Top 50 Space Companies to Watch in the 2nd Half of 2026', slug: 'top-50-space-companies-second-half-2026' },
                     { num: 2, title: 'SpaceX IPO: What a $1.75T Valuation Means', slug: 'spacex-ipo-what-it-means-for-space-investors' },
                     { num: 3, title: 'How to Track Satellites in Real-Time', slug: 'how-to-track-satellites-real-time-2026-guide' },
                     { num: 4, title: 'Space Stocks to Watch in 2026', slug: 'space-stocks-to-watch-2026-investors-guide' },
@@ -200,8 +200,8 @@ function BlogListingContent({ posts }: BlogListingClientProps) {
                     {[
                       { title: 'Space Stocks to Watch', slug: 'space-stocks-to-watch-2026-investors-guide' },
                       { title: 'Complete Guide to Space ETFs', slug: 'complete-guide-space-etfs-arkx-ufo-ita-2026' },
-                      { title: 'SpaceX IPO Analysis', slug: 'spacex-ipo-what-it-means-for-space-investors' },
                       { title: 'Space Investment Guide 2026', slug: 'space-industry-investment-guide-2026' },
+                      { title: 'SPCX Since the IPO', slug: 'spcx-stock-since-ipo-h2-2026-outlook' },
                     ].map((item) => (
                       <Link
                         key={item.slug}
@@ -330,12 +330,12 @@ function BlogListingContent({ posts }: BlogListingClientProps) {
         {/* Trending Topics */}
         <div className="flex flex-wrap gap-2 mb-6">
           {[
-            { label: 'Artemis II Launch Guide', href: '/blog/how-to-watch-artemis-ii-launch-complete-guide' },
+            { label: 'Artemis II: Everything to Know', href: '/blog/artemis-ii-moon-mission-everything-you-need-to-know' },
             { label: 'SpaceX Starship Guide', href: '/blog/spacex-starship-complete-guide-2026' },
             { label: 'Falcon 9 Deep Dive', href: '/blog/falcon-9-workhorse-rocket-changed-spaceflight' },
             { label: 'Artemis Program Explained', href: '/blog/artemis-program-explained-return-to-moon' },
             { label: 'Starlink: Everything to Know', href: '/blog/spacex-starlink-everything-you-need-to-know-2026' },
-            { label: 'Top 50 Space Companies', href: '/blog/top-50-space-companies-to-watch-2026' },
+            { label: 'Top 50 Companies for H2 2026', href: '/blog/top-50-space-companies-second-half-2026' },
             { label: 'Ignition Tracker', href: '/ignition' },
           ].map(topic => (
             <Link

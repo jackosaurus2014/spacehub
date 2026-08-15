@@ -30,9 +30,9 @@
 // capped at 2. Text labels are canvas sprites with sizeAttenuation:false so
 // they stay readable at Pluto range without DOM overlays.
 
-import { useRef, useState, useEffect, useMemo, useCallback, useLayoutEffect } from 'react';
+import { useRef, useState, useEffect, useMemo, useCallback, useLayoutEffect, lazy, Suspense } from 'react';
 import * as THREE from 'three';
-import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
+import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Billboard } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import type { GameState } from '@/lib/game/types';
@@ -44,7 +44,8 @@ import { getActiveScienceMissions, SCIENCE_PROGRAM_MAP } from '@/lib/game/scienc
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
 import { onMapPing, getPingVisual, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
-import { EFFECT_ASSETS } from '@/lib/game/assets';
+import { EFFECT_ASSETS, SKYBOX_ASSETS } from '@/lib/game/assets';
+import { computeModeVisuals, type MapMode, type ModeVisual } from '@/lib/game/map-modes';
 import { REGION_LABELS, LOCATIONS_BY_REGION } from './SolarSystemCanvas';
 import {
   ORBITAL_BODIES,
@@ -73,8 +74,45 @@ interface SolarMap3DProps {
   state: GameState;
   onSelectLocation?: (locId: string | null) => void;
   selectedLocationId?: string | null;
-  /** Freeze rendering entirely (page hidden / map scrolled away). */
+  /** Freeze rendering entirely (page hidden / map covered by the desktop
+   *  panels-as-overlays stage — Wave V4). frameloop drops to 'never'; the
+   *  retained framebuffer is the only cost. */
   active?: boolean;
+  /** Wave V4 — active map lens. Derived by the SAME map-modes.ts functions
+   *  the 2D canvas uses (parity requirement). */
+  mapMode?: MapMode;
+}
+
+// Wave V4 feature flag — flip false if the bloom pass ever busts the perf
+// budget on min-spec desktops (spec: "feature-flag/off if perf budget
+// exceeded"). The pass itself is a lazy chunk (SolarMapBloom.tsx) that only
+// downloads when every gate passes, so mobile never fetches it.
+const BLOOM_FEATURE_ENABLED = true;
+const MAP_FX_KEY = 'tycoon-map-fx'; // '1' | '0' — user quality toggle
+
+const SolarMapBloom = lazy(() => import('./SolarMapBloom'));
+
+// ── Wave V4: nebula skybox (V6 asset, previously unused) ────────────────────
+// Equirect background at deliberately low intensity — the NASA body textures
+// stay the visual focus (spec's brightness bound). Loads non-suspending; the
+// existing CSS gradient remains the fallback until (or if never) loaded.
+
+function NebulaSkybox() {
+  const scene = useThree(s => s.scene);
+  const tex = useSafeTexture(SKYBOX_ASSETS.nebulaEquirect);
+  useEffect(() => {
+    if (!tex) return;
+    tex.mapping = THREE.EquirectangularReflectionMapping;
+    const prevBg = scene.background;
+    const prevIntensity = scene.backgroundIntensity;
+    scene.background = tex;
+    scene.backgroundIntensity = 0.18;
+    return () => {
+      scene.background = prevBg;
+      scene.backgroundIntensity = prevIntensity;
+    };
+  }, [tex, scene]);
+  return null;
 }
 
 // ── Texture + label helpers ──────────────────────────────────────────────────
@@ -114,15 +152,21 @@ interface BadgeCounts { buildings: number; npc: number; world: number }
  *  glyph ♛/◆ rides in the label; the tint sprite is reinforcement only). */
 type ZoneStandingKind = 'governor' | 'stakeholder' | null;
 
+/** Wave V4 — mode-lens annotation baked into the label texture: a text glyph
+ *  after the name plus an optional second text row (never color alone). */
+interface ModeLabel { glyph: string; badge: string | null; color: string }
+
 /** Draw a name + badge row into a canvas and return a sprite texture. Labels
  *  are self-contained (no font fetch, no DOM) and match the 2D map's badge
  *  colors: cyan = your buildings, red = NPC presence, purple = other corps.
  *  W9: an optional standing glyph (♛ governor gold / ◆ stakeholder cyan)
- *  prefixes the name. */
-function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, standing: ZoneStandingKind = null): { tex: THREE.CanvasTexture; aspect: number } {
+ *  prefixes the name. V4: an optional mode glyph suffixes it, and a mode
+ *  badge text row renders under the count badges. */
+function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, standing: ZoneStandingKind = null, mode: ModeLabel | null = null): { tex: THREE.CanvasTexture; aspect: number } {
   const scale = 2; // supersample for crispness
   const font = `600 ${13 * scale}px Inter, system-ui, sans-serif`;
   const badgeFont = `700 ${11 * scale}px Inter, system-ui, sans-serif`;
+  const modeFont = `600 ${11 * scale}px Inter, system-ui, sans-serif`;
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
   ctx.font = font;
@@ -130,15 +174,21 @@ function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, 
   const glyphColor = standing === 'governor' ? '#fbbf24' : '#22d3ee';
   const glyphW = glyph ? ctx.measureText(glyph).width : 0;
   const nameW = ctx.measureText(name).width;
-  const textRowW = glyphW + nameW;
+  const modeGlyph = mode?.glyph ? ` ${mode.glyph}` : '';
+  const modeGlyphW = modeGlyph ? ctx.measureText(modeGlyph).width : 0;
+  const textRowW = glyphW + nameW + modeGlyphW;
   const badgeEntries: { n: number; color: string }[] = [];
   if (badges.buildings > 0) badgeEntries.push({ n: badges.buildings, color: '#06b6d4' });
   if (badges.npc > 0) badgeEntries.push({ n: badges.npc, color: '#ef4444' });
   if (badges.world > 0) badgeEntries.push({ n: badges.world, color: '#a855f7' });
   const badgeR = 9 * scale;
   const badgeRowW = badgeEntries.length * (badgeR * 2 + 6 * scale);
-  const w = Math.ceil(Math.max(textRowW, badgeRowW) + 16 * scale);
-  const h = Math.ceil((badgeEntries.length > 0 ? 42 : 22) * scale);
+  ctx.font = modeFont;
+  const modeBadgeW = mode?.badge ? ctx.measureText(mode.badge).width : 0;
+  const baseH = badgeEntries.length > 0 ? 42 : 22;
+  const modeRowH = mode?.badge ? 18 : 0;
+  const w = Math.ceil(Math.max(textRowW, badgeRowW, modeBadgeW) + 16 * scale);
+  const h = Math.ceil((baseH + modeRowH) * scale);
   canvas.width = w;
   canvas.height = h;
   // text — composed left-to-right so the standing glyph keeps its own color
@@ -155,6 +205,11 @@ function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, 
   }
   ctx.fillStyle = unlocked ? '#e2e8f0' : '#64748b';
   ctx.fillText(name, tx, 11 * scale);
+  tx += nameW;
+  if (modeGlyph) {
+    ctx.fillStyle = mode!.color;
+    ctx.fillText(modeGlyph, tx, 11 * scale);
+  }
   ctx.textAlign = 'center';
   // badges
   if (badgeEntries.length > 0) {
@@ -171,24 +226,82 @@ function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, 
       x += badgeR * 2 + 6 * scale;
     }
   }
+  // mode badge text row (V4) — bottom of the canvas
+  if (mode?.badge) {
+    ctx.shadowColor = 'rgba(0,0,0,0.9)';
+    ctx.shadowBlur = 4 * scale;
+    ctx.font = modeFont;
+    ctx.fillStyle = mode.color;
+    ctx.fillText(mode.badge, w / 2, (baseH + 8) * scale);
+  }
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   return { tex, aspect: w / h };
 }
 
-/** Screen-constant label sprite under a body/pip. */
-function LabelSprite({ name, unlocked, badges, yOffset, standing = null }: { name: string; unlocked: boolean; badges: BadgeCounts; yOffset: number; standing?: ZoneStandingKind }) {
-  const { tex, aspect } = useMemo(
-    () => makeLabelTexture(name, unlocked, badges, standing),
-    [name, unlocked, badges.buildings, badges.npc, badges.world, standing], // eslint-disable-line react-hooks/exhaustive-deps
+// ── Wave V4: zoom-level information layering (LOD bands) ────────────────────
+// Camera distance → three bands. far: planet names only (pip labels hidden);
+// mid: names + standing glyphs (badge rows suppressed); near: everything.
+// The band lives in a shared ref written once per frame (LodTracker) and
+// read by each LabelSprite's own useFrame — no React state churn at 60Hz.
+
+type LodBand = 'far' | 'mid' | 'near';
+type LodRef = React.MutableRefObject<LodBand>;
+
+const LOD_FAR_DIST = 95;
+const LOD_NEAR_DIST = 38;
+
+function LodTracker({ lodRef }: { lodRef: LodRef }) {
+  useFrame(({ camera }) => {
+    const d = camera.position.length();
+    lodRef.current = d > LOD_FAR_DIST ? 'far' : d > LOD_NEAR_DIST ? 'mid' : 'near';
+  });
+  return null;
+}
+
+/** Screen-constant label sprite under a body/pip. V4: renders a "full"
+ *  texture (badges + mode rows) and a "name-only" texture, toggling sprite
+ *  visibility per frame from the LOD band ref — textures regenerate only on
+ *  data change, never on camera motion. */
+function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = null, lodRef, kind = 'body' }: {
+  name: string; unlocked: boolean; badges: BadgeCounts; yOffset: number; standing?: ZoneStandingKind;
+  mode?: ModeVisual | null; lodRef?: LodRef; kind?: 'body' | 'pip';
+}) {
+  const modeLabel: ModeLabel | null = mode ? { glyph: mode.glyph, badge: mode.badge, color: mode.tint } : null;
+  const full = useMemo(
+    () => makeLabelTexture(name, unlocked, badges, standing, modeLabel),
+    [name, unlocked, badges.buildings, badges.npc, badges.world, standing, mode?.glyph, mode?.badge, mode?.tint], // eslint-disable-line react-hooks/exhaustive-deps
   );
-  useEffect(() => () => tex.dispose(), [tex]);
   const hasBadges = badges.buildings > 0 || badges.npc > 0 || badges.world > 0;
-  const hScale = hasBadges ? 0.085 : 0.05;
+  const needsNameOnly = hasBadges || !!modeLabel?.badge;
+  const nameOnly = useMemo(
+    () => needsNameOnly ? makeLabelTexture(name, unlocked, { buildings: 0, npc: 0, world: 0 }, standing, modeLabel ? { ...modeLabel, badge: null } : null) : null,
+    [name, unlocked, standing, needsNameOnly, mode?.glyph, mode?.tint], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  useEffect(() => () => full.tex.dispose(), [full]);
+  useEffect(() => () => { nameOnly?.tex.dispose(); }, [nameOnly]);
+  const fullRef = useRef<THREE.Sprite>(null);
+  const nameRef = useRef<THREE.Sprite>(null);
+  useFrame(() => {
+    const band = lodRef?.current ?? 'near';
+    const hidden = band === 'far' && kind === 'pip';
+    const showFull = !hidden && (band === 'near' || !nameOnly);
+    if (fullRef.current) fullRef.current.visible = showFull;
+    if (nameRef.current) nameRef.current.visible = !hidden && !showFull && !!nameOnly;
+  });
+  const hScale = (hasBadges ? 0.085 : 0.05) + (modeLabel?.badge ? 0.028 : 0);
+  const nScale = 0.05;
   return (
-    <sprite position={[0, yOffset, 0]} scale={[hScale * aspect, hScale, 1]} renderOrder={10}>
-      <spriteMaterial map={tex} sizeAttenuation={false} transparent depthTest={false} />
-    </sprite>
+    <group>
+      <sprite ref={fullRef} position={[0, yOffset, 0]} scale={[hScale * full.aspect, hScale, 1]} renderOrder={10}>
+        <spriteMaterial map={full.tex} sizeAttenuation={false} transparent depthTest={false} />
+      </sprite>
+      {nameOnly && (
+        <sprite ref={nameRef} visible={false} position={[0, yOffset, 0]} scale={[nScale * nameOnly.aspect, nScale, 1]} renderOrder={10}>
+          <spriteMaterial map={nameOnly.tex} sizeAttenuation={false} transparent depthTest={false} />
+        </sprite>
+      )}
+    </group>
   );
 }
 
@@ -328,10 +441,12 @@ interface BodyMeshProps {
   unlocked: boolean;
   badges: BadgeCounts;
   standing: ZoneStandingKind;
+  mode: ModeVisual | null;
+  lodRef: LodRef;
   onPick: (locId: string) => void;
 }
 
-function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, onPick }: BodyMeshProps) {
+function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, lodRef, onPick }: BodyMeshProps) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
@@ -389,15 +504,16 @@ function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, onPick }: 
         </mesh>
       )}
       {def.ring && <PlanetRing texUrl={def.ring.texture} innerScale={def.ring.innerScale} outerScale={def.ring.outerScale} bodyR={r} />}
-      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} yOffset={-(r + 0.45)} />}
+      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} mode={mode} lodRef={lodRef} kind="body" yOffset={-(r + 0.45)} />}
     </group>
   );
 }
 
 // ── Orbital pips (LEO / GEO / belt ops / deep-space relay …) ────────────────
 
-function PipMesh({ pip, posRef, unlocked, badges, standing, onPick }: {
-  pip: OrbitalPip; posRef: PositionsRef; unlocked: boolean; badges: BadgeCounts; standing: ZoneStandingKind; onPick: (locId: string) => void;
+function PipMesh({ pip, posRef, unlocked, badges, standing, mode, lodRef, onPick }: {
+  pip: OrbitalPip; posRef: PositionsRef; unlocked: boolean; badges: BadgeCounts; standing: ZoneStandingKind;
+  mode: ModeVisual | null; lodRef: LodRef; onPick: (locId: string) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   useFrame(() => {
@@ -424,7 +540,7 @@ function PipMesh({ pip, posRef, unlocked, badges, standing, onPick }: {
         <sphereGeometry args={[0.5, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} yOffset={-0.5} />
+      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} lodRef={lodRef} kind="pip" yOffset={-0.5} />
     </group>
   );
 }
@@ -960,6 +1076,58 @@ function ZoneTints({ posRef, tinted }: { posRef: PositionsRef; tinted: { locId: 
   );
 }
 
+// ── Wave V4: mode-lens tints — computeModeVisuals output as glow sprites ────
+// Same radial-gradient sprite approach as ZoneTints, generalized to the mode
+// palette. Reinforcement only: the label's mode glyph/badge (LabelSprite)
+// carries the information in text.
+
+function hexToRgbTriplet(hex: string): string {
+  const n = parseInt(hex.replace('#', ''), 16);
+  return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
+}
+
+function ModeTints({ posRef, visuals }: { posRef: PositionsRef; visuals: Record<string, ModeVisual> }) {
+  const entries = useMemo(() => Object.entries(visuals), [visuals]);
+  // One texture per unique tint color (modes use ≤3 colors at once).
+  const texByColor = useMemo(() => {
+    const map = new Map<string, THREE.CanvasTexture>();
+    for (const [, v] of entries) {
+      if (!map.has(v.tint)) map.set(v.tint, makeTintTexture(hexToRgbTriplet(v.tint)));
+    }
+    return map;
+  }, [entries]);
+  useEffect(() => () => { texByColor.forEach(t => t.dispose()); }, [texByColor]);
+  const spritesRef = useRef<(THREE.Sprite | null)[]>([]);
+  useFrame(() => {
+    const anchors = posRef.current.anchors;
+    for (let i = 0; i < entries.length; i++) {
+      const sp = spritesRef.current[i];
+      if (!sp) continue;
+      const a = anchors[entries[i][0]];
+      if (!a) { sp.visible = false; continue; }
+      sp.visible = true;
+      sp.position.set(a.pos[0], a.pos[1], a.pos[2]);
+      const s = a.r * 2 + 2.2 + entries[i][1].intensity * 1.4;
+      sp.scale.set(s, s, 1);
+    }
+  });
+  return (
+    <group>
+      {entries.map(([locId, v], i) => (
+        <sprite key={`${locId}-${v.tint}`} ref={el => { spritesRef.current[i] = el; }} visible={false} renderOrder={-2}>
+          <spriteMaterial
+            map={texByColor.get(v.tint)}
+            transparent
+            opacity={0.2 + v.intensity * 0.35}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+          />
+        </sprite>
+      ))}
+    </group>
+  );
+}
+
 // ── Science-mission presence (W9) — state.scienceMissions ───────────────────
 // Active flagship missions put a 🔬 instrument glyph on their target body.
 // Order Queue HUD rows for the same missions focus the same location, and
@@ -1006,8 +1174,15 @@ function ScienceMarker({ locId, count, posRef }: { locId: string; count: number;
 
 // ── Selection ring ───────────────────────────────────────────────────────────
 
+// Wave V4 — animated selection reticle: rotating dashed ring (8 arc
+// segments) + steady outer ring, replacing the color-only pulse ring.
+// Rotation and pulse are off under reduced motion (static reticle remains).
+const RETICLE_SEGMENTS = 8;
+const RETICLE_ARC = (Math.PI * 2) / RETICLE_SEGMENTS * 0.55; // 55% duty cycle
+
 function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: PositionsRef; selectedLocationId: string | null; reduced: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
+  const dashRef = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
     const g = groupRef.current;
     if (!g) return;
@@ -1016,17 +1191,22 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
     if (!a) { g.visible = false; return; }
     g.visible = true;
     g.position.set(a.pos[0], a.pos[1], a.pos[2]);
-    const pulse = reduced ? 1 : 1 + Math.sin(clock.elapsedTime * 3) * 0.1;
+    const pulse = reduced ? 1 : 1 + Math.sin(clock.elapsedTime * 3) * 0.08;
     const s = (a.r + 0.42) * pulse;
     g.scale.set(s, s, s);
+    if (dashRef.current && !reduced) dashRef.current.rotation.z = clock.elapsedTime * 0.9;
   });
   return (
     <group ref={groupRef} visible={false}>
       <Billboard>
-        <mesh renderOrder={5}>
-          <ringGeometry args={[0.9, 1, 48]} />
-          <meshBasicMaterial color="#22d3ee" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
-        </mesh>
+        <group ref={dashRef}>
+          {Array.from({ length: RETICLE_SEGMENTS }).map((_, i) => (
+            <mesh key={i} renderOrder={5}>
+              <ringGeometry args={[0.9, 1, 12, 1, (i / RETICLE_SEGMENTS) * Math.PI * 2, RETICLE_ARC]} />
+              <meshBasicMaterial color="#22d3ee" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
+            </mesh>
+          ))}
+        </group>
         <mesh renderOrder={5}>
           <ringGeometry args={[1.18, 1.24, 48]} />
           <meshBasicMaterial color="#22d3ee" transparent opacity={0.35} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
@@ -1038,7 +1218,7 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true }: SolarMap3DProps) {
+export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard' }: SolarMap3DProps) {
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
   const [showLanes, setShowLanes] = useState(true);
   const [showShips, setShowShips] = useState(true);
@@ -1048,6 +1228,8 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const cameraRef = useRef<THREE.Camera | null>(null);
   const pointerDownRef = useRef<{ x: number; y: number } | null>(null);
   const posRef = useRef<ScenePositions>(computeScenePositions(0));
+  // Wave V4 — LOD band shared ref (LodTracker writes, LabelSprites read).
+  const lodRef = useRef<LodBand>('mid');
 
   // Defensive: MapCommandCenter already falls back to 2D under
   // prefers-reduced-motion, but honor it here too in case of direct use.
@@ -1068,6 +1250,30 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     return () => document.removeEventListener('visibilitychange', onVis);
   }, []);
   const running = active && pageVisible;
+
+  // Wave V4 — bloom gating (spec: ON only when use3D && dpr>1 && !reduced,
+  // user quality toggle in the renderer button group, lazy chunk). dprHigh
+  // starts false so SSR/first paint never fetches the chunk speculatively.
+  const [dprHigh, setDprHigh] = useState(false);
+  useEffect(() => { setDprHigh(window.devicePixelRatio > 1); }, []);
+  const [fxPref, setFxPref] = useState(true);
+  useEffect(() => {
+    try { setFxPref(localStorage.getItem(MAP_FX_KEY) !== '0'); } catch { /* default on */ }
+  }, []);
+  const toggleFx = useCallback(() => {
+    playSound('click');
+    setFxPref(prev => {
+      const next = !prev;
+      try { localStorage.setItem(MAP_FX_KEY, next ? '1' : '0'); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+
+  // Wave V4 — mode-lens derivation (pure, shared with the 2D canvas).
+  const modeVisuals = useMemo(
+    () => computeModeVisuals(state, mapMode, Date.now()),
+    [state, mapMode],
+  );
 
   // Never leave a pointer cursor behind when the map unmounts mid-hover.
   useEffect(() => () => { document.body.style.cursor = 'auto'; }, []);
@@ -1191,14 +1397,17 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         }}
       >
         <ambientLight intensity={0.38} />
+        <NebulaSkybox />
         <Stars radius={420} depth={80} count={4200} factor={5} saturation={0} fade speed={reduced ? 0 : 0.6} />
         <SceneClock posRef={posRef} reduced={reduced} />
+        <LodTracker lodRef={lodRef} />
         <Sun reduced={reduced} />
         {ORBITAL_BODIES.filter(b => !b.parent).map(b => (
           <OrbitRing key={`orbit-${b.id}`} aAU={b.aAU!} inclinationDeg={b.inclinationDeg || 0} />
         ))}
         <BeltRocks reduced={reduced} />
-        {tintedLocations.length > 0 && <ZoneTints posRef={posRef} tinted={tintedLocations} />}
+        {tintedLocations.length > 0 && mapMode === 'standard' && <ZoneTints posRef={posRef} tinted={tintedLocations} />}
+        {Object.keys(modeVisuals).length > 0 && <ModeTints posRef={posRef} visuals={modeVisuals} />}
         {ORBITAL_BODIES.map(b => (
           <BodyMesh
             key={b.id}
@@ -1208,6 +1417,8 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             unlocked={b.locationId ? unlockedSet.has(b.locationId) : true}
             badges={(b.locationId && badgesByLoc[b.locationId]) || NO_BADGES}
             standing={(b.locationId && standingByLoc[b.locationId]) || null}
+            mode={(b.locationId && modeVisuals[b.locationId]) || null}
+            lodRef={lodRef}
             onPick={selectLocation}
           />
         ))}
@@ -1219,6 +1430,8 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             unlocked={unlockedSet.has(p.locationId)}
             badges={badgesByLoc[p.locationId] || NO_BADGES}
             standing={standingByLoc[p.locationId] || null}
+            mode={modeVisuals[p.locationId] || null}
+            lodRef={lodRef}
             onPick={selectLocation}
           />
         ))}
@@ -1230,6 +1443,15 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <ForecastMarkers posRef={posRef} state={state} reduced={reduced} />
         <ScienceMarkers posRef={posRef} state={state} />
         <SelectionMarker posRef={posRef} selectedLocationId={selectedLoc} reduced={reduced} />
+        {/* Wave V4 — selective bloom, desktop-only lazy chunk. Never fetched
+            unless every gate passes (feature flag × user FX toggle × dpr>1 ×
+            not reduced-motion); mobile uses the 2D renderer and never even
+            loads SolarMap3D, let alone this chunk. */}
+        {BLOOM_FEATURE_ENABLED && fxPref && dprHigh && !reduced && (
+          <Suspense fallback={null}>
+            <SolarMapBloom />
+          </Suspense>
+        )}
         <OrbitControls
           ref={controlsRef}
           enablePan
@@ -1282,6 +1504,18 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         >
           {worldLayerActive ? '● World' : '○ World'}
         </button>
+        {BLOOM_FEATURE_ENABLED && dprHigh && !reduced && (
+          <button
+            onClick={toggleFx}
+            aria-pressed={fxPref}
+            title={fxPref ? 'Disable bloom post-processing (quality toggle)' : 'Enable bloom post-processing'}
+            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+              fxPref ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+            }`}
+          >
+            {fxPref ? '● FX' : '○ FX'}
+          </button>
+        )}
       </div>
 
       {/* Keyboard-accessible Location List — identical grouping + behavior to
@@ -1315,6 +1549,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                     const isSelected = selectedLoc === loc.id;
                     const standing = standingByLoc[loc.id];
                     const hasWarning = warningLocs.has(loc.id);
+                    const modeVis = modeVisuals[loc.id];
                     return (
                       <button
                         key={loc.id}
@@ -1335,11 +1570,13 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                           {standing === 'governor' && <span aria-hidden="true" className="text-amber-300 shrink-0">♛</span>}
                           {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
                           {hasWarning && <span aria-hidden="true" className="text-amber-300 shrink-0">⚠</span>}
+                          {modeVis?.glyph && <span aria-hidden="true" className="text-slate-300 shrink-0">{modeVis.glyph}</span>}
                         </span>
                         <span className="sr-only">
                           {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
                           {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
                           {hasWarning ? ', severe hazard forecast next month' : ''}
+                          {modeVis ? `, ${modeVis.srText}` : ''}
                         </span>
                       </button>
                     );

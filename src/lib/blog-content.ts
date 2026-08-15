@@ -25,6 +25,363 @@ export interface OriginalBlogPost {
 }
 
 export const BLOG_POSTS: OriginalBlogPost[] = [
+  // ── Article: Top 50 Space Companies to Watch in the 2nd Half of 2026 ──
+  {
+    slug: 'top-50-space-companies-second-half-2026',
+    title: 'The Top 50 Space Companies to Watch in the 2nd Half of 2026',
+    excerpt: 'Our most-read article gets its mid-year update. The SpaceX IPO, an unprecedented funding wave, and a brutal small-cap shakeout have redrawn the map — here are the 50 companies that matter for the rest of 2026, with every keep, promotion, and drop justified.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-08-15T12:00:00Z',
+    readingTime: 18,
+    featured: true,
+    keywords: ['top space companies', 'space companies to watch', 'best space companies 2026', 'space companies second half 2026', 'space industry companies', 'space startups', 'commercial space companies', 'spacex ipo', 'space company list'],
+    content: `
+<p>In March we published <a href="/blog/top-50-space-companies-to-watch-2026">The Top 50 Space Companies to Watch in 2026</a>, and it became the most-read article in SpaceNexus history. Five months later, the list needs more than a touch-up. The first half of 2026 was arguably the most consequential six months in the history of commercial space: the <strong>largest IPO ever</strong>, a wave of billion-dollar private rounds, two flagship rocket programs hitting their stride, and a shakeout that quietly ended or absorbed several companies we covered in March.</p>
+
+<p>So here is the full mid-year rebuild: <strong>the 50 space companies to watch in the second half of 2026</strong>, organized by the same sector structure as the original, with every keep, promotion, and drop justified. Market caps and share prices are from SpaceNexus market data synced <strong>August 15, 2026</strong>; private-company figures reflect the most recent rounds in our <a href="/funding-tracker">funding tracker</a>. Where a current private valuation isn\'t in our data, we say "undisclosed" rather than guess.</p>
+
+<h2 id="what-changed">What Changed Between March and August</h2>
+
+<p>Three stories defined the half:</p>
+
+<ul>
+<li><strong>The SpaceX IPO.</strong> On June 12, SpaceX priced the largest public offering in history — roughly <strong>$75 billion raised at $135 per share (~$1.78 trillion)</strong>, with a debut-day market cap near $2.1 trillion. It trades today around <strong>$1.84 trillion (SPCX, ~$140)</strong>. In March, a "Starlink IPO" was a rumor at the bottom of our SpaceX entry. Now the entire capital structure of the industry has a public benchmark.</li>
+<li><strong>The money got enormous.</strong> H1 2026 produced a mega-round parade our <a href="/funding-tracker">funding tracker</a> has never seen in one half: Anduril\'s <strong>$5B Series H at a $61B valuation</strong>, Hadrian\'s <strong>$1.37B Series D at $7.87B</strong>, True Anomaly\'s <strong>$650M at $2.2B</strong>, Sierra Space\'s <strong>$550M at $8B</strong>, half-billion rounds from K2 Space, Impulse Space, and Vast, ICEYE\'s <strong>$486M at $12B</strong>, CesiumAstro\'s <strong>$470M</strong> — and Blue Origin\'s first-ever outside raise, <strong>up to $10B led by Coatue</strong> at a reported ~$130B pre-money.</li>
+<li><strong>The shakeout was real.</strong> Orbex is defunct. Capella Space was acquired. Mynaric was absorbed by Rocket Lab. Astra pivoted to satellite propulsion. ABL exited orbital launch entirely and renamed itself Long Wall. And a tier of public small-caps — Momentus, Comtech, Sidus, Spire, Satellogic — spent the half raising survival capital through dilutive placements.</li>
+</ul>
+
+<p>Add the operational milestones — <strong>Starship Flight 13\'s clean success on July 24</strong> (Flight 14 is NET late August; follow our live <a href="/starship">Starship tracker</a>), the restructured Artemis III (an Earth-orbit HLS demo NET late 2027, with the crewed landing moving to Artemis IV around 2028), and an IPO pipeline where Sierra Space and Axiom Space are both reportedly preparing filings — and the second half of 2026 sets up as the most watchable stretch the industry has ever had. The <strong>$630+ billion space economy</strong> that framed our March list is still the backdrop; what changed is how fast capital is now concentrating at the top of it.</p>
+
+<p>As before, every company here has a profile in our <a href="/company-profiles">Company Profiles</a> directory (300+ companies, with live stock data on <a href="/space-stocks">Space Stocks</a> and the private markets covered in the <a href="/startups">Startup &amp; Pre-IPO Hub</a>).</p>
+
+<h2 id="launch-providers">Launch Providers</h2>
+
+<p>Access to space remains the industry\'s foundation — and in H2 2026, the story is public-market launch companies and the reusable challengers behind them.</p>
+
+<h3>1. SpaceX (SPCX)</h3>
+<p>The company that redefined the industry now has a ticker. Post-IPO SpaceX trades around <strong>$1.84 trillion</strong>, larger than the rest of this list combined, on the strength of Starlink and an unmatched launch cadence. <strong>Starship Flight 13 flew a clean mission on July 24</strong>, and Flight 14 is NET late August. What to watch in H2: Flight 14 and the march toward operational Starship missions, Starlink\'s growth as a now-public P&amp;L, and progress toward the Earth-orbit HLS demonstration that anchors the restructured Artemis III. See the <a href="/company-profiles/spacex">SpaceX profile</a>.</p>
+
+<h3>2. Rocket Lab (RKLB)</h3>
+<p>The clearest non-SpaceX winner of the past year: Rocket Lab\'s market cap has grown to roughly <strong>$51 billion</strong> as Electron cadence, the space systems business, and its expansion into laser communications via the <strong>Mynaric acquisition</strong> compound. What to watch in H2: the <strong>Neutron</strong> medium-lift debut campaign and whether Rocket Lab converts its end-to-end model into major national-security constellation wins. <a href="/company-profiles/rocket-lab">Profile</a>.</p>
+
+<h3>3. Blue Origin</h3>
+<p>The biggest capital event in private space this year that wasn\'t an IPO: in July, Blue Origin raised its <strong>first outside funding — up to $10 billion led by Coatue</strong> — at a reported ~$130 billion pre-money, widely read as pre-IPO positioning. New Glenn is ramping toward regular cadence alongside BE-4 engine deliveries and the Artemis lunar lander program. What to watch in H2: New Glenn\'s flight rate and any concrete IPO signal. <a href="/company-profiles/blue-origin">Profile</a>.</p>
+
+<h3>4. Firefly Aerospace (FLY)</h3>
+<p>A private company when we published in March\'s frame of reference, Firefly has now been public for a year (IPO August 2025) and carries a <strong>~$4.5 billion market cap</strong>. Its portfolio spans Alpha, the Blue Ghost lunar lander line, and the MLV program with Northrop Grumman. What to watch in H2: execution under public-market scrutiny — launch cadence, lunar contract backlog, and MLV progress. <a href="/company-profiles/firefly-aerospace">Profile</a>.</p>
+
+<h3>5. Stoke Space</h3>
+<p>Promoted from a shared entry in March to its own slot. Stoke closed a <strong>$350M Series D extension in February</strong>, bringing lifetime funding to roughly <strong>$1.36 billion</strong> — remarkable for a company yet to reach orbit — on the promise of <strong>Nova</strong>, a fully reusable two-stage vehicle. What to watch in H2: Nova\'s path to a first flight attempt. <a href="/company-profiles/stoke-space">Profile</a>.</p>
+
+<h3>6. Relativity Space</h3>
+<p>Still the boldest bet in medium-lift: 3D-printed manufacturing at rocket scale, roughly <strong>$1.95 billion raised</strong> to date, and a <strong>$4.2 billion valuation</strong> in our tracker from its 2025 growth round. What to watch in H2: Terran R\'s march to the pad — after years of build-out, flight hardware progress is now the only metric that matters. <a href="/company-profiles/relativity-space">Profile</a>.</p>
+
+<h3>7. Isar Aerospace</h3>
+<p><em>New to the list.</em> Europe\'s best-funded launch startup crossed the <strong>$1 billion lifetime funding</strong> mark with a <strong>$292M Series D in June</strong>. With Spectrum flying and European launch sovereignty now a funded political priority, Isar carries the continental flag on this list. What to watch in H2: Spectrum\'s flight rate and institutional European contract wins. <a href="/company-profiles/isar-aerospace">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Astra</strong> (pivoted from launch to satellite propulsion), <strong>ABL Space</strong> (renamed <strong>Long Wall</strong> and exited orbital launch for defense manufacturing — a $2.4B company in our tracker, but no longer a launch story), and <strong>Arianespace</strong> (with Ariane 6 now in routine institutional service, it\'s a stalwart rather than a watch item — Isar takes Europe\'s slot).</em></p>
+
+<h2 id="satellite-operators">Satellite Operators &amp; Services</h2>
+
+<h3>8. AST SpaceMobile (ASTS)</h3>
+<p>The breakout public space stock of the cohort: a <strong>~$27.6 billion market cap</strong> as direct-to-smartphone broadband moves from thesis to deployment. What to watch in H2: BlueBird constellation expansion and the conversion of carrier partnerships into commercial service revenue. <a href="/company-profiles/ast-spacemobile">Profile</a>.</p>
+
+<h3>9. Planet Labs (PL)</h3>
+<p>Planet has re-rated dramatically, now carrying a <strong>~$8.8 billion market cap</strong> as defense and AI-driven demand for daily Earth imagery accelerates. What to watch in H2: Pelican-generation deployment and continued growth in government contracts. <a href="/company-profiles/planet-labs">Profile</a>.</p>
+
+<h3>10. Astranis</h3>
+<p><em>New to the list.</em> The MicroGEO satcom builder raised a <strong>$300M Series E at a $2.8 billion valuation</strong> in May (Snowpoint Ventures, Franklin Templeton). Its dedicated small-GEO model is winning nation-scale connectivity deals the big fleet operators can\'t serve economically. What to watch in H2: fleet launch cadence and new sovereign customers. <a href="/company-profiles/astranis">Profile</a>.</p>
+
+<h3>11. Iridium Communications (IRDM)</h3>
+<p>The only truly global constellation operator (<strong>~$5.3 billion market cap</strong>) keeps compounding through maritime, aviation, government, and IoT services. What to watch in H2: its standards-based direct-to-device push and defense demand for resilient communications. <a href="/company-profiles/iridium-communications">Profile</a>.</p>
+
+<h3>12. Viasat (VSAT)</h3>
+<p>Viasat\'s recovery is one of the quiet stories of 2026 — a <strong>~$11.4 billion market cap</strong> on the strength of aviation connectivity and government services. What to watch in H2: ViaSat-3 capacity utilization and defense SATCOM wins. <a href="/company-profiles/viasat">Profile</a>.</p>
+
+<h3>13. SES</h3>
+<p>Now integrating Intelsat, SES operates the largest multi-orbit GEO-MEO fleet in the industry (<strong>~$5 billion market cap</strong>). What to watch in H2: synergies from the combined fleet and O3b mPOWER-driven government and mobility growth. <a href="/company-profiles/ses">Profile</a>.</p>
+
+<h3>14. BlackSky (BKSY)</h3>
+<p>BlackSky enters H2 with a <strong>~$1.3 billion market cap</strong> and fresh capital — a <strong>$150M at-the-market raise closed August 1</strong> — to accelerate its Gen-3 high-resolution constellation. What to watch in H2: Gen-3 deployment pace and international defense contract flow. <a href="/company-profiles/blacksky">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Spire Global</strong> (a sub-$600M market cap funded through placements — the data business endures, but it\'s no longer a top-50 trajectory) and <strong>Maxar</strong> (renamed and split — see Vantor &amp; Lanteris under Earth Observation).</em></p>
+
+<h2 id="defense-national-security">Defense &amp; National Security</h2>
+
+<p>Defense remains the industry\'s strongest demand engine, and H1\'s two biggest private raises both happened here.</p>
+
+<h3>15. Anduril Industries</h3>
+<p>Anduril raised a <strong>$5 billion Series H at a $61 billion valuation</strong> in May (led by Thrive Capital) — and founder Palmer Luckey then said it would be "bad to IPO in the middle of a hype cycle." The company\'s space-based sensing and autonomous-systems portfolio keeps expanding into next-generation missile-defense architecture programs. What to watch in H2: proliferated-constellation awards and any change in IPO posture. <a href="/company-profiles/anduril-industries">Profile</a>.</p>
+
+<h3>16. True Anomaly</h3>
+<p>Promoted up the list after a <strong>$650M Series D at a $2.2 billion valuation</strong> in April (Eclipse, Riot Ventures) — capital that moves it from promising startup to funded space-security prime candidate. What to watch in H2: Jackal on-orbit operations and new Space Force mission awards. <a href="/company-profiles/true-anomaly">Profile</a>.</p>
+
+<h3>17. L3Harris Technologies (LHX)</h3>
+<p>A <strong>~$54 billion</strong> defense prime whose space portfolio spans missile-warning satellites, ISR payloads, and — via Aerojet Rocketdyne, which we listed separately in March — the propulsion inside most U.S. launch and interceptor programs. What to watch in H2: SDA tranche production and solid-rocket-motor capacity expansion. <a href="/company-profiles/l3harris-technologies">Profile</a>.</p>
+
+<h3>18. Northrop Grumman (NOC)</h3>
+<p>The <strong>~$83 billion</strong> prime behind national-security satellites, solid propulsion, and the only operational commercial satellite-servicing line (Mission Extension). What to watch in H2: missile-tracking constellation deliveries and Cygnus/station-logistics evolution. <a href="/company-profiles/northrop-grumman">Profile</a>.</p>
+
+<h3>19. Lockheed Martin (LMT)</h3>
+<p>Still the benchmark space prime (<strong>~$140 billion market cap</strong>), from GPS III to Orion — which carries added weight now that the restructured Artemis program targets its crewed landing on Artemis IV around 2028. What to watch in H2: next-gen milsatcom awards and how it deploys Terran Orbital\'s production capacity. <a href="/company-profiles/lockheed-martin">Profile</a>.</p>
+
+<h3>20. RTX</h3>
+<p>The <strong>~$300 billion</strong> giant\'s space exposure runs through missile-warning sensors, interceptors, and ground systems — squarely in the path of U.S. missile-defense spending. What to watch in H2: space-sensor production rates for the proliferated tracking layer. <a href="/company-profiles/raytheon">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Boeing</strong> — still a giant, but its 2026 space story is consolidation and program defense rather than growth; this is a watch list, and the upside stories crowded it out.</em></p>
+
+<h2 id="space-stations-habitats">Space Stations &amp; Habitats</h2>
+
+<p>The ISS retirement clock (~2030) keeps ticking, and in H1 the station race turned into a funding race — with an IPO subplot.</p>
+
+<h3>21. Vast</h3>
+<p>Vast raised <strong>$500M in March</strong> (Balerion Space Ventures) at a <strong>$2.3 billion valuation</strong> in our tracker, funding the final push for <strong>Haven-1</strong>. What to watch in H2: Haven-1\'s launch campaign — the first commercial space station to fly would reset this entire category. <a href="/company-profiles/vast">Profile</a>.</p>
+
+<h3>22. Sierra Space</h3>
+<p>A <strong>$550M Series C at an $8 billion valuation</strong> in March (LuminArx), followed by June reports that Sierra is <strong>preparing an IPO</strong>. Dream Chaser\'s ISS demonstration flight is planned for late 2026. What to watch in H2: Dream Chaser\'s flight and any S-1 — either would be a landmark. <a href="/company-profiles/sierra-space">Profile</a>.</p>
+
+<h3>23. Axiom Space</h3>
+<p>Axiom closed an <strong>oversubscribed $525M round in June</strong> (Type One Ventures, Qatar Investment Authority) at an undisclosed valuation, and was named alongside Sierra in IPO-preparation reporting. What to watch in H2: module fabrication milestones and private-astronaut mission cadence. <a href="/company-profiles/axiom-space">Profile</a>.</p>
+
+<h3>24. Voyager Technologies (VOYG)</h3>
+<p><em>New to the list.</em> Public since June 2025 and trading at a <strong>~$2.6 billion market cap</strong>, Voyager anchors the Starlab commercial station venture with Airbus. What to watch in H2: Starlab design milestones and NASA\'s commercial-LEO-destination funding decisions. <a href="/company-profiles/voyager-space">Profile</a>.</p>
+
+<h3>25. Gravitics</h3>
+<p>Still the interesting pure-play in large habitat structures, backed by roughly <strong>$60M</strong> including a U.S. Space Force STRATFI award. What to watch in H2: hardware demonstrations for station-scale and national-security modules. <a href="/company-profiles/gravitics">Profile</a>.</p>
+
+<h2 id="in-space-services">In-Space Services &amp; Manufacturing</h2>
+
+<h3>26. Impulse Space</h3>
+<p>Tom Mueller\'s orbital-transfer company raised a <strong>$500M Series D in June</strong> (137 Ventures, Banner VC), bringing lifetime funding to roughly <strong>$1.2 billion</strong>. Mira is flying; Helios, its high-energy kick stage, is the prize. What to watch in H2: Helios\'s debut and defense demand for rapid orbital maneuver. <a href="/company-profiles/impulse-space">Profile</a>.</p>
+
+<h3>27. Varda Space Industries</h3>
+<p>The in-space pharmaceutical manufacturer keeps converting its thesis into flight heritage, with roughly <strong>$592M raised</strong> and a <strong>$700M valuation</strong> in our tracker. What to watch in H2: W-capsule mission cadence and the growth of its hypersonic-reentry testbed business for the DoD. <a href="/company-profiles/varda-space-industries">Profile</a>.</p>
+
+<h3>28. Redwire (RDW)</h3>
+<p>Redwire has grown into a <strong>~$3.4 billion</strong> public space-infrastructure prime spanning deployable structures, in-space biotech, and defense platforms. What to watch in H2: margin execution and national-security program wins. <a href="/company-profiles/redwire">Profile</a>.</p>
+
+<h3>29. Starfish Space</h3>
+<p>Promoted from our Emerging section after a <strong>$110M Series B in April</strong> (Point72 Ventures). Otter\'s docking-and-servicing model now has the capital to become a real product line. What to watch in H2: commercial docking campaigns and government servicing awards. <a href="/company-profiles/starfish-space">Profile</a>.</p>
+
+<h3>30. Astroscale</h3>
+<p>The debris-removal and servicing pioneer (<strong>$1.5 billion valuation</strong> in our tracker) remains the category\'s reference company as deorbit regulation tightens worldwide. What to watch in H2: progress on national debris-removal demonstrators and commercial life-extension contracts. <a href="/company-profiles/astroscale">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Orbit Fab</strong> — its $20M Series B in March keeps the refueling vision alive, but at a scale the rest of this cohort has left behind.</em></p>
+
+<h2 id="satellite-manufacturing">Satellite &amp; Component Manufacturing</h2>
+
+<p>The most upgraded category on the list. Manufacturing is where H1\'s biggest new money landed.</p>
+
+<h3>31. K2 Space</h3>
+<p>Promoted from #50 in March to category leader: K2 raised a <strong>$500M Series D at a $6.8 billion valuation</strong> on August 3 (Kleiner Perkins, ICONIQ), betting that Starship-class launch makes very large, mass-produced satellites the winning architecture. What to watch in H2: first Mega-class flight hardware and defense constellation orders. <a href="/company-profiles/k2-space">Profile</a>.</p>
+
+<h3>32. Hadrian</h3>
+<p><em>New to the list.</em> The automated precision-manufacturing company closed a <strong>$1.37 billion Series D at a $7.87 billion valuation</strong> on August 6 — led by JPMorgan\'s strategic investment arm — bringing lifetime funding to roughly <strong>$2.4 billion</strong>. Hadrian\'s factories build the machined parts the space and defense industrial base is short of. What to watch in H2: factory capacity expansion and marquee aerospace customer announcements. <a href="/company-profiles/hadrian">Profile</a>.</p>
+
+<h3>33. Apex</h3>
+<p><em>New to the list.</em> The satellite-bus manufacturer has raised roughly <strong>$733M</strong> (Series D, 2025) at a <strong>$1 billion valuation</strong>, productizing standard buses the way the industry has long promised and rarely delivered. What to watch in H2: production-rate scaling and defense program selections. <a href="/company-profiles/apex">Profile</a>.</p>
+
+<h3>34. York Space Systems (YSS)</h3>
+<p>Now a public company with a <strong>~$1.4 billion market cap</strong>, York remains the volume manufacturer of standardized defense satellite buses. What to watch in H2: SDA tranche execution under quarterly-earnings scrutiny. <a href="/company-profiles/york-space-systems">Profile</a>.</p>
+
+<h3>35. Terran Orbital</h3>
+<p>Operating inside Lockheed Martin since 2024, Terran Orbital is the parent\'s small-satellite production engine. What to watch in H2: throughput on proliferated-constellation orders and how deeply Lockheed integrates it into next-gen programs. <a href="/company-profiles/terran-orbital">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Sidus Space</strong> (raised $100M in May, but remains a ~$260M microcap next to this cohort) and <strong>Aerojet Rocketdyne</strong> (folded into the L3Harris entry, where it has lived since 2023).</em></p>
+
+<h2 id="ground-segment">Ground Segment &amp; Communications</h2>
+
+<h3>36. Amazon / Project Kuiper</h3>
+<p>Amazon\'s <strong>$10+ billion</strong> constellation program is deep into deployment, making Kuiper the only credible scale competitor to Starlink. What to watch in H2: service expansion, enterprise-AWS bundling, and launch-partner cadence. <a href="/company-profiles/amazon-kuiper">Profile</a>.</p>
+
+<h3>37. Kratos Defense (KTOS)</h3>
+<p>Kratos has re-rated to a <strong>~$12 billion market cap</strong> on defense demand spanning virtualized ground systems and hypersonic test infrastructure. What to watch in H2: OpenSpace adoption as proliferated constellations force ground-segment modernization. <a href="/company-profiles/kratos-defense">Profile</a>.</p>
+
+<h3>38. CesiumAstro</h3>
+<p>Promoted from our Emerging section: CesiumAstro closed a <strong>$470M Series C in February</strong>, bringing lifetime funding to roughly <strong>$682M</strong> for its software-defined phased-array payloads. What to watch in H2: defense payload wins as active antennas become the default for military connectivity. <a href="/company-profiles/cesiumastro">Profile</a>.</p>
+
+<h3>39. Northwood Space</h3>
+<p><em>New to the list.</em> The phased-array ground-station startup raised a <strong>$100M Series B in January</strong> (Washington Harbour, a16z), attacking the industry\'s least-loved bottleneck: getting data down. What to watch in H2: commercial site deployments and constellation-operator contracts. <a href="/company-profiles/northwood-space">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Comtech</strong> — a ~$53M market cap took it out of watch-list territory.</em></p>
+
+<h2 id="earth-observation-analytics">Earth Observation &amp; Geospatial Analytics</h2>
+
+<h3>40. ICEYE</h3>
+<p><em>New to the list — and it arrives at #1 in category.</em> The Finnish SAR leader raised a <strong>$486M Series F at a $12 billion valuation</strong> in June (General Atlantic), with reported 2025 revenue around $300M, and says explicitly it is <strong>not</strong> pursuing an IPO. What to watch in H2: production scale-up as sovereign defense demand for radar constellations accelerates. <a href="/company-profiles/iceye">Profile</a>.</p>
+
+<h3>41. Vantor &amp; Lanteris (formerly Maxar)</h3>
+<p>The company we listed as Maxar in March now operates as two: <strong>Vantor</strong> (the imagery and geospatial-intelligence business, flying the WorldView Legion fleet) and <strong>Lanteris Space Systems</strong> (the satellite-manufacturing business). What to watch in H2: Legion utilization in a suddenly crowded high-resolution market, and Lanteris\'s bus orders. <a href="/company-profiles/maxar-technologies">Profile</a>.</p>
+
+<h3>42. HawkEye 360 (HAWK)</h3>
+<p>The RF-geolocation specialist <strong>went public on May 7</strong>, raising $416M at a $3.15 billion post-money valuation; it trades today around <strong>$2.2 billion</strong>. What to watch in H2: converting maritime-enforcement and spectrum-monitoring demand into growth that supports the IPO story. <a href="/company-profiles/hawkeye-360">Profile</a>.</p>
+
+<h3>43. Umbra</h3>
+<p>Still the high-watermark for commercial SAR resolution, valued at <strong>$600M</strong> in our tracker. It hasn\'t raised since 2023 — which in this funding environment is itself worth watching. What to watch in H2: next-generation satellite plans and whether it joins the SAR capital race ICEYE just escalated. <a href="/company-profiles/umbra">Profile</a>.</p>
+
+<h3>44. Pixxel</h3>
+<p><em>New to the list.</em> The hyperspectral-imaging leader raised a <strong>$100M growth round in May</strong>, bringing total funding to roughly <strong>$294M</strong>. Hyperspectral is moving from science project to procurement line-item, and Pixxel has the head start. What to watch in H2: commercial constellation buildout and defense pilot conversions. <a href="/company-profiles/pixxel">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Capella Space</strong> (acquired — per our company profiles it exits as an independent watch item) and <strong>Satellogic</strong> (funding via small registered directs; crowded out in a five-slot category).</em></p>
+
+<h2 id="propulsion-transportation">Propulsion &amp; In-Space Transportation</h2>
+
+<h3>45. Ursa Major</h3>
+<p><em>New to the list.</em> America\'s independent engine maker has raised roughly <strong>$631M</strong> through its late-2025 Series E, supplying propulsion across launch, hypersonics, and in-space applications while the defense industrial base scrambles for capacity. What to watch in H2: solid-rocket-motor production scaling and new engine program wins. <a href="/company-profiles/ursa-major">Profile</a>.</p>
+
+<h3>46. D-Orbit</h3>
+<p><em>New to the list.</em> The Italian in-space logistics company has quietly raised over <strong>$700M</strong> lifetime, topped up by a January Series D tranche (Azimut), and its ION carriers are the workhorse of European last-mile delivery. What to watch in H2: expansion from delivery into servicing and the growth of European institutional demand. <a href="/company-profiles/d-orbit">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Momentus</strong> (a ~$91M microcap sustained by serial sub-$25M placements) and <strong>Phase Four</strong> (no new capital in our tracker since 2022).</em></p>
+
+<h2 id="emerging-frontier">Emerging &amp; Frontier Companies</h2>
+
+<p>Three of March\'s six Emerging picks — K2 Space, CesiumAstro, and Starfish Space — graduated into sector categories above, which is exactly what this section is for. Four new frontier bets take their place alongside one holdover.</p>
+
+<h3>47. Starcloud</h3>
+<p><em>New to the list.</em> The orbital data-center startup raised a <strong>$170M Series A at a $1.1 billion valuation</strong> in March (Benchmark, EQT Ventures) — the fastest zero-to-unicorn run in our tracker this year. What to watch in H2: first on-orbit compute demonstrations and whether hyperscalers engage. <a href="/company-profiles/starcloud">Profile</a>.</p>
+
+<h3>48. Cowboy Space Corp</h3>
+<p><em>New to the list.</em> The company formerly known as Aetherflux raised a <strong>$275M Series B in May</strong> (Index Ventures) to pursue space-based solar power — beaming energy from LEO to the ground, starting with defense applications. What to watch in H2: first-generation demonstration satellites. <a href="/company-profiles/aetherflux">Profile</a>.</p>
+
+<h3>49. Xona Space Systems</h3>
+<p><em>New to the list.</em> Xona raised a <strong>$170M Series C in March</strong>, bringing total funding to roughly <strong>$281M</strong> to build a LEO navigation constellation — precision PNT independent of GPS, for machines that can\'t tolerate jamming. What to watch in H2: production satellite deployment and government alternative-PNT contracts. <a href="/company-profiles/xona-space-systems">Profile</a>.</p>
+
+<h3>50. Muon Space</h3>
+<p>The holdover: Muon\'s constellation-as-a-service model (roughly <strong>$347M raised</strong>) keeps winning climate and defense missions, including wildfire-detection constellations. What to watch in H2: operational deployments proving the multi-mission platform economics. <a href="/company-profiles/muon-space">Profile</a>.</p>
+
+<p><em>Off the list: <strong>Phantom Space</strong> and <strong>ThinkOrbital</strong> — neither has raised since 2022 in our tracker, and this section rewards momentum.</em></p>
+
+<h2 id="honorable-mentions">Honorable Mentions</h2>
+
+<p>Ten companies that just missed the cut and could force their way on by December: <strong>PLD Space</strong> ($209M Series C in March, with Mitsubishi Electric), <strong>Skyroot Aerospace</strong> ($60M Series C at a $1.1B valuation), <strong>Gilmour Space</strong> ($145M Series E at ~$1B), <strong>Loft Orbital</strong> ($1B valuation), <strong>Hermeus</strong> ($350M raised at $1B), <strong>Tomorrow.io</strong> (~$297M raised), <strong>Long Wall</strong> (the renamed ABL, now a $2.4B defense manufacturer), <strong>Observable Space</strong> ($90M debut round led by Lux Capital), <strong>Interlune</strong>, and <strong>Starlab Space</strong>. Track them all in the <a href="/startups">Startup &amp; Pre-IPO Hub</a>.</p>
+
+<h2 id="key-themes">Key Themes for the Second Half</h2>
+
+<ul>
+<li><strong>The IPO window is wide open.</strong> SpaceX, HawkEye 360, and the 2025 class (Firefly, Voyager) are public; Sierra Space and Axiom are reportedly preparing; Blue Origin\'s mega-raise reads as groundwork; Anduril is waiting out the hype cycle on purpose. Public-market discipline is coming to companies that grew up without it — follow the tape on <a href="/space-stocks">Space Stocks</a>.</li>
+<li><strong>Capital is concentrating.</strong> H1\'s defining round size was $500M+, and it went overwhelmingly to manufacturing (Hadrian, K2, Apex, CesiumAstro) and defense (Anduril, True Anomaly). The barbell between mega-funded leaders and starved small-caps got more extreme.</li>
+<li><strong>Manufacturing is the new launch.</strong> The scarcest asset in 2026 isn\'t a rocket — it\'s factory capacity for satellites, motors, and machined parts. That\'s why the biggest new names on this list build things.</li>
+<li><strong>Europe showed up.</strong> ICEYE at $12B, Isar past $1B raised, D-Orbit past $700M, PLD at $300M+ — European space companies raised at a scale that finally matches the continent\'s sovereignty rhetoric.</li>
+<li><strong>The small-cap squeeze is unforgiving.</strong> Companies below roughly $1B in market cap spent H1 diluting to survive. Expect consolidation — the Capella and Mynaric absorptions won\'t be the last.</li>
+<li><strong>Starship\'s cadence is the industry\'s clock.</strong> Flight 13 succeeded; Flight 14 is NET late August. Every architecture bet on this list — K2\'s big satellites, Vast\'s stations, Gravitics\' modules — prices in Starship working. Follow it live on our <a href="/starship">Starship tracker</a>.</li>
+</ul>
+
+<p>We\'ll revisit this list as the year closes. Explore detailed profiles, financials, and funding histories for all 50 companies — and 250+ more — in <a href="/company-profiles">Company Profiles</a>, track every round in the <a href="/funding-tracker">Funding Tracker</a>, and follow the public names on <a href="/space-stocks">Space Stocks</a>.</p>
+`,
+  },
+
+  // ── Article: SPCX Since the IPO — trading history + H2 2026 outlook ──
+  {
+    slug: 'spcx-stock-since-ipo-h2-2026-outlook',
+    title: 'SPCX Since the IPO: What Two Months of Trading Tell Us — and the H2 2026 Outlook',
+    excerpt: 'SpaceX priced the largest IPO in history at $135 a share on June 12. Since then, SPCX has popped to ~$2.1 trillion, spiked, retraced more than 30%, dipped below its IPO price, and rebounded to $1.84 trillion. Here is the real trajectory from our market data — and honest bull, base, and bear scenarios for the rest of 2026.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-08-15T15:00:00Z',
+    readingTime: 12,
+    featured: true,
+    keywords: ['SPCX', 'SpaceX stock', 'SpaceX stock price', 'SpaceX IPO performance', 'SPCX since IPO', 'SpaceX market cap', 'space stocks 2026', 'SPCX outlook', 'SpaceX valuation', 'Starship Flight 14'],
+    content: `
+<p><em><strong>Disclaimer:</strong> This article is for informational and educational purposes only. It does not constitute financial advice, investment advice, or a recommendation to buy, sell, or hold any security. Space stocks are volatile and speculative. Past performance does not guarantee future results. Always conduct your own research and consult a qualified financial advisor before making investment decisions. SpaceNexus has no financial relationship with any company mentioned in this article.</em></p>
+
+<p>Two months ago, on <strong>June 12, 2026</strong>, SpaceX priced the largest initial public offering in history: <strong>$135 per share, roughly $75 billion raised, at a valuation of about $1.78 trillion</strong>. In <a href="/blog/spacex-ipo-what-it-means-for-space-investors">our pre-IPO analysis in March</a>, we asked whether a trillion-dollar-plus valuation was defensible. The market has now spent two months answering — loudly, and in both directions.</p>
+
+<p>Today <strong>SPCX trades at $140</strong>, a market capitalization of <strong>$1.84 trillion</strong> (SpaceNexus market data, synced August 15). That single number hides one of the most dramatic trading stories of the year: a euphoric debut, a spike, a grinding six-week retracement that briefly took the stock <em>below</em> its IPO price, and a sharp August recovery. Using the daily price history from our <a href="/space-stocks">Space Stocks</a> tracker, here is what actually happened — and a scenario framework, with stated assumptions, for the rest of 2026.</p>
+
+<h2 id="the-trajectory">The Real Trajectory: Pop, Spike, Slide, Rebound</h2>
+
+<p>The headline arc — "debuted near $2.1 trillion, now $1.84 trillion" — makes it sound like a gentle drift. The daily chart tells a rougher story, in four phases:</p>
+
+<h3>Phase 1: The pop (June 12)</h3>
+<p>Priced at $135, SPCX closed its first session at <strong>$160.95, up 19% on the day</strong>, for a debut-day market cap of roughly <strong>$2.1 trillion</strong> — instantly one of the most valuable companies on Earth, eclipsing Saudi Aramco\'s 2019 debut as the largest listing ever.</p>
+
+<h3>Phase 2: The spike (mid-to-late June)</h3>
+<p>In the frenzied first weeks of trading, shares ran far above the debut close, touching an intraday high of <strong>$225.64</strong> — which, at the current share count, would have implied nearly <strong>$3 trillion</strong> of market value. That level lasted moments, not weeks, and stands as the stock\'s post-IPO high-water mark.</p>
+
+<h3>Phase 3: The slide (July)</h3>
+<p>Then came the retracement. From a July 6 close of $160.42, SPCX fell in almost a straight line for the rest of the month: $145 by July 10, $124 by July 17, and a July 31 close of <strong>$108.37</strong>. The closing low came on August 5 at <strong>$108.27</strong>, with an intraday low of $104.83. Peak to trough, that is a decline of more than <strong>50% from the June spike</strong>, about <strong>33% below the first-day close</strong> — and, notably, about <strong>20% below the $135 IPO price itself</strong>. Everyone who bought the debut was, briefly, underwater.</p>
+
+<p>One honest observation from the data: <strong>Starship Flight 13\'s clean success on July 24 did not stop the slide</strong>. SPCX closed at $115.07 that day and kept falling for another week. Whatever was driving the July selling — profit-taking from the spike, valuation discipline, early-holder positioning ahead of future share supply — it was bigger than one good flight.</p>
+
+<h3>Phase 4: The rebound (August)</h3>
+<p>The turn came in early August, and it was violent. From the August 5 closing low of $108.27, the stock jumped to <strong>$133.11 on August 7 — a 16% single-day move</strong> — and ran to a rebound high of <strong>$146.15 on August 12</strong>, a 35% recovery in five sessions. It has since settled to $141.29 (August 13) and <strong>$140.00 (August 14)</strong>. We won\'t pretend our data can cleanly attribute daily moves to specific headlines; what the tape shows is that aggressive buyers showed up near $108 and absorbed the selling.</p>
+
+<table>
+<thead>
+<tr><th>Milestone</th><th>Date</th><th>Share price</th><th>Implied market cap*</th></tr>
+</thead>
+<tbody>
+<tr><td>IPO price</td><td>Jun 12</td><td>$135.00</td><td>~$1.78T</td></tr>
+<tr><td>First-day close</td><td>Jun 12</td><td>$160.95</td><td>~$2.1T</td></tr>
+<tr><td>Post-IPO intraday high</td><td>late June</td><td>$225.64</td><td>~$2.97T</td></tr>
+<tr><td>Closing low</td><td>Aug 5</td><td>$108.27</td><td>~$1.43T</td></tr>
+<tr><td>Rebound high (close)</td><td>Aug 12</td><td>$146.15</td><td>~$1.93T</td></tr>
+<tr><td>Latest close</td><td>Aug 14</td><td>$140.00</td><td>$1.84T</td></tr>
+</tbody>
+</table>
+
+<p><em>*Implied at the current share count (~13.2 billion shares). Source: SpaceNexus Space Stocks market data, August 15, 2026.</em></p>
+
+<p>Net of all the drama: SPCX is up about <strong>4% from its IPO price</strong>, down about <strong>13% from its first-day close</strong>, and down about <strong>38% from its speculative June high</strong>. For a two-month-old mega-cap listing, that is neither triumph nor disaster — it is a market groping toward a fair price for something it has never had to price before.</p>
+
+<h2 id="what-drove-it">What Drove It: The Fundamental Backdrop</h2>
+
+<p>Price action aside, the underlying news flow during SPCX\'s first two months has been mostly constructive.</p>
+
+<h3>Starship went operational — and Flight 14 is the next catalyst</h3>
+<p><strong>Flight 13 on July 24</strong> was the program\'s cleanest mission yet: Starship deployed its first operational payload — next-generation Starlink V3 satellites too large for Falcon 9\'s fairing — and stuck a soft water landing. <strong>Flight 14, targeted for as early as late August</strong>, aims for the program\'s first attempt at catching the Starship upper stage with the launch tower\'s "chopstick" arms, alongside a continued booster catch — the gating step toward full, rapid reusability of both stages. Follow the campaign live on our <a href="/starship">Starship tracker</a>. For SPCX, Starship cadence is the single most watchable operational metric: it drives Starlink V3 deployment economics, Artemis obligations, and the long-duration Mars narrative that underpins the valuation\'s outer years.</p>
+
+<h3>Starlink economics carry the valuation</h3>
+<p>Starlink remains the revenue engine of the business. Our platform does not yet carry audited public-company segment financials for SPCX, so the honest framing is that the figures investors lean on are still <strong>estimates</strong>: our March pre-IPO analysis cited roughly <strong>$15-16 billion in estimated total annual revenue</strong>, with Starlink contributing <strong>$10B+ annualized across 4.5 million-plus subscribers</strong> and growing at an estimated 40-50% a year. Whether those growth estimates hold — and how they translate into disclosed, audited numbers in SpaceX\'s early quarterly reports as a public company — is the fundamental question of H2. Subscriber growth, ARPU, and churn disclosures will matter more to SPCX\'s price than any single launch.</p>
+
+<h3>The defense relationship deepened — with a twist</h3>
+<p>On August 13, the Space Force awarded <strong>$60 million to five companies — Amazon Leo, Lockheed Martin, Northrop Grumman, Rocket Lab, and York Space — to prototype and test connections to the SpaceX-built data network backbone</strong> (SpaceNews, via our <a href="/news">news feed</a>). Read that carefully: the dollars are trivial for a $1.8 trillion company, and they went to other vendors. The signal is double-edged. On one hand, SpaceX\'s network is literally the backbone the Pentagon is building around — a remarkable position of infrastructure entrenchment. On the other, the Space Force is deliberately cultivating a <strong>multi-vendor ecosystem</strong> on top of it, a reminder that procurement diversification is policy and that no incumbent\'s share of military space spending is guaranteed to grow unchecked.</p>
+
+<h3>Artemis obligations are on the clock</h3>
+<p>Under NASA\'s February 2026 restructure, <strong>Artemis III is now a crewed Earth-orbit demonstration of the Starship Human Landing System, targeted for no earlier than late 2027</strong>, with the first crewed lunar landing moving to <strong>Artemis IV around 2028</strong>. SpaceX holds the HLS contracts for both. H2 2026 progress on HLS hardware, propellant-transfer testing, and the demo timeline feeds directly into how the market handicaps SpaceX\'s highest-profile government program.</p>
+
+<h2 id="valuation">Valuation Context: What $1.84 Trillion Assumes</h2>
+
+<p>Here is where honesty matters most. On our March revenue <em>estimates</em> (roughly $15-16B), SPCX at $1.84 trillion trades at something like <strong>110-120x trailing revenue</strong> — and we stress that this is an estimate-on-estimate calculation, not an audited multiple. Even assuming aggressive growth toward $20B+ of forward revenue, the multiple remains far above any large-cap comparable: hyperscale tech platforms trade at single-digit-to-low-teens revenue multiples; high-growth defense-tech at 15-25x.</p>
+
+<p>The bull rejoinder is that a revenue multiple is the wrong lens: SPCX is priced as a <strong>platform monopoly on space access plus a compounding subscription business</strong>, where Starlink\'s subscriber curve, Starship\'s cost curve, and optionality on entirely new markets (in-space infrastructure, lunar logistics, Mars) justify paying for a decade of growth up front. That was exactly the sum-of-the-parts case in <a href="/blog/spacex-ipo-what-it-means-for-space-investors">our March analysis</a>, which found $1.0-1.75 trillion "defensible, depending on growth assumptions." The market\'s two-month verdict — overshoot to ~$3T implied, undershoot to ~$1.43T, settle near $1.84T — is essentially the tape agreeing that the defensible range is wide.</p>
+
+<p>For scale: SPCX\'s $1.84 trillion is roughly <strong>36 times</strong> the market cap of <a href="/company-profiles/rocket-lab">Rocket Lab</a> (~$51B), the second-most-valuable pure-play space company. Our side-by-side <a href="/compare/spcx-vs-rklb-stock">SPCX vs. RKLB comparison</a> breaks down how differently the market prices the two business models. And for how SpaceX\'s listing reshaped the whole sector\'s capital structure, see our new <a href="/blog/top-50-space-companies-second-half-2026">Top 50 Space Companies for H2 2026</a>.</p>
+
+<h2 id="h2-outlook">The H2 2026 Outlook: Scenarios, Not Predictions</h2>
+
+<p>Nobody — including us — knows where SPCX trades in December. What we can do is lay out scenarios tied to observable catalysts, with the assumptions stated plainly. Four things dominate the second half:</p>
+
+<ul>
+<li><strong>Starship Flight 14</strong> (NET late August): the first upper-stage tower-catch attempt.</li>
+<li><strong>Starlink disclosures:</strong> subscriber, revenue, and margin numbers in SpaceX\'s early public reporting.</li>
+<li><strong>Artemis milestones:</strong> HLS demo progress against the NET-late-2027 Artemis III timeline.</li>
+<li><strong>Lockup expiry:</strong> standard U.S. IPO lockups run 180 days, which for a June 12 listing would put expiry around <strong>mid-December 2026</strong>. <em>We have not verified SPCX\'s specific lockup terms, so treat this as "if standard" — but if it applies, a large tranche of insider and employee shares becomes sellable just before year-end, a supply event markets typically price in ahead of time.</em></li>
+</ul>
+
+<h3>Bull scenario</h3>
+<p><strong>Assumptions: Flight 14 catches the ship (or comes close enough to confirm the architecture), Starlink disclosures validate 40%+ growth, Artemis timeline holds.</strong> A clean tower catch would be the most visually undeniable technology milestone since the first booster catch, and confirmed Starlink momentum would let growth investors underwrite the multiple. In this world, a return toward the debut-day close ($160s, ~$2.1T) is the natural magnet, with the June highs only reachable on genuine euphoria. Even here, expect chop into December if the standard lockup applies.</p>
+
+<h3>Base scenario</h3>
+<p><strong>Assumptions: Flight 14 is partially successful (booster catch, useful ship data, no upper-stage catch), Starlink numbers are good but not startling, no Artemis slip announced.</strong> The stock likely keeps doing what it has done since late July: carving out a range — roughly the $120s to $150s — while the valuation grows into itself and early holders\' supply is absorbed. Two months of trading have arguably already found this equilibrium zone; the base case is simply more of it, with the lockup date capping year-end enthusiasm.</p>
+
+<h3>Bear scenario</h3>
+<p><strong>Assumptions: Flight 14 suffers a visible failure, and/or Starlink disclosures show deceleration, and/or Artemis III slips publicly.</strong> The August low near $108 (and the $104.83 intraday print) is the level the market has already shown it will test when sentiment sours. A hardware failure plus a December supply event would be the toughest combination — mega-IPO history (Facebook, Aramco) is full of listings that spent a year or more below their debut before growing into the price. The July tape proved SPCX is not immune to that pattern: it has already traded below its IPO price once.</p>
+
+<h2 id="what-to-watch">How to Follow It</h2>
+
+<p>A final word on process. The most common mistake with a stock like this is narrative-fitting: deciding SPCX is "obviously" the next mega-cap compounder or "obviously" the next Aramco, then reading every headline as confirmation. The first two months argue for humility — the same company, with the same fundamentals, has been priced anywhere from $1.4 trillion to nearly $3 trillion since June. Watch the four catalysts above, check the assumptions in whichever scenario you favor, and let the disclosed numbers — not the debut euphoria or the July gloom — update your view.</p>
+
+<p>We track SPCX daily — price, market cap, and 30-day chart — on <a href="/space-stocks">Space Stocks</a>, alongside every public space name. The <a href="/company-profiles/spacex">SpaceX company profile</a> carries the full corporate picture, and the <a href="/starship">Starship tracker</a> will cover Flight 14 live when it flies. However H2 resolves, the deeper point from our March analysis has already come true: space now has a public benchmark, priced in real time, and the entire industry\'s cost of capital moves with it.</p>
+
+<p><em><strong>Disclaimer:</strong> This article is for informational purposes only and does not constitute investment advice. All figures are drawn from SpaceNexus market data as of August 15, 2026, or are clearly labeled estimates; revenue figures for SPCX are estimates from our prior coverage, not audited disclosures. Consult a qualified financial advisor before making investment decisions.</em></p>
+`,
+  },
+
   {
     slug: 'why-space-industry-needs-bloomberg-terminal',
     title: 'Why the Space Industry Needs Its Own Bloomberg Terminal',
@@ -120,6 +477,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-02-14T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 10,
     featured: true,
     keywords: ['space economy 2026', 'space industry market size', 'space investment', 'satellite industry revenue', 'space startup funding'],
@@ -128,13 +486,15 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Using data from SpaceNexus\'s Market Intelligence module, we\'ve broken down the key segments driving this expansion.</p>
 
+<p><em><strong>Updated August 2026:</strong> Figures and company names in this piece have been refreshed — notably, Starship reached operational status with Flight 13\'s Starlink V3 deployment in July 2026, and Maxar\'s Earth-observation business now operates as Vantor.</em></p>
+
 <h2 id="satellite-services">Satellite Services: The Largest Segment</h2>
 
 <p>Satellite services — including communications, Earth observation, and navigation — account for roughly <strong>$180 billion</strong> of the space economy, making it the single largest segment. Within this:</p>
 
 <ul>
 <li><strong>Satellite broadband</strong> is the fastest-growing sub-segment, driven by SpaceX Starlink (7,000+ satellites), Amazon Kuiper (launching in 2026), and OneWeb. Revenue from satellite internet is projected to reach $40 billion by 2030.</li>
-<li><strong>Earth observation</strong> is growing at 15% CAGR, driven by climate monitoring, agriculture, and defense intelligence. Companies like Planet, Maxar, and BlackSky are expanding their constellations.</li>
+<li><strong>Earth observation</strong> is growing at 15% CAGR, driven by climate monitoring, agriculture, and defense intelligence. Companies like Planet, Vantor (formerly Maxar), and BlackSky are expanding their constellations.</li>
 <li><strong>Navigation services</strong> (GPS, Galileo, BeiDou) underpin $300+ billion in downstream applications across transportation, agriculture, and logistics.</li>
 </ul>
 
@@ -144,7 +504,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>SpaceX</strong> dominates with 60%+ market share by launch count, with Falcon 9 achieving aircraft-like reuse cadence</li>
-<li><strong>Starship</strong> — if it achieves operational status in 2026, it could reduce heavy-lift costs to $10/kg, transforming the economics of space logistics</li>
+<li><strong>Starship</strong> — now operational (Flight 13 deployed its first operational Starlink V3 payload in July 2026), it could ultimately reduce heavy-lift costs to $10/kg, transforming the economics of space logistics</li>
 <li><strong>New entrants</strong> like Rocket Lab (Neutron), Relativity (Terran R), and Blue Origin (New Glenn) are expanding the competitive landscape</li>
 <li><strong>Small launch</strong> providers are targeting dedicated rideshare for small satellites at $15,000-30,000/kg</li>
 </ul>
@@ -191,7 +551,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="tracking-the-market">How to Track It All</h2>
 
-<p>SpaceNexus\'s <a href="/market-intel">Market Intelligence module</a> provides real-time tracking of space stocks, ETFs, funding rounds, and economic indicators. Combined with our <a href="/company-profiles">200+ company profiles</a> and <a href="/procurement">procurement intelligence</a>, it\'s the most comprehensive view of the space economy available.</p>
+<p>SpaceNexus\'s <a href="/market-intel">Market Intelligence module</a> provides real-time tracking of space stocks, ETFs, funding rounds, and economic indicators. Combined with our <a href="/company-profiles">300+ company profiles</a> and <a href="/procurement">procurement intelligence</a>, it\'s the most comprehensive view of the space economy available.</p>
 
 <p><a href="/register">Start tracking the space economy for free</a>.</p>
 `,
@@ -1656,15 +2016,18 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'spacex-ipo-what-it-means-for-space-investors',
     title: 'The SpaceX IPO: What a $1.75 Trillion Valuation Means for Space Investors',
-    excerpt: 'SpaceX is preparing for a potential IPO at an expected $1.5-1.75 trillion valuation in mid-2026. Here\'s what it means for the space industry, public markets, and retail investors looking to get exposure to humanity\'s most ambitious company.',
+    excerpt: 'Our March pre-IPO analysis of what a $1.5-1.75 trillion SpaceX valuation would mean for the space industry, public markets, and retail investors. Updated August 2026: the IPO happened on June 12, pricing at $135 per share (~$1.78T) and raising ~$75 billion.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-14T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: ['SpaceX IPO', 'SpaceX valuation', 'space investing', 'space stocks', 'ARKX', 'UFO ETF', 'Starlink IPO', 'space industry stocks', 'space economy investing'],
     content: `
+<p><em><strong>Updated August 2026:</strong> This analysis was published in March 2026, three months before SpaceX went public. The IPO happened — on <strong>June 12, 2026</strong>, SPCX priced at <strong>$135 per share (~$1.78 trillion)</strong>, raised roughly <strong>$75 billion</strong>, and closed its first day near a $2.1 trillion market cap, the largest listing in history. We have preserved the original analysis below as published; its valuation figures were pre-IPO estimates. For how the stock has actually traded since — the debut pop, the July retracement below the IPO price, and the August recovery to ~$1.84 trillion — read our follow-up, <a href="/blog/spcx-stock-since-ipo-h2-2026-outlook">SPCX Since the IPO</a>.</em></p>
+
 <p>For over two decades, SpaceX has been the most transformative — and most inaccessible — company in the space industry. Founded in 2002 with the audacious goal of making humanity multiplanetary, Elon Musk\'s rocket company has reshaped every corner of the aerospace sector: launch costs, satellite broadband, crewed spaceflight, and national security space. And yet, despite generating an estimated $15-16 billion in annual revenue and achieving what most analysts agree is the most dominant position in commercial space history, SpaceX has remained stubbornly private.</p>
 
 <p>That is about to change. Multiple credible reports indicate that SpaceX is preparing for an initial public offering as early as <strong>June 2026</strong>, with an expected valuation in the range of <strong>$1.5 to $1.75 trillion</strong>. If it proceeds, this would be the largest IPO in history — eclipsing Saudi Aramco\'s $1.7 trillion debut in 2019 — and it would fundamentally reshape the space investment landscape.</p>
@@ -1898,6 +2261,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-14T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 14,
     featured: true,
     keywords: ['space data centers', 'AI in space', 'orbital computing', 'SpaceX data center satellites', 'Starcloud', 'space-based AI', 'edge computing space', 'NVIDIA space', 'satellite computing', 'space industry AI'],
@@ -1991,7 +2355,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Direct Plays</h3>
 <ul>
-<li><strong>SpaceX</strong> (pre-IPO/IPO): The most vertically integrated player with launch, satellites, and ground infrastructure.</li>
+<li><strong>SpaceX</strong> (SPCX, public since June 2026): The most vertically integrated player with launch, satellites, and ground infrastructure.</li>
 <li><strong>Starcloud</strong> (private): The first-mover in orbital AI training. Watch for Series C and potential SPAC or IPO in 2027-2028.</li>
 <li><strong>Axiom Space</strong> (private): Space station infrastructure play with compute hosting as a growing revenue line.</li>
 </ul>
@@ -2604,11 +2968,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'space-industry-investment-guide-2026',
     title: 'Space Industry Investment Guide: Where Smart Money Is Going in 2026',
-    excerpt: 'From launch providers to satellite operators to in-space services, here\'s a comprehensive guide to investing in the space economy — including the sectors, stocks, and strategies that are attracting the most capital in 2026.',
+    excerpt: 'From launch providers to satellite operators to in-space services, here\'s a comprehensive guide to investing in the space economy — including the sectors, stocks, and strategies that are attracting the most capital in 2026. Updated August 2026 for the SpaceX (SPCX) listing.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-14T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: ['space investment', 'space stocks 2026', 'space industry ETF', 'space SPAC', 'satellite stocks', 'Rocket Lab stock', 'space venture capital', 'space portfolio', 'space economy investing', '<a href="/funding-tracker">space industry funding</a>'],
@@ -2616,6 +2981,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The space economy is no longer a niche investment thesis — it's a <strong>$630+ billion market</strong> growing at 9% annually toward a projected $1.8 trillion by 2035. From Rocket Lab's ascent as a multi-billion-dollar pure-play to the explosion of private funding in Earth observation AI, the space sector is offering investors more opportunities — and more complexity — than ever before.</p>
 
 <p>This guide breaks down the space investment landscape for 2026: the key sectors, the public market opportunities, the private market dynamics, and the portfolio strategies that separate informed space investors from tourists.</p>
+
+<p><em><strong>Updated August 2026:</strong> The biggest change since this guide was published — SpaceX went public on June 12, 2026 as <strong>SPCX</strong>, in the largest IPO in history. References to SpaceX below have been updated; for the full post-listing story, see <a href="/blog/spcx-stock-since-ipo-h2-2026-outlook">SPCX Since the IPO</a>.</em></p>
 
 <h2 id="investment-landscape">The 2026 Space Investment Landscape</h2>
 
@@ -2636,7 +3003,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The launch sector is the gateway to space, and its economics are being fundamentally reshaped by reusability. Key dynamics:</p>
 
 <ul>
-<li><strong>SpaceX</strong> remains dominant with 60%+ market share and Falcon 9's unmatched flight cadence, but it's a private company — investors can only access it through secondary markets or a potential future IPO</li>
+<li><strong>SpaceX (SPCX)</strong> remains dominant with 60%+ market share and Falcon 9's unmatched flight cadence — and since its June 2026 IPO, any investor can access it directly on Nasdaq, where it trades at a ~$1.84 trillion market cap</li>
 <li><strong>Rocket Lab (RKLB)</strong> is the most investable pure-play launch company. With Electron achieving consistent profitability per mission, Neutron (medium-lift) in development, and a growing Space Systems division building satellite buses, RKLB has become a market darling — up over 400% from its 2022 lows</li>
 <li><strong>Blue Origin</strong> remains private, but New Glenn's entry into service creates competitive pressure that affects the entire sector</li>
 <li><strong>Emerging launchers:</strong> Relativity Space (Terran R), Stoke Space, and Chinese competitors are all pre-revenue but worth monitoring</li>
@@ -2687,7 +3054,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The private space market has seen several significant transactions that signal where institutional capital is flowing:</p>
 
 <ul>
-<li><strong>SpaceX:</strong> Valued at $350+ billion in secondary markets, making it one of the most valuable private companies in the world. The rumored IPO of Starlink as a separate entity would be the space industry's defining liquidity event</li>
+<li><strong>SpaceX (SPCX):</strong> Public since June 12, 2026 — the largest IPO in history ($135/share at pricing, ~$1.84 trillion market cap today). The defining liquidity event this guide once speculated about has happened, and it reset valuation benchmarks across the sector</li>
 <li><strong>Axiom Space:</strong> Raised $350 million in a Series D at a reported $4+ billion valuation, backed by sovereign wealth funds and strategic investors</li>
 <li><strong>Anduril Industries:</strong> Raised $1.5 billion at a $14 billion valuation — not purely a space company, but its expansion into space defense (including autonomous satellite systems) makes it increasingly relevant</li>
 <li><strong>Impulse Space:</strong> Raised $150 million for its orbital transfer vehicle, positioning to be the "FedEx of space" for last-mile satellite delivery</li>
@@ -2761,7 +3128,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Size positions by conviction:</strong> Your highest-conviction ideas should be your largest positions. Don't equal-weight a speculative CubeSat company with Rocket Lab</li>
 <li><strong>Watch for catalysts:</strong> Maiden flights, contract awards, earnings beats, and regulatory decisions all create entry/exit points. SpaceNexus's <a href="/market-intel">Market Intelligence</a> tracks these in real time</li>
-<li><strong>Monitor the private market:</strong> SpaceX's valuation, private funding rounds, and upcoming IPOs (Astroscale, potentially Starlink) all affect public market sentiment</li>
+<li><strong>Monitor the private market:</strong> Private funding rounds and the IPO pipeline (Sierra Space and Axiom Space are both reportedly preparing filings) affect public market sentiment — and SPCX now provides the public benchmark every late-stage round is priced against</li>
 <li><strong>Rebalance quarterly:</strong> Space stocks are volatile. Winners can double in a quarter; losers can halve. Regular rebalancing enforces discipline</li>
 <li><strong>Think in decades:</strong> The space economy is a 10-20 year secular growth story. Short-term volatility is noise. The trend — more launches, more satellites, more data, more services — is durable</li>
 </ul>
@@ -2784,7 +3151,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Several upcoming events could be transformative for space investments:</p>
 
 <ul>
-<li><strong>SpaceX Starlink IPO</strong> — If/when it happens, it would be the largest space industry liquidity event in history, potentially valued at $100+ billion</li>
+<li><strong>SpaceX's public-market performance (SPCX)</strong> — The June 2026 IPO was the largest liquidity event in space industry history; how SPCX trades from here, and what its early quarterly disclosures reveal about Starlink, now sets the tone for the whole sector</li>
 <li><strong>Artemis missions</strong> — Artemis II (crewed lunar flyby) and III (lunar landing) will drive cislunar economy investment</li>
 <li><strong>AST SpaceMobile commercial service</strong> — Successful D2D broadband deployment would validate a multi-trillion-dollar TAM</li>
 <li><strong>Commercial space station transition</strong> — ISS decommissioning by 2030 creates a must-fund replacement market</li>
@@ -2942,7 +3309,6 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     authorRole: 'Editorial',
     publishedAt: '2026-03-14T00:00:00Z',
     readingTime: 12,
-    featured: true,
     keywords: ['SATELLITE 2026', 'satellite conference', 'space conference 2026', 'direct-to-device', 'space-based data centers', 'defense space', 'GovMilSpace', 'Startup Space', 'satellite industry', 'space events'],
     content: `
 <p>Every March, the global space and satellite industry descends on Washington, DC for <strong>SATELLITE</strong> — the world's largest and longest-running event dedicated to satellite technology, space infrastructure, and the businesses building humanity's orbital future. Now in its fifth decade, SATELLITE 2026 runs <strong>March 23-26 at the Walter E. Washington Convention Center</strong>, and this year's edition arrives at a moment of extraordinary industry transformation.</p>
@@ -3105,11 +3471,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Space Operations',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: ['track satellites', 'satellite tracker', 'ISS tracker', 'Starlink tracker', 'satellite tracking app', 'how to track satellites', 'real-time satellite tracking', 'satellite pass predictions', 'TLE data', 'SGP4'],
     content: `
-<p>There are over <strong>13,000 active satellites</strong> orbiting Earth right now — more than double the number just three years ago. From SpaceX\'s Starlink mega-constellation to the International Space Station, these objects are visible to the naked eye and trackable in real time using free tools. Whether you\'re an amateur astronomer, a satellite operator, a radio hobbyist, or just someone who looked up and wondered "what was that bright dot moving across the sky?" — this guide will teach you everything you need to know about tracking satellites in 2026.</p>
+<p>There are over <strong>16,000 active satellites</strong> orbiting Earth right now — more than double the number just three years ago. From SpaceX\'s Starlink mega-constellation to the International Space Station, these objects are visible to the naked eye and trackable in real time using free tools. Whether you\'re an amateur astronomer, a satellite operator, a radio hobbyist, or just someone who looked up and wondered "what was that bright dot moving across the sky?" — this guide will teach you everything you need to know about tracking satellites in 2026. <em>(Updated August 2026: the active-satellite count has been refreshed to 16,000+, per live CelesTrak tracking data.)</em></p>
 
 <h2 id="what-satellites-can-you-track">What Satellites Can You Track?</h2>
 
@@ -3285,11 +3652,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'space-stocks-to-watch-2026-investors-guide',
     title: 'Space Stocks to Watch in 2026: The Complete Investor\'s Guide',
-    excerpt: 'A comprehensive guide to investing in publicly traded space companies and space ETFs in 2026. Covering Rocket Lab, Virgin Galactic, AST SpaceMobile, Planet Labs, Spire Global, Redwire, space ETFs like ARKX and UFO, SpaceX IPO speculation, and how to evaluate space stocks.',
+    excerpt: 'A comprehensive guide to investing in publicly traded space companies and space ETFs in 2026. Covering SpaceX (SPCX), Rocket Lab, Virgin Galactic, AST SpaceMobile, Planet Labs, Spire Global, Redwire, space ETFs like ARKX and UFO, and how to evaluate space stocks. Updated August 2026.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 14,
     featured: true,
     keywords: ['space stocks', 'space ETFs', 'space industry stocks', 'Rocket Lab stock', 'RKLB', 'Virgin Galactic stock', 'SPCE', 'AST SpaceMobile', 'ASTS', 'space investing', 'ARKX', 'UFO ETF', 'SpaceX IPO', 'space industry investment'],
@@ -3299,6 +3667,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The space economy is projected to grow from $630 billion today to <strong>$1.8 trillion by 2035</strong>, and public market investors have more ways than ever to participate. But space investing isn\'t straightforward — the sector combines cutting-edge technology risk with long development timelines, government contract dependency, and business models that are still being proven. Some space SPACs from the 2021 boom have lost 80%+ of their value, while others have delivered significant returns.</p>
 
 <p>This guide covers the major publicly traded space companies, key ETFs, the stocks generating the most investor interest, and — critically — how to evaluate space stocks using fundamental analysis rather than hype.</p>
+
+<p><em><strong>Updated August 2026:</strong> Market caps throughout this guide have been refreshed to SpaceNexus market data as of August 15, 2026, and the SpaceX section has been rewritten — the IPO this guide originally speculated about happened on June 12, 2026. SPCX now trades on Nasdaq at a ~$1.84 trillion market cap; see <a href="/blog/spcx-stock-since-ipo-h2-2026-outlook">SPCX Since the IPO</a> for the full post-listing analysis.</em></p>
 
 <h2 id="landscape-of-public-space-companies">The Landscape of Public Space Companies in 2026</h2>
 
@@ -3310,7 +3680,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Rocket Lab USA (RKLB) — The SpaceX Alternative</h3>
 
-<p><strong>Market cap:</strong> ~$15B+ | <strong>Exchange:</strong> NASDAQ | <strong>Focus:</strong> Launch services, spacecraft, space systems</p>
+<p><strong>Market cap:</strong> ~$51B | <strong>Exchange:</strong> NASDAQ | <strong>Focus:</strong> Launch services, spacecraft, space systems</p>
 
 <p>Rocket Lab has emerged as the <strong>most credible publicly traded launch company</strong> and arguably the strongest pure-play space stock in the market. The investment thesis rests on multiple pillars:</p>
 
@@ -3325,7 +3695,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>AST SpaceMobile (ASTS) — Direct-to-Cell From Space</h3>
 
-<p><strong>Market cap:</strong> ~$8B+ | <strong>Exchange:</strong> NASDAQ | <strong>Focus:</strong> Space-based cellular broadband</p>
+<p><strong>Market cap:</strong> ~$27.6B | <strong>Exchange:</strong> NASDAQ | <strong>Focus:</strong> Space-based cellular broadband</p>
 
 <p>AST SpaceMobile is building the first <strong>space-based cellular broadband network</strong> that connects directly to standard, unmodified smartphones — no special hardware required. This is one of the most ambitious and polarizing space investments available:</p>
 
@@ -3339,7 +3709,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Planet Labs (PL) — Earth Observation Data</h3>
 
-<p><strong>Market cap:</strong> ~$2B | <strong>Exchange:</strong> NYSE | <strong>Focus:</strong> Earth observation, satellite imagery, geospatial analytics</p>
+<p><strong>Market cap:</strong> ~$8.8B | <strong>Exchange:</strong> NYSE | <strong>Focus:</strong> Earth observation, satellite imagery, geospatial analytics</p>
 
 <p>Planet operates the <strong>largest fleet of Earth observation satellites</strong> in history — over 200 spacecraft providing daily imaging of the entire Earth\'s landmass. The company has transitioned from a data collection business to a geospatial analytics platform:</p>
 
@@ -3350,7 +3720,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>AI/ML layer</strong> — Planet is increasingly selling analytics and change-detection algorithms rather than raw imagery, improving margins and stickiness.</li>
 </ul>
 
-<p><strong>Key risks:</strong> Path to profitability timeline, competition from Maxar/BlackSky/Satellogic, government contract concentration, data commoditization pressure.</p>
+<p><strong>Key risks:</strong> Path to profitability timeline, competition from Vantor (formerly Maxar), BlackSky, and Satellogic, government contract concentration, data commoditization pressure.</p>
 
 <h3>Spire Global (SPIR) — Space-Based Data Analytics</h3>
 
@@ -3368,7 +3738,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Redwire Corporation (RDW) — Space Infrastructure and Manufacturing</h3>
 
-<p><strong>Market cap:</strong> ~$2B | <strong>Exchange:</strong> NYSE | <strong>Focus:</strong> Space infrastructure, in-space manufacturing, heritage space components</p>
+<p><strong>Market cap:</strong> ~$3.4B | <strong>Exchange:</strong> NYSE | <strong>Focus:</strong> Space infrastructure, in-space manufacturing, heritage space components</p>
 
 <p>Redwire has positioned itself as a <strong>space infrastructure conglomerate</strong>, assembling acquisitions across solar arrays, deployable structures, digital engineering, and in-space manufacturing:</p>
 
@@ -3405,7 +3775,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Procure Space ETF (UFO)</h3>
 <p><strong>Expense ratio:</strong> 0.75% | <strong>AUM:</strong> ~$50M</p>
-<p>UFO tracks the S-Network Space Index and tends to have <strong>more concentrated space exposure</strong> than ARKX, with larger allocations to satellite operators, launch companies, and space defense firms. Holdings include SES, Eutelsat, Maxar, and pure-play space companies. The tighter focus on actual space revenue makes UFO a more precise instrument for space sector bets, though the smaller AUM means lower liquidity.</p>
+<p>UFO tracks the S-Network Space Index and tends to have <strong>more concentrated space exposure</strong> than ARKX, with larger allocations to satellite operators, launch companies, and space defense firms. Holdings include SES, Eutelsat, and pure-play space companies. The tighter focus on actual space revenue makes UFO a more precise instrument for space sector bets, though the smaller AUM means lower liquidity.</p>
 
 <h3>iShares U.S. Aerospace & Defense ETF (ITA)</h3>
 <p><strong>Expense ratio:</strong> 0.42% | <strong>AUM:</strong> ~$6B</p>
@@ -3426,18 +3796,19 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="spacex-ipo">The SpaceX IPO Question</h2>
 
-<p>No discussion of space stocks is complete without addressing <strong>SpaceX</strong> — the dominant force in commercial space, valued at $350B+ in private secondary markets as of early 2026. The SpaceX IPO question generates enormous investor interest:</p>
+<p><em>This section originally addressed "the SpaceX IPO question" — whether investors would ever get direct access. That question was answered on <strong>June 12, 2026</strong>.</em></p>
 
-<h3>Will SpaceX IPO?</h3>
-<p>Elon Musk has repeatedly stated that SpaceX will not IPO until Starship is flying regularly and the Mars mission architecture is clear. However, the <strong>Starlink subsidiary</strong> is widely expected to be spun off as a separate publicly traded entity once it achieves stable profitability — potentially in 2026-2027. Starlink is already generating $6B+ in annual revenue with strong growth trajectory.</p>
+<p>SpaceX is now <strong>publicly traded on Nasdaq as SPCX</strong> — and it is, by an enormous margin, the anchor stock of the entire sector. The IPO priced at <strong>$135 per share (~$1.78 trillion valuation, ~$75 billion raised)</strong>, the largest listing in history. The stock closed its first day near a $2.1 trillion market cap, retraced below its IPO price during a July slide, and has recovered to trade around <strong>$140, a ~$1.84 trillion market cap</strong> (SpaceNexus market data, August 15, 2026).</p>
 
-<h3>How to Get Indirect SpaceX Exposure</h3>
+<h3>What SPCX Means for Space Investors</h3>
 <ul>
-<li><strong>Alphabet/Google (GOOGL)</strong> — Invested $900M in SpaceX in 2015 and holds equity in the company, though it\'s a negligible portion of Google\'s market cap.</li>
-<li><strong>Baillie Gifford funds</strong> — The Scottish investment firm is one of SpaceX\'s largest outside shareholders and holds shares in several publicly traded funds.</li>
-<li><strong>ARK Invest (ARKX)</strong> — ARK has accessed SpaceX exposure through private market allocations in the past.</li>
-<li><strong>Secondary market platforms</strong> — Accredited investors can sometimes access SpaceX shares through platforms like Forge Global (FRGE) and EquityZen, though at premium valuations and with liquidity constraints.</li>
+<li><strong>Direct access, finally</strong> — The indirect-exposure workarounds this guide once listed (Alphabet\'s stake, Baillie Gifford funds, secondary platforms) are obsolete. Any brokerage account can now hold the industry\'s most valuable company directly.</li>
+<li><strong>A sector benchmark</strong> — Every other space stock is now priced against a live SPCX quote. Launch, broadband, and defense-space multiples all have a public anchor.</li>
+<li><strong>Concentration cuts both ways</strong> — At ~$1.84 trillion, SPCX dwarfs the rest of the investable space universe combined. A "space portfolio" that includes SPCX at market weight is mostly a SpaceX portfolio.</li>
+<li><strong>Volatility is real</strong> — In its first two months, SPCX has traded as high as $225.64 intraday and as low as $104.83. Position sizing discipline applies to trillion-dollar companies too.</li>
 </ul>
+
+<p>For the full post-listing trajectory and our H2 2026 scenario framework, see <a href="/blog/spcx-stock-since-ipo-h2-2026-outlook">SPCX Since the IPO</a>, and compare it against the sector\'s number two in <a href="/compare/spcx-vs-rklb-stock">SPCX vs. RKLB</a>.</p>
 
 <h2 id="how-to-evaluate-space-stocks">How to Evaluate Space Stocks: A Framework</h2>
 
@@ -4297,11 +4668,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'five-space-industry-trends-defining-2026',
     title: '5 Space Industry Trends That Will Define 2026',
-    excerpt: 'From SpaceX\'s potential IPO to AI-powered orbital data centers, the space industry is entering its most transformative year yet. Here are the five trends that will reshape the market, create new investment opportunities, and redefine what\'s possible in orbit.',
+    excerpt: 'From the SpaceX IPO (which happened on June 12 — see the August update inside) to AI-powered orbital data centers, the space industry is in its most transformative year yet. Here are the five trends reshaping the market, creating new investment opportunities, and redefining what\'s possible in orbit.',
     category: 'analysis',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: ['space industry trends 2026', 'SpaceX IPO', 'AI space convergence', 'orbital data centers', 'direct-to-device satellite', 'commercial space stations', 'ISS retirement', 'space defense spending', 'space industry forecast', 'space economy trends'],
@@ -4311,6 +4683,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>We\'re not talking about incremental improvements or single milestone moments. The five trends outlined below represent <strong>category-level transformations</strong> that will define the trajectory of the space economy for the rest of the decade. Whether you\'re an investor evaluating space exposure, an engineer deciding where to build your career, or a business leader assessing how space affects your industry, these are the dynamics you need to understand.</p>
 
 <h2 id="trend-1-spacex-ipo">Trend 1: SpaceX IPO Legitimizes Space as an Asset Class</h2>
+
+<p><em><strong>Update, August 2026: this trend came true \u2014 bigger than we predicted.</strong> SpaceX went public on June 12, 2026 as SPCX \u2014 not a Starlink spinoff but the whole company \u2014 pricing at $135 per share (~$1.78 trillion) and raising ~$75 billion in the largest IPO in history. It trades around a $1.84 trillion market cap today. See <a href="/blog/spcx-stock-since-ipo-h2-2026-outlook">SPCX Since the IPO</a>.</em></p>
 
 <p>The most consequential event for the space economy in 2026 may not be a launch or a satellite deployment \u2014 it may be an <strong>S-1 filing</strong>. SpaceX, valued at over $350 billion on secondary markets, has been signaling movement toward an initial public offering, likely through a <strong>Starlink spinoff or partial IPO</strong>. If it happens, it would be the largest technology IPO in history and the single most significant event for space as an investable market.</p>
 
@@ -4528,7 +4902,6 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
     readingTime: 7,
-    featured: true,
     keywords: ['Artemis II rollout', 'Artemis II launch', 'NASA Artemis', 'SLS rocket', 'Orion spacecraft', 'Pad 39B', 'moon mission 2026', 'how to watch Artemis II'],
     content: `
 <p>After years of development, testing, and anticipation, <strong>Artemis II is rolling to the pad</strong>. On March 20, 2026, NASA will transport the fully stacked Space Launch System (SLS) rocket and Orion spacecraft from the Vehicle Assembly Building (VAB) to Launch Complex 39B at Kennedy Space Center. This rollout marks one of the final major milestones before the first crewed Artemis mission sends four astronauts around the Moon and back.</p>
@@ -4612,6 +4985,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 10,
     keywords: ['Starship V3', 'SpaceX Starship', 'Raptor V3', 'Super Heavy booster', 'most powerful rocket', 'Mechazilla', 'Starship heat shield', 'reusable rocket', 'Starship payload capacity'],
     content: `
@@ -4708,7 +5082,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Satellite operators</strong> can design larger, more capable satellites without being constrained by fairing size or mass limits, fundamentally changing spacecraft design philosophy.</li>
 <li><strong>Space station developers</strong> (Axiom, Vast, Orbital Reef) can launch station modules that are dramatically larger and heavier than what any other vehicle can deliver, accelerating the post-ISS commercial station era.</li>
-<li><strong>Lunar and Mars programs</strong> benefit from the ability to pre-position massive amounts of cargo, hardware, and propellant. Starship is already selected as NASA\'s Human Landing System for Artemis III and beyond.</li>
+<li><strong>Lunar and Mars programs</strong> benefit from the ability to pre-position massive amounts of cargo, hardware, and propellant. Starship is NASA\'s selected Human Landing System — flying the crewed Earth-orbit demonstration on Artemis III (NET late 2027) ahead of the Artemis IV lunar landing (~2028).</li>
 <li><strong>Competing launch providers</strong> face an existential pricing challenge. If Starship achieves even a fraction of its cost targets, the per-kilogram economics make it extremely difficult for expendable or partially reusable vehicles to compete on price.</li>
 <li><strong>In-space manufacturing</strong> companies can plan for regular, affordable cargo delivery that makes orbital factories economically viable for the first time.</li>
 </ul>
@@ -5193,28 +5567,29 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'state-of-space-economy-2026-overview',
     title: 'The State of the Space Economy in 2026: A Data-Driven Overview',
-    excerpt: 'A comprehensive, data-driven overview of the $626 billion global space economy in 2026 — covering launch, satellite communications, Earth observation, navigation, government spending, private investment, and the key trends shaping the industry\'s trajectory toward $1 trillion by 2034.',
+    excerpt: 'A comprehensive, data-driven overview of the $630 billion global space economy in 2026 — covering launch, satellite communications, Earth observation, navigation, government spending, private investment, and the key trends shaping the industry\'s trajectory toward $1 trillion by 2034.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T18:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: ['space economy 2026', 'space industry market size', 'space economy overview', 'satellite communications market', 'launch industry', 'Earth observation market', 'space investment', 'space industry trends', 'commercial space', 'space defense spending'],
     content: `
-<p>The global space economy reached an estimated <strong>$626 billion</strong> in 2025, according to aggregated data from the Space Foundation, Euroconsult, and the Satellite Industry Association. That figure represents a 7% year-over-year increase and positions the industry firmly on a trajectory to surpass <strong>$1 trillion by 2034</strong>. But the headline number only tells part of the story. Beneath it lies a complex, rapidly evolving ecosystem of launch providers, satellite operators, government agencies, defense contractors, and venture-backed startups — all competing and collaborating to build the infrastructure of a space-enabled global economy.</p>
+<p>The global space economy reached an estimated <strong>$630 billion</strong> in 2025, according to aggregated data from the Space Foundation, Euroconsult, and the Satellite Industry Association. That figure represents a 7% year-over-year increase and positions the industry firmly on a trajectory to surpass <strong>$1 trillion by 2034</strong>. But the headline number only tells part of the story. Beneath it lies a complex, rapidly evolving ecosystem of launch providers, satellite operators, government agencies, defense contractors, and venture-backed startups — all competing and collaborating to build the infrastructure of a space-enabled global economy. <em>(Updated August 2026: the economy figure has been aligned to the current $630 billion consensus estimate, and company names refreshed — Maxar\'s Earth-observation business now operates as Vantor.)</em></p>
 
 <p>This article provides a comprehensive, data-driven overview of the major sectors, spending patterns, investment flows, and structural trends defining the space economy in 2026. Whether you are an investor evaluating opportunities, an executive setting strategy, an engineer choosing your next role, or a policy analyst tracking government priorities, this is the landscape you need to understand.</p>
 
 <h2 id="market-size-composition">Market Size and Composition</h2>
 
-<p>The $626 billion space economy is not a single market — it is a collection of interconnected sectors with very different growth rates, competitive dynamics, and maturity levels. The major segments break down as follows:</p>
+<p>The $630 billion space economy is not a single market — it is a collection of interconnected sectors with very different growth rates, competitive dynamics, and maturity levels. The major segments break down as follows:</p>
 
 <ul>
 <li><strong>Satellite communications: ~$180 billion.</strong> This is the largest single segment, encompassing direct-to-home television, fixed satellite services, mobile satellite services, and the rapidly growing broadband-from-space category. Starlink alone is projected to generate $7-8 billion in 2026 revenue, and Amazon\'s Project Kuiper is beginning commercial service.</li>
 <li><strong>Positioning, navigation, and timing (PNT): $200 billion+.</strong> GPS, Galileo, GLONASS, and BeiDou underpin an enormous downstream economy spanning logistics, agriculture, financial services, telecommunications, and consumer devices. The PNT segment is often undercounted because its value is distributed across industries that depend on precise timing and location data.</li>
 <li><strong>Launch services: ~$12 billion.</strong> The global launch market includes commercial, government, and military payloads. SpaceX dominates commercial launch with approximately 70% market share by mass to orbit. Arianespace, Rocket Lab, ULA, ISRO, and emerging Chinese commercial providers compete for the remainder. Reusability has compressed per-kilogram costs by 90% over the past decade, enabling new categories of space activity.</li>
-<li><strong>Earth observation (EO): ~$6 billion.</strong> The EO market spans optical, radar (SAR), and hyperspectral imagery for government intelligence, agriculture, insurance, energy, environmental monitoring, and climate analytics. Planet Labs, Maxar, Airbus Defence and Space, and BlackSky are major players, with AI-driven analytics platforms increasingly bundled with imagery data.</li>
+<li><strong>Earth observation (EO): ~$6 billion.</strong> The EO market spans optical, radar (SAR), and hyperspectral imagery for government intelligence, agriculture, insurance, energy, environmental monitoring, and climate analytics. Planet Labs, Vantor (formerly Maxar), Airbus Defence and Space, and BlackSky are major players, with AI-driven analytics platforms increasingly bundled with imagery data.</li>
 <li><strong>Government space budgets: $95 billion+ globally.</strong> Government spending on civil and military space programs is the foundation of the space economy. The United States accounts for roughly $70 billion (NASA, Space Force, NRO, and other agencies), with China, the European Space Agency, India, Japan, and others contributing the balance.</li>
 <li><strong>Ground equipment and services: ~$140 billion.</strong> Satellite ground stations, VSAT terminals, user equipment (including GPS receivers in every smartphone), and ground-based space operations form a large but often overlooked segment of the value chain.</li>
 </ul>
@@ -5271,7 +5646,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="outlook">Outlook: The Road to $1 Trillion</h2>
 
-<p>The space economy\'s path from $626 billion to $1 trillion by 2034 is not guaranteed, but the structural drivers are strong. Declining launch costs make new applications economically viable. Proliferated LEO constellations are creating always-on global connectivity. AI and machine learning are unlocking value from the petabytes of data collected by Earth observation satellites. Government budgets are growing, not shrinking. And a new generation of entrepreneurs, engineers, and investors — many drawn from the tech industry — are bringing fresh capital, talent, and urgency to the sector.</p>
+<p>The space economy\'s path from $630 billion to $1 trillion by 2034 is not guaranteed, but the structural drivers are strong. Declining launch costs make new applications economically viable. Proliferated LEO constellations are creating always-on global connectivity. AI and machine learning are unlocking value from the petabytes of data collected by Earth observation satellites. Government budgets are growing, not shrinking. And a new generation of entrepreneurs, engineers, and investors — many drawn from the tech industry — are bringing fresh capital, talent, and urgency to the sector.</p>
 
 <p>The biggest risks to this trajectory include regulatory bottlenecks (spectrum allocation, launch licensing, orbital debris mitigation rules), geopolitical fragmentation (export controls, technology transfer restrictions, competing standards), and the persistent challenge of turning space technology into profitable commercial products. The industry has no shortage of ambitious vision; the question is whether business models can keep pace with engineering capabilities.</p>
 
@@ -5397,6 +5772,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 7,
     featured: true,
     keywords: [
@@ -5463,7 +5839,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <tr><td>Government contracts</td><td>SAM.gov — generic interface, no space focus</td><td>Space-filtered procurement with SBIR/STTR, agency tracking, and award analytics</td></tr>
 <tr><td>Market data</td><td>Yahoo Finance — general market, no sector view</td><td>Space-sector dashboard with 30+ tickers, ETFs, funding rounds, and sector correlation</td></tr>
 <tr><td>Monitoring &amp; alerts</td><td>Google Alerts — keyword only, high noise</td><td>Multi-domain alerts: launches, stocks, contracts, news, satellites — with intelligence filtering</td></tr>
-<tr><td>Company intelligence</td><td>Manual research across LinkedIn, Crunchbase, SEC</td><td>200+ company profiles with funding, contracts, technology focus, and competitive positioning</td></tr>
+<tr><td>Company intelligence</td><td>Manual research across LinkedIn, Crunchbase, SEC</td><td>300+ company profiles with funding, contracts, technology focus, and competitive positioning</td></tr>
 <tr><td>Cross-domain analysis</td><td>Not possible without manual effort</td><td>Automatic correlation between launches, markets, contracts, and news</td></tr>
 <tr><td>Historical trends</td><td>Not available</td><td>Longitudinal data across all modules</td></tr>
 </tbody>
@@ -5604,11 +5980,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'complete-guide-space-etfs-arkx-ufo-ita-2026',
     title: 'The Complete Guide to Space ETFs: ARKX, UFO, ITA and Beyond',
-    excerpt: 'A comprehensive breakdown of every space-focused ETF available in 2026 — holdings, expense ratios, AUM, performance, and strategy. The definitive resource for investors building space exposure through exchange-traded funds.',
+    excerpt: 'A comprehensive breakdown of every space-focused ETF available in 2026 — holdings, expense ratios, AUM, performance, and strategy. The definitive resource for investors building space exposure through exchange-traded funds. Updated August 2026 for the SpaceX (SPCX) listing.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-17T12:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: [
@@ -5630,7 +6007,9 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="why-space-etfs">Why Space ETFs Matter</h2>
 
-<p>Investing in individual space companies carries concentrated risk. SpaceX remains private. Many publicly traded space companies are small-caps or mid-caps with volatile earnings. The SPAC class of 2021 taught investors a painful lesson about speculative single-stock bets — names like Astra and Momentus declined 80-90% from their peaks.</p>
+<p><em><strong>Updated August 2026:</strong> When this guide was first published, its biggest caveat was that SpaceX — the industry\'s most valuable company — was private and unreachable through any fund. That changed on June 12, 2026, when SpaceX listed on Nasdaq as <strong>SPCX</strong> in the largest IPO in history (~$1.78 trillion at pricing; ~$1.84 trillion today). Expect index and ETF compositions to evolve around it; check current fund holdings before buying. See <a href="/blog/spcx-stock-since-ipo-h2-2026-outlook">SPCX Since the IPO</a> for the full analysis.</em></p>
+
+<p>Investing in individual space companies carries concentrated risk. Many publicly traded space companies are small-caps or mid-caps with volatile earnings. The SPAC class of 2021 taught investors a painful lesson about speculative single-stock bets — names like Astra and Momentus declined 80-90% from their peaks.</p>
 
 <p>Space ETFs solve this by spreading risk across dozens of holdings while still capturing the sector\'s structural growth. They also provide exposure to companies that are difficult to buy individually in certain brokerage accounts, and they rebalance automatically as the industry evolves.</p>
 
@@ -5715,8 +6094,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Top Holdings</h3>
 <ul>
-<li><strong>Maxar Technologies</strong> — Earth observation and geospatial intelligence satellites.</li>
-<li><strong>Virgin Galactic (SPCE)</strong> — Suborbital space tourism (though the company has faced significant operational challenges).</li>
+<li><strong>Planet Labs (PL)</strong> — Daily Earth observation imagery and geospatial analytics.</li>
+<li><strong>Virgin Galactic (SPCE)</strong> — Suborbital space tourism (currently between vehicles — commercial flights are paused until its Delta-class spaceplanes enter service, expected 2026-27).</li>
 <li><strong>Aerojet Rocketdyne</strong> — Rocket propulsion systems, now part of L3Harris.</li>
 <li><strong>BWX Technologies (BWXT)</strong> — Nuclear propulsion and power for space missions.</li>
 <li><strong>Kratos Defense (KTOS)</strong> — Satellite ground systems and unmanned platforms.</li>
@@ -5794,7 +6173,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Launch failures</strong> — A single anomaly can move multiple holdings simultaneously.</li>
 <li><strong>Government budget dependency</strong> — Many space companies rely on NASA, Space Force, and NRO contracts. Budget sequestration or political shifts can affect the entire sector.</li>
-<li><strong>SpaceX dominance</strong> — SpaceX remains private, meaning ETF investors cannot access the industry\'s most valuable company. SpaceX\'s pricing power also pressures competitors\' margins.</li>
+<li><strong>SpaceX concentration</strong> — Now that SpaceX trades publicly as SPCX (~$1.84 trillion), the opposite problem applies: any fund that holds it at market weight becomes dominated by a single name, and any fund that excludes it misses most of the sector\'s market value. SpaceX\'s pricing power also pressures competitors\' margins.</li>
 <li><strong>Regulatory risk</strong> — Changes to debris mitigation rules, spectrum allocation, or export controls can affect satellite operators and manufacturers.</li>
 <li><strong>Concentration</strong> — The publicly traded space universe is still relatively small. Multiple ETFs hold overlapping positions in names like Rocket Lab, Iridium, and L3Harris.</li>
 </ul>
@@ -6889,6 +7268,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-16T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 9,
     keywords: ['Starlink', 'SpaceX Starlink', 'Starlink satellites', 'Starlink internet', 'satellite internet', 'Starlink coverage 2026', 'Starlink price'],
     content: `
@@ -6992,7 +7372,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Hardware cost reduction:</strong> User terminal cost has been reduced from ~$3,000 manufacturing cost in 2020 to under $600 in 2026</li>
 </ul>
 
-<p>There is widespread speculation that SpaceX may eventually <strong>spin off Starlink as a separate publicly traded company</strong>, which could be valued at $100B+ based on revenue multiples.</p>
+<p>Before SpaceX\'s June 2026 IPO, there was widespread speculation that the company would <strong>spin off Starlink as a separate publicly traded company</strong>. Instead, the whole company went public as SPCX — and Starlink\'s subscriber and revenue disclosures inside SpaceX\'s public reporting are now among the most-watched numbers in the industry. See our analysis of <a href="/blog/spcx-stock-since-ipo-h2-2026-outlook">SPCX since the IPO</a>.</p>
 
 <h2 id="challenges">Challenges and Controversies</h2>
 
@@ -7171,9 +7551,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T12:00:00Z',
     readingTime: 15,
     keywords: ['top space companies', 'space companies to watch', 'best space companies 2026', 'space industry companies', 'space startups', 'commercial space companies', 'space company list'],
     content: `
+<p><em><strong>Updated follow-up:</strong> a lot has changed since this list was published in March — the SpaceX IPO, a record funding wave, and a small-cap shakeout. Read the fully rebuilt mid-year edition: <a href="/blog/top-50-space-companies-second-half-2026">The Top 50 Space Companies to Watch in the 2nd Half of 2026</a>.</em></p>
+
 <p>The space industry is no longer a handful of government contractors and a couple of billionaire-backed startups. In 2026, the <strong>$630+ billion global space economy</strong> is powered by hundreds of companies across launch, satellites, defense, manufacturing, and emerging sectors like in-space servicing and space tourism. Here are the <strong>50 most important space companies to watch in 2026</strong> — the organizations shaping the future of the industry.</p>
 
 <h2 id="launch-providers">Launch Providers</h2>
@@ -8543,6 +8926,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 11,
     featured: true,
     keywords: ['future of space', 'space predictions 2030', 'space industry forecast', 'mars mission timeline', 'space tourism future', 'orbital manufacturing', 'space economy trillion', 'space industry trends'],
@@ -8590,10 +8974,10 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="prediction-4">4. 50,000+ Active Satellites Will Orbit Earth</h2>
 
-<p>As of early 2026, approximately <strong>10,000-12,000 active satellites</strong> are in orbit. By 2030, that number will exceed 50,000:</p>
+<p><em>(Updated August 2026: baseline satellite counts refreshed.)</em> As of mid-2026, more than <strong>16,000 active satellites</strong> are in orbit. By 2030, that number could exceed 50,000:</p>
 
 <ul>
-<li><strong>Starlink:</strong> 12,000 current, targeting 42,000 authorized. Likely 25,000-30,000 operational by 2030.</li>
+<li><strong>Starlink:</strong> by far the largest constellation, with 12,000 satellites authorized in its initial phases and filings for up to 42,000. Likely 25,000-30,000 operational by 2030.</li>
 <li><strong>Amazon Kuiper:</strong> 3,236 authorized, with deployment well underway</li>
 <li><strong>OneWeb (Eutelsat):</strong> 600+ current, Gen 2 expansion planned</li>
 <li><strong>Chinese constellations (Guowang, G60 Starlink):</strong> 13,000+ authorized, rapid deployment beginning</li>
@@ -9259,6 +9643,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
     readingTime: 10,
     keywords: ['free space tools', 'CelesTrak', 'NASA Worldview', 'STK free', 'Space-Track.org', 'SpaceNexus', 'space industry tools', 'satellite tracking tools', 'space professional resources'],
     content: `
@@ -9323,7 +9708,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Comparison tools</strong> — side-by-side or swipe comparisons of different dates or data layers</li>
 </ul>
 
-<p><strong>Best for:</strong> Earth observation analysts, environmental scientists, insurance professionals, educators, and anyone interested in satellite remote sensing. Invaluable for understanding the products of EO companies like Planet, Maxar, and BlackBridge.</p>
+<p><strong>Best for:</strong> Earth observation analysts, environmental scientists, insurance professionals, educators, and anyone interested in satellite remote sensing. Invaluable for understanding the products of EO companies like Planet, Vantor (formerly Maxar), and BlackSky.</p>
 
 <p><strong>Pro tip:</strong> Use the "Add Layer" search to find specific datasets. The VIIRS Day/Night Band (nighttime lights) layer is particularly fascinating — you can see cities, fishing fleets, and gas flares from space.</p>
 

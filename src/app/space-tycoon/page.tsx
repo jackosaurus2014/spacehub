@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, type HTMLAttributes } from 'react';
 import type { GameState, GameTab } from '@/lib/game/types';
 import { processFullTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
@@ -135,6 +135,11 @@ import MapCommandCenter from '@/components/game/MapCommandCenter';
 // src/lib/game/{outliner,situation-log,order-queue}.ts.
 import Outliner from '@/components/game/Outliner';
 import type { OrderQueueTarget } from '@/lib/game/order-queue';
+// Wave V4 (docs/VISUAL_DEPTH_2026-08.md §V4) — map-as-stage: on desktop
+// (≥1280px) the map stays mounted behind every non-map tab, which renders
+// as an overlay over the frozen/dimmed map. Pure layout decisions live in
+// map-stage.ts so the open/close state machine is unit-testable.
+import { computeStageLayout, overlayDismissTab, STAGE_MEDIA_QUERY } from '@/lib/game/map-stage';
 import ContractsHubPanel from '@/components/game/ContractsHubPanel';
 import StandingsHubPanel from '@/components/game/StandingsHubPanel';
 import MarketHubPanel from '@/components/game/MarketHubPanel';
@@ -816,6 +821,44 @@ export default function SpaceTycoonPage() {
   // location twice in a row (already on the map tab) still re-triggers
   // MapCommandCenter's selection effect.
   const [mapFocusRequest, setMapFocusRequest] = useState<{ target: OrderQueueTarget; token: number } | null>(null);
+  // Wave V4 — map-as-stage. desktopStage tracks the ≥1280px media query
+  // (SSR-safe: starts false → phones/first paint keep today's full-screen
+  // panels). stageLayout decides mounted/covered/overlay per tab.
+  const [desktopStage, setDesktopStage] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(STAGE_MEDIA_QUERY);
+    const apply = () => setDesktopStage(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+  const stageLayout = computeStageLayout(tab, desktopStage);
+  // Escape closes the panel overlay and returns to the map (keyboard path;
+  // pointer path is the dimmed-margin backdrop button in the JSX below).
+  useEffect(() => {
+    if (!stageLayout.overlayOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      // Respect anything that already consumed the key (a modal's own
+      // Escape-to-close, a dropdown, etc.) — the overlay dismiss is the
+      // lowest-priority Escape handler on the page.
+      if (e.defaultPrevented) return;
+      const dismissTo = overlayDismissTab(e.key);
+      if (!dismissTo) return;
+      e.preventDefault();
+      playSound('click');
+      setTab(dismissTo);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [stageLayout.overlayOpen]);
+  // Move focus into the overlay sheet when it opens (the map behind it is
+  // inert, so focus must land in the panel for keyboard users).
+  const overlaySheetRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!stageLayout.overlayOpen) return;
+    const id = requestAnimationFrame(() => overlaySheetRef.current?.focus({ preventScroll: true }));
+    return () => cancelAnimationFrame(id);
+  }, [stageLayout.overlayOpen, tab]);
   const [showMenu, setShowMenu] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
@@ -1971,27 +2014,59 @@ export default function SpaceTycoonPage() {
           the tab-content column's own overflow-y-auto still work exactly
           as before — this wrapper adds no sizing behavior of its own. */}
       <div className="flex-1 flex min-h-0">
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="relative flex-1 min-w-0 flex flex-col">
       {/* Panel Content — the map tab gets the full-viewport command center
-          (Wave 9); every other tab keeps the scrollable card layout.
-          key={tab} on the scrollable branch triggers the reveal animation
-          on tab switch. */}
-      {tab === 'map' ? (
-        <MapCommandCenter
-          state={state}
-          onUnlock={handleUnlockLocation}
-          onBuild={handleBuild}
-          onSellBuilding={handleSellBuilding}
-          onDispatchShip={handleDispatchShip}
-          onLaunchExpedition={handleLaunchExpedition}
-          onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
-          onRegionFocus={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }}
-          focusRequest={mapFocusRequest}
-        />
-      ) : (
+          (Wave 9). Wave V4 (map-as-stage): on desktop ≥1280px the map STAYS
+          MOUNTED behind every other tab (WebGL context preserved, renderers
+          frozen via `covered`), dimmed by the overlay backdrop below; the
+          map subtree goes inert so focus stays in the panel. On phones the
+          map unmounts exactly as before. */}
+      {stageLayout.mapMounted && (
+        <div
+          className="flex-1 min-h-0 flex flex-col"
+          aria-hidden={stageLayout.mapCovered || undefined}
+          {...(stageLayout.mapCovered ? ({ inert: '' } as unknown as HTMLAttributes<HTMLDivElement>) : {})}
+        >
+          <MapCommandCenter
+            state={state}
+            onUnlock={handleUnlockLocation}
+            onBuild={handleBuild}
+            onSellBuilding={handleSellBuilding}
+            onDispatchShip={handleDispatchShip}
+            onLaunchExpedition={handleLaunchExpedition}
+            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onRegionFocus={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }}
+            focusRequest={mapFocusRequest}
+            covered={stageLayout.mapCovered}
+          />
+        </div>
+      )}
+      {tab !== 'map' && (
       // Wave V7 — tab-crossfade replaces the blanket animate-reveal-up "pop"
       // remount with a shorter cross-fade + slide (GameStyles.tsx).
-      <div key={tab} className="flex-1 overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full tab-crossfade game-scroll">
+      // Wave V4 — on desktop this whole block becomes an overlay sheet over
+      // the dimmed map: Escape (effect above) or clicking the dimmed margin
+      // (backdrop button) returns to the map tab.
+      <div className={stageLayout.overlayOpen ? 'absolute inset-0 z-30 flex flex-col' : 'flex-1 min-h-0 flex flex-col'}>
+        {stageLayout.overlayOpen && (
+          <button
+            type="button"
+            onClick={() => { playSound('click'); setTab('map'); }}
+            aria-label="Close panel and return to the map"
+            title="Return to the map (Esc)"
+            className="absolute inset-0 w-full h-full bg-black/55 backdrop-blur-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400"
+          />
+        )}
+        <div
+          key={tab}
+          ref={stageLayout.overlayOpen ? overlaySheetRef : undefined}
+          role={stageLayout.overlayOpen ? 'dialog' : undefined}
+          aria-label={stageLayout.overlayOpen ? `${TAB_CATALOG.find(t => t.id === tab)?.label || tab} console (Escape returns to the map)` : undefined}
+          tabIndex={stageLayout.overlayOpen ? -1 : undefined}
+          className={`overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full tab-crossfade game-scroll ${
+            stageLayout.overlayOpen ? 'relative flex-1 min-h-0 outline-none' : 'flex-1'
+          }`}
+        >
         {tab === 'dashboard' && <DashboardPanel
           state={state}
           onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)}
@@ -2395,6 +2470,7 @@ export default function SpaceTycoonPage() {
             }}
           />
         )}
+        </div>
       </div>
       )}
       </div>

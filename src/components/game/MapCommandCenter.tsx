@@ -33,6 +33,8 @@ import SpatialStrategyPanel from './SpatialStrategyPanel';
 import { playSound } from '@/lib/game/sound-engine';
 import { updateMusicMood } from '@/lib/game/music-engine';
 import { isFoldedFeatureUnlocked } from '@/lib/game/corporation-tiers';
+import { MAP_MODES, MAP_MODE_MAP, cycleMapMode, type MapMode } from '@/lib/game/map-modes';
+import GameIcon from './GameIcon';
 
 type Layer = 'solar' | 'galactic';
 
@@ -94,14 +96,40 @@ interface MapCommandCenterProps {
    *  twice in a row while already on the map tab still re-triggers the
    *  selection effect below (a plain value-equality prop wouldn't). */
   focusRequest?: { target: OrderQueueTarget; token: number } | null;
+  /** Wave V4 (map-as-stage): true while a desktop panel overlay fully covers
+   *  the mounted map. Both renderers freeze (no rAF / frameloop 'never' —
+   *  retained framebuffer only) and the map's keyboard shortcuts go quiet
+   *  so they can't fire under the overlay. */
+  covered?: boolean;
 }
 
 export default function MapCommandCenter({
-  state, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest,
+  state, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
   const [showActivity, setShowActivity] = useState(false);
+
+  // Wave V4 — map mode ("Stellaris lens"). Pure recolor/re-badge of existing
+  // data via map-modes.ts, consumed by BOTH renderers. Keyboard: `M` cycles.
+  const [mapMode, setMapMode] = useState<MapMode>('standard');
+  const setMode = useCallback((mode: MapMode) => {
+    playSound('click');
+    setMapMode(mode);
+  }, []);
+  useEffect(() => {
+    if (covered) return; // never steal keys while a panel overlay is up
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'm' && e.key !== 'M') return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      playSound('click');
+      setMapMode(prev => cycleMapMode(prev));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [covered]);
 
   // W12: the galactic layer steers the adaptive score toward the colder
   // interstellar palette (hint is only honored while the map tab is active —
@@ -201,6 +229,8 @@ export default function MapCommandCenter({
             state={state}
             selectedLocationId={selection?.kind === 'location' ? selection.id : null}
             onSelectLocation={selectLocation}
+            active={!covered}
+            mapMode={mapMode}
           />
         ) : (
           <SolarSystemCanvas
@@ -209,6 +239,8 @@ export default function MapCommandCenter({
             embedded
             selectedLocationId={selection?.kind === 'location' ? selection.id : null}
             onSelectLocation={selectLocation}
+            active={!covered}
+            mapMode={mapMode}
           />
         )
       ) : (
@@ -289,14 +321,66 @@ export default function MapCommandCenter({
         )}
       </div>
 
+      {/* Wave V4 — map-mode strip (Stellaris lenses), directly below the
+          layer toggle. Radiogroup: exactly one mode active; arrow keys move
+          within the group and `M` cycles globally. Modes recolor/re-badge
+          the SOLAR renderers only, so the strip hides on the galactic layer.
+          44px targets, horizontally scrollable on phones. */}
+      {layer === 'solar' && (
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 max-w-[94vw]">
+          <div
+            className="hud-frame flex rounded-xl border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm overflow-x-auto max-w-full"
+            role="radiogroup"
+            aria-label="Map mode"
+            onKeyDown={e => {
+              if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                setMode(cycleMapMode(mapMode, 1));
+              } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                setMode(cycleMapMode(mapMode, -1));
+              }
+            }}
+          >
+            {MAP_MODES.map((m, i) => {
+              const isActive = mapMode === m.id;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => setMode(m.id)}
+                  title={`${m.label} lens — ${m.legend} (press M to cycle)`}
+                  className={`min-h-[44px] px-2.5 sm:px-3 text-[10px] sm:text-[11px] font-semibold whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                    i > 0 ? 'border-l border-white/[0.08]' : ''
+                  } ${isActive ? 'bg-cyan-500/20 text-cyan-200' : 'text-slate-400 hover:text-white'}`}
+                >
+                  <GameIcon name={m.icon} size={13} />
+                  <span className={isActive ? '' : 'hidden sm:inline'}>{m.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          {/* Legend chip — states the active lens's meaning in TEXT (modes
+              are never conveyed by color alone). */}
+          {mapMode !== 'standard' && (
+            <p className="hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] text-slate-300 max-w-[min(94vw,460px)] text-center" role="status">
+              {MAP_MODE_MAP.get(mapMode)?.legend}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Global Activity Feed popover — reachable from the map HUD (audit
-          Change #3 / D1). Sits below the layer toggle so it never collides
-          with the Order Queue HUD (top-left) or the context panel (right /
-          bottom-sheet). */}
+          Change #3 / D1). Sits below the layer toggle + mode strip so it
+          never collides with the Order Queue HUD (top-left) or the context
+          panel (right / bottom-sheet). */}
       {showActivity && (
         <div
           id="map-activity-feed-popover"
-          className="hud-frame absolute top-14 left-1/2 -translate-x-1/2 z-20 w-[min(92vw,380px)] max-h-[50vh] rounded-xl border border-white/[0.08] bg-[#050510]/95 backdrop-blur-md overflow-hidden animate-reveal-up"
+          className="hud-frame absolute top-28 left-1/2 -translate-x-1/2 z-30 w-[min(92vw,380px)] max-h-[50vh] rounded-xl border border-white/[0.08] bg-[#050510]/95 backdrop-blur-md overflow-hidden animate-reveal-up"
         >
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
