@@ -420,7 +420,7 @@ function BlogsContent() {
   );
 }
 
-export default function BlogsPage() {
+export default function IndustryVoicesPage() {
   const [fetching, setFetching] = useState(false);
 
   const handleFetchNewPosts = async () => {
@@ -438,7 +438,7 @@ export default function BlogsPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader title="Blogs & Articles" subtitle="Expert insights from consultants, lawyers, and space industry professionals" icon="✍️" accentColor="purple">
+        <AnimatedPageHeader title="Industry Voices" subtitle="Curated third-party expert blogs from consultants, lawyers, and space industry professionals" icon="✍️" accentColor="purple">
           <button
             onClick={handleFetchNewPosts}
             disabled={fetching}
@@ -467,7 +467,7 @@ export default function BlogsPage() {
           <BlogsContent />
         </Suspense>
 
-        <RelatedModules modules={PAGE_RELATIONS['blogs']} />
+        <RelatedModules modules={PAGE_RELATIONS['industry-voices']} />
       </div>
     </div>
   );

@@ -97,7 +97,7 @@ const CATEGORIES: CategorySection[] = [
         icon: '\uD83D\uDCBC',
         name: 'Business Opportunities',
         description: 'AI-scored deal flow, procurement, supply chain',
-        href: '/business-opportunities',
+        href: '/procurement',
         tier: 'Pro',
       },
       {

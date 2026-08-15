@@ -1188,7 +1188,7 @@ export default function SpaceTourismPage() {
             <ScrollReveal>
               <RelatedModules
                 modules={[
-              { name: 'Business Opportunities', description: 'Space industry contracts and RFPs', href: '/business-opportunities', icon: '📋' },
+              { name: 'Business Opportunities', description: 'Space industry contracts and RFPs', href: '/procurement', icon: '📋' },
               { name: 'Cislunar Economy', description: 'Earth-Moon tourism and commerce', href: '/cislunar', icon: '🌙' },
               { name: 'Mars Planner', description: 'Future Mars tourism missions', href: '/mars-planner', icon: '🔴' },
               { name: 'Space Agencies', description: 'Government programs and partnerships', href: '/space-agencies', icon: '🏛️' },

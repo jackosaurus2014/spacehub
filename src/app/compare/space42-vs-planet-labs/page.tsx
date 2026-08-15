@@ -4,6 +4,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatMarketCap } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Space42 vs Planet Labs: Earth Observation Comparison 2026',
@@ -38,7 +43,22 @@ const COMPARISON_DATA = [
   { metric: 'Key Differentiator', a: 'AI-first geospatial intelligence + sovereign GEO comms infrastructure', b: 'Only company imaging the entire Earth every day; largest EO constellation' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['space42', 'planet-labs']);
+  const space42 = figures['space42'];
+  const planetLabs = figures['planet-labs'];
+  const planetLabsMarketCap = formatMarketCap(planetLabs?.marketCapUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Market Cap') {
+      return {
+        ...row,
+        b: planetLabsMarketCap ? `~${planetLabsMarketCap} (NYSE)` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Space42 vs Planet Labs' }]} />
@@ -76,7 +96,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -85,6 +105,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[space42, planetLabs]} />
         </div>
       </div>
 

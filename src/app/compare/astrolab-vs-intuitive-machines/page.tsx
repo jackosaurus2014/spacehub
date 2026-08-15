@@ -3,6 +3,11 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { getCompareFigures } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Astrolab vs Intuitive Machines: Lunar Vehicle Comparison 2026',
@@ -37,7 +42,14 @@ const COMPARISON_DATA = [
   { metric: 'Key Differentiator', a: 'Only large-payload lunar rover designed for Starship; JPL heritage team', b: 'Only company to achieve commercial lunar landing; proven CLPS provider' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  // Neither astrolab nor intuitive-machines has totalFundingUSD on file in
+  // CompanyProfile, so the Total Funding row below is left hardcoded. Figures
+  // are still fetched so the footnote can render if that changes.
+  const figures = await getCompareFigures(['astrolab', 'intuitive-machines']);
+  const astrolab = figures['astrolab'];
+  const intuitiveMachines = figures['intuitive-machines'];
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Astrolab vs Intuitive Machines' }]} />
@@ -84,6 +96,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[astrolab, intuitiveMachines]} />
         </div>
       </div>
 

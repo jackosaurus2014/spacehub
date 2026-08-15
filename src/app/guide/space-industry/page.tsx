@@ -594,7 +594,7 @@ export default function SpaceIndustryGuidePage() {
                       Regulatory &amp; compliance tracking on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
-                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
+                    <Link href="/procurement" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Government procurement opportunities
                     </Link>
                   </p>
@@ -885,7 +885,7 @@ export default function SpaceIndustryGuidePage() {
                     { name: 'Mission Control', href: '/mission-control', desc: 'Real-time launch tracking and mission monitoring' },
                     { name: 'News & Media', href: '/news', desc: 'Aggregated space industry news and analysis' },
                     { name: 'Market Intelligence', href: '/market-intel', desc: 'Space economy data, company analytics, startup tracking' },
-                    { name: 'Business Opportunities', href: '/business-opportunities', desc: 'Government contracts, procurement, supply chain' },
+                    { name: 'Business Opportunities', href: '/procurement', desc: 'Government contracts, procurement, supply chain' },
                     { name: 'Mission Planning', href: '/mission-cost', desc: 'Cost estimation, insurance, launch windows, vehicles' },
                     { name: 'Space Operations', href: '/satellites', desc: 'Satellite tracking, orbital management, constellations' },
                     { name: 'Space Talent Hub', href: '/space-talent', desc: 'Jobs board, workforce analytics, career resources' },

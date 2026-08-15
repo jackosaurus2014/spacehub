@@ -39,14 +39,14 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
       { id: 'market-intel', label: 'Market Intel', icon: 'chart', href: '/market-intel' },
       { id: 'space-economy', label: 'Space Economy', icon: 'chart', href: '/space-economy' },
       { id: 'space-capital', label: 'Space Capital', icon: 'lightbulb', href: '/space-capital' },
-      { id: 'blogs', label: 'Blogs & Articles', icon: 'newspaper', href: '/blogs' },
+      { id: 'blogs', label: 'Industry Voices', icon: 'newspaper', href: '/industry-voices' },
       { id: 'space-defense', label: 'Space Defense', icon: 'shield', href: '/space-defense' },
     ],
   },
   {
     title: 'Business & Talent',
     items: [
-      { id: 'business-opportunities', label: 'Opportunities', icon: 'lightbulb', href: '/business-opportunities' },
+      { id: 'business-opportunities', label: 'Opportunities', icon: 'lightbulb', href: '/procurement' },
       { id: 'space-talent', label: 'Space Talent Hub', icon: 'briefcase', href: '/space-talent' },
       { id: 'supply-chain', label: 'Supply Chain', icon: 'truck', href: '/supply-chain' },
       { id: 'space-mining', label: 'Space Mining', icon: 'mining', href: '/space-mining' },

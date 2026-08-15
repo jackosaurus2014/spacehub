@@ -4,6 +4,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatValuation, formatMarketCap } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Anduril vs L3Harris Space: Defense Space Comparison 2026',
@@ -37,7 +42,23 @@ const COMPARISON_DATA = [
   { metric: 'Key Differentiator', a: 'Speed of deployment; AI autonomy; startup culture disrupting primes', b: 'Decades of flight heritage; trusted by DoD; full production scale' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['anduril-industries', 'l3harris-technologies']);
+  const anduril = figures['anduril-industries'];
+  const l3harris = figures['l3harris-technologies'];
+  const andurilValuation = formatValuation(anduril?.valuationUSD);
+  const l3harrisMarketCap = formatMarketCap(l3harris?.marketCapUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) =>
+    row.metric === 'Valuation'
+      ? {
+          ...row,
+          a: andurilValuation ? `~${andurilValuation} (private, last known round)` : row.a,
+          b: l3harrisMarketCap ? `~${l3harrisMarketCap} market cap (NYSE: LHX)` : row.b,
+        }
+      : row
+  );
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Anduril vs L3Harris Space' }]} />
@@ -75,7 +96,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -84,6 +105,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[anduril, l3harris]} />
         </div>
       </div>
 
@@ -108,7 +132,7 @@ export default function Page() {
       {/* Industry Impact */}
       <h2 className="text-display text-xl mb-3">Implications for the Defense Industrial Base</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Anduril&apos;s rise represents a broader shift in how the Pentagon acquires space and defense technology. The company&apos;s $61B valuation (Series H, May 2026) on $1B+ in revenue signals investor confidence that software-first defense companies can capture significant market share from traditional primes. L3Harris, for its part, is not standing still &mdash; the company has been investing in AI, autonomous systems, and software-defined architectures. The likely outcome is convergence: Anduril will need to build more hardware expertise (its Arsenal-1 factory is a step), while L3Harris will need to become more software-capable. The space domain, where both companies are investing heavily, will be a primary battleground for this competition.
+        Anduril&apos;s rise represents a broader shift in how the Pentagon acquires space and defense technology. The company&apos;s {andurilValuation ?? '$61B'} valuation (Series H, May 2026) on $1B+ in revenue signals investor confidence that software-first defense companies can capture significant market share from traditional primes. L3Harris, for its part, is not standing still &mdash; the company has been investing in AI, autonomous systems, and software-defined architectures. The likely outcome is convergence: Anduril will need to build more hardware expertise (its Arsenal-1 factory is a step), while L3Harris will need to become more software-capable. The space domain, where both companies are investing heavily, will be a primary battleground for this competition.
       </p>
 
       {/* CTA */}

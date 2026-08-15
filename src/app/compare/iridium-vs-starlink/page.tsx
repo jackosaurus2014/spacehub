@@ -2,6 +2,11 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { getCompareFigures, formatMarketCap } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '1991 (Motorola); restructured 2001 (Ch.11); Iridium NEXT 2017-2019', b: '2015 (SpaceX subsidiary)' },
@@ -25,7 +30,24 @@ const COMPARISON_DATA = [
   { metric: 'Cross-Link Architecture', a: 'Yes — Ka-band inter-satellite links (no ground relay needed)', b: 'Yes — laser inter-satellite links on V2 Mini+' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['iridium-communications', 'spacex']);
+  const iridium = figures['iridium-communications'];
+  const spacex = figures['spacex'];
+  const iridiumMarketCap = formatMarketCap(iridium?.marketCapUSD);
+  const spacexMarketCap = formatMarketCap(spacex?.marketCapUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Market Cap / Valuation') {
+      return {
+        ...row,
+        a: iridiumMarketCap ? `~${iridiumMarketCap}` : row.a,
+        b: spacexMarketCap ? `Part of SpaceX (~${spacexMarketCap} market cap, Aug 2026)` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Iridium vs Starlink' }]} />
@@ -63,7 +85,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -72,6 +94,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[iridium, spacex]} />
         </div>
       </div>
 

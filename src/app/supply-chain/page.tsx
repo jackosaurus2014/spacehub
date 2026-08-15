@@ -1630,7 +1630,7 @@ export default function SupplyChainPage() {
             <ScrollReveal>
               <RelatedModules
                 modules={[
-              { name: 'Business Opportunities', description: 'Contracts and procurement opportunities', href: '/business-opportunities', icon: '📋' },
+              { name: 'Business Opportunities', description: 'Contracts and procurement opportunities', href: '/procurement', icon: '📋' },
               { name: 'Marketplace', description: 'Find space service providers', href: '/marketplace', icon: '🏪' },
               { name: 'Space Manufacturing', description: 'In-space and terrestrial manufacturing', href: '/space-manufacturing', icon: '🏭' },
               { name: 'Supply Chain Risk', description: 'Risk assessment and mitigation strategies', href: '/supply-chain-risk', icon: '⚠️' },

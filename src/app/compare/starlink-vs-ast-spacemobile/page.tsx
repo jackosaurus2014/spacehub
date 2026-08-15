@@ -3,6 +3,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatMarketCap, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 const COMPARISON_DATA = [
   { metric: 'Parent Company', a: 'SpaceX', b: 'AST SpaceMobile, Inc.' },
@@ -27,7 +32,33 @@ const COMPARISON_DATA = [
   { metric: 'FCC Authorization', a: 'Licensed for broadband + Direct to Cell', b: 'FCC commercial license granted November 2024' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['spacex', 'ast-spacemobile']);
+  const spacex = figures['spacex'];
+  const ast = figures['ast-spacemobile'];
+  const spacexMarketCap = formatMarketCap(spacex?.marketCapUSD);
+  const astMarketCap = formatMarketCap(ast?.marketCapUSD);
+  const spacexFunding = formatFundingTotal(spacex?.totalFundingUSD);
+  const astFunding = formatFundingTotal(ast?.totalFundingUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Market Cap / Valuation') {
+      return {
+        ...row,
+        a: spacexMarketCap ? `SpaceX ~${spacexMarketCap} (Aug 2026)` : row.a,
+        b: astMarketCap ? `~${astMarketCap} (Aug 2026)` : row.b,
+      };
+    }
+    if (row.metric === 'Total Funding') {
+      return {
+        ...row,
+        a: spacexFunding ? `Part of SpaceX (~${spacexFunding} total)` : row.a,
+        b: astFunding ? `~${astFunding} (equity + debt)` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Starlink vs AST SpaceMobile' }]} />
@@ -65,7 +96,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -74,6 +105,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[spacex, ast]} />
         </div>
       </div>
 
@@ -98,7 +132,7 @@ export default function Page() {
       {/* Investment Outlook */}
       <h2 className="text-display text-xl mb-3">Investment &amp; Stock Outlook</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        SpaceX went public on Nasdaq (SPCX) in June 2026, raising $75B and now trading around a $2 trillion market cap, with Starlink&apos;s profitability a key driver of that valuation. AST SpaceMobile (ASTS on Nasdaq) has a market cap of roughly $7 billion as of early 2026, driven by investor enthusiasm around the D2D opportunity. The stock is highly speculative &mdash; AST remains pre-revenue with significant capital needs to deploy its full 168-satellite constellation. Successful commercial service launch with AT&T could be a major catalyst, but execution risk remains substantial given the technical complexity of building and deploying these very large satellites at scale.
+        SpaceX went public on Nasdaq (SPCX) in June 2026, raising $75B and now trading around a $2 trillion market cap, with Starlink&apos;s profitability a key driver of that valuation. AST SpaceMobile (ASTS on Nasdaq) has a market cap of roughly {astMarketCap ?? '$7 billion'} as of early 2026, driven by investor enthusiasm around the D2D opportunity. The stock is highly speculative &mdash; AST remains pre-revenue with significant capital needs to deploy its full 168-satellite constellation. Successful commercial service launch with AT&T could be a major catalyst, but execution risk remains substantial given the technical complexity of building and deploying these very large satellites at scale.
       </p>
 
       {/* CTA */}

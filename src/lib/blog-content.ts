@@ -191,7 +191,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="tracking-the-market">How to Track It All</h2>
 
-<p>SpaceNexus\'s <a href="/market-intel">Market Intelligence module</a> provides real-time tracking of space stocks, ETFs, funding rounds, and economic indicators. Combined with our <a href="/company-profiles">200+ company profiles</a> and <a href="/business-opportunities">procurement intelligence</a>, it\'s the most comprehensive view of the space economy available.</p>
+<p>SpaceNexus\'s <a href="/market-intel">Market Intelligence module</a> provides real-time tracking of space stocks, ETFs, funding rounds, and economic indicators. Combined with our <a href="/company-profiles">200+ company profiles</a> and <a href="/procurement">procurement intelligence</a>, it\'s the most comprehensive view of the space economy available.</p>
 
 <p><a href="/register">Start tracking the space economy for free</a>.</p>
 `,
@@ -22825,7 +22825,7 @@ ISS (ZARYA)
 <li><strong>Non-compliant proposals:</strong> Proposals that do not address every requirement in the SOW, or that exceed page limits, are at risk of being eliminated before technical evaluation even begins.</li>
 </ul>
 
-<p>Build and manage your government space pipeline with the SpaceNexus <a href="/bd-pipeline">BD Pipeline</a> tracker, which integrates with <a href="/business-opportunities">Business Opportunities</a> and the <a href="/compliance-engine">Compliance Engine</a> to streamline your capture process from opportunity identification through proposal submission.</p>
+<p>Build and manage your government space pipeline with the SpaceNexus <a href="/bd-pipeline">BD Pipeline</a> tracker, which integrates with <a href="/procurement">Business Opportunities</a> and the <a href="/compliance-engine">Compliance Engine</a> to streamline your capture process from opportunity identification through proposal submission.</p>
 `,
 },
 {
@@ -22873,7 +22873,7 @@ ISS (ZARYA)
 <p>The most valuable CI data sources in the space industry include:</p>
 
 <ul>
-<li><strong>Contract awards:</strong> SAM.gov, USASpending.gov, and agency-specific award announcements. Track not just wins, but award amounts, period of performance, and competitive vs. sole-source designation. The SpaceNexus <a href="/business-opportunities">Business Opportunities</a> module aggregates government contract data with filtering by company, agency, and contract type.</li>
+<li><strong>Contract awards:</strong> SAM.gov, USASpending.gov, and agency-specific award announcements. Track not just wins, but award amounts, period of performance, and competitive vs. sole-source designation. The SpaceNexus <a href="/procurement">Business Opportunities</a> module aggregates government contract data with filtering by company, agency, and contract type.</li>
 <li><strong>Patent filings:</strong> USPTO and international patent databases reveal technology development directions 12-18 months before public announcements. A cluster of patent filings in a specific technology area is a strong signal of strategic investment.</li>
 <li><strong>Regulatory filings:</strong> FCC satellite and spectrum license applications, FAA launch licenses, and NOAA remote sensing licenses all contain technical details about planned systems. These are public documents that competitors routinely overlook.</li>
 <li><strong>SEC filings:</strong> For publicly traded space companies, 10-K and 10-Q filings contain detailed revenue breakdowns, backlog information, and management discussion of market conditions. Proxy statements reveal executive compensation and organizational priorities.</li>

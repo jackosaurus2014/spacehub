@@ -26,6 +26,7 @@ import DashboardLayoutSelector from '@/components/DashboardLayoutSelector';
 import ModuleConfigurator from '@/components/ModuleConfigurator';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import DashboardRecentlyViewed from '@/components/dashboard/RecentlyViewed';
+import MyDataStrip from '@/components/dashboard/MyDataStrip';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import LaunchCountdown from '@/components/widgets/LaunchCountdown';
 import SpaceHistoryToday from '@/components/SpaceHistoryToday';
@@ -173,7 +174,7 @@ const QUICK_STATS = [
 const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '\u{1F3AF}', label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
   { icon: '\u{1F4F0}', label: 'News & Categories', href: '/news', description: 'Latest space industry updates' },
-  { icon: '\u{1F4DD}', label: 'Blogs & Articles', href: '/blogs', description: 'Expert industry insights' },
+  { icon: '\u{1F4DD}', label: 'Industry Voices', href: '/industry-voices', description: 'Expert industry insights' },
   { icon: '\u{1F6E1}\uFE0F', label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
   { icon: '\u{1F916}', label: 'AI Insights', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { icon: '\u{1FA90}', label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
@@ -215,7 +216,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
 ];
 
 const BUSINESS_MODULES: ModuleItem[] = [
-  { icon: '\u{1F4BC}', label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
+  { icon: '\u{1F4BC}', label: 'Business Opportunities', href: '/procurement', description: 'AI-powered opportunity discovery' },
   { icon: '\u{1F465}', label: 'Space Talent Hub', href: '/space-talent', description: 'Jobs, experts & workforce analytics' },
   { icon: '\u{1F4CB}', label: 'Space Jobs Board', href: '/jobs', description: 'Browse and post space industry jobs' },
   { icon: '\u{1F517}', label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
@@ -266,6 +267,29 @@ const REFERENCE_MODULES: ModuleItem[] = [
   { icon: '\u{1F4D0}', label: 'Blueprint Series', href: '/propulsion-database', description: 'Technical hardware breakdowns' },
 ];
 
+/**
+ * Every dashboard module link, deduped by href (first occurrence wins, in
+ * Explore -> Intelligence -> Business -> Tools -> Reference order). Feeds the
+ * single collapsed "All Modules" section — replaces the four always-open
+ * grids that used to duplicate Navigation above the fold.
+ */
+const ALL_MODULES: ModuleItem[] = (() => {
+  const seen = new Set<string>();
+  const combined: ModuleItem[] = [];
+  for (const mod of [
+    ...EXPLORE_MODULES,
+    ...INTELLIGENCE_MODULES,
+    ...BUSINESS_MODULES,
+    ...TOOLS_MODULES,
+    ...REFERENCE_MODULES,
+  ]) {
+    if (seen.has(mod.href)) continue;
+    seen.add(mod.href);
+    combined.push(mod);
+  }
+  return combined;
+})();
+
 /** Animated counter that counts up from 0 to the target value */
 function AnimatedCounter({ target, duration = 1200 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -304,61 +328,33 @@ function AnimatedCounter({ target, duration = 1200 }: { target: number; duration
   return <>{isMobile ? formatCompact(count) : count.toLocaleString()}</>;
 }
 
-function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
-  title: string;
-  icon: string;
-  modules: ModuleItem[];
-  sizeClasses: ReturnType<typeof getModuleSizeClasses>;
-  delay: string;
-}) {
-  if (modules.length === 0) return null;
-
-  return (
-    <ScrollReveal>
-      <div className="mb-8">
-        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <span className="text-xl">{icon}</span>
-          {title}
-        </h2>
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {modules.map((mod) => (
-            <StaggerItem key={mod.href}>
-              <Link
-                href={mod.href}
-                className={`group relative card ${sizeClasses.padding} hover:border-white/10 hover:bg-white/[0.06] block`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors truncate">
-                      {mod.label}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
-                      {mod.description}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      </div>
-    </ScrollReveal>
-  );
-}
-
 /**
- * Collapsed-by-default "Reference" group for low-traffic modules. Keeps them
- * addressable from the dashboard (power-user surface) without occupying
- * prime real estate above the fold. Keyboard-operable toggle with
+ * Collapsed-by-default "All Modules" group. Founder-approved trim
+ * (2026-08-14): the dashboard used to open with four always-expanded link
+ * grids (~48+ links) duplicating Navigation/homepage and burying the user's
+ * own data. Every module link now lives in this single collapsed section —
+ * deduped across the old Explore/Intelligence/Business/Tools/Reference
+ * groupings — with its own search so power users can still jump straight to
+ * a module without leaving the dashboard. Keyboard-operable toggle with
  * aria-expanded/aria-controls; content is only mounted when expanded.
  */
-function ReferenceModuleSection({ modules, sizeClasses }: {
+function AllModulesSection({ modules, sizeClasses }: {
   modules: ModuleItem[];
   sizeClasses: ReturnType<typeof getModuleSizeClasses>;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const panelId = 'dashboard-reference-modules-panel';
+  const [search, setSearch] = useState('');
+  const panelId = 'dashboard-all-modules-panel';
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return modules;
+    const term = search.toLowerCase().trim();
+    return modules.filter(
+      (mod) =>
+        mod.label.toLowerCase().includes(term) ||
+        mod.description.toLowerCase().includes(term)
+    );
+  }, [modules, search]);
 
   if (modules.length === 0) return null;
 
@@ -374,9 +370,9 @@ function ReferenceModuleSection({ modules, sizeClasses }: {
         >
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <span className="text-xl">{'\u{1F4DA}'}</span>
-            Reference
+            All Modules
             <span className="text-xs font-normal text-slate-500 ml-1">
-              ({modules.length} lower-traffic module{modules.length === 1 ? '' : 's'})
+              ({modules.length} more to explore)
             </span>
           </h2>
           <svg
@@ -392,28 +388,52 @@ function ReferenceModuleSection({ modules, sizeClasses }: {
         </button>
         {expanded && (
           <div id={panelId}>
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-3">
-              {modules.map((mod) => (
-                <StaggerItem key={mod.href}>
-                  <Link
-                    href={mod.href}
-                    className={`group relative card ${sizeClasses.padding} hover:border-white/10 hover:bg-white/[0.06] block`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
-                      <div className="min-w-0">
-                        <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors truncate">
-                          {mod.label}
-                        </h3>
-                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
-                          {mod.description}
-                        </p>
+            <div className="relative mt-3 mb-3">
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={`Search ${modules.length} modules...`}
+                aria-label={`Search ${modules.length} modules`}
+                className="bg-white/[0.04] border border-white/[0.06] rounded-xl pl-11 pr-4 py-2.5 text-white placeholder-slate-400 focus:border-white/15 focus:outline-none w-full transition-colors"
+              />
+            </div>
+            {filtered.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-8">
+                No modules match &ldquo;{search}&rdquo;
+              </p>
+            ) : (
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {filtered.map((mod) => (
+                  <StaggerItem key={mod.href}>
+                    <Link
+                      href={mod.href}
+                      className={`group relative card ${sizeClasses.padding} hover:border-white/10 hover:bg-white/[0.06] block`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors truncate">
+                            {mod.label}
+                          </h3>
+                          <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                            {mod.description}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+                    </Link>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            )}
           </div>
         )}
       </div>
@@ -791,9 +811,6 @@ export default function DashboardPage() {
   const [overviewStats, setOverviewStats] = useState<Record<string, number>>({});
   const [statsLoading, setStatsLoading] = useState(true);
 
-  // Module search state
-  const [moduleSearch, setModuleSearch] = useState('');
-
   // Track time spent on the dashboard page
   useEffect(() => {
     return trackTimeOnPage('/dashboard');
@@ -844,24 +861,7 @@ export default function DashboardPage() {
     loadLayout();
   };
 
-  // Filter modules by search term
-  const filterModules = useCallback((modules: ModuleItem[]) => {
-    if (!moduleSearch.trim()) return modules;
-    const term = moduleSearch.toLowerCase().trim();
-    return modules.filter(
-      (mod) =>
-        mod.label.toLowerCase().includes(term) ||
-        mod.description.toLowerCase().includes(term)
-    );
-  }, [moduleSearch]);
-
-  const filteredExplore = useMemo(() => filterModules(EXPLORE_MODULES), [filterModules]);
-  const filteredIntelligence = useMemo(() => filterModules(INTELLIGENCE_MODULES), [filterModules]);
-  const filteredBusiness = useMemo(() => filterModules(BUSINESS_MODULES), [filterModules]);
-  const filteredTools = useMemo(() => filterModules(TOOLS_MODULES), [filterModules]);
-
-  const totalFilteredModules = filteredExplore.length + filteredIntelligence.length + filteredBusiness.length + filteredTools.length;
-  const totalModules = EXPLORE_MODULES.length + INTELLIGENCE_MODULES.length + BUSINESS_MODULES.length + TOOLS_MODULES.length;
+  const totalModules = ALL_MODULES.length;
 
   if (status === 'loading' || !layoutLoaded) {
     return (
@@ -1003,6 +1003,20 @@ export default function DashboardPage() {
           <TodaysBriefing />
         </ScrollReveal>
 
+        {/* Your Space — personalized-first previews of the user's own data:
+            watchlists, reading list, saved searches, alert deliveries, and
+            recently viewed pages. Founder-approved trim (2026-08-14): this
+            replaces the module-link grids as the thing above the fold. */}
+        <ScrollReveal>
+          <MyDataStrip />
+        </ScrollReveal>
+
+        <ScrollReveal>
+          <div className="mb-8">
+            <DashboardRecentlyViewed />
+          </div>
+        </ScrollReveal>
+
         {/* Quick Actions */}
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
@@ -1102,13 +1116,6 @@ export default function DashboardPage() {
           </div>
         </ScrollReveal>
 
-        {/* Continue Where You Left Off — recently viewed pages */}
-        <ScrollReveal>
-          <div className="mb-8">
-            <DashboardRecentlyViewed />
-          </div>
-        </ScrollReveal>
-
         {/* Space Industry Snapshot -- live data from /api/pulse */}
         <ScrollReveal>
           <SpaceIndustrySnapshot />
@@ -1129,112 +1136,14 @@ export default function DashboardPage() {
           </div>
         </ScrollReveal>
 
-        {/* Module Search / Filter */}
-        <ScrollReveal>
-        <div className="mb-6">
-          <div className="relative">
-            <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="search"
-              value={moduleSearch}
-              onChange={(e) => setModuleSearch(e.target.value)}
-              placeholder={`Search across ${totalModules} modules...`}
-              aria-label={`Search across ${totalModules} modules`}
-              className="bg-white/[0.04] border border-white/[0.06] rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-400 focus:border-white/15 focus:outline-none w-full transition-colors"
-            />
-            {moduleSearch && (
-              <button
-                onClick={() => setModuleSearch('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white/90 transition-colors"
-                aria-label="Clear search"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-          {moduleSearch && (
-            <p className="text-xs text-slate-400 mt-2 ml-1">
-              Showing {totalFilteredModules} of {totalModules} modules
-            </p>
-          )}
-          {/* Category pills with counts */}
-          <div className="flex flex-wrap gap-2 mt-3">
-            {[
-              { label: 'Explore', count: filteredExplore.length, total: EXPLORE_MODULES.length, icon: '🔭' },
-              { label: 'Intelligence', count: filteredIntelligence.length, total: INTELLIGENCE_MODULES.length, icon: '📊' },
-              { label: 'Business', count: filteredBusiness.length, total: BUSINESS_MODULES.length, icon: '💼' },
-              { label: 'Tools', count: filteredTools.length, total: TOOLS_MODULES.length, icon: '🛠️' },
-            ].map((cat) => (
-              <span key={cat.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.06] text-xs text-slate-300">
-                <span>{cat.icon}</span>
-                <span className="font-medium">{cat.label}</span>
-                <span className="text-slate-500 tabular-nums">{moduleSearch ? cat.count : cat.total}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-        </ScrollReveal>
-
-        {/* Module Sections - matching sidebar order */}
-        <ModuleSection
-          title="Explore"
-          icon={'\u{1F52D}'}
-          modules={filteredExplore}
-          sizeClasses={sizeClasses}
-          delay="0.1s"
-        />
-
-        <ModuleSection
-          title="Intelligence"
-          icon={'\u{1F4CA}'}
-          modules={filteredIntelligence}
-          sizeClasses={sizeClasses}
-          delay="0.15s"
-        />
-
-        <ModuleSection
-          title="Business"
-          icon={'\u{1F4BC}'}
-          modules={filteredBusiness}
-          sizeClasses={sizeClasses}
-          delay="0.2s"
-        />
-
-        <ModuleSection
-          title="Tools"
-          icon={'\u{1F6E0}\uFE0F'}
-          modules={filteredTools}
-          sizeClasses={sizeClasses}
-          delay="0.25s"
-        />
-
-        {/* Reference - low-traffic modules, collapsed by default (2026-08-14 sweep) */}
-        <ReferenceModuleSection
-          modules={REFERENCE_MODULES}
+        {/* All Modules — collapsed by default (founder-approved trim, 2026-08-14).
+            Every module link (Explore/Intelligence/Business/Tools/Reference,
+            deduped) lives here now instead of four always-open grids. */}
+        <AllModulesSection
+          modules={ALL_MODULES}
           sizeClasses={sizeClasses}
         />
 
-        {/* No results message */}
-        {moduleSearch && totalFilteredModules === 0 && (
-          <div className="text-center py-12 animate-fade-in">
-            <p className="text-slate-400 text-lg mb-2">No modules match &ldquo;{moduleSearch}&rdquo;</p>
-            <button
-              onClick={() => setModuleSearch('')}
-              className="text-sm text-slate-300 hover:text-white transition-colors"
-            >
-              Clear search
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Layout Selector Modal */}

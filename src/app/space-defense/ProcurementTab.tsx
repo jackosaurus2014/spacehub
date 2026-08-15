@@ -176,7 +176,7 @@ export default function ProcurementTab({ recentContracts, liveProcurement }: Pro
           Note: Procurement status and values are based on public RFIs, BAAs, and official acquisition announcements.
           Visit SAM.gov for current solicitation details and response deadlines. For comprehensive procurement
           intelligence including SBIR/STTR topics, see the{' '}
-          <a href="/business-opportunities?tab=procurement" className="text-slate-300 hover:text-white transition-colors underline">Procurement Intelligence module</a>.
+          <a href="/procurement" className="text-slate-300 hover:text-white transition-colors underline">Procurement Intelligence module</a>.
         </p>
       </div>
 

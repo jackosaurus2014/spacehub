@@ -476,11 +476,11 @@ export default function SpaceBusinessOpportunitiesPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
-                  <span><strong className="text-white">Business Opportunities Hub</strong> &mdash; Our dedicated <Link href="/business-opportunities" className="text-slate-300 hover:underline">Business Opportunities page</Link> aggregates RFPs, RFIs, subcontracting opportunities, and partnership requests.</span>
+                  <span><strong className="text-white">Business Opportunities Hub</strong> &mdash; Our dedicated <Link href="/procurement" className="text-slate-300 hover:underline">Business Opportunities page</Link> aggregates RFPs, RFIs, subcontracting opportunities, and partnership requests.</span>
                 </li>
               </ol>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/business-opportunities" className="btn-primary text-sm py-2 px-4">
+                <Link href="/procurement" className="btn-primary text-sm py-2 px-4">
                   Explore Opportunities
                 </Link>
                 <Link href="/marketplace" className="btn-secondary text-sm py-2 px-4">

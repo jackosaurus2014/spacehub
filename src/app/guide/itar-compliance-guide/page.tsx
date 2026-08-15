@@ -856,7 +856,7 @@ export default function ItarComplianceGuidePage() {
                       Manage regulatory compliance on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
-                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
+                    <Link href="/procurement" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track government contracts and procurement
                     </Link>
                   </p>
@@ -956,7 +956,7 @@ export default function ItarComplianceGuidePage() {
                   {[
                     { name: 'Regulatory & Compliance', href: '/compliance', desc: 'Space law, licensing, and regulatory tracking' },
                     { name: 'Spectrum Management', href: '/spectrum', desc: 'Frequency coordination and ITU filings' },
-                    { name: 'Business Opportunities', href: '/business-opportunities', desc: 'Government contracts and procurement' },
+                    { name: 'Business Opportunities', href: '/procurement', desc: 'Government contracts and procurement' },
                     { name: 'Space Defense', href: '/space-defense', desc: 'Defense and national security space tracking' },
                   ].map((mod) => (
                     <Link

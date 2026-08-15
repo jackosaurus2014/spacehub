@@ -3,6 +3,11 @@ import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatMarketCap, formatValuation, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Rocket Lab vs Relativity Space: Complete Comparison 2026',
@@ -34,7 +39,33 @@ const COMPARISON_DATA = [
   { metric: 'Space Systems Division', rocketLab: 'Yes (spacecraft buses, components)', relativity: 'No (launch-only focus)' },
 ];
 
-export default function RocketLabVsRelativitySpace() {
+export default async function RocketLabVsRelativitySpace() {
+  const figures = await getCompareFigures(['rocket-lab', 'relativity-space']);
+  const rocketLab = figures['rocket-lab'];
+  const relativity = figures['relativity-space'];
+  const rocketLabFunding = formatFundingTotal(rocketLab?.totalFundingUSD);
+  const relativityFunding = formatFundingTotal(relativity?.totalFundingUSD);
+  const rocketLabMarketCap = formatMarketCap(rocketLab?.marketCapUSD);
+  const relativityValuation = formatValuation(relativity?.valuationUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Total Funding') {
+      return {
+        ...row,
+        rocketLab: rocketLabFunding ? `~${rocketLabFunding}` : row.rocketLab,
+        relativity: relativityFunding ? `~${relativityFunding}` : row.relativity,
+      };
+    }
+    if (row.metric === 'Valuation / Market Cap') {
+      return {
+        ...row,
+        rocketLab: rocketLabMarketCap ? `~${rocketLabMarketCap} (RKLB, NASDAQ)` : row.rocketLab,
+        relativity: relativityValuation ? `Private (est. ${relativityValuation}, 2022 round)` : row.relativity,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <div className="mb-8">
@@ -73,7 +104,7 @@ export default function RocketLabVsRelativitySpace() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.rocketLab}</td>
@@ -82,6 +113,9 @@ export default function RocketLabVsRelativitySpace() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[rocketLab, relativity]} />
         </div>
       </div>
 

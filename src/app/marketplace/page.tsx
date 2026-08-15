@@ -360,7 +360,7 @@ export default function MarketplacePage() {
                 modules={[
               { name: 'Company Profiles', description: 'Detailed profiles of 100+ space companies', href: '/company-profiles', icon: '🏢' },
               { name: 'Funding Tracker', description: 'Track investment rounds and VC activity', href: '/funding-tracker', icon: '💰' },
-              { name: 'Business Opportunities', description: 'Contracts, RFPs, and procurement', href: '/business-opportunities', icon: '📋' },
+              { name: 'Business Opportunities', description: 'Contracts, RFPs, and procurement', href: '/procurement', icon: '📋' },
               { name: 'Space Talent Hub', description: 'Hire or find jobs in the space industry', href: '/space-talent', icon: '👥' },
                 ]}
               />

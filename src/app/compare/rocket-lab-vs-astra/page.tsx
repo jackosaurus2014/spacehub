@@ -3,6 +3,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatMarketCap, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2006', b: '2016' },
@@ -27,7 +32,33 @@ const COMPARISON_DATA = [
   { metric: 'Stock Performance (2024–2025)', a: 'RKLB up ~700% in 2024; strong institutional interest', b: 'ASTR down ~95% from SPAC debut; reverse splits to maintain listing' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['rocket-lab', 'astra-space']);
+  const rocketLab = figures['rocket-lab'];
+  const astra = figures['astra-space'];
+  const rocketLabMarketCap = formatMarketCap(rocketLab?.marketCapUSD);
+  const astraMarketCap = formatMarketCap(astra?.marketCapUSD);
+  const rocketLabFunding = formatFundingTotal(rocketLab?.totalFundingUSD);
+  const astraFunding = formatFundingTotal(astra?.totalFundingUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Market Cap (early 2026)') {
+      return {
+        ...row,
+        a: rocketLabMarketCap ? `~${rocketLabMarketCap}` : row.a,
+        b: astraMarketCap ? `~${astraMarketCap}` : row.b,
+      };
+    }
+    if (row.metric === 'Total Funding Raised') {
+      return {
+        ...row,
+        a: rocketLabFunding ? `~${rocketLabFunding} (public + private)` : row.a,
+        b: astraFunding ? `~${astraFunding} (including SPAC)` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Rocket Lab vs Astra Space' }]} />
@@ -65,7 +96,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -74,6 +105,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[rocketLab, astra]} />
         </div>
       </div>
 
@@ -98,10 +132,10 @@ export default function Page() {
       {/* Stock Performance */}
       <h2 className="text-display text-xl mb-3">Stock Performance &amp; Investor Outlook</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Rocket Lab (RKLB) has been one of the best-performing space stocks. After going public via SPAC in August 2021, the stock initially traded in the $5&ndash;$12 range before surging roughly 700% in 2024 as the company demonstrated consistent Electron launch cadence, growing backlog, and progress on Neutron. By early 2026, RKLB trades above $25 with a market cap exceeding $12 billion. Analysts view Neutron&apos;s entry into the medium-lift market as a significant catalyst.
+        Rocket Lab (RKLB) has been one of the best-performing space stocks. After going public via SPAC in August 2021, the stock initially traded in the $5&ndash;$12 range before surging roughly 700% in 2024 as the company demonstrated consistent Electron launch cadence, growing backlog, and progress on Neutron. By early 2026, RKLB trades above $25 with a market cap exceeding {rocketLabMarketCap ?? '$12 billion'}. Analysts view Neutron&apos;s entry into the medium-lift market as a significant catalyst.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Astra (ASTR) has lost over 95% of its value since the SPAC merger. The stock has undergone multiple reverse splits to maintain Nasdaq listing requirements and trades at a market cap below $50 million. Institutional ownership has largely evaporated, and the company faces questions about long-term viability as a standalone public company. The pivot to propulsion may provide a path to modest revenue, but the scale is incomparable to the original launch vision.
+        Astra (ASTR) has lost over 95% of its value since the SPAC merger. The stock has undergone multiple reverse splits to maintain Nasdaq listing requirements and trades at a market cap around {astraMarketCap ?? '$50 million'}. Institutional ownership has largely evaporated, and the company faces questions about long-term viability as a standalone public company. The pivot to propulsion may provide a path to modest revenue, but the scale is incomparable to the original launch vision.
       </p>
 
       {/* Future Outlook */}

@@ -125,7 +125,7 @@ export default function BlogsArticlesModule() {
 
   if (loading) {
     return (
-      <Link href="/blogs" className="block">
+      <Link href="/industry-voices" className="block">
         <div className="card p-6 glow-border">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-display font-bold text-white/90 flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function BlogsArticlesModule() {
   }
 
   return (
-    <Link href="/blogs" className="block">
+    <Link href="/industry-voices" className="block">
       <div className="card p-6 glow-border hover:border-white/10 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-display font-bold text-white/90 flex items-center gap-2">

@@ -639,7 +639,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
+                    <Link href="/procurement" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track government procurement opportunities on SpaceNexus
                     </Link>
                   </p>
@@ -1081,7 +1081,7 @@ export default function SpaceIndustryMarketSizePage() {
                     { name: 'Market Intelligence', href: '/market-intel', desc: 'Company analytics, market trends, economy dashboards' },
                     { name: 'Space Economy', href: '/space-economy', desc: 'Macro-level space economy data and analysis' },
                     { name: 'Space Capital', href: '/space-capital', desc: 'VC investors, startups, and matchmaking' },
-                    { name: 'Business Opportunities', href: '/business-opportunities', desc: 'Government contracts and procurement tracking' },
+                    { name: 'Business Opportunities', href: '/procurement', desc: 'Government contracts and procurement tracking' },
                   ].map((mod) => (
                     <Link
                       key={mod.href}

@@ -44,7 +44,7 @@ const NEWS_ITEMS: DropdownItem[] = [
   { label: 'Industry Reports', href: '/reports', description: 'In-depth research reports & market analysis' },
   { label: 'AI Insights & Analysis', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
-  { label: 'Industry Voices', href: '/blogs', description: 'Curated third-party expert blogs' },
+  { label: 'Industry Voices', href: '/industry-voices', description: 'Curated third-party expert blogs' },
   { label: 'Live Digest', href: '/briefs', description: 'Rolling 7-day space news digest' },
   { label: 'Brief Archive', href: '/intelligence-brief', description: 'Past weekly intelligence briefs' },
   { label: 'Podcasts', href: '/podcasts', description: 'Space podcast directory' },
@@ -68,9 +68,8 @@ const MARKETS_ITEMS: DropdownItem[] = [
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
-  { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
+  { label: 'Contracts & Opportunities', href: '/procurement', description: 'Contracts, grants, SBIR & budgets' },
   { label: 'Marketplace', href: '/marketplace', description: 'Services, RFQs & providers' },
-  { label: 'Procurement (SAM.gov)', href: '/procurement', description: 'Government contract opportunities' },
   { label: 'Regulatory & Compliance', href: '/compliance', description: 'Compliance, space law & filings' },
   { label: 'Patents', href: '/patents', description: 'Space technology patent trends' },
   { label: 'Spectrum', href: '/spectrum', description: 'Allocations, auctions & filings' },

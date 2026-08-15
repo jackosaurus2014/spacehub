@@ -557,52 +557,6 @@ model BlogPost {
   @@index([sourceId, publishedAt])
 }
 
-model SpaceCompany {
-  id           String  @id @default(cuid())
-  slug         String  @unique
-  name         String
-  description  String?
-  country      String // USA, CHN, RUS, JPN, etc.
-  headquarters String?
-  founded      Int? // Year founded
-  website      String?
-  logoUrl      String?
-
-  // Public company info
-  isPublic       Boolean @default(false)
-  ticker         String?
-  exchange       String? // NYSE, NASDAQ, TSE, SSE, etc.
-  marketCap      Float? // In billions USD
-  stockPrice     Float?
-  priceChange24h Float? // Percentage
-
-  // Private company info
-  isPreIPO          Boolean @default(false)
-  expectedIPODate   String? // e.g., "2025", "Q2 2026", "TBD"
-  lastFundingRound  String? // e.g., "Series D", "Series B"
-  lastFundingAmount Float? // In millions USD
-  lastFundingDate   String?
-  totalFunding      Float? // In millions USD
-  nextFundingRound  String? // Expected next round
-  valuation         Float? // In billions USD (for private companies)
-
-  // Space industry focus
-  focusAreas String // JSON array: ["launch_provider", "satellites", "space_stations", etc.]
-  subSectors String? // JSON array of more specific sectors
-
-  // Metadata
-  employeeCount   Int?
-  revenueEstimate Float? // In millions USD
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([country])
-  @@index([isPublic])
-  @@index([isPreIPO])
-  @@index([ticker])
-}
-
 model SpaceResource {
   id          String  @id @default(cuid())
   slug        String  @unique
@@ -1784,7 +1738,7 @@ model OrbitalService {
 
   // Provider info
   providerName    String
-  providerSlug    String? // Link to SpaceCompany if exists
+  providerSlug    String? // Link to CompanyProfile if exists
   providerCountry String
   providerWebsite String?
 
@@ -2844,7 +2798,7 @@ model AlertHistory {
 model CompanyProfile {
   id                  String    @id @default(cuid())
   slug                String    @unique // URL-friendly identifier
-  companyId           String? // Link to existing SpaceCompany if applicable
+  companyId           String? // Legacy link to the (now-removed) SpaceCompany row this profile was merged from
   name                String
   legalName           String?
   ticker              String?

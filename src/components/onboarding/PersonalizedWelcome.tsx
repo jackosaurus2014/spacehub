@@ -44,7 +44,7 @@ const ROLE_RECOMMENDATIONS: Record<string, { greeting: string; modules: ModuleRe
   'Space Startup Founder': {
     greeting: 'As a founder, these modules will help you grow and compete:',
     modules: [
-      { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
+      { label: 'Business Opportunities', href: '/procurement', description: 'AI-powered opportunity discovery' },
       { label: 'Investment Tracker', href: '/investment-tracker', description: 'Funding trends and top investors' },
       { label: 'Space Talent Hub', href: '/space-talent', description: 'Jobs, experts and workforce analytics' },
       { label: 'Unit Economics', href: '/unit-economics', description: 'Revenue modeling calculator' },

@@ -868,7 +868,7 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
+                    <Link href="/procurement" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore business opportunities on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
@@ -901,7 +901,7 @@ export default function CommercialSpaceEconomyPage() {
                     { name: 'Space Economy', href: '/space-economy', desc: 'Macro-level space economy data and trend analysis' },
                     { name: 'Market Intelligence', href: '/market-intel', desc: 'Company analytics, market trends, and competitive intelligence' },
                     { name: 'Space Capital', href: '/space-capital', desc: 'VC investors, startups, and matchmaking tools' },
-                    { name: 'Business Opportunities', href: '/business-opportunities', desc: 'Government contracts, RFPs, and procurement opportunities' },
+                    { name: 'Business Opportunities', href: '/procurement', desc: 'Government contracts, RFPs, and procurement opportunities' },
                     { name: 'Supply Chain', href: '/supply-chain', desc: 'Space supply chain mapping and vendor intelligence' },
                     { name: 'Space Talent Hub', href: '/space-talent', desc: 'Space industry jobs and workforce analytics' },
                   ].map((mod) => (

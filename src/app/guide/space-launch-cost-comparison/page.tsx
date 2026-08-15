@@ -638,7 +638,7 @@ export default function SpaceLaunchCostComparisonPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
+                    <Link href="/procurement" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track government launch procurement on SpaceNexus
                     </Link>
                   </p>

@@ -2,6 +2,11 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { getCompareFigures, formatValuation, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 const COMPARISON_DATA = [
   { metric: 'Founded / Spun Out', a: '2021 (spun out of Sierra Nevada Corporation, est. 1963)', b: '2016' },
@@ -26,7 +31,33 @@ const COMPARISON_DATA = [
   { metric: 'Revenue Model', a: 'NASA CRS cargo delivery, in-space manufacturing, defense contracts', b: 'Private astronaut missions (~$55M/seat), ISS operations, AxEMU suit' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['sierra-space', 'axiom-space']);
+  const sierraSpace = figures['sierra-space'];
+  const axiom = figures['axiom-space'];
+  const sierraValuation = formatValuation(sierraSpace?.valuationUSD);
+  const axiomValuation = formatValuation(axiom?.valuationUSD);
+  const sierraFunding = formatFundingTotal(sierraSpace?.totalFundingUSD);
+  const axiomFunding = formatFundingTotal(axiom?.totalFundingUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Valuation') {
+      return {
+        ...row,
+        a: sierraValuation ? `~${sierraValuation} (2023 Series A)` : row.a,
+        b: axiomValuation ? `Est. ${axiomValuation} (2023 Series C)` : row.b,
+      };
+    }
+    if (row.metric === 'Total Funding') {
+      return {
+        ...row,
+        a: sierraFunding ? `~${sierraFunding}` : row.a,
+        b: axiomFunding ? `~${axiomFunding}` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Sierra Space vs Axiom Space' }]} />
@@ -64,7 +95,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -73,6 +104,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[sierraSpace, axiom]} />
         </div>
       </div>
 
@@ -97,7 +131,7 @@ export default function Page() {
       {/* Analysis: Funding and Sustainability */}
       <h2 className="text-display text-xl mb-3">Funding &amp; Path to Sustainability</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Sierra Space raised over $1.4 billion at a $5.3 billion valuation in its 2023 Series A round, led by Coatue Management and Moore Strategic Ventures. The company benefits from shared resources with parent Sierra Nevada Corporation, a diversified defense and aerospace contractor. However, Sierra Space is pre-revenue from its own programs (Dream Chaser has not yet flown) and depends on the Orbital Reef partnership timeline, which is tied to Blue Origin&apos;s development cadence. Axiom Space has raised approximately $505 million through its Series C, at a lower valuation than Sierra Space, but is already generating revenue from private astronaut missions and the AxEMU spacesuit contract. Axiom&apos;s nearer-term hardware timeline (AxH1 targeted for 2026) and existing revenue streams give it a stronger argument for near-term sustainability, though both companies will need additional capital to complete their station programs.
+        Sierra Space raised over $1.4 billion at a {sierraValuation ?? '$5.3 billion'} valuation in its 2023 Series A round, led by Coatue Management and Moore Strategic Ventures. The company benefits from shared resources with parent Sierra Nevada Corporation, a diversified defense and aerospace contractor. However, Sierra Space is pre-revenue from its own programs (Dream Chaser has not yet flown) and depends on the Orbital Reef partnership timeline, which is tied to Blue Origin&apos;s development cadence. Axiom Space has raised approximately {axiomFunding ?? '$505 million'} through its Series C, at a lower valuation than Sierra Space, but is already generating revenue from private astronaut missions and the AxEMU spacesuit contract. Axiom&apos;s nearer-term hardware timeline (AxH1 targeted for 2026) and existing revenue streams give it a stronger argument for near-term sustainability, though both companies will need additional capital to complete their station programs.
       </p>
 
       {/* CTA */}

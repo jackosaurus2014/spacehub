@@ -482,6 +482,12 @@ const nextConfig = {
       // /market-intel merged into /space-stocks (last consumer of the
       // abandoned SpaceCompany table; ETFs + benchmarks ported over)
       { source: '/market-intel', destination: '/space-stocks', permanent: true },
+      // /blogs renamed — third-party blog aggregator vs our own /blog was a
+      // perpetual naming collision (founder-approved rename)
+      { source: '/blogs', destination: '/industry-voices', permanent: true },
+      // Opportunity trio consolidated into the /procurement hub
+      { source: '/business-opportunities', destination: '/procurement', permanent: true },
+      { source: '/funding-opportunities', destination: '/procurement?tab=grants', permanent: true },
       // Demoted-module salvage merges (content ported into hub tabs)
       { source: '/orbital-slots', destination: '/spectrum?tab=geo-slots', permanent: true },
       { source: '/government-budgets', destination: '/procurement?tab=global-budgets', permanent: true },

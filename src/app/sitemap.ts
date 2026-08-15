@@ -48,7 +48,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compare/spcx-vs-rklb-stock`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/starship-vs-new-glenn`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/satellites`, changeFrequency: 'daily' as const, priority: 1.0 },
-    { url: `${BASE_URL}/business-opportunities`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/mission-cost`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/compliance`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/solar-exploration`, changeFrequency: 'weekly' as const, priority: 0.8 },
@@ -92,7 +91,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Investor & Entrepreneur tools
     { url: `${BASE_URL}/investors`, changeFrequency: 'daily' as const, priority: 0.8 },
-    { url: `${BASE_URL}/funding-opportunities`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/funding-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/customer-discovery`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/business-models`, changeFrequency: 'weekly' as const, priority: 0.7 },
@@ -122,7 +120,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/space-industry/vandenberg`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Content and tools
-    { url: `${BASE_URL}/blogs`, changeFrequency: 'daily' as const, priority: 0.6 },
+    { url: `${BASE_URL}/industry-voices`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/launch`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/live`, changeFrequency: 'daily' as const, priority: 1.0 },
     { url: `${BASE_URL}/live/artemis-ii-blog`, changeFrequency: 'always' as const, priority: 1.0 },

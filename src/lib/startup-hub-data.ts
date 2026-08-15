@@ -149,7 +149,7 @@ export const FOUNDER_TOOLKIT: FounderToolkitLink[] = [
   { title: 'Customer Discovery', href: '/customer-discovery', description: 'Frameworks for validating demand before you build.' },
   { title: 'Unit Economics', href: '/unit-economics', description: 'Model CAC, LTV, and margins for space business plans.' },
   { title: 'Cap Table Builder', href: '/cap-tables', description: 'Model dilution across seed through Series rounds.' },
-  { title: 'Grants & SBIR Finder', href: '/funding-opportunities', description: 'Non-dilutive government funding programs.' },
+  { title: 'Grants & SBIR Finder', href: '/procurement?tab=grants', description: 'Non-dilutive government funding programs.' },
   { title: 'Deal Rooms', href: '/deal-rooms', description: 'Secure data rooms for fundraising and diligence.' },
   { title: 'Find a Mentor', href: '/mentors', description: 'Connect with experienced space industry operators.' },
   { title: 'Investor Directory', href: '/investors', description: 'Browse active space-focused VCs and funds.' },

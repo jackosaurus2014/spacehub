@@ -73,9 +73,9 @@ export async function GET(request: NextRequest) {
       'mission': { name: 'Mission Control', path: '/mission-control' },
       'solar': { name: 'Solar Exploration', path: '/solar-exploration' },
       'orbital': { name: 'GEO Slots', path: '/spectrum?tab=geo-slots' },
-      'blog': { name: 'Blogs & Articles', path: '/blogs' },
+      'blog': { name: 'Industry Voices', path: '/industry-voices' },
       'job': { name: 'Space Talent Hub', path: '/space-talent' },
-      'opportunity': { name: 'Business Opportunities', path: '/business-opportunities' },
+      'opportunity': { name: 'Business Opportunities', path: '/procurement' },
     };
 
     const matchedModules = Object.entries(moduleKeywords)

@@ -4,6 +4,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatMarketCap, formatFundingTotal, formatValuation } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
@@ -36,7 +41,33 @@ const COMPARISON_DATA = [
   { metric: 'Public/Private', spacex: 'Public (NASDAQ: SPCX, IPO June 2026)', blueOrigin: 'Private' },
 ];
 
-export default function SpaceXVsBlueOrigin() {
+export default async function SpaceXVsBlueOrigin() {
+  const figures = await getCompareFigures(['spacex', 'blue-origin']);
+  const spacex = figures['spacex'];
+  const blueOrigin = figures['blue-origin'];
+  const spacexFunding = formatFundingTotal(spacex?.totalFundingUSD);
+  const blueOriginFunding = formatFundingTotal(blueOrigin?.totalFundingUSD);
+  const spacexMarketCap = formatMarketCap(spacex?.marketCapUSD);
+  const blueOriginValuation = formatValuation(blueOrigin?.valuationUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Total Funding') {
+      return {
+        ...row,
+        spacex: spacexFunding ? `~${spacexFunding}` : row.spacex,
+        blueOrigin: blueOriginFunding ? `~${blueOriginFunding} (mostly Bezos)` : row.blueOrigin,
+      };
+    }
+    if (row.metric === 'Valuation') {
+      return {
+        ...row,
+        spacex: spacexMarketCap ? `~${spacexMarketCap} market cap (NASDAQ: SPCX)` : row.spacex,
+        blueOrigin: blueOriginValuation ? `Private (est. ${blueOriginValuation})` : row.blueOrigin,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'SpaceX vs Blue Origin' }]} />
@@ -76,7 +107,7 @@ export default function SpaceXVsBlueOrigin() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.spacex}</td>
@@ -85,6 +116,9 @@ export default function SpaceXVsBlueOrigin() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[spacex, blueOrigin]} />
         </div>
       </div>
 

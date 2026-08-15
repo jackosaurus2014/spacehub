@@ -3,6 +3,11 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { getCompareFigures, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Loft Orbital vs York Space Systems: Satellite Platform Comparison 2026',
@@ -38,7 +43,24 @@ const COMPARISON_DATA = [
   { metric: 'Revenue Model', a: 'Recurring data/capacity subscription fees', b: 'Hardware sales + satellite integration services' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['loft-orbital', 'york-space-systems']);
+  const loftOrbital = figures['loft-orbital'];
+  const york = figures['york-space-systems'];
+  const loftFunding = formatFundingTotal(loftOrbital?.totalFundingUSD);
+  const yorkFunding = formatFundingTotal(york?.totalFundingUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Total Funding') {
+      return {
+        ...row,
+        a: loftFunding ? `~${loftFunding}` : row.a,
+        b: yorkFunding ? `~${yorkFunding} (acquired by Northrop Grumman via SpaceLogistics, now independent again)` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Loft Orbital vs York Space Systems' }]} />
@@ -76,7 +98,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -85,6 +107,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[loftOrbital, york]} />
         </div>
       </div>
 

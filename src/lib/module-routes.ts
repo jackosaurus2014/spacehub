@@ -4,7 +4,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   'mission-control': '/mission-control',
   'news-media': '/news',
   'space-market-intelligence': '/space-stocks',
-  'business-opportunities-group': '/business-opportunities',
+  'business-opportunities-group': '/procurement',
   'mission-planning': '/mission-cost',
   'space-operations': '/satellites',
   'talent-workforce': '/space-talent',
@@ -14,7 +14,7 @@ export const MODULE_ROUTES: Record<string, string> = {
 
   // ── News & Media children ──
   'news-feed': '/news',
-  'blogs-articles': '/blogs',
+  'blogs-articles': '/industry-voices',
   'space-defense': '/space-defense',
   'ai-insights': '/ai-insights',
 
@@ -29,13 +29,13 @@ export const MODULE_ROUTES: Record<string, string> = {
   'investor-directory': '/investors',
 
   // ── Business Opportunities children ──
-  'business-opportunities': '/business-opportunities',
+  'business-opportunities': '/procurement',
   'supply-chain': '/supply-chain',
   'space-mining': '/space-mining',
   'patent-tracker': '/patents',
   'manufacturing-imagery': '/space-manufacturing',
   'procurement-intelligence': '/procurement',
-  'funding-opportunities': '/funding-opportunities',
+  'funding-opportunities': '/procurement?tab=grants',
 
   // ── Mission Planning children ──
   'mission-cost': '/mission-cost',

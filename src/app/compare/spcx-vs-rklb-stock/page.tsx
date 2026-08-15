@@ -3,6 +3,11 @@ import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { getCompareFigures, formatMarketCap } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'SpaceX vs Rocket Lab Stock: SPCX vs RKLB as Investments 2026',
@@ -45,7 +50,24 @@ const COMPARISON_DATA = [
   { metric: 'Key Bear Case', a: 'Priced for perfection at ~$2T; any Starship setback or Starlink competitive pressure (Kuiper) hits the thesis hard', b: 'Neutron has already slipped once; Iridium deal adds financing and integration risk ahead of a mid-2027 close' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['spacex', 'rocket-lab']);
+  const spacex = figures['spacex'];
+  const rocketLab = figures['rocket-lab'];
+  const spacexMarketCap = formatMarketCap(spacex?.marketCapUSD);
+  const rocketLabMarketCap = formatMarketCap(rocketLab?.marketCapUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Market Cap (Aug 2026)') {
+      return {
+        ...row,
+        a: spacexMarketCap ? `~${spacexMarketCap}` : row.a,
+        b: rocketLabMarketCap ? `~${rocketLabMarketCap}` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'SPCX vs RKLB Stock' }]} />
@@ -85,7 +107,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -95,12 +117,15 @@ export default function Page() {
             </tbody>
           </table>
         </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[spacex, rocketLab]} />
+        </div>
       </div>
 
       {/* Scale */}
       <h2 className="text-display text-xl mb-3">Scale: A ~$2 Trillion Giant vs a Scaling Small-Cap</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        SpaceX went public on Nasdaq on June 12, 2026, pricing at $135/share for a ~$1.78 trillion valuation and closing its debut day around ~$2.1 trillion &mdash; the largest IPO in history. It has held roughly that level since, making it the single largest space-industry equity by an enormous margin. Rocket Lab, by contrast, has traded publicly since its 2021 SPAC merger and sits around a ~$17 billion market cap as of August 2026 &mdash; still a small-cap next to SpaceX, but up substantially on record quarterly revenue and the Iridium deal announcement.
+        SpaceX went public on Nasdaq on June 12, 2026, pricing at $135/share for a ~$1.78 trillion valuation and closing its debut day around ~$2.1 trillion &mdash; the largest IPO in history. It has held roughly that level since, making it the single largest space-industry equity by an enormous margin. Rocket Lab, by contrast, has traded publicly since its 2021 SPAC merger and sits around a {rocketLabMarketCap ?? '~$17 billion'} market cap as of August 2026 &mdash; still a small-cap next to SpaceX, but up substantially on record quarterly revenue and the Iridium deal announcement.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         That scale gap shapes everything else about the comparison. SpaceX is a mega-cap with a trading history measured in weeks; Rocket Lab is a small-cap with more than four years of quarterly reports, analyst coverage, and price history for investors to underwrite.

@@ -65,5 +65,10 @@ build.log
 public/Screenshot*.png
 public/screenshots/
 
+# One-off DB backup dumps (not meant to accumulate in git history).
+# Exception: scripts/backups/space-company-*.json is force-added for the
+# record of the SpaceCompany table drop (2026-08) — see scripts/backup-space-company.ts.
+/scripts/backups/
+
 # Source PNGs for game art (converted to WebP into public/game/ via scripts/convert-game-assets.ts — keep originals out of git)
 /client/

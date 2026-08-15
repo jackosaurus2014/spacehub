@@ -205,7 +205,7 @@ export default function BusinessOpportunitiesModule() {
         </div>
         <div className="flex items-center gap-2">
           <Link
-            href="/business-opportunities"
+            href="/procurement"
             className="btn-secondary text-sm py-1.5 px-4"
           >
             View All →

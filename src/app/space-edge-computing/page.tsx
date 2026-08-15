@@ -780,7 +780,7 @@ export default function SpaceEdgeComputingPage() {
         <ScrollReveal>
           <div className="text-center pt-8 pb-4 border-t border-white/[0.06]">
             <Link
-              href="/business-opportunities"
+              href="/procurement"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-lg transition-all text-sm font-medium"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

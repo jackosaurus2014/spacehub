@@ -1718,7 +1718,7 @@ function ManufacturingAndImageryContent() {
               { name: 'Supply Chain', description: 'Space supply chain intelligence', href: '/supply-chain', icon: '🔗' },
               { name: 'Launch Vehicles', description: 'Rocket and launch system comparison', href: '/launch-vehicles', icon: '🚀' },
               { name: 'Marketplace', description: 'Find manufacturing service providers', href: '/marketplace', icon: '🏪' },
-              { name: 'Business Opportunities', description: 'Manufacturing contracts and RFPs', href: '/business-opportunities', icon: '📋' },
+              { name: 'Business Opportunities', description: 'Manufacturing contracts and RFPs', href: '/procurement', icon: '📋' },
                 ]}
               />
             </ScrollReveal>

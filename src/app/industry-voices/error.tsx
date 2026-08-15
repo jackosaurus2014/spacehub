@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
-    clientLogger.error('Page error', { page: 'blogs', message: error.message });
+    clientLogger.error('Page error', { page: 'industry-voices', message: error.message });
   }, [error]);
 
   return (

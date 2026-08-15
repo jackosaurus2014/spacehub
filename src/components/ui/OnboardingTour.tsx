@@ -36,7 +36,7 @@ const PERSONAS: { id: UserPersona; icon: string; title: string; description: str
 // Map persona to a starting destination so the tour ends with a clear next step
 const PERSONA_DESTINATIONS: Record<UserPersona, { href: string; label: string }> = {
   investor: { href: '/market-intel', label: 'Open Market Intelligence' },
-  entrepreneur: { href: '/funding-opportunities', label: 'Browse Funding Opportunities' },
+  entrepreneur: { href: '/procurement?tab=grants', label: 'Browse Funding Opportunities' },
   'mission-planner': { href: '/tools', label: 'Explore Engineering Tools' },
   executive: { href: '/mission-control', label: 'Open Mission Control' },
   'supply-chain': { href: '/supply-chain', label: 'View Supply Chain Map' },

@@ -33,7 +33,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
 
   // ── News & Media ──
   news: { name: 'Space News', description: 'Latest headlines', href: '/news', icon: '📰' },
-  blogs: { name: 'Blogs & Articles', description: 'Industry analysis', href: '/blogs', icon: '✍️' },
+  blogs: { name: 'Industry Voices', description: 'Curated third-party expert blogs', href: '/industry-voices', icon: '✍️' },
   spaceDefense: { name: 'Space Defense', description: 'Defense & security', href: '/space-defense', icon: '🛡️' },
   aiInsights: { name: 'AI Insights', description: 'AI-generated analysis', href: '/ai-insights', icon: '🤖' },
   newsDigest: { name: 'Live Digest', description: 'Rolling 7-day digest', href: '/briefs', icon: '📋' },
@@ -43,7 +43,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   newsletters: { name: 'Newsletters', description: 'Industry newsletters', href: '/newsletters-directory', icon: '✉️' },
 
   // ── Business Opportunities ──
-  businessOps: { name: 'Business Opportunities', description: 'Growth opportunities', href: '/business-opportunities', icon: '💼' },
+  businessOps: { name: 'Business Opportunities', description: 'Growth opportunities', href: '/procurement', icon: '💼' },
   supplyChain: { name: 'Supply Chain', description: 'Supply chain intel', href: '/supply-chain', icon: '🔗' },
   spaceMining: { name: 'Space Mining', description: 'Resource extraction', href: '/space-mining', icon: '⛏️' },
   patents: { name: 'Patents', description: 'IP landscape', href: '/patents', icon: '📜' },
@@ -51,7 +51,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   manufacturing: { name: 'Space Manufacturing', description: 'In-space production', href: '/space-manufacturing', icon: '🏭' },
   procurement: { name: 'Procurement', description: 'Government contracts', href: '/procurement', icon: '📋' },
   contractAwards: { name: 'Contract Awards', description: 'Recent awards', href: '/procurement', icon: '🏆' },
-  fundingOpportunities: { name: 'Funding Opportunities', description: 'Grants & programs', href: '/funding-opportunities', icon: '💡' },
+  fundingOpportunities: { name: 'Funding Opportunities', description: 'Grants & programs', href: '/procurement?tab=grants', icon: '💡' },
   fundingRounds: { name: 'Funding Rounds', description: 'Investment rounds DB', href: '/funding-tracker', icon: '💵' },
   govBudgets: { name: 'Government Budgets', description: 'Global agency spending', href: '/procurement?tab=global-budgets', icon: '🏛️' },
 
@@ -198,7 +198,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── News & Media cluster ──
   'news': [MODULES.newsDigest, MODULES.aiInsights, MODULES.intelligenceBrief, MODULES.blogs, MODULES.spaceDefense],
-  'blogs': [MODULES.news, MODULES.aiInsights, MODULES.resources, MODULES.podcasts],
+  'industry-voices': [MODULES.news, MODULES.aiInsights, MODULES.resources, MODULES.podcasts],
   'space-defense': [MODULES.news, MODULES.spaceAgencies, MODULES.compliance, MODULES.govBudgets, MODULES.procurement],
   'ai-insights': [MODULES.companyResearch, MODULES.news, MODULES.marketIntel, MODULES.intelligenceBrief],
   'news-digest': [MODULES.news, MODULES.intelligenceBrief, MODULES.aiInsights, MODULES.blogs],
@@ -209,7 +209,6 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'newsletters-directory': [MODULES.resources, MODULES.blogs, MODULES.podcasts, MODULES.news],
 
   // ── Business Opportunities cluster ──
-  'business-opportunities': [MODULES.procurement, MODULES.supplyChain, MODULES.marketplace, MODULES.fundingOpportunities, MODULES.contractAwards],
   'supply-chain': [MODULES.businessOps, MODULES.manufacturing, MODULES.marketplace, MODULES.companyProfiles],
   'space-mining': [MODULES.isru, MODULES.asteroidWatch, MODULES.solarExploration, MODULES.materialsDB],
   'patents': [MODULES.patentLandscape, MODULES.techReadiness, MODULES.companyProfiles, MODULES.manufacturing],
@@ -217,7 +216,6 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'space-manufacturing': [MODULES.supplyChain, MODULES.blueprints, MODULES.materialsDB, MODULES.businessOps],
   'procurement': [MODULES.contractAwards, MODULES.govBudgets, MODULES.businessOps, MODULES.fundingOpportunities],
   'contract-awards': [MODULES.procurement, MODULES.govBudgets, MODULES.companyProfiles, MODULES.dealFlow],
-  'funding-opportunities': [MODULES.fundingTracker, MODULES.procurement, MODULES.businessOps, MODULES.govBudgets],
   'funding-rounds': [MODULES.fundingTracker, MODULES.spaceCapital, MODULES.investors, MODULES.startupTracker],
   'government-budgets': [MODULES.spaceAgencies, MODULES.procurement, MODULES.contractAwards, MODULES.spaceEconomy],
 

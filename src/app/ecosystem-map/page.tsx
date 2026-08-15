@@ -592,7 +592,7 @@ export default function EcosystemMapPage() {
               Marketplace
             </Link>
             <Link
-              href="/business-opportunities"
+              href="/procurement"
               className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:text-white hover:border-purple-500/50 transition-all"
             >
               Business Opportunities

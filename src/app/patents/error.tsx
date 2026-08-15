@@ -30,7 +30,7 @@ export default function Error({
             Try Again
           </button>
           <Link
-            href="/business-opportunities"
+            href="/procurement"
             className="px-5 py-2.5 bg-white/[0.08] hover:bg-white/[0.1] text-white text-sm rounded-lg font-medium transition-colors"
           >
             Back to Business

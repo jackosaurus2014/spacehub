@@ -41,7 +41,7 @@ export async function submitAllToIndexNow(): Promise<boolean> {
     '/', '/ignition', '/live', '/live/artemis-ii-blog', '/satellites', '/news', '/space-stocks',
     '/compare', '/space-talent', '/blog', '/pricing', '/company-profiles',
     '/mission-control', '/space-environment', '/compliance', '/solar-exploration',
-    '/business-opportunities', '/mission-cost', '/marketplace',
+    '/mission-cost', '/marketplace',
   ];
 
   // Add top blog posts

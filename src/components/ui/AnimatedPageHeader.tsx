@@ -8,7 +8,7 @@ const BREADCRUMB_ROUTES: Record<string, string> = {
   'Dashboard': '/dashboard',
   'News & Media': '/news',
   'Intelligence': '/market-intel',
-  'Business': '/business-opportunities',
+  'Business': '/procurement',
   'Tools': '/tools',
   'Explore': '/features',
   'Market Intel': '/market-intel',

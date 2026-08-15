@@ -4,6 +4,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatMarketCap } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'SpaceX vs Rocket Lab: Complete Comparison 2026',
@@ -56,7 +61,24 @@ const COMPARISON_DATA = [
   { metric: 'Revenue Breakdown', a: '~60% Starlink, ~40% launch services', b: '~55% space systems, ~45% launch services' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['spacex', 'rocket-lab']);
+  const spacex = figures['spacex'];
+  const rocketLab = figures['rocket-lab'];
+  const spacexMarketCap = formatMarketCap(spacex?.marketCapUSD);
+  const rocketLabMarketCap = formatMarketCap(rocketLab?.marketCapUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Valuation / Market Cap') {
+      return {
+        ...row,
+        a: spacexMarketCap ? `~${spacexMarketCap} (market cap, Aug 2026)` : row.a,
+        b: rocketLabMarketCap ? `~${rocketLabMarketCap} (market cap, Aug 2026)` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'SpaceX vs Rocket Lab' }]} />
@@ -95,7 +117,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -104,6 +126,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[spacex, rocketLab]} />
         </div>
       </div>
 
@@ -146,7 +171,7 @@ export default function Page() {
       {/* Future Outlook */}
       <h2 className="text-display text-xl mb-3">Future Outlook</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        SpaceX&apos;s near-term trajectory is defined by Starship&apos;s operational maturation and Starlink&apos;s continued revenue growth following SpaceX&apos;s June 2026 Nasdaq listing (SPCX), which raised $75B and now trades around a $1.84T market cap. If Starship achieves reliable operations, it will fundamentally alter the economics of space access with its target cost per kg below $100 to LEO. Rocket Lab&apos;s inflection point is Neutron: a reusable medium-lift vehicle targeting ~$50M per launch that would directly compete for commercial and government missions in the most active segment of the market. Rocket Lab&apos;s stock (RKLB) surged roughly 700% in 2024 on investor enthusiasm for the Neutron program and growing space systems revenue, and its market cap has continued climbing through 2026 to roughly $51B. Both companies represent the clearest examples of new-space execution, though at very different scales.
+        SpaceX&apos;s near-term trajectory is defined by Starship&apos;s operational maturation and Starlink&apos;s continued revenue growth following SpaceX&apos;s June 2026 Nasdaq listing (SPCX), which raised $75B and now trades around a {spacexMarketCap ?? '$1.84T'} market cap. If Starship achieves reliable operations, it will fundamentally alter the economics of space access with its target cost per kg below $100 to LEO. Rocket Lab&apos;s inflection point is Neutron: a reusable medium-lift vehicle targeting ~$50M per launch that would directly compete for commercial and government missions in the most active segment of the market. Rocket Lab&apos;s stock (RKLB) surged roughly 700% in 2024 on investor enthusiasm for the Neutron program and growing space systems revenue, and its market cap has continued climbing through 2026 to roughly {rocketLabMarketCap ?? '$51B'}. Both companies represent the clearest examples of new-space execution, though at very different scales.
       </p>
 
       {/* CTA */}

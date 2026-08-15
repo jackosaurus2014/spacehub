@@ -14,12 +14,15 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import DataAsOf from '@/components/ui/DataAsOf';
 import GlobalBudgetsTab from './GlobalBudgetsTab';
+import ContractAwardsSection from './ContractAwardsSection';
+import MarketSignalsSection from './MarketSignalsSection';
+import FundingGrantsSection from './FundingGrantsSection';
 
 // ────────────────────────────────────────
 // Types
 // ────────────────────────────────────────
 
-type Tab = 'opportunities' | 'sbir' | 'budget' | 'global-budgets' | 'congressional' | 'saved';
+type Tab = 'opportunities' | 'grants' | 'budget' | 'global-budgets' | 'congressional' | 'saved';
 
 interface ProcurementOpportunity {
   id: string;
@@ -633,7 +636,7 @@ function ProcurementContent() {
   }, [sbirAgencyFilter, sbirProgramFilter]);
 
   useEffect(() => {
-    if (currentTab === 'sbir') fetchSBIR();
+    if (currentTab === 'grants') fetchSBIR();
   }, [currentTab, fetchSBIR]);
 
   // Fetch budget
@@ -699,7 +702,7 @@ function ProcurementContent() {
 
   const handleRefresh = useCallback(async () => {
     if (currentTab === 'opportunities') fetchOpportunities();
-    else if (currentTab === 'sbir') fetchSBIR();
+    else if (currentTab === 'grants') fetchSBIR();
     else if (currentTab === 'budget') fetchBudget();
     else if (currentTab === 'congressional') fetchCongressional();
     else if (currentTab === 'saved') fetchSaved();
@@ -708,7 +711,7 @@ function ProcurementContent() {
   // Tab buttons
   const tabs: { id: Tab; label: string; icon: string; count?: number }[] = [
     { id: 'opportunities', label: 'Contract Opportunities', icon: '📋', count: stats?.overview.activeOpportunities },
-    { id: 'sbir', label: 'SBIR/STTR', icon: '🔬', count: stats?.sbir.active },
+    { id: 'grants', label: 'Grants & SBIR', icon: '🔬', count: stats?.sbir.active },
     { id: 'budget', label: 'Budget Tracker', icon: '💰' },
     { id: 'global-budgets', label: 'Global Budgets', icon: '🌐' },
     { id: 'congressional', label: 'Congressional', icon: '🏛️', count: stats?.congressional.totalActivities },
@@ -720,8 +723,8 @@ function ProcurementContent() {
     <div className="min-h-screen bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <AnimatedPageHeader
-          title="Procurement Intelligence"
-          subtitle="Track government space contracts, SBIR/STTR opportunities, agency budgets, and congressional activity"
+          title="Contracts & Opportunities"
+          subtitle="The unified hub for government space contracts, awards, grants, SBIR/STTR, market signals, agency budgets, and congressional activity"
         />
 
         {/* Ignition Tracker Callout */}
@@ -875,11 +878,21 @@ function ProcurementContent() {
                 )}
               </>
             )}
+
+            {/* Market Signals — folded in from the retired /business-opportunities page */}
+            <MarketSignalsSection />
+
+            {/* Notable Contracts & Awards — folded in from the retired ContractTicker/ContractsList
+                embed on /business-opportunities */}
+            <ContractAwardsSection />
           </div>
         )}
 
-        {currentTab === 'sbir' && (
+        {currentTab === 'grants' && (
           <div>
+            <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-3">
+              <span>🔬</span> SBIR/STTR Solicitations
+            </h2>
             {/* Filters */}
             <div className="card p-4 mb-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -927,6 +940,9 @@ function ProcurementContent() {
                 ))}
               </StaggerContainer>
             )}
+
+            {/* Grants & Funding — folded in from the retired /funding-opportunities page */}
+            <FundingGrantsSection />
           </div>
         )}
 

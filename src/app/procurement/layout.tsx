@@ -1,25 +1,27 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SAM.gov Procurement Intelligence',
-  description: 'Search federal space contracts and SBIR opportunities from SAM.gov. Filter by agency, NAICS code, value, and deadline. Track NASA, Space Force, and DARPA awards.',
+  title: 'Contracts & Opportunities Hub',
+  description: 'The unified hub for space industry contracts and opportunities: SAM.gov federal solicitations, curated contract awards, grants, SBIR/STTR, market signals, agency budgets, and congressional activity. Track NASA, Space Force, DARPA, and ESA.',
   keywords: [
     'SAM.gov space',
     'space contracts',
     'SBIR space',
+    'space grants',
     'NASA procurement',
     'Space Force contracts',
     'federal space',
+    'space business opportunities',
   ],
   openGraph: {
-    title: 'SAM.gov Procurement Intelligence | SpaceNexus',
-    description: 'Search federal space contracts and SBIR opportunities from SAM.gov. Filter by agency, NAICS code, value, and deadline. Track NASA, Space Force, and DARPA awards.',
+    title: 'Contracts & Opportunities Hub | SpaceNexus',
+    description: 'The unified hub for space industry contracts and opportunities: SAM.gov solicitations, contract awards, grants, SBIR/STTR, market signals, agency budgets, and congressional activity.',
     url: 'https://spacenexus.us/procurement',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SAM.gov Procurement Intelligence | SpaceNexus',
-    description: 'Search federal space contracts and SBIR opportunities from SAM.gov. Filter by agency, NAICS code, value, and deadline. Track NASA, Space Force, and DARPA awards.',
+    title: 'Contracts & Opportunities Hub | SpaceNexus',
+    description: 'The unified hub for space industry contracts and opportunities: SAM.gov solicitations, contract awards, grants, SBIR/STTR, market signals, agency budgets, and congressional activity.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/procurement',

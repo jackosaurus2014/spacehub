@@ -3,6 +3,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, selectHeadlineFigure } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2006', b: '2002' },
@@ -27,7 +32,26 @@ const COMPARISON_DATA = [
   { metric: 'Constellation Ownership', a: 'None (but builds components used by constellation operators)', b: 'Starlink (6,000+ sats, $6.6B+ revenue)' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['rocket-lab', 'spacex']);
+  const rocketLab = figures['rocket-lab'];
+  const spacex = figures['spacex'];
+  const rocketLabHeadline = selectHeadlineFigure(rocketLab);
+  const spacexHeadline = selectHeadlineFigure(spacex);
+  const marketCapRatio = rocketLab?.marketCapUSD && spacex?.marketCapUSD
+    ? Math.round(spacex.marketCapUSD / rocketLab.marketCapUSD)
+    : null;
+
+  const comparisonData = COMPARISON_DATA.map((row) =>
+    row.metric === 'Market Cap / Valuation'
+      ? {
+          ...row,
+          a: rocketLabHeadline ? `${rocketLabHeadline.formatted} (${rocketLabHeadline.label})` : row.a,
+          b: spacexHeadline ? `${spacexHeadline.formatted} (${spacexHeadline.label}, Aug 2026)` : row.b,
+        }
+      : row
+  );
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Rocket Lab vs SpaceX' }]} />
@@ -65,7 +89,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -75,6 +99,9 @@ export default function Page() {
             </tbody>
           </table>
         </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[rocketLab, spacex]} />
+        </div>
       </div>
 
       {/* Analysis: The Vertical Integration Playbook */}
@@ -83,7 +110,7 @@ export default function Page() {
         SpaceX pioneered the vertically integrated space company model: designing and manufacturing its own engines, structures, avionics, launch vehicles, spacecraft, and even its primary customer (Starlink). By controlling the entire stack, SpaceX achieves cost efficiencies and iteration speeds that traditional aerospace supply chains cannot match. Rocket Lab has been deliberately following a similar playbook at smaller scale. Through a series of acquisitions &mdash; Planetary Systems Corp (separation systems, 2021), Advanced Solutions Inc (flight software, 2021), SolAero (space solar cells, 2022), and others &mdash; Rocket Lab has assembled the components to be a one-stop shop for satellite missions.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        The difference in scale is enormous. SpaceX&apos;s revenue is roughly 20x Rocket Lab&apos;s, and since its June 2026 Nasdaq listing (SPCX) its market cap has run to roughly 150x Rocket Lab&apos;s. But Rocket Lab&apos;s space systems division (which includes spacecraft, solar panels, reaction wheels, star trackers, and separation systems) now generates more revenue than its launch division, making it the rare space company that has diversified beyond launch. Notably, Rocket Lab&apos;s components end up on competitors&apos; satellites: SolAero solar cells have been used on Mars rovers and on satellites that launched on SpaceX rockets.
+        The difference in scale is enormous. SpaceX&apos;s revenue is roughly 20x Rocket Lab&apos;s, and since its June 2026 Nasdaq listing (SPCX) its market cap has run to roughly {marketCapRatio ? `${marketCapRatio}x` : '150x'} Rocket Lab&apos;s. But Rocket Lab&apos;s space systems division (which includes spacecraft, solar panels, reaction wheels, star trackers, and separation systems) now generates more revenue than its launch division, making it the rare space company that has diversified beyond launch. Notably, Rocket Lab&apos;s components end up on competitors&apos; satellites: SolAero solar cells have been used on Mars rovers and on satellites that launched on SpaceX rockets.
       </p>
 
       {/* Analysis: Neutron vs Falcon 9 */}

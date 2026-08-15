@@ -55,7 +55,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/industry-trends': 'Industry Trends',
   '/news': 'News',
   '/news-aggregator': 'News Aggregator',
-  '/blogs': 'Blogs & Articles',
+  '/industry-voices': 'Industry Voices',
   '/blog': 'Blog',
   '/podcasts': 'Podcasts',
   '/newsletters-directory': 'Newsletters Directory',
@@ -81,7 +81,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/ai-insights': 'AI Insights',
 
   // ── Business ──
-  '/business-opportunities': 'Business Opportunities',
   '/business-models': 'Business Models',
   '/space-talent': 'Space Talent Hub',
   '/supply-chain': 'Supply Chain',
@@ -93,7 +92,6 @@ export const ROUTE_LABELS: Record<string, string> = {
 
   // ── Investment ──
   '/funding-tracker': 'Funding Tracker',
-  '/funding-opportunities': 'Funding Opportunities',
   '/deal-rooms': 'Deal Rooms',
   '/investors': 'Investors',
   '/startup-tracker': 'Startup Tracker',
@@ -334,7 +332,7 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/media-kit': '/press',
 
   // Blog
-  '/blog': '/blogs',
+  '/blog': '/industry-voices',
 };
 
 // ─── Utility ─────────────────────────────────────────────────────────────────

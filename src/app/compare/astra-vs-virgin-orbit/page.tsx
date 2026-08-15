@@ -3,6 +3,11 @@ import Link from 'next/link';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Astra vs Virgin Orbit: Complete Comparison 2026',
@@ -34,7 +39,24 @@ const COMPARISON_DATA = [
   { metric: 'Post-Shutdown Legacy', a: 'Spacecraft propulsion products still sold', b: 'LauncherOne technology / assets acquired by various parties' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['astra-space', 'virgin-orbit']);
+  const astra = figures['astra-space'];
+  const virginOrbit = figures['virgin-orbit'];
+  const astraFunding = formatFundingTotal(astra?.totalFundingUSD);
+  const vorbFunding = formatFundingTotal(virginOrbit?.totalFundingUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Total Funding') {
+      return {
+        ...row,
+        a: astraFunding ? `~${astraFunding}` : row.a,
+        b: vorbFunding ? `~${vorbFunding}` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <nav className="text-xs text-zinc-500 mb-4">
@@ -71,7 +93,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -80,6 +102,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[astra, virginOrbit]} />
         </div>
       </div>
 

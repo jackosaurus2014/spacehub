@@ -3,6 +3,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatMarketCap, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2017', b: '2017 (as Ubiquitilink; renamed Lynk 2020)' },
@@ -29,7 +34,33 @@ const COMPARISON_DATA = [
   { metric: 'Competitive Moat', a: 'Patented large phased-array antenna technology; 50+ MNO agreements; FCC license', b: 'First company to send satellite-to-phone text; focus on underserved markets' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['ast-spacemobile', 'lynk-global']);
+  const ast = figures['ast-spacemobile'];
+  const lynk = figures['lynk-global'];
+  const astMarketCap = formatMarketCap(ast?.marketCapUSD);
+  const astFunding = formatFundingTotal(ast?.totalFundingUSD);
+  const lynkValuation = formatFundingTotal(lynk?.valuationUSD);
+  const lynkFunding = formatFundingTotal(lynk?.totalFundingUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Market Cap (early 2026)') {
+      return {
+        ...row,
+        a: astMarketCap ? `~${astMarketCap}` : row.a,
+        b: lynkValuation ? `Private — est. valuation ~${lynkValuation}` : row.b,
+      };
+    }
+    if (row.metric === 'Total Funding Raised') {
+      return {
+        ...row,
+        a: astFunding ? `~${astFunding} (equity + debt)` : row.a,
+        b: lynkFunding ? `~${lynkFunding}` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'AST SpaceMobile vs Lynk Global' }]} />
@@ -67,7 +98,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -76,6 +107,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[ast, lynk]} />
         </div>
       </div>
 

@@ -3,6 +3,11 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import { getCompareFigures, formatFundingTotal } from '@/lib/compare-figures';
+import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootnote';
+
+// Railway's build container has no DB access — figures are fetched at request time.
+export const dynamic = 'force-dynamic';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2017 (reincorporated after 2016 bankruptcy)', b: '2017' },
@@ -27,7 +32,24 @@ const COMPARISON_DATA = [
   { metric: 'Unique Approach', a: 'Also developing Elytra orbital transfer vehicle (OTV)', b: 'Containerized mobile launch system (GS0) for rapid deployment anywhere' },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const figures = await getCompareFigures(['firefly-aerospace', 'abl-space-systems']);
+  const firefly = figures['firefly-aerospace'];
+  const abl = figures['abl-space-systems'];
+  const fireflyFunding = formatFundingTotal(firefly?.totalFundingUSD);
+  const ablFunding = formatFundingTotal(abl?.totalFundingUSD);
+
+  const comparisonData = COMPARISON_DATA.map((row) => {
+    if (row.metric === 'Total Funding') {
+      return {
+        ...row,
+        a: fireflyFunding ? `~${fireflyFunding} (including Northrop Grumman investment)` : row.a,
+        b: ablFunding ? `~${ablFunding} (incl. Lockheed Martin Ventures investment)` : row.b,
+      };
+    }
+    return row;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Firefly vs ABL Space' }]} />
@@ -65,7 +87,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_DATA.map((row, i) => (
+              {comparisonData.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
                   <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
@@ -74,6 +96,9 @@ export default function Page() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-2 sm:px-4 pb-3">
+          <CompareFiguresFootnote figures={[firefly, abl]} />
         </div>
       </div>
 

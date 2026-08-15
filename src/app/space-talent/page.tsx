@@ -2044,7 +2044,7 @@ function SpaceTalentHubContent() {
             <h3 className="text-slate-400 text-sm font-medium mb-4">Related Resources</h3>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/business-opportunities"
+                href="/procurement"
                 className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-slate-300 hover:text-white hover:border-white/15 transition-all"
               >
                 Business Opportunities
