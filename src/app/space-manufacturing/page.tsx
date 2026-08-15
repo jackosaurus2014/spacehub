@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf, { oldestAsOfDate } from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
 import {
   type TopTabId,
@@ -1544,6 +1545,7 @@ function ManufacturingAndImageryContent() {
     IMG_HERO_STATS: FALLBACK_IMG_HERO_STATS,
     refreshedAt: null,
   });
+  const [dataAsOf, setDataAsOf] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -1574,6 +1576,10 @@ function ManufacturingAndImageryContent() {
           .pop() || null;
 
         setMfgData((prev) => ({ ...prev, ...newData, refreshedAt: latestRefresh }));
+        // latestRefresh above is module-wide-newest and can mask stale
+        // AI-researched sections behind one fresher key; show the honest
+        // oldest-section vintage across everything actually rendered here.
+        setDataAsOf(oldestAsOfDate(responses.map((r) => r.meta?.oldestRefreshed)));
       } catch (error) {
         clientLogger.error('Failed to fetch manufacturing data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
@@ -1611,6 +1617,7 @@ function ManufacturingAndImageryContent() {
         />
 
         <DataFreshness refreshedAt={mfgData.refreshedAt} source="DynamicContent" />
+        {dataAsOf && <DataAsOf date={dataAsOf} note="oldest of this page's AI-researched sections" className="mb-4" />}
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

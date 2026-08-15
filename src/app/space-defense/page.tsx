@@ -7,6 +7,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf, { oldestAsOfDate } from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
 import { getCompanyProfileUrl } from '@/lib/company-links';
@@ -1687,6 +1688,7 @@ export default function SpaceDefensePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [dataAsOf, setDataAsOf] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<TabId>('forces');
   const [programCategoryFilter, setProgramCategoryFilter] = useState<DefenseProgram['category'] | ''>('');
@@ -1732,6 +1734,19 @@ export default function SpaceDefensePage() {
         if (timestamps.length > 0) {
           setRefreshedAt(timestamps.sort().reverse()[0]);
         }
+        // The timestamp above is the newest across the 5 AI-researched
+        // sections and can look deceptively fresh next to the live
+        // procurement feed rendered alongside it. Surface the honest
+        // oldest-section vintage too (this is the exact audit finding:
+        // space-defense's 5 AI sections sat at 186 days old, sourceType
+        // 'seed', masked by the daily live-procurement key).
+        setDataAsOf(oldestAsOfDate([
+          forcesJson.meta?.oldestRefreshed,
+          programsJson.meta?.oldestRefreshed,
+          contractsJson.meta?.oldestRefreshed,
+          eventsJson.meta?.oldestRefreshed,
+          alliancesJson.meta?.oldestRefreshed,
+        ]));
       } catch (error) {
         clientLogger.error('Failed to fetch space defense data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
@@ -1779,6 +1794,13 @@ export default function SpaceDefensePage() {
           accentColor="red"
         />
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+        {dataAsOf && (
+          <DataAsOf
+            date={dataAsOf}
+            note="oldest of the force-posture/programs/contracts/counterspace/alliances sections — live procurement below refreshes separately"
+            className="mb-4"
+          />
+        )}
 
         {error && !loading && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

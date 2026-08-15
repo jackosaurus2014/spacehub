@@ -7,6 +7,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf, { formatAsOfDate } from '@/components/ui/DataAsOf';
 import ExportButton from '@/components/ui/ExportButton';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -955,6 +956,7 @@ export default function LaunchVehiclesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [dataAsOf, setDataAsOf] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -977,6 +979,10 @@ export default function LaunchVehiclesPage() {
           setVehicles(VEHICLES);
         }
         setRefreshedAt(data.meta?.lastRefreshed || null);
+        // meta.lastRefreshed is module-wide-newest and can mask stale
+        // AI-researched vehicle entries (e.g. rarely-updated vehicles like
+        // Soyuz-5) behind another fresher key in the same module.
+        setDataAsOf(formatAsOfDate(data.meta?.oldestRefreshed));
       } catch (error) {
         clientLogger.error('Failed to load launch vehicles data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
@@ -1154,6 +1160,7 @@ export default function LaunchVehiclesPage() {
       <div className="container mx-auto px-4">
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+        {dataAsOf && <DataAsOf date={dataAsOf} note="oldest of this page's AI-researched vehicle entries" className="mb-4" />}
 
         <MobileValueProp feature="launch vehicle specs and cost data" />
 

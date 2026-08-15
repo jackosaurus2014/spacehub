@@ -445,23 +445,9 @@ export async function fetchAndStoreDefenseSpending(): Promise<number> {
         { sourceType: 'api', sourceUrl: EXTERNAL_APIS.USASPENDING.baseUrl }
       );
 
-      // Cross-populate to space-economy module for government budgets section
-      const budgetData = results.map((a) => ({
-        agency: a.agency,
-        country: 'United States',
-        budgetBillions: parseFloat((a.totalObligations / 1e9).toFixed(2)),
-        fiscalYear: a.fiscalYear,
-        change: 0,
-        source: 'USAspending.gov',
-      }));
-
-      await upsertContent(
-        'space-economy:government-budgets',
-        'space-economy',
-        'government-budgets',
-        budgetData,
-        { sourceType: 'api', sourceUrl: EXTERNAL_APIS.USASPENDING.baseUrl }
-      );
+      // (space-economy cross-populate removed — the space-economy
+      // DynamicContent module is orphaned: /space-economy redirects to
+      // /market-intel, which never reads it.)
     }
 
     await logRefresh('space-defense', 'api-fetch', results.length > 0 ? 'success' : 'partial', {
@@ -1230,91 +1216,130 @@ export async function fetchAndStoreEnhancedSpaceWeather(): Promise<number> {
     logger.warn('Failed to fetch solar flux data', { error: error instanceof Error ? error.message : String(error) });
   }
 
-  // 6. Solar Wind Plasma (real-time from DSCOVR)
+  // 6. Solar Wind Plasma (real-time solar wind — DSCOVR/ACE via NOAA's RTSW feed)
+  //    NOTE: products/solar-wind/plasma-2-hour.json was retired by NOAA SWPC (404 as of
+  //    2026-08) in favor of the unified json/rtsw/rtsw_wind_1m.json feed, which multiplexes
+  //    several spacecraft and flags the primary source per-minute via `active: true`.
   try {
-    const plasmaData = await fetchNoaaSwpcProducts('solar-wind/plasma-2-hour.json') as Array<
-      [string, string, string, string] // [time_tag, density, speed, temperature] — first row is headers
-    > | null;
+    const rawPlasma = await fetchNoaaSwpcJson('rtsw/rtsw_wind_1m.json') as Array<{
+      time_tag: string;
+      active: boolean;
+      source: string;
+      proton_speed: number | null;
+      proton_density: number | null;
+      proton_temperature: number | null;
+    }> | null;
 
-    if (plasmaData && Array.isArray(plasmaData) && plasmaData.length > 1) {
-      // Skip header row (index 0), parse recent readings
-      const readings = plasmaData.slice(1).map((row) => ({
-        time: row[0],
-        density: row[1] ? parseFloat(row[1]) : null,
-        speed: row[2] ? parseFloat(row[2]) : null,
-        temperature: row[3] ? parseFloat(row[3]) : null,
-      })).filter((r) => r.density !== null || r.speed !== null);
+    if (rawPlasma && Array.isArray(rawPlasma) && rawPlasma.length > 0) {
+      const cutoffMs = Date.now() - 2 * 60 * 60 * 1000; // mirror the legacy 2-hour window
+      const readings = rawPlasma
+        .filter((r) => r.active === true && r.time_tag && Date.parse(`${r.time_tag}Z`) >= cutoffMs)
+        .map((r) => ({
+          time: r.time_tag,
+          density: typeof r.proton_density === 'number' ? r.proton_density : null,
+          speed: typeof r.proton_speed === 'number' ? r.proton_speed : null,
+          temperature: typeof r.proton_temperature === 'number' ? r.proton_temperature : null,
+        }))
+        .filter((r) => r.density !== null || r.speed !== null)
+        // RTSW feed is newest-first; store ascending like the legacy product did
+        .sort((a, b) => a.time.localeCompare(b.time));
 
-      const latest = readings[readings.length - 1];
-      const validSpeeds = readings.filter((r) => r.speed !== null).map((r) => r.speed as number);
-      const validDensities = readings.filter((r) => r.density !== null).map((r) => r.density as number);
+      if (readings.length > 0) {
+        const latest = readings[readings.length - 1];
+        const validSpeeds = readings.filter((r) => r.speed !== null).map((r) => r.speed as number);
+        const validDensities = readings.filter((r) => r.density !== null).map((r) => r.density as number);
 
-      await upsertContent(
-        'space-environment:solar-wind-plasma',
-        'space-environment',
-        'solar-wind',
-        {
-          latest: latest || null,
-          summary: {
-            avgSpeed: validSpeeds.length > 0 ? Math.round(validSpeeds.reduce((a, b) => a + b, 0) / validSpeeds.length) : null,
-            maxSpeed: validSpeeds.length > 0 ? Math.round(Math.max(...validSpeeds)) : null,
-            avgDensity: validDensities.length > 0 ? parseFloat((validDensities.reduce((a, b) => a + b, 0) / validDensities.length).toFixed(2)) : null,
-            readingCount: readings.length,
+        await upsertContent(
+          'space-environment:solar-wind-plasma',
+          'space-environment',
+          'solar-wind',
+          {
+            latest: latest || null,
+            summary: {
+              avgSpeed: validSpeeds.length > 0 ? Math.round(validSpeeds.reduce((a, b) => a + b, 0) / validSpeeds.length) : null,
+              maxSpeed: validSpeeds.length > 0 ? Math.round(Math.max(...validSpeeds)) : null,
+              avgDensity: validDensities.length > 0 ? parseFloat((validDensities.reduce((a, b) => a + b, 0) / validDensities.length).toFixed(2)) : null,
+              readingCount: readings.length,
+            },
+            recentReadings: readings.slice(-30), // Last 30 data points
+            fetchedAt: new Date().toISOString(),
           },
-          recentReadings: readings.slice(-30), // Last 30 data points
-          fetchedAt: new Date().toISOString(),
-        },
-        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/products/solar-wind/plasma-2-hour.json' }
-      );
-      updated++;
+          { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/rtsw/rtsw_wind_1m.json' }
+        );
+        updated++;
+      } else {
+        logger.warn('Solar wind plasma fetch: no usable active readings in RTSW payload', { rawCount: rawPlasma.length });
+      }
+    } else {
+      logger.warn('Solar wind plasma fetch returned empty or invalid payload', { hasData: !!rawPlasma });
     }
   } catch (error) {
     logger.warn('Failed to fetch solar wind plasma data', { error: error instanceof Error ? error.message : String(error) });
   }
 
-  // 7. Solar Wind Magnetometer (IMF from DSCOVR)
+  // 7. Solar Wind Magnetometer (IMF — DSCOVR/ACE via NOAA's RTSW feed)
+  //    NOTE: products/solar-wind/mag-2-hour.json was retired by NOAA SWPC (404 as of
+  //    2026-08) in favor of json/rtsw/rtsw_mag_1m.json — same multi-spacecraft/`active` shape.
   try {
-    const magData = await fetchNoaaSwpcProducts('solar-wind/mag-2-hour.json') as Array<
-      [string, string, string, string, string, string, string] // [time_tag, bx_gsm, by_gsm, bz_gsm, lon_gsm, lat_gsm, bt] — first row is headers
-    > | null;
+    const rawMag = await fetchNoaaSwpcJson('rtsw/rtsw_mag_1m.json') as Array<{
+      time_tag: string;
+      active: boolean;
+      source: string;
+      bt: number | null;
+      bx_gsm: number | null;
+      by_gsm: number | null;
+      bz_gsm: number | null;
+      theta_gsm: number | null;
+      phi_gsm: number | null;
+    }> | null;
 
-    if (magData && Array.isArray(magData) && magData.length > 1) {
-      // Skip header row
-      const readings = magData.slice(1).map((row) => ({
-        time: row[0],
-        bxGsm: row[1] ? parseFloat(row[1]) : null,
-        byGsm: row[2] ? parseFloat(row[2]) : null,
-        bzGsm: row[3] ? parseFloat(row[3]) : null,
-        lonGsm: row[4] ? parseFloat(row[4]) : null,
-        latGsm: row[5] ? parseFloat(row[5]) : null,
-        bt: row[6] ? parseFloat(row[6]) : null,
-      })).filter((r) => r.bt !== null || r.bzGsm !== null);
+    if (rawMag && Array.isArray(rawMag) && rawMag.length > 0) {
+      const cutoffMs = Date.now() - 2 * 60 * 60 * 1000;
+      const readings = rawMag
+        .filter((r) => r.active === true && r.time_tag && Date.parse(`${r.time_tag}Z`) >= cutoffMs)
+        .map((r) => ({
+          time: r.time_tag,
+          bxGsm: typeof r.bx_gsm === 'number' ? r.bx_gsm : null,
+          byGsm: typeof r.by_gsm === 'number' ? r.by_gsm : null,
+          bzGsm: typeof r.bz_gsm === 'number' ? r.bz_gsm : null,
+          lonGsm: typeof r.phi_gsm === 'number' ? r.phi_gsm : null,
+          latGsm: typeof r.theta_gsm === 'number' ? r.theta_gsm : null,
+          bt: typeof r.bt === 'number' ? r.bt : null,
+        }))
+        .filter((r) => r.bt !== null || r.bzGsm !== null)
+        .sort((a, b) => a.time.localeCompare(b.time));
 
-      const latest = readings[readings.length - 1];
-      const validBz = readings.filter((r) => r.bzGsm !== null).map((r) => r.bzGsm as number);
-      const validBt = readings.filter((r) => r.bt !== null).map((r) => r.bt as number);
+      if (readings.length > 0) {
+        const latest = readings[readings.length - 1];
+        const validBz = readings.filter((r) => r.bzGsm !== null).map((r) => r.bzGsm as number);
+        const validBt = readings.filter((r) => r.bt !== null).map((r) => r.bt as number);
 
-      await upsertContent(
-        'space-environment:solar-wind-mag',
-        'space-environment',
-        'solar-wind',
-        {
-          latest: latest || null,
-          summary: {
-            avgBz: validBz.length > 0 ? parseFloat((validBz.reduce((a, b) => a + b, 0) / validBz.length).toFixed(2)) : null,
-            minBz: validBz.length > 0 ? parseFloat(Math.min(...validBz).toFixed(2)) : null,
-            avgBt: validBt.length > 0 ? parseFloat((validBt.reduce((a, b) => a + b, 0) / validBt.length).toFixed(2)) : null,
-            maxBt: validBt.length > 0 ? parseFloat(Math.max(...validBt).toFixed(2)) : null,
-            // Southward Bz is geoeffective (negative values drive geomagnetic storms)
-            geoeffectiveConditions: validBz.length > 0 && Math.min(...validBz) < -10 ? 'Active' : validBz.length > 0 && Math.min(...validBz) < -5 ? 'Moderate' : 'Quiet',
-            readingCount: readings.length,
+        await upsertContent(
+          'space-environment:solar-wind-mag',
+          'space-environment',
+          'solar-wind',
+          {
+            latest: latest || null,
+            summary: {
+              avgBz: validBz.length > 0 ? parseFloat((validBz.reduce((a, b) => a + b, 0) / validBz.length).toFixed(2)) : null,
+              minBz: validBz.length > 0 ? parseFloat(Math.min(...validBz).toFixed(2)) : null,
+              avgBt: validBt.length > 0 ? parseFloat((validBt.reduce((a, b) => a + b, 0) / validBt.length).toFixed(2)) : null,
+              maxBt: validBt.length > 0 ? parseFloat(Math.max(...validBt).toFixed(2)) : null,
+              // Southward Bz is geoeffective (negative values drive geomagnetic storms)
+              geoeffectiveConditions: validBz.length > 0 && Math.min(...validBz) < -10 ? 'Active' : validBz.length > 0 && Math.min(...validBz) < -5 ? 'Moderate' : 'Quiet',
+              readingCount: readings.length,
+            },
+            recentReadings: readings.slice(-30),
+            fetchedAt: new Date().toISOString(),
           },
-          recentReadings: readings.slice(-30),
-          fetchedAt: new Date().toISOString(),
-        },
-        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/products/solar-wind/mag-2-hour.json' }
-      );
-      updated++;
+          { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/rtsw/rtsw_mag_1m.json' }
+        );
+        updated++;
+      } else {
+        logger.warn('Solar wind magnetometer fetch: no usable active readings in RTSW payload', { rawCount: rawMag.length });
+      }
+    } else {
+      logger.warn('Solar wind magnetometer fetch returned empty or invalid payload', { hasData: !!rawMag });
     }
   } catch (error) {
     logger.warn('Failed to fetch solar wind magnetometer data', { error: error instanceof Error ? error.message : String(error) });
@@ -3643,7 +3668,8 @@ export async function refreshAllExternalAPIs(): Promise<{
   results['jpl-close-approaches'] = await fetchAndStoreJplCloseApproaches();
   results['enhanced-space-weather'] = await fetchAndStoreEnhancedSpaceWeather();
   results['donki-enhanced'] = await fetchAndStoreDonkiEnhanced();
-  results['space-stocks'] = await fetchAndStoreSpaceStocks();
+  // space-stocks removed — wrote only to the orphaned space-economy
+  // DynamicContent module (/market-intel reads /api/stocks instead).
   results['gov-contracts'] = await fetchAndStoreGovContracts();
   results['fcc-filings'] = await fetchAndStoreFccFilings();
   results['federal-register'] = await fetchAndStoreFederalRegDocs();
@@ -3660,7 +3686,8 @@ export async function refreshAllExternalAPIs(): Promise<{
   results['solar-imagery'] = await fetchAndStoreSolarImagery();
   results['dsn-status'] = await fetchAndStoreDsnStatus();
   results['iss-position'] = await fetchAndStoreIssPosition();
-  results['sbir-awards'] = await fetchAndStoreSbirAwards();
+  // sbir-awards removed — wrote only to the orphaned startups
+  // DynamicContent module (/startups reads startup-hub-data.ts instead).
 
   const totalUpdated = Object.values(results).reduce((sum, n) => sum + n, 0);
 

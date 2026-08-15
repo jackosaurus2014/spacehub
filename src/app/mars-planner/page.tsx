@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf, { oldestAsOfDate } from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
@@ -563,6 +564,7 @@ export default function MarsPlannerPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [dataAsOf, setDataAsOf] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -591,6 +593,10 @@ export default function MarsPlannerPage() {
         if (d7.data?.length > 0) setCommercialOpportunities(d7.data);
         if (d8.data?.length > 0) setRoverPhotos(d8.data);
         setRefreshedAt(d1.meta?.lastRefreshed || null);
+        // d1.meta?.lastRefreshed is module-wide-newest and can mask stale
+        // AI-researched sections behind one fresher key; show the honest
+        // oldest-section vintage across everything actually rendered here.
+        setDataAsOf(oldestAsOfDate([d1, d2, d3, d4, d5, d6, d7, d8].map((d) => d.meta?.oldestRefreshed)));
       } catch (err) {
         clientLogger.error('Failed to load mars planner data', { error: err instanceof Error ? err.message : String(err) });
         // Fallback data is already set as defaults, so no action needed
@@ -632,6 +638,7 @@ export default function MarsPlannerPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+        {dataAsOf && <DataAsOf date={dataAsOf} note="oldest of this page's AI-researched sections" className="mb-4" />}
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

@@ -9,6 +9,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import RelatedModules from '@/components/ui/RelatedModules';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf, { formatAsOfDate } from '@/components/ui/DataAsOf';
 import TourismCard from '@/components/tourism/TourismCard';
 import ComparisonModal from '@/components/tourism/ComparisonModal';
 import { clientLogger } from '@/lib/client-logger';
@@ -735,7 +736,7 @@ function SpaceTourismContent() {
   const [detailOffering, setDetailOffering] = useState<SpaceTourismOffering | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabSection>('providers');
-  const [dataMeta, setDataMeta] = useState<{ source: string; refreshedAt: string } | null>(null);
+  const [dataMeta, setDataMeta] = useState<{ source: string; refreshedAt: string; oldestRefreshedAt?: string | null } | null>(null);
 
   // Filters from URL
   const providerFilter = searchParams.get('provider') || '';
@@ -1099,8 +1100,11 @@ function SpaceTourismContent() {
                 Please visit official provider websites for the most current details.
               </p>
               {dataMeta?.source === 'database' && dataMeta.refreshedAt && (
-                <div className="mt-2 flex justify-center">
+                <div className="mt-2 flex flex-col items-center gap-1">
                   <DataFreshness refreshedAt={dataMeta.refreshedAt} source="SpaceNexus research" />
+                  {formatAsOfDate(dataMeta.oldestRefreshedAt) && (
+                    <DataAsOf date={formatAsOfDate(dataMeta.oldestRefreshedAt)!} note="oldest of this page's AI-researched listings" />
+                  )}
                 </div>
               )}
             </div>

@@ -59,6 +59,7 @@ import {
   type AgeDistribution,
 } from './data';
 import RelatedModules from '@/components/ui/RelatedModules';
+import DataAsOf, { formatAsOfDate } from '@/components/ui/DataAsOf';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
@@ -1244,6 +1245,7 @@ function SpaceTalentHubContent() {
   const [expertiseFilter, setExpertiseFilter] = useState<TalentExpertiseArea | ''>('');
   const [availabilityFilter, setAvailabilityFilter] = useState<TalentAvailability | ''>('');
   const [talentSearch, setTalentSearch] = useState('');
+  const [talentDataAsOf, setTalentDataAsOf] = useState<string | null>(null);
 
   // Webinar state
   const [webinars, setWebinars] = useState<Webinar[]>([]);
@@ -1251,6 +1253,7 @@ function SpaceTalentHubContent() {
   const [webinarLoading, setWebinarLoading] = useState(false);
   const [webinarFilter, setWebinarFilter] = useState<'all' | 'live' | 'upcoming' | 'past'>('all');
   const [topicFilter, setTopicFilter] = useState<string>('');
+  const [webinarDataAsOf, setWebinarDataAsOf] = useState<string | null>(null);
 
   // Error state
   const [error, setError] = useState<string | null>(null);
@@ -1319,6 +1322,7 @@ function SpaceTalentHubContent() {
 
       if (data.talent) setTalent(data.talent);
       if (data.stats) setTalentStats(data.stats);
+      setTalentDataAsOf(formatAsOfDate(data._meta?.oldestRefreshedAt));
     } catch (error) {
       clientLogger.error('Failed to fetch talent', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
@@ -1345,6 +1349,7 @@ function SpaceTalentHubContent() {
 
       if (data.webinars) setWebinars(data.webinars);
       if (data.stats) setWebinarStats(data.stats);
+      setWebinarDataAsOf(formatAsOfDate(data._meta?.oldestRefreshedAt));
     } catch (error) {
       clientLogger.error('Failed to fetch webinars', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
@@ -1366,6 +1371,12 @@ function SpaceTalentHubContent() {
       fetchWebinars();
     }
   }, [topTab, talentSubTab, webinarFilter, topicFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Past-dated webinars never get pruned from DynamicContent (audit found
+  // 66 keys, oldest 174 days) — hide them from the default/"All"/"Upcoming"
+  // views at render time so they don't present as still-upcoming. The data
+  // stays intact and reachable via the explicit "Past" filter.
+  const visibleWebinars = webinarFilter === 'past' ? webinars : webinars.filter((w) => !w.isPast);
 
   // ════════════════════════════════════════
   // WORKFORCE DATA FETCHING
@@ -1744,6 +1755,7 @@ function SpaceTalentHubContent() {
           {/* ── Expert Consultants Sub-Tab ── */}
           {talentSubTab === 'experts' && (
             <div>
+              {talentDataAsOf && <DataAsOf date={talentDataAsOf} note="oldest of this roster's AI-researched profiles" className="mb-4" />}
               {/* Description */}
               <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-lg p-4 mb-6">
                 <p className="text-slate-300 text-sm">
@@ -1903,6 +1915,7 @@ function SpaceTalentHubContent() {
           {/* ── Webinars Sub-Tab ── */}
           {talentSubTab === 'webinars' && (
             <div>
+              {webinarDataAsOf && <DataAsOf date={webinarDataAsOf} note="oldest of this list's AI-researched event entries" className="mb-4" />}
               {/* Description */}
               <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg p-4 mb-6">
                 <p className="text-slate-300 text-sm">
@@ -1977,14 +1990,18 @@ function SpaceTalentHubContent() {
                 </div>
               </div>
 
-              {/* Webinar Grid */}
+              {/* Webinar Grid — hide past-dated events unless the user has
+                  explicitly asked for the "Past" filter. Past events are
+                  never deleted (the "Past" and stats-card counts still see
+                  them); this only keeps expired events out of the default/
+                  "All"/"Upcoming" views so they don't read as still-upcoming. */}
               {webinarLoading ? (
                 <div className="flex justify-center py-12">
                   <LoadingSpinner size="lg" />
                 </div>
-              ) : webinars.length > 0 ? (
+              ) : visibleWebinars.length > 0 ? (
                 <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {webinars.map(w => (
+                  {visibleWebinars.map(w => (
                     <StaggerItem key={w.id}>
                       <WebinarCard webinar={w} />
                     </StaggerItem>

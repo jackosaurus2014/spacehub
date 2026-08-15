@@ -18,6 +18,17 @@ export async function GET(
 
     const freshness = await getModuleFreshness(module);
 
+    // Oldest refreshedAt among the rows actually being returned (scoped to
+    // `section` when given, otherwise the whole module). `lastRefreshed`
+    // above is module-wide-newest and can hide stale sections behind one
+    // frequently-refreshed key (the stale-content audit's root cause) —
+    // `oldestRefreshed` lets callers show an honest "as of" date for what
+    // they're actually rendering. Additive field; existing consumers are
+    // unaffected.
+    const oldestRefreshed = content.length > 0
+      ? content.reduce((min, c) => (c.refreshedAt < min ? c.refreshedAt : min), content[0].refreshedAt)
+      : null;
+
     return NextResponse.json({
       module,
       section: section || null,
@@ -26,6 +37,7 @@ export async function GET(
       meta: {
         count: content.length,
         lastRefreshed: freshness.lastRefreshed,
+        oldestRefreshed,
         activeItems: freshness.active,
         staleItems: freshness.stale,
         sourceBreakdown: freshness.sourceBreakdown,

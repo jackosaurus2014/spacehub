@@ -4,6 +4,7 @@
  */
 
 import Parser from 'rss-parser';
+import sanitizeHtml from 'sanitize-html';
 import prisma from '@/lib/db';
 import { upsertContent } from '@/lib/dynamic-content';
 import { createCircuitBreaker } from '@/lib/circuit-breaker';
@@ -68,22 +69,47 @@ export async function fetchAndStoreLegalUpdates(): Promise<number> {
               .replace(/^-|-$/g, '')
               .slice(0, 100);
 
+            // RSS content is third-party and untrusted -- strip to plain text
+            // for the excerpt, and allow only a minimal safe formatting set
+            // (no scripts/styles/event handlers) for the stored content body.
+            const rawSnippet = item.contentSnippet || item.content || '';
+            const excerpt =
+              sanitizeHtml(rawSnippet, { allowedTags: [], allowedAttributes: {} })
+                .trim()
+                .slice(0, 500) || null;
+
+            const rawContent = item.content || item.contentSnippet || '';
+            const content = rawContent
+              ? sanitizeHtml(rawContent, {
+                  allowedTags: ['b', 'i', 'em', 'strong', 'br', 'p', 'ul', 'ol', 'li', 'a'],
+                  allowedAttributes: { a: ['href'] },
+                  allowedSchemes: ['https', 'http'],
+                }).trim() || null
+              : null;
+
+            // Guard against unparseable pubDate values (falls back to now)
+            let publishedAt = new Date();
+            if (item.pubDate) {
+              const parsed = new Date(item.pubDate);
+              if (!isNaN(parsed.getTime())) publishedAt = parsed;
+            }
+
             await prisma.legalUpdate.upsert({
               where: { url: item.link },
               update: {
                 title: item.title,
-                excerpt: (item.contentSnippet || item.content || '').slice(0, 500) || null,
+                excerpt,
                 topics: source.type || 'general',
               },
               create: {
                 title: item.title,
                 slug,
-                content: item.content || item.contentSnippet || null,
-                excerpt: (item.contentSnippet || item.content || '').slice(0, 500) || null,
+                content,
+                excerpt,
                 sourceId: source.id,
                 url: item.link,
                 topics: source.type || 'general',
-                publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+                publishedAt,
               },
             });
             count++;
@@ -94,6 +120,15 @@ export async function fetchAndStoreLegalUpdates(): Promise<number> {
 
         totalSaved += count;
         successCount++;
+
+        try {
+          await prisma.legalSource.update({
+            where: { id: source.id },
+            data: { lastFetched: new Date() },
+          });
+        } catch {
+          // Non-critical bookkeeping; ignore failures
+        }
       } catch (err) {
         failCount++;
         logger.warn(`[Compliance] Failed to fetch feed: ${source.name}`, {

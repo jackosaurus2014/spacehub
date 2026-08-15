@@ -98,11 +98,16 @@ function isOpen(closeDate?: string): boolean {
 }
 
 // ---- Grants.gov API ----
+// Grants.gov retired the old `www.grants.gov/grantsws/rest/opportunities/search`
+// REST endpoint (now returns HTTP 405) and migrated to the "Search2" API at
+// api.grants.gov. Verified live 2026-08-14: POST returns 200 with
+// { errorcode, msg, data: { oppHits: [...] } } — note the extra `data` wrapper
+// vs. the old top-level `oppHits`.
 export async function fetchGrantsGov(): Promise<FundingOpportunityInput[]> {
   const results: FundingOpportunityInput[] = [];
   try {
     const response = await grantsBreaker.execute(async () => {
-      const res = await fetch('https://www.grants.gov/grantsws/rest/opportunities/search', {
+      const res = await fetch('https://api.grants.gov/v1/api/search2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,7 +121,7 @@ export async function fetchGrantsGov(): Promise<FundingOpportunityInput[]> {
       return res.json();
     });
 
-    const opps = response?.oppHits || [];
+    const opps = response?.data?.oppHits || response?.oppHits || [];
     for (const opp of opps) {
       if (!isSpaceRelated(`${opp.title || ''} ${opp.synopsis || ''}`)) continue;
       results.push({
@@ -124,7 +129,11 @@ export async function fetchGrantsGov(): Promise<FundingOpportunityInput[]> {
         title: opp.title || 'Untitled',
         description: opp.synopsis || undefined,
         agency: opp.agency || opp.agencyCode || 'Unknown',
-        program: opp.cfdaList || undefined,
+        // cfdaList comes back as a string[] from the Search2 API (the old
+        // REST API returned a comma-joined string here) — FundingOpportunity.program
+        // is a plain String column, so an array value throws a Prisma
+        // validation error at write time. Join it.
+        program: Array.isArray(opp.cfdaList) ? opp.cfdaList.join(', ') : (opp.cfdaList || undefined),
         fundingType: 'grant',
         amountMin: opp.awardFloor || undefined,
         amountMax: opp.awardCeiling || undefined,
@@ -197,37 +206,75 @@ export async function fetchSamGovOpportunities(): Promise<FundingOpportunityInpu
 }
 
 // ---- SBIR.gov ----
+// The old `www.sbir.gov/api/solicitations.json` endpoint (flat array of
+// topic-level records) is gone — sbir.gov rebuilt on Drupal 10 and moved its
+// public API to a new domain: api.www.sbir.gov, documented at
+// https://www.sbir.gov/api/solicitation. Verified 2026-08-14: the new
+// endpoint responds (through CloudFront/API Gateway) but currently returns
+// HTTP 403 "Forbidden" — sbir.gov's own /api page displays a banner stating
+// "the SBIR.gov APIs are currently undergoing maintenance", so this looks
+// like an upstream outage on SBIR's end, not a client-side auth problem.
+// Response shape (per their docs) is a list of *solicitations*, each with a
+// nested `solicitation_topics` array (each topic optionally has
+// `subtopics`) — one FundingOpportunityInput is emitted per topic to match
+// the previous per-topic granularity.
 export async function fetchSBIROpportunities(): Promise<FundingOpportunityInput[]> {
   const results: FundingOpportunityInput[] = [];
   try {
     const response = await sbirBreaker.execute(async () => {
-      const res = await fetch('https://www.sbir.gov/api/solicitations.json?rows=100');
+      const res = await fetch('https://api.www.sbir.gov/public/api/solicitations?open=1&rows=100', {
+        headers: { Accept: 'application/json' },
+      });
       if (!res.ok) throw new Error(`SBIR.gov HTTP ${res.status}`);
       return res.json();
     });
-    for (const sol of response || []) {
-      const title = sol.topic_title || sol.solicitation_title || '';
-      const desc = sol.description || '';
-      if (!isSpaceRelated(`${title} ${desc} ${sol.agency || ''}`)) continue;
-      results.push({
-        externalId: `sbir-${sol.id || sol.topic_number}`,
-        title: title || 'Untitled SBIR Topic',
-        description: desc.slice(0, 5000) || undefined,
-        agency: sol.agency || 'Unknown',
-        program: `${sol.program || 'SBIR'} ${sol.phase || ''}`.trim(),
-        fundingType: (sol.program || '').toLowerCase().includes('sttr') ? 'sttr' : 'sbir',
-        amountMin: undefined,
-        amountMax: sol.award_amount || undefined,
-        deadline: sol.close_date ? new Date(sol.close_date) : undefined,
-        openDate: sol.open_date ? new Date(sol.open_date) : undefined,
-        status: isOpen(sol.close_date) ? 'open' : 'closed',
-        eligibility: ['small_business'],
-        categories: classifyCategories(title, desc),
-        applicationUrl: sol.solicitation_url || undefined,
-        sourceUrl: sol.solicitation_url || `https://www.sbir.gov/node/${sol.id}`,
-        source: 'sbir.gov',
-        solicitationNumber: sol.topic_number || undefined,
-      });
+
+    const solicitations: unknown[] = Array.isArray(response) ? response : (response?.data ?? []);
+
+    for (const solRaw of solicitations) {
+      const sol = solRaw as Record<string, unknown>;
+      const solicitationTitle = String(sol.solicitation_title || '');
+      const agency = String(sol.agency || 'Unknown');
+      const program = String(sol.program || 'SBIR');
+      const phase = String(sol.phase || '');
+      const closeDate = sol.close_date as string | undefined;
+      const openDate = sol.open_date as string | undefined;
+      const solicitationUrl = sol.solicitation_agency_url as string | undefined;
+      const solicitationNumber = sol.solicitation_number as string | undefined;
+
+      const topics = Array.isArray(sol.solicitation_topics) ? sol.solicitation_topics : [];
+      const items: { title: string; desc: string; id: string; url?: string }[] = topics.length > 0
+        ? topics.map((t: Record<string, unknown>, i: number) => ({
+            title: String(t.topic_title || solicitationTitle),
+            desc: String(t.topic_description || ''),
+            id: String(t.topic_number || `${solicitationNumber || i}`),
+            url: (t.sbir_topic_link as string | undefined) || solicitationUrl,
+          }))
+        : [{ title: solicitationTitle, desc: '', id: String(solicitationNumber || solicitationTitle), url: solicitationUrl }];
+
+      for (const item of items) {
+        if (!item.title) continue;
+        if (!isSpaceRelated(`${item.title} ${item.desc} ${agency}`)) continue;
+        results.push({
+          externalId: `sbir-${item.id}`,
+          title: item.title || 'Untitled SBIR Topic',
+          description: item.desc.slice(0, 5000) || undefined,
+          agency,
+          program: `${program} ${phase}`.trim(),
+          fundingType: program.toLowerCase().includes('sttr') ? 'sttr' : 'sbir',
+          amountMin: undefined,
+          amountMax: undefined,
+          deadline: closeDate ? new Date(closeDate) : undefined,
+          openDate: openDate ? new Date(openDate) : undefined,
+          status: isOpen(closeDate) ? 'open' : 'closed',
+          eligibility: ['small_business'],
+          categories: classifyCategories(item.title, item.desc),
+          applicationUrl: item.url || undefined,
+          sourceUrl: item.url || 'https://www.sbir.gov/topics',
+          source: 'sbir.gov',
+          solicitationNumber,
+        });
+      }
     }
   } catch (error) {
     logger.error('Failed to fetch from SBIR.gov', { error: error instanceof Error ? error.message : String(error) });
@@ -236,6 +283,15 @@ export async function fetchSBIROpportunities(): Promise<FundingOpportunityInput[
 }
 
 // ---- NASA ROSES (via RSS NSPIRES) ----
+// Verified 2026-08-14: `nspires.nasaprs.com/external/solicitations/rss.do`
+// returns HTTP 404 ("NSPIRES: Page Not Found"). Probed the NSPIRES site for a
+// replacement RSS/JSON feed (solicitations.do listing page, site homepage) —
+// no public syndication endpoint was found; NASA appears to have retired RSS
+// output from NSPIRES entirely (public solicitation browsing is now a
+// JS-rendered search UI with no documented feed). Left the original URL in
+// place — it fails loudly via the circuit breaker + logger.error below —
+// pending manual follow-up to find NASA's current solicitation feed (if any)
+// or replace this source.
 export async function fetchNASASolicitations(): Promise<FundingOpportunityInput[]> {
   const results: FundingOpportunityInput[] = [];
   try {
@@ -289,13 +345,27 @@ export async function aggregateAllOpportunities(): Promise<FundingOpportunityInp
   if (sbir.status === 'fulfilled') all.push(...sbir.value);
   if (nasa.status === 'fulfilled') all.push(...nasa.value);
 
-  logger.info('Aggregated funding opportunities', {
+  const counts = {
     grants: grants.status === 'fulfilled' ? grants.value.length : 0,
     sam: sam.status === 'fulfilled' ? sam.value.length : 0,
     sbir: sbir.status === 'fulfilled' ? sbir.value.length : 0,
     nasa: nasa.status === 'fulfilled' ? nasa.value.length : 0,
     total: all.length,
-  });
+  };
+
+  logger.info('Aggregated funding opportunities', counts);
+
+  // Each individual fetcher already swallows its own errors (so one dead
+  // source doesn't block the others) and logs at error level. But a fetcher
+  // returning zero results looks identical to "no new opportunities today"
+  // in that per-source log line — which is exactly how this pipeline went
+  // silently stale for ~170+ days. Surface it loudly here whenever *every*
+  // live source came back empty, since that's overwhelmingly more likely to
+  // mean "every external API is broken" than "there is genuinely nothing
+  // new across grants.gov, SAM.gov, SBIR.gov, and NASA combined."
+  if (counts.grants === 0 && counts.sam === 0 && counts.sbir === 0 && counts.nasa === 0) {
+    logger.error('aggregateAllOpportunities: ALL external funding sources returned zero results — likely an upstream API outage/breakage, not a real "no new opportunities" day', counts);
+  }
 
   return all;
 }

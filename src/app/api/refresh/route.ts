@@ -4,25 +4,7 @@ import { checkLaunchAlerts, checkSpaceWeatherAlerts } from '@/lib/push-triggers'
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
 import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
 import { fetchBlogPosts, initializeBlogSources } from '@/lib/blogs-fetcher';
-import { initializeCompanies } from '@/lib/company-roster';
-import { initializeResources } from '@/lib/resources-data';
-import { initializeOpportunities } from '@/lib/opportunities-data';
-import { initializeComplianceData } from '@/lib/compliance-data';
-import { initializeSolarExplorationData } from '@/lib/solar-exploration-data';
-import { initializeSpectrumData } from '@/lib/spectrum-data';
-import { fetchAndStoreSpectrumFilings } from '@/lib/fetchers/spectrum-filings-fetcher';
-import { initializeSpaceInsuranceData } from '@/lib/space-insurance-data';
-import { initializeWorkforceData } from '@/lib/workforce-data';
-import { initializeSolarFlareData } from '@/lib/solar-flare-data';
-import { initializeOrbitalData } from '@/lib/orbital-slots-data';
-import { initializeLaunchWindowsData } from '@/lib/launch-windows-data';
-import { initializeDebrisData } from '@/lib/debris-data';
-import { initializeOperationalAwarenessData } from '@/lib/operational-awareness-data';
-import { initializeSpaceMiningData } from '@/lib/space-mining-data';
-import { initializeBlueprintData } from '@/lib/blueprint-data';
-import { initializeGovernmentContracts } from '@/lib/government-contracts-data';
-import { initializeOrbitalServices } from '@/lib/orbital-services-data';
-import { initializeRegulatoryHubData } from '@/lib/regulatory-hub-data';
+import { refreshDaily } from '@/lib/refresh-daily-chain';
 // Newsletter sending moved to dedicated /api/newsletter/send-digest endpoint (Mon/Thu schedule)
 import { refreshAllExternalAPIs, fetchAndStoreEnhancedSpaceWeather, fetchAndStoreDonkiEnhanced } from '@/lib/module-api-fetchers';
 import { refreshAllAIResearchedModules } from '@/lib/ai-data-refresher';
@@ -56,78 +38,6 @@ async function refreshBlogs(): Promise<Record<string, string>> {
   return results;
 }
 
-async function refreshDaily(): Promise<Record<string, string>> {
-  const results: Record<string, string> = {};
-
-  await initializeBlogSources();
-  const blogCount = await fetchBlogPosts();
-  results.blogs = `Refreshed ${blogCount} blog posts`;
-
-  const companyCount = await initializeCompanies();
-  results.companies = `CompanyProfile canonical (${companyCount} companies; refreshed via scripts)`;
-
-  await initializeResources();
-  results.resources = 'Refreshed';
-
-  await initializeOpportunities();
-  results.opportunities = 'Refreshed';
-
-  await initializeComplianceData();
-  results.compliance = 'Refreshed';
-
-  await initializeSolarExplorationData();
-  results.solarExploration = 'Refreshed';
-
-  // initializeSpectrumData() only ensures the curated reference seed exists
-  // (create-if-missing; a no-op once seeded). The actual daily "refresh" is
-  // the live FCC ECFS filings feed fetched below.
-  await initializeSpectrumData();
-  const spectrumFilingsCount = await fetchAndStoreSpectrumFilings();
-  results.spectrum = `Reference data ensured; fetched ${spectrumFilingsCount} recent FCC filings`;
-
-  await initializeSpaceInsuranceData();
-  results.spaceInsurance = 'Refreshed';
-
-  await initializeWorkforceData();
-  results.workforce = 'Refreshed';
-
-  await initializeSolarFlareData();
-  results.solarFlares = 'Refreshed';
-
-  await initializeOrbitalData();
-  results.orbitalSlots = 'Refreshed';
-
-  await initializeLaunchWindowsData();
-  results.launchWindows = 'Refreshed';
-
-  await initializeDebrisData();
-  results.debris = 'Refreshed';
-
-  await initializeOperationalAwarenessData();
-  results.operationalAwareness = 'Refreshed';
-
-  await initializeSpaceMiningData();
-  results.spaceMining = 'Refreshed';
-
-  await initializeBlueprintData();
-  results.blueprints = 'Refreshed';
-
-  await initializeGovernmentContracts();
-  results.governmentContracts = 'Refreshed';
-
-  await initializeOrbitalServices();
-  results.orbitalServices = 'Refreshed';
-
-  await initializeRegulatoryHubData();
-  results.regulatoryHub = 'Refreshed';
-
-  // Newsletter digest is now sent on its own schedule (Mon/Thu) via /api/newsletter/send-digest
-  // Daily refresh only handles data seeding — no newsletter sending here
-  results.newsletterNote = 'Newsletter sends on Mon/Thu schedule via dedicated endpoint';
-
-  return results;
-}
-
 export async function POST(request: Request) {
   const { requireCronSecret } = await import('@/lib/errors');
   const authError = requireCronSecret(request);
@@ -157,8 +67,46 @@ export async function POST(request: Request) {
     }
 
     if (!type || type === 'daily') {
-      const dailyResults = await refreshDaily();
+      const { results: dailyResults, stepResults } = await refreshDaily();
       Object.assign(results, dailyResults);
+      results.dailySteps = stepResults;
+
+      const failedSteps = stepResults.filter((s) => !s.ok);
+      const status = failedSteps.length === 0
+        ? 'success'
+        : failedSteps.length === stepResults.length
+          ? 'failed'
+          : 'partial';
+      const totalDuration = stepResults.reduce((sum, s) => sum + s.durationMs, 0);
+
+      if (failedSteps.length > 0) {
+        logger.error(`refreshDaily completed with ${failedSteps.length}/${stepResults.length} step(s) failed`, {
+          failedSteps: failedSteps.map((s) => s.step),
+        });
+      }
+
+      try {
+        await prisma.dataRefreshLog.create({
+          data: {
+            module: 'daily-refresh',
+            refreshType: 'api-fetch',
+            status,
+            itemsChecked: stepResults.length,
+            itemsUpdated: stepResults.filter((s) => s.ok).length,
+            itemsExpired: 0,
+            itemsCreated: 0,
+            duration: totalDuration,
+            errorMessage: failedSteps.length > 0
+              ? failedSteps.map((s) => `${s.step}: ${s.error}`).join('; ').slice(0, 4000)
+              : null,
+            details: JSON.stringify(stepResults),
+          },
+        });
+      } catch (logErr) {
+        logger.error('Failed to write DataRefreshLog for daily-refresh', {
+          error: logErr instanceof Error ? logErr.message : String(logErr),
+        });
+      }
     }
 
     if (type === 'external-apis') {
@@ -312,11 +260,9 @@ export async function POST(request: Request) {
       results.spaceEnvironmentDaily = spaceEnvResult;
     }
 
-    if (type === 'business-opportunities') {
-      const { refreshBusinessOpportunities } = await import('@/lib/fetchers/business-opportunities-fetcher');
-      const bizOppResult = await refreshBusinessOpportunities();
-      results.businessOpportunities = bizOppResult;
-    }
+    // 'business-opportunities' + 'sam-gov-active' types removed — they fed
+    // orphaned DynamicContent keys nobody reads (the real /business-opportunities
+    // page is served by the Opportunity model via /api/opportunities).
 
     if (type === 'opportunities-analysis') {
       const { runAIAnalysis } = await import('@/lib/opportunities-data');
@@ -385,17 +331,6 @@ export async function POST(request: Request) {
       const { detectAndStoreFundingSignals } = await import('@/lib/fetchers/funding-signal-detector');
       const fundingResults = await detectAndStoreFundingSignals();
       results.fundingSignals = fundingResults;
-    }
-
-    if (type === 'sam-gov-active') {
-      // Re-use existing SAM.gov fetcher with active-only filter
-      try {
-        const { fetchAndStoreSpaceProcurement } = await import('@/lib/fetchers/business-opportunities-fetcher');
-        const opCount = await fetchAndStoreSpaceProcurement();
-        results.samGovActive = { count: opCount };
-      } catch {
-        results.samGovActive = { count: 0, note: 'SAM.gov fetcher not available' };
-      }
     }
 
     if (type === 'grants-gov') {

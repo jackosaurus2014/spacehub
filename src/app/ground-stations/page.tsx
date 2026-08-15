@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf, { oldestAsOfDate } from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
@@ -801,6 +802,7 @@ export default function GroundStationsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [dataAsOf, setDataAsOf] = useState<string | null>(null);
   const [GROUND_STATION_NETWORKS, setNetworks] = useState<GroundStationNetwork[]>(FALLBACK_NETWORKS);
   const [FREQUENCY_BANDS, setFrequencyBands] = useState<FrequencyBand[]>(FALLBACK_FREQUENCY_BANDS);
   const [HERO_STATS, setHeroStats] = useState<HeroStat[]>(FALLBACK_HERO_STATS);
@@ -837,6 +839,10 @@ export default function GroundStationsPage() {
           .sort()
           .pop();
         if (latestRefresh) setRefreshedAt(latestRefresh);
+        // latestRefresh above is module-wide-newest and can mask stale
+        // AI-researched sections behind one fresher key; show the honest
+        // oldest-section vintage across everything actually rendered here.
+        setDataAsOf(oldestAsOfDate(allMeta.map((m) => m.meta?.oldestRefreshed)));
       } catch (error) {
         clientLogger.error('Failed to fetch ground station data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
@@ -918,6 +924,7 @@ export default function GroundStationsPage() {
         </AnimatedPageHeader>
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+        {dataAsOf && <DataAsOf date={dataAsOf} note="oldest of this page's AI-researched sections" className="mb-4" />}
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

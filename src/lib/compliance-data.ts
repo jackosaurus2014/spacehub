@@ -233,6 +233,21 @@ const PROPOSED_REGULATIONS_SEED = [
 ];
 
 // Seed data for Legal Sources
+//
+// feedUrl verification (2026-08-14): each candidate feed was fetched and
+// confirmed to return valid RSS/Atom XML with dated <item>/<entry> elements
+// before being added below. Sources without a verified working feed are left
+// with feedUrl unset (null) rather than guessed -- fetchAndStoreLegalUpdates()
+// only queries sources where feedUrl is not null.
+//
+// Law firm sites (Hogan Lovells, Milbank, Wilson Sonsini, Akin Gump) either
+// 404 on every conventional feed path or sit behind a Cloudflare bot
+// challenge that blocks server-side RSS parsing -- no working feed found.
+// BIS and DDTC have no discoverable RSS either (federalregister.gov's RSS
+// endpoints require a JS challenge for non-browser clients); their live
+// regulatory content already flows into ProposedRegulation via
+// fetchAndStoreExportControlUpdates()/fetchAndStoreITUFilings(), which hit
+// the Federal Register JSON API directly rather than RSS.
 const LEGAL_SOURCES_SEED = [
   {
     name: 'Hogan Lovells Space & Satellite',
@@ -241,6 +256,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Hogan Lovells',
     specialty: 'space_law',
     url: 'https://www.hoganlovells.com/en/industry/aerospace-defense-and-government-services',
+    // No working feed found: /en/rss redirects to hlc.com behind Cloudflare; no other feed path resolves.
   },
   {
     name: 'Milbank Space Industry Group',
@@ -249,6 +265,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Milbank LLP',
     specialty: 'space_law',
     url: 'https://www.milbank.com/en/practices/industries/space.html',
+    // No working feed found: /rss.xml and /en/rss.xml both 404.
   },
   {
     name: 'Wilson Sonsini Space Tech',
@@ -257,6 +274,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Wilson Sonsini Goodrich & Rosati',
     specialty: 'regulatory',
     url: 'https://www.wsgr.com/en/services/industries/space-technology.html',
+    // No working feed found: site is behind a Cloudflare bot challenge (403 on every candidate path).
   },
   {
     name: 'Akin Gump Export Controls',
@@ -265,6 +283,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Akin Gump Strauss Hauer & Feld',
     specialty: 'export_control',
     url: 'https://www.akingump.com/en/experience/industries/aerospace-and-defense.html',
+    // No working feed found: /en/rss is a feed-picker page but intermittently returns a Cloudflare challenge to non-browser clients.
   },
   {
     name: 'BIS Export Control Updates',
@@ -273,6 +292,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Bureau of Industry and Security',
     specialty: 'export_control',
     url: 'https://www.bis.doc.gov/index.php/regulations/export-administration-regulations-ear',
+    // No working RSS found: federalregister.gov agency RSS requires a JS bot challenge; live BIS content is covered via fetchAndStoreExportControlUpdates().
   },
   {
     name: 'DDTC ITAR Updates',
@@ -281,6 +301,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Directorate of Defense Trade Controls',
     specialty: 'export_control',
     url: 'https://www.pmddtc.state.gov/ddtc_public',
+    // No working feed found on pmddtc.state.gov; live ITAR content is covered via fetchAndStoreExportControlUpdates().
   },
   {
     name: 'Satellite Industry Association',
@@ -289,6 +310,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Satellite Industry Association',
     specialty: 'general',
     url: 'https://sia.org/news-resources/',
+    feedUrl: 'https://sia.org/feed/', // Verified 2026-08-14: valid RSS 2.0, active (dated items through Aug 2026).
   },
   {
     name: 'Commercial Spaceflight Federation',
@@ -297,6 +319,7 @@ const LEGAL_SOURCES_SEED = [
     organization: 'Commercial Spaceflight Federation',
     specialty: 'regulatory',
     url: 'https://www.commercialspaceflight.org/resources/',
+    // No working feed found: /feed/, /news/feed/, and /category/news/feed/ all 404.
   },
   {
     name: 'Space Policy Online',
@@ -304,6 +327,27 @@ const LEGAL_SOURCES_SEED = [
     type: 'think_tank',
     specialty: 'space_law',
     url: 'https://spacepolicyonline.com/',
+    feedUrl: 'https://spacepolicyonline.com/feed/', // Verified 2026-08-14: valid RSS 2.0, very active (daily items).
+  },
+  // -- New sources added 2026-08-14 to give the legal-updates feed a pulse,
+  // since only 2 of the original 9 sources had a verified, bot-accessible RSS feed.
+  {
+    name: 'SpaceNews Regulation Desk',
+    slug: 'spacenews-regulation',
+    type: 'trade_press',
+    organization: 'SpaceNews',
+    specialty: 'regulatory',
+    url: 'https://spacenews.com/tag/regulation/',
+    feedUrl: 'https://spacenews.com/tag/regulation/feed/', // Verified 2026-08-14: valid RSS 2.0, tag-filtered to regulation coverage.
+  },
+  {
+    name: 'SpaceNews Policy Desk',
+    slug: 'spacenews-policy',
+    type: 'trade_press',
+    organization: 'SpaceNews',
+    specialty: 'space_law',
+    url: 'https://spacenews.com/tag/policy/',
+    feedUrl: 'https://spacenews.com/tag/policy/feed/', // Verified 2026-08-14: valid RSS 2.0, tag-filtered to space policy coverage.
   },
 ];
 

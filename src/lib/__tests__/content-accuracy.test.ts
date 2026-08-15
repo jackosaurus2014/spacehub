@@ -28,6 +28,7 @@ jest.mock('@/lib/db', () => ({
     aIInsight: { findFirst: jest.fn() },
     publishedBrief: { findFirst: jest.fn() },
     feedbackSubmission: { findFirst: jest.fn() },
+    dynamicContent: { findFirst: jest.fn() },
   },
 }));
 
@@ -49,8 +50,10 @@ import {
   runContentAccuracyChecks,
   runContentAccuracySentinel,
   quartersElapsedSince,
+  checkStaleModuleContent,
   type AccuracyCheckDef,
 } from '@/lib/content-accuracy';
+import type { FreshnessPolicy } from '@/lib/freshness-policies';
 
 const mockPrisma = prisma as unknown as {
   spaceEvent: { findMany: jest.Mock };
@@ -60,6 +63,7 @@ const mockPrisma = prisma as unknown as {
   aIInsight: { findFirst: jest.Mock };
   publishedBrief: { findFirst: jest.Mock };
   feedbackSubmission: { findFirst: jest.Mock };
+  dynamicContent: { findFirst: jest.Mock };
 };
 
 function getCheck(id: string): AccuracyCheckDef {
@@ -338,6 +342,71 @@ describe('feedback-review-cadence', () => {
     const result = await getCheck('feedback-review-cadence').run();
     expect(result.ok).toBe(true);
     expect(result.detail).toContain('not migrated');
+  });
+});
+
+describe('stale-module-content', () => {
+  // Small deterministic policy set — mirrors the real space-defense entry
+  // (24h TTL -> 96h/4-day flag threshold) plus a long-TTL module so the
+  // 4x-multiplier math is exercised at two different scales.
+  const testPolicies: Record<string, FreshnessPolicy> = {
+    'space-defense': { ttlHours: 24, refreshPriority: 'high', refreshSource: 'both', keywords: [] },
+    'ground-stations': { ttlHours: 1440, refreshPriority: 'low', refreshSource: 'ai-research', keywords: [] },
+  };
+
+  it('passes when every module\'s oldest active key is within 4x TTL', async () => {
+    mockPrisma.dynamicContent.findFirst.mockImplementation(({ where }: { where: { module: string } }) => {
+      if (where.module === 'space-defense') {
+        return Promise.resolve({ contentKey: 'space-defense:space-forces', refreshedAt: new Date(Date.now() - 2 * HOUR) });
+      }
+      return Promise.resolve({ contentKey: 'ground-stations:companies', refreshedAt: new Date(Date.now() - 10 * DAY) });
+    });
+
+    const result = await checkStaleModuleContent(testPolicies);
+    expect(result.ok).toBe(true);
+    expect(mockPrisma.dynamicContent.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { module: 'space-defense', isActive: true },
+        orderBy: { refreshedAt: 'asc' },
+      })
+    );
+  });
+
+  it('flags the audit finding: a module whose oldest key sits far past 4x TTL behind a fresh masking key', async () => {
+    // Reproduces the space-defense bug: AI sections 186 days old (way past
+    // 4x the 24h TTL == 4 days) even though *a* key in the module is fresh.
+    mockPrisma.dynamicContent.findFirst.mockImplementation(({ where }: { where: { module: string } }) => {
+      if (where.module === 'space-defense') {
+        return Promise.resolve({ contentKey: 'space-defense:space-forces', refreshedAt: new Date(Date.now() - 186 * DAY) });
+      }
+      return Promise.resolve({ contentKey: 'ground-stations:companies', refreshedAt: new Date(Date.now() - 10 * DAY) });
+    });
+
+    const result = await checkStaleModuleContent(testPolicies);
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain('space-defense');
+    expect(result.detail).toContain('space-defense:space-forces');
+    expect(result.detail).not.toContain('ground-stations (');
+  });
+
+  it('excludes modules with no active DynamicContent rows', async () => {
+    mockPrisma.dynamicContent.findFirst.mockResolvedValue(null);
+    const result = await checkStaleModuleContent(testPolicies);
+    expect(result.ok).toBe(true);
+  });
+
+  it('flags a module whose oldest key is just past the 4x threshold', async () => {
+    mockPrisma.dynamicContent.findFirst.mockImplementation(({ where }: { where: { module: string } }) => {
+      if (where.module === 'space-defense') {
+        // TTL 24h -> threshold 96h; 100h is just past it.
+        return Promise.resolve({ contentKey: 'space-defense:alliances', refreshedAt: new Date(Date.now() - 100 * HOUR) });
+      }
+      return Promise.resolve({ contentKey: 'ground-stations:companies', refreshedAt: new Date(Date.now() - 5 * DAY) });
+    });
+
+    const result = await checkStaleModuleContent(testPolicies);
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain('space-defense:alliances');
   });
 });
 

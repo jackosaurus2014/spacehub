@@ -1619,59 +1619,68 @@ const MINING_RESOURCES_SEED: MiningResourceSeed[] = [
 export async function initializeSpaceMiningData() {
   const results = {
     bodiesCreated: 0,
+    bodiesUpdated: 0,
     resourcesCreated: 0,
+    resourcesUpdated: 0,
     commoditiesCreated: 0,
+    commoditiesUpdated: 0,
   };
 
-  // Create mining bodies (asteroids, moons, planets)
+  // Upsert mining bodies (asteroids, moons, planets).
+  // NOTE: previously this was create-if-missing only (no update branch), so
+  // once a body existed the daily refresh silently no-op'd forever even
+  // though the route reported "Refreshed". Converted to upsert so seed-data
+  // edits (and future live-value updates) actually propagate.
   const allBodies = [...ASTEROIDS_SEED, ...MOONS_SEED, ...PLANETS_SEED];
 
   for (const bodyData of allBodies) {
-    const existing = await prisma.miningBody.findUnique({
-      where: { slug: bodyData.slug },
-    });
+    const data = {
+      name: bodyData.name,
+      designation: bodyData.designation,
+      bodyType: bodyData.bodyType,
+      spectralType: bodyData.spectralType,
+      orbitalFamily: bodyData.orbitalFamily,
+      diameter: bodyData.diameter,
+      mass: bodyData.mass,
+      density: bodyData.density,
+      rotationPeriod: bodyData.rotationPeriod,
+      semiMajorAxis: bodyData.semiMajorAxis,
+      eccentricity: bodyData.eccentricity,
+      inclination: bodyData.inclination,
+      perihelion: bodyData.perihelion,
+      aphelion: bodyData.aphelion,
+      orbitalPeriod: bodyData.orbitalPeriod,
+      deltaV: bodyData.deltaV,
+      trajectoryStatus: bodyData.trajectoryStatus,
+      missionHistory: bodyData.missionHistory ? JSON.stringify(bodyData.missionHistory) : null,
+      estimatedValue: bodyData.estimatedValue,
+      valueConfidence: bodyData.valueConfidence,
+      composition: bodyData.composition ? JSON.stringify(bodyData.composition) : null,
+      description: bodyData.description,
+      imageUrl: bodyData.imageUrl,
+    };
 
-    if (!existing) {
-      await prisma.miningBody.create({
-        data: {
-          slug: bodyData.slug,
-          name: bodyData.name,
-          designation: bodyData.designation,
-          bodyType: bodyData.bodyType,
-          spectralType: bodyData.spectralType,
-          orbitalFamily: bodyData.orbitalFamily,
-          diameter: bodyData.diameter,
-          mass: bodyData.mass,
-          density: bodyData.density,
-          rotationPeriod: bodyData.rotationPeriod,
-          semiMajorAxis: bodyData.semiMajorAxis,
-          eccentricity: bodyData.eccentricity,
-          inclination: bodyData.inclination,
-          perihelion: bodyData.perihelion,
-          aphelion: bodyData.aphelion,
-          orbitalPeriod: bodyData.orbitalPeriod,
-          deltaV: bodyData.deltaV,
-          trajectoryStatus: bodyData.trajectoryStatus,
-          missionHistory: bodyData.missionHistory ? JSON.stringify(bodyData.missionHistory) : null,
-          estimatedValue: bodyData.estimatedValue,
-          valueConfidence: bodyData.valueConfidence,
-          composition: bodyData.composition ? JSON.stringify(bodyData.composition) : null,
-          description: bodyData.description,
-          imageUrl: bodyData.imageUrl,
-        },
-      });
+    const existing = await prisma.miningBody.findUnique({ where: { slug: bodyData.slug } });
+    if (existing) {
+      await prisma.miningBody.update({ where: { slug: bodyData.slug }, data });
+      results.bodiesUpdated++;
+    } else {
+      await prisma.miningBody.create({ data: { slug: bodyData.slug, ...data } });
       results.bodiesCreated++;
     }
   }
 
-  // Create mining resources
+  // Upsert mining resources. MiningResource has no unique constraint on
+  // (miningBodyId, resourceType) so we can't use prisma's native `upsert` —
+  // find-then-create-or-update manually instead. This is the same fix as
+  // above: previously create-if-missing only, so MiningResource rows never
+  // refreshed after their first seed run.
   for (const resourceData of MINING_RESOURCES_SEED) {
     const body = await prisma.miningBody.findUnique({
       where: { slug: resourceData.miningBodySlug },
     });
 
     if (body) {
-      // Check if resource already exists
       const existing = await prisma.miningResource.findFirst({
         where: {
           miningBodyId: body.id,
@@ -1679,50 +1688,55 @@ export async function initializeSpaceMiningData() {
         },
       });
 
-      if (!existing) {
+      const data = {
+        category: resourceData.category,
+        abundancePercent: resourceData.abundancePercent,
+        estimatedMass: resourceData.estimatedMass,
+        estimatedValue: resourceData.estimatedValue,
+        extractionMethod: resourceData.extractionMethod,
+        extractionCost: resourceData.extractionCost,
+        notes: resourceData.notes,
+      };
+
+      if (existing) {
+        await prisma.miningResource.update({ where: { id: existing.id }, data });
+        results.resourcesUpdated++;
+      } else {
         await prisma.miningResource.create({
-          data: {
-            miningBodyId: body.id,
-            resourceType: resourceData.resourceType,
-            category: resourceData.category,
-            abundancePercent: resourceData.abundancePercent,
-            estimatedMass: resourceData.estimatedMass,
-            estimatedValue: resourceData.estimatedValue,
-            extractionMethod: resourceData.extractionMethod,
-            extractionCost: resourceData.extractionCost,
-            notes: resourceData.notes,
-          },
+          data: { miningBodyId: body.id, resourceType: resourceData.resourceType, ...data },
         });
         results.resourcesCreated++;
       }
     }
   }
 
-  // Create commodity prices
+  // Upsert commodity prices. Same fix: previously create-if-missing only.
+  // lastPriceUpdate is stamped on every successful run so the "as of" date
+  // shown to users reflects the refresh, not just first-ever creation.
   for (const commodityData of COMMODITY_PRICES_SEED) {
-    const existing = await prisma.commodityPrice.findUnique({
-      where: { slug: commodityData.slug },
-    });
+    const data = {
+      name: commodityData.name,
+      symbol: commodityData.symbol,
+      category: commodityData.category,
+      pricePerKg: commodityData.pricePerKg,
+      pricePerTonne: commodityData.pricePerTonne,
+      priceUnit: commodityData.priceUnit,
+      priceSource: commodityData.priceSource,
+      lastPriceUpdate: new Date(),
+      annualProduction: commodityData.annualProduction,
+      marketCap: commodityData.marketCap,
+      priceVolatility: commodityData.priceVolatility,
+      spaceApplications: commodityData.spaceApplications ? JSON.stringify(commodityData.spaceApplications) : null,
+      inSpaceValue: commodityData.inSpaceValue,
+      description: commodityData.description,
+    };
 
-    if (!existing) {
-      await prisma.commodityPrice.create({
-        data: {
-          slug: commodityData.slug,
-          name: commodityData.name,
-          symbol: commodityData.symbol,
-          category: commodityData.category,
-          pricePerKg: commodityData.pricePerKg,
-          pricePerTonne: commodityData.pricePerTonne,
-          priceUnit: commodityData.priceUnit,
-          priceSource: commodityData.priceSource,
-          annualProduction: commodityData.annualProduction,
-          marketCap: commodityData.marketCap,
-          priceVolatility: commodityData.priceVolatility,
-          spaceApplications: commodityData.spaceApplications ? JSON.stringify(commodityData.spaceApplications) : null,
-          inSpaceValue: commodityData.inSpaceValue,
-          description: commodityData.description,
-        },
-      });
+    const existing = await prisma.commodityPrice.findUnique({ where: { slug: commodityData.slug } });
+    if (existing) {
+      await prisma.commodityPrice.update({ where: { slug: commodityData.slug }, data });
+      results.commoditiesUpdated++;
+    } else {
+      await prisma.commodityPrice.create({ data: { slug: commodityData.slug, ...data } });
       results.commoditiesCreated++;
     }
   }

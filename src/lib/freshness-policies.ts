@@ -23,18 +23,17 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     refreshSource: 'both', // CelesTrak API + AI for regulatory/licensing details
     keywords: ['Starlink', 'OneWeb', 'Kuiper', 'constellation', 'satellite deploy'],
   },
-  'space-economy': {
-    ttlHours: 24,
-    refreshPriority: 'high',
-    refreshSource: 'both', // Finnhub stock API + AI research
-    keywords: ['space economy', 'space market', 'venture capital', 'space investment', 'space IPO', 'space funding', 'space stock'],
-  },
-  'startups': {
-    ttlHours: 168,
-    refreshPriority: 'high',
-    refreshSource: 'ai-research',
-    keywords: ['startup', 'funding round', 'Series A', 'Series B', 'space startup', 'seed round', 'space venture'],
-  },
+  // NOTE: 'space-economy' and 'startups' entries were removed here
+  // (2026-08-14 orphaned-pipeline cleanup). Neither module's DynamicContent
+  // rows have a reader: /space-economy redirects to /market-intel (reads
+  // /api/stocks + /api/companies) and /startups reads
+  // src/lib/startup-hub-data.ts. Removing the policy entries takes both out
+  // of getModulesBySource('ai-research'), so the daily ai-data-research
+  // cron stops burning Claude tokens researching them. See report for the
+  // caveat that module-api-fetchers.ts (out of scope for this cleanup)
+  // still separately writes space-economy:stock-quotes,
+  // space-economy:government-budgets, and startups:sbir-awards via the
+  // 'external-apis' cron.
   'space-capital': {
     ttlHours: 168, // 7 days
     refreshPriority: 'moderate',
@@ -139,13 +138,14 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
   // Space Economy (Finnhub stock data)
   // (extends existing ai-research with API data)
 
-  // Business Opportunities (SAM.gov contracts)
-  'business-opportunities': {
-    ttlHours: 24,
-    refreshPriority: 'high',
-    refreshSource: 'both', // SAM.gov API + AI
-    keywords: ['contract', 'opportunity', 'RFP', 'procurement', 'award', 'SAM.gov', 'aerospace contract'],
-  },
+  // NOTE: 'business-opportunities' entry removed here (2026-08-14
+  // orphaned-pipeline cleanup). The /business-opportunities page reads the
+  // BusinessOpportunity Prisma model via /api/opportunities (seeded +
+  // refreshed weekly by src/lib/opportunities-data.ts runAIAnalysis) —
+  // never this DynamicContent module. Its two AI-research/API keys
+  // (business-opportunities:sam-gov-all, :sbir-sttr, written by
+  // src/lib/fetchers/business-opportunities-fetcher.ts) have zero readers.
+  // See report for why the fetcher file itself was not deleted.
 
   // Space Environment (Enhanced NOAA + DONKI)
   'space-environment': {

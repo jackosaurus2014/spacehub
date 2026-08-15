@@ -24,19 +24,31 @@ export async function GET(request: NextRequest) {
       createdAt: new Date(),
       updatedAt: new Date(),
     })) as SpaceTalent[];
+    let dataSource: 'database' | 'fallback' = 'fallback';
+    let refreshedAt: string | null = null;
+    let oldestRefreshedAt: string | null = null;
 
     try {
       const dynamicData = await getModuleContent<SpaceTalent>('talent-board');
       if (dynamicData.length > 0) {
         allTalent = dynamicData.map((item) => item.data);
+        dataSource = 'database';
+        const newest = dynamicData.reduce((latest, item) =>
+          item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);
+        const oldest = dynamicData.reduce((earliest, item) =>
+          item.refreshedAt < earliest ? item.refreshedAt : earliest, dynamicData[0].refreshedAt);
+        refreshedAt = newest.toISOString();
+        oldestRefreshedAt = oldest.toISOString();
       }
     } catch {
       // DynamicContent unavailable, use fallback seed data
     }
 
+    const _meta = { source: dataSource, refreshedAt, oldestRefreshedAt };
+
     if (type === 'stats') {
       const stats = computeStats(allTalent);
-      return NextResponse.json({ stats });
+      return NextResponse.json({ stats, _meta });
     }
 
     // Apply filters
@@ -75,6 +87,7 @@ export async function GET(request: NextRequest) {
       talent: filteredTalent,
       total,
       stats,
+      _meta,
     });
   } catch (error) {
     logger.error('Failed to fetch talent data', { error: error instanceof Error ? error.message : String(error) });

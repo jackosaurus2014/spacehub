@@ -66,7 +66,13 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 3 * * *',     path: '/api/refresh/cleanup',                label: 'staleness-cleanup',          maxStaleMinutes: 1560 },
   { schedule: '0 4 * * *',     path: '/api/refresh?type=compliance-refresh', label: 'compliance-refresh',        maxStaleMinutes: 1560 },
   { schedule: '30 4 * * *',    path: '/api/refresh?type=space-environment-daily', label: 'space-environment-daily', maxStaleMinutes: 1560 },
-  { schedule: '0 5 * * *',     path: '/api/refresh?type=business-opportunities',  label: 'business-opportunities',  maxStaleMinutes: 1560 },
+  // 'business-opportunities' cron removed (2026-08-14 orphaned-pipeline
+  // cleanup): it wrote to DynamicContent module 'business-opportunities'
+  // (contentKeys sam-gov-all + sbir-sttr), which has zero readers — the
+  // /business-opportunities page reads the BusinessOpportunity Prisma
+  // model via /api/opportunities instead. See report for why the
+  // underlying fetcher file (src/lib/fetchers/business-opportunities-fetcher.ts)
+  // and its route.ts call sites were left in place rather than deleted.
   { schedule: '30 5 * * *',    path: '/api/refresh?type=regulation-explainers',   label: 'regulation-explainers',   maxStaleMinutes: 1560 },
   { schedule: '0 6 * * *',     path: '/api/refresh?type=space-defense',     label: 'space-defense-refresh',      maxStaleMinutes: 1560 },
   { schedule: '0 7 * * *',     path: '/api/ai-insights/generate',           label: 'ai-insights-retry',          maxStaleMinutes: 1560 },
@@ -124,7 +130,9 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 */6 * * *',  path: '/api/refresh?type=conjunction-alerts',       label: 'conjunction-alerts',          maxStaleMinutes: 480 },
   { schedule: '0 14 * * *',   path: '/api/refresh?type=executive-moves',          label: 'executive-moves-refresh',     maxStaleMinutes: 1560 },
   { schedule: '0 13 * * *',   path: '/api/refresh?type=funding-signals',          label: 'funding-signal-detection',    maxStaleMinutes: 1560 },
-  { schedule: '0 */4 * * *',  path: '/api/refresh?type=sam-gov-active',           label: 'sam-gov-active-refresh',      maxStaleMinutes: 360 },
+  // 'sam-gov-active-refresh' cron removed (2026-08-14 orphaned-pipeline
+  // cleanup): it only wrote to the same orphaned DynamicContent key as the
+  // 'business-opportunities' cron above (business-opportunities:sam-gov-all).
   { schedule: '0 11 * * *',   path: '/api/refresh?type=grants-gov',               label: 'grants-gov-refresh',          maxStaleMinutes: 1560 },
   { schedule: '0 16 * * 1',   path: '/api/refresh?type=sam-awards',               label: 'sam-awards-refresh',          maxStaleMinutes: 10080 },
   { schedule: '0 17 1 * *',   path: '/api/refresh?type=sam-entities',             label: 'sam-entities-refresh',        maxStaleMinutes: 43200 },
@@ -282,10 +290,15 @@ function startWatchdog() {
       const staleThresholdMs = status.maxStaleMinutes * 60 * 1000;
       const isStale = (now - lastSuccess) > staleThresholdMs;
 
-      // Grace period after startup — don't flag jobs as stale before they've
-      // had a chance to run naturally (wait at least 2x maxStaleMinutes for safety)
-      const startTime = schedulerStartTime || now;
-      if ((now - startTime) < staleThresholdMs * 2) continue;
+      // Grace period after startup — but ONLY when we have no real history
+      // for the job. When lastSuccessAt was seeded from DataRefreshLog, the
+      // staleness verdict is trustworthy immediately; gating it on scheduler
+      // uptime meant frequent deploys reset the grace window forever and
+      // once-daily jobs could silently starve for months.
+      if (!status.lastSuccessAt) {
+        const startTime = schedulerStartTime || now;
+        if ((now - startTime) < staleThresholdMs * 2) continue;
+      }
 
       if (!isStale) {
         // Job recovered — clear the alert dedup flag
@@ -387,6 +400,31 @@ export function getCronJobStatus() {
 // startCronJobs — entry point
 // ---------------------------------------------------------------------------
 
+/**
+ * Best-effort: recover each job's real last-success time from DataRefreshLog
+ * (matched by module === job label — jobs whose handlers log under a
+ * different module name simply keep in-memory-only tracking).
+ */
+async function seedTrackerFromRefreshLog(): Promise<void> {
+  const { default: prisma } = await import('@/lib/db');
+  const labels = CRON_JOBS.map((j) => j.label);
+  const rows = await prisma.dataRefreshLog.groupBy({
+    by: ['module'],
+    where: { module: { in: labels }, status: { in: ['success', 'partial'] } },
+    _max: { createdAt: true },
+  });
+  let seeded = 0;
+  for (const row of rows) {
+    const tracker = jobTracker.get(row.module);
+    const ts = row._max.createdAt?.getTime();
+    if (tracker && ts && !tracker.lastSuccessAt) {
+      tracker.lastSuccessAt = ts;
+      seeded++;
+    }
+  }
+  if (seeded > 0) logger.info(`Cron scheduler: seeded ${seeded} job trackers from DataRefreshLog`);
+}
+
 export function startCronJobs() {
   schedulerStartTime = Date.now();
 
@@ -411,6 +449,18 @@ export function startCronJobs() {
       triggerEndpoint(job.path, job.label);
     });
   }
+
+  // Seed lastSuccessAt from DataRefreshLog so watchdog history survives
+  // deploy restarts. Without this, every deploy resets the in-memory tracker
+  // and the watchdog's startup grace period (2x maxStaleMinutes) restarts —
+  // with several deploys a day, a once-daily job could go stale for months
+  // without ever being flagged or auto-recovered (this happened: daily-refresh
+  // starved GovernmentContract/PolicyChange for 140-190 days).
+  seedTrackerFromRefreshLog().catch((e) => {
+    logger.warn('Cron scheduler: failed to seed tracker from DataRefreshLog', {
+      error: e instanceof Error ? e.message : String(e),
+    });
+  });
 
   // Start the staleness watchdog
   startWatchdog();

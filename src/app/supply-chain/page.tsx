@@ -16,6 +16,7 @@ import ShortageAlert from '@/components/supply-chain/ShortageAlert';
 import DependencyChart from '@/components/supply-chain/DependencyChart';
 import { clientLogger } from '@/lib/client-logger';
 import EmptyState from '@/components/ui/EmptyState';
+import DataAsOf, { formatAsOfDate } from '@/components/ui/DataAsOf';
 import {
   SupplyChainCompany,
   SupplyRelationship,
@@ -53,6 +54,7 @@ interface SupplyChainStats {
   countriesWithHighRisk: string[];
   usCompanies: number;
   europeanCompanies: number;
+  _meta?: { source: 'database' | 'fallback'; refreshedAt: string; oldestRefreshedAt: string | null; ttl: number };
 }
 
 // ============================================================
@@ -752,8 +754,11 @@ function SupplyChainContent() {
 
   // BOM risk data is managed inside the lazy-loaded BOMRiskAnalysisTab
 
+  const dataAsOf = stats?._meta?.oldestRefreshedAt ? formatAsOfDate(stats._meta.oldestRefreshedAt) : null;
+
   return (
     <>
+      {dataAsOf && <DataAsOf date={dataAsOf} note="oldest of this page's AI-researched sections" className="mb-4" />}
       {/* Stats Overview */}
       {stats && (
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">

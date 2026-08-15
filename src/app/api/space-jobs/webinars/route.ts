@@ -26,6 +26,10 @@ export async function GET(request: NextRequest) {
       updatedAt: new Date(),
     })) as Webinar[];
 
+    let dataSource: 'database' | 'fallback' = 'fallback';
+    let refreshedAt: string | null = null;
+    let oldestRefreshedAt: string | null = null;
+
     try {
       const dynamicData = await getModuleContent<Webinar>('webinars');
       if (dynamicData.length > 0) {
@@ -33,14 +37,23 @@ export async function GET(request: NextRequest) {
           ...item.data,
           isPast: new Date(item.data.date) < now,
         }));
+        dataSource = 'database';
+        const newest = dynamicData.reduce((latest, item) =>
+          item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);
+        const oldest = dynamicData.reduce((earliest, item) =>
+          item.refreshedAt < earliest ? item.refreshedAt : earliest, dynamicData[0].refreshedAt);
+        refreshedAt = newest.toISOString();
+        oldestRefreshedAt = oldest.toISOString();
       }
     } catch {
       // DynamicContent unavailable, use fallback seed data
     }
 
+    const _meta = { source: dataSource, refreshedAt, oldestRefreshedAt };
+
     if (type === 'stats') {
       const stats = computeStats(allWebinars);
-      return NextResponse.json({ stats });
+      return NextResponse.json({ stats, _meta });
     }
 
     // Apply filters
@@ -85,6 +98,7 @@ export async function GET(request: NextRequest) {
       webinars: filteredWebinars,
       total,
       stats,
+      _meta,
     });
   } catch (error) {
     logger.error('Failed to fetch webinar data', { error: error instanceof Error ? error.message : String(error) });

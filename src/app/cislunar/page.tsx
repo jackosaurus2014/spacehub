@@ -9,6 +9,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
+import DataAsOf, { oldestAsOfDate } from '@/components/ui/DataAsOf';
 import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
@@ -1523,6 +1524,7 @@ function CislunarEcosystemContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [dataAsOf, setDataAsOf] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -1570,6 +1572,10 @@ function CislunarEcosystemContent() {
         if (firstMeta?.lastRefreshed) {
           setRefreshedAt(firstMeta.lastRefreshed);
         }
+        // DataFreshness above shows the module's newest key, which can mask
+        // stale AI-researched sections sitting behind one fresher key. Show
+        // the honest oldest-section vintage too.
+        setDataAsOf(oldestAsOfDate(results.map((r) => r?.meta?.oldestRefreshed)));
       } catch (error) {
         clientLogger.error('Failed to fetch cislunar data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
@@ -1622,6 +1628,7 @@ function CislunarEcosystemContent() {
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+        {dataAsOf && <DataAsOf date={dataAsOf} note="oldest of this page's AI-researched sections" className="mb-4" />}
 
         {/* Ignition Tracker Banner */}
         <Link href="/ignition" className="group block mb-6 rounded-xl border border-orange-500/20 bg-gradient-to-r from-orange-500/[0.06] to-amber-500/[0.04] hover:from-orange-500/[0.10] hover:to-amber-500/[0.08] hover:border-orange-500/30 transition-all duration-300 p-4">

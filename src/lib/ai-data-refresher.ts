@@ -39,8 +39,8 @@ interface AIRefreshResponse {
 // Module-specific keyword configs for fetching relevant news
 const MODULE_NEWS_KEYWORDS: Record<string, string[]> = {
   'space-stations': ['ISS', 'space station', 'Tiangong', 'crew', 'astronaut', 'cosmonaut', 'Axiom', 'Orbital Reef', 'Vast Haven', 'Starlab'],
-  'space-economy': ['space economy', 'space market', 'venture capital', 'space investment', 'space IPO', 'space funding', 'space revenue', 'satellite market', 'launch cost', 'space salary', 'space workforce', 'launch price'],
-  'startups': ['startup', 'funding round', 'Series A', 'Series B', 'seed round', 'space venture', 'space company', 'acquisition'],
+  // 'space-economy' and 'startups' keyword entries removed (2026-08-14
+  // orphaned-pipeline cleanup) — see matching note in freshness-policies.ts.
   'space-defense': ['Space Force', 'space defense', 'SDA', 'military space', 'space command', 'NRO', 'defense contract', 'USSF'],
   'cislunar': ['Artemis', 'lunar', 'moon mission', 'Gateway', 'CLPS', 'cislunar', 'Lunar Pathfinder', 'SLS', 'Orion'],
   'mars-planner': ['Mars', 'Perseverance', 'Curiosity', 'Mars mission', 'Mars launch', 'ExoMars', 'Mars Sample Return'],
@@ -52,7 +52,8 @@ const MODULE_NEWS_KEYWORDS: Record<string, string[]> = {
   'webinars': ['space conference', 'space webinar', 'space summit', 'space symposium', 'space forum', 'IAC', 'SATELLITE conference', 'SpaceCom', 'Space Symposium', 'space expo'],
   'space-tourism': ['space tourism', 'Blue Origin flight', 'Virgin Galactic', 'SpaceX tourism', 'Axiom mission', 'private astronaut', 'suborbital flight', 'Space Perspective', 'space hotel', 'orbital tourism'],
   'supply-chain': ['space supply chain', 'satellite components', 'space manufacturing', 'launch supply', 'radiation-hardened', 'space-grade', 'propulsion supplier', 'solar panel manufacturer', 'reaction wheel', 'star tracker'],
-  'business-opportunities': ['space contract', 'space RFP', 'NASA award', 'space procurement', 'SAM.gov', 'space grant', 'SBIR', 'space partnership', 'space opportunity', 'commercial crew'],
+  // 'business-opportunities' keyword entry removed (2026-08-14
+  // orphaned-pipeline cleanup) — see matching note in freshness-policies.ts.
   'ground-stations': ['ground station', 'satellite ground', 'KSAT', 'AWS Ground Station', 'SSC', 'antenna network', 'ground segment', 'TT&C', 'satellite uplink', 'deep space network'],
   'space-capital': ['space VC', 'space venture capital', 'space investment fund', 'space funding round', 'space SPAC', 'space IPO', 'Seraphim Capital', 'Space Capital', 'space fund raise', 'space acquisition'],
   'constellations': ['Starlink', 'OneWeb', 'Kuiper', 'constellation', 'satellite deploy', 'Iridium', 'Telesat', 'SDA Tranche', 'Guowang', 'satellite internet'],
@@ -83,42 +84,10 @@ COMMERCIAL STATIONS (section: commercial-stations):
 CLD MILESTONES (section: cld-milestones):
 - NASA Commercial LEO Destinations program: latest awards, deselections, schedule changes, funding updates`,
 
-  'space-economy': `Verify and update space economy data across these sections:
-
-MARKET SEGMENTS (section: market-segments):
-- Global space economy market size (latest estimate)
-- Segment revenue breakdown: satellite services, manufacturing, launch, ground equipment
-- Growth rates per segment
-
-QUARTERLY VC (section: quarterly-vc):
-- Recent VC/funding deals in space sector (last quarter)
-- Deal counts and total invested per quarter
-
-ANNUAL INVESTMENT (section: annual-investment):
-- Annual VC, debt financing, public offerings totals
-
-GOVERNMENT BUDGETS (section: government-budgets):
-- Space budgets for US (NASA, Space Force, NRO), China, ESA, India, Japan, etc.
-
-WORKFORCE STATS (section: workforce-stats):
-- Space industry employment, hiring trends, unfilled positions, salary growth
-
-LAUNCH COST TRENDS (section: launch-cost-trends):
-- Cost per kg to LEO for ALL major launch vehicles worldwide
-- Each entry needs: vehicle, operator, year, costPerKgLEO (number), payload (kg to LEO), reusable (boolean)
-- Include SpaceX (Falcon 9, Falcon Heavy, Starship), Rocket Lab (Electron, Neutron), ULA (Vulcan, Atlas V), Arianespace (Ariane 6, Vega C), Blue Origin (New Glenn), ISRO (PSLV, LVM3), JAXA (H3), CASC (Long March 2D/3B/5/8), Roscosmos (Soyuz-2, Proton-M, Angara A5), Firefly, Relativity, Northrop Grumman
-
-SALARY BENCHMARKS (section: salary-benchmarks):
-- US space industry salary data by role
-- Each entry needs: role (string), minSalary, maxSalary, median (all numbers in USD), growth (YoY percentage)
-- Include: Software, GNC, Propulsion, Systems, RF/Comms, Avionics, Thermal, Structures, Mission Ops, AI/ML, Manufacturing, Test, Program Manager, Ground Systems, Integration, Policy/Regulatory, Launch Ops, Orbital Mechanics`,
-
-  'startups': `Verify and update space startup data:
-- Recently funded space startups (funding rounds, amounts, investors)
-- Company status changes (IPO, acquisition, shutdown, pivot)
-- New notable space startups
-- Funding trends and total quarterly/annual investment figures
-- Top space VC investors and their recent deals`,
+  // 'space-economy' and 'startups' MODULE_PROMPTS entries removed
+  // (2026-08-14 orphaned-pipeline cleanup) — see matching note in
+  // freshness-policies.ts. Neither module's DynamicContent rows are read by
+  // any page.
 
   'space-defense': `Verify and update space defense data across all 5 sections:
 
@@ -366,15 +335,8 @@ SHORTAGES (section: shortages):
 - Titanium, carbon fiber, rare earth pricing and availability
 - For each: material/component, severity (critical/moderate/low), affected programs, estimated resolution timeline`,
 
-  'business-opportunities': `Verify and update space industry business opportunities:
-- Recent NASA contract awards (>$10M): Commercial Crew, CLPS, Artemis, SLS, ISS services
-- DoD/Space Force contract awards: SDA, NSSL, missile warning, space domain awareness
-- ESA and international space agency procurements
-- Commercial partnerships and joint ventures announced
-- New SAM.gov opportunities related to space/aerospace
-- SBIR/STTR awards for space technology
-- Industry RFPs and teaming opportunities
-For each opportunity: title, agency, value, awardee(s), deadline (if open), category (government/commercial/international), brief description`,
+  // 'business-opportunities' MODULE_PROMPTS entry removed (2026-08-14
+  // orphaned-pipeline cleanup) — see matching note in freshness-policies.ts.
 
   'ground-stations': `Verify and update ground station network data:
 - Major commercial networks: KSAT, SSC (Swedish Space Corp), Viasat RTE, AWS Ground Station, Azure Orbital, Leaf Space
@@ -459,9 +421,13 @@ async function getRelevantNews(module: string, daysBack: number = 7): Promise<st
 }
 
 /**
- * Refresh a single module's data using AI research
+ * Refresh a single module's data using AI research.
+ *
+ * @param priorityKeys - Optional content keys (stalest-first) that the
+ *   caller wants prioritized in this pass. See refreshAllAIResearchedModules
+ *   for how these are computed from actual per-key ages.
  */
-export async function refreshModuleViaAI(module: string): Promise<AIUpdateResult> {
+export async function refreshModuleViaAI(module: string, priorityKeys?: string[]): Promise<AIUpdateResult> {
   const start = Date.now();
   const result: AIUpdateResult = {
     module,
@@ -489,13 +455,21 @@ export async function refreshModuleViaAI(module: string): Promise<AIUpdateResult
     // 3. Get module-specific prompt
     const moduleInstructions = MODULE_PROMPTS[module] || `Verify and update data for the ${module} module.`;
 
+    // 3b. Priority steering — the LLM only ever updates an arbitrary subset
+    // of sections per pass, so without an explicit nudge some content keys
+    // never get touched across many refresh passes. If the caller computed
+    // the stalest keys, tell the model to treat them as must-review.
+    const priorityNote = priorityKeys && priorityKeys.length > 0
+      ? `\n\n## Priority — Stalest Content Keys (review these first)\nThese content keys have gone the longest without a refresh and MUST be reviewed and included in "updates" (with a changeNotes explaining what changed, or "no change needed" if verification found nothing to update) before you spend remaining budget elsewhere: ${priorityKeys.join(', ')}`
+      : '';
+
     // 4. Build the AI prompt
     const prompt = `You are a space industry data analyst for SpaceNexus, a professional space intelligence platform. Your job is to verify and update module data based on your knowledge and recent news articles.
 
 ## Module: ${module}
 
 ## Task
-${moduleInstructions}
+${moduleInstructions}${priorityNote}
 
 ## Current Data in Our Database
 ${currentDataSummary}
@@ -643,7 +617,15 @@ Respond with valid JSON (no markdown code fences):
 }
 
 /**
- * Refresh all modules that use AI research, checking staleness first
+ * Refresh all modules that use AI research, checking staleness first.
+ *
+ * IMPORTANT: the staleness gate looks at the OLDEST active content key for
+ * the module, not the most-recently-refreshed one. Several modules mix an
+ * API-refreshed key (e.g. a daily live-procurement feed) with AI-researched
+ * keys — checking only the newest key meant a single daily API refresh
+ * masked AI-authored sections that hadn't been touched in months (e.g.
+ * space-defense's 5 AI sections sat at sourceType 'seed', 186 days old,
+ * because the module's live-procurement key kept looking "fresh").
  */
 export async function refreshAllAIResearchedModules(): Promise<{
   totalUpdated: number;
@@ -662,23 +644,45 @@ export async function refreshAllAIResearchedModules(): Promise<{
     const policy = FRESHNESS_POLICIES[moduleItem];
     if (!policy) continue;
 
-    const latestContent = await prisma.dynamicContent.findFirst({
+    // Pull every active key's age (lightweight columns only) ordered
+    // oldest-first. This both (a) drives the gate off the OLDEST key so a
+    // single fresh API-refreshed key can't mask stale AI sections, and
+    // (b) gives us per-key coverage visibility in the logs regardless of
+    // whether the module ends up qualifying for a refresh pass.
+    const activeRows = await prisma.dynamicContent.findMany({
       where: { module: moduleItem, isActive: true },
-      orderBy: { refreshedAt: 'desc' },
-      select: { refreshedAt: true },
+      orderBy: { refreshedAt: 'asc' },
+      select: { contentKey: true, refreshedAt: true },
     });
 
-    // Skip if recently refreshed (within TTL)
-    if (latestContent) {
-      const ageMs = Date.now() - latestContent.refreshedAt.getTime();
-      const ttlMs = policy.ttlHours * 60 * 60 * 1000;
-      if (ageMs < ttlMs) {
-        logger.info(`Skipping AI research for ${moduleItem}: data is fresh (${Math.round(ageMs / 3600000)}h old, TTL ${policy.ttlHours}h)`);
+    const ttlMs = policy.ttlHours * 60 * 60 * 1000;
+    const now = Date.now();
+
+    if (activeRows.length > 0) {
+      logger.info(`Per-key freshness snapshot for ${moduleItem}`, {
+        keys: activeRows.map((r) => ({
+          contentKey: r.contentKey,
+          ageHours: Math.round((now - r.refreshedAt.getTime()) / 3600000),
+        })),
+      });
+
+      // Skip only if the OLDEST active key is still within TTL.
+      const oldest = activeRows[0];
+      const oldestAgeMs = now - oldest.refreshedAt.getTime();
+      if (oldestAgeMs < ttlMs) {
+        logger.info(`Skipping AI research for ${moduleItem}: oldest active key "${oldest.contentKey}" is fresh (${Math.round(oldestAgeMs / 3600000)}h old, TTL ${policy.ttlHours}h)`);
         continue;
       }
     }
 
-    const result = await refreshModuleViaAI(moduleItem);
+    // Steer the AI pass toward the stalest keys first. The LLM only updates
+    // an arbitrary subset of sections per pass within its token budget, so
+    // without explicit steering some keys (e.g. launch-vehicles:soyuz-5)
+    // never get touched across many passes. Pass the oldest N key names in
+    // as an explicit priority list for the prompt.
+    const priorityKeys = activeRows.slice(0, 8).map((r) => r.contentKey);
+
+    const result = await refreshModuleViaAI(moduleItem, priorityKeys);
     results.push(result);
     totalUpdated += result.itemsUpdated;
     totalCreated += result.itemsCreated;

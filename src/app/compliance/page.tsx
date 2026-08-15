@@ -16,6 +16,7 @@ import DataAsOf from '@/components/ui/DataAsOf';
 import PremiumGate from '@/components/PremiumGate';
 import RelatedModules from '@/components/ui/RelatedModules';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RecentLegalUpdates from './RecentLegalUpdates';
 
 import { getRegulatoryHubStats } from '@/lib/regulatory-hub-data';
 
@@ -346,6 +347,8 @@ function RegulatoryHubContent() {
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Expert Sources</div>
         </div>
       </div>
+
+      <RecentLegalUpdates />
 
       <InlineDisclaimer />
 

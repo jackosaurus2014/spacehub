@@ -19,6 +19,7 @@ import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 import { getArtemisNewsArticles } from '@/lib/artemis-news';
 import { getStarshipNewsArticles } from '@/lib/starship-news';
+import { FRESHNESS_POLICIES, type FreshnessPolicy } from '@/lib/freshness-policies';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -324,6 +325,62 @@ async function checkPublishedBriefsFresh(): Promise<AccuracyCheckOutcome> {
 }
 
 // ---------------------------------------------------------------------------
+// Check 9 — no module's oldest active DynamicContent key is > 4x its TTL
+// ---------------------------------------------------------------------------
+
+// Catches the class of bug where a live-API-refreshed key masks stale
+// AI-researched keys sitting in the same module (e.g. space-defense's 5 AI
+// sections sat at 186 days old / sourceType 'seed' behind a daily
+// live-procurement key — see refreshAllAIResearchedModules in
+// src/lib/ai-data-refresher.ts, which this check backstops). Modules with
+// zero active DynamicContent rows are excluded — nothing to be stale about.
+//
+// Takes an explicit `policies` param (defaulting to the real
+// FRESHNESS_POLICIES) so tests can exercise a small, deterministic subset
+// instead of every registered module.
+export async function checkStaleModuleContent(
+  policies: Record<string, FreshnessPolicy> = FRESHNESS_POLICIES
+): Promise<AccuracyCheckOutcome> {
+  const offenders: Array<{ module: string; contentKey: string; ageDays: number; ttlDays: number }> = [];
+
+  for (const [moduleName, policy] of Object.entries(policies)) {
+    const oldest = await prisma.dynamicContent.findFirst({
+      where: { module: moduleName, isActive: true },
+      orderBy: { refreshedAt: 'asc' },
+      select: { contentKey: true, refreshedAt: true },
+    });
+
+    if (!oldest) continue; // no rows for this module — nothing to flag
+
+    const ageHours = (Date.now() - oldest.refreshedAt.getTime()) / MS_PER_HOUR;
+    const thresholdHours = policy.ttlHours * 4;
+
+    if (ageHours > thresholdHours) {
+      offenders.push({
+        module: moduleName,
+        contentKey: oldest.contentKey,
+        ageDays: ageHours / 24,
+        ttlDays: policy.ttlHours / 24,
+      });
+    }
+  }
+
+  if (offenders.length === 0) {
+    return {
+      ok: true,
+      detail: 'No module has an active DynamicContent key older than 4x its freshness-policy TTL.',
+    };
+  }
+
+  return {
+    ok: false,
+    detail: `${offenders.length} module(s) have an active content key older than 4x TTL: ${offenders
+      .map((o) => `${o.module} (worst key "${o.contentKey}", ${o.ageDays.toFixed(0)}d old, TTL ${o.ttlDays.toFixed(1)}d)`)
+      .join('; ')}`,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Checklist registry — data-driven, extend by pushing a new entry
 // ---------------------------------------------------------------------------
 
@@ -443,6 +500,11 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
         detail: `Oldest "new" FeedbackSubmission is ${ageDays.toFixed(1)} day(s) old (policy: <= 7 days) — triage at /admin?tab=feedback.`,
       };
     },
+  },
+  {
+    id: 'stale-module-content',
+    label: 'No module has an active content key older than 4x its freshness-policy TTL',
+    run: () => checkStaleModuleContent(),
   },
 ];
 

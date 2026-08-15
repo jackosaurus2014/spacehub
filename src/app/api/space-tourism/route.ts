@@ -45,6 +45,10 @@ export async function GET(request: Request) {
     let allOfferings: SpaceTourismOffering[] = FALLBACK_OFFERINGS;
     let dataSource: 'database' | 'fallback' = 'fallback';
     let refreshedAt: string = new Date().toISOString();
+    // Oldest of the returned rows — refreshedAt above is newest-across-rows
+    // and can mask a stale entry sitting behind a fresher one (the
+    // stale-content audit found space-tourism entries up to 25x past TTL).
+    let oldestRefreshedAt: string | null = null;
     try {
       const dynamicData = await getModuleContent<SpaceTourismOffering>('space-tourism', 'offerings');
       if (dynamicData.length > 0) {
@@ -54,6 +58,9 @@ export async function GET(request: Request) {
         const latestRefresh = dynamicData.reduce((latest, item) =>
           item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);
         refreshedAt = latestRefresh.toISOString();
+        const earliestRefresh = dynamicData.reduce((earliest, item) =>
+          item.refreshedAt < earliest ? item.refreshedAt : earliest, dynamicData[0].refreshedAt);
+        oldestRefreshedAt = earliestRefresh.toISOString();
       }
     } catch {
       // DynamicContent unavailable, use fallback data
@@ -119,6 +126,7 @@ export async function GET(request: Request) {
       _meta: {
         source: dataSource,
         refreshedAt,
+        oldestRefreshedAt,
         ttl: 604800,
       },
     });

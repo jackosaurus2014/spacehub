@@ -47,6 +47,10 @@ export async function GET(request: Request) {
     let allShortages: SupplyShortage[] = FALLBACK_SHORTAGES;
     let dataSource: 'database' | 'fallback' = 'fallback';
     let refreshedAt: string = new Date().toISOString();
+    // Oldest of the three sections — refreshedAt above is module-wide-newest
+    // and can mask a stale section behind a fresher one (the stale-content
+    // audit's root cause); expose the honest oldest vintage too.
+    let earliestRefresh: Date | null = null;
 
     try {
       const [dynamicCompanies, dynamicRelationships, dynamicShortages] = await Promise.all([
@@ -73,6 +77,7 @@ export async function GET(request: Request) {
         const parsed = unwrap<SupplyChainCompany>(dynamicCompanies[0].data, 'companies', 'name');
         if (parsed) { allCompanies = parsed; hasDbData = true; }
         latestRefresh = dynamicCompanies[0].refreshedAt;
+        earliestRefresh = dynamicCompanies[0].refreshedAt;
       }
       if (dynamicRelationships.length > 0) {
         const parsed = unwrap<SupplyRelationship>(dynamicRelationships[0].data, 'relationships', 'supplierId');
@@ -80,12 +85,18 @@ export async function GET(request: Request) {
         if (!latestRefresh || dynamicRelationships[0].refreshedAt > latestRefresh) {
           latestRefresh = dynamicRelationships[0].refreshedAt;
         }
+        if (!earliestRefresh || dynamicRelationships[0].refreshedAt < earliestRefresh) {
+          earliestRefresh = dynamicRelationships[0].refreshedAt;
+        }
       }
       if (dynamicShortages.length > 0) {
         const parsed = unwrap<SupplyShortage>(dynamicShortages[0].data, 'shortages', 'material');
         if (parsed) { allShortages = parsed; hasDbData = true; }
         if (!latestRefresh || dynamicShortages[0].refreshedAt > latestRefresh) {
           latestRefresh = dynamicShortages[0].refreshedAt;
+        }
+        if (!earliestRefresh || dynamicShortages[0].refreshedAt < earliestRefresh) {
+          earliestRefresh = dynamicShortages[0].refreshedAt;
         }
       }
       if (hasDbData && latestRefresh) {
@@ -96,7 +107,12 @@ export async function GET(request: Request) {
       // DynamicContent unavailable, use fallback data
     }
 
-    const _meta = { source: dataSource, refreshedAt, ttl: 1209600 };
+    const _meta = {
+      source: dataSource,
+      refreshedAt,
+      oldestRefreshedAt: earliestRefresh ? earliestRefresh.toISOString() : null,
+      ttl: 1209600,
+    };
 
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'stats';
