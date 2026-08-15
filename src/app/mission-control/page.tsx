@@ -9,6 +9,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ExportButton from '@/components/ui/ExportButton';
 import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
+import type { AlternateStream as CommunityStream } from '@/lib/mission-stream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import AdSlot from '@/components/ads/AdSlot';
 import CollapsiblePanel from '@/components/ui/CollapsiblePanel';
@@ -465,6 +466,38 @@ function isLiveOrImminent(event: SpaceEvent): boolean {
 function LiveNowSection({ events }: { events: SpaceEvent[] }) {
   const [selectedMission, setSelectedMission] = useState<SpaceEvent | null>(null);
   const [countdown, setCountdown] = useState<Record<string, string>>({});
+  // Community/creator livestreams from the existing detector endpoint
+  // (NASASpaceflight, Everyday Astronaut, etc.) — offered as selectable
+  // alternate feeds in MissionStream when the official stream is dead,
+  // absent, or a viewer just prefers different coverage. See
+  // lib/mission-stream.ts (selectAlternateFeeds) for the filtering logic.
+  const [communityStreams, setCommunityStreams] = useState<CommunityStream[]>([]);
+
+  // Fetch active livestreams on mount and poll every 60s — same endpoint and
+  // cadence the homepage's LiveStreamSection uses.
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchStreams = async () => {
+      try {
+        const res = await fetch('/api/livestreams');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setCommunityStreams(data.streams || []);
+      } catch (error) {
+        clientLogger.error('Failed to fetch community livestreams', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    };
+
+    fetchStreams();
+    const interval = setInterval(fetchStreams, 60000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   // Get live/imminent missions
   const liveMissions = useMemo(() => {
@@ -580,6 +613,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
             <MissionStream
               mission={selectedMission}
               isLive={selectedMission.isLive || isLiveOrImminent(selectedMission)}
+              communityStreams={communityStreams}
             />
           )}
         </div>
