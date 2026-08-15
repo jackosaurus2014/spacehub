@@ -1095,6 +1095,17 @@ export interface GameState {
     miningBonus: number;
     researchBonus: number;
   } | null;
+
+  // ─── V26 (Live-Service Wave LS4 "Corporate Eras") ────────────────────────
+  // docs/LIVE_SERVICE_2026-08.md §LS4. 90-real-day chartered epochs with a
+  // declared focus (bonus/malus trade-off pair) and bracket-scaled goal
+  // scoring; completed eras earn a permanent medal that feeds legacy-system.ts
+  // as a new milestone family and (opt-in) publishes to the public Chronicle.
+  // Additive/optional; see save-load.ts's V26 migration block and
+  // corporate-eras.ts. Null/absent = no era ever chartered (identical to a
+  // fresh game — getActiveEraModifiers(undefined) returns the neutral 1.0
+  // multiplier set used throughout game-engine.ts/economy-report.ts).
+  corporateEras?: CorporateErasState;
 }
 
 /** One re-engagement objective inside a ReturningCommanderTrack — one per
@@ -1423,4 +1434,85 @@ export interface AwayLedger {
   queueSkipped: AwayLedgerQueueEntry[];
   hazardsApplied: AwayLedgerHazardEntry[];
   message: string;
+}
+
+// ─── Live-Service Wave LS4 — Corporate Eras ─────────────────────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS4. See corporate-eras.ts for the 8 charter
+// definitions, modifier/goal math, and lifecycle functions. Types live here
+// (not corporate-eras.ts) per the CommandQueueOrder/StandingDirective/
+// AwayLedger precedent above — avoids a circular import with legacy-system.ts,
+// which references CompletedCorporateEra's `medal` field for the new era
+// milestone family without needing to import corporate-eras.ts itself.
+
+export type EraCharterId =
+  | 'expansion_era'
+  | 'research_renaissance'
+  | 'consolidation'
+  | 'belt_century'
+  | 'science_age'
+  | 'logistics_empire'
+  | 'civic_era'
+  | 'interstellar_prelude';
+
+/** Bronze/silver/gold/platinum per how far the era's goal was carried;
+ *  'filed' = the era completed but fell short of even the bronze bar — still
+ *  a permanent, honestly-recorded Chronicle entry, never hidden or punitive. */
+export type EraMedal = 'filed' | 'bronze' | 'silver' | 'gold' | 'platinum';
+
+/** Snapshot of tracked stats at era charter time — every completed era's
+ *  goal is scored off the DELTA between this and the same read at era end,
+ *  never off cumulative totals (so a corporation's 3rd era isn't graded
+ *  against its 1st era's head start). */
+export interface EraStatSnapshot {
+  buildingsCompleted: number;
+  researchCompleted: number;
+  resourcesMined: number;
+  shipsBuilt: number;
+  reputation: number;
+  expeditionsLaunched: number;
+  totalSpent: number;
+  netWorth: number;
+}
+
+export interface ActiveCorporateEra {
+  /** 0-based, sequential per corporation — never reused. */
+  eraIndex: number;
+  charterId: EraCharterId;
+  startedAtMs: number;
+  /** startedAtMs + ERA_DURATION_MS (90 real days) — fixed at charter time,
+   *  wall-clock, decoupled from tick speed so a lapsed player's era still
+   *  ends on schedule (LS1's clock-fix precedent). */
+  endsAtMs: number;
+  /** League bracket (1-8, league-system.ts assignPlayerToLeague) at charter
+   *  time — the goal target bracket-scales off this so grading is fair at
+   *  every corporate scale, never re-evaluated mid-era even if net worth
+   *  crosses a bracket boundary. */
+  bracketAtStart: number;
+  startSnapshot: EraStatSnapshot;
+}
+
+export interface CompletedCorporateEra {
+  eraIndex: number;
+  charterId: EraCharterId;
+  startedAtMs: number;
+  endedAtMs: number;
+  bracketAtStart: number;
+  medal: EraMedal;
+  /** Raw goal-completion ratio (1.0 = target exactly met) — uncapped for
+   *  display; getEraMedalForScore() buckets it into the 5 medal grades. */
+  goalScore: number;
+  goalActual: number;
+  goalTarget: number;
+  /** A few headline stat deltas for the Chronicle card — not exhaustive,
+   *  just the ones worth reading as history. */
+  headlineStats: { label: string; value: number }[];
+  /** Up to 5 milestone-type eventLog titles still present in the log at
+   *  completion time (best-effort — see corporate-eras.ts's completeEra doc
+   *  comment for why this isn't a strict era-window filter). */
+  notableEvents: string[];
+}
+
+export interface CorporateErasState {
+  currentEra: ActiveCorporateEra | null;
+  completedEras: CompletedCorporateEra[];
 }

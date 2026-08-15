@@ -7,6 +7,9 @@ import ShareButton from '@/components/ui/ShareButton';
 import { formatMoney } from '@/lib/game/formulas';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { getPublicCorp } from '@/lib/game/public-leaderboard';
+import { getCorpChronicle } from '@/lib/game/public-era-chronicle';
+import { ERA_CHARTER_MAP } from '@/lib/game/corporate-eras';
+import { ERA_MEDAL_LABEL, ERA_MEDAL_ICON } from '@/lib/game/corp-era-registry';
 import { ACHIEVEMENTS } from '@/lib/game/achievements';
 
 // Public corporation profile — SEO-indexable, no login required. Only
@@ -46,7 +49,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 export default async function PublicCorpPage({ params }: { params: { id: string } }) {
-  const corp = await getPublicCorp(params.id);
+  const [corp, chronicle] = await Promise.all([
+    getPublicCorp(params.id),
+    getCorpChronicle(params.id),
+  ]);
   if (!corp) notFound();
 
   const tierDef = getTierDef(corp.tier);
@@ -156,6 +162,45 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
                   </span>
                 </li>
               ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Chronicle — Live-Service Wave LS4: permanent, public, append-only
+            record of chartered eras (CLAUDE.md "founding dates, major
+            acquisitions, public scandals, and legacy milestones recorded in
+            a permanent ledger new players can read as history"). Opt-in —
+            only eras the commander explicitly published appear here. */}
+        {chronicle.length > 0 && (
+          <div className="hud-frame game-panel p-4 sm:p-5">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <p className="game-label mb-3">Corporate Chronicle ({chronicle.length} era{chronicle.length === 1 ? '' : 's'})</p>
+            <ul className="space-y-3">
+              {chronicle.map((era) => {
+                const charter = ERA_CHARTER_MAP.get(era.charterId);
+                return (
+                  <li key={`${era.eraIndex}`} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-sm text-white font-medium flex items-center gap-1.5">
+                        <span aria-hidden="true">{charter?.icon || '🏛️'}</span> Era {era.eraIndex + 1}: {charter?.name || era.charterId}
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold flex items-center gap-1">
+                        <span aria-hidden="true">{ERA_MEDAL_ICON[era.medal]}</span> {ERA_MEDAL_LABEL[era.medal]}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      {new Date(era.startedAtMs).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}
+                      {' – '}
+                      {new Date(era.endedAtMs).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}
+                      {charter ? ` · ${charter.goalLabel}: ${Math.round(era.goalActual).toLocaleString()} / ${Math.round(era.goalTarget).toLocaleString()}` : ''}
+                    </p>
+                    {era.notableEvents.length > 0 && (
+                      <p className="mt-1.5 text-[11px] text-slate-400 truncate">{era.notableEvents.slice(0, 2).join(' · ')}</p>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

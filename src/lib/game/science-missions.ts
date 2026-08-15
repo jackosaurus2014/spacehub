@@ -918,6 +918,92 @@ export function coFundNpcProgram(
   };
 }
 
+// ─── Server-stake mode (Live-Service Wave LS5 part 2) ───────────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS5: "replace the client-deterministic solo
+// stake in science-missions.ts with server escrow... world-shared program
+// outcomes stay seeded — the ledger adds WHOSE money and WHO gets paid, not
+// new randomness." coFundNpcProgram/the settlement block above stay exactly
+// as they are — they finish out any legacy client-simulated contribution
+// already sitting in an existing save (additive-only guarantee, same as
+// every other V-numbered wave). NEW stakes go through
+// /api/space-tycoon/science/co-fund, which calls the two pure functions
+// below — no GameState involved, fully unit-testable, no Math.random.
+//
+// Cycle timing is UNCHANGED (getNpcProgramStatuses/getNpcSettlementMultiplier
+// above) — only who pays in and who gets paid moves server-side. World-shared
+// timing means the route/cron key off server-time.ts's getGlobalGameDate
+// (the world clock), not a per-player state.gameDate, matching
+// world-calendar.ts's npcProgramEntries deriver so the Mission Calendar's
+// settlement countdown and the actual settlement moment never disagree.
+
+/** Cycle window (start/settle world-month) for a given (program, cycle) pair
+ *  — the server-stake path needs this for an ARBITRARY past cycle a stake
+ *  was made in, not just "the current one" (getNpcProgramStatuses only
+ *  describes cycles relative to a live month index). Pure, deterministic. */
+export function getNpcCycleWindow(def: NpcProgramDef, cycleIndex: number): { cycleStartMonth: number; settlesAtMonth: number } {
+  const cycleStartMonth = def.offsetMonths + Math.max(0, cycleIndex) * def.cycleMonths;
+  return { cycleStartMonth, settlesAtMonth: cycleStartMonth + def.cycleMonths };
+}
+
+/** Cycle index a given world-month index falls into, for a program def —
+ *  the server-stake route's "what cycle am I staking into right now" check
+ *  (same math getNpcProgramStatuses uses internally, exposed standalone so
+ *  the route doesn't need to re-derive the whole statuses array just to
+ *  validate one program). */
+export function getNpcCycleIndexForMonth(def: NpcProgramDef, monthIndex: number): number {
+  const shifted = Math.max(0, monthIndex - def.offsetMonths);
+  return Math.floor(shifted / def.cycleMonths);
+}
+
+/** Below this share of a cycle's total staked pool, a stake counts as a
+ *  "small contributor" and gets a payout bonus — the same SHAPE as
+ *  mega-projects.ts's calculateMPPWithBonuses (a below-threshold contributor
+ *  is multiplied up), tuned for this system's stake scale: mega-projects'
+ *  0.01% threshold assumes megaproject-sized totals (many thousands of
+ *  contributors); an NPC program cycle typically has a handful of stakers,
+ *  so a percentage-of-pool threshold is used instead of a fixed 0.01% floor. */
+export const NPC_STAKE_SMALL_SHARE_THRESHOLD = 0.15;
+/** Payout multiplier bonus for small contributors (mega-projects.ts uses
+ *  2.0x for MPP-weight; this is real money, so a gentler 1.25x keeps the
+ *  aggregate payout close to `totalStaked * settlementMult` rather than
+ *  meaningfully inflating the sink's expected value). */
+export const NPC_STAKE_SMALL_SHARE_BONUS = 1.25;
+
+export interface NpcStakeRow {
+  profileId: string;
+  amount: number;
+}
+
+export interface NpcStakeSettlement {
+  profileId: string;
+  amount: number;
+  payout: number;
+  smallContributorBonus: boolean;
+}
+
+/** Pro-rata settlement payouts for every stake in one NPC program cycle.
+ *  Deterministic given `settlementMult` (itself seeded via
+ *  getNpcSettlementMultiplier — the same world-shared roll every co-funder
+ *  already shared under the client-simulated path, unchanged by this wave).
+ *  Pure — no DB, no state, safe to call from a route or a cron sweep. */
+export function computeNpcStakeSettlement(
+  stakes: NpcStakeRow[],
+  settlementMult: number,
+): NpcStakeSettlement[] {
+  const totalStaked = stakes.reduce((sum, s) => sum + Math.max(0, s.amount), 0);
+  if (totalStaked <= 0) return [];
+  return stakes.map(s => {
+    const isSmall = s.amount > 0 && s.amount < totalStaked * NPC_STAKE_SMALL_SHARE_THRESHOLD;
+    const mult = settlementMult * (isSmall ? NPC_STAKE_SMALL_SHARE_BONUS : 1);
+    return {
+      profileId: s.profileId,
+      amount: s.amount,
+      payout: Math.round(s.amount * mult),
+      smallContributorBonus: isSmall,
+    };
+  });
+}
+
 // ─── Plan: validation + cost quote (pure — expeditions.ts pattern) ───────────
 
 export interface ScienceMissionPlanRequest {

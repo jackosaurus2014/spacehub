@@ -16,10 +16,17 @@ import type { DoctrineCategory, DoctrinePolicyId, ConstituencyMood } from '@/lib
 import { getTotalGameMonthsElapsed } from '@/lib/game/quarterly-reports';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import type { EraCharterId } from '@/lib/game/types';
+import CorporateEraPanel from './CorporateEraPanel';
 
 interface GovernancePanelProps {
   state: GameState;
   onSwitchPolicy: (category: DoctrineCategory, policyId: DoctrinePolicyId | null) => void;
+  /** Live-Service Wave LS4 (docs/LIVE_SERVICE_2026-08.md §LS4): charter a new
+   *  90-day era. Era chartering lives with board politics per the spec — the
+   *  Governance tab is where doctrine, board directives, AND era mandates all
+   *  live, since all three are board-level decisions. */
+  onCharterEra: (charterId: EraCharterId) => void;
 }
 
 const CATEGORY_ORDER: DoctrineCategory[] = ['operations', 'disclosure', 'compensation'];
@@ -36,7 +43,7 @@ const DIRECTIVE_METRIC_ICON: Record<string, string> = {
   growth: '📈', profit: '💰', safety: '🛡️',
 };
 
-export default function GovernancePanel({ state, onSwitchPolicy }: GovernancePanelProps) {
+export default function GovernancePanel({ state, onSwitchPolicy, onCharterEra }: GovernancePanelProps) {
   const doctrine = state.corporateDoctrine || DEFAULT_DOCTRINE;
   const currentTotalMonths = getTotalGameMonthsElapsed(state.gameDate);
   const switchCost = getDoctrineSwitchCost(state.workforce);
@@ -56,6 +63,9 @@ export default function GovernancePanel({ state, onSwitchPolicy }: GovernancePan
         </div>
         <span className="text-[10px] text-slate-500">Policies, constituencies, and quarterly board expectations</span>
       </div>
+
+      {/* ── Corporate Eras (Live-Service Wave LS4) ─────────────────────── */}
+      <CorporateEraPanel state={state} onCharterEra={onCharterEra} />
 
       {/* ── Policies ─────────────────────────────────────────────────── */}
       <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">

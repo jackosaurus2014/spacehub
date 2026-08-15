@@ -10,6 +10,7 @@ import type { LegacyState } from './legacy-system';
 import { checkCorporationTier } from './corporation-tiers';
 import { initializeFrontier } from './frontier';
 import { DEFAULT_DOCTRINE } from './corporate-doctrine';
+import { DEFAULT_CORPORATE_ERAS } from './corporate-eras';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
@@ -153,6 +154,11 @@ export function getNewGameState(): GameState {
     // allianceBonuses — null until a sync response actually carries one.
     returningCommanderTrack: null,
     mentorshipBonuses: null,
+    // V26 — Live-Service Wave LS4 "Corporate Eras" (docs/
+    // LIVE_SERVICE_2026-08.md §LS4). A fresh corporation hasn't chartered an
+    // era yet (Tier 3+ gate) — no active era, no completed eras, nothing to
+    // publish to the Chronicle.
+    corporateEras: { ...DEFAULT_CORPORATE_ERAS },
   };
 }
 
@@ -425,6 +431,15 @@ export function loadGame(): GameState | null {
     // the last sync" — numerically identical to a fresh game (zero bonus).
     if (state.returningCommanderTrack === undefined) state.returningCommanderTrack = null;
     if (state.mentorshipBonuses === undefined) state.mentorshipBonuses = null;
+
+    // V26 fields — Live-Service Wave LS4 "Corporate Eras" (docs/
+    // LIVE_SERVICE_2026-08.md §LS4). Additive-only: an existing save with no
+    // corporateEras simply has never chartered an era (numerically identical
+    // to a fresh game — getActiveEraModifiers returns the neutral 1.0 set,
+    // no completed eras means no legacy "era" milestones have fired yet).
+    if (!state.corporateEras) state.corporateEras = { ...DEFAULT_CORPORATE_ERAS };
+    if (!state.corporateEras.completedEras) state.corporateEras.completedEras = [];
+    if (state.corporateEras.currentEra === undefined) state.corporateEras.currentEra = null;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

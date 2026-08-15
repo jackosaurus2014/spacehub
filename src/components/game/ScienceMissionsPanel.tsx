@@ -13,12 +13,12 @@
 // color alone (every colored chip carries text); animations ride existing
 // GameStyles classes which are reduced-motion-guarded.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import type { GameState, GameTab, ScienceMissionState } from '@/lib/game/types';
 import {
   SCIENCE_PROGRAMS, SCIENCE_PROGRAM_MAP,
   planScienceMission, getActiveMissionForProgram, getScienceMissionProgress,
-  getPhaseBoundaries, getNpcProgramStatuses, getTotalGameMonths,
+  getPhaseBoundaries, getNpcProgramStatuses, getTotalGameMonths, NPC_PROGRAM_MAP,
   INSTRUMENTS_PER_MISSION, SCIENCE_INSURANCE_PREMIUM_RATE, SCIENCE_INSURANCE_PAYOUT_RATE,
   PHASE_LABEL,
   type ScienceProgramDef, type InstrumentDef,
@@ -28,6 +28,7 @@ import { getMissionPatchAsset } from '@/lib/game/assets';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '@/lib/game/constants';
 import { useModalA11y } from './useModalA11y';
+import { playSound } from '@/lib/game/sound-engine';
 
 const REAL_SECONDS_PER_GAME_MONTH = TICKS_PER_GAME_MONTH * (TICK_INTERVALS[1] / 1000);
 
@@ -35,12 +36,11 @@ interface Props {
   state: GameState;
   onNavigateTab: (tab: GameTab) => void;
   onStartMission: (programId: string, instrumentIds: string[], insured: boolean) => void;
-  onCoFundNpcProgram: (npcProgramId: string) => void;
 }
 
 type SubTab = 'programs' | 'active' | 'discoveries' | 'npc';
 
-export default function ScienceMissionsPanel({ state, onNavigateTab, onStartMission, onCoFundNpcProgram }: Props) {
+export default function ScienceMissionsPanel({ state, onNavigateTab, onStartMission }: Props) {
   const [subTab, setSubTab] = useState<SubTab>('programs');
   const [plannerProgramId, setPlannerProgramId] = useState<string | null>(null);
 
@@ -144,7 +144,7 @@ export default function ScienceMissionsPanel({ state, onNavigateTab, onStartMiss
       )}
 
       {subTab === 'npc' && (
-        <NpcProgramsTab state={state} monthIndex={monthIndex} onCoFund={onCoFundNpcProgram} />
+        <NpcProgramsTab legacyContributions={state.npcProgramContributions || []} />
       )}
 
       {/* Instrument-picker modal */}
@@ -441,82 +441,162 @@ function MissionCard({ state, mission }: { state: GameState; mission: ScienceMis
   );
 }
 
-// ─── NPC co-funding board ───────────────────────────────────────────────────
+// ─── NPC co-funding board (Live-Service Wave LS5 part 2 — real server ledger) ─
+// docs/LIVE_SERVICE_2026-08.md §LS5. Server-backed and world-shared: every
+// player's stake counts toward the SAME cycle's pool, unlike the pre-LS5
+// client-simulated version (one contribution per player, never aggregated).
+// Self-fetching, same pattern as AllianceTreasuryPanel.tsx — never trusts
+// client state for money or settlement outcomes.
 
-function NpcProgramsTab({ state, monthIndex, onCoFund }: {
-  state: GameState;
-  monthIndex: number;
-  onCoFund: (npcProgramId: string) => void;
+interface CoFundProgramStatus {
+  npcProgramId: string;
+  cycleIndex: number;
+  phaseLabel: string;
+  coFundOpen: boolean;
+  monthsToSettlement: number;
+  settlesAtMonth: number;
+  totalStaked: number;
+  stakerCount: number;
+  myStake: { shares: number; amount: number; settled: boolean; payout: number | null } | null;
+}
+
+function NpcProgramsTab({ legacyContributions }: {
+  legacyContributions: NonNullable<GameState['npcProgramContributions']>;
 }) {
-  const statuses = getNpcProgramStatuses(monthIndex);
-  const contributions = state.npcProgramContributions || [];
+  const [programs, setPrograms] = useState<CoFundProgramStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [staking, setStaking] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStatus = useCallback(async () => {
+    try {
+      setError(null);
+      const res = await fetch('/api/space-tycoon/science/co-fund');
+      const json = await res.json();
+      setPrograms(Array.isArray(json.programs) ? json.programs : []);
+    } catch {
+      setError('Failed to load NPC program status');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 60_000);
+    return () => clearInterval(interval);
+  }, [fetchStatus]);
+
+  const handleStake = useCallback(async (npcProgramId: string) => {
+    if (staking) return;
+    setStaking(npcProgramId);
+    try {
+      const res = await fetch('/api/space-tycoon/science/co-fund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'stake', npcProgramId, shares: 1 }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        playSound('money');
+        await fetchStatus();
+      } else {
+        setError(result.error || 'Co-funding failed');
+        playSound('error');
+      }
+    } catch {
+      setError('Network error');
+      playSound('error');
+    }
+    setStaking(null);
+  }, [staking, fetchStatus]);
+
+  const unsettledLegacy = legacyContributions.filter(c => !c.settled);
+
   return (
     <div className="space-y-3">
       <p className="text-slate-500 text-[11px]">
         NPC factions run public science programs on fixed, published schedules — co-fund an open window
-        for a share of the settlement. Settlement pays a program-wide multiplier (the same for every
-        co-funder) one full cycle later: positive expected value, real downside, faction standing on top.
+        for a share of the settlement. Every player&apos;s stake counts toward the SAME world-shared pool
+        (real money, real server ledger). Settlement pays a program-wide multiplier one full cycle later:
+        positive expected value, real downside, faction standing on top.
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {statuses.map(s => {
-          const funded = contributions.find(c => c.npcProgramId === s.def.id && c.cycleIndex === s.cycleIndex);
-          const canAfford = state.money >= s.def.coFundCost;
-          return (
-            <div key={s.def.id} className={`hud-frame relative rounded-2xl border p-3 ${s.coFundOpen ? 'hud-frame-purple border-indigo-500/40' : 'border-white/[0.06]'}`} style={{ background: '#0a0a1a' }}>
-              <span className="hud-corner-bl" aria-hidden="true" />
-              <span className="hud-corner-br" aria-hidden="true" />
-              <div className="flex items-start justify-between gap-2 mb-1">
-                <div>
-                  <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
-                    <span aria-hidden="true">{s.def.icon}</span> {s.def.name}
-                  </h3>
-                  <div className="text-[9px] uppercase tracking-wider text-slate-500">{s.def.factionLabel}</div>
+      {error && (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2 text-red-300 text-[11px]">{error}</div>
+      )}
+      {unsettledLegacy.length > 0 && (
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.03] p-2 text-amber-200/80 text-[10px]">
+          {unsettledLegacy.length} legacy stake{unsettledLegacy.length === 1 ? '' : 's'} from before the server-ledger
+          upgrade {unsettledLegacy.length === 1 ? 'is' : 'are'} still finishing out on the old client-side path — they&apos;ll
+          settle normally on their original schedule.
+        </div>
+      )}
+      {loading ? (
+        <div className="text-center py-4">
+          <div className="inline-block w-5 h-5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {programs.map(s => {
+            const def = NPC_PROGRAM_MAP.get(s.npcProgramId);
+            if (!def) return null;
+            return (
+              <div key={s.npcProgramId} className={`hud-frame relative rounded-2xl border p-3 ${s.coFundOpen ? 'hud-frame-purple border-indigo-500/40' : 'border-white/[0.06]'}`} style={{ background: '#0a0a1a' }}>
+                <span className="hud-corner-bl" aria-hidden="true" />
+                <span className="hud-corner-br" aria-hidden="true" />
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <div>
+                    <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
+                      <span aria-hidden="true">{def.icon}</span> {def.name}
+                    </h3>
+                    <div className="text-[9px] uppercase tracking-wider text-slate-500">{def.factionLabel}</div>
+                  </div>
+                  <span className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${
+                    s.coFundOpen ? 'border-indigo-500/40 text-indigo-200 bg-indigo-500/10' : 'border-white/[0.08] text-slate-400 bg-white/[0.03]'
+                  }`}>
+                    {s.phaseLabel}
+                  </span>
                 </div>
-                <span className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${
-                  s.coFundOpen ? 'border-indigo-500/40 text-indigo-200 bg-indigo-500/10' : 'border-white/[0.08] text-slate-400 bg-white/[0.03]'
-                }`}>
-                  {s.phaseLabel}
-                </span>
+                <p className="text-slate-400 text-[11px] leading-relaxed mb-2">{def.description}</p>
+                <div className="grid grid-cols-3 gap-1.5 text-center mb-2">
+                  <div className="rounded bg-white/[0.03] p-1.5">
+                    <div className="game-label text-[8px]">Stake</div>
+                    <div className="font-hud text-[10px] text-white font-bold">{formatMoney(def.coFundCost)}</div>
+                  </div>
+                  <div className="rounded bg-white/[0.03] p-1.5">
+                    <div className="game-label text-[8px]">World pool</div>
+                    <div className="font-hud text-[10px] text-cyan-200 font-bold">{formatMoney(s.totalStaked)} ({s.stakerCount})</div>
+                  </div>
+                  <div className="rounded bg-white/[0.03] p-1.5">
+                    <div className="game-label text-[8px]">Settles in</div>
+                    <div className="font-hud text-[10px] text-amber-200 font-bold">{s.monthsToSettlement} mo</div>
+                  </div>
+                </div>
+                {s.myStake ? (
+                  <div className="text-[10px] text-emerald-300">
+                    ✓ Staked {formatMoney(s.myStake.amount)} this cycle{s.myStake.settled ? ` — settled for ${formatMoney(s.myStake.payout || 0)}` : ` — settles at world month ${s.settlesAtMonth}`}
+                  </div>
+                ) : s.coFundOpen ? (
+                  <button
+                    type="button"
+                    disabled={staking === s.npcProgramId}
+                    onClick={() => handleStake(s.npcProgramId)}
+                    className={`min-h-[44px] w-full px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                      staking !== s.npcProgramId ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-white/[0.05] text-slate-500 cursor-not-allowed'
+                    }`}
+                  >
+                    {staking === s.npcProgramId ? 'Staking...' : `Co-fund — ${formatMoney(def.coFundCost)}`}
+                  </button>
+                ) : (
+                  <div className="text-[10px] text-slate-500">
+                    Window closed — next window opens at world month {s.settlesAtMonth} (published schedule).
+                  </div>
+                )}
               </div>
-              <p className="text-slate-400 text-[11px] leading-relaxed mb-2">{s.def.description}</p>
-              <div className="grid grid-cols-3 gap-1.5 text-center mb-2">
-                <div className="rounded bg-white/[0.03] p-1.5">
-                  <div className="game-label text-[8px]">Stake</div>
-                  <div className="font-hud text-[10px] text-white font-bold">{formatMoney(s.def.coFundCost)}</div>
-                </div>
-                <div className="rounded bg-white/[0.03] p-1.5">
-                  <div className="game-label text-[8px]">Payout band</div>
-                  <div className="font-hud text-[10px] text-cyan-200 font-bold">×{s.def.payoutMultRange[0].toFixed(1)}–{s.def.payoutMultRange[1].toFixed(1)}</div>
-                </div>
-                <div className="rounded bg-white/[0.03] p-1.5">
-                  <div className="game-label text-[8px]">Settles in</div>
-                  <div className="font-hud text-[10px] text-amber-200 font-bold">{s.monthsToSettlement} mo</div>
-                </div>
-              </div>
-              {funded ? (
-                <div className="text-[10px] text-emerald-300">
-                  ✓ Staked {formatMoney(funded.amount)} this cycle{funded.settled ? ` — settled for ${formatMoney(funded.payout || 0)}` : ` — settles at world month ${funded.settlesAtMonth}`}
-                </div>
-              ) : s.coFundOpen ? (
-                <button
-                  type="button"
-                  disabled={!canAfford}
-                  onClick={() => onCoFund(s.def.id)}
-                  className={`min-h-[44px] w-full px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
-                    canAfford ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-white/[0.05] text-slate-500 cursor-not-allowed'
-                  }`}
-                >
-                  {canAfford ? `Co-fund — ${formatMoney(s.def.coFundCost)}` : `Requires ${formatMoney(s.def.coFundCost)}`}
-                </button>
-              ) : (
-                <div className="text-[10px] text-slate-500">
-                  Window closed — next window opens at world month {s.cycleStartMonth + s.def.cycleMonths} (published schedule).
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

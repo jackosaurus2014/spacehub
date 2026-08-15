@@ -8,10 +8,13 @@ import AllianceProjectsPanel from '@/components/game/AllianceProjectsPanel';
 import AllianceResearchPanel from '@/components/game/AllianceResearchPanel';
 import AllianceTreasuryPanel from '@/components/game/AllianceTreasuryPanel';
 import AllianceDiplomacyPanel from '@/components/game/AllianceDiplomacyPanel';
+// Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): Alliance Season
+// Charters — pledge board lives in the hub, its own tab beside Treasury.
+import AllianceCharterPanel from '@/components/game/AllianceCharterPanel';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type HubTab = 'overview' | 'events' | 'projects' | 'research' | 'treasury' | 'diplomacy';
+type HubTab = 'overview' | 'events' | 'projects' | 'research' | 'treasury' | 'diplomacy' | 'charter';
 
 interface AllianceInfo {
   id: string;
@@ -42,6 +45,7 @@ const HUB_TABS: { id: HubTab; label: string; icon: string }[] = [
   { id: 'projects', label: 'Projects', icon: '🏗️' },
   { id: 'research', label: 'Research', icon: '🧬' },
   { id: 'treasury', label: 'Treasury', icon: '🏦' },
+  { id: 'charter', label: 'Charter', icon: '🤝' },
   { id: 'diplomacy', label: 'Diplomacy', icon: '🕊️' },
 ];
 
@@ -192,6 +196,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
       {activeTab === 'projects' && <AllianceProjectsPanel state={state} />}
       {activeTab === 'research' && <AllianceResearchPanel />}
       {activeTab === 'treasury' && <AllianceTreasuryPanel />}
+      {activeTab === 'charter' && <AllianceCharterPanel />}
       {activeTab === 'diplomacy' && <AllianceDiplomacyPanel />}
     </div>
   );

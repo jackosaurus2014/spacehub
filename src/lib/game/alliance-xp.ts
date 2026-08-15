@@ -17,6 +17,7 @@ export type XPSource =
   | 'member_milestone'
   | 'war_victory'
   | 'treasury_deposit'
+  | 'charter' // LS5 alliance season charters: per-met-pledge + grade-completion XP
   | 'system';
 
 // ─── Level Unlock Definitions ──────────────────────────────────────────────
@@ -262,6 +263,7 @@ export const XP_SOURCE_RANGES: Record<XPSource, { min: number; max: number }> = 
   member_milestone: { min: 10, max: 50 },
   war_victory: { min: 250, max: 500 },
   treasury_deposit: { min: 5, max: 50 },
+  charter: { min: 10, max: 600 },
   system: { min: 0, max: 10000 },
 };
 

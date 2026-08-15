@@ -45,6 +45,7 @@ import {
   AWAY_EFFICIENCY_TIERS, AWAY_EFFICIENCY_INVESTMENT_CAP,
 } from './constants';
 import { DEFAULT_LEGACY, getLegacyBonuses } from './legacy-system';
+import { getActiveEraModifiers } from './corporate-eras';
 import { getGlobalGameDate } from './server-time';
 import { getTotalGameMonths } from './expeditions';
 import { simulateCommandQueueCatchUp } from './command-queue';
@@ -174,6 +175,12 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   const wfBonuses = getWorkforceBonuses(workforce);
   const resBonuses = getResearchBonuses(working.completedResearch, working.repeatableResearchLevels);
   const legacyBonuses = getLegacyBonuses(working.legacy || DEFAULT_LEGACY);
+  // LS4: away catch-up must agree with the live tick's era focus bonus/malus
+  // — otherwise chartering a heavy-revenue era would have no reason to
+  // affect the away-income projection, undermining the trade-off while the
+  // player is offline (the same "the two must agree" discipline this
+  // module's header cites for the efficiency curve).
+  const eraModifiers = getActiveEraModifiers(working);
   const fraction = 1 / TICKS_PER_GAME_MONTH;
 
   let revenuePerTick = 0;
@@ -195,16 +202,17 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       * (1 + wfBonuses.serviceRevenue)
       * (1 + resBonuses.serviceRevenueBonus)
       * legacyBonuses.revenueMultiplier
+      * eraModifiers.revenueMultiplier
       * supplyMult
     );
-    costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier);
+    costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier);
   }
   for (const bld of working.buildings) {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction));
+    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction));
   }
   const payrollPerTick = Math.round(getMonthlyPayroll(workforce) * fraction);
   costsPerTick += payrollPerTick;
@@ -214,7 +222,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   const grossEarned = Math.round(revenuePerTick * weightedTicks);
   const grossSpent = Math.round(costsPerTick * totalTicks);
 
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyBonuses.miningMultiplier;
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyBonuses.miningMultiplier * eraModifiers.miningMultiplier;
   const resourcesEarned: Record<string, number> = {};
   for (const svc of working.activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];

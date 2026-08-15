@@ -50,7 +50,18 @@ export type LedgerReason =
   | 'competitive_contract_reward'
   | 'daily_bonus'
   | 'prediction_stake'
-  | 'prediction_payout';
+  | 'prediction_payout'
+  // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): NPC flagship
+  // science program co-funding, now a real server-ledger stake instead of a
+  // client-simulated one (closes the long-deferred NPC_BACKDROP watch-item).
+  | 'npc_program_stake'
+  | 'npc_program_payout'
+  // LS5 alliance season charters: the personal stipend a met weekly pledge
+  // pays out of the charter's treasury-funded escrow. The escrow itself
+  // moves alliance.treasury <-> AllianceCharter with no per-player ledger
+  // entry (same as activatePerk's treasury spend) — only this final hop into
+  // a player's wallet is ledgered.
+  | 'charter_stipend';
 
 export interface LedgerWrite {
   profileId: string;

@@ -11,6 +11,14 @@ import {
 } from '@/lib/game/alliance-events';
 import { getResearchDurationMs } from '@/lib/game/alliance-research';
 import { awardAllianceXP } from '@/lib/game/alliance-xp';
+import {
+  ALLIANCE_CHARTER_MAP, evaluatePledgeWeek, gradeCharter, getCharterGradeXP,
+  getCharterWeekIndex, CHARTER_WEEK_MS, CHARTER_PLEDGE_MET_XP,
+  type AllianceCharterType,
+} from '@/lib/game/alliance-charters';
+import { computeWeeklyContribution } from '@/lib/game/alliance-charter-metrics';
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { sweepNpcCoFundSettlements } from '@/lib/game/npc-cofund-settlement';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,6 +63,10 @@ export async function POST(request: NextRequest) {
       diplomacyExpired: 0,
       allianceEventsCreated: 0,
       allianceEventsUpdated: 0,
+      charterPledgesClosed: 0,
+      charterPledgesMet: 0,
+      chartersGraded: 0,
+      npcCoFundStakesSettled: 0,
     };
 
     const now = new Date();
@@ -412,6 +424,126 @@ export async function POST(request: NextRequest) {
         }
       }
     }
+
+    // ── 10. Alliance Charter weekly pledge close (Live-Service Wave LS5,
+    // docs/LIVE_SERVICE_2026-08.md §LS5) ────────────────────────────────────
+    // Any pledge row from a week strictly before the current epoch-aligned
+    // week that hasn't been closed yet gets evaluated now: aggregate the
+    // member's real contribution (computeWeeklyContribution — every source
+    // is a row a server route already wrote), pay the stipend from the
+    // charter's treasury-funded escrow if met, award alliance XP, and roll
+    // the member's quota forward into the next week (carry-forward — an
+    // opted-out quotaAmount of 0 carries forward as opted out; forgiving by
+    // construction, never punitive: an unmet week just pays 0 stipend).
+    const currentWeekIndex = getCharterWeekIndex(nowMs);
+    const ledgerOnForCharters = await isLedgerAvailable();
+    const openPastPledges = await prisma.alliancePledge.findMany({
+      where: { weekIndex: { lt: currentWeekIndex }, closedAt: null },
+      take: 300,
+    });
+    for (const pledge of openPastPledges) {
+      const charter = await prisma.allianceCharter.findUnique({ where: { id: pledge.charterId } });
+      if (!charter) continue;
+      const def = ALLIANCE_CHARTER_MAP.get(charter.charterType as AllianceCharterType);
+      if (!def) continue;
+
+      const weekStartMs = pledge.weekIndex * CHARTER_WEEK_MS;
+      const weekEndMs = weekStartMs + CHARTER_WEEK_MS;
+      const contributed = await computeWeeklyContribution(
+        prisma, def.type, pledge.allianceId, pledge.profileId, weekStartMs, weekEndMs,
+      );
+      const escrowRemaining = Math.max(0, charter.escrowTotal - charter.escrowSpent);
+      const result = evaluatePledgeWeek(pledge.quotaAmount, contributed, escrowRemaining);
+
+      await prisma.$transaction(async tx => {
+        await tx.alliancePledge.update({
+          where: { id: pledge.id },
+          data: { contributed: result.contributed, met: result.met, stipendPaid: result.stipend, closedAt: now },
+        });
+        await tx.allianceCharter.update({
+          where: { id: charter.id },
+          data: { progress: { increment: result.contributed }, escrowSpent: { increment: result.stipend } },
+        });
+        if (result.stipend > 0 && ledgerOnForCharters) {
+          await tx.gameProfile.update({
+            where: { id: pledge.profileId },
+            data: { money: { increment: result.stipend } },
+          });
+          await recordLedger(tx, {
+            profileId: pledge.profileId, moneyDelta: result.stipend,
+            reason: 'charter_stipend', refId: charter.id,
+          });
+        }
+      });
+
+      stats.charterPledgesClosed++;
+      if (result.met) {
+        stats.charterPledgesMet++;
+        await awardAllianceXP(prisma, pledge.allianceId, CHARTER_PLEDGE_MET_XP, 'charter', pledge.profileId, undefined);
+      }
+
+      // Roll the quota forward into next week (carry-forward), only while
+      // the charter is still active.
+      const nextWeekIndex = pledge.weekIndex + 1;
+      if (nextWeekIndex <= currentWeekIndex && charter.status === 'active') {
+        await prisma.alliancePledge.upsert({
+          where: { charterId_profileId_weekIndex: { charterId: charter.id, profileId: pledge.profileId, weekIndex: nextWeekIndex } },
+          create: {
+            charterId: charter.id, allianceId: pledge.allianceId, profileId: pledge.profileId,
+            weekIndex: nextWeekIndex, quotaAmount: pledge.quotaAmount,
+          },
+          update: {},
+        });
+      }
+    }
+
+    // ── 11. Alliance Charter grading (season end or goal reached) ──────────
+    const activeCharters = await prisma.allianceCharter.findMany({ where: { status: 'active' } });
+    for (const charter of activeCharters) {
+      const reachedGoal = charter.goalTarget > 0 && charter.progress >= charter.goalTarget;
+      const seasonEnded = charter.endsAt.getTime() <= nowMs;
+      if (!reachedGoal && !seasonEnded) continue;
+
+      const grade = gradeCharter(charter.progress, charter.goalTarget);
+      const rewardXp = getCharterGradeXP(grade);
+      const unspentEscrow = Math.max(0, charter.escrowTotal - charter.escrowSpent);
+
+      await prisma.$transaction(async tx => {
+        await tx.allianceCharter.update({
+          where: { id: charter.id },
+          data: { status: 'completed', grade, gradedAt: now, rewardXp },
+        });
+        if (unspentEscrow > 0) {
+          await tx.alliance.update({
+            where: { id: charter.allianceId },
+            data: { treasury: { increment: unspentEscrow } },
+          });
+        }
+        await tx.allianceLog.create({
+          data: {
+            allianceId: charter.allianceId,
+            type: 'charter_completed',
+            title: `Season charter graded: ${grade.toUpperCase()}`,
+            description: `${Math.round((charter.progress / Math.max(1, charter.goalTarget)) * 100)}% of goal reached.` +
+              (unspentEscrow > 0 ? ` $${unspentEscrow.toLocaleString()} unspent escrow refunded to treasury.` : ''),
+            metadata: { charterId: charter.id, grade, progress: charter.progress, goalTarget: charter.goalTarget, rewardXp },
+          },
+        });
+      });
+
+      if (rewardXp > 0) {
+        await awardAllianceXP(prisma, charter.allianceId, rewardXp, 'charter', undefined, undefined);
+      }
+      stats.chartersGraded++;
+    }
+
+    // ── 12. NPC co-fund settlement backstop (Live-Service Wave LS5 part 2)
+    // — same sweep the science/co-fund route runs lazily on visit; running it
+    // here too means a cycle settles on schedule even if nobody visits the
+    // science tab that week, so the Mission Calendar's settlement countdown
+    // (world-calendar.ts npcProgramEntries) never quietly goes stale. ────────
+    const npcSweep = await sweepNpcCoFundSettlements(prisma);
+    stats.npcCoFundStakesSettled = npcSweep.settled;
 
     logger.info('Alliance cron completed', stats);
     return NextResponse.json({ success: true, ...stats });

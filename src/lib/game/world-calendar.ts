@@ -44,6 +44,22 @@ import { RESEARCH_MAP } from './research-tree';
 import { BUILDING_MAP } from './buildings';
 import { getUpcomingAppointmentEvents } from './appointment-events';
 import type { UpcomingLaunchLite } from './real-world-feed';
+// Live-Service Wave LS4 (docs/LIVE_SERVICE_2026-08.md §LS4): era-end entry —
+// a small additive deriver following this file's existing pattern exactly
+// (personal/non-world-shared, wall-clock atMs, no new scheduling state; the
+// era's own endsAtMs IS the source of truth, corporate-eras.ts never
+// duplicates it).
+import { ERA_CHARTER_MAP } from './corporate-eras';
+// Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): alliance season
+// charter deadline entry — a SEPARATE deriver function per this file's
+// existing convention (each system gets its own function; see
+// corporateEraEntries directly above for the LS4 precedent this follows).
+// Charter data is server-only (AllianceCharter has no GameState mirror — see
+// alliance-charters.ts's header), so it's injected the same way
+// upcomingLaunches already is: fetched by the caller, passed in, never
+// queried from here (this module stays DB-free and unit-testable). Reuses
+// this file's own getNextWeeklyUtcOccurrence (defined below) for the weekly
+// pledge-close entry — no new import needed for that half.
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
@@ -51,7 +67,8 @@ const MS_PER_GAME_MONTH = REAL_SECONDS_PER_GAME_MONTH * 1000;
 
 export type CalendarCategory =
   | 'senate' | 'league' | 'season' | 'alliance_event' | 'npc_program'
-  | 'expedition' | 'queue' | 'appointment_event' | 'real_launch';
+  | 'expedition' | 'queue' | 'appointment_event' | 'real_launch' | 'corporate_era'
+  | 'alliance_charter';
 
 export type CalendarEntryKind =
   | 'lock' | 'opens' | 'closes' | 'starts' | 'ends' | 'returns' | 'completes' | 'transition';
@@ -88,6 +105,21 @@ export interface MissionCalendarOptions {
    *  calendar with every entry EXCEPT real launches (e.g. in tests, or while
    *  the feed hasn't loaded yet). */
   upcomingLaunches?: UpcomingLaunchLite[];
+  /** LS5: the player's alliance's active season charter, from
+   *  GET /api/space-tycoon/alliances/charter. Optional — omit for a
+   *  calendar with every entry EXCEPT the charter deadline (no alliance, no
+   *  active charter, or not yet loaded). */
+  myAllianceCharter?: CalendarCharterLite | null;
+}
+
+/** Minimal shape the charter deriver needs — deliberately narrow so the
+ *  route's richer response (board, escrow, etc.) doesn't leak a coupling
+ *  into this pure module. */
+export interface CalendarCharterLite {
+  id: string;
+  name: string;
+  icon: string;
+  endsAtMs: number;
 }
 
 // ─── Generic fixed-UTC weekly-occurrence helper ─────────────────────────────
@@ -376,6 +408,70 @@ function appointmentEventEntries(nowMs: number, horizonDays: number): CalendarEn
   });
 }
 
+function corporateEraEntries(state: GameState, nowMs: number, horizonMs: number): CalendarEntry[] {
+  const active = state.corporateEras?.currentEra;
+  if (!active) return [];
+  if (active.endsAtMs < nowMs || active.endsAtMs > nowMs + horizonMs) return [];
+  const charter = ERA_CHARTER_MAP.get(active.charterId);
+  return [{
+    id: `corporate_era_end_${active.eraIndex}`,
+    category: 'corporate_era',
+    title: `${charter?.name || 'Chartered era'} ends`,
+    icon: charter?.icon || '🏛️',
+    atMs: active.endsAtMs,
+    kind: 'ends',
+    worldShared: false,
+    detail: 'Your 90-day charter closes — the era medal is graded and recorded, then the next charter is yours to declare.',
+  }];
+}
+
+/** LS5: alliance season charter entries — the season-end deadline (personal:
+ *  only this alliance sees it, unlike league/senate which fire for
+ *  everyone) plus the weekly pledge-close lock, aligned to the SAME fixed
+ *  UTC slot as the league lock (`getNextWeeklyUtcOccurrence(nowMs, 1, 0, 5)`
+ *  — Monday 00:05 UTC, matching alliance-cron's step 10). Co-fund
+ *  settlements are intentionally NOT duplicated here — npcProgramEntries
+ *  above already covers them and the underlying cycle math is unchanged by
+ *  the LS5 server-stake conversion (only who pays/gets paid moved
+ *  server-side, not the schedule). */
+function charterEntries(
+  charter: CalendarCharterLite | null | undefined,
+  nowMs: number,
+  horizonMs: number,
+): CalendarEntry[] {
+  if (!charter) return [];
+  const entries: CalendarEntry[] = [];
+
+  if (charter.endsAtMs >= nowMs && charter.endsAtMs <= nowMs + horizonMs) {
+    entries.push({
+      id: `charter_ends_${charter.id}`,
+      category: 'alliance_charter',
+      title: `${charter.name} season ends`,
+      icon: charter.icon,
+      atMs: charter.endsAtMs,
+      kind: 'ends',
+      worldShared: false,
+      detail: 'Final grading — remaining escrow refunds to the treasury and the next charter is yours to ratify.',
+    });
+  }
+
+  const pledgeCloseMs = getNextWeeklyUtcOccurrence(nowMs, 1, 0, 5);
+  if (pledgeCloseMs <= nowMs + horizonMs) {
+    entries.push({
+      id: `charter_pledge_close_${charter.id}_${pledgeCloseMs}`,
+      category: 'alliance_charter',
+      title: `${charter.name}: weekly pledge closes`,
+      icon: charter.icon,
+      atMs: pledgeCloseMs,
+      kind: 'lock',
+      worldShared: false,
+      detail: 'Met pledges pay a stipend from the charter escrow and add alliance XP. Missing the week only forfeits the stipend — no penalty.',
+    });
+  }
+
+  return entries;
+}
+
 function realLaunchEntries(
   upcomingLaunches: UpcomingLaunchLite[] | undefined,
   nowMs: number,
@@ -419,6 +515,8 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...npcProgramEntries(nowMs, horizonMs),
     ...expeditionEntries(state, nowMs, horizonMs),
     ...queueEntries(state, nowMs, horizonMs),
+    ...corporateEraEntries(state, nowMs, horizonMs),
+    ...charterEntries(opts.myAllianceCharter, nowMs, horizonMs),
     ...appointmentEventEntries(nowMs, horizonDays),
     ...realLaunchEntries(opts.upcomingLaunches, nowMs, horizonMs),
   ];

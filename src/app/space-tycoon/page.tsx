@@ -106,7 +106,7 @@ import {
 } from '@/lib/game/expeditions';
 import ScienceMissionsPanel from '@/components/game/ScienceMissionsPanel';
 import {
-  startScienceMission, coFundNpcProgram, markMilestoneClaimAttempted,
+  startScienceMission, markMilestoneClaimAttempted,
   SCIENCE_PROGRAM_MAP,
 } from '@/lib/game/science-missions';
 import ArchetypePicker from '@/components/game/ArchetypePicker';
@@ -126,6 +126,7 @@ import MarketHubPanel from '@/components/game/MarketHubPanel';
 // 4X Wave W13 (Corporate Doctrine & Board Politics)
 import GovernancePanel from '@/components/game/GovernancePanel';
 import { switchDoctrinePolicy } from '@/lib/game/corporate-doctrine';
+import { charterEra } from '@/lib/game/corporate-eras';
 
 // ─── Research Panel (redesigned — collapsible categories, search, progress) ──
 
@@ -1639,16 +1640,6 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
-  const handleCoFundNpcProgram = useCallback((npcProgramId: string) => {
-    setState(prev => {
-      if (!prev) return prev;
-      const result = coFundNpcProgram(prev, npcProgramId);
-      if (!result.ok) { playSound('error'); return prev; }
-      playSound('money');
-      return result.state;
-    });
-  }, []);
-
   const handleBuyResource = useCallback((resourceId: string, quantity: number, cost: number) => {
     playSound('money');
     setState(prev => {
@@ -2241,11 +2232,14 @@ export default function SpaceTycoonPage() {
         {tab === 'modules' && <ModulesPanel state={state} setState={setState} />}
         {tab === 'discoveries' && <AnomaliesPanel state={state} setState={setState} />}
         {tab === 'science' && (
+          // NPC co-funding is now server-backed (Live-Service Wave LS5 part
+          // 2, real ledger stakes) — ScienceMissionsPanel's NPC tab
+          // self-fetches /api/space-tycoon/science/co-fund instead of taking
+          // a client-state handler prop.
           <ScienceMissionsPanel
             state={state}
             onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
             onStartMission={handleStartScienceMission}
-            onCoFundNpcProgram={handleCoFundNpcProgram}
           />
         )}
         {tab === 'interstellar' && (
@@ -2281,6 +2275,10 @@ export default function SpaceTycoonPage() {
             onSwitchPolicy={(category, policyId) => {
               playSound('click');
               setState(prev => prev ? switchDoctrinePolicy(prev, category, policyId, getTotalGameMonthsElapsed(prev.gameDate)) : prev);
+            }}
+            onCharterEra={(charterId) => {
+              playSound('milestone');
+              setState(prev => prev ? charterEra(prev, charterId) : prev);
             }}
           />
         )}

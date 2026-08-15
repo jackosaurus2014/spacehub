@@ -134,6 +134,61 @@ describe('league entry', () => {
   });
 });
 
+describe('corporate era entry (Live-Service Wave LS4)', () => {
+  it('surfaces the active era end at its exact wall-clock endsAtMs', () => {
+    const state = baseState({
+      corporateEras: {
+        currentEra: {
+          eraIndex: 0,
+          charterId: 'expansion_era',
+          startedAtMs: NOW - 1000,
+          endsAtMs: NOW + 5 * 24 * 60 * 60 * 1000,
+          bracketAtStart: 1,
+          startSnapshot: {
+            buildingsCompleted: 0, researchCompleted: 0, resourcesMined: 0,
+            shipsBuilt: 0, reputation: 0, expeditionsLaunched: 0, totalSpent: 0, netWorth: 0,
+          },
+        },
+        completedEras: [],
+      },
+    });
+    const entries = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: 14 });
+    const eraEntry = entries.find(e => e.category === 'corporate_era');
+    expect(eraEntry).toBeDefined();
+    expect(eraEntry!.atMs).toBe(NOW + 5 * 24 * 60 * 60 * 1000);
+    expect(eraEntry!.kind).toBe('ends');
+    expect(eraEntry!.worldShared).toBe(false); // personal to this save, not world-shared
+    expect(eraEntry!.title).toContain('Expansion Era');
+  });
+
+  it('omits the entry when no era is active', () => {
+    const state = baseState({ corporateEras: { currentEra: null, completedEras: [] } });
+    const entries = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: 14 });
+    expect(entries.some(e => e.category === 'corporate_era')).toBe(false);
+  });
+
+  it('omits the entry once the era end falls outside the horizon', () => {
+    const state = baseState({
+      corporateEras: {
+        currentEra: {
+          eraIndex: 0,
+          charterId: 'expansion_era',
+          startedAtMs: NOW - 1000,
+          endsAtMs: NOW + 100 * 24 * 60 * 60 * 1000, // far beyond a 14-day horizon
+          bracketAtStart: 1,
+          startSnapshot: {
+            buildingsCompleted: 0, researchCompleted: 0, resourcesMined: 0,
+            shipsBuilt: 0, reputation: 0, expeditionsLaunched: 0, totalSpent: 0, netWorth: 0,
+          },
+        },
+        completedEras: [],
+      },
+    });
+    const entries = getMissionCalendarEntries(state, { nowMs: NOW, horizonDays: 14 });
+    expect(entries.some(e => e.category === 'corporate_era')).toBe(false);
+  });
+});
+
 describe('expedition entries', () => {
   function mockExpedition(overrides: Partial<ExpeditionState> = {}): ExpeditionState {
     return {

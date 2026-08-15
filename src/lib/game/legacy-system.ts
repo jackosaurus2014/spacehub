@@ -336,6 +336,49 @@ export const LEGACY_MILESTONES: LegacyMilestone[] = [
     bonusCategory: 'crewCapacity', bonusValue: 5,
     check: (s) => totalWorkforce(s.workforce) >= 30,
   },
+
+  // ── Live-Service Wave LS4: Corporate Eras milestone family (additive) ────
+  // docs/LIVE_SERVICE_2026-08.md §LS4: "Era medals feed legacy-system.ts as
+  // a new milestone family (additive; stays inside legacy bonus caps)."
+  // Reads state.corporateEras directly (types.ts) — no import from
+  // corporate-eras.ts needed, avoiding a circular dependency (corporate-
+  // eras.ts already imports DEFAULT_LEGACY from this file).
+  {
+    id: 'legacy_era_first_charter', name: 'First Charter', tier: 1,
+    description: 'Every dynasty starts with a declared mandate.',
+    bonusCategory: 'revenue', bonusValue: 2,
+    check: (s) => (s.corporateEras?.completedEras?.length || 0) >= 1,
+  },
+  {
+    id: 'legacy_era_silver', name: 'Era Achiever', tier: 2,
+    description: 'A chartered era carried its goal past the halfway mark.',
+    bonusCategory: 'buildSpeed', bonusValue: 4,
+    check: (s) => (s.corporateEras?.completedEras || []).some(e => e.medal === 'silver' || e.medal === 'gold' || e.medal === 'platinum'),
+  },
+  {
+    id: 'legacy_era_gold', name: 'Era Triumph', tier: 3,
+    description: 'A chartered era hit its target in full.',
+    bonusCategory: 'revenue', bonusValue: 5,
+    check: (s) => (s.corporateEras?.completedEras || []).some(e => e.medal === 'gold' || e.medal === 'platinum'),
+  },
+  {
+    id: 'legacy_era_platinum', name: 'Era Legend', tier: 4,
+    description: 'A chartered era shattered its target.',
+    bonusCategory: 'miningOutput', bonusValue: 6,
+    check: (s) => (s.corporateEras?.completedEras || []).some(e => e.medal === 'platinum'),
+  },
+  {
+    id: 'legacy_era_veteran', name: 'Three Eras Chronicled', tier: 3,
+    description: 'Nine real-world months of named corporate history.',
+    bonusCategory: 'costReduction', bonusValue: 4,
+    check: (s) => (s.corporateEras?.completedEras?.length || 0) >= 3,
+  },
+  {
+    id: 'legacy_era_decade', name: 'Ten Eras Chronicled', tier: 4,
+    description: 'A corporate lineage spanning generations of eras.',
+    bonusCategory: 'crewCapacity', bonusValue: 3,
+    check: (s) => (s.corporateEras?.completedEras?.length || 0) >= 10,
+  },
 ];
 
 /** Fast lookup map: milestoneId -> definition */

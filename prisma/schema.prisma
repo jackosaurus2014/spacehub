@@ -245,6 +245,11 @@ model GameProfile {
   mentorshipsAsMentor GameMentorship[] @relation("mentorOf")
   mentorshipsAsMentee GameMentorship[] @relation("menteeOf")
 
+  // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): alliance
+  // season charter pledges + real-ledger NPC science co-fund stakes.
+  alliancePledges  AlliancePledge[]
+  npcProgramStakes NpcProgramStake[]
+
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
@@ -4718,6 +4723,10 @@ model Alliance {
   diplomacySent     AllianceDiplomacy[] @relation("diplomacySender")
   diplomacyReceived AllianceDiplomacy[] @relation("diplomacyReceiver")
 
+  // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): Alliance
+  // Season Charters — see AllianceCharter below.
+  charters AllianceCharter[]
+
   @@index([totalNetWorth])
   @@index([powerScore])
   @@index([tier])
@@ -6650,4 +6659,119 @@ model PublishedCorpReport {
 
   @@unique([corpId, quarter])
   @@index([publishedAt])
+}
+
+// ─── Live-Service Wave LS4: Corporate Eras — public Chronicle ────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS4. Opt-in, player-published record of one
+// COMPLETED chartered era (src/lib/game/corporate-eras.ts generates the
+// record client-side; src/lib/game/corp-era-registry.ts shapes/sanitizes it
+// server-side before storage — same trust-boundary discipline as
+// PublishedCorpReport above). Published via POST /api/space-tycoon/corp-era;
+// listed at /space-tycoon/chronicle and on each corp's public profile page
+// (/space-tycoon/corp/[id]) — CLAUDE.md's "permanent ledger new players can
+// read as history."
+model CorpEraRecord {
+  id          String   @id @default(cuid())
+  corpId      String
+  corpName    String
+  // Deterministic per-corp key, e.g. "E0", "E1" — mirrors quarterKey()'s
+  // convention (corp-report-registry.ts), never a human label that could
+  // collide across renames.
+  eraKey      String
+  recordJson  String   @db.Text
+  publishedAt DateTime @default(now())
+
+  @@unique([corpId, eraKey])
+  @@index([publishedAt])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE-SERVICE WAVE LS5 — Alliance Season Charters + NPC co-funding ledger
+// docs/LIVE_SERVICE_2026-08.md §LS5. See src/lib/game/alliance-charters.ts
+// for the pure pledge/grade/escrow math and
+// src/app/api/space-tycoon/alliances/charter/route.ts +
+// src/app/api/space-tycoon/science/co-fund/route.ts for the server routes.
+// Additive-only: no existing model or column changes. No client save
+// migration was needed for this wave — every field here is server truth,
+// fetched on demand the same way league/season data already is.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// A per-season, alliance-level goal members pledge toward in weekly quotas.
+// Visible-but-forgiving (CLAUDE.md): missing a week costs only that week's
+// stipend — never a punitive marker, never removes anything.
+model AllianceCharter {
+  id           String   @id @default(cuid())
+  allianceId   String
+  alliance     Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  seasonNumber Int // ties the charter to seasonal-events.ts's 28-day season clock
+  charterType  String // AllianceCharterType — see alliance-charters.ts
+  goalTarget   Float // absolute season-wide target for the charter's metric
+  escrowTotal  Float @default(0) // funded from alliance.treasury at ratification (real sink)
+  escrowSpent  Float @default(0) // running total of stipends paid out
+  progress     Float @default(0) // cumulative metric total across all weeks/members (denormalized cache — source of truth is SUM(AlliancePledge.contributed))
+  status       String @default("active") // active, completed, expired
+  ratifiedBy   String // profileId of the officer/leader who ratified it
+  startsAt     DateTime @default(now())
+  endsAt       DateTime // season end
+  gradedAt     DateTime?
+  grade        String? // CharterGrade: gold | silver | bronze | incomplete
+  rewardXp     Int? // alliance XP granted at grading
+  createdAt    DateTime @default(now())
+
+  pledges AlliancePledge[]
+
+  @@index([allianceId, status])
+  @@index([seasonNumber])
+}
+
+// One member's weekly pledge row within a charter. A fresh row is created
+// each week a member has an active pledge (quota carries forward until an
+// officer changes it); `contributed` is server-aggregated from ledgered
+// rows (GameLedgerEntry / NpcProgramStake / AllianceEventContribution —
+// never client-reported), so pledge math can never be gamed by the client.
+model AlliancePledge {
+  id          String          @id @default(cuid())
+  charterId   String
+  charter     AllianceCharter @relation(fields: [charterId], references: [id], onDelete: Cascade)
+  allianceId  String
+  profileId   String
+  profile     GameProfile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  weekIndex   Int // epoch-aligned week — Math.floor(nowMs / CHARTER_WEEK_MS), matches league week convention
+  quotaAmount Float // this member's weekly quota (officer-adjustable)
+  contributed Float @default(0) // actual metric total this week, server-aggregated
+  met         Boolean @default(false)
+  stipendPaid Float @default(0)
+  closedAt    DateTime? // set once the weekly cron evaluates + pays this row
+  createdAt   DateTime @default(now())
+
+  @@unique([charterId, profileId, weekIndex])
+  @@index([charterId, weekIndex])
+  @@index([profileId])
+}
+
+// Live-Service Wave LS5 part 2: NPC flagship program co-funding, now a REAL
+// server-ledger stake — closes the long-deferred NPC_BACKDROP watch-item
+// (previously science-missions.ts simulated this entirely client-side, one
+// contribution per player, no way for the "world-shared program" to actually
+// aggregate real money). One row per stake; settlement is a lazy sweep (the
+// ResourceBounty sweepExpiredBounties precedent) keyed off the deterministic
+// world-month cycle science-missions.ts already defines — never a new
+// randomness source, only who paid in and who gets paid.
+model NpcProgramStake {
+  id           String      @id @default(cuid())
+  npcProgramId String
+  cycleIndex   Int
+  profileId    String
+  profile      GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  allianceId   String? // null = solo stake; set = an alliance-pooled stake (still owned by one profile's wallet)
+  shares       Int         @default(1) // multiples of the program's fixed coFundCost
+  amount       Float // shares * coFundCost at stake time
+  settled      Boolean     @default(false)
+  payout       Float?
+  stakedAt     DateTime    @default(now())
+  settledAt    DateTime?
+
+  @@unique([npcProgramId, cycleIndex, profileId])
+  @@index([npcProgramId, cycleIndex])
+  @@index([profileId])
 }

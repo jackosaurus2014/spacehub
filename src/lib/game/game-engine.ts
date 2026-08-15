@@ -83,6 +83,11 @@ import type { ResourceId } from './resources';
 // so live and away evaluation can never drift).
 import { popCommandQueue } from './command-queue';
 import { processDirectivesForMonth } from './standing-directives';
+// Live-Service Wave LS4 "Corporate Eras" (docs/LIVE_SERVICE_2026-08.md §LS4):
+// active-era focus bonus/malus applied at the same sites as legacy/mega/rep
+// bonuses below; era completion is a wall-clock check (`now >= endsAtMs`),
+// safe to run unconditionally every tick — see corporate-eras.ts's header.
+import { getActiveEraModifiers, completeCurrentEra } from './corporate-eras';
 
 /** Get or create today's daily metrics tracker */
 function getDailyMetrics(state: GameState): NonNullable<GameState['dailyMetrics']> {
@@ -142,6 +147,11 @@ export function processTick(state: GameState): GameState {
   const legacyMiningMult = legacyBonuses.miningMultiplier;
   const legacyBuildSpeedMult = legacyBonuses.buildSpeedMultiplier;
   const legacyCostMult = legacyBonuses.costMultiplier;
+
+  // Live-Service Wave LS4: active chartered era's bonus/malus pair (a real
+  // trade-off — e.g. Expansion Era's +10% revenue pairs with +8% overhead).
+  // Neutral 1.0 set when no era is chartered.
+  const eraModifiers = getActiveEraModifiers(state);
 
   // Get corporation tier bonuses
   const corpTier = state.corporationTier || 1;
@@ -321,6 +331,7 @@ export function processTick(state: GameState): GameState {
       * repBonuses.revenueMultiplier
       * commanderBonuses.revenueMultiplier
       * doctrineBonuses.revenueMultiplier  // W13: disclosure policy (Open Science -3% / Proprietary +3%)
+      * eraModifiers.revenueMultiplier     // LS4: active era focus bonus/malus
       * powerRatio
       * (1 + stationBonus)
       * saturationMult
@@ -332,7 +343,7 @@ export function processTick(state: GameState): GameState {
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
-    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction));
+    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction));
     money += revenue - cost;
     totalEarned += revenue;
     totalSpent += cost;
@@ -351,6 +362,7 @@ export function processTick(state: GameState): GameState {
       monthlyOverhead * fraction
       * multipliers.costMultiplier
       * legacyCostMult
+      * eraModifiers.costMultiplier // LS4: era focus overhead trade-off
       * (1 - tierBonuses.maintenanceReduction)
       * (megaBonuses.maintenanceMultiplier || 1)
       * repBonuses.maintenanceMultiplier
@@ -389,7 +401,7 @@ export function processTick(state: GameState): GameState {
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
+    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -412,7 +424,7 @@ export function processTick(state: GameState): GameState {
       * victoryBonuses.buildSpeedMultiplier
       * (1 + allianceB.buildSpeedBonus)
     );
-    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier * doctrineBonuses.buildSpeedMultiplier * waveBBuildSpeedMult * DEV_FAST_MULTIPLIER);
+    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * eraModifiers.buildSpeedMultiplier * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier * doctrineBonuses.buildSpeedMultiplier * waveBBuildSpeedMult * DEV_FAST_MULTIPLIER);
     if (elapsed >= effectiveDuration) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
@@ -471,7 +483,7 @@ export function processTick(state: GameState): GameState {
     // ("Radio Science Windfall", "Fusion Ignition Milestone"...) ride the
     // same expiring activeEffects list random events use, aggregated by
     // getActiveMultipliers into `multipliers.researchSpeedMultiplier`.
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completeResearchDef(activeResearch.definitionId);
@@ -496,7 +508,7 @@ export function processTick(state: GameState): GameState {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
     const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus)); // audit Wave B (same pack as queue 1) + Sol Events + LS2 mentee share
-    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
       completeResearchDef(activeResearch2.definitionId);
@@ -570,7 +582,7 @@ export function processTick(state: GameState): GameState {
     * (1 + mentorshipB.miningBonus) // LS2: mentee mining share
     * getActiveBoostMultiplier(activeBoosts, 'mining')
   );
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * eraModifiers.miningMultiplier * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
   const currentTotalMonths = newDate.year * 12 + newDate.month;
   const miningBonuses = state.miningBonuses || [];
   // Audit Wave E (A5-i / §1d-5 "Mining never moves prices"): track units
@@ -1876,6 +1888,17 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Legacy/tier check error (non-fatal):', err);
+  }
+
+  // 7b2. Live-Service Wave LS4: complete the active chartered era once its
+  // 90-real-day wall-clock window has elapsed. Cheap unconditional check
+  // (single Date.now() compare) — no cadence gate needed, unlike the legacy
+  // block above which reads several array-scan checks. completeCurrentEra is
+  // a no-op (same state reference) unless an era is both active and expired.
+  try {
+    newState = completeCurrentEra(newState);
+  } catch (err) {
+    console.error('Corporate era completion error (non-fatal):', err);
   }
 
   // 7c. Check megastructure phase completion

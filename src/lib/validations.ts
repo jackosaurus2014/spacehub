@@ -4124,3 +4124,32 @@ export const publishCorpReportSchema = z.object({
 });
 
 export type PublishCorpReportInput = z.infer<typeof publishCorpReportSchema>;
+
+// ─── Space Tycoon: Corporate Chronicle (publish a completed era) ───────────
+// Validates the client-submitted CompletedCorporateEra (src/lib/game/
+// corporate-eras.ts) before it is shaped/sanitized (src/lib/game/
+// corp-era-registry.ts) and upserted by POST /api/space-tycoon/corp-era.
+// Same generous-but-finite numeric bounds rationale as publishCorpReportSchema
+// above — this is a display-only public Chronicle entry, not a gameplay-
+// authoritative balance.
+export const publishCorpEraSchema = z.object({
+  eraIndex: z.number().int().min(0).max(100_000),
+  charterId: z.enum([
+    'expansion_era', 'research_renaissance', 'consolidation', 'belt_century',
+    'science_age', 'logistics_empire', 'civic_era', 'interstellar_prelude',
+  ]),
+  startedAtMs: z.number().finite().min(0),
+  endedAtMs: z.number().finite().min(0),
+  bracketAtStart: z.number().int().min(1).max(8),
+  medal: z.enum(['filed', 'bronze', 'silver', 'gold', 'platinum']),
+  goalScore: z.number().finite(),
+  goalActual: z.number().finite(),
+  goalTarget: z.number().finite(),
+  headlineStats: z.array(z.object({
+    label: z.string().max(80),
+    value: z.number().finite(),
+  })).max(10).default([]),
+  notableEvents: z.array(z.string().max(300)).max(5).default([]),
+});
+
+export type PublishCorpEraInput = z.infer<typeof publishCorpEraSchema>;

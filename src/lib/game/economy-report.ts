@@ -14,6 +14,7 @@ import { SHIP_MAP } from './ships';
 import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
 import { getResearchBonuses } from './research-tree';
 import { DEFAULT_LEGACY, getLegacyBonuses } from './legacy-system';
+import { getActiveEraModifiers } from './corporate-eras';
 import { getTierBonuses } from './corporation-tiers';
 import { getMegastructureBonuses } from './personal-megastructures';
 import { getReputationBonuses } from './reputation';
@@ -49,6 +50,8 @@ export interface RevenueMultiplierBreakdown {
   research: number;
   /** legacyRevMult */
   legacy: number;
+  /** LS4: active chartered era's revenue focus term (1.0 = no era / neutral). */
+  era: number;
   /** (1 + tierBonuses.revenueBonus) */
   corporationTier: number;
   /** megaBonuses.revenueMultiplier */
@@ -168,6 +171,11 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   const legacyRevMult = legacyBonuses.revenueMultiplier;
   const legacyCostMult = legacyBonuses.costMultiplier;
 
+  // LS4: active chartered era's bonus/malus pair — neutral 1.0 set if none.
+  const eraModifiers = getActiveEraModifiers(state);
+  const eraRevMult = eraModifiers.revenueMultiplier;
+  const eraCostMult = eraModifiers.costMultiplier;
+
   const corpTier = state.corporationTier || 1;
   const tierBonuses = getTierBonuses(corpTier);
 
@@ -184,6 +192,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     workforce: 1 + wfBonuses.serviceRevenue,
     research:  1 + resBonuses.serviceRevenueBonus,
     legacy:    legacyRevMult,
+    era:       eraRevMult,
     corporationTier: 1 + tierBonuses.revenueBonus,
     megastructure: megaBonuses.revenueMultiplier || 1,
     reputation:    repBonuses.revenueMultiplier,
@@ -192,7 +201,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     combined: 1,
   };
   revMult.combined =
-    revMult.workforce * revMult.research * revMult.legacy *
+    revMult.workforce * revMult.research * revMult.legacy * revMult.era *
     revMult.corporationTier * revMult.megastructure * revMult.reputation *
     revMult.commander * revMult.event;
 
@@ -249,6 +258,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
       def.operatingCostPerMonth
       * eventMultipliers.costMultiplier
       * legacyCostMult
+      * eraCostMult
       * (1 - tierBonuses.maintenanceReduction)
       * (megaBonuses.maintenanceMultiplier || 1)
       * repBonuses.maintenanceMultiplier,
@@ -310,6 +320,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
         * maintMult
         * (1 - resBonuses.maintenanceReduction)
         * legacyCostMult
+        * eraCostMult
         * (1 - tierBonuses.maintenanceReduction)
         * (megaBonuses.maintenanceMultiplier || 1)
         * repBonuses.maintenanceMultiplier,
@@ -324,6 +335,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     corporateOverheadMonthly(completedBuildingCount)
     * eventMultipliers.costMultiplier
     * legacyCostMult
+    * eraCostMult
     * (1 - tierBonuses.maintenanceReduction)
     * (megaBonuses.maintenanceMultiplier || 1)
     * repBonuses.maintenanceMultiplier,
@@ -450,12 +462,13 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     costs,
     balance,
 
-    buildSpeedMultiplier: commanderBonuses.buildSpeedMultiplier * legacyBonuses.buildSpeedMultiplier * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier,
-    researchSpeedMultiplier: commanderBonuses.researchSpeedMultiplier * legacyBonuses.researchSpeedMultiplier * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier,
-    miningMultiplier: commanderBonuses.miningMultiplier * legacyBonuses.miningMultiplier * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * (1 + tierBonuses.miningBonus) * (1 + resBonuses.miningOutputBonus) * (1 + wfBonuses.miningOutput),
+    buildSpeedMultiplier: commanderBonuses.buildSpeedMultiplier * legacyBonuses.buildSpeedMultiplier * eraModifiers.buildSpeedMultiplier * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier,
+    researchSpeedMultiplier: commanderBonuses.researchSpeedMultiplier * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier,
+    miningMultiplier: commanderBonuses.miningMultiplier * legacyBonuses.miningMultiplier * eraModifiers.miningMultiplier * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * (1 + tierBonuses.miningBonus) * (1 + resBonuses.miningOutputBonus) * (1 + wfBonuses.miningOutput),
     maintenanceCostMultiplier:
       eventMultipliers.costMultiplier
       * legacyCostMult
+      * eraCostMult
       * (1 - tierBonuses.maintenanceReduction)
       * (megaBonuses.maintenanceMultiplier || 1)
       * repBonuses.maintenanceMultiplier,

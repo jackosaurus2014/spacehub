@@ -18,14 +18,14 @@ import { useEffect, useMemo, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import {
   getMissionCalendarEntries, groupCalendarEntriesByDay,
-  type CalendarEntry, type CalendarCategory,
+  type CalendarEntry, type CalendarCategory, type CalendarCharterLite,
 } from '@/lib/game/world-calendar';
 import type { UpcomingLaunchLite } from '@/lib/game/real-world-feed';
 
 const POLL_MS = 5 * 60 * 1000; // matches world-feed route's 5-minute cache TTL
 const TICK_MS = 30 * 1000; // countdown refresh — text only, no animation
 
-const CATEGORY_LABEL: Record<CalendarCategory, string> = {
+const CATEGORY_LABEL: Partial<Record<CalendarCategory, string>> = {
   senate: 'Accord Senate',
   league: 'League',
   season: 'Season',
@@ -35,9 +35,11 @@ const CATEGORY_LABEL: Record<CalendarCategory, string> = {
   queue: 'Command Queue',
   appointment_event: 'World Event',
   real_launch: 'Real Launch',
+  alliance_charter: 'Season Charter',
+  corporate_era: 'Corporate Era', // Live-Service Wave LS4
 };
 
-const CATEGORY_FRAME: Record<CalendarCategory, string> = {
+const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
   senate: 'border-purple-500/25 bg-purple-500/[0.03]',
   league: 'border-amber-500/25 bg-amber-500/[0.03]',
   season: 'border-cyan-500/25 bg-cyan-500/[0.03]',
@@ -47,7 +49,11 @@ const CATEGORY_FRAME: Record<CalendarCategory, string> = {
   queue: 'border-slate-500/25 bg-slate-500/[0.03]',
   appointment_event: 'border-red-500/25 bg-red-500/[0.03]',
   real_launch: 'border-orange-500/25 bg-orange-500/[0.03]',
+  alliance_charter: 'border-teal-500/25 bg-teal-500/[0.03]',
+  corporate_era: 'border-yellow-500/25 bg-yellow-500/[0.03]', // Live-Service Wave LS4
 };
+const FALLBACK_CATEGORY_LABEL = 'Event';
+const FALLBACK_CATEGORY_FRAME = 'border-slate-500/25 bg-slate-500/[0.03]';
 
 function formatCountdown(msRemaining: number): string {
   if (msRemaining <= 0) return 'Now';
@@ -78,6 +84,10 @@ interface WorldFeedResponse {
   upcomingLaunches?: UpcomingLaunchLite[];
 }
 
+interface CharterFeedResponse {
+  charter?: { id: string; def?: { name?: string; icon?: string } | null; endsAt: number } | null;
+}
+
 interface Props {
   state: GameState;
 }
@@ -85,6 +95,7 @@ interface Props {
 export default function MissionCalendarPanel({ state }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [upcomingLaunches, setUpcomingLaunches] = useState<UpcomingLaunchLite[]>([]);
+  const [myAllianceCharter, setMyAllianceCharter] = useState<CalendarCharterLite | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -106,15 +117,45 @@ export default function MissionCalendarPanel({ state }: Props) {
     return () => { cancelled = true; clearInterval(feedInterval); };
   }, []);
 
+  // LS5: alliance season charter deadline — same "fetch, pass in, never
+  // query from world-calendar.ts" pattern as upcomingLaunches above.
+  useEffect(() => {
+    let cancelled = false;
+    async function pollCharter() {
+      try {
+        const res = await fetch('/api/space-tycoon/alliances/charter');
+        if (!res.ok) return;
+        const json = (await res.json()) as CharterFeedResponse;
+        if (cancelled) return;
+        if (json.charter) {
+          setMyAllianceCharter({
+            id: json.charter.id,
+            name: json.charter.def?.name || 'Season Charter',
+            icon: json.charter.def?.icon || '🤝',
+            endsAtMs: json.charter.endsAt,
+          });
+        } else {
+          setMyAllianceCharter(null);
+        }
+      } catch {
+        // Charter entry just stays absent — every other calendar source is
+        // engine-derived and unaffected.
+      }
+    }
+    void pollCharter();
+    const charterInterval = setInterval(() => { void pollCharter(); }, POLL_MS);
+    return () => { cancelled = true; clearInterval(charterInterval); };
+  }, []);
+
   useEffect(() => {
     const tick = setInterval(() => setNow(Date.now()), TICK_MS);
     return () => clearInterval(tick);
   }, []);
 
   const entries = useMemo(
-    () => getMissionCalendarEntries(state, { nowMs: now, horizonDays: 14, upcomingLaunches }),
+    () => getMissionCalendarEntries(state, { nowMs: now, horizonDays: 14, upcomingLaunches, myAllianceCharter }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state.accordDocket, state.expeditions, state.buildings, state.activeResearch, state.activeResearch2, upcomingLaunches, now],
+    [state.accordDocket, state.expeditions, state.buildings, state.activeResearch, state.activeResearch2, upcomingLaunches, myAllianceCharter, now],
   );
 
   const preview = entries.slice(0, 3);
@@ -182,12 +223,12 @@ function CalendarRow({ entry, now, compact }: { entry: CalendarEntry; now: numbe
   const isFinalHour = remaining > 0 && remaining <= 60 * 60 * 1000;
   return (
     <div
-      className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[11px] border ${CATEGORY_FRAME[entry.category]}`}
+      className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[11px] border ${CATEGORY_FRAME[entry.category] ?? FALLBACK_CATEGORY_FRAME}`}
       style={{ minHeight: 44 }}
     >
       <span className="text-base shrink-0" aria-hidden="true">{entry.icon}</span>
       <span className="min-w-0 flex-1">
-        <span className="game-label mr-2">{CATEGORY_LABEL[entry.category]}</span>
+        <span className="game-label mr-2">{CATEGORY_LABEL[entry.category] ?? FALLBACK_CATEGORY_LABEL}</span>
         <span className="text-slate-200">{entry.title}</span>
         {!compact && entry.detail && (
           <span className="block text-slate-500 text-[10px] mt-0.5">{entry.detail}</span>
