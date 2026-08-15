@@ -25,6 +25,7 @@ import MiniActivitiesWidget from '@/components/game/MiniActivitiesWidget';
 import type { MiniActivityReward } from '@/lib/game/mini-activities';
 import WorldStatusCard from '@/components/game/WorldStatusCard';
 import WorldEventsBanner from '@/components/game/WorldEventsBanner';
+import StoryChapterBanner from '@/components/game/StoryChapterBanner';
 import ReturningCommanderWidget from '@/components/game/ReturningCommanderWidget';
 import MissionCalendarPanel from '@/components/game/MissionCalendarPanel';
 import HistoricalArchiveTicker from '@/components/game/HistoricalArchiveTicker';
@@ -521,7 +522,7 @@ function QuickNavGrid({
   );
 }
 
-export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate, onSetInsuranceActive }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void; onSetInsuranceActive?: (active: boolean) => void }) {
+export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate, onSetInsuranceActive, onResolveChapterEpilogue }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void; onSetInsuranceActive?: (active: boolean) => void; onResolveChapterEpilogue?: (participationCount: number) => void }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
   // W10: rare techs the corp hasn't discovered yet don't count toward the
@@ -585,6 +586,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       <CommandCenterHeader state={state} />
       {/* Sol Events — real-world space weather / launch / milestone feed, mirrored into the game as archive entries. Renders nothing when no event is active. */}
       <WorldEventsBanner />
+      {/* Story Chapters (LS8) — calendar-dated, world-synchronized narrative arc banner: act progress, finale countdown, server-backed participation tally. Renders nothing before the first tick has started chapter tracking. */}
+      <StoryChapterBanner state={state} onResolveEpilogue={onResolveChapterEpilogue} />
       {/* Returning Commander (LS2) — 7-day re-entry objectives + decaying earnings boost after a >=14-day lapse. Renders nothing when no track is active. */}
       <ReturningCommanderWidget state={state} />
       {/* Mission Calendar (LS3) — unified forward view: league lock, senate docket close, season transitions, alliance event windows, NPC co-fund windows, expedition returns, queue completions, appointment world events, real launch windows. Renders nothing when the 14-day horizon is empty. */}

@@ -64,6 +64,19 @@ import { COMMANDER_MAP, getRetirementEtaMs } from './commanders';
 // era's own endsAtMs IS the source of truth, corporate-eras.ts never
 // duplicates it).
 import { ERA_CHARTER_MAP } from './corporate-eras';
+// Live-Service Wave LS9 (docs/LIVE_SERVICE_2026-08.md §LS9): the next
+// Realignment date + a published-band preview — a SEPARATE deriver
+// following this file's existing convention (see corporateEraEntries just
+// above). Pure/DB-free (realignment.ts's own header), world-shared like
+// senate/league/season.
+import { getCurrentRealignmentEpoch, getEpochWindow, POSTURE_BAND_MIN, POSTURE_BAND_MAX } from './realignment';
+// Live-Service Wave LS8 (docs/LIVE_SERVICE_2026-08.md §LS8): calendar-dated
+// Story Chapter beats — a SEPARATE deriver (chapterEntries below) following
+// this file's one-function-per-system convention. getCurrentChapterInstance
+// is a pure function of nowMs alone (chapters.ts's own header), so — like
+// senate/league/season above — the whole entry is forecastable straight off
+// the clock, no chapter row or save state required.
+import { getCurrentChapterInstance, getActRevealMs, getChapterForCycle } from './chapters';
 // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): alliance season
 // charter deadline entry — a SEPARATE deriver function per this file's
 // existing convention (each system gets its own function; see
@@ -82,7 +95,8 @@ const MS_PER_GAME_MONTH = REAL_SECONDS_PER_GAME_MONTH * 1000;
 export type CalendarCategory =
   | 'senate' | 'league' | 'season' | 'alliance_event' | 'npc_program'
   | 'expedition' | 'queue' | 'appointment_event' | 'real_launch' | 'corporate_era'
-  | 'alliance_charter' | 'economic_cycle' | 'program' | 'leader_retirement';
+  | 'alliance_charter' | 'economic_cycle' | 'program' | 'leader_retirement' | 'realignment'
+  | 'story_chapter';
 
 export type CalendarEntryKind =
   | 'lock' | 'opens' | 'closes' | 'starts' | 'ends' | 'returns' | 'completes' | 'transition';
@@ -470,6 +484,29 @@ function corporateEraEntries(state: GameState, nowMs: number, horizonMs: number)
   }];
 }
 
+/** LS9 — the next Realignment (real-world UTC calendar quarter boundary),
+ *  world-shared like senate/league/season. The band preview is published
+ *  ahead of time (forecastable, CLAUDE.md invariant) rather than the actual
+ *  outcome, which isn't knowable until the epoch's aggregate senate/season
+ *  data exists. */
+function realignmentEntries(nowMs: number, horizonMs: number): CalendarEntry[] {
+  const currentEpoch = getCurrentRealignmentEpoch(nowMs);
+  const next = getEpochWindow(currentEpoch + 1);
+  if (next.startMs < nowMs || next.startMs > nowMs + horizonMs) return [];
+  const bandPct = Math.round((POSTURE_BAND_MAX - 1) * 100);
+  return [{
+    id: `realignment_${next.epochIndex}`,
+    category: 'realignment',
+    title: `Epoch ${next.year} Q${next.quarter} Realignment`,
+    icon: '🌐',
+    atMs: next.startMs,
+    kind: 'starts',
+    worldShared: true,
+    detail: `Faction postures shift within their published ±${bandPct}% band, NPC market bias re-aligns, and the Epoch Address publishes with the new roadmap spotlight.`,
+    href: '/space-tycoon/epoch',
+  }];
+}
+
 /** LS5: alliance season charter entries — the season-end deadline (personal:
  *  only this alliance sees it, unlike league/senate which fire for
  *  everyone) plus the weekly pledge-close lock, aligned to the SAME fixed
@@ -591,6 +628,71 @@ function leaderRetirementEntries(state: GameState, nowMs: number, horizonMs: num
   return entries;
 }
 
+/** LS8 — calendar-dated Story Chapter beats: the next unrevealed act, the
+ *  finale weekend window (start if upcoming, end if currently running), and
+ *  the moment the epilogue ends / the next chapter's Act 1 opens.
+ *  World-shared — every player sees the identical timing
+ *  (getCurrentChapterInstance is a pure function of nowMs alone). */
+function chapterEntries(nowMs: number, horizonMs: number): CalendarEntry[] {
+  const inst = getCurrentChapterInstance(nowMs);
+  const entries: CalendarEntry[] = [];
+  const def = inst.def;
+
+  if (inst.revealedActCount < def.acts.length) {
+    const nextActIndex = inst.revealedActCount;
+    const atMs = getActRevealMs(inst.cycleIndex, nextActIndex);
+    if (atMs >= nowMs && atMs <= nowMs + horizonMs) {
+      const act = def.acts[nextActIndex];
+      entries.push({
+        id: `chapter_act_${def.id}_${inst.cycleIndex}_${nextActIndex}`,
+        category: 'story_chapter',
+        title: `${def.name}: ${act.name}`,
+        icon: act.icon,
+        atMs,
+        kind: 'starts',
+        worldShared: true,
+        detail: act.description,
+      });
+    }
+  }
+
+  if (!inst.finaleClosed) {
+    const { startMs, endMs } = inst.finaleWindow;
+    const upcoming = startMs > nowMs;
+    const atMs = upcoming ? startMs : endMs;
+    if (atMs >= nowMs && atMs <= nowMs + horizonMs) {
+      entries.push({
+        id: `chapter_finale_${def.id}_${inst.cycleIndex}`,
+        category: 'story_chapter',
+        title: `${def.name}: ${def.finale.name}`,
+        icon: def.finale.icon,
+        atMs,
+        endMs,
+        kind: upcoming ? 'starts' : 'ends',
+        worldShared: true,
+        detail: def.finale.description,
+      });
+    }
+  } else {
+    const atMs = inst.epilogueEndMs;
+    if (atMs >= nowMs && atMs <= nowMs + horizonMs) {
+      const nextDef = getChapterForCycle(inst.cycleIndex + 1);
+      entries.push({
+        id: `chapter_next_${nextDef.id}_${inst.cycleIndex + 1}`,
+        category: 'story_chapter',
+        title: `Next chapter: ${nextDef.name}`,
+        icon: nextDef.icon,
+        atMs,
+        kind: 'starts',
+        worldShared: true,
+        detail: nextDef.tagline,
+      });
+    }
+  }
+
+  return entries;
+}
+
 // ─── Orchestrator ──────────────────────────────────────────────────────────
 
 const DEFAULT_HORIZON_DAYS = 14;
@@ -620,6 +722,8 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...realLaunchEntries(opts.upcomingLaunches, nowMs, horizonMs),
     ...programEntries(state, nowMs, horizonMs),
     ...leaderRetirementEntries(state, nowMs, horizonMs),
+    ...realignmentEntries(nowMs, horizonMs),
+    ...chapterEntries(nowMs, horizonMs),
   ];
 
   return entries

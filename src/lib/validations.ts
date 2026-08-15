@@ -4153,3 +4153,17 @@ export const publishCorpEraSchema = z.object({
 });
 
 export type PublishCorpEraInput = z.infer<typeof publishCorpEraSchema>;
+
+// Live-Service Wave LS8 (docs/LIVE_SERVICE_2026-08.md §LS8): Story Chapter
+// finale participation. POST /api/space-tycoon/chapters records "this
+// profile answered the call" for a given chapter cycle — no money moves
+// through this route (the personal cost is applied client-side, same as
+// every other narrative-events.ts chain choice); cycleIndex/chapterId are
+// bounds-checked generously since they're just a dedupe key, not a
+// gameplay-authoritative balance.
+export const chapterContributeSchema = z.object({
+  cycleIndex: z.number().int().min(0).max(1_000_000),
+  chapterId: z.string().min(1).max(100),
+});
+
+export type ChapterContributeInput = z.infer<typeof chapterContributeSchema>;

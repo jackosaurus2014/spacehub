@@ -1,6 +1,19 @@
 // ─── Space Tycoon: NPC Company Definitions ──────────────────────────────────
 // 10 AI-controlled companies that compete with the player.
 // Each has a unique strategy, progression speed, and market behavior.
+//
+// Live-Service Wave LS9 (docs/LIVE_SERVICE_2026-08.md §LS9) adds `factionId`
+// — docs/NPC_BACKDROP.md's own "suggested next step" ("add factionId? to
+// NPCSeedData... ~1 hour change"), finally wired. Each NPC now carries a
+// fixed faction alignment; realignment.ts's getNpcFactionBiasMultiplier
+// reads it (via NPC_SEEDS below) to nudge that NPC's market activity level
+// within a tight, bounded range each Realignment epoch — flavor only, never
+// new capability. NPC_BACKDROP's invariants are untouched: no new
+// locations/resources/research, no milestone claims, and the bias band
+// (realignment.ts NPC_BIAS_MIN/MAX, 0.85-1.15) is tighter than the
+// player-facing posture band, keeping NPCs a floor, never a ceiling.
+
+import type { FactionId } from './factions';
 
 export type NPCStrategy = 'aggressive' | 'balanced' | 'conservative';
 
@@ -34,6 +47,11 @@ export interface NPCSeedData {
   miningFocus: number;
   sellThreshold: number;
   description: string;
+  /** LS9 — fixed faction alignment (NPC_BACKDROP.md's "suggested next
+   *  step"). Not part of NPCCompanyState/save data — it never changes over
+   *  an NPC's life, so game-engine.ts looks it up from NPC_SEEDS by id
+   *  rather than persisting a redundant copy per save. */
+  factionId: FactionId;
 }
 
 // NPC speeds are slow (0.2-0.45x) so players outpace them, but they provide
@@ -43,51 +61,61 @@ export const NPC_SEEDS: NPCSeedData[] = [
     id: 'npc_orbital_dynamics', name: 'Orbital Dynamics Corp', strategy: 'aggressive',
     progressionSpeed: 0.35, riskTolerance: 0.5, miningFocus: 0.6, sellThreshold: 80,
     description: 'Small launch provider. Sells tracking data.',
+    factionId: 'the-dominion',
   },
   {
     id: 'npc_stellar', name: 'Stellar Industries', strategy: 'balanced',
     progressionSpeed: 0.3, riskTolerance: 0.3, miningFocus: 0.7, sellThreshold: 120,
     description: 'Diversified miner and manufacturer.',
+    factionId: 'the-syndicate',
   },
   {
     id: 'npc_nova', name: 'Nova Aerospace', strategy: 'aggressive',
     progressionSpeed: 0.4, riskTolerance: 0.4, miningFocus: 0.5, sellThreshold: 60,
     description: 'Scrappy launch startup. Sells surplus fuel.',
+    factionId: 'void-corsairs',
   },
   {
     id: 'npc_titan_mining', name: 'Titan Mining Collective', strategy: 'conservative',
     progressionSpeed: 0.25, riskTolerance: 0.2, miningFocus: 0.95, sellThreshold: 150,
     description: 'Pure mining operation. Major market supplier.',
+    factionId: 'hive-collective',
   },
   {
     id: 'npc_artemis', name: 'Artemis Ventures', strategy: 'balanced',
     progressionSpeed: 0.3, riskTolerance: 0.3, miningFocus: 0.6, sellThreshold: 100,
     description: 'Lunar-focused mining and tourism.',
+    factionId: 'nebula-reavers',
   },
   {
     id: 'npc_deep_space', name: 'Deep Space Holdings', strategy: 'conservative',
     progressionSpeed: 0.2, riskTolerance: 0.2, miningFocus: 0.8, sellThreshold: 200,
     description: 'Long-term mining investor. Slow and steady.',
+    factionId: 'echo-remnants',
   },
   {
     id: 'npc_cislunar', name: 'Cislunar Partners', strategy: 'aggressive',
     progressionSpeed: 0.35, riskTolerance: 0.4, miningFocus: 0.7, sellThreshold: 70,
     description: 'Earth-Moon corridor mining and logistics.',
+    factionId: 'the-dominion',
   },
   {
     id: 'npc_helios', name: 'Helios Energy', strategy: 'balanced',
     progressionSpeed: 0.3, riskTolerance: 0.3, miningFocus: 0.5, sellThreshold: 100,
     description: 'Solar energy provider. Sells excess power credits.',
+    factionId: 'the-syndicate',
   },
   {
     id: 'npc_frontier', name: 'Frontier Spacecraft', strategy: 'balanced',
     progressionSpeed: 0.25, riskTolerance: 0.2, miningFocus: 0.6, sellThreshold: 130,
     description: 'Spacecraft manufacturer. Mines raw materials.',
+    factionId: 'void-corsairs',
   },
   {
     id: 'npc_quantum', name: 'Quantum Launch Systems', strategy: 'aggressive',
     progressionSpeed: 0.45, riskTolerance: 0.5, miningFocus: 0.5, sellThreshold: 50,
     description: 'Budget launch provider. Sells whatever they mine.',
+    factionId: 'hive-collective',
   },
 ];
 

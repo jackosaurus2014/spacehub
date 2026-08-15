@@ -525,15 +525,12 @@ describe('leaders 2.0 — roster buckets & portrait fallback', () => {
     expect(getRosterBucket(diplomat)).toBe('commander');
   });
 
-  it('the 20 new W8 leaders have no portrait art (text-avatar fallback)', () => {
-    const newLeaders = COMMANDER_DEFS.filter(c => c.hasPortrait === false);
-    expect(newLeaders).toHaveLength(20);
-    for (const def of newLeaders) {
-      expect(hasPortraitArt(def)).toBe(false);
-      expect(def.rarity).not.toBe('legendary');
-      expect(def.rarity).not.toBe('epic');
-      expect(def.class === 'scientist' || def.class === 'engineer').toBe(true);
-    }
+  it('every roster leader has portrait art (V6 art wave filled the W8 gap)', () => {
+    // The 20 W8 scientist/engineer leaders shipped without portraits; the
+    // Aug 2026 V6 art wave generated them, so hasPortrait:false no longer
+    // exists anywhere in the roster.
+    const withoutPortraits = COMMANDER_DEFS.filter(c => !hasPortraitArt(c));
+    expect(withoutPortraits).toHaveLength(0);
   });
 
   it('the original 60 commanders still have portrait art', () => {

@@ -105,14 +105,21 @@ export const BG_ASSETS = {
   starfield: `${BASE}/bg-starfield.webp`,
 };
 
-// ─── EVENT ILLUSTRATION ASSETS (4X Wave W2) ─────────────────────────────────
+// ─── EVENT ILLUSTRATION ASSETS (4X Wave W2, completed Wave V6) ──────────────
 // docs/4X_BASELINE_2026-08.md Part 3.3 "Event illustrations" gap +
 // cinematic-moments.ts's documented art gap. 16:9 mission-imagery-style
-// illustrations, one per narrative chain (src/lib/game/narrative-events.ts
-// chain ids). Only the first 12 chain-heads got an art pass in W2 — this map
-// is intentionally partial. Consumers MUST fall back to PLANET_ASSETS/
-// BG_ASSETS biome art (see cinematic-moments.ts pickNarrativeArt) when a
-// chainId has no entry here, so future chains never render broken art.
+// illustrations, one per narrative CHAIN (src/lib/game/narrative-events.ts
+// CHAIN_DEFINITIONS ids — EVENT_ART is keyed by chainId, not by individual
+// stage id, so one illustration covers every stage in that chain's arc).
+// W2 shipped the first 12 of the (then) 12 chains; Wave V6
+// (docs/VISUAL_DEPTH_2026-08.md) audited the live chain list and found
+// exactly one chain added since (W13's board_politics_demand) lacked art —
+// generated and added below, so this map is now complete for all chains in
+// CHAIN_DEFINITIONS. Still keep the fallback contract for future chains:
+// consumers MUST fall back to PLANET_ASSETS/BG_ASSETS biome art (see
+// cinematic-moments.ts pickNarrativeArt) when a chainId has no entry here,
+// so a future chain added without art still renders something on-theme
+// instead of a broken image.
 export const EVENT_ART: Record<string, string> = {
   space_weather_ladder: `${BASE}/event-space_weather_ladder.webp`,
   europa_biosignature: `${BASE}/event-europa_biosignature.webp`,
@@ -126,6 +133,8 @@ export const EVENT_ART: Record<string, string> = {
   triton_archive_followup: `${BASE}/event-triton_archive_followup.webp`,
   wanderer1_anomaly: `${BASE}/event-wanderer1_anomaly.webp`,
   ring_fire_anniversary: `${BASE}/event-ring_fire_anniversary.webp`,
+  // Wave V6 addition — W13's Governance/board-politics chain.
+  board_politics_demand: `${BASE}/event-board_politics_demand.webp`,
 };
 
 // ─── MISSION PATCH ASSETS (4X Wave W2) ──────────────────────────────────────
@@ -154,6 +163,109 @@ export const MISSION_PATCH_ASSETS: Record<string, string> = {
  *  image). */
 export function getMissionPatchAsset(programId: string): string | null {
   return MISSION_PATCH_ASSETS[programId] ?? null;
+}
+
+// ─── FACTION LEADER PORTRAITS (Wave V6) ─────────────────────────────────────
+// docs/VISUAL_DEPTH_2026-08.md Wave V6 batch B3. Distinct from the flat
+// emblem-only faction art above (`faction-{id}.webp`, referenced via
+// factions.ts's getFactionArtUrl) — these are portrait busts of the named
+// faction leaders from docs/LORE.md's "Named leaders" per faction, keyed by
+// the same FactionId used throughout src/lib/game/factions.ts. Hive
+// Collective has no singular leader per lore ("interfaces rotate"), so its
+// entry depicts a spokesbody interface rather than a named individual.
+export const FACTION_LEADER_ASSETS: Record<string, string> = {
+  'the-dominion': `${BASE}/faction-leader-the-dominion.webp`,
+  'the-syndicate': `${BASE}/faction-leader-the-syndicate.webp`,
+  'void-corsairs': `${BASE}/faction-leader-void-corsairs.webp`,
+  'hive-collective': `${BASE}/faction-leader-hive-collective.webp`,
+  'nebula-reavers': `${BASE}/faction-leader-nebula-reavers.webp`,
+  'echo-remnants': `${BASE}/faction-leader-echo-remnants.webp`,
+};
+
+/** Get a faction's named-leader portrait, or null if none exists (keeps the
+ *  same graceful-fallback contract as getMissionPatchAsset — callers should
+ *  fall back to the flat emblem art (factions.ts getFactionArtUrl) rather
+ *  than request a 404). */
+export function getFactionLeaderArt(factionId: string): string | null {
+  return FACTION_LEADER_ASSETS[factionId] ?? null;
+}
+
+// ─── REGION BANNERS (Wave V6) ───────────────────────────────────────────────
+// docs/VISUAL_DEPTH_2026-08.md Wave V6 batch B4. Ultra-wide 21:9 hero vistas
+// for the 8 canonical regions named throughout CLAUDE.md's GUI/Command
+// Center section and the V6 spec's prompt table (inner system / asteroid
+// belt / lunar / martian / jovian / saturnian / outer system / interstellar).
+// This is a coarser grouping than RegionBackdrop.tsx's per-location
+// REGION_PALETTE (12+ location ids) or SolarSystemCanvas's LocationType-keyed
+// REGION_LABELS — intended for V5 ConsolePanel keylines and V4's galactic
+// vista thumbnails, both of which think in terms of these 8 zones rather
+// than individual locations. `interstellar` is new (no LocationType/location
+// id maps to it yet — it represents the post-heliopause end-game zone
+// introduced by interstellar.ts).
+export const REGION_ART: Record<string, string> = {
+  inner_system: `${BASE}/region-inner_system.webp`,
+  asteroid_belt: `${BASE}/region-asteroid_belt.webp`,
+  lunar: `${BASE}/region-lunar.webp`,
+  martian: `${BASE}/region-martian.webp`,
+  jovian: `${BASE}/region-jovian.webp`,
+  saturnian: `${BASE}/region-saturnian.webp`,
+  outer_system: `${BASE}/region-outer_system.webp`,
+  interstellar: `${BASE}/region-interstellar.webp`,
+};
+
+/** Get a canonical region's hero banner, or null if the id isn't one of the
+ *  8 canonical regions above. */
+export function getRegionArt(regionId: string): string | null {
+  return REGION_ART[regionId] ?? null;
+}
+
+// ─── INTERSTELLAR SYSTEM VISTAS (Wave V6) ───────────────────────────────────
+// docs/VISUAL_DEPTH_2026-08.md Wave V6 batch B5. One vista per
+// src/lib/game/interstellar.ts INTERSTELLAR_SYSTEMS id — consumed by V4's
+// galactic layer restage (per-system vista thumbnails behind node buttons).
+export const SYSTEM_ART: Record<string, string> = {
+  proxima_centauri: `${BASE}/system-proxima_centauri.webp`,
+  barnards_star: `${BASE}/system-barnards_star.webp`,
+  wolf_359: `${BASE}/system-wolf_359.webp`,
+  alpha_centauri: `${BASE}/system-alpha_centauri.webp`,
+  sirius: `${BASE}/system-sirius.webp`,
+};
+
+/** Get an interstellar system's vista art, or null if none exists yet. */
+export function getSystemVista(systemId: string): string | null {
+  return SYSTEM_ART[systemId] ?? null;
+}
+
+// ─── SKYBOX (Wave V6) ────────────────────────────────────────────────────────
+// docs/VISUAL_DEPTH_2026-08.md Wave V6 batch B6 — a single seamless
+// equirectangular nebula panorama for SolarMap3D's scene atmosphere pass
+// (Wave V4, "equirect nebula skybox (Gemini-generated, V6 asset) at 2k").
+// Generated via Gemini at 21:9 (the nearest valid aspect ratio to 2:1 — see
+// scripts/generate-art.ts's VALID_ASPECT_RATIOS) then center-cropped to an
+// exact 2048x1024 (true 2:1 equirect) with sharp — ready to load directly
+// into a THREE.EquirectangularReflectionMapping texture, no further resize
+// needed.
+export const SKYBOX_ASSETS = {
+  nebulaEquirect: `${BASE}/skybox-nebula-equirect.webp`,
+};
+
+// ─── MULTI-SIZE VARIANTS (Wave V6) ──────────────────────────────────────────
+// scripts/resize-art.ts emits 1536/512/128px WebP siblings next to a base
+// asset (e.g. `commander-dr-solene-marchetti-512.webp`) for every asset
+// generated as part of Wave V6 (2026-08-15 onward). The pre-existing
+// 377-image backlog does NOT have these siblings — deferred per
+// docs/VISUAL_DEPTH_2026-08.md Wave V6 ("do not block on the 377-image
+// legacy backlog"). Use getArtVariant() rather than string-splicing a size
+// onto a path directly so intent is documented at the call site; this
+// function does NOT check the filesystem (it runs in the browser too), so
+// only call it for assets known to have variants — passing a legacy asset
+// without siblings will produce a path that 404s.
+export const ART_VARIANT_SIZES = [1536, 512, 128] as const;
+export type ArtVariantSize = typeof ART_VARIANT_SIZES[number];
+
+export function getArtVariant(basePath: string, size: ArtVariantSize): string {
+  const dot = basePath.lastIndexOf('.');
+  return `${basePath.slice(0, dot)}-${size}${basePath.slice(dot)}`;
 }
 
 // ─── TEXTURE ASSETS ──────────────────────────────────────────────────────────

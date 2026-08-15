@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import type { GameState } from '@/lib/game/types';
 import {
   FACTIONS,
@@ -19,6 +20,11 @@ import {
   type FactionStanding,
 } from '@/lib/game/factions';
 import { formatMoney } from '@/lib/game/formulas';
+// Live-Service Wave LS9 (docs/LIVE_SERVICE_2026-08.md §LS9): this epoch's
+// world-shared Realignment posture — a small badge per faction card, not a
+// full sub-panel (the /space-tycoon/epoch public page is the detailed
+// surface). Pure/DB-free (realignment.ts header), safe to compute client-side.
+import { computeFactionPostures, getCurrentRealignmentEpoch, type FactionTrend } from '@/lib/game/realignment';
 
 interface Props {
   state: GameState;
@@ -33,7 +39,21 @@ function formatModifierPct(mod: number): string {
   return mod >= 0 ? `-${pct}% broker fee` : `+${pct}% broker fee`;
 }
 
+// Colorblind-safe: trend is glyph + text label together, never color alone
+// (CLAUDE.md accessibility invariant — same rule as the reputation bar's
+// center-tick + numeric readout above).
+const TREND_ICON: Record<FactionTrend, string> = { ascendant: '▲', retreating: '▼', stable: '▬' };
+const TREND_LABEL: Record<FactionTrend, string> = { ascendant: 'Ascendant this epoch', retreating: 'Retreating this epoch', stable: 'Stable this epoch' };
+const TREND_ACCENT: Record<FactionTrend, string> = { ascendant: 'text-emerald-300', retreating: 'text-amber-300', stable: 'text-slate-500' };
+
 export default function FactionPanel({ state, onSendEnvoy, onPurchaseLicense }: Props) {
+  // LS9: computed once per render for all six factions (computeFactionPostures
+  // walks a bounded senate+season aggregate — cheap, but no reason to repeat
+  // it per faction card).
+  const postureByFaction = new Map(
+    computeFactionPostures(getCurrentRealignmentEpoch()).map(p => [p.factionId, p]),
+  );
+
   return (
     <div className="space-y-4">
       <div className="card p-4">
@@ -92,6 +112,7 @@ export default function FactionPanel({ state, onSendEnvoy, onPurchaseLicense }: 
           const embargoed = isEmbargoed(rep);
           const licenses = FACTION_LICENSES.filter(l => l.factionId === f.id);
           const owned = state.factionLicenses || [];
+          const posture = postureByFaction.get(f.id);
 
           return (
             <div
@@ -124,6 +145,18 @@ export default function FactionPanel({ state, onSendEnvoy, onPurchaseLicense }: 
 
               <div className="p-3">
                 <p className="text-slate-400 text-xs leading-relaxed mb-3">{f.description}</p>
+
+                {/* LS9 — Realignment posture badge (world-shared, this epoch) */}
+                {posture && (
+                  <div className={`flex items-center gap-1.5 text-[10px] mb-3 ${TREND_ACCENT[posture.trend]}`}>
+                    <span aria-hidden="true">{TREND_ICON[posture.trend]}</span>
+                    <span>{TREND_LABEL[posture.trend]}</span>
+                    <span className="text-slate-600">·</span>
+                    <Link href="/space-tycoon/epoch" className="text-slate-500 hover:text-slate-300 underline underline-offset-2">
+                      Epoch Address
+                    </Link>
+                  </div>
+                )}
 
                 {/* Reputation bar */}
                 <div className="mb-3">

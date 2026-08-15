@@ -166,6 +166,16 @@ export function getNewGameState(): GameState {
     programs: { queues: { crew_cohort: [], leader_development: [], rd_residency: [] }, completedCohortDefIds: [] },
     retiredLeaders: [],
     leaderMentorBoosts: [],
+    // V28 — Live-Service Wave LS8 "Story Chapters" (docs/
+    // LIVE_SERVICE_2026-08.md §LS8). A fresh corporation has no chapter
+    // progress yet — the next tick's advanceStoryChapters call starts fresh
+    // progress from the world's current calendar cycle.
+    storyChapters: { current: null, history: [] },
+    // V29 — Live-Service Wave LS9 "The Realignment" (docs/
+    // LIVE_SERVICE_2026-08.md §LS9). A fresh save has never had a
+    // Realignment epoch announced — the next tick's clock check announces
+    // the current epoch exactly once, same as a save that just migrated in.
+    lastSeenRealignmentEpoch: null,
   };
 }
 
@@ -470,6 +480,26 @@ export function loadGame(): GameState | null {
     }
     if (!state.retiredLeaders) state.retiredLeaders = [];
     if (!state.leaderMentorBoosts) state.leaderMentorBoosts = [];
+
+    // V28 fields — Live-Service Wave LS8 "Story Chapters" (docs/
+    // LIVE_SERVICE_2026-08.md §LS8). Additive-only: an existing save with no
+    // storyChapters simply has never tracked chapter progress yet
+    // (numerically identical to a fresh game — the very next tick's
+    // advanceStoryChapters call starts fresh progress from the world's
+    // current calendar cycle; no consequence is lost by the field being
+    // absent, since chapter acts only ever apply once actually resolved).
+    if (!state.storyChapters) state.storyChapters = { current: null, history: [] };
+
+    // V29 fields — Live-Service Wave LS9 "The Realignment" (docs/
+    // LIVE_SERVICE_2026-08.md §LS9, coordination note: LS9 ran concurrently
+    // with LS8 and originally targeted V28; LS8 claimed it first, so LS9
+    // took V29 — see types.ts's matching field comment). Additive-only: an
+    // existing save with no lastSeenRealignmentEpoch simply hasn't had a
+    // Realignment epoch announced to it yet — numerically identical to a
+    // fresh game (the next tick's clock check announces the CURRENT epoch,
+    // never retroactively "catches up" on epochs the save missed while it
+    // didn't exist).
+    if (state.lastSeenRealignmentEpoch === undefined) state.lastSeenRealignmentEpoch = null;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

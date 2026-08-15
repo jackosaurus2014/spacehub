@@ -419,44 +419,49 @@ export const COMMANDER_DEFS: CommanderDefinition[] = [
   { id: 'zahn-eclipse',       name: 'Zahn Eclipse',       title: 'Grand Theorist',       class: 'scientist',   rarity: 'legendary', hasFullbody: true },
   { id: 'zero',               name: 'Zero',               title: 'The Unknown',          class: 'commander',   rarity: 'legendary', hasFullbody: true },
 
-  // ── W8 — SCIENTIST/ENGINEER LEADERS (20, no unique portrait art yet — ──
-  // text-avatar fallback; see hasPortraitArt()/CommanderPanel and the
-  // Part 3 asset-gap note below). Fills the two science posts (research
-  // directorate, science program) alongside the existing scientist/engineer
-  // classed commanders (Surveyor, Tech Nova, Professor Quark, Dr. Vale...).
+  // ── W8 — SCIENTIST/ENGINEER LEADERS (20). Portraits generated in Wave V6 ──
+  // (docs/VISUAL_DEPTH_2026-08.md batch B1) — hasPortrait is no longer
+  // overridden to false, so hasPortraitArt() now returns true and the UI
+  // renders /public/game/commander-{id}.webp instead of the text-avatar
+  // fallback. Fills the two science posts (research directorate, science
+  // program) alongside the existing scientist/engineer classed commanders
+  // (Surveyor, Tech Nova, Professor Quark, Dr. Vale...).
   // COMMON (8)
-  { id: 'dr-solene-marchetti', name: 'Dr. Solene Marchetti', title: 'Astrobiologist',                 class: 'scientist', rarity: 'common',   hasFullbody: false, hasPortrait: false },
-  { id: 'amara-reyes-voss',    name: 'Amara Reyes-Voss',     title: 'Radiation Physiologist',          class: 'scientist', rarity: 'common',   hasFullbody: false, hasPortrait: false },
-  { id: 'mikael-fenn',         name: 'Mikael Fenn',          title: 'Seismologist',                    class: 'scientist', rarity: 'common',   hasFullbody: false, hasPortrait: false },
-  { id: 'sofia-baptiste',      name: 'Sofia Baptiste',       title: 'Data Scientist',                  class: 'scientist', rarity: 'common',   hasFullbody: false, hasPortrait: false },
-  { id: 'beatrix-solheim',     name: 'Beatrix Solheim',      title: 'Structural Engineer',             class: 'engineer',  rarity: 'common',   hasFullbody: false, hasPortrait: false },
-  { id: 'desmond-ochieng',     name: 'Desmond Ochieng',      title: 'Avionics Engineer',               class: 'engineer',  rarity: 'common',   hasFullbody: false, hasPortrait: false },
-  { id: 'fenwick-atara',       name: 'Fenwick Atara',        title: 'Robotics Engineer',               class: 'engineer',  rarity: 'common',   hasFullbody: false, hasPortrait: false },
-  { id: 'callum-ridgeway',     name: 'Callum Ridgeway',      title: 'Thermal Systems Engineer',        class: 'engineer',  rarity: 'common',   hasFullbody: false, hasPortrait: false },
+  { id: 'dr-solene-marchetti', name: 'Dr. Solene Marchetti', title: 'Astrobiologist',                 class: 'scientist', rarity: 'common',   hasFullbody: false },
+  { id: 'amara-reyes-voss',    name: 'Amara Reyes-Voss',     title: 'Radiation Physiologist',          class: 'scientist', rarity: 'common',   hasFullbody: false },
+  { id: 'mikael-fenn',         name: 'Mikael Fenn',          title: 'Seismologist',                    class: 'scientist', rarity: 'common',   hasFullbody: false },
+  { id: 'sofia-baptiste',      name: 'Sofia Baptiste',       title: 'Data Scientist',                  class: 'scientist', rarity: 'common',   hasFullbody: false },
+  { id: 'beatrix-solheim',     name: 'Beatrix Solheim',      title: 'Structural Engineer',             class: 'engineer',  rarity: 'common',   hasFullbody: false },
+  { id: 'desmond-ochieng',     name: 'Desmond Ochieng',      title: 'Avionics Engineer',               class: 'engineer',  rarity: 'common',   hasFullbody: false },
+  { id: 'fenwick-atara',       name: 'Fenwick Atara',        title: 'Robotics Engineer',               class: 'engineer',  rarity: 'common',   hasFullbody: false },
+  { id: 'callum-ridgeway',     name: 'Callum Ridgeway',      title: 'Thermal Systems Engineer',        class: 'engineer',  rarity: 'common',   hasFullbody: false },
   // UNCOMMON (7)
-  { id: 'dr-kenji-osei',       name: 'Dr. Kenji Osei',       title: 'Heliophysicist',                  class: 'scientist', rarity: 'uncommon', hasFullbody: false, hasPortrait: false },
-  { id: 'dr-priya-nandakumar', name: 'Dr. Priya Nandakumar', title: 'Planetary Geologist',             class: 'scientist', rarity: 'uncommon', hasFullbody: false, hasPortrait: false },
-  { id: 'dr-inez-castellan',   name: 'Dr. Inez Castellan',   title: 'Mission Designer',                class: 'scientist', rarity: 'uncommon', hasFullbody: false, hasPortrait: false },
-  { id: 'tomas-vireo',         name: 'Tomas Vireo',          title: 'Cryobot Engineer',                class: 'engineer',  rarity: 'uncommon', hasFullbody: false, hasPortrait: false },
-  { id: 'omar-delacroix',      name: 'Omar Delacroix',       title: 'Flight Director',                 class: 'engineer',  rarity: 'uncommon', hasFullbody: false, hasPortrait: false },
-  { id: 'dr-lena-brandt',      name: 'Dr. Lena Brandt',      title: 'Guidance & Navigation Engineer',  class: 'engineer',  rarity: 'uncommon', hasFullbody: false, hasPortrait: false },
-  { id: 'dr-satomi-kwon',      name: 'Dr. Satomi Kwon',      title: 'Systems Integration Engineer',    class: 'engineer',  rarity: 'uncommon', hasFullbody: false, hasPortrait: false },
+  { id: 'dr-kenji-osei',       name: 'Dr. Kenji Osei',       title: 'Heliophysicist',                  class: 'scientist', rarity: 'uncommon', hasFullbody: false },
+  { id: 'dr-priya-nandakumar', name: 'Dr. Priya Nandakumar', title: 'Planetary Geologist',             class: 'scientist', rarity: 'uncommon', hasFullbody: false },
+  { id: 'dr-inez-castellan',   name: 'Dr. Inez Castellan',   title: 'Mission Designer',                class: 'scientist', rarity: 'uncommon', hasFullbody: false },
+  { id: 'tomas-vireo',         name: 'Tomas Vireo',          title: 'Cryobot Engineer',                class: 'engineer',  rarity: 'uncommon', hasFullbody: false },
+  { id: 'omar-delacroix',      name: 'Omar Delacroix',       title: 'Flight Director',                 class: 'engineer',  rarity: 'uncommon', hasFullbody: false },
+  { id: 'dr-lena-brandt',      name: 'Dr. Lena Brandt',      title: 'Guidance & Navigation Engineer',  class: 'engineer',  rarity: 'uncommon', hasFullbody: false },
+  { id: 'dr-satomi-kwon',      name: 'Dr. Satomi Kwon',      title: 'Systems Integration Engineer',    class: 'engineer',  rarity: 'uncommon', hasFullbody: false },
   // RARE (5)
-  { id: 'dr-elias-thorne',     name: 'Dr. Elias Thorne',     title: 'Spectroscopist',                  class: 'scientist', rarity: 'rare',     hasFullbody: false, hasPortrait: false },
-  { id: 'dr-yuki-tanaka',      name: 'Dr. Yuki Tanaka',      title: 'Xenochemist',                     class: 'scientist', rarity: 'rare',     hasFullbody: false, hasPortrait: false },
-  { id: 'dr-rowan-achterberg', name: 'Dr. Rowan Achterberg', title: 'Planetary Protection Officer',    class: 'scientist', rarity: 'rare',     hasFullbody: false, hasPortrait: false },
-  { id: 'dr-hana-lindqvist',   name: 'Dr. Hana Lindqvist',   title: 'Propulsion Engineer',             class: 'engineer',  rarity: 'rare',     hasFullbody: false, hasPortrait: false },
-  { id: 'dr-noor-abbasi',      name: 'Dr. Noor Abbasi',      title: 'Life-Support Engineer',           class: 'engineer',  rarity: 'rare',     hasFullbody: false, hasPortrait: false },
+  { id: 'dr-elias-thorne',     name: 'Dr. Elias Thorne',     title: 'Spectroscopist',                  class: 'scientist', rarity: 'rare',     hasFullbody: false },
+  { id: 'dr-yuki-tanaka',      name: 'Dr. Yuki Tanaka',      title: 'Xenochemist',                     class: 'scientist', rarity: 'rare',     hasFullbody: false },
+  { id: 'dr-rowan-achterberg', name: 'Dr. Rowan Achterberg', title: 'Planetary Protection Officer',    class: 'scientist', rarity: 'rare',     hasFullbody: false },
+  { id: 'dr-hana-lindqvist',   name: 'Dr. Hana Lindqvist',   title: 'Propulsion Engineer',             class: 'engineer',  rarity: 'rare',     hasFullbody: false },
+  { id: 'dr-noor-abbasi',      name: 'Dr. Noor Abbasi',      title: 'Life-Support Engineer',           class: 'engineer',  rarity: 'rare',     hasFullbody: false },
 ];
 
 export const COMMANDER_MAP = new Map(COMMANDER_DEFS.map(c => [c.id, c]));
 
-/** W8 asset-gap note (Part 3 of the 4X baseline doc): the 20 leaders above
- *  have no unique portrait art — /public/game/commander-{id}.webp does not
- *  exist for them. hasPortraitArt() is the UI contract: false means render
- *  a text-avatar (initials) fallback instead of requesting the (404ing)
- *  portrait. Flagged for the Part 3 asset-generation wave (~20 "Scientist/
- *  engineer leader portraits" is already an itemized gap in that plan). */
+/** Asset-gap note (historical): the 20 W8 leaders above originally had
+ *  `hasPortrait: false` — no unique portrait art existed for them at
+ *  /public/game/commander-{id}.webp, and hasPortraitArt() gated the UI to a
+ *  text-avatar (initials) fallback instead of requesting a 404ing portrait.
+ *  Wave V6 (docs/VISUAL_DEPTH_2026-08.md batch B1) generated all 20
+ *  portraits and removed the override above, so hasPortraitArt() now
+ *  returns true for every commander in COMMANDER_DEFS — the function and
+ *  its `hasPortrait?: boolean` field stay in place as the contract for any
+ *  future roster addition that ships without art. */
 export function hasPortraitArt(def: CommanderDefinition): boolean {
   return def.hasPortrait !== false;
 }

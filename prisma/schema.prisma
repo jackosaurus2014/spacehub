@@ -250,6 +250,10 @@ model GameProfile {
   alliancePledges  AlliancePledge[]
   npcProgramStakes NpcProgramStake[]
 
+  // Live-Service Wave LS8 (docs/LIVE_SERVICE_2026-08.md §LS8): Story
+  // Chapter finale participation tally (see ChapterContribution below).
+  chapterContributions ChapterContribution[]
+
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
@@ -6783,4 +6787,26 @@ model NpcProgramStake {
   @@unique([npcProgramId, cycleIndex, profileId])
   @@index([npcProgramId, cycleIndex])
   @@index([profileId])
+}
+
+// Live-Service Wave LS8 (docs/LIVE_SERVICE_2026-08.md §LS8): Story Chapter
+// finale participation tally. One row per (cycleIndex, profileId) — the
+// finale's "did this corporation answer the call" flag. Deliberately NOT a
+// money escrow: the personal cost of participating is applied client-side
+// through the same applyChainConsequence path every other narrative-events.ts
+// chain choice already uses (src/lib/game/chapters.ts resolveChapterChoice);
+// this table only powers the aggregate-participation-weighted outcome roll
+// every client reads via GET /api/space-tycoon/chapters once the finale
+// window closes (computeFinaleOutcome — deterministic given cycleIndex +
+// this table's count, so every caller resolves the identical outcome).
+model ChapterContribution {
+  id         String      @id @default(cuid())
+  cycleIndex Int
+  chapterId  String
+  profileId  String
+  profile    GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+
+  @@unique([cycleIndex, profileId])
+  @@index([cycleIndex])
 }

@@ -11,6 +11,13 @@ import { RESOURCES, RESOURCE_MAP, type ResourceId } from './resources';
 import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER } from './frontier';
 import { getReputationBonuses } from './reputation';
 import { getWorkforceBonuses } from './workforce';
+// Live-Service Wave LS9 (docs/LIVE_SERVICE_2026-08.md §LS9): quarterly
+// Realignment posture — contract-generosity multiplier + procurement-focus
+// category, both bounded within POSTURE_BAND. Pure/DB-free (see
+// realignment.ts's header); one-directional import (realignment.ts never
+// imports this module, so no cycle).
+import { computeFactionPostures, getCurrentRealignmentEpoch, type FactionPosture } from './realignment';
+import type { ResourceCategory } from './economic-seasons';
 
 /** Public type alias — the persisted DeliveryContractState is the contract. */
 export type DeliveryContract = DeliveryContractState;
@@ -162,15 +169,37 @@ function pickWeighted<T>(rng: () => number, items: T[], weights: number[]): T {
   return items[items.length - 1];
 }
 
-/** Generate a single contract for the given faction. */
-export function generateContract(factionId: FactionId, rngSeed: number, now: number = Date.now()): DeliveryContract {
+/** Generate a single contract for the given faction.
+ *
+ *  LS9 posture params (both optional, default to "no change" so every
+ *  existing caller/test keeps producing identical contracts):
+ *  `postureMultiplier` — this epoch's band-bounded contract-generosity
+ *  multiplier for `factionId` (realignment.ts getContractGenerosityMultiplier),
+ *  layered on TOP of the faction's static FACTION_FLAVOR.paymentMultiplier,
+ *  never replacing it. `focusCategory` — this epoch's procurement-focus
+ *  category for `factionId`; resources in that category get a modest
+ *  weight bump in the pick below (still bounded — avoidedResources are
+ *  never included regardless of focus). */
+export function generateContract(
+  factionId: FactionId,
+  rngSeed: number,
+  now: number = Date.now(),
+  postureMultiplier: number = 1,
+  focusCategory?: ResourceCategory,
+): DeliveryContract {
   const rng = mulberry32(rngSeed);
   const flavor = FACTION_FLAVOR[factionId];
   const faction = FACTION_MAP.get(factionId)!;
 
-  // Pick a resource — weight preferred higher, avoid avoided.
+  // Pick a resource — weight preferred higher, avoid avoided. This epoch's
+  // procurement focus (LS9) nudges the weight further when it lands on a
+  // still-eligible resource — never overrides avoidedResources.
   const candidates = RESOURCES.filter(r => !flavor.avoidedResources.includes(r.id));
-  const weights = candidates.map(r => flavor.preferredResources.includes(r.id) ? 5 : 1);
+  const weights = candidates.map(r => {
+    let w = flavor.preferredResources.includes(r.id) ? 5 : 1;
+    if (focusCategory && r.category === focusCategory) w *= 1.6;
+    return w;
+  });
   const resource = pickWeighted(rng, candidates, weights);
 
   // Quantity: scales to flavor multiplier. Base range 20-200.
@@ -178,8 +207,12 @@ export function generateContract(factionId: FactionId, rngSeed: number, now: num
   const quantity = Math.max(5, Math.round(baseQty * flavor.quantityMultiplier));
 
   // Payment: baseline market price × quantity × multiplier, with some noise.
+  // LS9: postureMultiplier is this epoch's band-bounded (±20%) generosity
+  // shift for this faction — a real, forecastable, world-shared variance on
+  // top of the faction's fixed baseline, matching "BALANCE table becomes
+  // dynamic ±0.2" per the LS9 spec.
   const basePrice = resource.baseMarketPrice;
-  const payment = Math.round(basePrice * quantity * flavor.paymentMultiplier * (0.9 + rng() * 0.2));
+  const payment = Math.round(basePrice * quantity * flavor.paymentMultiplier * postureMultiplier * (0.9 + rng() * 0.2));
 
   // Deadline: from flavor range, measured in real-time hours.
   const deadlineHours = randRange(rng, flavor.deadlineHoursRange[0], flavor.deadlineHoursRange[1]);
@@ -234,11 +267,25 @@ export function ensureFreshDeliveryPool(state: GameState, now: number = Date.now
     return acc;
   }, {} as Record<FactionId, number>);
 
+  // LS9: this epoch's faction postures, computed ONCE per pool refresh (not
+  // per contract) — computeFactionPostures is a bounded but non-trivial walk
+  // (see realignment.ts), and refreshes only happen every POOL_REFRESH_MS or
+  // when the pool runs low, so this stays cheap in practice.
+  const epochIndex = getCurrentRealignmentEpoch(now);
+  const postureByFaction = new Map<FactionId, FactionPosture>(
+    computeFactionPostures(epochIndex).map(p => [p.factionId, p]),
+  );
+
   const bucket = Math.floor(now / POOL_REFRESH_MS);
   const fresh: DeliveryContract[] = [];
   for (let i = 0; i < POOL_TARGET_SIZE; i++) {
     const fId = pickWeighted(mulberry32(bucket * 1000 + i), FACTIONS.map(f => f.id), FACTIONS.map(f => factionWeights[f.id]));
-    fresh.push(generateContract(fId, bucket * 1000 + i * 37, now));
+    const posture = postureByFaction.get(fId);
+    fresh.push(generateContract(
+      fId, bucket * 1000 + i * 37, now,
+      posture?.contractGenerosityMultiplier ?? 1,
+      posture?.procurementFocus,
+    ));
   }
 
   return {

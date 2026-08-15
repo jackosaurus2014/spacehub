@@ -15,6 +15,7 @@ import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
 import { advanceNarrativeChains } from './narrative-events';
 import { advanceAccordSenate } from './accord-senate';
+import { advanceStoryChapters } from './chapters';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
@@ -40,6 +41,12 @@ import { computeCommanderBonuses, processCommanderMonthTick, processLeaderRetire
 // threaded through every revenue/research/mining site.
 import { advancePrograms, getEffectiveWorkforceForBonuses, mergeProgramWorkforceBonuses } from './programs';
 import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
+// Live-Service Wave LS9 (docs/LIVE_SERVICE_2026-08.md §LS9): quarterly
+// Realignment — epoch clock, NPC faction-bias lookup, Epoch Address assembly.
+// Pure/DB-free (see realignment.ts's header) — computed fresh every tick,
+// nothing here is persisted beyond the one-shot "already announced" flag.
+import { getCurrentRealignmentEpoch, getNpcFactionBiasMultiplier, assembleEpochAddress } from './realignment';
+import { NPC_SEEDS } from './npc-companies';
 import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
 import { rollMonthlyHazards, applyHazards, forecastSevereHazards } from './hazards';
 // Audit Wave D+E (Change #4 hazards/insurance, Change #5 markets, Change #9
@@ -1355,10 +1362,64 @@ export function processFullTick(state: GameState): GameState {
   const commanderMonthAdvanced = newState.gameDate.month !== workingState.gameDate.month
     || newState.gameDate.year !== workingState.gameDate.year;
 
+  // 1b. Live-Service Wave LS9 "The Realignment" (docs/LIVE_SERVICE_2026-08.md
+  // §LS9): real-world-clock-driven, so it's checked every tick (not gated on
+  // isMonthEnd like the game-month-cadenced systems inside processTick) —
+  // cheap (one integer comparison) except on the rare tick that actually
+  // crosses a real quarter boundary. computeFactionPostures/assembleEpochAddress
+  // are pure/DB-free (realignment.ts header); npcBias is also computed here
+  // (every tick, not just on the boundary) so NPC market activity reflects
+  // the LIVE epoch's postures continuously, not just at the announcement
+  // moment.
+  let npcBias: Record<string, number> = {};
+  try {
+    const epochIndex = getCurrentRealignmentEpoch(Date.now());
+    npcBias = Object.fromEntries(
+      NPC_SEEDS.map(seed => [seed.id, getNpcFactionBiasMultiplier(seed.factionId, epochIndex)]),
+    );
+
+    if (newState.lastSeenRealignmentEpoch == null || epochIndex > newState.lastSeenRealignmentEpoch) {
+      const address = assembleEpochAddress(epochIndex);
+      newState = {
+        ...newState,
+        lastSeenRealignmentEpoch: epochIndex,
+        eventLog: [{
+          id: generateId(), date: newState.gameDate, type: 'random_event' as const,
+          title: `🌐 ${address.title}`,
+          description: address.lines[0],
+        }, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+      };
+    }
+  } catch (err) {
+    console.error('Realignment epoch check error (non-fatal):', err);
+  }
+
+  // 1c. Live-Service Wave LS8 "Story Chapters" (docs/LIVE_SERVICE_2026-08.md
+  // §LS8): calendar-dated, world-synchronized narrative arcs — real-world-
+  // clock-driven like the Realignment check above, so it's checked every
+  // tick rather than gated on isMonthEnd (chapter act reveals/finale windows
+  // are fixed real-world timestamps, not game-month-cadenced). Only claims
+  // the single pendingChoice slot when nothing upstream (processTick's
+  // narrative-events chains) already filled it this tick — the SAME
+  // contention discipline advanceNarrativeChains uses, just resolved a tick
+  // later here since chapters run after processTick rather than inside it.
+  try {
+    const chapterResult = advanceStoryChapters(newState, Date.now(), !newState.pendingChoice);
+    newState = {
+      ...chapterResult.state,
+      pendingChoice: chapterResult.pendingChoice || chapterResult.state.pendingChoice,
+      eventLog: chapterResult.events.length > 0
+        ? [...chapterResult.events, ...chapterResult.state.eventLog].slice(0, MAX_EVENT_LOG)
+        : chapterResult.state.eventLog,
+    };
+  } catch (err) {
+    console.error('Story Chapters advance error (non-fatal):', err);
+  }
+
   // 2. Process NPC companies (can fail safely)
   try {
     if (newState.npcCompanies && newState.npcCompanies.length > 0) {
-      const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate);
+      const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate, npcBias);
       newState = {
         ...newState,
         npcCompanies: npcResult.npcs,

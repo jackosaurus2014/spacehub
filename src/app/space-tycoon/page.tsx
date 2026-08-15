@@ -35,6 +35,7 @@ import SolarSystemCanvas from '@/components/game/SolarSystemCanvas';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
 import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
 import { resolveChainChoice } from '@/lib/game/narrative-events';
+import { resolveChapterChoice, resolveChapterEpilogue } from '@/lib/game/chapters';
 import { getGlobalGameDate } from '@/lib/game/server-time';
 import { applyMiniActivityBonus } from '@/lib/game/mini-activities';
 import { setInsuranceActive } from '@/lib/game/economic-sinks';
@@ -56,6 +57,7 @@ import CinematicOverlay from '@/components/game/CinematicOverlay';
 import {
   enqueueCinematicMoments, dequeueCinematicMoment,
   detectCinematicMomentsFromEvents, buildNarrativeChoiceCinematicMoment, buildDiscoveryCinematicMoment,
+  buildChapterChoiceCinematicMoment,
   type CinematicMoment,
 } from '@/lib/game/cinematic-moments';
 import FleetPanel from '@/components/game/FleetPanel';
@@ -1349,7 +1351,11 @@ export default function SpaceTycoonPage() {
       cinematicPendingChoiceMountedRef.current = true;
       return;
     }
-    const moment = buildNarrativeChoiceCinematicMoment(state?.pendingChoice ?? null);
+    const moment = buildNarrativeChoiceCinematicMoment(state?.pendingChoice ?? null)
+      // LS8: Story Chapter act/finale choices — same shape, checked second
+      // since a pendingChoice is either chain-sourced or chapter-sourced,
+      // never both.
+      || buildChapterChoiceCinematicMoment(state?.pendingChoice ?? null);
     if (moment) setCinematicQueue(q => enqueueCinematicMoments(q, [moment]));
   }, [state?.pendingChoice?.eventId]);
 
@@ -1937,6 +1943,9 @@ export default function SpaceTycoonPage() {
             playSound('click');
             setState(prev => prev ? setInsuranceActive(prev, active) : prev);
           }}
+          onResolveChapterEpilogue={(participationCount) => {
+            setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
+          }}
         />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onRushRepairBuilding={(instanceId) => {
           setState(prev => {
@@ -2399,7 +2408,7 @@ export default function SpaceTycoonPage() {
           eventIcon={state.pendingChoice.eventIcon}
           eventDescription={state.pendingChoice.eventDescription}
           choices={state.pendingChoice.choices}
-          chainName={state.pendingChoice.chainName}
+          chainName={state.pendingChoice.chainName || state.pendingChoice.chapterName}
           stageIndex={state.pendingChoice.stageIndex}
           totalStages={state.pendingChoice.totalStages}
           onChoose={(choiceIndex) => {
@@ -2411,6 +2420,30 @@ export default function SpaceTycoonPage() {
               if (prev.pendingChoice.chainId) {
                 const monthIndex = getGlobalGameDate().totalMonths;
                 const newState = resolveChainChoice(prev, prev.pendingChoice.chainId, choiceIndex, monthIndex);
+                return { ...newState, pendingChoice: null };
+              }
+              // Live-Service Wave LS8: calendar-dated Story Chapter act/
+              // finale choices carry chapterId; route to chapters.ts's
+              // resolver. If this WAS the finale's "answer the call" choice
+              // (index 0), also record the server-side participation tally
+              // — fire-and-forget, never blocks state application (the
+              // personal cost already applied above via
+              // resolveChapterChoice's own applyChainConsequence call).
+              if (prev.pendingChoice.chapterId) {
+                const chapterId = prev.pendingChoice.chapterId;
+                const newState = resolveChapterChoice(prev, chapterId, choiceIndex);
+                const justParticipated = newState.storyChapters?.current?.flags?.finaleParticipated === true
+                  && prev.storyChapters?.current?.flags?.finaleParticipated !== true;
+                if (justParticipated) {
+                  const cycleIndex = newState.storyChapters?.current?.cycleIndex;
+                  if (typeof cycleIndex === 'number') {
+                    fetch('/api/space-tycoon/chapters', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ cycleIndex, chapterId }),
+                    }).catch(() => { /* best-effort — resolveChapterEpilogue falls back to a zero-ish count on failure */ });
+                  }
+                }
                 return { ...newState, pendingChoice: null };
               }
               const eventDef = RANDOM_EVENTS.find(e => e.id === prev.pendingChoice!.eventId);

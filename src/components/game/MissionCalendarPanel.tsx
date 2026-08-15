@@ -40,6 +40,7 @@ const CATEGORY_LABEL: Partial<Record<CalendarCategory, string>> = {
   economic_cycle: 'Super-Cycle', // Live-Service Wave LS7
   program: 'Training Program', // Live-Service Wave LS6
   leader_retirement: 'Leader Retirement', // Live-Service Wave LS6
+  story_chapter: 'Story Chapter', // Live-Service Wave LS8
 };
 
 const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
@@ -57,6 +58,7 @@ const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
   economic_cycle: 'border-lime-500/25 bg-lime-500/[0.03]', // Live-Service Wave LS7
   program: 'border-sky-500/25 bg-sky-500/[0.03]', // Live-Service Wave LS6
   leader_retirement: 'border-fuchsia-500/25 bg-fuchsia-500/[0.03]', // Live-Service Wave LS6
+  story_chapter: 'border-violet-500/25 bg-violet-500/[0.03]', // Live-Service Wave LS8
 };
 const FALLBACK_CATEGORY_LABEL = 'Event';
 const FALLBACK_CATEGORY_FRAME = 'border-slate-500/25 bg-slate-500/[0.03]';

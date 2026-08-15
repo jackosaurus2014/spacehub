@@ -23,8 +23,17 @@ import type { GameEvent } from './types';
 import type { PendingChainChoiceUI } from './narrative-events';
 import { isCinematicChainStage, CINEMATIC_INFO_STAGE_TITLES } from './narrative-events';
 import { PLANET_ASSETS, BG_ASSETS, EVENT_ART } from './assets';
+// Live-Service Wave LS8 (docs/LIVE_SERVICE_2026-08.md §LS8): chapter-open
+// (Act 1) / chapter-close (finale resolution) cinematic beats — same
+// title-lookup detection convention as CINEMATIC_INFO_STAGE_TITLES above,
+// just sourced from chapters.ts's calendar-staged content instead of
+// narrative-events.ts's month-staged chains.
+import {
+  CINEMATIC_CHAPTER_ACT_TITLES, CHAPTER_FINALE_RESOLUTION_TITLES, pickChapterArt,
+  isCinematicChapterActStage, type PendingChapterChoiceUI,
+} from './chapters';
 
-export type CinematicMomentKind = 'narrative' | 'discovery' | 'expedition' | 'victory' | 'megastructure';
+export type CinematicMomentKind = 'narrative' | 'discovery' | 'expedition' | 'victory' | 'megastructure' | 'chapter';
 
 export interface CinematicMoment {
   /** Stable dedupe key — see each builder for its scheme. */
@@ -135,6 +144,37 @@ export function detectCinematicMomentsFromEvents(events: GameEvent[]): Cinematic
       continue;
     }
 
+    // Story Chapter (LS8) Act 1 opens — same eventLog-title lookup shape as
+    // chainHit above, sourced from chapters.ts instead of narrative-events.ts.
+    const chapterActHit = CINEMATIC_CHAPTER_ACT_TITLES.get(ev.title);
+    if (chapterActHit) {
+      moments.push({
+        id: `chapter:${ev.id}`,
+        kind: 'chapter',
+        title: chapterActHit.chapterName,
+        subtitle: chapterActHit.name,
+        icon: chapterActHit.icon,
+        accent: '#8b5cf6',
+        art: pickChapterArt(chapterActHit.chapterId),
+      });
+      continue;
+    }
+
+    // Story Chapter (LS8) finale resolution — the chapter-close beat.
+    const chapterFinaleHit = CHAPTER_FINALE_RESOLUTION_TITLES.get(ev.title);
+    if (chapterFinaleHit) {
+      moments.push({
+        id: `chapter-finale:${ev.id}`,
+        kind: 'chapter',
+        title: chapterFinaleHit.success ? 'CHAPTER RESOLVED' : 'CHAPTER SETBACK',
+        subtitle: chapterFinaleHit.chapterName,
+        icon: chapterFinaleHit.icon,
+        accent: chapterFinaleHit.success ? '#fbbf24' : '#8b5cf6',
+        art: pickChapterArt(chapterFinaleHit.chapterId),
+      });
+      continue;
+    }
+
     if (ev.type !== 'milestone') continue;
 
     if (ev.title.startsWith(VICTORY_TITLE_PREFIX)) {
@@ -198,6 +238,24 @@ export function buildNarrativeChoiceCinematicMoment(pending: PendingChainChoiceU
     icon: pending.eventIcon,
     accent: '#22d3ee',
     art: pickNarrativeArt(pending.chainId),
+  };
+}
+
+/** Chapter-sourced choice acts — currently unused by the 3 authored
+ *  chapters (none open on a choice-kind act), but wired for forward-compat
+ *  the same way narrative-events.ts's choice-stage path is always checked
+ *  regardless of which chains currently use it. */
+export function buildChapterChoiceCinematicMoment(pending: PendingChapterChoiceUI | null | undefined): CinematicMoment | null {
+  if (!pending || !pending.chapterId || pending.stageIndex === undefined) return null;
+  if (!isCinematicChapterActStage(pending.chapterId, pending.stageIndex)) return null;
+  return {
+    id: `chapter:${pending.eventId}`,
+    kind: 'chapter',
+    title: pending.chapterName || pending.eventName,
+    subtitle: pending.eventName,
+    icon: pending.eventIcon,
+    accent: '#8b5cf6',
+    art: pickChapterArt(pending.chapterId),
   };
 }
 

@@ -433,6 +433,13 @@ export interface GameState {
     chainName?: string;
     stageIndex?: number;
     totalStages?: number;
+    // V28 / Live-Service Wave LS8 (chapters.ts): set when this pendingChoice
+    // came from a calendar-dated Story Chapter act or finale instead of a
+    // narrative-events.ts chain — mutually exclusive with chainId/chainName
+    // above. Reuses stageIndex/totalStages (act index / act count + 1 for
+    // the finale slot) rather than adding parallel fields.
+    chapterId?: string;
+    chapterName?: string;
   } | null;
   incomeHistory?: number[];
 
@@ -1126,6 +1133,84 @@ export interface GameState {
   /** Active mentor boosts waiting to be consumed by the next matching hire.
    *  See LeaderMentorBoost. */
   leaderMentorBoosts?: LeaderMentorBoost[];
+
+  // ─── V28 (Live-Service Wave LS8 "Story Chapters") ────────────────────────
+  // docs/LIVE_SERVICE_2026-08.md §LS8. Calendar-dated, world-synchronized
+  // narrative arcs built on the W4 chain engine (narrative-events.ts) — every
+  // player experiences the same chapter during the same real-world window,
+  // seeded deterministically off a pure function of wall-clock time (no new
+  // scheduling state, same discipline as world-calendar.ts/appointment-
+  // events.ts). Shapes defined here (same precedent as corporateEras above)
+  // and consumed by chapters.ts, which imports GameState from this file.
+  // Additive/optional; see save-load.ts's V28 migration block. Null/absent =
+  // no chapter progress ever recorded (identical to a fresh game — the very
+  // next tick starts one from the world's current cycle).
+  storyChapters?: StoryChaptersState;
+
+  // ─── V29 (Live-Service Wave LS9 "The Realignment") ───────────────────────
+  // docs/LIVE_SERVICE_2026-08.md §LS9. Quarterly (real-world UTC calendar
+  // quarter) faction-posture shift + Epoch Address. NOTE: LS9 ran
+  // concurrently with LS8 above and originally targeted V28 — LS8 claimed it
+  // first, so this wave takes V29 (see save-load.ts's V29 migration block
+  // for the coordination note). The epoch's CONTENT (postures, address text)
+  // is never persisted — realignment.ts computes it fresh from the clock
+  // every time (same "pure function of time" discipline as
+  // economic-seasons.ts/seasonal-events.ts, and StoryChaptersState's own
+  // header two fields above). This one field exists purely so the engine can
+  // fire the "a new epoch has begun" event/banner exactly once per epoch per
+  // save, not to store the epoch itself.
+
+  /** The last Realignment epoch index (realignment.ts
+   *  getCurrentRealignmentEpoch) this save has already announced. Null/absent
+   *  = never announced one yet (identical to a fresh game — the next tick's
+   *  clock check announces the current epoch exactly once). */
+  lastSeenRealignmentEpoch?: number | null;
+}
+
+/** One chapter act's live/catch-up progress marker (0..acts.length-1 while
+ *  acts are resolving, acts.length once every act is done and only the
+ *  finale remains). */
+export interface ChapterProgressState {
+  /** World chapter-cycle this progress belongs to — chapters.ts's
+   *  getChapterCycleIndex(weekIndex). The moment the world moves to a new
+   *  cycle without this reaching 'completed', advanceStoryChapters files it
+   *  as missed and starts fresh progress for the new cycle. */
+  cycleIndex: number;
+  chapterId: string;
+  actIndex: number;
+  status: 'active' | 'completed';
+  awaitingChoice?: boolean;
+  /** World week-in-cycle at which this save first started tracking THIS
+   *  cycle — informational (drives the "you joined partway through" banner
+   *  note); advanceStoryChapters's catch-up/recap decision is driven purely
+   *  by how many acts are due at once, not by this field. */
+  joinedAtWeek: number;
+  /** Per-chapter-progress flags set by act/finale consequences, read by
+   *  later acts' resolve() and by the finale-answered/participated gates
+   *  (`finaleAnswered`, `finaleParticipated`, `epilogueResolved`) — same
+   *  flag-bag convention as narrative-events.ts's ChainProgressState. */
+  flags?: Record<string, boolean>;
+}
+
+/** Permanent record of a resolved chapter — the Chronicle-feed precedent
+ *  (LS4 corporate eras, LS7 season archive): a chapter's outcome becomes
+ *  part of this save's history the moment its finale resolves (or its
+ *  window closes unanswered). */
+export interface CompletedChapterRecord {
+  cycleIndex: number;
+  chapterId: string;
+  chapterName: string;
+  finaleSuccess: boolean;
+  completedAtMs: number;
+  headline: string;
+}
+
+export interface StoryChaptersState {
+  current: ChapterProgressState | null;
+  /** Most-recent-last, capped at 20 — plenty for the in-game history view;
+   *  a future public Chronicle wave can republish selected entries the same
+   *  opt-in way LS4's corp-era registry does. */
+  history: CompletedChapterRecord[];
 }
 
 /** One re-engagement objective inside a ReturningCommanderTrack — one per

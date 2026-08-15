@@ -383,6 +383,34 @@ function resolveMeasure(
 }
 
 /**
+ * Live-Service Wave LS9 ("The Realignment", docs/LIVE_SERVICE_2026-08.md
+ * §LS9): a PURE preview of a measure's world-shared BASELINE outcome — the
+ * exact same roll (`vote:${measureId}` tagged, quarter-seeded) every
+ * player's own resolveMeasure() would draw before their personal lobbying
+ * shift is applied. No player state is read or mutated.
+ *
+ * realignment.ts uses this to aggregate "what the Accord did this epoch"
+ * across many quarterIndex values without any cross-player DB aggregation:
+ * because the pre-lobbying roll is identical for every player on a given
+ * quarterIndex (this file's own header: "the pass/fail draw is world-shared,
+ * same roll value for everyone"), replaying it here for a range of quarters
+ * is a faithful, deterministic stand-in for "the real senate outcome",
+ * without needing to read anyone's actual accordLobbying/accordVoteHistory.
+ * Returns null for an unknown measureId (defensive — should never happen,
+ * mirrors resolveMeasure's own fail-safe).
+ */
+export function previewBaselineMeasureOutcome(
+  measureId: string,
+  quarterIndex: number,
+): { passed: boolean; def: AccordMeasureDefinition } | null {
+  const def = MEASURE_MAP.get(measureId);
+  if (!def) return null;
+  const publishedOdds = getPublishedOdds(measureId, quarterIndex);
+  const rng = worldRng(`vote:${measureId}`, quarterIndex);
+  return { passed: rng() < publishedOdds, def };
+}
+
+/**
  * Advance the Accord Senate by one game-month. Called once per month-end
  * from game-engine's processTick, alongside (and independent of) the W4
  * narrative chains. Resolves the current docket when its quarter-long

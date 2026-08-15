@@ -1,0 +1,3 @@
+[
+  { "prompt": "Seamless equirectangular deep-space panorama, faint cyan and violet nebula wisps scattered on near-black background, dim distant star clusters, VERY low brightness overall (this is a background skybox element, not a focal image), no bright focal object, no planets, no ships, uniform edge-to-edge texture suitable for spherical wraparound", "output": "public/game/skybox-nebula-equirect.webp", "aspectRatio": "21:9" }
+]

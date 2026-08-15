@@ -66,6 +66,15 @@ const NPC_BUY_RESOURCES = ['iron', 'aluminum', 'titanium', 'lunar_water'];
 export function processNPCTick(
   npcs: NPCCompanyState[],
   gameDate: GameDate,
+  // Live-Service Wave LS9 (docs/LIVE_SERVICE_2026-08.md §LS9): optional,
+  // keyed by npc id, this epoch's faction-alignment market-activity bias
+  // (realignment.ts getNpcFactionBiasMultiplier — bounded 0.85-1.15).
+  // Omitted/empty = every NPC behaves exactly as before this wave (bias 1),
+  // so existing callers/tests are unaffected. Deliberately NOT computed in
+  // this module — npc-engine.ts stays free of the accord-senate/factions
+  // import chain; the caller (game-engine.ts) computes it once per tick from
+  // NPC_SEEDS' factionId and passes the small lookup in.
+  npcFactionBias: Record<string, number> = {},
 ): { npcs: NPCCompanyState[]; events: GameEvent[]; marketActions: NPCMarketAction[] } {
   const allEvents: GameEvent[] = [];
   const allMarketActions: NPCMarketAction[] = [];
@@ -168,6 +177,10 @@ export function processNPCTick(
 
     // ─── 6. Market Activity (gentle nudges, not crashes) ──────────
     const marketActions: NPCMarketAction[] = [];
+    // LS9: this NPC's faction-alignment bias for the current epoch, bounded
+    // 0.85-1.15 by realignment.ts — colors HOW MUCH it trades, never WHAT it
+    // trades (allowed resources/locations/research are untouched).
+    const bias = npcFactionBias[n.id] ?? 1;
 
     // Sell excess resources (staggered to prevent dumps)
     const sellMonth = n.monthsPlayed % 5 === (NPC_SEEDS_INDEX.get(n.id) || 0) % 5;
@@ -176,7 +189,7 @@ export function processNPCTick(
         if (!NPC_ALLOWED_RESOURCES.has(resourceId)) continue;
         // Only sell when well above threshold (gentle trickle, not dump)
         if (qty > n.sellThreshold * 2) {
-          const sellQty = Math.round((qty - n.sellThreshold) * 0.3); // Sell 30% of excess
+          const sellQty = Math.round((qty - n.sellThreshold) * 0.3 * bias); // Sell ~30% of excess, epoch-biased
           if (sellQty > 0 && sellQty < 100) { // Cap sells to prevent price crashes
             marketActions.push({ npcId: n.id, npcName: n.name, resourceId, quantity: sellQty });
             n.resources[resourceId] = qty - sellQty;
@@ -191,7 +204,7 @@ export function processNPCTick(
     // Occasionally BUY resources (creates buy pressure, stabilizes prices)
     if (n.monthsPlayed % 7 === (NPC_SEEDS_INDEX.get(n.id) || 0) % 7 && n.money > 10_000_000) {
       const buyResource = NPC_BUY_RESOURCES[n.monthsPlayed % NPC_BUY_RESOURCES.length];
-      const buyQty = Math.round(5 + Math.random() * 15); // Buy 5-20 units
+      const buyQty = Math.round((5 + Math.random() * 15) * bias); // Buy ~5-20 units, epoch-biased
       const cost = buyQty * getBasePrice(buyResource);
       if (n.money > cost * 3) { // Only buy if we can easily afford it
         n.resources[buyResource] = (n.resources[buyResource] || 0) + buyQty;
