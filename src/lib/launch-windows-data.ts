@@ -533,7 +533,10 @@ export async function fetchLaunchLibraryUpcoming(limit = 50): Promise<Normalized
   }
 
   return data.results.map((launch): NormalizedLaunch => ({
-    externalId: `ll2-${launch.id}`,
+    // Raw LL2 UUID — MUST match events-fetcher.ts's externalId convention.
+    // A `ll2-` prefix here created a second row for every launch both crons
+    // touched (46 duplicate mission cards on /mission-control, Aug 2026).
+    externalId: launch.id,
     source: 'launch_library',
     name: launch.name,
     missionName: launch.mission?.name || null,

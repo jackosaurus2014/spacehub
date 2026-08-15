@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { SpaceEvent, MissionPhase, MISSION_PHASE_INFO, EVENT_TYPE_INFO } from '@/types';
 
 interface MissionStreamProps {
@@ -196,8 +197,29 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                   </div>
                 )}
 
-                <p className="text-slate-400 text-sm mb-2">Stream Not Available</p>
-                <p className="text-slate-400 text-xs">Check back closer to launch time</p>
+                <p className="text-slate-400 text-sm mb-2">Stream Not Yet Live</p>
+                <p className="text-slate-400 text-xs mb-4">
+                  Providers usually start webcasts 10&ndash;20 minutes before T-0
+                </p>
+                {/* Fallback watch options while the official stream is dark */}
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {mission.infoUrl && (
+                    <a
+                      href={mission.infoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-white/90 text-xs font-medium hover:bg-white/[0.14] transition-colors"
+                    >
+                      Provider launch page ↗
+                    </a>
+                  )}
+                  <Link
+                    href="/live"
+                    className="px-3 py-1.5 rounded-lg bg-cyan-500/15 text-cyan-300 text-xs font-medium border border-cyan-500/25 hover:bg-cyan-500/25 transition-colors"
+                  >
+                    Browse live streams
+                  </Link>
+                </div>
               </div>
             </div>
           )}

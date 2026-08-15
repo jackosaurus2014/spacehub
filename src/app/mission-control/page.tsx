@@ -449,13 +449,15 @@ function isLiveOrImminent(event: SpaceEvent): boolean {
   if (!launchDate) return false;
 
   const timeDiff = launchDate.getTime() - now.getTime();
-  const isWithin1Hour = timeDiff > 0 && timeDiff <= 60 * 60 * 1000;
+  // "About to launch" = within 6 hours of T-0 — a T-4h Falcon 9 with a firm
+  // window belongs in the Live Now rail, not buried in the upcoming list.
+  const isImminent = timeDiff > 0 && timeDiff <= 6 * 60 * 60 * 1000;
   const isPastLaunchWithin90Min = timeDiff < 0 && Math.abs(timeDiff) <= 90 * 60 * 1000;
 
   // Check if within launch window
   const inWindow = windowStart !== null && windowEnd !== null && now >= windowStart && now <= windowEnd;
 
-  return isWithin1Hour || isPastLaunchWithin90Min || inWindow;
+  return isImminent || isPastLaunchWithin90Min || inWindow;
 }
 
 // Live Now Section - shows missions that are currently live or about to go live
