@@ -449,9 +449,10 @@ function isLiveOrImminent(event: SpaceEvent): boolean {
   if (!launchDate) return false;
 
   const timeDiff = launchDate.getTime() - now.getTime();
-  // "About to launch" = within 6 hours of T-0 — a T-4h Falcon 9 with a firm
-  // window belongs in the Live Now rail, not buried in the upcoming list.
-  const isImminent = timeDiff > 0 && timeDiff <= 6 * 60 * 60 * 1000;
+  // "About to launch" = within 24 hours of T-0 (founder decision 8/15) — the
+  // Live Now rail always shows the next day's missions with countdowns
+  // rather than sitting on "no live missions" between launches.
+  const isImminent = timeDiff > 0 && timeDiff <= 24 * 60 * 60 * 1000;
   const isPastLaunchWithin90Min = timeDiff < 0 && Math.abs(timeDiff) <= 90 * 60 * 1000;
 
   // Check if within launch window

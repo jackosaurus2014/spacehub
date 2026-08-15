@@ -158,6 +158,14 @@ export default async function HomePage() {
   contentCards.sort((a, b) => b.date.getTime() - a.date.getTime());
   const topContent = contentCards.slice(0, 4);
 
+  // Today's Reads strip (directly under the hero): top 2 newest site-authored
+  // pieces. Since contentCards is already sorted newest-first across both AI
+  // dailies and editorial posts, this naturally shows today's freshest 2 when
+  // they exist and falls back to the next-newest available items when
+  // nothing new landed today — never an empty strip as long as any content
+  // exists at all.
+  const todaysReads = contentCards.slice(0, 2);
+
   const CATEGORY_COLORS: Record<string, string> = {
     regulatory: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     market: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
@@ -182,6 +190,48 @@ export default async function HomePage() {
 
       {/* Hero Section with featured content */}
       <LandingHero featuredArticle={featuredArticle} trendingNews={trendingNews} />
+
+      {/* Today's Reads — top 2 newest site-authored articles, directly below
+          the hero. Server-rendered from the DB (force-dynamic page); falls
+          back to the newest available content when nothing new landed today
+          (see todaysReads computation above). Never renders empty as long as
+          the site has published at least one AI insight or blog post. */}
+      {todaysReads.length > 0 && (
+        <section className="relative z-10 py-6 md:py-8">
+          <div className="container mx-auto px-4 max-w-5xl">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#56F000] animate-pulse" />
+              <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">Today&apos;s Reads</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {todaysReads.map((card) => (
+                <Link
+                  key={card.slug}
+                  href={card.href}
+                  className="group card-content !p-4 flex flex-col"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[card.category] || 'bg-slate-500/20 text-slate-400 border-slate-500/30'}`}>
+                      {card.category}
+                    </span>
+                    {card.readingTime ? (
+                      <span className="text-[10px] text-slate-400">{card.readingTime} min read</span>
+                    ) : (
+                      <span className="text-[10px] text-slate-400">AI Analysis</span>
+                    )}
+                  </div>
+                  <h3 className="text-sm md:text-base font-semibold text-white group-hover:text-white transition-colors line-clamp-2 mb-1">
+                    {card.title}
+                  </h3>
+                  <p className="text-xs text-slate-400 line-clamp-1">
+                    {card.summary}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* V3 Persona Picker — first-visit only, customizes the experience */}
       <PersonaPicker />

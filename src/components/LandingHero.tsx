@@ -42,7 +42,7 @@ interface LandingHeroProps {
 function DataCard({ label, value, sub, live, delay }: { label: string; value: string; sub?: string; live?: boolean; delay: number }) {
   return (
     <Reveal delay={delay}>
-      <div className="p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:border-[var(--border-default)] transition-colors">
+      <div className="p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:border-[var(--border-default)] transition-colors">
         <div className="flex items-center justify-between mb-1">
           <span className="text-[10px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-medium">{label}</span>
           {live && (
@@ -164,7 +164,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
   }, []);
 
   return (
-    <section className="relative min-h-[80vh] md:min-h-[88vh] flex items-center overflow-hidden">
+    <section className="relative py-10 sm:py-12 md:py-16 lg:py-20 flex items-center overflow-hidden">
       {/* Hero background illustration */}
       <div className="absolute inset-0 -z-10">
         <Image
@@ -193,12 +193,12 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
 
       {/* Content — asymmetric 60/40 layout */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
           {/* Left column — 7/12 on desktop */}
           <div className="lg:col-span-7">
             {/* Status badge */}
-            <Reveal delay={0.15} className="mb-8">
+            <Reveal delay={0.15} className="mb-5">
               <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#56F000] animate-pulse" />
                 <span className="text-[11px] text-[var(--text-secondary)] font-medium tracking-wide">{SITE_STATS.dataSources} live data sources connected</span>
@@ -206,8 +206,8 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
             </Reveal>
 
             {/* Headline — Satoshi Black, left-aligned, intentional line breaks */}
-            <Reveal delay={0.3} className="mb-6">
-              <h1 className="text-display text-[clamp(2.5rem,5vw+1rem,4.5rem)] text-[var(--text-primary)]">
+            <Reveal delay={0.3} className="mb-4">
+              <h1 className="text-display text-[clamp(2.25rem,4.5vw+1rem,3.75rem)] text-[var(--text-primary)]">
                 The terminal<br className="hidden sm:block" />
                 for space<br className="hidden sm:block" />
                 business.
@@ -215,14 +215,14 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
             </Reveal>
 
             {/* Value prop */}
-            <Reveal delay={0.45} className="mb-10">
+            <Reveal delay={0.45} className="mb-6">
               <p className="text-base md:text-lg text-[var(--text-secondary)] max-w-lg leading-relaxed">
                 Track launches, monitor satellites, analyze funding rounds, and research {SITE_STATS.companies} companies. Real-time intelligence for the space industry.
               </p>
             </Reveal>
 
             {/* Single primary CTA — indigo, not white */}
-            <Reveal delay={0.55} className="mb-6">
+            <Reveal delay={0.55} className="mb-4">
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 <Link
                   href="/mission-control"
@@ -274,7 +274,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                 </div>
 
                 {/* Data cards grid — values fetched from /api/pulse and /api/funding-tracker/stats */}
-                <div className="p-3 grid grid-cols-2 gap-2.5">
+                <div className="p-2.5 grid grid-cols-2 gap-2">
                   <DataCard label="Next Launch" value={nextLaunch} sub={launchName} live delay={0.65} />
                   <DataCard label="Active Sats" value={activeSats} sub={satsSub} live={pulseLive} delay={0.7} />
                   <DataCard label="Space Weather" value={weatherSummary} sub={weatherSub} live={pulseLive} delay={0.75} />

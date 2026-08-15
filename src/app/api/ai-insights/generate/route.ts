@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
 
     // Fetch recent content for analysis
     const thirtysSixHoursAgo = new Date(Date.now() - 36 * 60 * 60 * 1000);
-    const newsArticles = await prisma.newsArticle.findMany({
+    let newsArticles = await prisma.newsArticle.findMany({
       where: { publishedAt: { gte: thirtysSixHoursAgo } },
       orderBy: { publishedAt: 'desc' },
       take: 50,
@@ -242,7 +242,7 @@ export async function POST(request: NextRequest) {
     });
 
     const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
-    const blogPosts = await prisma.blogPost.findMany({
+    let blogPosts = await prisma.blogPost.findMany({
       where: { publishedAt: { gte: fortyEightHoursAgo } },
       orderBy: { publishedAt: 'desc' },
       take: 30,
@@ -250,7 +250,7 @@ export async function POST(request: NextRequest) {
     });
 
     const seventyTwoHoursAgo = new Date(Date.now() - 72 * 60 * 60 * 1000);
-    const legalUpdates = await prisma.legalUpdate.findMany({
+    let legalUpdates = await prisma.legalUpdate.findMany({
       where: { publishedAt: { gte: seventyTwoHoursAgo } },
       orderBy: { publishedAt: 'desc' },
       take: 20,
@@ -263,8 +263,49 @@ export async function POST(request: NextRequest) {
       legalCount: legalUpdates.length,
     });
 
+    // Resilience: a quiet 36h news window shouldn't zero out a whole day's
+    // generation. Before giving up, widen every lookback window once (news
+    // 36h→96h, blogs 48h→120h, legal 72h→168h) and retry — this covers the
+    // observed gap where the daily cron produced zero insights on a slow
+    // news day even though older-but-still-fresh content existed.
+    let usedWidenedLookback = false;
     if (newsArticles.length === 0 && blogPosts.length === 0 && legalUpdates.length === 0) {
-      logger.error('AI insights generation skipped — no recent content found');
+      usedWidenedLookback = true;
+      logger.warn('AI insights: no content in primary window, widening lookback and retrying');
+      const ninetySixHoursAgo = new Date(Date.now() - 96 * 60 * 60 * 1000);
+      const oneTwentyHoursAgo = new Date(Date.now() - 120 * 60 * 60 * 1000);
+      const oneSixtyEightHoursAgo = new Date(Date.now() - 168 * 60 * 60 * 1000);
+
+      [newsArticles, blogPosts, legalUpdates] = await Promise.all([
+        prisma.newsArticle.findMany({
+          where: { publishedAt: { gte: ninetySixHoursAgo } },
+          orderBy: { publishedAt: 'desc' },
+          take: 50,
+          select: { title: true, summary: true, url: true, source: true, category: true },
+        }),
+        prisma.blogPost.findMany({
+          where: { publishedAt: { gte: oneTwentyHoursAgo } },
+          orderBy: { publishedAt: 'desc' },
+          take: 30,
+          select: { title: true, excerpt: true, url: true, topic: true, source: { select: { name: true } } },
+        }),
+        prisma.legalUpdate.findMany({
+          where: { publishedAt: { gte: oneSixtyEightHoursAgo } },
+          orderBy: { publishedAt: 'desc' },
+          take: 20,
+          select: { title: true, excerpt: true, url: true, topics: true },
+        }),
+      ]);
+
+      logger.info('AI insights content availability after widened lookback', {
+        newsCount: newsArticles.length,
+        blogCount: blogPosts.length,
+        legalCount: legalUpdates.length,
+      });
+    }
+
+    if (newsArticles.length === 0 && blogPosts.length === 0 && legalUpdates.length === 0) {
+      logger.error('AI insights generation skipped — no recent content found even after widened lookback');
       return NextResponse.json(
         { success: false, error: 'No recent content found to analyze' },
         { status: 404 }
@@ -301,9 +342,16 @@ export async function POST(request: NextRequest) {
 
     // Determine content mix for today
     const includeForecast = shouldIncludeForecast();
-    const articleCount = 2;
+    // Baseline 2 articles/day. Content-heavy-day boost: bump to 3 when the
+    // day's ingest volume is unusually high (busy news day), so readers get
+    // more coverage precisely when there's more to cover — without inflating
+    // prompt cost on quiet days. Threshold tuned to the top end of a normal
+    // day's combined news+blog+legal volume (typically ~20-40 items).
+    const totalRecentItems = newsArticles.length + blogPosts.length + legalUpdates.length;
+    const CONTENT_HEAVY_THRESHOLD = 45;
+    const articleCount = totalRecentItems > CONTENT_HEAVY_THRESHOLD ? 3 : 2;
     const forecastInstructions = includeForecast
-      ? `\n\nIMPORTANT: Make one of the 2 articles a FORECAST piece. For the forecast article:
+      ? `\n\nIMPORTANT: Make one of the ${articleCount} articles a FORECAST piece. For the forecast article:
 - Project 5-10 years into the future based on current trends
 - Use the category "forecast" for this article
 - Ground predictions in real data and current trajectories
@@ -316,13 +364,13 @@ export async function POST(request: NextRequest) {
 
     const prompt = `You are a senior space industry analyst writing in-depth intelligence briefings for SpaceNexus, a professional space industry platform. Based on the following recent news articles, blog posts, and legal/regulatory updates, identify the ${articleCount} most significant space industry developments and write a comprehensive analysis for each.
 
-## Recent News Articles (Last 36 Hours)
+## Recent News Articles (Last ${usedWidenedLookback ? '96' : '36'} Hours)
 ${newsContext}
 
-## Recent Blog Posts & Analysis (Last 48 Hours)
+## Recent Blog Posts & Analysis (Last ${usedWidenedLookback ? '120' : '48'} Hours)
 ${blogContext}
 
-## Recent Legal & Regulatory Updates (Last 72 Hours)
+## Recent Legal & Regulatory Updates (Last ${usedWidenedLookback ? '168' : '72'} Hours)
 ${legalContext}
 
 ## Instructions
@@ -368,11 +416,12 @@ Respond with valid JSON in this exact format (no markdown code fences):
       blogCount: blogPosts.length,
       legalCount: legalUpdates.length,
       includeForecast,
+      articleCount,
     });
 
     const response = await anthropic.messages.create({
       model: EDITORIAL_MODEL,
-      max_tokens: 16000,
+      max_tokens: articleCount >= 3 ? 22000 : 16000,
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -494,15 +543,25 @@ Respond with valid JSON in this exact format (no markdown code fences):
       }
     }
 
-    // ALL articles require admin approval — send review email for all generated insights
+    // ALL articles require admin approval — send a review email covering the
+    // FULL pending_review backlog (not just today's batch). A missed review
+    // email one day would otherwise silently drop that day's articles from
+    // the reviewer's inbox once the next day's email replaces it, which is
+    // how articles were getting stuck in pending_review for multiple days
+    // straight and never reaching readers.
     if (upsertedInsights.length > 0) {
+      const allPending = await (prisma.aIInsight as any).findMany({
+        where: { status: 'pending_review' },
+        select: { title: true, slug: true, summary: true, category: true, content: true, factCheckNote: true, reviewToken: true },
+        orderBy: { generatedAt: 'asc' },
+      });
       await sendReviewEmail(
-        upsertedInsights.map((i) => ({
+        allPending.map((i: any) => ({
           title: i.title,
           slug: i.slug,
-          summary: parsed.insights.find((p) => generateSlug(p.title) === i.slug)?.summary || '',
+          summary: i.summary,
           category: i.category,
-          content: parsed.insights.find((p) => generateSlug(p.title) === i.slug)?.content || '',
+          content: i.content,
           factCheckNote: i.factCheckNote,
           reviewToken: i.reviewToken || '',
         }))
