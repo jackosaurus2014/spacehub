@@ -8,6 +8,10 @@ import {
   queueServerReconciliation,
   consumeServerReconciliation,
   __clearReconciliationQueue,
+  clampPlausibleMoney,
+  MAX_PLAUSIBLE_INCOME_PER_MS,
+  MIN_PLAUSIBILITY_ELAPSED_MS,
+  MAX_PLAUSIBILITY_ELAPSED_MS,
   type LedgerEntryLite,
 } from '../ledger-reconcile';
 import type { GameState } from '../types';
@@ -173,6 +177,66 @@ describe('applyReconciliationToState', () => {
     const twice = applyReconciliationToState(once, rec);
     expect(twice).toBe(once);
     expect(twice.money).toBe(1_050_000);
+  });
+});
+
+// ─── Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1, exploit #5): "client money is
+// the reconciliation base" plausibility clamp ────────────────────────────────
+describe('clampPlausibleMoney — E1 exploit #5 regression', () => {
+  it('regression: an edited-save / forged sync claiming an absurd figure is rejected, not believed', () => {
+    // This is exactly the exploit: reconcileBalance's BASE (clientMoney) was
+    // never checked against anything, so a save edited to claim an
+    // arbitrarily large `money` figure sailed straight through to
+    // `reconciledMoney` and got persisted. The clamp must reject it.
+    const prevMoney = 1_000_000_000; // $1B, plausible mid-game net worth
+    const elapsedMs = 60_000; // one normal 60s sync interval
+    const forgedClaim = 999_999_999_999_999; // near JS max safe integer
+    const result = clampPlausibleMoney(forgedClaim, prevMoney, elapsedMs);
+
+    expect(result.wasClamped).toBe(true);
+    expect(result.clampedMoney).toBeLessThan(forgedClaim);
+    expect(result.clampedMoney).toBe(prevMoney + elapsedMs * MAX_PLAUSIBLE_INCOME_PER_MS);
+    expect(result.rejectedExcess).toBe(forgedClaim - result.clampedMoney);
+  });
+
+  it('does not clamp legitimate, generous tick income between syncs', () => {
+    // A whale corp earning even $50M in a single 60s sync interval (very
+    // generous relative to docs/BALANCE.md's largest single service revenue,
+    // $160M/MONTH) must sail through untouched.
+    const prevMoney = 5_000_000_000;
+    const legitimateClaim = prevMoney + 50_000_000;
+    const result = clampPlausibleMoney(legitimateClaim, prevMoney, 60_000);
+    expect(result.wasClamped).toBe(false);
+    expect(result.clampedMoney).toBe(legitimateClaim);
+    expect(result.rejectedExcess).toBe(0);
+  });
+
+  it('never restricts downward movement (spending, hazard losses)', () => {
+    const result = clampPlausibleMoney(100, 999_999_999, 60_000);
+    expect(result.wasClamped).toBe(false);
+    expect(result.clampedMoney).toBe(100);
+  });
+
+  it('floors elapsed time so a rapid double-sync cannot be used to shrink the ceiling to ~0', () => {
+    const prevMoney = 1_000_000;
+    // elapsedMs = 0 would produce ceiling === prevMoney with no floor;
+    // MIN_PLAUSIBILITY_ELAPSED_MS guarantees some headroom.
+    const result = clampPlausibleMoney(prevMoney + 1, prevMoney, 0);
+    expect(result.ceiling).toBe(prevMoney + MIN_PLAUSIBILITY_ELAPSED_MS * MAX_PLAUSIBLE_INCOME_PER_MS);
+    expect(result.wasClamped).toBe(false);
+  });
+
+  it('caps elapsed time so a long-dormant lastSyncAt cannot produce an unbounded ceiling', () => {
+    const prevMoney = 1_000_000;
+    const oneYearMs = 365 * 24 * 3600_000;
+    const result = clampPlausibleMoney(prevMoney, prevMoney, oneYearMs);
+    expect(result.ceiling).toBe(prevMoney + MAX_PLAUSIBILITY_ELAPSED_MS * MAX_PLAUSIBLE_INCOME_PER_MS);
+  });
+
+  it('treats non-finite inputs as zero/floor rather than throwing or producing NaN', () => {
+    const result = clampPlausibleMoney(Number.NaN, Number.NaN, Number.NaN);
+    expect(Number.isFinite(result.clampedMoney)).toBe(true);
+    expect(Number.isFinite(result.ceiling)).toBe(true);
   });
 });
 

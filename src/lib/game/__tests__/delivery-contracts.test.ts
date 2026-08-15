@@ -14,6 +14,7 @@ import {
   getActiveDeliveries,
   getCompletedDeliveries,
   POOL_SIZE,
+  DELIVERY_ARBITRAGE_SPREAD,
 } from '../delivery-contracts';
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
@@ -145,7 +146,7 @@ describe('delivery-contracts — canDeliver / deliverContract', () => {
     expect(canDeliver(sWithoutInventory, c.id)).toBe(false);
   });
 
-  it('deliverContract pays money, deducts resources, records completion', () => {
+  it('deliverContract pays money (minus the E1 arbitrage spread), deducts resources, records completion', () => {
     const c = { ...generateContract('the-dominion', 20, 1000), status: 'accepted' as const };
     const s = baseState({
       activeDeliveries: [c],
@@ -153,14 +154,39 @@ describe('delivery-contracts — canDeliver / deliverContract', () => {
       money: 100,
     });
     const after = deliverContract(s, c.id, 5000);
-    // paymentMoney may be boosted by FRONTIER_CONTRACT_PAYOUT_MULTIPLIER when the
-    // player is in Frontier — in this test we are not. Check money rose by at
-    // least the base amount.
-    expect(after.money).toBeGreaterThanOrEqual(100 + c.paymentMoney);
+    // Wave E1: payout is c.paymentMoney * (1 - DELIVERY_ARBITRAGE_SPREAD), not
+    // the raw static price — this player is not in Frontier and has no rep/
+    // workforce bonuses (both default multipliers are 1), so the expected
+    // payout is exact modulo rounding.
+    const expectedPayment = Math.round(c.paymentMoney * (1 - DELIVERY_ARBITRAGE_SPREAD));
+    expect(after.money).toBe(100 + expectedPayment);
+    expect(after.money).toBeLessThan(100 + c.paymentMoney); // never the full static price
     expect(after.resources[c.resourceId]).toBe(50);
     expect(after.activeDeliveries).toHaveLength(0);
     expect(after.completedDeliveries).toHaveLength(1);
     expect(after.completedDeliveries![0].status).toBe('completed');
+  });
+
+  it('E1 regression: delivery payout is haircut by DELIVERY_ARBITRAGE_SPREAD, closing the static-price risk-free flip', () => {
+    // Regression for docs/ECONOMY_PVP_2026-08.md §E1 exploit #4: before the
+    // fix, a player who crashed the live market price for a resource (via
+    // market/trade), bought it back cheap on the crashed market, then
+    // delivered it here, was paid the FULL static baseMarketPrice-derived
+    // contract.paymentMoney — a risk-free flip. The spread guard doesn't
+    // require live market data (delivery contracts have no server endpoint
+    // to compare against), but it does guarantee the payout is now strictly
+    // less than the static contract price on every delivery, every time.
+    for (let seed = 1; seed <= 10; seed++) {
+      const c = { ...generateContract('the-syndicate', seed, 1000), status: 'accepted' as const };
+      const s = baseState({
+        activeDeliveries: [c],
+        resources: { [c.resourceId]: c.quantity },
+        money: 0,
+      });
+      const after = deliverContract(s, c.id, 5000);
+      expect(after.money).toBeGreaterThan(0);
+      expect(after.money).toBeLessThanOrEqual(Math.round(c.paymentMoney * (1 - DELIVERY_ARBITRAGE_SPREAD)));
+    }
   });
 
   it('deliverContract shifts faction reputation on complete', () => {

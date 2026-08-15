@@ -90,6 +90,62 @@ export function reconcileBalance(
   };
 }
 
+// ─── Wave E1 plausibility clamp (docs/ECONOMY_PVP_2026-08.md §E1, exploit #5) ─
+//
+// "Client money is the reconciliation base": reconcileBalance above computes
+// `reconciledMoney = clientMoney + ledgerDelta` — the LEDGER corrects deltas
+// (server-verified debits/credits), but `clientMoney` itself, the BASE of
+// that sum, was never checked against anything. An edited save (or a
+// forged sync POST body) that claims `money: 999999999999999` is simply
+// believed and persisted.
+//
+// This is a stopgap, not the full server-authoritative wallet program
+// (SIMULATION_INTEGRITY_TOOLING.md): it bounds how much the client-claimed
+// figure may have plausibly grown since the profile's last sync, using a
+// generous ceiling (well above any legitimate tick-income rate — see
+// docs/BALANCE.md service revenue tables, whose largest single service is
+// $160M/month ≈ $60/sec) so real play is never clipped, while an implausible
+// jump (edited save, forged payload) is rejected down to the ceiling and
+// flagged. Ledger-mediated income (contracts, mega-projects, bounties...) is
+// NOT subject to this ceiling — it is added on top via `moneyDelta`, which
+// is independently server-verified.
+export const MAX_PLAUSIBLE_INCOME_PER_MS = 2_000; // $2M/sec ceiling
+export const MIN_PLAUSIBILITY_ELAPSED_MS = 5_000; // 5s floor (rapid re-syncs)
+export const MAX_PLAUSIBILITY_ELAPSED_MS = 30 * 24 * 3600_000; // 30d cap
+
+export interface PlausibilityClampResult {
+  /** The client-claimed money figure, clamped to the plausible ceiling. */
+  clampedMoney: number;
+  wasClamped: boolean;
+  /** How much of the client's claim was rejected (0 when not clamped). */
+  rejectedExcess: number;
+  ceiling: number;
+}
+
+/**
+ * Bound a client-claimed money figure against how much it could plausibly
+ * have grown (via client-simulated tick income only — ledger deltas are
+ * handled separately) since `prevMoney` was last persisted, `elapsedMs` ago.
+ * Never restricts downward movement (spending, losses, hazards are
+ * unrestricted) — only clamps implausible upward jumps.
+ */
+export function clampPlausibleMoney(
+  clientMoney: number,
+  prevMoney: number,
+  elapsedMs: number,
+): PlausibilityClampResult {
+  const safeClient = Number.isFinite(clientMoney) ? clientMoney : 0;
+  const safePrev = Number.isFinite(prevMoney) ? prevMoney : 0;
+  const rawElapsed = Number.isFinite(elapsedMs) ? elapsedMs : MIN_PLAUSIBILITY_ELAPSED_MS;
+  const safeElapsed = Math.min(MAX_PLAUSIBILITY_ELAPSED_MS, Math.max(MIN_PLAUSIBILITY_ELAPSED_MS, rawElapsed));
+  const ceiling = safePrev + safeElapsed * MAX_PLAUSIBLE_INCOME_PER_MS;
+
+  if (safeClient > ceiling) {
+    return { clampedMoney: ceiling, wasClamped: true, rejectedExcess: safeClient - ceiling, ceiling };
+  }
+  return { clampedMoney: safeClient, wasClamped: false, rejectedExcess: 0, ceiling };
+}
+
 /** Apply signed resource deltas onto an inventory map, clamped at zero. */
 export function applyResourceDeltas(
   resources: Record<string, number>,

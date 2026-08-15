@@ -8,6 +8,7 @@ import {
   getCompletedDeliveries,
   canDeliver,
   formatDeadline,
+  DELIVERY_ARBITRAGE_SPREAD,
   type DeliveryContract,
 } from '@/lib/game/delivery-contracts';
 import { FACTION_MAP, getFactionArtUrl, type FactionId } from '@/lib/game/factions';
@@ -299,7 +300,10 @@ function ContractCard({
         </div>
 
         <div className="grid grid-cols-3 gap-1.5 text-[10px] mb-2">
-          <MicroStat label="Payment" value={formatMoney(contract.paymentMoney)} accent="cyan" />
+          {/* Wave E1: shows the actual net payout (post arbitrage-spread
+              haircut), not the raw static contract.paymentMoney — matches
+              what deliverContract() actually pays out. */}
+          <MicroStat label="Payment" value={formatMoney(Math.round(contract.paymentMoney * (1 - DELIVERY_ARBITRAGE_SPREAD)))} accent="cyan" />
           <MicroStat label="Deadline" value={formatDeadline(contract.deadlineAtMs, now)} accent={overdue ? 'red' : contract.deadlineAtMs - now < 6 * 3600 * 1000 ? 'amber' : 'slate'} />
           <MicroStat label="Rep" value={`+${contract.reputationOnComplete} / ${contract.reputationOnDefault}`} accent="purple" />
         </div>

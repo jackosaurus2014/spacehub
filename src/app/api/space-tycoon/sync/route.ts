@@ -12,7 +12,7 @@ import {
   getLeagueDefinition,
 } from '@/lib/game/league-system';
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
-import { reconcileBalance, applyResourceDeltas, type LedgerEntryLite } from '@/lib/game/ledger-reconcile';
+import { reconcileBalance, applyResourceDeltas, clampPlausibleMoney, type LedgerEntryLite } from '@/lib/game/ledger-reconcile';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 
 /**
@@ -96,8 +96,42 @@ export async function POST(request: Request) {
     try {
       const existingProfile = await prisma.gameProfile.findUnique({
         where: { userId: session.user.id },
-        select: { id: true },
+        select: { id: true, money: true, lastSyncAt: true },
       });
+
+      // Wave E1 (§E1 exploit #5): clamp the client-claimed money figure
+      // against how much it could plausibly have grown since this profile's
+      // last sync, BEFORE it becomes the base of the ledger reconciliation
+      // sum below. Only runs for existing profiles — a first-ever sync has
+      // no prior baseline to compare against (new accounts start at a fixed
+      // STARTING_MONEY, not exploitable via this path).
+      let plausibilityClampedMoney = clientMoney;
+      if (existingProfile) {
+        const elapsedMs = Date.now() - existingProfile.lastSyncAt.getTime();
+        const clamp = clampPlausibleMoney(clientMoney, existingProfile.money, elapsedMs);
+        plausibilityClampedMoney = clamp.clampedMoney;
+        if (clamp.wasClamped) {
+          logger.warn('Client money claim exceeded plausibility ceiling — clamped', {
+            userId: session.user.id, profileId: existingProfile.id,
+            clientMoney, prevMoney: existingProfile.money, elapsedMs,
+            ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
+          });
+          try {
+            await prisma.marketAuditLog.create({
+              data: {
+                eventType: 'client_money_implausible_rejected',
+                profileId: existingProfile.id,
+                details: {
+                  clientMoney, prevMoney: existingProfile.money, elapsedMs,
+                  ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
+                },
+                severity: 'critical',
+              },
+            });
+          } catch { /* audit log is best-effort */ }
+        }
+      }
+
       if (existingProfile && (await isLedgerAvailable())) {
         const safeAck = typeof ledgerAck === 'number' && Number.isFinite(ledgerAck) && ledgerAck > 0
           ? Math.floor(ledgerAck)
@@ -117,7 +151,7 @@ export async function POST(request: Request) {
           select: { seq: true, moneyDelta: true, resourceSlug: true, resourceDelta: true, reason: true, refId: true },
         });
 
-        const rec = reconcileBalance(clientMoney, pendingRows, safeAck);
+        const rec = reconcileBalance(plausibilityClampedMoney, pendingRows, safeAck);
         reconciledMoney = rec.reconciledMoney;
         reconciledResources = applyResourceDeltas(clientResources, rec.resourceDeltas);
         ledgerInfo = {
@@ -128,6 +162,10 @@ export async function POST(request: Request) {
           // Cap the entry list returned for UI display purposes.
           entries: rec.pending.slice(-25),
         };
+      } else if (existingProfile) {
+        // Ledger table unavailable — still apply the plausibility clamp to
+        // the figure that will be persisted below.
+        reconciledMoney = plausibilityClampedMoney;
       }
     } catch (ledgerError) {
       // Reconciliation is best-effort; never block the sync.

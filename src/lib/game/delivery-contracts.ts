@@ -131,6 +131,25 @@ export const POOL_SIZE = 8;
 const POOL_TARGET_SIZE = POOL_SIZE;
 const POOL_REFRESH_MS = 4 * 60 * 60 * 1000; // 4 hours
 
+// Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1, exploit #4 / §1c "three price
+// surfaces that never meet"): `paymentMoney` is fixed at generation time off
+// the STATIC `resource.baseMarketPrice` constant and never revisited — it
+// never sees the shared, player-movable `MarketResource.currentPrice`. That
+// makes delivery contracts a risk-free flip: crash a resource's live market
+// price (market/trade sell), buy it back cheap on the crashed market, then
+// deliver at the contract's untouched static price for pure profit.
+//
+// The full fix (spot-linked pricing via the server `marketSnapshot` sync
+// pipe, §2) is later-wave infrastructure — delivery contracts currently have
+// no server endpoint at all (100% client-simulated), so there is nothing to
+// cross-check a live price against without first building that pipe. As the
+// E1 stopgap, a flat settlement spread is deducted from every delivery
+// payout, shrinking (not eliminating) the exploitable margin — the same
+// "friction cost" role MARKET_BROKER_FEE_RATE plays on live market sells.
+// Real per-delivery money is also bounded (as a backstop) by the sync-route
+// client-money plausibility clamp (exploit #5, ledger-reconcile.ts).
+export const DELIVERY_ARBITRAGE_SPREAD = 0.15; // 15% haircut on payout
+
 export function getDeliveryPool(state: GameState): DeliveryContract[] {
   return state.availableDeliveries || [];
 }
@@ -341,6 +360,7 @@ export function deliverContract(state: GameState, contractId: string, now: numbe
   const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
   const payment = Math.round(
     contract.paymentMoney
+    * (1 - DELIVERY_ARBITRAGE_SPREAD)
     * frontierBonus
     * repBonuses.contractRewardMultiplier
     * (1 + wfBonuses.contractPayBonus)

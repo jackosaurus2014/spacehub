@@ -705,6 +705,16 @@ export interface GameProfileForFulfillment {
   completedResearchList: string[];
   shipsData: unknown;
   unlockedLocationsList: string[];
+  // Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1): additive optional fields so
+  // checkContractFulfillment can also verify the CompetitiveContract
+  // requirement types (competitive-contracts.ts), which is a superset of
+  // BiddingContract's ContractRequirements. Callers that don't supply these
+  // (bidding/fulfill route) are unaffected — those requirement types never
+  // appear on BiddingContract.
+  netWorth?: number;
+  serviceCount?: number;
+  /** Location IDs where this profile holds a server-recorded ColonyClaim. */
+  colonyLocationIds?: string[];
 }
 
 export interface FulfillmentResult {
@@ -735,7 +745,11 @@ export function checkContractFulfillment(
         isFulfilled: count >= requirements.target,
       };
     }
-    case 'resources_delivered': {
+    // 'resources_delivered' and 'mining_output_total' (competitive-contracts.ts)
+    // are the same check: does the profile's server-synced resource
+    // inventory hold at least `target` units of `resourceId`?
+    case 'resources_delivered':
+    case 'mining_output_total': {
       const resources = (profile.resources as Record<string, number>) || {};
       const available = resources[requirements.resourceId!] || 0;
       const pct = Math.min(100, (available / requirements.target) * 100);
@@ -757,6 +771,56 @@ export function checkContractFulfillment(
         percentage: pct,
         details: `${count}/${requirements.target} station(s) at ${LOCATION_NAMES[requirements.locationId!] || requirements.locationId || 'target'}`,
         isFulfilled: count >= requirements.target,
+      };
+    }
+    // Wave E1: competitive-contracts.ts 'buildings_at_location' — any
+    // completed building at the target location counts (unlike
+    // station_at_location, which requires a space_station definition).
+    case 'buildings_at_location': {
+      const buildings = (profile.buildingsData as Array<{ definitionId: string; locationId: string; isComplete: boolean }>) || [];
+      const count = buildings.filter(b =>
+        b.isComplete &&
+        (!requirements.locationId || b.locationId === requirements.locationId)
+      ).length;
+      const pct = Math.min(100, (count / requirements.target) * 100);
+      return {
+        percentage: pct,
+        details: `${count}/${requirements.target} buildings at ${LOCATION_NAMES[requirements.locationId!] || requirements.locationId || 'target'}`,
+        isFulfilled: count >= requirements.target,
+      };
+    }
+    // Wave E1: competitive-contracts.ts 'net_worth_threshold'.
+    case 'net_worth_threshold': {
+      const netWorth = profile.netWorth ?? 0;
+      const pct = Math.min(100, (netWorth / requirements.target) * 100);
+      return {
+        percentage: pct,
+        details: `$${netWorth.toLocaleString()}/$${requirements.target.toLocaleString()} net worth`,
+        isFulfilled: netWorth >= requirements.target,
+      };
+    }
+    // Wave E1: competitive-contracts.ts 'services_count'.
+    case 'services_count': {
+      const serviceCount = profile.serviceCount ?? 0;
+      const pct = Math.min(100, (serviceCount / requirements.target) * 100);
+      return {
+        percentage: pct,
+        details: `${serviceCount}/${requirements.target} active services`,
+        isFulfilled: serviceCount >= requirements.target,
+      };
+    }
+    // Wave E1: competitive-contracts.ts 'colony_established'. Verified
+    // against server-recorded ColonyClaim rows (colonies/route.ts) — NOT
+    // client-claimed state, since this is the one requirement type with an
+    // authoritative server record.
+    case 'colony_established': {
+      const claimed = (profile.colonyLocationIds || []).includes(requirements.locationId || '');
+      return {
+        percentage: claimed ? 100 : 0,
+        details: claimed
+          ? `Colony established at ${LOCATION_NAMES[requirements.locationId!] || requirements.locationId}`
+          : `No colony claim at ${LOCATION_NAMES[requirements.locationId!] || requirements.locationId || 'target'}`,
+        isFulfilled: claimed,
       };
     }
     case 'ships_at_location': {
@@ -787,8 +851,14 @@ export function checkContractFulfillment(
         isFulfilled: true,
       };
     }
+    // Wave E1: 'survey_discoveries' and 'trade_volume' (competitive-contracts.ts)
+    // have no server-authoritative counter yet (survey discoveries are a
+    // pure client-tick event never synced; trade volume is real per-player
+    // but not yet aggregated — see docs/ECONOMY_PVP_2026-08.md §E1/E6).
+    // Fail CLOSED rather than trust an unverifiable client claim: these
+    // contract types are not claimable until a later wave adds the counter.
     default:
-      return { percentage: 0, details: 'Unknown requirement type', isFulfilled: false };
+      return { percentage: 0, details: 'Unknown or unverifiable requirement type', isFulfilled: false };
   }
 }
 

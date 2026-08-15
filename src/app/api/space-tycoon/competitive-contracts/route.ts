@@ -6,8 +6,14 @@ import { logger } from '@/lib/logger';
 import { COMPETITIVE_CONTRACT_POOL } from '@/lib/game/competitive-contracts';
 import { getGlobalGameDate } from '@/lib/game/server-time';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { checkContractFulfillment, type GameProfileForFulfillment } from '@/lib/game/contract-bidding';
 
 export const dynamic = 'force-dynamic';
+
+/** Only 'colony_established' needs the extra ColonyClaim lookup. */
+function requiresColonyCheck(requirementType: string): boolean {
+  return requirementType === 'colony_established';
+}
 
 /**
  * GET /api/space-tycoon/competitive-contracts
@@ -129,6 +135,71 @@ export async function POST(request: NextRequest) {
         error: `All ${contract.maxWinners} slots are filled`,
         slotsRemaining: 0,
       });
+    }
+
+    // ── Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1, exploit #1): this route
+    // used to pay out on timing/duplication/slot checks ONLY — a logged-in
+    // user could curl `{contractId:'cc_pluto_expedition'}` for $50B with no
+    // verification that they actually meet the contract's requirement.
+    // checkContractFulfillment() existed (used by bidding/fulfill) and was
+    // never called here. Verify against the profile's own server-synced
+    // state before any payout; unverifiable requirement types (survey
+    // discoveries, trade volume — see contract-bidding.ts) fail CLOSED.
+    const colonyClaims = requiresColonyCheck(contract.requirement.type)
+      ? await prisma.colonyClaim.findMany({ where: { profileId: profile.id }, select: { locationId: true } })
+      : [];
+    const fulfillmentProfile: GameProfileForFulfillment = {
+      buildingsData: profile.buildingsData,
+      resources: profile.resources,
+      completedResearchList: profile.completedResearchList,
+      shipsData: profile.shipsData,
+      unlockedLocationsList: profile.unlockedLocationsList,
+      netWorth: profile.netWorth,
+      serviceCount: profile.serviceCount,
+      colonyLocationIds: colonyClaims.map(c => c.locationId),
+    };
+    const fulfillment = checkContractFulfillment(
+      {
+        type: contract.requirement.type,
+        target: contract.requirement.target,
+        locationId: contract.requirement.locationId,
+        resourceId: contract.requirement.resourceId,
+        categoryId: contract.requirement.categoryId,
+        label: contract.requirement.label,
+      },
+      fulfillmentProfile,
+    );
+
+    if (!fulfillment.isFulfilled) {
+      // Logged rejection — this is the abuse path the exploit used to hit.
+      logger.warn('Competitive contract claim rejected — requirement not met', {
+        contractId, companyName, userId: session.user.id, profileId: profile.id,
+        requirementType: contract.requirement.type,
+        progress: fulfillment.details,
+        percentage: fulfillment.percentage,
+      });
+      try {
+        await prisma.marketAuditLog.create({
+          data: {
+            eventType: 'competitive_contract_unverified_claim',
+            profileId: profile.id,
+            details: {
+              contractId,
+              requirementType: contract.requirement.type,
+              target: contract.requirement.target,
+              percentage: fulfillment.percentage,
+              details: fulfillment.details,
+              claimedReward: contract.reward.money,
+            },
+            severity: 'warning',
+          },
+        });
+      } catch { /* audit log is best-effort */ }
+      return NextResponse.json({
+        success: false,
+        error: `Contract requirement not met: ${fulfillment.details}`,
+        progress: { percentage: Math.round(fulfillment.percentage), details: fulfillment.details },
+      }, { status: 400 });
     }
 
     // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.

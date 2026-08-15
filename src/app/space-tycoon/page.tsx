@@ -2247,8 +2247,13 @@ export default function SpaceTycoonPage() {
               if (newRes[resId] !== undefined && newRes[resId] >= qty) { newRes[resId] -= qty; }
               else if (newProducts[resId] !== undefined) { newProducts[resId] -= qty; }
             }
-            // Add outputs immediately (simplified — no wait for completion)
-            newProducts[recipe.outputId] = (newProducts[recipe.outputId] || 0) + recipe.outputQuantity;
+            // Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1, exploit #3): outputs
+            // used to be credited HERE immediately on start, AND AGAIN by
+            // game-engine.ts's processFullTick refining-completion check
+            // when activeRefining elapses — every craft yielded 2x its
+            // outputQuantity. The engine's completion credit (into
+            // `resources`) is the single source of truth now; this handler
+            // only deducts inputs and starts the timer.
             return {
               ...prev,
               resources: newRes,
