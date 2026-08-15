@@ -139,6 +139,13 @@ export function getNewGameState(): GameState {
     // first transport/tanker is built (then remote accrual goes local).
     locationInventories: {},
     logisticsUnlocked: false,
+    // V24 — Live-Service Wave LS1 "Night Shift" (command-queue.ts,
+    // standing-directives.ts, away-operations.ts). A fresh corporation has
+    // no queued orders and no standing directives yet (both are opt-in, free
+    // to configure — see the StandingOrdersPanel); no away catch-up has run.
+    commandQueue: [],
+    standingDirectives: [],
+    awayLedger: null,
   };
 }
 
@@ -391,6 +398,17 @@ export function loadGame(): GameState | null {
     // owned moves, strands, or duplicates.
     if (!state.locationInventories) state.locationInventories = {};
     if (state.logisticsUnlocked === undefined) state.logisticsUnlocked = false;
+
+    // V24 fields — Live-Service Wave LS1 "Night Shift" (docs/
+    // LIVE_SERVICE_2026-08.md §LS1). Additive-only: an existing save with no
+    // commandQueue/standingDirectives simply has nothing queued/automated
+    // yet (numerically identical to a fresh game — an empty queue pops
+    // nothing, zero active directives charge zero ops fee). awayLedger
+    // starts null; the very next load computes one via
+    // calculateAwayOperations if the player was away >= 30s.
+    if (!state.commandQueue) state.commandQueue = [];
+    if (!state.standingDirectives) state.standingDirectives = [];
+    if (state.awayLedger === undefined) state.awayLedger = null;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

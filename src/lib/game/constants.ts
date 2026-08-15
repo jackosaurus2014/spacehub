@@ -47,8 +47,59 @@ export const TICK_INTERVALS: Record<number, number> = {
  *  Revenue and costs are divided by this number per tick. */
 export const TICKS_PER_GAME_MONTH = 30;
 
-/** Game save version for migration support */
+/** Game save version for migration support.
+ *  NOTE (docs/LIVE_SERVICE_2026-08.md appendix defect #9): this literal has
+ *  stayed at 1 since the earliest builds. The REAL migration ledger is the
+ *  inline "V<n>" comments inside save-load.ts's getNewGameState()/loadGame()
+ *  (currently V12 -> V24 as of Wave LS1). Two numbering schemes coexist —
+ *  this constant is NOT what future agents should bump for a new migration;
+ *  add a new additive "V<n> fields" block to save-load.ts instead, following
+ *  the existing V-comment convention. */
 export const SAVE_VERSION = 1;
+
+// ─── Live-Service Wave LS1 "Night Shift" ────────────────────────────────────
+// docs/LIVE_SERVICE_2026-08.md §LS1. Command queue depth, standing-directive
+// ops-fee pricing, and the away-efficiency curve that replaces the old 8h
+// hard cap (offline-income.ts, deleted this wave — see away-operations.ts).
+
+/** Base free command-queue slots (research + build orders share one list).
+ *  CLAUDE.md permits paid queue-slot convenience monetization beyond a
+ *  reasonable free cap "later"; per the founder's monetization hold, LS1
+ *  ships everything free/earnable — no purchased slots exist. */
+export const COMMAND_QUEUE_BASE_DEPTH = 4;
+/** +2 slots once Autonomous Operations research completes — thematically the
+ *  "stations and mines run without human oversight" tech (research-tree.ts
+ *  id 'autonomous_ops'), i.e. the spec's "parallel_research-style ops tech". */
+export const COMMAND_QUEUE_AUTOMATION_RESEARCH_ID = 'autonomous_ops';
+export const COMMAND_QUEUE_AUTOMATION_BONUS = 2;
+/** +2 slots at corporation tier 5 (Megacorp-class operations). */
+export const COMMAND_QUEUE_TIER5_BONUS = 2;
+export const COMMAND_QUEUE_TIER5_THRESHOLD = 5;
+
+/** Standing-directive ops-fee sink: $250K x activeDirectiveCount^1.3 per
+ *  game-month. Superlinear so stacking automation is a real, escalating
+ *  economic trade-off (docs/BALANCE.md sink pattern) rather than a free
+ *  default — every active directive raises the cost of ALL of them. */
+export const DIRECTIVE_OPS_FEE_BASE = 250_000;
+export const DIRECTIVE_OPS_FEE_EXPONENT = 1.3;
+
+/** Away-efficiency curve: uncapped TIME, capped RATE. Replaces
+ *  offline-income.ts's dishonest MAX_OFFLINE_HOURS=8 wall (and its
+ *  Math.max(0, netPerTick) clamp — appendix defect #1; see
+ *  away-operations.ts). `maxHours` is the tier's upper bound of real hours
+ *  away; `baseEfficiency` is the fraction of live-tick revenue/mining
+ *  credited per tick in that bucket before any investment bonus. */
+export interface AwayEfficiencyTier { maxHours: number; baseEfficiency: number; }
+export const AWAY_EFFICIENCY_TIERS: AwayEfficiencyTier[] = [
+  { maxHours: 12, baseEfficiency: 1.00 },        // 0-12h: full rate
+  { maxHours: 48, baseEfficiency: 0.70 },         // 12-48h
+  { maxHours: 24 * 7, baseEfficiency: 0.40 },     // 48h-7d
+  { maxHours: Infinity, baseEfficiency: 0.15 },   // 7d+ floor
+];
+/** Investment (automation research + operator workforce share) raises tiers
+ *  2-4 toward this cap — never to 1.0. Logging in must always beat staying
+ *  away (MMO invariant, docs/LIVE_SERVICE_2026-08.md §2.2). */
+export const AWAY_EFFICIENCY_INVESTMENT_CAP = 0.85;
 
 /** localStorage key */
 export const SAVE_KEY = 'spacetycoon_save';

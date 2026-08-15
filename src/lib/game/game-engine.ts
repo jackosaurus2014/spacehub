@@ -75,6 +75,13 @@ import type { ServiceType } from './types';
 // constituency approval feeds updateCrewWellbeing as one additive input.
 import { getDoctrineBonuses, getConstituencyApprovals, getConstituencyMoraleModifier } from './corporate-doctrine';
 import type { ResourceId } from './resources';
+// Live-Service Wave LS1 "Night Shift" (docs/LIVE_SERVICE_2026-08.md §LS1):
+// command-queue pop-on-slot-free (every tick) + standing-directive monthly
+// ops fee/automation (same isMonthEnd hook hazards/senate already use — the
+// away-catchup path in away-operations.ts shares processDirectivesForMonth
+// so live and away evaluation can never drift).
+import { popCommandQueue } from './command-queue';
+import { processDirectivesForMonth } from './standing-directives';
 
 /** Get or create today's daily metrics tracker */
 function getDailyMetrics(state: GameState): NonNullable<GameState['dailyMetrics']> {
@@ -1051,6 +1058,19 @@ export function processTick(state: GameState): GameState {
     }
   } catch { /* accord senate non-critical — never block the tick */ }
 
+  // Live-Service Wave LS1 "Night Shift" (docs/LIVE_SERVICE_2026-08.md §LS1
+  // item 2): standing-directive ops fee + auto-sell/auto-restock/auto-renew,
+  // evaluated once per game-month — the SAME processDirectivesForMonth call
+  // away-operations.ts's catch-up loop uses, so live play and away catch-up
+  // can never compute different numbers for the same elapsed month.
+  try {
+    if (isMonthEnd) {
+      const monthIndex = globalDate.totalMonths;
+      const dResult = processDirectivesForMonth(out, monthIndex, now);
+      out = dResult.state;
+    }
+  } catch { /* standing directives non-critical — never block the tick */ }
+
   // Hazards v2 (audit Wave D / Change #4 "hazards hurt, insurance pays"):
   // roll once per game-month, seeded per (world month, location, type) —
   // deterministic, shared weather, no save-scumming. Severe events can
@@ -1146,6 +1166,17 @@ export function processTick(state: GameState): GameState {
       description: 'Your Protected Frontier period has ended. The full competitive economy is now open to you — and you to it.',
     });
   }
+
+  // Live-Service Wave LS1 "Night Shift" (docs/LIVE_SERVICE_2026-08.md §LS1
+  // item 1): pop the command queue every tick — starts the next queued
+  // research/build the instant its channel frees (builds/research above
+  // already self-complete on wall-clock time; this just chains what's next).
+  // Cheap no-op when the queue is empty or nothing is ready.
+  try {
+    if ((out.commandQueue || []).length > 0) {
+      out = popCommandQueue(out, now).state;
+    }
+  } catch { /* command queue non-critical — never block the tick */ }
 
   return out;
 }

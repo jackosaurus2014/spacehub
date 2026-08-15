@@ -42,8 +42,9 @@ import { calculateRushRepairCost } from '@/lib/game/hazards';
 import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/game/contracts';
 import { createContractBoost } from '@/lib/game/speed-boosts';
 import WelcomeBackModal from '@/components/game/WelcomeBackModal';
-import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-income';
-import type { OfflineEarnings } from '@/lib/game/offline-income';
+import { calculateAwayOperations, applyAwayOperations } from '@/lib/game/away-operations';
+import type { AwayLedger } from '@/lib/game/types';
+import StandingOrdersPanel from '@/components/game/StandingOrdersPanel';
 import GameStyles from '@/components/game/GameStyles';
 import RegionBackdrop from '@/components/game/RegionBackdrop';
 import StardustLayer from '@/components/game/StardustLayer';
@@ -778,7 +779,7 @@ export default function SpaceTycoonPage() {
   const [showMenu, setShowMenu] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
-  const [offlineEarnings, setOfflineEarnings] = useState<OfflineEarnings | null>(null);
+  const [offlineEarnings, setOfflineEarnings] = useState<AwayLedger | null>(null);
   const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [showFrontierGraduation, setShowFrontierGraduation] = useState(false);
   // 4X Wave W5 — cinematic presentation queue (client-side only; see
@@ -810,16 +811,24 @@ export default function SpaceTycoonPage() {
   useEffect(() => {
     const saved = loadGame();
     if (saved) {
-      // Check for offline income
-      const earnings = calculateOfflineIncome(saved);
-      if (earnings && earnings.moneyEarned > 0) {
-        setOfflineEarnings(earnings);
+      // LS1 "Night Shift": away-operations already applies everything that
+      // happened while offline (income, standing directives, command-queue
+      // chaining, forecast hazards) — the modal below is purely a debrief
+      // display, not a "claim" gate. State is loaded post-catch-up either way.
+      const awayResult = calculateAwayOperations(saved);
+      const loadedState = awayResult ? applyAwayOperations(saved, awayResult) : saved;
+      if (awayResult) {
+        const ledger = awayResult.ledger;
+        const hadResourceGain = Object.values(ledger.resourcesDelta).some(v => v > 0);
+        if (ledger.moneyDelta !== 0 || hadResourceGain || ledger.queueExecuted.length > 0 || ledger.hazardsApplied.length > 0) {
+          setOfflineEarnings(ledger);
+        }
       }
-      setState(saved);
+      setState(loadedState);
       // Wave 9: players who've finished the 5-step tutorial land on the
       // map-first command center by default — brand-new players (still
       // mid-tutorial) keep the guided Dashboard as their entry point.
-      setTab(pickInitialTab(saved));
+      setTab(pickInitialTab(loadedState));
     } else {
       setShowMenu(true);
     }
@@ -2054,6 +2063,11 @@ export default function SpaceTycoonPage() {
             });
           }}
         />}
+        {tab === 'fleet' && (
+          <div className="mt-4">
+            <StandingOrdersPanel state={state} onUpdateState={fn => setState(prev => prev ? fn(prev) : prev)} />
+          </div>
+        )}
         {tab === 'crafting' && <CraftingPanel state={state} onStartCrafting={(recipeId) => {
           const recipe = CHAIN_MAP.get(recipeId);
           if (!recipe) return;
@@ -2344,14 +2358,12 @@ export default function SpaceTycoonPage() {
       />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
-      {/* Offline Income Modal */}
+      {/* Away-Operations Debrief (LS1 "Night Shift") — state is already
+          applied on load; this is a display-only dismiss. */}
       {offlineEarnings && (
         <WelcomeBackModal
           earnings={offlineEarnings}
-          onCollect={() => {
-            setState(prev => prev ? applyOfflineIncome(prev, offlineEarnings) : prev);
-            setOfflineEarnings(null);
-          }}
+          onCollect={() => setOfflineEarnings(null)}
         />
       )}
 

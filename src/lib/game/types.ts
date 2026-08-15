@@ -1042,6 +1042,33 @@ export interface GameState {
    *  repeatableResearchLevels) sums def.repeatable.effectPerLevel once per
    *  completed level, inside the same aggregate caps as every other bonus. */
   repeatableResearchLevels?: Record<string, number>;
+
+  // ─── V24 (Live-Service Wave LS1 "Night Shift") ───────────────────────────
+  // docs/LIVE_SERVICE_2026-08.md §LS1. Command queues + priced standing
+  // directives + honest uncapped-time/capped-rate away efficiency, replacing
+  // offline-income.ts's dishonest 8h hard-cap (appendix defect #1). All
+  // fields additive/optional; see save-load.ts's V24 migration block and
+  // away-operations.ts / command-queue.ts / standing-directives.ts.
+
+  /** Ordered list of orders waiting for a free channel (research slot 1/2,
+   *  construction pool). Executes automatically as slots free — on every
+   *  live tick (game-engine.ts) and during away catch-up
+   *  (away-operations.ts). Capacity from getCommandQueueCapacity(state);
+   *  everything free/earnable per CLAUDE.md's monetization-hold exception. */
+  commandQueue?: CommandQueueOrder[];
+
+  /** Persistent automation policies (auto-sell, auto-restock, auto-renew
+   *  delivery contracts, maintenance reserve floor). Each active directive
+   *  adds to a superlinear monthly ops-fee sink (standing-directives.ts) —
+   *  automation is a priced economic trade-off, never a free default. */
+  standingDirectives?: StandingDirective[];
+
+  /** Summary of the most recent away-operations catch-up — what the
+   *  efficiency curve credited, which queue orders started/skipped, what
+   *  directives cost/did, and which forecasted hazards struck while away.
+   *  Consumed by the (LS2) Operations Debrief; LS1 only guarantees the data
+   *  exists. Cleared to null once the player has seen it. */
+  awayLedger?: AwayLedger | null;
 }
 
 export interface DeliveryContractState {
@@ -1240,3 +1267,100 @@ export interface ScienceMissionState {
 // resolveLegacyTab() in space-tycoon/page.tsx so old saves/links never dead-end.
 // 'science' added in 4X Wave W6 (flagship scientific missions — science-missions.ts).
 export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'predictions' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance';
+
+// ─── Live-Service Wave LS1 "Night Shift" — command queues, standing
+// directives, away operations. docs/LIVE_SERVICE_2026-08.md §LS1. Types live
+// here (GameState references them) — engine logic lives in command-queue.ts /
+// standing-directives.ts / away-operations.ts.
+
+/** Order kinds the queue can hold. Execution this wave is fully implemented
+ *  for 'research' and 'build' (the two chaining examples in the LS1 player
+ *  outcome: "queue the next three researches, chain two builds"). The other
+ *  three kinds from the spec's data-model list are typed for forward
+ *  compatibility but are not yet executable — command-queue.ts skips them
+ *  with a logged reason the moment they reach the front of the queue
+ *  (never silently vanish, per spec). 'service_activate' has no manual
+ *  analogue in this codebase (services auto-activate when their building
+ *  completes — game-engine.ts step 5), so a `build` order is the correct
+ *  way to "activate" one; 'ship_dispatch' and 'craft' await a follow-up wave. */
+export type CommandQueueOrderKind = 'research' | 'build' | 'ship_dispatch' | 'craft' | 'service_activate';
+
+export interface CommandQueueOrder {
+  id: string;
+  kind: CommandQueueOrderKind;
+  /** When the order was added to the queue (ms) — used as a floor for its
+   *  simulated start time during away catch-up. */
+  createdAtMs: number;
+  /** Display label captured at enqueue time so the UI/ledger never breaks if
+   *  a definition is later removed/renamed. */
+  label: string;
+  /** kind: 'research' */
+  researchId?: string;
+  /** kind: 'build' */
+  buildingId?: string;
+  locationId?: string;
+}
+
+/** Directive kinds implemented this wave. 'ship_loop' (route-repeating
+ *  hauler automation via cargo-logistics.ts) is deferred — see LS1 report
+ *  deviations — so it is deliberately NOT part of this union; charging its
+ *  ops fee for a no-op would violate the "priced automation must actually
+ *  automate something" invariant. */
+export type StandingDirectiveType = 'auto_sell' | 'auto_restock' | 'auto_renew_contract' | 'maintenance_reserve';
+
+export interface StandingDirective {
+  id: string;
+  type: StandingDirectiveType;
+  createdAtMs: number;
+  active: boolean;
+  label: string;
+  /** auto_sell: sell down to nothing (or maxUnitsPerMonth) while spot price
+   *  stays at/above minPrice. */
+  resourceId?: string;
+  minPrice?: number;
+  /** auto_restock: buy up toward targetStock while spot price stays at/below
+   *  maxPrice, gated by any active maintenance_reserve floor. */
+  maxPrice?: number;
+  targetStock?: number;
+  /** Shared unit cap per game-month for auto_sell / auto_restock. */
+  maxUnitsPerMonth?: number;
+  /** auto_renew_contract: only these resource ids (empty/undefined = any). */
+  resourceWhitelist?: string[];
+  maxContractsPerMonth?: number;
+  /** maintenance_reserve: never let auto_restock spend money below this
+   *  liquid floor. Multiple active reserve directives combine via max(). */
+  reserveAmount?: number;
+}
+
+export interface AwayLedgerQueueEntry {
+  kind: CommandQueueOrderKind;
+  label: string;
+  ok: boolean;
+  reason?: string;
+}
+
+export interface AwayLedgerHazardEntry {
+  monthIndex: number;
+  summary: string;
+}
+
+/** Snapshot of one away-operations catch-up pass (away-operations.ts). Feeds
+ *  the (LS2) Operations Debrief; LS1 only guarantees this data exists and is
+ *  deterministic (same state + elapsed time -> identical ledger). */
+export interface AwayLedger {
+  computedAtMs: number;
+  timeAwayMs: number;
+  efficiencyTierLabel: string;
+  /** 0-1 — the blended tier efficiency applied to revenue/mining. */
+  effectiveEfficiencyPct: number;
+  /** Net money delta actually applied (state.money after - before). */
+  moneyDelta: number;
+  resourcesDelta: Record<string, number>;
+  gameMonthsProcessed: number;
+  directiveFeesCharged: number;
+  directiveActionsSummary: string[];
+  queueExecuted: AwayLedgerQueueEntry[];
+  queueSkipped: AwayLedgerQueueEntry[];
+  hazardsApplied: AwayLedgerHazardEntry[];
+  message: string;
+}
