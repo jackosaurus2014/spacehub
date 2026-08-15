@@ -225,7 +225,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                     <span className={`text-xs font-medium ${claimed ? isPlayer ? 'text-green-400' : 'text-red-400/70' : 'text-white'}`}>
                       {m.name}
                     </span>
-                    <p className="text-slate-600 text-[9px]">{m.description}</p>
+                    <p className="text-slate-600 text-[11px]">{m.description}</p>
                   </div>
                 </div>
                 <div className="text-right">

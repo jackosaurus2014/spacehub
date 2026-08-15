@@ -281,19 +281,19 @@ export default function FuturesPanel({ state, setState }: Props) {
             {quote && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
                 <div className="bg-white/[0.03] rounded-lg p-2">
-                  <div className="text-slate-500 text-[9px] uppercase tracking-wider">Spot</div>
+                  <div className="text-slate-500 text-[10px] uppercase tracking-wider">Spot</div>
                   <div className="game-number text-white font-bold">{formatMoney(quote.spotPrice)}</div>
                 </div>
                 <div className="bg-green-500/5 rounded-lg p-2 border border-green-500/10">
-                  <div className="text-slate-500 text-[9px] uppercase tracking-wider">Bid</div>
+                  <div className="text-slate-500 text-[10px] uppercase tracking-wider">Bid</div>
                   <div className="game-number text-green-400 font-bold">{formatMoney(quote.bid)}</div>
                 </div>
                 <div className="bg-red-500/5 rounded-lg p-2 border border-red-500/10">
-                  <div className="text-slate-500 text-[9px] uppercase tracking-wider">Ask</div>
+                  <div className="text-slate-500 text-[10px] uppercase tracking-wider">Ask</div>
                   <div className="game-number text-red-400 font-bold">{formatMoney(quote.ask)}</div>
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-2">
-                  <div className="text-slate-500 text-[9px] uppercase tracking-wider">Spread</div>
+                  <div className="text-slate-500 text-[10px] uppercase tracking-wider">Spread</div>
                   <div className="game-number text-amber-300 font-bold">{(quote.spreadPct * 100).toFixed(1)}%</div>
                 </div>
               </div>
@@ -449,7 +449,7 @@ export default function FuturesPanel({ state, setState }: Props) {
                           <span className="text-white">{rDef?.icon} {rDef?.name || c.resourceSlug}</span>
                         </td>
                         <td className="py-2 px-3">
-                          <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                          <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
                             c.direction === 'long' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
                           }`}>
                             {c.direction === 'long' ? '▲ Long' : '▼ Short'}
@@ -512,7 +512,7 @@ export default function FuturesPanel({ state, setState }: Props) {
                           <span className="text-white">{rDef?.icon} {rDef?.name || c.resourceSlug}</span>
                         </td>
                         <td className="py-2 px-3">
-                          <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                          <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
                             c.direction === 'long' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
                           }`}>
                             {c.direction === 'long' ? '▲ Long' : '▼ Short'}

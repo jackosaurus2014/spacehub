@@ -448,37 +448,37 @@ function BracketStandings({
                     {entry.companyName}
                   </span>
                   {entry.isYou && (
-                    <span className="flex-shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                    <span className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
                       YOU
                     </span>
                   )}
                   {entry.allianceTag && (
-                    <span className="flex-shrink-0 text-[9px] text-slate-500">
+                    <span className="flex-shrink-0 text-[10px] text-slate-500">
                       [{entry.allianceTag}]
                     </span>
                   )}
                   {entry.shielded && (
-                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Demotion shield active">
+                    <span className="flex-shrink-0 text-[10px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Demotion shield active">
                       {'\uD83D\uDEE1'} Shielded
                     </span>
                   )}
                   {entry.promoted && (
-                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" title="Promoted this week">
+                    <span className="flex-shrink-0 text-[10px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" title="Promoted this week">
                       {'\u2B06'} Promoted
                     </span>
                   )}
                   {entry.demoted && (
-                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20" title="Demoted this week">
+                    <span className="flex-shrink-0 text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20" title="Demoted this week">
                       {'\u2B07'} Demoted
                     </span>
                   )}
                   {!entry.promoted && !entry.demoted && inPromo && (
-                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="flex-shrink-0 text-[10px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                       {'\u25B2'} Promo Zone
                     </span>
                   )}
                   {!entry.promoted && !entry.demoted && inDemo && (
-                    <span className="flex-shrink-0 text-[9px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">
+                    <span className="flex-shrink-0 text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">
                       {'\u25BC'} Danger Zone
                     </span>
                   )}

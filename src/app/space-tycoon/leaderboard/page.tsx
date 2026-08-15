@@ -113,13 +113,13 @@ export default async function PublicLeaderboardPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-medium text-white truncate">{entry.companyName}</span>
                       <span
-                        className="text-[9px] px-1.5 py-0.5 rounded-full border font-bold"
+                        className="text-[10px] px-1.5 py-0.5 rounded-full border font-bold"
                         style={{ color: tierDef.color, borderColor: `${tierDef.color}55`, backgroundColor: `${tierDef.color}14` }}
                       >
                         {tierDef.icon} {tierDef.name}
                       </span>
                       {entry.title && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
                           {entry.title}
                         </span>
                       )}

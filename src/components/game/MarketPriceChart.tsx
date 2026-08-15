@@ -188,7 +188,7 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
             )}
             {candles.length > 0 && (
               <span
-                className={`font-hud text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${
+                className={`font-hud text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                   volatilityTier === 'high'
                     ? 'bg-red-500/10 text-red-400 border-red-500/20'
                     : volatilityTier === 'medium'
@@ -225,7 +225,7 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
 
       {/* Hovered candle info */}
       {hovered && (
-        <div className="flex items-center gap-3 text-[9px] text-slate-400 bg-white/[0.02] rounded px-2 py-1">
+        <div className="flex items-center gap-3 text-[10px] text-slate-400 bg-white/[0.02] rounded px-2 py-1">
           <span>{new Date(hovered.t).toLocaleString()}</span>
           <span>O: <span className="game-number text-white">{formatMoney(hovered.o)}</span></span>
           <span>H: <span className="game-number text-cyan-400">{formatMoney(hovered.h)}</span></span>
@@ -374,7 +374,7 @@ export default function MarketPriceChart({ resourceSlug: initialResource }: Mark
 
       {/* Stats bar */}
       {candles.length > 0 && (
-        <div className="flex items-center justify-between text-[9px] text-slate-500 px-1">
+        <div className="flex items-center justify-between text-[10px] text-slate-500 px-1">
           <span>High: <span className="game-number text-cyan-400">{formatMoney(priceMax)}</span></span>
           <span>Low: <span className="game-number text-amber-400">{formatMoney(priceMin)}</span></span>
           <span>Volume: <span className="game-number text-amber-400">

@@ -364,7 +364,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                         const done = getLocalMilestoneStatus(m.id);
                         return (
                           <div key={m.id} className="flex items-center gap-2">
-                            <div className={`w-3.5 h-3.5 rounded flex items-center justify-center text-[8px] ${
+                            <div className={`w-3.5 h-3.5 rounded flex items-center justify-center text-[10px] ${
                               done
                                 ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                                 : 'bg-white/5 text-white/20 border border-white/10'
@@ -590,7 +590,7 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
                         key={b.id}
                         className={`rounded px-2 py-1 ${BRACKET_BG[b.id]} border`}
                       >
-                        <p className={`text-[9px] ${BRACKET_COLORS[b.id]}`}>{b.name}</p>
+                        <p className={`text-[10px] ${BRACKET_COLORS[b.id]}`}>{b.name}</p>
                         <p className="text-[10px] text-slate-500 mt-0.5">--</p>
                       </div>
                     ))}

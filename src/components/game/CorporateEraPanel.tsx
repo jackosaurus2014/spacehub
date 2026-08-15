@@ -177,7 +177,7 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
               underline={false}
               content={{ title: 'Era Medal', icon: 'medal', body: <Concept id="era-medal" /> }}
             >
-              <span className={`text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[progress.liveMedal]}`}>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[progress.liveMedal]}`}>
                 <GameIcon name={MEDAL_ICON[progress.liveMedal] || 'medal'} size={11} /> Currently {ERA_MEDAL_LABEL[progress.liveMedal]}
               </span>
             </HoloTip>
@@ -188,7 +188,7 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
               underline={false}
               content={{ title: 'Era Bonus', icon: 'trending-up', iconGlow: 'green', body: 'The upside half of this era\'s charter — always paired with a stated malus below. See Era Charter for the full trade-off design.' }}
             >
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
                 {formatFocusTerm(progress.charter.bonus)}
               </span>
             </HoloTip>
@@ -196,14 +196,14 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
               underline={false}
               content={{ title: 'Era Malus', icon: 'trending-down', iconGlow: 'red', body: 'The stated cost of this era\'s charter — every chartered bonus is paired with a malus, never a free win.' }}
             >
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-300">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-300">
                 {formatFocusTerm(progress.charter.malus)}
               </span>
             </HoloTip>
           </div>
 
           <div className="mb-2">
-            <div className="flex justify-between text-[9px] text-slate-500 mb-1">
+            <div className="flex justify-between text-[10px] text-slate-500 mb-1">
               <span>Era progress</span>
               <span>{Math.max(0, Math.round(progress.daysRemaining))}d remaining</span>
             </div>
@@ -220,7 +220,7 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
           </div>
 
           <div>
-            <div className="flex justify-between text-[9px] text-slate-500 mb-1">
+            <div className="flex justify-between text-[10px] text-slate-500 mb-1">
               <span>{progress.charter.goalLabel}</span>
               <span>{formatCompactNumber(progress.goalActual)} / {formatCompactNumber(progress.goalTarget)}</span>
             </div>
@@ -266,16 +266,16 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
                     <GameIcon name={resolveIcon(charter.icon, 'scroll')} size={12} />
                     <span className="text-[11px] font-medium text-white">{charter.name}</span>
                   </div>
-                  <p className="text-[9px] text-slate-400 mb-1.5">{charter.description}</p>
+                  <p className="text-[11px] text-slate-400 mb-1.5">{charter.description}</p>
                   <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
                       {formatFocusTerm(charter.bonus)}
                     </span>
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-300">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-300">
                       {formatFocusTerm(charter.malus)}
                     </span>
                   </div>
-                  <p className="text-[8px] text-slate-500">Goal: {charter.goalLabel}</p>
+                  <p className="text-[10px] text-slate-500">Goal: {charter.goalLabel}</p>
                 </button>
               );
             })}
@@ -285,7 +285,7 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
 
       {completedEras.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[9px] text-slate-500 uppercase tracking-wider">Era History ({completedEras.length})</p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-wider">Era History ({completedEras.length})</p>
           {[...completedEras].reverse().map((era) => {
             const charter = ERA_CHARTERS.find(c => c.id === era.charterId);
             return (
@@ -298,13 +298,13 @@ export default function CorporateEraPanel({ state, onCharterEra }: CorporateEraP
                     underline={false}
                     content={{ title: 'Era Medal', icon: 'medal', body: <Concept id="era-medal" /> }}
                   >
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[era.medal]}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-bold uppercase ${MEDAL_COLOR[era.medal]}`}>
                       <GameIcon name={MEDAL_ICON[era.medal] || 'medal'} size={11} /> {ERA_MEDAL_LABEL[era.medal]}
                     </span>
                   </HoloTip>
                 </div>
                 {charter && (
-                  <p className="text-[9px] text-slate-500 mb-1.5">
+                  <p className="text-[10px] text-slate-500 mb-1.5">
                     {charter.goalLabel}: {formatCompactNumber(era.goalActual)} / {formatCompactNumber(era.goalTarget)}
                   </p>
                 )}

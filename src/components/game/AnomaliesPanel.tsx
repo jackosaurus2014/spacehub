@@ -137,7 +137,7 @@ function KnownTab({ state, setState, anomalies, now }: { state: GameState; setSt
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className={`text-[9px] uppercase tracking-wider font-bold ${KIND_ACCENT[kind].split(' ').find(c => c.startsWith('text-'))}`}>
+                <div className={`text-[10px] uppercase tracking-wider font-bold ${KIND_ACCENT[kind].split(' ').find(c => c.startsWith('text-'))}`}>
                   <span aria-hidden="true">{KIND_ICON[kind]}</span> {kind.replace(/_/g, ' ')}
                 </div>
                 <h3 className="text-white text-sm font-bold leading-tight">{a.title}</h3>
@@ -148,7 +148,7 @@ function KnownTab({ state, setState, anomalies, now }: { state: GameState; setSt
             <p className="relative text-slate-400 text-[11px] leading-relaxed mb-2">{a.summary}</p>
 
             <div className="relative rounded bg-black/30 p-2 mb-2">
-              <div className="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Rewards on claim</div>
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Rewards on claim</div>
               <div className="text-[11px] text-slate-200">{formatAnomalyRewards(a as any)}</div>
             </div>
 
@@ -200,7 +200,7 @@ function ClaimedTab({ anomalies }: { anomalies: NonNullable<GameState['knownAnom
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-white text-sm font-bold truncate">{a.title}</span>
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded border ${KIND_ACCENT[kind]}`}>{kind.replace(/_/g, ' ')}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded border ${KIND_ACCENT[kind]}`}>{kind.replace(/_/g, ' ')}</span>
                 </div>
                 <div className="text-[10px] text-slate-500">{locName} · claimed</div>
               </div>

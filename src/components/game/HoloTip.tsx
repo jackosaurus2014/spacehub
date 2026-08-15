@@ -87,7 +87,7 @@ function conceptContent(id: string): HoloTipContent | null {
         <p>{concept.body}</p>
         {concept.related && concept.related.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5 border-t border-white/[0.08] pt-2">
-            <span className="w-full text-[9px] uppercase tracking-wider text-slate-500">Related</span>
+            <span className="w-full text-[10px] uppercase tracking-wider text-slate-500">Related</span>
             {concept.related.map(relId => (
               <Concept key={relId} id={relId} />
             ))}
@@ -317,7 +317,7 @@ export default function HoloTip({ content, children, as: Tag = 'span', underline
         )}
 
         {activeContent.source && (
-          <p className="mt-2 border-t border-white/[0.08] pt-1.5 text-[9px] font-mono text-slate-500">{activeContent.source}</p>
+          <p className="mt-2 border-t border-white/[0.08] pt-1.5 text-[10px] font-mono text-slate-500">{activeContent.source}</p>
         )}
       </div>
     </HoloTipStackContext.Provider>

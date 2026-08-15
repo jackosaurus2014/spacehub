@@ -193,7 +193,7 @@ export default function FactionPanel({ state, onSendEnvoy, onPurchaseLicense }: 
                     )}
                   </div>
                   {rival && (
-                    <div className="text-[9px] text-slate-500 mt-1">
+                    <div className="text-[10px] text-slate-500 mt-1">
                       Rival: <span className="text-slate-400">{rival.name}</span> — loses ½ rep when you gain here
                     </div>
                   )}
@@ -236,7 +236,7 @@ export default function FactionPanel({ state, onSendEnvoy, onPurchaseLicense }: 
                         <div key={l.id} className="rounded border border-white/10 bg-white/[0.02] p-2">
                           <div className="flex items-center justify-between gap-2">
                             <span className="text-[11px] font-bold text-slate-200">{l.name}</span>
-                            {isOwned && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">OWNED</span>}
+                            {isOwned && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">OWNED</span>}
                           </div>
                           <p className="text-[10px] text-slate-500 mt-0.5">{l.description}</p>
                           <div className="flex items-center justify-between mt-1.5">

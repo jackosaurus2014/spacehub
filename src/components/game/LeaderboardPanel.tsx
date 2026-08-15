@@ -164,15 +164,15 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
                       {entry.companyName}
                     </span>
                     {entry.isYou && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
                         YOU
                       </span>
                     )}
                     {entry.isNPC && (
-                      <span className="text-[9px] px-1 py-0.5 rounded text-slate-600" title="NPC company">NPC</span>
+                      <span className="text-[10px] px-1 py-0.5 rounded text-slate-600" title="NPC company">NPC</span>
                     )}
                     {entry.title && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
                         {entry.title}
                       </span>
                     )}

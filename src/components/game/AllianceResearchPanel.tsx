@@ -184,7 +184,7 @@ export default function AllianceResearchPanel() {
                 <p className={`game-number ${catColors.text} text-xs font-bold`}>
                   {bonusVal > 0 ? `+${bonusVal}%` : '0%'}
                 </p>
-                <p className="text-slate-500 text-[9px]">{cat.label}</p>
+                <p className="text-slate-500 text-[10px]">{cat.label}</p>
               </div>
             );
           })}
@@ -342,7 +342,7 @@ function TierSlot({
               <h4 className={`text-xs font-semibold ${isCompleted ? 'text-green-300' : isLocked ? 'text-slate-500' : 'text-white'}`}>
                 {item.name}
               </h4>
-              <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
+              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
                 isCompleted
                   ? 'bg-green-500/20 text-green-300 border border-green-500/30'
                   : isResearching

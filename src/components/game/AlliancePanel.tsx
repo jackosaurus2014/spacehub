@@ -279,8 +279,8 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
           </h3>
           <div className="overflow-x-auto" role="table" aria-label="Corporation members">
             <div className="flex items-center justify-between py-1 px-3 mb-1" role="row">
-              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
-              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Net Worth</span>
+              <span className="font-hud text-[10px] uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
+              <span className="font-hud text-[10px] uppercase tracking-widest text-slate-500" role="columnheader">Net Worth</span>
             </div>
             <div>
               {myAlliance.members.map((member) => (
@@ -301,7 +301,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                           {member.companyName}
                         </span>
                         {member.isYou && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
                             YOU
                           </span>
                         )}
@@ -326,8 +326,8 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
             </h3>
             <div className="overflow-x-auto" role="table" aria-label="Shared corporation facilities">
               <div className="flex items-center justify-between py-1 px-2.5 mb-1" role="row">
-                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Facility</span>
-                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Level</span>
+                <span className="font-hud text-[10px] uppercase tracking-widest text-slate-500" role="columnheader">Facility</span>
+                <span className="font-hud text-[10px] uppercase tracking-widest text-slate-500" role="columnheader">Level</span>
               </div>
               <div className="space-y-2">
                 {myAlliance.sharedFacilities.map((facility) => (
@@ -345,7 +345,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                     </div>
                     <div className="text-right" role="cell">
                       <span className="game-number text-amber-400 text-[10px]">Lv.{facility.level}</span>
-                      <p className="text-slate-600 text-[9px]">by {facility.contributedBy}</p>
+                      <p className="text-slate-600 text-[10px]">by {facility.contributedBy}</p>
                     </div>
                   </div>
                 ))}
@@ -462,7 +462,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-white text-xs font-medium">{alliance.name}</span>
-                    <span className="text-[9px] px-1 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">
+                    <span className="text-[10px] px-1 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">
                       [{alliance.tag}]
                     </span>
                   </div>

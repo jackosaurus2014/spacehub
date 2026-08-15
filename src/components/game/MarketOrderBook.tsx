@@ -527,7 +527,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
-                        <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                        <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
                           order.side === 'buy'
                             ? 'bg-green-500/10 text-green-400'
                             : 'bg-red-500/10 text-red-400'
@@ -539,7 +539,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                           order.status === 'filled' ? 'bg-green-500/10 text-green-400' :
                           order.status === 'partial' ? 'bg-amber-500/10 text-amber-400' :
                           order.status === 'cancelled' ? 'bg-slate-500/10 text-slate-400' :
@@ -551,7 +551,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
                           <button
                             onClick={() => handleCancelOrder(order.id)}
                             aria-label={`Cancel ${order.side} order for ${rDef?.name || order.resourceSlug}`}
-                            className="min-h-[44px] inline-flex items-center justify-center text-[9px] text-red-400 hover:text-red-300 px-2.5 py-0.5 rounded border border-red-500/20 hover:border-red-500/40 transition-colors"
+                            className="min-h-[44px] inline-flex items-center justify-center text-[10px] text-red-400 hover:text-red-300 px-2.5 py-0.5 rounded border border-red-500/20 hover:border-red-500/40 transition-colors"
                           >
                             Cancel
                           </button>

@@ -60,12 +60,12 @@ function TierNode({
             {tierDef.name}
           </span>
           {isUnlocked && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               UNLOCKED
             </span>
           )}
           {!isUnlocked && isNext && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
               NEXT
             </span>
           )}
@@ -73,18 +73,18 @@ function TierNode({
         <p className="text-[10px] text-slate-500 mt-0.5">{tierDef.description}</p>
         {!isUnlocked && (
           <div className="flex flex-wrap gap-1 mt-1">
-            <span className="text-[9px] text-slate-600">
+            <span className="text-[10px] text-slate-600">
               Cost: {formatMoney(tierDef.costMoney)}
             </span>
             {Object.entries(tierDef.costResources).map(([resId, qty]) => (
-              <span key={resId} className="text-[9px] text-slate-600">
+              <span key={resId} className="text-[10px] text-slate-600">
                 + {qty} {resId.replace(/_/g, ' ')}
               </span>
             ))}
           </div>
         )}
         {isNext && !canBuy && reason && (
-          <p className="text-[9px] text-red-400/70 mt-0.5">{reason}</p>
+          <p className="text-[10px] text-red-400/70 mt-0.5">{reason}</p>
         )}
       </div>
     </div>

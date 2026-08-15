@@ -13,6 +13,7 @@ import { SHIP_MAP } from '@/lib/game/ships';
 import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from '@/lib/game/sound-engine';
 import { toggleMusic, isMusicPlaying, setMusicVolume, getMusicVolume, initMusicAutoResume } from '@/lib/game/music-engine';
 import { isHapticsEnabled, toggleHaptics, vibrate } from '@/lib/game/haptics';
+import { toggleGameDensity, type GameDensity } from '@/lib/game/density';
 import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
 import GameIcon from './GameIcon';
@@ -20,6 +21,12 @@ import HoloTip, { Concept } from './HoloTip';
 
 interface ResourceBarProps {
   state: GameState;
+  /** Wave V8 — current density mode, lifted to the page shell so it can also
+   *  drive the `data-density` attribute on the game root. Optional so
+   *  existing tests/usages that don't care about density still compile;
+   *  defaults to comfortable. */
+  density?: GameDensity;
+  onDensityChange?: (density: GameDensity) => void;
 }
 
 /** Animated number that rolls toward a target value via RAF easing. Also emits
@@ -82,7 +89,7 @@ function MoneySparkline({ history, positive }: { history: number[]; positive: bo
 
 const SPARKLINE_MAX_POINTS = 30;
 
-export default function ResourceBar({ state }: ResourceBarProps) {
+export default function ResourceBar({ state, density = 'comfortable', onDensityChange }: ResourceBarProps) {
   const [muted, setMuted] = useState(true);
   const [ambient, setAmbient] = useState(false);
   const [music, setMusic] = useState(false);
@@ -197,6 +204,14 @@ export default function ResourceBar({ state }: ResourceBarProps) {
     setHaptics(next);
     if (next) vibrate(10); // confirm the toggle itself with a tap, once enabled
   };
+  // Wave V8 — density mode toggle. Persists via density.ts, then notifies
+  // the page shell (onDensityChange) so it can re-set the `data-density`
+  // attribute on the game root — GameStyles.tsx's CSS custom properties do
+  // the rest, no per-panel re-render required.
+  const handleToggleDensity = () => {
+    const next = toggleGameDensity();
+    onDensityChange?.(next);
+  };
 
   return (
     <div className="hud-frame relative bg-black/90 border-b border-cyan-500/10 px-3 sm:px-4 py-2 z-20">
@@ -283,7 +298,7 @@ export default function ResourceBar({ state }: ResourceBarProps) {
           </div>
           <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
-            <span className="text-[9px] text-cyan-400 font-medium tracking-widest">LIVE</span>
+            <span className="text-[10px] text-cyan-400 font-medium tracking-widest">LIVE</span>
           </div>
         </div>
 
@@ -340,6 +355,22 @@ export default function ResourceBar({ state }: ResourceBarProps) {
               <GameIcon name={haptics ? 'haptics' : 'haptics-off'} size={14} />
             </button>
           )}
+          {/* Wave V8 — density toggle. Hidden under 640px: compact mode is
+              forced back to comfortable on phones (44px touch-target floor
+              takes priority over information density there), so the control
+              itself is hidden rather than offering a choice that silently
+              does nothing. `hidden sm:flex` matches Tailwind's 640px `sm`
+              breakpoint, the same threshold GameStyles.tsx's compact-mode
+              media guards use. */}
+          <button
+            onClick={handleToggleDensity}
+            aria-label={density === 'compact' ? 'Switch to comfortable density' : 'Switch to compact density'}
+            aria-pressed={density === 'compact'}
+            className={`hidden sm:flex min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${density === 'compact' ? 'text-cyan-400' : 'text-slate-600 hover:text-slate-400'}`}
+            title={density === 'compact' ? 'Density: Compact' : 'Density: Comfortable'}
+          >
+            <GameIcon name={density === 'compact' ? 'density-compact' : 'density-comfortable'} size={14} />
+          </button>
         </div>
       </div>
     </div>

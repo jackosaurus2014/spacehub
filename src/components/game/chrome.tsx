@@ -72,7 +72,7 @@ export function ConsolePanel({
 }: ConsolePanelProps) {
   const Heading = asH3 ? 'h3' : 'h2';
   return (
-    <div id={id} className={`hud-frame ${ACCENT_FRAME[accent]} relative game-panel overflow-hidden ${compact ? 'p-3' : 'p-4'} ${className}`}>
+    <div id={id} className={`hud-frame ${ACCENT_FRAME[accent]} relative game-panel overflow-hidden ${compact ? 'console-panel-pad-compact' : 'console-panel-pad'} ${className}`}>
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       {art && (

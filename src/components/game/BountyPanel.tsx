@@ -321,7 +321,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                 />
                 <span className="text-slate-500 text-[10px]">/unit</span>
               </div>
-              <p className="text-slate-600 text-[9px] mt-1">
+              <p className="text-slate-600 text-[10px] mt-1">
                 Base market: {formatMoney(RESOURCE_MAP.get(postResourceId as never)?.baseMarketPrice || 0)}
               </p>
             </div>
@@ -396,13 +396,13 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                       <div>
                         <span className="text-white text-xs font-medium">{def?.name || bounty.resourceId}</span>
                         {bounty.isYours && (
-                          <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                          <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
                             YOURS
                           </span>
                         )}
                       </div>
                     </div>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-medium ${getStatusColor(bounty.status)}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-medium ${getStatusColor(bounty.status)}`}>
                       {getStatusLabel(bounty.status)}
                     </span>
                   </div>
@@ -410,15 +410,15 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                   {/* Details */}
                   <div className="grid grid-cols-3 gap-2 mb-2">
                     <div>
-                      <p className="text-slate-500 text-[9px] uppercase">Needed</p>
+                      <p className="text-slate-500 text-[10px] uppercase">Needed</p>
                       <p className="game-number text-white text-xs font-mono">{remaining.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-slate-500 text-[9px] uppercase">Price/Unit</p>
+                      <p className="text-slate-500 text-[10px] uppercase">Price/Unit</p>
                       <p className="game-number text-amber-400 text-xs font-mono">{formatMoney(bounty.pricePerUnit)}</p>
                     </div>
                     <div>
-                      <p className="text-slate-500 text-[9px] uppercase">Total Value</p>
+                      <p className="text-slate-500 text-[10px] uppercase">Total Value</p>
                       <p className="game-number text-green-400 text-xs font-mono">{formatMoney(totalValue)}</p>
                     </div>
                   </div>
@@ -426,7 +426,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                   {/* Progress bar for partial fills */}
                   {bounty.filledQuantity > 0 && (
                     <div className="mb-2">
-                      <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
+                      <div className="flex items-center justify-between text-[10px] text-slate-500 mb-0.5">
                         <span>Filled</span>
                         <span>{bounty.filledQuantity}/{bounty.quantity}</span>
                       </div>
@@ -442,7 +442,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                   {/* Bottom row: expiry + action */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-slate-600 text-[9px]">Posted by</span>
+                      <span className="text-slate-600 text-[10px]">Posted by</span>
                       <span className={`text-[10px] font-medium ${bounty.isYours ? 'text-cyan-300' : 'text-white'}`}>
                         {bounty.posterName}
                       </span>
@@ -506,7 +506,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="game-number text-slate-500 text-[10px] font-mono">{formatMoney(bounty.quantity * bounty.pricePerUnit)}</span>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-medium ${getStatusColor(bounty.status)}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-medium ${getStatusColor(bounty.status)}`}>
                       {getStatusLabel(bounty.status)}
                     </span>
                   </div>

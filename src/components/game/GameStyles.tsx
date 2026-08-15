@@ -833,7 +833,7 @@ export default function GameStyles() {
         right: 6px;
         transform: rotate(6deg);
         font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
-        font-size: 8px;
+        font-size: 10px; /* V8 type floor — was 8px */
         font-weight: 800;
         letter-spacing: 0.14em;
         text-transform: uppercase;
@@ -871,7 +871,7 @@ export default function GameStyles() {
         padding: 2px 8px;
         border-radius: 9999px;
         font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
-        font-size: 9px;
+        font-size: 10px; /* V8 type floor — was 9px */
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -913,7 +913,7 @@ export default function GameStyles() {
         font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        font-size: 9px;
+        font-size: 10px; /* V8 type floor — was 9px */
       }
       .holo-table tbody tr {
         transition: background 0.2s ease;
@@ -1106,6 +1106,103 @@ export default function GameStyles() {
       @media (prefers-reduced-motion: reduce) {
         .tab-crossfade { animation: none; }
       }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE V8 — TYPE SCALE, DENSITY MODES & CONTRAST FLOOR
+         (docs/VISUAL_DEPTH_2026-08.md §V8). Type floor (documented, and now
+         enforced across the sweep): display 18 / HUD 12 / body 11 / label 10
+         / micro 9 (tooltip-backed only) — nothing in src/components/game or
+         src/app/space-tycoon goes below 10px for load-bearing text.
+
+         Density modes: data-density="comfortable"|"compact" is set on the
+         game root (the outermost div in space-tycoon/page.tsx) by
+         lib/game/density.ts + the ResourceBar settings-cluster toggle.
+         Comfortable is the default and reproduces today's spacing exactly
+         (the --density-scale custom property below resolves to 1, a no-op).
+         Compact tightens the two centralized "panel sweep" primitives from
+         chrome.tsx (ConsolePanel's body padding, .hub-section-header row
+         height) by the spec's ~20% via a single custom property — new
+         surfaces built on ConsolePanel/HoloCard/DataChip inherit the mode
+         automatically; no per-component Tailwind literals were forked.
+
+         Compact is forced back to comfortable under 640px (phones) via the
+         min-width guards below, regardless of the stored preference —
+         tightened padding on a phone risks the 44px touch-target floor
+         (CLAUDE.md accessibility invariant), so the density toggle itself
+         is also hidden under 640px in ResourceBar.tsx.
+         ═══════════════════════════════════════════════════════════════════ */
+      [data-density] {
+        --density-scale: 1;
+      }
+      [data-density="compact"] {
+        --density-scale: 0.8;
+      }
+      @media (max-width: 639px) {
+        [data-density="compact"] {
+          --density-scale: 1; /* compact unavailable on phones — force comfortable */
+        }
+      }
+
+      .console-panel-pad {
+        padding: calc(16px * var(--density-scale, 1));
+      }
+      .console-panel-pad-compact {
+        /* ConsolePanel's own "compact" prop (nested sub-panel header) — a
+           different axis than the density mode, so it still scales with it. */
+        padding: calc(12px * var(--density-scale, 1));
+      }
+
+      /* Row-height tightening for the shared hub header band. */
+      [data-density="compact"] .hub-section-header {
+        padding-bottom: calc(10px * var(--density-scale, 1));
+        margin-bottom: calc(12px * var(--density-scale, 1));
+      }
+      [data-density="compact"] .hub-section-header-compact {
+        padding-bottom: calc(6px * var(--density-scale, 1));
+        margin-bottom: calc(8px * var(--density-scale, 1));
+      }
+
+      /* Elements marked compact-reveal only render their content in compact
+         mode on desktop/tablet — e.g. MarketPanel's inline scarcity readout
+         (spec: "reveals extra columns... market rows show volatility
+         inline"). Additive: the underlying data is always in the DOM in
+         comfortable mode too via the row's title=/aria attributes, this
+         class only governs the always-visible inline chip. */
+      .density-compact-reveal {
+        display: none;
+      }
+      @media (min-width: 640px) {
+        [data-density="compact"] .density-compact-reveal {
+          display: inline-flex;
+        }
+      }
+
+      /* Contrast audit (spec's third V8 bullet). The site's real high-contrast
+         mechanism is a "html.high-contrast" class toggled by
+         useHighContrast.ts + globals.css (NOT the [data-contrast="high"]
+         attribute the spec sketches — that attribute isn't wired up anywhere
+         in the codebase, so these rules hook the mechanism that actually
+         exists and actually reaches players who've turned the setting on).
+         Bumps the lowest-opacity washes/borders on the two centralized V5
+         chrome primitives (DataChip's tone borders/fills, hud-frame's glow
+         color) roughly 0.03-0.08 -> 0.12-0.35, matching the site-wide
+         high-contrast border bump above (border-white/10 -> 0.25). */
+      html.high-contrast .hud-frame {
+        --hud-color: rgba(34, 211, 238, 0.75) !important;
+      }
+      html.high-contrast .hud-frame-amber  { --hud-color: rgba(245, 158, 11, 0.85) !important; }
+      html.high-contrast .hud-frame-purple { --hud-color: rgba(167, 139, 250, 0.85) !important; }
+      html.high-contrast .hud-frame-red    { --hud-color: rgba(239, 68, 68, 0.85) !important; }
+      html.high-contrast .border-white\\/\\[0\\.08\\] { border-color: rgba(255, 255, 255, 0.3) !important; }
+      html.high-contrast .bg-white\\/\\[0\\.02\\]      { background-color: rgba(255, 255, 255, 0.06) !important; }
+      html.high-contrast .border-green-500\\/25 { border-color: rgba(74, 222, 128, 0.65) !important; }
+      html.high-contrast .bg-green-500\\/8      { background-color: rgba(74, 222, 128, 0.16) !important; }
+      html.high-contrast .border-red-500\\/25   { border-color: rgba(248, 113, 113, 0.65) !important; }
+      html.high-contrast .bg-red-500\\/8        { background-color: rgba(248, 113, 113, 0.16) !important; }
+      html.high-contrast .border-amber-500\\/25 { border-color: rgba(251, 191, 36, 0.65) !important; }
+      html.high-contrast .bg-amber-500\\/8      { background-color: rgba(251, 191, 36, 0.16) !important; }
+      html.high-contrast .border-cyan-500\\/25  { border-color: rgba(34, 211, 238, 0.65) !important; }
+      html.high-contrast .bg-cyan-500\\/8       { background-color: rgba(34, 211, 238, 0.16) !important; }
     `}</style>
   );
 }

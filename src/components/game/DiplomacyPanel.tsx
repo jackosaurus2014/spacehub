@@ -226,7 +226,7 @@ function HistoryTab({ completed }: { completed: DeliveryContract[] }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
                   <span className="text-white text-sm font-bold truncate">{c.title}</span>
-                  {faction && <span className={`text-[9px] px-1.5 py-0.5 rounded border ${faction.theme.border} ${faction.theme.accent}`}>{faction.name}</span>}
+                  {faction && <span className={`text-[10px] px-1.5 py-0.5 rounded border ${faction.theme.border} ${faction.theme.accent}`}>{faction.name}</span>}
                 </div>
                 <div className="text-[10px] text-slate-500">
                   {won ? 'Completed' : 'Defaulted'} · {resource?.name} × {c.quantity.toLocaleString()}
@@ -331,7 +331,7 @@ function MicroStat({ label, value, accent }: { label: string; value: string; acc
   }[accent];
   return (
     <div className="rounded bg-white/[0.03] p-1.5 text-center">
-      <div className="text-[9px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
       <div className={`game-number font-mono text-[11px] font-bold ${color} truncate`}>{value}</div>
     </div>
   );

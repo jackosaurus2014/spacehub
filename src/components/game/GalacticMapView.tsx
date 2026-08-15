@@ -350,15 +350,15 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
               ready ? 'text-cyan-200 bg-black/50' : 'text-slate-400 bg-black/50'
             }`}>
               {sys.name}
-              {isColonized && <span className="ml-1 text-[8px] font-bold uppercase text-purple-300">COLONY</span>}
-              <span className={`ml-1 text-[8px] font-bold uppercase ${ready ? 'text-emerald-300' : 'text-red-300'}`}>
+              {isColonized && <span className="ml-1 text-[10px] font-bold uppercase text-purple-300">COLONY</span>}
+              <span className={`ml-1 text-[10px] font-bold uppercase ${ready ? 'text-emerald-300' : 'text-red-300'}`}>
                 {ready ? 'READY' : 'LOCKED'}
               </span>
             </span>
             {/* W9: colony production glyphs + inbound-shipment count (text
                 lives in the button's aria-label above) */}
             {colony && colony.localResources.length > 0 && (
-              <span className="flex items-center gap-0.5 text-[9px] bg-black/50 px-1 py-0.5 rounded backdrop-blur-sm" aria-hidden="true">
+              <span className="flex items-center gap-0.5 text-[10px] bg-black/50 px-1 py-0.5 rounded backdrop-blur-sm" aria-hidden="true">
                 <span>🏙️</span>
                 {colony.localResources.slice(0, 4).map(r => (
                   <span key={r}>{RESOURCE_MAP.get(r as ResourceId)?.icon || '▪'}</span>
@@ -389,7 +389,7 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
             <span aria-hidden="true">{icon}</span>
             {monthsLeft !== null && (
               <span
-                className="absolute top-full mt-0.5 left-1/2 -translate-x-1/2 text-[8px] font-mono text-cyan-200 bg-black/60 px-1 rounded whitespace-nowrap pointer-events-none"
+                className="absolute top-full mt-0.5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-cyan-200 bg-black/60 px-1 rounded whitespace-nowrap pointer-events-none"
                 aria-hidden="true"
               >
                 {monthsLeft} mo
@@ -399,7 +399,7 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
         );
       })}
 
-      <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] text-slate-500 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none">
+      <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[11px] text-slate-500 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none">
         Galactic Layer — select a system to plan an expedition or check its dossier
       </p>
     </div>

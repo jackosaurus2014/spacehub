@@ -164,7 +164,7 @@ function FleetGauges({ state }: { state: GameState }) {
           >
             <span className="font-hud text-sm font-bold" style={{ color: g.color }}>{g.value}</span>
           </div>
-          <span className="text-[9px] uppercase tracking-widest text-slate-500 mt-1">{g.label}</span>
+          <span className="text-[10px] uppercase tracking-widest text-slate-500 mt-1">{g.label}</span>
         </div>
       ))}
     </div>
@@ -209,7 +209,7 @@ function InfrastructureFootprint({ state }: { state: GameState }) {
               );
             })}
           </div>
-          <div className="flex justify-between text-[9px] text-slate-500 font-mono tabular-nums">
+          <div className="flex justify-between text-[10px] text-slate-500 font-mono tabular-nums">
             {([1, 2, 3, 4, 5] as const).map(t => (
               <span key={t} style={{ color: byTier[t] > 0 ? TIER_COLOR[t - 1] : '#475569' }}>
                 T{t}·{byTier[t]}

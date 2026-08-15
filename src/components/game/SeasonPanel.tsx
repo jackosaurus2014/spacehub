@@ -972,7 +972,7 @@ function LeaderboardTab({
                     {entry.companyName}
                   </span>
                   {entry.title && (
-                    <span className="text-purple-400 text-[9px]">{entry.title}</span>
+                    <span className="text-purple-400 text-[10px]">{entry.title}</span>
                   )}
                 </div>
                 <span role="cell" className="w-12 text-right text-slate-400 text-[10px]">{entry.currentTier}</span>
@@ -1067,7 +1067,7 @@ function HistoryTab({ data }: { data: ChronicleData | null }) {
                 {record.allianceOutcomes.map((a, i) => (
                   <span
                     key={`${a.allianceTag}_${i}`}
-                    className="px-1.5 py-0.5 rounded text-[9px] font-medium border border-teal-500/30 bg-teal-500/10 text-teal-300"
+                    className="px-1.5 py-0.5 rounded text-[10px] font-medium border border-teal-500/30 bg-teal-500/10 text-teal-300"
                   >
                     [{a.allianceTag}] {a.charterType} &middot; {a.grade || 'incomplete'}
                   </span>

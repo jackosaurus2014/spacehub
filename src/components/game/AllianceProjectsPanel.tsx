@@ -402,7 +402,7 @@ function ActiveProjectCard({
           </div>
           <div>
             <h3 className="text-white text-sm font-semibold">{project.name}</h3>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
+            <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
               isBuilding
                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                 : 'bg-green-500/20 text-green-300 border border-green-500/30'
@@ -486,7 +486,7 @@ function ActiveProjectCard({
         <div className="mb-3">
           <h4 className="font-hud text-white text-[10px] font-bold uppercase tracking-wider mb-1.5">Top Contributors</h4>
           <div role="table" aria-label="Top contributors">
-            <div className="flex items-center justify-between py-1 px-2 text-[9px]" role="row">
+            <div className="flex items-center justify-between py-1 px-2 text-[10px]" role="row">
               <div className="flex items-center gap-1.5">
                 <span className="font-hud uppercase tracking-widest text-slate-500" role="columnheader">#</span>
                 <span className="font-hud uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
@@ -627,7 +627,7 @@ function ContributionForm({
             onChange={(e) => setMoneyPct(Number(e.target.value))}
             className="w-full h-1.5 bg-white/[0.1] rounded-full appearance-none cursor-pointer accent-purple-500"
           />
-          <div className="flex justify-between text-[9px] text-slate-600 mt-0.5">
+          <div className="flex justify-between text-[10px] text-slate-600 mt-0.5">
             <span>0%</span>
             <span>Available: <span className="game-number">{formatMoney(state.money)}</span></span>
             <span>100%</span>
@@ -654,7 +654,7 @@ function ContributionForm({
                 }}
                 className="flex-1 h-7 px-2 rounded bg-white/[0.06] text-white text-xs border border-white/[0.06] focus:outline-none focus:border-cyan-500/30 font-mono"
               />
-              <span className="text-slate-500 text-[9px] w-24 text-right">
+              <span className="text-slate-500 text-[10px] w-24 text-right">
                 need <span className="game-number">{remaining.toLocaleString()}</span> / have <span className="game-number">{playerHas.toLocaleString()}</span>
               </span>
             </div>
@@ -706,10 +706,10 @@ function AvailableProjectCard({
           <div>
             <h3 className="text-white text-xs font-semibold">{project.name}</h3>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`text-[9px] px-1.5 py-0.5 rounded game-badge-t${project.tier}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded game-badge-t${project.tier}`}>
                 Tier {project.tier}
               </span>
-              <span className="text-[9px] text-slate-500">
+              <span className="text-[10px] text-slate-500">
                 {project.minMembers}+ members
               </span>
             </div>
@@ -743,7 +743,7 @@ function AvailableProjectCard({
               ? `-${((value as number) * 100).toFixed(0)}%`
               : `+${((value as number) * 100).toFixed(0)}%`;
           return (
-            <span key={key} className="text-[9px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
+            <span key={key} className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
               {label}: {display}
             </span>
           );
@@ -778,7 +778,7 @@ function CompletedProjectCard({ project }: { project: ProjectData }) {
           <span className="text-xl">{project.icon}</span>
           <div>
             <h3 className="text-white text-xs font-semibold">{project.name}</h3>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-300 border border-green-500/30 font-bold uppercase">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-300 border border-green-500/30 font-bold uppercase">
               Completed
             </span>
           </div>
@@ -801,7 +801,7 @@ function CompletedProjectCard({ project }: { project: ProjectData }) {
               ? `-${(value * 100).toFixed(0)}%`
               : `+${(value * 100).toFixed(0)}%`;
           return (
-            <span key={key} className="text-[9px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20 font-bold">
+            <span key={key} className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20 font-bold">
               {label}: <span className="game-number">{display}</span>
             </span>
           );
@@ -816,7 +816,7 @@ function CompletedProjectCard({ project }: { project: ProjectData }) {
             {project.contributions.slice(0, 5).map(c => (
               <span
                 key={c.profileId}
-                className={`text-[9px] px-1.5 py-0.5 rounded ${
+                className={`text-[10px] px-1.5 py-0.5 rounded ${
                   c.isYou ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20' : 'bg-white/[0.04] text-slate-400'
                 }`}
               >

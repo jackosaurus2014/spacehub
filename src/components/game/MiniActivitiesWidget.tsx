@@ -188,7 +188,7 @@ export default function MiniActivitiesWidget({ state, onExecute }: MiniActivitie
           </span>
           {readyCount > 0 && (
             <span
-              className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+              className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
               style={{ background: 'rgba(34,211,238,0.15)', color: '#22d3ee' }}
             >
               {readyCount} ready
@@ -209,7 +209,7 @@ export default function MiniActivitiesWidget({ state, onExecute }: MiniActivitie
       {!isCollapsed && (
         <div className="p-3 space-y-2">
           {/* Status line */}
-          <div className="flex items-center justify-between text-[9px] px-1">
+          <div className="flex items-center justify-between text-[10px] px-1">
             <span style={{ color: 'var(--text-muted, #6b7280)' }}>
               {visibleActivities.length}/{MAX_VISIBLE_SLOTS} slots
             </span>
@@ -301,7 +301,7 @@ function ActivityCard({
                   {formatCountdown(cooldownRemaining)}
                 </span>
               ) : (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full shrink-0" style={{ background: 'rgba(34,211,238,0.1)', color: '#22d3ee' }}>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full shrink-0" style={{ background: 'rgba(34,211,238,0.1)', color: '#22d3ee' }}>
                   READY
                 </span>
               )}
@@ -309,7 +309,7 @@ function ActivityCard({
             <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted, #6b7280)' }}>
               {activity.description}
             </p>
-            <span className="text-[9px] font-mono mt-0.5 inline-block" style={{ color: 'var(--text-tertiary, #9ca3af)' }}>
+            <span className="text-[10px] font-mono mt-0.5 inline-block" style={{ color: 'var(--text-tertiary, #9ca3af)' }}>
               {activity.minReward}–{activity.maxReward}
             </span>
           </div>

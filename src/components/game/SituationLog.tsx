@@ -172,7 +172,7 @@ export default function SituationLog({ state, onNavigate, onFocusMap, compact }:
                     {item.severity}
                   </DataChip>
                   {item.atMs !== undefined && (
-                    <span className="text-slate-500 text-[9px] font-hud">{formatCountdown(item.atMs - now)}</span>
+                    <span className="text-slate-500 text-[10px] font-hud">{formatCountdown(item.atMs - now)}</span>
                   )}
                 </span>
               </div>

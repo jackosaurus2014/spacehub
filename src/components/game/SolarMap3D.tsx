@@ -1470,7 +1470,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
       <div className="absolute top-2 right-2 flex flex-col gap-1 z-20">
         <button onClick={() => zoomBy(0.8)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
         <button onClick={() => zoomBy(1.25)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
-        <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[9px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+        <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
       </div>
 
       {/* Layer toggles — bottom-right, same as 2D embedded */}
@@ -1478,7 +1478,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <button
           onClick={() => setShowLanes(v => !v)}
           aria-pressed={showLanes}
-          className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+          className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
             showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
           }`}
         >
@@ -1487,7 +1487,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <button
           onClick={() => setShowShips(v => !v)}
           aria-pressed={showShips}
-          className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+          className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
             showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
           }`}
         >
@@ -1498,7 +1498,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           aria-pressed={showWorld}
           disabled={!worldAvailable}
           title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}
-          className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
+          className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
             worldLayerActive ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
           }`}
         >
@@ -1509,7 +1509,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             onClick={toggleFx}
             aria-pressed={fxPref}
             title={fxPref ? 'Disable bloom post-processing (quality toggle)' : 'Enable bloom post-processing'}
-            className={`min-h-[44px] px-2 py-1 rounded text-[9px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               fxPref ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
             }`}
           >
@@ -1589,7 +1589,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
       </div>
 
       {shipsInTransit > 0 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 text-[9px] text-emerald-300 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm pointer-events-none">
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 text-[10px] text-emerald-300 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm pointer-events-none">
           ⚡ {shipsInTransit} in transit
         </div>
       )}

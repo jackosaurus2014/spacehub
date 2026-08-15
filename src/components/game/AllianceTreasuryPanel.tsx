@@ -352,7 +352,7 @@ export default function AllianceTreasuryPanel() {
           ) : (
             <div className="max-h-80 overflow-y-auto overflow-x-auto game-scroll" role="table" aria-label="Treasury transaction history">
               {/* Column header row */}
-              <div className="flex items-center justify-between py-1 px-3 font-hud text-[9px] uppercase tracking-widest text-slate-500" role="row">
+              <div className="flex items-center justify-between py-1 px-3 font-hud text-[10px] uppercase tracking-widest text-slate-500" role="row">
                 <span role="columnheader">Event</span>
                 <span role="columnheader">Actor</span>
                 <span role="columnheader">Amount</span>
@@ -370,7 +370,7 @@ export default function AllianceTreasuryPanel() {
                       </span>
                       <div>
                         <p className="text-white text-xs">{log.title}</p>
-                        <p className="text-slate-600 text-[9px]">
+                        <p className="text-slate-600 text-[10px]">
                           {log.actorName ?? 'System'} &middot; {new Date(log.createdAt).toLocaleDateString()}
                         </p>
                       </div>

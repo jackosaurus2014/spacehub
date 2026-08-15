@@ -268,14 +268,14 @@ function CalendarRow({ entry, now, compact }: { entry: CalendarEntry; now: numbe
           <span className="block text-slate-500 text-[10px] mt-0.5">{entry.detail}</span>
         )}
         {entry.estimated && (
-          <span className="ml-1 text-[9px] text-slate-500 italic">(est.)</span>
+          <span className="ml-1 text-[10px] text-slate-500 italic">(est.)</span>
         )}
       </span>
       <span className="text-right shrink-0">
         <span className={`block font-hud text-[11px] uppercase tracking-wide ${isFinalHour ? 'text-amber-400' : 'text-cyan-400'}`}>
           {formatCountdown(remaining)}
         </span>
-        <span className="block text-slate-500 text-[9px]">{formatEntryTime(entry.atMs)}</span>
+        <span className="block text-slate-500 text-[10px]">{formatEntryTime(entry.atMs)}</span>
       </span>
     </div>
   );

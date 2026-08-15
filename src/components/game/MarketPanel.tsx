@@ -291,7 +291,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                   <div className="flex items-center gap-1.5">
                     <p className="text-slate-500 text-[10px]">{formatMoney(value)}</p>
                     {change !== 0 && (
-                      <span className={`game-number text-[9px] ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <span className={`game-number text-[10px] ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {change > 0 ? '▲' : '▼'}{Math.abs(change)}%
                       </span>
                     )}
@@ -377,6 +377,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             const ask = priceData?.effectivePrice || current;
             const change = priceData?.change || 0;
             const mineOnly = MINED_ONLY_RESOURCE_IDS.has(r.id);
+            const scarcity = priceData?.supplyMultiplier;
             return (
               <div key={r.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center gap-2">
@@ -394,7 +395,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="text-right">
-                    <div className="flex items-baseline justify-end gap-2 text-[9px] font-mono">
+                    <div className="flex items-baseline justify-end gap-2 text-[10px] font-mono">
                       <span className="text-amber-300" title="Bid — what you receive per unit when selling (includes 3% broker fee)">
                         B: {formatMoney(Math.round(current * 0.97))}
                       </span>
@@ -409,6 +410,17 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                       }`}>
                         {change > 0 ? '▲+' : change < 0 ? '▼' : ''}{change}%
                       </span>
+                      {/* V8 density mode — compact reveals scarcity (supply
+                          multiplier) inline; comfortable keeps the row to
+                          price + change only. */}
+                      {typeof scarcity === 'number' && (
+                        <span
+                          className="density-compact-reveal items-baseline text-[10px] ml-1 text-purple-300/80"
+                          title={`Scarcity multiplier — ${scarcity.toFixed(2)}x spot price paid on buy`}
+                        >
+                          ×{scarcity.toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex gap-1">
@@ -418,14 +430,14 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                         <button
                           onClick={() => { setSelectedResource(r.id); setSellQty(Math.min(1, state.resources[r.id] || 0)); }}
                           disabled={trading}
-                          className="min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors bg-amber-600/20 text-amber-400 border border-amber-600/30 hover:bg-amber-600/30"
+                          className="min-h-[44px] px-2 py-0.5 text-[10px] font-medium rounded transition-colors bg-amber-600/20 text-amber-400 border border-amber-600/30 hover:bg-amber-600/30"
                         >Sell</button>
                       </>
                     )}
                     {/* Buy buttons */}
                     {onBuyResource && mineOnly && (
                       <span
-                        className="min-h-[44px] flex items-center px-2 py-0.5 text-[9px] font-medium rounded bg-white/[0.02] text-slate-500 border border-dashed border-white/[0.08]"
+                        className="min-h-[44px] flex items-center px-2 py-0.5 text-[10px] font-medium rounded bg-white/[0.02] text-slate-500 border border-dashed border-white/[0.08]"
                         title="Mined only — not sold on the open market"
                       >
                         ⛏ Mined only — not for sale
@@ -437,7 +449,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                           onClick={() => handleBuy(r.id, 1)}
                           disabled={state.money < ask || trading}
                           title={`Pay ${formatMoney(ask)}`}
-                          className={`min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                          className={`min-h-[44px] px-2 py-0.5 text-[10px] font-medium rounded transition-colors ${
                             state.money >= ask && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
@@ -447,7 +459,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                           onClick={() => handleBuy(r.id, 10)}
                           disabled={state.money < ask * 10 || trading}
                           title={`Pay ${formatMoney(ask * 10)}`}
-                          className={`min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                          className={`min-h-[44px] px-2 py-0.5 text-[10px] font-medium rounded transition-colors ${
                             state.money >= ask * 10 && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
@@ -457,7 +469,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                           onClick={() => handleBuy(r.id, 100)}
                           disabled={state.money < ask * 100 || trading}
                           title={`Pay ${formatMoney(ask * 100)}`}
-                          className={`min-h-[44px] px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                          className={`min-h-[44px] px-2 py-0.5 text-[10px] font-medium rounded transition-colors ${
                             state.money >= ask * 100 && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
@@ -471,7 +483,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             );
           })}
         </div>
-        <p className="text-slate-600 text-[9px] mt-3 text-center">
+        <p className="text-slate-600 text-[11px] mt-3 text-center">
           Prices change based on global player activity. Buying pushes prices up, selling pushes them down.
         </p>
       </div>

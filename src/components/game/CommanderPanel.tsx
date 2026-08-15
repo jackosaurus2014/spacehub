@@ -99,7 +99,7 @@ export default function CommanderPanel({ state, onHire, onDismiss, onAssign, onU
           <div className="text-right shrink-0">
             <div className="game-label">Roster</div>
             <div className={`game-number font-bold ${hired.length >= cap ? 'text-amber-400' : 'text-white'}`}>{hired.length}/{cap}</div>
-            <div className="text-[9px] text-slate-600 mt-0.5">Cap rises with corp tier</div>
+            <div className="text-[10px] text-slate-600 mt-0.5">Cap rises with corp tier</div>
           </div>
         </div>
 
@@ -235,7 +235,7 @@ function BonusChip({ label, value }: { label: string; value: string }) {
   const isZero = value === '+0%';
   return (
     <div className={`rounded-lg p-2 text-center ${isZero ? 'bg-white/[0.02] border border-white/[0.04]' : 'bg-cyan-500/5 border border-cyan-500/20'}`}>
-      <div className={`text-[9px] uppercase tracking-wide ${isZero ? 'text-slate-600' : 'text-slate-400'}`}>{label}</div>
+      <div className={`text-[10px] uppercase tracking-wide ${isZero ? 'text-slate-600' : 'text-slate-400'}`}>{label}</div>
       <div className={`game-number text-sm font-bold ${isZero ? 'text-slate-500' : 'text-cyan-300'}`}>{value}</div>
     </div>
   );
@@ -299,11 +299,11 @@ function CommanderCard({
         <span className="hud-corner-br" aria-hidden="true" />
         <Portrait def={def} size={256} />
         {/* Rarity badge */}
-        <span className={`absolute top-1.5 left-1.5 text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide backdrop-blur-sm ${accent.text}`} style={{ background: 'rgba(0,0,0,0.65)' }}>
+        <span className={`absolute top-1.5 left-1.5 text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide backdrop-blur-sm ${accent.text}`} style={{ background: 'rgba(0,0,0,0.65)' }}>
           {RARITY_LABEL[def.rarity]}
         </span>
         {onOpenHero && (
-          <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full text-amber-300 bg-amber-500/10 border border-amber-500/30 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
+          <span className="absolute top-1.5 right-1.5 text-[10px] px-1.5 py-0.5 rounded-full text-amber-300 bg-amber-500/10 border border-amber-500/30 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
             View hero
           </span>
         )}
@@ -314,7 +314,7 @@ function CommanderCard({
         <div className="text-white text-sm font-bold leading-tight truncate">{def.name}</div>
         <div className="text-slate-500 text-[10px] truncate">{def.title}</div>
         <div className="flex items-center gap-1 mt-1">
-          <span className={`text-[9px] px-1.5 py-0.5 rounded ${accent.text}`} style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded ${accent.text}`} style={{ background: 'rgba(255,255,255,0.05)' }}>
             {CLASS_LABEL[def.class]}
           </span>
         </div>
@@ -439,14 +439,14 @@ function HiredCommanderCard({
               <div className="text-white text-sm font-bold leading-tight truncate">{def.name}</div>
               <div className="text-slate-500 text-[10px] truncate">{def.title}</div>
             </div>
-            <span className={`shrink-0 text-[9px] px-1.5 py-0.5 rounded ${accent.text}`} style={{ background: 'rgba(255,255,255,0.05)' }}>
+            <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded ${accent.text}`} style={{ background: 'rgba(255,255,255,0.05)' }}>
               {CLASS_LABEL[def.class]}
             </span>
           </div>
 
           {/* Level / XP bar */}
           <div className="mt-1.5">
-            <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
+            <div className="flex items-center justify-between text-[10px] text-slate-500 mb-0.5">
               <span>Level {xpProgress.level}{xpProgress.level >= MAX_LEVEL ? ' (max)' : ''}</span>
               <span>{xpProgress.xpForNextLevel !== null ? `${xpProgress.xp}/${xpProgress.xpForNextLevel} XP` : 'MAX'}</span>
             </div>
@@ -460,13 +460,13 @@ function HiredCommanderCard({
       {/* Trait chips (text tooltips — not color-only) */}
       <div className="px-3 flex flex-wrap gap-1.5">
         <span
-          className="text-[9px] px-1.5 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/5"
+          className="text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/5"
           title={`Specialty — ${specialty.name}: ${specialty.description}`}
         >
           ★ {specialty.name}
         </span>
         <span
-          className="text-[9px] px-1.5 py-0.5 rounded border border-amber-500/30 text-amber-300 bg-amber-500/5"
+          className="text-[10px] px-1.5 py-0.5 rounded border border-amber-500/30 text-amber-300 bg-amber-500/5"
           title={`Quirk — ${quirk.name}: ${quirk.description}`}
         >
           ◆ {quirk.name}
@@ -475,7 +475,7 @@ function HiredCommanderCard({
           const bonusTrait = getCommanderBonusTrait(def.id);
           return (
             <span
-              className="text-[9px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5"
+              className="text-[10px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5"
               title={`Program-earned specialty — ${bonusTrait.name}: ${bonusTrait.description}`}
             >
               ★★ {bonusTrait.name}
@@ -493,7 +493,7 @@ function HiredCommanderCard({
                 Posted: <span className="text-white font-medium">{ASSIGNMENT_POST_LABEL[assignment.postType]}</span>
                 {targetLabelFor(assignment, state) && <> — {targetLabelFor(assignment, state)}</>}
               </div>
-              <div className={`text-[9px] mt-0.5 ${isProductive ? 'text-emerald-400' : 'text-slate-600'}`}>
+              <div className={`text-[10px] mt-0.5 ${isProductive ? 'text-emerald-400' : 'text-slate-600'}`}>
                 {isProductive ? 'Active — earning XP this month' : 'Idle — no XP this month (post not producing)'}
               </div>
               {(() => {
@@ -501,7 +501,7 @@ function HiredCommanderCard({
                 if (etaMs === null) return null;
                 const daysLeft = Math.max(0, Math.ceil((etaMs - Date.now()) / (24 * 60 * 60 * 1000)));
                 return (
-                  <div className="text-[9px] mt-0.5 text-fuchsia-400">
+                  <div className="text-[10px] mt-0.5 text-fuchsia-400">
                     🎖️ Retires in {daysLeft}d — reassigning to a different post resets this clock
                   </div>
                 );

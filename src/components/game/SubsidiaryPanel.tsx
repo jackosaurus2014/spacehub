@@ -50,7 +50,7 @@ function UpgradeTrackWidget({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[11px] text-white font-medium">{label}</span>
-          <span className="text-[9px] font-mono text-cyan-400">Lv {level}/{maxLevel}</span>
+          <span className="text-[10px] font-mono text-cyan-400">Lv {level}/{maxLevel}</span>
         </div>
         {/* Level dots */}
         <div className="flex gap-1 mb-1">
@@ -63,7 +63,7 @@ function UpgradeTrackWidget({
             />
           ))}
         </div>
-        <p className="text-[9px] text-slate-500">{bonusLabel}</p>
+        <p className="text-[10px] text-slate-500">{bonusLabel}</p>
       </div>
       <div className="shrink-0 ml-2">
         {level < maxLevel ? (
@@ -187,9 +187,9 @@ function SubsidiaryCard({
 
       {/* Service types affected */}
       <div className="flex flex-wrap gap-1 mb-3">
-        <span className="text-[9px] text-slate-500">Boosts:</span>
+        <span className="text-[10px] text-slate-500">Boosts:</span>
         {def.targetServiceTypes.map(st => (
-          <span key={st} className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
+          <span key={st} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
             {st.replace(/_/g, ' ')}
           </span>
         ))}
@@ -352,9 +352,9 @@ export default function SubsidiaryPanel({ state, onCreate, onUpgrade, onDissolve
                     </div>
                     <p className="text-slate-400 text-[10px] mb-2">{def.description}</p>
                     <div className="flex flex-wrap gap-1 mb-3">
-                      <span className="text-[9px] text-slate-500">Boosts:</span>
+                      <span className="text-[10px] text-slate-500">Boosts:</span>
                       {def.targetServiceTypes.map(st => (
-                        <span key={st} className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
+                        <span key={st} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
                           {st.replace(/_/g, ' ')}
                         </span>
                       ))}
@@ -372,7 +372,7 @@ export default function SubsidiaryPanel({ state, onCreate, onUpgrade, onDissolve
                       Establish ({formatMoney(def.setupCost)})
                     </button>
                     {!check.allowed && check.reason && (
-                      <p className="text-[9px] text-red-400/70 mt-1 text-center">{check.reason}</p>
+                      <p className="text-[10px] text-red-400/70 mt-1 text-center">{check.reason}</p>
                     )}
                   </div>
                 );

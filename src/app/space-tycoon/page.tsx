@@ -22,6 +22,7 @@ import ResourceBar from '@/components/game/ResourceBar';
 import GlobalEffectsLayer from '@/components/game/GlobalEffectsLayer'; // Wave V7 — map pings/sound/haptics on order completion, mounted tab-independent
 import { mapPing } from '@/lib/game/map-ping'; // Wave V7 — order-ack beacon event bus
 import { hapticAck } from '@/lib/game/haptics'; // Wave V7 — order-ack haptic tap
+import { getGameDensity, type GameDensity } from '@/lib/game/density'; // Wave V8 — density mode
 import GameIcon from '@/components/game/GameIcon';
 import HoloTip, { Concept } from '@/components/game/HoloTip';
 import type { IconName } from '@/lib/game/icons';
@@ -274,7 +275,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
           <div className="flex items-center gap-2 mb-3">
             <GameIcon name="idea" size={16} />
             <h3 className="font-hud text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>Suggested Research</h3>
-            <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>— best for your current progress</span>
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>— best for your current progress</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {suggestions.map(r => {
@@ -306,7 +307,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{r.name}</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{
                       background: canStart ? 'rgba(99,102,241,0.15)' : 'rgba(255,179,2,0.1)',
                       color: canStart ? '#818cf8' : '#FFB302',
                     }}>
@@ -316,7 +317,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                   <p className="text-[10px] mb-0.5" style={{ color: 'var(--text-tertiary)' }}>{r.effect}</p>
                   <p className="text-[10px] mb-1.5 text-cyan-300/80 font-mono">→ {getResearchMechanicalEffect(r)}</p>
                   {unlocksText && (
-                    <p className="text-[9px] font-medium" style={{ color: '#56F000' }}>
+                    <p className="text-[10px] font-medium" style={{ color: '#56F000' }}>
                       Unlocks: {unlocksText}
                     </p>
                   )}
@@ -350,7 +351,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                 <span className="animate-pulse motion-reduce:animate-none"><GameIcon name="research" size={20} glow="purple" /></span>
                 <div>
                   <span className="text-white text-sm font-semibold">{def.name}</span>
-                  {hasQueue2 && <span className="text-slate-500 text-[9px] ml-1.5">Q1</span>}
+                  {hasQueue2 && <span className="text-slate-500 text-[10px] ml-1.5">Q1</span>}
                   <span className="game-number text-purple-400 text-xs ml-2">{pct}%</span>
                 </div>
               </div>
@@ -379,7 +380,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                 <span className="animate-pulse motion-reduce:animate-none"><GameIcon name="research" size={20} glow="purple" /></span>
                 <div>
                   <span className="text-white text-sm font-semibold">{def2.name}</span>
-                  <span className="text-slate-500 text-[9px] ml-1.5">Q2</span>
+                  <span className="text-slate-500 text-[10px] ml-1.5">Q2</span>
                   <span className="game-number text-cyan-400 text-xs ml-2">{pct2}%</span>
                 </div>
               </div>
@@ -543,7 +544,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                               underline={false}
                               content={{ title: 'Repeatable Research', icon: 'research', body: <Concept id="repeatable-research" /> }}
                             >
-                              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-semibold">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-semibold">
                                 LVL {disp.repeatableLevel}/{r.repeatable!.maxLevel}
                               </span>
                             </HoloTip>
@@ -553,22 +554,22 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                               underline={false}
                               content={{ title: 'Doctrine Locked', icon: 'balance', iconGlow: 'amber', body: <Concept id="doctrine-lock" /> }}
                             >
-                              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-medium">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-medium">
                                 Doctrine locked — chose {RESEARCH_MAP.get(disp.lockedBySiblingId!)?.name || disp.lockedBySiblingId}
                               </span>
                             </HoloTip>
                           )}
                           {canStart && anyQueueFree && !disp.doctrineLocked && (
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">READY</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">READY</span>
                           )}
                           {unlockedCantAfford && (
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400/70 font-medium">NEED $</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400/70 font-medium">NEED $</span>
                           )}
                           <HoloTip
                             underline={false}
                             content={{ title: `Tier ${r.tier} Research`, icon: 'research', body: 'Higher tiers require deeper prerequisite chains and cost more — the tree gates progression so late-game techs are earned, not stumbled into early.' }}
                           >
-                            <span className={`font-hud text-[9px] px-1.5 py-0.5 rounded-full ${tierBadgeClass}`}>T{r.tier}</span>
+                            <span className={`font-hud text-[10px] px-1.5 py-0.5 rounded-full ${tierBadgeClass}`}>T{r.tier}</span>
                           </HoloTip>
                         </div>
                       </div>
@@ -581,7 +582,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                             const pDef = RESEARCH_MAP.get(p);
                             const pDone = state.completedResearch.includes(p);
                             return (
-                              <span key={p} className={`inline-flex items-center gap-0.5 text-[8px] px-1.5 py-0.5 rounded ${
+                              <span key={p} className={`inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded ${
                                 pDone ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
                               }`}>
                                 <GameIcon name={pDone ? 'check' : 'close'} size={9} /> {pDef?.name || p}
@@ -596,7 +597,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                           {Object.entries(r.resourceCost).map(([resId, qty]) => {
                             const have = state.resources[resId] || 0;
                             return (
-                              <span key={resId} className={`text-[8px] px-1 py-0.5 rounded border ${
+                              <span key={resId} className={`text-[10px] px-1 py-0.5 rounded border ${
                                 have >= qty ? 'text-slate-400 border-white/[0.06]' : 'text-red-400 border-red-500/20'
                               }`}>{resId.replace(/_/g, ' ')} {have}/{qty}</span>
                             );
@@ -617,7 +618,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                             </span>
                           )}
                           {unlockedCantAfford && !canAffordMoney && (
-                            <span className="text-[9px] text-amber-400/60">
+                            <span className="text-[10px] text-amber-400/60">
                               Need {formatMoney(disp.effectiveMoneyCost - state.money)} more
                             </span>
                           )}
@@ -741,7 +742,7 @@ function ServicesPanel({ state }: { state: GameState }) {
           <p className={`game-number text-xs font-bold ${netGroup >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>
             {netGroup >= 0 ? '+' : ''}{formatMoney(netGroup)}
           </p>
-          <p className="text-slate-600 text-[9px] uppercase tracking-wider">Net/mo</p>
+          <p className="text-slate-600 text-[10px] uppercase tracking-wider">Net/mo</p>
         </div>
       </div>
     );
@@ -859,6 +860,15 @@ export default function SpaceTycoonPage() {
     const id = requestAnimationFrame(() => overlaySheetRef.current?.focus({ preventScroll: true }));
     return () => cancelAnimationFrame(id);
   }, [stageLayout.overlayOpen, tab]);
+  // Wave V8 (docs/VISUAL_DEPTH_2026-08.md §V8): density mode — comfortable
+  // (default, novice) vs compact (denser consoles, veteran). Lives in
+  // lib/game/density.ts (localStorage-persisted module singleton, mirrors
+  // haptics.ts) rather than component state alone, because the ResourceBar
+  // toggle needs to both read and write it; this piece of state exists so
+  // the value can drive the `data-density` attribute on the game root,
+  // which GameStyles.tsx's CSS custom properties key off of.
+  const [density, setDensityState] = useState<GameDensity>('comfortable');
+  useEffect(() => { setDensityState(getGameDensity()); }, []);
   const [showMenu, setShowMenu] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
@@ -1843,7 +1853,7 @@ export default function SpaceTycoonPage() {
   const activeInSecondary = secondaryTabs.find(t => t.id === tab);
 
   return (
-    <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines">
+    <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines" data-density={density}>
       {/* Subtle starfield background */}
       <Image
         src="/game/bg-starfield.webp"
@@ -1880,7 +1890,7 @@ export default function SpaceTycoonPage() {
       {/* Wave V7 — tab-independent order-completion feedback (map pings, sound, haptics) */}
       <GlobalEffectsLayer state={state} />
       {/* Resource Bar */}
-      <ResourceBar state={state} />
+      <ResourceBar state={state} density={density} onDensityChange={setDensityState} />
 
       {/* Protected Frontier banner — renders only when active */}
       <FrontierBadge
@@ -1951,7 +1961,7 @@ export default function SpaceTycoonPage() {
                     <GameIcon name={t.icon} size={14} />
                     <span>{t.label}</span>
                     {t.id === 'reports' && unreadReports > 0 && (
-                      <span className="ml-auto px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                      <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                         {unreadReports}
                       </span>
                     )}

@@ -107,7 +107,7 @@ export default function ArchetypePicker({ onSelect, onCancel }: Props) {
                     </p>
 
                     <div className={`text-[11px] p-2 rounded ${a.accent.bg}`}>
-                      <div className={`text-[9px] uppercase tracking-wider font-bold ${a.accent.text} mb-0.5`}>Strategic hint</div>
+                      <div className={`text-[10px] uppercase tracking-wider font-bold ${a.accent.text} mb-0.5`}>Strategic hint</div>
                       <p className="text-slate-300 leading-relaxed">{a.strategicHint}</p>
                     </div>
                   </div>
@@ -152,7 +152,7 @@ export default function ArchetypePicker({ onSelect, onCancel }: Props) {
 function KeyStat({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
     <div>
-      <div className="text-[9px] uppercase tracking-wider text-slate-500">{label}</div>
+      <div className="text-[10px] uppercase tracking-wider text-slate-500">{label}</div>
       <div className={`font-mono text-sm font-bold ${accent}`}>{value}</div>
     </div>
   );

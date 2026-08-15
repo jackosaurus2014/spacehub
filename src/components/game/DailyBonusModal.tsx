@@ -165,7 +165,7 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
                             : 'bg-white/[0.03] border border-white/[0.06]'
                       }`}
                     >
-                      <p className={`text-[9px] font-medium ${isToday ? 'text-cyan-400' : isPast ? 'text-green-400' : 'text-slate-500'}`}>
+                      <p className={`text-[10px] font-medium ${isToday ? 'text-cyan-400' : isPast ? 'text-green-400' : 'text-slate-500'}`}>
                         Day {day.day}
                       </p>
                       <p className={`text-[10px] font-bold mt-0.5 ${isToday ? 'text-white' : isPast ? 'text-green-400/70' : 'text-slate-400'}`}>
@@ -173,7 +173,7 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
                       </p>
                       <span className="sr-only">{isPast ? ' (claimed)' : isToday ? ' (today)' : ''}</span>
                       {isPast && (
-                        <span className="absolute -top-1 -right-1 text-[8px]" aria-hidden="true">✅</span>
+                        <span className="absolute -top-1 -right-1 text-[10px]" aria-hidden="true">✅</span>
                       )}
                       {isToday && (
                         <span className="absolute -top-1 -right-1 text-[10px] animate-pulse motion-reduce:animate-none" aria-hidden="true">⭐</span>

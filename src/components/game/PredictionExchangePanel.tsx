@@ -212,10 +212,10 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
                     <div className="flex items-start gap-2">
                       <span className="text-sm mt-0.5" aria-hidden="true">{meta.icon}</span>
                       <div>
-                        <span className="text-[9px] uppercase tracking-wider text-cyan-400/80 font-semibold">{meta.label}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-cyan-400/80 font-semibold">{meta.label}</span>
                         <p className="text-white text-xs font-medium leading-snug">{q.question}</p>
                         {q.sourceHref && (
-                          <Link href={q.sourceHref} className="text-cyan-400/70 hover:text-cyan-300 text-[9px] underline underline-offset-2">
+                          <Link href={q.sourceHref} className="text-cyan-400/70 hover:text-cyan-300 text-[10px] underline underline-offset-2">
                             View tracked source
                           </Link>
                         )}
@@ -257,7 +257,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <span>{opt.label}</span>
-                                <span className="text-slate-500 text-[9px] font-mono shrink-0">{share}%</span>
+                                <span className="text-slate-500 text-[10px] font-mono shrink-0">{share}%</span>
                               </div>
                             </button>
                           );
@@ -287,7 +287,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
                           >
                             Max
                           </button>
-                          <span className="text-slate-500 text-[9px]">
+                          <span className="text-slate-500 text-[10px]">
                             Pays {formatMoney((stakeDrafts[q.id] ?? PREDICTION_STAKE_MIN) * PREDICTION_PAYOUT_MULTIPLIER)} if correct
                           </span>
                           <button
@@ -300,7 +300,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
                         </div>
                       )}
 
-                      <p className="text-slate-600 text-[9px]">
+                      <p className="text-slate-600 text-[10px]">
                         {q.stakeCount} player{q.stakeCount === 1 ? '' : 's'} staked so far · {formatMoney(total)} in play
                       </p>
                     </div>
@@ -332,7 +332,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
               return (
                 <div key={q.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors gap-2">
                   <div className="min-w-0">
-                    <span className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold mr-1.5">{meta.icon} {meta.label}</span>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mr-1.5">{meta.icon} {meta.label}</span>
                     <p className="text-slate-300 text-[11px] truncate">{q.question}</p>
                     <p className="text-slate-500 text-[10px]">Outcome: <span className="text-white">{outcomeLabel}</span></p>
                   </div>

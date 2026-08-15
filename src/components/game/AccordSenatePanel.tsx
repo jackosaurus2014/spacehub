@@ -69,7 +69,7 @@ export default function AccordSenatePanel({ state, onLobby }: Props) {
                   <span aria-hidden="true">{r.icon}</span>
                   <span className="text-slate-300 truncate">{r.measureName}</span>
                   {r.playerStance && (
-                    <span className="text-[9px] text-slate-500 uppercase">({r.playerStance})</span>
+                    <span className="text-[10px] text-slate-500 uppercase">({r.playerStance})</span>
                   )}
                 </div>
                 <span className={`font-bold shrink-0 ${r.passed ? 'text-emerald-300' : 'text-red-300'}`}>
@@ -116,7 +116,7 @@ function MeasureCard({
           <div className="flex items-center gap-2">
             <span aria-hidden="true">{def.icon}</span>
             <h3 className="text-white text-sm font-bold">{def.name}</h3>
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/10 text-slate-400 uppercase">{def.category.replace(/_/g, ' ')}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-slate-400 uppercase">{def.category.replace(/_/g, ' ')}</span>
           </div>
           <p className="text-slate-400 text-[11px] mt-1">{def.description}</p>
         </div>

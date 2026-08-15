@@ -121,7 +121,7 @@ export default async function CorporateChroniclePage() {
                         {' '}Published {formatPublishedDate(entry.publishedAt)}
                       </p>
                     </div>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03] text-slate-400 font-bold shrink-0">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03] text-slate-400 font-bold shrink-0">
                       Bracket {entry.era.bracketAtStart}
                     </span>
                   </div>

@@ -195,7 +195,7 @@ export default function AllianceCharterPanel() {
                     <span aria-hidden="true">{def.icon}</span> {def.name}
                   </div>
                   <p className="text-[10px] text-slate-400 mt-0.5">{def.description}</p>
-                  <div className="text-[9px] text-teal-300 mt-1">
+                  <div className="text-[10px] text-teal-300 mt-1">
                     Season target: {formatMetric(def.perMemberSeasonTarget, def.metricUnit)}/member · {def.metricLabel}
                   </div>
                 </button>
@@ -226,9 +226,9 @@ export default function AllianceCharterPanel() {
                 <h3 className="font-hud text-white text-sm font-bold flex items-center gap-1.5">
                   <span aria-hidden="true">{data.charter.def?.icon}</span> {data.charter.def?.name}
                 </h3>
-                <div className="text-[9px] uppercase tracking-wider text-slate-500">Season {data.charter.seasonNumber}</div>
+                <div className="text-[10px] uppercase tracking-wider text-slate-500">Season {data.charter.seasonNumber}</div>
               </div>
-              <span className="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-teal-500/40 text-teal-200 bg-teal-500/10">
+              <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-teal-500/40 text-teal-200 bg-teal-500/10">
                 {data.charter.status}
               </span>
             </div>
@@ -251,11 +251,11 @@ export default function AllianceCharterPanel() {
             </div>
             <div className="grid grid-cols-2 gap-1.5 text-center mt-2">
               <div className="rounded bg-white/[0.03] p-1.5">
-                <div className="game-label text-[8px]">Escrow remaining</div>
+                <div className="game-label text-[10px]">Escrow remaining</div>
                 <div className="font-hud text-[10px] text-white font-bold">{formatCompact(data.charter.escrowRemaining)}</div>
               </div>
               <div className="rounded bg-white/[0.03] p-1.5">
-                <div className="game-label text-[8px]">Season ends</div>
+                <div className="game-label text-[10px]">Season ends</div>
                 <div className="font-hud text-[10px] text-amber-200 font-bold">
                   {new Date(data.charter.endsAt).toLocaleDateString()}
                 </div>
@@ -265,7 +265,7 @@ export default function AllianceCharterPanel() {
 
           {/* My pledge */}
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-            <div className="game-label text-[9px] mb-1.5">My weekly pledge (week ends {new Date(data.weekEndsAtMs).toLocaleDateString()})</div>
+            <div className="game-label text-[10px] mb-1.5">My weekly pledge (week ends {new Date(data.weekEndsAtMs).toLocaleDateString()})</div>
             <div className="flex gap-2">
               <input
                 type="number"
@@ -285,12 +285,12 @@ export default function AllianceCharterPanel() {
                 Pledge
               </button>
             </div>
-            <p className="text-[9px] text-slate-500 mt-1">Set to 0 to opt out — no penalty, just no stipend.</p>
+            <p className="text-[11px] text-slate-500 mt-1">Set to 0 to opt out — no penalty, just no stipend.</p>
           </div>
 
           {/* Pledge board */}
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-            <div className="game-label text-[9px] mb-2">Pledge board — visible to the whole corporation</div>
+            <div className="game-label text-[10px] mb-2">Pledge board — visible to the whole corporation</div>
             <div className="space-y-1.5">
               {data.board.map(row => (
                 <div key={row.profileId} className="flex items-center justify-between gap-2 rounded-lg bg-white/[0.02] px-2.5 py-1.5 text-[11px]">

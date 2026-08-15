@@ -256,7 +256,7 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-0.5">
           {capacity.breakdown.map(b => (
-            <span key={b.source} className="text-zinc-500 text-[9px]">+{b.amount} from {b.source}</span>
+            <span key={b.source} className="text-zinc-500 text-[10px]">+{b.amount} from {b.source}</span>
           ))}
         </div>
       </div>
@@ -293,9 +293,9 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
                     </div>
                     <p className="text-slate-500 text-[10px]">{worker.description}</p>
                     <div className="flex gap-2 mt-1">
-                      <span className="text-slate-600 text-[9px]">Salary: {formatMoney(worker.salary)}/mo</span>
-                      <span className="text-slate-600 text-[9px]">·</span>
-                      <span className="text-slate-600 text-[9px]">Hire cost: {formatMoney(hireCost)}</span>
+                      <span className="text-slate-600 text-[10px]">Salary: {formatMoney(worker.salary)}/mo</span>
+                      <span className="text-slate-600 text-[10px]">·</span>
+                      <span className="text-slate-600 text-[10px]">Hire cost: {formatMoney(hireCost)}</span>
                     </div>
                   </div>
                 </div>

@@ -491,7 +491,7 @@ function LocalStockpileBlock({ state, locationId }: { state: GameState; location
             )}
           </div>
           {!home && (
-            <p className="text-[9px] text-slate-500 mt-1">Goods must be freighted to Earth before they can be sold on the market.</p>
+            <p className="text-[11px] text-slate-500 mt-1">Goods must be freighted to Earth before they can be sold on the market.</p>
           )}
         </>
       )}
@@ -780,7 +780,7 @@ function GalacticBody({
           </div>
           {colony.localResources.length > 0 && (
             <div className="flex flex-wrap items-center gap-1 mt-1.5">
-              <span className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Produces</span>
+              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Produces</span>
               {colony.localResources.map(r => {
                 const res = RESOURCE_MAP.get(r as ResourceId);
                 return (

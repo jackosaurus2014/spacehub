@@ -85,7 +85,7 @@ export default function GovernancePanel({ state, onSwitchPolicy, onCharterEra }:
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] uppercase tracking-wider text-cyan-300 font-bold">{DOCTRINE_CATEGORY_LABEL[category]}</span>
                   {!gate.allowed && (
-                    <span className="text-[9px] text-amber-400 font-mono">Cooldown: {gate.monthsRemaining}mo</span>
+                    <span className="text-[10px] text-amber-400 font-mono">Cooldown: {gate.monthsRemaining}mo</span>
                   )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -116,10 +116,10 @@ export default function GovernancePanel({ state, onSwitchPolicy, onCharterEra }:
                         <div className="flex items-center gap-1.5 mb-1">
                           <span aria-hidden="true">{opt.icon}</span>
                           <span className="text-[11px] font-medium text-white">{opt.name}</span>
-                          {isActive && <span className="text-[8px] font-mono text-cyan-300 uppercase ml-auto">Active</span>}
+                          {isActive && <span className="text-[10px] font-mono text-cyan-300 uppercase ml-auto">Active</span>}
                         </div>
-                        <p className="text-[9px] text-slate-400 mb-1">{opt.description}</p>
-                        <p className="text-[9px] text-amber-400/80">Catch: {opt.tradeoff}</p>
+                        <p className="text-[11px] text-slate-400 mb-1">{opt.description}</p>
+                        <p className="text-[10px] text-amber-400/80">Catch: {opt.tradeoff}</p>
                       </button>
                     );
                   })}
@@ -186,23 +186,23 @@ export default function GovernancePanel({ state, onSwitchPolicy, onCharterEra }:
             <div className="flex items-center gap-1.5 mb-1">
               <span aria-hidden="true">{DIRECTIVE_METRIC_ICON[currentDirective.metric]}</span>
               <span className="text-[11px] text-white font-medium">{currentDirective.label}</span>
-              <span className={`text-[9px] font-mono uppercase ml-auto ${
+              <span className={`text-[10px] font-mono uppercase ml-auto ${
                 currentDirective.status === 'pending' ? 'text-cyan-300'
                   : currentDirective.status === 'hit' ? 'text-emerald-400' : 'text-red-400'
               }`}>
                 {currentDirective.status === 'pending' ? 'In progress' : currentDirective.status}
               </span>
             </div>
-            <p className="text-[9px] text-slate-500">Quarter {currentDirective.quarterIndex + 1}{currentDirective.actualValue !== undefined ? ` — actual: ${currentDirective.metric === 'profit' ? formatMoney(currentDirective.actualValue) : currentDirective.actualValue}` : ''}</p>
+            <p className="text-[10px] text-slate-500">Quarter {currentDirective.quarterIndex + 1}{currentDirective.actualValue !== undefined ? ` — actual: ${currentDirective.metric === 'profit' ? formatMoney(currentDirective.actualValue) : currentDirective.actualValue}` : ''}</p>
           </div>
         ) : (
           <p className="text-[10px] text-slate-500 mb-2">No directive yet — the board issues its first target after your first quarterly report.</p>
         )}
         {directiveHistory.length > 0 && (
           <div className="space-y-1">
-            <p className="text-[9px] text-slate-500 uppercase tracking-wider">History</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider">History</p>
             {directiveHistory.map(d => (
-              <div key={d.id} className="flex items-center justify-between text-[9px] text-slate-400 py-0.5">
+              <div key={d.id} className="flex items-center justify-between text-[10px] text-slate-400 py-0.5">
                 <span className="flex items-center gap-1"><span aria-hidden="true">{DIRECTIVE_METRIC_ICON[d.metric]}</span>{d.label}</span>
                 <span className={d.status === 'hit' ? 'text-emerald-400' : 'text-red-400'}>{d.status === 'hit' ? '✓ Hit' : '✗ Missed'}</span>
               </div>

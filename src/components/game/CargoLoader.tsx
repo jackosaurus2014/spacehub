@@ -101,7 +101,7 @@ export default function CargoLoader({ state, shipInstanceId, cargo, onChange }: 
         />
       </div>
       {isTanker && (
-        <p className="text-[9px] text-sky-300/80">⛽ Tanker hull: water &amp; hydrocarbons count at half weight (2x liquid capacity).</p>
+        <p className="text-[11px] text-sky-300/80">⛽ Tanker hull: water &amp; hydrocarbons count at half weight (2x liquid capacity).</p>
       )}
 
       {stockEntries.length === 0 ? (
@@ -152,7 +152,7 @@ export default function CargoLoader({ state, shipInstanceId, cargo, onChange }: 
                   type="button"
                   onClick={() => { playSound('click'); setQty(resId, loaded >= maxLoadable(resId) ? 0 : maxLoadable(resId)); }}
                   aria-label={loaded >= maxLoadable(resId) ? `Unload all ${res?.name || resId}` : `Load maximum ${res?.name || resId}`}
-                  className="min-w-[36px] min-h-[36px] px-1 flex items-center justify-center rounded text-[9px] font-semibold bg-cyan-600/20 text-cyan-300 border border-cyan-600/30 hover:bg-cyan-600/30 transition-colors"
+                  className="min-w-[36px] min-h-[36px] px-1 flex items-center justify-center rounded text-[10px] font-semibold bg-cyan-600/20 text-cyan-300 border border-cyan-600/30 hover:bg-cyan-600/30 transition-colors"
                 >
                   {loaded >= maxLoadable(resId) && loaded > 0 ? '0' : 'MAX'}
                 </button>

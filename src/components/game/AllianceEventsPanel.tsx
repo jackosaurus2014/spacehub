@@ -240,7 +240,7 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
           <span className="text-xl">{event.icon}</span>
           <div>
             <h3 className="text-white text-sm font-semibold">{event.name}</h3>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold uppercase">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold uppercase">
               {event.category.replace('_', ' ')}
             </span>
           </div>
@@ -256,15 +256,15 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
       {/* Alliance Score */}
       <div className="grid grid-cols-3 gap-2 mb-3">
         <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.04] text-center">
-          <p className="text-slate-500 text-[9px] uppercase tracking-wider">Total Score</p>
+          <p className="text-slate-500 text-[10px] uppercase tracking-wider">Total Score</p>
           <p className="game-number text-white text-sm font-bold font-mono">{allianceScore.totalScore.toLocaleString()}</p>
         </div>
         <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.04] text-center">
-          <p className="text-slate-500 text-[9px] uppercase tracking-wider">Per Capita</p>
+          <p className="text-slate-500 text-[10px] uppercase tracking-wider">Per Capita</p>
           <p className="game-number text-cyan-300 text-sm font-bold font-mono">{allianceScore.perCapitaScore.toFixed(1)}</p>
         </div>
         <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.04] text-center">
-          <p className="text-slate-500 text-[9px] uppercase tracking-wider">Rank</p>
+          <p className="text-slate-500 text-[10px] uppercase tracking-wider">Rank</p>
           <p className={`game-number text-sm font-bold font-mono ${
             allianceScore.bracketRank && allianceScore.bracketRank <= 3 ? 'text-amber-300' : 'text-white'
           }`}>
@@ -294,10 +294,10 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
           <div className="rounded-lg" role="table" aria-label="Top contributors">
             <div className="flex items-center justify-between py-1 px-2.5" role="row">
               <div className="flex items-center gap-2">
-                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500 w-4" role="columnheader">#</span>
-                <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
+                <span className="font-hud text-[10px] uppercase tracking-widest text-slate-500 w-4" role="columnheader">#</span>
+                <span className="font-hud text-[10px] uppercase tracking-widest text-slate-500" role="columnheader">Commander</span>
               </div>
-              <span className="font-hud text-[9px] uppercase tracking-widest text-slate-500" role="columnheader">Score</span>
+              <span className="font-hud text-[10px] uppercase tracking-widest text-slate-500" role="columnheader">Score</span>
             </div>
             <div className="space-y-1">
               {contributions.slice(0, 5).map((c, idx) => (
@@ -314,7 +314,7 @@ function EventCard({ event, alliance }: { event: AllianceEventData; alliance: Al
                       {c.companyName}
                     </span>
                     {c.isYou && (
-                      <span className="text-[8px] px-1 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
+                      <span className="text-[10px] px-1 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">
                         YOU
                       </span>
                     )}
@@ -365,11 +365,11 @@ function BracketStandings({ event }: { event: AllianceEventData }) {
                     <span className={`text-xs font-medium ${s.isYou ? 'text-purple-300' : 'text-white'}`}>
                       {s.allianceName}
                     </span>
-                    <span className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-slate-400 font-mono">
+                    <span className="text-[10px] px-1 py-0.5 rounded bg-white/[0.06] text-slate-400 font-mono">
                       [{s.allianceTag}]
                     </span>
                     {s.isYou && (
-                      <span className="text-[8px] px-1 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-bold">
+                      <span className="text-[10px] px-1 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-bold">
                         YOU
                       </span>
                     )}
@@ -381,7 +381,7 @@ function BracketStandings({ event }: { event: AllianceEventData }) {
               </div>
               <div role="cell" className="text-right">
                 <p className="game-number text-white text-xs font-mono font-bold">{s.perCapitaScore.toFixed(1)}</p>
-                <p className="text-slate-600 text-[9px]">per capita</p>
+                <p className="text-slate-600 text-[10px]">per capita</p>
               </div>
             </div>
           ))}
@@ -439,7 +439,7 @@ function DailyTasksCard({ tasks, allCompleted, dailyMetrics }: { tasks: DailyTas
               </div>
               {!task.completed && (
                 <div className="mt-1.5 ml-7">
-                  <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
+                  <div className="flex items-center justify-between text-[10px] text-slate-500 mb-0.5">
                     <span className="game-number">{formatMetricValue(currentValue)} / {formatMetricValue(task.target)}</span>
                     <span className="game-number">{Math.round(progressPct)}%</span>
                   </div>
@@ -515,7 +515,7 @@ function EventHistory({ history }: { history: EventHistoryItem[] }) {
                 <span className="game-number text-green-400 text-[10px] font-mono">+{h.rewardXP} XP</span>
               </div>
               {h.rewardBonus && (
-                <p className="game-number text-[9px] text-cyan-400">
+                <p className="game-number text-[10px] text-cyan-400">
                   +{h.rewardBonus.revenueBonusPct}% rev ({h.rewardBonus.durationDays}d)
                 </p>
               )}

@@ -65,6 +65,7 @@ export type IconName =
   | 'track-crew-cohort' | 'track-leader-development' | 'track-rd-residency'
   // ── Misc HUD ─────────────────────────────────────────────────────────────
   | 'save' | 'mute' | 'unmute' | 'music' | 'ambient' | 'haptics' | 'haptics-off' | 'restart' | 'quit'
+  | 'density-comfortable' | 'density-compact'
   | 'help' | 'more' | 'close' | 'chevron-up' | 'chevron-down' | 'check'
   | 'warning' | 'info' | 'activity' | 'money' | 'trending-up'
   | 'trending-down' | 'handshake' | 'package' | 'target' | 'swords'
@@ -207,6 +208,11 @@ export const ICONS: Record<IconName, IconDef> = {
   // so the on/off state is never conveyed by color alone (mirrors mute/unmute).
   haptics: { meaning: 'Haptic feedback toggle — on', els: [r(8, 2, 8, 20, 2), l(11, 19, 13, 19), p('M4 9l1.5 1.5L4 12l1.5 1.5L4 15', 'none'), p('M20 9l-1.5 1.5L20 12l-1.5 1.5L20 15', 'none')] },
   'haptics-off': { meaning: 'Haptic feedback toggle — off', els: [r(8, 2, 8, 20, 2), l(11, 19, 13, 19), l(4, 4, 20, 20)] },
+  // Wave V8 (docs/VISUAL_DEPTH_2026-08.md §V8): density toggle in ResourceBar —
+  // row count is the shape signal (3 widely-spaced rows vs 5 tightly-packed
+  // rows), never color alone, mirroring the haptics on/off precedent.
+  'density-comfortable': { meaning: 'Display density: comfortable (wider spacing)', els: [l(4, 6, 20, 6), l(4, 12, 20, 12), l(4, 18, 20, 18)] },
+  'density-compact': { meaning: 'Display density: compact (denser rows)', els: [l(4, 4, 20, 4), l(4, 8, 20, 8), l(4, 12, 20, 12), l(4, 16, 20, 16), l(4, 20, 20, 20)] },
   restart: { meaning: 'Restart game', els: [p('M4 12a8 8 0 1 1 2.3 5.6'), pl('4,17 4,12 9,12')] },
   quit: { meaning: 'Quit to menu', els: [p('M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5'), l(9, 12, 21, 12), pl('17,8 21,12 17,16')] },
   help: { meaning: 'Help / how to play', els: [c(12, 12, 9, 'none'), p('M9 9a3 3 0 1 1 4 2.8c-.8.5-1 1-1 2.2'), c(12, 17, 0.6, 'currentColor')] },

@@ -129,7 +129,7 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
                       {a.name}
                     </span>
                     {a.title && isUnlocked && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
                         {a.title}
                       </span>
                     )}

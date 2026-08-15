@@ -380,7 +380,7 @@ function DeepDiveModal({
                       formatter={((v: number) => [formatMoney(v), 'Price']) as never}
                     />
                     {livePrice?.basePrice && (
-                      <ReferenceLine y={livePrice.basePrice} stroke="#475569" strokeDasharray="3 3" label={{ value: 'Base', fill: '#475569', fontSize: 9, position: 'left' }} />
+                      <ReferenceLine y={livePrice.basePrice} stroke="#475569" strokeDasharray="3 3" label={{ value: 'Base', fill: '#475569', fontSize: 10, position: 'left' }} />
                     )}
                     <Line type="monotone" dataKey="price" stroke="#22d3ee" strokeWidth={2} dot={false} isAnimationActive={false} />
                   </LineChart>
@@ -392,7 +392,7 @@ function DeepDiveModal({
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} margin={{ top: 0, right: 8, bottom: 0, left: 36 }}>
                     <XAxis dataKey="label" hide />
-                    <YAxis stroke="#475569" style={{ fontSize: 9 }} width={40} tickFormatter={(v: number) => v.toLocaleString()} />
+                    <YAxis stroke="#475569" style={{ fontSize: 10 }} width={40} tickFormatter={(v: number) => v.toLocaleString()} />
                     <Tooltip
                       contentStyle={{ background: '#0a0a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
                       itemStyle={{ color: '#a78bfa', fontSize: 11 }}

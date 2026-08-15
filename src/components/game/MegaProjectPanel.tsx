@@ -1166,7 +1166,7 @@ function LeaderboardIndividuals({ data }: { data: Record<string, unknown> }) {
                   <span className="text-slate-600 ml-1">[{entry.allianceTag}]</span>
                 )}
                 {entry.isYou && (
-                  <span className="text-[9px] ml-1 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold">
+                  <span className="text-[10px] ml-1 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold">
                     YOU
                   </span>
                 )}

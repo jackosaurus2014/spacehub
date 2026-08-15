@@ -136,7 +136,7 @@ function ShopTab({ state, setState }: { state: GameState; setState: Props['setSt
                 <div className="flex items-start gap-2">
                   <span className="text-3xl shrink-0" aria-hidden="true">{m.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <div className={`text-[9px] uppercase tracking-wider font-bold ${accent.text}`}>
+                    <div className={`text-[10px] uppercase tracking-wider font-bold ${accent.text}`}>
                       {RARITY_LABEL[m.rarity]} · T{m.tier} · {HARDPOINT_ICON[m.hardpointType]} {m.hardpointType}
                     </div>
                     <h3 className="text-white text-sm font-bold leading-tight">{m.name}</h3>
@@ -192,7 +192,7 @@ function InventoryTab({ state, inventory }: { state: GameState; inventory: Owned
           <div key={owned.instanceId} className={`rounded-lg border ${accent.border} p-3 flex items-center gap-3`} style={{ background: '#0a0a1a' }}>
             <span className="text-2xl" aria-hidden="true">{def.icon}</span>
             <div className="flex-1 min-w-0">
-              <div className={`text-[9px] uppercase tracking-wider font-bold ${accent.text}`}>
+              <div className={`text-[10px] uppercase tracking-wider font-bold ${accent.text}`}>
                 {RARITY_LABEL[def.rarity]} · T{def.tier} · {HARDPOINT_ICON[def.hardpointType]} {def.hardpointType}
               </div>
               <div className="text-white text-sm font-bold">{def.name}</div>
@@ -297,11 +297,11 @@ function FitTab({
                     {fittedDef ? (
                       <>
                         <div className="text-xl" aria-hidden="true">{fittedDef.icon}</div>
-                        <div className={`text-[9px] font-bold truncate ${RARITY_ACCENT[fittedDef.rarity].text}`}>{fittedDef.name}</div>
+                        <div className={`text-[10px] font-bold truncate ${RARITY_ACCENT[fittedDef.rarity].text}`}>{fittedDef.name}</div>
                         <button
                           onClick={() => setState(prev => prev ? unfitModule(prev, selected.instanceId, fittedItem.instanceId) : prev)}
                           aria-label={`Unfit ${fittedDef.name}`}
-                          className="mt-1 text-[9px] text-red-300 hover:text-red-200 min-h-[44px] min-w-[44px] px-2 flex items-center justify-center"
+                          className="mt-1 text-[10px] text-red-300 hover:text-red-200 min-h-[44px] min-w-[44px] px-2 flex items-center justify-center"
                         >
                           Unfit
                         </button>
@@ -309,7 +309,7 @@ function FitTab({
                     ) : (
                       <>
                         <div className="text-slate-600 text-xl">◯</div>
-                        <div className="text-[9px] text-slate-600">Empty slot</div>
+                        <div className="text-[10px] text-slate-600">Empty slot</div>
                       </>
                     )}
                   </div>
@@ -319,7 +319,7 @@ function FitTab({
 
             {/* Effective stats comparison */}
             <div className="rounded-lg bg-white/[0.03] p-2">
-              <div className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Effective stats</div>
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Effective stats</div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px]">
                 <StatRow label="Sublight" base={selectedStats.sublightSpeed} effective={effectiveStats.sublightSpeed} unit="m/s" />
                 <StatRow label="Warp" base={selectedStats.warpFactor} effective={effectiveStats.warpFactor} suffix="×" />
@@ -355,7 +355,7 @@ function FitTab({
                       <span className="text-xl shrink-0" aria-hidden="true">{def.icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className={`text-[10px] ${accent.text} font-bold truncate`}>{def.name}</div>
-                        <div className="text-[9px] text-slate-500">{HARDPOINT_ICON[def.hardpointType]} {def.hardpointType} · T{def.tier}</div>
+                        <div className="text-[10px] text-slate-500">{HARDPOINT_ICON[def.hardpointType]} {def.hardpointType} · T{def.tier}</div>
                       </div>
                       <button
                         onClick={() => setState(prev => prev ? fitModule(prev, selected.instanceId, owned.instanceId) : prev)}
@@ -401,7 +401,7 @@ function StatRow({
     <div className="flex justify-between">
       <span className="text-slate-500">{label}</span>
       <span className={changed ? (isImprovement ? 'text-emerald-300 font-mono' : 'text-red-300 font-mono') : 'text-slate-300 font-mono'}>
-        {changed && <span className="text-slate-600 text-[8px]">{format(base)} → </span>}
+        {changed && <span className="text-slate-600 text-[10px]">{format(base)} → </span>}
         {changed && <span aria-hidden="true">{isImprovement ? '▲' : '▼'} </span>}
         {format(effective)}
       </span>

@@ -182,7 +182,7 @@ function FrontierDetailModal({
           >
             Graduate Early — Enter Open Economy
           </button>
-          <p className="text-[9px] text-slate-500 mt-1.5 text-center">
+          <p className="text-[11px] text-slate-500 mt-1.5 text-center">
             Early graduation is irreversible. The full competitive economy unlocks immediately.
           </p>
         </div>

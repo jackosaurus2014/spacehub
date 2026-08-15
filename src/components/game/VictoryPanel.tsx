@@ -113,7 +113,7 @@ function VictoryCard({ victory, state, isEarned }: { victory: VictoryDefinition;
                 <span className={`text-[10px] font-mono ${isDone ? 'text-green-400' : 'text-slate-500'}`}>
                   {formatNumber(detail.current)}/{formatNumber(detail.target)}
                 </span>
-                <span className={`text-[9px] font-mono w-8 text-right ${isDone ? 'text-green-400' : 'text-slate-600'}`}>
+                <span className={`text-[10px] font-mono w-8 text-right ${isDone ? 'text-green-400' : 'text-slate-600'}`}>
                   {detailPercent}%
                 </span>
               </div>
@@ -142,22 +142,22 @@ function VictoryCard({ victory, state, isEarned }: { victory: VictoryDefinition;
         <p className="text-[10px] text-slate-500 mb-1">Permanent Reward:</p>
         <div className="flex flex-wrap gap-1.5">
           {victory.reward.revenueMultiplier > 1 && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
               +{Math.round((victory.reward.revenueMultiplier - 1) * 100)}% Revenue
             </span>
           )}
           {victory.reward.buildSpeedMultiplier > 1 && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               +{Math.round((victory.reward.buildSpeedMultiplier - 1) * 100)}% Build Speed
             </span>
           )}
           {victory.reward.researchSpeedMultiplier > 1 && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
               +{Math.round((victory.reward.researchSpeedMultiplier - 1) * 100)}% Research Speed
             </span>
           )}
           {victory.reward.miningMultiplier > 1 && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
               +{Math.round((victory.reward.miningMultiplier - 1) * 100)}% Mining
             </span>
           )}
@@ -197,7 +197,7 @@ function HallOfFame({ earnedVictoryIds }: { earnedVictoryIds: string[] }) {
             <span className="text-base" aria-hidden="true">{v.icon}</span>
             <div>
               <p className="text-[10px] font-bold text-yellow-300">{v.name}</p>
-              <p className="text-[9px] text-yellow-300/50">&quot;{v.title}&quot;</p>
+              <p className="text-[10px] text-yellow-300/50">&quot;{v.title}&quot;</p>
             </div>
           </div>
         ))}
@@ -210,25 +210,25 @@ function HallOfFame({ earnedVictoryIds }: { earnedVictoryIds: string[] }) {
           {bonuses.revenueMultiplier > 1 && (
             <div className="text-center px-2 py-1.5 rounded bg-green-500/[0.06] border border-green-500/10">
               <p className="text-xs font-bold text-green-400">+{Math.round((bonuses.revenueMultiplier - 1) * 100)}%</p>
-              <p className="text-[9px] text-slate-500">Revenue</p>
+              <p className="text-[10px] text-slate-500">Revenue</p>
             </div>
           )}
           {bonuses.buildSpeedMultiplier > 1 && (
             <div className="text-center px-2 py-1.5 rounded bg-cyan-500/[0.06] border border-cyan-500/10">
               <p className="text-xs font-bold text-cyan-400">+{Math.round((bonuses.buildSpeedMultiplier - 1) * 100)}%</p>
-              <p className="text-[9px] text-slate-500">Build Speed</p>
+              <p className="text-[10px] text-slate-500">Build Speed</p>
             </div>
           )}
           {bonuses.researchSpeedMultiplier > 1 && (
             <div className="text-center px-2 py-1.5 rounded bg-purple-500/[0.06] border border-purple-500/10">
               <p className="text-xs font-bold text-purple-400">+{Math.round((bonuses.researchSpeedMultiplier - 1) * 100)}%</p>
-              <p className="text-[9px] text-slate-500">Research</p>
+              <p className="text-[10px] text-slate-500">Research</p>
             </div>
           )}
           {bonuses.miningMultiplier > 1 && (
             <div className="text-center px-2 py-1.5 rounded bg-amber-500/[0.06] border border-amber-500/10">
               <p className="text-xs font-bold text-amber-400">+{Math.round((bonuses.miningMultiplier - 1) * 100)}%</p>
-              <p className="text-[9px] text-slate-500">Mining</p>
+              <p className="text-[10px] text-slate-500">Mining</p>
             </div>
           )}
         </div>

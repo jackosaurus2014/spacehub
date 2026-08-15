@@ -53,7 +53,7 @@ export default function ReturningCommanderWidget({ state }: { state: GameState }
               <li key={o.id} className="flex items-center gap-2 text-[11px]">
                 <span aria-hidden="true">{o.done ? '✅' : '⬜'}</span>
                 <span className={o.done ? 'text-slate-500 line-through' : 'text-slate-300'}>{o.label}</span>
-                <span className="text-slate-600 text-[9px] uppercase ml-auto">{o.loop}</span>
+                <span className="text-slate-600 text-[10px] uppercase ml-auto">{o.loop}</span>
               </li>
             ))}
           </ul>

@@ -141,7 +141,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
                 <span className={`text-xs font-bold ${tierInfo.color}`}>
                   {tierInfo.label}
                 </span>
-                <span className={`game-badge-t${allianceInfo.tier} text-[9px] px-1.5 py-0.5 rounded font-mono`}>
+                <span className={`game-badge-t${allianceInfo.tier} text-[10px] px-1.5 py-0.5 rounded font-mono`}>
                   Tier {allianceInfo.tier}
                 </span>
               </div>
@@ -154,8 +154,8 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
           {/* XP Progress Bar */}
           <div>
             <div className="flex items-center justify-between mb-0.5">
-              <span className="font-hud text-slate-500 text-[9px]">Corporation XP</span>
-              <span className="game-number text-purple-300 text-[9px]">
+              <span className="font-hud text-slate-500 text-[10px]">Corporation XP</span>
+              <span className="game-number text-purple-300 text-[10px]">
                 {allianceInfo.xp.toLocaleString()} / {allianceInfo.xpToNextLevel.toLocaleString()}
               </span>
             </div>

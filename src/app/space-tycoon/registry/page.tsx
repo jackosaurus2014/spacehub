@@ -104,7 +104,7 @@ export default async function CorporateRegistryPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h2 className="text-sm font-semibold text-white truncate">{entry.corpName}</h2>
                         <span
-                          className="text-[9px] px-1.5 py-0.5 rounded-full border font-bold shrink-0"
+                          className="text-[10px] px-1.5 py-0.5 rounded-full border font-bold shrink-0"
                           style={{ color: tierDef.color, borderColor: `${tierDef.color}55`, backgroundColor: `${tierDef.color}14` }}
                         >
                           {tierDef.icon} {tierDef.name}
@@ -131,21 +131,21 @@ export default async function CorporateRegistryPage() {
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
                     <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2">
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Revenue</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Revenue</p>
                       <p className="game-number text-emerald-300 text-sm font-bold">{formatMoney(entry.report.revenue)}</p>
                     </div>
                     <div className={`rounded-lg border p-2 ${entry.report.profit >= 0 ? 'border-cyan-500/20 bg-cyan-500/5' : 'border-amber-500/20 bg-amber-500/5'}`}>
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Profit</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Profit</p>
                       <p className={`game-number text-sm font-bold ${entry.report.profit >= 0 ? 'text-cyan-300' : 'text-amber-300'}`}>
                         {formatMoney(entry.report.profit)}
                       </p>
                     </div>
                     <div className="rounded-lg border border-purple-500/20 bg-purple-500/5 p-2">
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Net Worth</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Net Worth</p>
                       <p className="game-number text-purple-300 text-sm font-bold">{formatMoney(entry.report.netWorth)}</p>
                     </div>
                     <div className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
-                      <p className="text-[9px] uppercase tracking-wider text-slate-500">Fleet / Buildings</p>
+                      <p className="text-[10px] uppercase tracking-wider text-slate-500">Fleet / Buildings</p>
                       <p className="game-number text-white text-sm font-bold">
                         {entry.report.fleetCount} / {entry.report.buildingCount}
                       </p>

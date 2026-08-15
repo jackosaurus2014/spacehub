@@ -38,7 +38,7 @@ export default function OrderQueueHUD({ state, onSelect, className }: OrderQueue
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center gap-1.5 px-2 py-1.5 overflow-x-auto max-w-[calc(100vw-1rem)] sm:max-w-[60vw]" style={{ WebkitOverflowScrolling: 'touch' }}>
-        <span className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold shrink-0 px-1">Orders</span>
+        <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold shrink-0 px-1">Orders</span>
         {items.map(item => (
           <button
             key={item.id}
@@ -50,7 +50,7 @@ export default function OrderQueueHUD({ state, onSelect, className }: OrderQueue
             <GameIcon name={item.icon} size={15} />
             <span className="flex flex-col leading-tight">
               <span className="text-[10px] text-white font-medium truncate max-w-[110px]">{item.label}</span>
-              <span className="text-[9px] text-slate-400 truncate max-w-[110px]">
+              <span className="text-[10px] text-slate-400 truncate max-w-[110px]">
                 {item.sub}
                 {item.etaSeconds !== null && <span className="text-cyan-300/80"> · {formatCountdown(item.etaSeconds)}</span>}
               </span>

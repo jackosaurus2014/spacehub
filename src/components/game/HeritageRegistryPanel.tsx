@@ -157,7 +157,7 @@ function HeritageCard({ npc }: { npc: HeritageNPC }) {
         <div>
           <h3 className="text-sm font-semibold text-white">{'◆'} {npc.name}</h3>
           <span
-            className={`inline-block mt-1 text-[9px] px-1.5 py-0.5 rounded-full border ${tierBadgeColor(npc.tier)}`}
+            className={`inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded-full border ${tierBadgeColor(npc.tier)}`}
           >
             {npc.tierLabel}
           </span>
@@ -172,7 +172,7 @@ function HeritageCard({ npc }: { npc: HeritageNPC }) {
           {npc.sectorTraits.map((trait) => (
             <span
               key={trait}
-              className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06]"
+              className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06]"
             >
               {trait}
             </span>

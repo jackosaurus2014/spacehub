@@ -142,7 +142,7 @@ export default function HazardAlertLayer({ state }: HazardAlertLayerProps) {
                 }}
               >
                 <span
-                  className={`text-[8px] px-1 py-0.5 rounded ${
+                  className={`text-[10px] px-1 py-0.5 rounded ${
                     a.severity === 'loss' ? 'bg-red-500/40 text-red-100' : 'bg-amber-500/40 text-amber-100'
                   }`}
                 >

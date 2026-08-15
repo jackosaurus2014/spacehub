@@ -477,7 +477,7 @@ function RivalCard({
         {/* Trend indicators */}
         {rival.trend.length > 0 && (
           <div className="flex items-center gap-1 mt-1.5">
-            <span className="text-[9px] text-slate-600 mr-1">Trend:</span>
+            <span className="text-[10px] text-slate-600 mr-1">Trend:</span>
             {rival.trend.map((t, i) => {
               const { char, color } = trendChar(t);
               return (
@@ -578,7 +578,7 @@ function MetricCompare({
 }) {
   return (
     <div className="rounded-lg bg-white/[0.03] p-2 text-center">
-      <p className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">
+      <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
         {label}
       </p>
       <div className="flex items-center justify-center gap-1.5 text-xs">

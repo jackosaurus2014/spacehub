@@ -95,7 +95,7 @@ function Section({
         <GameIcon name={icon} size={14} />
         <span className="game-label text-[11px] text-slate-300 flex-1">{title}</span>
         {severity && <span className={`w-1.5 h-1.5 rounded-full ${SEVERITY_DOT[severity]}`} aria-hidden="true" />}
-        <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-white/[0.06] text-slate-300">{count}</span>
+        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-white/[0.06] text-slate-300">{count}</span>
         <svg className={`w-3 h-3 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
@@ -131,9 +131,9 @@ function Row({ id, icon, label, sub, badge, severity, onClick }: {
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[11px] text-white truncate">{label}</span>
-        {sub && <span className="block text-[9px] text-slate-500 truncate">{sub}</span>}
+        {sub && <span className="block text-[10px] text-slate-500 truncate">{sub}</span>}
       </span>
-      {badge && <span className="shrink-0 text-[9px] font-hud text-cyan-300/80">{badge}</span>}
+      {badge && <span className="shrink-0 text-[10px] font-hud text-cyan-300/80">{badge}</span>}
     </button>
   );
 }
@@ -230,7 +230,7 @@ function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyPro
       <Section id="holdings" title="Holdings" icon="city" count={holdings.reduce((n, g) => n + g.locations.length, 0)}>
         {holdings.map(group => (
           <div key={group.type} className="mb-1.5 last:mb-0">
-            <div className="px-2 py-1 text-[9px] uppercase tracking-wider text-slate-500 flex items-center justify-between">
+            <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-slate-500 flex items-center justify-between">
               <span>{REGION_LABELS[group.type]}</span>
               <span>{group.buildingCount} bld · {group.shipCount} sh</span>
             </div>
