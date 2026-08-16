@@ -137,6 +137,12 @@ export async function GET(request: NextRequest) {
           ? (contract.winner?.companyName ?? null) : null,
         winningBid: contract.status === 'completed' ? contract.winningBid : null,
         baseReward: contract.baseReward,
+        // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7): NPC procurement drives
+        // are BiddingContract rows with issuerNpcId set — exposed so the UI
+        // (calendar, intelligence surfaces) can distinguish them from
+        // player-issued contracts without a second endpoint.
+        issuerNpcId: contract.issuerNpcId ?? null,
+        zoneSlug: contract.zoneSlug ?? null,
         myBid: myBid ? {
           id: myBid.id,
           bidAmount: myBid.bidAmount,

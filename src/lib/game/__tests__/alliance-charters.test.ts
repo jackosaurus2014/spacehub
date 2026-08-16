@@ -21,9 +21,9 @@ describe('ALLIANCE_CHARTER_DEFINITIONS', () => {
     }
   });
 
-  it('has exactly the three metric-backed charter types', () => {
+  it('has exactly the four metric-backed charter types (Wave E7 adds market_share)', () => {
     const types = ALLIANCE_CHARTER_DEFINITIONS.map(d => d.type).sort();
-    expect(types).toEqual(['event_points', 'science_cofund_count', 'treasury_growth'].sort());
+    expect(types).toEqual(['event_points', 'market_share', 'science_cofund_count', 'treasury_growth'].sort());
   });
 });
 

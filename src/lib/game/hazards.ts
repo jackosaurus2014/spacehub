@@ -52,6 +52,13 @@ import { generateId, formatMoney, mulberry32, hashStringToSeed } from './formula
 import { getEffectiveShipStats } from './modules';
 import { getWorkforceBonuses } from './workforce';
 import { DEFAULT_WORKFORCE } from './workforce';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.4/§E5 hazard coupling): inventory
+// destruction reads/writes the SAME pools cargo-logistics.ts already owns
+// (home pool vs per-location stockpile) and values losses at live spot when
+// available.
+import { getLocationInventory, isHomeLocation } from './cargo-logistics';
+import { RESOURCE_MAP } from './resources';
+import type { ResourceId } from './resources';
 
 export type HazardType = 'solar_storm' | 'micrometeorite' | 'pirate_raid' | 'equipment_failure';
 export type HazardSeverity = 'minor' | 'major' | 'severe';
@@ -544,4 +551,172 @@ export const REPAIR_COST_RATE = 0.30;
 export function calculateRushRepairCost(damagePct: number | undefined, baseCost: number): number {
   if (!damagePct || damagePct <= 0) return 0;
   return Math.round(damagePct * baseCost * REPAIR_COST_RATE);
+}
+
+// ─── Wave E5 hazard coupling (§2.4): location inventory destruction ─────────
+// "belt pirate raids and solar storms now destroy location inventory
+// (bounded %, insurance-coverable) and post a supply-shock flow to the
+// market — disasters move prices, per canon 'prices should feel alive.'"
+//
+// Separate deterministic roll from rollMonthlyHazards' asset-targeting rolls
+// (own RNG salt) so this can be reasoned about independently, but keyed to
+// the SAME (monthIndex, locationId, type) shared-world weather — a severe
+// pirate raid at Ceres this month is one narrative event with two
+// consequences (asset damage AND cargo loss), not two coincidental rolls.
+
+export type InventoryShockHazardType = Extract<HazardType, 'solar_storm' | 'pirate_raid'>;
+const INVENTORY_SHOCK_TYPES: InventoryShockHazardType[] = ['solar_storm', 'pirate_raid'];
+
+/** Loss fraction range per severity — deliberately gentler than asset damage
+ *  (a raid that damages a station doesn't necessarily torch the whole
+ *  warehouse) and floored so a "major" event is felt but never crippling. */
+const INVENTORY_LOSS_RANGE: Record<Extract<HazardSeverity, 'major' | 'severe'>, [number, number]> = {
+  major: [0.03, 0.08],
+  severe: [0.08, 0.15],
+};
+
+/** Fraction of lost market value reimbursed while insured — a flat
+ *  inventory-coverage rate distinct from the per-asset insuredValue used
+ *  for ships/buildings (cargo isn't a discrete insurable "thing", so it
+ *  gets a simpler blanket rate). */
+export const INVENTORY_INSURANCE_COVERAGE = 0.6;
+
+export interface InventoryShockRecord {
+  id: string;
+  type: InventoryShockHazardType;
+  severity: HazardSeverity;
+  locationId: string;
+  resourceId: string;
+  qtyLost: number;
+  valueLost: number;
+  insurancePayout: number;
+  occurredAtMs: number;
+  summary: string;
+}
+
+function inventoryShockRng(monthIndex: number, locationId: string, type: HazardType): () => number {
+  return mulberry32(hashStringToSeed(`stw-hazard-inventory:${monthIndex}:${locationId}:${type}`));
+}
+
+/** Live spot if the player has a recent market snapshot, else the resource's
+ *  static baseMarketPrice — same "best available valuation" posture as
+ *  espionage/salvage valuations elsewhere (§2.5 "one price truth"). */
+function valuationFor(state: GameState, resourceId: string): number {
+  const spot = state.marketSnapshot?.prices?.[resourceId];
+  if (typeof spot === 'number' && spot > 0) return spot;
+  return RESOURCE_MAP.get(resourceId as ResourceId)?.baseMarketPrice || 0;
+}
+
+/**
+ * Roll location-inventory shocks for one game-month. Deterministic per
+ * (monthIndex, locationId, type). Only locations where this player actually
+ * holds inventory are ever touched — a hazard can't destroy stock that isn't
+ * there. Called alongside rollMonthlyHazards from processTick's month-end
+ * hazard block (non-Frontier players only).
+ */
+export function rollLocationInventoryShocks(state: GameState, monthIndex: number, now: number): InventoryShockRecord[] {
+  const records: InventoryShockRecord[] = [];
+  const insured = state.insuranceActive === true;
+
+  // Every location where the player holds ANY inventory — home pool counts
+  // as earth_surface/leo/geo (cargo-logistics.ts's HOME_LOCATION_IDS), plus
+  // any remote stockpile with real stock.
+  const candidateLocations = new Set<string>();
+  if (Object.values(state.resources || {}).some(q => q > 0)) {
+    candidateLocations.add('earth_surface');
+    candidateLocations.add('leo');
+    candidateLocations.add('geo');
+  }
+  for (const [locId, inv] of Object.entries(state.locationInventories || {})) {
+    if (Object.values(inv || {}).some(q => q > 0)) candidateLocations.add(locId);
+  }
+  const locations = Array.from(candidateLocations).sort(); // deterministic order
+
+  for (const locationId of locations) {
+    const inventory = getLocationInventory(state, locationId);
+    const stockedResources = Object.entries(inventory).filter(([, q]) => q > 0);
+    if (stockedResources.length === 0) continue;
+
+    for (const type of INVENTORY_SHOCK_TYPES) {
+      const occ = rollHazardOccurrence(monthIndex, locationId, type);
+      if (!occ.occurs || occ.severity === 'minor') continue;
+      const rng = inventoryShockRng(monthIndex, locationId, type);
+      const [minLoss, maxLoss] = INVENTORY_LOSS_RANGE[occ.severity as 'major' | 'severe'];
+      const lossFraction = minLoss + rng() * (maxLoss - minLoss);
+
+      for (const [resourceId, qty] of stockedResources) {
+        const qtyLost = Math.floor(qty * lossFraction);
+        if (qtyLost <= 0) continue;
+        const unitValue = valuationFor(state, resourceId);
+        const valueLost = qtyLost * unitValue;
+        const insurancePayout = insured ? Math.round(valueLost * INVENTORY_INSURANCE_COVERAGE) : 0;
+        records.push({
+          id: generateId(),
+          type,
+          severity: occ.severity,
+          locationId,
+          resourceId,
+          qtyLost,
+          valueLost,
+          insurancePayout,
+          occurredAtMs: now,
+          summary: `${occ.severity === 'severe' ? 'SEVERE ' : 'Major '}${type === 'pirate_raid' ? 'pirate raid' : 'solar storm'} at ${locationId.replace(/_/g, ' ')} destroyed ${qtyLost.toLocaleString()} ${resourceId.replace(/_/g, ' ')} (${formatMoney(valueLost)}).${insurancePayout > 0 ? ` Insurance paid out ${formatMoney(insurancePayout)}.` : insured ? '' : ' No insurance coverage on the loss.'}`,
+        });
+      }
+    }
+  }
+
+  return records;
+}
+
+/**
+ * Apply inventory-shock records: debit the lost quantities from the right
+ * pool (home vs local stockpile), credit any insurance payout, and return
+ * the raw per-resource units lost — the caller feeds that straight into
+ * market-pressure.ts's accumulateShockFlows (§2.4 "post a supply-shock flow
+ * to the market").
+ */
+export function applyInventoryShocks(
+  state: GameState,
+  records: InventoryShockRecord[],
+): { state: GameState; events: GameEvent[]; lostUnits: Record<string, number> } {
+  if (records.length === 0) return { state, events: [], lostUnits: {} };
+
+  let resources = state.resources;
+  let locationInventories: Record<string, Record<string, number>> = state.locationInventories || {};
+  let touchedLocationInventories = false;
+  let money = state.money;
+  let totalEarned = state.totalEarned;
+  const events: GameEvent[] = [];
+  const lostUnits: Record<string, number> = {};
+
+  for (const r of records) {
+    if (isHomeLocation(r.locationId)) {
+      if (resources === state.resources) resources = { ...state.resources };
+      resources[r.resourceId] = Math.max(0, (resources[r.resourceId] || 0) - r.qtyLost);
+    } else {
+      if (!touchedLocationInventories) {
+        locationInventories = { ...locationInventories };
+        touchedLocationInventories = true;
+      }
+      const loc = { ...(locationInventories[r.locationId] || {}) };
+      loc[r.resourceId] = Math.max(0, (loc[r.resourceId] || 0) - r.qtyLost);
+      locationInventories[r.locationId] = loc;
+    }
+    if (r.insurancePayout > 0) {
+      money += r.insurancePayout;
+      totalEarned += r.insurancePayout;
+    }
+    lostUnits[r.resourceId] = (lostUnits[r.resourceId] || 0) + r.qtyLost;
+    events.push({
+      id: generateId(),
+      date: state.gameDate,
+      type: 'random_event',
+      title: `📦 Cargo lost: ${r.qtyLost.toLocaleString()} ${r.resourceId.replace(/_/g, ' ')} at ${r.locationId.replace(/_/g, ' ')}`,
+      description: r.summary,
+    });
+  }
+
+  const newState: GameState = { ...state, resources, locationInventories, money, totalEarned };
+  return { state: newState, events, lostUnits };
 }

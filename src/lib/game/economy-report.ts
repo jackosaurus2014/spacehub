@@ -11,7 +11,13 @@ import { SERVICE_MAP } from './services';
 import { LOCATION_MAP } from './solar-system';
 import { RESOURCE_MAP } from './resources';
 import { SHIP_MAP } from './ships';
-import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
+import { getWorkforceBonuses } from './workforce';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.6/§E5, [BAL] "wages... shown in
+// the P&L panel with their inputs"): the report must reflect the SAME
+// wage-index-adjusted payroll the live tick actually charges, not the flat
+// base-salary figure.
+import { getMonthlyPayrollWithWageIndex, getWageIndex } from './labor-market';
+import { WORKER_TYPES } from './workforce';
 // LS6 (Programs Queue): same effective-workforce + program-bonus merge as
 // game-engine.ts's live tick, so the P&L report never disagrees with actual
 // tick behavior while a crew cohort is enrolled/completed.
@@ -83,6 +89,12 @@ export interface CostBreakdown {
    *  same figure the tick actually charges. 0 when uninsured. */
   insurancePremium: number;
   total: number;
+  /** Wave E5 (§2.6/§E5, [BAL] "wages... shown in the P&L panel with their
+   *  inputs"): the server-wide wage index per crew type this payroll figure
+   *  was computed from — 1.0 for every type when no labor-market snapshot
+   *  has arrived yet (neutral, pre-E5 behavior). Transparency, not a new
+   *  cost line — workforcePayroll above already has it baked in. */
+  wageIndexByType: Partial<Record<string, number>>;
 }
 
 /** Wave F (h): P&L lines the audit flagged as real money flows the tick
@@ -170,7 +182,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   // All the bonus sources, in the same order as game-engine.ts
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(state)), state);
-  const payroll = getMonthlyPayroll(workforce);
+  const payroll = getMonthlyPayrollWithWageIndex(workforce, state.laborMarket, now);
   const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
 
   const legacy = state.legacy || DEFAULT_LEGACY;
@@ -398,6 +410,12 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     outstandingRepairCost,
   };
 
+  const wageIndexByType: Partial<Record<string, number>> = {};
+  for (const wDef of WORKER_TYPES) {
+    const count = (workforce[`${wDef.type}s` as keyof typeof workforce] as number | undefined) || 0;
+    if (count > 0) wageIndexByType[wDef.type] = getWageIndex(state.laborMarket, wDef.type, now);
+  }
+
   const costs: CostBreakdown = {
     serviceOperating: totalOperatingCost,
     buildingMaintenance,
@@ -407,6 +425,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     insurancePremium,
     total: totalOperatingCost + buildingMaintenance + corporateOverhead + executiveCompensation + payroll + insurancePremium
       + (subsidiaryIncomeMonthly < 0 ? -subsidiaryIncomeMonthly : 0),
+    wageIndexByType,
   };
 
   monthlyRevenue += governorTaxMonthly + (subsidiaryIncomeMonthly > 0 ? subsidiaryIncomeMonthly : 0);

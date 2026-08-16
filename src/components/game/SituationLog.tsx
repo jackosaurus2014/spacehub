@@ -32,6 +32,12 @@ const CATEGORY_LABEL: Record<SituationCategory, string> = {
   ship_damage: 'Fleet',
   ship_idle: 'Fleet',
   queue_stalled: 'Command Queue',
+  // Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5)
+  deposit_depletion: 'Deposit',
+  wage_spike: 'Labor Market',
+  // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7)
+  slot_auction: 'Orbital Slot',
+  procurement_drive: 'NPC Drive',
 };
 
 const CATEGORY_FRAME: Record<SituationCategory, string> = {
@@ -50,6 +56,12 @@ const CATEGORY_FRAME: Record<SituationCategory, string> = {
   ship_damage: 'border-red-500/25 bg-red-500/[0.03]',
   ship_idle: 'border-slate-500/25 bg-slate-500/[0.03]',
   queue_stalled: 'border-amber-500/25 bg-amber-500/[0.03]',
+  // Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5)
+  deposit_depletion: 'border-orange-500/25 bg-orange-500/[0.03]',
+  wage_spike: 'border-amber-500/25 bg-amber-500/[0.03]',
+  // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7)
+  slot_auction: 'border-cyan-500/25 bg-cyan-500/[0.03]',
+  procurement_drive: 'border-teal-500/25 bg-teal-500/[0.03]',
 };
 
 const SEVERITY_TONE: Record<SituationSeverity, 'bad' | 'warn' | 'info'> = {

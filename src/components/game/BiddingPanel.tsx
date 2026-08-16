@@ -132,6 +132,9 @@ function getTypeIcon(contractType: string): string {
     research_partnership: '\u{1F52C}',
     emergency_supply: '\u{26A0}\uFE0F',
     mining_rights_lease: '\u26CF\uFE0F',
+    // Wave E7 (docs/ECONOMY_PVP_2026-08.md \u00A7E7): NPC procurement drives \u2014
+    // same generic BiddingContract rendering, just a distinguishing icon.
+    npc_procurement_drive: '\u{1F4E2}',
   };
   return icons[contractType] || '\u{1F4C4}';
 }

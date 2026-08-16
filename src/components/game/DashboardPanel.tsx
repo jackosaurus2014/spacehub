@@ -8,7 +8,11 @@ import { SERVICE_MAP } from '@/lib/game/services';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { RESEARCH, getResearchBonuses, getResearchMechanicalEffect, isRareTechVisible } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
-import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
+import { getWorkforceBonuses } from '@/lib/game/workforce';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.6/§E5): "matches game engine logic
+// exactly" (comment below) — the engine now charges wage-index-adjusted
+// payroll, so this dashboard estimate must too.
+import { getMonthlyPayrollWithWageIndex } from '@/lib/game/labor-market';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { LOCATIONS } from '@/lib/game/solar-system';
@@ -550,7 +554,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
     const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
     const wfBonuses = getWorkforceBonuses(workforce);
     const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
-    const payroll = getMonthlyPayroll(workforce);
+    const payroll = getMonthlyPayrollWithWageIndex(workforce, state.laborMarket);
 
     const demandMonthIndex = gameDateToMonthIndex(state.gameDate);
     const collectedDemandMults: number[] = [];

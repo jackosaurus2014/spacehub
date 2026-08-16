@@ -254,6 +254,11 @@ model GameProfile {
   // Chapter finale participation tally (see ChapterContribution below).
   chapterContributions ChapterContribution[]
 
+  // Economic PvP Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7): orbital-slot
+  // lease auctions (see OrbitalSlotBid/OrbitalSlotLease below).
+  orbitalSlotBids   OrbitalSlotBid[]
+  orbitalSlotLeases OrbitalSlotLease[]
+
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
@@ -395,6 +400,64 @@ model LocationDemandPool {
 
   @@unique([locationId, category])
   @@index([locationId])
+}
+
+// Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/ECONOMY_PVP_2026-08.md
+// §2.4/§E5): server-aggregated mining-pressure accumulator per (location,
+// resource). Written whenever a sync reports minedByLocationThisTick;
+// decayed lazily (10%/day) using `updatedAt` rather than a cron, so there is
+// no drift and no wasted cron slot (see extraction-pressure.ts). Read by
+// sync/route.ts to build the extractionPressure snapshot. Additive — no
+// existing table is touched.
+model LocationExtraction {
+  id         String @id @default(cuid())
+  locationId String
+  resourceId String
+  // Decaying pressure score (see extraction-pressure.ts computeExtractionPressure).
+  // Always read through decay-since-updatedAt before use.
+  accumulated Float @default(0)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([locationId, resourceId])
+  @@index([locationId])
+}
+
+// Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/ECONOMY_PVP_2026-08.md
+// §2.6/§E5): server-wide wage index per crew type. Written by the weekly
+// /api/space-tycoon/labor/update job (labor-market.ts computeLaborAggregates);
+// read by sync/route.ts to build the laborMarket snapshot. One row per
+// WorkerType (global — the labor pool is server-wide, not per-location, per
+// the spec's "server-shared where players share the labor pool" boundary).
+// Additive — no existing table is touched.
+model LaborIndex {
+  id           String @id @default(cuid())
+  crewType     String @unique
+  wageIndex    Float  @default(1.0)
+  employedRaw  Float  @default(0)
+  supply       Float  @default(0)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+// Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/ECONOMY_PVP_2026-08.md
+// §2.8/§E5): per-lane dispatch-usage counter — "repeated routes improve,
+// abandoned lanes degrade" (CLAUDE.md). Written whenever a sync reports
+// laneDispatchesThisTick; decayed lazily (per trade-lanes.ts
+// LANE_USAGE_DECAY_PER_DAY) using `updatedAt`, same no-cron-drift posture as
+// LocationExtraction. Read by sync/route.ts to build the laneBonuses
+// snapshot consumed by cargo-logistics.ts's freight fuel pricing. Additive —
+// no existing table is touched.
+model LaneUsage {
+  id       String @id @default(cuid())
+  // Canonical undirected lane key (trade-lanes.ts laneKey: "fromId|toId" sorted).
+  laneKey  String @unique
+  usage    Float  @default(0)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model MarketOrder {
@@ -4998,6 +5061,19 @@ model BiddingContract {
 
   bids ContractBid[]
 
+  // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 "NPC procurement drives"):
+  // when set, this contract is an NPC-faction reverse auction (npc-
+  // procurement-drives.ts) rather than a player-issued one — `issuerNpcId`
+  // is one of npc-companies.ts's NPC_SEEDS ids (not a GameProfile FK; NPCs
+  // have no wallet row, same non-relation convention as
+  // DeliveryContractState.issuerFactionId). `zoneSlug` tags which zone
+  // (zone-influence.ts ZONE_DEFINITIONS) the contract's demand executes in —
+  // real zone-tagged influence (replaces the fabricated contractIp estimate)
+  // for BOTH NPC drives and future player-issued contracts. Both additive,
+  // nullable — existing rows are unaffected.
+  issuerNpcId String?
+  zoneSlug    String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -5005,6 +5081,7 @@ model BiddingContract {
   @@index([tier])
   @@index([contractType])
   @@index([biddingEndsAt])
+  @@index([issuerNpcId])
 }
 
 model ContractBid {
@@ -6876,4 +6953,102 @@ model ChapterContribution {
 
   @@unique([cycleIndex, profileId])
   @@index([cycleIndex])
+}
+
+// â”€â”€â”€ Economic PvP Wave E7 "Chokepoints, Tariffs & NPC Drives" â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 5 "finish the
+// computeOrbitalSlotReport TODO"). All-additive; no existing table touched.
+
+// Server-aggregated occupancy cache for spatial-strategy.ts's
+// ORBITAL_SLOT_POOLS (GEO/lunar-polar/Mars-areosynchronous/Jovian). Written
+// by a periodic cron (mirrors LocationDemandPool's hourly-job precedent)
+// that counts completed buildings at each pool's locationId across ALL
+// synced GameProfile rows — the real "crowd another player out" occupancy
+// the old client-only computeOrbitalSlotReport TODO could never see. Read by
+// sync/route.ts and delivered into the client snapshot.
+model OrbitalSlotOccupancy {
+  locationId    String @id
+  occupiedCount Int    @default(0)
+  totalSlots    Int
+  // Precomputed bucket ('low'|'medium'|'high'|'saturated') — saturated
+  // (>=85% per §5 item 5) is the gate: new leases require winning an
+  // OrbitalSlotAuction once a pool crosses this threshold.
+  bucket    String   @default("low")
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+// Sealed-bid auction for a single orbital-slot lease at a saturated pool.
+// Opened server-side (auction cron / on-demand when a pool crosses 85%),
+// bids escrowed like ResourceBounty/ContractBid collateral, resolved when
+// `closesAt` passes: highest bid wins, an OrbitalSlotLease is minted for the
+// winner, the winning bid is BURNED (removed from the economy — a money
+// sink per BALANCE.md, proceeds never paid to any player), losing bids
+// refunded in full. Chokepoint locations (spatial-strategy.ts
+// computeChokepoints severity) raise `minBid` via a premium multiplier.
+model OrbitalSlotAuction {
+  id         String @id @default(cuid())
+  locationId String
+  minBid     Float
+  // Chokepoint-severity premium baked into minBid at creation time (1.0 =
+  // no chokepoint, 1.25 = major, 1.5 = critical) — kept for display/audit.
+  chokepointPremium Float @default(1.0)
+
+  status     String    @default("open") // open, resolved, expired (no bids)
+  closesAt   DateTime
+  resolvedAt DateTime?
+  winnerId   String?
+  winningBid Float?
+
+  bids OrbitalSlotBid[]
+
+  createdAt DateTime @default(now())
+
+  @@index([locationId, status])
+  @@index([status, closesAt])
+}
+
+model OrbitalSlotBid {
+  id        String             @id @default(cuid())
+  auctionId String
+  auction   OrbitalSlotAuction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   GameProfile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  amount    Float
+  createdAt DateTime           @default(now())
+
+  @@unique([auctionId, profileId])
+  @@index([auctionId])
+}
+
+// A won/transferred orbital-slot lease. Leases are transferable at
+// market-clearing prices (canon: "orbital slots are finite... ownership
+// transfers at market-clearing prices") via a direct player-to-player sale
+// (`status` flips seller->buyer, `leaseAmount` updated, ledgered as
+// `slot_lease_transfer_payment` — money goes to the SELLING player, unlike
+// the initial auction burn). Term-limited; `expiresAt` reaching now returns
+// the slot to the open pool (re-auctionable) unless renewed.
+model OrbitalSlotLease {
+  id          String      @id @default(cuid())
+  locationId  String
+  holderId    String
+  holder      GameProfile @relation(fields: [holderId], references: [id], onDelete: Cascade)
+  // The price paid to ACQUIRE this lease (auction win or transfer buy-in) —
+  // display/audit only; auction proceeds were already burned, transfer
+  // proceeds already paid out at time of transfer.
+  leaseAmount Float
+  status      String      @default("active") // active, expired, transferred
+  startedAt   DateTime    @default(now())
+  expiresAt   DateTime
+  // Set when this lease was sold player-to-player (transfer market) rather
+  // than won at auction — audit trail for the "transferable at
+  // market-clearing prices" canon line.
+  transferredFromId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([locationId, status])
+  @@index([holderId])
+  @@index([status, expiresAt])
 }

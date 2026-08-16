@@ -10,6 +10,7 @@ import {
   type IntelPerkSnapshot,
   type LeagueBoostSnapshot,
   type MentorshipBonusSnapshot,
+  type MegaProjectBonusSnapshot,
 } from '@/lib/game/server-effects';
 import type { MarketSnapshot } from '@/lib/game/spot-price';
 import { queueMarketFlowFlush } from '@/lib/game/market-pressure';
@@ -17,6 +18,12 @@ import { queueMarketFlowFlush } from '@/lib/game/market-pressure';
 // standing-order procurement requests ride the sync like the market flows —
 // snapshot, send, flush-on-200 (amounts accrued mid-flight survive).
 import { queueConsumptionFlush, PROCUREMENT_RESOURCE_CAP } from '@/lib/game/consumption';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5): per-lane dispatch usage rides
+// the sync the same way, via its own tiny hand-off queue.
+import { queueLaneUsageFlush } from '@/lib/game/trade-lanes';
+import type { ExtractionPressureSnapshot } from '@/lib/game/extraction-pressure';
+import type { LaborMarketSnapshot } from '@/lib/game/labor-market';
+import type { LaneBonusSnapshot } from '@/lib/game/trade-lanes';
 
 interface SyncStatus {
   lastSyncAt: number | null;
@@ -54,8 +61,18 @@ export function useGameSync(
     leagueBoost?: LeagueBoostSnapshot | null;
     /** Live-Service Wave LS2 (§LS2 mechanic 3): mentor/mentee bonus. */
     mentorshipBonuses?: MentorshipBonusSnapshot | null;
+    /** Wave E7 (§E7 / §5 item 6): world-shared cooperative mega-project bonus. */
+    megaProjectBonuses?: MegaProjectBonusSnapshot | null;
     /** Wave E2 (§2.5 "one price truth"): band-clamped live spot snapshot. */
     marketSnapshot?: MarketSnapshot | null;
+    /** Wave E5 (§2.4): per-(location, resource) deposit extraction-pressure snapshot. */
+    extractionPressure?: ExtractionPressureSnapshot | null;
+    /** Wave E5 (§2.6): server-wide wage-index-per-crew-type snapshot. */
+    laborMarket?: { index: LaborMarketSnapshot; asOf: number } | null;
+    /** Wave E5 (§2.8): per-lane fuel-discount snapshot. */
+    laneBonuses?: LaneBonusSnapshot | null;
+    /** Wave E7 (§E7 / §5 item 5): server-aggregated orbital-slot occupancy. */
+    orbitalSlotOccupancy?: Record<string, { occupiedCount: number; bucket: string }> | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -83,6 +100,15 @@ export function useGameSync(
       // was transmitted after a 200 (amounts accrued mid-flight survive).
       const minedFlows = { ...(state.pendingMarketFlows?.mined || {}) };
       const npcFlows = { ...(state.pendingMarketFlows?.npc || {}) };
+      // Wave E5 (§2.4/§2.4 hazard coupling): per-location mined attribution
+      // + hazard supply shocks, snapshotted the same way.
+      const minedByLocationFlows: Record<string, Record<string, number>> = {};
+      for (const [locId, byRes] of Object.entries(state.pendingMarketFlows?.minedByLocation || {})) {
+        minedByLocationFlows[locId] = { ...byRes };
+      }
+      const shockFlows = { ...(state.pendingMarketFlows?.shock || {}) };
+      // Wave E5 (§2.8): per-lane dispatch usage since the last sync.
+      const laneDispatches = { ...(state.pendingLaneUsage || {}) };
       // Wave E3: snapshot the consumption accumulators the same way.
       const demandFlows = { ...(state.consumptionState?.pendingDemandFlows || {}) };
       const procurement: Record<string, number> = {};
@@ -130,6 +156,11 @@ export function useGameSync(
         // no schema change; same client-claimed trust level as the rest
         // of the sync payload.)
         commanderIds: (state.hiredCommanders || []).map(c => c.definitionId).slice(0, 30),
+        // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 7): faction
+        // standing, so market/trade can finally wire STANDING_BROKER_
+        // MODIFIER server-side. Stored under workforceData._factionRep —
+        // same pattern/trust level as commanderIds above.
+        factionReputation: state.factionReputation || {},
         // One Wallet (audit A1): ack cursor — highest server ledger seq this
         // state has already applied. The server only reconciles/returns
         // entries beyond it (idempotent under retries).
@@ -148,6 +179,14 @@ export function useGameSync(
         // Wave E3 (§E3): market-policy shortfalls → server-side standing buy
         // orders on the shared book (source 'standing').
         procurementRequests: procurement,
+        // Wave E5 (§2.4): per-location mined attribution feeding the
+        // LocationExtraction depletion accumulator.
+        minedByLocationThisTick: minedByLocationFlows,
+        // Wave E5 (§2.4 hazard coupling): hazard-driven inventory-loss
+        // supply shock (negative units — see market-pressure.ts's `shock`).
+        hazardShockThisTick: shockFlows,
+        // Wave E5 (§2.8): per-lane dispatch counts feeding LaneUsage.
+        laneDispatchesThisTick: laneDispatches,
       };
 
       const res = await fetch('/api/space-tycoon/sync', {
@@ -162,8 +201,17 @@ export function useGameSync(
         retryCount.current = 0;
         // Audit Wave E (A5-i/iv): the flows were delivered — queue the flush
         // so the engine subtracts exactly what was sent on the next tick.
-        if (Object.keys(minedFlows).length > 0 || Object.keys(npcFlows).length > 0) {
-          queueMarketFlowFlush({ mined: minedFlows, npc: npcFlows });
+        // Wave E5: + per-location mined attribution and hazard shocks.
+        if (
+          Object.keys(minedFlows).length > 0 || Object.keys(npcFlows).length > 0
+          || Object.keys(minedByLocationFlows).length > 0 || Object.keys(shockFlows).length > 0
+        ) {
+          queueMarketFlowFlush({ mined: minedFlows, npc: npcFlows, minedByLocation: minedByLocationFlows, shock: shockFlows });
+        }
+        // Wave E5 (§2.8): the lane-dispatch payload was delivered — queue its
+        // own flush the same way.
+        if (Object.keys(laneDispatches).length > 0) {
+          queueLaneUsageFlush(laneDispatches);
         }
         // Wave E3: the consumption payload was delivered — queue its flush so
         // the engine subtracts exactly what was sent on the next tick.
@@ -195,7 +243,12 @@ export function useGameSync(
         // `allianceBonuses` and dropped them on the floor — "the entire
         // alliance bonus pipeline is severed one hop before the player's
         // tick" (audit §4).
-        if (data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost || data.mentorshipBonuses || data.demandPools) {
+        if (
+          data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost
+          || data.mentorshipBonuses || data.demandPools
+          || data.extractionPressure || data.laborMarket || data.laneBonuses
+          || data.megaProjectBonuses
+        ) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
             zoneStandings: Array.isArray(data.zoneStandings) ? data.zoneStandings : undefined,
@@ -207,6 +260,14 @@ export function useGameSync(
             // applied atomically inside processFullTick, with prevPlayerShare
             // stamped for the Situation Log's share-drop alerts.
             demandPools: data.demandPools || undefined,
+            // Wave E5: deposit extraction pressure, labor wage index, and
+            // per-lane fuel discounts ride the same hop.
+            extractionPressure: data.extractionPressure || undefined,
+            laborMarket: data.laborMarket || undefined,
+            laneBonuses: data.laneBonuses || undefined,
+            // Wave E7: world-shared cooperative mega-project bonus rides the
+            // same hop.
+            megaProjectBonuses: data.megaProjectBonuses || null,
             fetchedAtMs: Date.now(),
           });
         }
@@ -223,6 +284,11 @@ export function useGameSync(
             leagueBoost: data.leagueBoost || undefined,
             mentorshipBonuses: data.mentorshipBonuses || undefined,
             marketSnapshot: data.marketSnapshot || undefined,
+            extractionPressure: data.extractionPressure || undefined,
+            laborMarket: data.laborMarket || undefined,
+            laneBonuses: data.laneBonuses || undefined,
+            orbitalSlotOccupancy: data.orbitalSlotOccupancy || undefined,
+            megaProjectBonuses: data.megaProjectBonuses || undefined,
           });
         }
 

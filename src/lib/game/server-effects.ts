@@ -20,6 +20,16 @@ import type { GameState } from './types';
 import { MENTOR_REVENUE_BONUS_CAP, MENTEE_BOOST_CAP } from './constants';
 import type { DemandPoolSnapshot, DemandPoolEntry } from './demand-pools';
 import { clampDemandMultiplier } from './service-pricing';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5): the three new server-shared
+// snapshots this wave delivers — deposit extraction pressure, the labor
+// wage index, and per-lane fuel-discount bonuses. Same type-only + clamp
+// posture as demandPools above.
+import {
+  EXTRACTION_PRESSURE_MIN, EXTRACTION_PRESSURE_MAX,
+  type ExtractionPressureSnapshot,
+} from './extraction-pressure';
+import { WAGE_INDEX_MIN, WAGE_INDEX_MAX, type LaborMarketSnapshot } from './labor-market';
+import { LANE_BONUS_CAP, type LaneBonusSnapshot } from './trade-lanes';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -81,6 +91,24 @@ export interface MentorshipBonusSnapshot {
   researchBonus: number;
 }
 
+/** Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 6 "mega-project
+ *  permanentBonus actually applied — audit §1d"): mega-projects.ts's
+ *  MegaProjectDefinition.permanentBonus rewards were display-string-only
+ *  (never multiplied into the tick). Cooperative mega-projects are
+ *  GLOBALLY shared (one MegaProject row per type, not per-player — see
+ *  mega-projects.ts header) — once a type reaches server status
+ *  'completed', its permanentBonus applies to EVERY synced player, world-
+ *  shared like alliance/season bonuses. Same shape/clamp posture as
+ *  AllianceBonusSnapshot above; `launchCostReduction` is display-only for
+ *  now (no single tick-level launch-cost multiplier site exists yet — see
+ *  mega-projects.ts's getMegaProjectBonuses header). */
+export interface MegaProjectBonusSnapshot {
+  revenueBonus: number;
+  miningBonus: number;
+  researchBonus: number;
+  launchCostReduction: number;
+}
+
 export interface ServerEffectsSnapshot {
   allianceBonuses?: AllianceBonusSnapshot | null;
   zoneStandings?: ZoneStandingSnapshot[];
@@ -88,12 +116,65 @@ export interface ServerEffectsSnapshot {
   leagueBoost?: LeagueBoostSnapshot | null;
   worldEventBonuses?: WorldEventBonusSnapshot | null;
   mentorshipBonuses?: MentorshipBonusSnapshot | null;
+  /** Wave E7: world-shared cooperative mega-project bonuses (see
+   *  MegaProjectBonusSnapshot above). */
+  megaProjectBonuses?: MegaProjectBonusSnapshot | null;
   /** Wave E4 (Finite Demand Pools, §2.1/§E4): per-(location, category) pool
    *  snapshot — mult, pool size, this player's share, anonymized top-supplier
    *  shares. Applied via mergeDemandPoolSnapshot (re-clamped; previous
    *  playerShare stamped so the Situation Log can flag share drops). */
   demandPools?: DemandPoolSnapshot | null;
+  /** Wave E5 (§2.4): per-(location, resource) deposit extraction-pressure
+   *  snapshot (extraction-pressure.ts). */
+  extractionPressure?: ExtractionPressureSnapshot | null;
+  /** Wave E5 (§2.6): server-wide wage-index-per-crew-type snapshot
+   *  (labor-market.ts), refreshed by the weekly labor cron. */
+  laborMarket?: { index: LaborMarketSnapshot; asOf: number } | null;
+  /** Wave E5 (§2.8): per-lane fuel-discount snapshot (trade-lanes.ts). */
+  laneBonuses?: LaneBonusSnapshot | null;
   fetchedAtMs: number;
+}
+
+// ─── Wave E5: clamp helpers (defensive — server data trusted more than
+// client, but a bugged aggregate must never explode mining output, payroll,
+// or freight cost) ────────────────────────────────────────────────────────
+
+function clampExtractionPressureSnapshot(
+  snap: ExtractionPressureSnapshot | null | undefined,
+): ExtractionPressureSnapshot | null {
+  if (!snap || !snap.entries) return null;
+  const entries: ExtractionPressureSnapshot['entries'] = {};
+  for (const [key, e] of Object.entries(snap.entries)) {
+    if (!e || typeof e.pressure !== 'number' || !Number.isFinite(e.pressure)) continue;
+    entries[key] = {
+      locationId: e.locationId,
+      resourceId: e.resourceId,
+      pressure: Math.max(EXTRACTION_PRESSURE_MIN, Math.min(EXTRACTION_PRESSURE_MAX, e.pressure)),
+    };
+  }
+  return { entries, asOf: typeof snap.asOf === 'number' ? snap.asOf : Date.now() };
+}
+
+function clampLaborMarketSnapshot(
+  snap: { index: LaborMarketSnapshot; asOf: number } | null | undefined,
+): { index: LaborMarketSnapshot; asOf: number } | null {
+  if (!snap || !snap.index) return null;
+  const index: LaborMarketSnapshot = {};
+  for (const [type, v] of Object.entries(snap.index)) {
+    if (typeof v !== 'number' || !Number.isFinite(v)) continue;
+    index[type as keyof LaborMarketSnapshot] = Math.max(WAGE_INDEX_MIN, Math.min(WAGE_INDEX_MAX, v));
+  }
+  return { index, asOf: typeof snap.asOf === 'number' ? snap.asOf : Date.now() };
+}
+
+function clampLaneBonusSnapshot(snap: LaneBonusSnapshot | null | undefined): LaneBonusSnapshot | null {
+  if (!snap || !snap.bonuses) return null;
+  const bonuses: Record<string, number> = {};
+  for (const [key, v] of Object.entries(snap.bonuses)) {
+    if (typeof v !== 'number' || !Number.isFinite(v)) continue;
+    bonuses[key] = Math.max(0, Math.min(LANE_BONUS_CAP, v));
+  }
+  return { bonuses, asOf: typeof snap.asOf === 'number' ? snap.asOf : Date.now() };
 }
 
 // ─── Wave E4: demand-pool snapshot merge ────────────────────────────────────
@@ -198,6 +279,27 @@ export function clampMentorshipBonuses(b: MentorshipBonusSnapshot | null | undef
   };
 }
 
+// Wave E7: caps match the largest single permanentBonus.baseValue actually
+// authored in mega-projects.ts (0.25 mining) with headroom for multiple
+// completed projects to stack (a corporation-era-scale achievement, not a
+// quick win — the durationDays/moneyCost gates already make stacking rare).
+export const MEGA_PROJECT_REVENUE_BONUS_CAP = 0.30;
+export const MEGA_PROJECT_MINING_BONUS_CAP = 0.50;
+export const MEGA_PROJECT_RESEARCH_BONUS_CAP = 0.40;
+export const MEGA_PROJECT_LAUNCH_COST_REDUCTION_CAP = 0.30;
+
+export function clampMegaProjectBonuses(b: MegaProjectBonusSnapshot | null | undefined): MegaProjectBonusSnapshot | null {
+  if (!b) return null;
+  const safe = (v: unknown, cap: number) =>
+    typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(cap, v)) : 0;
+  return {
+    revenueBonus: safe(b.revenueBonus, MEGA_PROJECT_REVENUE_BONUS_CAP),
+    miningBonus: safe(b.miningBonus, MEGA_PROJECT_MINING_BONUS_CAP),
+    researchBonus: safe(b.researchBonus, MEGA_PROJECT_RESEARCH_BONUS_CAP),
+    launchCostReduction: safe(b.launchCostReduction, MEGA_PROJECT_LAUNCH_COST_REDUCTION_CAP),
+  };
+}
+
 /**
  * Apply a server-effects snapshot into game state. Pure + idempotent:
  * re-applying the same snapshot yields the same state (league boosts are
@@ -229,11 +331,27 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     mentorshipBonuses: eff.mentorshipBonuses !== undefined
       ? clampMentorshipBonuses(eff.mentorshipBonuses)
       : state.mentorshipBonuses,
+    // Wave E7: cooperative mega-project bonuses reach the tick the same hop
+    // allianceBonuses does.
+    megaProjectBonuses: eff.megaProjectBonuses !== undefined
+      ? clampMegaProjectBonuses(eff.megaProjectBonuses)
+      : state.megaProjectBonuses,
     // Wave E4: finite demand pools reach the tick the same hop the alliance
     // bonuses do. Merge stamps prevPlayerShare for share-drop alerts.
     demandPools: eff.demandPools !== undefined
       ? mergeDemandPoolSnapshot(state.demandPools, eff.demandPools)
       : state.demandPools,
+    // Wave E5: deposit extraction pressure, labor wage index, and lane fuel
+    // discounts reach the tick the same hop demandPools does.
+    extractionPressure: eff.extractionPressure !== undefined
+      ? clampExtractionPressureSnapshot(eff.extractionPressure)
+      : state.extractionPressure,
+    laborMarket: eff.laborMarket !== undefined
+      ? clampLaborMarketSnapshot(eff.laborMarket)
+      : state.laborMarket,
+    laneBonuses: eff.laneBonuses !== undefined
+      ? clampLaneBonusSnapshot(eff.laneBonuses)
+      : state.laneBonuses,
   };
 
   // Audit §1b "Leagues": grant the promotion boost the league system defines

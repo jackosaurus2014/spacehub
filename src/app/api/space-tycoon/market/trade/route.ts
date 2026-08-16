@@ -7,6 +7,17 @@ import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPP
 import { getGlobalMarketEventMultiplier } from '@/lib/game/market-events';
 import { MINED_ONLY_RESOURCE_IDS } from '@/lib/game/economic-sinks';
 import { RESOURCE_MAP } from '@/lib/game/resources';
+// Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 7 "Realignment postures
+// bite"): getGoverningFactionForResource resolves which faction's economy a
+// resource belongs to (delivery-contracts.ts's FACTION_FLAVOR reverse-
+// lookup — the trade route has no locationId, so lane-crossing can't be
+// determined directly; a resource's governing faction stands in for "whose
+// space this trade crosses"). getFactionStandingBrokerModifier finally gets
+// a real caller. computeFactionPostures/getCurrentRealignmentEpoch are pure/
+// DB-free (realignment.ts header) — safe to call server-side with zero new
+// plumbing, exactly like delivery-contracts.ts already does client-side.
+import { getGoverningFactionForResource, computeTariffFeeRate } from '@/lib/game/delivery-contracts';
+import { getFactionStandingBrokerModifier } from '@/lib/game/factions';
 
 /**
  * Audit Wave B (Change #2): per-player sell-side broker-fee reductions.
@@ -22,12 +33,25 @@ async function computeSellerFeeRate(profileId: string, resourceSlug: string): Pr
   let commanderMarketMultiplier = 1;
   let espionageDiscount = 0;
   let diplomacyTradeBonus = 0;
+  let factionStandingModifier = 0;
 
   try {
     const profileRow = await prisma.gameProfile.findUnique({
       where: { id: profileId },
       select: { workforceData: true, allianceMembership: { select: { allianceId: true } } },
     });
+
+    // E7 (§5 item 7, the "one-line fix" that was never wired): STANDING_
+    // BROKER_MODIFIER via the resource's governing faction and the player's
+    // synced reputation with it (workforceData._factionRep — see
+    // sync/route.ts). No entry for that faction (never interacted) reads as
+    // neutral (modifier 0), same as getFactionRep's default.
+    const governingFaction = getGoverningFactionForResource(resourceSlug);
+    if (governingFaction) {
+      const factionRep = (profileRow?.workforceData as { _factionRep?: Record<string, number> } | null)?._factionRep;
+      const rep = factionRep?.[governingFaction] ?? 0;
+      factionStandingModifier = getFactionStandingBrokerModifier(rep);
+    }
 
     // Magnate commanders (audit §1c)
     const commanderIds = (profileRow?.workforceData as { _commanders?: string[] } | null)?._commanders;
@@ -77,7 +101,7 @@ async function computeSellerFeeRate(profileId: string, resourceSlug: string): Pr
     // Fee bonuses are best-effort — fall back to the base rate.
   }
 
-  return getEffectiveBrokerFeeRate({ commanderMarketMultiplier, espionageDiscount, diplomacyTradeBonus });
+  return getEffectiveBrokerFeeRate({ commanderMarketMultiplier, espionageDiscount, diplomacyTradeBonus, factionStandingModifier });
 }
 
 /**
@@ -177,7 +201,20 @@ export async function POST(request: NextRequest) {
       ? MARKET_BROKER_FEE_RATE
       : await computeSellerFeeRate(profileId, resourceSlug);
     const brokerFee = isBuy ? 0 : Math.round(grossTotal * effectiveFeeRate);
-    const totalCost = isBuy ? grossTotal : grossTotal - brokerFee;
+
+    // E7 (§5 item 7): faction tariff — a WORLD-SHARED premium/discount on
+    // trade of resources belonging to a faction's governed economy, current
+    // this realignment epoch. Distinct from the broker fee (a service cut);
+    // this is a toll on the transaction itself, symmetric across buy/sell —
+    // "applies as a fee/premium on trades... crossing that faction's space."
+    // Transparent per BALANCE.md's P&L-panel requirement: returned in full
+    // in the response below, never silently folded into pricePerUnit.
+    const tariff = computeTariffFeeRate(resourceSlug);
+    const tariffFee = Math.round(grossTotal * tariff.rate);
+
+    const totalCost = isBuy
+      ? grossTotal + tariffFee
+      : grossTotal - brokerFee - tariffFee;
 
     // For buys: check available supply (always at least MINIMUM_MARKET_SUPPLY)
     if (isBuy) {
@@ -267,6 +304,13 @@ export async function POST(request: NextRequest) {
         grossTotal,
         brokerFee,
         brokerFeeRate: isBuy ? 0 : effectiveFeeRate,
+        // E7 (§5 item 7): transparent tariff line (BALANCE.md P&L-panel
+        // requirement — "pools/wages/tariffs all shown ... with their
+        // inputs"). tariffFactionId is null when the resource has no
+        // governing faction (no tariff applies).
+        tariffFee,
+        tariffRate: tariff.rate,
+        tariffFactionId: tariff.factionId,
         totalCost,
         newPrice: newEffectivePrice,
         supply: newSupply,

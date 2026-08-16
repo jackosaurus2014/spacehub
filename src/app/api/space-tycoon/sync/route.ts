@@ -21,6 +21,7 @@ import { reconcileBalance, applyResourceDeltas, clampPlausibleMoney, type Ledger
 import { buildMarketSnapshot } from '@/lib/game/spot-price';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 import { resolveMetricCurrentValue } from '@/lib/game/market-share';
+import { getMegaProjectBonuses } from '@/lib/game/mega-projects';
 
 /**
  * POST /api/space-tycoon/sync
@@ -66,6 +67,12 @@ export async function POST(request: Request) {
       // market-policy shortfall procurement requests (standing buy orders).
       consumedThisTick = {},
       procurementRequests = {},
+      // Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.4/§2.8/§E5): per-location
+      // mined attribution (deposit depletion), hazard-driven inventory-loss
+      // supply shock, and per-lane dispatch usage (trade lanes).
+      minedByLocationThisTick = {},
+      hazardShockThisTick = {},
+      laneDispatchesThisTick = {},
       // Full state for multiplayer visibility
       buildings = [],
       activeServices = [],
@@ -75,6 +82,12 @@ export async function POST(request: Request) {
       workforce = null,
       commanderIds = [],
       ledgerAck = 0,
+      // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 7): faction
+      // standing isn't persisted server-side anywhere (client-only
+      // GameState.factionReputation) — market/trade needs it to finally
+      // wire STANDING_BROKER_MODIFIER. Same stash-in-workforceData pattern
+      // as _commanders below.
+      factionReputation = null,
     } = body;
 
     // Audit Wave B (§1c commander marketPriceMultiplier): stash the hired
@@ -85,9 +98,21 @@ export async function POST(request: Request) {
     const safeCommanderIds = Array.isArray(commanderIds)
       ? commanderIds.filter((c: unknown) => typeof c === 'string').slice(0, 30)
       : [];
+    // E7: sanitize to a flat string->finite-number map, capped at 6 entries
+    // (one per faction) — defense in depth against a hostile payload.
+    const safeFactionRep: Record<string, number> = {};
+    if (factionReputation && typeof factionReputation === 'object') {
+      for (const [k, v] of Object.entries(factionReputation as Record<string, unknown>).slice(0, 6)) {
+        if (typeof v === 'number' && Number.isFinite(v)) {
+          safeFactionRep[k] = Math.max(-100, Math.min(100, v));
+        }
+      }
+    }
+    const extras: Record<string, unknown> = { _commanders: safeCommanderIds };
+    if (Object.keys(safeFactionRep).length > 0) extras._factionRep = safeFactionRep;
     const workforceData = workforce && typeof workforce === 'object'
-      ? { ...(workforce as Record<string, unknown>), _commanders: safeCommanderIds }
-      : (safeCommanderIds.length > 0 ? { _commanders: safeCommanderIds } : workforce);
+      ? { ...(workforce as Record<string, unknown>), ...extras }
+      : (safeCommanderIds.length > 0 || Object.keys(safeFactionRep).length > 0 ? extras : workforce);
 
     // ── One Wallet: reconcile client money against the server delta ledger ──
     // (see route header). Falls back to the raw client figure when the ledger
@@ -223,6 +248,40 @@ export async function POST(request: Request) {
     }
     const netWorth = reconciledMoney + resourceValue;
 
+    // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 5): server-
+    // aggregated orbital-slot occupancy (finishes the computeOrbitalSlotReport
+    // TODO). Cache table populated by orbital-slots/resolve's cron — cheap
+    // read here, no aggregation on the request path.
+    let orbitalSlotOccupancy: Record<string, { occupiedCount: number; bucket: string }> | null = null;
+    try {
+      const occRows = await prisma.orbitalSlotOccupancy.findMany();
+      if (occRows.length > 0) {
+        orbitalSlotOccupancy = {};
+        for (const row of occRows) {
+          orbitalSlotOccupancy[row.locationId] = { occupiedCount: row.occupiedCount, bucket: row.bucket };
+        }
+      }
+    } catch {
+      // Table may not exist yet (pre-migration) — client falls back to 'low'.
+    }
+
+    // Wave E7 (§E7 / §5 item 6, audit §1d): cooperative mega-project
+    // permanentBonus, finally applied. World-shared (one MegaProject row per
+    // type — see mega-projects.ts header), so this is a cheap, bounded query
+    // (at most a handful of rows ever) rather than a per-player aggregate.
+    let megaProjectBonuses: { revenueBonus: number; miningBonus: number; researchBonus: number; launchCostReduction: number } | null = null;
+    try {
+      const completed = await prisma.megaProject.findMany({
+        where: { status: 'completed' },
+        select: { projectType: true },
+      });
+      if (completed.length > 0) {
+        megaProjectBonuses = getMegaProjectBonuses(completed.map(p => p.projectType));
+      }
+    } catch {
+      // MegaProject table/rows may not exist yet — no bonus, matches pre-E7.
+    }
+
     // Sanitize arrays for storage
     const safeBuildings = Array.isArray(buildings) ? buildings.slice(0, 200) : [];
     const safeServices = Array.isArray(activeServices) ? activeServices.slice(0, 100) : [];
@@ -328,6 +387,95 @@ export async function POST(request: Request) {
           }
         }
       } catch { /* NPC flow pressure is non-critical */ }
+    }
+
+    // Wave E5 (§2.4 hazard coupling): hazard-driven inventory-loss supply
+    // shock — same background-flow price path as NPC flow, just a separately
+    // attributed channel (market-pressure.ts's `shock`, always ≤ 0 units).
+    const SHOCK_PER_SYNC_CAP = 1_000;
+    if (hazardShockThisTick && typeof hazardShockThisTick === 'object') {
+      try {
+        const { calculatePriceAfterBackgroundFlow } = await import('@/lib/game/market-engine');
+        for (const [slug, qty] of Object.entries(hazardShockThisTick)) {
+          if (typeof qty !== 'number' || !Number.isFinite(qty) || qty >= 0) continue;
+          const safeQty = Math.max(-SHOCK_PER_SYNC_CAP, Math.round(qty));
+          const resource = await prisma.marketResource.findUnique({ where: { slug } });
+          if (!resource) continue;
+          const newPrice = calculatePriceAfterBackgroundFlow(
+            resource.currentPrice, resource.basePrice, safeQty,
+            resource.volatility, resource.minPrice, resource.maxPrice,
+          );
+          if (newPrice !== resource.currentPrice) {
+            await prisma.marketResource.update({
+              where: { id: resource.id },
+              data: { currentPrice: newPrice },
+            });
+          }
+        }
+      } catch { /* hazard shock pressure is non-critical */ }
+    }
+
+    // Wave E5 (§2.4): per-location mined attribution feeds the
+    // LocationExtraction depletion accumulator — deposits everyone
+    // strip-mines thin server-wide (extraction-pressure.ts). Decay is
+    // applied lazily against `updatedAt` at each write (no cron drift).
+    const MINED_BY_LOCATION_PER_SYNC_CAP = 2_000;
+    if (minedByLocationThisTick && typeof minedByLocationThisTick === 'object') {
+      try {
+        const { applyExtractionEvent } = await import('@/lib/game/extraction-pressure');
+        const nowMs = Date.now();
+        for (const [locationId, byRes] of Object.entries(minedByLocationThisTick as Record<string, unknown>)) {
+          if (!byRes || typeof byRes !== 'object') continue;
+          for (const [resourceId, qty] of Object.entries(byRes as Record<string, unknown>)) {
+            if (typeof qty !== 'number' || !Number.isFinite(qty) || qty <= 0) continue;
+            const safeQty = Math.min(MINED_BY_LOCATION_PER_SYNC_CAP, Math.floor(qty));
+            const existing = await prisma.locationExtraction.findUnique({
+              where: { locationId_resourceId: { locationId, resourceId } },
+            });
+            const { accumulated, updatedAtMs } = applyExtractionEvent(
+              existing?.accumulated || 0,
+              existing?.updatedAt.getTime() || nowMs,
+              safeQty,
+              resourceId,
+              nowMs,
+            );
+            await prisma.locationExtraction.upsert({
+              where: { locationId_resourceId: { locationId, resourceId } },
+              create: { locationId, resourceId, accumulated },
+              update: { accumulated },
+            });
+            void updatedAtMs; // updatedAt is server-managed (@updatedAt)
+          }
+        }
+      } catch { /* extraction pressure is non-critical */ }
+    }
+
+    // Wave E5 (§2.8): per-lane dispatch usage feeds LaneUsage — repeated
+    // routes earn a fuel discount, decaying when the lane goes quiet
+    // (trade-lanes.ts). Same lazy-decay-on-write posture as extraction above.
+    const LANE_DISPATCH_PER_SYNC_CAP = 500;
+    if (laneDispatchesThisTick && typeof laneDispatchesThisTick === 'object') {
+      try {
+        const { applyLaneUsageEvent } = await import('@/lib/game/trade-lanes');
+        const nowMs = Date.now();
+        for (const [key, dispatches] of Object.entries(laneDispatchesThisTick as Record<string, unknown>)) {
+          if (typeof dispatches !== 'number' || !Number.isFinite(dispatches) || dispatches <= 0) continue;
+          if (!key.includes('|')) continue; // malformed key — ignore
+          const safeDispatches = Math.min(LANE_DISPATCH_PER_SYNC_CAP, Math.floor(dispatches));
+          const existing = await prisma.laneUsage.findUnique({ where: { laneKey: key } });
+          const { usage } = applyLaneUsageEvent(
+            existing?.usage || 0,
+            existing?.updatedAt.getTime() || nowMs,
+            safeDispatches,
+            nowMs,
+          );
+          await prisma.laneUsage.upsert({
+            where: { laneKey: key },
+            create: { laneKey: key, usage },
+            update: { usage },
+          });
+        }
+      } catch { /* lane usage is non-critical */ }
     }
 
     // Wave E3 (§2.2 "aggregate demand telemetry"): building-recipe
@@ -696,6 +844,68 @@ export async function POST(request: Request) {
       }
     } catch { /* demand pools non-critical (schema may lag deploy) */ }
 
+    // ── Wave E5 (§2.4/§E5): deposit extraction-pressure snapshot ───────────
+    // Read every LocationExtraction row (small table — a few hundred rows at
+    // most across all locations × raw resources), decay each to "now" at
+    // read time (no cron drift — extraction-pressure.ts's readAccumulated),
+    // and deliver the resulting mining-output multiplier per (location,
+    // resource). Absent/empty table = client falls back to neutral 1.0.
+    let extractionPressureSnapshot: { entries: Record<string, { locationId: string; resourceId: string; pressure: number }>; asOf: number } | null = null;
+    try {
+      const { readAccumulated, computeExtractionPressure, extractionKey } = await import('@/lib/game/extraction-pressure');
+      const rows = await prisma.locationExtraction.findMany({
+        select: { locationId: true, resourceId: true, accumulated: true, updatedAt: true },
+      });
+      if (rows.length > 0) {
+        const nowMs = Date.now();
+        const entries: Record<string, { locationId: string; resourceId: string; pressure: number }> = {};
+        for (const r of rows) {
+          const decayed = readAccumulated(r.accumulated, r.updatedAt.getTime(), nowMs);
+          entries[extractionKey(r.locationId, r.resourceId)] = {
+            locationId: r.locationId,
+            resourceId: r.resourceId,
+            pressure: computeExtractionPressure(decayed),
+          };
+        }
+        extractionPressureSnapshot = { entries, asOf: nowMs };
+      }
+    } catch { /* extraction pressure non-critical (schema may lag deploy) */ }
+
+    // ── Wave E5 (§2.6/§E5): server-wide labor wage-index snapshot ──────────
+    // Read the weekly labor cron's LaborIndex rows verbatim — no per-sync
+    // computation (the aggregation is intentionally a WEEKLY loop item, not
+    // recomputed on every sync).
+    let laborMarketSnapshot: { index: Record<string, number>; asOf: number } | null = null;
+    try {
+      const rows = await prisma.laborIndex.findMany({ select: { crewType: true, wageIndex: true, updatedAt: true } });
+      if (rows.length > 0) {
+        const index: Record<string, number> = {};
+        let latest = 0;
+        for (const r of rows) {
+          index[r.crewType] = r.wageIndex;
+          latest = Math.max(latest, r.updatedAt.getTime());
+        }
+        laborMarketSnapshot = { index, asOf: latest || Date.now() };
+      }
+    } catch { /* labor market non-critical (schema may lag deploy) */ }
+
+    // ── Wave E5 (§2.8/§E5): per-lane fuel-discount snapshot ────────────────
+    let laneBonusesSnapshot: { bonuses: Record<string, number>; asOf: number } | null = null;
+    try {
+      const { readLaneUsage, computeLaneBonus } = await import('@/lib/game/trade-lanes');
+      const rows = await prisma.laneUsage.findMany({ select: { laneKey: true, usage: true, updatedAt: true } });
+      if (rows.length > 0) {
+        const nowMs = Date.now();
+        const bonuses: Record<string, number> = {};
+        for (const r of rows) {
+          const decayed = readLaneUsage(r.usage, r.updatedAt.getTime(), nowMs);
+          const bonus = computeLaneBonus(decayed);
+          if (bonus > 0) bonuses[r.laneKey] = bonus;
+        }
+        laneBonusesSnapshot = { bonuses, asOf: nowMs };
+      }
+    } catch { /* lane bonuses non-critical (schema may lag deploy) */ }
+
     // ── Audit Wave B (A7): the player's zone standings for the tick ─────────
     // Governor benefits and stakeholder service bonuses were "defined, never
     // called anywhere" (audit §1b Territory). The client engine applies them
@@ -829,11 +1039,25 @@ export async function POST(request: Request) {
       // log-decay servicePriceMultipliers. Additive field; older clients
       // simply fall back to their deterministic local pools.
       demandPools,
+      // Wave E5 (§2.4/§2.6/§2.8/§E5): deposit extraction pressure, labor wage
+      // index, and per-lane fuel discounts — additive fields; older clients
+      // simply fall back to their pre-E5 neutral behavior.
+      extractionPressure: extractionPressureSnapshot,
+      laborMarket: laborMarketSnapshot,
+      laneBonuses: laneBonusesSnapshot,
       // Wave E2 (§2.5 "one price truth"): band-clamped live spot per resource,
       // the single price the client tick now uses to value delivery contracts
       // (spot-at-acceptance) and settle the NPC backdrop. Additive field —
       // absent on older clients simply means base-price fallback.
       marketSnapshot,
+      // Wave E7 (§E7 / §5 item 5): server-aggregated orbital-slot occupancy
+      // — spatial-strategy.ts's computeOrbitalSlotReport uses this to report
+      // the REAL saturation bucket instead of the old hardcoded 'low'.
+      // Additive; absent = pre-E7 fallback behavior.
+      orbitalSlotOccupancy,
+      // Wave E7 (§E7 / §5 item 6, audit §1d): world-shared cooperative
+      // mega-project bonuses — see server-effects.ts's MegaProjectBonusSnapshot.
+      megaProjectBonuses,
       rivals: rivalsSummary,
       leagueInfo,
       // Audit Wave B: server-computed effects consumed by the client tick

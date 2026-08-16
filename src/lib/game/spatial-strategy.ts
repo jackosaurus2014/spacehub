@@ -174,24 +174,95 @@ export interface OrbitalSlotReport {
   playerOccupied: number;         // from state.buildings
   playerOccupancyPct: number;     // 0-100
   overallOccupancyBucket: 'low' | 'medium' | 'high' | 'saturated';
+  /** True once the server-aggregated pool crosses SATURATED_OCCUPANCY_PCT —
+   *  new builds at this location require winning an OrbitalSlotAuction
+   *  (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 5). */
+  requiresLeaseAuction: boolean;
 }
 
-/** Orbital-slot occupancy snapshot for all pools. Uses player-side data for
- *  player occupancy; the overall occupancy bucket is a placeholder bucketed
- *  reading — the real source of truth will come from a server-aggregated
- *  count once the slot-market system is built. */
-export function computeOrbitalSlotReport(state: GameState): OrbitalSlotReport[] {
+/** Server-aggregated occupancy snapshot, one entry per ORBITAL_SLOT_POOLS
+ *  locationId. Delivered via sync/route.ts's marketSnapshot (populated from
+ *  the OrbitalSlotOccupancy cache table, mirroring the demand-pools pipe) —
+ *  this is what finally makes computeOrbitalSlotReport server-aggregated
+ *  instead of a hardcoded 'low' TODO. */
+export interface OrbitalSlotOccupancySnapshot {
+  occupiedCount: number;
+  // Widened to `string` (not the narrower bucket union) because this is
+  // server-delivered data crossing the GameState boundary (types.ts can't
+  // import this module's narrower type without a circular import — same
+  // trade-off MarketSnapshot-adjacent fields make elsewhere). Validated
+  // against the known buckets at the one read site below.
+  bucket: string;
+}
+
+/** Occupancy % at/above which a pool requires a slot-lease auction to build
+ *  further (canon: "orbital slots are finite… ownership transfers at
+ *  market-clearing prices", §5 item 5: "when a pool crosses 85%"). */
+export const SATURATED_OCCUPANCY_PCT = 85;
+
+export function occupancyBucket(occupiedCount: number, totalSlots: number): OrbitalSlotOccupancySnapshot['bucket'] {
+  const pct = totalSlots > 0 ? (occupiedCount / totalSlots) * 100 : 0;
+  if (pct >= SATURATED_OCCUPANCY_PCT) return 'saturated';
+  if (pct >= 60) return 'high';
+  if (pct >= 25) return 'medium';
+  return 'low';
+}
+
+/** Orbital-slot occupancy snapshot for all pools. `serverOccupancy` (from the
+ *  sync snapshot's OrbitalSlotOccupancy cache) supplies the REAL
+ *  server-aggregated bucket across every player; omitted (offline/solo/
+ *  never-synced) falls back to 'low' — the pre-E7 behavior — so no existing
+ *  caller or save breaks. Player-side occupied-count stays client-derived
+ *  (it only needs to reflect the requesting player's own buildings). */
+export function computeOrbitalSlotReport(
+  state: GameState,
+  serverOccupancy?: Record<string, OrbitalSlotOccupancySnapshot>,
+): OrbitalSlotReport[] {
   return ORBITAL_SLOT_POOLS.map(pool => {
     const playerOccupied = countPlayerBuildingsAt(state, pool.locationId);
     const playerOccupancyPct = Math.min(100, (playerOccupied / pool.totalSlots) * 100);
-    // TODO: replace with server-aggregated count when the slot-market system is live
+    const server = serverOccupancy?.[pool.locationId];
+    const validBuckets: OrbitalSlotReport['overallOccupancyBucket'][] = ['low', 'medium', 'high', 'saturated'];
+    const overallOccupancyBucket: OrbitalSlotReport['overallOccupancyBucket'] =
+      server && validBuckets.includes(server.bucket as OrbitalSlotReport['overallOccupancyBucket'])
+        ? (server.bucket as OrbitalSlotReport['overallOccupancyBucket'])
+        : 'low';
     return {
       pool,
       playerOccupied,
       playerOccupancyPct,
-      overallOccupancyBucket: 'low' as const,
+      overallOccupancyBucket,
+      requiresLeaseAuction: overallOccupancyBucket === 'saturated',
     };
   });
+}
+
+// ─── Chokepoint premiums ─────────────────────────────────────────────────────
+// §5 item 5 / §E7: chokepoint locations (LEO, GEO, the belt approach…) carry
+// a premium on slot-lease auction minimum bids AND on freight passing
+// through them (cargo-logistics.ts) — scarcity has a price, not just a label.
+
+/** Premium multiplier by chokepoint severity. 1.0 = not a chokepoint. */
+export const CHOKEPOINT_PREMIUM: Record<Chokepoint['severity'], number> = {
+  critical: 1.5,
+  major: 1.25,
+  minor: 1.0,
+};
+
+let _chokepointSeverityCache: Map<string, Chokepoint['severity']> | null = null;
+function chokepointSeverityMap(): Map<string, Chokepoint['severity']> {
+  if (!_chokepointSeverityCache) {
+    _chokepointSeverityCache = new Map(computeChokepoints().map(c => [c.locationId, c.severity]));
+  }
+  return _chokepointSeverityCache;
+}
+
+/** Premium multiplier for a location — 1.5x at critical chokepoints (LEO),
+ *  1.25x at major ones, 1.0x elsewhere. Used for both slot-auction minimum
+ *  bids and freight tariff/toll pricing at that location. */
+export function getChokepointPremium(locationId: string): number {
+  const severity = chokepointSeverityMap().get(locationId);
+  return severity ? CHOKEPOINT_PREMIUM[severity] : 1.0;
 }
 
 // ─── Category helpers ────────────────────────────────────────────────────────

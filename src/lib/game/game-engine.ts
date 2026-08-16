@@ -19,7 +19,7 @@ import { advanceStoryChapters } from './chapters';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
-import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
+import { getWorkforceBonuses } from './workforce';
 import { getActiveBoostMultiplier, cleanupExpiredBoosts } from './speed-boosts';
 import type { ActiveBoost } from './speed-boosts';
 import { getGlobalActiveMarketEvents } from './market-events';
@@ -59,7 +59,7 @@ import {
   getReserveStatus,
   RESERVE_REQUIREMENT_MIN_TIER,
 } from './economic-sinks';
-import { accumulateMinedFlows, accumulateNpcFlows, consumeMarketFlowFlush, applyMarketFlowFlush } from './market-pressure';
+import { accumulateMinedFlows, accumulateNpcFlows, accumulateShockFlows, consumeMarketFlowFlush, applyMarketFlowFlush } from './market-pressure';
 import { processExpeditionTick } from './expeditions';
 // 4X Wave W6 (science-missions.ts): flagship science programs — tick beside
 // expeditions; Sentinel constellation extends the hazard forecast horizon and
@@ -75,7 +75,7 @@ import { getSpecializationBonuses } from './specializations';
 import { getVictoryBonuses } from './victory-conditions';
 import { getTotalSubsidiaryIncome, getSubsidiaryServiceBonus } from './subsidiaries';
 import { getGovernorBenefits, getStakeholderServiceBonus, getMultiZonePenalty, LOCATION_TO_ZONE } from './zone-influence';
-import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses, clampWorldEventBonuses, clampMentorshipBonuses } from './server-effects';
+import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses, clampWorldEventBonuses, clampMentorshipBonuses, clampMegaProjectBonuses } from './server-effects';
 import { getReturningCommanderMultiplier } from './returning-commander';
 import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './modules';
 // 4X Wave W14 (cargo-logistics.ts, audit C1): per-location inventory routing
@@ -85,6 +85,16 @@ import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './mo
 // lives in dispatchShipWithCargo).
 import { routeProductionCredit, creditArrivalCargo, hasFreightCapability } from './cargo-logistics';
 import { updateCrewWellbeing, getTotalCrew, getCrewCapacity } from './workforce';
+// Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/ECONOMY_PVP_2026-08.md
+// §2.4/§2.6/§E5): deposit extraction pressure brakes mining output per
+// (location, resource); the wage index multiplies payroll per crew type;
+// hazard-driven inventory loss posts a market supply shock. Lane-usage
+// (§2.8) is wired in cargo-logistics.ts / trade-lanes.ts instead — dispatch
+// happens outside the tick loop.
+import { getExtractionPressureMultiplier } from './extraction-pressure';
+import { getMonthlyPayrollWithWageIndex } from './labor-market';
+import { rollLocationInventoryShocks, applyInventoryShocks } from './hazards';
+import { consumeLaneUsageFlush, subtractTransmittedLaneUsage } from './trade-lanes';
 import type { ServiceType } from './types';
 // 4X Wave W13 (Corporate Doctrine & Board Politics, docs/4X_BASELINE_2026-08.md
 // §1.7): doctrineBonuses is consumed at the SAME sites resBonuses/
@@ -236,6 +246,13 @@ export function processTick(state: GameState): GameState {
   const mentorshipB = clampMentorshipBonuses(state.mentorshipBonuses) || {
     revenueBonus: 0, miningBonus: 0, researchBonus: 0,
   };
+  // Wave E7 (§5 item 6, audit §1d): cooperative mega-project permanentBonus,
+  // finally applied — server-aggregated (every completed project is
+  // global/shared, see mega-projects.ts getMegaProjectBonuses), delivered
+  // via the same sync -> server-effects hop as allianceB/mentorshipB above.
+  const coopMegaB = clampMegaProjectBonuses(state.megaProjectBonuses) || {
+    revenueBonus: 0, miningBonus: 0, researchBonus: 0, launchCostReduction: 0,
+  };
   // Live-Service Wave LS2 (§LS2 mechanic 2): Returning Commander re-entry
   // boost — 1.3x decaying linearly to 1.0x over 14 real days. Purely a
   // function of wall-clock time since the track started in
@@ -267,8 +284,11 @@ export function processTick(state: GameState): GameState {
 
   // ─── 0. Workforce payroll (fractional per tick) ──────────────────
   // W13: compensation-philosophy policy multiplies payroll (Generous ×1.15 /
-  // Lean ×0.90 / neutral ×1.0).
-  const payroll = Math.round(getMonthlyPayroll(workforce) * fraction * doctrineBonuses.payrollMultiplier);
+  // Lean ×0.90 / neutral ×1.0). Wave E5 (§2.6): salary is base × the
+  // server-wide wage index per crew type (getMonthlyPayrollWithWageIndex
+  // falls back to plain getMonthlyPayroll behavior — index 1.0 — when no
+  // labor-market snapshot has arrived yet).
+  const payroll = Math.round(getMonthlyPayrollWithWageIndex(workforce, state.laborMarket) * fraction * doctrineBonuses.payrollMultiplier);
   if (payroll > 0) {
     money -= payroll;
     totalSpent += payroll;
@@ -352,6 +372,7 @@ export function processTick(state: GameState): GameState {
       * (1 + (subsidiaryBonusByType.get(def.type) || 0))
       * (1 + zoneBonusPct / 100)
       * (1 + mentorshipB.revenueBonus) // LS2: mentor/mentee revenue share
+      * (1 + coopMegaB.revenueBonus) // E7: completed cooperative mega-projects
     );
     // Audit Wave D (A4): hazard damage on the enabling building penalizes
     // service revenue until auto-repair (month-end money sink below) works
@@ -523,7 +544,7 @@ export function processTick(state: GameState): GameState {
     // bonus (§1b), alliance researchBonus (A2). Combined new factor cap 2x.
     // Sol Events (real-world feed): + worldEventB.researchSpeedBonus while a
     // real program milestone is fresh (<7 days old, +10% flat).
-    const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus)); // LS2: mentee research share
+    const waveBResearchMult = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus) * (1 + coopMegaB.researchBonus)); // LS2: mentee research share; E7: mega-project
     // narrativeResearchMult (V17 / Wave W4): chain-event research boosts
     // ("Radio Science Windfall", "Fusion Ignition Milestone"...) ride the
     // same expiring activeEffects list random events use, aggregated by
@@ -552,7 +573,7 @@ export function processTick(state: GameState): GameState {
   if (activeResearch2 && completedResearch.includes('parallel_research')) {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
-    const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus)); // audit Wave B (same pack as queue 1) + Sol Events + LS2 mentee share
+    const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus) * (1 + coopMegaB.researchBonus)); // audit Wave B (same pack as queue 1) + Sol Events + LS2 mentee share; E7: mega-project
     const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
@@ -625,6 +646,7 @@ export function processTick(state: GameState): GameState {
     * victoryBonuses.miningMultiplier
     * (1 + allianceB.miningBonus)
     * (1 + mentorshipB.miningBonus) // LS2: mentee mining share
+    * (1 + coopMegaB.miningBonus) // E7: completed cooperative mega-projects
     * getActiveBoostMultiplier(activeBoosts, 'mining')
   );
   const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * eraModifiers.miningMultiplier * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
@@ -634,6 +656,14 @@ export function processTick(state: GameState): GameState {
   // mined this tick so useGameSync can send them as minedThisTick supply
   // pressure — the sync payload field the audit identifies as missing.
   const minedFlowsThisTick: Record<string, number> = {};
+  // Wave E5 (§2.4): the SAME units, broken out per producing location — feeds
+  // the server's LocationExtraction depletion accumulator via
+  // minedByLocationThisTick.
+  const minedFlowsByLocationThisTick: Record<string, Record<string, number>> = {};
+  const addLocationMined = (locationId: string, resource: string, added: number) => {
+    const loc = minedFlowsByLocationThisTick[locationId] || (minedFlowsByLocationThisTick[locationId] = {});
+    loc[resource] = (loc[resource] || 0) + added;
+  };
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
@@ -663,16 +693,22 @@ export function processTick(state: GameState): GameState {
       // Ceres storage (local stockpile) once logistics is unlocked; home-
       // cluster and pre-ratchet production still credit the global pool.
       // Mined-flow market pressure stays global either way (supply is supply).
-      const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
+      // Wave E5 (§2.4): deposit extraction pressure — everyone strip-mining
+      // the SAME (location, resource) thins the seam for everyone. Read from
+      // the last server snapshot; neutral 1.0 (no penalty) when absent/stale.
+      const extractionPressure = getExtractionPressureMultiplier(state.extractionPressure, svc.locationId, resource);
+      const fractionalAmount = amountPerMonth * fraction * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
       if (fractionalAmount >= 1) {
         const added = Math.round(fractionalAmount);
         routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
         minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
+        addLocationMined(svc.locationId, resource, added);
       } else if (isMonthEnd) {
         // On month boundary, add at least the monthly total
-        const added = Math.round(amountPerMonth * miningMult * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff);
+        const added = Math.round(amountPerMonth * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff);
         routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
         minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
+        addLocationMined(svc.locationId, resource, added);
       }
     }
   }
@@ -1078,8 +1114,9 @@ export function processTick(state: GameState): GameState {
     workforce: workforceOut,               // audit Wave B (A10 morale writer)
     reserveStatus: reserveStatusOut,       // audit Wave E (C5 §7)
     // Audit Wave E (A5-i): building-mining output joins the pending market
-    // flows; ship mining + NPC flows are added in processFullTick.
-    pendingMarketFlows: accumulateMinedFlows(state.pendingMarketFlows, minedFlowsThisTick),
+    // flows; ship mining + NPC flows are added in processFullTick. Wave E5:
+    // + per-location attribution feeding LocationExtraction.
+    pendingMarketFlows: accumulateMinedFlows(state.pendingMarketFlows, minedFlowsThisTick, minedFlowsByLocationThisTick),
     pendingChoice,
     incomeHistory,
     eventLog,
@@ -1218,6 +1255,23 @@ export function processTick(state: GameState): GameState {
         eventLog: [...applied.events, ...(applied.state.eventLog || [])].slice(0, MAX_EVENT_LOG),
       };
     }
+    // Wave E5 hazard coupling (§2.4): severe/major solar storms and pirate
+    // raids also destroy a bounded % of location inventory (insurance-
+    // coverable) and post the loss as a negative supply-shock flow to the
+    // shared market — "disasters move prices" (CLAUDE.md). Separate roll
+    // from the asset-hit rolls above (own RNG salt), same shared-weather
+    // determinism.
+    try {
+      const shockRecords = rollLocationInventoryShocks(out, monthIndex, Date.now());
+      if (shockRecords.length > 0) {
+        const shockApplied = applyInventoryShocks(out, shockRecords);
+        out = {
+          ...shockApplied.state,
+          eventLog: [...shockApplied.events, ...(shockApplied.state.eventLog || [])].slice(0, MAX_EVENT_LOG),
+          pendingMarketFlows: accumulateShockFlows(shockApplied.state.pendingMarketFlows, shockApplied.lostUnits),
+        };
+      }
+    } catch { /* inventory shocks non-critical — never block the tick */ }
     // Warning cadence (A4 / task spec): severe hazards are telegraphed one
     // full game-month (6 real hours) ahead — the player can shield, insure,
     // staff security, or relocate BEFORE the hit lands (CLAUDE.md: "players
@@ -1390,6 +1444,21 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Market flow flush error (non-fatal):', err);
+  }
+
+  // 0c2. Wave E5 (§2.8): drain the lane-usage flush a successful sync just
+  // transmitted (trade-lanes.ts's own single-slot queue — kept separate from
+  // market flows since it's keyed by lane, not resource).
+  try {
+    const laneFlush = consumeLaneUsageFlush();
+    if (laneFlush) {
+      workingState = {
+        ...workingState,
+        pendingLaneUsage: subtractTransmittedLaneUsage(workingState.pendingLaneUsage, laneFlush),
+      };
+    }
+  } catch (err) {
+    console.error('Lane usage flush error (non-fatal):', err);
   }
 
   // 0d. Wave E3: drain the consumption sync flush (demand telemetry +
@@ -1629,6 +1698,8 @@ export function processFullTick(state: GameState): GameState {
       const shipsToRemove: string[] = []; // For consumed survey probes
       // Audit Wave E (A5-i): ship-mined units join the market flows too.
       const shipMinedFlows: Record<string, number> = {};
+      // Wave E5 (§2.4): same units, per producing location.
+      const shipMinedFlowsByLocation: Record<string, Record<string, number>> = {};
       // Audit Wave D (A4): month-end hull auto-repair sink (tickCount resets
       // to 0 exactly on the month boundary inside processTick).
       const isShipMonthEnd = newState.tickCount === 0;
@@ -1691,18 +1762,24 @@ export function processFullTick(state: GameState): GameState {
             // Audit Wave D (A4): persistent hull damage penalizes mining
             // rate until repaired — "ship mining-rate penalty" verbatim.
             const hullDamageFactor = Math.max(0.25, 1 - 0.75 * (ship.hullDamagePct || 0));
-            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * hullDamageFactor * shipFraction);
+            // Wave E5 (§2.4): the same deposit extraction-pressure brake
+            // building-based mining uses.
+            const shipMiningLocationId = ship.miningOperation.locationId || ship.currentLocation;
+            const shipExtractionPressure = getExtractionPressureMultiplier(newState.extractionPressure, shipMiningLocationId, resId);
+            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * hullDamageFactor * shipExtractionPressure * shipFraction);
             if (mined >= 1) {
               // W14: ship-mined output accrues at the MINING location's
               // stockpile once logistics is unlocked (Ceres ore fills Ceres
               // storage); grace/home routing matches building production.
               routeProductionCredit(
                 resources, shipLocationInventories,
-                ship.miningOperation.locationId || ship.currentLocation,
+                shipMiningLocationId,
                 resId, mined, shipRouteLocally,
               );
               // Audit Wave E (A5-i): mined units → shared-market pressure.
               shipMinedFlows[resId] = (shipMinedFlows[resId] || 0) + mined;
+              const shipLoc = shipMinedFlowsByLocation[shipMiningLocationId] || (shipMinedFlowsByLocation[shipMiningLocationId] = {});
+              shipLoc[resId] = (shipLoc[resId] || 0) + mined;
             }
           }
         }
@@ -1858,7 +1935,7 @@ export function processFullTick(state: GameState): GameState {
           ? { ...newState.dailyMetrics, cargo_delivered: newState.dailyMetrics.cargo_delivered + cargoDeliveredUnits }
           : newState.dailyMetrics,
         // Audit Wave E (A5-i): ship-mined units join the pending flows.
-        pendingMarketFlows: accumulateMinedFlows(newState.pendingMarketFlows, shipMinedFlows),
+        pendingMarketFlows: accumulateMinedFlows(newState.pendingMarketFlows, shipMinedFlows, shipMinedFlowsByLocation),
         money: shipMoney,
         totalSpent: shipTotalSpent,
         eventLog: shipEvents.length > 0

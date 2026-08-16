@@ -19,8 +19,10 @@ import type { GameState } from '@/lib/game/types';
 import {
   getMissionCalendarEntries, groupCalendarEntriesByDay,
   type CalendarEntry, type CalendarCategory, type CalendarCharterLite,
+  type CalendarSlotAuctionLite, type CalendarNpcDriveLite,
 } from '@/lib/game/world-calendar';
 import type { UpcomingLaunchLite } from '@/lib/game/real-world-feed';
+import { locationName } from '@/lib/game/spatial-strategy';
 import GameIcon from '@/components/game/GameIcon';
 import { calendarCategoryIcon } from '@/lib/game/icons';
 import HoloTip, { Concept } from '@/components/game/HoloTip';
@@ -118,6 +120,8 @@ export default function MissionCalendarPanel({ state }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [upcomingLaunches, setUpcomingLaunches] = useState<UpcomingLaunchLite[]>([]);
   const [myAllianceCharter, setMyAllianceCharter] = useState<CalendarCharterLite | null>(null);
+  const [openSlotAuctions, setOpenSlotAuctions] = useState<CalendarSlotAuctionLite[]>([]);
+  const [openNpcDrives, setOpenNpcDrives] = useState<CalendarNpcDriveLite[]>([]);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -169,15 +173,63 @@ export default function MissionCalendarPanel({ state }: Props) {
     return () => { cancelled = true; clearInterval(charterInterval); };
   }, []);
 
+  // E7 (docs/ECONOMY_PVP_2026-08.md §E7): open orbital-slot auctions + NPC
+  // procurement drives — same "fetch, pass in, never query from
+  // world-calendar.ts" pattern as upcomingLaunches/myAllianceCharter above.
+  useEffect(() => {
+    let cancelled = false;
+    async function pollSlots() {
+      try {
+        const res = await fetch('/api/space-tycoon/orbital-slots');
+        if (!res.ok) return;
+        const json = await res.json() as { openAuctions?: { id: string; locationId: string; closesAt: string }[] };
+        if (cancelled) return;
+        setOpenSlotAuctions((json.openAuctions || []).map(a => ({
+          id: a.id, locationId: a.locationId, locationLabel: locationName(a.locationId),
+          closesAt: new Date(a.closesAt).getTime(),
+        })));
+      } catch {
+        // Auction entries just stay empty — every other calendar source is
+        // engine-derived and unaffected.
+      }
+    }
+    void pollSlots();
+    const slotsInterval = setInterval(() => { void pollSlots(); }, POLL_MS);
+    return () => { cancelled = true; clearInterval(slotsInterval); };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function pollDrives() {
+      try {
+        const res = await fetch('/api/space-tycoon/bidding?status=open');
+        if (!res.ok) return;
+        const json = await res.json() as { contracts?: { id: string; title: string; biddingEndsAt: string; issuerNpcId?: string | null }[] };
+        if (cancelled) return;
+        const drives = (json.contracts || []).filter(c => !!c.issuerNpcId);
+        setOpenNpcDrives(drives.map(d => ({
+          id: d.id, title: d.title, npcName: d.title.split(':')[0] || 'NPC', biddingEndsAt: new Date(d.biddingEndsAt).getTime(),
+        })));
+      } catch {
+        // Drive entries just stay empty.
+      }
+    }
+    void pollDrives();
+    const drivesInterval = setInterval(() => { void pollDrives(); }, POLL_MS);
+    return () => { cancelled = true; clearInterval(drivesInterval); };
+  }, []);
+
   useEffect(() => {
     const tick = setInterval(() => setNow(Date.now()), TICK_MS);
     return () => clearInterval(tick);
   }, []);
 
   const entries = useMemo(
-    () => getMissionCalendarEntries(state, { nowMs: now, horizonDays: 14, upcomingLaunches, myAllianceCharter }),
+    () => getMissionCalendarEntries(state, {
+      nowMs: now, horizonDays: 14, upcomingLaunches, myAllianceCharter, openSlotAuctions, openNpcDrives,
+    }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state.accordDocket, state.expeditions, state.buildings, state.activeResearch, state.activeResearch2, upcomingLaunches, myAllianceCharter, now],
+    [state.accordDocket, state.expeditions, state.buildings, state.activeResearch, state.activeResearch2, upcomingLaunches, myAllianceCharter, openSlotAuctions, openNpcDrives, now],
   );
 
   const preview = entries.slice(0, 3);

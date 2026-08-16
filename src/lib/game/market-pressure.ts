@@ -27,29 +27,82 @@ export interface MarketFlows {
   /** Net NPC trade flow since last sync, by resource id.
    *  Positive = NPC sells (supply in, price down); negative = NPC buys. */
   npc: Record<string, number>;
+  /** Wave E5 (§2.4/§E5): the SAME mined units as `mined` above, but broken
+   *  out per producing location — `minedByLocation[locationId][resourceId]`.
+   *  Feeds the server's LocationExtraction depletion accumulator (extraction-
+   *  pressure.ts) in addition to the flat `mined` total still feeding the
+   *  shared spot price. Optional so pre-E5 saves round-trip unchanged. */
+  minedByLocation?: Record<string, Record<string, number>>;
+  /** Wave E5 hazard coupling (§2.4): inventory destroyed by a hazard this
+   *  tick, by resource id, expressed as a NEGATIVE supply shock (a hazard
+   *  removes goods the market can never see again — CLAUDE.md "disasters
+   *  should move prices"). Always ≤ 0. Applied via
+   *  calculatePriceAfterBackgroundFlow exactly like NPC flow, just a
+   *  separately-attributed channel so it isn't mislabeled as NPC trade. */
+  shock?: Record<string, number>;
 }
 
-export const EMPTY_MARKET_FLOWS: MarketFlows = { mined: {}, npc: {} };
+export const EMPTY_MARKET_FLOWS: MarketFlows = { mined: {}, npc: {}, minedByLocation: {}, shock: {} };
 
 /** Client-side accumulation caps — bound state size for players who never
  *  sync, and bound the burst any one sync can deliver (the server clamps
  *  again per POLICY.md — client data is client-claimed). */
 export const MINED_FLOW_CAP = 5_000;
 export const NPC_FLOW_CAP = 1_000;
+/** Per-(location, resource) cap on the extraction-pressure feed — smaller
+ *  than MINED_FLOW_CAP since it's per-location rather than global. */
+export const MINED_BY_LOCATION_CAP = 3_000;
+/** Per-resource cap on the hazard supply-shock feed — hazards are bounded-%
+ *  events (hazards.ts), so a single tick's shock is inherently small. */
+export const SHOCK_FLOW_CAP = 1_000;
 
-/** Merge freshly-mined amounts into the pending flows (pure). */
+/** Merge freshly-mined amounts into the pending flows (pure). `minedByLocation`
+ *  (Wave E5) is optional — omitted call sites (e.g. megastructure passive
+ *  output, which deliberately stays in the global pool per W14) contribute to
+ *  the flat spot-price total without attributing extraction pressure to any
+ *  one deposit. */
 export function accumulateMinedFlows(
   pending: MarketFlows | undefined,
   mined: Record<string, number>,
+  minedByLocation?: Record<string, Record<string, number>>,
 ): MarketFlows {
   const base = pending || EMPTY_MARKET_FLOWS;
   const entries = Object.entries(mined).filter(([, q]) => Number.isFinite(q) && q > 0);
-  if (entries.length === 0) return base;
+  const byLoc = { ...(base.minedByLocation || {}) };
+  if (minedByLocation) {
+    for (const [locId, byRes] of Object.entries(minedByLocation)) {
+      const locOut = { ...(byLoc[locId] || {}) };
+      for (const [res, q] of Object.entries(byRes)) {
+        if (!Number.isFinite(q) || q <= 0) continue;
+        locOut[res] = Math.min(MINED_BY_LOCATION_CAP, (locOut[res] || 0) + Math.round(q));
+      }
+      byLoc[locId] = locOut;
+    }
+  }
+  if (entries.length === 0) return { ...base, minedByLocation: byLoc };
   const out = { ...base.mined };
   for (const [res, q] of entries) {
     out[res] = Math.min(MINED_FLOW_CAP, (out[res] || 0) + Math.round(q));
   }
-  return { mined: out, npc: base.npc };
+  return { ...base, mined: out, minedByLocation: byLoc };
+}
+
+/** Merge a hazard-driven inventory-loss supply shock into the pending flows
+ *  (pure). Wave E5 (§2.4 hazard coupling). Values are magnitudes (positive
+ *  units lost); stored internally as a negative flow (a shock always removes
+ *  supply, never adds it). */
+export function accumulateShockFlows(
+  pending: MarketFlows | undefined,
+  lostUnits: Record<string, number>,
+): MarketFlows {
+  const base = pending || EMPTY_MARKET_FLOWS;
+  const entries = Object.entries(lostUnits).filter(([, q]) => Number.isFinite(q) && q > 0);
+  if (entries.length === 0) return base;
+  const out = { ...(base.shock || {}) };
+  for (const [res, q] of entries) {
+    out[res] = Math.max(-SHOCK_FLOW_CAP, (out[res] || 0) - Math.round(q));
+  }
+  return { ...base, shock: out };
 }
 
 /** Merge NPC trade actions into the pending flows (pure).
@@ -66,7 +119,7 @@ export function accumulateNpcFlows(
     const next = (out[a.resourceId] || 0) + Math.round(a.quantity);
     out[a.resourceId] = Math.max(-NPC_FLOW_CAP, Math.min(NPC_FLOW_CAP, next));
   }
-  return { mined: base.mined, npc: out };
+  return { ...base, npc: out };
 }
 
 /** Subtract transmitted amounts after a successful sync (pure, clamped ≥ 0
@@ -91,7 +144,24 @@ export function subtractTransmittedFlows(
       : q;
     if (remaining !== 0) npc[res] = remaining;
   }
-  return { mined, npc };
+  const minedByLocation: Record<string, Record<string, number>> = {};
+  for (const [locId, byRes] of Object.entries(base.minedByLocation || {})) {
+    const sentLoc = sent.minedByLocation?.[locId] || {};
+    const locOut: Record<string, number> = {};
+    for (const [res, q] of Object.entries(byRes)) {
+      const remaining = q - (sentLoc[res] || 0);
+      if (remaining > 0) locOut[res] = remaining;
+    }
+    if (Object.keys(locOut).length > 0) minedByLocation[locId] = locOut;
+  }
+  const shock: Record<string, number> = {};
+  for (const [res, q] of Object.entries(base.shock || {})) {
+    // shock values are ≤ 0; sent values are also ≤ 0 — subtract toward zero.
+    const sentQ = sent.shock?.[res] || 0;
+    const remaining = Math.min(0, q - sentQ);
+    if (remaining !== 0) shock[res] = remaining;
+  }
+  return { mined, npc, minedByLocation, shock };
 }
 
 // ─── Hand-off queue (client only; single slot, merged) ───────────────────────
@@ -102,7 +172,14 @@ let pendingFlush: MarketFlows | null = null;
 export function queueMarketFlowFlush(sent: MarketFlows): void {
   if (!sent) return;
   if (!pendingFlush) {
-    pendingFlush = { mined: { ...sent.mined }, npc: { ...sent.npc } };
+    pendingFlush = {
+      mined: { ...sent.mined },
+      npc: { ...sent.npc },
+      minedByLocation: Object.fromEntries(
+        Object.entries(sent.minedByLocation || {}).map(([loc, byRes]) => [loc, { ...byRes }]),
+      ),
+      shock: { ...(sent.shock || {}) },
+    };
     return;
   }
   for (const [res, q] of Object.entries(sent.mined)) {
@@ -110,6 +187,17 @@ export function queueMarketFlowFlush(sent: MarketFlows): void {
   }
   for (const [res, q] of Object.entries(sent.npc)) {
     pendingFlush.npc[res] = (pendingFlush.npc[res] || 0) + q;
+  }
+  const byLoc = pendingFlush.minedByLocation || (pendingFlush.minedByLocation = {});
+  for (const [locId, byRes] of Object.entries(sent.minedByLocation || {})) {
+    const locOut = byLoc[locId] || (byLoc[locId] = {});
+    for (const [res, q] of Object.entries(byRes)) {
+      locOut[res] = (locOut[res] || 0) + q;
+    }
+  }
+  const shock = pendingFlush.shock || (pendingFlush.shock = {});
+  for (const [res, q] of Object.entries(sent.shock || {})) {
+    shock[res] = (shock[res] || 0) + q;
   }
 }
 

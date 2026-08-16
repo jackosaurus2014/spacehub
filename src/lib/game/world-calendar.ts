@@ -96,7 +96,7 @@ export type CalendarCategory =
   | 'senate' | 'league' | 'season' | 'alliance_event' | 'npc_program'
   | 'expedition' | 'queue' | 'appointment_event' | 'real_launch' | 'corporate_era'
   | 'alliance_charter' | 'economic_cycle' | 'program' | 'leader_retirement' | 'realignment'
-  | 'story_chapter';
+  | 'story_chapter' | 'slot_auction' | 'procurement_drive';
 
 export type CalendarEntryKind =
   | 'lock' | 'opens' | 'closes' | 'starts' | 'ends' | 'returns' | 'completes' | 'transition';
@@ -138,6 +138,33 @@ export interface MissionCalendarOptions {
    *  calendar with every entry EXCEPT the charter deadline (no alliance, no
    *  active charter, or not yet loaded). */
   myAllianceCharter?: CalendarCharterLite | null;
+  /** E7 (docs/ECONOMY_PVP_2026-08.md §E7): open orbital-slot lease auctions,
+   *  from GET /api/space-tycoon/orbital-slots (openAuctions). Server-only
+   *  data, injected the same way upcomingLaunches/myAllianceCharter are —
+   *  this module stays DB-free. Optional — omit for a calendar with every
+   *  entry EXCEPT auction closings. */
+  openSlotAuctions?: CalendarSlotAuctionLite[];
+  /** E7: open NPC procurement drives (BiddingContract rows with
+   *  issuerNpcId set), from GET /api/space-tycoon/bidding?status=open,
+   *  pre-filtered to NPC-issued. Optional — omit for a calendar with every
+   *  entry EXCEPT drive deadlines. */
+  openNpcDrives?: CalendarNpcDriveLite[];
+}
+
+/** Minimal shape the slot-auction deriver needs. */
+export interface CalendarSlotAuctionLite {
+  id: string;
+  locationId: string;
+  locationLabel: string;
+  closesAt: number; // ms epoch
+}
+
+/** Minimal shape the NPC-drive deriver needs. */
+export interface CalendarNpcDriveLite {
+  id: string;
+  title: string;
+  npcName: string;
+  biddingEndsAt: number; // ms epoch
 }
 
 /** Minimal shape the charter deriver needs — deliberately narrow so the
@@ -693,6 +720,49 @@ function chapterEntries(nowMs: number, horizonMs: number): CalendarEntry[] {
   return entries;
 }
 
+/** E7 — sealed-bid orbital-slot lease auction closings. World-shared (every
+ *  player sees the identical auction/close time). Server-only source data
+ *  (injected, see MissionCalendarOptions.openSlotAuctions header). */
+function slotAuctionEntries(auctions: CalendarSlotAuctionLite[] | undefined, nowMs: number, horizonMs: number): CalendarEntry[] {
+  if (!auctions || auctions.length === 0) return [];
+  const entries: CalendarEntry[] = [];
+  for (const a of auctions) {
+    if (a.closesAt < nowMs || a.closesAt > nowMs + horizonMs) continue;
+    entries.push({
+      id: `slot_auction_${a.id}`,
+      category: 'slot_auction',
+      title: `${a.locationLabel} slot lease auction closes`,
+      icon: '🛰',
+      atMs: a.closesAt,
+      kind: 'closes',
+      worldShared: true,
+      detail: 'Sealed bids close and the winner is awarded — bid before the window shuts.',
+    });
+  }
+  return entries;
+}
+
+/** E7 — NPC procurement drive bidding deadlines (NPC_BACKDROP "visible and
+ *  forecastable"). World-shared. Server-only source data (injected). */
+function procurementDriveEntries(drives: CalendarNpcDriveLite[] | undefined, nowMs: number, horizonMs: number): CalendarEntry[] {
+  if (!drives || drives.length === 0) return [];
+  const entries: CalendarEntry[] = [];
+  for (const d of drives) {
+    if (d.biddingEndsAt < nowMs || d.biddingEndsAt > nowMs + horizonMs) continue;
+    entries.push({
+      id: `procurement_drive_${d.id}`,
+      category: 'procurement_drive',
+      title: `${d.npcName}: bidding closes`,
+      icon: '📢',
+      atMs: d.biddingEndsAt,
+      kind: 'closes',
+      worldShared: true,
+      detail: `${d.title} — lowest qualified bid wins the contract.`,
+    });
+  }
+  return entries;
+}
+
 // ─── Orchestrator ──────────────────────────────────────────────────────────
 
 const DEFAULT_HORIZON_DAYS = 14;
@@ -724,6 +794,8 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...leaderRetirementEntries(state, nowMs, horizonMs),
     ...realignmentEntries(nowMs, horizonMs),
     ...chapterEntries(nowMs, horizonMs),
+    ...slotAuctionEntries(opts.openSlotAuctions, nowMs, horizonMs),
+    ...procurementDriveEntries(opts.openNpcDrives, nowMs, horizonMs),
   ];
 
   return entries

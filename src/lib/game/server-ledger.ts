@@ -61,7 +61,18 @@ export type LedgerReason =
   // moves alliance.treasury <-> AllianceCharter with no per-player ledger
   // entry (same as activatePerk's treasury spend) — only this final hop into
   // a player's wallet is ledgered.
-  | 'charter_stipend';
+  | 'charter_stipend'
+  // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7): orbital-slot lease auctions.
+  // Bid escrow/refund mirror bounty_escrow's shape; `slot_auction_burn` has
+  // no matching credit anywhere — the winning bid is deliberately destroyed
+  // (BALANCE.md money sink), not paid to any player or NPC.
+  | 'slot_auction_bid_escrow'
+  | 'slot_auction_bid_refund'
+  | 'slot_auction_burn'
+  // Lease transfer market: money moves seller<-buyer directly (unlike the
+  // auction burn above) — "ownership transfers at market-clearing prices."
+  | 'slot_lease_transfer_payment'
+  | 'slot_lease_transfer_receipt';
 
 export interface LedgerWrite {
   profileId: string;

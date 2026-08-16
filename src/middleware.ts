@@ -273,6 +273,9 @@ function checkCsrf(req: NextRequest): boolean {
         // Wave E4 (Finite Demand Pools) — hourly pool aggregation, same
         // mean-revert precedent (scheduler-invoked internal POST).
         '/api/space-tycoon/demand-pools/update',
+        // Wave E5 (Depletion, Labor & Lanes) — weekly labor wage-index job,
+        // same scheduler-invoked-internal-POST precedent.
+        '/api/space-tycoon/labor/update',
         '/api/procurement/opportunities',
         // 4X Wave W3 (seasonal-event generation cron) — same mean-revert
         // precedent: a scheduler-invoked internal POST, not a browser mutation.
@@ -283,6 +286,12 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/launch-windows/fetch',
         '/api/debris-monitor/fetch',
         '/api/solar-flares/fetch',
+        // Wave E7 (Chokepoints, Tariffs & NPC Drives) — orbital-slot
+        // occupancy/auction resolution cron, same scheduler-invoked-
+        // internal-POST precedent (this middleware.ts entry is the exact
+        // "CSRF-for-new-cron gotcha" prior waves flagged — every new cron
+        // route in cron-scheduler.ts MUST be added here too or it 403s).
+        '/api/space-tycoon/orbital-slots/resolve',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {

@@ -21,6 +21,13 @@ import type { MarketSnapshot } from './spot-price';
 // MarketSnapshot above (demand-pools.ts never value-imports types.ts).
 import type { DemandPoolSnapshot } from './demand-pools';
 
+// E5 (Depletion, Labor & Lanes): type-only imports of the three new
+// server-shared snapshots this wave delivers via sync — same compile-time-
+// erased pattern as MarketSnapshot/DemandPoolSnapshot above.
+import type { ExtractionPressureSnapshot } from './extraction-pressure';
+import type { LaborMarketSnapshot } from './labor-market';
+import type { LaneBonusSnapshot } from './trade-lanes';
+
 export interface GameDate {
   year: number;
   month: number; // 1-12
@@ -920,10 +927,15 @@ export interface GameState {
 
   /** Wave E (A5-i/A5-iv): market flows awaiting transmission to the shared
    *  market via sync — mined units (supply pressure) and net NPC trade flow.
-   *  Drained after each successful sync (market-pressure.ts). */
+   *  Drained after each successful sync (market-pressure.ts). Wave E5 adds
+   *  `minedByLocation` (per-deposit extraction-pressure attribution) and
+   *  `shock` (hazard-driven inventory-loss supply shock) — both optional so
+   *  pre-E5 saves round-trip unchanged. */
   pendingMarketFlows?: {
     mined: Record<string, number>;
     npc: Record<string, number>;
+    minedByLocation?: Record<string, Record<string, number>>;
+    shock?: Record<string, number>;
   };
 
   /** Wave E (C5 §7): cash-reserve requirement status for T5+ corporations.
@@ -1148,6 +1160,18 @@ export interface GameState {
     researchBonus: number;
   } | null;
 
+  /** E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 6): world-shared
+   *  cooperative mega-project permanentBonus, finally applied (audit §1d —
+   *  previously display-string-only). Same sync -> server-effects -> tick
+   *  hand-off as allianceBonuses/mentorshipBonuses; re-clamped defensively
+   *  on apply (server-effects.ts clampMegaProjectBonuses). */
+  megaProjectBonuses?: {
+    revenueBonus: number;
+    miningBonus: number;
+    researchBonus: number;
+    launchCostReduction: number;
+  } | null;
+
   // ─── V26 (Live-Service Wave LS4 "Corporate Eras") ────────────────────────
   // docs/LIVE_SERVICE_2026-08.md §LS4. 90-real-day chartered epochs with a
   // declared focus (bonus/malus trade-off pair) and bracket-scaled goal
@@ -1219,6 +1243,15 @@ export interface GameState {
    *  baseMarketPrice, identical to pre-E2 behavior. */
   marketSnapshot?: MarketSnapshot | null;
 
+  /** E7 (Chokepoints, Tariffs & NPC Drives — docs/ECONOMY_PVP_2026-08.md
+   *  §E7 / §5 item 5): server-aggregated orbital-slot occupancy per
+   *  ORBITAL_SLOT_POOLS locationId, delivered via sync the same direct-stash
+   *  way as marketSnapshot above (ephemeral telemetry, not deterministic
+   *  tick input). Null/absent = never synced — spatial-strategy.ts's
+   *  computeOrbitalSlotReport falls back to 'low' (identical to pre-E7
+   *  behavior). */
+  orbitalSlotOccupancy?: Record<string, { occupiedCount: number; bucket: string }> | null;
+
   /** V32 — Wave E3 "The Consumption Engine" (docs/ECONOMY_PVP_2026-08.md
    *  §2.2/§E3, engine: consumption.ts). Additive. Tracks the world-month
    *  consumption grid (dedupe between live tick and away catch-up — the two
@@ -1278,6 +1311,37 @@ export interface GameState {
    *  same grandfather ramp E3's consumption used); null = full effect
    *  (fresh games — new corps are Frontier-shielded anyway). */
   demandPoolPhaseInStartMonth?: number | null;
+
+  // ─── V34 — Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/
+  // ECONOMY_PVP_2026-08.md §2.4/§2.6/§2.8/§E5) ────────────────────────────
+
+  /** The last per-(location, resource) deposit extraction-pressure snapshot
+   *  the server delivered via sync (extraction-pressure.ts). Mining output
+   *  at a deposit multiplies by its pressure (0.4-1.0); null/absent/stale
+   *  = neutral 1.0 (the deterministic local fallback — an unsynced player
+   *  never sees cross-player depletion). Delivered through server-effects.ts
+   *  exactly like demandPools. */
+  extractionPressure?: ExtractionPressureSnapshot | null;
+
+  /** The last server-wide wage-index-per-crew-type snapshot (labor-market.ts),
+   *  refreshed by the weekly labor cron. Salary = base × wageIndex; null/
+   *  absent/stale = neutral 1.0 for every type (pre-E5 payroll behavior).
+   *  Delivered through server-effects.ts exactly like demandPools. */
+  laborMarket?: { index: LaborMarketSnapshot; asOf: number } | null;
+
+  /** The last per-lane fuel-discount snapshot (trade-lanes.ts) — heavily
+   *  used lanes discount the Δv fuel bill up to LANE_BONUS_CAP; null/absent/
+   *  stale = 0 (no bonus, pre-E5 fuel-cost behavior). Delivered through
+   *  server-effects.ts exactly like demandPools. */
+  laneBonuses?: LaneBonusSnapshot | null;
+
+  /** Dispatches recorded since the last successful sync, per canonical lane
+   *  key (trade-lanes.ts laneKey) — written directly by
+   *  dispatchShipWithCargo (cargo-logistics.ts) at departure time, since
+   *  dispatch happens outside the periodic tick loop. Sent as
+   *  `laneDispatchesThisTick`; drained via the same single-slot hand-off
+   *  pattern as pendingMarketFlows (trade-lanes.ts's own queue). */
+  pendingLaneUsage?: Record<string, number>;
 }
 
 /** One chapter act's live/catch-up progress marker (0..acts.length-1 while
@@ -1381,6 +1445,11 @@ export interface DeliveryContractState {
    *  accepted — a genuine forward (lock today's spot, deliver in 72h). Absent
    *  = accepted before a snapshot was available (base-priced). */
   spotUnitAtAcceptance?: number;
+  /** E7 (docs/ECONOMY_PVP_2026-08.md §E7): the zone this contract executes
+   *  in (the issuing faction's territory — zone-influence.ts
+   *  FACTION_TERRITORY). Display/flavor only for this client-simulated pool.
+   *  Absent for factions with no mapped territory (Hive, Nebula Reavers). */
+  zoneSlug?: string;
 }
 
 // ─── Interstellar era (Wave 10 — expeditions.ts) ────────────────────────────

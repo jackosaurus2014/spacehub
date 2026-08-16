@@ -491,6 +491,39 @@ export function getProjectDefinition(projectType: string): MegaProjectDefinition
 }
 
 /**
+ * Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 6 "mega-project
+ * permanentBonus actually applied — audit §1d"): aggregates every COMPLETED
+ * project's permanentBonus into the four multiplier buckets the tick
+ * consumes (game-engine.ts, alongside allianceB/mentorshipB). Mega-projects
+ * are cooperative/global (one MegaProject row per type — see this file's
+ * header), so `completedProjectTypes` is simply every `type` whose server
+ * row has reached status 'completed' — the caller (sync/route.ts) queries
+ * that once and this stays a pure aggregator, unit-testable without Prisma.
+ * `launchCostReduction` is aggregated for completeness/display but has no
+ * tick-level consumer yet — no single "launch cost" multiplier site exists
+ * in the deterministic tick (launches are priced in ships.ts/expeditions.ts
+ * dispatch-time functions, out of E7's file-boundary scope this wave).
+ */
+export function getMegaProjectBonuses(completedProjectTypes: string[]): {
+  revenueBonus: number;
+  miningBonus: number;
+  researchBonus: number;
+  launchCostReduction: number;
+} {
+  const bonuses = { revenueBonus: 0, miningBonus: 0, researchBonus: 0, launchCostReduction: 0 };
+  for (const type of completedProjectTypes) {
+    const def = MEGA_PROJECT_MAP.get(type);
+    if (!def) continue;
+    const { type: bonusType, baseValue } = def.permanentBonus;
+    if (bonusType === 'revenue_boost') bonuses.revenueBonus += baseValue;
+    else if (bonusType === 'mining_boost') bonuses.miningBonus += baseValue;
+    else if (bonusType === 'research_speed') bonuses.researchBonus += baseValue;
+    else if (bonusType === 'launch_cost_reduction') bonuses.launchCostReduction += baseValue;
+  }
+  return bonuses;
+}
+
+/**
  * Get the current phase requirement for a given project.
  */
 export function getCurrentPhaseRequirement(

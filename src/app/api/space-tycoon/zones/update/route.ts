@@ -72,6 +72,21 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
+    // ─── Step 2b: Real zone-tagged contract completions (Wave E7, §5 item 1)─
+    // Replaces the fabricated "20% of contracts" estimate with actual
+    // per-(profile, zone) BiddingContract completions — real influence from
+    // real work, per docs/ECONOMY_PVP_2026-08.md.
+    const completedZoneContracts = await prisma.biddingContract.groupBy({
+      by: ['winnerId', 'zoneSlug'],
+      where: { status: 'completed', zoneSlug: { not: null }, winnerId: { not: null } },
+      _count: { _all: true },
+    });
+    const zoneContractCountMap = new Map<string, number>(); // `${profileId}:${zoneSlug}` -> count
+    for (const row of completedZoneContracts) {
+      if (!row.winnerId || !row.zoneSlug) continue;
+      zoneContractCountMap.set(`${row.winnerId}:${row.zoneSlug}`, row._count._all);
+    }
+
     // ─── Step 3: Calculate IP for each player in each zone ─────────────────
     // Track per-zone influence data
     const zonePlayerData: Map<string, {
@@ -93,12 +108,18 @@ export async function POST(request: Request) {
       const buildings = (profile.buildingsData as unknown as BuildingInstance[]) || [];
       const services = (profile.activeServicesData as unknown as ServiceInstance[]) || [];
       const research = profile.completedResearchList || [];
-      // completedContracts is not stored in GameProfile; approximate from activity
+      // completedContracts (client-simulated delivery contracts) still isn't
+      // stored server-side — pass empty (matches pre-E7 behavior for that
+      // signal) but supply the REAL zone-tagged BiddingContract count as the
+      // 6th arg, which now takes priority over the estimate (see
+      // zone-influence.ts calculateInfluenceFromActivity).
       const contracts: string[] = [];
 
       for (const zone of ZONE_DEFINITIONS) {
+        const regular = zoneContractCountMap.get(`${profile.id}:${zone.slug}`) || 0;
         const breakdown = calculateInfluenceFromActivity(
-          buildings, services, research, contracts, zone.slug
+          buildings, services, research, contracts, zone.slug,
+          { regular, competitive: 0 },
         );
 
         if (breakdown.totalRawIp > 0) {

@@ -11,6 +11,12 @@ import {
 } from '@/lib/game/contract-bidding';
 import { getGlobalGameDate } from '@/lib/game/server-time';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+// Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §2.3): NPC procurement drives
+// reuse this route's existing generic resolution (Phase 1, above) and
+// generation cadence (Phase 3) — only the generator function differs.
+import { generateNpcProcurementDrive, selectNpcsForNewDrives } from '@/lib/game/npc-procurement-drives';
+import type { ResourceId } from '@/lib/game/resources';
+import { RESOURCE_MAP } from '@/lib/game/resources';
 
 export const dynamic = 'force-dynamic';
 
@@ -337,17 +343,100 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ── Phase 3b: NPC procurement drives (Wave E7, §2.3) ──────────────
+    // Publish 1-2 new drives per NPC per week (NPC_BACKDROP "visible and
+    // forecastable" + SESSION_DESIGN's daily-loop cadence for drives — this
+    // cron runs every 5 min, but selectNpcsForNewDrives only proposes an NPC
+    // that has ZERO open drives, so a given NPC naturally settles into a
+    // "next drive once the current one resolves" rhythm rather than
+    // spamming).
+    let npcDrivesGenerated = 0;
+    try {
+      const openNpcDrives = await prisma.biddingContract.findMany({
+        where: { status: 'open', issuerNpcId: { not: null } },
+        select: { issuerNpcId: true },
+      });
+      const openCountByNpc: Record<string, number> = {};
+      for (const row of openNpcDrives) {
+        if (!row.issuerNpcId) continue;
+        openCountByNpc[row.issuerNpcId] = (openCountByNpc[row.issuerNpcId] || 0) + 1;
+      }
+      // Cap concurrent new drives per cycle so a cold-start server doesn't
+      // spawn all 10 NPCs' drives simultaneously.
+      const candidates = selectNpcsForNewDrives(openCountByNpc, 2);
+
+      for (const npc of candidates) {
+        const drive = generateNpcProcurementDrive({
+          npcId: npc.id,
+          now: now.getTime(),
+          spotPriceLookup: (resourceId: ResourceId) => {
+            // Best-effort spot lookup; RESOURCE_MAP.baseMarketPrice is the
+            // deterministic fallback when the row hasn't traded yet.
+            return RESOURCE_MAP.get(resourceId)?.baseMarketPrice ?? 1000;
+          },
+        });
+        if (!drive) continue;
+
+        // Prefer live spot over the base-price fallback when the market row
+        // exists (mirrors delivery-contracts' spot-at-acceptance intent —
+        // drives should reflect what the market is ACTUALLY doing).
+        try {
+          const marketRow = await prisma.marketResource.findUnique({
+            where: { slug: drive.requirements.resourceId },
+            select: { currentPrice: true },
+          });
+          if (marketRow?.currentPrice) {
+            const spot = marketRow.currentPrice;
+            const qty = drive.requirements.target;
+            drive.maxBid = Math.round(spot * 1.10 * qty);
+            drive.minBid = Math.round(spot * 0.70 * qty);
+            drive.baseReward = Math.round((drive.minBid + drive.maxBid) / 2);
+          }
+        } catch {
+          // Fall back to the base-price-derived bounds already on `drive`.
+        }
+
+        await prisma.biddingContract.create({
+          data: {
+            contractType: drive.contractType,
+            tier: drive.tier,
+            title: drive.title,
+            description: drive.description,
+            requirements: JSON.parse(JSON.stringify(drive.requirements)),
+            baseReward: drive.baseReward,
+            minBid: drive.minBid,
+            maxBid: drive.maxBid,
+            collateralPct: drive.collateralPct,
+            biddingEndsAt: drive.biddingEndsAt,
+            status: 'open',
+            issuerNpcId: drive.issuerNpcId,
+            zoneSlug: drive.zoneSlug ?? null,
+          },
+        });
+        npcDrivesGenerated++;
+
+        logger.info('NPC procurement drive published', {
+          npcId: npc.id, npcName: npc.name, resourceId: drive.requirements.resourceId,
+          quantity: drive.requirements.target, maxBid: drive.maxBid, zoneSlug: drive.zoneSlug,
+        });
+      }
+    } catch (driveError) {
+      logger.error('NPC procurement drive generation failed', { error: String(driveError) });
+    }
+
     logger.info('Bidding resolution cycle complete', {
       contractsResolved,
       contractsGenerated,
+      npcDrivesGenerated,
       deadlinesExpired,
-      activeCount: activeCount + contractsGenerated,
+      activeCount: activeCount + contractsGenerated + npcDrivesGenerated,
     });
 
     return NextResponse.json({
       success: true,
       contractsResolved,
       contractsGenerated,
+      npcDrivesGenerated,
       deadlinesExpired,
     });
 

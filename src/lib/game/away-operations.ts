@@ -38,7 +38,14 @@ import { MINING_PRODUCTION } from './resources';
 import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { formatMoney } from './formulas';
-import { getMonthlyPayroll, getWorkforceBonuses } from './workforce';
+import { getWorkforceBonuses } from './workforce';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.4/§2.6/§E5): away-time parity —
+// the same wage-index payroll and deposit extraction-pressure brake the
+// live tick applies must also apply to the offline catch-up estimate,
+// reading the SAME last-synced snapshots off `working` (no live network
+// call — this module stays pure/deterministic).
+import { getMonthlyPayrollWithWageIndex } from './labor-market';
+import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { getResearchBonuses } from './research-tree';
 import {
   TICKS_PER_GAME_MONTH, TICK_INTERVALS, MAX_EVENT_LOG,
@@ -240,7 +247,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
     costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction));
   }
-  const payrollPerTick = Math.round(getMonthlyPayroll(workforce) * fraction);
+  const payrollPerTick = Math.round(getMonthlyPayrollWithWageIndex(workforce, working.laborMarket) * fraction);
   costsPerTick += payrollPerTick;
 
   const weightedTicks = getWeightedTicks(timeAwayMs, investmentBonus);
@@ -254,7 +261,11 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
     for (const { resource, amountPerMonth } of production) {
-      const totalMined = amountPerMonth * fraction * miningMult * weightedTicks;
+      // Wave E5 (§2.4): the same deposit extraction-pressure brake the live
+      // tick applies, read from the last-synced snapshot (no cross-player
+      // computation here — deterministic, own-state-only).
+      const pressure = getExtractionPressureMultiplier(working.extractionPressure, svc.locationId, resource);
+      const totalMined = amountPerMonth * fraction * miningMult * pressure * weightedTicks;
       if (totalMined >= 1) resourcesEarned[resource] = (resourcesEarned[resource] || 0) + Math.round(totalMined);
     }
   }

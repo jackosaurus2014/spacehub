@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import {
@@ -28,7 +28,13 @@ export default function SpatialStrategyPanel({ state }: Props) {
 
   const traffic    = useMemo(() => computeLaneTraffic(state), [state]);
   const chokepoints = useMemo(() => computeChokepoints(),    []);
-  const slotReport  = useMemo(() => computeOrbitalSlotReport(state), [state]);
+  // Wave E7 (§E7 / §5 item 5): server-aggregated occupancy (state.
+  // orbitalSlotOccupancy, delivered via sync — see useGameSync/page.tsx)
+  // finally replaces the hardcoded 'low' bucket.
+  const slotReport  = useMemo(
+    () => computeOrbitalSlotReport(state, state.orbitalSlotOccupancy ?? undefined),
+    [state],
+  );
 
   return (
     <div className="space-y-4">
@@ -244,58 +250,193 @@ function ChokepointSection({ title, severity, list, accent }: { title: string; s
 
 // ─── Orbital Slots Tab ────────────────────────────────────────────────────────
 
+const BUCKET_LABEL: Record<string, string> = {
+  low: 'LOW OCCUPANCY',
+  medium: 'MODERATE OCCUPANCY',
+  high: 'HIGH OCCUPANCY',
+  saturated: 'SATURATED — LEASE REQUIRED',
+};
+
 function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotReport> }) {
+  const [auctionData, setAuctionData] = useState<OrbitalSlotAuctionApiResponse | null>(null);
+  const [loadedOnce, setLoadedOnce] = useState(false);
+
+  const anySaturated = report.some(r => r.requiresLeaseAuction);
+
+  const refetch = () => {
+    fetch('/api/space-tycoon/orbital-slots')
+      .then(r => r.json())
+      .then((data: OrbitalSlotAuctionApiResponse) => { setAuctionData(data); setLoadedOnce(true); })
+      .catch(() => setLoadedOnce(true));
+  };
+
+  useEffect(() => {
+    if (anySaturated && !loadedOnce) refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anySaturated, loadedOnce]);
+
   return (
     <div className="space-y-3">
       <div className="card p-3">
         <div className="text-xs text-slate-400 leading-relaxed">
           <p>
             <span className="text-white font-bold">Finite orbital slots</span> are one of the genuinely scarce resources
-            in the solar-system economy. Once all the viable GEO or Lagrange slots are claimed, new entrants must either
-            buy slots from current holders at market-clearing prices or redirect to less-premium orbits.
-          </p>
-          <p className="mt-2 text-slate-500">
-            Your occupancy below is the count of your completed buildings at each slot pool. A server-aggregated
-            global occupancy view will land when the slot-market system goes live.
+            in the solar-system economy. Once a pool crosses 85% server-wide occupancy, new construction there requires
+            winning a sealed-bid lease auction — proceeds are burned (a real money sink), and the zone governor earns a
+            revenue share. Leases run 90 days and are transferable at market-clearing prices.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3">
-        {report.map(r => (
-          <div key={r.pool.locationId} className="hud-frame relative card p-3">
-            <span className="hud-corner-bl" aria-hidden="true" />
-            <span className="hud-corner-br" aria-hidden="true" />
-            <div className="flex items-baseline justify-between mb-1">
-              <div>
-                <h3 className="font-hud text-white font-bold text-sm">{r.pool.label}</h3>
-                <div className="text-slate-500 text-[10px]">{locationName(r.pool.locationId)}</div>
+        {report.map(r => {
+          const auction = auctionData?.openAuctions.find(a => a.locationId === r.pool.locationId);
+          return (
+            <div key={r.pool.locationId} className="hud-frame relative card p-3">
+              <span className="hud-corner-bl" aria-hidden="true" />
+              <span className="hud-corner-br" aria-hidden="true" />
+              <div className="flex items-baseline justify-between mb-1">
+                <div>
+                  <h3 className="font-hud text-white font-bold text-sm">{r.pool.label}</h3>
+                  <div className="text-slate-500 text-[10px]">{locationName(r.pool.locationId)}</div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="game-number text-cyan-300 text-sm font-bold">{r.playerOccupied} / {r.pool.totalSlots}</div>
+                  <div className="text-[10px] text-slate-500">your slots</div>
+                </div>
               </div>
-              <div className="text-right shrink-0">
-                <div className="game-number text-cyan-300 text-sm font-bold">{r.playerOccupied} / {r.pool.totalSlots}</div>
-                <div className="text-[10px] text-slate-500">your slots</div>
-              </div>
-            </div>
 
-            <div
-              className="h-2 bg-white/[0.06] rounded-full overflow-hidden my-2"
-              role="progressbar"
-              aria-label={`Your ${r.pool.label} occupancy`}
-              aria-valuenow={r.playerOccupied}
-              aria-valuemin={0}
-              aria-valuemax={r.pool.totalSlots}
-              aria-valuetext={`${r.playerOccupied} of ${r.pool.totalSlots} slots occupied by your corporation`}
-            >
               <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full"
-                style={{ width: `${r.playerOccupancyPct}%` }}
-                aria-hidden="true"
-              />
-            </div>
+                className="h-2 bg-white/[0.06] rounded-full overflow-hidden my-2"
+                role="progressbar"
+                aria-label={`Your ${r.pool.label} occupancy`}
+                aria-valuenow={r.playerOccupied}
+                aria-valuemin={0}
+                aria-valuemax={r.pool.totalSlots}
+                aria-valuetext={`${r.playerOccupied} of ${r.pool.totalSlots} slots occupied by your corporation`}
+              >
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full"
+                  style={{ width: `${r.playerOccupancyPct}%` }}
+                  aria-hidden="true"
+                />
+              </div>
 
-            <p className="text-[11px] text-slate-400 leading-relaxed">{r.pool.description}</p>
-          </div>
-        ))}
+              <p className="text-[11px] text-slate-400 leading-relaxed">{r.pool.description}</p>
+
+              <div className={`mt-2 text-[10px] font-bold tracking-wide ${r.requiresLeaseAuction ? 'text-amber-300' : 'text-slate-500'}`}>
+                {BUCKET_LABEL[r.overallOccupancyBucket] || 'OCCUPANCY UNKNOWN'}
+              </div>
+
+              {r.requiresLeaseAuction && (
+                <AuctionWidget
+                  locationId={r.pool.locationId}
+                  auction={auction || null}
+                  onChange={refetch}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+interface OrbitalSlotAuctionApiResponse {
+  openAuctions: {
+    id: string;
+    locationId: string;
+    minBid: number;
+    closesAt: string;
+    bidCount: number;
+    myBid: { amount: number; createdAt: string } | null;
+  }[];
+  myLeases: { id: string; locationId: string; leaseAmount: number; expiresAt: string }[];
+}
+
+function AuctionWidget({
+  locationId,
+  auction,
+  onChange,
+}: {
+  locationId: string;
+  auction: OrbitalSlotAuctionApiResponse['openAuctions'][number] | null;
+  onChange: () => void;
+}) {
+  const [bidAmount, setBidAmount] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const openAuction = async () => {
+    setSubmitting(true);
+    try {
+      await fetch('/api/space-tycoon/orbital-slots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'open', locationId }),
+      });
+      onChange();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const placeBid = async () => {
+    if (!auction || !bidAmount) return;
+    setSubmitting(true);
+    try {
+      await fetch('/api/space-tycoon/orbital-slots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'bid', auctionId: auction.id, amount: Number(bidAmount) }),
+      });
+      onChange();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!auction) {
+    return (
+      <button
+        onClick={openAuction}
+        disabled={submitting}
+        className="mt-2 w-full text-[11px] font-bold rounded border border-amber-500/40 bg-amber-500/10 text-amber-300 py-1.5 hover:bg-amber-500/20 disabled:opacity-50"
+      >
+        Open Sealed-Bid Lease Auction
+      </button>
+    );
+  }
+
+  const closesAt = new Date(auction.closesAt);
+  const hoursLeft = Math.max(0, Math.round((closesAt.getTime() - Date.now()) / 3_600_000));
+
+  return (
+    <div className="mt-2 rounded border border-amber-500/30 bg-amber-500/[0.04] p-2">
+      <div className="flex items-center justify-between text-[11px] mb-1.5">
+        <span className="text-amber-300 font-bold">Sealed-bid auction — {auction.bidCount} bid{auction.bidCount === 1 ? '' : 's'}</span>
+        <span className="text-slate-400">closes in {hoursLeft}h</span>
+      </div>
+      <div className="text-[10px] text-slate-500 mb-1.5">Min bid: {formatMoney(auction.minBid)} · Bids are sealed; proceeds burned on award.</div>
+      {auction.myBid && (
+        <div className="text-[10px] text-cyan-300 mb-1.5">Your current bid: {formatMoney(auction.myBid.amount)}</div>
+      )}
+      <div className="flex gap-1.5">
+        <input
+          type="number"
+          value={bidAmount}
+          onChange={e => setBidAmount(e.target.value)}
+          placeholder={`≥ ${auction.minBid}`}
+          className="flex-1 min-w-0 bg-black/40 border border-white/10 rounded px-2 py-1 text-[11px] text-white"
+          aria-label={`Bid amount for ${locationId} slot lease`}
+        />
+        <button
+          onClick={placeBid}
+          disabled={submitting || !bidAmount}
+          className="shrink-0 text-[11px] font-bold rounded border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 px-2.5 py-1 hover:bg-cyan-500/20 disabled:opacity-50"
+        >
+          {auction.myBid ? 'Revise Bid' : 'Place Bid'}
+        </button>
       </div>
     </div>
   );

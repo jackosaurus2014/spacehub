@@ -37,6 +37,13 @@ import type { OrderQueueTarget } from './order-queue';
 // lands), keeping this module's DB-free contract intact.
 import { CATEGORY_LABELS, getServiceCategory, demandPoolKey } from './demand-pools';
 import { LOCATION_MAP } from './solar-system';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5): deposit extraction-pressure and
+// labor wage-index alerts — same pure-GameState-lens posture as the demand
+// pool alerts above.
+import { getDepositGrade, EXTRACTION_PRESSURE_MIN } from './extraction-pressure';
+import { GUILD_STRIKE_WAGE_THRESHOLD, WAGE_INDEX_MAX } from './labor-market';
+import { WORKER_TYPES } from './workforce';
+import { MINING_PRODUCTION } from './resources';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -50,9 +57,18 @@ export type SituationCategory =
   // of a demand market dropped since the previous snapshot — a competitor
   // is taking customers ("competitor undercutting at X").
   | 'demand_shift'
+  // Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5): a deposit this player mines
+  // has thinned into the Thinning/Critical grade band.
+  | 'deposit_depletion'
+  // Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5 §2.6 lore surface): a crew
+  // type's server-wide wage index has climbed to a hiring-boom level.
+  | 'wage_spike'
   // Outliner-only sources (deriveAttentionItems, outliner.ts) — included in
   // the shared union so both modules can emit/consume the same item shape.
-  | 'building_damage' | 'ship_damage' | 'ship_idle' | 'queue_stalled';
+  | 'building_damage' | 'ship_damage' | 'ship_idle' | 'queue_stalled'
+  // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7): orbital-slot auction closing
+  // soon, NPC procurement drive bidding deadline approaching.
+  | 'slot_auction' | 'procurement_drive';
 
 export interface SituationItem {
   id: string;
@@ -115,6 +131,11 @@ const CALENDAR_CATEGORY_TAB: Partial<Record<CalendarCategory, GameTab>> = {
   economic_cycle: 'market',
   program: 'workforce',
   leader_retirement: 'commanders',
+  // Wave E7: auction closing -> Map (Spatial Strategy tab lives there);
+  // drive deadline -> Contracts (where NPC procurement drives are bid on,
+  // same bidding UI as player-issued contracts).
+  slot_auction: 'map',
+  procurement_drive: 'contracts',
 };
 
 const CALENDAR_CATEGORY_TO_SITUATION: Partial<Record<CalendarCategory, SituationCategory>> = {
@@ -123,6 +144,8 @@ const CALENDAR_CATEGORY_TO_SITUATION: Partial<Record<CalendarCategory, Situation
   corporate_era: 'charter',
   story_chapter: 'story_chapter',
   economic_cycle: 'economic_cycle',
+  slot_auction: 'slot_auction',
+  procurement_drive: 'procurement_drive',
 };
 
 export interface SituationLogOptions {
@@ -133,6 +156,13 @@ export interface SituationLogOptions {
   closingSoonMs?: number;
   /** How far back a resolved hazard still counts as "recent". Default 24h. */
   recentHazardMs?: number;
+  /** E7: open orbital-slot auctions / NPC procurement drives, forwarded
+   *  straight into getMissionCalendarEntries — see world-calendar.ts's
+   *  MissionCalendarOptions for the source routes. Optional; omitted means
+   *  those two categories simply don't surface here (same as the existing
+   *  upcomingLaunches/myAllianceCharter omission below). */
+  openSlotAuctions?: import('./world-calendar').CalendarSlotAuctionLite[];
+  openNpcDrives?: import('./world-calendar').CalendarNpcDriveLite[];
 }
 
 const DEFAULT_CLOSING_SOON_MS = 48 * 60 * 60 * 1000;
@@ -205,6 +235,8 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
   const calendarEntries = getMissionCalendarEntries(state, {
     nowMs,
     horizonDays: Math.max(1, Math.ceil(closingSoonMs / (24 * 60 * 60 * 1000))),
+    openSlotAuctions: opts.openSlotAuctions,
+    openNpcDrives: opts.openNpcDrives,
   });
   for (const entry of calendarEntries) {
     const situationCategory = CALENDAR_CATEGORY_TO_SITUATION[entry.category];
@@ -276,6 +308,66 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
         severity: entry.mult <= 0.75 ? 'warning' : 'info',
         atMs: demandSnapshot.asOf,
         tab: 'market',
+      });
+    }
+  }
+
+  // ── Deposit depletion (Wave E5 — extraction-pressure.ts) ────────────────
+  // "Deposit depleting": a (location, resource) THIS player actually mines
+  // has thinned into the Thinning/Critical grade band. Only surfaces for
+  // deposits the player has a mining service on — a rival's depleted rock
+  // elsewhere isn't this player's problem.
+  const extractionSnapshot = state.extractionPressure;
+  if (extractionSnapshot?.entries) {
+    const minedHere = new Set<string>(); // `${locationId}:${resourceId}`
+    for (const svc of state.activeServices || []) {
+      const production = MINING_PRODUCTION[svc.definitionId];
+      if (!production) continue;
+      for (const { resource } of production) minedHere.add(`${svc.locationId}:${resource}`);
+    }
+    for (const entry of Object.values(extractionSnapshot.entries)) {
+      if (!minedHere.has(`${entry.locationId}:${entry.resourceId}`)) continue;
+      const grade = getDepositGrade(entry.pressure);
+      if (grade.tier !== 'thinning' && grade.tier !== 'critical') continue;
+      const locName = LOCATION_MAP.get(entry.locationId)?.name || entry.locationId;
+      items.push({
+        id: `sit-deposit-${entry.locationId}-${entry.resourceId}`,
+        category: 'deposit_depletion',
+        icon: 'ship-mining',
+        label: `${entry.resourceId.replace(/_/g, ' ')} deposit ${grade.label.toLowerCase()} at ${locName}`,
+        detail: `Output down to ${Math.round(entry.pressure * 100)}% of an untouched deposit (floor ${Math.round(EXTRACTION_PRESSURE_MIN * 100)}%) — everyone mining this seam thins it. Recovers over time; expand to a fresh site to spread the pressure.`,
+        severity: grade.tier === 'critical' ? 'warning' : 'info',
+        atMs: extractionSnapshot.asOf,
+        tab: 'map',
+        target: { kind: 'location', id: entry.locationId },
+      });
+    }
+  }
+
+  // ── Wage spike (Wave E5 — labor-market.ts) ───────────────────────────────
+  // "Wage spike": a crew type this player employs has hit a server-wide
+  // hiring-boom wage index. Only surfaces for types the player actually has
+  // on payroll.
+  const laborSnapshot = state.laborMarket;
+  if (laborSnapshot?.index) {
+    const workforce = state.workforce;
+    for (const wDef of WORKER_TYPES) {
+      const count = workforce ? (workforce[`${wDef.type}s` as keyof typeof workforce] as number | undefined) || 0 : 0;
+      if (count <= 0) continue;
+      const index = laborSnapshot.index[wDef.type];
+      if (typeof index !== 'number' || index < 1.4) continue;
+      const pinned = index >= GUILD_STRIKE_WAGE_THRESHOLD;
+      items.push({
+        id: `sit-wage-${wDef.type}`,
+        category: 'wage_spike',
+        icon: 'workforce',
+        label: `${wDef.name} wages ${pinned ? 'pinned at boom levels' : 'climbing'}`,
+        detail: pinned
+          ? `Server-wide ${wDef.name.toLowerCase()} demand has pinned the wage index at ${index.toFixed(2)}× (cap ${WAGE_INDEX_MAX.toFixed(1)}×)${wDef.type === 'miner' ? ' — the Belt Miners’ Guild is watching' : ''}. Payroll is expensive right now; training reduces headcount pressure.`
+          : `Server-wide hiring has pushed the ${wDef.name.toLowerCase()} wage index to ${index.toFixed(2)}×. Expect payroll to keep climbing while the boom lasts.`,
+        severity: pinned ? 'warning' : 'info',
+        atMs: laborSnapshot.asOf,
+        tab: 'workforce',
       });
     }
   }

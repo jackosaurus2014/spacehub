@@ -200,6 +200,26 @@ export function getNewGameState(): GameState {
     // new-game mechanic; new corporations are Frontier-shielded anyway).
     demandPools: null,
     demandPoolPhaseInStartMonth: null,
+    // V34 — Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/
+    // ECONOMY_PVP_2026-08.md §E5). A fresh save holds no server snapshots
+    // yet — the first authenticated sync delivers them; until then mining
+    // runs at full deposit pressure (1.0), payroll at neutral wage index
+    // (1.0), and freight at zero lane discount — identical to pre-E5
+    // behavior. No pending flows to transmit either.
+    extractionPressure: null,
+    laborMarket: null,
+    laneBonuses: null,
+    pendingLaneUsage: {},
+    // V35 — Economic PvP Wave E7 "Chokepoints, Tariffs & NPC Drives" (docs/
+    // ECONOMY_PVP_2026-08.md §E7). A fresh save holds no server snapshots
+    // yet — orbitalSlotOccupancy and megaProjectBonuses arrive only via the
+    // authenticated sync hop (same "null until sync delivers one" pattern
+    // as demandPools/mentorshipBonuses above); until then
+    // computeOrbitalSlotReport falls back to 'low' occupancy and the tick
+    // applies zero cooperative mega-project bonus — both identical to
+    // pre-E7 behavior.
+    orbitalSlotOccupancy: null,
+    megaProjectBonuses: null,
   };
 }
 
@@ -596,6 +616,59 @@ export function loadGame(): GameState | null {
         title: '📊 Finite demand pools activated',
         description: 'Every service market now has a finite demand pool per location. Suppliers split the pool by capacity share — crowded markets pay less per instance (competitors take customers), underserved locations pay up to +25%. Pools phase in over the next 3 game months. See Market Intelligence → Demand for pool sizes, your share, and competitor pressure.',
       }, ...(state.eventLog || [])].slice(0, 50);
+    }
+
+    // V34 — Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/
+    // ECONOMY_PVP_2026-08.md §E5 [SAVE] + §7). Additive, and — unlike E3/E4 —
+    // needs NO grandfather phase-in ramp: every new snapshot field defaults
+    // to the exact pre-E5 neutral value (extraction pressure 1.0 = untouched
+    // deposit, wage index 1.0 = old constant-salary behavior, lane bonus
+    // 0 = old flat fuel cost), so an existing save's economy is bit-for-bit
+    // unchanged until the next authenticated sync actually delivers a
+    // non-neutral server snapshot — the same "no phase-in for a neutral
+    // default" precedent V30's marketSnapshot set. One-shot explainer event
+    // mirrors the V15/V32/V33 announcements.
+    if (state.extractionPressure === undefined) {
+      state.extractionPressure = null;
+      state.laborMarket = null;
+      state.laneBonuses = null;
+      state.pendingLaneUsage = {};
+      state.eventLog = [{
+        id: 'evt_v34_depletion_labor_lanes',
+        date: state.gameDate,
+        type: 'random_event' as const,
+        title: '⛏ Deposit depletion, labor market & trade lanes activated',
+        description: 'Mining deposits now show real extraction pressure — a deposit everyone strip-mines thins for everyone, recovering over time. Crew wages respond to server-wide hiring demand and the housing you build. Repeated freight routes earn a fuel discount (up to −15%) that fades if the lane goes quiet. See the Mining, Workforce, and Logistics map layer for details.',
+      }, ...(state.eventLog || [])].slice(0, 50);
+    }
+    if (!state.pendingMarketFlows) state.pendingMarketFlows = { mined: {}, npc: {}, minedByLocation: {}, shock: {} };
+    if (!state.pendingMarketFlows.minedByLocation) state.pendingMarketFlows.minedByLocation = {};
+    if (!state.pendingMarketFlows.shock) state.pendingMarketFlows.shock = {};
+
+    // V35 — Economic PvP Wave E7 "Chokepoints, Tariffs & NPC Drives" (docs/
+    // ECONOMY_PVP_2026-08.md §E7 [SAVE]). Additive, no grandfather phase-in
+    // needed: orbitalSlotOccupancy defaults to null (spatial-strategy.ts's
+    // computeOrbitalSlotReport falls back to 'low' bucket — identical to
+    // pre-E7 behavior) and megaProjectBonuses defaults to null (zero tick
+    // bonus, identical to pre-E7 — permanentBonus was display-only before
+    // this wave regardless). Both populated only once the next authenticated
+    // sync delivers a real snapshot. One-shot explainer mirrors the
+    // V15/V32/V33/V34 announcements.
+    if (state.orbitalSlotOccupancy === undefined) {
+      state.orbitalSlotOccupancy = null;
+      state.megaProjectBonuses = null;
+      state.eventLog = [{
+        id: 'evt_v35_chokepoints_tariffs_npc_drives',
+        date: state.gameDate,
+        type: 'random_event' as const,
+        title: '🛰 Orbital-slot auctions, faction tariffs & NPC procurement drives activated',
+        description: 'Saturated orbital-slot pools now require winning a sealed-bid lease auction to build further — proceeds are burned, and zone governors earn a revenue share. Faction realignment postures now bite: trades and NPC contracts crossing a faction\'s governed economy carry a real tariff, and standing with that faction shifts your broker fee. NPC companies publish forecastable procurement drives — public reverse auctions any player can underbid to fill. See Spatial Strategy → Orbital Slots and the Contracts board.',
+      }, ...(state.eventLog || [])].slice(0, 50);
+    } else if (state.megaProjectBonuses === undefined) {
+      // Defensive: a save that somehow got orbitalSlotOccupancy without
+      // megaProjectBonuses (shouldn't happen via this migration, but keeps
+      // the invariant "every V35 field is defined" bulletproof).
+      state.megaProjectBonuses = null;
     }
 
     state.tickSpeed = 1; // Always 1x for fairness

@@ -71,5 +71,24 @@ export async function computeWeeklyContribution(
     return rows.reduce((sum, r) => sum + Math.max(0, r.score), 0);
   }
 
+  if (charterType === 'market_share') {
+    // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 6): "hold X% of a
+    // resource's traded volume" is season-long/relative by nature, which
+    // doesn't fit this function's per-week additive contribution shape —
+    // the weekly PLEDGE instead tracks raw trade value moved (MarketFill,
+    // buyer+seller) within the window, same raw material league trade_volume
+    // uses. computeCharterGoal's perMemberSeasonTarget is denominated in
+    // that same $ unit (see alliance-charters.ts definition below).
+    const [asBuyer, asSeller] = await Promise.all([
+      prisma.marketFill.aggregate({
+        where: { buyerProfileId: profileId, createdAt: { gte, lt } }, _sum: { totalValue: true },
+      }),
+      prisma.marketFill.aggregate({
+        where: { sellerProfileId: profileId, createdAt: { gte, lt } }, _sum: { totalValue: true },
+      }),
+    ]);
+    return (asBuyer._sum.totalValue || 0) + (asSeller._sum.totalValue || 0);
+  }
+
   return 0;
 }

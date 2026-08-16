@@ -906,6 +906,10 @@ export default function SpaceTycoonPage() {
         // Wave E2 (§2.5): stash the live spot snapshot so the deterministic
         // tick can value delivery contracts and NPC settlement at spot.
         marketSnapshot: serverData.marketSnapshot || prev.marketSnapshot,
+        // Wave E7 (§E7 / §5 item 5): server-aggregated orbital-slot
+        // occupancy — same direct-stash pattern as marketSnapshot above
+        // (ephemeral telemetry, not a deterministic tick input).
+        orbitalSlotOccupancy: serverData.orbitalSlotOccupancy ?? prev.orbitalSlotOccupancy,
       };
     });
   });

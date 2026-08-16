@@ -39,6 +39,11 @@ import { getResearchBonuses } from './research-tree';
 import { getFittedModulesForShip } from './modules';
 import { generateId } from './formulas';
 import { MAX_EVENT_LOG } from './constants';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.8/§E5): "shipping lanes are
+// investments" (CLAUDE.md) — repeated dispatches on a lane earn a fuel
+// discount (server-shared, delivered via state.laneBonuses), and every
+// dispatch here records one usage tick for the next sync to transmit.
+import { getLaneBonus, accumulateLaneUsage } from './trade-lanes';
 
 // ─── Home cluster ────────────────────────────────────────────────────────────
 
@@ -279,7 +284,12 @@ export function getFreightFuelCost(
   const deltaV = getRouteDeltaV(from, to);
   const loadUnits = getCargoLoadUnits(def.role, cargo);
   const raw = deltaV * (FREIGHT_HULL_FUEL_RATE * def.tier + FREIGHT_CARGO_FUEL_RATE * loadUnits);
-  const cost = Math.round(raw * getFuelEfficiencyMultiplier(state));
+  // Wave E5 (§2.8): heavily-used lanes discount the fuel bill up to
+  // LANE_BONUS_CAP (15%) — "repeated routes... get faster, safer, and
+  // cheaper with... investment" (CLAUDE.md). Reads the last server snapshot;
+  // 0 (no discount) when absent/stale — pre-E5 behavior exactly.
+  const laneDiscount = getLaneBonus(state.laneBonuses, from, to);
+  const cost = Math.round(raw * getFuelEfficiencyMultiplier(state) * (1 - laneDiscount));
   return Math.max(FREIGHT_MIN_FUEL_COST, cost);
 }
 
@@ -445,6 +455,11 @@ export function dispatchShipWithCargo(
     resources,
     locationInventories,
     ships,
+    // Wave E5 (§2.8): every dispatch is one usage tick on its lane — recorded
+    // here (outside the periodic tick loop) since dispatch is a one-shot
+    // player action. Sent to the server as laneDispatchesThisTick and
+    // drained via trade-lanes.ts's own hand-off queue after a successful sync.
+    pendingLaneUsage: accumulateLaneUsage(state.pendingLaneUsage, plan.from, plan.to),
     eventLog: [{
       id: generateId(),
       date: state.gameDate,

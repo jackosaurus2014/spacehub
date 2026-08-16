@@ -25,6 +25,11 @@ export interface BiddingContractType {
   clients: string[];
   titleTemplates: string[];
   descriptionTemplates: string[];
+  /** Wave E7: false = never picked by generateSingleContract's random
+   *  player-facing generator (npc-procurement-drives.ts spawns these
+   *  separately, faction-flavored). Omitted/true = existing behavior for
+   *  every current entry, unchanged. */
+  playerFacing?: boolean;
 }
 
 export const CONTRACT_TYPES: Record<string, BiddingContractType> = {
@@ -162,6 +167,29 @@ export const CONTRACT_TYPES: Record<string, BiddingContractType> = {
       'Exclusive mining rights at {location} for {duration} months. +{bonus}% mining output.',
     ],
   },
+  // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §2.3 "NPC procurement
+  // drives"): faction-issued public reverse auctions, generated separately
+  // by npc-procurement-drives.ts (playerFacing: false keeps
+  // generateSingleContract's random player-contract generator from ever
+  // picking this type). Resolution/fulfillment reuse the SAME generic
+  // evaluateBids/checkContractFulfillment machinery as every other
+  // BiddingContract — only generation is bespoke.
+  npc_procurement_drive: {
+    type: 'npc_procurement_drive',
+    category: 'npc_procurement',
+    icon: 'megaphone',
+    baseValue: 50_000_000,
+    availableTiers: [1, 2, 3, 4],
+    // Short, forecastable windows — "publishes 1-2 upcoming buys per week",
+    // "Titan Mining Collective buys 500 iron in 3 days" (§2.3 example).
+    deliveryMonthsByTier: { 1: 1, 2: 1, 3: 1, 4: 2 },
+    supportsPartialFulfillment: false,
+    bidDirection: 'reverse',
+    clients: [], // faction name supplied directly by the generator (lore-voiced)
+    titleTemplates: [],
+    descriptionTemplates: [],
+    playerFacing: false,
+  },
 };
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -285,6 +313,9 @@ export interface GeneratedContract {
   biddingEndsAt: Date;
   deliveryMonths: number;
   status: string;
+  /** Wave E7 — set only for NPC procurement drives (npc-procurement-drives.ts). */
+  issuerNpcId?: string;
+  zoneSlug?: string;
 }
 
 export interface ContractRequirements {
@@ -350,9 +381,10 @@ function generateSingleContract(
   // Select tier
   const tier = weightedRandom(tierWeights);
 
-  // Select contract type available at this tier
+  // Select contract type available at this tier (playerFacing: false types —
+  // NPC procurement drives — are spawned separately, never picked here).
   const availableTypes = Object.values(CONTRACT_TYPES).filter(
-    ct => ct.availableTiers.includes(tier)
+    ct => ct.availableTiers.includes(tier) && ct.playerFacing !== false
   );
   if (availableTypes.length === 0) return null;
 

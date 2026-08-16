@@ -82,10 +82,10 @@ describe('volatility taming (A5-v — qty×vol×k with per-trade clamp)', () => 
     expect(newPrice).toBe(Math.round(5_000 * (1 + MAX_TRADE_IMPACT)));
   });
 
-  it('mining pressure stays at 1/3 of trade impact (BALANCE.md Wave 4 ratio)', () => {
+  it('mining pressure is at 1/2 of trade impact (Wave E5 §2.4 — raised from 1/3 now that extraction pressure is the physical brake)', () => {
     const afterMining = calculatePriceAfterMining(5_000, 5_000, 100, 0.02, 1_000, 50_000);
-    // 4% × 0.33 ≈ 1.32% downward
-    expect(afterMining).toBe(Math.round(5_000 * (1 - 0.04 * 0.33)));
+    // 4% × 0.5 = 2% downward
+    expect(afterMining).toBe(Math.round(5_000 * (1 - 0.04 * 0.5)));
   });
 });
 

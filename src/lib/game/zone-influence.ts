@@ -5,6 +5,7 @@
 import type { BuildingInstance, ServiceInstance } from './types';
 import { BUILDING_MAP } from './buildings';
 import { SERVICE_MAP } from './services';
+import type { FactionId } from './factions';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -209,6 +210,47 @@ for (const zone of ZONE_DEFINITIONS) {
 }
 export const LOCATION_TO_ZONE = _locationToZone;
 
+// ─── Faction territory (Wave E7, docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 7)─
+// "tariffStanceMultiplier applies as a fee/premium on trades and freight
+// crossing that faction's space" — spatial-strategy.ts's lane graph has no
+// per-lane faction field (audit finding), so territory is assigned at the
+// ZONE level instead, anchored to each faction's canonical HQ/claim in
+// docs/LORE.md: Dominion (Kepler Station, GEO) patrols the whole inner
+// system per its "heavy patrol presence in inner-system shipping lanes"
+// operational style; Syndicate's nominal capital is Pallas-4 Free Port in
+// the belt; Void Corsairs hold "the outer belt and Saturnian rings"
+// (explicit lore text); Echo Remnants' Archive sits on Triton (outer
+// system). Hive Collective (Great Nest, Kuiper Belt) and Nebula Reavers
+// (nomadic, no fixed territory by philosophy) are deliberately NOT given a
+// controlled zone — the Reavers' whole identity is "untethered to any
+// world" and the Hive's Kuiper claim isn't a mapped ZONE_DEFINITIONS entry.
+// A zone may be uncontrolled (no tariff/toll applies there). One controlling
+// faction per zone — contested zones pick the lore-primary claimant.
+export const FACTION_TERRITORY: Partial<Record<FactionId, string[]>> = {
+  'the-dominion': ['zone_leo', 'zone_geo', 'zone_lunar', 'zone_mars'],
+  'the-syndicate': ['zone_belt'],
+  'void-corsairs': ['zone_saturn'],
+  'echo-remnants': ['zone_outer'],
+};
+
+const _zoneToFaction = new Map<string, FactionId>();
+for (const [factionId, zones] of Object.entries(FACTION_TERRITORY) as [FactionId, string[]][]) {
+  for (const z of zones) _zoneToFaction.set(z, factionId);
+}
+
+/** The faction whose space a zone falls under, if any (see FACTION_TERRITORY
+ *  above). Returns null for contested/unclaimed zones (zone_jupiter — no
+ *  single lore-anchored claimant). */
+export function getControllingFaction(zoneSlug: string): FactionId | null {
+  return _zoneToFaction.get(zoneSlug) ?? null;
+}
+
+/** The faction controlling the zone a location belongs to, if any. */
+export function getControllingFactionForLocation(locationId: string): FactionId | null {
+  const zoneSlug = LOCATION_TO_ZONE.get(locationId);
+  return zoneSlug ? getControllingFaction(zoneSlug) : null;
+}
+
 // ─── Research-to-Zone Mapping ────────────────────────────────────────────────
 
 export const ZONE_RESEARCH_MAP: Record<string, string[]> = {
@@ -263,6 +305,16 @@ export function calculateInfluenceFromActivity(
   completedResearch: string[],
   completedContracts: string[],
   zoneSlug: string,
+  // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 1 "replacing the
+  // fabricated contractIp estimate with real influence from real work"):
+  // real per-zone contract counts, split by tier. Sourced server-side from
+  // BiddingContract rows (now zoneSlug-tagged) — `regular` = completed
+  // contracts of any type in this zone, `competitive` = the subset flagged
+  // by the caller as competitive-tier. Optional and additive: omitted (every
+  // existing caller/test) falls back to the previous fabricated 20% estimate
+  // below so nothing breaks; once a caller supplies real counts, the
+  // estimate is bypassed entirely.
+  realZoneContracts?: { regular: number; competitive: number },
 ): InfluenceBreakdown {
   const zoneDef = ZONE_MAP.get(zoneSlug);
   if (!zoneDef) {
@@ -319,23 +371,25 @@ export function calculateInfluenceFromActivity(
   }
 
   // ─── Contract IP ─────────────────────────────────────────────────────────
-  // Contracts are identified by ID. Zone-relevant contracts contain the zone
-  // location ID in their name as a convention. For now, count all contracts
-  // and assign a fraction based on zone tier accessibility.
-  // In a full implementation, each contract would tag which zone it belongs to.
   let contractIp = 0;
-  const contractCount = completedContracts?.length || 0;
-  // Approximate: spread contracts across zones the player has unlocked
-  // Each contract contributes a base amount
-  if (contractCount > 0) {
-    // Give a proportional share of contracts to zones where the player has buildings
-    const playerHasBuildingsInZone = buildings.some(
-      b => b.isComplete && zoneLocations.has(b.locationId)
-    );
-    if (playerHasBuildingsInZone) {
-      // Estimate ~20% of contracts are per-zone for active zones
-      const estimatedZoneContracts = Math.ceil(contractCount * 0.2);
-      contractIp = estimatedZoneContracts * CONTRACT_IP_REGULAR;
+  if (realZoneContracts) {
+    // Real zone-tagged counts (E7) — no estimation.
+    contractIp = realZoneContracts.regular * CONTRACT_IP_REGULAR
+      + realZoneContracts.competitive * CONTRACT_IP_COMPETITIVE;
+  } else {
+    // Pre-E7 fallback: contracts aren't zone-tagged for this caller. Spread
+    // an estimate across zones where the player has buildings (kept for
+    // backward compatibility with callers/tests that don't yet pass real
+    // per-zone counts).
+    const contractCount = completedContracts?.length || 0;
+    if (contractCount > 0) {
+      const playerHasBuildingsInZone = buildings.some(
+        b => b.isComplete && zoneLocations.has(b.locationId)
+      );
+      if (playerHasBuildingsInZone) {
+        const estimatedZoneContracts = Math.ceil(contractCount * 0.2);
+        contractIp = estimatedZoneContracts * CONTRACT_IP_REGULAR;
+      }
     }
   }
 

@@ -22,6 +22,11 @@ import {
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
 import { resourceCategoryIcon, type IconName } from '@/lib/game/icons';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.4/§E5): real, server-shared deposit
+// extraction pressure — distinct from the client-only proxy scarcityList
+// below (which predates this wave and has no real per-location data source).
+import { getDepositGrade, EXTRACTION_PRESSURE_MIN } from '@/lib/game/extraction-pressure';
+import { MINING_PRODUCTION } from '@/lib/game/resources';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -172,6 +177,21 @@ export default function EconomyPanel({ state }: Props) {
       };
     }).sort((a, b) => a.multiplier - b.multiplier).slice(0, 6);
   }, [prices]);
+
+  // ─── Wave E5: real deposit extraction pressure for THIS player's mines ──
+  const depositList = useMemo(() => {
+    const minedHere = new Set<string>();
+    for (const svc of state.activeServices || []) {
+      const production = MINING_PRODUCTION[svc.definitionId];
+      if (!production) continue;
+      for (const { resource } of production) minedHere.add(`${svc.locationId}:${resource}`);
+    }
+    const entries = Object.values(state.extractionPressure?.entries || {});
+    return entries
+      .filter(e => minedHere.has(`${e.locationId}:${e.resourceId}`))
+      .map(e => ({ ...e, grade: getDepositGrade(e.pressure) }))
+      .sort((a, b) => a.pressure - b.pressure);
+  }, [state.activeServices, state.extractionPressure]);
 
   return (
     <div className="space-y-4">
@@ -405,6 +425,52 @@ export default function EconomyPanel({ state }: Props) {
             </div>
           </ConsolePanel>
         </div>
+      )}
+
+      {/* ── DEPOSIT EXTRACTION PRESSURE (Wave E5) ───────────────────────────── */}
+      {tab === 'scarcity' && depositList.length > 0 && (
+        <ConsolePanel
+          title="Your Deposits"
+          icon="ship-mining"
+          subtitle="Real, server-shared depletion for the deposits you actively mine — everyone strip-mining the same seam thins it for everyone. Recovers over time; expand to a fresh site to spread the pressure."
+        >
+          <div className="space-y-2 mt-2">
+            {depositList.map(item => {
+              const gradeColor: Record<string, string> = {
+                abundant: 'bg-green-500', healthy: 'bg-cyan-400',
+                strained: 'bg-amber-400', thinning: 'bg-orange-500', critical: 'bg-red-500',
+              };
+              const locName = LOCATION_MAP.get(item.locationId)?.name || item.locationId;
+              const resDef = RESOURCE_MAP.get(item.resourceId as ResourceId);
+              return (
+                <div key={`${item.locationId}:${item.resourceId}`} className="holo-row flex items-center gap-3 p-2 rounded-lg">
+                  <div className="sprite-frame w-8 h-8 flex-shrink-0 flex items-center justify-center">
+                    {RESOURCE_ASSETS[item.resourceId] ? (
+                      <Image src={RESOURCE_ASSETS[item.resourceId]} alt="" width={32} height={32} loading="lazy" className="w-8 h-8 rounded object-cover" />
+                    ) : (
+                      <GameIcon name={resDef ? resourceCategoryIcon(resDef.category) : 'ship-mining'} size={16} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-white truncate">{resDef?.name || item.resourceId} · {locName}</span>
+                      <span className="text-slate-400 shrink-0">
+                        {item.grade.label} <span className="text-slate-600">(×{item.pressure.toFixed(2)})</span>
+                      </span>
+                    </div>
+                    <div
+                      className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"
+                      role="progressbar" aria-valuenow={Math.round(item.pressure * 100)} aria-valuemin={Math.round(EXTRACTION_PRESSURE_MIN * 100)} aria-valuemax={100}
+                      aria-label={`${resDef?.name || item.resourceId} deposit at ${locName}: ${item.grade.label}, ${Math.round(item.pressure * 100)}% output`}
+                    >
+                      <div className={`h-full rounded-full transition-all duration-500 ${gradeColor[item.grade.tier]}`} style={{ width: `${Math.round(item.pressure * 100)}%` }} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </ConsolePanel>
       )}
 
       {/* ── SCARCITY HEAT-LIST ──────────────────────────────────────────────── */}

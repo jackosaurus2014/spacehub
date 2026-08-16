@@ -21,6 +21,11 @@ import {
   computeChokepoints,
   countPlayerBuildingsAt,
 } from './spatial-strategy';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.8/§E5): "shipping lanes are
+// investments" — the logistics lens additively shows each location's best
+// (highest-bonus) touching lane's fuel discount, on top of the existing
+// chokepoint/orbital-slot visuals.
+import { getLaneBonus, LANE_BONUS_CAP } from './trade-lanes';
 
 export type MapMode = 'standard' | 'economy' | 'hazard' | 'territory' | 'logistics';
 
@@ -244,6 +249,43 @@ function logisticsVisuals(state: GameState): Record<string, ModeVisual> {
       badge: `${occupied}/${pool.totalSlots} slots`,
       srText: `${occupied} of ${pool.totalSlots} orbital slots occupied${laneHub ? `, ${laneHub.srText}` : ''}`,
     };
+  }
+
+  // Wave E5 (§2.8): additively annotate each location with its best touching
+  // lane's fuel-discount investment — "repeated routes get... cheaper with...
+  // investment" (CLAUDE.md). Never overrides tint/glyph (slots/chokepoints
+  // stay the primary signal here); only extends the badge/srText so the
+  // discount is visible without adding a new visual layer.
+  const laneBonuses = state.laneBonuses;
+  if (laneBonuses?.bonuses && Object.keys(laneBonuses.bonuses).length > 0) {
+    const bestBonusAt = new Map<string, number>();
+    for (const lane of LANES) {
+      const bonus = getLaneBonus(laneBonuses, lane.from, lane.to);
+      if (bonus <= 0) continue;
+      bestBonusAt.set(lane.from, Math.max(bestBonusAt.get(lane.from) || 0, bonus));
+      bestBonusAt.set(lane.to, Math.max(bestBonusAt.get(lane.to) || 0, bonus));
+    }
+    bestBonusAt.forEach((bonus, locationId) => {
+      const pct = Math.round((bonus / LANE_BONUS_CAP) * 100); // % of the way to the cap, for a stable "investment level" readout
+      const discountPct = Math.round(bonus * 100);
+      const existing = out[locationId];
+      const investedText = `−${discountPct}% freight fuel (lane investment ${pct}%)`;
+      if (existing) {
+        out[locationId] = {
+          ...existing,
+          badge: existing.badge ? `${existing.badge} · ${investedText}` : investedText,
+          srText: `${existing.srText}, ${investedText}`,
+        };
+      } else {
+        out[locationId] = {
+          tint: MODE_TINT.laneHub,
+          intensity: 0.3,
+          glyph: '⇄',
+          badge: investedText,
+          srText: `Well-traveled lane: ${investedText}`,
+        };
+      }
+    });
   }
 
   return out;

@@ -54,10 +54,17 @@ export function calculatePriceAfterTrade(
 }
 
 /**
+ * Mining supply-pressure ratio: fraction of normal sell pressure per unit
+ * mined. Was 1/3 (BALANCE.md "mining pressure at 1/3 … audited in Wave 4 and
+ * found sound"). Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.4) raises it to 1/2
+ * now that deposit extraction pressure (extraction-pressure.ts) provides the
+ * PHYSICAL brake on mining volume — the price side can afford to react more
+ * now that unlimited extraction is no longer possible at one spot.
+ */
+export const MINING_IMPACT_RATIO = 0.5;
+
+/**
  * Apply mining supply pressure (gentler than direct trades).
- * Mining adds 1/3 of normal sell pressure per unit mined (BALANCE.md
- * "mining pressure at 1/3 … audited in Wave 4 and found sound" — the 1/3
- * ratio is kept; only the underlying impact curve is tamed per A5-v).
  * Audit §1d-5: this is the "mass extraction depresses prices" path — the
  * client now actually sends minedThisTick via sync (see market-pressure.ts).
  */
@@ -69,7 +76,7 @@ export function calculatePriceAfterMining(
   minPrice: number,
   maxPrice: number,
 ): number {
-  const impactPct = Math.min(MAX_BACKGROUND_IMPACT, quantity * volatility * TRADE_IMPACT_K * 0.33);
+  const impactPct = Math.min(MAX_BACKGROUND_IMPACT, quantity * volatility * TRADE_IMPACT_K * MINING_IMPACT_RATIO);
   const newPrice = currentPrice * (1 - impactPct);
   return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
 }

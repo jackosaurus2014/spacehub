@@ -19,6 +19,13 @@ import { getWorkforceBonuses } from './workforce';
 import { computeFactionPostures, getCurrentRealignmentEpoch, type FactionPosture } from './realignment';
 import type { ResourceCategory } from './economic-seasons';
 import { getSpotPrice } from './spot-price';
+// Wave E7 (§E7 "zone-tagged contracts"): tag each generated contract with
+// the zone it executes in (the issuing faction's territory, per
+// zone-influence.ts's lore-anchored FACTION_TERRITORY). Flavor/display only
+// for THIS client-simulated pool — the real, IP-affecting zone-tagged
+// contract source is the server-authoritative BiddingContract.zoneSlug
+// column (see contract-bidding.ts / zones/update/route.ts).
+import { FACTION_TERRITORY } from './zone-influence';
 
 /** Public type alias — the persisted DeliveryContractState is the contract. */
 export type DeliveryContract = DeliveryContractState;
@@ -28,7 +35,7 @@ export type DeliveryStatus = DeliveryContractState['status'];
 // Each faction has a preferred resource category and offers contracts
 // consistent with its character. Mentioned in lore / flavor text.
 
-interface FactionFlavor {
+export interface FactionFlavor {
   preferredResources: ResourceId[];
   avoidedResources: ResourceId[];
   paymentMultiplier: number;   // faction's pay vs baseline
@@ -39,7 +46,12 @@ interface FactionFlavor {
   titleTemplates: string[];
 }
 
-const FACTION_FLAVOR: Record<FactionId, FactionFlavor> = {
+// Exported (Wave E7, docs/ECONOMY_PVP_2026-08.md §E7): npc-procurement-
+// drives.ts reuses `preferredResources` for faction-biased NPC buys, and
+// market/trade/route.ts reverse-looks-up a resource's "governing faction"
+// (the faction whose preferredResources includes it) for tariff wiring —
+// one shared table instead of a second copy drifting out of sync.
+export const FACTION_FLAVOR: Record<FactionId, FactionFlavor> = {
   'the-dominion': {
     preferredResources: ['iron', 'aluminum', 'titanium', 'rare_earth'],
     avoidedResources: [],
@@ -127,6 +139,54 @@ const FACTION_FLAVOR: Record<FactionId, FactionFlavor> = {
     ],
   },
 };
+
+/** Wave E7 (§5 item 7 "tariffStanceMultiplier applies as a fee/premium on
+ *  trades... crossing that faction's space"): the trade route has no
+ *  location context, so tariff wiring resolves a resource's "governing
+ *  faction" as the faction whose FACTION_FLAVOR.preferredResources includes
+ *  it (first match, deterministic order) — a resource "belongs" to whichever
+ *  faction's economy it's canonically part of (Dominion metals, Hive
+ *  exotics...). Resources with no faction preference return null (no tariff
+ *  applies). Pure/deterministic — safe to call from either client or server. */
+export function getGoverningFactionForResource(resourceId: string): FactionId | null {
+  for (const faction of FACTIONS) {
+    if (FACTION_FLAVOR[faction.id].preferredResources.includes(resourceId as ResourceId)) {
+      return faction.id;
+    }
+  }
+  return null;
+}
+
+/** Bound applied to the tariff fee rate — matches realignment.ts's
+ *  POSTURE_BAND_MIN/MAX (0.8-1.2) reduced to a ±20% fee-on-gross. Exported
+ *  so tests assert against the same constant the function enforces. */
+export const TARIFF_FEE_RATE_BOUND = 0.2;
+
+/**
+ * E7 (§5 item 7 "Realignment postures bite"): tariffStanceMultiplier — the
+ * WORLD-SHARED (not player-specific; that's STANDING_BROKER_MODIFIER/
+ * getFactionStandingBrokerModifier in factions.ts) posture premium/discount
+ * a faction is currently charging on trade of the resources it governs
+ * (getGoverningFactionForResource). Symmetric: intended to apply to both
+ * buy and sell — a tariff taxes the border crossing regardless of
+ * direction. Pure/deterministic (computeFactionPostures/
+ * getCurrentRealignmentEpoch are both DB-free — see realignment.ts header),
+ * so this is callable from either a server route (market/trade) or the
+ * client tick with zero new plumbing. Resources with no governing faction
+ * return rate 0 (no tariff).
+ */
+export function computeTariffFeeRate(
+  resourceId: string,
+  nowMs: number = Date.now(),
+): { rate: number; factionId: FactionId | null } {
+  const governingFaction = getGoverningFactionForResource(resourceId);
+  if (!governingFaction) return { rate: 0, factionId: null };
+  const epochIndex = getCurrentRealignmentEpoch(nowMs);
+  const posture = computeFactionPostures(epochIndex).find(p => p.factionId === governingFaction);
+  if (!posture) return { rate: 0, factionId: governingFaction };
+  const rate = Math.max(-TARIFF_FEE_RATE_BOUND, Math.min(TARIFF_FEE_RATE_BOUND, posture.tariffStanceMultiplier - 1));
+  return { rate, factionId: governingFaction };
+}
 
 export const POOL_SIZE = 8;
 const POOL_TARGET_SIZE = POOL_SIZE;
@@ -246,6 +306,14 @@ export function generateContract(
     .replace('{res}', resource.name)
     .replace('{{n}}', n.toString());
 
+  // E7: zone-tagged, display-only (see import comment above) — a faction
+  // with no mapped territory (Hive Collective, Nebula Reavers — nomadic by
+  // lore) simply has no zoneSlug.
+  const territory = FACTION_TERRITORY[factionId];
+  const zoneSlug = territory && territory.length > 0
+    ? territory[Math.floor(rng() * territory.length)]
+    : undefined;
+
   return {
     id: `dlv-${factionId}-${rngSeed.toString(36)}-${Math.floor(rng() * 1e9).toString(36)}`,
     issuerKind: 'faction',
@@ -259,6 +327,7 @@ export function generateContract(
     reputationOnDefault: flavor.reputationOnDefault,
     status: 'open',
     offeredAtMs: now,
+    zoneSlug,
   };
 }
 

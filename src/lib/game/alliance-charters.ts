@@ -27,7 +27,11 @@
 
 // ─── Charter type catalogue ─────────────────────────────────────────────────
 
-export type AllianceCharterType = 'treasury_growth' | 'science_cofund_count' | 'event_points';
+// Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 6): 'market_share' adds
+// a fourth charter type — trade value moved (MarketFill), the same raw
+// material league trade_volume and quarterly reports use. See
+// alliance-charter-metrics.ts's computeWeeklyContribution for the query.
+export type AllianceCharterType = 'treasury_growth' | 'science_cofund_count' | 'event_points' | 'market_share';
 
 export interface AllianceCharterDefinition {
   type: AllianceCharterType;
@@ -68,6 +72,15 @@ export const ALLIANCE_CHARTER_DEFINITIONS: AllianceCharterDefinition[] = [
     metricLabel: 'Alliance event points',
     metricUnit: 'points',
     perMemberSeasonTarget: 4000, // 4,000 pts/member/season
+  },
+  {
+    type: 'market_share',
+    name: 'Dominion Charter',
+    icon: '📈',
+    description: 'Every member pledges weekly trade value on the shared market — an alliance-wide bet on out-trading every rival corp in the system.',
+    metricLabel: 'Trade value moved',
+    metricUnit: 'money',
+    perMemberSeasonTarget: 1_000_000_000, // $1B/member/season ($250M/member/week)
   },
 ];
 

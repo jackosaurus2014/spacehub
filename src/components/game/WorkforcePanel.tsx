@@ -3,12 +3,15 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { GameState } from '@/lib/game/types';
-import { WORKER_TYPES, getMonthlyPayroll, getWorkforceBonuses, getHireCost, getCrewCapacity, canHireWorker } from '@/lib/game/workforce';
+import { WORKER_TYPES, getWorkforceBonuses, getHireCost, getCrewCapacity, canHireWorker } from '@/lib/game/workforce';
 import type { WorkerType } from '@/lib/game/workforce';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
 import { buildCareerCrossoverLine } from '@/lib/game/career-crossover';
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.6/§E5): salary is now base × the
+// server-wide wage index per crew type — replaces the flat-constant payroll.
+import { getMonthlyPayrollWithWageIndex, getWageIndex, getWageAdjustedSalary, WAGE_INDEX_MAX, GUILD_STRIKE_WAGE_THRESHOLD } from '@/lib/game/labor-market';
 
 interface WorkforcePanelProps {
   state: GameState;
@@ -85,7 +88,7 @@ function CareerCrossoverFooter() {
 
 export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrainingBudget }: WorkforcePanelProps) {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
-  const payroll = getMonthlyPayroll(workforce);
+  const payroll = getMonthlyPayrollWithWageIndex(workforce, state.laborMarket);
   const bonuses = getWorkforceBonuses(workforce);
   const totalWorkers =
     workforce.engineers + workforce.scientists + workforce.miners + workforce.operators
@@ -281,19 +284,38 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
             const canAfford = state.money >= hireCost;
             const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew);
             const canHire = canAfford && hireCheck.allowed;
+            // Wave E5 (§2.6): server-wide wage index for this crew type.
+            const wageIndex = getWageIndex(state.laborMarket, worker.type as WorkerType);
+            const adjustedSalary = getWageAdjustedSalary(worker.type as WorkerType, state.laborMarket);
+            const wagePinned = wageIndex >= GUILD_STRIKE_WAGE_THRESHOLD;
+            const wageHot = wageIndex >= 1.2;
 
             return (
               <div key={worker.type} className="holo-row flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{worker.icon}</span>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-white text-sm font-medium">{worker.name}</span>
                       <span className="game-number text-cyan-400 text-xs">{count} hired</span>
+                      {wageIndex !== 1.0 && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.5 rounded-full border ${
+                            wagePinned ? 'bg-red-500/10 text-red-300 border-red-500/20'
+                              : wageHot ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+                              : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+                          }`}
+                          title={`Server-wide ${worker.name.toLowerCase()} wage index (0.8x-${WAGE_INDEX_MAX.toFixed(1)}x). Rises with hiring demand, falls as more crew housing is built server-wide.`}
+                        >
+                          Wages ×{wageIndex.toFixed(2)}{wagePinned ? ' — Guild watch' : ''}
+                        </span>
+                      )}
                     </div>
                     <p className="text-slate-500 text-[10px]">{worker.description}</p>
                     <div className="flex gap-2 mt-1">
-                      <span className="text-slate-600 text-[10px]">Salary: {formatMoney(worker.salary)}/mo</span>
+                      <span className="text-slate-600 text-[10px]">
+                        Salary: {formatMoney(adjustedSalary)}/mo{wageIndex !== 1.0 ? ` (base ${formatMoney(worker.salary)})` : ''}
+                      </span>
                       <span className="text-slate-600 text-[10px]">·</span>
                       <span className="text-slate-600 text-[10px]">Hire cost: {formatMoney(hireCost)}</span>
                     </div>

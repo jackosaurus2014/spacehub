@@ -184,6 +184,12 @@ const CRON_JOBS: CronJobDef[] = [
   // EMA-smoothed on a 7-day horizon; offset so it interleaves with the :00
   // restock and :30 mean-revert)
   { schedule: '15 * * * *',   path: '/api/space-tycoon/demand-pools/update',        label: 'tycoon-demand-pools',         maxStaleMinutes: 1440 },
+  // Labor market wage index — WEEKLY, Sundays 5am UTC (Economic PvP Wave E5,
+  // docs/ECONOMY_PVP_2026-08.md §2.6/§E5: SESSION_DESIGN.md explicitly places
+  // the wage index on the weekly loop, not the oversubscribed daily one).
+  // Aggregates every synced profile's crew headcount + crew-housing built
+  // server-wide into a wage index per crew type.
+  { schedule: '0 5 * * 0',    path: '/api/space-tycoon/labor/update',              label: 'tycoon-labor-market',          maxStaleMinutes: 11520 },
   // Seasonal-event generation — daily at 6am UTC (4X Wave W3, closes audit C4:
   // no cron ever instantiated SeasonalEvent rows, so /seasons was a permanently
   // empty shell). Deterministic ~31-day season calendar — daily polling is far
@@ -194,6 +200,15 @@ const CRON_JOBS: CronJobDef[] = [
   // past its resolvesAt gate. See src/lib/game/prediction-exchange.ts.
   { schedule: '30 6 * * 1',   path: '/api/cron/prediction-exchange?action=generate', label: 'tycoon-predictions-generate', maxStaleMinutes: 11520 },
   { schedule: '0 10 * * *',   path: '/api/cron/prediction-exchange?action=resolve',  label: 'tycoon-predictions-resolve',  maxStaleMinutes: 1560 },
+  // Orbital-slot lease auctions — every 2 hours (Economic PvP Wave E7, docs/
+  // ECONOMY_PVP_2026-08.md §E7/§5 item 5: recomputes server-aggregated
+  // occupancy per ORBITAL_SLOT_POOLS, auto-opens auctions the moment a pool
+  // crosses 85%, resolves closed auctions — burn + governor revenue share —
+  // and expires spent leases. SESSION_DESIGN.md places slot auctions on the
+  // weekly loop; this cadence just keeps the underlying occupancy/closing
+  // checks fresh within that loop, same relationship bidding/resolve has to
+  // the weekly contract cadence.
+  { schedule: '0 */2 * * *',  path: '/api/space-tycoon/orbital-slots/resolve',      label: 'tycoon-orbital-slots',         maxStaleMinutes: 1440 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

@@ -405,28 +405,69 @@ export async function getRecentTradesForEspionage(
  *  already work. Closes §1d: "League `trade_volume` metric: no real trade
  *  volume is measured despite `MarketFill` carrying buyer/seller/quantity/
  *  value — the exact raw material." */
+/** Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7): settled NPC procurement-drive
+ *  fulfillments count as real trade volume too — "fills feeding market-share
+ *  telemetry" (§2.3/§5). These never land as MarketFill rows (there's no
+ *  MarketLimitOrder counterparty for an NPC-issued reverse auction — see
+ *  npc-procurement-drives.ts header), so they're summed separately here and
+ *  folded into the totals below. `winningBid` is the settled contract value. */
+async function getProfileNpcDriveVolume(profileId: string, since?: Date): Promise<number> {
+  try {
+    const total = await prisma.biddingContract.aggregate({
+      where: {
+        winnerId: profileId,
+        issuerNpcId: { not: null },
+        status: 'completed',
+        ...(since ? { completedAt: { gte: since } } : {}),
+      },
+      _sum: { winningBid: true },
+    });
+    return total._sum.winningBid || 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function getProfileTradeVolumeAllTime(profileId: string): Promise<number> {
   try {
-    const [asBuyer, asSeller] = await Promise.all([
+    const [asBuyer, asSeller, npcDrives] = await Promise.all([
       prisma.marketFill.aggregate({ where: { buyerProfileId: profileId }, _sum: { totalValue: true } }),
       prisma.marketFill.aggregate({ where: { sellerProfileId: profileId }, _sum: { totalValue: true } }),
+      getProfileNpcDriveVolume(profileId),
     ]);
-    return (asBuyer._sum.totalValue || 0) + (asSeller._sum.totalValue || 0);
+    return (asBuyer._sum.totalValue || 0) + (asSeller._sum.totalValue || 0) + npcDrives;
+  } catch {
+    return 0;
+  }
+}
+
+/** Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 6): sums trade value
+ *  (MarketFill + NPC procurement-drive settlements) across every member
+ *  profile of an alliance since a given timestamp — the "compare share
+ *  deltas over the war window" math `economic_dominance` war objectives need
+ *  (alliance-cron/route.ts). No caching: called at most twice per active
+ *  economic_dominance war per cron tick, a small, bounded query set. */
+export async function getAllianceTradeValueSince(profileIds: string[], since: Date): Promise<number> {
+  if (profileIds.length === 0) return 0;
+  try {
+    const values = await Promise.all(profileIds.map(id => getProfileTradeValueSince(id, since)));
+    return values.reduce((a, b) => a + b, 0);
   } catch {
     return 0;
   }
 }
 
 async function getProfileTradeValueSince(profileId: string, since: Date): Promise<number> {
-  const [asBuyer, asSeller] = await Promise.all([
+  const [asBuyer, asSeller, npcDrives] = await Promise.all([
     prisma.marketFill.aggregate({
       where: { buyerProfileId: profileId, createdAt: { gte: since } }, _sum: { totalValue: true },
     }),
     prisma.marketFill.aggregate({
       where: { sellerProfileId: profileId, createdAt: { gte: since } }, _sum: { totalValue: true },
     }),
+    getProfileNpcDriveVolume(profileId, since),
   ]);
-  return (asBuyer._sum.totalValue || 0) + (asSeller._sum.totalValue || 0);
+  return (asBuyer._sum.totalValue || 0) + (asSeller._sum.totalValue || 0) + npcDrives;
 }
 
 async function getTotalMarketValueSince(since: Date): Promise<number> {

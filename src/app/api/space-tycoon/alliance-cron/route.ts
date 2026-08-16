@@ -18,6 +18,11 @@ import {
 } from '@/lib/game/alliance-charters';
 import { computeWeeklyContribution } from '@/lib/game/alliance-charter-metrics';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+// Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 6): economic_dominance
+// war objective finally resolves against real trade-value deltas instead of
+// an always-0 warScore (audit finding: no resolution code existed for any
+// of the three war objectives — receiver always won by forfeit).
+import { getAllianceTradeValueSince } from '@/lib/game/market-share';
 import { sweepNpcCoFundSettlements } from '@/lib/game/npc-cofund-settlement';
 
 export const dynamic = 'force-dynamic';
@@ -307,6 +312,40 @@ export async function POST(request: NextRequest) {
       where: { expiresAt: { lte: now } },
     });
     stats.perksExpired = expiredPerks.count;
+
+    // ── 7b. Economic dominance war scoring (Wave E7, §5 item 6) ───────────
+    // Real-time warScore update for every ACTIVE war whose objective is
+    // economic_dominance — each side's trade-value delta since the war
+    // started (getAllianceTradeValueSince, market-share.ts). Runs every
+    // cron tick so warScore reflects the current standing at ANY point (not
+    // just at expiry), and the existing expiry-resolution block below
+    // (step 8) just reads whatever's already there — no change needed to
+    // that resolution logic itself.
+    let economicDominanceWarsScored = 0;
+    try {
+      const activeEconWars = await prisma.allianceDiplomacy.findMany({
+        where: { type: 'war', status: 'active', warObjective: 'economic_dominance' },
+        select: { id: true, senderId: true, receiverId: true, startsAt: true, createdAt: true },
+      });
+      for (const war of activeEconWars) {
+        const since = war.startsAt || war.createdAt;
+        const [senderMembers, receiverMembers] = await Promise.all([
+          prisma.allianceMember.findMany({ where: { allianceId: war.senderId }, select: { profileId: true } }),
+          prisma.allianceMember.findMany({ where: { allianceId: war.receiverId }, select: { profileId: true } }),
+        ]);
+        const [senderScore, receiverScore] = await Promise.all([
+          getAllianceTradeValueSince(senderMembers.map(m => m.profileId), since),
+          getAllianceTradeValueSince(receiverMembers.map(m => m.profileId), since),
+        ]);
+        await prisma.allianceDiplomacy.update({
+          where: { id: war.id },
+          data: { warScore: { senderScore: Math.round(senderScore), receiverScore: Math.round(receiverScore) } },
+        });
+        economicDominanceWarsScored++;
+      }
+    } catch (warScoreError) {
+      logger.error('Economic dominance war scoring failed', { error: String(warScoreError) });
+    }
 
     // ── 8. Expired Diplomacy Cleanup ──────────────────────────────────────
     const expiredDiplomacy = await prisma.allianceDiplomacy.findMany({
