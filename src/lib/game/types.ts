@@ -510,6 +510,11 @@ export interface GameState {
   activeContracts?: string[];
   completedContracts?: string[];
   lastContractRefresh?: number;
+  /** V40: wall-clock timestamps of legacy CONTRACT_POOL completions — counted
+   *  against the SHARED daily contract-completion cap alongside delivery
+   *  contracts (founder directive: X completions per 24h across both
+   *  systems). Pruned to the rolling window on write. */
+  legacyContractCompletionsAt?: number[];
 
   // Competitive milestones
   claimedMilestones?: Record<string, string>;

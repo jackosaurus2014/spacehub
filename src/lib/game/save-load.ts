@@ -765,6 +765,15 @@ export function loadGame(): GameState | null {
       state.equity = null;
     }
 
+    // V40 — shared contract-completion cap (founder follow-up 8/16): legacy
+    // CONTRACT_POOL completions now count against the same rolling-24h daily
+    // budget as delivery contracts. Additive: existing saves start with an
+    // empty stamp list (their historical legacy completions have no
+    // timestamps — the window starts fresh, which only ever UNDER-counts).
+    if (state.legacyContractCompletionsAt === undefined) {
+      state.legacyContractCompletionsAt = [];
+    }
+
     state.tickSpeed = 1; // Always 1x for fairness
     return state;
   } catch {

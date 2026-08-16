@@ -110,7 +110,7 @@ import AccordSenatePanel from '@/components/game/AccordSenatePanel';
 import { sendEnvoy, purchaseFactionLicense } from '@/lib/game/factions';
 import { commitLobbying } from '@/lib/game/accord-senate';
 import type { LobbyStance } from '@/lib/game/accord-senate';
-import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
+import { acceptDelivery, deliverContract, getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
 import FrontierGraduationModal from '@/components/game/FrontierGraduationModal';
 import { graduateFrontier } from '@/lib/game/frontier';
@@ -1326,21 +1326,33 @@ export default function SpaceTycoonPage() {
       });
     }
 
-    // Check active contracts for completion
+    // Check active contracts for completion — gated on the SHARED daily
+    // contract-completion cap (founder directive: X completions per 24h
+    // across BOTH contract systems). A requirement-met contract past the cap
+    // simply stays active and pays out on a later tick once the rolling
+    // window frees a slot.
     const activeContractIds = state.activeContracts || [];
     for (const cId of activeContractIds) {
       const cDef = CONTRACT_POOL.find(c => c.id === cId);
       if (cDef && isContractComplete(state, cDef) && !(state.completedContracts || []).includes(cId)) {
+        if (getDeliveryCapStatus(state).atCap) break; // shared budget spent — try next tick
         playSound('milestone');
         setState(prev => {
           if (!prev) return prev;
+          if (getDeliveryCapStatus(prev).atCap) return prev;
           const rewarded = applyContractReward(prev, cDef.reward);
           // Award a speed boost for completing the contract
           const boost = createContractBoost(cDef.tier, cDef.id);
+          const capWindowStart = Date.now() - 24 * 60 * 60 * 1000;
           return {
             ...rewarded,
             activeContracts: (prev.activeContracts || []).filter(id => id !== cId),
             completedContracts: [...(prev.completedContracts || []), cId],
+            // Stamp toward the shared daily contract cap (pruned to window)
+            legacyContractCompletionsAt: [
+              ...(prev.legacyContractCompletionsAt || []).filter(t => t > capWindowStart),
+              Date.now(),
+            ],
             availableBoosts: [...(prev.availableBoosts || []), boost],
             eventLog: [{
               id: generateId(),

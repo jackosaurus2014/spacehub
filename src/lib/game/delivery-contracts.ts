@@ -449,17 +449,30 @@ export interface DeliveryCapStatus {
 }
 
 export function getDeliveryCapStatus(state: GameState, now: number = Date.now()): DeliveryCapStatus {
-  const recent = getRecentDeliveryCompletions(state, now);
+  const recentDeliveries = getRecentDeliveryCompletions(state, now);
+  // Founder follow-up (2026-08-16): the daily budget is SHARED across both
+  // contract systems — faction delivery contracts AND the legacy
+  // CONTRACT_POOL contracts (ContractsPanel), whose auto-completions were
+  // originally uncapped and made contract income feel unlimited. Legacy
+  // completions are stamped into state.legacyContractCompletionsAt (V40).
+  const legacyRecent = (state.legacyContractCompletionsAt || []).filter(
+    (t) => now - t < DELIVERY_CAP_WINDOW_MS
+  );
+  const completedCount = recentDeliveries.length + legacyRecent.length;
   const cap = getDailyDeliveryCap(state);
-  const atCap = recent.length >= cap;
+  const atCap = completedCount >= cap;
   let resetInMs = 0;
-  if (atCap && recent.length > 0) {
+  if (atCap && completedCount > 0) {
     // The oldest completion still inside the window is the one that must
     // roll off before a new completion is allowed again.
-    const oldest = recent.reduce((min, c) => (c.completedAtMs! < min ? c.completedAtMs! : min), recent[0].completedAtMs!);
+    const stamps = [
+      ...recentDeliveries.map((c) => c.completedAtMs!),
+      ...legacyRecent,
+    ];
+    const oldest = stamps.reduce((min, t) => (t < min ? t : min), stamps[0]);
     resetInMs = Math.max(0, oldest + DELIVERY_CAP_WINDOW_MS - now);
   }
-  return { completed: recent.length, cap, atCap, resetInMs };
+  return { completed: completedCount, cap, atCap, resetInMs };
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
