@@ -13,6 +13,7 @@ import {
 import { STARTING_YEAR } from '../constants';
 import { SAVE_KEY } from '../constants';
 import { loadGame, getNewGameState } from '../save-load';
+import { computeBookNetWorth } from '../frontier'; // M1/F4: asset-aware
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
   return {
@@ -133,7 +134,10 @@ describe('quarterly-reports — generateQuarterlyReport', () => {
     expect(report.fleetCount).toBe(1);
     expect(report.buildingCount).toBe(1);
     expect(report.corporationTier).toBe(2);
-    expect(report.netWorth).toBe(s.money + s.totalEarned - s.totalSpent);
+    // M1/F4: quarterly reports use book net worth (cash + depreciated asset
+    // book + inventory), not the old flow-based money+totalEarned-totalSpent.
+    expect(report.netWorth).toBe(computeBookNetWorth(s));
+    expect(report.netWorth).toBeGreaterThan(s.money); // the completed building's book value counts
     expect(report.growthRatePct).toBeNull(); // first report, nothing to compare against
   });
 

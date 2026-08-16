@@ -30,7 +30,7 @@ import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchPr
 import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
-import { computeCommanderBonuses, processCommanderMonthTick, processLeaderRetirements } from './commanders';
+import { computeCommanderBonuses, processCommanderMonthTick, processLeaderRetirements, computeCommanderUpkeepMonthly } from './commanders';
 // Live-Service Wave LS6 (docs/LIVE_SERVICE_2026-08.md §LS6): programs.ts
 // merges crew-cohort completion bonuses into the SAME wfBonuses shape
 // workforce.ts already produces (mergeProgramWorkforceBonuses), and
@@ -47,7 +47,7 @@ import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-co
 // nothing here is persisted beyond the one-shot "already announced" flag.
 import { getCurrentRealignmentEpoch, getNpcFactionBiasMultiplier, assembleEpochAddress } from './realignment';
 import { NPC_SEEDS } from './npc-companies';
-import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
+import { shouldAutoGraduate, graduateFrontier, isInFrontier, computeBookNetWorth } from './frontier';
 import { rollMonthlyHazards, applyHazards, forecastSevereHazards } from './hazards';
 // Audit Wave D+E (Change #4 hazards/insurance, Change #5 markets, Change #9
 // sinks — see docs/GAME_SYSTEMS_AUDIT_2026-08.md A4/A5/C5) imports:
@@ -92,7 +92,7 @@ import { updateCrewWellbeing, getTotalCrew, getCrewCapacity } from './workforce'
 // (§2.8) is wired in cargo-logistics.ts / trade-lanes.ts instead — dispatch
 // happens outside the tick loop.
 import { getExtractionPressureMultiplier } from './extraction-pressure';
-import { getMonthlyPayrollWithWageIndex } from './labor-market';
+import { getMonthlyPayrollWithWageIndex, getWageIndex } from './labor-market';
 import { rollLocationInventoryShocks, applyInventoryShocks } from './hazards';
 import { consumeLaneUsageFlush, subtractTransmittedLaneUsage } from './trade-lanes';
 import type { ServiceType } from './types';
@@ -129,6 +129,12 @@ import { advanceConsumptionToMonth, consumeConsumptionFlush, applyConsumptionFlu
 // (state.servicePriceMultipliers). Same helper serves away-operations.ts —
 // identical state ⇒ identical multiplier on either path.
 import { getServiceDemandMultiplier } from './service-pricing';
+// Meaningful Decisions Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5,
+// "the exit decision"): mothball/decommission status gates revenue,
+// maintenance, and mining the same way consumption's supply-efficiency floor
+// already does; the two process*ForMonth functions run on the same
+// server-world-month grid as advanceConsumptionToMonth, right after it.
+import { isBuildingOperational, getMothballMaintenanceMultiplier, processMothballTransitionsForMonth, processScheduledDecommissionsForMonth } from './mothball';
 
 /** Get or create today's daily metrics tracker */
 function getDailyMetrics(state: GameState): NonNullable<GameState['dailyMetrics']> {
@@ -294,6 +300,19 @@ export function processTick(state: GameState): GameState {
     totalSpent += payroll;
   }
 
+  // ─── 0a. Commander upkeep (M1 — docs/MEANINGFUL_2026-08.md §5 M1.5) ──────
+  // Small monthly salary per hired commander, rarity-scaled and riding the
+  // same wage index crew payroll uses — roster size becomes a recurring
+  // decision instead of a permanent free multiplier stack after a one-time
+  // hire cost.
+  const commanderUpkeep = Math.round(
+    computeCommanderUpkeepMonthly(state, getWageIndex(state.laborMarket, 'negotiator', Date.now())) * fraction,
+  );
+  if (commanderUpkeep > 0) {
+    money -= commanderUpkeep;
+    totalSpent += commanderUpkeep;
+  }
+
   // ─── 0b. Power balance per location ─────────────────────────────
   // Buildings at space locations need power. Underpowered locations reduce revenue.
   const powerByLocation = getPowerByLocation(state.buildings);
@@ -302,7 +321,7 @@ export function processTick(state: GameState): GameState {
   // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus,
   //          power ratio, station bonus, market saturation (see Wave 1 balance).
   let monthlyRevenue = 0;
-  let monthlyCosts = 0;
+  let monthlyCosts = commanderUpkeep; // M1: fold into the P&L cost total (money/totalSpent already debited above)
 
   // Wave E3: per-building supply efficiency from the latest consumption pass
   // (0.5..1; absent instance = fully supplied). Read once — multiplied into
@@ -327,6 +346,18 @@ export function processTick(state: GameState): GameState {
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
+    // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5, "the exit
+    // decision"): a mothballed/reactivating/decommissioning building's
+    // service earns zero revenue AND pays zero operating cost this tick —
+    // looked up via linkedBuildingIds (the SPECIFIC building this service
+    // instance belongs to), not the location+enabledServices scan a few
+    // lines below (that scan is a coarse "representative building at this
+    // location" used only for upgrade/damage/supply-efficiency factors and
+    // predates this wave — left untouched).
+    const ownerBld = svc.linkedBuildingIds?.length
+      ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId))
+      : undefined;
+    if (ownerBld && !isBuildingOperational(ownerBld)) continue;
     const bucketKey = `${svc.definitionId}@${svc.locationId}`;
     const saturationPosition = saturationCounts.get(bucketKey) || 0;
     saturationCounts.set(bucketKey, saturationPosition + 1);
@@ -445,9 +476,12 @@ export function processTick(state: GameState): GameState {
   // CEO, CFO, board, legal. Scales with net worth above a $100M threshold so
   // early players aren't affected; wealthy corps pay continuously.
   {
-    // Net worth here reads the *current* money; totalEarned / totalSpent came
-    // in with state, so this is an up-to-date running estimate.
-    const netWorth = money + totalEarned - totalSpent;
+    // M1/F4: book net worth (cash + depreciated asset book + inventory),
+    // not the old flow-based money+totalEarned-totalSpent — the wealth tax
+    // must reach BUILT wealth, not just uninvested cash. `state.buildings`/
+    // `state.ships`/`state.resources` are this tick's current holdings;
+    // `money` is the up-to-date running cash total accumulated so far.
+    const netWorth = computeBookNetWorth({ ...state, money });
     const monthlyExecComp = executiveCompensationMonthly(netWorth);
     const execComp = Math.round(
       monthlyExecComp * fraction
@@ -467,7 +501,10 @@ export function processTick(state: GameState): GameState {
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
+    // Wave M2: mothballed/reactivating/decommissioning buildings pay 25%
+    // maintenance instead of the full rate — "paused", not "free".
+    const mothballMaintMult = getMothballMaintenanceMultiplier(bld);
+    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -667,6 +704,12 @@ export function processTick(state: GameState): GameState {
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
+    // Wave M2: a mothballed/reactivating/decommissioning mining rig produces
+    // nothing this tick — same ownerBld lookup pattern as §1's revenue loop.
+    const miningOwnerBld = svc.linkedBuildingIds?.length
+      ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId))
+      : undefined;
+    if (miningOwnerBld && !isBuildingOperational(miningOwnerBld)) continue;
     // Wave E3: hauler-fuel shortfall on the linked mining building scales
     // output down to the 0.5 soft floor (same factor as its service revenue).
     const svcSupplyEff = svc.linkedBuildingIds?.length
@@ -1202,6 +1245,20 @@ export function processTick(state: GameState): GameState {
       out = advanceConsumptionToMonth(out, globalDate.totalMonths);
     }
   } catch { /* consumption non-critical — never block the tick */ }
+
+  // Wave M2 (docs/MEANINGFUL_2026-08.md §M2): resolve any reactivation
+  // spin-up or decommission teardown whose window has elapsed on the shared
+  // server world-month clock. Runs right after consumption so a building
+  // that just flipped back to 'active' this month is fully operational for
+  // NEXT tick's §1/§2/§6 passes (same one-tick settling lag every other
+  // month-boundary transition in this file has).
+  try {
+    if (isMonthEnd) {
+      const monthIndex = globalDate.totalMonths;
+      out = processMothballTransitionsForMonth(out, monthIndex);
+      out = processScheduledDecommissionsForMonth(out, monthIndex);
+    }
+  } catch { /* mothball/decommission transitions non-critical — never block the tick */ }
 
   // Hazards v2 (audit Wave D / Change #4 "hazards hurt, insurance pays"):
   // roll once per game-month, seeded per (world month, location, type) —

@@ -32,7 +32,7 @@
 //     - active30d = 0 (full NPC demand floor). npcPopulationScaler scenarios
 //       can be passed explicitly.
 
-import { BUILDING_MAP, getPowerByLocation } from '../src/lib/game/buildings';
+import { BUILDINGS, BUILDING_MAP, getPowerByLocation } from '../src/lib/game/buildings';
 import { SERVICE_MAP } from '../src/lib/game/services';
 import { MINING_PRODUCTION, RESOURCE_MAP } from '../src/lib/game/resources';
 import type { ResourceId } from '../src/lib/game/resources';
@@ -488,6 +488,44 @@ export function marginalCurve(
     prevNet = fleetNet;
   }
   return rows;
+}
+
+// ─── Build-menu first-copy sweep (§2.1 dominance audit / M1 acceptance) ─────
+// The location -> cheapest-generator pairing every "first copy at this
+// location" probe needs when the building has a power requirement. Shared by
+// scripts/sim-strategies.ts (the printed table) and the M1 regression test
+// (tier-ladder-first-copy-roi.test.ts) so the two never drift apart.
+export const LOCATION_POWER_PLAN: Partial<Record<string, { powerPlanDefId: string; powerPlanEvery: number }>> = {
+  leo: { powerPlanDefId: 'solar_farm_orbital', powerPlanEvery: 1 },
+  lunar_surface: { powerPlanDefId: 'solar_farm_lunar', powerPlanEvery: 1 },
+  mars_surface: { powerPlanDefId: 'solar_farm_mars', powerPlanEvery: 1 },
+  mars_orbit: { powerPlanDefId: 'nuclear_reactor_mars_orbit', powerPlanEvery: 1 },
+  asteroid_belt: { powerPlanDefId: 'nuclear_reactor_asteroid', powerPlanEvery: 1 },
+  jupiter_system: { powerPlanDefId: 'nuclear_reactor_jupiter', powerPlanEvery: 1 },
+  saturn_system: { powerPlanDefId: 'nuclear_reactor_saturn', powerPlanEvery: 1 },
+  lunar_orbit: { powerPlanDefId: 'solar_array_lunar_orbit', powerPlanEvery: 1 },
+};
+
+/** First-copy (N=1) marginal-ROI row for every revenue building at its
+ *  required location, solo/base-multipliers — the build-menu dominance
+ *  sweep. Buildings with no enabledServices or no requiredLocation are
+ *  skipped (nothing to measure). Power-hungry buildings are paired with the
+ *  cheapest same-location generator per LOCATION_POWER_PLAN; buildings with
+ *  no requirement (or none available, e.g. RTG-powered outer-system rigs)
+ *  run unpowered. */
+export function buildMenuFirstCopySweep(): { def: { id: string; tier: number; requiredLocation?: string; baseCost: number }; loc: string; row: MarginalRow }[] {
+  const out: { def: { id: string; tier: number; requiredLocation?: string; baseCost: number }; loc: string; row: MarginalRow }[] = [];
+  for (const def of BUILDINGS) {
+    if (!def.enabledServices || def.enabledServices.length === 0) continue;
+    const loc = def.requiredLocation;
+    if (!loc) continue;
+    const powerOpts = def.powerRequired ? (LOCATION_POWER_PLAN[loc] || {}) : {};
+    try {
+      const [r1] = marginalCurve(def.id, loc, 1, powerOpts);
+      out.push({ def, loc, row: r1 });
+    } catch { /* skip defs that fail to probe */ }
+  }
+  return out;
 }
 
 // ─── Formatting helpers ─────────────────────────────────────────────────────

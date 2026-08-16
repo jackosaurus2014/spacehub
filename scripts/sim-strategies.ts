@@ -6,7 +6,7 @@
 //   npx tsx scripts/sim-strategies.ts
 
 import {
-  newPlayer, newWorld, runWorld, marginalCurve, fm, mdTable,
+  newPlayer, newWorld, runWorld, marginalCurve, fm, mdTable, buildMenuFirstCopySweep,
   type SimPlayer,
 } from './sim-harness';
 
@@ -281,29 +281,9 @@ console.log('\n## (d) Pure market trader — analytic bound (real fee/spread/cap
 
 console.log('\n## Build menu — first-copy ROI for every revenue building (solo, base multipliers)\n');
 {
-  const { BUILDINGS } = require('../src/lib/game/buildings') as typeof import('../src/lib/game/buildings');
-  const rows: (string | number)[][] = [];
-  for (const def of BUILDINGS) {
-    if (!def.enabledServices || def.enabledServices.length === 0) continue;
-    const loc = def.requiredLocation;
-    if (!loc) continue;
-    // power support: pair with the cheapest generator at that location if needed
-    const powerOpts = def.powerRequired
-      ? (loc === 'leo' ? { powerPlanDefId: 'solar_farm_orbital', powerPlanEvery: 1 }
-        : loc === 'lunar_surface' ? { powerPlanDefId: 'solar_farm_lunar', powerPlanEvery: 1 }
-        : loc === 'mars_surface' ? { powerPlanDefId: 'solar_farm_mars', powerPlanEvery: 1 }
-        : loc === 'mars_orbit' ? { powerPlanDefId: 'nuclear_reactor_mars_orbit', powerPlanEvery: 1 }
-        : loc === 'asteroid_belt' ? { powerPlanDefId: 'nuclear_reactor_asteroid', powerPlanEvery: 1 }
-        : loc === 'jupiter_system' ? { powerPlanDefId: 'nuclear_reactor_jupiter', powerPlanEvery: 1 }
-        : loc === 'saturn_system' ? { powerPlanDefId: 'nuclear_reactor_saturn', powerPlanEvery: 1 }
-        : loc === 'lunar_orbit' ? { powerPlanDefId: 'solar_array_lunar_orbit', powerPlanEvery: 1 }
-        : {})
-      : {};
-    try {
-      const [r1] = marginalCurve(def.id, loc, 1, powerOpts as { powerPlanDefId?: string; powerPlanEvery?: number });
-      rows.push([def.id, `T${def.tier}`, loc, fm(def.baseCost), r1.poolMult, fm(r1.fleetNet), r1.marginalROIpctPerMonth, r1.paybackMonths === Infinity ? 'never' : r1.paybackMonths]);
-    } catch { /* skip defs that fail */ }
-  }
+  const rows: (string | number)[][] = buildMenuFirstCopySweep().map(({ def, loc, row: r1 }) =>
+    [def.id, `T${def.tier}`, loc, fm(def.baseCost), r1.poolMult, fm(r1.fleetNet), r1.marginalROIpctPerMonth, r1.paybackMonths === Infinity ? 'never' : r1.paybackMonths],
+  );
   rows.sort((a, b) => (b[6] as number) - (a[6] as number));
   console.log(mdTable(['building', 'tier', 'location', 'base cost', 'pool mult', 'net/mo (N=1)', 'ROI %/mo', 'payback (mo)'], rows));
 }

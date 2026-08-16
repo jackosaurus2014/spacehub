@@ -20,14 +20,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     consumesPerMonth: { rocket_fuel: 10 } },
   { id: 'launch_pad_medium', name: 'Medium Launch Pad', category: 'launch_pad', tier: 2,
     description: 'Supports reusable medium-lift vehicles up to 25 tons to LEO.',
-    tooltip: 'MAJOR REVENUE UPGRADE. Activates Medium Launch Services at $18M/mo revenue vs $7M/mo operating cost = $11M/mo net. A huge jump from the small pad\'s $3M net. Requires "Reusable Boosters" research first. At $200M cost, payback is ~18 months. Build this as your second or third building once research completes.',
+    tooltip: 'MAJOR REVENUE UPGRADE. Activates Medium Launch Services at $18M/mo revenue vs $7M/mo operating cost = $11M/mo net. A huge jump from the small pad\'s $3M net. Requires "Reusable Boosters" research first. Build this as your second or third building once research completes. (Economics shift with pool saturation and research — see the live projection on the build card.)',
     baseCost: 200_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: ['reusable_boosters'], requiredLocation: 'earth_surface', enabledServices: ['svc_launch_medium'],
     realBuildSeconds: 900, resourceCost: { iron: 50, aluminum: 30 },
     consumesPerMonth: { rocket_fuel: 40 } }, // E3: 40 × $120K ≈ 27% of $18M gross
   { id: 'launch_pad_heavy', name: 'Heavy Launch Pad', category: 'launch_pad', tier: 3,
     description: 'Supports super-heavy vehicles. 100+ tons to LEO.',
-    tooltip: 'HIGHEST-REVENUE LAUNCH SERVICE. Activates Heavy Launch at $55M/mo revenue vs $20M/mo cost = $35M/mo net profit. The single highest-margin Earth-based service. Requires "Super Heavy Lift" research (Tier 3 rocketry). At $800M cost, payback is ~23 months. Essential for mid-game income before mining operations come online.',
+    tooltip: 'HIGHEST-REVENUE LAUNCH SERVICE. Activates Heavy Launch at $55M/mo revenue vs $20M/mo cost = $35M/mo net profit. The single highest-margin Earth-based service. Requires "Super Heavy Lift" research (Tier 3 rocketry). Essential for mid-game income before mining operations come online. (See the live projection on the build card for current pool-adjusted economics.)',
     baseCost: 800_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 3_000_000,
     requiredResearch: ['super_heavy_lift'], requiredLocation: 'earth_surface', enabledServices: ['svc_launch_heavy'],
     realBuildSeconds: 2700, resourceCost: { iron: 200, titanium: 50, aluminum: 100 },
@@ -36,7 +36,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── GROUND ───────────────────────────────────────────────────────────
   { id: 'ground_station', name: 'Ground Station', category: 'ground_station', tier: 1,
     description: 'Antenna complex for satellite comms and tracking. Generates revenue from tracking services.',
-    tooltip: 'CHEAPEST BUILDING IN THE GAME ($30M, 3 min build). Activates Ground Tracking at $2M/mo revenue vs $600K cost = $1.4M/mo net. Low profit but fast payback (21 months) and no research needed. Build this first — it starts generating income immediately while you research and save for bigger buildings. Also counts toward building-count contracts.',
+    tooltip: 'CHEAPEST BUILDING IN THE GAME ($30M, 3 min build). Activates Ground Tracking at $2M/mo revenue vs $600K cost = $1.4M/mo net. Low upfront cost and no research needed. Build this first — it starts generating income immediately while you research and save for bigger buildings. Also counts toward building-count contracts.',
     baseCost: 30_000_000, buildTimeMonths: 4, maintenanceCostPerMonth: 300_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: ['svc_ground_tracking'],
     realBuildSeconds: 180 },
@@ -82,7 +82,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SPACE STATIONS ───────────────────────────────────────────────────
   { id: 'space_station_small', name: 'Orbital Outpost', category: 'space_station', tier: 1,
     description: 'Small modular space station in LEO. 4-person crew capacity.',
-    tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). At $500M and 15 min build, payback is ~167 months, but it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone.',
+    tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). A slow-payback but strategic build — it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone. (Check the live projection on the build card before committing $500M.)',
     baseCost: 500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft'], requiredLocation: 'leo', enabledServices: ['svc_tourism_leo'],
     realBuildSeconds: 900, resourceCost: { aluminum: 50, titanium: 20 }, powerRequired: 5,
@@ -108,14 +108,14 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── DATA CENTERS ─────────────────────────────────────────────────────
   { id: 'datacenter_orbital', name: 'Orbital Data Center', category: 'datacenter', tier: 2,
     description: 'AI compute facility in orbit. Free cooling, solar powered.',
-    tooltip: 'HIGH-MARGIN TECH PLAY. Activates Orbital AI Compute at $12M/mo vs $4M cost = $8M/mo net. Excellent 67% profit margin. Requires "Rad-Hardened Processors" research. At $300M cost, payback is ~37 months. The AI datacenter revenue is one of the best returns per dollar invested. Build as soon as you complete the research.',
+    tooltip: 'HIGH-MARGIN TECH PLAY. Activates Orbital AI Compute at $12M/mo vs $4M cost = $8M/mo net. Excellent 67% profit margin. Requires "Rad-Hardened Processors" research. The AI datacenter revenue is a strong return per dollar invested early — saturates fast if others build here too. Build as soon as you complete the research.',
     baseCost: 300_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_000_000,
     requiredResearch: ['rad_hard_processors'], requiredLocation: 'leo', enabledServices: ['svc_ai_datacenter'],
     realBuildSeconds: 420, resourceCost: { rare_earth: 15, titanium: 10 }, powerRequired: 10,
     consumesPerMonth: { electronics_package: 2 } }, // E3: compute spares, 2 × $1.5M = 25% of $12M gross
   { id: 'datacenter_mars_orbit', name: 'Mars Data Relay', category: 'datacenter', tier: 3,
     description: 'Data processing and relay facility at Mars.',
-    tooltip: 'DEEP-SPACE COMPUTE. Activates Mars Data Processing at $25M/mo vs $8M cost = $17M/mo net. Required for Mars operations communication and data relay. Requires "Edge AI" research. At $3B cost, payback is long, but it\'s essential infrastructure if you\'re building a Mars presence. Also enables Propellant Brokerage when combined with other Mars infrastructure.',
+    tooltip: 'DEEP-SPACE COMPUTE. Activates Mars Data Processing at $25M/mo vs $8M cost = $17M/mo net. Required for Mars operations communication and data relay. Requires "Edge AI" research. A long-horizon investment, but essential infrastructure if you\'re building a Mars presence. Also enables Propellant Brokerage when combined with other Mars infrastructure.',
     baseCost: 3_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['edge_ai'], requiredLocation: 'mars_orbit', enabledServices: ['svc_ai_mars'],
     realBuildSeconds: 2700, resourceCost: { rare_earth: 50, titanium: 40, iron: 100 }, powerRequired: 20,
@@ -198,7 +198,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── HABITATS ─────────────────────────────────────────────────────────
   { id: 'habitat_lunar', name: 'Lunar Habitat', category: 'space_station', tier: 2,
     description: 'Pressurized habitat on the lunar surface. 8-person capacity.',
-    tooltip: 'LUNAR TOURISM HUB (+15% REVENUE BONUS). Activates Lunar Tourism at $30M/mo vs $12M cost = $18M/mo net. Also boosts ALL service revenue on the Lunar Surface by +15% (stacks with other stations). The highest-revenue lunar service. Lunar Tourism is a premium revenue stream that attracts wealthy tourists. Requires "Modular Spacecraft" + "Resource Prospecting" research plus lunar water (50) and metals to build. At $3B cost, payback is ~14 years, but the steady $18M/mo income is valuable for mid-game stability.',
+    tooltip: 'LUNAR TOURISM HUB (+15% REVENUE BONUS). Activates Lunar Tourism at $30M/mo vs $12M cost = $18M/mo net. Also boosts ALL service revenue on the Lunar Surface by +15% (stacks with other stations). The highest-revenue lunar service. Lunar Tourism is a premium revenue stream that attracts wealthy tourists. Requires "Modular Spacecraft" + "Resource Prospecting" research plus lunar water (50) and metals to build. A very long-horizon investment at $3B, but steady income is valuable for mid-game stability.',
     baseCost: 3_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft', 'resource_prospecting'], requiredLocation: 'lunar_surface', enabledServices: ['svc_tourism_moon'],
     realBuildSeconds: 1500, resourceCost: { aluminum: 80, titanium: 30, lunar_water: 50, iron: 60 }, powerRequired: 8,
@@ -214,7 +214,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── GEO INFRASTRUCTURE ─────────────────────────────────────────────
   { id: 'solar_farm_geo', name: 'GEO Solar Power Platform', category: 'solar_farm', tier: 2,
     description: 'High-power solar farm in geostationary orbit for space-based solar power.',
-    tooltip: 'ENABLES NAVIGATION SERVICES. Activates Navigation (GPS) at $15M/mo vs $4M cost = $11M/mo net. The main reason to build this is unlocking the high-margin navigation service. Requires "Triple Junction" + "High Power Comms" research. At $300M, payback is ~27 months from the nav service alone. Build in GEO orbit after you have telecom satellites there.',
+    tooltip: 'ENABLES NAVIGATION SERVICES. Activates Navigation (GPS) at $15M/mo vs $4M cost = $11M/mo net. The main reason to build this is unlocking the high-margin navigation service. Requires "Triple Junction" + "High Power Comms" research. Build in GEO orbit after you have telecom satellites there.',
     baseCost: 300_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: ['triple_junction', 'high_power_comms'], requiredLocation: 'geo', enabledServices: ['svc_navigation'],
     realBuildSeconds: 600, resourceCost: { aluminum: 40, rare_earth: 10 }, powerGenerated: 40 }, // 10 min

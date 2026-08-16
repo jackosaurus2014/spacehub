@@ -40,6 +40,14 @@ import {
   REACTIVATION_SPINUP_MONTHS,
   REACTIVATION_FEE_FRACTION,
 } from '@/lib/game/mothball';
+// M1 (docs/MEANINGFUL_2026-08.md §5 M1.4, finding F9): the authored tooltip
+// payback claims below predate demand pools (E4) and input consumption (E3)
+// and drifted far from reality (Heavy Launch Pad's tooltip claimed "~23
+// months" while the real pre-M1 number was 2,979 months). computeBuildPreview
+// replaces reliance on that static prose with a live number derived from the
+// SAME formulas the tick uses — the spec's preferred fix ("replaced by a live
+// P&L preview — better").
+import { computeBuildPreview } from '@/lib/game/build-preview';
 import { resourceCategoryIcon } from '@/lib/game/icons';
 import Image from 'next/image';
 import { ConsolePanel } from './chrome';
@@ -246,7 +254,38 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 </div>
                 <div className="p-3">
                 <p className="text-slate-400 text-[11px] mb-1 leading-relaxed">{bld.description}</p>
-                {/* Strategy tooltip */}
+                {/* M1/F9: live P&L preview — computed from the same
+                    formulas the tick uses (pool multiplier, saturation,
+                    power, recipe cost, marginal overhead), NOT the static
+                    authored tooltip prose below. Always visible (not
+                    collapsed) since this is the number that matters. */}
+                {(() => {
+                  const preview = computeBuildPreview(state, bld, selectedLocation);
+                  const positive = preview.projectedNetMonthly > 0;
+                  return (
+                    <div className={`mb-2 p-2 rounded-md border text-[10px] leading-relaxed ${
+                      positive ? 'bg-emerald-500/5 border-emerald-500/15' : 'bg-red-500/5 border-red-500/15'
+                    }`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`font-semibold ${positive ? 'text-emerald-300' : 'text-red-300'}`}>
+                          Projected {formatMoney(preview.projectedNetMonthly)}/mo net
+                        </span>
+                        <span className="text-slate-400">
+                          {preview.paybackMonths === null ? 'payback: never' : `payback: ~${preview.paybackMonths}mo`}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 text-slate-500">
+                        {preview.poolMultiplier !== null && (
+                          <>pool {preview.poolMultiplier < 1 ? 'saturated' : preview.poolMultiplier > 1 ? 'undersupplied' : 'balanced'} ({preview.poolMultiplier.toFixed(2)}x) · </>
+                        )}
+                        at current pools, before research/commander bonuses — recomputed live, not a fixed promise.
+                      </div>
+                    </div>
+                  );
+                })()}
+                {/* Strategy tooltip — flavor/context only; economics claims in
+                    the prose above (if any) predate E3/E4 and are NOT
+                    authoritative. The live preview above is the honest number. */}
                 {bld.tooltip && (
                   <details className="mb-2 group/tip">
                     <summary className="text-[10px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">

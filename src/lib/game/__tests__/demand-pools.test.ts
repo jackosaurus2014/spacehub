@@ -234,7 +234,7 @@ describe('NPC_DEMAND_FLOOR authoring rule — floor ≥ 2.5x flagship capacity (
 
   it('every authored (location, category) floor is >= 2.5x its flagship service capacity', () => {
     const violations: string[] = [];
-    for (const [key, cap] of flagshipCapacity.entries()) {
+    flagshipCapacity.forEach((cap, key) => {
       const sep = key.indexOf(':');
       const locationId = key.slice(0, sep);
       const category = key.slice(sep + 1) as ServiceCategory;
@@ -243,7 +243,7 @@ describe('NPC_DEMAND_FLOOR authoring rule — floor ≥ 2.5x flagship capacity (
       if (ratio < 2.5) {
         violations.push(`${key}: floor=${floor.toLocaleString()} cap=${cap.toLocaleString()} ratio=${ratio.toFixed(2)}`);
       }
-    }
+    });
     expect(violations).toEqual([]);
   });
 });
