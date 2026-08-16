@@ -7,7 +7,20 @@ import { formatMoney } from '@/lib/game/formulas';
 import { MILESTONES } from '@/lib/game/milestones';
 import { playSound } from '@/lib/game/sound-engine';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
+// FTUE fix (simulated-newcomer audit 8/16): legacy contract completions now
+// count against the SHARED rolling-24h budget (delivery-contracts.ts V40) —
+// but this panel never showed it, so a "COMPLETE!" contract that silently
+// didn't pay looked broken. Surface the budget and the queued-payout state.
+import { getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
+import HoloTip, { Concept } from './HoloTip';
 import Image from 'next/image';
+
+/** "2h 05m" style formatter for the cap-reset countdown. */
+function formatMsShort(ms: number): string {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.ceil((ms % 3600000) / 60000);
+  return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
+}
 
 interface ContractsPanelProps {
   state: GameState;
@@ -38,8 +51,42 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
   const timedEvents = (state.activeTimedEvents || []).filter(e => !e.completed);
   const completedTimedEvents = (state.activeTimedEvents || []).filter(e => e.completed);
 
+  // Shared daily contract budget (delivery-contracts.ts): legacy + delivery
+  // completions draw from one rolling-24h pool.
+  const capStatus = getDeliveryCapStatus(state);
+
   return (
     <div className="space-y-6">
+      {/* Daily contract budget — shared across Standard + Faction Delivery contracts */}
+      <div className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 ${
+        capStatus.atCap ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/[0.06] bg-white/[0.02]'
+      }`}>
+        <HoloTip
+          content={{
+            title: 'Daily Contract Budget',
+            icon: 'contracts',
+            body: (
+              <p>
+                Contract payouts share one <Concept id="delivery-cap">daily budget</Concept> — Standard
+                contracts and Faction Deliveries both draw from it. A finished contract past the cap
+                stays active and pays automatically once the rolling 24-hour window frees a slot.
+                Raise the cap with Space Logistics Network research and at Corporation Tier 5.
+              </p>
+            ),
+            source: 'delivery-contracts.ts · rolling 24h window',
+          }}
+        >
+          <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold cursor-help">
+            Daily contract budget
+          </span>
+        </HoloTip>
+        <span className={`text-xs font-mono ${capStatus.atCap ? 'text-amber-400' : 'text-slate-300'}`}>
+          {capStatus.completed}/{capStatus.cap} used
+          {capStatus.atCap && capStatus.resetInMs > 0 && (
+            <span className="text-[10px] text-slate-500"> · frees in {formatMsShort(capStatus.resetInMs)}</span>
+          )}
+        </span>
+      </div>
       {/* Timed Competitive Events */}
       {(timedEvents.length > 0 || completedTimedEvents.length > 0) && (
         <div>
@@ -107,7 +154,14 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                       <span className="text-white text-sm font-semibold">{contract.name}</span>
                       <p className="text-slate-500 text-[10px] mt-0.5">{contract.client}</p>
                     </div>
-                    {complete && <span role="status" aria-live="polite" className="text-green-400 text-xs font-bold">COMPLETE!</span>}
+                    {complete && (capStatus.atCap ? (
+                      <span role="status" aria-live="polite" className="text-amber-400 text-[10px] font-bold text-right">
+                        PAYOUT QUEUED<br />
+                        <span className="font-normal text-amber-400/70">daily budget spent{capStatus.resetInMs > 0 ? ` — frees in ${formatMsShort(capStatus.resetInMs)}` : ''}</span>
+                      </span>
+                    ) : (
+                      <span role="status" aria-live="polite" className="text-green-400 text-xs font-bold">COMPLETE!</span>
+                    ))}
                   </div>
                   <p className="text-slate-400 text-xs mb-3">{contract.description}</p>
                   {/* Requirements with progress */}

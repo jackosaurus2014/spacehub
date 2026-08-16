@@ -48,7 +48,13 @@ import {
 // SAME formulas the tick uses — the spec's preferred fix ("replaced by a live
 // P&L preview — better").
 import { computeBuildPreview } from '@/lib/game/build-preview';
-import { resourceCategoryIcon } from '@/lib/game/icons';
+// Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md): every
+// capability is a real modifier into an existing formula (hazard mitigation,
+// shock buffering, freight fuel, detection, training, away efficiency,
+// expeditions, diplomacy, research, crew capacity, shipyard slots). The
+// chips below surface them with a HoloTip explaining the exact mechanic.
+import { getCapabilityChipsForDefinition, summarizeCapabilities } from '@/lib/game/building-capabilities';
+import { resourceCategoryIcon, type IconName } from '@/lib/game/icons';
 import Image from 'next/image';
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
@@ -95,6 +101,37 @@ function RecipeChips({ consumes, produces }: { consumes?: Record<string, number>
       {describeRecipeLine(consumes).map(r => chip(r.resourceId, r.perMonth, 'in'))}
       {produces && Object.keys(produces).length > 0 && <span className="text-slate-600 text-[10px]">→</span>}
       {describeRecipeLine(produces).map(r => chip(r.resourceId, r.perMonth, 'out'))}
+    </div>
+  );
+}
+
+/** Construction Purposes wave: purpose chips — the building's non-revenue
+ *  roles, each backed by a real formula (HoloTip explains which + the cap). */
+function PurposeChips({ definitionId }: { definitionId: string }) {
+  const chips = getCapabilityChipsForDefinition(definitionId);
+  if (chips.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-1 mb-2">
+      <span className="text-[10px] uppercase tracking-wider text-slate-500">Purpose</span>
+      {chips.map(chip => (
+        <HoloTip
+          key={chip.key}
+          underline={false}
+          content={{
+            title: chip.label,
+            icon: chip.icon as IconName,
+            body: <p>{chip.describe(chip.value)}</p>,
+            source: chip.source,
+          }}
+        >
+          <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border text-violet-300/90 border-violet-500/20 bg-violet-500/5 cursor-help">
+            <GameIcon name={chip.icon as IconName} size={10} />
+            {chip.key === 'crewQuarters' || chip.key === 'shipyardSlots'
+              ? `${chip.label} +${Math.round(chip.value)}`
+              : `${chip.label} +${Math.round(chip.value * 100)}%`}
+          </span>
+        </HoloTip>
+      ))}
     </div>
   );
 }
@@ -280,9 +317,21 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                         )}
                         at current pools, before research/commander bonuses — recomputed live, not a fixed promise.
                       </div>
+                      {/* Construction Purposes wave: the projection is P&L-only —
+                          name the non-revenue value qualitatively so a thin
+                          payback doesn't read as "worthless building". */}
+                      {(() => {
+                        const capSummary = summarizeCapabilities(bld.id);
+                        return capSummary ? (
+                          <div className="mt-0.5 text-violet-300/70">
+                            beyond P&amp;L: {capSummary}
+                          </div>
+                        ) : null;
+                      })()}
                     </div>
                   );
                 })()}
+                <PurposeChips definitionId={bld.id} />
                 {/* Strategy tooltip — flavor/context only; economics claims in
                     the prose above (if any) predate E3/E4 and are NOT
                     authoritative. The live preview above is the honest number. */}

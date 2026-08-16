@@ -80,6 +80,54 @@ export interface BuildingDerivedStats {
   maxUpgradeLevel: number;
 }
 
+/**
+ * Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+ * non-revenue purposes a building contributes to EXISTING systems. Every
+ * field is a real modifier consumed by an existing formula — no parallel
+ * mechanics. All fractional fields are additive per completed, operational
+ * building copy and capped centrally in building-capabilities.ts
+ * (CAPABILITY_CAPS), so stacking copies has bounded returns and the risk /
+ * balance pillars stay intact. Absent field = 0 (pre-wave behavior exactly).
+ */
+export interface BuildingCapabilities {
+  /** LOCATION-scoped: extra hazard mitigation for every asset (building or
+   *  ship) at this building's location — hazards.ts getBuilding/
+   *  ShipHazardMitigation, under the global MITIGATION_CAP. */
+  hazardShielding?: number;
+  /** LOCATION-scoped: reduces the inventory loss fraction when solar storms /
+   *  pirate raids destroy location stock (hazards.ts
+   *  rollLocationInventoryShocks). Hardened storage. */
+  inventoryProtection?: number;
+  /** LOCATION-scoped: freight fuel discount when this building sits at a
+   *  dispatch's origin or destination (cargo-logistics.ts getFreightFuelCost).
+   *  Propellant infrastructure = cheaper logistics. */
+  logisticsSupport?: number;
+  /** GLOBAL: raises the chance rival espionage against you is detected
+   *  (espionage-system.ts executeEspionageAction — tracking/sensor network). */
+  detectionBonus?: number;
+  /** GLOBAL: shortens LS6 training/leader program durations
+   *  (programs.ts enqueueProgram). */
+  trainingSpeed?: number;
+  /** GLOBAL: adds to the away-efficiency investment bonus
+   *  (away-operations.ts getAwayEfficiencyInvestmentBonus) — autonomous ops. */
+  awayAutomation?: number;
+  /** GLOBAL: reduces interstellar-expedition transit hazard damage
+   *  (expeditions.ts processExpeditionTick — deep-space support network). */
+  expeditionSupport?: number;
+  /** GLOBAL: amplifies positive faction reputation gains
+   *  (factions.ts shiftReputation — stations host diplomatic missions). */
+  diplomacy?: number;
+  /** GLOBAL: multiplies research speed (game-engine.ts research queues —
+   *  orbital compute runs simulations). */
+  researchSpeed?: number;
+  /** GLOBAL: extra crew capacity headcount (workforce.ts getCrewCapacity —
+   *  habitats house crew). Integer, additive per copy. */
+  crewQuarters?: number;
+  /** GLOBAL: extra shipyard construction slots (shipyard-slots.ts —
+   *  counted once per definition, MAX_SHIPYARD_SLOTS still binds). */
+  shipyardSlots?: number;
+}
+
 export interface BuildingDefinition {
   id: string;
   name: string;
@@ -117,6 +165,9 @@ export interface BuildingDefinition {
   /** Phase I: optional per-building overrides for any derived stats.
    *  Values not specified here are filled in by category+tier defaults. */
   stats?: Partial<BuildingDerivedStats>;
+  /** Construction Purposes wave: non-revenue purposes wired into existing
+   *  formulas (see BuildingCapabilities doc + building-capabilities.ts). */
+  capabilities?: BuildingCapabilities;
 }
 
 export interface BuildingInstance {
@@ -705,9 +756,18 @@ export interface GameState {
     platinum_group_mined: number;
   };
 
-  // Tutorial
-  tutorialStep?: number; // 0 = not started, 1-5 = in progress, 6 = completed
+  // Tutorial / FTUE objective chain (onboarding.ts)
+  /** 1-based position in the onboarding chain; >= ONBOARDING_DONE_STEP
+   *  (onboarding.ts) = finished. Historic saves used 6 as the done sentinel
+   *  for the old 5-step overlay — save-load.ts V41 bumps those forward. */
+  tutorialStep?: number;
   tutorialDismissed?: boolean;
+  /** V41 — which onboarding chain this save has been migrated to
+   *  (ONBOARDING_CHAIN_VERSION). Guards the one-time done-sentinel bump. */
+  onboardingChainVersion?: number;
+  /** V41 — set the first time the player buys or sells on the market (page
+   *  handlers); the onboarding chain's first-trade detection reads it. */
+  hasTradedOnMarket?: boolean;
 
   // Subsidiaries
   subsidiaries?: {

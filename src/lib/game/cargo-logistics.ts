@@ -52,6 +52,12 @@ import { getLaneBonus, accumulateLaneUsage } from './trade-lanes';
 // through the sync route's ledger credit. Frontier corps exempt; alternate
 // routes / voting the governor out / trade treaties are the counterplay.
 import { computeCargoValue, computeFreightTolls, accumulateTollPayments, type FreightTollCharge } from './offense';
+// Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+// propellant infrastructure (launch pads, propellant plants/depots, Titan
+// refinery) at a dispatch's ORIGIN or DESTINATION discounts the fuel bill —
+// logisticsSupport, combined endpoint total capped at 15% (mirrors the
+// lane-investment cap; stacks multiplicatively with lane + research terms).
+import { getLocationCapabilityBonus, CAPABILITY_CAPS } from './building-capabilities';
 
 // ─── Home cluster ────────────────────────────────────────────────────────────
 
@@ -297,7 +303,15 @@ export function getFreightFuelCost(
   // cheaper with... investment" (CLAUDE.md). Reads the last server snapshot;
   // 0 (no discount) when absent/stale — pre-E5 behavior exactly.
   const laneDiscount = getLaneBonus(state.laneBonuses, from, to);
-  const cost = Math.round(raw * getFuelEfficiencyMultiplier(state) * (1 - laneDiscount));
+  // Construction Purposes wave: endpoint logistics infrastructure (see
+  // import comment). Sum of origin + destination capability, capped at the
+  // same central logisticsSupport ceiling.
+  const endpointDiscount = Math.min(
+    CAPABILITY_CAPS.logisticsSupport,
+    getLocationCapabilityBonus(state, from, 'logisticsSupport')
+      + getLocationCapabilityBonus(state, to, 'logisticsSupport'),
+  );
+  const cost = Math.round(raw * getFuelEfficiencyMultiplier(state) * (1 - laneDiscount) * (1 - endpointDiscount));
   return Math.max(FREIGHT_MIN_FUEL_COST, cost);
 }
 

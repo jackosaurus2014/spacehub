@@ -45,6 +45,9 @@ import { MAX_EVENT_LOG, STARTING_YEAR } from './constants';
 // exoplanet census, Heliopause Probe, GW array) buff expedition survey
 // payouts and trim transit hazard damage — knowledge de-risks the frontier.
 import { getExpeditionScienceBonuses } from './science-missions';
+// Construction Purposes wave: deep-space support buildings trim transit
+// hazard damage (expeditionSupport — see processExpeditionTick).
+import { getGlobalCapabilityBonus } from './building-capabilities';
 
 // ─── Tuning constants ────────────────────────────────────────────────────────
 
@@ -840,7 +843,13 @@ export function processExpeditionTick(state: GameState, now: number = Date.now()
     );
     const researchDamageMult = (state.completedResearch.includes(HEAVY_SHIELDING_RESEARCH_ID)
       ? 1 - HEAVY_SHIELDING_DAMAGE_REDUCTION
-      : 1) * scienceBonuses.hazardDamageMult; // W6: boundary charting trims transit damage
+      : 1) * scienceBonuses.hazardDamageMult // W6: boundary charting trims transit damage
+      // Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+      // the deep-space support network (Deep Space Relay, sensor satellites,
+      // Jupiter Relay Hub — expeditionSupport, capped 15%) trims transit
+      // damage the same post-mitigation way the W6 science bonuses do.
+      // Away-parity is automatic: this tick IS the shared catch-up path.
+      * (1 - getGlobalCapabilityBonus(state, 'expeditionSupport'));
 
     const returnStartMonth = e.outboundMonths + e.exploreMonths;
     const totalMissionMonths = returnStartMonth + e.outboundMonths;

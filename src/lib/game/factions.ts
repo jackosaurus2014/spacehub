@@ -4,6 +4,9 @@
 // Later: faction-themed contracts, rep shifts from in-game actions, alliance effects.
 
 import type { GameState } from './types';
+// Construction Purposes wave: diplomatic-post buildings amplify positive rep
+// gains (diplomacy capability — see shiftReputation).
+import { getGlobalCapabilityBonus } from './building-capabilities';
 
 export type FactionId =
   | 'the-dominion'
@@ -130,12 +133,21 @@ export function getEnvoyCost(currentRep: number): number {
   return 50_000_000;
 }
 
-/** Apply a reputation change to a faction. Rivals lose half the amount when you gain with opponent. */
+/** Apply a reputation change to a faction. Rivals lose half the amount when you gain with opponent.
+ *  Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+ *  diplomatic infrastructure (crewed stations with the `diplomacy`
+ *  capability, capped +25%) amplifies POSITIVE gains only — the rival's
+ *  penalty stays keyed to the ORIGINAL delta (embassies win friends without
+ *  making extra enemies), and losses are never softened (a broken contract
+ *  hurts the same no matter how many summits you host). */
 export function shiftReputation(state: GameState, id: FactionId, delta: number): GameState {
   const current = state.factionReputation || {};
   const faction = FACTION_MAP.get(id);
   const next = { ...current };
-  next[id] = Math.max(-100, Math.min(100, (current[id] ?? 0) + delta));
+  const appliedDelta = delta > 0
+    ? Math.round(delta * (1 + getGlobalCapabilityBonus(state, 'diplomacy')))
+    : delta;
+  next[id] = Math.max(-100, Math.min(100, (current[id] ?? 0) + appliedDelta));
   // If the delta is positive, rival loses half as much (bounded down at -100)
   if (faction && delta > 0) {
     const rivalDelta = -Math.floor(delta / 2);

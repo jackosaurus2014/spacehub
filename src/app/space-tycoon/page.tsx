@@ -99,6 +99,13 @@ import { getHireCost, consumeHeadhuntVoucher } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
 import GameTutorial from '@/components/game/GameTutorial';
 import TutorialOverlay, { getTutorialTargetTab } from '@/components/game/TutorialOverlay';
+// FTUE v2 (simulated-newcomer audit 8/16): pure onboarding chain — step
+// definitions, completion detection, reward grants — lives in onboarding.ts;
+// TutorialOverlay renders it, these handlers mutate through it.
+import {
+  advanceOnboarding, skipOnboarding, restartOnboarding,
+  isOnboardingActive, isOnboardingComplete, isEarlyOnboarding,
+} from '@/lib/game/onboarding';
 import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getTierUnlockedTabs, getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
@@ -787,11 +794,11 @@ function ServicesPanel({ state }: { state: GameState }) {
 }
 
 /** Wave 9: the map-first command interface becomes the default landing tab
- *  for any player who has finished (or skipped) the 5-step tutorial —
- *  tutorialStep is 6 on completion, undefined/1-5 while a brand-new game is
- *  still onboarding. New players keep the guided Dashboard entry point. */
+ *  for any player who has finished (or skipped) the onboarding chain. New
+ *  players keep the guided Dashboard entry point (FTUE v2: done sentinel is
+ *  chain-length-aware — onboarding.ts ONBOARDING_DONE_STEP). */
 function pickInitialTab(state: GameState): GameTab {
-  return (state.tutorialStep ?? 6) >= 6 ? 'map' : 'dashboard';
+  return isOnboardingComplete(state) || state.tutorialDismissed ? 'map' : 'dashboard';
 }
 
 /** Audit Wave F (§B2-B5): 8 tabs were merged away into hub tabs. GameState
@@ -1261,35 +1268,19 @@ export default function SpaceTycoonPage() {
     }
   }, []);
 
-  // Tutorial handlers
-  const handleTutorialNext = useCallback(() => {
-    setState(prev => {
-      if (!prev) return prev;
-      const nextStep = (prev.tutorialStep ?? 1) + 1;
-      return { ...prev, tutorialStep: nextStep };
-    });
+  // Tutorial handlers — FTUE v2: all mutation goes through onboarding.ts's
+  // pure functions (advance grants each step's one-time reward exactly once).
+  const handleTutorialAdvance = useCallback((manual: boolean) => {
+    setState(prev => (prev ? advanceOnboarding(prev, { manual }) : prev));
   }, []);
 
   const handleTutorialSkip = useCallback(() => {
-    setState(prev => {
-      if (!prev) return prev;
-      return { ...prev, tutorialStep: 6, tutorialDismissed: true };
-    });
-  }, []);
-
-  const handleTutorialComplete = useCallback(() => {
-    setState(prev => {
-      if (!prev) return prev;
-      return { ...prev, tutorialStep: 6 };
-    });
+    setState(prev => (prev ? skipOnboarding(prev) : prev));
   }, []);
 
   const handleRestartTutorial = useCallback(() => {
     playSound('click');
-    setState(prev => {
-      if (!prev) return prev;
-      return { ...prev, tutorialStep: 1, tutorialDismissed: false };
-    });
+    setState(prev => (prev ? restartOnboarding(prev) : prev));
   }, []);
 
   // Check achievements periodically (must be before any early returns — React hooks rules)
@@ -1563,6 +1554,7 @@ export default function SpaceTycoonPage() {
         ...prev,
         money: prev.money + revenue,
         totalEarned: prev.totalEarned + revenue,
+        hasTradedOnMarket: true, // FTUE v2 — first-trade objective detection
         resources: { ...prev.resources, [resourceId]: currentQty - quantity },
         eventLog: [{
           id: generateId(),
@@ -1785,6 +1777,7 @@ export default function SpaceTycoonPage() {
         ...prev,
         money: prev.money - cost,
         totalSpent: prev.totalSpent + cost,
+        hasTradedOnMarket: true, // FTUE v2 — first-trade objective detection
         resources: { ...prev.resources, [resourceId]: (prev.resources[resourceId] || 0) + quantity },
         eventLog: [{
           id: generateId(),
@@ -2541,8 +2534,12 @@ export default function SpaceTycoonPage() {
       />
       </div>
 
-      {/* Daily Login Bonus */}
-      <DailyBonusModal
+      {/* Daily Login Bonus — held back during the first onboarding minutes
+          (orientation → first income) so a brand-new player's opening
+          seconds aren't an unexplained reward modal; it appears on the next
+          mount once the early steps are done (claims are day-keyed, so
+          nothing is lost within the same day). */}
+      {!isEarlyOnboarding(state) && <DailyBonusModal
         onClaim={(amount) => {
           setState(prev => prev ? {
             ...prev,
@@ -2557,7 +2554,7 @@ export default function SpaceTycoonPage() {
             }, ...prev.eventLog].slice(0, 50),
           } : prev);
         }}
-      />
+      />}
 
       {/* Achievements Modal */}
       {showAchievements && (
@@ -2576,19 +2573,32 @@ export default function SpaceTycoonPage() {
         />
       )}
 
-      {/* Interactive Tutorial Overlay (5-step onboarding, persisted in GameState) */}
-      {(state.tutorialStep ?? 6) >= 1 && (state.tutorialStep ?? 6) <= 5 && (
+      {/* First-Hour Guide (FTUE v2 objective chain, persisted in GameState) */}
+      {isOnboardingActive(state) && (
         <TutorialOverlay
           state={state}
           currentTab={tab}
-          onNext={handleTutorialNext}
+          onAdvance={handleTutorialAdvance}
           onSkip={handleTutorialSkip}
-          onComplete={handleTutorialComplete}
           onSetTab={(t) => setTab(t)}
         />
       )}
-      {/* Legacy detailed tutorial + Feature Unlock Notifications */}
-      <GameTutorial key={state.createdAt} onSetTab={(t) => setTab(resolveLegacyTab(t))} />
+      {/* Advanced-systems handbook — shown only AFTER the guided chain is
+          done (the two used to render simultaneously on a fresh save, two
+          competing tutorials with conflicting first instructions). */}
+      {!isOnboardingActive(state) && (
+        <GameTutorial
+          key={state.createdAt}
+          onSetTab={(t) => {
+            // Never navigate into a tier-locked tab (the deck tours systems
+            // the player may not have unlocked yet — its copy names the
+            // unlock tier instead; navigating would render a panel outside
+            // the staged-unlock design with no active tab in the bar).
+            const resolved = resolveLegacyTab(t);
+            if (unlockedTabIds.has(resolved)) setTab(resolved);
+          }}
+        />
+      )}
       <FeatureUnlockToast
         availableTabsKey={tabIdsKey}
         availableTabs={allTabs.map(t => t.id)}

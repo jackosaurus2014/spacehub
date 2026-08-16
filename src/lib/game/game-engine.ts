@@ -85,6 +85,10 @@ import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './mo
 // lives in dispatchShipWithCargo).
 import { routeProductionCredit, creditArrivalCargo, hasFreightCapability } from './cargo-logistics';
 import { updateCrewWellbeing, getTotalCrew, getCrewCapacity } from './workforce';
+// Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+// datacenter compute joins the research-speed stack; habitat crewQuarters
+// joins crew capacity. Both capped in building-capabilities.ts.
+import { getGlobalCapabilityBonus, getCapabilityCrewQuarters } from './building-capabilities';
 // Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/ECONOMY_PVP_2026-08.md
 // §2.4/§2.6/§E5): deposit extraction pressure brakes mining output per
 // (location, resource); the wage index multiplies payroll per crew type;
@@ -657,6 +661,12 @@ export function processTick(state: GameState): GameState {
     }
   };
 
+  // Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+  // datacenters contribute compute to the research effort (researchSpeed
+  // capability, capped +10% in building-capabilities.ts) — one small extra
+  // term in the existing (already 2.0-capped-per-pack) multiplier stack.
+  const capabilityResearchMult = 1 + getGlobalCapabilityBonus(state, 'researchSpeed');
+
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
     const researchBoostMult = getActiveBoostMultiplier(activeBoosts, 'research');
@@ -669,7 +679,7 @@ export function processTick(state: GameState): GameState {
     // ("Radio Science Windfall", "Fusion Ignition Milestone"...) ride the
     // same expiring activeEffects list random events use, aggregated by
     // getActiveMultipliers into `multipliers.researchSpeedMultiplier`.
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult * multipliers.researchSpeedMultiplier * capabilityResearchMult * DEV_FAST_MULTIPLIER;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completeResearchDef(activeResearch.definitionId);
@@ -694,7 +704,7 @@ export function processTick(state: GameState): GameState {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
     const waveBResearchMult2 = Math.min(2.0, (1 + specBonuses.researchSpeed) * victoryBonuses.researchSpeedMultiplier * (1 + allianceB.researchBonus) * (1 + worldEventB.researchSpeedBonus) * (1 + mentorshipB.researchBonus) * (1 + coopMegaB.researchBonus)); // audit Wave B (same pack as queue 1) + Sol Events + LS2 mentee share; E7: mega-project
-    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
+    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * eraModifiers.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * doctrineBonuses.researchSpeedMultiplier * waveBResearchMult2 * multipliers.researchSpeedMultiplier * capabilityResearchMult * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
       completeResearchDef(activeResearch2.definitionId);
@@ -971,7 +981,7 @@ export function processTick(state: GameState): GameState {
     }
     // Utilization: crew headcount vs infrastructure capacity
     const completedCount = buildings.filter(b => b.isComplete).length;
-    const capacity = getCrewCapacity(completedCount, state.unlockedLocations.length, completedResearch.length).total;
+    const capacity = getCrewCapacity(completedCount, state.unlockedLocations.length, completedResearch.length, 0, getCapabilityCrewQuarters(state)).total;
     const utilization = capacity > 0 ? totalCrew / capacity : 0;
     // Hazards that struck within the last game-month (6 real hours)
     const oneGameMonthMs = 6 * 60 * 60 * 1000;

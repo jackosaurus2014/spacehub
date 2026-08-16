@@ -13,6 +13,7 @@ import { DEFAULT_DOCTRINE } from './corporate-doctrine';
 import { DEFAULT_CORPORATE_ERAS } from './corporate-eras';
 import { DEFAULT_CONSUMPTION_STATE, applyGrandfatherGrace } from './consumption';
 import { getGlobalGameDate } from './server-time';
+import { ONBOARDING_CHAIN_VERSION, ONBOARDING_DONE_STEP } from './onboarding';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
@@ -78,9 +79,11 @@ export function getNewGameState(): GameState {
     // V7 fields — megastructures & reputation
     megastructures: [],
     reputation: 0,
-    // V9 fields — tutorial onboarding
+    // V9 fields — tutorial onboarding (V41: 8-step objective chain, onboarding.ts)
     tutorialStep: 1,
     tutorialDismissed: false,
+    onboardingChainVersion: ONBOARDING_CHAIN_VERSION,
+    hasTradedOnMarket: false,
     // V10 fields — mining bonuses from survey probes
     miningBonuses: [],
     // V11 — Protected Frontier (new-player onramp shield)
@@ -773,6 +776,21 @@ export function loadGame(): GameState | null {
     if (state.legacyContractCompletionsAt === undefined) {
       state.legacyContractCompletionsAt = [];
     }
+
+    // V41 — FTUE objective chain v2 (onboarding.ts, simulated-newcomer audit
+    // 8/16). The old 5-step tutorial used "6 = done" as its sentinel; the new
+    // 8-step chain's done sentinel is ONBOARDING_DONE_STEP. One-time bump:
+    // any un-migrated save at/past the OLD sentinel is finished onboarding
+    // (never re-show a longer tutorial to a veteran); a save mid-old-tutorial
+    // (1-5) keeps its position — the new chain's steps 1-5 cover the same
+    // build/income/research ground and its detections fast-forward anything
+    // already done. onboardingChainVersion guards re-runs so a save
+    // legitimately on NEW steps 6-8 is never bumped.
+    if (state.onboardingChainVersion !== ONBOARDING_CHAIN_VERSION) {
+      if ((state.tutorialStep ?? 0) >= 6) state.tutorialStep = ONBOARDING_DONE_STEP;
+      state.onboardingChainVersion = ONBOARDING_CHAIN_VERSION;
+    }
+    if (state.hasTradedOnMarket === undefined) state.hasTradedOnMarket = false;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

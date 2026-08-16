@@ -8,6 +8,7 @@ import type { WorkerType } from '@/lib/game/workforce';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
+import { getCapabilityCrewQuarters } from '@/lib/game/building-capabilities';
 import { buildCareerCrossoverLine } from '@/lib/game/career-crossover';
 // Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.6/§E5): salary is now base × the
 // server-wide wage index per crew type — replaces the flat-constant payroll.
@@ -101,7 +102,10 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
   const monthlyTrainingCost = totalWorkers * trainingBudget;
   const completedBuildings = state.buildings.filter(b => b.isComplete).length;
   const legacyBonusCrew = getLegacyBonuses(state.legacy || DEFAULT_LEGACY).bonusCrewCapacity;
-  const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew);
+  // Construction Purposes wave: habitat/station crewQuarters capability adds
+  // real crew capacity (breakdown row "Habitat crew quarters").
+  const capabilityCrewQuarters = getCapabilityCrewQuarters(state);
+  const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew, capabilityCrewQuarters);
   const now = Date.now();
   const headhuntVoucher = (state.activeIntelPerks || []).find(
     p => p.type === 'headhunt_voucher' && p.expiresAtMs > now
@@ -286,7 +290,7 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
             const count = workforce[`${worker.type}s` as keyof typeof workforce] || 0;
             const hireCost = getHireCost(worker.type);
             const canAfford = state.money >= hireCost;
-            const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew);
+            const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew, capabilityCrewQuarters);
             const canHire = canAfford && hireCheck.allowed;
             // Wave E5 (§2.6): server-wide wage index for this crew type.
             const wageIndex = getWageIndex(state.laborMarket, worker.type as WorkerType);

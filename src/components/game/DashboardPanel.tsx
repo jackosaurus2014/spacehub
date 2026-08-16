@@ -38,6 +38,13 @@ import ReturningCommanderWidget from '@/components/game/ReturningCommanderWidget
 import MissionCalendarPanel from '@/components/game/MissionCalendarPanel';
 import HistoricalArchiveTicker from '@/components/game/HistoricalArchiveTicker';
 import { useActivityFeed, formatRelativeTime, usePrefersReducedMotion } from '@/hooks/useWorldState';
+// FTUE v2 (simulated-newcomer audit 8/16): newcomer HUD mode — while the
+// first-hour guide is active on a Tier-1 corp, the Dashboard hides advanced
+// live-service surfaces (story chapters, mission calendar, world races,
+// mini-activities, weekly challenge, archive ticker) so minute one shows only
+// the core loop. CLAUDE.md: "information density that scales with the
+// player's expertise." Skipping the guide opts out immediately.
+import { isNewcomerHud } from '@/lib/game/onboarding';
 import { ConsolePanel, HoloCard, DataChip } from '@/components/game/chrome';
 import GameIcon, { type GameIconGlow } from '@/components/game/GameIcon';
 import type { IconName } from '@/lib/game/icons';
@@ -599,22 +606,25 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
     return { revenue, costs, opCosts, maintenance, payroll, net: revenue - costs, wfBonuses, resBonuses, hasSupplyPenalty, avgSupplyMult, hasPowerDeficit };
   }, [state, powerData]);
 
+  // FTUE v2 — newcomer HUD: advanced surfaces below are gated on this.
+  const newcomer = isNewcomerHud(state);
+
   return (
     <div className="space-y-4">
       {/* Command Center header — corporation identity, mission clock, region readout */}
       <CommandCenterHeader state={state} />
-      {/* Sol Events — real-world space weather / launch / milestone feed, mirrored into the game as archive entries. Renders nothing when no event is active. */}
-      <WorldEventsBanner />
-      {/* Story Chapters (LS8) — calendar-dated, world-synchronized narrative arc banner: act progress, finale countdown, server-backed participation tally. Renders nothing before the first tick has started chapter tracking. */}
-      <StoryChapterBanner state={state} onResolveEpilogue={onResolveChapterEpilogue} />
-      {/* Returning Commander (LS2) — 7-day re-entry objectives + decaying earnings boost after a >=14-day lapse. Renders nothing when no track is active. */}
+      {/* Sol Events — real-world space weather / launch / milestone feed, mirrored into the game as archive entries. Renders nothing when no event is active. Newcomer-gated (FTUE v2). */}
+      {!newcomer && <WorldEventsBanner />}
+      {/* Story Chapters (LS8) — calendar-dated, world-synchronized narrative arc banner: act progress, finale countdown, server-backed participation tally. Renders nothing before the first tick has started chapter tracking. Newcomer-gated (FTUE v2). */}
+      {!newcomer && <StoryChapterBanner state={state} onResolveEpilogue={onResolveChapterEpilogue} />}
+      {/* Returning Commander (LS2) — 7-day re-entry objectives + decaying earnings boost after a >=14-day lapse. Renders nothing when no track is active. (Never newcomer-gated: a lapsed veteran is by definition not a newcomer.) */}
       <ReturningCommanderWidget state={state} />
-      {/* Mission Calendar (LS3) — unified forward view: league lock, senate docket close, season transitions, alliance event windows, NPC co-fund windows, expedition returns, queue completions, appointment world events, real launch windows. Renders nothing when the 14-day horizon is empty. */}
-      <MissionCalendarPanel state={state} />
+      {/* Mission Calendar (LS3) — unified forward view: league lock, senate docket close, season transitions, alliance event windows, NPC co-fund windows, expedition returns, queue completions, appointment world events, real launch windows. Renders nothing when the 14-day horizon is empty. Newcomer-gated (FTUE v2). */}
+      {!newcomer && <MissionCalendarPanel state={state} />}
       {/* Quick-nav holo tiles — one-tap access to the panels players touch most, + live alerts strip */}
       <QuickNavGrid state={state} hasPowerDeficit={financials.hasPowerDeficit} onNavigate={onNavigate} />
-      {/* The live world — colony races, milestone claims, competitive contracts (audit Change #3) */}
-      <WorldStatusCard companyName={state.companyName} />
+      {/* The live world — colony races, milestone claims, competitive contracts (audit Change #3). Newcomer-gated (FTUE v2). */}
+      {!newcomer && <WorldStatusCard companyName={state.companyName} />}
       {/* Empire Overview — visual summary at the top */}
       <EmpireOverview state={state} onUpdateCompanyName={onUpdateCompanyName} />
       {/* HUD-styled at-a-glance viz — revenue breakdown, fleet status, infrastructure mix */}
@@ -827,18 +837,18 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
         <IncomeChart data={state.incomeHistory} />
       )}
 
-      {/* Mini-Activities — quick money-earning actions */}
-      <MiniActivitiesWidget
+      {/* Mini-Activities — quick money-earning actions. Newcomer-gated (FTUE v2): random side-income buttons on minute one teach the wrong loop. */}
+      {!newcomer && <MiniActivitiesWidget
         state={state}
         onExecute={(activityId: string, reward: MiniActivityReward) => {
           window.dispatchEvent(new CustomEvent('mini-activity-execute', {
             detail: { activityId, reward },
           }));
         }}
-      />
+      />}
 
-      {/* Weekly Challenge */}
-      <WeeklyChallengeWidget />
+      {/* Weekly Challenge — newcomer-gated (FTUE v2, weekly-loop content) */}
+      {!newcomer && <WeeklyChallengeWidget />}
 
       {/* Speed Boosts — available and active */}
       {((state.availableBoosts && state.availableBoosts.length > 0) || (state.activeBoosts && state.activeBoosts.length > 0)) && (
@@ -1212,8 +1222,9 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       </ConsolePanel>
 
       {/* Sol Historical Archive — real site headlines reframed as in-universe
-          history (docs/LORE.md narrative year). Renders nothing on empty/error. */}
-      <HistoricalArchiveTicker />
+          history (docs/LORE.md narrative year). Renders nothing on empty/error.
+          Newcomer-gated (FTUE v2). */}
+      {!newcomer && <HistoricalArchiveTicker />}
     </div>
   );
 }

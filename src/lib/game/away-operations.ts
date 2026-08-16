@@ -86,6 +86,9 @@ import { getServiceDemandMultiplier } from './service-pricing';
 // surfaces in this ledger's message instead of silently on the next tick.
 import { advanceProgramsDetailed, getEffectiveWorkforceForBonuses, mergeProgramWorkforceBonuses } from './programs';
 import { processLeaderRetirements } from './commanders';
+// Construction Purposes wave: relay/ops buildings raise away efficiency
+// (awayAutomation — see getAwayEfficiencyInvestmentBonus).
+import { getGlobalCapabilityBonus } from './building-capabilities';
 
 const TICK_INTERVAL_MS = TICK_INTERVALS[1]; // 2000ms — 1x speed (same as offline-income.ts)
 const MIN_AWAY_MS = 30_000; // same "don't bother" threshold offline-income.ts used
@@ -112,6 +115,12 @@ export function getAwayEfficiencyInvestmentBonus(state: GameState): number {
   if (state.completedResearch.includes('digital_twin')) bonus += 0.05;
   const opsLevel = Math.min(5, state.repeatableResearchLevels?.ops_automation_program || 0);
   bonus += opsLevel * 0.03; // up to +0.15 at max level 5
+  // Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md): comm
+  // relays, Mission Control, and deep-space datacenters keep operations
+  // running unattended — the closest realization yet of the spec's deferred
+  // `autonomous_ops_center` building. Capped +0.08 in building-capabilities;
+  // AWAY_EFFICIENCY_INVESTMENT_CAP still bounds the total below 100%.
+  bonus += getGlobalCapabilityBonus(state, 'awayAutomation');
   const wf = state.workforce;
   if (wf) {
     const total = (wf.pilots || 0) + (wf.negotiators || 0) + (wf.securitys || 0) + (wf.medics || 0)

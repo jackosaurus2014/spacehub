@@ -10,8 +10,9 @@
 // until the mechanic touches them. Mobile-first: wrapping chips, 28px+
 // targets, horizontal scroll never required.
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
+import { playSound } from '@/lib/game/sound-engine';
 import { deriveSupplySummary } from '@/lib/game/consumption';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import type { ResourceId } from '@/lib/game/resources';
@@ -19,11 +20,54 @@ import { resourceCategoryIcon } from '@/lib/game/icons';
 import GameIcon from './GameIcon';
 import HoloTip, { Concept } from './HoloTip';
 
+// FTUE beat (simulated-newcomer audit 8/16): the FIRST time a shortfall ever
+// appears, expand a one-time plain-language explainer under the strip — the
+// chips + HoloTip alone assume the player already knows the consumption
+// mechanic. Dismiss persists in localStorage (presentation-only).
+const SUPPLY_INTRO_KEY = 'spacetycoon_supply_intro_seen';
+
+function FirstShortfallExplainer({ visible, onDismiss }: { visible: boolean; onDismiss: () => void }) {
+  if (!visible) return null;
+  return (
+    <div className="mt-2 rounded-lg border border-amber-500/25 bg-amber-500/[0.05] p-3">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[11px] leading-relaxed text-slate-300">
+          <span className="font-bold text-amber-300">Your first supply shortfall. </span>
+          Completed buildings consume real inputs every game month per their{' '}
+          <Concept id="building-recipe">recipes</Concept> — a facility that can&rsquo;t draw them
+          runs at reduced <Concept id="supply-efficiency">efficiency</Concept> (never below 50%),
+          cutting its revenue until supply recovers. Three fixes: <strong>buy</strong> the input on
+          the Market, <strong>produce</strong> it yourself (propellant plants, agri domes,
+          refineries), or set the building to a{' '}
+          <Concept id="standing-order">standing market order</Concept> from its card on the Build
+          tab so it restocks itself automatically.
+        </p>
+        <button
+          onClick={onDismiss}
+          className="shrink-0 min-h-[36px] px-2 text-[10px] uppercase tracking-wider text-slate-500 hover:text-white transition-colors"
+        >
+          Got it
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function SupplyStatusStrip({ state }: { state: GameState }) {
   const lines = useMemo(() => deriveSupplySummary(state), [state]);
-  if (lines.length === 0) return null;
 
   const anyShort = lines.some(l => l.short);
+
+  // One-time explainer trigger — armed only when a shortfall actually exists.
+  const [showIntro, setShowIntro] = useState(false);
+  useEffect(() => {
+    if (!anyShort) return;
+    try {
+      if (localStorage.getItem(SUPPLY_INTRO_KEY) !== 'true') setShowIntro(true);
+    } catch {}
+  }, [anyShort]);
+
+  if (lines.length === 0) return null;
 
   return (
     <div className="mb-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
@@ -78,6 +122,14 @@ export default function SupplyStatusStrip({ state }: { state: GameState }) {
           );
         })}
       </div>
+      <FirstShortfallExplainer
+        visible={showIntro && anyShort}
+        onDismiss={() => {
+          playSound('click');
+          try { localStorage.setItem(SUPPLY_INTRO_KEY, 'true'); } catch {}
+          setShowIntro(false);
+        }}
+      />
     </div>
   );
 }

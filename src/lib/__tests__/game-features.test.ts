@@ -3,6 +3,7 @@
  */
 import { getPowerByLocation, getCraftingSpeedMultiplier, BUILDING_MAP } from '../game/buildings';
 import { processTick } from '../game/game-engine';
+import { ONBOARDING_DONE_STEP, ONBOARDING_STEPS } from '../game/onboarding';
 import type { GameState, BuildingInstance, ActiveResearch } from '../game/types';
 
 // ---------------------------------------------------------------------------
@@ -782,22 +783,21 @@ describe('Tutorial System', () => {
     expect(state.tutorialStep).toBe(0);
   });
 
-  it('tutorialStep = 6 means completed', () => {
+  it('tutorialStep at the done sentinel means completed (FTUE v2: chain-length-aware)', () => {
     const state: Partial<GameState> = {
-      tutorialStep: 6,
+      tutorialStep: ONBOARDING_DONE_STEP,
     };
-    expect(state.tutorialStep).toBe(6);
+    expect(state.tutorialStep).toBe(ONBOARDING_STEPS.length + 1);
   });
 
-  it('tutorialStep advances from 1 through 5', () => {
+  it('tutorialStep advances from 1 through the chain to the done sentinel', () => {
     let step = 1;
-    // Simulate advancing through tutorial steps
-    while (step < 6) {
+    while (step < ONBOARDING_DONE_STEP) {
       expect(step).toBeGreaterThanOrEqual(1);
-      expect(step).toBeLessThanOrEqual(5);
+      expect(step).toBeLessThanOrEqual(ONBOARDING_STEPS.length);
       step++;
     }
-    expect(step).toBe(6); // completed
+    expect(step).toBe(ONBOARDING_DONE_STEP); // completed
   });
 
   it('dismissed tutorial does not show again', () => {

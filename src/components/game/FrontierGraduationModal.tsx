@@ -52,6 +52,7 @@ export default function FrontierGraduationModal({ state, onClose }: Props) {
                 <li>Espionage operations can be run against you</li>
                 <li>NPC piracy, sabotage, and hazard events are no longer suppressed</li>
                 <li>Contract payouts drop to standard rates (Frontier's +25% bonus ends)</li>
+                <li>Buildings start consuming real monthly inputs (propellant, spares, life support) — watch the Supply Lines strip on the Dashboard; stock inputs or set standing orders</li>
               </ul>
             </div>
 

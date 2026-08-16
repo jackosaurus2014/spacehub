@@ -59,6 +59,12 @@ import { DEFAULT_WORKFORCE } from './workforce';
 import { getLocationInventory, isHomeLocation } from './cargo-logistics';
 import { RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
+// Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+// stations and relays project a LOCATION-scoped mitigation umbrella
+// (hazardShielding, capped 0.12) and hardened storage cuts inventory-shock
+// losses (inventoryProtection, capped 0.40). Both are additive terms into
+// the formulas below — MITIGATION_CAP still binds, risk stays real.
+import { getLocationCapabilityBonus } from './building-capabilities';
 
 export type HazardType = 'solar_storm' | 'micrometeorite' | 'pirate_raid' | 'equipment_failure';
 export type HazardSeverity = 'minor' | 'major' | 'severe';
@@ -227,28 +233,36 @@ export function getShipHazardMitigation(
   state: GameState,
   shipInstanceId: string,
   type: HazardType,
+  /** Construction Purposes wave: pass the ship's location to include the
+   *  local hazardShielding umbrella (stations/relays). Optional — omitting
+   *  it reproduces pre-wave behavior exactly. */
+  locationId?: string,
 ): number {
   const eff = getEffectiveShipStats(state, shipInstanceId);
   if (!eff) return 0;
   const wf = getWorkforceHazardMitigation(state);
   const chainBonus = getChainHazardMitigationBonus(state);
+  const localShield = locationId ? getLocationCapabilityBonus(state, locationId, 'hazardShielding') : 0;
   return Math.min(
     MITIGATION_CAP,
-    eff.shieldingRating + (type === 'pirate_raid' ? eff.pointDefenseRating : 0) + wf + chainBonus,
+    eff.shieldingRating + (type === 'pirate_raid' ? eff.pointDefenseRating : 0) + wf + chainBonus + localShield,
   );
 }
 
-/** Building mitigation: shielding + structural stability + workforce. */
+/** Building mitigation: shielding + structural stability + workforce
+ *  (+ the location's capability shielding umbrella when locationId given). */
 export function getBuildingHazardMitigation(
   state: GameState,
   definitionId: string,
+  locationId?: string,
 ): number {
   const def = BUILDING_MAP.get(definitionId);
   if (!def) return 0;
   const stats = getBuildingDerivedStats(def);
   const wf = getWorkforceHazardMitigation(state);
   const chainBonus = getChainHazardMitigationBonus(state);
-  return Math.min(MITIGATION_CAP, stats.shieldingRating + stats.stabilityRating * 0.2 + wf + chainBonus);
+  const localShield = locationId ? getLocationCapabilityBonus(state, locationId, 'hazardShielding') : 0;
+  return Math.min(MITIGATION_CAP, stats.shieldingRating + stats.stabilityRating * 0.2 + wf + chainBonus + localShield);
 }
 
 // ─── Hit resolution (pure — unit-testable core) ──────────────────────────────
@@ -334,7 +348,7 @@ export function rollMonthlyHazards(state: GameState, now: number, monthIndex: nu
         const def = SHIP_MAP.get(target.definitionId);
         if (!def) continue;
         const stats = getShipDerivedStats(def);
-        const mitigation = getShipHazardMitigation(state, target.instanceId, type);
+        const mitigation = getShipHazardMitigation(state, target.instanceId, type, locationId);
         const hit = resolveHazardHit({
           rawDamage: occ.rawDamage,
           mitigation,
@@ -361,7 +375,7 @@ export function rollMonthlyHazards(state: GameState, now: number, monthIndex: nu
         if (!target) continue;
         const def = BUILDING_MAP.get(target.definitionId);
         if (!def) continue;
-        const mitigation = getBuildingHazardMitigation(state, target.definitionId);
+        const mitigation = getBuildingHazardMitigation(state, target.definitionId, locationId);
         const hit = resolveHazardHit({
           rawDamage: occ.rawDamage,
           mitigation,
@@ -642,7 +656,11 @@ export function rollLocationInventoryShocks(state: GameState, monthIndex: number
       if (!occ.occurs || occ.severity === 'minor') continue;
       const rng = inventoryShockRng(monthIndex, locationId, type);
       const [minLoss, maxLoss] = INVENTORY_LOSS_RANGE[occ.severity as 'major' | 'severe'];
-      const lossFraction = minLoss + rng() * (maxLoss - minLoss);
+      // Construction Purposes wave: hardened storage (stations, refineries,
+      // fab plants with inventoryProtection) buffers the shock — loss
+      // fraction reduced by the location's capped capability total (≤40%).
+      const protection = getLocationCapabilityBonus(state, locationId, 'inventoryProtection');
+      const lossFraction = (minLoss + rng() * (maxLoss - minLoss)) * (1 - protection);
 
       for (const [resourceId, qty] of stockedResources) {
         const qtyLost = Math.floor(qty * lossFraction);

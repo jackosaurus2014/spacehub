@@ -20,6 +20,9 @@
 // ─── Imports ────────────────────────────────────────────────────────────────
 
 import { BUILDING_MAP } from './buildings';
+// Construction Purposes wave: target's sensor/tracking buildings raise the
+// detection roll (pure list helper — server routes pass raw buildingsData).
+import { getDetectionBonusFromBuildingList } from './building-capabilities';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -721,14 +724,19 @@ export function executeEspionageAction(
   // Wave M5 (O8): sharper products carry a guaranteed-exposure floor —
   // the victim sees a counterintelligence event at least minDetectionChance
   // of the time regardless of their security level.
-  const detectionRate = Math.max(
+  // Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md): the
+  // TARGET's sensor/tracking buildings (ground stations, sensor satellites,
+  // deep-space relay — detectionBonus, capped +10%) raise the chance this
+  // operation is spotted. Defensive infrastructure is real counterintel.
+  const buildingDetection = getDetectionBonusFromBuildingList(targetGameProfile.buildingsData || []);
+  const detectionRate = Math.min(0.95, Math.max(
     action.minDetectionChance ?? 0,
     calculateDetectionRate(
       targetEspionageProfile.securityLevel,
       targetEspionageProfile.heightenedAlert,
       targetEspionageProfile.alertExpiresAt,
-    ),
-  );
+    ) + buildingDetection,
+  ));
 
   // Roll for success
   const successRoll = Math.random();

@@ -56,6 +56,9 @@ import type { CommanderClass, CommanderRarity } from './commanders';
 import { COMMANDER_MAP, getLevelFromXp } from './commanders';
 import { generateId, hashStringToSeed, mulberry32 } from './formulas';
 import { RESEARCH_CATEGORIES } from './research-tree';
+// Construction Purposes wave: training-annex buildings shorten program
+// durations (trainingSpeed, capped 25% — see enqueueProgram).
+import { getGlobalCapabilityBonus } from './building-capabilities';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -257,6 +260,13 @@ export function enqueueProgram(
     if (getReservedLeaderIds(state).has(commanderId)) return { ok: false, state, reason: 'commander_busy' };
   }
 
+  // Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
+  // training infrastructure (Mission Control, habitats — trainingSpeed,
+  // capped 25%) shortens the program. Applied at enqueue time — the moment
+  // the syllabus is drawn up — so an in-flight program's duration never
+  // shifts under it (deterministic, matches durationMs being stored here).
+  const trainingSpeedBonus = getGlobalCapabilityBonus(state, 'trainingSpeed');
+
   const instance: ProgramInstance = {
     id: generateId(),
     track,
@@ -264,7 +274,7 @@ export function enqueueProgram(
     label: def.name,
     createdAtMs: now,
     startedAtMs: null,
-    durationMs: def.durationDays * DAY_MS,
+    durationMs: Math.round(def.durationDays * DAY_MS * (1 - trainingSpeedBonus)),
     targetCommanderId: track === 'crew_cohort' ? undefined : opts.targetCommanderId,
     targetCategory: track === 'rd_residency' ? opts.targetCategory : undefined,
   };

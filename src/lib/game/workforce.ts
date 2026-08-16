@@ -320,6 +320,9 @@ export function getCrewCapacity(
   unlockedLocationCount: number,
   completedResearchCount: number,
   legacyBonusCrew: number = 0,
+  /** Construction Purposes wave: summed crewQuarters capability from
+   *  habitats/stations (building-capabilities.getCapabilityCrewQuarters). */
+  capabilityCrewQuarters: number = 0,
 ): {
   total: number;
   perType: number;
@@ -348,7 +351,13 @@ export function getCrewCapacity(
     breakdown.push({ source: 'Legacy milestones', amount: legacyBonusCrew });
   }
 
-  const total = base + buildingCap + locationCap + researchCap + legacyBonusCrew;
+  // Construction Purposes wave: dedicated crew housing (habitats, stations,
+  // agri/life-support works with the crewQuarters capability).
+  if (capabilityCrewQuarters > 0) {
+    breakdown.push({ source: 'Habitat crew quarters', amount: capabilityCrewQuarters });
+  }
+
+  const total = base + buildingCap + locationCap + researchCap + legacyBonusCrew + capabilityCrewQuarters;
   // Per-type cap = total / 2 (can't put all eggs in one basket)
   const perType = Math.max(1, Math.ceil(total / 2));
 
@@ -365,8 +374,9 @@ export function canHireWorker(
   unlockedLocationCount: number,
   completedResearchCount: number,
   legacyBonusCrew: number = 0,
+  capabilityCrewQuarters: number = 0,
 ): { allowed: boolean; reason?: string; capacity: ReturnType<typeof getCrewCapacity> } {
-  const capacity = getCrewCapacity(completedBuildingCount, unlockedLocationCount, completedResearchCount, legacyBonusCrew);
+  const capacity = getCrewCapacity(completedBuildingCount, unlockedLocationCount, completedResearchCount, legacyBonusCrew, capabilityCrewQuarters);
   const currentTotal = workforce.engineers + workforce.scientists + workforce.miners + workforce.operators;
   const currentOfType = workforce[`${type}s` as keyof WorkforceState] || 0;
 
