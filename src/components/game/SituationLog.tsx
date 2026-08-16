@@ -40,6 +40,12 @@ const CATEGORY_LABEL: Record<SituationCategory, string> = {
   procurement_drive: 'NPC Drive',
   // Wave M2 (docs/MEANINGFUL_2026-08.md §M2)
   building_status: 'Building Status',
+  // Wave M6 (docs/MEANINGFUL_2026-08.md §M6)
+  equity: 'Equity',
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §M5 — the offense toolkit)
+  economic_attack: 'Economic Attack',
+  poach_offer: 'Poach Offer',
+  lane_toll: 'Freight Toll',
 };
 
 const CATEGORY_FRAME: Record<SituationCategory, string> = {
@@ -66,6 +72,12 @@ const CATEGORY_FRAME: Record<SituationCategory, string> = {
   procurement_drive: 'border-teal-500/25 bg-teal-500/[0.03]',
   // Wave M2 (docs/MEANINGFUL_2026-08.md §M2)
   building_status: 'border-slate-500/25 bg-slate-500/[0.03]',
+  // Wave M6 (docs/MEANINGFUL_2026-08.md §M6)
+  equity: 'border-purple-500/25 bg-purple-500/[0.03]',
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §M5 — the offense toolkit)
+  economic_attack: 'border-red-500/25 bg-red-500/[0.03]',
+  poach_offer: 'border-red-500/25 bg-red-500/[0.03]',
+  lane_toll: 'border-amber-500/25 bg-amber-500/[0.03]',
 };
 
 const SEVERITY_TONE: Record<SituationSeverity, 'bad' | 'warn' | 'info'> = {

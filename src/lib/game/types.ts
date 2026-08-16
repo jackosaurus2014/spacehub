@@ -1276,6 +1276,19 @@ export interface GameState {
    *  behavior). */
   orbitalSlotOccupancy?: Record<string, { occupiedCount: number; bucket: string }> | null;
 
+  /** V39 — Wave M6 "Takeovers & the Share Registry" (docs/
+   *  MEANINGFUL_2026-08.md §M6, engine: share-registry.ts). Server-owned
+   *  equity snapshot delivered via sync the same null-until-sync way as
+   *  demandPools: my corp's capital structure (float, valuation,
+   *  controller, dividend policy, integration malus), open tender offers
+   *  targeting me, my open offers, and my holdings in other corporations.
+   *  Null/absent = never synced or the population gate is closed —
+   *  consumers (Situation Log tender alerts, world-calendar closings, the
+   *  game-engine integration malus) all treat null as "no equity system",
+   *  identical to pre-M6 behavior. Inline import type keeps types.ts free
+   *  of engine logic (share-registry.ts is pure). */
+  equity?: import('./share-registry').EquitySnapshot | null;
+
   /** V32 — Wave E3 "The Consumption Engine" (docs/ECONOMY_PVP_2026-08.md
    *  §2.2/§E3, engine: consumption.ts). Additive. Tracks the world-month
    *  consumption grid (dedupe between live tick and away catch-up — the two
@@ -1375,6 +1388,29 @@ export interface GameState {
    *  `laneDispatchesThisTick`; drained via the same single-slot hand-off
    *  pattern as pendingMarketFlows (trade-lanes.ts's own queue). */
   pendingLaneUsage?: Record<string, number>;
+
+  // ─── V38 — Meaningful Decisions Wave M5 "Offense Toolkit I" (docs/
+  // MEANINGFUL_2026-08.md §M5 / §3.2 O2-O8) ───────────────────────────────
+
+  /** The last offense snapshot the server delivered via sync (offense.ts):
+   *  active price campaigns (public), incoming poach offers awaiting a
+   *  counteroffer + resolved poach outcomes, zone freight tolls (public),
+   *  and cornering alerts. Feeds the Situation Log's "you are under
+   *  economic attack at X" items and the dispatch-time toll math.
+   *  Null/absent = never synced — no offense state, pre-M5 behavior. */
+  offense?: import('./offense').OffenseSnapshot | null;
+
+  /** PoachOffer outcome ids already applied to this save's workforce/event
+   *  log (offense.ts applyOffenseToState) — the idempotency cursor that
+   *  makes crew transfers apply exactly once under sync retries. The
+   *  [SAVE] V38 "counteroffer inbox on the save's alert surface" field. */
+  appliedPoachOfferIds?: string[];
+
+  /** Freight tolls (O6) debited at dispatch time but not yet settled to the
+   *  zone governor, per zone slug. Sent as `tollPaymentsThisTick`; the
+   *  server credits the governor via the One-Wallet ledger (capped) and the
+   *  client drains via offense.ts's own hand-off queue. */
+  pendingTollPayments?: Record<string, number>;
 }
 
 /** One chapter act's live/catch-up progress marker (0..acts.length-1 while

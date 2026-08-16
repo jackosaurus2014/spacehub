@@ -96,6 +96,9 @@ import { priceLinkedMiningRevenue, blendMiningBaseRevenue } from './mining-prici
 import { getMonthlyPayrollWithWageIndex, getWageIndex } from './labor-market';
 import { rollLocationInventoryShocks, applyInventoryShocks } from './hazards';
 import { consumeLaneUsageFlush, subtractTransmittedLaneUsage } from './trade-lanes';
+// Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O6): freight-toll settlement
+// hand-off queue (offense.ts) — same single-slot pattern as lane usage.
+import { consumeTollFlush, subtractTransmittedTolls } from './offense';
 import type { ServiceType } from './types';
 // 4X Wave W13 (Corporate Doctrine & Board Politics, docs/4X_BASELINE_2026-08.md
 // §1.7): doctrineBonuses is consumed at the SAME sites resBonuses/
@@ -448,6 +451,12 @@ export function processTick(state: GameState): GameState {
       * (1 + zoneBonusPct / 100)
       * (1 + mentorshipB.revenueBonus) // LS2: mentor/mentee revenue share
       * (1 + coopMegaB.revenueBonus) // E7: completed cooperative mega-projects
+      // M6 (docs/MEANINGFUL_2026-08.md §M6): post-acquisition integration
+      // malus — an ACQUIRED corporation's service revenue takes −10% for 2
+      // game-months after a control change (spec "costs/risks"). Server-set
+      // (CorpShareRegistry.integrationMalusUntil), delivered on the equity
+      // snapshot, clamped ≤ 0.25 by clampEquitySnapshot. 0 when absent.
+      * (1 - (state.equity?.registry?.integrationMalusPct || 0))
     );
     // Audit Wave D (A4): hazard damage on the enabling building penalizes
     // service revenue until auto-repair (month-end money sink below) works
@@ -1572,6 +1581,20 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Lane usage flush error (non-fatal):', err);
+  }
+
+  // 0c3. Wave M5 (§3.2 O6): drain the freight-toll flush a successful sync
+  // just settled to zone governors (offense.ts's own single-slot queue).
+  try {
+    const tollFlush = consumeTollFlush();
+    if (tollFlush) {
+      workingState = {
+        ...workingState,
+        pendingTollPayments: subtractTransmittedTolls(workingState.pendingTollPayments, tollFlush),
+      };
+    }
+  } catch (err) {
+    console.error('Toll flush error (non-fatal):', err);
   }
 
   // 0d. Wave E3: drain the consumption sync flush (demand telemetry +

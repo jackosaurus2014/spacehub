@@ -370,6 +370,13 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'tax_optimization', name: 'Tax Optimization Strategy', category: 'economy', tier: 1, description: 'Minimize operational tax burden.', effect: '-10% all costs', baseCostMoney: 50_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
   { id: 'brand_management', name: 'Brand & Reputation', category: 'economy', tier: 1, description: 'Build corporate reputation.', effect: '+10% contract win rate', baseCostMoney: 40_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
   { id: 'merger_acquisition', name: 'M&A Strategy', category: 'economy', tier: 4, description: 'Acquire competitor assets.', effect: 'Enables corporate acquisitions', baseCostMoney: 10_000_000_000, baseTimeMonths: 24, prerequisites: ['venture_capital'], unlocks: [] },
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O3/O4): the two offense-toolkit
+  // gates. market_microstructure unlocks the standing-order demand report
+  // (aim a corner at what rivals' buildings actually need); guild_arbitration
+  // grants one FREE poach-retention per 28-day season (the defender-side
+  // counterpart — a real either/or with spending the same budget on offense).
+  { id: 'market_microstructure', name: 'Market Microstructure Analysis', category: 'economy', tier: 3, description: 'Order-flow analytics over the shared book: see aggregate rival standing-order demand per resource — which inputs the competition\'s buildings are short of, and where a supply squeeze would bite. Unlocks the Standing-Order Demand Report (Market Intelligence; burned fee per pull). Never free, never perfect: aggregates only — per-corporation attribution still requires espionage.', effect: 'Unlocks the standing-order demand intelligence report', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['futures_trading'], unlocks: [] },
+  { id: 'guild_arbitration', name: 'Guild Arbitration Compact', category: 'economy', tier: 3, description: 'A standing arbitration agreement with the crew guilds: when a rival corporation poaches your crew with signing bonuses, the guild matches the offer once per season at no cost to you — one free retention per 28 days. The defender-side answer to targeted wage wars.', effect: 'One free poach counteroffer retention per season', baseCostMoney: 1_200_000_000, baseTimeMonths: 14, prerequisites: ['brand_management'], unlocks: [] },
 
   // ═══════════════════════════════════════════════════════════════════════════
   // DOCTRINE CHOICES (Waves W3+W10 — 4X_BASELINE Part 2a Op4) — 4 new techs.
@@ -676,6 +683,11 @@ export const EFFECTS_BY_ID: Record<string, ResearchEffect[]> = {
   tax_optimization: [{ type: 'buildCost', magnitude: 0.1 }],
   brand_management: [{ type: 'revenue', magnitude: 0.1 }],
   merger_acquisition: [{ type: 'revenue', magnitude: 0.04 }, { type: 'maintenance', magnitude: 0.04 }],
+  // Wave M5 offense-toolkit gates: the mechanical unlock IS the point;
+  // small passive edges keep the "every tech has authored effects" invariant
+  // without turning the gates into dominant stat-sticks.
+  market_microstructure: [{ type: 'revenue', magnitude: 0.03 }],
+  guild_arbitration: [{ type: 'crewMorale', magnitude: 0.05 }],
   photon_sail_station_keeping: [{ type: 'maintenance', magnitude: 0.1 }],
   aerostat_technology: [{ type: 'mining', magnitude: 0.03 }, { type: 'revenue', magnitude: 0.03 }],
 

@@ -97,3 +97,71 @@ export function splitAuctionProceeds(winningAmount: number, hasGovernor: boolean
 export function isSlotPoolLocation(locationId: string): boolean {
   return ORBITAL_SLOT_MAP.has(locationId);
 }
+
+// ─── Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O7): auction soft-close ───────
+// A bid landing inside the final SOFT_CLOSE_WINDOW_MS extends the close by
+// SOFT_CLOSE_EXTENSION_MS (capped at SOFT_CLOSE_MAX_EXTENSION_MS past the
+// auction's original window) — last-second sniping becomes a strategy with
+// counterplay (rivals get time to respond) rather than a timing gimmick.
+
+export const SOFT_CLOSE_WINDOW_MS = 10 * 60 * 1000;
+export const SOFT_CLOSE_EXTENSION_MS = 10 * 60 * 1000;
+export const SOFT_CLOSE_MAX_EXTENSION_MS = 60 * 60 * 1000;
+
+/**
+ * New closesAt after a bid at `nowMs`. `openedAtMs` anchors the extension
+ * cap (openedAt + AUCTION_WINDOW_MS + max extension). Returns the existing
+ * closesAt unchanged when the bid is outside the soft-close window or the
+ * cap is exhausted. Pure/deterministic.
+ */
+export function applySoftClose(closesAtMs: number, openedAtMs: number, nowMs: number): number {
+  if (nowMs >= closesAtMs) return closesAtMs; // already closed — resolve path handles it
+  if (closesAtMs - nowMs > SOFT_CLOSE_WINDOW_MS) return closesAtMs;
+  const cap = openedAtMs + AUCTION_WINDOW_MS + SOFT_CLOSE_MAX_EXTENSION_MS;
+  return Math.min(cap, closesAtMs + SOFT_CLOSE_EXTENSION_MS);
+}
+
+// ─── Wave M5 (§3.2 O5): predatory slot leasing — allowed, taxed ─────────────
+// Leasing slots you don't build on is legitimate denial (the burned bid is
+// a real carrying cost), but not a free lockout: unbuilt leases pay an
+// escalating idle fee (10% of the winning bid per 30 days, burned) and
+// auto-release at 90 days unbuilt — "ownership transfers at market-clearing
+// prices" (canon) stays true because a denied rival can also just buy the
+// lease on the transfer market. Enforced by orbital-slots/resolve.
+
+export const SLOT_IDLE_FEE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
+export const SLOT_IDLE_FEE_FRACTION = 0.10;
+export const SLOT_IDLE_AUTO_RELEASE_MS = 90 * 24 * 60 * 60 * 1000;
+
+export interface IdleFeeAssessment {
+  /** Idle-fee intervals elapsed and not yet charged. */
+  intervalsDue: number;
+  /** Total fee due now (intervalsDue × 10% of leaseAmount), burned. */
+  feeDue: number;
+  /** When the charge cursor should advance to if feeDue is collected. */
+  chargeCursorMs: number;
+  /** ≥ 90 days unbuilt — the lease auto-releases back to the pool. */
+  autoRelease: boolean;
+}
+
+/**
+ * Assess idle fees for an ACTIVE lease with no completed building at its
+ * location. Pure: caller decides "unbuilt" (server-side building scan) and
+ * applies the charge/release. `lastIdleFeeAtMs` null = never charged (the
+ * cursor starts at `startedAtMs`).
+ */
+export function assessIdleFees(
+  lease: { startedAtMs: number; lastIdleFeeAtMs: number | null; leaseAmount: number },
+  nowMs: number,
+): IdleFeeAssessment {
+  const cursor = lease.lastIdleFeeAtMs ?? lease.startedAtMs;
+  const elapsed = Math.max(0, nowMs - cursor);
+  const intervalsDue = Math.floor(elapsed / SLOT_IDLE_FEE_INTERVAL_MS);
+  const feePerInterval = Math.round(Math.max(0, lease.leaseAmount) * SLOT_IDLE_FEE_FRACTION);
+  return {
+    intervalsDue,
+    feeDue: intervalsDue * feePerInterval,
+    chargeCursorMs: cursor + intervalsDue * SLOT_IDLE_FEE_INTERVAL_MS,
+    autoRelease: nowMs - lease.startedAtMs >= SLOT_IDLE_AUTO_RELEASE_MS,
+  };
+}

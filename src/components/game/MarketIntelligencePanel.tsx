@@ -56,7 +56,7 @@ interface CorporationRow {
   rank: number;
 }
 
-type IntelTab = 'market' | 'corporations' | 'flows' | 'share' | 'demand';
+type IntelTab = 'market' | 'corporations' | 'flows' | 'share' | 'demand' | 'offense';
 
 // Wave E4 (Finite Demand Pools — docs/ECONOMY_PVP_2026-08.md §E4): the
 // demand map's row shape, as served by GET /api/space-tycoon/demand-pools.
@@ -101,6 +101,9 @@ export default function MarketIntelligencePanel() {
           <TabButton active={tab === 'demand'} onClick={() => setTab('demand')} icon="services">
             Demand
           </TabButton>
+          <TabButton active={tab === 'offense'} onClick={() => setTab('offense')} icon="trending-down">
+            Econ Warfare
+          </TabButton>
         </div>
       </ConsolePanel>
 
@@ -109,6 +112,7 @@ export default function MarketIntelligencePanel() {
       {tab === 'flows' && <SupplyFlowsTab />}
       {tab === 'share' && <MarketShareTab />}
       {tab === 'demand' && <DemandMapTab />}
+      {tab === 'offense' && <EconWarfareTab />}
     </div>
   );
 }
@@ -1026,6 +1030,186 @@ function DemandMapTab() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ─── Econ Warfare Tab (Wave M5 — docs/MEANINGFUL_2026-08.md §3.2 O2/O3) ─────
+// The offense toolkit's market surface: every active price campaign on the
+// server (fully public — reputation is legible), a declare form (burned
+// fee + real inventory ammunition required, one campaign at a time), and
+// the standing-order demand report (market_microstructure research + a
+// burned per-pull fee — the "aim your corner" intelligence read).
+
+interface CampaignView {
+  id: string;
+  resourceSlug: string;
+  byCompanyName: string;
+  declaredAt: string;
+  endsAt: string;
+  feePaid: number;
+}
+
+interface StandingDemandView {
+  resourceSlug: string;
+  openQty: number;
+  escrowValue: number;
+  buyerCount: number;
+  standingQty: number;
+}
+
+function EconWarfareTab() {
+  const [campaigns, setCampaigns] = useState<CampaignView[]>([]);
+  const [declareSlug, setDeclareSlug] = useState<string>('iron');
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [demandReport, setDemandReport] = useState<StandingDemandView[] | null>(null);
+  const [reportMessage, setReportMessage] = useState<string | null>(null);
+
+  const loadCampaigns = useCallback(async () => {
+    try {
+      const res = await fetch('/api/space-tycoon/market/campaign');
+      if (res.ok) {
+        const data = await res.json();
+        setCampaigns(Array.isArray(data.campaigns) ? data.campaigns : []);
+      }
+    } catch { /* best-effort */ }
+  }, []);
+
+  useEffect(() => { loadCampaigns(); }, [loadCampaigns]);
+
+  const declare = async () => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const res = await fetch('/api/space-tycoon/market/campaign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'declare', resourceSlug: declareSlug }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setMessage(`Campaign declared — fee ${formatMoney(data.feePaid)} burned. Now sell real volume below spot; the crash sticks until ${new Date(data.endsAt).toLocaleString()}.`);
+        loadCampaigns();
+      } else {
+        setMessage(data.error || 'Declaration failed.');
+      }
+    } catch {
+      setMessage('Network error — try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const pullDemandReport = async () => {
+    setBusy(true);
+    setReportMessage(null);
+    try {
+      const res = await fetch('/api/space-tycoon/market/standing-demand', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDemandReport(Array.isArray(data.demand) ? data.demand : []);
+        setReportMessage(`Report pulled — ${formatMoney(data.feePaid)} burned.`);
+      } else {
+        setReportMessage(data.error || 'Report failed.');
+      }
+    } catch {
+      setReportMessage('Network error — try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <ConsolePanel title="Active Price Campaigns" icon="trending-down" subtitle="Public dumping declarations — every campaign is visible to every corporation. Producers: buy the dip, mothball, or out-wait the clock.">
+        {campaigns.length === 0 ? (
+          <p className="text-xs text-slate-500 py-3">No active price campaigns anywhere on the server. Markets are healing normally.</p>
+        ) : (
+          <div className="space-y-2">
+            {campaigns.map(c => {
+              const def = RESOURCE_MAP.get(c.resourceSlug as ResourceId);
+              const hoursLeft = Math.max(0, Math.round((new Date(c.endsAt).getTime() - Date.now()) / 3_600_000));
+              return (
+                <div key={c.id} className="flex items-center justify-between rounded-lg bg-red-500/[0.05] border border-red-500/20 px-3 py-2">
+                  <div>
+                    <p className="text-xs text-slate-200 font-bold">{def?.name || c.resourceSlug}</p>
+                    <p className="text-[11px] text-slate-400">{c.byCompanyName} · fee {formatMoney(c.feePaid)} burned</p>
+                  </div>
+                  <span className="text-[11px] font-mono text-red-300">{hoursLeft}h left</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="mt-3 pt-3 border-t border-white/[0.06]">
+          <p className="text-[11px] text-slate-400 mb-2">
+            Declare your own campaign: burned fee scaled to the market, requires holding real inventory of the resource, one campaign at a time, 14-day per-market cooldown. Frontier corporations cannot declare or be starved.
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={declareSlug}
+              onChange={e => setDeclareSlug(e.target.value)}
+              className="bg-slate-900 border border-white/[0.1] rounded-md px-2 py-1.5 text-xs text-slate-200"
+              aria-label="Resource to campaign against"
+            >
+              {RESOURCES.map(r => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </select>
+            <button
+              onClick={declare}
+              disabled={busy}
+              className="px-3 py-1.5 rounded-md text-xs font-bold bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500/25 disabled:opacity-40"
+            >
+              Declare price campaign
+            </button>
+          </div>
+          {message && <p className="text-[11px] text-slate-300 mt-2">{message}</p>}
+        </div>
+      </ConsolePanel>
+
+      <ConsolePanel title="Standing-Order Demand Report" icon="market" subtitle="What rival buildings are short of, per resource — aim a corner where it bites. Requires Market Microstructure Analysis research; each pull burns a fee.">
+        <button
+          onClick={pullDemandReport}
+          disabled={busy}
+          className="px-3 py-1.5 rounded-md text-xs font-bold bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/25 disabled:opacity-40"
+        >
+          Pull report ($5M, burned)
+        </button>
+        {reportMessage && <p className="text-[11px] text-slate-300 mt-2">{reportMessage}</p>}
+        {demandReport && (
+          demandReport.length === 0 ? (
+            <p className="text-xs text-slate-500 mt-3">No rival buy-side demand resting on the book right now.</p>
+          ) : (
+            <div className="mt-3 overflow-x-auto">
+              <table className="w-full text-left text-[11px]">
+                <thead>
+                  <tr className="text-slate-500 uppercase tracking-wider">
+                    <th className="py-1 pr-3">Resource</th>
+                    <th className="py-1 pr-3">Open demand</th>
+                    <th className="py-1 pr-3">Standing (building shortfalls)</th>
+                    <th className="py-1 pr-3">Escrow value</th>
+                    <th className="py-1">Buyers</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {demandReport.map(d => (
+                    <tr key={d.resourceSlug} className="border-t border-white/[0.05] text-slate-300">
+                      <td className="py-1.5 pr-3 font-bold">{RESOURCE_MAP.get(d.resourceSlug as ResourceId)?.name || d.resourceSlug}</td>
+                      <td className="py-1.5 pr-3 font-mono">{d.openQty.toLocaleString()}</td>
+                      <td className="py-1.5 pr-3 font-mono">{d.standingQty.toLocaleString()}</td>
+                      <td className="py-1.5 pr-3 font-mono">{formatMoney(d.escrowValue)}</td>
+                      <td className="py-1.5 font-mono">{d.buyerCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+      </ConsolePanel>
     </div>
   );
 }

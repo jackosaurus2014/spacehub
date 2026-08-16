@@ -84,6 +84,11 @@ export async function GET(request: NextRequest) {
             status: true,
             compositeScore: true,
             createdAt: true,
+            // Wave M5 (§3.2 O7): bid insurance — marginLost is stamped by
+            // the resolver for insured LOSING bids only.
+            insured: true,
+            insuranceFee: true,
+            marginLost: true,
           },
         },
         _count: {
@@ -150,6 +155,9 @@ export async function GET(request: NextRequest) {
           collateralLocked: myBid.collateralLocked,
           status: myBid.status,
           compositeScore: myBid.compositeScore,
+          // Wave M5 (O7): insured losing bids see the margin they lost by.
+          insured: myBid.insured,
+          marginLost: myBid.insured && myBid.status === 'lost' ? myBid.marginLost : null,
         } : null,
       };
     });

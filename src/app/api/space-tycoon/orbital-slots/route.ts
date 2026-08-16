@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { ORBITAL_SLOT_POOLS, SATURATED_OCCUPANCY_PCT } from '@/lib/game/spatial-strategy';
-import { computeMinBid, isSlotPoolLocation, AUCTION_WINDOW_MS } from '@/lib/game/orbital-slot-auctions';
+import { computeMinBid, isSlotPoolLocation, AUCTION_WINDOW_MS, applySoftClose } from '@/lib/game/orbital-slot-auctions';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
@@ -158,11 +158,25 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Insufficient funds to escrow this bid' }, { status: 400 });
       }
 
+      // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O7): soft-close — a bid
+      // inside the final 10 minutes extends the close by 10 minutes (capped
+      // at +1h past the original window), so last-second sniping gives
+      // rivals a response window instead of being a timing gimmick.
+      const nowMs = Date.now();
+      const extendedCloseMs = applySoftClose(auction.closesAt.getTime(), auction.createdAt.getTime(), nowMs);
+      const softClosed = extendedCloseMs !== auction.closesAt.getTime();
+
       await prisma.$transaction(async (tx) => {
         if (existingBid) {
           await tx.orbitalSlotBid.update({ where: { id: existingBid.id }, data: { amount: bidAmount } });
         } else {
           await tx.orbitalSlotBid.create({ data: { auctionId, profileId: profile.id, amount: bidAmount } });
+        }
+        if (softClosed) {
+          await tx.orbitalSlotAuction.update({
+            where: { id: auctionId },
+            data: { closesAt: new Date(extendedCloseMs) },
+          });
         }
         if (ledgerOn && delta !== 0) {
           await tx.gameProfile.update({ where: { id: profile.id }, data: { money: { decrement: delta } } });
@@ -174,7 +188,12 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      return NextResponse.json({ success: true, escrowed: ledgerOn ? bidAmount : 0 });
+      return NextResponse.json({
+        success: true,
+        escrowed: ledgerOn ? bidAmount : 0,
+        softClosed,
+        closesAt: new Date(extendedCloseMs).toISOString(),
+      });
     }
 
     if (body.action === 'transfer') {

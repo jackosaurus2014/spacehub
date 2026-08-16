@@ -76,6 +76,10 @@ export async function POST(request: Request) {
       minedByLocationThisTick = {},
       hazardShockThisTick = {},
       laneDispatchesThisTick = {},
+      // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O6): freight tolls debited
+      // client-side at dispatch, settled to zone governors here (ledgered,
+      // capped).
+      tollPaymentsThisTick = {},
       // Full state for multiplayer visibility
       buildings = [],
       activeServices = [],
@@ -1062,6 +1066,68 @@ export async function POST(request: Request) {
       }
     } catch { /* rivals summary non-critical */ }
 
+    // ── Wave M5 (docs/MEANINGFUL_2026-08.md §M5 / §3.2 O6): settle freight
+    // tolls to zone governors. The client debited itself at dispatch time
+    // (cargo-logistics.ts) from the PUBLIC toll snapshot; here the credit
+    // side lands via the One-Wallet ledger. Client-claimed like the rest of
+    // the payload, so defense in depth: only zones with a real toll > 0 and
+    // a governor get credited, the per-zone amount is capped per sync, and
+    // the governor never pays themselves. ──────────────────────────────────
+    if (tollPaymentsThisTick && typeof tollPaymentsThisTick === 'object') {
+      try {
+        const { FREIGHT_TOLL_SERVER_CREDIT_CAP_PER_SYNC } = await import('@/lib/game/offense');
+        const { recordLedger, isLedgerAvailable: ledgerAvail } = await import('@/lib/game/server-ledger');
+        const tollLedgerOn = await ledgerAvail();
+        if (tollLedgerOn) {
+          for (const [zoneSlug, amount] of Object.entries(tollPaymentsThisTick as Record<string, unknown>).slice(0, 10)) {
+            if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) continue;
+            const safeAmount = Math.min(FREIGHT_TOLL_SERVER_CREDIT_CAP_PER_SYNC, Math.round(amount));
+            const zone = await prisma.zone.findUnique({
+              where: { slug: zoneSlug },
+              select: { governorId: true, freightTollPct: true },
+            });
+            if (!zone || !zone.governorId || zone.freightTollPct <= 0) continue;
+            if (zone.governorId === profile.id) continue;
+            await prisma.$transaction(async (tx) => {
+              await tx.gameProfile.update({
+                where: { id: zone.governorId! },
+                data: { money: { increment: safeAmount }, totalEarned: { increment: safeAmount } },
+              });
+              await recordLedger(tx, {
+                profileId: zone.governorId!, moneyDelta: safeAmount,
+                reason: 'lane_toll_income', refId: `${zoneSlug}:${profile.id}`,
+              });
+            });
+          }
+        }
+      } catch { /* toll settlement non-critical (schema may lag deploy) */ }
+    }
+
+    // ── Wave M5 (§M5): offense snapshot — active price campaigns (public),
+    // this player's poach inbox + outcomes, zone freight tolls (public),
+    // cornering alerts. Built server-side (offense-server.ts), re-clamped
+    // client-side (offense.ts). Also lazy-resolves expired poach offers —
+    // no cron dependency. ──────────────────────────────────────────────────
+    let offense = null;
+    try {
+      const { buildOffenseSnapshot } = await import('@/lib/game/offense-server');
+      offense = await buildOffenseSnapshot(profile.id, safeResearch);
+    } catch { /* offense snapshot non-critical (schema may lag deploy) */ }
+
+    // ── Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity snapshot ──────────
+    // Share registry / tender offers / holdings for THIS profile, gated on
+    // the server-side population check (share-registry.ts). Read-only on
+    // this hot path (registries are created lazily by the equity GET /
+    // resolve cron, never here); null until the schema is pushed AND the
+    // gate opens — the client treats null as "no equity system" (pre-M6).
+    let equity = null;
+    try {
+      const { buildEquitySnapshot } = await import('@/lib/game/server-equity');
+      equity = await buildEquitySnapshot(
+        { id: profile.id, companyName: profile.companyName, netWorth },
+      );
+    } catch { /* equity snapshot non-critical (schema may lag deploy) */ }
+
     return NextResponse.json({
       success: true,
       profileId: profile.id,
@@ -1101,6 +1167,13 @@ export async function POST(request: Request) {
       // Wave E7 (§E7 / §5 item 6, audit §1d): world-shared cooperative
       // mega-project bonuses — see server-effects.ts's MegaProjectBonusSnapshot.
       megaProjectBonuses,
+      // Wave M5 (§M5): offense snapshot — campaigns / poach inbox+outcomes /
+      // freight tolls / cornering alerts. Additive field; older clients
+      // simply ignore it (pre-M5 behavior).
+      offense,
+      // Wave M6 (§M6): share-registry/takeover snapshot — additive field;
+      // older clients simply ignore it (pre-M6 behavior).
+      equity,
       rivals: rivalsSummary,
       leagueInfo,
       // Audit Wave B: server-computed effects consumed by the client tick

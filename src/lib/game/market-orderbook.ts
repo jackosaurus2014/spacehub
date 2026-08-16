@@ -632,6 +632,24 @@ export async function getNPCMarketMakerOrders(
   const npcBidPrice = quote.bid;
   const npcAskPrice = quote.ask;
 
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O2 "price campaigns"): while a
+  // declared price campaign is live on this resource, the maker halves its
+  // BID volume — the house won't absorb the dump, so crashing the price
+  // requires selling to real players below basis. ASK volume is untouched:
+  // Frontier players' input purchases still fill at the maker's band quote
+  // (never below band), so the campaign can't starve anyone's supply.
+  let bidVolume = effectiveVolume;
+  try {
+    const { CAMPAIGN_NPC_BID_VOLUME_FACTOR } = await import('./price-campaigns');
+    const campaignActive = await prisma.priceCampaign.findFirst({
+      where: { resourceSlug, status: 'active', endsAt: { gt: new Date() } },
+      select: { id: true },
+    });
+    if (campaignActive) {
+      bidVolume = Math.max(1, Math.floor(effectiveVolume * CAMPAIGN_NPC_BID_VOLUME_FACTOR));
+    }
+  } catch { /* campaign table may lag deploy — full bid volume */ }
+
   // Clean up any existing NPC orders for this resource
   await prisma.marketLimitOrder.updateMany({
     where: {
@@ -650,7 +668,7 @@ export async function getNPCMarketMakerOrders(
       profileId: NPC_PROFILE_ID,
       resourceSlug,
       side: 'buy',
-      quantity: effectiveVolume,
+      quantity: bidVolume,
       filledQty: 0,
       pricePerUnit: npcBidPrice,
       escrowAmount: 0,
@@ -675,7 +693,7 @@ export async function getNPCMarketMakerOrders(
   });
 
   return {
-    bid: { price: npcBidPrice, quantity: effectiveVolume },
+    bid: { price: npcBidPrice, quantity: bidVolume },
     ask: { price: npcAskPrice, quantity: effectiveVolume },
     spreadHalf: quote.spreadHalf,
   };

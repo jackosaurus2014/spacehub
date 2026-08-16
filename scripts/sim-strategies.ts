@@ -309,4 +309,59 @@ console.log('\n## Labor market — engineer wage index vs server-wide hiring (co
   console.log(mdTable(['scenario', 'crew quarters built', 'employed', 'labor supply', 'wage index', 'engineer salary'], rows));
 }
 
+// ─── Price-campaign duel (Wave M5, §3.2 O2 / §6 candidate scenario) ─────────
+// The same lunar miner run twice: once at neutral spot, once against a
+// fully-pressed price campaign that has pinned its output commodities at the
+// anti-cornering band floor (base × 0.3 — the deepest a dump can legally
+// push). With M3's price-linked mining, the crash lands directly on the
+// victim's cash revenue — this is the number a defender weighs against
+// mothballing (M2) or buying the dump. The attacker's own cost (fee burn +
+// selling below basis) is not modeled here; this is the VICTIM's damage
+// bound.
+
+console.log('\n## Price-campaign duel — lunar miner at neutral spot vs campaign-crashed spot (band floor 0.3×)\n');
+{
+  const { RESOURCE_MAP: RM } = require('../src/lib/game/resources') as typeof import('../src/lib/game/resources');
+  const minerPlan: SimPlayer['plan'] = (p) => {
+    if (p.buildings.length >= 4) return [];
+    return [
+      { definitionId: 'mining_lunar_basic', locationId: 'lunar_surface' },
+      { definitionId: 'mining_lunar_ice', locationId: 'lunar_surface' },
+      { definitionId: 'solar_farm_lunar', locationId: 'lunar_surface' },
+    ];
+  };
+
+  const neutral = newPlayer('miner-neutral', START_MONEY, minerPlan, { maxBuildsPerMonth: 2 });
+  runWorld(newWorld([neutral], 0), 12);
+
+  // Crash EVERY resource to the band floor — the upper bound of a
+  // multi-market campaign barrage (a single campaign only pins ONE market;
+  // per-resource rows below show the one-market case too).
+  const crashedPrices: Record<string, number> = {};
+  const { RESOURCES: ALL_RES } = require('../src/lib/game/resources') as typeof import('../src/lib/game/resources');
+  for (const r of ALL_RES) crashedPrices[r.id] = Math.round(r.baseMarketPrice * 0.3);
+  const crashed = newPlayer('miner-crashed', START_MONEY, minerPlan, { maxBuildsPerMonth: 2 });
+  runWorld(newWorld([crashed], 0, { prices: crashedPrices, asOf: Date.now() }), 12);
+
+  const rows: (string | number)[][] = [];
+  for (const mo of [3, 6, 11]) {
+    const n = neutral.history[mo];
+    const c = crashed.history[mo];
+    rows.push([
+      mo,
+      fm(n.revenue + n.resourceSales),
+      fm(c.revenue + c.resourceSales),
+      `${Math.round(((c.revenue + c.resourceSales) / Math.max(1, n.revenue + n.resourceSales)) * 100)}%`,
+      fm(n.net),
+      fm(c.net),
+    ]);
+  }
+  console.log(mdTable(
+    ['mo', 'gross/mo (neutral)', 'gross/mo (crashed)', 'vs neutral', 'net/mo (neutral)', 'net/mo (crashed)'],
+    rows,
+  ));
+  const waterBase = RM.get('lunar_water')!.baseMarketPrice;
+  console.log(`\nSingle-market case: one campaign pins ONE commodity (e.g. lunar_water ${fm(waterBase)} → ${fm(Math.round(waterBase * 0.3))}) for 7 days, then mean reversion resumes (~6.6h half-life). Counterplay: mothball (25% maintenance), buy the dump, or out-wait the clock — the attacker pays the burned fee plus below-basis margin the whole time.`);
+}
+
 console.log('\ndone.');

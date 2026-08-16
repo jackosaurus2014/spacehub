@@ -259,6 +259,13 @@ model GameProfile {
   orbitalSlotBids   OrbitalSlotBid[]
   orbitalSlotLeases OrbitalSlotLease[]
 
+  // Meaningful Decisions Wave M5 "Offense Toolkit I" (docs/
+  // MEANINGFUL_2026-08.md §M5 / §3.2 O2+O4): declared price campaigns and
+  // targeted talent-poaching offers (see PriceCampaign/PoachOffer below).
+  priceCampaigns      PriceCampaign[]
+  poachOffersMade     PoachOffer[] @relation("poachAttacker")
+  poachOffersReceived PoachOffer[] @relation("poachTarget")
+
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
@@ -5096,6 +5103,15 @@ model ContractBid {
   collateralLocked Float  @default(0)
   compositeScore   Float? // Computed: 70% price + 15% reputation + 15% speed
 
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O7 "bid insurance"): pay 5% of
+  // collateral (burned) at bid time to learn, post-award, the margin you
+  // lost by — paid intel that improves next bids. `marginLost` is stamped by
+  // bidding/resolve for insured LOSING bids only (positive = how much closer
+  // your price needed to be to the winner's).
+  insured      Boolean @default(false)
+  insuranceFee Float   @default(0)
+  marginLost   Float?
+
   status    String   @default("pending") // pending, won, lost, withdrawn
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5455,6 +5471,13 @@ model Zone {
   governorId   String? // Profile ID of current governor
   governorName String?
   customName   String? // Governor-assigned zone name
+
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O6 "chokepoint squeeze — lane
+  // concessions"): governor-levied freight toll (0.005-0.02 fraction of
+  // cargo value) on rival dispatches crossing this zone's lanes. 0 = no
+  // toll. Public (delivered to every synced client in the offense
+  // snapshot); Frontier payers exempt; alliance trade treaties reduce it.
+  freightTollPct Float @default(0)
 
   influences ZoneInfluence[]
   challenges GovernanceChallenge[]
@@ -7045,10 +7068,218 @@ model OrbitalSlotLease {
   // market-clearing prices" canon line.
   transferredFromId String?
 
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O5 "predatory slot leasing —
+  // allowed, taxed"): leases held WITHOUT a completed building at the
+  // location pay an escalating idle fee (10% of the winning bid per 30
+  // days, burned) and auto-release at 90 days unbuilt. Enforced by the
+  // orbital-slots/resolve cron; `status` gains a 'released' terminal value.
+  idleFeesPaid  Float     @default(0)
+  lastIdleFeeAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([locationId, status])
   @@index([holderId])
   @@index([status, expiresAt])
+}
+
+// ─── Space Tycoon Wave M6: Share Registry & Hostile Takeovers ───────────────
+// docs/MEANINGFUL_2026-08.md §M6 / §3.2 O1. Server-side truth for every
+// corporation's capital structure. Deliberately uses PLAIN profileId strings
+// (no GameProfile relations) so this block is purely additive — the
+// equity/resolve cron reconciles orphans (a deleted holder's shares escheat
+// back to the founder holding with an audit ShareTransaction) instead of
+// relying on cascade deletes that would silently break the
+// sum(holdings) == totalShares invariant. Pure decision logic lives in
+// src/lib/game/share-registry.ts; mutations happen only in
+// /api/space-tycoon/equity + /api/space-tycoon/equity/resolve, ledgered via
+// server-ledger.ts.
+
+model CorpShareRegistry {
+  id        String @id @default(cuid())
+  // The corporation this registry describes (GameProfile.id). One wallet =
+  // one corp = one registry.
+  profileId String @unique
+
+  totalShares Int @default(100)
+
+  // Set when another profile holds >= CONTROL_SHARES (51) — the target
+  // continues as a subsidiary of this controller (spec "what control gets
+  // you"). Null = founder-controlled.
+  controllerProfileId String?
+  // Post-acquisition integration malus (-10% target service revenue) active
+  // until this instant (2 game-months after the control change).
+  integrationMalusUntil DateTime?
+
+  // Distress tracking (spec: cash-negative >= 3 consecutive game-months
+  // auto-auctions a tranche). Checked monthly by the resolve cron.
+  distressMonths         Int    @default(0)
+  lastDistressCheckMonth Int?
+  lastDistressCash       Float?
+
+  // Anti-abuse bounds
+  lastRaiseAt         DateTime?
+  tenderCooldownUntil DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  holdings       CorpShareHolding[]
+  transactions   ShareTransaction[]
+  tenderOffers   TenderOffer[]
+  dividendPolicy DividendPolicy?
+
+  @@index([controllerProfileId])
+}
+
+model CorpShareHolding {
+  id              String            @id @default(cuid())
+  registryId      String
+  registry        CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
+  // GameProfile.id of the holder. The founder's holding is the row where
+  // holderProfileId == registry.profileId. Invariant: sum(shares) over a
+  // registry == registry.totalShares (resolve cron heals orphans).
+  holderProfileId String
+  shares          Int
+  updatedAt       DateTime          @default(now()) @updatedAt
+
+  @@unique([registryId, holderProfileId])
+  @@index([holderProfileId])
+}
+
+// Permanent audit trail — "player corporations write their own chapter."
+// Every share movement (tender settlement, buyback, raise, distress sale,
+// mandatory-bid exercise, escheat) is a row here, surfaced on the public
+// corporation page as chronicle entries.
+model ShareTransaction {
+  id            String            @id @default(cuid())
+  registryId    String
+  registry      CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
+  kind          String // tender_settlement | buyback | raise_sale | distress_sale | mandatory_bid | escheat
+  fromProfileId String?
+  toProfileId   String?
+  shares        Int
+  pricePerShare Float
+  refId         String? // TenderOffer id when applicable
+  createdAt     DateTime          @default(now())
+
+  @@index([registryId, createdAt])
+}
+
+// One row per offer/listing. Buy-side kinds (tender, white_knight, buyback)
+// escrow pricePerShare*sharesSought from the initiator at creation and
+// resolve as a deterministic contest at closesAt (share-registry.ts
+// rankContestOffers). Sell-side kinds (raise, distress) are first-come
+// purchasable listings. All offers are public and calendar-visible.
+model TenderOffer {
+  id              String            @id @default(cuid())
+  registryId      String
+  registry        CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
+  // Denormalized from registry for cheap "offers targeting me" queries.
+  targetProfileId String
+  // Buy-side: the bidder (for buyback this equals targetProfileId — the
+  // board burning its own cash). Sell-side: the seller.
+  initiatorProfileId String
+  kind            String // tender | white_knight | buyback | raise | distress
+  pricePerShare   Float
+  sharesSought    Int
+  sharesFilled    Int               @default(0)
+  escrowAmount    Float             @default(0)
+  arbitrationFee  Float             @default(0)
+  status          String            @default("open") // open | settled | settled_control | lost | expired | withdrawn
+  opensAt         DateTime          @default(now())
+  closesAt        DateTime
+  // Set when a settlement crossed 50%: minorities may sell to the new
+  // controller at pricePerShare until this instant (mandatory bid rule).
+  mandatoryBidEndsAt DateTime?
+  createdAt       DateTime          @default(now())
+
+  acceptances TenderAcceptance[]
+
+  @@index([targetProfileId, status])
+  @@index([initiatorProfileId, status])
+  @@index([status, closesAt])
+}
+
+// A holder opting IN to sell shares into an open buy-side offer (selling is
+// always voluntary — minorities may instead hold and collect dividends).
+model TenderAcceptance {
+  id              String      @id @default(cuid())
+  offerId         String
+  offer           TenderOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  holderProfileId String
+  shares          Int
+  createdAt       DateTime    @default(now())
+
+  @@unique([offerId, holderProfileId])
+}
+
+// Board-set dividend payout ratio (0-50% of published quarterly profit),
+// paid pro-rata to minority holders by the resolve cron once per NEW
+// published quarterly report (PublishedCorpReport).
+model DividendPolicy {
+  id                String            @id @default(cuid())
+  registryId        String            @unique
+  registry          CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
+  payoutRatioPct    Int               @default(0)
+  lastPaidQuarterKey String?
+  updatedAt         DateTime          @updatedAt
+}
+
+// ─── Meaningful Decisions Wave M5 "Offense Toolkit I" ────────────────────────
+// (docs/MEANINGFUL_2026-08.md §M5 / §3.2 O2-O8). All-additive; the only
+// existing tables touched are additive columns on OrbitalSlotLease (idle
+// fees), ContractBid (bid insurance) and Zone (freight toll).
+
+// O2 — a declared, PUBLIC price campaign ("dumping") on one resource market.
+// Declaring costs a burned fee scaled to the market's size and requires real
+// inventory ammunition; while active, mean-reversion stops healing that
+// resource's price (the crash sticks for the week) and the NPC maker halves
+// its bid volume (the house won't absorb the dump — only real players and
+// the campaigner's own margin sacrifice move the market). Every campaign is
+// visible to every synced player (reputation is legible — canon).
+model PriceCampaign {
+  id           String      @id @default(cuid())
+  profileId    String
+  profile      GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  resourceSlug String
+  feePaid      Float
+  status       String      @default("active") // active, completed, cancelled
+  declaredAt   DateTime    @default(now())
+  endsAt       DateTime
+  createdAt    DateTime    @default(now())
+
+  @@index([resourceSlug, status])
+  @@index([profileId, status])
+  @@index([status, endsAt])
+}
+
+// O4 — a targeted talent-poaching offer: escrowed signing bonuses for up to
+// 10% of a rival's named crew type, with a 48h counteroffer window (match
+// 75% of the bonus to retain). Resolution outcomes are delivered to both
+// saves via the sync offense snapshot and applied idempotently client-side
+// (GameState.appliedPoachOfferIds). Frontier corps are immune both
+// directions; per-target cooldown 30 days.
+model PoachOffer {
+  id                String      @id @default(cuid())
+  attackerId        String
+  attacker          GameProfile @relation("poachAttacker", fields: [attackerId], references: [id], onDelete: Cascade)
+  targetId          String
+  target            GameProfile @relation("poachTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  crewType          String
+  count             Int
+  signingBonusTotal Float // escrowed from the attacker at offer time
+  retentionCost     Float // 75% of the bonus — what the target pays to retain
+  actionFee         Float   @default(0) // burned espionage-style fee
+  wageIndexAtOffer  Float   @default(1)
+  detected          Boolean @default(false) // target identified the attacker
+  status            String  @default("pending") // pending, retained, retained_free, poached, withdrawn
+  respondBy         DateTime
+  resolvedAt        DateTime?
+  createdAt         DateTime  @default(now())
+
+  @@index([targetId, status])
+  @@index([attackerId, status])
+  @@index([status, respondBy])
 }

@@ -44,6 +44,14 @@ import { MAX_EVENT_LOG } from './constants';
 // discount (server-shared, delivered via state.laneBonuses), and every
 // dispatch here records one usage tick for the next sync to transmit.
 import { getLaneBonus, accumulateLaneUsage } from './trade-lanes';
+// Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O6 "chokepoint squeeze — lane
+// concessions"): zone governors may levy a small public freight toll
+// (0.5-2% of cargo value, capped) on rival dispatches crossing their zone.
+// Computed here at dispatch time from the synced offense snapshot
+// (deterministic), debited with the fuel bill, and settled to the governor
+// through the sync route's ledger credit. Frontier corps exempt; alternate
+// routes / voting the governor out / trade treaties are the counterplay.
+import { computeCargoValue, computeFreightTolls, accumulateTollPayments, type FreightTollCharge } from './offense';
 
 // ─── Home cluster ────────────────────────────────────────────────────────────
 
@@ -319,6 +327,11 @@ export interface FreightPlan {
   loadUnits: number;
   capacity: number;
   fuelCost: number;
+  /** Wave M5 (O6): governor freight tolls owed by this dispatch (sum of
+   *  `tolls[].amount`). 0 when no tolled zone is crossed / Frontier / no
+   *  synced offense snapshot. */
+  tollCost: number;
+  tolls: FreightTollCharge[];
   travelSeconds: number;
 }
 
@@ -344,6 +357,7 @@ export function planFreight(
   shipInstanceId: string,
   toLocationId: string,
   cargo: Record<string, number> = {},
+  nowMs: number = Date.now(),
 ): FreightPlan | FreightPlanError {
   const ship = (state.ships || []).find(s => s.instanceId === shipInstanceId);
   if (!ship) return { ok: false, reason: 'ship_not_found' };
@@ -370,8 +384,11 @@ export function planFreight(
   }
 
   const fuelCost = getFreightFuelCost(state, shipInstanceId, ship.currentLocation, toLocationId, manifest);
-  if (state.money < fuelCost) {
-    return { ok: false, reason: 'insufficient_funds', detail: `Fuel bill ${fuelCost.toLocaleString()}` };
+  // Wave M5 (O6): governor freight tolls on tolled zones this route crosses.
+  const tolls = computeFreightTolls(state, ship.currentLocation, toLocationId, computeCargoValue(manifest), nowMs);
+  const tollCost = tolls.reduce((s, t) => s + t.amount, 0);
+  if (state.money < fuelCost + tollCost) {
+    return { ok: false, reason: 'insufficient_funds', detail: `Fuel bill ${fuelCost.toLocaleString()}${tollCost > 0 ? ` + toll ${tollCost.toLocaleString()}` : ''}` };
   }
 
   return {
@@ -384,6 +401,8 @@ export function planFreight(
     loadUnits,
     capacity,
     fuelCost,
+    tollCost,
+    tolls,
     travelSeconds: getTravelTime(ship.currentLocation, toLocationId),
   };
 }
@@ -403,7 +422,7 @@ export function dispatchShipWithCargo(
   cargo: Record<string, number> = {},
   nowMs: number = Date.now(),
 ): { ok: true; state: GameState; plan: FreightPlan } | FreightPlanError {
-  const plan = planFreight(state, shipInstanceId, toLocationId, cargo);
+  const plan = planFreight(state, shipInstanceId, toLocationId, cargo, nowMs);
   if (!plan.ok) return plan;
 
   // Debit origin inventory (ledger-style: departure debit).
@@ -450,8 +469,8 @@ export function dispatchShipWithCargo(
 
   const newState: GameState = {
     ...state,
-    money: state.money - plan.fuelCost,
-    totalSpent: state.totalSpent + plan.fuelCost,
+    money: state.money - plan.fuelCost - plan.tollCost,
+    totalSpent: state.totalSpent + plan.fuelCost + plan.tollCost,
     resources,
     locationInventories,
     ships,
@@ -460,12 +479,17 @@ export function dispatchShipWithCargo(
     // player action. Sent to the server as laneDispatchesThisTick and
     // drained via trade-lanes.ts's own hand-off queue after a successful sync.
     pendingLaneUsage: accumulateLaneUsage(state.pendingLaneUsage, plan.from, plan.to),
+    // Wave M5 (O6): tolls debited above settle to the governor via sync
+    // (`tollPaymentsThisTick` → server ledger credit, capped server-side).
+    pendingTollPayments: plan.tollCost > 0
+      ? accumulateTollPayments(state.pendingTollPayments, plan.tolls)
+      : state.pendingTollPayments,
     eventLog: [{
       id: generateId(),
       date: state.gameDate,
       type: 'milestone' as const,
       title: `🚚 Freight dispatched → ${toName}`,
-      description: `Carrying ${cargoSummary}. Fuel bill: $${(plan.fuelCost / 1_000_000).toFixed(2)}M (${plan.deltaV.toLocaleString()} m/s Δv).`,
+      description: `Carrying ${cargoSummary}. Fuel bill: $${(plan.fuelCost / 1_000_000).toFixed(2)}M (${plan.deltaV.toLocaleString()} m/s Δv).${plan.tollCost > 0 ? ` Zone freight toll: $${(plan.tollCost / 1_000_000).toFixed(2)}M (${plan.tolls.map(t => `${t.zoneSlug} ${(t.tollPct * 100).toFixed(1)}%`).join(', ')}).` : ''}`,
     }, ...state.eventLog].slice(0, MAX_EVENT_LOG),
   };
 

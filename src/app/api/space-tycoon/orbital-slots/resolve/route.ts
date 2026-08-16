@@ -6,6 +6,7 @@ import {
   computeMinBid,
   resolveAuction,
   splitAuctionProceeds,
+  assessIdleFees,
   LEASE_TERM_MS,
   AUCTION_WINDOW_MS,
 } from '@/lib/game/orbital-slot-auctions';
@@ -182,8 +183,89 @@ export async function POST(request: NextRequest) {
       data: { status: 'expired' },
     });
 
+    // ── Step 4 (Wave M5, docs/MEANINGFUL_2026-08.md §3.2 O5): predatory
+    // slot leasing is allowed but taxed. An ACTIVE lease whose holder has
+    // no completed building at the location pays an escalating idle fee
+    // (10% of the winning bid per 30 days, BURNED — a money sink, never
+    // paid to anyone) and auto-releases back to the pool at 90 days
+    // unbuilt ("ownership transfers at market-clearing prices" — a locked
+    // slot always comes back). ─────────────────────────────────────────────
+    let idleFeesCharged = 0;
+    let leasesReleased = 0;
+    try {
+      const activeLeases = await prisma.orbitalSlotLease.findMany({
+        where: { status: 'active' },
+        take: 200,
+      });
+      for (const lease of activeLeases) {
+        try {
+          const holder = await prisma.gameProfile.findUnique({
+            where: { id: lease.holderId },
+            select: { buildingsData: true },
+          });
+          const holderBuildings = (holder?.buildingsData as unknown as BuildingInstance[]) || [];
+          const hasBuilt = holderBuildings.some(b => b.isComplete && b.locationId === lease.locationId);
+          if (hasBuilt) continue; // built-on leases pay nothing
+
+          const assessment = assessIdleFees(
+            {
+              startedAtMs: lease.startedAt.getTime(),
+              lastIdleFeeAtMs: lease.lastIdleFeeAt ? lease.lastIdleFeeAt.getTime() : null,
+              leaseAmount: lease.leaseAmount,
+            },
+            now.getTime(),
+          );
+
+          if (assessment.autoRelease) {
+            await prisma.orbitalSlotLease.update({
+              where: { id: lease.id },
+              data: { status: 'released' },
+            });
+            leasesReleased++;
+            await prisma.playerActivity.create({
+              data: {
+                profileId: lease.holderId,
+                companyName: '',
+                type: 'orbital_slot_lease_released',
+                title: 'Idle orbital-slot lease auto-released',
+                description: `A lease at ${lease.locationId} sat unbuilt for 90 days and returned to the open pool.`,
+                metadata: { leaseId: lease.id, locationId: lease.locationId },
+              },
+            }).catch(() => { /* non-critical */ });
+            continue;
+          }
+
+          if (assessment.feeDue > 0) {
+            await prisma.$transaction(async (tx) => {
+              // Burned — debit the holder, credit no one (BALANCE.md sink).
+              await tx.gameProfile.update({
+                where: { id: lease.holderId },
+                data: { money: { decrement: assessment.feeDue }, totalSpent: { increment: assessment.feeDue } },
+              });
+              if (ledgerOn) {
+                await recordLedger(tx, {
+                  profileId: lease.holderId, moneyDelta: -assessment.feeDue,
+                  reason: 'slot_idle_fee', refId: lease.id,
+                });
+              }
+              await tx.orbitalSlotLease.update({
+                where: { id: lease.id },
+                data: {
+                  idleFeesPaid: { increment: assessment.feeDue },
+                  lastIdleFeeAt: new Date(assessment.chargeCursorMs),
+                },
+              });
+            });
+            idleFeesCharged++;
+          }
+        } catch (leaseError) {
+          logger.error('Slot idle-fee assessment failed', { leaseId: lease.id, error: String(leaseError) });
+        }
+      }
+    } catch { /* idle fees non-critical (columns may lag deploy) */ }
+
     logger.info('Orbital slot resolution cycle complete', {
-      autoOpened, resolved, expiredLeases: expiredLeases.count,
+      autoOpened, resolved, expiredLeases: expiredLeases.count, idleFeesCharged, leasesReleased,
     });
 
     return NextResponse.json({
@@ -191,6 +273,8 @@ export async function POST(request: NextRequest) {
       autoOpened,
       resolved,
       expiredLeases: expiredLeases.count,
+      idleFeesCharged,
+      leasesReleased,
     });
   } catch (error) {
     logger.error('Orbital slot resolution error', { error: String(error) });

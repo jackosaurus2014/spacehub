@@ -7,7 +7,7 @@ import GameIcon from '@/components/game/GameIcon';
 import ShareButton from '@/components/ui/ShareButton';
 import { formatMoney } from '@/lib/game/formulas';
 import { getTierDef } from '@/lib/game/corporation-tiers';
-import { getPublicCorp } from '@/lib/game/public-leaderboard';
+import { getPublicCorp, getPublicCorpEquity } from '@/lib/game/public-leaderboard';
 import { getCorpChronicle } from '@/lib/game/public-era-chronicle';
 import { ERA_CHARTER_MAP } from '@/lib/game/corporate-eras';
 import { ERA_MEDAL_LABEL } from '@/lib/game/corp-era-registry';
@@ -71,6 +71,12 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
   // boundary. "Never free, never perfect" per canon — this public view is
   // the free-tier summary (top categories only, no participant table).
   const tradeSummary = await computeServerTradeSummary(corp.id, DEFAULT_SHARE_WINDOW_DAYS);
+
+  // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): public capital structure —
+  // float, controller, dividend policy, and the permanent share-transaction
+  // chronicle ("corporate scouting is legitimate gameplay"). Null until the
+  // corp graduates into the equity market (or pre-migration) — block hidden.
+  const equity = await getPublicCorpEquity(corp.id);
 
   const tierDef = getTierDef(corp.tier);
   const url = `${APP_URL}/space-tycoon/corp/${corp.id}`;
@@ -166,6 +172,58 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
                     {c.category} · {c.sharePct.toFixed(1)}% of category volume
                   </span>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Capital Structure — Wave M6 share registry. Public by canon
+            (float and control are scoutable; cash/P&L detail stays behind
+            paid diligence). */}
+        {equity && (
+          <div className="hud-frame game-panel p-4 sm:p-5">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            <div className="flex items-center justify-between mb-2">
+              <p className="game-label">Capital Structure</p>
+              {equity.openTenderCount > 0 && (
+                <span className="text-[10px] px-2 py-1 rounded-full bg-red-500/10 text-red-300 border border-red-500/25 font-bold">
+                  ⚑ {equity.openTenderCount} open tender {equity.openTenderCount === 1 ? 'offer' : 'offers'}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-3">
+              <div className="text-center">
+                <p className="game-label">Founder Stake</p>
+                <p className="game-number text-lg font-bold text-cyan-300">{equity.founderShares}%</p>
+              </div>
+              <div className="text-center">
+                <p className="game-label">Public Float</p>
+                <p className="game-number text-lg font-bold text-purple-300">{equity.floatShares}%</p>
+              </div>
+              <div className="text-center">
+                <p className="game-label">Dividend Payout</p>
+                <p className="game-number text-lg font-bold text-white">{equity.dividendPayoutPct}%</p>
+              </div>
+            </div>
+            {equity.controllerName && (
+              <p className="text-xs text-purple-300 mb-2">
+                ◆ Controlled subsidiary of <span className="font-bold">{equity.controllerName}</span>
+              </p>
+            )}
+            {equity.recentTransactions.length > 0 && (
+              <div>
+                <p className="game-label mb-1.5">Share Chronicle</p>
+                <ul className="space-y-1">
+                  {equity.recentTransactions.map((t, i) => (
+                    <li key={i} className="text-[11px] text-slate-400">
+                      <span className="text-slate-500">{new Date(t.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span>
+                      {' — '}
+                      {t.kind.replace(/_/g, ' ')}: {t.shares} shares
+                      {t.pricePerShare > 0 ? ` at ${formatMoney(t.pricePerShare)}/share` : ''}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>

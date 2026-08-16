@@ -225,6 +225,25 @@ export function getNewGameState(): GameState {
     // pre-E7 behavior.
     orbitalSlotOccupancy: null,
     megaProjectBonuses: null,
+    // V38 — Meaningful Decisions Wave M5 "Offense Toolkit I" (docs/
+    // MEANINGFUL_2026-08.md §M5). A fresh save has never been targeted by
+    // (or launched) an economic offense — the offense snapshot arrives only
+    // via the authenticated sync hop (same "null until sync delivers one"
+    // pattern as demandPools), no poach outcomes have been applied, and no
+    // freight tolls are pending settlement.
+    offense: null,
+    appliedPoachOfferIds: [],
+    pendingTollPayments: {},
+    // V39 — Meaningful Decisions Wave M6 "Takeovers & the Share Registry"
+    // (docs/MEANINGFUL_2026-08.md §M6). A fresh save holds no equity
+    // snapshot yet — the first authenticated sync delivers one, and only
+    // once the server-side population gate opens (TAKEOVER_MIN_ACTIVE_CORPS
+    // active corporations); until then every consumer (Situation Log tender
+    // alerts, calendar closings, the integration-malus multiplier) treats
+    // the equity system as absent. Server-side truth (CorpShareRegistry et
+    // al.) is created lazily after Frontier graduation, never stored in the
+    // save.
+    equity: null,
   };
 }
 
@@ -711,6 +730,39 @@ export function loadGame(): GameState | null {
         title: '⛏ Mining revenue now tracks the live market',
         description: 'Mining service income now values what you actually extract at the live spot price instead of a fixed monthly rate — a commodity crash bites your mining income, and a shortage pays a premium. Extraction pressure and mining bonuses now move cash revenue directly. Blends in gradually over the next 3 game months so nobody\'s income craters overnight.',
       }, ...(state.eventLog || [])].slice(0, 50);
+    }
+
+    // V38 — Meaningful Decisions Wave M5 "Offense Toolkit I" (docs/
+    // MEANINGFUL_2026-08.md §M5 / §3.2 [SAVE]). Additive: the offense
+    // snapshot defaults to null (no offense state until the next
+    // authenticated sync delivers one — pre-M5 behavior exactly), the poach
+    // idempotency cursor starts empty (nothing has been applied), and no
+    // freight tolls are pending. One-shot explainer mirrors the
+    // V15/V32-V35/V37 announcements.
+    if (state.appliedPoachOfferIds === undefined) {
+      state.appliedPoachOfferIds = [];
+      state.offense = state.offense ?? null;
+      state.pendingTollPayments = state.pendingTollPayments ?? {};
+      state.eventLog = [{
+        id: 'evt_v38_offense_toolkit',
+        date: state.gameDate,
+        type: 'random_event' as const,
+        title: '⚔ Economic offense toolkit activated',
+        description: 'Corporations can now declare public price campaigns (dumping) on a commodity market, poach rival crew with escrowed signing bonuses (48h counteroffer window — watch your Situation Log), buy standing-order demand intelligence, and zone governors can levy small freight tolls. Every offensive act is public, costs real money, has documented counterplay, and never touches Protected Frontier corporations.',
+      }, ...(state.eventLog || [])].slice(0, 50);
+    }
+
+    // V39 — Meaningful Decisions Wave M6 "Takeovers & the Share Registry"
+    // (docs/MEANINGFUL_2026-08.md §M6 [SAVE]). Additive, no grandfather
+    // phase-in needed: the equity snapshot defaults to null — the exact
+    // pre-M6 "no equity system" behavior — and stays null until BOTH the
+    // next authenticated sync AND the server-side population gate
+    // (TAKEOVER_MIN_ACTIVE_CORPS) open the market. No one-shot explainer
+    // here: the announcement belongs to the moment the gate actually opens
+    // (the Situation Log emits it from the first non-null snapshot), not to
+    // the code shipping — a dormant system shouldn't advertise itself.
+    if (state.equity === undefined) {
+      state.equity = null;
     }
 
     state.tickSpeed = 1; // Always 1x for fairness

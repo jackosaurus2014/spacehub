@@ -72,7 +72,43 @@ export type LedgerReason =
   // Lease transfer market: money moves seller<-buyer directly (unlike the
   // auction burn above) — "ownership transfers at market-clearing prices."
   | 'slot_lease_transfer_payment'
-  | 'slot_lease_transfer_receipt';
+  | 'slot_lease_transfer_receipt'
+  // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): share registry & takeovers.
+  // Buy-side offers escrow price×shares at creation; settlement pays selling
+  // holders out of that escrow and refunds the remainder. The arbitration
+  // fee and diligence fee are BURNED (no matching credit — BALANCE.md money
+  // sinks). share_purchase covers first-come sell-side listing buys (capital
+  // raises + distress tranches), whose proceeds land on the seller as
+  // capital_raise_proceeds / distress_sale_proceeds.
+  | 'tender_escrow'
+  | 'tender_escrow_refund'
+  | 'tender_arbitration_burn'
+  | 'share_sale_proceeds'
+  | 'share_purchase'
+  | 'capital_raise_proceeds'
+  | 'distress_sale_proceeds'
+  | 'mandatory_bid_payment'
+  | 'mandatory_bid_receipt'
+  | 'dividend_paid'
+  | 'dividend_received'
+  | 'diligence_fee_burn'
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §M5 / §3.2): the offense toolkit.
+  // BURNED (no matching credit — BALANCE.md sinks): price_campaign_fee,
+  // poach_action_fee, poach_retention_payment (paid "to the crew"),
+  // standing_demand_report_fee, bid_insurance_fee, slot_idle_fee.
+  // poach_offer_escrow/refund mirror bounty escrow; a resolved poach BURNS
+  // the escrow (signing bonuses go to the departing crew, not a player).
+  // lane_toll_income is the one player-to-player transfer: freight payers
+  // (debited client-side at dispatch) settle to the zone governor.
+  | 'price_campaign_fee'
+  | 'poach_offer_escrow'
+  | 'poach_escrow_refund'
+  | 'poach_action_fee'
+  | 'poach_retention_payment'
+  | 'standing_demand_report_fee'
+  | 'bid_insurance_fee'
+  | 'slot_idle_fee'
+  | 'lane_toll_income';
 
 export interface LedgerWrite {
   profileId: string;

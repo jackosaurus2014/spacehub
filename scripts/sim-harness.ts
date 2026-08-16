@@ -57,6 +57,7 @@ import {
   extractionKey,
 } from '../src/lib/game/extraction-pressure';
 import { priceLinkedMiningRevenue } from '../src/lib/game/mining-pricing';
+import type { MarketSnapshot } from '../src/lib/game/spot-price';
 import type { GameState } from '../src/lib/game/types';
 
 export const GAME_MONTH_MS = 21_600 * 1000; // server-time.ts REAL_SECONDS_PER_GAME_MONTH
@@ -117,10 +118,17 @@ export interface SimWorld {
   extraction: Map<string, { acc: number; atMs: number }>;
   active30d: number;
   monthMs: number;
+  /** Wave M5 (§3.2 O2 / §6 "price-campaign duel"): optional world spot
+   *  snapshot. Absent = base prices everywhere (the pre-M5 default). A
+   *  scenario can pin a resource at the anti-cornering band floor
+   *  (base × 0.3) to model a fully-pressed price campaign — mining_output
+   *  cash revenue AND leftover-inventory sales both read it, exactly like
+   *  the live engine reads state.marketSnapshot. */
+  spotSnapshot?: MarketSnapshot | null;
 }
 
-export function newWorld(players: SimPlayer[], active30d = 0): SimWorld {
-  return { players, extraction: new Map(), active30d, monthMs: GAME_MONTH_MS };
+export function newWorld(players: SimPlayer[], active30d = 0, spotSnapshot: MarketSnapshot | null = null): SimWorld {
+  return { players, extraction: new Map(), active30d, monthMs: GAME_MONTH_MS, spotSnapshot };
 }
 
 export function newPlayer(
@@ -337,7 +345,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         // physical byproduct units are still credited to inventory (loop
         // above), unaffected by M3.
         if (isMiningOutput) {
-          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, undefined) * saturationMult;
+          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, world.spotSnapshot) * saturationMult;
         }
       }
     }
@@ -347,7 +355,10 @@ export function stepMonth(world: SimWorld, month: number): void {
       const keep = need[res] || 0;
       const sell = Math.max(0, qty - keep);
       if (sell > 0) {
-        const price = RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0;
+        const base = RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0;
+        // M5: leftover sales read the world spot snapshot when one is set
+        // (price-campaign scenarios) — base price otherwise, as before.
+        const price = world.spotSnapshot?.prices?.[res] ?? base;
         resourceSales += sell * price * OUTPUT_SELL_MULT;
         p.resources[res] = qty - sell;
       }

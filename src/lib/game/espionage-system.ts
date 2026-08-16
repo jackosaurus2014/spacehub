@@ -17,6 +17,10 @@
 //
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// ─── Imports ────────────────────────────────────────────────────────────────
+
+import { BUILDING_MAP } from './buildings';
+
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 export const ESPIONAGE_CONSTANTS = {
@@ -146,7 +150,16 @@ export type EspionageActionType =
   | 'trade_route_intel'
   | 'research_theft_attempt'
   | 'employee_headhunt'
-  | 'counter_intelligence';
+  | 'counter_intelligence'
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O8 "espionage stays info-only —
+  // but the info gets sharper"): three new purchasable intel products. Each
+  // is priced, cooldown-gated, and carries a raised detection floor
+  // (minDetectionChance 0.25 — visible-to-victim as a counterintelligence
+  // event 25% of the time minimum; risk is part of the price). Still ZERO
+  // target-side harm — the 8 prohibitions above hold unchanged.
+  | 'pool_share_trend'
+  | 'input_dependency_report'
+  | 'labor_roster_report';
 
 export interface EspionageActionDef {
   id: EspionageActionType;
@@ -159,6 +172,10 @@ export interface EspionageActionDef {
   intelDurationHours: number;
   unlockRequirement: string | null; // research ID or null for default
   category: 'reconnaissance' | 'offensive' | 'defensive';
+  /** Wave M5 (O8): floor on the target's detection roll for this action —
+   *  sharper products carry guaranteed exposure risk regardless of the
+   *  target's security level. Absent = no floor (pre-M5 actions). */
+  minDetectionChance?: number;
 }
 
 export const ESPIONAGE_ACTIONS: Record<EspionageActionType, EspionageActionDef> = {
@@ -281,6 +298,46 @@ export const ESPIONAGE_ACTIONS: Record<EspionageActionType, EspionageActionDef> 
     intelDurationHours: 72,
     unlockRequirement: 'talent_acquisition',
     category: 'offensive',
+  },
+  // ── Wave M5 (§3.2 O8) — sharper intel products ────────────────────────
+  pool_share_trend: {
+    id: 'pool_share_trend',
+    name: 'Market Share Deep Scan',
+    description: 'Reveals the target\'s capacity share of every demand pool they supply — where their revenue actually comes from, how saturated each of their markets is, and how many rivals they share it with. The O2/pool-undercutting targeting data.',
+    baseCost: 20_000_000,
+    bracketCostMultiplier: 20_000_000,
+    baseSuccessRate: 0.65,
+    cooldownHours: 24,
+    intelDurationHours: 72,
+    unlockRequirement: 'signals_intelligence',
+    category: 'reconnaissance',
+    minDetectionChance: 0.25,
+  },
+  input_dependency_report: {
+    id: 'input_dependency_report',
+    name: 'Input Dependency Report',
+    description: 'Reveals what the target\'s buildings consume monthly, per resource and location — exactly which supply lines a corner or denial play would squeeze. The O3 targeting data.',
+    baseCost: 25_000_000,
+    bracketCostMultiplier: 25_000_000,
+    baseSuccessRate: 0.60,
+    cooldownHours: 24,
+    intelDurationHours: 72,
+    unlockRequirement: 'corporate_infiltration',
+    category: 'reconnaissance',
+    minDetectionChance: 0.25,
+  },
+  labor_roster_report: {
+    id: 'labor_roster_report',
+    name: 'Labor Roster Summary',
+    description: 'Reveals the target\'s full crew roster, training level, and estimated monthly payroll at current wage indexes — which crew types a poach offer would hurt most. The O4 targeting data.',
+    baseCost: 20_000_000,
+    bracketCostMultiplier: 15_000_000,
+    baseSuccessRate: 0.65,
+    cooldownHours: 24,
+    intelDurationHours: 72,
+    unlockRequirement: 'talent_acquisition',
+    category: 'reconnaissance',
+    minDetectionChance: 0.25,
   },
   counter_intelligence: {
     id: 'counter_intelligence',
@@ -556,6 +613,41 @@ export function getIntelReward(
         },
       };
 
+    // ── Wave M5 (§3.2 O8) ─────────────────────────────────────────────
+    case 'pool_share_trend':
+      return {
+        intelData: {
+          companyName: targetProfile.companyName,
+          serviceCount: targetProfile.serviceCount,
+          // Placeholder — pure function (no DB). The real per-pool share
+          // table is patched onto `intelGathered.poolShares` by the caller
+          // (espionage/execute/route.ts) from LocationDemandPool rows +
+          // the target's synced services via buildDemandPoolSnapshot.
+          poolShares: [],
+        },
+      };
+
+    case 'input_dependency_report':
+      return {
+        intelData: {
+          companyName: targetProfile.companyName,
+          // Computed pure from the target's synced buildings × authored
+          // recipes (BUILDING_MAP.consumesPerMonth) — no DB needed.
+          monthlyInputs: computeMonthlyInputDependency(targetProfile.buildingsData),
+        },
+      };
+
+    case 'labor_roster_report':
+      return {
+        intelData: {
+          companyName: targetProfile.companyName,
+          workforce: targetProfile.workforceData || { engineers: 0, scientists: 0, miners: 0, operators: 0 },
+          // Placeholder — wage-index-adjusted payroll estimate is patched
+          // on by the caller from live LaborIndex rows.
+          estimatedMonthlyPayroll: null,
+        },
+      };
+
     case 'counter_intelligence':
       // Counter-intelligence is self-targeted; it reveals recent incoming attacks
       return {
@@ -569,6 +661,32 @@ export function getIntelReward(
     default:
       return { intelData: { note: 'Unknown action type.' } };
   }
+}
+
+// ─── Wave M5 (O8): pure input-dependency aggregation ────────────────────────
+// The target's monthly recipe draw per resource, per location — computed
+// from their synced buildingsData × the authored consumesPerMonth recipes.
+// Pure (definitions only); shared by getIntelReward and tests.
+
+export function computeMonthlyInputDependency(
+  buildingsData: unknown[],
+): Array<{ locationId: string; resourceId: string; perMonth: number }> {
+  const agg = new Map<string, { locationId: string; resourceId: string; perMonth: number }>();
+  for (const raw of buildingsData || []) {
+    const b = raw as { definitionId?: string; locationId?: string; isComplete?: boolean };
+    if (!b || !b.definitionId || b.isComplete === false) continue;
+    const def = BUILDING_MAP.get(b.definitionId);
+    if (!def || !def.consumesPerMonth) continue;
+    const locationId = b.locationId || 'unknown';
+    for (const [resourceId, qty] of Object.entries(def.consumesPerMonth)) {
+      if (typeof qty !== 'number' || !Number.isFinite(qty) || qty <= 0) continue;
+      const key = `${locationId}:${resourceId}`;
+      const row = agg.get(key) || { locationId, resourceId, perMonth: 0 };
+      row.perMonth = Math.round((row.perMonth + qty) * 100) / 100;
+      agg.set(key, row);
+    }
+  }
+  return Array.from(agg.values()).sort((a, b) => b.perMonth - a.perMonth);
 }
 
 // ─── Mission Execution ──────────────────────────────────────────────────────
@@ -600,10 +718,16 @@ export function executeEspionageAction(
   const action = ESPIONAGE_ACTIONS[actionType];
   const cost = getActionCost(actionType, attackerProfile.netWorth);
   const successRate = calculateSuccessRate(actionType, attackerProfile, targetEspionageProfile, attackerProfileId);
-  const detectionRate = calculateDetectionRate(
-    targetEspionageProfile.securityLevel,
-    targetEspionageProfile.heightenedAlert,
-    targetEspionageProfile.alertExpiresAt,
+  // Wave M5 (O8): sharper products carry a guaranteed-exposure floor —
+  // the victim sees a counterintelligence event at least minDetectionChance
+  // of the time regardless of their security level.
+  const detectionRate = Math.max(
+    action.minDetectionChance ?? 0,
+    calculateDetectionRate(
+      targetEspionageProfile.securityLevel,
+      targetEspionageProfile.heightenedAlert,
+      targetEspionageProfile.alertExpiresAt,
+    ),
   );
 
   // Roll for success

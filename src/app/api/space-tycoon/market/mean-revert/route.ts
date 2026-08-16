@@ -52,7 +52,26 @@ export async function POST(request: Request) {
     const seasonNumber = getCurrentSeasonNumber();
     let reverted = 0;
 
+    // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O2 "price campaigns"): a
+    // resource under an ACTIVE declared price campaign does not mean-revert
+    // — the crash the campaigner engineered with real sell volume sticks
+    // until the 7-day campaign clock runs out (then healing resumes, which
+    // is exactly what makes sustaining a crash expensive). Best-effort: a
+    // missing PriceCampaign table (schema lag) skips nothing.
+    let campaignSlugs = new Set<string>();
+    try {
+      const { activeCampaignSlugs } = await import('@/lib/game/price-campaigns');
+      const rows = await prisma.priceCampaign.findMany({
+        where: { status: 'active', endsAt: { gt: new Date() } },
+        select: { resourceSlug: true, status: true, endsAt: true },
+      });
+      campaignSlugs = activeCampaignSlugs(
+        rows.map(r => ({ resourceSlug: r.resourceSlug, status: r.status, endsAtMs: r.endsAt.getTime() })),
+      );
+    } catch { /* campaigns non-critical */ }
+
     for (const resource of resources) {
+      if (campaignSlugs.has(resource.slug)) continue;
       const seasonalTarget = getSeasonalMeanRevertTarget(
         resource.basePrice,
         resource.slug,

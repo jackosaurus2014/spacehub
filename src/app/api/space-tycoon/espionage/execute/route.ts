@@ -299,6 +299,58 @@ export async function POST(request: NextRequest) {
       } catch { /* leave stubbed empty array */ }
     }
 
+    // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O8): the two new products
+    // that need server data get it patched here, same best-effort posture
+    // as market_spy above (executeEspionageAction stays pure).
+    if (validActionType === 'pool_share_trend' && result.succeeded && result.intelGathered) {
+      try {
+        const { buildDemandPoolSnapshot } = await import('@/lib/game/service-pricing');
+        const { getCurrentSeasonNumber } = await import('@/lib/game/seasonal-events');
+        const poolRows = await prisma.locationDemandPool.findMany({
+          select: { locationId: true, category: true, dNpc: true, dDerived: true, cSupply: true, topShares: true, supplierCount: true },
+        });
+        const targetServices = (targetGameProfile.activeServicesData as { definitionId?: string; locationId?: string }[] | null || [])
+          .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
+          .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string }));
+        const snap = buildDemandPoolSnapshot(
+          poolRows.map(r => ({ ...r, topShares: r.topShares as unknown })),
+          targetServices,
+          getCurrentSeasonNumber(),
+          Date.now(),
+        );
+        result.intelGathered.poolShares = Object.values(snap.pools)
+          .filter(p => p.playerShare > 0)
+          .map(p => ({
+            locationId: p.locationId,
+            category: p.category,
+            targetShare: Math.round(p.playerShare * 1000) / 10, // pct
+            poolMultiplier: Math.round(p.mult * 100) / 100,
+            supplierCount: p.supplierCount,
+          }));
+      } catch { /* leave stubbed empty array */ }
+    }
+
+    if (validActionType === 'labor_roster_report' && result.succeeded && result.intelGathered) {
+      try {
+        const { getMonthlyPayrollWithWageIndex } = await import('@/lib/game/labor-market');
+        const rows = await prisma.laborIndex.findMany({ select: { crewType: true, wageIndex: true, updatedAt: true } });
+        const index: Record<string, number> = {};
+        let latest = 0;
+        for (const r of rows) {
+          index[r.crewType] = r.wageIndex;
+          latest = Math.max(latest, r.updatedAt.getTime());
+        }
+        const wf = targetGameProfile.workforceData as Record<string, number> | null;
+        if (wf) {
+          result.intelGathered.estimatedMonthlyPayroll = getMonthlyPayrollWithWageIndex(
+            wf as never,
+            rows.length > 0 ? { index, asOf: latest || Date.now() } : null,
+          );
+          result.intelGathered.trainingLevel = typeof wf.trainingLevel === 'number' ? wf.trainingLevel : null;
+        }
+      } catch { /* leave payroll estimate null */ }
+    }
+
     // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
     const ledgerOn = await isLedgerAvailable();
 

@@ -30,6 +30,15 @@ import {
 } from './extraction-pressure';
 import { WAGE_INDEX_MIN, WAGE_INDEX_MAX, type LaborMarketSnapshot } from './labor-market';
 import { LANE_BONUS_CAP, type LaneBonusSnapshot } from './trade-lanes';
+// Wave M5 (docs/MEANINGFUL_2026-08.md §M5): the offense snapshot — price
+// campaigns, poach offers/outcomes, freight tolls, cornering alerts — rides
+// the same hop. Clamping AND poach-outcome application live in offense.ts
+// (applyOffenseToState is idempotent via appliedPoachOfferIds).
+import { applyOffenseToState, type OffenseSnapshot } from './offense';
+// Wave M6 (docs/MEANINGFUL_2026-08.md §M6): the equity snapshot — share
+// registry, tenders, holdings — delivered the same hop. Clamp lives in
+// share-registry.ts (pure), same type-only posture as demandPools above.
+import { clampEquitySnapshot, type EquitySnapshot } from './share-registry';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -132,6 +141,14 @@ export interface ServerEffectsSnapshot {
   laborMarket?: { index: LaborMarketSnapshot; asOf: number } | null;
   /** Wave E5 (§2.8): per-lane fuel-discount snapshot (trade-lanes.ts). */
   laneBonuses?: LaneBonusSnapshot | null;
+  /** Wave M5 (§M5): offense snapshot — campaigns/poach/tolls/cornering
+   *  (offense.ts). Applied via applyOffenseToState (idempotent). */
+  offense?: OffenseSnapshot | null;
+  /** Wave M6 (docs/MEANINGFUL_2026-08.md §M6): share-registry/takeover
+   *  snapshot — my capital structure, tenders targeting me, my offers,
+   *  my holdings (share-registry.ts). Re-clamped via clampEquitySnapshot;
+   *  null = gate closed or never synced (pre-M6 behavior). */
+  equity?: EquitySnapshot | null;
   fetchedAtMs: number;
 }
 
@@ -352,7 +369,21 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     laneBonuses: eff.laneBonuses !== undefined
       ? clampLaneBonusSnapshot(eff.laneBonuses)
       : state.laneBonuses,
+    // Wave M6: the equity snapshot reaches the tick the same hop demandPools
+    // does. Plain clamped stash — the consumers (Situation Log, calendar,
+    // the integration-malus multiplier in game-engine.ts) are all pure
+    // lenses over state.equity.
+    equity: eff.equity !== undefined
+      ? clampEquitySnapshot(eff.equity)
+      : state.equity,
   };
+
+  // Wave M5: the offense snapshot reaches the tick the same hop demandPools
+  // does — but application is more than a stash (poach outcomes move crew
+  // headcount, idempotently), so it delegates to offense.ts.
+  if (eff.offense !== undefined && eff.offense !== null) {
+    out = applyOffenseToState(out, eff.offense);
+  }
 
   // Audit §1b "Leagues": grant the promotion boost the league system defines
   // (league-system.ts getLeagueRewards boostType/boostMultiplier were

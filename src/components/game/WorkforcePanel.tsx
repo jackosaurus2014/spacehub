@@ -121,6 +121,10 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
         <span className="text-[10px] text-slate-500">Hire, train, and retain your workforce</span>
       </div>
 
+      {/* Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O4): the poach inbox —
+          incoming signing-bonus raids with the 48h counteroffer decision. */}
+      <PoachInbox state={state} />
+
       {/* Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="hud-frame relative rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
@@ -395,6 +399,110 @@ function CrewStatBar({
           aria-hidden="true"
         />
       </div>
+    </div>
+  );
+}
+
+// ─── Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O4): the poach inbox ──────────
+// Incoming signing-bonus raids from state.offense (the sync-delivered
+// snapshot). The 48h decision on the defender's side: pay 75% of the rival
+// bonus to retain (burned — it goes to the crew), spend the once-per-season
+// free Guild Arbitration retention, or concede and keep the cash. Actions
+// hit /api/space-tycoon/poach; the money moves through the One-Wallet
+// ledger and the headcount outcome lands on the save via the next sync.
+
+function PoachInbox({ state }: { state: GameState }) {
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [resolvedIds, setResolvedIds] = useState<string[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const now = Date.now();
+  const offers = (state.offense?.poachIncoming || []).filter(
+    p => p.respondByMs > now && !resolvedIds.includes(p.id)
+  );
+  if (offers.length === 0) return null;
+
+  const respond = async (offerId: string, response: 'retain' | 'free_retain' | 'concede') => {
+    setBusyId(offerId);
+    setMessage(null);
+    try {
+      const res = await fetch('/api/space-tycoon/poach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'respond', offerId, response }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        playSound('notification');
+        setResolvedIds(ids => [...ids, offerId]);
+        setMessage(
+          response === 'concede'
+            ? 'Offer conceded — the crew depart with their bonuses. Headcount updates on the next sync.'
+            : response === 'free_retain'
+              ? 'Guild arbitration matched the offer at no cost. Crew retained.'
+              : 'Counteroffer paid — crew retained. The retention payment went to the crew.'
+        );
+      } else {
+        setMessage(data.error || 'Action failed.');
+      }
+    } catch {
+      setMessage('Network error — try again.');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  return (
+    <div className="hud-frame relative rounded-xl border border-red-500/25 bg-red-500/[0.04] p-3">
+      <span className="hud-corner-bl" aria-hidden="true" />
+      <span className="hud-corner-br" aria-hidden="true" />
+      <p className="font-hud text-red-300 text-xs font-bold mb-2 uppercase tracking-wider">
+        ⚠ Crew under offer — counteroffer window open
+      </p>
+      <div className="space-y-2">
+        {offers.map(p => {
+          const crewDef = WORKER_TYPES.find(w => w.type === p.crewType);
+          const hoursLeft = Math.max(0, Math.floor((p.respondByMs - now) / 3_600_000));
+          return (
+            <div key={p.id} className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-2">
+              <p className="text-xs text-slate-200">
+                <span className="font-bold">{p.attackerName || 'An unidentified corporation'}</span>{' '}
+                is offering signing bonuses to <span className="font-bold">{p.count} {crewDef?.name.toLowerCase() || p.crewType}{p.count === 1 ? '' : 's'}</span>.
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Retain for <span className="text-amber-300 font-mono">{formatMoney(p.retentionCost)}</span> (75% match, paid to the crew)
+                · window closes in ~{hoursLeft}h · doing nothing lets them walk.
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <button
+                  onClick={() => respond(p.id, 'retain')}
+                  disabled={busyId === p.id || state.money < p.retentionCost}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Counteroffer ({formatMoney(p.retentionCost)})
+                </button>
+                {p.freeRetentionAvailable && (
+                  <button
+                    onClick={() => respond(p.id, 'free_retain')}
+                    disabled={busyId === p.id}
+                    className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/25 disabled:opacity-40"
+                  >
+                    Guild arbitration (free, 1/season)
+                  </button>
+                )}
+                <button
+                  onClick={() => respond(p.id, 'concede')}
+                  disabled={busyId === p.id}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white/[0.04] border border-white/[0.1] text-slate-400 hover:text-slate-200 disabled:opacity-40"
+                >
+                  Let them walk
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {message && <p className="text-[11px] text-slate-300 mt-2">{message}</p>}
     </div>
   );
 }

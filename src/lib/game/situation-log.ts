@@ -50,6 +50,12 @@ import { MINING_PRODUCTION } from './resources';
 // same posture as every other section in this file.
 import { isBuildingMothballed, isBuildingReactivating, isBuildingDecommissioning, REACTIVATION_SPINUP_MONTHS } from './mothball';
 import { getGlobalGameDate, REAL_SECONDS_PER_GAME_MONTH } from './server-time';
+// Wave M5 (docs/MEANINGFUL_2026-08.md §M5): offense-snapshot alerts — the
+// "you are under economic attack at X" surface. Pure read of state.offense
+// (delivered via sync/server-effects), same DB-free posture as everything
+// else here. LOCATION_TO_ZONE maps a building's location to its toll zone.
+import { OFFENSE_SNAPSHOT_STALE_MS } from './offense';
+import { LOCATION_TO_ZONE } from './zone-influence';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -78,7 +84,22 @@ export type SituationCategory =
   // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): a building is
   // paused (mothballed), spinning back up (reactivating), or mid-teardown
   // (decommissioning) — the exit-decision states.
-  | 'building_status';
+  | 'building_status'
+  // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity events — a tender
+  // offer targets your corporation, a distress-auction clock is running, or
+  // a controller holds your float. Pure lens over state.equity.
+  | 'equity'
+  // Wave M5 (docs/MEANINGFUL_2026-08.md §M5 / §3.2 item 6 "visible-to-victim
+  // telemetry"): the offense snapshot's alert surface — "you are under
+  // economic attack at X". A price campaign on a resource this player mines
+  // or holds; a cornering squeeze forming on an input their buildings
+  // consume; a governor freight toll on a zone they operate in. Pure lens
+  // over state.offense.
+  | 'economic_attack'
+  // Wave M5 (O4): a rival's signing-bonus raid on this player's crew —
+  // counteroffer window closing (the [SAVE] V38 "counteroffer inbox").
+  | 'poach_offer'
+  | 'lane_toll';
 
 export interface SituationItem {
   id: string;
@@ -146,6 +167,8 @@ const CALENDAR_CATEGORY_TAB: Partial<Record<CalendarCategory, GameTab>> = {
   // same bidding UI as player-issued contracts).
   slot_auction: 'map',
   procurement_drive: 'contracts',
+  // Wave M6: tender contests live with board politics on the Governance tab.
+  tender_offer: 'governance',
 };
 
 const CALENDAR_CATEGORY_TO_SITUATION: Partial<Record<CalendarCategory, SituationCategory>> = {
@@ -156,6 +179,11 @@ const CALENDAR_CATEGORY_TO_SITUATION: Partial<Record<CalendarCategory, Situation
   economic_cycle: 'economic_cycle',
   slot_auction: 'slot_auction',
   procurement_drive: 'procurement_drive',
+  // NOTE: 'tender_offer' is deliberately ABSENT — the equity section below
+  // emits its own richer items for the full 7-day tender window (a tender
+  // on your corporation warrants attention immediately, not only inside
+  // the 48h closing-soon window this calendar pass covers), so mapping it
+  // here would double-report the same offer.
 };
 
 export interface SituationLogOptions {
@@ -428,6 +456,165 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
         atMs: laborSnapshot.asOf,
         tab: 'workforce',
       });
+    }
+  }
+
+  // ── Equity: tenders, distress, control (Wave M6 — share-registry.ts) ────
+  // Pure lens over state.equity (the sync-delivered snapshot). Null (gate
+  // closed / never synced) surfaces nothing — the equity system simply
+  // doesn't exist for this save yet.
+  const equity = state.equity;
+  if (equity?.enabled) {
+    for (const t of equity.tendersOnMe || []) {
+      const remaining = t.closesAtMs - nowMs;
+      if (remaining <= 0) continue;
+      items.push({
+        id: `sit-equity-tender-${t.id}`,
+        category: 'equity',
+        icon: 'reports',
+        label: t.kind === 'white_knight'
+          ? `White knight bid from ${t.initiatorName}`
+          : `Tender offer for your corporation`,
+        detail: `${t.initiatorName} bids $${Math.round(t.pricePerShare).toLocaleString()}/share for ${t.sharesSought} shares — closes in ${formatHoursOrDays(remaining)}. Counter with a buyback, solicit a white knight, or let holders decide.`,
+        severity: remaining <= 24 * 60 * 60 * 1000 ? 'critical' : 'warning',
+        atMs: t.closesAtMs,
+        tab: 'governance',
+      });
+    }
+    const reg = equity.registry;
+    if (reg && reg.distressMonths > 0) {
+      items.push({
+        id: 'sit-equity-distress',
+        category: 'equity',
+        icon: 'reports',
+        label: `Cash-negative: ${reg.distressMonths} of ${3} months toward a distress auction`,
+        detail: 'Three consecutive cash-negative game-months auto-auction a 10-share tranche of your corporation at a discount. Restore positive cash to reset the clock.',
+        severity: reg.distressMonths >= 2 ? 'critical' : 'warning',
+        tab: 'governance',
+      });
+    }
+    if (reg?.controllerName) {
+      items.push({
+        id: 'sit-equity-controlled',
+        category: 'equity',
+        icon: 'reports',
+        label: `${reg.controllerName} holds a controlling stake`,
+        detail: reg.integrationMalusPct > 0
+          ? `Your corporation operates as a subsidiary of ${reg.controllerName}. Integration drag: −${Math.round(reg.integrationMalusPct * 100)}% service revenue while systems merge.`
+          : `Your corporation operates as a subsidiary of ${reg.controllerName}.`,
+        severity: 'info',
+        tab: 'governance',
+      });
+    }
+  }
+
+  // ── Economic offense (Wave M5 — offense.ts) ─────────────────────────────
+  // "You are under economic attack at X" — pure lens over state.offense
+  // (the sync-delivered snapshot). Null/stale surfaces nothing.
+  const offense = state.offense;
+  if (offense && typeof offense.asOf === 'number' && nowMs - offense.asOf <= OFFENSE_SNAPSHOT_STALE_MS) {
+    // Incoming poach offers — the counteroffer inbox. Always critical while
+    // the 48h window runs: doing nothing IS a decision (the crew walk).
+    for (const p of offense.poachIncoming || []) {
+      const remaining = p.respondByMs - nowMs;
+      if (remaining <= 0) continue;
+      const crewName = WORKER_TYPES.find(w => w.type === p.crewType)?.name || p.crewType;
+      items.push({
+        id: `sit-poach-${p.id}`,
+        category: 'poach_offer',
+        icon: 'workforce',
+        label: `${p.attackerName || 'A rival corporation'} is poaching ${p.count} of your ${crewName.toLowerCase()}${p.count === 1 ? '' : 's'}`,
+        detail: `Counteroffer window closes in ${formatHoursOrDays(remaining)}. Match 75% of the signing bonus ($${(p.retentionCost / 1_000_000).toFixed(1)}M, burned) to retain${p.freeRetentionAvailable ? ' — or use your free guild-arbitration retention' : ''}, or let them walk and keep the cash.`,
+        severity: 'critical',
+        atMs: p.respondByMs,
+        tab: 'workforce',
+      });
+    }
+
+    // Price campaigns on resources this player mines or holds ("dumping").
+    {
+      const myResources = new Set<string>();
+      for (const [resId, qty] of Object.entries(state.resources || {})) {
+        if (typeof qty === 'number' && qty > 0) myResources.add(resId);
+      }
+      for (const svc of state.activeServices || []) {
+        const production = MINING_PRODUCTION[svc.definitionId];
+        if (!production) continue;
+        for (const { resource } of production) myResources.add(resource);
+      }
+      for (const c of offense.campaigns || []) {
+        if (c.endsAtMs <= nowMs) continue;
+        const resName = c.resourceSlug.replace(/_/g, ' ');
+        if (c.own) {
+          items.push({
+            id: `sit-campaign-own-${c.resourceSlug}`,
+            category: 'economic_attack',
+            icon: 'market',
+            label: `Your price campaign on ${resName} is live`,
+            detail: `Ends in ${formatHoursOrDays(c.endsAtMs - nowMs)}. Mean reversion is suspended and the NPC maker won't absorb your dump — sell real volume below spot to push the price toward the band floor.`,
+            severity: 'info',
+            atMs: c.endsAtMs,
+            tab: 'market',
+          });
+        } else if (myResources.has(c.resourceSlug)) {
+          items.push({
+            id: `sit-campaign-${c.resourceSlug}`,
+            category: 'economic_attack',
+            icon: 'trending-down',
+            label: `Price war declared on ${resName}`,
+            detail: `${c.byCompanyName} is dumping ${resName} — spot won't mean-revert until ${formatHoursOrDays(Math.max(0, c.endsAtMs - nowMs))} from now, and price-linked mining income follows spot. Counterplay: buy the dumped goods cheap, mothball marginal miners to ride it out, or out-wait the campaign clock.`,
+            severity: 'warning',
+            atMs: c.endsAtMs,
+            tab: 'market',
+          });
+        }
+      }
+    }
+
+    // Cornering squeezes forming on inputs this player's buildings consume.
+    {
+      const myInputs = new Set<string>();
+      for (const b of state.buildings || []) {
+        if (!b.isComplete) continue;
+        const def = BUILDING_MAP.get(b.definitionId);
+        for (const resId of Object.keys(def?.consumesPerMonth || {})) myInputs.add(resId);
+      }
+      for (const a of offense.corneringAlerts || []) {
+        if (!myInputs.has(a.resourceSlug)) continue;
+        items.push({
+          id: `sit-corner-${a.resourceSlug}`,
+          category: 'economic_attack',
+          icon: 'market',
+          label: `Supply squeeze forming on ${a.resourceSlug.replace(/_/g, ' ')}`,
+          detail: `A single buyer's open bids equal ${Math.round(a.topBuyerShare * 100)}% of the last 7 days' traded volume — your buildings consume this input. Counterplay: switch supply policy to local production, stockpile now, or buy through Earth import (premium, but never denial).`,
+          severity: 'warning',
+          atMs: offense.asOf,
+          tab: 'market',
+        });
+      }
+    }
+
+    // Governor freight tolls on zones this player operates in.
+    {
+      const myZones = new Set<string>();
+      for (const b of state.buildings || []) {
+        const z = LOCATION_TO_ZONE.get(b.locationId);
+        if (z) myZones.add(z);
+      }
+      const governorOf = new Set((state.zoneStandings || []).filter(z => z.isGovernor).map(z => z.zoneSlug));
+      for (const t of offense.laneTolls || []) {
+        if (!myZones.has(t.zoneSlug) || governorOf.has(t.zoneSlug)) continue;
+        items.push({
+          id: `sit-toll-${t.zoneSlug}`,
+          category: 'lane_toll',
+          icon: 'fleet',
+          label: `Freight toll levied in ${t.zoneSlug.replace(/^zone_/, '').replace(/_/g, ' ').toUpperCase()}`,
+          detail: `${t.governorName || 'The zone governor'} charges ${(t.tollPct * 100).toFixed(1)}% of cargo value on dispatches crossing this zone (capped). Counterplay: route around it (real Δv), sign a trade treaty, or contest the governorship.`,
+          severity: 'info',
+          atMs: offense.asOf,
+          tab: 'map',
+        });
+      }
     }
   }
 

@@ -21,6 +21,14 @@ import { queueConsumptionFlush, PROCUREMENT_RESOURCE_CAP } from '@/lib/game/cons
 // Wave E5 (docs/ECONOMY_PVP_2026-08.md §E5): per-lane dispatch usage rides
 // the sync the same way, via its own tiny hand-off queue.
 import { queueLaneUsageFlush } from '@/lib/game/trade-lanes';
+// Wave M5 (docs/MEANINGFUL_2026-08.md §M5): freight-toll settlements ride
+// the sync up (offense.ts hand-off queue) and the offense snapshot —
+// campaigns / poach offers / tolls / cornering alerts — rides back down
+// through the server-effects hop.
+import { queueTollFlush, type OffenseSnapshot } from '@/lib/game/offense';
+// Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity snapshot type for the
+// server-effects hand-off (share registry / tenders / holdings).
+import type { EquitySnapshot } from '@/lib/game/share-registry';
 import type { ExtractionPressureSnapshot } from '@/lib/game/extraction-pressure';
 import type { LaborMarketSnapshot } from '@/lib/game/labor-market';
 import type { LaneBonusSnapshot } from '@/lib/game/trade-lanes';
@@ -109,6 +117,8 @@ export function useGameSync(
       const shockFlows = { ...(state.pendingMarketFlows?.shock || {}) };
       // Wave E5 (§2.8): per-lane dispatch usage since the last sync.
       const laneDispatches = { ...(state.pendingLaneUsage || {}) };
+      // Wave M5 (O6): freight-toll settlements owed to zone governors.
+      const tollPayments = { ...(state.pendingTollPayments || {}) };
       // Wave E3: snapshot the consumption accumulators the same way.
       const demandFlows = { ...(state.consumptionState?.pendingDemandFlows || {}) };
       const procurement: Record<string, number> = {};
@@ -187,6 +197,9 @@ export function useGameSync(
         hazardShockThisTick: shockFlows,
         // Wave E5 (§2.8): per-lane dispatch counts feeding LaneUsage.
         laneDispatchesThisTick: laneDispatches,
+        // Wave M5 (O6): freight tolls debited at dispatch, settled to the
+        // zone governor via the One-Wallet ledger (capped server-side).
+        tollPaymentsThisTick: tollPayments,
       };
 
       const res = await fetch('/api/space-tycoon/sync', {
@@ -212,6 +225,10 @@ export function useGameSync(
         // own flush the same way.
         if (Object.keys(laneDispatches).length > 0) {
           queueLaneUsageFlush(laneDispatches);
+        }
+        // Wave M5 (O6): the toll payments were delivered — queue their flush.
+        if (Object.keys(tollPayments).length > 0) {
+          queueTollFlush(tollPayments);
         }
         // Wave E3: the consumption payload was delivered — queue its flush so
         // the engine subtracts exactly what was sent on the next tick.
@@ -247,7 +264,7 @@ export function useGameSync(
           data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost
           || data.mentorshipBonuses || data.demandPools
           || data.extractionPressure || data.laborMarket || data.laneBonuses
-          || data.megaProjectBonuses
+          || data.megaProjectBonuses || data.offense || data.equity
         ) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
@@ -268,6 +285,13 @@ export function useGameSync(
             // Wave E7: world-shared cooperative mega-project bonus rides the
             // same hop.
             megaProjectBonuses: data.megaProjectBonuses || null,
+            // Wave M5: the offense snapshot (campaigns/poach/tolls/cornering)
+            // rides the same hop; applyOffenseToState handles it idempotently.
+            offense: (data.offense as OffenseSnapshot) || undefined,
+            // Wave M6: the equity snapshot (share registry / tenders /
+            // holdings) rides the same hop; clampEquitySnapshot re-clamps
+            // inside applyServerEffectsToState.
+            equity: (data.equity as EquitySnapshot) || undefined,
             fetchedAtMs: Date.now(),
           });
         }

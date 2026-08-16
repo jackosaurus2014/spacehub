@@ -30,8 +30,8 @@ import type { ResearchDefinition, ResearchEffectType } from '../types';
 // ─── 1. Completeness ────────────────────────────────────────────────────────
 
 describe('W1 completeness — every tech has authored effects', () => {
-  test('research tree has exactly 275 techs across 17 categories (254 W1 base + 18 from Waves W3+W10 + 3 from Economy Wave E3 §4.3)', () => {
-    expect(RESEARCH.length).toBe(275);
+  test('research tree has exactly 277 techs across 17 categories (254 W1 base + 18 from Waves W3+W10 + 3 from Economy Wave E3 §4.3 + 2 from Meaningful Wave M5 §3.2 offense gates)', () => {
+    expect(RESEARCH.length).toBe(277);
     expect(RESEARCH_CATEGORIES.length).toBe(17);
     const actualCategories = new Set(RESEARCH.map(r => r.category));
     expect(actualCategories.size).toBe(17);

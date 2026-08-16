@@ -134,3 +134,77 @@ describe('isSlotPoolLocation', () => {
     expect(isSlotPoolLocation('narnia')).toBe(false);
   });
 });
+
+// ─── Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O5 + O7) ──────────────────────
+
+import {
+  applySoftClose, assessIdleFees,
+  SOFT_CLOSE_WINDOW_MS, SOFT_CLOSE_EXTENSION_MS, SOFT_CLOSE_MAX_EXTENSION_MS,
+  SLOT_IDLE_FEE_INTERVAL_MS, SLOT_IDLE_FEE_FRACTION, SLOT_IDLE_AUTO_RELEASE_MS,
+  AUCTION_WINDOW_MS,
+} from '../orbital-slot-auctions';
+
+describe('M5 O7 — auction soft-close', () => {
+  const openedAt = 1_000_000;
+  const closesAt = openedAt + AUCTION_WINDOW_MS;
+
+  it('a bid outside the final window leaves closesAt untouched', () => {
+    const nowMs = closesAt - SOFT_CLOSE_WINDOW_MS - 1;
+    expect(applySoftClose(closesAt, openedAt, nowMs)).toBe(closesAt);
+  });
+
+  it('a bid inside the final 10 minutes extends the close by 10 minutes', () => {
+    const nowMs = closesAt - 60_000; // 1 minute before close
+    expect(applySoftClose(closesAt, openedAt, nowMs)).toBe(closesAt + SOFT_CLOSE_EXTENSION_MS);
+  });
+
+  it('extensions cap at +1h past the original window (no infinite ping-pong)', () => {
+    const cap = openedAt + AUCTION_WINDOW_MS + SOFT_CLOSE_MAX_EXTENSION_MS;
+    // Simulate repeated last-second bids: each extends until the cap binds.
+    let close = closesAt;
+    for (let i = 0; i < 20; i++) {
+      close = applySoftClose(close, openedAt, close - 1_000);
+    }
+    expect(close).toBe(cap);
+  });
+
+  it('a bid after close never reopens the auction', () => {
+    expect(applySoftClose(closesAt, openedAt, closesAt + 1)).toBe(closesAt);
+  });
+});
+
+describe('M5 O5 — predatory-lease idle fees', () => {
+  const startedAt = 5_000_000;
+  const lease = { startedAtMs: startedAt, lastIdleFeeAtMs: null, leaseAmount: 100_000_000 };
+
+  it('no fee before the first 30-day interval elapses', () => {
+    const a = assessIdleFees(lease, startedAt + SLOT_IDLE_FEE_INTERVAL_MS - 1);
+    expect(a.intervalsDue).toBe(0);
+    expect(a.feeDue).toBe(0);
+    expect(a.autoRelease).toBe(false);
+  });
+
+  it('charges 10% of the winning bid per elapsed 30-day interval', () => {
+    const a = assessIdleFees(lease, startedAt + SLOT_IDLE_FEE_INTERVAL_MS);
+    expect(a.intervalsDue).toBe(1);
+    expect(a.feeDue).toBe(Math.round(lease.leaseAmount * SLOT_IDLE_FEE_FRACTION));
+    // Two intervals unpaid → both charged at once (lazy cron catch-up).
+    const b = assessIdleFees(lease, startedAt + 2 * SLOT_IDLE_FEE_INTERVAL_MS);
+    expect(b.intervalsDue).toBe(2);
+    expect(b.feeDue).toBe(2 * Math.round(lease.leaseAmount * SLOT_IDLE_FEE_FRACTION));
+  });
+
+  it('the charge cursor advances only by whole intervals (no drift, no double-charge)', () => {
+    const nowMs = startedAt + SLOT_IDLE_FEE_INTERVAL_MS + 12_345;
+    const a = assessIdleFees(lease, nowMs);
+    expect(a.chargeCursorMs).toBe(startedAt + SLOT_IDLE_FEE_INTERVAL_MS);
+    // Re-assessing from the advanced cursor owes nothing until the next interval.
+    const b = assessIdleFees({ ...lease, lastIdleFeeAtMs: a.chargeCursorMs }, nowMs);
+    expect(b.feeDue).toBe(0);
+  });
+
+  it('auto-releases at 90 days unbuilt (ownership always returns to the market)', () => {
+    expect(assessIdleFees(lease, startedAt + SLOT_IDLE_AUTO_RELEASE_MS - 1).autoRelease).toBe(false);
+    expect(assessIdleFees(lease, startedAt + SLOT_IDLE_AUTO_RELEASE_MS).autoRelease).toBe(true);
+  });
+});

@@ -46,6 +46,7 @@ const CATEGORY_LABEL: Partial<Record<CalendarCategory, string>> = {
   program: 'Training Program', // Live-Service Wave LS6
   leader_retirement: 'Leader Retirement', // Live-Service Wave LS6
   story_chapter: 'Story Chapter', // Live-Service Wave LS8
+  tender_offer: 'Tender Offer', // Wave M6 (docs/MEANINGFUL_2026-08.md §M6)
 };
 
 const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {

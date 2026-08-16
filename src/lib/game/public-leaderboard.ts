@@ -100,6 +100,73 @@ export async function getPublicCorporationCount(): Promise<number> {
   return prisma.gameProfile.count();
 }
 
+// ─── Wave M6 (docs/MEANINGFUL_2026-08.md §M6): public equity block ──────────
+// Float / valuation premium / controller / recent share transactions for the
+// public corporation page. Everything here is deliberately public by canon
+// ("corporate scouting is legitimate gameplay": fleet counts, facility
+// locations, league rankings are free — deeper intel is paid). Book net
+// worth (`netWorth`) is already public; the valuation shown here is the
+// same computeValuation figure the tender-price floor uses, so scouts and
+// targets read one truth.
+
+export interface PublicCorpEquity {
+  totalShares: number;
+  founderShares: number;
+  floatShares: number;
+  controllerName: string | null;
+  dividendPayoutPct: number;
+  recentTransactions: {
+    kind: string;
+    shares: number;
+    pricePerShare: number;
+    at: Date;
+  }[];
+  openTenderCount: number;
+}
+
+export async function getPublicCorpEquity(profileId: string): Promise<PublicCorpEquity | null> {
+  try {
+    const registry = await prisma.corpShareRegistry.findUnique({
+      where: { profileId },
+      include: {
+        holdings: true,
+        dividendPolicy: true,
+        transactions: { orderBy: { createdAt: 'desc' }, take: 8 },
+      },
+    });
+    if (!registry) return null;
+    const founderShares = registry.holdings.find(h => h.holderProfileId === profileId)?.shares ?? 0;
+    let controllerName: string | null = null;
+    if (registry.controllerProfileId) {
+      const controller = await prisma.gameProfile.findUnique({
+        where: { id: registry.controllerProfileId },
+        select: { companyName: true },
+      });
+      controllerName = controller?.companyName ?? null;
+    }
+    const openTenderCount = await prisma.tenderOffer.count({
+      where: { targetProfileId: profileId, status: 'open', kind: { in: ['tender', 'white_knight', 'buyback'] } },
+    });
+    return {
+      totalShares: registry.totalShares,
+      founderShares,
+      floatShares: registry.totalShares - founderShares,
+      controllerName,
+      dividendPayoutPct: registry.dividendPolicy?.payoutRatioPct ?? 0,
+      recentTransactions: registry.transactions.map(t => ({
+        kind: t.kind,
+        shares: t.shares,
+        pricePerShare: t.pricePerShare,
+        at: t.createdAt,
+      })),
+      openTenderCount,
+    };
+  } catch {
+    // Table may not exist yet (pre-migration) — page renders without the block.
+    return null;
+  }
+}
+
 export async function getPublicCorp(id: string): Promise<PublicCorp | null> {
   const profile = await prisma.gameProfile.findUnique({
     where: { id },

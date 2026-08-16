@@ -96,7 +96,11 @@ export type CalendarCategory =
   | 'senate' | 'league' | 'season' | 'alliance_event' | 'npc_program'
   | 'expedition' | 'queue' | 'appointment_event' | 'real_launch' | 'corporate_era'
   | 'alliance_charter' | 'economic_cycle' | 'program' | 'leader_retirement' | 'realignment'
-  | 'story_chapter' | 'slot_auction' | 'procurement_drive';
+  | 'story_chapter' | 'slot_auction' | 'procurement_drive'
+  // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): tender offers are public,
+  // priced, time-boxed — and calendar-visible. Derived from state.equity
+  // (the sync snapshot), keeping this module DB-free.
+  | 'tender_offer';
 
 export type CalendarEntryKind =
   | 'lock' | 'opens' | 'closes' | 'starts' | 'ends' | 'returns' | 'completes' | 'transition';
@@ -796,11 +800,57 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...chapterEntries(nowMs, horizonMs),
     ...slotAuctionEntries(opts.openSlotAuctions, nowMs, horizonMs),
     ...procurementDriveEntries(opts.openNpcDrives, nowMs, horizonMs),
+    ...tenderOfferEntries(state, nowMs, horizonMs),
   ];
 
   return entries
     .filter(e => e.atMs >= nowMs && e.atMs <= nowMs + horizonMs)
     .sort((a, b) => a.atMs - b.atMs);
+}
+
+/** M6 — tender-offer contest deadlines (docs/MEANINGFUL_2026-08.md §M6:
+ *  "public, priced, time-boxed — calendar-visible"). Personal lens over the
+ *  sync-delivered equity snapshot: offers TARGETING me and offers I opened.
+ *  Null snapshot (gate closed / never synced) = no entries. */
+function tenderOfferEntries(state: GameState, nowMs: number, horizonMs: number): CalendarEntry[] {
+  const equity = state.equity;
+  if (!equity?.enabled) return [];
+  const entries: CalendarEntry[] = [];
+  const seen = new Set<string>();
+  for (const t of equity.tendersOnMe || []) {
+    if (t.status !== 'open' || t.closesAtMs < nowMs || t.closesAtMs > nowMs + horizonMs) continue;
+    seen.add(t.id);
+    entries.push({
+      id: `tender_offer_${t.id}`,
+      category: 'tender_offer',
+      title: t.kind === 'buyback'
+        ? 'Your buyback counteroffer closes'
+        : `${t.initiatorName}'s tender for your corporation closes`,
+      icon: '🏢',
+      atMs: t.closesAtMs,
+      kind: 'closes',
+      worldShared: false,
+      detail: `$${Math.round(t.pricePerShare).toLocaleString()}/share for ${t.sharesSought} shares — the contest resolves deterministically at the deadline (highest price wins; the board's counteroffer wins ties).`,
+    });
+  }
+  for (const o of equity.myOffers || []) {
+    if (o.status !== 'open' || seen.has(o.id) || o.closesAtMs < nowMs || o.closesAtMs > nowMs + horizonMs) continue;
+    entries.push({
+      id: `tender_offer_${o.id}`,
+      category: 'tender_offer',
+      title: o.kind === 'raise'
+        ? 'Your capital raise listing closes'
+        : o.kind === 'distress'
+          ? 'Your distress tranche listing closes'
+          : `Your offer on ${o.targetName} closes`,
+      icon: '🏢',
+      atMs: o.closesAtMs,
+      kind: 'closes',
+      worldShared: false,
+      detail: `$${Math.round(o.pricePerShare).toLocaleString()}/share × ${o.sharesSought} shares.`,
+    });
+  }
+  return entries;
 }
 
 /** Group already-sorted entries by local calendar day (viewer's timezone) —

@@ -18,6 +18,11 @@ import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import type { EraCharterId } from '@/lib/game/types';
 import CorporateEraPanel from './CorporateEraPanel';
+// Wave M6 (docs/MEANINGFUL_2026-08.md §M6): Capital & Control — the share
+// registry / tender-offer surface. Board politics is its natural home
+// (capital raises and dividend policy are board decisions, and a hostile
+// tender is the ultimate board-politics event).
+import ShareRegistryPanel from './ShareRegistryPanel';
 
 interface GovernancePanelProps {
   state: GameState;
@@ -66,6 +71,9 @@ export default function GovernancePanel({ state, onSwitchPolicy, onCharterEra }:
 
       {/* ── Corporate Eras (Live-Service Wave LS4) ─────────────────────── */}
       <CorporateEraPanel state={state} onCharterEra={onCharterEra} />
+
+      {/* ── Capital & Control (Wave M6 — share registry & takeovers) ────── */}
+      <ShareRegistryPanel state={state} />
 
       {/* ── Policies ─────────────────────────────────────────────────── */}
       <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">

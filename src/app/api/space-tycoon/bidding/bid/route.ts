@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import {
   calculateCollateral,
+  computeBidInsuranceFee,
   MAX_CONCURRENT_BIDS,
   MAX_CONCURRENT_WON,
   MIN_BALANCE_AFTER_COLLATERAL,
@@ -35,6 +36,9 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { contractId, bidAmount, deliveryPromise } = body;
+    // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O7): opt-in bid insurance —
+    // pay 5% of collateral (burned) to learn the losing margin post-award.
+    const wantsInsurance = body.insurance === true;
 
     if (!contractId || bidAmount == null || deliveryPromise == null) {
       return NextResponse.json(
@@ -181,10 +185,13 @@ export async function POST(request: NextRequest) {
         recentWins,
       );
 
-      // 11. Check player can afford collateral
-      if (profile.money - collateralAmount < MIN_BALANCE_AFTER_COLLATERAL) {
+      // Wave M5 (O7): insurance fee — 5% of collateral, burned up-front.
+      const insuranceFee = wantsInsurance ? computeBidInsuranceFee(collateralAmount) : 0;
+
+      // 11. Check player can afford collateral (+ any insurance fee)
+      if (profile.money - collateralAmount - insuranceFee < MIN_BALANCE_AFTER_COLLATERAL) {
         throw new BidError(
-          `Insufficient funds. Need $${(collateralAmount + MIN_BALANCE_AFTER_COLLATERAL).toLocaleString()} (collateral + minimum balance)`,
+          `Insufficient funds. Need $${(collateralAmount + insuranceFee + MIN_BALANCE_AFTER_COLLATERAL).toLocaleString()} (collateral${wantsInsurance ? ' + insurance' : ''} + minimum balance)`,
           'INSUFFICIENT_FUNDS'
         );
       }
@@ -202,14 +209,18 @@ export async function POST(request: NextRequest) {
           collateralLocked: collateralAmount,
           compositeScore: null, // Computed at resolution time
           status: 'pending',
+          insured: wantsInsurance,
+          insuranceFee,
         },
       });
 
-      // 14. Deduct collateral from player balance (+ledger, audit A1)
+      // 14. Deduct collateral (+ insurance fee, burned) from player balance
+      // (+ledger, audit A1)
       await tx.gameProfile.update({
         where: { id: profile.id },
         data: {
-          money: { decrement: collateralAmount },
+          money: { decrement: collateralAmount + insuranceFee },
+          ...(insuranceFee > 0 ? { totalSpent: { increment: insuranceFee } } : {}),
         },
       });
       if (ledgerOn) {
@@ -217,6 +228,12 @@ export async function POST(request: NextRequest) {
           profileId: profile.id, moneyDelta: -collateralAmount,
           reason: 'bid_collateral', refId: bid.id,
         });
+        if (insuranceFee > 0) {
+          await recordLedger(tx, {
+            profileId: profile.id, moneyDelta: -insuranceFee,
+            reason: 'bid_insurance_fee', refId: bid.id,
+          });
+        }
       }
 
       // 15. Increment contract bid count
@@ -236,9 +253,11 @@ export async function POST(request: NextRequest) {
           collateralLocked: bid.collateralLocked,
           collateralPct,
           status: bid.status,
+          insured: bid.insured,
+          insuranceFee,
         },
         profile: {
-          money: profile.money - collateralAmount,
+          money: profile.money - collateralAmount - insuranceFee,
           activeBidCount: activeBidCount + 1,
         },
       };

@@ -209,6 +209,14 @@ const CRON_JOBS: CronJobDef[] = [
   // checks fresh within that loop, same relationship bidding/resolve has to
   // the weekly contract cadence.
   { schedule: '0 */2 * * *',  path: '/api/space-tycoon/orbital-slots/resolve',      label: 'tycoon-orbital-slots',         maxStaleMinutes: 1440 },
+
+  // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity/takeover resolution —
+  // deterministic tender-contest settlement, sell-side listing expiry,
+  // monthly distress checks (game month = 6h real), and per-published-report
+  // dividends. Tender offers live on the WEEKLY loop (7-day windows); this
+  // cadence keeps closings settled within ~2h of their deadline. Registered
+  // in middleware.ts cronPaths (the CSRF-for-new-cron gotcha).
+  { schedule: '30 */2 * * *', path: '/api/space-tycoon/equity/resolve',             label: 'tycoon-equity-resolve',        maxStaleMinutes: 1440 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

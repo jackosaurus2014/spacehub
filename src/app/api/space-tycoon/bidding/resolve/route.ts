@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger';
 import {
   evaluateBids,
   generateBiddingContracts,
+  computeMarginLost,
   CONTRACT_TYPES,
   type BidForEvaluation,
   type ContractForEvaluation,
@@ -166,6 +167,8 @@ export async function POST(request: NextRequest) {
           });
 
           // Mark losing bids and refund collateral
+          const winnerPrice = bidsForEval.find(b => b.id === winner.bidId)?.priceOffer || 0;
+          const bidDirection = contractDef?.bidDirection === 'forward' ? 'forward' as const : 'reverse' as const;
           for (const result of results) {
             if (result.isWinner) continue;
             const losingBid = contract.bids.find(b => b.id === result.bidId);
@@ -176,6 +179,13 @@ export async function POST(request: NextRequest) {
               data: {
                 status: 'lost',
                 compositeScore: result.compositeScore,
+                // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O7): insured
+                // losing bids learn their price margin post-award — the
+                // paid calibration intel bid insurance bought. Never
+                // stamped for uninsured bids (sealed stays sealed).
+                ...(losingBid.insured
+                  ? { marginLost: computeMarginLost(bidDirection, losingBid.bidAmount, winnerPrice) }
+                  : {}),
               },
             });
 

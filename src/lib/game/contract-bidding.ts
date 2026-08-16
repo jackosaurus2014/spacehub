@@ -894,6 +894,37 @@ export function checkContractFulfillment(
   }
 }
 
+// ─── Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O7): bid insurance ────────────
+// Sealed-bid stays sealed — but a bidder may pay 5% of their collateral
+// (burned, never refunded) to learn, POST-award, the margin they lost by.
+// Paid intel that improves the next bid: contract sniping keeps its edge,
+// and the counter-decision ("is calibration worth 5% of collateral every
+// time?") is a real recurring cost, not a free scouting report.
+
+export const BID_INSURANCE_FRACTION = 0.05;
+
+/** Burned fee to insure a bid (5% of the collateral actually locked). */
+export function computeBidInsuranceFee(collateralAmount: number): number {
+  return Math.round(Math.max(0, collateralAmount) * BID_INSURANCE_FRACTION);
+}
+
+/**
+ * The margin an insured LOSING bid gets told post-award. Positive = how far
+ * from the winner's price you were, in the direction you needed to move:
+ * reverse auctions (lowest wins) → yourPrice − winnerPrice; forward
+ * auctions (highest wins) → winnerPrice − yourPrice. Never negative (a
+ * loser who priced "better" than the winner lost on reputation/delivery —
+ * margin 0 tells them price wasn't the problem, itself useful intel).
+ */
+export function computeMarginLost(
+  bidDirection: 'reverse' | 'forward',
+  loserPrice: number,
+  winnerPrice: number,
+): number {
+  const margin = bidDirection === 'forward' ? winnerPrice - loserPrice : loserPrice - winnerPrice;
+  return Math.max(0, Math.round(margin));
+}
+
 // ─── Collateral Calculation ─────────────────────────────────────────────────
 
 /**

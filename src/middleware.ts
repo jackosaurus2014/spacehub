@@ -292,6 +292,9 @@ function checkCsrf(req: NextRequest): boolean {
         // "CSRF-for-new-cron gotcha" prior waves flagged — every new cron
         // route in cron-scheduler.ts MUST be added here too or it 403s).
         '/api/space-tycoon/orbital-slots/resolve',
+        // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity/takeover
+        // resolution cron — tender contests, distress checks, dividends.
+        '/api/space-tycoon/equity/resolve',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {

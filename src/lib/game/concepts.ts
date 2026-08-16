@@ -265,6 +265,50 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
     related: ['mothball'],
   }),
 
+  // ── Economic offense toolkit (Wave M5 — docs/MEANINGFUL_2026-08.md §3.2) ─
+  'price-campaign': c({
+    id: 'price-campaign', name: 'Price Campaign', icon: 'trending-down',
+    short: 'Public, week-long dumping attack on one commodity market',
+    body: 'A corporation may pay a burned fee to declare a public price campaign on one resource: for 7 days that market\'s price stops mean-reverting and the NPC maker halves its buying — so real sell volume below spot can crash the price toward the band floor, cutting every price-linked miner\'s income. Counterplay: buy the dumped goods cheap, mothball marginal producers to ride it out, or simply out-wait the clock — sustaining a crash costs the attacker real margin every day. Frontier corporations\' input purchases are unaffected.',
+    related: ['mean-reversion', 'mothball', 'cornering'],
+  }),
+  cornering: c({
+    id: 'cornering', name: 'Market Cornering', icon: 'market',
+    short: 'Buying up standing supply a rival needs — bounded, visible',
+    body: 'Buying out a resource\'s open supply is legitimate but bounded: the price band (0.3×–3× base), the NPC maker\'s restock, and Earth-import parity mean denial raises a rival\'s costs without ever starving them outright. When one buyer\'s open bids exceed 40% of a week\'s traded volume, every corporation consuming that input gets a Situation Log squeeze warning. Counterplay: switch supply policy to local production, stockpile early, or pay the import premium.',
+    related: ['standing-order', 'order-book-depth', 'price-campaign'],
+  }),
+  'talent-poaching': c({
+    id: 'talent-poaching', name: 'Talent Poaching', icon: 'workforce',
+    short: 'Escrowed signing-bonus raids on a rival\'s crew — 48h to counter',
+    body: 'A rival can offer signing bonuses (6 months\' salary × wage index × 1.5, escrowed) to up to 10% of one of your crew types. You get 48 hours to counteroffer — pay 75% of the bonus to retain, use your once-per-season free Guild Arbitration retention if researched, or keep the cash and let them walk. Every successful poach heats the global wage index, so wage wars are self-limiting. Frontier corporations are immune in both directions.',
+    related: ['wage-index-concept', 'workforce-bonus'],
+  }),
+  'wage-index-concept': c({
+    id: 'wage-index-concept', name: 'Wage Index', icon: 'workforce',
+    short: 'Server-wide pay multiplier per crew type (0.8×–1.6×)',
+    body: 'Each crew type\'s salary multiplies by a server-wide wage index driven by total hiring versus labor supply. Mass hiring booms (and successful poaching raids) push it up for everyone; building crew quarters grows the labor pool and relieves it. Training your own crew reduces your contribution to the pressure.',
+    related: ['talent-poaching'],
+  }),
+  'lane-toll': c({
+    id: 'lane-toll', name: 'Freight Toll', icon: 'fleet',
+    short: 'Governor-levied 0.5–2% cargo toll on a zone\'s lanes',
+    body: 'A zone\'s governor may levy a small public toll (0.5–2% of cargo value, capped per dispatch) on rival freight crossing the zone. Tolls are visible to everyone before you dispatch, and the governor collects them through the ledger. Counterplay: route around the zone (real Δv cost — geography is strategy), sign an alliance trade treaty (reduces fees), or contest the governorship itself. Frontier corporations never pay tolls.',
+    related: ['delta-v', 'freight-cost', 'influence-share'],
+  }),
+  'bid-insurance': c({
+    id: 'bid-insurance', name: 'Bid Insurance', icon: 'contracts',
+    short: 'Pay 5% of collateral to learn your losing margin post-award',
+    body: 'When placing a sealed contract bid you may pay 5% of the collateral (burned) as bid insurance: if you lose, you learn exactly how far your price was from the winner\'s. Sealed bids stay sealed before award — this is paid calibration intel for your next bid, not a peek at rivals\' live offers.',
+    related: ['slot-idle-fee'],
+  }),
+  'slot-idle-fee': c({
+    id: 'slot-idle-fee', name: 'Slot Idle Fee', icon: 'territory',
+    short: 'Unbuilt orbital-slot leases pay 10%/30 days and auto-release at 90',
+    body: 'Winning an orbital-slot lease and never building on it is legitimate denial — but taxed: an unbuilt lease pays 10% of the winning bid every 30 days (burned) and auto-releases back to the pool after 90 days unbuilt. A denied rival can also buy the lease outright on the transfer market — premium orbital real estate always transfers at market-clearing prices.',
+    related: ['orbital-slot', 'bid-insurance'],
+  }),
+
   // ── Legacy / progression ─────────────────────────────────────────────────
   legacy: c({
     id: 'legacy', name: 'Legacy', icon: 'scroll',
