@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import prisma from '@/lib/db';
 
 interface Props {
@@ -12,7 +13,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, description: true, logoUrl: true, sector: true, headquarters: true },
   });
 
-  if (!company) return { title: 'Company Not Found' };
+  // The page itself is a Client Component that fetches its data after
+  // mount, so it can never produce a real 404 status on its own — the
+  // existence check has to happen here, in generateMetadata, which runs
+  // server-side before the response streams. Calling notFound() here makes
+  // the route render src/app/company-profiles/[slug]/not-found.tsx with a
+  // genuine HTTP 404 status.
+  if (!company) notFound();
 
   const desc = company.description?.slice(0, 160) || `${company.name} - space industry company profile on SpaceNexus`;
 

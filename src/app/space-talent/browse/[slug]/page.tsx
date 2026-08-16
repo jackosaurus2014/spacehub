@@ -11,6 +11,18 @@ import { JOB_CATEGORIES } from '@/types';
 import type { JobCategory, SeniorityLevel } from '@/types';
 
 export const revalidate = 3600;
+// JOB_LANDING_PAGES (src/lib/job-landing-pages.ts) is a static,
+// build-time-known array — generateStaticParams() below already enumerates
+// every valid slug. dynamicParams=false makes Next's router 404 any slug
+// NOT in that list at the routing layer, before this page's notFound()
+// call (line ~131) ever runs. That matters because notFound() called from
+// inside a matched route is caught by a client-side React error boundary
+// (see node_modules/next/dist/client/components/not-found-boundary.js)
+// that can swap in the right UI but can't set the HTTP status code — only
+// a route-level "no page matched" 404 (this one) reliably returns a real
+// 404 status. Safe here specifically because the slug list is static: a
+// new landing page requires a code change + redeploy anyway.
+export const dynamicParams = false;
 
 // A page with fewer than this many live matches is thin content — still
 // fully functional, but flagged noindex rather than pretending it's a

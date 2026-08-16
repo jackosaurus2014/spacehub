@@ -337,7 +337,80 @@ function checkCsrf(req: NextRequest): boolean {
   return false;
 }
 
-export function middleware(req: NextRequest) {
+// ─────────────────────────────────────────────────────────────────────────
+// Real 404s for DB-backed dynamic detail routes
+// ─────────────────────────────────────────────────────────────────────────
+//
+// notFound() called from inside a matched route (e.g. deep in a page.tsx
+// after an "if (!row) notFound()" check) is caught by a CLIENT-SIDE React
+// error boundary — NotFoundBoundary, see
+// node_modules/next/dist/client/components/not-found-boundary.js. It can
+// correctly swap in the not-found UI (and Next itself adds a
+// <meta name="robots" content="noindex"> tag as a built-in mitigation) but
+// it has no way to touch the HTTP response status code, which by the time
+// that boundary runs has already been committed to 200. The only render
+// path that reliably sets res.statusCode = 404 is a route-level "no page
+// matched this URL" 404 — i.e. dynamicParams=false rejecting a slug that
+// isn't in generateStaticParams()'s list, or a URL with no matching route
+// at all. See src/app/blog/[slug]/page.tsx and
+// src/app/space-talent/browse/[slug]/page.tsx for that fix, used where the
+// valid slugs are a small static, build-time-known set.
+//
+// /company-profiles/[slug] and /marketplace/listings/[slug] can't use that
+// trick: their valid slugs come from Postgres, and the Railway build
+// container has no DB access, so generateStaticParams can't enumerate them
+// (see CLAUDE.md/memory: "Railway build container has NO DB access").
+// Instead, middleware — which runs before any page rendering — checks
+// existence against a small side-effect-free API and returns a genuine
+// 404 Response directly when the slug doesn't exist, bypassing the
+// notFound()-boundary limitation entirely. If the check itself fails for
+// any reason (network hiccup, DB blip, timeout), we fail OPEN — the
+// request proceeds normally — so a transient error in this check can never
+// incorrectly 404 real content.
+const SLUG_EXISTENCE_CHECKS: Array<{
+  match: RegExp;
+  excludedSlugs?: Set<string>;
+  existsApiPath: (slug: string) => string;
+}> = [
+  {
+    // /company-profiles/sponsor is a real static page, not a company slug.
+    match: /^\/company-profiles\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['sponsor']),
+    existsApiPath: (slug) => `/api/company-profiles/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    match: /^\/marketplace\/listings\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/marketplace/listings/${encodeURIComponent(slug)}/exists`,
+  },
+];
+
+async function checkKnownSlugMissing(req: NextRequest, pathname: string): Promise<boolean> {
+  for (const check of SLUG_EXISTENCE_CHECKS) {
+    const m = pathname.match(check.match);
+    if (!m) continue;
+    const slug = decodeURIComponent(m[1]);
+    if (check.excludedSlugs?.has(slug)) return false;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    try {
+      const res = await fetch(new URL(check.existsApiPath(slug), req.nextUrl.origin), {
+        method: 'GET',
+        signal: controller.signal,
+        headers: { 'x-internal-existence-check': '1' },
+      });
+      return res.status === 404;
+    } catch {
+      // Fail open: never 404 real content because the check itself broke.
+      return false;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  return false;
+}
+
+export async function middleware(req: NextRequest) {
   const hostname = req.headers.get('host') || '';
 
   // Redirect www → non-www (301 permanent)
@@ -348,6 +421,25 @@ export function middleware(req: NextRequest) {
   }
 
   const pathname = req.nextUrl.pathname;
+
+  // Give the small set of DB-backed detail routes above a real 404 status
+  // for unknown slugs — see SLUG_EXISTENCE_CHECKS comment.
+  if (!pathname.startsWith('/api/') && SLUG_EXISTENCE_CHECKS.some((c) => c.match.test(pathname))) {
+    const missing = await checkKnownSlugMissing(req, pathname);
+    if (missing) {
+      // A minimal, self-contained 404 page — middleware can't invoke
+      // Next's own React rendering pipeline (that's the exact mechanism
+      // that fails to set a real status code; see the comment above), so
+      // this is a small hand-written page rather than the site's styled
+      // not-found.tsx. It matches the site's dark theme closely enough to
+      // not look broken, and links back to a working page.
+      const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Not Found | SpaceNexus</title><meta name="robots" content="noindex"><style>body{background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}main{text-align:center;padding:2rem}h1{font-size:1.5rem;margin:0 0 .5rem}p{color:#94a3b8;margin:0 0 1.5rem}a{color:#22d3ee;text-decoration:none}a:hover{text-decoration:underline}</style></head><body><main><h1>Page not found</h1><p>The page you're looking for doesn't exist or has been removed.</p><a href="/">Return to SpaceNexus</a></main></body></html>`;
+      return new NextResponse(html, {
+        status: 404,
+        headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex' },
+      });
+    }
+  }
 
   // Rate limiting and CSRF only apply to API routes
   if (pathname.startsWith('/api/')) {

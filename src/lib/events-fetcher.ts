@@ -367,3 +367,64 @@ export async function getAllEventsInRange(startDate: Date, endDate: Date, option
 export async function getEventById(id: string) {
   return prisma.spaceEvent.findUnique({ where: { id } });
 }
+
+// ─── Stale-status transition ────────────────────────────────────────────────
+
+/**
+ * Grace period after launchDate before a row stuck on 'upcoming'/'go' is
+ * considered stale. Launch Library's /upcoming feed simply stops returning a
+ * launch once it's in the past, so our upsert-only sync (fetchLaunchLibraryEvents
+ * above) never gets a chance to move it to a terminal status — the row sits
+ * as 'upcoming' forever and pollutes every status-filtered query (getUpcomingEvents
+ * here, plus ~20 other call sites across api/events, api/v1/launches, api/pulse,
+ * api/live, prediction-exchange's weekly generator, etc. that all filter on
+ * status in ['upcoming','go','tbc','tbd']).
+ */
+export const STALE_EVENT_GRACE_MS = 24 * 3600_000;
+
+/**
+ * Transition rows whose launchDate is more than STALE_EVENT_GRACE_MS in the
+ * past but whose status is still stuck at 'upcoming' or 'go' to 'scrubbed'.
+ *
+ * Deliberately 'scrubbed', not 'completed', even though semantically neither
+ * is quite right (we don't actually know the outcome — LL2 just stopped
+ * telling us). 'completed' is not safe here because several consumers treat
+ * it as a confirmed-successful launch:
+ *   - src/lib/game/prediction-exchange.ts resolveSpaceEventOutcome() maps
+ *     'completed'/'in_progress' -> 'yes' ("launched within its tracked
+ *     window") and pays out real game-currency stakes on that read. Its own
+ *     resolver (src/app/api/cron/prediction-exchange/route.ts runResolve)
+ *     already force-settles a question ~48h after windowEnd regardless of
+ *     status, defaulting to 'no' for anything not completed/in_progress —
+ *     i.e. a stuck 'upcoming' status already resolves conservatively today.
+ *     Flipping stale rows to 'completed' would turn that safe default into
+ *     an unconfirmed "yes" and change real payouts. 'scrubbed' hits the same
+ *     'no' branch as the current stuck-status fallback, so this transition
+ *     is a no-op for prediction-exchange's resolution math.
+ *   - src/app/api/cron/mission-debriefs/route.ts seeds a debrief's status as
+ *     'success' when event.status === 'completed'. Marking an unconfirmed
+ *     event 'completed' would auto-draft a false "success" debrief.
+ *   - src/lib/monthly-report-generator.ts counts status:'completed' launches
+ *     as this month's successful launches; 'scrubbed' rows are excluded.
+ * 'scrubbed' is already a first-class terminal SpaceEventStatus value (see
+ * src/types/index.ts EVENT_STATUS_INFO) and src/lib/content-accuracy.ts's
+ * checkCountdownWidgetsFuture() already treats 'completed' and 'scrubbed' as
+ * the two acceptable "no longer open" outcomes for a linked countdown.
+ *
+ * Pure DB update, no external I/O — safe to call every sync pass regardless
+ * of whether the Launch Library fetch itself succeeded.
+ */
+export async function expireStaleUpcomingEvents(now: Date = new Date()): Promise<number> {
+  const cutoff = new Date(now.getTime() - STALE_EVENT_GRACE_MS);
+  const result = await prisma.spaceEvent.updateMany({
+    where: {
+      status: { in: ['upcoming', 'go'] },
+      launchDate: { lt: cutoff },
+    },
+    data: {
+      status: 'scrubbed',
+      updatedAt: now,
+    },
+  });
+  return result.count;
+}

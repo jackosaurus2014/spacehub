@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import prisma from '@/lib/db';
 
 interface Props {
@@ -12,7 +13,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, description: true, category: true, pricingType: true },
   });
 
-  if (!listing) return { title: 'Listing Not Found' };
+  // The listing page itself (page.tsx) is a Client Component: it fetches
+  // /api/marketplace/listings/[slug] client-side after mount and only calls
+  // notFound() once that fetch fails, which happens entirely in the browser
+  // and never reaches the server response. Doing the existence check here
+  // instead, in generateMetadata (server-side, before the page streams),
+  // renders ./not-found.tsx for the right slugs. Note: middleware.ts also
+  // short-circuits unknown slugs on this route with a real HTTP 404 before
+  // rendering ever starts — see the comment there for why that's required
+  // in addition to this notFound() call.
+  if (!listing) notFound();
 
   const desc = listing.description?.slice(0, 160) || `${listing.name} - space industry service listing on SpaceNexus Marketplace`;
 

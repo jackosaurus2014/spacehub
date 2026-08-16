@@ -31,6 +31,19 @@ const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
 };
 
 export const revalidate = 3600;
+// BLOG_POSTS (src/lib/blog-content.ts) is a static, build-time-known array
+// — every valid slug is already enumerated by generateStaticParams() below.
+// dynamicParams=false makes Next's router 404 any slug NOT in that list at
+// the routing layer, before page.tsx (and its notFound() call) ever runs.
+// That matters because notFound() called from inside a matched route is
+// caught by a client-side React error boundary (see
+// node_modules/next/dist/client/components/not-found-boundary.js) that can
+// swap in the right UI but can't set the HTTP status code — only a
+// route-level "no page matched" 404 (this one) reliably returns a real 404
+// status. Safe here specifically because content is static: a new blog
+// post requires a code change + redeploy anyway, so there's no "valid slug
+// added without a rebuild" case to worry about (unlike DB-backed routes).
+export const dynamicParams = false;
 
 const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'why-space-industry-needs-bloomberg-terminal': { tool: 'Mission Control', path: '/mission-control' },

@@ -25,6 +25,86 @@ export interface OriginalBlogPost {
 }
 
 export const BLOG_POSTS: OriginalBlogPost[] = [
+  // ── Article: Introducing Space Tycoon (launch announcement) ──
+  {
+    slug: 'introducing-space-tycoon-economic-space-mmo',
+    title: 'Introducing Space Tycoon: An Economic Space MMO With No Combat and Real Space Data',
+    excerpt: 'We built a game. Space Tycoon is a free browser MMO where corporations wage purely economic warfare across a hard-science 2150 solar system — and where real NOAA space weather, real launches, and real program milestones flow into the simulation. Here is what it is, why we built it this way, and how to start playing.',
+    category: 'building-in-public',
+    author: 'SpaceNexus Team',
+    authorRole: 'Engineering',
+    publishedAt: '2026-08-16T12:00:00Z',
+    readingTime: 8,
+    featured: true,
+    keywords: ['space tycoon', 'space economy game', 'browser space game', 'economic mmo', 'space strategy game', 'no combat mmo', 'free space game', 'tycoon game', 'space business game', 'spacenexus game'],
+    content: `
+<p>SpaceNexus is a site about the business of space — launches, markets, jobs, funding rounds, the whole industry. Today we are launching something we have been building alongside all of that: a game about the business of space.</p>
+
+<p><a href="/space-tycoon"><strong>Space Tycoon</strong></a> is a free live-service economic strategy MMO, playable instantly in any browser or on your phone. No download, no install, no pay-to-win — ever. You found a corporation in the year 2150, ninety years after commercial spaceflight outgrew national programs, and you compete with every other corporation on the server for wealth, territory, talent, and influence across a realistically modeled solar system.</p>
+
+<p>It is newly launched. The economy is live, the first corporations are forming, and the best market positions in the game's history are — right now — unclaimed. This post explains what the game is, the design principles behind it, and the one feature we have not seen anywhere else: real space data flowing into the simulation.</p>
+
+<h2 id="no-combat">There Is No Combat. That Is the Point.</h2>
+
+<p>Nearly every space strategy game is a combat game. Fleets, lasers, blockades — the economy exists to fund the war. We built the opposite: in Space Tycoon's universe, the Accord of 2089 demilitarized space, and the treaty still holds in 2150. There are no fleet battles because there are no fleets of warships. All conflict is economic.</p>
+
+<p>What does economic warfare actually look like in play?</p>
+
+<ul>
+<li><strong>Price wars.</strong> Service revenue comes from finite, local demand pools. If a rival builds a competing orbital datacenter in the same market you serve, they take a share of your customers and your revenue genuinely drops. Saturating a market is a real strategic act — and so is defending one.</li>
+<li><strong>Market cornering.</strong> Every commodity has one live, shared price and a real limit-order book with escrow. Your trades move the price everyone else sees. Accumulate quietly and the market's cornering alerts may give you away.</li>
+<li><strong>Talent poaching.</strong> You can make an offer to a rival corporation's crew. They get a 48-hour window to counteroffer. Either way, the global wage index for that crew type heats up — poaching wars make labor expensive for everyone, which is itself a strategy.</li>
+<li><strong>Hostile takeovers.</strong> Every corporation has a 100-share registry. Shares only enter the public float through capital raises, distress auctions, or accepted tender offers — so a healthy, disciplined corporation can never be taken over against its will, and an over-leveraged one is a target. Tender offers, counteroffers, white knights, and minority-shareholder protections are all in the rules. (The takeover system gates itself off until the server has enough active corporations for it to be meaningful — and tells you so honestly rather than pretending.)</li>
+</ul>
+
+<p>Risk still exists — it just is not other players shooting at you. Solar storms, micrometeoroid strikes, pirate raids from NPC factions, and plain equipment failure can destroy ships, buildings, and inventory. Insurance, shielding, and redundancy are real line items in your budget, which makes them real decisions.</p>
+
+<h2 id="real-economy">A Real Economy, Not a Decorative One</h2>
+
+<p>Our design rule, written into the project's founding principles: <em>if a decision does not change a player's economic situation, it should not be in the game.</em> That rule forced us to build an economy where the numbers push back.</p>
+
+<p>Demand is finite and local, so every additional copy of a building earns less than the last — and past a point, it earns less than it costs, because your operating costs do not shrink just because your market share did. Buildings consume inputs every tick, so supply chains are physical, not cosmetic. Shared mineral deposits thin under extraction pressure: three corporations mining the same field each settle at roughly two-thirds of what a solo miner would pull. Wages float on a labor market. Commodity super-cycles are announced a week in advance, so positioning ahead of them is a genuine trade. And logistics cost money — freight is priced on delta-v over real orbital routes, not teleportation.</p>
+
+<p>We do not balance this by feel. A simulation harness runs scripted strategies against the actual game engine over 24 game-months — solo and against competitors sharing the same demand pools — before tuning changes ship. It is how we know, for example, that the degenerate strategy of buying nothing but telecom satellites converts two billion dollars of starting capital into a fleet that loses about $24 million a month, forever, while a diversified, vertically integrated corporation is the strategy with durable positive income. When a rival enters a shared orbital market in the harness, the incumbent's revenue falls by a third. That is not flavor text. That is the simulation output — and it is exactly the economy we wanted.</p>
+
+<h2 id="real-data">Real Space Data Flows Into the Game</h2>
+
+<p>SpaceNexus already ingests live NOAA space-weather data, the global launch manifest, and program-level mission tracking for the news and tools side of the site. So we asked an obvious question: why should the game invent fake weather when the Sun provides real weather?</p>
+
+<p>Concretely:</p>
+
+<ul>
+<li><strong>Real solar storms appear in the game.</strong> When the actual planetary Kp index climbs above 5, or the current GOES X-ray reading is an M- or X-class flare, an in-game solar-storm watch goes up — severity mapped from the real measurement, labeled with its source: mirrored from real heliophysics data (NOAA SWPC). The aurora you read about on the news side of SpaceNexus is the storm watch on your ops board in the game.</li>
+<li><strong>Real launches open bonus windows.</strong> When any real rocket — a Falcon 9, a New Glenn, a Vulcan — is within about an hour of liftoff, the game opens a launch-window event with a +10% contract payout bonus for its duration. A real countdown is a reason to be in the game at that exact moment, and the in-game mission calendar shows the actual upcoming launch schedule.</li>
+<li><strong>Real milestones fire research bonuses.</strong> When the Starship or Artemis programs hit a genuine milestone, every corporation gets a +10% research-speed bonus for the week. The industry's good days are the game's good days.</li>
+</ul>
+
+<p>We think of it as the game breathing with the real space industry. If you already follow launches and space weather — and if you are reading this site, you probably do — the game gives that attention a second payoff.</p>
+
+<h2 id="built-for-months">Built to Be Played Over Months</h2>
+
+<p>Space Tycoon is a live-service game designed for long arcs, and for people with jobs. Before you log off, you load a command queue — the next builds, the next research, repeating ship routes — and set standing directives: sell this commodity above that price, keep a maintenance reserve, restock below a threshold. Your corporation keeps operating while you are away, and away-time is a planning decision rather than a penalty: away yield is uncapped in time but capped in rate, and you can invest — in automation research, in an autonomous operations center, in operators — to raise that rate. Catch-up is deterministic, so a week away resolves identically whether you were online or not. When you return, you get a full operations debrief: what you earned, what completed, what the market did, and what is on the calendar next.</p>
+
+<p>The long game has structure. Corporations charter 90-real-day eras with a declared mandate, and earn medals against it — published, if you choose, to the public <a href="/space-tycoon/chronicle">Corporate Chronicle</a>. World-synchronized story chapters unfold in weekly acts toward finale weekends the whole server experiences together. Every quarter, the six-faction political landscape realigns, announced in a public <a href="/space-tycoon/epoch">Epoch Address</a>. Weekly leagues promote and relegate. And the <a href="/space-tycoon/leaderboard">leaderboard</a> and <a href="/space-tycoon/registry">corporate registry</a> are public web pages — the server's history is legible to anyone, logged in or not.</p>
+
+<h2 id="no-p2w">Free Means Free: The No-Pay-to-Win Policy</h2>
+
+<p>An economy game is only worth playing if the economy is fair, so this commitment is published as formal policy, not marketing. The core principle, quoted directly: <em>"Real money can buy convenience, personalization, and support. Real money can never buy competitive economic advantage."</em> The policy is explicit about what that excludes — no purchasable resources or money, no research or construction acceleration, no paid commanders, no paid faction reputation, no randomized purchases that yield competitive items. And it states what players can count on, in its own words: <em>"The game is not pay-to-win. Real money buys convenience, not competitive edge."</em></p>
+
+<p>The same policy commits us to simulation integrity: quarterly economic health reports, a documented exploit-response playbook, and public post-mortems when something breaks. If you find an exploit, tell us — the policy promises you transparency, not punishment.</p>
+
+<h2 id="honest-state">Where the Game Is Today</h2>
+
+<p>Honestly: it is day one of the live economy. The market breathes even on a quiet server — an NPC economic backdrop produces and consumes enough that prices move and contracts flow regardless of population, and it is designed to recede as real players grow. But the player-versus-player layer gets better with every corporation that joins: deeper order books, contested zones, real bidding wars, and eventually the takeover end-game switching itself on. Early corporations get something no one later can have — an uncontested start, and a founding date near the top of the chronicle.</p>
+
+<h2 id="play-now">Play It</h2>
+
+<p>Space Tycoon is free, runs in any browser and on any phone, and takes about a minute to start: <a href="/space-tycoon"><strong>found your corporation</strong></a>. New players start in a protected frontier with generous starter contracts, so the open economy will not eat you on day one. If you want the background first, the <a href="/space-tycoon/faq">FAQ</a> covers the basics, and the public <a href="/space-tycoon/leaderboard">leaderboard</a> shows you who you are up against.</p>
+
+<p>We will keep building this the way we build everything at SpaceNexus — in public, grounded in real data, and prioritizing the people who show up over squeezing them. See you in the belt.</p>
+`,
+  },
+
   // ── Article: Top 50 Space Companies to Watch in the 2nd Half of 2026 ──
   {
     slug: 'top-50-space-companies-second-half-2026',

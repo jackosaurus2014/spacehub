@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { checkLaunchAlerts, checkSpaceWeatherAlerts } from '@/lib/push-triggers';
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
-import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
+import { fetchLaunchLibraryEvents, expireStaleUpcomingEvents } from '@/lib/events-fetcher';
 import { fetchBlogPosts, initializeBlogSources } from '@/lib/blogs-fetcher';
 import { refreshDaily } from '@/lib/refresh-daily-chain';
 // Newsletter sending moved to dedicated /api/newsletter/send-digest endpoint (Mon/Thu schedule)
@@ -27,6 +27,19 @@ async function refreshEvents(): Promise<Record<string, string>> {
   const results: Record<string, string> = {};
   const eventsCount = await fetchLaunchLibraryEvents();
   results.events = `Refreshed ${eventsCount} events`;
+
+  // Transition rows LL2 stopped reporting (launchDate passed, status stuck
+  // at 'upcoming'/'go') so they drop out of every status-filtered query.
+  // Independent of the fetch above so it still runs on a transient LL2 failure.
+  try {
+    const expiredCount = await expireStaleUpcomingEvents();
+    if (expiredCount > 0) {
+      results.eventsExpired = `Marked ${expiredCount} stale event(s) as scrubbed`;
+    }
+  } catch (err) {
+    logger.error('Failed to expire stale SpaceEvent rows', { error: err instanceof Error ? err.message : String(err) });
+  }
+
   return results;
 }
 
