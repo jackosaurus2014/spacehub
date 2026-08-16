@@ -81,6 +81,10 @@ interface MapCommandCenterProps {
   onUnlock: (locId: string) => void;
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
+  /** Wave M2 (docs/MEANINGFUL_2026-08.md §M2): mothball (pause) / reactivate
+   *  a completed building from the map's Build sub-panel. */
+  onMothballBuilding?: (instanceId: string) => void;
+  onReactivateBuilding?: (instanceId: string) => void;
   /** W14 (cargo logistics): optional manifest — dispatch debits it at the
    *  origin and the tick engine credits the destination on arrival. */
   onDispatchShip: (shipInstanceId: string, toLocationId: string, cargo?: Record<string, number>) => void;
@@ -104,7 +108,7 @@ interface MapCommandCenterProps {
 }
 
 export default function MapCommandCenter({
-  state, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
+  state, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
@@ -437,6 +441,8 @@ export default function MapCommandCenter({
           onUnlock={onUnlock}
           onBuild={onBuild}
           onSellBuilding={onSellBuilding}
+          onMothballBuilding={onMothballBuilding}
+          onReactivateBuilding={onReactivateBuilding}
           onDispatchShip={onDispatchShip}
           onLaunchExpedition={onLaunchExpedition}
           onNavigateTab={onNavigateTab}

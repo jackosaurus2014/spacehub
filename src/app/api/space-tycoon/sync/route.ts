@@ -22,6 +22,9 @@ import { buildMarketSnapshot } from '@/lib/game/spot-price';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 import { resolveMetricCurrentValue } from '@/lib/game/market-share';
 import { getMegaProjectBonuses } from '@/lib/game/mega-projects';
+import { BOOK_VALUE_DEPRECIATION_FACTOR } from '@/lib/game/frontier';
+import { BUILDING_MAP } from '@/lib/game/buildings';
+import { SHIP_MAP } from '@/lib/game/ships';
 
 /**
  * POST /api/space-tycoon/sync
@@ -246,7 +249,30 @@ export async function POST(request: Request) {
         if (typeof qty === 'number') resourceValue += qty * 50_000;
       }
     }
-    const netWorth = reconciledMoney + resourceValue;
+    // M1/F4: book value of completed capital assets (buildings + ships),
+    // depreciated to BOOK_VALUE_DEPRECIATION_FACTOR of baseCost — same
+    // methodology as frontier.ts's computeBookNetWorth. Pre-M1 this figure
+    // was cash + inventory ONLY, so an asset-heavy corp read as no richer
+    // than one holding the same cash in an empty account — invisible to the
+    // league/espionage/leaderboard brackets this value feeds. Buildings/ships
+    // are client-reported (same trust level as buildingCount/serviceCount
+    // elsewhere in this route) and capped defensively before iterating.
+    let assetBookValue = 0;
+    if (Array.isArray(buildings)) {
+      for (const b of buildings.slice(0, 200)) {
+        if (!b || !b.isComplete) continue;
+        const def = BUILDING_MAP.get(b.definitionId);
+        if (def) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
+      }
+    }
+    if (Array.isArray(ships)) {
+      for (const s of ships.slice(0, 50)) {
+        if (!s || !s.isBuilt) continue;
+        const def = SHIP_MAP.get(s.definitionId);
+        if (def) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
+      }
+    }
+    const netWorth = Math.round(reconciledMoney + resourceValue + assetBookValue);
 
     // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 5): server-
     // aggregated orbital-slot occupancy (finishes the computeOrbitalSlotReport
@@ -832,8 +858,25 @@ export async function POST(request: Request) {
         select: { locationId: true, category: true, dNpc: true, dDerived: true, cSupply: true, topShares: true, supplierCount: true },
       });
       if (poolRows.length > 0) {
-        const ownServices = (safeServices as { definitionId?: string; locationId?: string }[])
+        // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): a
+        // mothballed/reactivating/decommissioning building's service claims
+        // no capacity — it exited the market. Cross-reference against the
+        // client-claimed building status (client-claimed like the rest of
+        // this sync payload, per POLICY.md's trust boundary) before
+        // computing this player's own capacity share.
+        const nonOperationalBuildingIds = new Set(
+          (safeBuildings as { instanceId?: string; status?: string }[])
+            .filter(b => typeof b?.instanceId === 'string' && !!b?.status && b.status !== 'active')
+            .map(b => b.instanceId as string)
+        );
+        const ownServices = (safeServices as { definitionId?: string; locationId?: string; linkedBuildingIds?: unknown }[])
           .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
+          .filter(s => {
+            const ids = Array.isArray(s.linkedBuildingIds)
+              ? s.linkedBuildingIds.filter((x): x is string => typeof x === 'string')
+              : [];
+            return ids.length === 0 || ids.every(id => !nonOperationalBuildingIds.has(id));
+          })
           .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string }));
         demandPools = buildDemandPoolSnapshot(
           poolRows.map(r => ({ ...r, topShares: r.topShares as unknown })),

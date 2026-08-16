@@ -36,11 +36,27 @@ export async function GET() {
       if (session?.user?.id) {
         const profile = await prisma.gameProfile.findUnique({
           where: { userId: session.user.id },
-          select: { activeServicesData: true },
+          select: { activeServicesData: true, buildingsData: true },
         });
         if (profile && Array.isArray(profile.activeServicesData)) {
-          ownServices = (profile.activeServicesData as { definitionId?: string; locationId?: string }[])
+          // Wave M2 (docs/MEANINGFUL_2026-08.md §M2): don't show a
+          // mothballed/decommissioning building's capacity as "your share" —
+          // it withdrew from this market.
+          const nonOperationalBuildingIds = new Set(
+            Array.isArray(profile.buildingsData)
+              ? (profile.buildingsData as { instanceId?: string; status?: string }[])
+                  .filter(b => typeof b?.instanceId === 'string' && !!b?.status && b.status !== 'active')
+                  .map(b => b.instanceId as string)
+              : []
+          );
+          ownServices = (profile.activeServicesData as { definitionId?: string; locationId?: string; linkedBuildingIds?: unknown }[])
             .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
+            .filter(s => {
+              const ids = Array.isArray(s.linkedBuildingIds)
+                ? s.linkedBuildingIds.filter((x): x is string => typeof x === 'string')
+                : [];
+              return ids.length === 0 || ids.every(id => !nonOperationalBuildingIds.has(id));
+            })
             .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string }));
         }
       }

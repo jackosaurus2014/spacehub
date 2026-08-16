@@ -60,6 +60,10 @@ interface MapContextPanelProps {
   onUnlock: (locId: string) => void;
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
+  /** Wave M2 (docs/MEANINGFUL_2026-08.md §M2): mothball (pause) / reactivate
+   *  a completed building from the map's Build sub-panel. */
+  onMothballBuilding?: (instanceId: string) => void;
+  onReactivateBuilding?: (instanceId: string) => void;
   onDispatchShip: (shipInstanceId: string, toLocationId: string, cargo?: Record<string, number>) => void;
   onLaunchExpedition: (req: ExpeditionPlanRequest) => void;
   onNavigateTab: (tab: GameTab) => void;
@@ -81,7 +85,7 @@ const CATEGORY_META: Record<string, { label: string; icon: string }> = {
 };
 
 export default function MapContextPanel({
-  state, selection, onClose, onUnlock, onBuild, onSellBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab,
+  state, selection, onClose, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab,
 }: MapContextPanelProps) {
   const [view, setView] = useState<'overview' | 'build' | 'dispatch' | 'plan-expedition'>('overview');
   const [pickedShip, setPickedShip] = useState<string | null>(null);
@@ -144,7 +148,7 @@ export default function MapContextPanel({
   if (view === 'build') {
     return panelShell(
       <PanelTitle icon="🏗️" title="Build" subtitle={loc?.name || locId} onBack={() => setView('overview')} />,
-      <BuildPanel state={state} onBuild={onBuild} onSellBuilding={onSellBuilding} initialLocationId={locId} lockLocation />
+      <BuildPanel state={state} onBuild={onBuild} onSellBuilding={onSellBuilding} onMothballBuilding={onMothballBuilding} onReactivateBuilding={onReactivateBuilding} initialLocationId={locId} lockLocation />
     );
   }
 

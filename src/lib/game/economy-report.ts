@@ -32,7 +32,7 @@ import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { computeCommanderBonuses } from './commanders';
 import { serviceSaturationMultiplier, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
-import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER } from './frontier';
+import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER, computeBookNetWorth } from './frontier';
 import { getTotalSubsidiaryIncome } from './subsidiaries';
 import { getGovernorBenefits, getMultiZonePenalty } from './zone-influence';
 import { getMonthlyInsurancePremium } from './economic-sinks';
@@ -353,7 +353,11 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     }
   }
 
-  const runningNetWorth = state.money + state.totalEarned - state.totalSpent;
+  // M1/F4: exec comp reads book net worth here too — "one P&L truth" (A11)
+  // means this display must charge the SAME figure game-engine.ts's live
+  // tick actually charges, or the panel would show a stale/wrong number
+  // (exactly the F9 tooltip-honesty problem, one level up).
+  const runningNetWorth = computeBookNetWorth(state);
 
   const corporateOverhead = Math.round(
     corporateOverheadMonthly(completedBuildingCount)
@@ -448,9 +452,15 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   const balance: BalanceSheet = {
     cash: state.money,
     resourceInventoryValue: Math.round(resourceInventoryValue),
+    // infrastructureValue/shipValue below are shown at full (undepreciated)
+    // replacement cost — "what you built" — deliberately NOT summed
+    // arithmetically into netWorth below. M1/F4: netWorth is the same
+    // computeBookNetWorth(state) the wealth tax/Frontier/leagues/espionage
+    // brackets use (60% depreciated book), so this panel never shows a
+    // richer number than what actually drives those systems.
     infrastructureValue,
     shipValue,
-    netWorth: state.money + Math.round(resourceInventoryValue) + infrastructureValue + shipValue,
+    netWorth: computeBookNetWorth(state),
   };
 
   // ─── Supply pressure ───────────────────────────────────────────────────

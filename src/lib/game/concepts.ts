@@ -251,6 +251,20 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
     related: ['building-recipe', 'order-book-depth', 'escrow'],
   }),
 
+  // ── The exit decision (Wave M2 — docs/MEANINGFUL_2026-08.md §M2) ─────────
+  'mothball': c({
+    id: 'mothball', name: 'Mothball', icon: 'idle',
+    short: 'Reversible pause: zero revenue, zero consumption, 25% maintenance',
+    body: 'A mothballed building earns nothing and draws no recipe inputs, but still pays 25% of its normal maintenance — parked, not abandoned. It also stops claiming demand-pool capacity, a visible supply withdrawal rivals can see in the market intelligence view. Reactivating charges a small spin-up fee and takes a game-month before revenue and consumption resume — the tool for riding out a market crash without bleeding full costs or scrapping the investment.',
+    related: ['decommission', 'supply-efficiency'],
+  }),
+  'decommission': c({
+    id: 'decommission', name: 'Decommission', icon: 'wrench',
+    short: 'Scrap a building for partial, below-book recovery',
+    body: 'Decommissioning permanently removes a building for 40% of its base cost in cash plus 50% of its material cost back — deliberately below book value, so building then decommissioning can never be a profitable round trip. Tier-3-and-up facilities take a one-game-month teardown (paused, 25% maintenance) before the building is removed and recovery is credited; Tier-1/2 facilities scrap instantly. Unlike a mothball, this is irreversible.',
+    related: ['mothball'],
+  }),
+
   // ── Legacy / progression ─────────────────────────────────────────────────
   legacy: c({
     id: 'legacy', name: 'Legacy', icon: 'scroll',

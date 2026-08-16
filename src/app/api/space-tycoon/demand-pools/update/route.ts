@@ -61,22 +61,43 @@ export async function POST(request: Request) {
       }),
     ]);
 
-    const summaries: ProfileActivitySummary[] = profiles.map(p => ({
-      id: p.id,
-      buildings: Array.isArray(p.buildingsData)
-        ? (p.buildingsData as { definitionId?: string; locationId?: string; isComplete?: boolean }[])
-            .filter(b => typeof b?.definitionId === 'string' && typeof b?.locationId === 'string')
-            .map(b => ({ definitionId: b.definitionId as string, locationId: b.locationId as string, isComplete: b.isComplete !== false }))
-        : [],
-      services: Array.isArray(p.activeServicesData)
-        ? (p.activeServicesData as { definitionId?: string; locationId?: string }[])
-            .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
-            .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string }))
-        : [],
-      ships: Array.isArray(p.shipsData)
-        ? (p.shipsData as { currentLocation?: string }[]).map(s => ({ currentLocation: s?.currentLocation }))
-        : [],
-    }));
+    const summaries: ProfileActivitySummary[] = profiles.map(p => {
+      // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): a
+      // mothballed/reactivating/decommissioning building withdraws from the
+      // demand-pool economy — no derived demand, no capacity claim ("a
+      // visible supply withdrawal rivals can see in the pool intel"). Drop
+      // the building AND any service solely linked to it from this profile's
+      // contribution before it's aggregated into the shared pool.
+      const rawBuildings = Array.isArray(p.buildingsData)
+        ? (p.buildingsData as { instanceId?: string; definitionId?: string; locationId?: string; isComplete?: boolean; status?: string }[])
+        : [];
+      const nonOperationalIds = new Set(
+        rawBuildings
+          .filter(b => typeof b?.instanceId === 'string' && !!b?.status && b.status !== 'active')
+          .map(b => b.instanceId as string)
+      );
+      return {
+        id: p.id,
+        buildings: rawBuildings
+          .filter(b => typeof b?.definitionId === 'string' && typeof b?.locationId === 'string')
+          .filter(b => !b?.instanceId || !nonOperationalIds.has(b.instanceId))
+          .map(b => ({ definitionId: b.definitionId as string, locationId: b.locationId as string, isComplete: b.isComplete !== false })),
+        services: Array.isArray(p.activeServicesData)
+          ? (p.activeServicesData as { definitionId?: string; locationId?: string; linkedBuildingIds?: unknown }[])
+              .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
+              .filter(s => {
+                const ids = Array.isArray(s.linkedBuildingIds)
+                  ? s.linkedBuildingIds.filter((x): x is string => typeof x === 'string')
+                  : [];
+                return ids.length === 0 || ids.every(id => !nonOperationalIds.has(id));
+              })
+              .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string }))
+          : [],
+        ships: Array.isArray(p.shipsData)
+          ? (p.shipsData as { currentLocation?: string }[]).map(s => ({ currentLocation: s?.currentLocation }))
+          : [],
+      };
+    });
 
     const aggregates = computePoolAggregates(summaries, active30d);
 

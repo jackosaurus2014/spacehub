@@ -671,6 +671,18 @@ export function loadGame(): GameState | null {
       state.megaProjectBonuses = null;
     }
 
+    // V36 — Meaningful Decisions Wave M2 "The Exit Decision" (docs/
+    // MEANINGFUL_2026-08.md §M2 / finding F5). Additive-only, no migration
+    // code needed: BuildingInstance.status is optional and every read site
+    // (mothball.ts's isBuildingOperational, consumption.ts, game-engine.ts
+    // §1/§2/§6, service-pricing.ts's local pool, away-operations.ts) treats
+    // an absent status as 'active' — an existing save's buildings are
+    // bit-for-bit unchanged on load. mothballedAtMonth/reactivationStartMonth
+    // /decommissionCompletesAtMonth are likewise optional and only ever
+    // written by the new mothballBuilding/reactivateBuilding/
+    // decommissionBuilding actions. This comment documents the version bump
+    // per the wave's [SAVE] note; there is nothing to default.
+
     state.tickSpeed = 1; // Always 1x for fairness
     return state;
   } catch {

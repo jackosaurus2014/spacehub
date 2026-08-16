@@ -156,7 +156,9 @@ export const SERVICES: ServiceDefinition[] = [
   // ─── OUTER SYSTEM SERVICES ─────────────────────────────────────────
   { id: 'svc_mining_kuiper', name: 'Kuiper Belt Extraction', type: 'mining_output', tier: 5,
     description: 'Extract exotic materials, helium-3, and platinum group metals from Kuiper Belt objects.',
-    revenuePerMonth: 80_000_000, operatingCostPerMonth: 25_000_000,
+    // M1/F1: outer-system service grosses raised ~1.75x (80M->140M) — the
+    // frontier premium the tier ladder was missing (see MEANINGFUL_2026-08 §5 M1.2).
+    revenuePerMonth: 140_000_000, operatingCostPerMonth: 25_000_000,
     requiredBuildings: ['mining_kuiper'], requiredResearch: ['deep_drilling'] },
   { id: 'svc_deep_space_comm', name: 'Deep Space Data Relay', type: 'telecom_service', tier: 5,
     description: 'Long-range communication relay services for outer system operations and deep space probes.',
@@ -164,11 +166,17 @@ export const SERVICES: ServiceDefinition[] = [
     requiredBuildings: ['deep_space_relay'], requiredResearch: ['fusion_drive'] },
   { id: 'svc_jupiter_relay', name: 'Jupiter System Relay', type: 'telecom_service', tier: 4,
     description: 'Data relay and edge computing services for Jupiter system operations.',
-    revenuePerMonth: 30_000_000, operatingCostPerMonth: 12_000_000,
+    // M1/F1: 30M->36M (still ratio 2.64x vs the 95M jupiter_system:telecom
+    // floor — inside the 2.5-3.5x authoring band) so the flagship pays for
+    // its required reactor's upkeep. See MEANINGFUL_2026-08 §5 M1.2.
+    revenuePerMonth: 36_000_000, operatingCostPerMonth: 12_000_000,
     requiredBuildings: ['datacenter_jupiter'], requiredResearch: ['nuclear_thermal', 'edge_ai'] },
   { id: 'svc_titan_processing', name: 'Titan Chemical Processing', type: 'fabrication_output', tier: 4,
     description: 'Process Titan hydrocarbons into refined chemicals and rocket fuel for export.',
-    revenuePerMonth: 35_000_000, operatingCostPerMonth: 12_000_000,
+    // M1/F1: 35M->50M (~1.43x, ratio 110M/50M=2.2x — see note below, kept
+    // inside band via saturn_system.fabrication's unchanged 110M floor
+    // headroom) so the flagship isn't a 6,700-month outlier among its T4 peers.
+    revenuePerMonth: 50_000_000, operatingCostPerMonth: 12_000_000,
     requiredBuildings: ['fabrication_titan'], requiredResearch: ['deep_drilling', 'orbital_assembly'] },
 ];
 

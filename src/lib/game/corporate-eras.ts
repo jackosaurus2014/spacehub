@@ -30,7 +30,7 @@ import type {
   ActiveCorporateEra, CompletedCorporateEra, CorporateErasState,
 } from './types';
 import { assignPlayerToLeague } from './league-system';
-import { computeNetWorth } from './frontier';
+import { computeBookNetWorth } from './frontier'; // M1/F4: asset-aware
 import { DEFAULT_LEGACY } from './legacy-system';
 import { generateId } from './formulas';
 
@@ -230,7 +230,7 @@ export function getEraStatSnapshot(state: GameState): EraStatSnapshot {
     reputation: state.reputation || 0,
     expeditionsLaunched: (state.expeditions || []).length,
     totalSpent: state.totalSpent,
-    netWorth: computeNetWorth(state),
+    netWorth: computeBookNetWorth(state), // M1/F4
   };
 }
 
@@ -349,7 +349,7 @@ export function charterEra(state: GameState, charterId: EraCharterId, now: numbe
   const gate = canCharterEra(state, now);
   if (!gate.allowed) return state;
 
-  const netWorth = computeNetWorth(state);
+  const netWorth = computeBookNetWorth(state); // M1/F4
   const bracketAtStart = assignPlayerToLeague(netWorth, netWorth);
   const priorEras = state.corporateEras?.completedEras || [];
   const eraIndex = priorEras.length;

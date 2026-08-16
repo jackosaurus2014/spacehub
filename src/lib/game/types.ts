@@ -147,6 +147,30 @@ export interface BuildingInstance {
    *  standing buy orders on the shared book (real MarketLimitOrder rows other
    *  players can see, front-run, and supply) at live spot + 2% fee. */
   supplyPolicy?: 'local' | 'market';
+  /** Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5, "the exit
+   *  decision"): operating status. Absent/'active' = normal operation.
+   *  'mothballed' = paused: zero revenue, zero consumption/production, 25%
+   *  maintenance — the "market turned, park it" tool. 'reactivating' =
+   *  mothball toggled back on, spinning up (still zero revenue/consumption,
+   *  still 25% maintenance) until `reactivationStartMonth` + the spin-up
+   *  window elapses, then flips to 'active' automatically.
+   *  'decommissioning' = scrap in progress (T3+ buildings only — T1/T2 scrap
+   *  instantly and are simply removed, never reach this state): zero
+   *  revenue/consumption, 25% maintenance, until `decommissionCompletesAtMonth`
+   *  elapses, then the building (and its linked service) is removed and
+   *  scrap recovery is credited. Server world-month grid throughout (same
+   *  clock consumption.ts/hazards.ts key off), not the player's personal
+   *  gameDate — see mothball.ts's header. */
+  status?: 'active' | 'mothballed' | 'reactivating' | 'decommissioning';
+  /** World-month index (server clock) the building was last mothballed at.
+   *  Display-only (Situation Log "mothballed since"); not read by any math. */
+  mothballedAtMonth?: number;
+  /** World-month index (server clock) reactivation began — set by
+   *  reactivateBuilding, cleared once status flips back to 'active'. */
+  reactivationStartMonth?: number;
+  /** World-month index (server clock) at which a T3+ decommission's teardown
+   *  finishes and scrap recovery is credited — set by decommissionBuilding. */
+  decommissionCompletesAtMonth?: number;
 }
 
 // ─── Research ───────────────────────────────────────────────────────────────

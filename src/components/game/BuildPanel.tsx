@@ -23,6 +23,23 @@ import { calculateRushRepairCost } from '@/lib/game/hazards';
 import { describeRecipeLine, getBuildingConsumptionEfficiency, hasRecipe } from '@/lib/game/consumption';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import type { ResourceId } from '@/lib/game/resources';
+// Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5, "the exit
+// decision"): mothball (pause, reversible) and decommission (scrap for
+// partial recovery, irreversible) previews + status.
+import {
+  computeDecommissionRecovery,
+  isBuildingMothballed,
+  isBuildingReactivating,
+  isBuildingDecommissioning,
+  isBuildingOperational,
+  MOTHBALL_MAINTENANCE_FRACTION,
+  DECOMMISSION_MONEY_RECOVERY_FRACTION,
+  DECOMMISSION_RESOURCE_RECOVERY_FRACTION,
+  DECOMMISSION_TEARDOWN_MIN_TIER,
+  DECOMMISSION_TEARDOWN_MONTHS,
+  REACTIVATION_SPINUP_MONTHS,
+  REACTIVATION_FEE_FRACTION,
+} from '@/lib/game/mothball';
 import { resourceCategoryIcon } from '@/lib/game/icons';
 import Image from 'next/image';
 import { ConsolePanel } from './chrome';
@@ -92,9 +109,16 @@ interface BuildPanelProps {
    *  vertical integration, run degraded when short; 'market' = standing buy
    *  orders on the shared book). Toggle only renders when provided. */
   onSetSupplyPolicy?: (instanceId: string, policy: 'local' | 'market') => void;
+  /** Wave M2: pause a completed, fully-active building (zero revenue, zero
+   *  consumption, 25% maintenance). Mothball toggle only renders when
+   *  provided. */
+  onMothballBuilding?: (instanceId: string) => void;
+  /** Wave M2: begin spinning a mothballed building back up (charges a small
+   *  fee, 1-game-month delay). Reactivate button only renders when provided. */
+  onReactivateBuilding?: (instanceId: string) => void;
 }
 
-export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy }: BuildPanelProps) {
+export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy, onMothballBuilding, onReactivateBuilding }: BuildPanelProps) {
   const [selectedLocation, setSelectedLocation] = useState(initialLocationId || state.unlockedLocations[0] || 'earth_surface');
   const totalSlots = getConstructionSlots(state);
   const activeBuilds = getActiveConstructions(state);
@@ -357,7 +381,6 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
               {builtHere.map(bld => {
                 const def = BUILDING_MAP.get(bld.definitionId);
                 if (!def) return null;
-                const sellPrice = Math.round(def.baseCost * 0.4);
                 const hasDamage = !!bld.damagePct && bld.damagePct > 0;
                 const isSevere = !!bld.damagePct && bld.damagePct >= 0.5;
                 const repairCost = calculateRushRepairCost(bld.damagePct, def.baseCost);
@@ -366,12 +389,25 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 const supplyEff = getBuildingConsumptionEfficiency(state, bld.instanceId);
                 const isShort = (state.consumptionState?.shortfallResources?.[bld.instanceId] || []).length > 0;
                 const policy = bld.supplyPolicy || 'local';
+                // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): the
+                // exit decision — mothball (reversible pause) vs decommission
+                // (irreversible scrap for partial recovery).
+                const operational = isBuildingOperational(bld);
+                const mothballed = isBuildingMothballed(bld);
+                const reactivating = isBuildingReactivating(bld);
+                const decommissioning = isBuildingDecommissioning(bld);
+                const recovery = computeDecommissionRecovery(def);
+                const resourceRecoveryText = Object.entries(recovery.resources)
+                  .map(([resId, qty]) => `${qty} ${(RESOURCE_MAP.get(resId as ResourceId)?.name || resId.replace(/_/g, ' '))}`)
+                  .join(', ') || 'no materials';
+                const isTeardown = def.tier >= DECOMMISSION_TEARDOWN_MIN_TIER;
+                const reactivationFee = Math.round(def.baseCost * REACTIVATION_FEE_FRACTION);
                 return (
                   <div key={bld.instanceId} className="py-1 px-2 rounded hover:bg-white/[0.02]">
                     <div className="flex items-center justify-between">
                       <span className="text-white text-xs">{def.name}</span>
                       <div className="flex items-center gap-1.5">
-                        {recipeActive && (
+                        {recipeActive && operational && (
                           <HoloTip
                             underline={false}
                             content={{
@@ -407,16 +443,111 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                             <GameIcon name="warning" size={10} /> {Math.round((bld.damagePct || 0) * 100)}% dmg
                           </span>
                         )}
-                        {onSellBuilding && (
+                        {/* Wave M2: operating-status badge — mothballed / spinning up / tearing down */}
+                        {!operational && (
+                          <HoloTip
+                            underline={false}
+                            content={{
+                              title: mothballed ? 'Mothballed' : reactivating ? 'Reactivating' : 'Decommissioning',
+                              icon: mothballed || reactivating ? 'idle' : 'wrench',
+                              body: mothballed ? (
+                                <p>
+                                  Paused: zero revenue, zero recipe consumption, maintenance cut to {Math.round(MOTHBALL_MAINTENANCE_FRACTION * 100)}%.
+                                  Reactivate any time — a <Concept id="mothball">{REACTIVATION_SPINUP_MONTHS}-game-month spin-up</Concept> applies.
+                                </p>
+                              ) : reactivating ? (
+                                <p>Spinning back up — back to full revenue and consumption in {REACTIVATION_SPINUP_MONTHS} game month{REACTIVATION_SPINUP_MONTHS === 1 ? '' : 's'}.</p>
+                              ) : (
+                                <p>
+                                  <Concept id="decommission">Teardown</Concept> underway ({DECOMMISSION_TEARDOWN_MONTHS} game month) — paused
+                                  meanwhile. Recovery credits automatically on completion.
+                                </p>
+                              ),
+                            }}
+                          >
+                            <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold cursor-help ${
+                              mothballed
+                                ? 'bg-slate-500/10 text-slate-300 border-slate-500/30'
+                                : reactivating
+                                  ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30'
+                                  : 'bg-orange-500/10 text-orange-300 border-orange-500/30'
+                            }`}>
+                              <GameIcon name={mothballed || reactivating ? 'idle' : 'wrench'} size={10} />
+                              {mothballed ? 'MOTHBALLED' : reactivating ? 'REACTIVATING' : 'DECOMMISSIONING'}
+                            </span>
+                          </HoloTip>
+                        )}
+                        {onSellBuilding && !decommissioning && (
                           <button
-                            onClick={() => { if (confirm(`Sell ${def.name} for ${formatMoney(sellPrice)}? (40% of build cost)`)) onSellBuilding(bld.instanceId); }}
+                            onClick={() => {
+                              const confirmMsg = isTeardown
+                                ? `Decommission ${def.name}? Teardown takes ${DECOMMISSION_TEARDOWN_MONTHS} game month, paused meanwhile. Recovers ${formatMoney(recovery.money)} (${Math.round(DECOMMISSION_MONEY_RECOVERY_FRACTION * 100)}% of build cost) + ${resourceRecoveryText} (${Math.round(DECOMMISSION_RESOURCE_RECOVERY_FRACTION * 100)}% of materials) on completion.`
+                                : `Scrap ${def.name}? Recovers ${formatMoney(recovery.money)} (${Math.round(DECOMMISSION_MONEY_RECOVERY_FRACTION * 100)}% of build cost) + ${resourceRecoveryText} (${Math.round(DECOMMISSION_RESOURCE_RECOVERY_FRACTION * 100)}% of materials) instantly.`;
+                              if (confirm(confirmMsg)) onSellBuilding(bld.instanceId);
+                            }}
                             className="text-[10px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
                           >
-                            Sell ({formatMoney(sellPrice)})
+                            {isTeardown ? 'Decommission' : 'Scrap'} ({formatMoney(recovery.money)})
                           </button>
                         )}
                       </div>
                     </div>
+                    {/* Wave M2: mothball toggle — reversible pause, distinct from
+                        the irreversible Scrap/Decommission action above. */}
+                    {(onMothballBuilding || onReactivateBuilding) && (mothballed || operational) && (
+                      <div className="mt-1">
+                        {mothballed && onReactivateBuilding ? (
+                          <HoloTip
+                            content={{
+                              title: 'Reactivate',
+                              icon: 'idle',
+                              body: (
+                                <p>
+                                  Pay a one-time spin-up fee ({formatMoney(reactivationFee)}, {Math.round(REACTIVATION_FEE_FRACTION * 100)}% of build cost)
+                                  to start bringing this facility back online. Full revenue and consumption resume
+                                  after a <Concept id="mothball">{REACTIVATION_SPINUP_MONTHS}-game-month</Concept> spin-up.
+                                </p>
+                              ),
+                            }}
+                          >
+                            <button
+                              onClick={() => onReactivateBuilding(bld.instanceId)}
+                              disabled={state.money < reactivationFee}
+                              className={`w-full min-h-[28px] text-[10px] px-2 py-1 rounded border transition-colors flex items-center justify-center gap-1 ${
+                                state.money < reactivationFee
+                                  ? 'bg-white/[0.02] text-slate-600 border-white/[0.06] cursor-not-allowed'
+                                  : 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20 hover:bg-cyan-500/20'
+                              }`}
+                            >
+                              <GameIcon name="idle" size={11} /> Reactivate — {formatMoney(reactivationFee)} + {REACTIVATION_SPINUP_MONTHS}mo spin-up
+                            </button>
+                          </HoloTip>
+                        ) : operational && onMothballBuilding ? (
+                          <HoloTip
+                            content={{
+                              title: 'Mothball',
+                              icon: 'idle',
+                              body: (
+                                <p>
+                                  Pause this facility instead of scrapping it: zero revenue, zero recipe
+                                  consumption, maintenance cut to {Math.round(MOTHBALL_MAINTENANCE_FRACTION * 100)}%.
+                                  <Concept id="mothball">Reversible</Concept> — reactivate any time for a small fee
+                                  and a {REACTIVATION_SPINUP_MONTHS}-game-month spin-up. The tool for riding out a
+                                  market crash instead of eating full maintenance forever.
+                                </p>
+                              ),
+                            }}
+                          >
+                            <button
+                              onClick={() => onMothballBuilding(bld.instanceId)}
+                              className="w-full min-h-[28px] text-[10px] px-2 py-1 rounded bg-slate-500/10 text-slate-300 border border-slate-500/20 hover:bg-slate-500/20 transition-colors flex items-center justify-center gap-1"
+                            >
+                              <GameIcon name="idle" size={11} /> Mothball — {Math.round(MOTHBALL_MAINTENANCE_FRACTION * 100)}% maintenance, zero revenue
+                            </button>
+                          </HoloTip>
+                        ) : null}
+                      </div>
+                    )}
                     {hasDamage && onRushRepairBuilding && (
                       <button
                         onClick={() => onRushRepairBuilding(bld.instanceId)}
@@ -426,7 +557,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       </button>
                     )}
                     {/* Wave E3: sourcing policy — the vertical-integration-vs-market choice */}
-                    {recipeActive && onSetSupplyPolicy && (
+                    {recipeActive && operational && onSetSupplyPolicy && (
                       <div className="mt-1 flex items-center gap-1.5">
                         <HoloTip
                           content={{

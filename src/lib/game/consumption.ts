@@ -47,6 +47,12 @@ import { accumulateMinedFlows } from './market-pressure';
 import { generateId } from './formulas';
 import { MAX_EVENT_LOG } from './constants';
 import { GAME_START_YEAR } from './server-time';
+// Meaningful Decisions Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5):
+// a mothballed/reactivating/decommissioning building draws AND produces
+// nothing — it exits the recipe economy the same way it exits revenue and
+// demand-pool capacity. isBuildingOperational is the single predicate every
+// M2-aware call site shares.
+import { isBuildingOperational } from './mothball';
 
 // ─── Constants (§2.2 / §E3) ─────────────────────────────────────────────────
 
@@ -197,7 +203,7 @@ export function processConsumptionForMonth(state: GameState, monthIndex: number)
   const events: GameEvent[] = [];
 
   const completed = state.buildings.filter(
-    b => b.isComplete && hasRecipe(BUILDING_MAP.get(b.definitionId)),
+    b => b.isComplete && hasRecipe(BUILDING_MAP.get(b.definitionId)) && isBuildingOperational(b),
   );
   if (completed.length === 0) {
     return {
@@ -471,7 +477,7 @@ export function deriveSupplySummary(state: GameState, monthIndex?: number): Supp
 
   const demand: Record<string, number> = {};
   for (const bld of state.buildings) {
-    if (!bld.isComplete) continue;
+    if (!bld.isComplete || !isBuildingOperational(bld)) continue;
     const consumes = BUILDING_MAP.get(bld.definitionId)?.consumesPerMonth;
     if (!consumes) continue;
     for (const [resId, base] of Object.entries(consumes)) {

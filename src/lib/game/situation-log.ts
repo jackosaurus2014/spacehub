@@ -44,6 +44,12 @@ import { getDepositGrade, EXTRACTION_PRESSURE_MIN } from './extraction-pressure'
 import { GUILD_STRIKE_WAGE_THRESHOLD, WAGE_INDEX_MAX } from './labor-market';
 import { WORKER_TYPES } from './workforce';
 import { MINING_PRODUCTION } from './resources';
+// Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): surface a building's
+// mothball/reactivation/decommission state in the Situation Log — the
+// "reflect mothballed state" requirement. Pure GameState + world-clock lens,
+// same posture as every other section in this file.
+import { isBuildingMothballed, isBuildingReactivating, isBuildingDecommissioning, REACTIVATION_SPINUP_MONTHS } from './mothball';
+import { getGlobalGameDate, REAL_SECONDS_PER_GAME_MONTH } from './server-time';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -68,7 +74,11 @@ export type SituationCategory =
   | 'building_damage' | 'ship_damage' | 'ship_idle' | 'queue_stalled'
   // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7): orbital-slot auction closing
   // soon, NPC procurement drive bidding deadline approaching.
-  | 'slot_auction' | 'procurement_drive';
+  | 'slot_auction' | 'procurement_drive'
+  // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): a building is
+  // paused (mothballed), spinning back up (reactivating), or mid-teardown
+  // (decommissioning) — the exit-decision states.
+  | 'building_status';
 
 export interface SituationItem {
   id: string;
@@ -207,6 +217,55 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
       tab: 'map',
       target: { kind: 'location', id: h.locationId },
     });
+  }
+
+  // ── Building status (Wave M2 — mothballed / reactivating / decommissioning) ─
+  {
+    const worldMonth = getGlobalGameDate(nowMs).totalMonths;
+    for (const b of state.buildings) {
+      if (!b.isComplete) continue;
+      const def = BUILDING_MAP.get(b.definitionId);
+      const name = def?.name || 'Facility';
+      if (isBuildingMothballed(b)) {
+        items.push({
+          id: `sit-bld-mothball-${b.instanceId}`,
+          category: 'building_status',
+          icon: 'idle',
+          label: `${name} mothballed`,
+          detail: 'Paused: zero revenue, zero consumption, 25% maintenance. Reactivate from the Build tab any time.',
+          severity: 'info',
+          tab: 'build',
+        });
+      } else if (isBuildingReactivating(b) && b.reactivationStartMonth !== undefined) {
+        const monthsRemaining = Math.max(0, (b.reactivationStartMonth + REACTIVATION_SPINUP_MONTHS) - worldMonth);
+        items.push({
+          id: `sit-bld-reactivating-${b.instanceId}`,
+          category: 'building_status',
+          icon: 'idle',
+          label: `${name} spinning up`,
+          detail: monthsRemaining > 0
+            ? `Back online in ~${formatHoursOrDays(monthsRemaining * REAL_SECONDS_PER_GAME_MONTH * 1000)}.`
+            : 'Back online this cycle.',
+          severity: 'info',
+          atMs: nowMs + monthsRemaining * REAL_SECONDS_PER_GAME_MONTH * 1000,
+          tab: 'build',
+        });
+      } else if (isBuildingDecommissioning(b) && b.decommissionCompletesAtMonth !== undefined) {
+        const monthsRemaining = Math.max(0, b.decommissionCompletesAtMonth - worldMonth);
+        items.push({
+          id: `sit-bld-decommissioning-${b.instanceId}`,
+          category: 'building_status',
+          icon: 'wrench',
+          label: `${name} decommissioning`,
+          detail: monthsRemaining > 0
+            ? `Teardown completes in ~${formatHoursOrDays(monthsRemaining * REAL_SECONDS_PER_GAME_MONTH * 1000)} — recovery credits automatically.`
+            : 'Teardown completes this cycle — recovery credits automatically.',
+          severity: 'warning',
+          atMs: nowMs + monthsRemaining * REAL_SECONDS_PER_GAME_MONTH * 1000,
+          tab: 'build',
+        });
+      }
+    }
   }
 
   // ── Contracts closing (delivery-contracts.ts — real wall-clock deadlines,

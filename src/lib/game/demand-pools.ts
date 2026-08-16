@@ -77,6 +77,13 @@ const SERVICE_CATEGORY_OVERRIDES: Record<string, ServiceCategory> = {
   svc_space_insurance: 'insurance',
   svc_power_orbital: 'power',
   svc_power_lunar: 'power',
+  // M1/F2: svc_propellant_brokerage ("buy cheap fuel at Moon, sell at premium
+  // to Mars/Jupiter-bound missions") is logistics/arbitrage in substance, not
+  // launch-pad capacity — it was miscategorized into mars_orbit's tiny
+  // authored `launch` floor (0.375x flagship, a floor-authoring violation).
+  // Recategorizing is the spec's preferred fix over inflating a launch floor
+  // that has no other tenant.
+  svc_propellant_brokerage: 'logistics',
 };
 
 const CATEGORY_BY_SERVICE_TYPE: Partial<Record<ServiceType, ServiceCategory>> = {
@@ -117,17 +124,32 @@ export const CATEGORY_LABELS: Record<ServiceCategory, string> = {
 // huge, Titan telecom tiny". Values are the <50-active-player full backdrop;
 // npcPopulationScaler recedes them as the server fills up.
 
+// M1/F2 floor-authoring pass: every floor below must be ≥ 2.5x the flagship
+// (highest single-instance revenuePerMonth) service placeable in that
+// (location, category) market — enforced by
+// demand-pools.floor-authoring.test.ts, which iterates BUILDINGS × SERVICES
+// the same way the harness's build-menu sweep does. Changed vs. the pre-M1
+// authoring: earth_surface.launch 60M→150M (Heavy Launch Pad was saturated
+// at N=1); geo.logistics 8M→40M (svc_navigation); lunar_orbit.insurance
+// (unauthored → 24M, svc_space_insurance) and lunar_orbit.logistics
+// 25M→36M (svc_debris_removal) — both found by the exhaustive sweep, not
+// just the two the audit called out by name. mars_orbit.launch is
+// unchanged (svc_propellant_brokerage was recategorized to logistics
+// instead, see SERVICE_CATEGORY_OVERRIDES above — the preferred fix) and
+// mars_orbit.logistics raised 40M→100M for it.
 export const NPC_DEMAND_FLOOR: Record<string, Partial<Record<ServiceCategory, number>>> = {
-  earth_surface: { launch: 60_000_000, sensor: 18_000_000, telecom: 10_000_000, insurance: 20_000_000, logistics: 12_000_000 },
+  earth_surface: { launch: 150_000_000, sensor: 18_000_000, telecom: 10_000_000, insurance: 20_000_000, logistics: 12_000_000 },
   leo:           { telecom: 30_000_000, sensor: 12_000_000, tourism: 40_000_000, compute: 40_000_000, power: 10_000_000, fabrication: 30_000_000, logistics: 15_000_000, insurance: 10_000_000, launch: 20_000_000 },
-  geo:           { telecom: 28_000_000, sensor: 24_000_000, power: 8_000_000, logistics: 8_000_000, insurance: 6_000_000 },
-  lunar_orbit:   { tourism: 80_000_000, telecom: 10_000_000, logistics: 25_000_000, fabrication: 12_000_000, sensor: 10_000_000, launch: 12_000_000 },
+  geo:           { telecom: 28_000_000, sensor: 24_000_000, power: 8_000_000, logistics: 40_000_000, insurance: 6_000_000 },
+  lunar_orbit:   { tourism: 80_000_000, telecom: 10_000_000, logistics: 36_000_000, fabrication: 12_000_000, sensor: 10_000_000, launch: 12_000_000, insurance: 24_000_000 },
   lunar_surface: { tourism: 95_000_000, fabrication: 45_000_000, power: 16_000_000, logistics: 20_000_000, telecom: 8_000_000, compute: 10_000_000, sensor: 8_000_000 },
-  mars_orbit:    { sensor: 140_000_000, compute: 80_000_000, telecom: 15_000_000, logistics: 40_000_000, launch: 15_000_000, insurance: 8_000_000 },
+  mars_orbit:    { sensor: 140_000_000, compute: 80_000_000, telecom: 15_000_000, logistics: 100_000_000, launch: 15_000_000, insurance: 8_000_000 },
   mars_surface:  { tourism: 250_000_000, logistics: 65_000_000, fabrication: 30_000_000, power: 15_000_000, sensor: 20_000_000, telecom: 12_000_000, compute: 15_000_000 },
   asteroid_belt: { sensor: 90_000_000, launch: 130_000_000, logistics: 45_000_000, fabrication: 30_000_000, telecom: 10_000_000 },
   jupiter_system: { telecom: 95_000_000, compute: 30_000_000, logistics: 25_000_000, sensor: 15_000_000 },
-  saturn_system: { fabrication: 110_000_000, telecom: 20_000_000, logistics: 30_000_000, sensor: 12_000_000 },
+  // fabrication raised 110M->130M alongside svc_titan_processing's M1 revenue
+  // bump (35M->50M) to keep the 2.5-3.5x floor-authoring rule intact.
+  saturn_system: { fabrication: 130_000_000, telecom: 20_000_000, logistics: 30_000_000, sensor: 12_000_000 },
   outer_system:  { telecom: 130_000_000, logistics: 30_000_000, sensor: 25_000_000 },
 };
 

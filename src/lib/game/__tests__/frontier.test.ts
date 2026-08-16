@@ -17,7 +17,10 @@ import {
   isHostileEventSuppressed,
   getFrontierSummary,
   computeNetWorth,
+  computeBookNetWorth,
+  BOOK_VALUE_DEPRECIATION_FACTOR,
 } from '../frontier';
+import { BUILDING_MAP } from '../buildings';
 
 function newGame(createdAtMs: number, overrides: Partial<GameState> = {}): GameState {
   return {
@@ -185,8 +188,75 @@ describe('frontier — summary for UI', () => {
 });
 
 describe('frontier — net worth', () => {
-  it('computeNetWorth = money + totalEarned - totalSpent', () => {
+  it('computeNetWorth = money + totalEarned - totalSpent (deprecated, kept for compat)', () => {
     const s = newGame(0, { money: 100, totalEarned: 50, totalSpent: 20 });
     expect(computeNetWorth(s)).toBe(130);
+  });
+});
+
+// ─── M1/F4: computeBookNetWorth ─────────────────────────────────────────────
+
+describe('computeBookNetWorth (M1/F4)', () => {
+  it('with no buildings/ships/resources, book net worth is just cash', () => {
+    const s = newGame(0, { money: 5_000_000, totalEarned: 999_000_000, totalSpent: 999_000_000 });
+    expect(computeBookNetWorth(s)).toBe(5_000_000);
+  });
+
+  it('capex does NOT read as destroyed wealth — completed buildings book at 60% of baseCost', () => {
+    const groundStationCost = BUILDING_MAP.get('ground_station')!.baseCost;
+    const s = newGame(0, {
+      money: 1_000_000, // spent almost everything building it
+      totalEarned: 1_000_000,
+      totalSpent: groundStationCost, // the OLD flow metric would go deeply negative
+      buildings: [{
+        instanceId: 'b1', definitionId: 'ground_station', locationId: 'earth_surface',
+        isComplete: true, startedAt: { year: 2150, month: 1 }, completesAt: { year: 2150, month: 2 },
+      }] as unknown as GameState['buildings'],
+    });
+    const expected = 1_000_000 + groundStationCost * BOOK_VALUE_DEPRECIATION_FACTOR;
+    expect(computeBookNetWorth(s)).toBe(Math.round(expected));
+    // The old flow metric WOULD have gone negative here — proving the bug this fixes.
+    expect(computeNetWorth(s)).toBeLessThan(0);
+    expect(computeBookNetWorth(s)).toBeGreaterThan(0);
+  });
+
+  it('incomplete buildings contribute no book value (nothing to depreciate yet)', () => {
+    const s = newGame(0, {
+      money: 1_000_000,
+      buildings: [{
+        instanceId: 'b1', definitionId: 'ground_station', locationId: 'earth_surface',
+        isComplete: false, startedAt: { year: 2150, month: 1 }, completesAt: { year: 2150, month: 2 },
+      }] as unknown as GameState['buildings'],
+    });
+    expect(computeBookNetWorth(s)).toBe(1_000_000);
+  });
+
+  it('resource inventory is valued at base market price', () => {
+    const s = newGame(0, { money: 0, resources: { iron: 100 } });
+    // iron baseMarketPrice — read via RESOURCE_MAP indirectly; just assert positive and finite.
+    const nw = computeBookNetWorth(s);
+    expect(nw).toBeGreaterThan(0);
+    expect(Number.isFinite(nw)).toBe(true);
+  });
+
+  it('escrow parameter adds to net worth but is never negative-contributing', () => {
+    const s = newGame(0, { money: 1_000_000 });
+    expect(computeBookNetWorth(s, 500_000)).toBe(1_500_000);
+    expect(computeBookNetWorth(s, -999)).toBe(1_000_000); // negative escrow ignored, not subtracted
+  });
+
+  it('a heavy spammer (lots of capex, little cash) reads richer than an idler with the same buildings never earns nothing', () => {
+    // Sanity: book net worth is monotonically non-decreasing as buildings are added
+    // with cash held constant conceptually — i.e. building something never DESTROYS
+    // measured wealth the way the flow metric could.
+    const base = newGame(0, { money: 10_000_000 });
+    const withBuilding = newGame(0, {
+      money: 10_000_000,
+      buildings: [{
+        instanceId: 'b1', definitionId: 'ground_station', locationId: 'earth_surface',
+        isComplete: true, startedAt: { year: 2150, month: 1 }, completesAt: { year: 2150, month: 2 },
+      }] as unknown as GameState['buildings'],
+    });
+    expect(computeBookNetWorth(withBuilding)).toBeGreaterThan(computeBookNetWorth(base));
   });
 });

@@ -46,7 +46,8 @@ import {
 } from '../service-pricing';
 import { mergeDemandPoolSnapshot } from '../server-effects';
 import { getNewGameState } from '../save-load';
-import { SERVICES } from '../services';
+import { SERVICES, SERVICE_MAP } from '../services';
+import { BUILDINGS } from '../buildings';
 import { calculateAwayOperations } from '../away-operations';
 import { getGlobalGameDate } from '../server-time';
 import type { GameState } from '../types';
@@ -198,6 +199,52 @@ describe('NPC backdrop — floor, not ceiling', () => {
         expect(mod).toBeLessThanOrEqual(SEASON_DEMAND_MOD_MAX);
       }
     }
+  });
+});
+
+// ─── Floor-authoring rule (M1/F2): floor ≥ 2.5x flagship capacity ──────────
+// docs/MEANINGFUL_2026-08.md §5 M1.1. "Flagship capacity" = the highest
+// single-instance revenuePerMonth among services placeable in a given
+// (location, category) market (mirrors scripts/sim-strategies.ts's build-menu
+// sweep). A floor below 2.5x its flagship saturates that market at N=1 —
+// exactly what broke earth_surface.launch (Heavy Launch Pad, F2) and
+// mars_orbit.launch (Propellant Brokerage, F2) pre-M1.
+
+describe('NPC_DEMAND_FLOOR authoring rule — floor ≥ 2.5x flagship capacity (F2)', () => {
+  // Build the same (location, category) -> max revenuePerMonth map the
+  // harness's build-menu sweep implicitly exercises: every building's
+  // requiredLocation × its enabledServices' pool category.
+  const flagshipCapacity = new Map<string, number>();
+  for (const b of BUILDINGS) {
+    const loc = b.requiredLocation;
+    if (!loc) continue;
+    for (const svcId of b.enabledServices) {
+      const sDef = SERVICE_MAP.get(svcId);
+      if (!sDef) continue;
+      const cat = getServiceCategory(svcId);
+      if (!cat) continue; // mining_output — exempt, §2.4
+      const key = demandPoolKey(loc, cat);
+      flagshipCapacity.set(key, Math.max(flagshipCapacity.get(key) || 0, sDef.revenuePerMonth));
+    }
+  }
+
+  it('found at least one flagship market to check (sanity — the sweep is not vacuous)', () => {
+    expect(flagshipCapacity.size).toBeGreaterThan(10);
+  });
+
+  it('every authored (location, category) floor is >= 2.5x its flagship service capacity', () => {
+    const violations: string[] = [];
+    for (const [key, cap] of flagshipCapacity.entries()) {
+      const sep = key.indexOf(':');
+      const locationId = key.slice(0, sep);
+      const category = key.slice(sep + 1) as ServiceCategory;
+      const floor = getNpcFloorBase(locationId, category);
+      const ratio = floor / cap;
+      if (ratio < 2.5) {
+        violations.push(`${key}: floor=${floor.toLocaleString()} cap=${cap.toLocaleString()} ratio=${ratio.toFixed(2)}`);
+      }
+    }
+    expect(violations).toEqual([]);
   });
 });
 

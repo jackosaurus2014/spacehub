@@ -65,6 +65,12 @@ import { rollMonthlyHazards, applyHazards } from './hazards';
 // lastProcessedMonth cursor guarantees live play and away catch-up can never
 // double-consume, and identical elapsed time always consumes identically.
 import { advanceConsumptionToMonth } from './consumption';
+// Meaningful Decisions Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5):
+// away-catch-up parity for mothball/decommission — a paused building must
+// earn/consume/produce nothing while the player is offline exactly as it
+// does while they're online, and reactivation/teardown windows elapsing
+// while away must resolve on the SAME per-elapsed-month loop below.
+import { isBuildingOperational, getMothballMaintenanceMultiplier, processMothballTransitionsForMonth, processScheduledDecommissionsForMonth } from './mothball';
 // Wave E4 (Finite Demand Pools): away catch-up uses THE SAME demand-pool
 // multiplier helper as the live tick (game-engine.ts) — identical state ⇒
 // identical multiplier, the away-catch-up-parity invariant.
@@ -219,6 +225,13 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   for (const svc of working.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
+    // Wave M2: away-parity with game-engine.ts §1 — a mothballed/
+    // reactivating/decommissioning building's service earns and costs
+    // nothing while the player is offline either.
+    const ownerBld = svc.linkedBuildingIds?.length
+      ? working.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId))
+      : undefined;
+    if (ownerBld && !isBuildingOperational(ownerBld)) continue;
     const linkedBld = working.buildings.find(b =>
       b.isComplete && b.locationId === svc.locationId
       && BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId)
@@ -245,7 +258,8 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction));
+    const mothballMaintMult = getMothballMaintenanceMultiplier(bld);
+    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction));
   }
   const payrollPerTick = Math.round(getMonthlyPayrollWithWageIndex(workforce, working.laborMarket) * fraction);
   costsPerTick += payrollPerTick;
@@ -260,6 +274,12 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   for (const svc of working.activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
+    // Wave M2: away-parity with game-engine.ts §6 — no output from a
+    // mothballed/reactivating/decommissioning mining rig.
+    const miningOwnerBld = svc.linkedBuildingIds?.length
+      ? working.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId))
+      : undefined;
+    if (miningOwnerBld && !isBuildingOperational(miningOwnerBld)) continue;
     for (const { resource, amountPerMonth } of production) {
       // Wave E5 (§2.4): the same deposit extraction-pressure brake the live
       // tick applies, read from the last-synced snapshot (no cross-player
@@ -311,6 +331,15 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     // directives — auto-restock buys land before the draw, matching the live
     // tick's ordering). Events/efficiency merge into `working` internally.
     working = advanceConsumptionToMonth(working, m);
+
+    // Wave M2 (docs/MEANINGFUL_2026-08.md §M2): resolve any reactivation
+    // spin-up or decommission teardown that elapsed THIS month while the
+    // player was away — same month grid, same functions the live tick's
+    // isMonthEnd hook calls, so a spin-up that finishes on day 3 of a
+    // 10-day away window is back online for the remaining catch-up months
+    // exactly as it would be live.
+    working = processMothballTransitionsForMonth(working, m);
+    working = processScheduledDecommissionsForMonth(working, m);
 
     // Only hazards that were ALREADY forecast (severe, visible at logout)
     // may strike while away — everything else defers to the first live tick

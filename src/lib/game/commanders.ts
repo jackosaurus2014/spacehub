@@ -11,6 +11,7 @@
 import type { GameState } from './types';
 import { RESEARCH_MAP } from './research-tree';
 import { hashStringToSeed } from './formulas';
+import { computeBookNetWorth } from './frontier'; // M1/F4: asset-aware net worth
 
 export type CommanderRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 export type CommanderClass =
@@ -160,6 +161,47 @@ export const RARITY_HIRE_COST: Record<CommanderRarity, number> = {
 const RARITY_WEIGHT: Record<CommanderRarity, number> = {
   common: 50, uncommon: 28, rare: 14, epic: 6, legendary: 2,
 };
+
+// ─── M1 — Commander upkeep (docs/MEANINGFUL_2026-08.md §5 M1.5) ─────────────
+// Pre-M1, commanders were a one-time hire cost with NO upkeep — after
+// purchase they were permanent free multipliers, so roster choice was just
+// "buy them all eventually" (§2.2 "Half-meaningful"). A small monthly salary,
+// rarity-scaled and wage-indexed like crew payroll, turns roster SIZE into a
+// recurring decision (bench a commander you're not using — see the
+// assignedSinceMs retirement-clock comment above, same "idle costs you"
+// design already applied to retirement). Deliberately small relative to a
+// commander's one-time hire cost (~1.5%/mo) — this is a maintenance nudge,
+// not a wealth sink on its own.
+export const COMMANDER_MONTHLY_SALARY: Record<CommanderRarity, number> = {
+  common: 150_000,
+  uncommon: 350_000,
+  rare: 900_000,
+  epic: 2_500_000,
+  legendary: 6_000_000,
+};
+
+/** Total monthly commander upkeep for the roster, before the wage index.
+ *  Pure — reads only the hired roster + definitions. */
+export function getCommanderUpkeepBase(state: GameState): number {
+  const hired = state.hiredCommanders || [];
+  let total = 0;
+  for (const h of hired) {
+    const def = COMMANDER_MAP.get(h.definitionId);
+    if (def) total += COMMANDER_MONTHLY_SALARY[def.rarity];
+  }
+  return total;
+}
+
+/** Wage-indexed monthly commander upkeep — the figure game-engine.ts's tick
+ *  actually charges. `wageIndex` defaults to neutral (1.0) for callers
+ *  without a labor-market snapshot handy (matches getWageIndex's own
+ *  deterministic fallback). Commanders are executive-tier hires, so the
+ *  roster rides the 'negotiator' wage index (workforce.ts's highest base
+ *  salary crew type, the closest existing proxy for leadership comp) rather
+ *  than introducing a tenth WorkerType for a single consumer. */
+export function computeCommanderUpkeepMonthly(state: GameState, wageIndex: number = 1): number {
+  return Math.round(getCommanderUpkeepBase(state) * Math.max(0, wageIndex));
+}
 
 // ─── W8 — Leaders 2.0: levels & XP ──────────────────────────────────────────
 // Levels 1-5, XP earned once per game-month from a productive assignment
@@ -850,7 +892,10 @@ export function canHire(state: GameState, defId: string): { ok: boolean; reason?
   if (def.rarity === 'rare' && unlocked < 2) return { ok: false, reason: 'Unlock 2+ locations first' };
   if (def.rarity === 'epic' && unlocked < 4) return { ok: false, reason: 'Unlock 4+ locations first' };
   if (def.rarity === 'legendary') {
-    const netWorth = state.money + state.totalEarned - state.totalSpent;
+    // M1/F4: book net worth — a corp that plowed cash into buildings/ships
+    // shouldn't be locked out of legendary hires because capex reads as a
+    // loss under the old flow-based metric.
+    const netWorth = computeBookNetWorth(state);
     if (netWorth < 10_000_000_000 || unlocked < 5) {
       return { ok: false, reason: 'Requires $10B net worth and 5+ locations' };
     }

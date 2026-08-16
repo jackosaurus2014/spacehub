@@ -38,6 +38,8 @@ const CATEGORY_LABEL: Record<SituationCategory, string> = {
   // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7)
   slot_auction: 'Orbital Slot',
   procurement_drive: 'NPC Drive',
+  // Wave M2 (docs/MEANINGFUL_2026-08.md §M2)
+  building_status: 'Building Status',
 };
 
 const CATEGORY_FRAME: Record<SituationCategory, string> = {
@@ -62,6 +64,8 @@ const CATEGORY_FRAME: Record<SituationCategory, string> = {
   // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7)
   slot_auction: 'border-cyan-500/25 bg-cyan-500/[0.03]',
   procurement_drive: 'border-teal-500/25 bg-teal-500/[0.03]',
+  // Wave M2 (docs/MEANINGFUL_2026-08.md §M2)
+  building_status: 'border-slate-500/25 bg-slate-500/[0.03]',
 };
 
 const SEVERITY_TONE: Record<SituationSeverity, 'bad' | 'warn' | 'info'> = {

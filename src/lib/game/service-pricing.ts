@@ -30,6 +30,12 @@
 import type { GameState } from './types';
 import { isInFrontier } from './frontier';
 import { getCurrentSeasonNumber } from './seasonal-events';
+// Meaningful Decisions Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5):
+// a mothballed/reactivating/decommissioning building withdraws from the
+// demand-pool economy entirely — no derived demand, no capacity claim
+// ("a visible supply withdrawal rivals can see in the pool intel", per the
+// spec). isBuildingOperational is the single shared predicate.
+import { isBuildingOperational } from './mothball';
 import {
   getServiceCategory,
   demandPoolKey,
@@ -95,6 +101,21 @@ export function clampDemandMultiplier(mult: unknown): number {
 // of (own save, world clocks) — deterministic, and identical between the
 // live tick and away catch-up.
 
+/** Wave M2: buildings/services belonging to a non-operational (mothballed /
+ *  reactivating / decommissioning) building — filtered out of every
+ *  derived-demand and capacity computation below. A service counts as
+ *  operational only when EVERY building it's linked to is operational
+ *  (in practice always a single 1:1 link — see game-engine.ts §5's
+ *  "each completed building gets its own service instance"). */
+function operationalActivityInputs(state: GameState) {
+  const buildingStatus = new Map((state.buildings || []).map(b => [b.instanceId, b]));
+  const buildings = (state.buildings || []).filter(b => isBuildingOperational(b));
+  const services = (state.activeServices || []).filter(s =>
+    !s.linkedBuildingIds?.length || s.linkedBuildingIds.every(id => isBuildingOperational(buildingStatus.get(id)))
+  );
+  return { buildings, services };
+}
+
 export function computeLocalPoolMultiplier(
   state: GameState,
   locationId: string,
@@ -102,12 +123,13 @@ export function computeLocalPoolMultiplier(
   seasonNumber: number,
 ): number {
   const key = demandPoolKey(locationId, category);
+  const { buildings: opBuildings, services: opServices } = operationalActivityInputs(state);
   const ownActivity = deriveActivityDemand({
     id: 'self',
-    buildings: (state.buildings || []).map(b => ({
+    buildings: opBuildings.map(b => ({
       definitionId: b.definitionId, locationId: b.locationId, isComplete: b.isComplete,
     })),
-    services: (state.activeServices || []).map(s => ({
+    services: opServices.map(s => ({
       definitionId: s.definitionId, locationId: s.locationId,
     })),
     ships: (state.ships || []).map(s => ({ currentLocation: s.currentLocation })),
@@ -115,7 +137,7 @@ export function computeLocalPoolMultiplier(
   const mod = getDemandPoolSeasonModifier(category, seasonNumber);
   const D = getNpcFloorBase(locationId, category) * mod + (ownActivity.get(key) || 0);
   const ownCapacity = computeCapacityByMarket(
-    (state.activeServices || []).map(s => ({ definitionId: s.definitionId, locationId: s.locationId })),
+    opServices.map(s => ({ definitionId: s.definitionId, locationId: s.locationId })),
   ).get(key) || 0;
   const C = getNpcSupplyCapacity(locationId, category, 0) + ownCapacity;
   return computePoolMultiplier(D, C);

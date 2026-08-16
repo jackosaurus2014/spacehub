@@ -15,7 +15,7 @@
 import type { GameDate, GameState } from './types';
 import { STARTING_YEAR } from './constants';
 import { computeEconomyReport } from './economy-report';
-import { computeNetWorth } from './frontier';
+import { computeBookNetWorth } from './frontier'; // M1/F4: asset-aware
 import { generateId, formatMoney } from './formulas';
 // W13 (Corporate Doctrine & Board Politics, docs/4X_BASELINE_2026-08.md
 // §1.7): board directives hook this module's generation point additively —
@@ -108,7 +108,7 @@ export function generateQuarterlyReport(state: GameState, now: number = Date.now
   const quarterOfYear = (quarterIndex % 4) + 1;
 
   const econ = computeEconomyReport(state, now);
-  const netWorth = computeNetWorth(state);
+  const netWorth = computeBookNetWorth(state); // M1/F4
 
   const priorReports = state.quarterlyReports || [];
   const priorReport = priorReports.length > 0 ? priorReports[priorReports.length - 1] : null;

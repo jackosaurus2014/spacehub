@@ -30,6 +30,11 @@ import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
 import SupplyStatusStrip from '@/components/game/SupplyStatusStrip';
 import { setBuildingSupplyPolicy } from '@/lib/game/consumption';
+// Meaningful Decisions Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5,
+// "the exit decision"): mothball (pause) and decommission (scrap for partial
+// recovery) — the pure state mutators live in mothball.ts, same house style
+// as setBuildingSupplyPolicy above.
+import { mothballBuilding, reactivateBuilding, decommissionBuilding } from '@/lib/game/mothball';
 import DailyBonusModal from '@/components/game/DailyBonusModal';
 import AlliancePanel from '@/components/game/AlliancePanel';
 import AllianceHubPanel from '@/components/game/AllianceHubPanel';
@@ -1558,44 +1563,43 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
-  // ─── Sell Building ───────────────────────────────────────────────────
+  // ─── Sell / Decommission Building ─────────────────────────────────────
+  // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): "sell" IS
+  // decommission — delegates to mothball.ts's decommissionBuilding, which
+  // now also recovers 50% of resourceCost (materials, not just cash) and
+  // routes T3+ buildings through a 1-game-month teardown instead of
+  // vanishing instantly (matches the spec's "T3+ takes 1 game-month
+  // teardown"). T1/T2 keep the old instant-scrap feel.
   const handleSellBuilding = useCallback((instanceId: string) => {
     playSound('money');
     setState(prev => {
       if (!prev) return prev;
-      const bldIdx = prev.buildings.findIndex(b => b.instanceId === instanceId);
-      if (bldIdx === -1) return prev;
-      const bld = prev.buildings[bldIdx];
-      if (!bld.isComplete) { playSound('error'); return prev; } // Can't sell under construction
+      const monthIndex = getGlobalGameDate().totalMonths;
+      return decommissionBuilding(prev, instanceId, monthIndex);
+    });
+  }, []);
 
-      const def = BUILDING_MAP.get(bld.definitionId);
-      if (!def) return prev;
+  // ─── Mothball / Reactivate Building ────────────────────────────────────
+  // Wave M2: pause a building (zero revenue, zero consumption, 25%
+  // maintenance) — the reversible "ride out a market crash" tool, as
+  // distinct from decommission's irreversible scrap-for-partial-recovery.
+  const handleMothballBuilding = useCallback((instanceId: string) => {
+    playSound('click');
+    setState(prev => {
+      if (!prev) return prev;
+      const monthIndex = getGlobalGameDate().totalMonths;
+      return mothballBuilding(prev, instanceId, monthIndex);
+    });
+  }, []);
 
-      // Sell for 40% of original cost (depreciation)
-      const sellPrice = Math.round(def.baseCost * 0.4);
-
-      // Remove building and any services linked to it
-      const newBuildings = prev.buildings.filter(b => b.instanceId !== instanceId);
-      const newServices = prev.activeServices.filter(s => {
-        // Remove services that were linked to this building
-        if (!s.linkedBuildingIds) return true;
-        return !s.linkedBuildingIds.includes(instanceId);
-      });
-
-      return {
-        ...prev,
-        money: prev.money + sellPrice,
-        totalEarned: prev.totalEarned + sellPrice,
-        buildings: newBuildings,
-        activeServices: newServices,
-        eventLog: [{
-          id: generateId(),
-          date: prev.gameDate,
-          type: 'milestone' as const,
-          title: `Sold: ${def.name}`,
-          description: `Recovered ${formatMoney(sellPrice)} (40% of build cost).`,
-        }, ...prev.eventLog].slice(0, 50),
-      };
+  const handleReactivateBuilding = useCallback((instanceId: string) => {
+    playSound('click');
+    setState(prev => {
+      if (!prev) return prev;
+      const monthIndex = getGlobalGameDate().totalMonths;
+      const next = reactivateBuilding(prev, instanceId, monthIndex);
+      if (next === prev) playSound('error'); // couldn't afford the spin-up fee
+      return next;
     });
   }, []);
 
@@ -2061,6 +2065,8 @@ export default function SpaceTycoonPage() {
             onUnlock={handleUnlockLocation}
             onBuild={handleBuild}
             onSellBuilding={handleSellBuilding}
+            onMothballBuilding={handleMothballBuilding}
+            onReactivateBuilding={handleReactivateBuilding}
             onDispatchShip={handleDispatchShip}
             onLaunchExpedition={handleLaunchExpedition}
             onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
@@ -2109,7 +2115,7 @@ export default function SpaceTycoonPage() {
             setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
           }}
         />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onRushRepairBuilding={(instanceId) => {
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={(instanceId) => {
           setState(prev => {
             if (!prev) return prev;
             const bld = prev.buildings.find(b => b.instanceId === instanceId);
