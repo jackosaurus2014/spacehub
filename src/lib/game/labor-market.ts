@@ -176,17 +176,29 @@ export type LaborMarketSnapshot = Partial<Record<WorkerType, number>>; // type -
 export const LABOR_MARKET_STALE_MS = 14 * 24 * 60 * 60 * 1000; // weekly job, generous staleness window
 
 /** Read a crew type's wage index from a (possibly stale/absent) snapshot,
- *  defaulting to neutral 1.0 — the deterministic client fallback. */
+ *  defaulting to neutral 1.0 — the deterministic client fallback.
+ *
+ *  Wave M4 (docs/MEANINGFUL_2026-08.md §M4, "1.4's soft spot"): a STALE
+ *  snapshot used to collapse straight to neutral (1.0) regardless of what
+ *  the last known index actually was — a mild sink-evasion for offline
+ *  players (a wage boom that pinned at 1.6 was invisible to anyone who
+ *  hadn't synced in 14 days, so their payroll silently got cheaper than the
+ *  live market). It now degrades to the LAST KNOWN index, floored at neutral
+ *  (1.0) — never a below-market discount from staleness alone, but a real
+ *  boom is still felt instead of being erased. */
 export function getWageIndex(
   snapshot: { index: LaborMarketSnapshot; asOf: number } | null | undefined,
   type: WorkerType,
   nowMs: number = Date.now(),
 ): number {
   if (!snapshot || !snapshot.index) return WAGE_INDEX_NEUTRAL;
-  if (nowMs - snapshot.asOf > LABOR_MARKET_STALE_MS) return WAGE_INDEX_NEUTRAL;
   const v = snapshot.index[type];
   if (typeof v !== 'number' || !Number.isFinite(v)) return WAGE_INDEX_NEUTRAL;
-  return Math.max(WAGE_INDEX_MIN, Math.min(WAGE_INDEX_MAX, v));
+  const clamped = Math.max(WAGE_INDEX_MIN, Math.min(WAGE_INDEX_MAX, v));
+  if (nowMs - snapshot.asOf > LABOR_MARKET_STALE_MS) {
+    return Math.max(WAGE_INDEX_NEUTRAL, clamped);
+  }
+  return clamped;
 }
 
 /** Belt Miners' Guild wage-strike threshold (§2.6 lore surface: "issues

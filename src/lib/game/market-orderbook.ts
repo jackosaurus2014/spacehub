@@ -8,6 +8,7 @@ import type { ResourceId } from './resources';
 import { validatePriceBand } from './price-band';
 import { computeNpcMakerQuote } from './market-engine';
 import { recordLedger, isLedgerAvailable } from './server-ledger';
+import { isMarketEventActiveForResource } from './market-events';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -547,6 +548,14 @@ export async function cancelOrder(
  * `referenceSpot` may be passed (already band-clamped spot from the sync
  * snapshot); when omitted the maker reads the resource's currentPrice.
  * NPC orders are permanent backstop liquidity.
+ *
+ * Wave M4 (docs/MEANINGFUL_2026-08.md §M4, F10): while a market event is
+ * live for this resource (per the same public schedule the forecast reads —
+ * see market-events.ts), the NPC maker is NOT a free counterparty to a known
+ * move — its spread doubles and its resting volume cap halves, so the
+ * event's bounded print (F10's $41.9M helium3 example) is a real trade
+ * against thinner, worse-priced liquidity rather than the house handing out
+ * risk-free edge.
  */
 export async function getNPCMarketMakerOrders(
   resourceSlug: string,
@@ -556,6 +565,7 @@ export async function getNPCMarketMakerOrders(
   const basePrice = resourceDef?.baseMarketPrice ?? 0;
   const minPrice = resourceDef?.minPrice ?? 1;
   const maxPrice = resourceDef?.maxPrice ?? Number.MAX_SAFE_INTEGER;
+  const eventActive = isMarketEventActiveForResource(resourceSlug);
   const volume = getNpcVolumeCap(resourceSlug);
 
   // Wave E2 [BAL]: a zero cap (top-of-chain crafted products, MINED_ONLY
@@ -601,7 +611,24 @@ export async function getNPCMarketMakerOrders(
     capUsedFraction = volume > 0 ? Math.min(1, used / volume) : 0;
   } catch { /* inventory read best-effort — default to base spread */ }
 
-  const quote = computeNpcMakerQuote({ spotPrice: spot, basePrice, minPrice, maxPrice, capUsedFraction });
+  let quote = computeNpcMakerQuote({ spotPrice: spot, basePrice, minPrice, maxPrice, capUsedFraction });
+
+  // Wave M4 [event spread schedule]: a live market event on this resource
+  // doubles the maker's half-spread (re-clamped to the same price band
+  // computeNpcMakerQuote uses) and halves its resting volume — see the
+  // function doc comment above.
+  let effectiveVolume = volume;
+  if (eventActive) {
+    const band = validatePriceBand(1, basePrice, minPrice, maxPrice);
+    const widenedHalf = quote.spreadHalf * 2;
+    const clamp = (p: number) => Math.max(band.min, Math.min(band.max, Math.round(p)));
+    quote = {
+      bid: clamp(spot * (1 - widenedHalf)),
+      ask: clamp(spot * (1 + widenedHalf)),
+      spreadHalf: widenedHalf,
+    };
+    effectiveVolume = Math.max(1, Math.floor(volume / 2));
+  }
   const npcBidPrice = quote.bid;
   const npcAskPrice = quote.ask;
 
@@ -623,7 +650,7 @@ export async function getNPCMarketMakerOrders(
       profileId: NPC_PROFILE_ID,
       resourceSlug,
       side: 'buy',
-      quantity: volume,
+      quantity: effectiveVolume,
       filledQty: 0,
       pricePerUnit: npcBidPrice,
       escrowAmount: 0,
@@ -638,7 +665,7 @@ export async function getNPCMarketMakerOrders(
       profileId: NPC_PROFILE_ID,
       resourceSlug,
       side: 'sell',
-      quantity: volume,
+      quantity: effectiveVolume,
       filledQty: 0,
       pricePerUnit: npcAskPrice,
       escrowAmount: 0,
@@ -648,8 +675,8 @@ export async function getNPCMarketMakerOrders(
   });
 
   return {
-    bid: { price: npcBidPrice, quantity: volume },
-    ask: { price: npcAskPrice, quantity: volume },
+    bid: { price: npcBidPrice, quantity: effectiveVolume },
+    ask: { price: npcAskPrice, quantity: effectiveVolume },
     spreadHalf: quote.spreadHalf,
   };
 }

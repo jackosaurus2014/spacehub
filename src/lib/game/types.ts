@@ -1336,6 +1336,15 @@ export interface GameState {
    *  (fresh games — new corps are Frontier-shielded anyway). */
   demandPoolPhaseInStartMonth?: number | null;
 
+  /** V37 — Meaningful Decisions Wave M3 (docs/MEANINGFUL_2026-08.md §M3 —
+   *  finding F3, "price-linked mining"). World-month index when an existing
+   *  save's mining_output revenue began transitioning from the flat
+   *  authored rate to the spot-linked formula. Blends 50/50 old/new for 3
+   *  game-months from this anchor, then switches fully (mining-pricing.ts's
+   *  getMiningPriceLinkFraction); null = full new-formula weight
+   *  immediately (fresh games — not a migration penalty). */
+  miningPriceLinkPhaseInStartMonth?: number | null;
+
   // ─── V34 — Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/
   // ECONOMY_PVP_2026-08.md §2.4/§2.6/§2.8/§E5) ────────────────────────────
 

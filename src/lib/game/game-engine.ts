@@ -92,6 +92,7 @@ import { updateCrewWellbeing, getTotalCrew, getCrewCapacity } from './workforce'
 // (§2.8) is wired in cargo-logistics.ts / trade-lanes.ts instead — dispatch
 // happens outside the tick loop.
 import { getExtractionPressureMultiplier } from './extraction-pressure';
+import { priceLinkedMiningRevenue, blendMiningBaseRevenue } from './mining-pricing';
 import { getMonthlyPayrollWithWageIndex, getWageIndex } from './labor-market';
 import { rollLocationInventoryShocks, applyInventoryShocks } from './hazards';
 import { consumeLaneUsageFlush, subtractTransmittedLaneUsage } from './trade-lanes';
@@ -317,6 +318,49 @@ export function processTick(state: GameState): GameState {
   // Buildings at space locations need power. Underpowered locations reduce revenue.
   const powerByLocation = getPowerByLocation(state.buildings);
 
+  // ─── 0c. Mining physics, hoisted (M3/F3 — docs/MEANINGFUL_2026-08.md §M3) ──
+  // `waveBMiningMult`/`miningMult`, `activeBoosts`, `currentTotalMonths`, and
+  // `miningBonuses` used to be declared down in §6 (resource production),
+  // AFTER §1's revenue loop had already run. Price-linked mining revenue
+  // (§1, below) needs the exact same "how much would this rig extract right
+  // now" formula §6 uses, so these are hoisted here — every ingredient
+  // (specBonuses, victoryBonuses, allianceB, mentorshipB, coopMegaB,
+  // wfBonuses, resBonuses, legacyMiningMult, eraModifiers, tierBonuses,
+  // megaBonuses, repBonuses, commanderBonuses) is already computed above
+  // this point, so the hoist changes no other ordering. §6 below now just
+  // references these instead of redeclaring them.
+  const activeBoosts: ActiveBoost[] = (state.activeBoosts || []) as ActiveBoost[];
+  const currentTotalMonths = newDate.year * 12 + newDate.month;
+  const miningBonuses = state.miningBonuses || [];
+  const waveBMiningMult = Math.min(2.0,
+    (1 + specBonuses.miningOutput)
+    * victoryBonuses.miningMultiplier
+    * (1 + allianceB.miningBonus)
+    * (1 + mentorshipB.miningBonus) // LS2: mentee mining share
+    * (1 + coopMegaB.miningBonus) // E7: completed cooperative mega-projects
+    * getActiveBoostMultiplier(activeBoosts, 'mining')
+  );
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * eraModifiers.miningMultiplier * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
+  /** Freighter/tanker logistics bonus for mining at a location — shared by
+   *  §1's price-linked mining revenue and §6's physical unit production so
+   *  the two can never drift apart. */
+  const computeFreighterBonusAt = (locationId: string): number => {
+    let count = 0;
+    for (const ship of (state.ships || [])) {
+      if (!ship.isBuilt || ship.status !== 'idle') continue;
+      if (ship.currentLocation !== locationId) continue;
+      const sDef = SHIP_MAP.get(ship.definitionId);
+      if (sDef?.role === 'transport' || sDef?.role === 'tanker') count++;
+    }
+    return Math.min(count * 0.10, 0.50); // +10% per freighter/tanker, cap +50%
+  };
+  /** Survey-probe mining bonus for one (location, resource) — same shared
+   *  purpose as computeFreighterBonusAt above. */
+  const computeMiningLocationBonus = (locationId: string, resource: string): number =>
+    miningBonuses
+      .filter(b => b.locationId === locationId && b.resourceId === resource && b.expiresAtMonth > currentTotalMonths)
+      .reduce((sum, b) => sum + b.bonusPct / 100, 0);
+
   // ─── 1. Revenue collection from active services ───────────────────
   // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus,
   //          power ratio, station bonus, market saturation (see Wave 1 balance).
@@ -413,8 +457,38 @@ export function processTick(state: GameState): GameState {
     // Wave E3 (§2.2): supply shortfall browns the building out — linear down
     // to the 0.5 soft floor, never a hard stop (the powerRatio precedent).
     const supplyEfficiency = linkedBld ? (consumptionEff[linkedBld.instanceId] ?? 1) : 1;
+    // M3/F3 (docs/MEANINGFUL_2026-08.md §M3 — "mining's cash revenue is
+    // market-blind"): mining_output services substitute a PRICE-LINKED base
+    // term for the flat `def.revenuePerMonth` every other service still
+    // uses — Σ(units this tick × live spot) × the service's authored
+    // revenue/base-value scale (mining-pricing.ts; reproduces the exact old
+    // flat number at neutral spot/pressure/bonus conditions, see that
+    // file's header). `svcSupplyEff` below folds the hauler-fuel shortfall
+    // into the units themselves, so the outer `supplyEfficiency` term is
+    // skipped for mining (else the same brake would apply twice).
+    const isMiningOutput = def.type === 'mining_output';
+    let baseTerm: number;
+    if (isMiningOutput) {
+      const production = MINING_PRODUCTION[svc.definitionId] || [];
+      const svcSupplyEff = svc.linkedBuildingIds?.length
+        ? (consumptionEff[svc.linkedBuildingIds[0]] ?? 1)
+        : 1;
+      const freighterBonus = computeFreighterBonusAt(svc.locationId);
+      const unitsPerResource: Record<string, number> = {};
+      for (const { resource, amountPerMonth } of production) {
+        const extractionPressure = getExtractionPressureMultiplier(state.extractionPressure, svc.locationId, resource);
+        const locationBonus = computeMiningLocationBonus(svc.locationId, resource);
+        unitsPerResource[resource] =
+          amountPerMonth * fraction * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
+      }
+      const oldBase = def.revenuePerMonth * fraction;
+      const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, state.marketSnapshot);
+      baseTerm = blendMiningBaseRevenue(oldBase, newBase, state.miningPriceLinkPhaseInStartMonth, globalDate.totalMonths);
+    } else {
+      baseTerm = def.revenuePerMonth * fraction;
+    }
     const revenue = Math.round(
-      def.revenuePerMonth * fraction
+      baseTerm
       * svc.revenueMultiplier
       * multipliers.revenueMultiplier
       * upgradeBoost
@@ -434,7 +508,7 @@ export function processTick(state: GameState): GameState {
       * wfBonuses.moraleMultiplier
       * waveBRevenueMult
       * hazardDamageFactor        // audit Wave D (A4)
-      * supplyEfficiency          // Wave E3 (§2.2 consumption soft floor)
+      * (isMiningOutput ? 1 : supplyEfficiency) // Wave E3 (§2.2) — folded into unitsPerResource for mining above
       * reserveEfficiencyMult     // audit Wave E (C5 §7)
       * returningCommanderRevMult // LS2: decaying re-entry boost, 1.3x -> 1.0x over 14 days
       * DEV_REVENUE_MULTIPLIER
@@ -512,7 +586,7 @@ export function processTick(state: GameState): GameState {
 
   // ─── 3. Construction completion check (real wall-clock time) ──────
   const now = Date.now();
-  const activeBoosts: ActiveBoost[] = (state.activeBoosts || []) as ActiveBoost[];
+  // activeBoosts hoisted to §0c (M3/F3 — mining price-linking needs it earlier).
   const buildBoostMult = getActiveBoostMultiplier(activeBoosts, 'construction');
   const buildings = state.buildings.map((bld) => {
     if (bld.isComplete) return bld;
@@ -678,17 +752,8 @@ export function processTick(state: GameState): GameState {
   // bonus (§1b), alliance miningBonus (A2), and timed 'mining' boosts from
   // mini-activities (§1c — mining_boost was silently dropped before).
   // Combined new factor capped at 2x (BALANCE.md invariant).
-  const waveBMiningMult = Math.min(2.0,
-    (1 + specBonuses.miningOutput)
-    * victoryBonuses.miningMultiplier
-    * (1 + allianceB.miningBonus)
-    * (1 + mentorshipB.miningBonus) // LS2: mentee mining share
-    * (1 + coopMegaB.miningBonus) // E7: completed cooperative mega-projects
-    * getActiveBoostMultiplier(activeBoosts, 'mining')
-  );
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * eraModifiers.miningMultiplier * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
-  const currentTotalMonths = newDate.year * 12 + newDate.month;
-  const miningBonuses = state.miningBonuses || [];
+  // waveBMiningMult/miningMult/currentTotalMonths/miningBonuses hoisted to
+  // §0c (M3/F3 — price-linked mining revenue in §1 needs them too).
   // Audit Wave E (A5-i / §1d-5 "Mining never moves prices"): track units
   // mined this tick so useGameSync can send them as minedThisTick supply
   // pressure — the sync payload field the audit identifies as missing.
@@ -716,21 +781,12 @@ export function processTick(state: GameState): GameState {
       ? (consumptionEff[svc.linkedBuildingIds[0]] ?? 1)
       : 1;
     // Logistics bonus from freighters/transports at this mining location
-    const freighterBonus = (() => {
-      let count = 0;
-      for (const ship of (state.ships || [])) {
-        if (!ship.isBuilt || ship.status !== 'idle') continue;
-        if (ship.currentLocation !== svc.locationId) continue;
-        const sDef = SHIP_MAP.get(ship.definitionId);
-        if (sDef?.role === 'transport' || sDef?.role === 'tanker') count++;
-      }
-      return Math.min(count * 0.10, 0.50); // +10% per freighter/tanker, cap +50%
-    })();
+    // (shared helper — see §0c).
+    const freighterBonus = computeFreighterBonusAt(svc.locationId);
     for (const { resource, amountPerMonth } of production) {
       // Survey probe mining bonus: location + resource specific, time-limited
-      const locationBonus = miningBonuses
-        .filter(b => b.locationId === svc.locationId && b.resourceId === resource && b.expiresAtMonth > currentTotalMonths)
-        .reduce((sum, b) => sum + b.bonusPct / 100, 0);
+      // (shared helper — see §0c).
+      const locationBonus = computeMiningLocationBonus(svc.locationId, resource);
       // Accumulate fractional amounts — only add whole units.
       // W14: credit routes by the PRODUCING location — mining at Ceres fills
       // Ceres storage (local stockpile) once logistics is unlocked; home-

@@ -424,3 +424,65 @@ The delivery contract daily cap (above) is covered in
 stacking), rolling-24h-window boundary math, and enforcement inside
 `deliverContract` (blocks at cap, frees up as the window rolls, research/
 tier bonus slots, and confirms accept/deadline-processing stay unaffected).
+
+---
+
+## Meaningful Decisions Wave M3 — demand grows with the economy, mining is
+## price-linked (docs/MEANINGFUL_2026-08.md §M3, findings F3/F6)
+
+- **F6 — derived demand is now gross-share, not flat-per-building.**
+  `demand-pools.ts`'s `DERIVED_DEMAND_RATES.perBuilding` (a flat $/mo
+  constant identical for a $3.5M satellite and a $160M mining rig) is
+  replaced by `addGrossSpreadDemand`: `DERIVED_DEMAND_GROSS_SHARE` (30%,
+  spec range 25-35%) of a building's own service gross, spread across
+  every demand-pool category it does NOT itself supply
+  (`GENERIC_SPREAD_WEIGHTS`, renormalized over the eligible categories).
+  A building can never feed its own category — the pre-M3 flat constant
+  did (a datacenter's $250K generic "compute" contribution counted toward
+  its OWN pool). Crewed-building demand (`perCrewedBuilding`) now scales by
+  building tier as a headcount proxy (the save has no per-location crew
+  occupancy to read). Verified by `__tests__/demand-pools-population-
+  scaling.test.ts`'s "gross-share scaling" block — direct, deterministic
+  unit tests on `deriveActivityDemand` that fail against the pre-M3 flat
+  constants (checked by hand) and pass post-fix. The spec's own acceptance
+  wording ("50-profile world at active30d=500, median pool mult >= 0.7")
+  is also covered there, honestly labeled as a floor/sanity check — every
+  diversified synthetic population tried already cleared 0.7 on a
+  per-market median basis even pre-M3 (most of the ~88 (location,
+  category) markets never accumulate enough capacity to saturate); the
+  "slides toward 0.35" dynamic F6 describes is real but shows up in
+  supplier-weighted terms for the small set of buildings every player
+  converges on, which is the demand-pool floor mechanic working as
+  designed (competitors take your customers), not something a derived-
+  demand coefficient should or can erase.
+- **F3 — mining_output revenue is price-linked.** `mining-pricing.ts` (new)
+  replaces the flat `revenuePerMonth` cash figure for `mining_output`
+  services with `Σ(units mined this tick × live spot) × scale`, where
+  `scale = revenuePerMonth / Σ(amountPerMonth × basePrice)` — a constant
+  derived from existing authored data (no MINING_PRODUCTION/revenue re-
+  tuning), chosen so the new formula reproduces the OLD flat number
+  exactly at neutral conditions (spot = base, extraction pressure = 1.0,
+  no mining bonuses). From there it's fully reactive: extraction pressure,
+  spot-price moves, and mining-output bonuses (previously ignored by the
+  flat cash figure) now move revenue directly. Wired into `game-engine.ts`
+  §1 (live tick, hoisted `miningMult`/freighter/location-bonus helpers so
+  the price-linked base can be computed in the SAME loop that used to read
+  the flat rate) and `away-operations.ts` (away-parity, using that
+  module's pre-existing simpler mining-production formula — no freighter/
+  location/consumption terms, matching its own established approximation
+  posture). Grandfathered: existing saves blend 50/50 old/new for 3
+  game-months from a V37 migration anchor (`miningPriceLinkPhaseInStart
+  Month`), then switch fully — new games get full weight immediately.
+  `mining-pricing.test.ts` + `mining-price-linking-integration.test.ts`
+  cover the scale-factor derivation, spot/pressure sensitivity, the
+  grandfather blend, determinism, and away-parity. `scripts/sim-harness.ts`
+  was updated to match (mining_output no longer double-counts a flat
+  service-revenue line AND a separate resale-of-leftover-inventory line —
+  see that file's M3 comments); `mining_asteroid`'s first-copy marginal ROI
+  softened from a 354-month to a 497-month payback as a result (still
+  solidly positive — `tier-ladder-first-copy-roi.test.ts`'s "every
+  first-copy is profitable" guard still passes 5/5) because the harness's
+  pre-M3 combo was itself slightly over-generous to mining (a full flat
+  rate PLUS a separate 100%-of-leftover auto-sale, something the real
+  engine never did); the unified price-linked figure is the more accurate
+  read of the real post-M3 engine.

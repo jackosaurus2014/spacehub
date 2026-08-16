@@ -200,6 +200,11 @@ export function getNewGameState(): GameState {
     // new-game mechanic; new corporations are Frontier-shielded anyway).
     demandPools: null,
     demandPoolPhaseInStartMonth: null,
+    // V37 — Meaningful Decisions Wave M3 (docs/MEANINGFUL_2026-08.md §M3 —
+    // finding F3). Fresh games get the new spot-linked mining formula at
+    // full weight immediately — no grandfather blend needed (not a
+    // migration penalty).
+    miningPriceLinkPhaseInStartMonth: null,
     // V34 — Economic PvP Wave E5 "Depletion, Labor & Lanes" (docs/
     // ECONOMY_PVP_2026-08.md §E5). A fresh save holds no server snapshots
     // yet — the first authenticated sync delivers them; until then mining
@@ -682,6 +687,31 @@ export function loadGame(): GameState | null {
     // written by the new mothballBuilding/reactivateBuilding/
     // decommissionBuilding actions. This comment documents the version bump
     // per the wave's [SAVE] note; there is nothing to default.
+
+    // V37 — Meaningful Decisions Wave M3 "Demand Grows With the Economy"
+    // (docs/MEANINGFUL_2026-08.md §M3 — finding F3, "price-linked mining").
+    // Existing saves anchor a 50/50 old-flat/new-spot-linked blend of
+    // mining_output revenue for 3 game-months from migration, then switch
+    // fully — mirrors the V33/E4 grandfather precedent, but a flat 50%
+    // blend rather than a ramp (mining-pricing.ts's own header explains
+    // why: the new formula already reproduces the old flat number at
+    // neutral spot/pressure/bonus conditions, so a fixed damper covers the
+    // migration-moment risk without needing a multi-step ramp). F6's
+    // derived-demand rebase (demand-pools.ts) needs no migration flag at
+    // all — DERIVED_DEMAND_RATES is read fresh every aggregation, so an
+    // existing save picks up the new coefficients on its very next pool
+    // sync with no field to default. One-shot explainer mirrors the
+    // V15/V32/V33/V34/V35 announcements.
+    if (state.miningPriceLinkPhaseInStartMonth === undefined) {
+      state.miningPriceLinkPhaseInStartMonth = getGlobalGameDate().totalMonths;
+      state.eventLog = [{
+        id: 'evt_v37_price_linked_mining',
+        date: state.gameDate,
+        type: 'random_event' as const,
+        title: '⛏ Mining revenue now tracks the live market',
+        description: 'Mining service income now values what you actually extract at the live spot price instead of a fixed monthly rate — a commodity crash bites your mining income, and a shortage pays a premium. Extraction pressure and mining bonuses now move cash revenue directly. Blends in gradually over the next 3 game months so nobody\'s income craters overnight.',
+      }, ...(state.eventLog || [])].slice(0, 50);
+    }
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

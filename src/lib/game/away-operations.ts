@@ -46,6 +46,7 @@ import { getWorkforceBonuses } from './workforce';
 // call — this module stays pure/deterministic).
 import { getMonthlyPayrollWithWageIndex } from './labor-market';
 import { getExtractionPressureMultiplier } from './extraction-pressure';
+import { priceLinkedMiningRevenue, blendMiningBaseRevenue } from './mining-pricing';
 import { getResearchBonuses } from './research-tree';
 import {
   TICKS_PER_GAME_MONTH, TICK_INTERVALS, MAX_EVENT_LOG,
@@ -219,6 +220,16 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   // module's header cites for the efficiency curve).
   const eraModifiers = getActiveEraModifiers(working);
   const fraction = 1 / TICKS_PER_GAME_MONTH;
+  // M3/F3 (docs/MEANINGFUL_2026-08.md §M3): hoisted from below the revenue
+  // loop (its ingredients — wfBonuses/resBonuses/legacyBonuses/eraModifiers
+  // — are all already computed above this point) so mining_output services
+  // can price-link their revenue in the SAME loop that computes it for
+  // every other service. Deliberately the simpler away formula (no
+  // freighter/location/consumption terms) — matches this module's existing,
+  // pre-M3 approximation posture for mining exactly (§6's own resourcesEarned
+  // loop below never modeled those either).
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyBonuses.miningMultiplier * eraModifiers.miningMultiplier;
+  const awayMonthIndex = getTotalGameMonths(working.gameDate);
 
   let revenuePerTick = 0;
   let costsPerTick = 0;
@@ -240,8 +251,22 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     const supplyMult = getServiceDemandMultiplier(
       working, svc.definitionId, svc.locationId, getTotalGameMonths(working.gameDate), now,
     );
+    // M3/F3: mining_output substitutes a price-linked base term (same
+    // mining-pricing.ts helper + grandfather blend game-engine.ts §1 uses)
+    // for the flat `def.revenuePerMonth` — away-parity for the F3 fix.
+    let baseTerm = def.revenuePerMonth * fraction;
+    if (def.type === 'mining_output') {
+      const production = MINING_PRODUCTION[svc.definitionId] || [];
+      const unitsPerResource: Record<string, number> = {};
+      for (const { resource, amountPerMonth } of production) {
+        const pressure = getExtractionPressureMultiplier(working.extractionPressure, svc.locationId, resource);
+        unitsPerResource[resource] = amountPerMonth * fraction * miningMult * pressure;
+      }
+      const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, working.marketSnapshot);
+      baseTerm = blendMiningBaseRevenue(baseTerm, newBase, working.miningPriceLinkPhaseInStartMonth, awayMonthIndex);
+    }
     revenuePerTick += Math.round(
-      def.revenuePerMonth * fraction
+      baseTerm
       * svc.revenueMultiplier
       * multipliers.revenueMultiplier
       * upgradeBoost
@@ -269,7 +294,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   const grossEarned = Math.round(revenuePerTick * weightedTicks);
   const grossSpent = Math.round(costsPerTick * totalTicks);
 
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyBonuses.miningMultiplier * eraModifiers.miningMultiplier;
+  // miningMult hoisted above the revenue loop (M3/F3 — price-linking needs it there too).
   const resourcesEarned: Record<string, number> = {};
   for (const svc of working.activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];

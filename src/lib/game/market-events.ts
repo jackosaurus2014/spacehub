@@ -174,3 +174,78 @@ export function getGlobalActiveMarketEvents(nowMs: number = Date.now()): ActiveM
 export function getGlobalMarketEventMultiplier(resourceId: string, nowMs: number = Date.now()): number {
   return getMarketEventMultiplier(resourceId, getGlobalActiveMarketEvents(nowMs), nowMs);
 }
+
+// ─── Wave M4 (docs/MEANINGFUL_2026-08.md §M4, F8/F10) — public forecast ────
+//
+// F8: the schedule above is deterministic and world-shared BY DESIGN — that
+// boundary is correct (every client and the server must agree on which event
+// is live without a DB round trip). The DEFECT was that the only way to know
+// a FUTURE event was to read this source file and run the same math ahead of
+// time — a code-reading trader front-ran every event risk-free. The fix is
+// NOT to make the schedule secret (that would break the shared-client-tick
+// boundary [BOUND] this file documents at the top); it's to STOP the
+// forecast from being exclusive. `getGlobalMarketEventForecast` runs the
+// exact same pure function ahead of "now" and is surfaced to EVERY player
+// through the market API (see market/route.ts) and MarketPanel's "Market
+// Outlook" section — so the code-reader's edge and the in-game trader's edge
+// are now the identical, fully public 48h forecast. [P2W]: this must never
+// sit behind a subscription tier — see market/route.ts.
+
+export interface ForecastMarketEvent {
+  eventId: string;
+  name: string;
+  icon: string;
+  affectedResources: string[];
+  priceMultiplier: number;
+  startsAtMs: number;
+  expiresAtMs: number;
+  durationHours: number;
+}
+
+/** How far ahead the public forecast looks. Matches the spec's "48h ahead". */
+export const MARKET_EVENT_FORECAST_HORIZON_MS = 48 * 3600_000;
+
+/**
+ * The world-shared, publicly-surfaced forecast of market events that have
+ * not started yet as of `nowMs`, within `horizonMs`. Pure and deterministic
+ * — identical output for the server and every client, exactly like
+ * `getGlobalActiveMarketEvents`. This is the fix for F8: the same math the
+ * schedule always ran, just exposed as a first-class in-game feature instead
+ * of something only a source-reader could compute.
+ */
+export function getGlobalMarketEventForecast(
+  nowMs: number = Date.now(),
+  horizonMs: number = MARKET_EVENT_FORECAST_HORIZON_MS,
+): ForecastMarketEvent[] {
+  const forecast: ForecastMarketEvent[] = [];
+  const currentWindow = Math.floor((nowMs - SERVER_EPOCH_MS) / MARKET_EVENT_WINDOW_MS);
+  const lastWindow = Math.floor((nowMs + horizonMs - SERVER_EPOCH_MS) / MARKET_EVENT_WINDOW_MS);
+  // Strictly future windows only — currently-active events are already
+  // surfaced by getGlobalActiveMarketEvents; the forecast is "what's next".
+  for (let w = Math.max(0, currentWindow + 1); w <= lastWindow; w++) {
+    const rng = mulberry32(hashStringToSeed(`stw-market-event:${w}`));
+    if (rng() >= MARKET_EVENT_SPAWN_CHANCE) continue;
+    const def = MARKET_EVENTS[Math.floor(rng() * MARKET_EVENTS.length)];
+    const startsAtMs = SERVER_EPOCH_MS + w * MARKET_EVENT_WINDOW_MS;
+    const expiresAtMs = startsAtMs + def.durationHours * 3600_000;
+    forecast.push({
+      eventId: def.id,
+      name: def.name,
+      icon: def.icon,
+      affectedResources: def.affectedResources,
+      priceMultiplier: def.priceMultiplier,
+      startsAtMs,
+      expiresAtMs,
+      durationHours: def.durationHours,
+    });
+  }
+  return forecast.sort((a, b) => a.startsAtMs - b.startsAtMs);
+}
+
+/** True while any active or forecast event affects `resourceId` — used by the
+ *  NPC maker (market-orderbook.ts) to widen its spread / halve its volume cap
+ *  during a known event window (F10: an event-window trade against the NPC
+ *  maker must be a real trade against liquidity, not a free-money oracle). */
+export function isMarketEventActiveForResource(resourceId: string, nowMs: number = Date.now()): boolean {
+  return getGlobalActiveMarketEvents(nowMs).some(ev => ev.affectedResources.includes(resourceId));
+}

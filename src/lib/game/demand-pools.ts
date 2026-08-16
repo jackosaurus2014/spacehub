@@ -239,22 +239,60 @@ export function getDemandPoolSeasonModifier(category: ServiceCategory, seasonNum
   return Math.max(SEASON_DEMAND_MOD_MIN, Math.min(SEASON_DEMAND_MOD_MAX, 1 + bias));
 }
 
-// ─── D_derived: demand from real activity at a location (§2.1) ──────────────
+// ─── D_derived: demand from real activity at a location (§2.1, rebased M3/F6) ─
 // Authored $/month contributions per unit of activity. Shared verbatim by
 // the server cron (summed across all synced profiles) and the client's
 // deterministic local fallback (own state only) — one derivation, two data
 // sources, which is the whole determinism story.
+//
+// M3/F6 rebase (docs/MEANINGFUL_2026-08.md §M3): pre-M3 this was a FLAT
+// dollar constant per building regardless of the building's own scale — a
+// $3.5M-capacity LEO sat and a $160M-capacity Titan hydrocarbon rig
+// contributed the IDENTICAL $500K of power demand. Player capacity grew
+// ~17x faster than player-derived demand as the server's population and
+// building count scaled up (F6: "a LEO telecom sat adds $0.2M/mo of derived
+// telecom demand but $3.5M of capacity, 5.7%"), sliding every market toward
+// the 0.35 floor exactly as the game succeeds — the macro curve punished
+// MAU growth. `addGrossSpreadDemand` below fixes this structurally: a
+// building's generic derived-demand contribution is now a PERCENTAGE
+// (`DERIVED_DEMAND_GROSS_SHARE`) of its OWN service gross (revenuePerMonth,
+// summed across its enabledServices) spread across every OTHER category —
+// never its own ("a datacenter demands power/logistics/insurance, never its
+// own compute") — so aggregate demand grows with real economic activity
+// (population × buildings × their own scale) instead of a per-building head
+// count alone. mining_output buildings own no demand-pool category, so their
+// (often very large) gross spreads across all five generic categories —
+// exactly the "demand grows with the economy" the finding calls for from
+// the vertical that was otherwise fully exempt from the pool system.
+
+/** Share of a building's own service gross spread as derived demand into
+ *  OTHER categories, per month. Spec range 25-35%; 30% is the midpoint. */
+export const DERIVED_DEMAND_GROSS_SHARE = 0.30;
+
+/** Relative weights for the generic gross-spread categories — renormalized
+ *  at read time over whichever of these the building does NOT itself supply
+ *  (so e.g. a telecom sat's contribution is fully redistributed among
+ *  power/logistics/compute/launch, never diluted just because it owns one
+ *  of the five weighted categories). */
+const GENERIC_SPREAD_WEIGHTS: Partial<Record<ServiceCategory, number>> = {
+  power: 0.30, telecom: 0.20, logistics: 0.20, compute: 0.15, launch: 0.15,
+};
 
 export const DERIVED_DEMAND_RATES = {
-  /** Every completed building at a location needs power, compute, comms,
-   *  and resupply — construction is demand (agglomeration). */
-  perBuilding: { power: 500_000, compute: 250_000, telecom: 200_000, logistics: 250_000, launch: 150_000 } as Partial<Record<ServiceCategory, number>>,
   /** Crewed stations/habitats add tourism traffic, crew comms, and hull
-   *  underwriting demand. */
+   *  underwriting demand — scaled by building TIER as a headcount proxy
+   *  (the save doesn't track per-location crew occupancy; tier is the
+   *  closest static "how big is this station" signal a T4 Jovian station
+   *  houses far more people than a T1 orbital outpost, so its demand
+   *  footprint should too). M3/F6: "crew-headcount demand... the most
+   *  organic demand curve in the game" per ECONOMY_PVP §3.1E — this finally
+   *  scales with the building generating it instead of a flat per-building
+   *  constant. */
   perCrewedBuilding: { tourism: 1_500_000, telecom: 400_000, insurance: 300_000 } as Partial<Record<ServiceCategory, number>>,
-  /** Launch pads generate propellant/logistics traffic. */
+  /** Launch pads generate ADDITIONAL propellant/logistics traffic beyond
+   *  the generic gross-spread every building already contributes. */
   perLaunchPad: { logistics: 500_000 } as Partial<Record<ServiceCategory, number>>,
-  /** Datacenters are power-hungry. */
+  /** Datacenters are power-hungry beyond the generic gross-spread. */
   perDatacenter: { power: 1_000_000 } as Partial<Record<ServiceCategory, number>>,
   /** A ship at a location means launches, transfers, and freight handling. */
   perShip: { launch: 400_000, logistics: 500_000 } as Partial<Record<ServiceCategory, number>>,
@@ -294,6 +332,45 @@ function buildingCategory(b: ActivityBuilding): string | undefined {
   return BUILDING_MAP.get(b.definitionId)?.category;
 }
 
+/** A building's own service gross ($/mo, summed across enabledServices) and
+ *  the set of demand-pool categories that gross belongs to — the categories
+ *  the generic gross-spread must never feed back into. */
+function ownGrossAndCategories(definitionId: string): { gross: number; categories: Set<ServiceCategory> } {
+  const bDef = BUILDING_MAP.get(definitionId);
+  let gross = 0;
+  const categories = new Set<ServiceCategory>();
+  if (bDef) {
+    for (const svcId of bDef.enabledServices) {
+      const sDef = SERVICE_MAP.get(svcId);
+      if (!sDef) continue;
+      gross += sDef.revenuePerMonth;
+      const cat = getServiceCategory(svcId);
+      if (cat) categories.add(cat);
+    }
+  }
+  return { gross, categories };
+}
+
+/** Generic gross-spread demand for one building: `DERIVED_DEMAND_GROSS_SHARE`
+ *  of its own service gross, distributed across every category it does NOT
+ *  itself supply, weighted by `GENERIC_SPREAD_WEIGHTS` (renormalized over
+ *  the eligible categories). */
+function addGrossSpreadDemand(out: Map<string, number>, locationId: string, definitionId: string): void {
+  const { gross, categories } = ownGrossAndCategories(definitionId);
+  if (gross <= 0) return;
+  let eligibleWeight = 0;
+  for (const [cat, w] of Object.entries(GENERIC_SPREAD_WEIGHTS)) {
+    if (!categories.has(cat as ServiceCategory)) eligibleWeight += w as number;
+  }
+  if (eligibleWeight <= 0) return;
+  const totalSpread = gross * DERIVED_DEMAND_GROSS_SHARE;
+  for (const [cat, w] of Object.entries(GENERIC_SPREAD_WEIGHTS)) {
+    if (categories.has(cat as ServiceCategory)) continue;
+    const key = demandPoolKey(locationId, cat as ServiceCategory);
+    out.set(key, (out.get(key) || 0) + totalSpread * ((w as number) / eligibleWeight));
+  }
+}
+
 /** Derived demand (Map<poolKey, $/month>) generated by ONE actor's activity.
  *  Pure — same summary in, same map out. */
 export function deriveActivityDemand(summary: ProfileActivitySummary): Map<string, number> {
@@ -301,10 +378,11 @@ export function deriveActivityDemand(summary: ProfileActivitySummary): Map<strin
   for (const b of summary.buildings) {
     if (b.isComplete === false) continue;
     if (!b.locationId || !LOCATION_MAP.has(b.locationId)) continue;
-    addDemand(out, b.locationId, DERIVED_DEMAND_RATES.perBuilding);
+    addGrossSpreadDemand(out, b.locationId, b.definitionId);
     const cat = buildingCategory(b);
     if (cat && CREWED_BUILDING_CATEGORIES.has(cat)) {
-      addDemand(out, b.locationId, DERIVED_DEMAND_RATES.perCrewedBuilding);
+      const tier = Math.max(1, BUILDING_MAP.get(b.definitionId)?.tier || 1);
+      addDemand(out, b.locationId, DERIVED_DEMAND_RATES.perCrewedBuilding, tier);
     }
     if (cat === 'launch_pad') addDemand(out, b.locationId, DERIVED_DEMAND_RATES.perLaunchPad);
     if (cat === 'datacenter') addDemand(out, b.locationId, DERIVED_DEMAND_RATES.perDatacenter);

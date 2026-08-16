@@ -55,8 +55,8 @@ import {
   applyExtractionEvent,
   computeExtractionPressure,
   extractionKey,
-  getExtractionSensitivity,
 } from '../src/lib/game/extraction-pressure';
+import { priceLinkedMiningRevenue } from '../src/lib/game/mining-pricing';
 import type { GameState } from '../src/lib/game/types';
 
 export const GAME_MONTH_MS = 21_600 * 1000; // server-time.ts REAL_SECONDS_PER_GAME_MONTH
@@ -258,6 +258,12 @@ export function stepMonth(world: SimWorld, month: number): void {
 
     // 4. Service revenue & operating costs (engine §1 structural stack:
     //    saturation × pool × power × supplyEfficiency; private multipliers 1.0)
+    // M3/F3 (docs/MEANINGFUL_2026-08.md §M3): mining_output services no
+    // longer add flat `sDef.revenuePerMonth` here — §5 below prices their
+    // ACTUAL extracted units at spot (mining-pricing.ts), matching
+    // game-engine.ts §1's substitution. `eff` (consumption efficiency) is
+    // folded into §5's mined-unit figure instead of multiplied here, so it
+    // isn't double-applied.
     const power = getPowerByLocation(p.buildings);
     const saturationCounts = new Map<string, number>();
     let revenue = 0, operating = 0, maintenance = 0;
@@ -278,6 +284,8 @@ export function stepMonth(world: SimWorld, month: number): void {
         const bucketKey = `${svcId}@${b.locationId}`;
         const pos = saturationCounts.get(bucketKey) || 0;
         saturationCounts.set(bucketKey, pos + 1);
+        operating += sDef.operatingCostPerMonth;
+        if (sDef.type === 'mining_output') continue; // priced in §5 below (fabrication_output byproduct producers stay on this flat/pool path)
         const cat = getServiceCategory(svcId);
         const poolMult = cat ? (poolMults[demandPoolKey(b.locationId, cat)] ?? 1) : 1;
         revenue += sDef.revenuePerMonth
@@ -286,12 +294,16 @@ export function stepMonth(world: SimWorld, month: number): void {
           * powerRatio
           * (1 + stationBonus)
           * eff;
-        operating += sDef.operatingCostPerMonth;
       }
     }
 
-    // 5. Mining (shared extraction pressure — E5 server accumulator, real math)
-    let resourceSales = 0;
+    // 5. Mining (shared extraction pressure — E5 server accumulator, real
+    //    math) — physical units credited to inventory exactly as before.
+    //    M3/F3: the SAME units now also price cash revenue directly
+    //    (`revenue`, via mining-pricing.ts's price-linked formula, saturation-
+    //    discounted like any other service) instead of the old flat rate;
+    //    `resourceSales` below is the UNRELATED, still-existing secondary
+    //    stream — a player manually selling genuinely leftover inventory.
     const saturationCounts2 = new Map<string, number>();
     for (const b of p.buildings) {
       const bDef = BUILDING_MAP.get(b.definitionId);
@@ -300,9 +312,12 @@ export function stepMonth(world: SimWorld, month: number): void {
       for (const svcId of bDef.enabledServices) {
         const production = MINING_PRODUCTION[svcId];
         if (!production) continue;
+        const isMiningOutput = SERVICE_MAP.get(svcId)?.type === 'mining_output';
         const bucketKey = `${svcId}@${b.locationId}`;
         const pos = saturationCounts2.get(bucketKey) || 0;
         saturationCounts2.set(bucketKey, pos + 1);
+        const saturationMult = serviceSaturationMultiplier(pos);
+        const unitsPerResource: Record<string, number> = {};
         for (const { resource, amountPerMonth } of production) {
           const key = extractionKey(b.locationId, resource);
           const prev = world.extraction.get(key) || { acc: 0, atMs: nowMs - world.monthMs };
@@ -314,9 +329,19 @@ export function stepMonth(world: SimWorld, month: number): void {
           const updated = applyExtractionEvent(prev.acc, prev.atMs, mined, resource, nowMs);
           world.extraction.set(key, { acc: updated.accumulated, atMs: updated.updatedAtMs });
           p.resources[resource] = (p.resources[resource] || 0) + mined;
+          unitsPerResource[resource] = mined;
+        }
+        // Only true mining_output services price-link cash revenue here —
+        // fabrication_output byproduct producers (e.g. svc_fabrication_lunar)
+        // already earned their flat/pool-priced revenue in §4 above; their
+        // physical byproduct units are still credited to inventory (loop
+        // above), unaffected by M3.
+        if (isMiningOutput) {
+          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, undefined) * saturationMult;
         }
       }
     }
+    let resourceSales = 0;
     // Sell every resource not needed as next month's input, at spot −3%.
     for (const [res, qty] of Object.entries(p.resources)) {
       const keep = need[res] || 0;
@@ -427,8 +452,29 @@ export function marginalCurve(
     const power = getPowerByLocation(p.buildings);
     const saturationCounts = new Map<string, number>();
     let revenue = 0, operating = 0, maintenance = 0, inputCost = 0;
-    // mining: steady-state SHARED deposit pressure across the whole fleet
-    const miningBySens: { units: number; sens: number; res: string; powerRatio: number }[] = [];
+    // mining_output pricing here: M3/F3 (docs/MEANINGFUL_2026-08.md §M3)
+    // price-links `mining_output` cash revenue instead of a flat rate — but
+    // this function's `fleetNet` represents a STEADY (permanent-fleet-size)
+    // monthly net for every OTHER system precisely because those systems
+    // (pools, saturation curves, power) are memoryless equilibria with no
+    // time dimension. Deposit extraction pressure is NOT memoryless — it's
+    // an accumulator that decays toward its floor only after many months of
+    // CONTINUOUS extraction (extraction-pressure.ts's 0.9^(6h/24h) per-
+    // game-month decay), so "steady state" for pressure means "a very long
+    // time from now", not "the instant this building completes". Since this
+    // function is the M1 first-copy-ROI CI guard's engine (buildMenuFirst
+    // CopySweep — "what does building this TODAY look like"), mining
+    // revenue here is priced at NEUTRAL pressure (1.0, freshly-built
+    // deposit) rather than the long-run steadyStatePressure fixed point —
+    // the honest "day 1" reading. The real decay-over-months dynamic this
+    // deliberately excludes is instead visible in sim-strategies.ts's 24-
+    // game-month stepMonth tables, which run the REAL time-accumulating
+    // extraction-pressure engine. `mining_output` gate (not "has a
+    // MINING_PRODUCTION entry") matters: fabrication_output services like
+    // svc_fabrication_lunar also produce small byproduct resources via
+    // MINING_PRODUCTION but keep their ordinary flat/pool-priced revenue —
+    // only true mining_output services get the F3 substitution.
+    const miningInstances: { svcId: string; production: { resource: string; amountPerMonth: number }[]; powerRatio: number; saturationMult: number }[] = [];
     for (const b of p.buildings) {
       const bDef = BUILDING_MAP.get(b.definitionId)!;
       maintenance += bDef.maintenanceCostPerMonth;
@@ -444,29 +490,26 @@ export function marginalCurve(
         const bucketKey = `${svcId}@${b.locationId}`;
         const pos = saturationCounts.get(bucketKey) || 0;
         saturationCounts.set(bucketKey, pos + 1);
+        operating += sDef.operatingCostPerMonth;
+        if (sDef.type === 'mining_output') {
+          miningInstances.push({
+            svcId, production: MINING_PRODUCTION[svcId] || [], powerRatio,
+            saturationMult: serviceSaturationMultiplier(pos),
+          });
+          continue;
+        }
         const cat = getServiceCategory(svcId);
         const poolMult = cat ? (poolMults[demandPoolKey(b.locationId, cat)] ?? 1) : 1;
         revenue += sDef.revenuePerMonth * revMult * serviceSaturationMultiplier(pos) * poolMult * powerRatio;
-        operating += sDef.operatingCostPerMonth;
-        const production = MINING_PRODUCTION[svcId];
-        if (production) {
-          for (const { resource, amountPerMonth } of production) {
-            miningBySens.push({
-              units: amountPerMonth,
-              sens: getExtractionSensitivity(resource),
-              res: resource,
-              powerRatio,
-            });
-          }
-        }
       }
     }
     let miningSales = 0;
-    if (miningBySens.length > 0) {
-      const pressure = steadyStatePressure(miningBySens.map(e => ({ units: e.units * e.powerRatio, sens: e.sens })));
-      for (const e of miningBySens) {
-        miningSales += e.units * e.powerRatio * pressure * (RESOURCE_MAP.get(e.res as ResourceId)?.baseMarketPrice || 0) * OUTPUT_SELL_MULT;
+    for (const inst of miningInstances) {
+      const unitsPerResource: Record<string, number> = {};
+      for (const { resource, amountPerMonth } of inst.production) {
+        unitsPerResource[resource] = amountPerMonth * inst.powerRatio; // neutral pressure=1 (see note above)
       }
+      miningSales += priceLinkedMiningRevenue(inst.svcId, unitsPerResource, undefined) * revMult * inst.saturationMult;
     }
     const overhead = corporateOverheadMonthly(p.buildings.length);
     const fleetNet = revenue + miningSales - operating - maintenance - overhead - inputCost;

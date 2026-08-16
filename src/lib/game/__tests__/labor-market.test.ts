@@ -178,8 +178,18 @@ describe('getWageIndex — deterministic client read', () => {
     expect(getWageIndex(snapshot, 'medic', snapshot.asOf)).toBe(WAGE_INDEX_NEUTRAL);
   });
 
-  it('defaults to neutral 1.0 for a stale snapshot', () => {
-    expect(getWageIndex(snapshot, 'engineer', snapshot.asOf + LABOR_MARKET_STALE_MS + 1)).toBe(WAGE_INDEX_NEUTRAL);
+  it('Wave M4: a stale snapshot degrades to the last-known index, not neutral — a real wage boom is still felt offline', () => {
+    expect(getWageIndex(snapshot, 'engineer', snapshot.asOf + LABOR_MARKET_STALE_MS + 1)).toBe(1.3);
+  });
+
+  it('Wave M4: a stale snapshot below neutral is still floored at 1.0 — staleness never grants a below-market discount', () => {
+    const lowSnapshot = { index: { engineer: 0.8 } as LaborMarketSnapshot, asOf: 1_000_000 };
+    expect(getWageIndex(lowSnapshot, 'engineer', lowSnapshot.asOf + LABOR_MARKET_STALE_MS + 1)).toBe(WAGE_INDEX_NEUTRAL);
+  });
+
+  it('a fresh snapshot below neutral is NOT floored — only staleness applies the floor', () => {
+    const lowSnapshot = { index: { engineer: 0.8 } as LaborMarketSnapshot, asOf: 1_000_000 };
+    expect(getWageIndex(lowSnapshot, 'engineer', lowSnapshot.asOf)).toBe(0.8);
   });
 });
 

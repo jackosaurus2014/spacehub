@@ -6,7 +6,7 @@ import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
-import { isMarketEventExpired, type ActiveMarketEvent } from '@/lib/game/market-events';
+import { isMarketEventExpired, type ActiveMarketEvent, type ForecastMarketEvent } from '@/lib/game/market-events';
 // W14 (cargo logistics, audit C1): selling requires goods AT Earth/home —
 // `state.resources` IS the Earth pool, so the held counts below are already
 // honest; getResourceTotals surfaces what's sitting in remote stockpiles so
@@ -46,6 +46,7 @@ const MINED_ONLY_RESOURCE_IDS = new Set(MINED_ONLY_RESOURCE_ID_LIST);
 export default function MarketPanel({ state, onSellResource, onBuyResource }: MarketPanelProps) {
   const [prices, setPrices] = useState<MarketPrices>({});
   const [activeMarketEvents, setActiveMarketEvents] = useState<ActiveMarketEvent[]>([]);
+  const [forecastMarketEvents, setForecastMarketEvents] = useState<ForecastMarketEvent[]>([]);
   const [selectedResource, setSelectedResource] = useState<string | null>(null);
   const [sellQty, setSellQty] = useState(1);
   const [trading, setTrading] = useState(false);
@@ -58,6 +59,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
         const data = await res.json();
         setPrices(data.prices || {});
         setActiveMarketEvents(data.activeMarketEvents || []);
+        setForecastMarketEvents(data.forecastMarketEvents || []);
         return;
       }
     } catch { /* fallback */ }
@@ -170,6 +172,19 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
 
   const minutesRemaining = (expiresAtMs: number) => Math.max(0, Math.round((expiresAtMs - Date.now()) / 60000));
 
+  // Wave M4 (docs/MEANINGFUL_2026-08.md §M4, F8): the same deterministic
+  // schedule a code-reader could always compute ahead of time, now surfaced
+  // to every player identically — "Market Outlook". Never gated by tier.
+  const hoursUntil = (startsAtMs: number) => Math.max(0, (startsAtMs - Date.now()) / 3_600_000);
+  const formatForecastWindow = (startsAtMs: number) => {
+    const h = hoursUntil(startsAtMs);
+    if (h < 1) return `in ${Math.max(1, Math.round(h * 60))}m`;
+    if (h < 24) return `in ~${Math.round(h)}h`;
+    const days = Math.floor(h / 24);
+    const rem = Math.round(h % 24);
+    return `in ~${days}d ${rem}h`;
+  };
+
   return (
     <div className="space-y-4">
       {/* Active Market Events */}
@@ -206,6 +221,50 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Market Outlook — Wave M4 public forecast (F8). Same data for every
+          player, free tier included — [P2W] this must never be gated. */}
+      {forecastMarketEvents.length > 0 && (
+        <div
+          className="hud-frame relative rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] px-3 py-2 space-y-1.5"
+          role="status"
+          aria-label="Market outlook — upcoming events"
+        >
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm" aria-hidden="true">🔭</span>
+            <span className="font-hud text-cyan-300 text-[11px] font-semibold uppercase tracking-wide">
+              Market Outlook — Next 48h
+            </span>
+            <span className="text-slate-500 text-[9px] ml-auto">Public forecast · same for every trader</span>
+          </div>
+          <div className="space-y-1">
+            {forecastMarketEvents.map(ev => {
+              const affectedNames = ev.affectedResources
+                .map(id => RESOURCE_MAP.get(id as never)?.name || id)
+                .join(', ');
+              const isSurge = ev.priceMultiplier >= 1;
+              return (
+                <div
+                  key={`${ev.eventId}-${ev.startsAtMs}`}
+                  className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px]"
+                >
+                  <span aria-hidden="true">{ev.icon}</span>
+                  <span className="text-slate-200">{ev.name}</span>
+                  <span className={`game-number text-[10px] px-1 py-0.5 rounded font-semibold ${
+                    isSurge ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
+                  }`}>
+                    {isSurge ? '▲' : '▼'} ×{ev.priceMultiplier.toFixed(1)}
+                  </span>
+                  <span className="text-slate-500">{affectedNames}</span>
+                  <span className="ml-auto text-slate-400 font-mono">{formatForecastWindow(ev.startsAtMs)}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
