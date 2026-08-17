@@ -398,7 +398,11 @@ describe('processCeoBrief', () => {
     expect(args.html).toContain('Growth vs goal');
   });
 
-  it('records a Resend failure in errors but still advances the marker', async () => {
+  it('on a Resend failure: records the error, keeps the snapshot, WITHHOLDS the marker so catch-up retries', async () => {
+    // Semantics fixed 8/17: the 2026-08-17 brief hit a transient Resend
+    // error, the marker was written anyway, and the week was silently
+    // skipped forever. A failed send with a key present must leave the
+    // marker absent (snapshot still persists — it's idempotent on retry).
     primeHappyPath();
     process.env.RESEND_API_KEY = 'test-key';
     mockResendSend.mockResolvedValue({ data: null, error: { message: 'quota exceeded' } });
@@ -407,6 +411,20 @@ describe('processCeoBrief', () => {
 
     expect(result.sent).toBe(false);
     expect(result.errors.some((e) => e.includes('quota exceeded'))).toBe(true);
+    const upsertKeys = mockPrisma.dynamicContent.upsert.mock.calls.map(
+      (c) => c[0].where.contentKey
+    );
+    expect(upsertKeys).toContain('ceo-brief:snapshot:2026-08-10');
+    expect(upsertKeys).not.toContain('ceo-brief:sent:2026-08-10');
+  });
+
+  it('without RESEND_API_KEY: still advances the marker (documented compute-only mode)', async () => {
+    primeHappyPath();
+    delete process.env.RESEND_API_KEY;
+
+    const result = await processCeoBrief(NOW);
+
+    expect(result.sent).toBe(false);
     const upsertKeys = mockPrisma.dynamicContent.upsert.mock.calls.map(
       (c) => c[0].where.contentKey
     );

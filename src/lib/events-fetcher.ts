@@ -254,6 +254,14 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
               ? 'space_station'
               : 'launch';
 
+          // LL2's /event/upcoming/ occasionally keeps events whose date has
+          // already passed. Hardcoding 'upcoming' here resurrected rows that
+          // expireStaleUpcomingEvents had scrubbed (CEO-brief sentinel flagged
+          // exactly this on the 8/10 brief), so status is date-aware: only a
+          // genuinely future event is re-marked upcoming; a past-dated one
+          // keeps the scrubbed transition path.
+          const eventStatus =
+            event.date && new Date(event.date).getTime() > Date.now() ? 'upcoming' : 'scrubbed';
           try {
             await prisma.spaceEvent.upsert({
               where: { externalId: `event-${event.id}` },
@@ -261,7 +269,7 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
                 name: event.name,
                 description: event.description || null,
                 type: eventType,
-                status: 'upcoming',
+                status: eventStatus,
                 launchDate: event.date ? new Date(event.date) : null,
                 location: event.location || null,
                 imageUrl: event.feature_image || null,
@@ -274,7 +282,7 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
                 name: event.name,
                 description: event.description || null,
                 type: eventType,
-                status: 'upcoming',
+                status: eventStatus,
                 launchDate: event.date ? new Date(event.date) : null,
                 location: event.location || null,
                 imageUrl: event.feature_image || null,

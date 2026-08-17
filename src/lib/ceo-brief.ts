@@ -656,13 +656,25 @@ export async function processCeoBrief(now: Date = new Date()): Promise<ProcessCe
   };
   try {
     await upsertKV(snapshotKey, 'snapshot', snapshot, now, SNAPSHOT_RETENTION_DAYS);
-    await upsertKV(
-      markerKey,
-      'marker',
-      { weekKey, sent, sentinelFailures, sentAt: now.toISOString() },
-      now,
-      MARKER_RETENTION_DAYS
-    );
+    // Marker semantics (fixed 8/17 after the 2026-08-17 brief silently
+    // vanished): write the "done for this week" marker ONLY when the email
+    // actually went out, or when no RESEND_API_KEY is configured (the
+    // documented compute-only mode). A TRANSIENT send failure with a key
+    // present must NOT mark the week done — leaving the marker absent lets
+    // the scheduler's stale-cron catch-up retry the send (the snapshot
+    // upsert above is idempotent, so a retry recomputes against the same
+    // week and the deltas stay correct).
+    if (sent || !apiKey) {
+      await upsertKV(
+        markerKey,
+        'marker',
+        { weekKey, sent, sentinelFailures, sentAt: now.toISOString() },
+        now,
+        MARKER_RETENTION_DAYS
+      );
+    } else {
+      logger.warn('CEO brief: send failed — marker withheld so catch-up retries', { weekKey });
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     data.errors.push(`persist: ${message}`);
