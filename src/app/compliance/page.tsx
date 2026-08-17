@@ -71,6 +71,7 @@ import { AgencyDirectoryTab } from './AgencyDirectoryTab';
 import { AllRegulationsTab } from './AllRegulationsTab';
 import { LegalResourceDirectoryTab } from './LegalResourceDirectoryTab';
 import { RiskAssessmentTab } from './RiskAssessmentTab';
+import RegulatoryRadarTab from './RegulatoryRadarTab';
 import type { BidProtest } from './ProtestsSection';
 
 // Runtime-populated data (populated from DynamicContent API)
@@ -105,15 +106,17 @@ function getFilingsTabs(): { id: FilingsTabId; label: string; count: number }[] 
 // MAIN PAGE - Two-Level Tab System
 // ############################################################################
 
-type TopSection = 'compliance' | 'space-law' | 'filings' | 'protests' | 'quick-reference';
+type TopSection = 'compliance' | 'radar' | 'space-law' | 'filings' | 'protests' | 'quick-reference';
 
 function getTopSectionFromTab(tab: string): TopSection {
   const complianceTabs = ['policy', 'wizard', 'cases', 'export', 'experts', 'risk'];
+  const radarTabs = ['radar'];
   const spaceLawTabs = ['treaties', 'national', 'artemis', 'proceedings', 'bodies'];
   const filingsTabs = ['fcc', 'faa', 'itu', 'sec', 'federal-register'];
   const protestTabs = ['protests-overview', 'protests-timeline', 'protests-analysis'];
   const quickRefTabs = ['ref-bodies', 'ref-regulations', 'ref-checklists', 'ref-agencies', 'ref-all-regs', 'ref-legal'];
   if (complianceTabs.includes(tab)) return 'compliance';
+  if (radarTabs.includes(tab)) return 'radar';
   if (spaceLawTabs.includes(tab)) return 'space-law';
   if (filingsTabs.includes(tab)) return 'filings';
   if (protestTabs.includes(tab)) return 'protests';
@@ -123,6 +126,7 @@ function getTopSectionFromTab(tab: string): TopSection {
 
 function getDefaultSubTab(section: TopSection): string {
   if (section === 'compliance') return 'policy';
+  if (section === 'radar') return 'radar';
   if (section === 'space-law') return 'treaties';
   if (section === 'filings') return 'fcc';
   if (section === 'protests') return 'protests-overview';
@@ -246,13 +250,14 @@ function RegulatoryHubContent() {
   }, []);
 
   useSwipeTabs(
-    ['compliance', 'space-law', 'filings', 'protests', 'quick-reference'],
+    ['compliance', 'radar', 'space-law', 'filings', 'protests', 'quick-reference'],
     activeSection,
     (tab) => handleSectionChange(tab as TopSection)
   );
 
   const topSections: { id: TopSection; label: string; icon: string }[] = [
     { id: 'compliance', label: 'Compliance', icon: '\uD83D\uDCCB' },
+    { id: 'radar', label: 'Regulatory Radar', icon: '\uD83D\uDCE1' },
     { id: 'space-law', label: 'Space Law', icon: '\u2696\uFE0F' },
     { id: 'filings', label: 'Regulatory Filings', icon: '\uD83D\uDCC4' },
     { id: 'protests', label: 'Bid Protests & Claims', icon: '\uD83C\uDFDB\uFE0F' },
@@ -483,6 +488,7 @@ function RegulatoryHubContent() {
       )}
 
       {/* Tab Content */}
+      {activeSubTab === 'radar' && <RegulatoryRadarTab />}
       {activeSubTab === 'policy' && <PolicyTrackerTab />}
       {activeSubTab === 'wizard' && <ComplianceWizardTab />}
       {activeSubTab === 'cases' && <CaseLawArchiveTab />}

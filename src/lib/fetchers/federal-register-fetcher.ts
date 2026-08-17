@@ -10,6 +10,8 @@
 import { createCircuitBreaker } from '@/lib/circuit-breaker';
 import { bulkUpsertContent } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
+import { categorizeRegulatoryAction, isExportControlRelevant } from '@/lib/regulatory-categorizer';
+import { upsertRadarEntries, type RadarEntryInput } from '@/lib/regulatory-radar';
 
 const circuitBreaker = createCircuitBreaker('federal-register-space', {
   failureThreshold: 3,
@@ -20,7 +22,7 @@ const circuitBreaker = createCircuitBreaker('federal-register-space', {
 // Types
 // ---------------------------------------------------------------------------
 
-interface FederalRegisterApiDocument {
+export interface FederalRegisterApiDocument {
   document_number: string;
   title: string;
   type: string;
@@ -40,6 +42,8 @@ interface FederalRegisterApiDocument {
   regulation_id_numbers: string[];
   significant: boolean;
   action: string | null;
+  comment_url: string | null;
+  comments_close_on: string | null;
 }
 
 export interface FederalRegisterEntry {
@@ -57,6 +61,9 @@ export interface FederalRegisterEntry {
   docketIds: string[];
   action: string | null;
   significant: boolean;
+  commentUrl: string | null;
+  /** ISO date the public comment window closes, when the document has one. */
+  commentsCloseOn: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -72,6 +79,16 @@ const SPACE_AGENCY_SLUGS = [
   'bureau-of-industry-and-security',
   'state-department', // DDTC falls under State
   'air-force-department', // Space Force resides under Air Force/DoD
+];
+
+/**
+ * Agencies whose export-control output is space-relevant even with zero
+ * space-hardware words in the text (an EAR/ITAR rule change hits satellite
+ * and launch companies without ever saying "satellite").
+ */
+export const EXPORT_CONTROL_AGENCY_SLUGS = [
+  'bureau-of-industry-and-security',
+  'state-department',
 ];
 
 // ---------------------------------------------------------------------------
@@ -111,6 +128,75 @@ function isSpaceRelevant(title: string, abstract: string | null): boolean {
   return SPACE_KEYWORDS.some((kw) => text.includes(kw));
 }
 
+/**
+ * Relevance filter (pure, exported for tests).
+ *
+ * - BIS / State (DDTC) documents pass on export-control terms (ITAR, EAR,
+ *   USML, CCL, license exceptions, 9x515, 600 series, ...) OR space terms —
+ *   export-control rulemaking affects space companies even with zero
+ *   space-hardware words. The export-control keyword gate applies ONLY to
+ *   these two agencies, so generic State Department notices (visas, passport
+ *   fees, ...) still need a space or export-control hook to get in and other
+ *   agencies' EAR-adjacent chatter doesn't flood the feed.
+ * - Every other agency keeps the original space-keyword filter.
+ */
+export function isRelevantFederalRegisterDoc(doc: FederalRegisterApiDocument): boolean {
+  const slugs = doc.agencies?.map((a) => a.slug) || [];
+  const spaceHit = isSpaceRelevant(doc.title, doc.abstract);
+  const fromExportControlAgency = slugs.some((slug) => EXPORT_CONTROL_AGENCY_SLUGS.includes(slug));
+  if (fromExportControlAgency) {
+    return spaceHit || isExportControlRelevant(`${doc.title} ${doc.abstract || ''}`);
+  }
+  return spaceHit;
+}
+
+/** Map an API document to our entry shape (pure, exported for tests). */
+export function mapFederalRegisterDoc(doc: FederalRegisterApiDocument): FederalRegisterEntry {
+  return {
+    documentNumber: doc.document_number,
+    title: doc.title,
+    type: doc.type,
+    abstract: doc.abstract,
+    publicationDate: doc.publication_date,
+    effectiveDate: doc.effective_on,
+    agencies: doc.agencies?.map((a) => a.name) || [],
+    agencySlugs: doc.agencies?.map((a) => a.slug) || [],
+    htmlUrl: doc.html_url,
+    pdfUrl: doc.pdf_url,
+    citation: doc.citation,
+    docketIds: doc.docket_ids || [],
+    action: doc.action,
+    significant: doc.significant ?? false,
+    commentUrl: doc.comment_url || null,
+    commentsCloseOn: doc.comments_close_on || null,
+  };
+}
+
+/** Build the RegulatoryAction dual-write row for a FR entry (pure, exported for tests). */
+export function federalRegisterEntryToRadarInput(entry: FederalRegisterEntry): RadarEntryInput {
+  const commentClose = entry.commentsCloseOn ? new Date(`${entry.commentsCloseOn}T23:59:59Z`) : null;
+  return {
+    dedupKey: `federal-register:${entry.documentNumber}`,
+    source: 'federal-register',
+    category: categorizeRegulatoryAction({
+      title: entry.title,
+      summary: entry.abstract,
+      agencies: entry.agencies,
+    }),
+    title: entry.title,
+    summary: entry.abstract,
+    actionDate: new Date(`${entry.publicationDate}T12:00:00Z`),
+    url: entry.htmlUrl,
+    agency: entry.agencies[0] || null,
+    documentType: entry.type,
+    actionText: entry.action,
+    commentUrl: entry.commentUrl,
+    commentCloseDate: commentClose && !Number.isNaN(commentClose.getTime()) ? commentClose : null,
+    significant: entry.significant,
+    raw: entry,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Fetch from Federal Register API
 // ---------------------------------------------------------------------------
@@ -133,12 +219,23 @@ export async function fetchFederalRegisterEntries(): Promise<FederalRegisterEntr
       'conditions[type][]=NOTICE',
     ].join('&');
 
+    // Request fields explicitly — comment_url / comments_close_on /
+    // significant / effective_on are NOT in the API's default field set.
+    const fieldParams = [
+      'document_number', 'title', 'type', 'abstract', 'publication_date',
+      'effective_on', 'agencies', 'html_url', 'pdf_url', 'citation',
+      'docket_ids', 'regulation_id_numbers', 'significant', 'action',
+      'comment_url', 'comments_close_on',
+    ]
+      .map((f) => `fields[]=${encodeURIComponent(f)}`)
+      .join('&');
+
     const baseParams = new URLSearchParams({
       per_page: '50',
       order: 'newest',
     });
 
-    const url = `https://www.federalregister.gov/api/v1/documents.json?${baseParams.toString()}&${agencyParams}&${typeParams}`;
+    const url = `https://www.federalregister.gov/api/v1/documents.json?${baseParams.toString()}&${agencyParams}&${typeParams}&${fieldParams}`;
 
     logger.info('[FederalRegister] Fetching documents', { url: url.substring(0, 120) + '...' });
 
@@ -154,31 +251,15 @@ export async function fetchFederalRegisterEntries(): Promise<FederalRegisterEntr
     const data = await response.json();
     const rawDocuments: FederalRegisterApiDocument[] = data.results || [];
 
-    // Filter for space relevance
-    const spaceDocuments = rawDocuments.filter((doc) =>
-      isSpaceRelevant(doc.title, doc.abstract)
-    );
+    // Filter for relevance (space keywords generally; export-control
+    // keywords also count for BIS/State documents)
+    const relevantDocuments = rawDocuments.filter(isRelevantFederalRegisterDoc);
 
-    const entries: FederalRegisterEntry[] = spaceDocuments.map((doc) => ({
-      documentNumber: doc.document_number,
-      title: doc.title,
-      type: doc.type,
-      abstract: doc.abstract,
-      publicationDate: doc.publication_date,
-      effectiveDate: doc.effective_on,
-      agencies: doc.agencies?.map((a) => a.name) || [],
-      agencySlugs: doc.agencies?.map((a) => a.slug) || [],
-      htmlUrl: doc.html_url,
-      pdfUrl: doc.pdf_url,
-      citation: doc.citation,
-      docketIds: doc.docket_ids || [],
-      action: doc.action,
-      significant: doc.significant,
-    }));
+    const entries: FederalRegisterEntry[] = relevantDocuments.map(mapFederalRegisterDoc);
 
     logger.info('[FederalRegister] Fetched documents', {
       rawCount: rawDocuments.length,
-      spaceRelevant: entries.length,
+      relevant: entries.length,
     });
 
     return entries;
@@ -190,22 +271,27 @@ export async function fetchFederalRegisterEntries(): Promise<FederalRegisterEntr
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch Federal Register entries and store each as a separate DynamicContent record
- * under module='compliance', section='federal-register-entries'.
+ * Fetch Federal Register entries and store them twice:
+ *  1. DynamicContent KV (module='compliance', section='federal-register-entries')
+ *     — back-compat for the existing /compliance Filings tab.
+ *  2. RegulatoryAction rows via upsertRadarEntries — the Regulatory Radar
+ *     timeline (fail-soft: skipped until `prisma db push` creates the table).
  */
 export async function fetchAndStoreFederalRegister(): Promise<{
   stored: number;
+  radarStored: number;
   errors: number;
 }> {
   let stored = 0;
+  let radarStored = 0;
   let errors = 0;
 
   try {
     const entries = await fetchFederalRegisterEntries();
 
     if (entries.length === 0) {
-      logger.info('[FederalRegister] No space-relevant entries found');
-      return { stored: 0, errors: 0 };
+      logger.info('[FederalRegister] No relevant entries found');
+      return { stored: 0, radarStored: 0, errors: 0 };
     }
 
     const items = entries.map((entry) => ({
@@ -222,7 +308,10 @@ export async function fetchAndStoreFederalRegister(): Promise<{
       sourceUrl: 'https://www.federalregister.gov/api/v1/documents',
     });
 
-    logger.info('[FederalRegister] Stored entries in DynamicContent', { stored });
+    // Dual-write into the Regulatory Radar model (never throws)
+    radarStored = await upsertRadarEntries(entries.map(federalRegisterEntryToRadarInput));
+
+    logger.info('[FederalRegister] Stored entries', { stored, radarStored });
   } catch (error) {
     errors++;
     logger.error('[FederalRegister] Failed to fetch and store entries', {
@@ -230,5 +319,5 @@ export async function fetchAndStoreFederalRegister(): Promise<{
     });
   }
 
-  return { stored, errors };
+  return { stored, radarStored, errors };
 }

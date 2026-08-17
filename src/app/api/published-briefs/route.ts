@@ -5,7 +5,7 @@ import prisma from '@/lib/db';
 import { constrainPagination, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
-const VALID_TYPES = new Set(['weekly_intelligence', 'economy', 'hiring', 'special']);
+const VALID_TYPES = new Set(['weekly_intelligence', 'economy', 'hiring', 'regulatory', 'special']);
 
 /**
  * GET /api/published-briefs
@@ -16,7 +16,7 @@ const VALID_TYPES = new Set(['weekly_intelligence', 'economy', 'hiring', 'specia
  * the weekly economy/hiring crons (src/lib/published-briefs.ts).
  *
  * Query params:
- *   type  — optional briefType filter ('weekly_intelligence' | 'economy' | 'hiring' | 'special')
+ *   type  — optional briefType filter ('weekly_intelligence' | 'economy' | 'hiring' | 'regulatory' | 'special')
  *   limit — max rows, default 20, capped by constrainPagination
  */
 export async function GET(req: NextRequest) {

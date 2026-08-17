@@ -1856,6 +1856,43 @@ model PublishedBrief {
   @@index([sourceInsightId])
 }
 
+// ============================================================
+// Regulatory Radar — cross-source regulatory action timeline
+// ============================================================
+// Unified store for congressional actions, Federal Register documents, and
+// agency actions relevant to the space industry. Populated by
+// src/lib/fetchers/federal-register-fetcher.ts (dual-write alongside the
+// legacy DynamicContent KV rows) and src/lib/fetchers/congress-fetcher.ts.
+// Read by /api/regulatory-radar, the /regulatory-radar page, the /compliance
+// Radar tab, the weekly regulatory brief, and the newsletter digest's
+// Export Control Watch section.
+model RegulatoryAction {
+  id               String    @id @default(cuid())
+  dedupKey         String    @unique // e.g. "federal-register:2026-12345" or "congress:119-hr-1234:2026-08-01"
+  source           String // 'congress' | 'federal-register' | 'faa' | 'fcc' | 'itu' | 'sec'
+  category         String // 'export-controls' | 'launch-licensing' | 'spectrum' | 'remote-sensing' | 'procurement-policy' | 'space-traffic' | 'other'
+  title            String
+  summary          String?   @db.Text
+  actionDate       DateTime // FR publication date / latest congressional action date
+  url              String
+  agency           String? // display name: "Bureau of Industry and Security", "U.S. House", ...
+  documentType     String? // FR: 'Rule' | 'Proposed Rule' | 'Notice'; Congress: bill type (hr, s, ...)
+  actionText       String? // FR: action line ("Interim final rule"); Congress: latest action text
+  commentUrl       String?
+  commentCloseDate DateTime?
+  significant      Boolean   @default(false)
+  digestIncludedAt DateTime? // set when included in a newsletter digest Export Control Watch (dedupe cursor)
+  raw              String?   @db.Text // raw source JSON for debugging/reprocessing
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([actionDate])
+  @@index([source, actionDate])
+  @@index([category, actionDate])
+  @@index([commentCloseDate])
+  @@index([category, significant, digestIncludedAt])
+}
+
 // Company Addition Request
 model CompanyAddRequest {
   id             String   @id @default(cuid())

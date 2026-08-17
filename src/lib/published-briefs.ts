@@ -23,7 +23,7 @@ import { logger } from '@/lib/logger';
  * the mirror until the table exists.
  */
 
-export type BriefType = 'weekly_intelligence' | 'economy' | 'hiring' | 'special';
+export type BriefType = 'weekly_intelligence' | 'economy' | 'hiring' | 'regulatory' | 'special';
 
 // ─── Availability probe ──────────────────────────────────────────────────────
 

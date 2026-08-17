@@ -38,6 +38,16 @@ interface DigestEmailResult {
   subject: string;
 }
 
+// Rare, high-signal export-control alerts (see src/lib/export-control-watch.ts).
+export interface DigestExportControlItem {
+  title: string;
+  whatHappened: string;
+  whyItMatters: string;
+  dateLine: string | null;
+  url: string;
+  agency: string | null;
+}
+
 import { APP_URL } from '@/lib/constants';
 export { APP_URL };
 
@@ -188,11 +198,86 @@ ${APP_URL}`;
   };
 }
 
+/**
+ * Build the "Export Control Watch" digest section. Renders NOTHING (empty
+ * strings) when there are no items — the digest is byte-identical to a
+ * pre-watch digest in that case (tested).
+ */
+export function buildExportControlWatchSection(
+  items: DigestExportControlItem[],
+  overflow: boolean
+): { html: string; plain: string } {
+  if (items.length === 0) return { html: '', plain: '' };
+
+  const itemsHtml = items
+    .map(
+      (item) => `
+        <tr>
+          <td style="padding: 10px 30px; background-color: ${styles.bgCard};">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid ${styles.borderColor};">
+                  <a href="${escapeHtml(item.url)}" style="font-size: 15px; font-weight: 500; color: ${styles.textWhite}; text-decoration: none; line-height: 1.4;">
+                    ${escapeHtml(item.title)}
+                  </a>
+                  <p style="margin: 8px 0 0 0; font-size: 13px; color: #fbbf24;">
+                    ${escapeHtml(item.whatHappened)}${item.agency ? ` &middot; ${escapeHtml(item.agency)}` : ''}${item.dateLine ? ` &middot; ${escapeHtml(item.dateLine)}` : ''}
+                  </p>
+                  <p style="margin: 8px 0 0 0; font-size: 14px; color: ${styles.textLight}; line-height: 1.5;">
+                    ${escapeHtml(item.whyItMatters)}
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>`
+    )
+    .join('');
+
+  const html = `
+      <tr>
+        <td style="padding: 25px 30px 10px 30px; background-color: ${styles.bgCard};">
+          <span style="display: inline-block; padding: 4px 12px; background-color: #b45309; color: ${styles.textWhite}; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; margin-bottom: 12px;">
+            Export Control Watch
+          </span>
+          <h3 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid ${styles.borderColor}; padding-bottom: 10px;">
+            Significant Export-Control Actions
+          </h3>
+        </td>
+      </tr>${itemsHtml}
+      <tr>
+        <td style="padding: 10px 30px 20px 30px; background-color: ${styles.bgCard};">
+          <p style="margin: 0; font-size: 13px; color: ${styles.textMuted};">
+            ${overflow ? 'More qualifying actions this period &mdash; ' : ''}<a href="${APP_URL}/regulatory-radar" style="color: ${styles.accentNebulaLight};">View all regulatory actions on the Regulatory Radar &rarr;</a>
+          </p>
+        </td>
+      </tr>`;
+
+  let plain = `
+=== EXPORT CONTROL WATCH ===
+`;
+  for (const item of items) {
+    plain += `
+* ${item.title}
+  ${item.whatHappened}${item.agency ? ` | ${item.agency}` : ''}${item.dateLine ? ` | ${item.dateLine}` : ''}
+  ${item.whyItMatters}
+  Details: ${item.url}
+`;
+  }
+  plain += `
+${overflow ? 'More qualifying actions this period - ' : ''}View all regulatory actions: ${APP_URL}/regulatory-radar
+`;
+
+  return { html, plain };
+}
+
 export function renderDigestEmail(
   date: Date,
   featureArticles: FeatureArticle[],
   categorizedNews: CategorizedNews,
-  unsubscribeUrl: string = '{{UNSUBSCRIBE_URL}}'
+  unsubscribeUrl: string = '{{UNSUBSCRIBE_URL}}',
+  exportControlWatch: DigestExportControlItem[] = [],
+  exportControlOverflow: boolean = false
 ): DigestEmailResult {
   const formattedDate = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -204,6 +289,10 @@ export function renderDigestEmail(
 
   const totalArticles = Object.values(categorizedNews).flat().length;
   const categoryNames = Object.keys(categorizedNews);
+
+  // Conditional Export Control Watch — empty strings (and therefore
+  // byte-identical output) when there are no qualifying items.
+  const watchSection = buildExportControlWatchSection(exportControlWatch, exportControlOverflow);
 
   // Build feature article sections
   let featureArticlesHtml = '';
@@ -305,7 +394,7 @@ ${article.content}
           ${totalArticles} articles across ${categoryNames.length} categories
         </p>
       </td>
-    </tr>
+    </tr>${watchSection.html}
     ${featureArticles.length > 0 ? featureArticlesHtml.split('</tr>')[0] + '</tr>' : ''}
     ${newsHtml}
     ${featureArticles.length > 1 ? featureArticlesHtml.split('</tr>').slice(1).join('</tr>') : ''}
@@ -328,7 +417,7 @@ ${article.content}
   const plain = `SPACENEXUS DAILY DIGEST
 ${formattedDate}
 ${totalArticles} articles across ${categoryNames.length} categories
-
+${watchSection.plain}
 ${featureArticlesPlain}
 ${newsPlain}
 

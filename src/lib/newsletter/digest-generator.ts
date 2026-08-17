@@ -6,6 +6,10 @@ import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
 import { renderDigestEmail } from './email-templates';
+import {
+  markExportControlItemsIncluded,
+  selectExportControlWatchItems,
+} from '@/lib/export-control-watch';
 
 interface NewsItem {
   title: string;
@@ -234,11 +238,20 @@ export async function generateDailyDigest(): Promise<DigestResult> {
     const categorizedNews = categorizeNews(news);
     const categories = Object.keys(categorizedNews);
 
+    // Export Control Watch — rare, high-bar export-control alerts. Fails
+    // soft to an empty selection; dedupe cursor (digestIncludedAt) is
+    // stamped only after the digest is saved, so the same action never
+    // appears in two digests.
+    const watch = await selectExportControlWatchItems();
+
     // Render email template
     const { html, plain, subject } = renderDigestEmail(
       digestDate,
       featureArticles,
-      categorizedNews
+      categorizedNews,
+      undefined,
+      watch.items,
+      watch.overflow
     );
 
     // Save or update digest
@@ -267,7 +280,17 @@ export async function generateDailyDigest(): Promise<DigestResult> {
       },
     });
 
-    logger.info(`Digest generated for ${digestDate.toISOString().split('T')[0]}`, { newsCount: news.length, featureCount: featureArticles.length });
+    // Digest saved — stamp the export-control dedupe cursor so these
+    // actions can never ship in a second digest.
+    if (watch.includedIds.length > 0) {
+      await markExportControlItemsIncluded(watch.includedIds);
+    }
+
+    logger.info(`Digest generated for ${digestDate.toISOString().split('T')[0]}`, {
+      newsCount: news.length,
+      featureCount: featureArticles.length,
+      exportControlWatchItems: watch.items.length,
+    });
 
     return {
       success: true,

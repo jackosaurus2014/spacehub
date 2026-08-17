@@ -144,10 +144,20 @@ function LegalSourceCard({ source }: { source: LegalSource }) {
   );
 }
 
+interface RadarTeaserEntry {
+  id: string;
+  title: string;
+  url: string;
+  source: string;
+  agency?: string | null;
+  actionDate: string;
+}
+
 export default function ComplianceModule() {
   const [classifications, setClassifications] = useState<ExportClassification[]>([]);
   const [regulations, setRegulations] = useState<ProposedRegulation[]>([]);
   const [legalSources, setLegalSources] = useState<LegalSource[]>([]);
+  const [radarEntries, setRadarEntries] = useState<RadarTeaserEntry[]>([]);
   const [stats, setStats] = useState<{
     classifications: number;
     regulations: number;
@@ -165,24 +175,27 @@ export default function ComplianceModule() {
 
   const fetchData = async () => {
     try {
-      const [statsRes, classRes, regRes, sourcesRes] = await Promise.all([
+      const [statsRes, classRes, regRes, sourcesRes, radarRes] = await Promise.all([
         fetch('/api/compliance'),
         fetch('/api/compliance/classifications?limit=6'),
         fetch('/api/compliance/regulations?limit=4'),
         fetch('/api/compliance/legal?type=sources'),
+        fetch('/api/regulatory-radar?limit=3').catch(() => null),
       ]);
 
-      const [statsData, classData, regData, sourcesData] = await Promise.all([
+      const [statsData, classData, regData, sourcesData, radarData] = await Promise.all([
         statsRes.json(),
         classRes.json(),
         regRes.json(),
         sourcesRes.json(),
+        radarRes ? radarRes.json().catch(() => null) : null,
       ]);
 
       if (statsData.classifications !== undefined) setStats(statsData);
       if (classData.classifications) setClassifications(classData.classifications);
       if (regData.regulations) setRegulations(regData.regulations);
       if (sourcesData.sources) setLegalSources(sourcesData.sources);
+      if (Array.isArray(radarData?.entries)) setRadarEntries(radarData.entries.slice(0, 3));
     } catch (error) {
       clientLogger.error('Failed to fetch compliance data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
@@ -252,6 +265,40 @@ export default function ComplianceModule() {
       </div>
 
       <InlineDisclaimer />
+
+      {/* Latest regulatory actions teaser (Regulatory Radar) — hidden until
+          the radar has data; never fabricates counts */}
+      {radarEntries.length > 0 && (
+        <div className="card p-4 mb-6">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+              Latest Regulatory Actions
+            </h3>
+            <Link href="/regulatory-radar" className="text-xs text-violet-300 hover:text-violet-200 whitespace-nowrap">
+              Regulatory Radar &rarr;
+            </Link>
+          </div>
+          <ul className="divide-y divide-white/[0.06]">
+            {radarEntries.map((entry) => (
+              <li key={entry.id} className="py-2 first:pt-0 last:pb-0">
+                <a
+                  href={entry.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3"
+                >
+                  <span className="text-sm text-slate-200 group-hover:text-white transition-colors leading-snug line-clamp-2">
+                    {entry.title}
+                  </span>
+                  <span className="text-xs text-slate-500 whitespace-nowrap shrink-0">
+                    {entry.agency || entry.source}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

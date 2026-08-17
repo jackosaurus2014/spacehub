@@ -208,16 +208,21 @@ export async function POST(request: Request) {
       const { fetchAndStoreFCCFilings } = await import('@/lib/fetchers/fcc-space-filings-fetcher');
       const { fetchAndStoreFederalRegister } = await import('@/lib/fetchers/federal-register-fetcher');
       const { fetchAndStoreITUFilings } = await import('@/lib/fetchers/itu-filings-fetcher');
+      const { fetchAndStoreCongressActions } = await import('@/lib/fetchers/congress-fetcher');
       const faaCount = await fetchAndStoreFAALicenses();
       const fccCount = await fetchAndStoreFCCFilings();
       const fedRegResult = await fetchAndStoreFederalRegister();
       const ituResult = await fetchAndStoreITUFilings();
+      // Env-gated (CONGRESS_GOV_API_KEY): returns { skipped: true } without
+      // touching the network when the key is absent.
+      const congressResult = await fetchAndStoreCongressActions();
       results.regulatoryFeeds = {
         faaLicenses: faaCount,
         fccFilings: fccCount,
         federalRegister: fedRegResult,
         ituFilings: ituResult,
-        totalUpdated: faaCount + fccCount + fedRegResult.stored + ituResult.seeded + ituResult.notices,
+        congress: congressResult,
+        totalUpdated: faaCount + fccCount + fedRegResult.stored + ituResult.seeded + ituResult.notices + congressResult.stored,
       };
     }
 

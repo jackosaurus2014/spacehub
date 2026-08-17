@@ -9,6 +9,10 @@ import prisma from '@/lib/db';
 import { sendDailyDigest, filterSubscribersByPreferences } from '@/lib/newsletter/email-service';
 import { renderDigestEmail } from '@/lib/newsletter/email-templates';
 import { generateFeatureArticles, categorizeNews } from '@/lib/newsletter/digest-generator';
+import {
+  markExportControlItemsIncluded,
+  selectExportControlWatchItems,
+} from '@/lib/export-control-watch';
 
 /**
  * POST /api/newsletter/send-digest
@@ -112,13 +116,22 @@ export async function POST(request: NextRequest) {
     // 7. Categorize news for the email template
     const categorizedNews = categorizeNews(allContent);
 
+    // 7b. Export Control Watch — rare, high-bar export-control actions
+    // (final/interim-final rules from BIS/DDTC, significant proposed rules,
+    // passage-level export-control bills). Fails soft to an empty selection;
+    // the section renders nothing when there are no qualifying items.
+    const watch = await selectExportControlWatchItems();
+
     // 8. Render the email
     const digestDate = new Date();
     digestDate.setHours(0, 0, 0, 0);
     const { html, plain, subject } = renderDigestEmail(
       digestDate,
       featureArticles,
-      categorizedNews
+      categorizedNews,
+      undefined,
+      watch.items,
+      watch.overflow
     );
 
     // 9. Save digest record
@@ -136,6 +149,12 @@ export async function POST(request: NextRequest) {
         aiModel: EDITORIAL_MODEL,
       },
     });
+
+    // 9b. Digest content is frozen — stamp the export-control dedupe cursor
+    // so these actions never appear in a second digest.
+    if (watch.includedIds.length > 0) {
+      await markExportControlItemsIncluded(watch.includedIds);
+    }
 
     // 10. Get verified subscribers and filter by notification preferences
     const allSubscribers = await prisma.newsletterSubscriber.findMany({

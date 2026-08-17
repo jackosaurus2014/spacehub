@@ -12,7 +12,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { clientLogger } from '@/lib/client-logger';
 
-type BriefType = 'weekly_intelligence' | 'economy' | 'hiring' | 'special';
+type BriefType = 'weekly_intelligence' | 'economy' | 'hiring' | 'regulatory' | 'special';
 
 interface PublishedBrief {
   id: string;
@@ -29,6 +29,7 @@ const TYPE_LABELS: Record<BriefType, string> = {
   weekly_intelligence: 'Weekly Intelligence',
   economy: 'State of the Economy',
   hiring: "Who's Hiring",
+  regulatory: 'Regulatory Radar',
   special: 'Special Report',
 };
 
@@ -37,6 +38,7 @@ const TYPE_FILTERS: Array<{ value: BriefType | 'all'; label: string }> = [
   { value: 'weekly_intelligence', label: 'Weekly Intelligence' },
   { value: 'economy', label: 'State of the Economy' },
   { value: 'hiring', label: "Who's Hiring" },
+  { value: 'regulatory', label: 'Regulatory Radar' },
   { value: 'special', label: 'Special' },
 ];
 
@@ -44,6 +46,7 @@ const TYPE_BADGE_COLORS: Record<BriefType, string> = {
   weekly_intelligence: 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20',
   economy: 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20',
   hiring: 'text-purple-300 bg-purple-500/10 border-purple-500/20',
+  regulatory: 'text-orange-300 bg-orange-500/10 border-orange-500/20',
   special: 'text-amber-300 bg-amber-500/10 border-amber-500/20',
 };
 
