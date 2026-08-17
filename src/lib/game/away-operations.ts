@@ -47,6 +47,7 @@ import { getWorkforceBonuses } from './workforce';
 import { getMonthlyPayrollWithWageIndex } from './labor-market';
 import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { priceLinkedMiningRevenue, blendMiningBaseRevenue } from './mining-pricing';
+import { isInFrontier } from './frontier';
 import { getResearchBonuses } from './research-tree';
 import {
   TICKS_PER_GAME_MONTH, TICK_INTERVALS, MAX_EVENT_LOG,
@@ -239,6 +240,11 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   // loop below never modeled those either).
   const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyBonuses.miningMultiplier * eraModifiers.miningMultiplier;
   const awayMonthIndex = getTotalGameMonths(working.gameDate);
+  // Balance Pass 3 ([FRONTIER] gap fix) — away-parity with game-engine.ts
+  // §1: Frontier saves floor mining spot at base (crashes can't bite;
+  // premiums still pay). Same isInFrontier read the demand-pool shield in
+  // getServiceDemandMultiplier (called above) already performs at `now`.
+  const miningFrontierShield = { frontierSpotFloor: isInFrontier(working, now) };
 
   let revenuePerTick = 0;
   let costsPerTick = 0;
@@ -271,7 +277,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
         const pressure = getExtractionPressureMultiplier(working.extractionPressure, svc.locationId, resource);
         unitsPerResource[resource] = amountPerMonth * fraction * miningMult * pressure;
       }
-      const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, working.marketSnapshot);
+      const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, working.marketSnapshot, miningFrontierShield);
       baseTerm = blendMiningBaseRevenue(baseTerm, newBase, working.miningPriceLinkPhaseInStartMonth, awayMonthIndex);
     }
     revenuePerTick += Math.round(

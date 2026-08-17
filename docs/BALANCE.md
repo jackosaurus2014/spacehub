@@ -848,3 +848,246 @@ reading the SAME pure functions the tick bills through
   `advanceConsumptionToMonth`'s existing shield).
 - M1 `tier-ladder-first-copy-roi.test.ts` green; legacy `sim-strategies.ts`
   tables byte-identical (diffed against the HEAD harness).
+
+## Pass 3 — the player-vs-player economy (2026-08)
+
+**Founder directive:** *"Make sure the competitive aspect against other
+players makes sense with the way our game is currently designed."* Passes
+1–2 audited the single-player-vs-world resource flows; Pass 3 audits the
+PLAYER-VS-PLAYER surfaces: shared demand pools, shared deposits, the shared
+labor market, the one shared price, the M5 offense toolkit, newcomer
+protection, and the dormant M6 takeover system.
+
+### Current population reality (prod telemetry, 2026-08-17)
+
+Alliance count 1; PriceCampaign / PoachOffer / OrbitalSlotAuction all-time
+**0**; EspionageMission, MarketFill, MarketLimitOrder last-7d **0**. Every
+PvP lever is empirically unused — the population is pre-contact. Two
+consequences for this pass: (1) the multi-player sim below is currently the
+ONLY way these levers can be balance-tested — there is no live data; (2)
+every verdict distinguishes "balanced once contact exists" from
+"discoverability problem." Zero all-time usage of levers that the sim shows
+are reasonably priced is at least partly a **surfacing** problem, not a
+pricing one (follow-ups at the end).
+
+### Tooling (additive; defaults off; legacy tables diffed byte-identical)
+
+`scripts/sim-harness.ts` gains three opt-in world switches, all importing
+the real engine modules (never reimplementing):
+
+- **`contendedNpcCaps`** — with `npcSaleCaps`, ONE monthly NPC absorption
+  budget per resource for the whole world, consumed first-come in player
+  array order. This matches the real order book: `matchOrders`
+  (market-orderbook.ts) is price-time FIFO with **no fair-split mechanism**
+  — whoever rests their ask first eats the NPC bid. The delivery-contract
+  outlet is deliberately NOT contended (the real daily cap is per-save).
+- **`laborMarket`** — each player carries an optional `headcount`; monthly
+  payroll is charged at the real shared wage index
+  (`computeLaborAggregates` over every player in the world, the weekly
+  cron's pure core).
+- **`dynamicSpot`** (+ `campaignSlugs`) — the world spot snapshot evolves
+  from the players' COMBINED flows each month through the real
+  market-engine functions: mined units → `calculatePriceAfterMining`, sold
+  units → `calculatePriceAfterTrade` (sell side), then the mean-reversion
+  cron's `calculateIdleDecay` once per real hour of the game-month —
+  skipping campaigned resources, exactly as the mean-revert route does.
+
+`scripts/sim-pvp.ts` (new runner, deterministic — no Date.now/Math.random)
+prints every table below: `npx tsx scripts/sim-pvp.ts`.
+
+Guards: `src/lib/game/__tests__/sim-pvp-harness.test.ts` (10 tests:
+defaults-off invariance, FIFO budget conservation/reset, payroll = real
+aggregate index math, dynamic-spot determinism/pressure/campaign-pin).
+Legacy `sim-strategies.ts` and `sim-resources.ts` outputs re-run and diffed
+against pre-change captures: **byte-identical**.
+
+### B. Crowding & fairness — the numbers
+
+**N identical players, 6 GEO telecom sats each (18 mo):**
+
+| players in pool | geo:telecom mult | each: net/mo |
+|---|---:|---:|
+| 1 | 0.497 | −$8.1M |
+| 2 | 0.350 (floor) | −$14.2M |
+| 3 | 0.350 | −$14.2M |
+| 5 | 0.350 | −$14.2M |
+
+The pool floor is reached with just TWO over-built players; further
+entrants change nothing (damage saturates — bounded, by design). Note even
+the solo 6-sat player is negative: GEO telecom carries ~2–3 copies.
+
+**Whale (12 LEO sats) vs small efficient player (3 sats), same pool:**
+
+| player | rev/sat | net/mo |
+|---|---:|---:|
+| whale contested | $1.4M | −$19.4M |
+| whale alone | $1.7M | −$15.9M |
+| small vs whale | $1.7M | −$2.0M |
+| small alone | $3.6M/sat eff. | +$3.6M |
+
+**Verdicts:** (1) The capacity-share split pays the same per-$ rate to
+everyone; the whale's extra copies then eat within-player saturation and
+superlinear overhead — **efficiency wins per dollar, scale loses more in
+absolute terms**. (2) But a small efficient player still **cannot carve
+out profit inside a whale-crowded pool** (−$2.0M/mo vs +$3.6M alone) —
+the winning answer is to move, which is the intended geography gradient:
+same capex postured as "contest the whale's pool" nets **−$6.7M/mo** vs
+"spread across three markets" **+$1.7M/mo** (S3). (3) Shared deposits
+thin smoothly: 1/2/3/5 co-located belt miners keep 100/74/67/66% of solo
+output — crowding pressure also saturates (the 0.4 pressure floor).
+
+**Labor (S5):** a whale hiring 900 engineers moves the engineer index
+0.80 → 1.45; a 25-engineer small corp's payroll rises $13.2M → $21.4M/mo
+(+62%) — the wage tax is real and untargeted. But the whale pays the index
+it created on all 1,500 heads: **$845M/mo** — massively self-limiting.
+Counterplay is adequately priced and cooperative: restoring the pre-whale
+index needs ~245 crew-quarters server-wide at ~$1.4M capex per quarters
+slot (launch_pad_small is the cheapest carrier) ≈ $350M across the whole
+server. Verdict: **healthy**.
+
+**One shared price (S6, dynamicSpot):** with three lunar miners the spot
+falls only mildly (base $50K → $46K vs $47K solo) because NPC volume caps
+bound sale volume long before price impact compounds — the REAL contention
+is the FIFO NPC absorption budget: the third player in book order grosses
+$17.5M/mo vs the first's $36.0M. First-come liquidation priority is a real
+(and currently invisible) PvP surface — see follow-ups.
+
+### C. Offense toolkit ROI (cost / damage / counterplay)
+
+**Price campaign (S7, lunar_water, all real constants):**
+
+| ledger line | value |
+|---|---:|
+| victim (2 lunar mines) net/mo: neutral → crashed | $21.2M → $16.8M (−21%) |
+| victim gross delta per game-month | −$4.4M |
+| victim damage per 7-real-day campaign (= 28 game-months) | −$123M |
+| victim mothball bound (0 revenue, 25% maint) | −$950K/mo — mothballing does NOT pay here; ride it out |
+| attacker burned fee (lunar_water) | $250M |
+| attacker margin sacrifice on the crash ammunition (~2,085 u, real impact math) | ~$37M |
+| NPC bid absorption during campaign (halved) | 100 u/real-day |
+| cooldown before re-declaring | 14 days |
+
+Verdict: **rational only as market-wide warfare** — attacker all-in
+≈$287M vs $123M damage to ONE two-mine victim; it pays only when several
+rivals share the resource and the attacker's own exposure is small. It
+cannot be aimed at one corporation, the band floor bounds it, and the fee
+scales with the market's base price. Not dead, not a griefing engine —
+**correctly priced, awaiting population**.
+
+**Talent poaching (S8):**
+
+| target | attacker all-in | sunk if countered | defender: retention | defender: REHIRE instead | victim rev value |
+|---|---:|---:|---:|---:|---:|
+| 40 eng @ idx 1.0 | $28.0M | $10.0M | $13.5M | $12.0M | $12M/mo |
+| 40 eng @ idx 1.6 | $38.8M | $10.0M | $21.6M | $12.0M | $12M/mo |
+| 250 eng @ idx 1.6 | $190.0M | $10.0M | $135.0M | $75.0M | $30M/mo |
+
+**Defect (design-level, proposed not implemented):** `getHireCost` charges
+6 months' BASE salary with **no wage index**, and open-market hiring is
+supply-unlimited. A rational defender therefore never retains (rehire is
+cheaper at every index level) and the attacker pays 1.5×index× premium for
+crew the victim replaces at base price — poaching is strictly dominated
+both as acquisition and as damage. **As shipped, O4 is dead content.**
+Cheapest coherent fix: `getHireCost = 6 × salary × wageIndex` (one line in
+workforce.ts + snapshot plumbing) — at idx 1.6 rehire becomes $19.2M vs
+retention $21.6M and the counteroffer becomes a real decision; it also
+closes the "hiring ignores the labor market E5 built" inconsistency.
+Flagged as proposed because it repurchases a PvE-facing price everywhere,
+not just in the poach flow.
+
+**Other levers:** governor freight toll (≤2%, $2M/dispatch cap,
+$10M/sync credit cap) — mild governor perk, adequate counterplay, verdict
+fine-but-weak. Slot-lease denial — burned bid + 10%/30d idle fee + 90-day
+auto-release: bounded, correctly taxed. Cornering intel ($5M/pull + tech)
+and espionage products — info-only per POLICY.md, priced, fine. NOTE the
+E7 follow-up still stands: `requiresLeaseAuction` is **display-only** —
+the build flow does not actually enforce auctions at saturated pools, so
+slot denial currently denies nothing.
+
+### D. Newcomer-crush check (S9)
+
+Whale ($100B cash) camps a fresh graduate's GEO market (graduate: book NW
+$134M, 2 GEO sats + ground station):
+
+| row | value |
+|---|---:|
+| graduate net/mo alone → with whale | $6.4M → $0.1M |
+| income suppressed | $6.3M/game-month |
+| whale running cost of the camp (vs holding cash) | $9.9M/game-month |
+| cost : damage | **1.6 : 1** |
+| whale capex to enter | $1.31B |
+
+Suppression is loss-making for the attacker (per real-month of camping:
+~$1.2B whale bleed vs ~$760M graduate income destroyed) and the victim has
+a positive-EV escape (spread out — S3; decommission recovers 40%). Poach
+is blocked below 4 heads/type; campaigns are market-wide and fee-gated;
+tolls are capped; tenders are impossible (Frontier shield + zero float).
+Pool undercutting is the only aimable channel and it is expensive.
+**No critical defect** — but note the whale can trivially AFFORD the
+bleed, so the deterrent is opportunity cost, not capability. Watch-item
+once real whales exist. One asymmetry window: a $100–200M graduate can be
+hit by (market-wide) campaigns but cannot declare their own until the
+$200M offense floor — half a tier of one-way exposure; acceptable, noted.
+
+### E. Takeover sanity (dormant, report only)
+
+| target | book NW | control cost (51 shares at min tender) | vs book |
+|---|---:|---:|---:|
+| fresh graduate | $150M | $91.8M + $1.8M burned arb fee | 61% |
+| mid corp (+30%/q published) | $5B | $3.52B + $70M | 70% |
+| late corp (+10%/q published) | $100B | $64.3B + $1.3B | 64% |
+
+Control costs 61–70% of the target's book **in escrowed cash**, plus the
+burned arbitration fee, the −10%/2-month integration malus, and the
+mandatory-bid obligation. Structurally, float exists only via voluntary
+raises, distress auctions, or accepted tenders — **a healthy corporation
+that never raises capital is mathematically untakeable**, and Frontier
+corps cannot be tendered. A tender is never cheaper than out-competing
+unless the target already leaked float — takeovers are late-game drama as
+designed. No changes; system stays dormant behind the 25-active-corp gate.
+
+### F. Fix implemented — Frontier shield on price-linked mining
+
+**The one critical gap found:** the M3 price-linked mining channel read
+the synced spot with NO Frontier shield. A rival's price campaign (or any
+organic crash) at band floor cut a Protected-Frontier miner's mining cash
+revenue to ~30% of neutral — the only offense-reachable revenue path that
+bypassed the on-ramp shield (pools, hazards, espionage, poaching, tolls,
+and tenders were all already shielded).
+
+**Fix:** `priceLinkedMiningRevenue` accepts opt-in
+`{ frontierSpotFloor: true }` — each resource's spot floors at its base
+price. Passed by both engines (`game-engine.ts` §1 live tick,
+`away-operations.ts` catch-up — parity) when `isInFrontier(state)`.
+Exactly mirrors the demand-pool shield's posture: crashes can't bite,
+spikes still pay, and the shield ends at graduation. Default off — every
+other caller (harness, tests) byte-identical; no save migration, no
+GameState changes. Guard: `mining-frontier-shield.test.ts` (6 tests, unit
++ live-tick integration incl. the graduated-still-takes-the-crash case).
+
+### Proposed, NOT implemented (worked numbers above)
+
+1. **Wage-index the hire cost** (`getHireCost × wageIndex`) — the O4 fix;
+   see the poaching table. Without it, poaching stays dead content.
+2. **Enforce the slot-auction build gate** — `requiresLeaseAuction` is
+   display-only; O5's denial lever denies nothing until the build/purchase
+   path checks it (pre-existing E7 follow-up, re-confirmed). When it lands,
+   exempt Frontier players' FIRST building at a location or the newcomer
+   wall returns at 85%-saturated GEO.
+3. **Offense-floor alignment** — consider raising the campaign/poach
+   attacker floor from $200M to scale with the victim band, or simply
+   documenting the $100–200M one-way window as accepted.
+
+### Follow-ups
+
+- **Discoverability (per the population telemetry):** zero all-time usage
+  of every lever means the Market/Diplomacy panels under-expose them.
+  Candidates: campaign declaration + poach actions surfaced from the rival/
+  market screens they target (not only their own tabs); Situation-Log
+  nudges when a player's own market position makes a lever relevant. Not
+  built in this pass.
+- **FIFO liquidation priority** (S6) is a real ordering advantage the game
+  never surfaces — either document it as intended ("be first on the book")
+  or consider per-refresh maker-quote rationing later.
+- The S1 finding that a SOLO 6-copy GEO telecom fleet is already negative
+  is Pass-M1-adjacent (pool sizing), not a PvP defect — left alone.

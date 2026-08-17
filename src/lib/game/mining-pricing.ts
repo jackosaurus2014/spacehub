@@ -85,17 +85,41 @@ export function getMiningSpotPrice(
  * service instance this tick. `unitsPerResource` is the continuous (not
  * rounded/threshold-gated) units-mined-this-tick figure the caller computes
  * with its own bonus stack; this function only prices and scales it.
+ *
+ * Balance Pass 3 (docs/BALANCE.md "Pass 3", [FRONTIER] gap fix): pass
+ * `opts.frontierSpotFloor: true` for a save currently inside the Protected
+ * Frontier — each resource's spot is then floored at its base price, so a
+ * market crash (organic or a declared M5 price campaign) can never push a
+ * Frontier miner's cash revenue BELOW the authored neutral number, while
+ * spot premiums still pay in full. This mirrors service-pricing.ts's
+ * demand-pool shield exactly ("premiums still pay, penalties don't bite
+ * until graduation") — before this fix, the price-linked mining channel was
+ * the one offense-reachable revenue path with NO Frontier shield: a rival's
+ * price campaign crashed spot to base×0.3 and flowed straight into a
+ * Frontier miner's income. Default off — every existing caller/test is
+ * byte-identical.
  */
+export interface MiningRevenueOpts {
+  frontierSpotFloor?: boolean;
+}
+
 export function priceLinkedMiningRevenue(
   definitionId: string,
   unitsPerResource: Partial<Record<string, number>>,
   snapshot: MarketSnapshot | null | undefined,
+  opts?: MiningRevenueOpts,
 ): number {
   const scale = getMiningRevenueScale(definitionId);
+  const floorAtBase = opts?.frontierSpotFloor === true;
   let total = 0;
   for (const [resource, units] of Object.entries(unitsPerResource)) {
     if (!units) continue;
-    total += units * getMiningSpotPrice(snapshot, resource);
+    let spot = getMiningSpotPrice(snapshot, resource);
+    if (floorAtBase) {
+      const base = RESOURCE_MAP.get(resource as ResourceId)?.baseMarketPrice || 0;
+      spot = Math.max(spot, base);
+    }
+    total += units * spot;
   }
   return total * scale;
 }

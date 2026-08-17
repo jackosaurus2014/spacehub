@@ -61,6 +61,20 @@ import {
 import { priceLinkedMiningRevenue } from '../src/lib/game/mining-pricing';
 import type { MarketSnapshot } from '../src/lib/game/spot-price';
 import type { GameState } from '../src/lib/game/types';
+// ─── Balance Pass 3 (PvP): shared-world modules the multi-player world
+// config exercises — all REAL engine imports, never reimplemented.
+import {
+  computeLaborAggregates,
+  sumCrewQuarters,
+  type LaborActivitySummary,
+} from '../src/lib/game/labor-market';
+import { WORKER_TYPES, type WorkerType } from '../src/lib/game/workforce';
+import {
+  calculatePriceAfterMining,
+  calculatePriceAfterTrade,
+  calculateIdleDecay,
+} from '../src/lib/game/market-engine';
+import { RESOURCES } from '../src/lib/game/resources';
 
 export const GAME_MONTH_MS = 21_600 * 1000; // server-time.ts REAL_SECONDS_PER_GAME_MONTH
 export const INPUT_BUY_MULT = 1.08; // NPC maker min half-spread 0.06 + FEE_RATE 0.02
@@ -110,6 +124,15 @@ export interface SimPlayer {
    *  understate the sink this model exists to measure). Empty/absent =
    *  no crafting (every legacy table byte-identical). */
   craftPlan?: string[];
+  /** Balance Pass 3 (PvP): crew headcount per worker type. Only read when
+   *  the world's `laborMarket` opt is ON — payroll is then charged at the
+   *  REAL shared wage index (labor-market.ts computeLaborAggregates over
+   *  every player in the world). Absent/flag-off = no payroll modeled
+   *  (legacy tables byte-identical). */
+  headcount?: Partial<Record<WorkerType, number>>;
+  /** Balance Pass 3: this player's crew trainingLevel (0-1) for the labor
+   *  aggregation's mitigation term. Default 0.5 (labor-market.ts default). */
+  trainingLevel?: number;
   history: MonthRow[];
 }
 
@@ -194,6 +217,9 @@ export interface MonthRow {
   /** Balance Pass 2: revenue from the delivery-contract outlet this month
    *  (0 unless world.opts.contractOutlet is set). Included in `net`. */
   contractSales?: number;
+  /** Balance Pass 3: monthly payroll at the shared wage index — present only
+   *  when world.opts.laborMarket is on. Included in `net`. */
+  payroll?: number;
   net: number;
   buildingCount: number;
   capex: number;
@@ -232,6 +258,42 @@ export interface SimWorldOpts {
    *  ×1.0. Faction payment multipliers (0.9–1.5, mean 1.2) are conservatively
    *  held at 1.0. Off by default — legacy tables unchanged. */
   contractOutlet?: { capPerDay: number };
+  // ─── Balance Pass 3 (PvP) — multi-player shared-world switches. All off
+  // by default: every legacy single-player table is byte-identical.
+  /** With npcSaleCaps ON, contend the NPC maker's monthly absorption budget
+   *  ACROSS players instead of granting each player its own full cap. The
+   *  budget is consumed first-come in player array order — matching the real
+   *  order book's price-time FIFO (market-orderbook.ts matchOrders: the
+   *  earlier-resting ask fills first; there is no fair-split mechanism).
+   *  NOTE the ordering bias this implies is REAL game behavior, not a sim
+   *  artifact: whoever gets their ask on the book first eats the NPC bid.
+   *  The delivery-contract outlet is deliberately NOT contended — the real
+   *  daily cap is per-save (delivery-contracts.ts reads the player's own
+   *  completedDeliveries), not a shared pool. */
+  contendedNpcCaps?: boolean;
+  /** Charge each player a monthly payroll at the REAL shared wage index:
+   *  computeLaborAggregates over every player's `headcount` + crew quarters
+   *  (labor-market.ts — the weekly cron's pure core). Off = no payroll
+   *  (the harness's historical stance: workforce held out entirely). */
+  laborMarket?: boolean;
+  /** Evolve world.spotSnapshot from the players' COMBINED physical flows
+   *  each month, using the real market-engine price-impact functions:
+   *  mined units → calculatePriceAfterMining, sold units (leftover + contract
+   *  sales) → calculatePriceAfterTrade(sell side), then the hourly
+   *  mean-reversion cron's calculateIdleDecay applied once per real hour of
+   *  the game-month (6 calls at 60 idle minutes each — the same ≤10%-of-gap
+   *  step the /market/mean-revert route takes). Prices are updated at month
+   *  END, so a month's sales settle at the PREVIOUS month's spot — mirroring
+   *  the real lag between fills and the cron. Approximation stated: the live
+   *  path clamps impact per SYNC call, not per month; one monthly call with
+   *  MAX_BACKGROUND_IMPACT/MAX_TRADE_IMPACT clamps is the coarse-grained
+   *  equivalent and slightly UNDERSTATES what a burst-syncing seller could
+   *  do — conservative for a crash-damage audit. */
+  dynamicSpot?: boolean;
+  /** Resources under a declared price campaign: mean reversion SKIPS them
+   *  (the mean-revert route consults active campaigns — price-campaigns.ts
+   *  mechanic #1). Only meaningful with dynamicSpot on. */
+  campaignSlugs?: string[];
 }
 
 /** Balance Pass 2: expected units per delivery contract. Derivation from
@@ -269,7 +331,7 @@ export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
@@ -278,6 +340,8 @@ export function newPlayer(
     buysInputs: opts.buysInputs ?? true,
     sellsLeftovers: opts.sellsLeftovers ?? true,
     craftPlan: opts.craftPlan,
+    headcount: opts.headcount,
+    trainingLevel: opts.trainingLevel,
     history: [],
   };
 }
@@ -339,6 +403,48 @@ export function computeWorldPoolMults(world: SimWorld): Record<string, number> {
  *  mining (shared extraction pressure) → sinks → bookkeeping. */
 export function stepMonth(world: SimWorld, month: number): void {
   const nowMs = month * world.monthMs;
+
+  // ── 0. Balance Pass 3 (PvP) shared-world state ────────────────────────
+  // 0a. Dynamic spot: lazily seed the snapshot at base prices (asOf 0 —
+  //     deterministic; getSpotPrice never staleness-checks a MarketSnapshot).
+  if (world.opts.dynamicSpot && !world.spotSnapshot) {
+    const prices: Record<string, number> = {};
+    for (const r of RESOURCES) prices[r.id] = r.baseMarketPrice;
+    world.spotSnapshot = { prices, asOf: 0 };
+  }
+  // 0b. Shared NPC absorption budget (contendedNpcCaps): ONE monthly budget
+  //     per resource for the whole world, consumed first-come in player
+  //     array order — the order book's price-time FIFO, not a fair split.
+  const npcBudget: Map<string, number> | null =
+    world.opts.npcSaleCaps && world.opts.contendedNpcCaps ? new Map() : null;
+  const takeNpcBudget = (res: string, want: number): number => {
+    if (!npcBudget) return want; // per-player cap handled at the call site
+    const remaining = npcBudget.has(res)
+      ? (npcBudget.get(res) as number)
+      : npcAbsorptionPerMonth(res, world.monthMs);
+    const granted = Math.max(0, Math.min(want, remaining));
+    npcBudget.set(res, remaining - granted);
+    return granted;
+  };
+  // 0c. Labor market: aggregate every player's headcount + crew quarters
+  //     through the REAL weekly-cron core (labor-market.ts) — one shared
+  //     wage index per crew type for the whole world this month.
+  let wageIndexByType: Map<WorkerType, number> | null = null;
+  if (world.opts.laborMarket) {
+    const summaries: LaborActivitySummary[] = world.players.map(p => ({
+      id: p.name,
+      headcount: p.headcount || {},
+      trainingLevel: p.trainingLevel,
+      crewQuarters: sumCrewQuarters(p.buildings),
+    }));
+    const aggregates = computeLaborAggregates(summaries);
+    wageIndexByType = new Map();
+    aggregates.forEach((agg, type) => wageIndexByType!.set(type, agg.index));
+  }
+  // Combined physical flows for the dynamic-spot update (0a) — filled in
+  // during the per-player loop, applied at month end (§7).
+  const combinedMined: Record<string, number> = {};
+  const combinedSold: Record<string, number> = {};
 
   // ── 1. Purchases ──────────────────────────────────────────────────────
   for (const p of world.players) {
@@ -529,6 +635,7 @@ export function stepMonth(world: SimWorld, month: number): void {
           p.resources[resource] = (p.resources[resource] || 0) + mined;
           unitsPerResource[resource] = mined;
           addFlow(flows.mined, resource, mined);
+          if (world.opts.dynamicSpot) combinedMined[resource] = (combinedMined[resource] || 0) + mined;
         }
         // Only true mining_output services price-link cash revenue here —
         // fabrication_output byproduct producers (e.g. svc_fabrication_lunar)
@@ -599,7 +706,13 @@ export function stepMonth(world: SimWorld, month: number): void {
         const keep = need[res] || 0;
         let sell = Math.max(0, qty - keep);
         if (sell > 0 && world.opts.npcSaleCaps) {
-          const absorbable = npcAbsorptionPerMonth(res, world.monthMs);
+          // Balance Pass 3: with contendedNpcCaps the absorbable amount is
+          // whatever is LEFT of the world's shared monthly budget (consumed
+          // first-come in player order — order-book FIFO); otherwise the
+          // legacy per-player full cap.
+          const absorbable = npcBudget
+            ? takeNpcBudget(res, sell)
+            : npcAbsorptionPerMonth(res, world.monthMs);
           const unabsorbed = Math.max(0, sell - absorbable);
           if (unabsorbed > 0) addFlow(flows.unsold, res, unabsorbed);
           sell = Math.min(sell, absorbable);
@@ -612,6 +725,7 @@ export function stepMonth(world: SimWorld, month: number): void {
           resourceSales += sell * price * OUTPUT_SELL_MULT;
           p.resources[res] = qty - sell;
           addFlow(flows.sold, res, sell);
+          if (world.opts.dynamicSpot) combinedSold[res] = (combinedSold[res] || 0) + sell;
         }
       }
     }
@@ -652,6 +766,19 @@ export function stepMonth(world: SimWorld, month: number): void {
     }
 
     // 6. Scaling sinks (engine §1b/§1c formulas verbatim)
+    // Balance Pass 3 (laborMarket): payroll at the shared wage index —
+    // count × base salary × index(type), exactly labor-market.ts's
+    // getMonthlyPayrollWithWageIndex math against this month's world-wide
+    // aggregate index.
+    let payroll = 0;
+    if (wageIndexByType && p.headcount) {
+      for (const wDef of WORKER_TYPES) {
+        const n = p.headcount[wDef.type] || 0;
+        if (n <= 0) continue;
+        payroll += n * wDef.salary * (wageIndexByType.get(wDef.type) ?? 1);
+      }
+      payroll = Math.round(payroll);
+    }
     const overhead = corporateOverheadMonthly(p.buildings.length);
     // M1/F4: exec comp keys off BOOK net worth now (asset-aware), matching
     // game-engine.ts's §1c. bookNetWorth reads p.money BEFORE this month's
@@ -661,7 +788,7 @@ export function stepMonth(world: SimWorld, month: number): void {
     const execComp = executiveCompensationMonthly(netWorthEst);
 
     const grossIn = revenue + resourceSales + contractSales;
-    const grossOut = operating + maintenance + overhead + execComp;
+    const grossOut = operating + maintenance + overhead + execComp + payroll;
     p.money += grossIn - grossOut;
     p.totalEarned += grossIn;
     p.totalSpent += grossOut;
@@ -677,7 +804,7 @@ export function stepMonth(world: SimWorld, month: number): void {
       stockByBucket[resourceBucket(res)] += qty;
       stockValue += qty * (RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0);
     }
-    p.history.push({
+    const row: MonthRow = {
       month,
       money: p.money,
       netWorthEst: bookNetWorth(p), // M1/F4: asset-aware book net worth
@@ -698,7 +825,46 @@ export function stepMonth(world: SimWorld, month: number): void {
       stock,
       stockByBucket,
       stockValue: Math.round(stockValue),
-    });
+    };
+    // Balance Pass 3: payroll only stamped when the labor market is modeled —
+    // legacy rows keep their exact shape.
+    if (world.opts.laborMarket) row.payroll = payroll;
+    p.history.push(row);
+  }
+
+  // ── 7. Dynamic spot update (Balance Pass 3, opt-in) ───────────────────
+  // Month-end: combined MINED units press the shared spot down through the
+  // real calculatePriceAfterMining; combined SOLD units press it down as
+  // sell-side trades (calculatePriceAfterTrade); then the mean-reversion
+  // cron's calculateIdleDecay heals the gap once per real hour of the
+  // game-month — except for resources under a declared price campaign
+  // (campaignSlugs), which mean-revert skips while active
+  // (price-campaigns.ts mechanic #1). All functions are the live engine's.
+  if (world.opts.dynamicSpot && world.spotSnapshot) {
+    const prices = { ...world.spotSnapshot.prices };
+    const campaigned = new Set(world.opts.campaignSlugs || []);
+    const hoursPerMonth = Math.max(1, Math.round(world.monthMs / 3_600_000));
+    const touched = new Set<string>([...Object.keys(combinedMined), ...Object.keys(combinedSold), ...Object.keys(prices)]);
+    for (const res of Array.from(touched)) {
+      const def = RESOURCE_MAP.get(res as ResourceId);
+      if (!def) continue;
+      const base = def.baseMarketPrice;
+      const vol = (def as { volatility?: number }).volatility ?? 0.05;
+      const minP = (def as { minPrice?: number }).minPrice ?? Math.max(1, Math.round(base * 0.1));
+      const maxP = (def as { maxPrice?: number }).maxPrice ?? base * 10;
+      let price = prices[res] ?? base;
+      const minedQty = combinedMined[res] || 0;
+      if (minedQty > 0) price = calculatePriceAfterMining(price, base, minedQty, vol, minP, maxP);
+      const soldQty = combinedSold[res] || 0;
+      if (soldQty > 0) price = calculatePriceAfterTrade(price, base, soldQty, false, vol, minP, maxP);
+      if (!campaigned.has(res)) {
+        for (let h = 0; h < hoursPerMonth; h++) {
+          price = calculateIdleDecay(price, base, 60, minP, maxP);
+        }
+      }
+      prices[res] = price;
+    }
+    world.spotSnapshot = { ...world.spotSnapshot, prices };
   }
 }
 

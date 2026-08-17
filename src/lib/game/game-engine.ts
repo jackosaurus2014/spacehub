@@ -394,6 +394,14 @@ export function processTick(state: GameState): GameState {
       ? Math.max(0.6, Math.min(1, state.reserveStatus.efficiencyMultiplier))
       : 1.0;
 
+  // Balance Pass 3 ([FRONTIER] gap fix, docs/BALANCE.md "Pass 3"): while in
+  // the Protected Frontier, price-linked mining revenue floors each spot at
+  // its base price — a crashed market (organic or an M5 price campaign)
+  // never bites a Frontier miner's income; spot premiums still pay. Mirrors
+  // service-pricing.ts's demand-pool shield ("premiums pay, penalties wait
+  // for graduation"). Hoisted once per tick.
+  const miningFrontierShield = { frontierSpotFloor: isInFrontier(state) };
+
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
@@ -495,7 +503,7 @@ export function processTick(state: GameState): GameState {
           amountPerMonth * fraction * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
       }
       const oldBase = def.revenuePerMonth * fraction;
-      const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, state.marketSnapshot);
+      const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, state.marketSnapshot, miningFrontierShield);
       baseTerm = blendMiningBaseRevenue(oldBase, newBase, state.miningPriceLinkPhaseInStartMonth, globalDate.totalMonths);
     } else {
       baseTerm = def.revenuePerMonth * fraction;
