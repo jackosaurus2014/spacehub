@@ -309,6 +309,20 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
     related: ['orbital-slot', 'bid-insurance'],
   }),
 
+  // ── Storage integrity (Balance Pass 1-2, consumption.ts) ────────────────
+  'storage-cap': c({
+    id: 'storage-cap', name: 'Storage Capacity', icon: 'package',
+    short: 'Per-resource soft cap — stock above it decays 15%/game-month',
+    body: 'Every resource has a corporate storage capacity set by its rarity tier (bulk raw 1,500 units; refined 400; precious and exotic 300; components 150; products 60). Stock above the cap degrades 15% per game-month — sell it, consume it in production, or lose it. Warehousing facilities with inventory protection (refineries, belt stations) extend capacity up to ×2.2. Stock below the cap never decays unless it is a volatile.',
+    related: ['boiloff', 'building-recipe'],
+  }), // consumption.ts baseStorageCapUnits / storageCapacityUnits / STORAGE_OVERFLOW_DECAY_PER_MONTH
+  boiloff: c({
+    id: 'boiloff', name: 'Volatile Boiloff', icon: 'trending-down',
+    short: 'Cryogenic stock loses 2-5% of TOTAL units every game-month',
+    body: 'Volatiles evaporate in storage: rocket fuel and helium-3 lose 5% of total stock per game-month, methane and ethane 4%, ammonia 3%, water ices and deuterium 2%. Boiloff applies to everything you hold, not just overflow — keep working buffers, not deep tanks, and convert volatiles into products or sales before they escape.',
+    related: ['storage-cap', 'supply-efficiency'],
+  }), // consumption.ts VOLATILE_BOILOFF_PER_MONTH
+
   // ── Legacy / progression ─────────────────────────────────────────────────
   legacy: c({
     id: 'legacy', name: 'Legacy', icon: 'scroll',

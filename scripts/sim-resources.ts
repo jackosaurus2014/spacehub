@@ -1,8 +1,11 @@
-// ─── Space Tycoon: Resource-Generation Balance Audit (Balance Pass 1) ────────
-// docs/BALANCE.md "Pass 1 — Resource generation vs sinks". Hunts the
+// ─── Space Tycoon: Resource-Generation Balance Audit (Balance Pass 1 + 2) ────
+// docs/BALANCE.md "Pass 1 — Resource generation vs sinks" and "Pass 2 —
+// asymptote verification, crafting/contract sinks". Hunts the
 // material-post-scarcity failure mode: if mining + recipes generate resources
 // far faster than consumption/construction/market absorption can drain them,
-// stockpiles grow unboundedly and supply decisions stop mattering.
+// stockpiles grow unboundedly and supply decisions stop mattering. Pass 2
+// extends the horizon to 36 months, models the crafting queue and the
+// delivery-contract outlet, and prints per-strategy asymptote-drift tables.
 //
 // Runs strategies through scripts/sim-harness.ts (real engine math) in the
 // AUDIT world configuration: npcSaleCaps ON (leftover sales bounded by what
@@ -15,13 +18,16 @@
 import {
   newPlayer, newWorld, runWorld, fm, mdTable, sinkCoverage,
   extractionPressureReport, npcAbsorptionPerMonth, resourceBucket,
+  CONTRACT_OUTLET_TYPICAL_QTY,
   type SimPlayer, type SimWorld,
 } from './sim-harness';
 import { RESOURCES, RESOURCE_MAP, MINING_PRODUCTION } from '../src/lib/game/resources';
 import type { ResourceId } from '../src/lib/game/resources';
 import { getNpcVolumeCap } from '../src/lib/game/npc-volume-caps';
 
-const MONTHS = 24;
+// Balance Pass 2: 24 → 36 game-months — Pass 1 verified flattening by month
+// 24; Pass 2 verifies a true asymptote (docs/BALANCE.md "Pass 2").
+const MONTHS = 36;
 const START_MONEY = 2_000_000_000;
 
 // ─── Strategy plans ─────────────────────────────────────────────────────────
@@ -118,6 +124,31 @@ const hoarderPlan: SimPlayer['plan'] = (p) => {
   return [{ definitionId: 'mining_asteroid', locationId: 'asteroid_belt' }];
 };
 
+/** Balance Pass 2 — "belt industrialist": the belt baron who ALSO invests in
+ *  fabrication (Orbital Fab Lab + Lunar Manufacturing Plant) and runs the
+ *  crafting queue continuously as a surplus sink. The Pass-1 audit could not
+ *  see this player at all — steel/refined coverage was understated by
+ *  exactly this channel. Craft priority: sink components first (beams,
+ *  electronics), then the tier-1 refiners that convert raw surplus. */
+// NOTE: the fab investments are inserted right after the refinery, BEFORE
+// the 4th+ asteroid rigs — the harness's purchase loop stops at the first
+// unaffordable item (scaledBuildingCost makes late same-location rigs very
+// expensive), so trailing entries would never be reached.
+const beltIndustrialistOrder: { definitionId: string; locationId: string }[] = [
+  ...beltBaronOrder.slice(0, 6), // 3 rigs, 2 reactors, orbital_refinery
+  { definitionId: 'fabrication_orbital', locationId: 'leo' },
+  { definitionId: 'solar_farm_orbital', locationId: 'leo' },
+  { definitionId: 'fabrication_lunar', locationId: 'lunar_surface' },
+  { definitionId: 'solar_farm_lunar', locationId: 'lunar_surface' },
+  ...beltBaronOrder.slice(6),
+];
+const beltIndustrialistCraftPlan = [
+  'forge_structural_beams',   // steel_ingots 5 + aluminum_alloy 3 → 4 beams
+  'make_electronics',         // refined_rare_earth 3 + gold 1 → 2 electronics
+  'refine_rare_earth',        // rare_earth 10 → 5 refined_rare_earth
+  'smelt_steel',              // iron 20 → 10 steel_ingots
+];
+
 // ─── Runners ────────────────────────────────────────────────────────────────
 
 interface RunResult { player: SimPlayer; world: SimWorld }
@@ -125,10 +156,12 @@ interface RunResult { player: SimPlayer; world: SimWorld }
 function runAudit(name: string, plan: SimPlayer['plan'], opts: {
   money?: number; maxBuilds?: number; sellsLeftovers?: boolean;
   floorSpot?: boolean; npcSaleCaps?: boolean;
+  craftPlan?: string[]; contractCapPerDay?: number; months?: number;
 } = {}): RunResult {
   const p = newPlayer(name, opts.money ?? START_MONEY, plan, {
     maxBuildsPerMonth: opts.maxBuilds ?? 2,
     sellsLeftovers: opts.sellsLeftovers ?? true,
+    craftPlan: opts.craftPlan,
   });
   let spot = null;
   if (opts.floorSpot) {
@@ -139,26 +172,44 @@ function runAudit(name: string, plan: SimPlayer['plan'], opts: {
   const world = newWorld([p], 0, spot, {
     npcSaleCaps: opts.npcSaleCaps ?? true,
     constructionMaterials: true,
+    contractOutlet: opts.contractCapPerDay ? { capPerDay: opts.contractCapPerDay } : undefined,
   });
-  runWorld(world, MONTHS);
+  runWorld(world, opts.months ?? MONTHS);
   return { player: p, world };
 }
 
 function summaryTable(p: SimPlayer): string {
-  const rows = [2, 5, 11, 17, 23].map(m => {
+  const rows = [2, 5, 11, 17, 23, 29, 35].filter(m => m < p.history.length).map(m => {
     const h = p.history[m];
     const b = h.stockByBucket!;
     const unsold = Object.values(h.flows?.unsold || {}).reduce((a, x) => a + x, 0);
     return [
       m, h.buildingCount,
       Math.round(b.raw), Math.round(b.refined), Math.round(b.component), Math.round(b.product),
-      fm(h.stockValue || 0), fm(h.resourceSales), Math.round(unsold), fm(h.net), fm(h.money),
+      fm(h.stockValue || 0), fm(h.resourceSales), fm(h.contractSales || 0), Math.round(unsold), fm(h.net), fm(h.money),
     ];
   });
   return mdTable(
-    ['mo', 'bldgs', 'raw stk', 'ref stk', 'comp stk', 'prod stk', 'stock $', 'res sales/mo', 'unsold u/mo', 'net/mo', 'cash'],
+    ['mo', 'bldgs', 'raw stk', 'ref stk', 'comp stk', 'prod stk', 'stock $', 'res sales/mo', 'contract $/mo', 'unsold u/mo', 'net/mo', 'cash'],
     rows,
   );
+}
+
+/** Asymptote check (Pass 2): total-stock trajectory + month-over-month drift
+ *  at the tail. A true asymptote shows drift → ~0, not merely "flatter". */
+function asymptoteTable(p: SimPlayer): string {
+  const months = [11, 17, 23, 29, 35].filter(m => m < p.history.length);
+  const total = (m: number) => {
+    const b = p.history[m].stockByBucket!;
+    return b.raw + b.refined + b.component + b.product;
+  };
+  const rows = months.map((m, i) => {
+    const t = total(m);
+    const prev = i > 0 ? total(months[i - 1]) : null;
+    const drift = prev === null ? '—' : ((t - prev) / (m - months[i - 1])).toFixed(1);
+    return [m, Math.round(t), drift];
+  });
+  return mdTable(['mo', 'total stock (u)', 'drift u/mo since prev row'], rows);
 }
 
 function coverageTable(p: SimPlayer, month: number): string {
@@ -183,18 +234,25 @@ function topStocks(p: SimPlayer, month: number, n = 10): string {
   return mdTable(['resource', 'units', 'book value', 'bucket'], rows);
 }
 
-// ─── 1. The three strategies, audit world ───────────────────────────────────
+// ─── 1. The strategies, audit world (36 game-months, Pass 2) ────────────────
 
-console.log('# Balance Pass 1 — resource generation vs sinks (audit world: NPC sale caps ON, construction materials ON)\n');
+console.log('# Balance Pass 2 — resource generation vs sinks re-audit (audit world: NPC sale caps ON, construction materials ON, 36 months)\n');
 
 const integrator = runAudit('integrator', orderedPlan(integratorBuildOrder), { maxBuilds: 2 });
 const beltBaron = runAudit('belt-baron', orderedPlan(beltBaronOrder), { money: 60_000_000_000, maxBuilds: 2 });
 const hoarder = runAudit('hoarder', hoarderPlan, { money: 500_000_000_000, maxBuilds: 4, sellsLeftovers: false });
+// Pass 2: the crafting-queue sink modeled — belt baron + fabrication + a
+// continuous craft rotation. No contract outlet here so the crafting effect
+// is isolated.
+const industrialist = runAudit('belt-industrialist', orderedPlan(beltIndustrialistOrder), {
+  money: 60_000_000_000, maxBuilds: 2, craftPlan: beltIndustrialistCraftPlan,
+});
 
 for (const { title, run } of [
   { title: '## Integrator (diversified 24-building reference)', run: integrator },
   { title: '## Belt baron (6 asteroid rigs + refinery, sells max)', run: beltBaron },
   { title: '## Resource hoarder (max mining+production, sells NOTHING)', run: hoarder },
+  { title: '## Belt industrialist (belt baron + fabrication, continuous crafting queue — Pass 2)', run: industrialist },
 ]) {
   console.log(`${title}\n`);
   console.log(summaryTable(run.player));
@@ -202,8 +260,12 @@ for (const { title, run } of [
   console.log(coverageTable(run.player, 11));
   console.log('\n### Sink coverage — month 24\n');
   console.log(coverageTable(run.player, 23));
-  console.log('\n### Top stockpiles by book value — month 24\n');
-  console.log(topStocks(run.player, 23));
+  console.log('\n### Sink coverage — month 36\n');
+  console.log(coverageTable(run.player, 35));
+  console.log('\n### Asymptote check — total stock trajectory\n');
+  console.log(asymptoteTable(run.player));
+  console.log('\n### Top stockpiles by book value — month 36\n');
+  console.log(topStocks(run.player, 35));
   console.log('');
 }
 
@@ -265,5 +327,36 @@ console.log('\n### Analytic ceiling — saturate every minable NPC cap at the ba
   console.log(mdTable(['resource', 'NPC cap/real-day', 'floor sale price', 'max $/real-day'], rows));
   console.log(`\nTotal: ~${fm(Math.round(totalPerDay))}/real-day (${fm(Math.round(totalPerDay / 4))}/game-month) if a player saturates EVERY minable cap at the floor, 24/7.`);
 }
+
+// ─── 4. Contract outlet — belt-baron viability (Pass 2, task 4) ─────────────
+// The Pass-1 audit world showed the pure mining specialist cash-negative
+// with NPC absorption honored — but the real game has the delivery-contract
+// channel (4-6 completions per rolling 24h, no fee, spot-priced). Model it
+// and re-check viability at mid-tier (cap/day 5 = base 4 + space_logistics).
+
+const baronContracts = runAudit('baron-contracts', orderedPlan(beltBaronOrder), {
+  money: 60_000_000_000, maxBuilds: 2, contractCapPerDay: 5,
+});
+const industrialistContracts = runAudit('industrialist-contracts', orderedPlan(beltIndustrialistOrder), {
+  money: 60_000_000_000, maxBuilds: 2, craftPlan: beltIndustrialistCraftPlan, contractCapPerDay: 5,
+});
+
+console.log('\n## Contract outlet (cap 5/day, typical qty ' + CONTRACT_OUTLET_TYPICAL_QTY + ' u, spot ×1.0) — specialist viability\n');
+const coRows = [5, 11, 17, 23, 29, 35].map(m => {
+  const none = beltBaron.player.history[m];
+  const c = baronContracts.player.history[m];
+  const ic = industrialistContracts.player.history[m];
+  return [
+    m,
+    fm(none.net), fm(c.net), fm(c.contractSales || 0),
+    fm(ic.net), fm(ic.contractSales || 0),
+  ];
+});
+console.log(mdTable(
+  ['mo', 'baron net/mo (no outlet)', 'baron net/mo (outlet)', 'baron contract $/mo', 'industrialist net/mo (outlet)', 'industrialist contract $/mo'],
+  coRows,
+));
+console.log('\n### Belt baron w/ outlet — coverage month 36\n');
+console.log(coverageTable(baronContracts.player, 35));
 
 console.log('\ndone.');

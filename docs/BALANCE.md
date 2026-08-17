@@ -606,6 +606,19 @@ the asymptote is finite (≈ 3,300-4,200 u for the hoarder). Slow-filling
 resources are *allowed* a working stockpile before the cap bites; that is
 the design, not a leak.
 
+*Pass-2 footnotes (2026-08, see "Pass 2" section below):* (i) the month-36
+re-audit reproduces this table's month-24 values exactly (the audit runs are
+deterministic) and confirms convergence continues past month 24 — total-stock
+drift falls geometrically (belt baron 265 → 53 u/mo, hoarder 1,196 → 275
+u/mo between the mo-11→17 and mo-29→35 windows). (ii) The steel/refined
+coverage in this table was understated for players who CRAFT — the harness
+couldn't see the crafting queue. With crafting modeled (Pass 2), a belt
+specialist who invests in fabrication reaches iron ≈ 1.0 and
+steel_ingots ≈ 1.0 coverage, but the crafting sink is **output-bound** at
+steady state: components pile to their own (tighter) caps unless they exit
+via contracts. The numbers above — the no-crafting case — remain the honest
+floor.
+
 **Healthy-band statement:** target is 0.6-1.2 coverage for the majority
 of actively-generated resources as stocks approach equilibrium.
 Post-tuning at month 24, 10 of the hoarder's 16 generated resources sit
@@ -633,8 +646,205 @@ visibly asymptoting (7.06K at mo17 → 7.73K at mo23, vs linear before).
   fresh against whatever constants are live.
 - Candidate follow-ups, in preference order: (a) storage-cap UI (show
   capacity + overflow warning in the inventory panel — the mechanic is
-  live but only surfaced via the Situation-Log event); (b) recurring
-  refined/component sinks via maintenance-consumes-materials WITH a
-  grandfather grace credit; (c) extraction-pressure floor decay for
+  live but only surfaced via the Situation-Log event) — **DONE in Pass 2**;
+  (b) recurring refined/component sinks via maintenance-consumes-materials
+  WITH a grandfather grace credit; (c) extraction-pressure floor decay for
   over-saturated deposits; (d) crafting-queue modeling in the harness
-  (steel→beams is a real player sink the sim can't see yet).
+  (steel→beams is a real player sink the sim can't see yet) — **DONE in
+  Pass 2**.
+
+## Pass 2 — asymptote verification, crafting/contract sinks, storage UI (2026-08)
+
+Second pass on the same founder directive. Pass 1 bounded stockpiles; Pass 2
+(a) closed the two harness blind spots that under-measured player sinks
+(crafting queue, delivery contracts), (b) re-audited the tuned world to
+month 36 to verify true asymptotes and hunt NEW dominant strategies the
+Pass-1 levers might have created, and (c) shipped the storage-visibility UI
+so decay never feels like silent theft.
+
+### Tooling (additive; defaults off; legacy tables diffed byte-identical)
+
+- **Crafting-queue sink** (`sim-harness.ts` `SimPlayer.craftPlan`) — mirrors
+  the live engine's single `activeRefining` slot run continuously (the same
+  24/7 assumption `npcAbsorptionPerMonth` already makes): a priority list of
+  `PRODUCTION_CHAINS` recipe ids; each month's budget is the game-month's
+  real seconds ÷ each recipe's `timeSeconds`/`getCraftingSpeedMultiplier`
+  (real fab-count bonus). `requiredBuilding` is enforced against the fleet;
+  `requiredResearch` is assumed complete (the harness's standing neutrality
+  stance). Inputs come from EXISTING stock only — never market-bought, never
+  below the next month's recipe keep-back — so the model measures crafting
+  as a **surplus sink**, not manufactured demand. **Informed-player guard:**
+  a recipe never runs its output past `storageCapacityUnits` — without this
+  the model "crafts into decay" and overstates the sink by pure churn (first
+  modeling attempt did exactly that: 2,708 steel piled at a 480-unit cap
+  with 15%/mo bleeding disguised as "coverage").
+- **Delivery-contract outlet** (`SimWorldOpts.contractOutlet`) — the live
+  game's no-fee channel the Pass-1 audit world couldn't see: up to
+  `capPerDay` completions per rolling 24h (delivery-contracts.ts: 4 base,
+  +1 `space_logistics`, +1 tier 5), modeled as capPerDay × ¼ contracts per
+  game-month × `CONTRACT_OUTLET_TYPICAL_QTY` (94 u — derivation in the
+  constant's doc comment) units of post-NPC-cap surplus sold at spot ×1.0,
+  highest-value first. Faction payment multipliers (0.9–1.5, mean ≈1.2) are
+  conservatively held at 1.0, so the real-game outlet is slightly BETTER
+  than modeled.
+- `sinkCoverage` now counts `craftedIn`/`contractSold` as drains and
+  `craftedOut` as generation; `sim-resources.ts` runs to month 36, prints an
+  asymptote-drift table per strategy, and adds two new runs
+  (belt-industrialist; contract-outlet comparisons).
+- Guards: `src/lib/game/__tests__/sim-crafting-contracts.test.ts` (8 tests:
+  recipe gating, stock-only inputs, output-cap guard, time-budget bound,
+  outlet budget/pricing/ordering, defaults-off invariance, determinism).
+  Legacy `sim-strategies.ts` output was additionally diffed against the
+  HEAD harness: **byte-identical**. M1 first-copy-ROI CI guard untouched
+  and green.
+
+### Re-audit: stocks truly asymptote (month 36)
+
+Total-stock drift (units/game-month, averaged over each 6-month window):
+
+| strategy | mo 11→17 | mo 17→23 | mo 23→29 | mo 29→35 | verdict |
+|---|---:|---:|---:|---:|---|
+| integrator | −0.2 | −0.1 | −0.1 | −0.1 | equilibrium (≈33 u total — caps never bind) |
+| belt baron | 265 | 135 | 76 | 53 | converging geometrically |
+| hoarder | 1,196 | 1,054 | 546 | 275 | converging geometrically |
+| belt industrialist | 335 | 178 | 105 | 77 | converging geometrically |
+
+The residual drift is entirely resources still UNDER their storage caps
+(belt baron: titanium at 1,634 u vs a 2,250-u warehoused cap) — the same
+"allowed working stockpile" § Pass 1's † footnote documents. Every
+over-cap resource sits at its finite equilibrium (`cap + net-gen/0.15`);
+hoarder iron is the clearest: 16,042 u at month 36 against a ~2,550-u cap,
+with decay drain (≈2,020 u/mo) nearly matching generation (2,310 u/mo) —
+coverage 0.98 and closing on 1.0 by construction. **No unbounded curve
+remains in any run.**
+
+### New-dominant-strategy checks (Pass-1 levers)
+
+- **Is warehousing now mandatory-dominant?** No. The integrator's total
+  stock (≈33 u) never approaches any base cap — a diversified player pays
+  zero decay with zero warehousing investment. `inventoryProtection` only
+  matters to specialists running deep stockpiles, where it is a real but
+  bounded choice (×2.2 max capacity, and the buildings that carry it are
+  bought for their PRIMARY function — refining, station services). It is a
+  specialist's tool, not a universal tax.
+- **Month-end dump-and-rebuy dodge?** Not durable. Decay reads end-of-month
+  holdings, so "dump before the tick" is just… selling — the intended
+  response — and both legs are bounded: the sale leg by NPC volume caps +
+  the contract cap, the rebuy leg by the same caps plus the ~11% round-trip
+  spread (buy ×1.08 / sell ×0.97). The spread is paid on the FULL churned
+  quantity while decay only taxes the overflow fraction, the caps prevent
+  bulk churn at scale, and the rebuilt pile decays again next month anyway.
+- **Crafting-shelter dodge?** A craft-in-progress does hold one recipe's
+  inputs outside the decay base, but the single refining slot bounds the
+  shelter to one recipe's input stack (~20–50 u) — noise.
+- **Crafting-into-decay churn** — found in the MODEL and guarded (see
+  Tooling); in the live game it destroys player value rather than creating
+  it (no money is minted), and the new storage UI warns exactly when an
+  output is over cap. Not an exploit; a player error the UI now prevents.
+
+### Crafting sink — measured effect
+
+Belt industrialist (belt baron + Orbital Fab Lab + Lunar Manufacturing
+Plant, continuous rotation beams → electronics → refine-rare-earth →
+smelt-steel), no contract outlet. While the queue has cap headroom (month
+12) the sink is dramatic vs the plain baron: iron coverage 0.74 → **1.00**
+(stock 4,482 → **200** — the smelter eats the entire iron surplus),
+aluminum_alloy 0.16 → **1.00**, rare_earth 0.39 → **1.00**. But at steady
+state the queue is **output-bound**: beams/electronics fill their component
+caps (~208 u warehoused) within months and the guard idles the queue, iron
+piles again toward its own cap equilibrium, and component NPC caps are tiny
+by design (2–8/real-day) — so crafting alone converts a raw pileup into a
+smaller, denser component equilibrium; it does not exit matter from the
+economy unless the products SELL. With the contract outlet the products do
+sell, and that combination is the first genuinely profitable specialist
+(next section).
+
+### Belt-baron viability (Pass-1 open question) — answered
+
+Month-35 steady state, audit world, contract outlet at mid-tier cap 5/day:
+
+| player | net/mo (no outlet) | net/mo (outlet) | contract $/mo |
+|---|---:|---:|---:|
+| belt baron (4 rigs + 2 reactors + refinery, one deposit) | **−$61.6M** | **−$47.4M** | $14.3M |
+| distributed miner (6 deposits, lunar→Titan) | −$11.2M | **−$2.6M** | $9.2M |
+| belt industrialist (baron + fabs + crafting) | −$42.7M | **+$7.0M** | $52.9M |
+
+Verdict: **a PURE mining specialist is not viable at mid-tier steady
+state**, even with the contract channel modeled. The structural cause is
+cost-side, not demand-side: shared-deposit extraction pressure floors at
+0.4 after ~3 months of continuous extraction, so a rig earns ~40% of
+nameplate while paying **100% of nameplate operating cost** ($18M/mo for a
+belt rig that grosses ~$18.5M at the floor). The belt baron's month-35 P&L:
+$74M mining revenue + $28M sales/contracts vs $72M operating + $55M
+maintenance + $17M exec comp. Mining→fabrication→contracts IS viable
+(+$7M/mo and improving with scale), which is the designed pull toward
+vertical integration — but the pure-extraction rung of the ladder is a
+trap plateau.
+
+**Proposed lever (NOT implemented) — extraction duty-cycle opex scaling.**
+When a deposit's extraction pressure is below 1.0, the mining building
+throttles its duty cycle and its *service operating cost* scales with it,
+floored so fixed costs never vanish:
+
+```
+opexMult = clamp(pressure, 0.55, 1.0)   // applies to mining_output
+                                        // operatingCostPerMonth only;
+                                        // maintenance unchanged
+```
+
+Numbers at the 0.4 floor: belt rig opex $18M → $9.9M (−$8.1M/rig/mo).
+Belt baron: −$47.4M → **≈ −$15M/mo** (single-deposit stacking stays
+punished — correct). Distributed miner: −$2.6M → **≈ +$13–18M/mo**
+(mining-opex share ≈ $35–40M across six deposit services) — the
+geographically-diversified specialist becomes viable, which is exactly the
+gradient the game wants (spread out, don't strip-mine one rock). The
+integrator gains <$4M/mo (mining is a small share) — no dominant-strategy
+risk. It is cost-side (sinks-first compatible: adds zero generation and
+zero NPC money), uses telemetry that already exists per-deposit, and needs
+no save migration (pure formula change in the tick + harness §4/§5).
+Secondary option if more is needed after that lands: contract
+`quantityMultiplier` ×1.5 when a faction's preferred resource is raw bulk
+(raises the outlet's raw-unit throughput ~$7M/mo for the baron) — weaker,
+and it injects NPC contract money, so try the cost-side lever first.
+Implementation should re-run `sim-resources.ts` and hold the M1 first-copy
+guard green (first-copy probes price at pressure 1.0, where opexMult = 1.0,
+so the guard is structurally unaffected).
+
+### Storage visibility UI (shipped)
+
+Decay must never feel like silent theft (Pass-1 invariant; founder
+directive). Shipped in `MarketPanel.tsx` ("Your Resources" + sell modal),
+reading the SAME pure functions the tick bills through
+(`storageCapacityUnits`, `VOLATILE_BOILOFF_PER_MONTH`,
+`STORAGE_OVERFLOW_DECAY_PER_MONTH` — consumption.ts):
+
+- Every inventory card: `Storage <total> / <cap>` across ALL pools (the
+  integrity pass taxes total holdings, not just Earth stock), a thin fill
+  bar (decorative, aria-hidden), a "near cap" note at ≥85%, and an explicit
+  **"Over cap — N u decaying 15%/mo"** state with a GameIcon `warning`
+  glyph + amber border — text-first, never color-alone.
+- Volatiles additionally show **"Volatile — boils off N%/mo"** with the
+  per-resource rate.
+- The sell modal repeats the warning where the fix happens: "N units above
+  your X-unit storage capacity — surplus decays 15% per game-month.
+  Selling it stops the loss."
+- Two new glossary concepts (`concepts.ts`): **storage-cap** and
+  **boiloff**, cross-linked to each other and reachable from the panel
+  header's HoloTip `<Concept>` chips (keyboard/screen-reader accessible via
+  the existing HoloTip contract; the per-card text is plain content inside
+  the existing card buttons — no nested interactive controls). Cards are
+  2-per-row at 375px and the new line is one short text row — no layout
+  change.
+
+### Invariants held
+
+- No save migration, no `types.ts` changes — the UI reads existing state;
+  the harness fields are sim-only.
+- Deterministic: no `Date.now`/`Math.random` in any new harness path
+  (asserted by the determinism test).
+- Sinks-first: nothing in this pass buffs generation; the proposed miner
+  lever is cost-side.
+- Frontier exemption untouched (storage integrity still runs behind
+  `advanceConsumptionToMonth`'s existing shield).
+- M1 `tier-ladder-first-copy-roi.test.ts` green; legacy `sim-strategies.ts`
+  tables byte-identical (diffed against the HEAD harness).

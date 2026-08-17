@@ -32,7 +32,8 @@
 //     - active30d = 0 (full NPC demand floor). npcPopulationScaler scenarios
 //       can be passed explicitly.
 
-import { BUILDINGS, BUILDING_MAP, getPowerByLocation } from '../src/lib/game/buildings';
+import { BUILDINGS, BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier } from '../src/lib/game/buildings';
+import { CHAIN_MAP } from '../src/lib/game/production-chains';
 import { SERVICE_MAP } from '../src/lib/game/services';
 import { MINING_PRODUCTION, RESOURCE_MAP } from '../src/lib/game/resources';
 import type { ResourceId } from '../src/lib/game/resources';
@@ -50,7 +51,7 @@ import {
   type ProfileActivitySummary,
 } from '../src/lib/game/demand-pools';
 import { computePoolMultiplier } from '../src/lib/game/service-pricing';
-import { processConsumptionForMonth, DEFAULT_CONSUMPTION_STATE, CONSUMPTION_EFFICIENCY_FLOOR } from '../src/lib/game/consumption';
+import { processConsumptionForMonth, DEFAULT_CONSUMPTION_STATE, CONSUMPTION_EFFICIENCY_FLOOR, storageCapacityUnits } from '../src/lib/game/consumption';
 import { getNpcVolumeCap } from '../src/lib/game/npc-volume-caps';
 import {
   applyExtractionEvent,
@@ -96,6 +97,19 @@ export interface SimPlayer {
    *  "resource hoarder" worst case (stockpiles only grow). Default true
    *  (the original always-liquidate behavior). */
   sellsLeftovers: boolean;
+  /** Balance Pass 2: crafting-queue plan — PRODUCTION_CHAINS recipe ids in
+   *  priority order. Each month the single refining slot (game-engine.ts
+   *  `activeRefining`) runs recipes from this list, first-listed first,
+   *  bounded by (a) the month's real-seconds budget ÷ each recipe's
+   *  effective duration (fab-count speed bonus applied, exactly
+   *  getCraftingSpeedMultiplier) and (b) inputs ALREADY IN STOCK — the
+   *  crafting model is a surplus SINK, it never market-buys inputs.
+   *  requiredBuilding is enforced against the player's completed fleet;
+   *  requiredResearch is assumed complete (same neutrality stance as the
+   *  harness's other private multipliers — gating by research would
+   *  understate the sink this model exists to measure). Empty/absent =
+   *  no crafting (every legacy table byte-identical). */
+  craftPlan?: string[];
   history: MonthRow[];
 }
 
@@ -126,10 +140,20 @@ export interface ResourceFlows {
   /** Units bought from the market (recipe-input shortfall + construction
    *  material shortfall). */
   bought: Record<string, number>;
+  /** Balance Pass 2: input units consumed by the crafting queue (a drain). */
+  craftedIn: Record<string, number>;
+  /** Balance Pass 2: output units produced by the crafting queue (generation). */
+  craftedOut: Record<string, number>;
+  /** Balance Pass 2: units sold through the delivery-contract outlet (a
+   *  drain, separate from NPC-capped leftover sales). */
+  contractSold: Record<string, number>;
 }
 
 export function emptyFlows(): ResourceFlows {
-  return { mined: {}, produced: {}, consumed: {}, construction: {}, sold: {}, unsold: {}, decayed: {}, bought: {} };
+  return {
+    mined: {}, produced: {}, consumed: {}, construction: {}, sold: {},
+    unsold: {}, decayed: {}, bought: {}, craftedIn: {}, craftedOut: {}, contractSold: {},
+  };
 }
 
 function addFlow(rec: Record<string, number>, res: string, qty: number): void {
@@ -167,6 +191,9 @@ export interface MonthRow {
   execComp: number;
   inputCost: number;
   resourceSales: number;
+  /** Balance Pass 2: revenue from the delivery-contract outlet this month
+   *  (0 unless world.opts.contractOutlet is set). Included in `net`. */
+  contractSales?: number;
   net: number;
   buildingCount: number;
   capex: number;
@@ -194,7 +221,24 @@ export interface SimWorldOpts {
    *  drain the real engine charges (command-queue.ts). Off by default so the
    *  historical money tables don't shift. */
   constructionMaterials?: boolean;
+  /** Balance Pass 2: delivery-contract outlet — the sink the Pass-1 audit
+   *  world couldn't see. The live game lets a player complete
+   *  `getDailyDeliveryCap()` delivery contracts per rolling 24h (4 base, +1
+   *  space_logistics research, +1 tier 5), each asking for a faction-typical
+   *  quantity of ONE resource, paid at live spot with NO broker fee
+   *  (delivery-contracts.ts). Model: each game-month the player may sell up
+   *  to capPerDay × (monthMs/DAY) × CONTRACT_OUTLET_TYPICAL_QTY units of
+   *  its post-NPC-cap leftover surplus (highest book value first) at spot
+   *  ×1.0. Faction payment multipliers (0.9–1.5, mean 1.2) are conservatively
+   *  held at 1.0. Off by default — legacy tables unchanged. */
+  contractOutlet?: { capPerDay: number };
 }
+
+/** Balance Pass 2: expected units per delivery contract. Derivation from
+ *  delivery-contracts.ts generateContract: baseQty ~ U[20,200] (mean 110) ×
+ *  mean faction quantityMultiplier ((1.2+0.8+1.0+0.5+0.9+0.7)/6 = 0.85)
+ *  ≈ 93.5 → 94. */
+export const CONTRACT_OUTLET_TYPICAL_QTY = 94;
 
 export interface SimWorld {
   players: SimPlayer[];
@@ -225,7 +269,7 @@ export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
@@ -233,6 +277,7 @@ export function newPlayer(
     plan, maxBuildsPerMonth: opts.maxBuildsPerMonth ?? 2,
     buysInputs: opts.buysInputs ?? true,
     sellsLeftovers: opts.sellsLeftovers ?? true,
+    craftPlan: opts.craftPlan,
     history: [],
   };
 }
@@ -495,6 +540,54 @@ export function stepMonth(world: SimWorld, month: number): void {
         }
       }
     }
+    // 5b. Crafting queue (Balance Pass 2) — the player sink the Pass-1 audit
+    //     couldn't see. Mirrors game-engine.ts's single `activeRefining`
+    //     slot run continuously (the same 24/7 assumption npcAbsorptionPerMonth
+    //     already makes): the month's budget is monthMs real-seconds; each run
+    //     of a recipe costs timeSeconds ÷ getCraftingSpeedMultiplier (the
+    //     fab-count bonus, real math) and inputs are drawn from EXISTING
+    //     stock only, never market-bought and never below next month's
+    //     recipe keep-back (`need`) — crafting drains surplus, it doesn't
+    //     manufacture demand. requiredBuilding gates each recipe against the
+    //     player's completed fleet.
+    if (p.craftPlan && p.craftPlan.length > 0) {
+      const speedMult = getCraftingSpeedMultiplier(p.buildings);
+      let secondsLeft = world.monthMs / 1000;
+      const builtIds = new Set(p.buildings.map(b => b.definitionId));
+      for (const recipeId of p.craftPlan) {
+        const recipe = CHAIN_MAP.get(recipeId);
+        if (!recipe || !builtIds.has(recipe.requiredBuilding)) continue;
+        const runSeconds = recipe.timeSeconds / speedMult;
+        if (runSeconds <= 0) continue;
+        const runsByTime = Math.floor(secondsLeft / runSeconds);
+        if (runsByTime <= 0) continue;
+        let runsByInputs = Infinity;
+        for (const [res, qty] of Object.entries(recipe.inputs)) {
+          const available = Math.max(0, (p.resources[res] || 0) - (need[res] || 0));
+          runsByInputs = Math.min(runsByInputs, Math.floor(available / qty));
+        }
+        // Informed-player guard: never craft an output past its storage cap
+        // (consumption.ts storageCapacityUnits) — above it, output decays
+        // 15%/game-month, so "craft into decay" destroys value and the new
+        // storage-visibility UI tells the player exactly that. Without this
+        // guard the crafting sink is overstated by decay-churn.
+        const outCap = storageCapacityUnits(p.buildings as unknown as GameState['buildings'], recipe.outputId);
+        const outRoom = Math.max(0, outCap - (p.resources[recipe.outputId] || 0));
+        const runsByOutputCap = Math.floor(outRoom / recipe.outputQuantity);
+        const runs = Math.min(runsByTime, runsByOutputCap, Number.isFinite(runsByInputs) ? runsByInputs : 0);
+        if (runs <= 0) continue;
+        secondsLeft -= runs * runSeconds;
+        for (const [res, qty] of Object.entries(recipe.inputs)) {
+          const drawn = qty * runs;
+          p.resources[res] = Math.max(0, (p.resources[res] || 0) - drawn);
+          addFlow(flows.craftedIn, res, drawn);
+        }
+        const out = recipe.outputQuantity * runs;
+        p.resources[recipe.outputId] = (p.resources[recipe.outputId] || 0) + out;
+        addFlow(flows.craftedOut, recipe.outputId, out);
+      }
+    }
+
     let resourceSales = 0;
     // Sell every resource not needed as next month's input, at spot −3%.
     // Balance Pass 1: a hoarder (sellsLeftovers=false) skips this entirely;
@@ -523,6 +616,41 @@ export function stepMonth(world: SimWorld, month: number): void {
       }
     }
 
+    // 5c. Delivery-contract outlet (Balance Pass 2, opt-in) — after the
+    //     NPC-capped dump, the player may still move a bounded contract
+    //     budget's worth of surplus at spot with no fee (the real game's
+    //     no-fee delivery channel, capped per rolling 24h). Highest-value
+    //     surplus first — the honest "which contracts would a specialist
+    //     accept" heuristic.
+    let contractSales = 0;
+    if (p.sellsLeftovers && world.opts.contractOutlet) {
+      const contractsPerMonth = world.opts.contractOutlet.capPerDay * (world.monthMs / DAY_MS);
+      let unitsBudget = contractsPerMonth * CONTRACT_OUTLET_TYPICAL_QTY;
+      const surplus = Object.entries(p.resources)
+        .map(([res, qty]) => {
+          const avail = Math.max(0, qty - (need[res] || 0));
+          const price = world.spotSnapshot?.prices?.[res]
+            ?? (RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0);
+          return { res, avail, price };
+        })
+        .filter(e => e.avail > 0 && e.price > 0)
+        .sort((a, b) => b.price - a.price);
+      for (const e of surplus) {
+        if (unitsBudget <= 0) break;
+        const sell = Math.min(e.avail, unitsBudget);
+        unitsBudget -= sell;
+        contractSales += sell * e.price; // spot ×1.0 — the no-fee channel
+        p.resources[e.res] = (p.resources[e.res] || 0) - sell;
+        addFlow(flows.contractSold, e.res, sell);
+        // These units found a real buyer after all — they are no longer
+        // "unsold" for this month's telemetry.
+        if (flows.unsold[e.res]) {
+          flows.unsold[e.res] = Math.max(0, flows.unsold[e.res] - sell);
+          if (flows.unsold[e.res] === 0) delete flows.unsold[e.res];
+        }
+      }
+    }
+
     // 6. Scaling sinks (engine §1b/§1c formulas verbatim)
     const overhead = corporateOverheadMonthly(p.buildings.length);
     // M1/F4: exec comp keys off BOOK net worth now (asset-aware), matching
@@ -532,7 +660,7 @@ export function stepMonth(world: SimWorld, month: number): void {
     const netWorthEst = bookNetWorth(p);
     const execComp = executiveCompensationMonthly(netWorthEst);
 
-    const grossIn = revenue + resourceSales;
+    const grossIn = revenue + resourceSales + contractSales;
     const grossOut = operating + maintenance + overhead + execComp;
     p.money += grossIn - grossOut;
     p.totalEarned += grossIn;
@@ -560,6 +688,7 @@ export function stepMonth(world: SimWorld, month: number): void {
       execComp,
       inputCost,
       resourceSales,
+      contractSales,
       net: grossIn - grossOut - inputCost,
       buildingCount: p.buildings.length,
       capex: (p as SimPlayer & { _capex?: number })._capex || 0,
@@ -577,14 +706,17 @@ export function stepMonth(world: SimWorld, month: number): void {
 
 export interface SinkCoverageRow {
   resource: string;
-  generated: number; // mined + produced (units/mo)
-  drained: number;   // consumed + construction + sold + decayed (units/mo)
+  generated: number; // mined + produced + craftedOut (units/mo)
+  drained: number;   // consumed + construction + sold + contractSold + craftedIn + decayed (units/mo)
   ratio: number;     // drained / generated (Infinity when generated = 0)
   stock: number;     // end-of-month stock (units)
 }
 
 /** Per-resource sink-coverage at one month of a player's history: monthly
- *  drains ÷ monthly generation. Ratios far below 1 = unbounded pileup. */
+ *  drains ÷ monthly generation. Ratios far below 1 = unbounded pileup.
+ *  Balance Pass 2: crafting-queue inputs (craftedIn) and contract-outlet
+ *  sales (contractSold) count as drains; crafting outputs (craftedOut)
+ *  count as generation. */
 export function sinkCoverage(row: MonthRow): SinkCoverageRow[] {
   const f = row.flows;
   if (!f) return [];
@@ -592,11 +724,14 @@ export function sinkCoverage(row: MonthRow): SinkCoverageRow[] {
     ...Object.keys(f.mined), ...Object.keys(f.produced),
     ...Object.keys(f.consumed), ...Object.keys(f.construction), ...Object.keys(f.sold),
     ...Object.keys(f.decayed),
+    ...Object.keys(f.craftedIn || {}), ...Object.keys(f.craftedOut || {}),
+    ...Object.keys(f.contractSold || {}),
   ]);
   const out: SinkCoverageRow[] = [];
   for (const res of Array.from(resourceSet)) {
-    const generated = (f.mined[res] || 0) + (f.produced[res] || 0);
-    const drained = (f.consumed[res] || 0) + (f.construction[res] || 0) + (f.sold[res] || 0) + (f.decayed[res] || 0);
+    const generated = (f.mined[res] || 0) + (f.produced[res] || 0) + (f.craftedOut?.[res] || 0);
+    const drained = (f.consumed[res] || 0) + (f.construction[res] || 0) + (f.sold[res] || 0)
+      + (f.decayed[res] || 0) + (f.craftedIn?.[res] || 0) + (f.contractSold?.[res] || 0);
     out.push({
       resource: res,
       generated: Math.round(generated * 100) / 100,

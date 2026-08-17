@@ -13,6 +13,17 @@ import { isMarketEventExpired, type ActiveMarketEvent, type ForecastMarketEvent 
 // the player understands why it isn't sellable yet.
 import { getResourceTotals } from '@/lib/game/cargo-logistics';
 import { MINED_ONLY_RESOURCE_IDS as MINED_ONLY_RESOURCE_ID_LIST } from '@/lib/game/economic-sinks';
+// Balance Pass 2 (docs/BALANCE.md "Pass 2"): storage integrity must be
+// visible where inventory is shown — decay may never feel like silent theft.
+// These are the SAME pure functions the monthly tick charges, so the numbers
+// shown are the numbers billed.
+import {
+  storageCapacityUnits,
+  VOLATILE_BOILOFF_PER_MONTH,
+  STORAGE_OVERFLOW_DECAY_PER_MONTH,
+} from '@/lib/game/consumption';
+import GameIcon from './GameIcon';
+import { Concept } from './HoloTip';
 import Image from 'next/image';
 
 interface MarketPrices {
@@ -161,6 +172,24 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
   }, [onBuyResource, trading, state.money, fetchPrices]);
 
   const ownedResources = Object.entries(state.resources || {}).filter(([, qty]) => qty > 0);
+
+  // Balance Pass 2: per-resource storage readout. Capacity counts ALL pools
+  // (Earth + remote stockpiles) because the monthly storage-integrity pass
+  // taxes total holdings, not just what is sellable at Earth.
+  const storageInfo = (resourceId: string) => {
+    const cap = Math.round(storageCapacityUnits(state.buildings, resourceId));
+    const total = getResourceTotals(state, resourceId).total;
+    const boiloff = VOLATILE_BOILOFF_PER_MONTH[resourceId] || 0;
+    return {
+      cap,
+      total,
+      overCap: cap > 0 && total > cap,
+      nearCap: cap > 0 && total <= cap && total >= cap * 0.85,
+      fillPct: cap > 0 ? Math.min(100, Math.round((total / cap) * 100)) : 0,
+      boiloffPct: Math.round(boiloff * 100),
+    };
+  };
+  const overflowPct = Math.round(STORAGE_OVERFLOW_DECAY_PER_MONTH * 100);
 
   // Live (non-expired) market events, filtered for render.
   const liveMarketEvents = activeMarketEvents.filter(ev => !isMarketEventExpired(ev));
@@ -317,9 +346,19 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
       <div className="hud-frame hud-frame-amber relative rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
-        <h3 className="font-hud text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-          <span>📦</span> Your Resources
-        </h3>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-3">
+          <h3 className="font-hud text-amber-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <GameIcon name="package" size={14} /> Your Resources
+          </h3>
+          {/* Balance Pass 2: storage-integrity legend — keyboard/SR-reachable
+              glossary trigger, kept OUTSIDE the card buttons (no nested
+              interactive controls). */}
+          <span className="text-[10px] text-slate-500">
+            <Concept id="storage-cap">Storage caps</Concept>
+            {' '}&middot;{' '}
+            <Concept id="boiloff">boiloff</Concept>
+          </span>
+        </div>
         {ownedResources.length === 0 ? (
           <p className="text-slate-500 text-xs">No resources yet. Build mining operations to produce resources.</p>
         ) : (
@@ -330,6 +369,8 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
               const price = getSellPrice(id);
               const value = qty * price;
               const change = prices[id]?.change || 0;
+              // Balance Pass 2: storage state — total across all pools vs cap.
+              const st = storageInfo(id);
               return (
                 <button
                   key={id}
@@ -337,7 +378,9 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                   className={`p-2 rounded-lg text-left transition-all ${
                     selectedResource === id
                       ? 'bg-amber-500/20 border border-amber-500/30'
-                      : 'bg-white/[0.03] border border-white/[0.04] hover:border-white/[0.1]'
+                      : st.overCap
+                        ? 'bg-white/[0.03] border border-amber-500/40 hover:border-amber-500/60'
+                        : 'bg-white/[0.03] border border-white/[0.04] hover:border-white/[0.1]'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
@@ -359,6 +402,33 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                       </span>
                     )}
                   </div>
+                  {/* Balance Pass 2: storage capacity + decay state. Plain
+                      text (screen-reader-visible), never color-alone; the
+                      fill bar is decorative. */}
+                  <div
+                    className="mt-1 h-1 rounded-full bg-white/[0.06] overflow-hidden"
+                    aria-hidden="true"
+                  >
+                    <div
+                      className={`h-full rounded-full ${st.overCap ? 'bg-amber-400' : st.nearCap ? 'bg-amber-400/60' : 'bg-cyan-500/50'}`}
+                      style={{ width: `${st.fillPct}%` }}
+                    />
+                  </div>
+                  <p className={`mt-0.5 text-[10px] leading-tight ${st.overCap ? 'text-amber-300' : 'text-slate-500'}`}>
+                    {st.overCap ? (
+                      <span className="inline-flex items-center gap-1">
+                        <GameIcon name="warning" size={10} />
+                        <span>
+                          Over cap — {Math.round(st.total - st.cap).toLocaleString()} u decaying {overflowPct}%/mo
+                        </span>
+                      </span>
+                    ) : (
+                      <>Storage {Math.round(st.total).toLocaleString()} / {st.cap.toLocaleString()}{st.nearCap ? ' — near cap' : ''}</>
+                    )}
+                    {st.boiloffPct > 0 && (
+                      <span className="block text-slate-500">Volatile — boils off {st.boiloffPct}%/mo</span>
+                    )}
+                  </p>
                 </button>
               );
             })}
@@ -396,6 +466,29 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
               )}
             </h3>
             <p className="text-slate-500 text-[10px] mb-2">Selling will push the market price down</p>
+            {/* Balance Pass 2: over-cap decay warning — selling surplus is
+                the loss-stopping move, say so where the sale happens. */}
+            {(() => {
+              const st = storageInfo(selectedResource);
+              if (!st.overCap && st.boiloffPct === 0) return null;
+              return (
+                <p className="text-amber-300/90 text-[10px] mb-2 flex items-start gap-1" role="note">
+                  <GameIcon name="warning" size={12} />
+                  <span>
+                    {st.overCap && (
+                      <>
+                        {Math.round(st.total - st.cap).toLocaleString()} unit{Math.round(st.total - st.cap) === 1 ? '' : 's'} above
+                        your {st.cap.toLocaleString()}-unit <Concept id="storage-cap">storage capacity</Concept> — surplus decays {overflowPct}% per
+                        game-month. Selling it stops the loss.{' '}
+                      </>
+                    )}
+                    {st.boiloffPct > 0 && (
+                      <>This volatile <Concept id="boiloff">boils off</Concept> {st.boiloffPct}% of total stock per game-month.</>
+                    )}
+                  </span>
+                </p>
+              );
+            })()}
             {totals.remote > 0 && (
               <p className="text-amber-300/90 text-[10px] mb-2" role="note">
                 📦 {totals.remote.toLocaleString()} more unit{totals.remote === 1 ? '' : 's'} in remote stockpiles
