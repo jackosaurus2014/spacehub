@@ -234,7 +234,7 @@ export async function fetchAndStoreExportControlUpdates(): Promise<number> {
     });
 
     // Filter for BIS and State Department
-    const url = `https://www.federalregister.gov/api/v1/documents.json?${params.toString()}&conditions[agencies][]=bureau-of-industry-and-security&conditions[agencies][]=state-department`;
+    const url = `https://www.federalregister.gov/api/v1/documents.json?${params.toString()}&conditions[agencies][]=industry-and-security-bureau&conditions[agencies][]=state-department`;
 
     const response = await fetch(url, {
       headers: { 'Accept': 'application/json' },

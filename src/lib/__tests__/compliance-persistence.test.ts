@@ -194,7 +194,7 @@ describe('Federal Register type to regulation type mapping', () => {
 describe('category detection from agency and content', () => {
   it('detects export_control from BIS agency slug', async () => {
     const doc = makeDocument({
-      agencySlugs: ['bureau-of-industry-and-security'],
+      agencySlugs: ['industry-and-security-bureau'],
       title: 'Trade regulations update',
       abstract: 'General trade update',
     });

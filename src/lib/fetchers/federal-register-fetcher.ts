@@ -76,7 +76,12 @@ const SPACE_AGENCY_SLUGS = [
   'national-aeronautics-and-space-administration',
   'national-oceanic-and-atmospheric-administration',
   'defense-department',
-  'bureau-of-industry-and-security',
+  // NOTE: BIS's Federal Register slug is 'industry-and-security-bureau' —
+  // NOT 'bureau-of-industry-and-security'. One invalid slug 400s the ENTIRE
+  // multi-agency query, and the circuit breaker masks that as "0 documents";
+  // this fetcher had been silently dead until the 8/17 Radar verification
+  // caught it. Verify new slugs against /api/v1/agencies before adding.
+  'industry-and-security-bureau',
   'state-department', // DDTC falls under State
   'air-force-department', // Space Force resides under Air Force/DoD
 ];
@@ -87,7 +92,7 @@ const SPACE_AGENCY_SLUGS = [
  * and launch companies without ever saying "satellite").
  */
 export const EXPORT_CONTROL_AGENCY_SLUGS = [
-  'bureau-of-industry-and-security',
+  'industry-and-security-bureau',
   'state-department',
 ];
 

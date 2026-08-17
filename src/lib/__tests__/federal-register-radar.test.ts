@@ -62,7 +62,7 @@ describe('isRelevantFederalRegisterDoc', () => {
     const doc = makeDoc({
       title: 'Additions to the Entity List; revisions to license exception availability',
       agencies: [
-        { raw_name: 'BIS', name: 'Bureau of Industry and Security', id: 2, slug: 'bureau-of-industry-and-security' },
+        { raw_name: 'BIS', name: 'Bureau of Industry and Security', id: 2, slug: 'industry-and-security-bureau' },
       ],
     });
     expect(isRelevantFederalRegisterDoc(doc)).toBe(true);

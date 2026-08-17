@@ -151,7 +151,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchResp
       const agencySlugsLower = doc.agencySlugs.map(s => s.toLowerCase());
 
       let category = 'commercial_space';
-      if (agencySlugsLower.includes('bureau-of-industry-and-security') ||
+      if (agencySlugsLower.includes('industry-and-security-bureau') ||
           combinedText.includes('export') || combinedText.includes('itar') || combinedText.includes('ear')) {
         category = 'export_control';
       } else if (combinedText.includes('license') || combinedText.includes('licensing') || combinedText.includes('permit')) {
