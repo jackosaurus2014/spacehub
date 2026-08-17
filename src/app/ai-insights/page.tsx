@@ -81,6 +81,15 @@ function formatDate(dateString: string): string {
   });
 }
 
+// Distinguish the two auto-generated regulatory sub-types in the hub: rule
+// explainers (slug prefix regulatory-explainer-) and the weekly Radar brief
+// (slug prefix regulatory-radar-week-of-). Matches src/lib/radar-explainers.ts.
+function regulatorySubtype(slug: string): 'explainer' | 'brief' | null {
+  if (slug.startsWith('regulatory-explainer-')) return 'explainer';
+  if (slug.startsWith('regulatory-radar-week-of-')) return 'brief';
+  return null;
+}
+
 function getInsightConfidence(insight: Insight): 'high' | 'medium' | 'low' {
   // Insights with parsed sources get higher confidence
   try {
@@ -230,10 +239,22 @@ export default function AIInsightsPage() {
                     <GlassCard className="h-full flex flex-col">
                       {/* Category Badge + Confidence */}
                       <div className="flex items-center justify-between mb-3">
-                        <span
-                          className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${colors.badge}`}
-                        >
-                          {insight.category.charAt(0).toUpperCase() + insight.category.slice(1)}
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${colors.badge}`}
+                          >
+                            {insight.category.charAt(0).toUpperCase() + insight.category.slice(1)}
+                          </span>
+                          {regulatorySubtype(insight.slug) === 'explainer' && (
+                            <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                              Rule Explainer
+                            </span>
+                          )}
+                          {regulatorySubtype(insight.slug) === 'brief' && (
+                            <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">
+                              Weekly Brief
+                            </span>
+                          )}
                         </span>
                         <ConfidenceBadge level={getInsightConfidence(insight)} />
                       </div>

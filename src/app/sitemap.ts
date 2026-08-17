@@ -525,6 +525,10 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
   try {
     const [insights, explainers] = await Promise.all([
       prisma.aIInsight.findMany({
+        // Only published insights: pending_review/held slugs 404 at the API
+        // layer, so listing them burned crawl budget on dead URLs (spotted
+        // during Wave B, same family as the task-#16 crawl concerns).
+        where: { status: 'published' },
         select: { slug: true, generatedAt: true },
         orderBy: { generatedAt: 'desc' },
       }),

@@ -85,6 +85,10 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 9 * * *',     path: '/api/funding-opportunities',          label: 'funding-opportunities-refresh', maxStaleMinutes: 1560 },
   { schedule: '0 11 * * *',    path: '/api/refresh?type=patents',           label: 'patents-refresh',            maxStaleMinutes: 1560 },
   { schedule: '0 12 * * *',    path: '/api/refresh?type=regulatory-feeds',  label: 'regulatory-feeds',           maxStaleMinutes: 1560 },
+  // Radar rule explainers — plain-English AI explainers for significant
+  // RegulatoryAction rows (max 2/day, fact-check-gated). Runs 45 min after
+  // the regulatory-feeds refresh so the day's new documents are in the pool.
+  { schedule: '45 12 * * *',   path: '/api/cron/radar-explainers',          label: 'radar-explainers',           maxStaleMinutes: 1560 },
   { schedule: '0 14 * * *',    path: '/api/refresh?type=sec-filings',       label: 'sec-filings',                maxStaleMinutes: 1560 },
   // Daily stock-price/market-cap sync for public CompanyProfile rows (fixes
   // the stock-price split-brain vs. /api/stocks). Weekdays, after US market

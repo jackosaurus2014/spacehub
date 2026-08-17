@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getDocketSnapshotsForAction, regulationsGovDocketUrl } from '@/lib/docket-intel';
+import { getExplainerForAction } from '@/lib/radar-explainers';
 import { RADAR_CATEGORY_LABELS, type RadarCategory } from '@/lib/regulatory-categorizer';
 import { daysUntil, getRadarEntryById, type RadarEntry } from '@/lib/regulatory-radar';
 import { SOURCE_LABELS } from '@/components/regulatory/RadarTimeline';
@@ -64,6 +66,13 @@ export default async function RegulatoryActionDetailPage({ params }: { params: {
   const commentOpen = entry.commentCloseDate && entry.commentCloseDate.getTime() > now.getTime();
   const penalty = entry.summary?.match(/^Penalty: (.+?)\.(?:\s|$)/)?.[1] || null;
 
+  // Both fail soft to null/[] — a missing table or absent data never blanks
+  // the detail page.
+  const [explainer, docketSnapshots] = await Promise.all([
+    getExplainerForAction(entry.dedupKey),
+    getDocketSnapshotsForAction(entry.dedupKey),
+  ]);
+
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-8 pb-12 max-w-3xl">
@@ -108,6 +117,20 @@ export default async function RegulatoryActionDetailPage({ params }: { params: {
           </div>
         )}
 
+        {explainer && (
+          <div className="card p-4 mb-6 border border-cyan-500/25 bg-cyan-500/[0.05]">
+            <p className="text-sm text-slate-300">
+              <span className="font-semibold text-cyan-300">Plain-English explainer available: </span>
+              <Link
+                href={`/ai-insights/${explainer.slug}`}
+                className="underline underline-offset-2 text-cyan-300 hover:text-cyan-200"
+              >
+                {explainer.title}
+              </Link>
+            </p>
+          </div>
+        )}
+
         {entry.summary && (
           <p className="text-sm text-slate-300 leading-relaxed mb-6">{entry.summary}</p>
         )}
@@ -139,6 +162,47 @@ export default async function RegulatoryActionDetailPage({ params }: { params: {
             </p>
           )}
         </div>
+
+        {docketSnapshots.length > 0 && (
+          <div className="card p-5 mb-8 space-y-4">
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Who&apos;s commenting</h2>
+            {docketSnapshots.map((snapshot) => (
+              <div key={snapshot.docketId}>
+                <p className="text-sm text-slate-300">
+                  <a
+                    href={regulationsGovDocketUrl(snapshot.docketId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 text-cyan-300 hover:text-cyan-200"
+                  >
+                    Docket {snapshot.docketId}
+                    <span className="sr-only"> on Regulations.gov (opens in new tab)</span>
+                  </a>
+                  {' — '}
+                  {snapshot.commentCount} public comment{snapshot.commentCount === 1 ? '' : 's'}
+                </p>
+                {snapshot.organizations.length > 0 && (
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {snapshot.organizations.slice(0, 10).map((org) => (
+                      <li
+                        key={org.name}
+                        className="text-[11px] font-medium px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.04] text-slate-300"
+                      >
+                        {org.name}
+                        {org.count > 1 ? ` (${org.count})` : ''}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+            <p className="text-xs text-slate-500">
+              Organization names as filed with recent comments on Regulations.gov; individual
+              commenters are not listed. Counts reflect the docket total; named organizations are
+              from a sample of the most recent comments.
+            </p>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-3 mb-10">
           <a

@@ -302,11 +302,18 @@ export default function AIInsightDetailPage() {
               <span className="text-slate-400 truncate">{insight.title}</span>
             </nav>
 
-            {/* Category Badge */}
-            <span
-              className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-4 ${colors.badge}`}
-            >
-              {insight.category.charAt(0).toUpperCase() + insight.category.slice(1)}
+            {/* Category Badge (+ regulatory sub-type) */}
+            <span className="inline-flex items-center gap-2 mb-4">
+              <span
+                className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${colors.badge}`}
+              >
+                {insight.category.charAt(0).toUpperCase() + insight.category.slice(1)}
+              </span>
+              {insight.slug.startsWith('regulatory-explainer-') && (
+                <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                  Rule Explainer
+                </span>
+              )}
             </span>
 
             {/* Title */}

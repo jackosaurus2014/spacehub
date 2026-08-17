@@ -220,6 +220,12 @@ export async function POST(request: Request) {
       // Enforcement Watch — FR term searches for BIS/DDTC/FCC/FAA penalty,
       // denial-order, debarment, and settlement documents (keyless, fail-soft).
       const enforcementResult = await fetchAndStoreEnforcementActions();
+      // Docket intelligence — Regulations.gov comment counts + commenter
+      // organizations for open-comment dockets. Env-gated
+      // (REGULATIONS_GOV_API_KEY): returns { skipped: true } without touching
+      // the network when the key is absent.
+      const { fetchAndStoreDocketIntel } = await import('@/lib/fetchers/docket-intel-fetcher');
+      const docketIntelResult = await fetchAndStoreDocketIntel();
       results.regulatoryFeeds = {
         faaLicenses: faaCount,
         fccFilings: fccCount,
@@ -227,6 +233,7 @@ export async function POST(request: Request) {
         ituFilings: ituResult,
         congress: congressResult,
         enforcement: enforcementResult,
+        docketIntel: docketIntelResult,
         totalUpdated: faaCount + fccCount + fedRegResult.stored + ituResult.seeded + ituResult.notices + congressResult.stored + enforcementResult.stored,
       };
     }

@@ -1918,6 +1918,25 @@ model RegulatoryAction {
   @@index([category, significant, digestIncludedAt])
 }
 
+// Docket intelligence (Regulatory Wave B, item 2) — per-docket public-comment
+// snapshots from the Regulations.gov v4 API for RegulatoryAction rows with
+// open comment windows. Organization names only — individual commenters are
+// never stored. Availability-probed (src/lib/docket-intel.ts) so this code
+// can ship before `prisma db push` creates the table.
+model DocketSnapshot {
+  id             String   @id @default(cuid())
+  docketId       String   @unique // e.g. "FAA-2026-1234" (Regulations.gov docket id)
+  actionDedupKey String // RegulatoryAction.dedupKey this docket was discovered on
+  commentCount   Int      @default(0) // total comments per Regulations.gov meta.totalElements
+  organizations  String   @db.Text // JSON [{ name, count }] — org names from comment metadata only
+  lastCheckedAt  DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([actionDedupKey])
+  @@index([lastCheckedAt])
+}
+
 // Company Addition Request
 model CompanyAddRequest {
   id             String   @id @default(cuid())

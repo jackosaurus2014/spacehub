@@ -157,4 +157,38 @@ describe('composeRegulatoryBrief', () => {
     // Penalty amount pulled from the stored summary — bolded in the brief
     expect(withEnforcement.content).toContain('**$1,500,000**');
   });
+
+  it('includes the Docket activity section only when snapshots are provided (org names only)', () => {
+    const without = composeRegulatoryBrief({ weekActions: [entry()], closingWindows: [] }, NOW)!;
+    expect(without.content).not.toContain('## Docket activity');
+
+    const withDockets = composeRegulatoryBrief(
+      {
+        weekActions: [entry()],
+        closingWindows: [],
+        docketActivity: [
+          {
+            docketId: 'FAA-2026-1234',
+            actionDedupKey: 'federal-register:2026-12345',
+            commentCount: 47,
+            organizations: [
+              { name: 'SpaceX', count: 3 },
+              { name: 'Iridium', count: 2 },
+              { name: 'Astra', count: 1 },
+              { name: 'Rocket Lab', count: 1 },
+            ],
+            lastCheckedAt: new Date('2026-08-17T12:00:00Z'),
+          },
+        ],
+      },
+      NOW
+    )!;
+    expect(withDockets.content).toContain('## Docket activity');
+    expect(withDockets.content).toContain(
+      '[Docket FAA-2026-1234](https://www.regulations.gov/docket/FAA-2026-1234): 47 comments incl. SpaceX, Iridium, Astra'
+    );
+    // Only the top 3 organizations are listed inline
+    expect(withDockets.content).not.toContain('Rocket Lab');
+    expect(withDockets.content).toContain('individual commenters are not listed');
+  });
 });

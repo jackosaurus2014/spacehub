@@ -1,3 +1,4 @@
+import { getRecentDocketActivity, regulationsGovDocketUrl, type DocketSnapshotRecord } from '@/lib/docket-intel';
 import { RADAR_CATEGORY_LABELS, type RadarCategory } from '@/lib/regulatory-categorizer';
 import { daysUntil, getClosingCommentWindows, getRadarTimeline, type RadarEntry } from '@/lib/regulatory-radar';
 
@@ -23,6 +24,12 @@ export interface RegulatoryBriefData {
   weekActions: RadarEntry[];
   /** Comment windows closing in the next 14 days, soonest first. */
   closingWindows: RadarEntry[];
+  /**
+   * Docket comment activity from Regulations.gov snapshots (busiest first).
+   * Optional — empty/absent when REGULATIONS_GOV_API_KEY isn't configured or
+   * the DocketSnapshot table doesn't exist yet.
+   */
+  docketActivity?: DocketSnapshotRecord[];
 }
 
 function fmtDate(d: Date): string {
@@ -32,11 +39,12 @@ function fmtDate(d: Date): string {
 /** Query the radar for the brief's inputs. Fails soft to empty lists. */
 export async function collectRegulatoryBriefData(now = new Date()): Promise<RegulatoryBriefData> {
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const [weekActions, closingWindows] = await Promise.all([
+  const [weekActions, closingWindows, docketActivity] = await Promise.all([
     getRadarTimeline({ since: weekAgo, limit: 200 }),
     getClosingCommentWindows(14, now),
+    getRecentDocketActivity(7, 5, now),
   ]);
-  return { weekActions, closingWindows };
+  return { weekActions, closingWindows, docketActivity };
 }
 
 /**
@@ -120,6 +128,24 @@ export function composeRegulatoryBrief(data: RegulatoryBriefData, now = new Date
         : 'closing soon';
       lines.push(`- [${w.title}](${w.url}) — ${w.agency || 'Federal Register'} — **${closes}**`);
     }
+    lines.push('');
+  }
+
+  const docketActivity = data.docketActivity || [];
+  if (docketActivity.length > 0) {
+    lines.push('## Docket activity');
+    lines.push('');
+    lines.push('Public-comment activity on open dockets tracked by the Radar, from Regulations.gov:');
+    lines.push('');
+    for (const d of docketActivity) {
+      const orgNames = d.organizations.slice(0, 3).map((o) => o.name);
+      const incl = orgNames.length > 0 ? ` incl. ${orgNames.join(', ')}` : '';
+      lines.push(
+        `- [Docket ${d.docketId}](${regulationsGovDocketUrl(d.docketId)}): ${d.commentCount} comment${d.commentCount === 1 ? '' : 's'}${incl}`
+      );
+    }
+    lines.push('');
+    lines.push('*Organization names as filed with public comments; individual commenters are not listed.*');
     lines.push('');
   }
 
