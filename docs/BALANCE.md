@@ -1766,3 +1766,32 @@ relief tied to lost output.
   but verify).
 - The Pass-5 follow-up list otherwise stands (flagship upkeep + mothball
   exercise, in-world poach duel, per-player contract caps).
+
+---
+
+## Pass 7 — C2 ruled intended design (founder decision, 2026-08-17)
+
+Pass 5's CRITICAL C2 ("deep-tier ladder unreachable-by-design": full tree
+$5.62T vs $611B best 50-year gross; zero T5 flagships in the 50-year sim;
+proposal was ÷15–20 T5 / ÷3–4 T4 repricing + upkeep sink) was presented to
+the founder ahead of the 2026-08-24 relaunch. **Founder ruling: "Deep-tier
+research taking more than 50 years of in-game time seems reasonable" — the
+horizon is INTENTIONAL generational-legacy content.** The repricing was NOT
+implemented (a Pass-7 agent was launched and stopped before making changes).
+
+Standing consequences of the ruling:
+- C2 is closed as intended design. Do not re-flag slow T4/T5 research
+  reachability as a defect in future passes; measure it, but the >50-year
+  horizon is canon (CLAUDE.md "generational corporate legacies").
+- **Residual WATCH item — flagship self-paybacks.** Distinct from research
+  pacing: the T4/T5 flagship BUILDINGS' own capex-vs-income paybacks
+  (618–3,393 game-months at neutral) mean that even a corporation that
+  eventually unlocks them buys a strictly money-losing asset. That violates
+  "every decision meaningful" *whenever it becomes reachable*, regardless of
+  when that is. Revisit pricing (income up / capex down / prestige framing)
+  when live-world telemetry shows the first corporations entering T4
+  flagship range — no urgency at relaunch population.
+- Pass-5 H1 (wealth-indexed offense fees), H2 (labor supply at small pop),
+  H3 (dead decades) remain HIGH / first-month-of-new-world items, per their
+  original ranking. H3's research-wall component is now partially canon by
+  this ruling; its rung-gap component ($2B → $8–80B catalog jump) stands.
