@@ -1542,3 +1542,227 @@ double-run diff-identical, defaults-off invariance byte-diffed.
 - The 41-step integrator order and the research cash-reserve heuristics
   are scripted, not optimal — treat absolute levels as lower bounds on
   skilled play; the SHAPES (floors, walls, cliffs) are the findings.
+
+## Pass 6 — the pre-relaunch fix wave: graduation glide + duty-cycle opex (2026-08)
+
+**Scope:** implement the two Pass-5 findings flagged *ship-with-relaunch*
+before the 2026-08-24 fresh world: **C1** (the graduation cliff — CRITICAL)
+and **H4** (mining specialist capped for five decades — HIGH, spec'd in
+Pass 2). Nothing else touched: C2 research-tree repricing, H1 offense-fee
+indexing, and H2 labor supply remain founder decisions.
+
+### Fix 1 — C1: post-graduation demand-pool glide
+
+**Mechanic.** The Frontier demand-pool shield no longer vanishes at
+graduation — it GLIDES. For `GRADUATION_GLIDE_MS` after
+`frontierGraduatedAtMs`, a below-neutral pool multiplier blends linearly
+from 1.0 (neutral — the Frontier shield's own value) down to the true
+market rate:
+
+```
+fraction  = 1 − elapsed / GRADUATION_GLIDE_MS        // clamped [0, 1]
+effective = mult + (1 − mult) × fraction             // only when mult < 1
+```
+
+Equivalently: the multiplier floors at a value decaying linearly
+1.0 → market over the window — the exact extension of the Frontier floor
+mechanic in `getServiceDemandMultiplier` (service-pricing.ts), NOT a new
+system. Premiums (mult > 1) pass through untouched; the blend can never
+exceed 1.0; Frontier-active saves take the original shield branch
+unchanged. Away catch-up, every P&L surface (economy-report, dashboard),
+and the live tick all read the one shared multiplier source, so parity is
+by construction (and guarded by tests at both engine levels).
+
+**State.** Reuses `frontierGraduatedAtMs`, which `graduateFrontier` has
+always stamped — **no new fields, no save migration**. Saves that
+graduated long ago (or predate the Frontier) read fraction 0.
+
+**Glide length — chosen by simulation, and the honest surprise.** The
+sweep (`sim-50yr.ts` §6c: the full 8-archetype shared world re-run per
+candidate to month 300, month-120 joiner measured to age 179):
+
+| variant | first net>0 (age) | profitable in glide | avg net ages 0-23 | avg net 12mo post-glide | avg net ages 156-179 | bldgs @179 | NW @179 | research @179 |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| no glide (Pass-5 baseline) | never | — | −$1.4M | — | −$1.5M | 3 | −$196.9M | 3 done, stalled |
+| 4 days (16 game-mo) | 0 | 14/16 | $1.2M | −$1.4M | −$1.5M | 3 | −$134.3M | 3 done, stalled |
+| 6 days (24 game-mo) | 0 | 22/24 | $3.2M | −$1.3M | −$1.4M | 4 | −$106.7M | 3 done, stalled |
+| 8 days (32 game-mo) | 0 | 29/32 | $4.7M | −$1.3M | −$1.4M | 4 | −$56.9M | 3 done, stalled |
+| 12 days (48 game-mo) | 0 | 48/48 | $6.3M | $48K | −$43K | 4 | $156.6M | 5 done |
+| 13 days (52 game-mo) | 0 | 52/52 | $6.5M | $39K | −$52K | 4 | $187.0M | 5 done |
+| **14 days (56 game-mo) — SHIPPED** | 0 | 56/56 | $6.7M | $740K | **+$2.1M** | 4 | $147.9M | **9 done** |
+| 15 days (60 game-mo) | 0 | 60/60 | $6.9M | $1.4M | +$11.8M | 8 | $370.9M | 9 done |
+| 16 days (64 game-mo) | 0 | 64/64 | $7.1M | $1.8M | +$47.2M | 12 | $1.04B | 11 done |
+
+Every candidate gives first-profit inside the glide, but **all four
+Pass-5 candidates {4, 6, 8, 12 days} fail the durability criterion** —
+the joiner collects the subsidy, stays research-stalled (the $50M
+`orbital_advertising` gate needs 2× cash under the harness's standing
+cash-reserve rule), never escapes the floored starter pools, and slides
+back to −$1.3M/mo the month the glide ends (12 days ends at breakeven).
+Day-granular probes locate a sharp phase transition: at **14 days** the
+graduate banks enough to un-stall its research ladder (9 techs vs 3) and
+holds +$2.1M/mo a full decade after the glide ends; 13 days fails.
+**Shipped: `GRADUATION_GLIDE_MS` = 14 real days = 56 game-months** — the
+shortest durable length, and at half the 30-day Frontier window still
+proportionate to the on-ramp it extends. Pass 5's worked recommendation
+(6 days) was measurably insufficient; this is exactly why the pass bar
+says sim first.
+
+**FIFO NPC-book component — measured, then deliberately NOT implemented.**
+Pass 5 attributed the cliff to pool crowding PLUS FIFO book position. The
+sweep's diagnosis columns settle the split: the binding constraint is
+pool position + the research gate. The acceptance joiner has **no
+NPC-book flow at all** during the glide (its 3-4 buildings are all
+services; it mines nothing), so an absorption-priority glide would have
+been unmeasurable dead weight on this archetype. For mining graduates the
+exposure is second-order anyway: M3 price-linked mining pays CASH revenue
+regardless of absorption (only the ~15% leftover-inventory stream is
+FIFO-contended), and the delivery-contract outlet — a graduate's main
+liquidation channel — is already per-save, never contended. Revisit only
+if post-relaunch telemetry shows mining-heavy graduates failing where
+service graduates succeed.
+
+**600-month world, before → after (the Pass-5 headline table re-run):**
+
+| joiner | first net>0 | profitable of first 60 | tier 3 | NW y50 | vs founder median |
+|---|---:|---:|---:|---:|---:|
+| joiner-y10 (before) | never | 0/60 | never | **−$676M** | −14.8% |
+| joiner-y10 (after) | 0 | **60/60** | mo 253 | **+$18.70B** | 597% |
+| joiner-y30 (before) | never | 0/60 | never | −$325M | −7.6% |
+| joiner-y30 (after) | 0 | 54/60 | never | +$80.9M | 2.6% |
+
+The y50 world now has **8/8 solvent players** (was 6/8), Gini 0.787 (was
+0.818), top-1 share 80% (was 89%). joiner-y10's $18.7B is ladder-climb,
+not subsidy — the glide's entire revenue effect is bounded by ~56
+game-months × single-digit $M/mo; the growth comes from the integrator
+ladder it can now actually climb (22 buildings by +240). Residual,
+honestly: **joiner-y30 survives but stagnates** (−$0.7M/mo, $81M NW at
+y50) — a year-30 world prices its next rungs beyond a $200M start even
+with the glide. That is C2/H3 territory (the missing mid-band rungs and
+the research wall), not a glide-length problem — a longer glide flatters
+the sim but the graduate still has nowhere affordable to build.
+
+### Fix 2 — H4: extraction duty-cycle opex scaling
+
+**Mechanic — exactly the Pass-2 spec.** `mining_output` services'
+OPERATING cost now scales with deposit pressure; maintenance unchanged:
+
+```
+opexMult = clamp(pressure, 0.55, 1.0)   // mining-pricing.ts
+                                        // miningDutyCycleOpexMult
+```
+
+Multi-resource rigs weight each deposit's pressure by that resource's
+authored base-value share (`amountPerMonth × basePrice` — the same
+weights `getMiningRevenueScale` already uses), reducing to the exact
+Pass-2 clamp when all deposits sit at one pressure. Applied in the live
+tick (game-engine.ts §1 cost line), away catch-up (parity), and the P&L
+report (economy-report.ts — the dashboard shows the same discounted opex
+the tick charges). `build-preview.ts` deliberately unchanged: it prices
+mining REVENUE at neutral pressure too, so both sides of its "day 1,
+fresh deposit" estimate stay consistent (the marginalCurve posture).
+
+**Acceptance (sim-resources, month-35 steady state, audit world):**
+
+| player | net/mo before | net/mo after | Δ |
+|---|---:|---:|---:|
+| distributed miner, 6 deposits lunar→Titan (no outlet) | −$11.2M | **+$23.0M** | +$34.2M |
+| distributed miner (outlet 5/day) | −$2.6M | **+$31.6M** | +$34.2M |
+| belt baron, single-deposit stacking (outlet) | −$47.4M | **−$15.6M** | +$31.8M |
+| belt industrialist (outlet) | +$7.0M | +$38.8M | +$31.8M |
+| integrator (diversified reference) | $27.3M | $27.5M | **+$0.2M** |
+
+- **The geographically-diversified pure miner is finally viable** — and
+  the gradient points the right way: spread across six deposits beats
+  stacking one (the baron stays negative at −$15.6M, matching Pass 2's
+  ≈−$15M projection to the dollar).
+- The realized distributed-miner delta (+$34.2M) EXCEEDS Pass 2's worked
+  estimate (+$13–18M): the estimate undercounted the opex share of the
+  bigger outer-system rigs (Europa/reactor fleet at $86.2M/mo nameplate
+  opex, $34.7M/mo of it rebated at the measured pressures). Direction and
+  ordering are exactly as designed; the level is a viable-specialist
+  income (~+$23–32M/mo on ~$50B deployed), far below the integrator's
+  $450M+/mo — no dominant-strategy risk.
+- **Integrator splash +$0.2M/mo** — an order of magnitude under the
+  <+$4M bound.
+- **M1 first-copy-ROI guard: structurally unaffected and green.**
+  First-copy probes price at pressure 1.0 where the clamp is exactly 1
+  (unit-tested); the sim-strategies build-menu sweep is byte-identical
+  through this change.
+- New permanent probe: `sim-resources.ts` §5 "Distributed miner (6
+  deposits, lunar→Titan) — H4 duty-cycle opex acceptance" prints the
+  table above plus the deposit-pressure readout every run.
+- 50-year world: the vertical industrialist barely moves ($47.8M →
+  $43.6M/mo at y50 — its opex relief is offset by the now-thriving
+  joiner-y10 crowding shared pools and the FIFO book). H4's beneficiary
+  is the DISTRIBUTED archetype the 50-year roster doesn't script;
+  the focused sim-resources acceptance above is the honest measure.
+
+**Sinks-first check:** the rebate reduces a sink, but the after-world's
+money supply stays healthy — sink coverage 95–102% every decade,
+cumulative net minted +$7.3B over 50 years (before: +$15.0B; the
+glide-enabled joiner's research spend, $263B world-wide vs $237B, more
+than absorbs the opex relief). No NPC money injected by either fix: the
+glide is revenue-side against authored NPC demand floors already priced
+into every pool, bounded and expiring; the opex change is pure cost
+relief tied to lost output.
+
+### Files
+
+- `src/lib/game/frontier.ts` — `GRADUATION_GLIDE_MS`,
+  `getGraduationGlideFraction`, `applyGraduationGlide` (pure, shared).
+- `src/lib/game/service-pricing.ts` — glide branch in
+  `getServiceDemandMultiplier` (the one multiplier source).
+- `src/lib/game/mining-pricing.ts` — `MINING_OPEX_PRESSURE_FLOOR`,
+  `miningDutyCycleOpexMult`.
+- `src/lib/game/game-engine.ts` §1, `src/lib/game/away-operations.ts`,
+  `src/lib/game/economy-report.ts` — opex mult applied (tick / away / P&L).
+- `scripts/sim-harness.ts` — `SimPlayer.graduationGlide` opt (+
+  `GRADUATION_GLIDE_GAME_MONTHS`, `glideFractionAtMonth`), H4 opex rebate
+  in §5 via the real helper. Defaults absent → legacy tables unchanged
+  except where H4 legitimately moves mining numbers (below).
+- `scripts/sim-50yr.ts` — world loop refactored into `runScenario(months,
+  joinerGlideMonths)`; main run models the shipped glide; §6c sweep.
+- `scripts/sim-resources.ts` — §5 distributed-miner acceptance probe.
+- Tests: `graduation-glide.test.ts` (13),
+  `mining-opex-duty-cycle.test.ts` (11).
+
+### Legacy sim outputs that legitimately moved (all H4, all explained)
+
+- `sim-strategies.ts`: integrator 24-month rows ±$0.2M/mo (lunar/belt rig
+  opex rebate); campaign-victim mothball table — victim lunar miner nets
+  $21.2M → $23.8M neutral / $16.8M → $19.4M crashed (same −$4.4M campaign
+  damage), making "ride it out" even more clearly dominant over mothball.
+  Build-menu first-copy sweep byte-identical.
+- `sim-pvp.ts`: S6 FIFO rows −$0.1M rounding; S7 victim ledger same
+  +$2.6M opex-rebate shift on both sides of the crash (damage unchanged).
+- `sim-resources.ts`: baron/industrialist/hoarder mining tables improve
+  by the rebate; every Pass-1/2 storage-cap and asymptote verdict
+  unchanged (stock flows are units, not dollars).
+- No CI guard expectations required changes: the M1 first-copy guard
+  (`tier-ladder-first-copy-roi.test.ts`) is pressure-1.0 by construction;
+  the harness invariance tests pass untouched because both new behaviors
+  are opt-in/absent by default.
+
+### Verification
+
+- `npx tsc --noEmit` clean; full jest **4,411/196 green** (24 new guard
+  tests); `next build` passes.
+- All four runners deterministic — double-run diff-identical
+  (sim-50yr, sim-resources, sim-strategies, sim-pvp).
+- Frontier posture held everywhere: premiums pay, penalties wait, the
+  active-Frontier branch is untouched, veterans get nothing, and the
+  glide can never push any multiplier above 1.0.
+
+### Follow-ups
+
+- **joiner-y30 stagnation** (survives, doesn't thrive) — reconfirms C2 +
+  H3: the mid-band construction rung and research repricing are what a
+  late-world graduate needs; no glide length fixes that.
+- Watch post-relaunch telemetry for mining-heavy graduates (the FIFO
+  decision above); and for real players gaming graduation timing (the
+  glide starts at graduation, which auto-triggers at $100M book NW —
+  sandbagging under the bar now delays a benefit, which is self-limiting,
+  but verify).
+- The Pass-5 follow-up list otherwise stands (flagship upkeep + mothball
+  exercise, in-world poach duel, per-player contract caps).

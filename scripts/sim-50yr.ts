@@ -50,6 +50,7 @@
 import {
   newPlayer, newWorld, stepMonth, fm, mdTable, bookNetWorth, marginalCurve,
   extractionPressureReport, GAME_MONTH_MS, INPUT_BUY_MULT, LOCATION_POWER_PLAN,
+  GRADUATION_GLIDE_GAME_MONTHS,
   type SimPlayer, type SimWorld,
 } from './sim-harness';
 import { RESEARCH, RESEARCH_MAP } from '../src/lib/game/research-tree';
@@ -485,45 +486,6 @@ interface Meta {
   tier3Month: number | null;       // months since join reaching totalEarned >= $5B
 }
 
-const metas: Meta[] = ARCHETYPES.map(arch => {
-  const rs = makeResearchMeta(
-    arch.name === 'mono-expander'
-      ? [{ definitionId: 'sat_telecom' }, { definitionId: 'sat_telecom_geo' }]
-      : arch.name === 'hoarder' ? HOARDER_CORE
-      : arch.name === 'integrator' ? INTEGRATOR_ORDER
-      : arch.name.startsWith('joiner') ? JOINER_ORDER
-      : arch.name === 'industrialist' ? INDUSTRIALIST_ORDER
-      : arch.name === 'aggressor' ? AGGRESSOR_ORDER
-      : TURTLE_ORDER,
-    arch.researchMax,
-  );
-  const player = newPlayer(arch.name, arch.money, arch.makePlan(() => rs), {
-    maxBuildsPerMonth: arch.maxBuilds,
-    sellsLeftovers: arch.sellsLeftovers,
-    craftPlan: arch.craftPlan,
-  });
-  return {
-    arch, player, rs, joined: arch.joinMonth === 0,
-    negStreak: 0, decommissioned: 0, decomRecovered: 0,
-    decisionMonths: new Set<number>(), firstProfitMonth: null, tier3Month: null,
-  };
-});
-
-const world: SimWorld = newWorld(
-  metas.filter(m => m.joined).map(m => m.player),
-  0, null,
-  {
-    npcSaleCaps: true,
-    contendedNpcCaps: true,
-    constructionMaterials: true,
-    laborMarket: true,
-    dynamicSpot: true,
-    contractOutlet: { capPerDay: CONTRACT_CAP_PER_DAY },
-  },
-);
-
-// ─── Ledgers & decade snapshots ─────────────────────────────────────────────
-
 interface DecadeLedger {
   created: number;    // NPC-paid revenue + resource/contract sales + decommission recovery
   destroyed: number;  // opex+maint+overhead+exec+payroll+inputs+capex+research+fees
@@ -531,14 +493,6 @@ interface DecadeLedger {
   campaignFees: number;
   decomRecovered: number;
 }
-const ledgers: DecadeLedger[] = Array.from({ length: MONTHS / DECADE }, () => ({
-  created: 0, destroyed: 0, researchSpend: 0, campaignFees: 0, decomRecovered: 0,
-}));
-
-const spotSnapshots: { month: number; prices: Record<string, number> }[] = [];
-const laborSnapshots: { month: number; indices: Record<string, number> }[] = [];
-const pressureSnapshots: { month: number; rows: { key: string; pressure: number }[] }[] = [];
-const campaignLog: string[] = [];
 
 function rowOf(m: Meta, worldMonth: number) {
   const idx = worldMonth - m.arch.joinMonth;
@@ -573,12 +527,82 @@ function pctOf(value: number, denom: number): string {
   return denom > 0 ? `${((value / denom) * 100).toFixed(1)}%` : '—';
 }
 
-// ─── The 600-month loop ─────────────────────────────────────────────────────
+// ─── Scenario runner (Balance Pass 6: reusable for the glide-length sweep) ──
+// Constructs the full 8-archetype shared world and runs it `months`
+// game-months. `joinerGlideMonths` models the C1 post-graduation demand-pool
+// glide for the two late joiners (they enter at $200M — i.e. at the moment
+// of Frontier graduation, so their glide starts at their join month):
+// null = pre-Pass-6 world (the Pass-5 baseline), a number = the glide window
+// in game-months (real engine blend via the harness's graduationGlide opt).
+// Founders get NO glide — they graduated at world start with the world
+// empty; a glide there would be a no-op anyway (pools start neutral) but we
+// keep the modeling honest.
 
-let campaignActiveUntil = -1;
-const aggressorMeta = metas.find(m => m.arch.name === 'aggressor')!;
+interface ScenarioResult {
+  metas: Meta[];
+  world: SimWorld;
+  ledgers: DecadeLedger[];
+  spotSnapshots: { month: number; prices: Record<string, number> }[];
+  laborSnapshots: { month: number; indices: Record<string, number> }[];
+  pressureSnapshots: { month: number; rows: { key: string; pressure: number }[] }[];
+  campaignLog: string[];
+  totalResearchSpend: number;
+}
 
-for (let month = 0; month < MONTHS; month++) {
+function runScenario(months: number, joinerGlideMonths: number | null): ScenarioResult {
+  const metas: Meta[] = ARCHETYPES.map(arch => {
+    const rs = makeResearchMeta(
+      arch.name === 'mono-expander'
+        ? [{ definitionId: 'sat_telecom' }, { definitionId: 'sat_telecom_geo' }]
+        : arch.name === 'hoarder' ? HOARDER_CORE
+        : arch.name === 'integrator' ? INTEGRATOR_ORDER
+        : arch.name.startsWith('joiner') ? JOINER_ORDER
+        : arch.name === 'industrialist' ? INDUSTRIALIST_ORDER
+        : arch.name === 'aggressor' ? AGGRESSOR_ORDER
+        : TURTLE_ORDER,
+      arch.researchMax,
+    );
+    const player = newPlayer(arch.name, arch.money, arch.makePlan(() => rs), {
+      maxBuildsPerMonth: arch.maxBuilds,
+      sellsLeftovers: arch.sellsLeftovers,
+      craftPlan: arch.craftPlan,
+      graduationGlide: joinerGlideMonths !== null && arch.joinMonth > 0
+        ? { startMonth: arch.joinMonth, glideMonths: joinerGlideMonths }
+        : undefined,
+    });
+    return {
+      arch, player, rs, joined: arch.joinMonth === 0,
+      negStreak: 0, decommissioned: 0, decomRecovered: 0,
+      decisionMonths: new Set<number>(), firstProfitMonth: null, tier3Month: null,
+    };
+  });
+
+  const world: SimWorld = newWorld(
+    metas.filter(m => m.joined).map(m => m.player),
+    0, null,
+    {
+      npcSaleCaps: true,
+      contendedNpcCaps: true,
+      constructionMaterials: true,
+      laborMarket: true,
+      dynamicSpot: true,
+      contractOutlet: { capPerDay: CONTRACT_CAP_PER_DAY },
+    },
+  );
+
+  const ledgers: DecadeLedger[] = Array.from({ length: Math.ceil(months / DECADE) }, () => ({
+    created: 0, destroyed: 0, researchSpend: 0, campaignFees: 0, decomRecovered: 0,
+  }));
+
+  const spotSnapshots: { month: number; prices: Record<string, number> }[] = [];
+  const laborSnapshots: { month: number; indices: Record<string, number> }[] = [];
+  const pressureSnapshots: { month: number; rows: { key: string; pressure: number }[] }[] = [];
+  const campaignLog: string[] = [];
+
+  let campaignActiveUntil = -1;
+  const aggressorMeta = metas.find(m => m.arch.name === 'aggressor')!;
+
+  for (let month = 0; month < months; month++) {
   // Late joiners enter the world (appended LAST in player order — the
   // order-book FIFO means incumbents are ahead of them on the NPC book,
   // which is the real price-time-priority reality for a newcomer).
@@ -685,7 +709,7 @@ for (let month = 0; month < MONTHS; month++) {
   // (Added at declaration time below via the ledger's campaignFees line.)
 
   // Decade-end snapshots.
-  if ((month + 1) % DECADE === 0 || month === MONTHS - 1) {
+  if ((month + 1) % DECADE === 0 || month === months - 1) {
     if (world.spotSnapshot) spotSnapshots.push({ month, prices: { ...world.spotSnapshot.prices } });
     const summaries: LaborActivitySummary[] = world.players.map(p => ({
       id: p.name,
@@ -701,7 +725,23 @@ for (let month = 0; month < MONTHS; month++) {
   }
 }
 
-const totalResearchSpend = metas.reduce((a, m) => a + m.rs.moneySpent, 0);
+  return {
+    metas, world, ledgers, spotSnapshots, laborSnapshots, pressureSnapshots,
+    campaignLog,
+    totalResearchSpend: metas.reduce((a, m) => a + m.rs.moneySpent, 0),
+  };
+}
+
+// ─── Main run (Balance Pass 6: joiners carry the SHIPPED glide constant) ────
+// GRADUATION_GLIDE_GAME_MONTHS derives from frontier.ts GRADUATION_GLIDE_MS
+// (14 real days = 56 game-months) — the headline tables below therefore
+// describe the post-Pass-6 world. The §6c sweep further down re-runs shorter
+// worlds at the Pass-5 candidates {4, 6, 8, 12 real days} plus day-granular
+// boundary probes to show why this length was chosen.
+const {
+  metas, world, ledgers, spotSnapshots, laborSnapshots, pressureSnapshots,
+  campaignLog, totalResearchSpend,
+} = runScenario(MONTHS, GRADUATION_GLIDE_GAME_MONTHS);
 
 // ════════════════════════════════════════════════════════════════════════════
 // Report
@@ -911,6 +951,73 @@ console.log('\n\n## 6. Late-joiner viability (THE relaunch question)\n');
       rows,
     ));
     console.log(`\njoiner-solo NW at +60 mo: ${fm(solo.history[59].netWorthEst)} (vs shared-world joiner-y10 ${fm(rowOf(shared, JOIN_A + 59)?.netWorthEst ?? 0)}). The delta is ENTIRELY pool crowding + FIFO NPC-book position — same portfolio, same prices, same math.`);
+  }
+
+  // 6c. Balance Pass 6 (C1): glide-length selection sweep. Re-runs the full
+  // shared world to month 300 (joiner-y10 ages 0–179) at each candidate
+  // glide length {4, 6, 8, 12 real days} plus the no-glide Pass-5 baseline.
+  // Selection rule (docs/BALANCE.md Pass 6): the SHORTEST glide where the
+  // month-120 joiner (a) turns its first profitable month INSIDE the glide
+  // window, and (b) holds a durable positive trajectory long after the glide
+  // ends (ages 156–179 — i.e. the subsidy let it BUILD into position, not
+  // just collect a check).
+  console.log('\n### 6c. Glide-length selection sweep (Pass 6 — full shared world re-run per candidate, joiner-y10 shown)\n');
+  {
+    const SWEEP_MONTHS = 300;
+    const variants: { label: string; glide: number | null }[] = [
+      { label: 'no glide (Pass-5 baseline)', glide: null },
+      { label: '4 real days (16 game-mo)', glide: 16 },
+      { label: '6 real days (24 game-mo)', glide: 24 },
+      { label: '8 real days (32 game-mo)', glide: 32 },
+      { label: '12 real days (48 game-mo)', glide: 48 },
+      // Boundary refinement: none of the four Pass-5 candidates clears the
+      // durable-trajectory bar (12d ends at breakeven), while longer glides
+      // cross a phase transition — the graduate banks enough to un-stall
+      // its research ladder and build OUT of the floored starter pools.
+      // The day-granular probes below locate the threshold: 13d fails,
+      // 14d is the shortest durable length (the shipped constant), 15-16d
+      // strengthen it.
+      { label: '13 real days (52 game-mo) — probe', glide: 52 },
+      { label: '14 real days (56 game-mo) — CHOSEN', glide: 56 },
+      { label: '15 real days (60 game-mo) — probe', glide: 60 },
+      { label: '16 real days (64 game-mo) — probe', glide: 64 },
+    ];
+    const rows: (string | number)[][] = [];
+    for (const v of variants) {
+      const res = runScenario(SWEEP_MONTHS, v.glide);
+      const j = res.metas.find(m => m.arch.name === 'joiner-y10')!;
+      const hist = j.player.history;
+      const avgAges = (lo: number, hi: number): number => {
+        const vals: number[] = [];
+        for (let a = lo; a <= hi && a < hist.length; a++) vals.push(hist[a].net);
+        return vals.length ? vals.reduce((x, y) => x + y, 0) / vals.length : 0;
+      };
+      let firstProfit: number | 'never' = 'never';
+      for (let a = 0; a < hist.length; a++) if (hist[a].net > 0) { firstProfit = a; break; }
+      const g = v.glide ?? 0;
+      let profitableInGlide = 0;
+      for (let a = 0; a < g && a < hist.length; a++) if (hist[a].net > 0) profitableInGlide++;
+      const last = hist[Math.min(179, hist.length - 1)];
+      // Diagnosis columns: what is actually blocking "build into position"?
+      const stalled = j.rs.idx < j.rs.queue.length ? RESEARCH_MAP.get(j.rs.queue[j.rs.idx]) : null;
+      rows.push([
+        v.label,
+        firstProfit,
+        v.glide === null ? '—' : `${profitableInGlide}/${g}`,
+        fm(avgAges(0, 23)),
+        v.glide === null ? '—' : fm(avgAges(g, g + 11)),
+        fm(avgAges(156, 179)),
+        last?.buildingCount ?? '—',
+        fm(last?.money ?? 0),
+        fm(last?.netWorthEst ?? 0),
+        `${j.rs.completed} done${stalled ? `, stalled ${stalled.id} (${fm(stalled.baseCostMoney)})` : ''}`,
+      ]);
+    }
+    console.log(mdTable(
+      ['variant', 'first net>0 (age mo)', 'profitable in glide', 'avg net ages 0-23', 'avg net 12mo post-glide', 'avg net ages 156-179', 'bldgs @179', 'cash @179', 'NW @179', 'research @179'],
+      rows,
+    ));
+    console.log('\nSelection rule: shortest glide with first net>0 inside the glide AND a durable positive ages-156-179 trajectory (built into position, not glide-dependent). All four Pass-5 candidates fail the second criterion; the day-granular probes locate the phase transition at 14 real days. The shipped constant is GRADUATION_GLIDE_MS (frontier.ts) = ' + GRADUATION_GLIDE_GAME_MONTHS + ' game-months.');
   }
 }
 

@@ -43,7 +43,7 @@ import {
   executiveCompensationMonthly,
   scaledBuildingCost,
 } from '../src/lib/game/formulas';
-import { BOOK_VALUE_DEPRECIATION_FACTOR } from '../src/lib/game/frontier';
+import { BOOK_VALUE_DEPRECIATION_FACTOR, applyGraduationGlide, GRADUATION_GLIDE_MS } from '../src/lib/game/frontier';
 import {
   computePoolAggregates,
   getServiceCategory,
@@ -58,7 +58,7 @@ import {
   computeExtractionPressure,
   extractionKey,
 } from '../src/lib/game/extraction-pressure';
-import { priceLinkedMiningRevenue } from '../src/lib/game/mining-pricing';
+import { priceLinkedMiningRevenue, miningDutyCycleOpexMult } from '../src/lib/game/mining-pricing';
 import { clampSpotToBand, type MarketSnapshot } from '../src/lib/game/spot-price';
 import type { GameState } from '../src/lib/game/types';
 // ─── Balance Pass 3 (PvP): shared-world modules the multi-player world
@@ -142,7 +142,34 @@ export interface SimPlayer {
    *  are honest. Mutable between months (runner-driven). Absent/1.0 = every
    *  legacy table byte-identical. */
   revenueMult?: number;
+  /** Balance Pass 6 (C1): post-graduation demand-pool glide — the REAL
+   *  engine mechanic (frontier.ts applyGraduationGlide, wired into
+   *  getServiceDemandMultiplier): for `glideMonths` game-months from
+   *  `startMonth` (= the month this player graduated/joined the open world),
+   *  a below-neutral pool multiplier blends linearly from 1.0 down to the
+   *  true market rate. Premiums untouched; absent = no glide (every legacy
+   *  table byte-identical). GRADUATION_GLIDE_GAME_MONTHS converts the shipped
+   *  real-time constant. */
+  graduationGlide?: { startMonth: number; glideMonths: number };
   history: MonthRow[];
+}
+
+/** The shipped GRADUATION_GLIDE_MS expressed in 6h game-months — what a
+ *  runner passes as `graduationGlide.glideMonths` to model the real engine
+ *  constant. */
+export const GRADUATION_GLIDE_GAME_MONTHS = GRADUATION_GLIDE_MS / GAME_MONTH_MS;
+
+/** Month-granular glide fraction — the harness equivalent of frontier.ts
+ *  getGraduationGlideFraction (elapsed real time ⇒ elapsed game-months). */
+export function glideFractionAtMonth(
+  glide: { startMonth: number; glideMonths: number } | undefined,
+  month: number,
+): number {
+  if (!glide || glide.glideMonths <= 0) return 0;
+  const elapsed = month - glide.startMonth;
+  if (elapsed < 0) return 0;
+  if (elapsed >= glide.glideMonths) return 0;
+  return 1 - elapsed / glide.glideMonths;
 }
 
 // ─── Balance Pass 1: per-month resource flow decomposition ──────────────────
@@ -340,7 +367,7 @@ export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult' | 'graduationGlide'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
@@ -352,6 +379,7 @@ export function newPlayer(
     headcount: opts.headcount,
     trainingLevel: opts.trainingLevel,
     revenueMult: opts.revenueMult,
+    graduationGlide: opts.graduationGlide,
     history: [],
   };
 }
@@ -584,6 +612,9 @@ export function stepMonth(world: SimWorld, month: number): void {
     // tables byte-identical). Applied where marginalCurve applies its
     // `revenueMult` opt: service revenue and price-linked mining revenue.
     const rMult = p.revenueMult ?? 1;
+    // Balance Pass 6 (C1): this player's post-graduation glide strength this
+    // month (0 = no glide / expired — the default for every legacy run).
+    const glideFrac = glideFractionAtMonth(p.graduationGlide, month);
     let revenue = 0, operating = 0, maintenance = 0;
     const effVals: number[] = [];
     for (const b of p.buildings) {
@@ -605,7 +636,13 @@ export function stepMonth(world: SimWorld, month: number): void {
         operating += sDef.operatingCostPerMonth;
         if (sDef.type === 'mining_output') continue; // priced in §5 below (fabrication_output byproduct producers stay on this flat/pool path)
         const cat = getServiceCategory(svcId);
-        const poolMult = cat ? (poolMults[demandPoolKey(b.locationId, cat)] ?? 1) : 1;
+        // Balance Pass 6 (C1): the REAL engine glide blend (frontier.ts) —
+        // below-neutral pool mults ease toward 1.0 while the player's
+        // post-graduation glide is active; premiums and veterans unchanged.
+        const poolMult = applyGraduationGlide(
+          cat ? (poolMults[demandPoolKey(b.locationId, cat)] ?? 1) : 1,
+          glideFrac,
+        );
         revenue += sDef.revenuePerMonth
           * rMult
           * serviceSaturationMultiplier(pos)
@@ -637,6 +674,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         saturationCounts2.set(bucketKey, pos + 1);
         const saturationMult = serviceSaturationMultiplier(pos);
         const unitsPerResource: Record<string, number> = {};
+        const pressureByResource: Record<string, number> = {};
         for (const { resource, amountPerMonth } of production) {
           const key = extractionKey(b.locationId, resource);
           const prev = world.extraction.get(key) || { acc: 0, atMs: nowMs - world.monthMs };
@@ -644,6 +682,7 @@ export function stepMonth(world: SimWorld, month: number): void {
             // read with decay-to-now applied (server read path)
             prev.acc * Math.pow(0.9, Math.max(0, nowMs - prev.atMs) / 86_400_000),
           );
+          pressureByResource[resource] = pressure;
           const mined = amountPerMonth * pressure * eff;
           const updated = applyExtractionEvent(prev.acc, prev.atMs, mined, resource, nowMs);
           world.extraction.set(key, { acc: updated.accumulated, atMs: updated.updatedAtMs });
@@ -651,6 +690,19 @@ export function stepMonth(world: SimWorld, month: number): void {
           unitsPerResource[resource] = mined;
           addFlow(flows.mined, resource, mined);
           if (world.opts.dynamicSpot) combinedMined[resource] = (combinedMined[resource] || 0) + mined;
+        }
+        // Balance Pass 6 (H4, spec'd Pass 2): extraction duty-cycle opex
+        // scaling — §4 charged this mining service's FULL nameplate operating
+        // cost; rebate the duty-cycle discount here where the deposit
+        // pressures are known (REAL engine helper — game-engine.ts §1 applies
+        // the identical multiplier). mining_output only; maintenance
+        // untouched.
+        if (isMiningOutput) {
+          const sDef = SERVICE_MAP.get(svcId);
+          if (sDef) {
+            operating -= sDef.operatingCostPerMonth
+              * (1 - miningDutyCycleOpexMult(svcId, pressureByResource));
+          }
         }
         // Only true mining_output services price-link cash revenue here —
         // fabrication_output byproduct producers (e.g. svc_fabrication_lunar)

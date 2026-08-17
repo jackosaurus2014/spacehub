@@ -40,6 +40,12 @@ import { calculateRushRepairCost } from './hazards';
 // Wave E4 (Finite Demand Pools): the P&L reads THE tick's multiplier source.
 import { getServiceDemandMultiplier } from './service-pricing';
 import { gameDateToMonthIndex } from './demand-pools';
+// Balance Pass 6 (H4): the P&L shows the SAME duty-cycle-scaled mining opex
+// the live tick charges (mining-pricing.ts miningDutyCycleOpexMult over the
+// synced extraction-pressure snapshot) — never the flat nameplate figure.
+import { miningDutyCycleOpexMult } from './mining-pricing';
+import { getExtractionPressureMultiplier } from './extraction-pressure';
+import { MINING_PRODUCTION } from './resources';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -278,6 +284,16 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
       * (1 + stationBonus),
     );
     const realized = Math.round(baseRevenue * saturationMult);
+    // Balance Pass 6 (H4): duty-cycle opex scaling for mining_output —
+    // mirrors game-engine.ts §1's miningOpexMult exactly (1.0 elsewhere).
+    let miningOpexMult = 1;
+    if (def.type === 'mining_output') {
+      const pressureByResource: Record<string, number> = {};
+      for (const { resource } of MINING_PRODUCTION[svc.definitionId] || []) {
+        pressureByResource[resource] = getExtractionPressureMultiplier(state.extractionPressure, svc.locationId, resource);
+      }
+      miningOpexMult = miningDutyCycleOpexMult(svc.definitionId, pressureByResource);
+    }
     const operatingCost = Math.round(
       def.operatingCostPerMonth
       * eventMultipliers.costMultiplier
@@ -285,7 +301,8 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
       * eraCostMult
       * (1 - tierBonuses.maintenanceReduction)
       * (megaBonuses.maintenanceMultiplier || 1)
-      * repBonuses.maintenanceMultiplier,
+      * repBonuses.maintenanceMultiplier
+      * miningOpexMult,
     );
     totalOperatingCost += operatingCost;
 

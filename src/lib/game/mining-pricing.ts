@@ -124,6 +124,67 @@ export function priceLinkedMiningRevenue(
   return total * scale;
 }
 
+// ─── Extraction duty-cycle opex scaling (Balance Pass 6 — H4, spec'd Pass 2) ─
+// docs/BALANCE.md Pass 2 "extraction duty-cycle opex scaling", upgraded to
+// ship-with-relaunch by Pass 5 finding H4: a rig on a depleted deposit
+// (extraction pressure < 1.0) throttles its duty cycle — output already falls
+// with pressure, and now its *operating* cost falls with it too, floored so
+// fixed costs never vanish:
+//
+//   opexMult = clamp(pressure, 0.55, 1.0)   // mining_output
+//                                           // operatingCostPerMonth ONLY;
+//                                           // maintenance unchanged
+//
+// Rationale (Pass 2's worked numbers): the 0.4 pressure floor meant a rig
+// earned ~40% of nameplate while paying 100% of nameplate opex — the pure
+// mining specialist was a trap plateau at every deposit it touched. Scaling
+// opex down with duty cycle makes GEOGRAPHIC diversification viable
+// (distributed miner −$2.6M → ≈+$13–18M/mo) while single-deposit stacking
+// stays punished (belt baron still ≈−$15M/mo) — exactly the "spread out,
+// don't strip-mine one rock" gradient E5 wants. Cost-side only: sinks-first
+// compatible (zero new generation, zero NPC money).
+//
+// Multi-resource rigs (most MINING_PRODUCTION entries) weight each deposit's
+// pressure by that resource's authored base-value share (amountPerMonth ×
+// basePrice — the SAME weights getMiningRevenueScale's denominator uses), so
+// the duty cycle follows the rig's economic output mix. When every deposit
+// sits at one pressure p this reduces to exactly clamp(p, 0.55, 1.0), the
+// Pass-2 spec. First copies at fresh deposits price at pressure 1.0 →
+// opexMult 1.0 → the M1 first-copy-ROI guard is structurally unaffected.
+
+export const MINING_OPEX_PRESSURE_FLOOR = 0.55;
+
+/**
+ * Duty-cycle operating-cost multiplier for ONE mining_output service
+ * instance, from its per-resource deposit pressures ([0.4, 1.0] each —
+ * extraction-pressure.ts). `pressureByResource` maps resourceId → pressure;
+ * missing resources read as 1.0 (untouched deposit — same default the
+ * snapshot read path uses). Non-mining definitionIds (no MINING_PRODUCTION
+ * entry) return 1 — defensive, callers only invoke this for mining_output.
+ */
+export function miningDutyCycleOpexMult(
+  definitionId: string,
+  pressureByResource: Partial<Record<string, number>>,
+): number {
+  const production = MINING_PRODUCTION[definitionId];
+  if (!production || production.length === 0) return 1;
+  let weightTotal = 0;
+  let weighted = 0;
+  for (const { resource, amountPerMonth } of production) {
+    const weight = amountPerMonth * (RESOURCE_MAP.get(resource)?.baseMarketPrice || 0);
+    if (weight <= 0) continue;
+    const raw = pressureByResource[resource];
+    const pressure = typeof raw === 'number' && Number.isFinite(raw)
+      ? Math.max(0, Math.min(1, raw))
+      : 1;
+    weightTotal += weight;
+    weighted += weight * pressure;
+  }
+  if (weightTotal <= 0) return 1;
+  const meanPressure = weighted / weightTotal;
+  return Math.max(MINING_OPEX_PRESSURE_FLOOR, Math.min(1, meanPressure));
+}
+
 // ─── Grandfather blend (§M3 [SAVE] V37) ─────────────────────────────────────
 // Existing saves anchor a flat 50/50 blend of the old flat formula and the
 // new spot-linked one for 3 game-months from migration, then switch fully to

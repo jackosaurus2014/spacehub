@@ -46,7 +46,7 @@ import { getWorkforceBonuses } from './workforce';
 // call — this module stays pure/deterministic).
 import { getMonthlyPayrollWithWageIndex } from './labor-market';
 import { getExtractionPressureMultiplier } from './extraction-pressure';
-import { priceLinkedMiningRevenue, blendMiningBaseRevenue } from './mining-pricing';
+import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
 import { isInFrontier } from './frontier';
 import { getResearchBonuses } from './research-tree';
 import {
@@ -270,13 +270,22 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     // mining-pricing.ts helper + grandfather blend game-engine.ts §1 uses)
     // for the flat `def.revenuePerMonth` — away-parity for the F3 fix.
     let baseTerm = def.revenuePerMonth * fraction;
+    // Balance Pass 6 (H4): away-parity with game-engine.ts §1 — a mining rig
+    // on a depleted deposit throttles its duty cycle offline too, so its
+    // OPERATING cost scales with the same value-weighted deposit pressure
+    // (clamp 0.55–1.0, mining-pricing.ts). Maintenance unchanged; 1.0 for
+    // every non-mining service.
+    let miningOpexMult = 1;
     if (def.type === 'mining_output') {
       const production = MINING_PRODUCTION[svc.definitionId] || [];
       const unitsPerResource: Record<string, number> = {};
+      const pressureByResource: Record<string, number> = {};
       for (const { resource, amountPerMonth } of production) {
         const pressure = getExtractionPressureMultiplier(working.extractionPressure, svc.locationId, resource);
+        pressureByResource[resource] = pressure;
         unitsPerResource[resource] = amountPerMonth * fraction * miningMult * pressure;
       }
+      miningOpexMult = miningDutyCycleOpexMult(svc.definitionId, pressureByResource);
       const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, working.marketSnapshot, miningFrontierShield);
       baseTerm = blendMiningBaseRevenue(baseTerm, newBase, working.miningPriceLinkPhaseInStartMonth, awayMonthIndex);
     }
@@ -291,7 +300,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       * eraModifiers.revenueMultiplier
       * supplyMult
     );
-    costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier);
+    costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * miningOpexMult);
   }
   for (const bld of working.buildings) {
     if (!bld.isComplete) continue;

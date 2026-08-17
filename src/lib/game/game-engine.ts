@@ -96,7 +96,7 @@ import { getGlobalCapabilityBonus, getCapabilityCrewQuarters } from './building-
 // (§2.8) is wired in cargo-logistics.ts / trade-lanes.ts instead — dispatch
 // happens outside the tick loop.
 import { getExtractionPressureMultiplier } from './extraction-pressure';
-import { priceLinkedMiningRevenue, blendMiningBaseRevenue } from './mining-pricing';
+import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
 import { getMonthlyPayrollWithWageIndex, getWageIndex } from './labor-market';
 import { rollLocationInventoryShocks, applyInventoryShocks } from './hazards';
 import { consumeLaneUsageFlush, subtractTransmittedLaneUsage } from './trade-lanes';
@@ -488,6 +488,12 @@ export function processTick(state: GameState): GameState {
     // into the units themselves, so the outer `supplyEfficiency` term is
     // skipped for mining (else the same brake would apply twice).
     const isMiningOutput = def.type === 'mining_output';
+    // Balance Pass 6 (H4, spec'd Pass 2): extraction duty-cycle opex scaling —
+    // a mining rig on a depleted deposit throttles, so its OPERATING cost
+    // scales with deposit pressure (clamp 0.55–1.0, value-weighted across the
+    // rig's production mix). Maintenance is deliberately unchanged. 1.0 for
+    // every non-mining service and for untouched deposits.
+    let miningOpexMult = 1;
     let baseTerm: number;
     if (isMiningOutput) {
       const production = MINING_PRODUCTION[svc.definitionId] || [];
@@ -496,12 +502,15 @@ export function processTick(state: GameState): GameState {
         : 1;
       const freighterBonus = computeFreighterBonusAt(svc.locationId);
       const unitsPerResource: Record<string, number> = {};
+      const pressureByResource: Record<string, number> = {};
       for (const { resource, amountPerMonth } of production) {
         const extractionPressure = getExtractionPressureMultiplier(state.extractionPressure, svc.locationId, resource);
+        pressureByResource[resource] = extractionPressure;
         const locationBonus = computeMiningLocationBonus(svc.locationId, resource);
         unitsPerResource[resource] =
           amountPerMonth * fraction * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
       }
+      miningOpexMult = miningDutyCycleOpexMult(svc.definitionId, pressureByResource);
       const oldBase = def.revenuePerMonth * fraction;
       const newBase = priceLinkedMiningRevenue(svc.definitionId, unitsPerResource, state.marketSnapshot, miningFrontierShield);
       baseTerm = blendMiningBaseRevenue(oldBase, newBase, state.miningPriceLinkPhaseInStartMonth, globalDate.totalMonths);
@@ -535,7 +544,9 @@ export function processTick(state: GameState): GameState {
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
-    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction));
+    // Balance Pass 6 (H4): × miningOpexMult — duty-cycle opex scaling for
+    // mining_output services on depleted deposits (1.0 for everything else).
+    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) * miningOpexMult);
     money += revenue - cost;
     totalEarned += revenue;
     totalSpent += cost;

@@ -165,6 +165,62 @@ export function initializeFrontier(createdAtMs: number): {
   };
 }
 
+// ─── Post-graduation demand-pool glide (Balance Pass 6 — C1) ─────────────────
+// docs/BALANCE.md Pass 5 finding C1 ("the graduation cliff"): a fresh
+// graduate's entire affordable build menu sits in exactly the pools week-1
+// players floor first (0.35–0.38×), so a $100–200M graduate had 0/60
+// profitable months in the Pass-5 50-year world while the SAME portfolio
+// alone earned +$13.7M/mo. The fix extends the Frontier demand-pool shield
+// with a time-based blend: for GRADUATION_GLIDE_MS after graduation, a
+// below-neutral pool multiplier glides linearly from 1.0 (neutral, the
+// Frontier shield's own value) down to the true market multiplier. Premiums
+// (mult > 1) are untouched — same "premiums pay, penalties wait" posture as
+// the shield itself. Glide length chosen by simulation (sim-50yr.ts §6c
+// glide-length sweep — see BALANCE.md Pass 6): 14 real days = 56 game-months.
+// The Pass-5 candidates {4, 6, 8, 12 days} ALL failed the durability bar
+// (first profitable month inside the glide, yes — but every one of them
+// slid back to the pool floor after the glide ended; 12 days ended at
+// breakeven). Day-granular refinement located a sharp phase transition:
+// at 14 days the graduate banks enough to un-stall its research ladder and
+// build out of the floored starter pools (+$2.1M/mo a decade after glide
+// end vs −$1.5M/mo forever at the no-glide baseline); 13 days fails. 14 is
+// the shortest durable length, and at half the 30-day Frontier window it
+// stays proportionate to the on-ramp it extends.
+//
+// State: reuses `frontierGraduatedAtMs`, which graduateFrontier has always
+// stamped — no new fields, no save migration. Saves that graduated long ago
+// (or predate the Frontier system entirely) read fraction 0: veterans get
+// nothing.
+
+/** Post-graduation glide window: 14 real days (= 56 game-months at 6h). */
+export const GRADUATION_GLIDE_MS = 14 * 24 * 60 * 60 * 1000;
+
+/** Remaining glide strength ∈ [0, 1]: 1 at the moment of graduation, linear
+ *  to 0 at GRADUATION_GLIDE_MS, 0 for veterans / never-graduated / Frontier-
+ *  active saves (the Frontier's own full shield handles those). */
+export function getGraduationGlideFraction(state: GameState, now: number = Date.now()): number {
+  if (state.frontierStatus !== 'graduated') return 0;
+  const graduatedAt = state.frontierGraduatedAtMs;
+  if (typeof graduatedAt !== 'number' || !Number.isFinite(graduatedAt)) return 0;
+  const elapsed = now - graduatedAt;
+  if (elapsed <= 0) return 1;
+  if (elapsed >= GRADUATION_GLIDE_MS) return 0;
+  return 1 - elapsed / GRADUATION_GLIDE_MS;
+}
+
+/** Blend a below-neutral demand-pool multiplier toward 1.0 by the glide
+ *  fraction: mult + (1 − mult) × fraction. Equivalently, the multiplier
+ *  floors at a value decaying linearly 1.0 → market rate over the window.
+ *  NEVER boosts: mult ≥ 1 (scarcity premiums) and fraction ≤ 0 pass through
+ *  unchanged, and the blended value never exceeds 1.0. Pure — shared by the
+ *  live tick, away catch-up, every P&L surface (all via
+ *  getServiceDemandMultiplier), and the sim harness. */
+export function applyGraduationGlide(mult: number, fraction: number): number {
+  if (!(fraction > 0) || !(mult < 1)) return mult;
+  const f = Math.min(1, fraction);
+  return mult + (1 - mult) * f;
+}
+
 // ─── Benefits / penalties while in Frontier ──────────────────────────────────
 
 /** Contract payouts inside Frontier get a generosity boost. */

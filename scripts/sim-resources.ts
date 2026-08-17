@@ -359,4 +359,54 @@ console.log(mdTable(
 console.log('\n### Belt baron w/ outlet — coverage month 36\n');
 console.log(coverageTable(baronContracts.player, 35));
 
+// ─── 5. Distributed miner — H4 duty-cycle opex acceptance (Balance Pass 6) ──
+// docs/BALANCE.md Pass 2 "extraction duty-cycle opex scaling" (implemented in
+// Pass 6): the GEOGRAPHICALLY diversified pure-mining specialist — six
+// deposits from the Moon out to Titan, one rig each, plus required power —
+// is the player the lever exists for. Acceptance: distributed miner becomes
+// viable (Pass-2 worked estimate ≈ +$13–18M/mo at steady state), while the
+// single-deposit belt baron above stays punished and the integrator's gain
+// stays < +$4M/mo.
+
+const distributedMinerOrder: { definitionId: string; locationId: string }[] = [
+  { definitionId: 'mining_lunar_basic', locationId: 'lunar_surface' },
+  { definitionId: 'solar_farm_lunar', locationId: 'lunar_surface' },
+  { definitionId: 'mining_lunar_ice', locationId: 'lunar_surface' },
+  { definitionId: 'mining_mars', locationId: 'mars_surface' },
+  { definitionId: 'solar_farm_mars', locationId: 'mars_surface' },
+  { definitionId: 'mining_asteroid', locationId: 'asteroid_belt' },
+  { definitionId: 'nuclear_reactor_asteroid', locationId: 'asteroid_belt' },
+  { definitionId: 'mining_europa', locationId: 'jupiter_system' },
+  { definitionId: 'nuclear_reactor_jupiter', locationId: 'jupiter_system' },
+  { definitionId: 'mining_titan', locationId: 'saturn_system' },
+  { definitionId: 'nuclear_reactor_saturn', locationId: 'saturn_system' },
+];
+
+const distributedMiner = runAudit('distributed-miner', orderedPlan(distributedMinerOrder), {
+  money: 60_000_000_000, maxBuilds: 2,
+});
+const distributedMinerContracts = runAudit('distributed-miner-contracts', orderedPlan(distributedMinerOrder), {
+  money: 60_000_000_000, maxBuilds: 2, contractCapPerDay: 5,
+});
+
+console.log('\n## Distributed miner (6 deposits, lunar→Titan) — H4 duty-cycle opex acceptance (Pass 6)\n');
+const dmRows = [5, 11, 17, 23, 29, 35].map(m => {
+  const d = distributedMiner.player.history[m];
+  const dc = distributedMinerContracts.player.history[m];
+  return [
+    m, d.buildingCount,
+    fm(d.revenue), fm(d.operating), fm(d.net),
+    fm(dc.net), fm(dc.contractSales || 0),
+  ];
+});
+console.log(mdTable(
+  ['mo', 'bldgs', 'svc+mining rev/mo', 'operating/mo', 'net/mo (no outlet)', 'net/mo (outlet 5/day)', 'contract $/mo'],
+  dmRows,
+));
+console.log('\nDeposit pressures at month 36 (distributed world):');
+console.log(mdTable(
+  ['deposit (location:resource)', 'pressure mult'],
+  extractionPressureReport(distributedMiner.world, MONTHS).map(r => [r.key, r.pressure]),
+));
+
 console.log('\ndone.');

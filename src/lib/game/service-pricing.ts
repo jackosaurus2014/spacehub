@@ -28,7 +28,7 @@
 // DashboardPanel, ResourceBar) — same state in, same multiplier out.
 
 import type { GameState } from './types';
-import { isInFrontier } from './frontier';
+import { isInFrontier, getGraduationGlideFraction, applyGraduationGlide } from './frontier';
 import { getCurrentSeasonNumber } from './seasonal-events';
 // Meaningful Decisions Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5):
 // a mothballed/reactivating/decommissioning building withdraws from the
@@ -237,7 +237,17 @@ export function getServiceDemandMultiplier(
   // corporations are shielded from rival saturation — the same shield
   // consumption and hazards use. Premiums still pay (the on-ramp stays
   // generous), penalties don't bite until graduation.
-  if (mult < 1 && isInFrontier(state, nowMs)) mult = 1;
+  // Balance Pass 6 (C1, "the graduation cliff"): after graduation the shield
+  // doesn't vanish — it GLIDES. For GRADUATION_GLIDE_MS the below-neutral
+  // multiplier blends linearly from 1.0 (neutral) down to the true market
+  // rate, giving a fresh graduate one bounded window to BUILD out of the
+  // floored starter pools instead of dying inside them (Pass-5 late joiners:
+  // 0/60 profitable months without this). Premiums untouched; veterans
+  // (fraction 0) untouched; the Frontier branch itself is unchanged.
+  if (mult < 1) {
+    if (isInFrontier(state, nowMs)) mult = 1;
+    else mult = applyGraduationGlide(mult, getGraduationGlideFraction(state, nowMs));
+  }
 
   return Math.max(DEMAND_MULT_FLOOR, Math.min(DEMAND_PREMIUM_CAP, mult));
 }
