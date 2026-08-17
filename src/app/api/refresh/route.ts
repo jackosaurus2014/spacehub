@@ -201,6 +201,11 @@ export async function POST(request: Request) {
       const alertResult = await processWatchlistAlerts(prisma);
       const digestResult = await sendWatchlistDailyDigest(prisma);
       results.watchlistAlerts = { alerts: alertResult, digest: digestResult };
+      // Regulatory Wave C — daily-frequency regulatory alert digests ride the
+      // same 08:00 UTC branch ('immediate' users are handled hourly by
+      // /api/cron/regulatory-alerts). Fail-soft before `prisma db push`.
+      const { processRegulatoryAlerts } = await import('@/lib/alerts/regulatory-alert-processor');
+      results.regulatoryAlerts = await processRegulatoryAlerts('daily');
     }
 
     if (type === 'regulatory-feeds') {

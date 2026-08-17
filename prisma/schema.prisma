@@ -112,6 +112,9 @@ model User {
   // Notification preferences
   notificationPreferences NotificationPreference?
 
+  // Regulatory alert preferences (Regulatory Wave C — Pro feature)
+  regulatoryAlertPreference RegulatoryAlertPreference?
+
   // Onboarding
   persona             String? // investor, entrepreneur, mission-planner, executive, supply-chain, legal
   onboardingCompleted Boolean @default(false)
@@ -1935,6 +1938,27 @@ model DocketSnapshot {
 
   @@index([actionDedupKey])
   @@index([lastCheckedAt])
+}
+
+// Regulatory Wave C — per-user regulatory alert preferences (Pro feature).
+// One row per user: which radar categories they watch, how often they want
+// email, and the send-watermark (lastSentAt advances ONLY on a confirmed
+// Resend send, so a failed send retries the same window next run).
+// Availability-probed (src/lib/regulatory-alerts.ts) so this code can ship
+// before `prisma db push` creates the table.
+model RegulatoryAlertPreference {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled           Boolean   @default(true)
+  watchedCategories String    @default("[]") // JSON string[] of RadarCategory slugs (see RADAR_CATEGORIES)
+  frequency         String    @default("daily") // 'immediate' (hourly cron) | 'daily' (08:00 UTC digest)
+  unsubscribeToken  String    @unique @default(cuid())
+  lastSentAt        DateTime? // send watermark — advanced only on confirmed send
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([enabled, frequency])
 }
 
 // Company Addition Request

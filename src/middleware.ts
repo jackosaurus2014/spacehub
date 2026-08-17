@@ -245,6 +245,21 @@ function checkCsrf(req: NextRequest): boolean {
     return true;
   }
 
+  // Skip CSRF check for one-click email unsubscribe (Regulatory Wave C):
+  // RFC 8058 List-Unsubscribe-Post requests come from mail-provider servers
+  // with no Origin/Referer header. Auth is the per-user unsubscribe token in
+  // the URL, not a cookie, so CSRF does not apply (same rationale as the
+  // Stripe-webhook exemption above).
+  if (pathname.startsWith('/api/regulatory-alerts/unsubscribe')) {
+    return true;
+  }
+  // Same exemption for the newsletter's one-click unsubscribe — pre-existing
+  // gap found during Wave C: mail-provider POSTs (no Origin) were CSRF-blocked,
+  // breaking RFC 8058 one-click for Gmail/Yahoo. Token-authed like the above.
+  if (pathname.startsWith('/api/newsletter/unsubscribe')) {
+    return true;
+  }
+
   // Skip CSRF check for cron/internal requests authenticated via valid CRON_SECRET Bearer token
   // Only bypass for known internal paths to prevent arbitrary CSRF bypass with any Bearer token
   const authHeader = req.headers.get('authorization');

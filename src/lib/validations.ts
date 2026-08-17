@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { RADAR_CATEGORIES } from '@/lib/regulatory-categorizer';
 
 /**
  * Common validation schemas for SpaceNexus API
@@ -4167,3 +4168,17 @@ export const chapterContributeSchema = z.object({
 });
 
 export type ChapterContributeInput = z.infer<typeof chapterContributeSchema>;
+
+// ─── Regulatory Wave C: per-user regulatory alert preferences (Pro) ─────────
+// Category slugs are validated against RADAR_CATEGORIES (src/lib/
+// regulatory-categorizer.ts — the single source of truth; do not redeclare).
+export const regulatoryAlertPreferencesSchema = z.object({
+  enabled: z.boolean(),
+  frequency: z.enum(['immediate', 'daily']),
+  watchedCategories: z
+    .array(z.enum(RADAR_CATEGORIES as unknown as [string, ...string[]]))
+    .max(RADAR_CATEGORIES.length)
+    .transform((cats) => Array.from(new Set(cats))),
+});
+
+export type RegulatoryAlertPreferencesInput = z.infer<typeof regulatoryAlertPreferencesSchema>;

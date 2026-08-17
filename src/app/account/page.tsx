@@ -9,6 +9,7 @@ import { extractApiError } from '@/lib/errors';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ReferralWidget from '@/components/ReferralWidget';
+import RegulatoryAlertsCard from '@/components/account/RegulatoryAlertsCard';
 
 type Section = 'profile' | 'security' | 'notifications' | 'appearance' | 'data-privacy';
 
@@ -55,6 +56,16 @@ export default function AccountPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeSection, setActiveSection] = useState<Section>('profile');
+
+  // Deep-link support (?tab=notifications) — used by the Regulatory Radar
+  // "get alerts" CTA and alert email footers. Applied after mount to avoid
+  // an SSR/client hydration mismatch.
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab && SECTION_TABS.some((t) => t.key === tab)) {
+      setActiveSection(tab as Section);
+    }
+  }, []);
 
   if (status === 'loading') {
     return (
@@ -111,7 +122,12 @@ export default function AccountPage() {
         <ScrollReveal delay={0.2}>
           {activeSection === 'profile' && <ProfileSection session={session} />}
           {activeSection === 'security' && <SecuritySection />}
-          {activeSection === 'notifications' && <NotificationsSection />}
+          {activeSection === 'notifications' && (
+            <>
+              <NotificationsSection />
+              <RegulatoryAlertsCard />
+            </>
+          )}
           {activeSection === 'appearance' && <AppearanceSection />}
           {activeSection === 'data-privacy' && <DataPrivacySection />}
         </ScrollReveal>

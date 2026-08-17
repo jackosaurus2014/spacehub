@@ -81,6 +81,12 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 13 * * 3',    path: '/api/cron/whos-hiring-post',          label: 'whos-hiring-post',           maxStaleMinutes: 11520 },
   { schedule: '30 7 * * *',    path: '/api/refresh?type=module-news',       label: 'module-news-compilation',    maxStaleMinutes: 1560 },
   { schedule: '0 8 * * *',     path: '/api/refresh?type=watchlist-alerts',  label: 'watchlist-alerts',           maxStaleMinutes: 1560 },
+  // Regulatory Wave C — per-user regulatory alert emails for Pro users on the
+  // 'immediate' frequency ("within the hour"). Daily-frequency users ride the
+  // watchlist-alerts branch above (08:00 UTC). Offset to :20 so it interleaves
+  // with the :00/:15/:30 hourly game jobs. /api/cron/ prefix is already in the
+  // middleware CSRF cron allowlist.
+  { schedule: '20 * * * *',    path: '/api/cron/regulatory-alerts',         label: 'regulatory-alerts-immediate', maxStaleMinutes: 180 },
   { schedule: '30 8 * * *',    path: '/api/refresh?type=commodity-prices',  label: 'commodity-price-update',     maxStaleMinutes: 1560 },
   { schedule: '0 9 * * *',     path: '/api/funding-opportunities',          label: 'funding-opportunities-refresh', maxStaleMinutes: 1560 },
   { schedule: '0 11 * * *',    path: '/api/refresh?type=patents',           label: 'patents-refresh',            maxStaleMinutes: 1560 },

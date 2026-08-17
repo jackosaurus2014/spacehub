@@ -125,6 +125,26 @@ export default async function RegulatoryRadarPage({
           ))}
         </nav>
 
+        {/* Per-user alert CTA (Regulatory Wave C) — visible to everyone;
+            settings enforce the Pro gate server-side. Honest copy only. */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-3">
+          <p className="text-xs text-slate-400">
+            <span className="text-slate-200 font-medium">
+              {categoryParam
+                ? `Get alerts for ${RADAR_CATEGORY_LABELS[categoryParam]}.`
+                : 'Get alerts for the categories you watch.'}
+            </span>{' '}
+            Pro subscribers get an email when a significant action lands — final rules,
+            enforcement actions, and passage-level legislation; routine notices filtered out.
+          </p>
+          <Link
+            href="/account?tab=notifications"
+            className="btn-secondary text-xs py-2 px-3 whitespace-nowrap"
+          >
+            Set up alerts
+          </Link>
+        </div>
+
         <RadarTimelineList entries={serializedEntries} />
 
         {/* Live compliance calendar — assembled from tracked comment windows
