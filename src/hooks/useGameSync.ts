@@ -81,6 +81,8 @@ export function useGameSync(
     laneBonuses?: LaneBonusSnapshot | null;
     /** Wave E7 (§E7 / §5 item 5): server-aggregated orbital-slot occupancy. */
     orbitalSlotOccupancy?: Record<string, { occupiedCount: number; bucket: string }> | null;
+    /** Balance Pass 4: this player's active orbital-slot leases (slot-gate). */
+    orbitalSlotLeases?: { locationId: string; expiresAtMs: number }[] | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -312,6 +314,9 @@ export function useGameSync(
             laborMarket: data.laborMarket || undefined,
             laneBonuses: data.laneBonuses || undefined,
             orbitalSlotOccupancy: data.orbitalSlotOccupancy || undefined,
+            // Balance Pass 4: [] is meaningful ("synced, holds no leases") —
+            // don't collapse it to undefined like the object snapshots above.
+            orbitalSlotLeases: Array.isArray(data.orbitalSlotLeases) ? data.orbitalSlotLeases : undefined,
             megaProjectBonuses: data.megaProjectBonuses || undefined,
           });
         }

@@ -17,6 +17,9 @@ import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction } from '@/lib/game/construction-slots';
+// Balance Pass 4 (docs/BALANCE.md "Pass 4"): saturated orbital-slot pools
+// block new builds without a lease — the build cards surface the reason.
+import { checkOrbitalSlotGate } from '@/lib/game/spatial-strategy';
 import { calculateRushRepairCost } from '@/lib/game/hazards';
 // Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): recipe display + per-building
 // supply efficiency + the vertical-integration-vs-market sourcing toggle.
@@ -168,6 +171,11 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
   const totalSlots = getConstructionSlots(state);
   const activeBuilds = getActiveConstructions(state);
   const slotsAvailable = canStartConstruction(state);
+  // Balance Pass 4 (docs/BALANCE.md "Pass 4"): orbital-slot gate — a
+  // saturated pool (E7 requiresLeaseAuction) blocks NEW builds at this
+  // location unless the player holds a slot lease (or the Frontier
+  // first-building exemption applies). Mirrors handleBuild's check exactly.
+  const slotGate = checkOrbitalSlotGate(state, selectedLocation);
 
   const availableBuildings = BUILDINGS.filter(b => {
     if (b.requiredLocation !== selectedLocation) return false;
@@ -251,6 +259,26 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
         )}
       </ConsolePanel>
 
+      {/* Balance Pass 4: slot-gate notice — the whole location is
+          lease-gated, so say it once above the cards (each card's button
+          also carries the reason). */}
+      {!slotGate.allowed && availableBuildings.length > 0 && (
+        <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] p-2.5 text-[11px] text-amber-300 leading-relaxed">
+          <span className="font-bold uppercase tracking-wide">Slots saturated</span>
+          <span className="text-amber-200/80"> — {slotGate.reason}</span>
+        </div>
+      )}
+      {slotGate.allowed && slotGate.viaLease && (
+        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.05] p-2 text-[10px] text-emerald-300">
+          Slot lease active at this location — new builds permitted while it holds.
+        </div>
+      )}
+      {slotGate.allowed && slotGate.viaFrontierExemption && (
+        <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/[0.05] p-2 text-[10px] text-cyan-300">
+          Frontier exemption: this pool is saturated, but your FIRST building here is guaranteed a slot. Further builds will need a lease auction.
+        </div>
+      )}
+
       {/* Building Cards */}
       {availableBuildings.length === 0 ? (
         <div className="card p-6 text-center">
@@ -266,7 +294,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
             const hasResources = !bld.resourceCost || Object.entries(bld.resourceCost).every(
               ([resId, qty]) => (state.resources[resId] || 0) >= qty
             );
-            const canAfford = canAffordMoney && hasResources && slotsAvailable;
+            const canAfford = canAffordMoney && hasResources && slotsAvailable && slotGate.allowed;
 
             return (
               <div key={bld.id} className={`rounded-xl border overflow-hidden transition-all game-card ${
@@ -432,7 +460,17 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     <span className={canAffordMoney ? 'text-green-400' : 'text-red-400'}>{formatMoney(cost)}</span>
                     <span className="text-slate-500 ml-2">{formatDuration(scaledBuildTime(bld.realBuildSeconds, count))}</span>
                   </div>
-                  {!slotsAvailable && canAffordMoney && hasResources ? (
+                  {!slotGate.allowed ? (
+                    /* Balance Pass 4: saturated pool — the Build button is
+                       replaced by the gate reason (win a lease auction). */
+                    <span
+                      className="px-3 py-1 rounded text-[10px] font-medium"
+                      style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}
+                      title={slotGate.reason}
+                    >
+                      Slots Saturated — Lease Required
+                    </span>
+                  ) : !slotsAvailable && canAffordMoney && hasResources ? (
                     <span className="px-3 py-1 rounded text-[10px] font-medium" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}>
                       Queue Full
                     </span>

@@ -1346,6 +1346,16 @@ export interface GameState {
    *  behavior). */
   orbitalSlotOccupancy?: Record<string, { occupiedCount: number; bucket: string }> | null;
 
+  /** Balance Pass 4 (docs/BALANCE.md "Pass 4") — NEW OPTIONAL FIELD, no save
+   *  migration (absent = null = no leases, gate behaves exactly as before
+   *  for never-synced saves). This player's ACTIVE orbital-slot leases
+   *  (OrbitalSlotLease rows, status 'active'), delivered via sync the same
+   *  direct-stash way as orbitalSlotOccupancy above. Read by
+   *  spatial-strategy.ts's checkOrbitalSlotGate: at a saturated pool a NEW
+   *  build requires one of these (or the Frontier first-building
+   *  exemption) — the E7 `requiresLeaseAuction` flag finally enforced. */
+  orbitalSlotLeases?: { locationId: string; expiresAtMs: number }[] | null;
+
   /** V39 — Wave M6 "Takeovers & the Share Registry" (docs/
    *  MEANINGFUL_2026-08.md §M6, engine: share-registry.ts). Server-owned
    *  equity snapshot delivered via sync the same null-until-sync way as

@@ -1,5 +1,7 @@
-// ─── Space Tycoon: Player-vs-Player Balance Audit (Balance Pass 3) ──────────
-// docs/BALANCE.md "Pass 3 — the player-vs-player economy". Runs N SimPlayers
+// ─── Space Tycoon: Player-vs-Player Balance Audit (Balance Pass 3+4) ────────
+// docs/BALANCE.md "Pass 3 — the player-vs-player economy" and "Pass 4"
+// (S8 wage-indexed hiring before/after; S12 slot-gate enforcement).
+// Runs N SimPlayers
 // in ONE world through scripts/sim-harness.ts, which imports the REAL engine
 // modules: demand-pools capacity-share splits, extraction-pressure shared
 // deposits, labor-market computeLaborAggregates (opt-in laborMarket world),
@@ -31,8 +33,11 @@ import {
   POACH_ACTION_FEE, POACH_TARGET_COOLDOWN_MS, POACH_MIN_TARGET_HEADCOUNT, POACH_MIN_NET_WORTH,
 } from '../src/lib/game/talent-poaching';
 import { WORKER_MAP, getWorkforceBonuses, getHireCost, DEFAULT_WORKFORCE } from '../src/lib/game/workforce';
-import { computeWageIndex, laborSupply, computeLaborAggregates, LABOR_SUPPLY_PER_QUARTERS } from '../src/lib/game/labor-market';
-import { computeMinBid, SLOT_IDLE_FEE_FRACTION, SLOT_IDLE_AUTO_RELEASE_MS, LEASE_TERM_MS } from '../src/lib/game/orbital-slot-auctions';
+import { computeWageIndex, laborSupply, computeLaborAggregates, LABOR_SUPPLY_PER_QUARTERS, getHireCostWithWageIndex } from '../src/lib/game/labor-market';
+import { computeMinBid, SLOT_IDLE_FEE_FRACTION, SLOT_IDLE_AUTO_RELEASE_MS, LEASE_TERM_MS, AUCTION_WINDOW_MS, assessIdleFees } from '../src/lib/game/orbital-slot-auctions';
+// Balance Pass 4: slot-gate enforcement (S12) + wage-indexed hiring (S8).
+import { checkOrbitalSlotGate, ORBITAL_SLOT_MAP, SATURATED_OCCUPANCY_PCT } from '../src/lib/game/spatial-strategy';
+import type { GameState } from '../src/lib/game/types';
 import { STANDING_DEMAND_REPORT_FEE } from '../src/lib/game/cornering-intel';
 import { FREIGHT_TOLL_MAX, FREIGHT_TOLL_CAP_PER_DISPATCH } from '../src/lib/game/offense';
 import {
@@ -60,7 +65,7 @@ const buildN = (definitionId: string, locationId: string, n: number): SimPlayer[
 function last(p: SimPlayer) { return p.history[p.history.length - 1]; }
 
 // ════════════════════════════════════════════════════════════════════════════
-console.log('# Balance Pass 3 — PvP economy audit (multi-player shared world, real engine modules)\n');
+console.log('# Balance Pass 3+4 — PvP economy audit (multi-player shared world, real engine modules)\n');
 
 // ─── S1. Crowding: N identical players piling into one pool ─────────────────
 console.log('## S1 — Crowding: N identical players, 6 GEO telecom sats each (18 months, shared geo:telecom pool)\n');
@@ -274,17 +279,24 @@ console.log('\n## S7 — Price campaign on lunar_water: victim damage AND attack
 }
 
 // ─── S8. Talent poaching ROI (analytic, real constants) ─────────────────────
-console.log('\n## S8 — Talent poaching: attacker cost vs victim loss (engineers; real constants)\n');
+// Balance Pass 4: getHireCostWithWageIndex (labor-market.ts) now charges the
+// live wage index on hiring — the table shows BOTH the pre-fix flat rehire
+// (what made O4 dead content) and the real post-fix wage-indexed rehire.
+console.log('\n## S8 — Talent poaching: attacker cost vs victim loss (engineers; real constants; Pass 4 wage-indexed hiring)\n');
 {
-  const eng = WORKER_MAP.get('engineer')!;
   const rows: (string | number)[][] = [];
   for (const { targetHeads, idx } of [{ targetHeads: 40, idx: 1.0 }, { targetHeads: 40, idx: 1.6 }, { targetHeads: 250, idx: 1.6 }]) {
     const n = maxPoachableCount(targetHeads);
     const bonus = computeSigningBonus('engineer', n, idx);
     const retention = computeRetentionCost(bonus);
-    const rehire = n * getHireCost('engineer');
-    // Victim revenue value of n engineers: serviceRevenue 0.05/head at default
-    // training (bonusScale 1.0), on a $60M/mo gross service book.
+    const rehireOld = n * getHireCost('engineer'); // pre-Pass-4: flat base, no index
+    // Post-Pass-4: the REAL charged rehire price at the live index (graduated
+    // corp — Frontier corps can't be poached at all). Deterministic fixture.
+    const defenderState = {
+      frontierStatus: 'graduated',
+      laborMarket: { index: { engineer: idx }, asOf: 0 },
+    } as unknown as GameState;
+    const rehireNew = n * getHireCostWithWageIndex(defenderState, 'engineer', 0);
     const wf = { ...DEFAULT_WORKFORCE, engineers: n };
     const revShare = getWorkforceBonuses(wf).serviceRevenue;
     const victimRevLoss = 60_000_000 * revShare;
@@ -294,15 +306,17 @@ console.log('\n## S8 — Talent poaching: attacker cost vs victim loss (engineer
       fm(bonus + POACH_ACTION_FEE),
       fm(POACH_ACTION_FEE),
       fm(retention),
-      fm(rehire),
+      fm(rehireOld),
+      fm(rehireNew),
       `${fm(victimRevLoss)}/mo`,
     ]);
   }
   console.log(mdTable(
-    ['target', 'max heads/offer', 'attacker all-in (bonus+fee)', 'attacker sunk if countered', 'defender: retention (burn)', 'defender: just REHIRE (base salary ×6, wage-index-free)', 'victim rev value of raided heads'],
+    ['target', 'max heads/offer', 'attacker all-in (bonus+fee)', 'attacker sunk if countered', 'defender: retention (burn)', 'defender: rehire PRE-Pass-4 (flat base)', 'defender: rehire NOW (× wage index)', 'victim rev value of raided heads'],
     rows,
   ));
-  console.log(`\nfloors/cooldowns: min target headcount ${POACH_MIN_TARGET_HEADCOUNT}, per-target cooldown ${POACH_TARGET_COOLDOWN_MS / DAY_MS}d, attacker net-worth gate ${fm(POACH_MIN_NET_WORTH)}. KEY ASYMMETRY: open-market hiring (getHireCost) charges 6 months' BASE salary with NO wage index — rehiring replacement crew is almost always cheaper than retention, and always cheaper than what the attacker paid.`);
+  console.log(`\nfloors/cooldowns: min target headcount ${POACH_MIN_TARGET_HEADCOUNT}, per-target cooldown ${POACH_TARGET_COOLDOWN_MS / DAY_MS}d, attacker net-worth gate ${fm(POACH_MIN_NET_WORTH)}.`);
+  console.log(`PASS 4 FIX VERIFIED: retention (bonus × 0.75 = 1.125 × idx × 6-mo salary) vs rehire (1.0 × idx × 6-mo salary) now scale with the SAME index — a 12.5% spread instead of the old 44-80%. Retention also keeps trained crew instantly, avoids the +${(0.02).toFixed(2)}/head post-poach index bump the rehirer eats, and skips crew-capacity re-checks: a real decision. In a tight market (idx 1.6) the attacker's 1.5× premium buys crew the victim can only replace at 1.6× base — poaching is no longer strictly dominated.`);
 }
 
 // ─── S9. Whale vs fresh graduate (newcomer-crush check) ─────────────────────
@@ -385,6 +399,61 @@ console.log('\n## S11 — Other offense levers (constants as shipped)\n');
     ['cornering intel report', `${fm(STANDING_DEMAND_REPORT_FEE)}/pull + market_microstructure tech`, 'info only — aims a corner', 'cornering alert fires at 40% of 7d volume; switch supply policy local; Earth import ×2.5'],
     ['espionage products', '$5-100M base + net-worth-bracket scaling (espionage-system.ts)', 'info only (POLICY.md: zero target-side harm)', 'security levels 1-10 ($0.5M-1B/mo) raise detection'],
   ]));
+}
+
+// ─── S12. Slot scarcity now BINDS (Balance Pass 4 enforcement check) ────────
+console.log('\n## S12 — Orbital-slot gate (Pass 4): the E7 lease requirement is now enforced on the build path\n');
+{
+  // 12a. The gate itself, exercised through the REAL checkOrbitalSlotGate
+  // (the same function page.tsx handleBuild, command-queue attemptBuildStart,
+  // and BuildPanel all call). Deterministic fixtures, now = 0.
+  const geoPool = ORBITAL_SLOT_MAP.get('geo')!;
+  const saturated = { geo: { occupiedCount: 160, bucket: 'saturated' } };
+  const mkState = (over: Record<string, unknown>): GameState => ({
+    buildings: [], frontierStatus: 'graduated', money: 0,
+    totalEarned: 0, totalSpent: 0, resources: {}, ships: [],
+    ...over,
+  } as unknown as GameState);
+  const entrant = mkState({ orbitalSlotOccupancy: saturated });
+  const leaseHolder = mkState({ orbitalSlotOccupancy: saturated, orbitalSlotLeases: [{ locationId: 'geo', expiresAtMs: 1 }] });
+  const frontierFirst = mkState({ orbitalSlotOccupancy: saturated, frontierStatus: 'active', frontierEnteredAtMs: 0, createdAt: 0 });
+  const frontierSecond = mkState({
+    orbitalSlotOccupancy: saturated, frontierStatus: 'active', frontierEnteredAtMs: 0, createdAt: 0,
+    buildings: [{ instanceId: 'b1', definitionId: 'sat_telecom_geo', locationId: 'geo', isComplete: false }],
+  });
+  const unsynced = mkState({});
+  console.log(mdTable(['builder at 85%+ saturated GEO (160/180)', 'gate verdict'], [
+    ['graduated corp, no lease', checkOrbitalSlotGate(entrant, 'geo', 0).allowed ? 'ALLOWED (bug!)' : `BLOCKED — "${checkOrbitalSlotGate(entrant, 'geo', 0).reason}"`],
+    ['active slot-lease holder', checkOrbitalSlotGate(leaseHolder, 'geo', 0).allowed ? 'allowed (via lease)' : 'BLOCKED (bug!)'],
+    ['Frontier corp, FIRST building at GEO', checkOrbitalSlotGate(frontierFirst, 'geo', 0).allowed ? 'allowed (Frontier first-build exemption)' : 'BLOCKED (bug!)'],
+    ['Frontier corp, SECOND building at GEO', checkOrbitalSlotGate(frontierSecond, 'geo', 0).allowed ? 'ALLOWED (bug!)' : 'blocked — exemption is one building only'],
+    ['never-synced save (no occupancy snapshot)', checkOrbitalSlotGate(unsynced, 'geo', 0).allowed ? 'allowed (fail-open — documented residual)' : 'BLOCKED (bug!)'],
+  ]));
+
+  // 12b. Entry economics at saturation: what the gate makes a late entrant
+  // PAY vs what denial/squatting costs an incumbent. Real constants.
+  const minBid = computeMinBid('geo');
+  const satCapex = scaledBuildingCost(BUILDING_MAP.get('sat_telecom_geo')!.baseCost, 0);
+  const idle30 = assessIdleFees({ startedAtMs: 0, lastIdleFeeAtMs: null, leaseAmount: minBid }, 30 * DAY_MS);
+  const idle89 = assessIdleFees({ startedAtMs: 0, lastIdleFeeAtMs: null, leaseAmount: minBid }, SLOT_IDLE_AUTO_RELEASE_MS - 1);
+  const squatTotal = minBid + idle89.feeDue;
+  console.log('\n' + mdTable(['line', 'value'], [
+    ['saturation trigger', `${SATURATED_OCCUPANCY_PCT}% of ${geoPool.totalSlots} GEO slots (auction auto-opens; ${AUCTION_WINDOW_MS / DAY_MS}d sealed-bid window, soft-close)`],
+    ['late entrant: min lease bid (burned)', fm(minBid)],
+    ['late entrant: entry premium vs first GEO sat capex', `${fm(minBid)} on ${fm(satCapex)} = +${Math.round((minBid / satCapex) * 100)}%`],
+    ['lease term / build window', `${LEASE_TERM_MS / DAY_MS} days (building persists after expiry — never evicted)`],
+    ['squatter: idle fee per 30d unbuilt (burned)', `${fm(idle30.feeDue)} (${SLOT_IDLE_FEE_FRACTION * 100}% of bid)`],
+    ['squatter: total to deny ONE slot to auto-release', `${fm(squatTotal)} burned over ${SLOT_IDLE_AUTO_RELEASE_MS / DAY_MS}d, then the slot returns to auction`],
+    ['squatter yield', 'nothing — no revenue, no asset, and the denied rival can outbid the NEXT weekly auction or build at an unsaturated pool'],
+  ]));
+
+  // 12c. Can a whale saturate GEO unilaterally to lock entrants out? Same-
+  // definition cost scaling (×1.15 per copy at a location) prices it out.
+  const slotsToSaturate = Math.ceil((SATURATED_OCCUPANCY_PCT / 100) * geoPool.totalSlots);
+  let soloCapex = 0;
+  for (let i = 0; i < slotsToSaturate; i++) soloCapex += scaledBuildingCost(BUILDING_MAP.get('sat_telecom_geo')!.baseCost, i);
+  console.log(`\nWhale first-mover lock check: saturating GEO alone needs ${slotsToSaturate} occupying buildings; ${slotsToSaturate}× sat_telecom_geo at one location costs ${fm(soloCapex)} (×1.15/copy compounding) — economically impossible, and S1 shows the pool multiplier floors long before that. Saturation is a MULTI-corp phenomenon; the gate prices ENTRY, it cannot be engineered as a unilateral lock. Mothballed/decommissioning buildings free their slots (occupancy cron + client agree via isSlotOccupant).`);
+  console.log(`Watch-item: one auction per location at a time + ${AUCTION_WINDOW_MS / DAY_MS}d window caps lease throughput at ~1 slot/week/location once saturated — an entry queue, not a wall (weekly-loop tempo; leases are also P2P transferable).`);
 }
 
 console.log('\ndone.');

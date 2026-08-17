@@ -40,6 +40,8 @@ import { RESEARCH_MAP, getResearchDisplayState, getResearchBonuses } from './res
 import { BUILDING_MAP, scaledBuildTime } from './buildings';
 import { generateId, formatDuration, advanceDate, scaledBuildingCost, scaledResearchTime } from './formulas';
 import { getConstructionSlots, getActiveConstructions } from './construction-slots';
+// Balance Pass 4: saturated orbital-slot pools block new builds (slot gate).
+import { checkOrbitalSlotGate } from './spatial-strategy';
 import {
   COMMAND_QUEUE_BASE_DEPTH,
   COMMAND_QUEUE_AUTOMATION_RESEARCH_ID,
@@ -182,6 +184,12 @@ export function attemptBuildStart(
   if (!def) return { ok: false, reason: 'unknown_building' };
   if (!(state.unlockedLocations || []).includes(order.locationId)) return { ok: false, reason: 'location_locked' };
   if (!def.requiredResearch.every(r => state.completedResearch.includes(r))) return { ok: false, reason: 'missing_research' };
+  // Balance Pass 4 (docs/BALANCE.md "Pass 4"): a queued order can sit until
+  // after its target pool saturates — the orbital-slot gate applies here
+  // exactly as it does in handleBuild (lease or Frontier first-building
+  // exemption required at a saturated pool). The order stays queued and
+  // retries next tick, like any other transient failure.
+  if (!checkOrbitalSlotGate(state, order.locationId, startedAtMs).allowed) return { ok: false, reason: 'slot_pool_saturated' };
 
   const count = state.buildings.filter(b => b.definitionId === order.buildingId && b.locationId === order.locationId).length;
   const { buildCostReduction } = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);

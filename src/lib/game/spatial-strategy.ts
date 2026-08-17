@@ -2,8 +2,9 @@
 // Shipping lanes, chokepoint analysis, and finite orbital slot inventory.
 // Realizes the "Spatial strategy — geography matters" principle in CLAUDE.md.
 
-import type { GameState } from './types';
+import type { GameState, BuildingInstance } from './types';
 import { LOCATION_MAP } from './solar-system';
+import { isInFrontier } from './frontier';
 
 // ─── Lane Definitions ────────────────────────────────────────────────────────
 // Canonical transit routes between solar-system locations. Bidirectional — the
@@ -129,9 +130,23 @@ export const ORBITAL_SLOT_MAP = new Map(ORBITAL_SLOT_POOLS.map(p => [p.locationI
 
 // ─── Player-perspective computations ─────────────────────────────────────────
 
-/** Count player buildings at a given location (proxy for slot occupancy). */
+/** Balance Pass 4 (docs/BALANCE.md "Pass 4"): does this building instance
+ *  occupy an orbital slot? Completed AND operationally present — a
+ *  mothballed or decommissioning building has powered down its station-
+ *  keeping and releases its slot (it is never retro-blocked from
+ *  reactivating: the gate below only guards NEW builds). Shared by the
+ *  client-side occupancy report AND the server occupancy cron
+ *  (orbital-slots/resolve) so both count identically. */
+export function isSlotOccupant(b: Pick<BuildingInstance, 'isComplete' | 'status'>): boolean {
+  if (!b.isComplete) return false;
+  return b.status !== 'mothballed' && b.status !== 'decommissioning';
+}
+
+/** Count player buildings at a given location (proxy for slot occupancy).
+ *  Pass 4: mothballed/decommissioning buildings no longer count — they free
+ *  their slot (matching the server aggregation in orbital-slots/resolve). */
 export function countPlayerBuildingsAt(state: GameState, locationId: string): number {
-  return state.buildings.filter(b => b.isComplete && b.locationId === locationId).length;
+  return state.buildings.filter(b => isSlotOccupant(b) && b.locationId === locationId).length;
 }
 
 export interface LaneTraffic {
@@ -235,6 +250,76 @@ export function computeOrbitalSlotReport(
       requiresLeaseAuction: overallOccupancyBucket === 'saturated',
     };
   });
+}
+
+// ─── Balance Pass 4: slot-gate ENFORCEMENT (docs/BALANCE.md "Pass 4") ────────
+// Pass 3 re-confirmed `requiresLeaseAuction` was display-only: the build path
+// never checked it, so "orbital slots are finite" was UI fiction at
+// saturation and O5's slot-lease denial denied nothing. This is the missing
+// build-path check, enforced at every build entrance (page.tsx handleBuild,
+// command-queue.ts attemptBuildStart, BuildPanel's build cards).
+//
+// Deterministic-offline honesty: the check reads ONLY sync-delivered
+// snapshots already on the save (orbitalSlotOccupancy + orbitalSlotLeases) —
+// never a live network call. A save that has never synced has no occupancy
+// snapshot and the gate stays OPEN (identical to pre-Pass-4 behavior, and a
+// solo/offline player can't be contending for slots anyway). Residual gap:
+// between syncs the snapshot can lag the true pool state by up to the sync
+// interval, and one active lease at a location permits builds there for its
+// whole term (the client can't attribute a specific building to a specific
+// lease row) — both documented in BALANCE.md Pass 4.
+
+export interface OrbitalSlotGateCheck {
+  allowed: boolean;
+  /** Why the build is blocked (present iff !allowed) — surfaced verbatim on
+   *  the build card. */
+  reason?: string;
+  /** The gate was passed via an active slot lease at this location. */
+  viaLease?: boolean;
+  /** The gate was passed via the Frontier first-building exemption. */
+  viaFrontierExemption?: boolean;
+}
+
+/** True when the player holds an unexpired slot lease at `locationId`
+ *  (sync-delivered orbitalSlotLeases snapshot). */
+export function hasActiveSlotLease(state: GameState, locationId: string, now: number = Date.now()): boolean {
+  return (state.orbitalSlotLeases || []).some(l => l.locationId === locationId && l.expiresAtMs > now);
+}
+
+/**
+ * May this player start a NEW building at `locationId` right now?
+ * - Non-pool locations (surfaces, LEO, belt…): always allowed.
+ * - Pool below saturation (or no occupancy snapshot yet): allowed.
+ * - Saturated pool: allowed only with an active slot lease there — EXCEPT a
+ *   Protected-Frontier player's FIRST building at the location, which is
+ *   always allowed (Pass 3 requirement: without this, the newcomer wall
+ *   returns at 85%-saturated GEO).
+ * Existing buildings are never retro-blocked — this guards build STARTS only.
+ */
+export function checkOrbitalSlotGate(
+  state: GameState,
+  locationId: string,
+  now: number = Date.now(),
+): OrbitalSlotGateCheck {
+  const pool = ORBITAL_SLOT_MAP.get(locationId);
+  if (!pool) return { allowed: true };
+
+  const server = state.orbitalSlotOccupancy?.[locationId];
+  if (!server || server.bucket !== 'saturated') return { allowed: true };
+
+  if (hasActiveSlotLease(state, locationId, now)) return { allowed: true, viaLease: true };
+
+  // Frontier first-building exemption: count EVERY building the player has
+  // at the location (including under-construction and mothballed) so the
+  // exemption can't be chained into multiple queued builds.
+  if (isInFrontier(state, now) && !state.buildings.some(b => b.locationId === locationId)) {
+    return { allowed: true, viaFrontierExemption: true };
+  }
+
+  return {
+    allowed: false,
+    reason: `${pool.label} saturated (${server.occupiedCount}/${pool.totalSlots}) — win a slot-lease auction to build here (Map → Spatial Strategy → Orbital Slots).`,
+  };
 }
 
 // ─── Chokepoint premiums ─────────────────────────────────────────────────────

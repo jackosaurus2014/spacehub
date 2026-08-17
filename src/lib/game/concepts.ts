@@ -138,7 +138,7 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   'order-book-depth': c({
     id: 'order-book-depth', name: 'Order Book Depth', icon: 'market',
     short: 'Total buy/sell volume stacked at each price level',
-    body: 'The order book shows every open bid and ask at its price level, with bar width scaled to quantity — deeper levels mean more volume must be absorbed before price moves past them. NPC market-maker orders are tagged separately from player orders so you can read genuine player liquidity apart from the floor.',
+    body: 'The order book shows every open bid and ask at its price level, with bar width scaled to quantity — deeper levels mean more volume must be absorbed before price moves past them. NPC market-maker orders are tagged separately from player orders so you can read genuine player liquidity apart from the floor. Matching is price-time priority: at the same price, whoever rested their order first fills first — including against the NPC maker\'s limited absorption budget, so when several corporations liquidate the same commodity, being early on the book is a real advantage.',
     related: ['escrow', 'mean-reversion'],
   }),
   escrow: c({
@@ -195,7 +195,8 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   'orbital-slot': c({
     id: 'orbital-slot', name: 'Orbital Slot', icon: 'territory',
     short: 'Finite premium anchorage (GEO, Lagrange, lunar polar…)',
-    body: 'High-value anchorages — geostationary orbit, stable Lagrange points, lunar polar slots — are finite inventory. Ownership transfers at market-clearing prices, so control of the best slots is contested and earned, never free.',
+    body: 'High-value anchorages — geostationary orbit, stable Lagrange points, lunar polar slots — are finite inventory. Once a pool passes 85% occupancy, new construction there is blocked until you win a sealed-bid slot-lease auction (proceeds burned) — with one exception: a Protected-Frontier corporation\'s first building at the location is always guaranteed a slot. Mothballing or decommissioning a building frees its slot, and existing buildings are never evicted.',
+    related: ['slot-idle-fee'],
   }),
 
   // ── Hazards / risk ────────────────────────────────────────────────────────
@@ -287,7 +288,7 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   'wage-index-concept': c({
     id: 'wage-index-concept', name: 'Wage Index', icon: 'workforce',
     short: 'Server-wide pay multiplier per crew type (0.8×–1.6×)',
-    body: 'Each crew type\'s salary multiplies by a server-wide wage index driven by total hiring versus labor supply. Mass hiring booms (and successful poaching raids) push it up for everyone; building crew quarters grows the labor pool and relieves it. Training your own crew reduces your contribution to the pressure.',
+    body: 'Each crew type\'s salary AND one-time hire cost (the 6-month signing bonus) multiply by a server-wide wage index driven by total hiring versus labor supply. Mass hiring booms (and successful poaching raids) push it up for everyone; building crew quarters grows the labor pool and relieves it. Training your own crew reduces your contribution to the pressure. Protected-Frontier corporations never pay above the base rate when hiring — a slack market still discounts for them, an overheated one doesn\'t bite until graduation.',
     related: ['talent-poaching'],
   }),
   'lane-toll': c({

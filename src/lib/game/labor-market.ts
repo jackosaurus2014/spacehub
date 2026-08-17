@@ -34,8 +34,10 @@
 // loop item (§7), not daily — the cron/job cadence below matches.
 
 import type { WorkerType, WorkforceState } from './workforce';
-import { WORKER_TYPES, WORKER_MAP } from './workforce';
+import { WORKER_TYPES, WORKER_MAP, getHireCost } from './workforce';
 import { BUILDING_MAP, getBuildingDerivedStats } from './buildings';
+import { isInFrontier } from './frontier';
+import type { GameState } from './types';
 
 export const WAGE_INDEX_MIN = 0.8;
 export const WAGE_INDEX_MAX = 1.6;
@@ -241,4 +243,46 @@ export function getWageAdjustedSalary(
   const def = WORKER_MAP.get(type);
   if (!def) return 0;
   return Math.round(def.salary * getWageIndex(snapshot, type, nowMs));
+}
+
+// ─── Balance Pass 4: wage-indexed hiring (docs/BALANCE.md "Pass 4") ─────────
+// Pass 3's S8 poaching audit found O4 (talent poaching) was dead content:
+// getHireCost charged 6 months' BASE salary with no wage-index term while
+// retention costs 0.75 × bonus × index — so rehiring replacement crew
+// strictly dominated retention at every index level, and a poach attacker
+// always overpaid relative to the victim's replacement cost. Fix (Pass 3
+// proposal, verbatim numbers): hire cost = getHireCost × wageIndex. This
+// also closes the E5 inconsistency where SALARIES tracked the shared labor
+// market but the signing bonus ignored it.
+//
+// FRONTIER SHIELD (premiums-pay-penalties-wait, matching the other shields:
+// service-pricing.ts floors the pool mult at 1, mining's frontierSpotFloor
+// floors spot at base): for a COST the analogous posture is a CAP at
+// neutral — a Frontier corp never pays an overheated index (>1.0) but still
+// enjoys a slack labor market (<1.0). The shield ends at graduation.
+
+/** The wage index actually applied to HIRING for this save: the live
+ *  snapshot index, capped at neutral (1.0) while in the Protected Frontier. */
+export function getHireWageIndex(
+  state: GameState,
+  type: WorkerType,
+  nowMs: number = Date.now(),
+): number {
+  const idx = getWageIndex(state.laborMarket, type, nowMs);
+  return isInFrontier(state, nowMs) ? Math.min(WAGE_INDEX_NEUTRAL, idx) : idx;
+}
+
+/** The REAL charged hire cost: workforce.ts's getHireCost (6-month signing
+ *  bonus, espionage headhunt voucher applied) × the hire wage index above.
+ *  Every UI surface that displays a hire price and every handler that
+ *  charges one must use THIS — never raw getHireCost — so the shown and
+ *  charged numbers can't diverge. Lives here (not workforce.ts) because
+ *  labor-market already depends on workforce; the reverse import would
+ *  cycle. */
+export function getHireCostWithWageIndex(
+  state: GameState,
+  type: WorkerType,
+  nowMs: number = Date.now(),
+): number {
+  return Math.round(getHireCost(type, state, nowMs) * getHireWageIndex(state, type, nowMs));
 }

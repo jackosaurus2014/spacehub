@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { ORBITAL_SLOT_POOLS, occupancyBucket } from '@/lib/game/spatial-strategy';
+import { ORBITAL_SLOT_POOLS, occupancyBucket, isSlotOccupant } from '@/lib/game/spatial-strategy';
 import {
   computeMinBid,
   resolveAuction,
@@ -50,7 +50,10 @@ export async function POST(request: NextRequest) {
     for (const p of profiles) {
       const buildings = (p.buildingsData as unknown as BuildingInstance[]) || [];
       for (const b of buildings) {
-        if (!b.isComplete) continue;
+        // Balance Pass 4: mothballed/decommissioning buildings free their
+        // slot (shared isSlotOccupant predicate — the client-side occupancy
+        // report counts identically).
+        if (!isSlotOccupant(b)) continue;
         if (poolLocationIds.has(b.locationId)) {
           occupiedCounts.set(b.locationId, (occupiedCounts.get(b.locationId) || 0) + 1);
         }

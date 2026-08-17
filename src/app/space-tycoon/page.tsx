@@ -95,7 +95,13 @@ import { SHIP_MAP, generateShipName } from '@/lib/game/ships';
 // credit-at-arrival handled by the tick engine.
 import { dispatchShipWithCargo } from '@/lib/game/cargo-logistics';
 import { CHAIN_MAP } from '@/lib/game/production-chains';
-import { getHireCost, consumeHeadhuntVoucher } from '@/lib/game/workforce';
+import { consumeHeadhuntVoucher, type WorkerType } from '@/lib/game/workforce';
+// Balance Pass 4: hire cost is wage-indexed (getHireCost × live index,
+// Frontier-capped at 1.0) — see labor-market.ts getHireCostWithWageIndex.
+import { getHireCostWithWageIndex } from '@/lib/game/labor-market';
+// Balance Pass 4: saturated orbital-slot pools now BLOCK new builds without
+// a lease (E7 requiresLeaseAuction, finally enforced).
+import { checkOrbitalSlotGate } from '@/lib/game/spatial-strategy';
 import type { WorkforceState } from '@/lib/game/workforce';
 import GameTutorial from '@/components/game/GameTutorial';
 import TutorialOverlay, { getTutorialTargetTab } from '@/components/game/TutorialOverlay';
@@ -923,6 +929,10 @@ export default function SpaceTycoonPage() {
         // occupancy — same direct-stash pattern as marketSnapshot above
         // (ephemeral telemetry, not a deterministic tick input).
         orbitalSlotOccupancy: serverData.orbitalSlotOccupancy ?? prev.orbitalSlotOccupancy,
+        // Balance Pass 4: active slot leases ride the same stash — the
+        // slot-gate (checkOrbitalSlotGate) reads them to permit builds at
+        // saturated pools. [] is meaningful (synced, no leases held).
+        orbitalSlotLeases: serverData.orbitalSlotLeases ?? prev.orbitalSlotLeases,
       };
     });
   });
@@ -1025,6 +1035,14 @@ export default function SpaceTycoonPage() {
       const { buildCostReduction } = getResearchBonuses(prev.completedResearch, prev.repeatableResearchLevels);
       const cost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
       if (prev.money < cost) { playSound('error'); return prev; }
+
+      // Balance Pass 4 (docs/BALANCE.md "Pass 4"): orbital-slot gate — a
+      // saturated pool (E7 requiresLeaseAuction) blocks NEW builds unless
+      // the player holds a slot lease (or the Frontier first-building
+      // exemption applies). BuildPanel disables the card with the reason;
+      // this is defense in depth for any other entrance.
+      const slotGate = checkOrbitalSlotGate(prev, locationId);
+      if (!slotGate.allowed) { playSound('error'); return prev; }
 
       // Check resource costs
       if (def.resourceCost) {
@@ -2305,7 +2323,11 @@ export default function SpaceTycoonPage() {
             // Audit A8 / Wave F wiring: pass state so an active espionage
             // headhunt voucher (employee_headhunt reward) discounts the hire,
             // then consume the voucher so it doesn't apply twice.
-            const cost = getHireCost(workerType as 'engineer' | 'scientist' | 'miner' | 'operator', prev);
+            // Balance Pass 4: the charge is wage-indexed (base 6-month bonus
+            // × live wage index, Frontier-capped at 1.0) — hiring now tracks
+            // the same labor market salaries already pay, and matches the
+            // price WorkforcePanel displays exactly.
+            const cost = getHireCostWithWageIndex(prev, workerType as WorkerType);
             if (prev.money < cost) { playSound('error'); return prev; }
             playSound('click');
             const workforce = { ...(prev.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 }) };

@@ -230,6 +230,10 @@ export function getNewGameState(): GameState {
     // pre-E7 behavior.
     orbitalSlotOccupancy: null,
     megaProjectBonuses: null,
+    // Balance Pass 4 (docs/BALANCE.md "Pass 4"): active slot leases arrive
+    // only via sync (same posture as orbitalSlotOccupancy) — null until then,
+    // and the slot gate stays open for never-synced saves.
+    orbitalSlotLeases: null,
     // V38 — Meaningful Decisions Wave M5 "Offense Toolkit I" (docs/
     // MEANINGFUL_2026-08.md §M5). A fresh save has never been targeted by
     // (or launched) an economic offense — the offense snapshot arrives only
@@ -707,6 +711,16 @@ export function loadGame(): GameState | null {
       // megaProjectBonuses (shouldn't happen via this migration, but keeps
       // the invariant "every V35 field is defined" bulletproof).
       state.megaProjectBonuses = null;
+    }
+
+    // Balance Pass 4 (docs/BALANCE.md "Pass 4"): additive optional field, no
+    // version bump — active slot leases default to null (no leases) and are
+    // populated only by the next authenticated sync. The slot-gate
+    // enforcement (spatial-strategy.ts checkOrbitalSlotGate) treats a
+    // missing occupancy snapshot as open, so a pre-Pass-4 save behaves
+    // identically until it syncs.
+    if (state.orbitalSlotLeases === undefined) {
+      state.orbitalSlotLeases = null;
     }
 
     // V36 — Meaningful Decisions Wave M2 "The Exit Decision" (docs/

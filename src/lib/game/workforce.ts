@@ -208,11 +208,19 @@ export function consumeHeadhuntVoucher(state: GameState, now: number = Date.now(
 }
 
 /**
- * Cost to hire one worker.
+ * BASE cost to hire one worker (6-month signing bonus at base salary,
+ * espionage headhunt voucher applied when `state` is passed).
+ *
+ * Balance Pass 4 (docs/BALANCE.md "Pass 4"): the REAL charged hire price is
+ * this × the live wage index — labor-market.ts's getHireCostWithWageIndex
+ * (Frontier corps capped at neutral 1.0). UI displays and hire handlers must
+ * go through that wrapper; this function stays wage-index-free only because
+ * labor-market.ts already depends on this module (importing it back here
+ * would cycle).
+ *
  * Audit A8: pass `state` to apply an active espionage headhunt voucher
  * (employee_headhunt reward — 50% off the next hire). Omitting `state`
- * returns the undiscounted cost (back-compat with existing call sites;
- * page.tsx:1767 should pass `state` — flagged for the UI wave).
+ * returns the undiscounted cost (back-compat with existing call sites).
  */
 export function getHireCost(type: WorkerType, state?: GameState, now: number = Date.now()): number {
   const def = WORKER_MAP.get(type);

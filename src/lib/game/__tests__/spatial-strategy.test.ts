@@ -10,6 +10,9 @@ import {
   computeLaneTraffic,
   computeOrbitalSlotReport,
   countPlayerBuildingsAt,
+  isSlotOccupant,
+  hasActiveSlotLease,
+  checkOrbitalSlotGate,
 } from '../spatial-strategy';
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
@@ -167,5 +170,122 @@ describe('spatial-strategy — player-perspective computations', () => {
     const geo = report.find(r => r.pool.locationId === 'geo');
     expect(geo!.playerOccupied).toBe(2);
     expect(geo!.playerOccupancyPct).toBeCloseTo((2 / 180) * 100);
+  });
+});
+
+// ─── Balance Pass 4 (docs/BALANCE.md "Pass 4"): slot-gate enforcement ───────
+
+const NOW = 50_000_000;
+
+function mkBuilding(locationId: string, opts: { isComplete?: boolean; status?: 'active' | 'mothballed' | 'reactivating' | 'decommissioning' } = {}) {
+  return {
+    instanceId: `b_${Math.random()}`, definitionId: 'x', locationId,
+    buildStartDate: { year: 0, month: 0 }, completionDate: { year: 0, month: 0 },
+    isComplete: opts.isComplete ?? true, startedAtMs: 0, realDurationSeconds: 0,
+    ...(opts.status ? { status: opts.status } : {}),
+  };
+}
+
+const saturatedGeo = { geo: { occupiedCount: 160, bucket: 'saturated' } };
+
+describe('Pass 4 — isSlotOccupant / mothball frees the slot', () => {
+  it('completed active (or status-less) buildings occupy', () => {
+    expect(isSlotOccupant({ isComplete: true })).toBe(true);
+    expect(isSlotOccupant({ isComplete: true, status: 'active' })).toBe(true);
+    expect(isSlotOccupant({ isComplete: true, status: 'reactivating' })).toBe(true);
+  });
+
+  it('incomplete, mothballed, and decommissioning buildings do NOT occupy', () => {
+    expect(isSlotOccupant({ isComplete: false })).toBe(false);
+    expect(isSlotOccupant({ isComplete: true, status: 'mothballed' })).toBe(false);
+    expect(isSlotOccupant({ isComplete: true, status: 'decommissioning' })).toBe(false);
+  });
+
+  it('countPlayerBuildingsAt excludes mothballed buildings', () => {
+    const s = baseState({
+      buildings: [
+        mkBuilding('geo'),
+        mkBuilding('geo', { status: 'mothballed' }),
+        mkBuilding('geo', { status: 'decommissioning' }),
+      ],
+    });
+    expect(countPlayerBuildingsAt(s, 'geo')).toBe(1);
+  });
+});
+
+describe('Pass 4 — checkOrbitalSlotGate', () => {
+  it('non-pool locations are never gated', () => {
+    const s = baseState({ orbitalSlotOccupancy: { leo: { occupiedCount: 999, bucket: 'saturated' } } });
+    expect(checkOrbitalSlotGate(s, 'leo', NOW).allowed).toBe(true);
+    expect(checkOrbitalSlotGate(s, 'earth_surface', NOW).allowed).toBe(true);
+  });
+
+  it('no occupancy snapshot (never synced): gate stays OPEN — pre-Pass-4 behavior', () => {
+    expect(checkOrbitalSlotGate(baseState(), 'geo', NOW).allowed).toBe(true);
+    expect(checkOrbitalSlotGate(baseState({ orbitalSlotOccupancy: null }), 'geo', NOW).allowed).toBe(true);
+  });
+
+  it('below saturation: allowed', () => {
+    const s = baseState({ orbitalSlotOccupancy: { geo: { occupiedCount: 100, bucket: 'high' } } });
+    expect(checkOrbitalSlotGate(s, 'geo', NOW).allowed).toBe(true);
+  });
+
+  it('saturated, no lease, not Frontier: BLOCKED with an auction hint', () => {
+    const s = baseState({ frontierStatus: 'graduated', orbitalSlotOccupancy: saturatedGeo });
+    const gate = checkOrbitalSlotGate(s, 'geo', NOW);
+    expect(gate.allowed).toBe(false);
+    expect(gate.reason).toMatch(/lease auction/i);
+    expect(gate.reason).toMatch(/160\/180/);
+  });
+
+  it('saturated + active lease at the location: allowed (viaLease)', () => {
+    const s = baseState({
+      frontierStatus: 'graduated',
+      orbitalSlotOccupancy: saturatedGeo,
+      orbitalSlotLeases: [{ locationId: 'geo', expiresAtMs: NOW + 1000 }],
+    });
+    const gate = checkOrbitalSlotGate(s, 'geo', NOW);
+    expect(gate.allowed).toBe(true);
+    expect(gate.viaLease).toBe(true);
+  });
+
+  it('an EXPIRED lease (or a lease elsewhere) does not open the gate', () => {
+    const expired = baseState({
+      frontierStatus: 'graduated',
+      orbitalSlotOccupancy: saturatedGeo,
+      orbitalSlotLeases: [{ locationId: 'geo', expiresAtMs: NOW - 1 }],
+    });
+    expect(checkOrbitalSlotGate(expired, 'geo', NOW).allowed).toBe(false);
+    expect(hasActiveSlotLease(expired, 'geo', NOW)).toBe(false);
+    const elsewhere = baseState({
+      frontierStatus: 'graduated',
+      orbitalSlotOccupancy: saturatedGeo,
+      orbitalSlotLeases: [{ locationId: 'lunar_orbit', expiresAtMs: NOW + 1000 }],
+    });
+    expect(checkOrbitalSlotGate(elsewhere, 'geo', NOW).allowed).toBe(false);
+  });
+
+  it('Frontier FIRST building at a saturated location: always allowed', () => {
+    const s = baseState({
+      frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000, createdAt: NOW - 1000,
+      orbitalSlotOccupancy: saturatedGeo,
+    });
+    const gate = checkOrbitalSlotGate(s, 'geo', NOW);
+    expect(gate.allowed).toBe(true);
+    expect(gate.viaFrontierExemption).toBe(true);
+  });
+
+  it('Frontier SECOND building at the location: blocked (even if the first is still under construction)', () => {
+    const s = baseState({
+      frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000, createdAt: NOW - 1000,
+      orbitalSlotOccupancy: saturatedGeo,
+      buildings: [mkBuilding('geo', { isComplete: false })],
+    });
+    expect(checkOrbitalSlotGate(s, 'geo', NOW).allowed).toBe(false);
+  });
+
+  it('graduated corp with zero buildings there gets NO exemption', () => {
+    const s = baseState({ frontierStatus: 'graduated', orbitalSlotOccupancy: saturatedGeo });
+    expect(checkOrbitalSlotGate(s, 'geo', NOW).allowed).toBe(false);
   });
 });

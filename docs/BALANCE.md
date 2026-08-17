@@ -1091,3 +1091,197 @@ GameState changes. Guard: `mining-frontier-shield.test.ts` (6 tests, unit
   or consider per-refresh maker-quote rationing later.
 - The S1 finding that a SOLO 6-copy GEO telecom fleet is already negative
   is Pass-M1-adjacent (pool sizing), not a PvP defect — left alone.
+
+## Pass 4 — closing Pass 3's two verified defects (2026-08)
+
+**Founder directive (standing):** keep making economic balance passes; the
+competitive aspect must make sense. Pass 3 verified two design-level
+defects and proposed their fixes with worked numbers; Pass 4 implements
+both, re-runs the full sim battery, and surfaces the S6 FIFO finding to
+players. Runner: `npx tsx scripts/sim-pvp.ts` (S8 now prints the
+before/after; new S12 prints the slot-gate verdicts).
+
+### Fix 1 — wage-indexed hiring (O4 "poaching is dead content")
+
+**What shipped.** The Pass 3 proposal verbatim: the REAL charged hire price
+is now `getHireCost × wageIndex` — implemented as
+`getHireCostWithWageIndex` / `getHireWageIndex` in `labor-market.ts` (it
+cannot live in workforce.ts: labor-market already imports workforce, the
+reverse import would cycle). `getHireCost` itself is unchanged
+(6-month base signing bonus, A8 headhunt voucher applied) so every
+legacy caller is opt-safe; the three surfaces that CHARGE or DISPLAY a
+hire price all moved to the wrapper: page.tsx's hire handler,
+WorkforcePanel's hire buttons (which now show the exact charged number,
+with the `×idx` factor and a tooltip — no silent divergence), and
+sim-pvp S8. Voucher composes multiplicatively before the index
+(commutative; guarded by test).
+
+**Frontier shield (premiums-pay-penalties-wait).** Frontier corps hire at
+`min(index, 1.0)` — an overheated market can't bite them, a slack one
+(<1.0) still discounts. This is the COST-side mirror of the existing
+revenue-side shields (service-pricing floors the pool mult at 1;
+mining's `frontierSpotFloor` floors spot at base). The shield ends at
+graduation. Guard: `hire-cost-wage-index.test.ts` (11 tests).
+
+**Before/after (S8, engineers, real constants):**
+
+| target | retention (burn) | rehire PRE-Pass-4 | rehire NOW | verdict |
+|---|---:|---:|---:|---|
+| 40 eng @ idx 1.0 | $13.5M | $12.0M | $12.0M | unchanged at neutral |
+| 40 eng @ idx 1.6 | $21.6M | $12.0M | $19.2M | spread 80% → 12.5% |
+| 250 eng @ idx 1.6 | $135.0M | $75.0M | $120.0M | spread 80% → 12.5% |
+
+Retention (`1.125 × idx × 6-mo salary`) and rehire (`1.0 × idx × 6-mo
+salary`) now scale with the SAME index — a fixed 12.5% paper spread in
+rehire's favor, against which retention keeps trained crew instantly,
+avoids the +0.02/head post-poach global index bump the rehirer would eat,
+and skips crew-capacity re-checks. **Retention-vs-rehire is a real
+decision, and in a tight market the attacker's 1.5× premium buys crew the
+victim can only replace at the same hot index — poaching is no longer
+strictly dominated.** Deliberate side effect (per the proposal): PvE
+hiring now tracks the labor market salaries already paid — the E5
+inconsistency (hire cost lagging the index) is closed.
+
+**Newcomer-during-a-whale-spree check (fresh audit):** a just-graduated
+corp hiring 10 engineers at a pinned 1.6 index pays $48M vs $30M base —
++$18M one-time on a ≥$100M-NW corp. The ONGOING payroll at 1.6× (which
+they were already paying pre-Pass-4) dwarfs the one-time bonus premium
+within ~4 game-months, and the Frontier month is fully shielded, so the
+fix does not create a punishing cliff. Counterplay unchanged and
+cooperative: crew quarters grow server-wide labor supply (S5: ~$350M
+server-wide restores a whale-spree index). No dominant strategy found:
+pre-hiring cheap crew before an anticipated boom is now mildly rewarded —
+that is the labor market working, bounded by the 0.8 floor and per-type
+crew caps.
+
+### Fix 2 — the orbital-slot gate is now ENFORCED (O5 "denial denies nothing")
+
+**What shipped.** `checkOrbitalSlotGate(state, locationId)` in
+`spatial-strategy.ts`, called by all three build entrances: page.tsx
+`handleBuild` (defense in depth), command-queue `attemptBuildStart`
+(reason `slot_pool_saturated` — the order stays queued and retries), and
+BuildPanel (button replaced by "Slots Saturated — Lease Required" with
+the full reason + a location-level banner; lease/Frontier passes get an
+explanatory chip). Rules, exactly as directed:
+
+- Gate applies only at the four `ORBITAL_SLOT_POOLS` locations and only
+  when the SYNC-DELIVERED occupancy bucket is `saturated` (≥85%).
+- An active slot lease at the location opens the gate. Leases now sync
+  down: **NEW OPTIONAL GameState FIELD `orbitalSlotLeases`**
+  (`{ locationId, expiresAtMs }[] | null`, types.ts next to
+  `orbitalSlotOccupancy`; sync/route.ts reads the player's active
+  `OrbitalSlotLease` rows; save-load defaults it to null — NO save
+  migration, absent = pre-Pass-4 behavior).
+- A Protected-Frontier corp's FIRST building at the location always
+  passes (counting under-construction and mothballed buildings, so the
+  exemption can't be chained); the second is gated like anyone else.
+- Existing buildings are never retro-blocked or evicted (gate guards
+  build STARTS only; lease expiry never removes a building — unchanged
+  resolve-cron Step 3 behavior).
+- **Mothball/decommission frees the slot:** new shared predicate
+  `isSlotOccupant` (complete AND not mothballed/decommissioning) used by
+  BOTH the occupancy cron (orbital-slots/resolve Step 1) and the
+  client-side `countPlayerBuildingsAt`, so server and client count
+  identically.
+
+**S12 verdicts (real gate function + real constants):** graduated
+entrant at 160/180 GEO → BLOCKED with the auction hint; lease holder →
+allowed; Frontier first build → allowed; Frontier second → blocked;
+never-synced save → allowed (fail-open, see residual). Entry economics:
+min GEO lease bid $25M burned = +17% on the first sat's $150M capex —
+scarcity now has a price at the margin. Squatting (O5 denial) burns
+$30M/slot/90d ($25M bid + 2×$2.5M idle fees) for zero yield before
+auto-release — **the idle fee's design purpose (make squatting
+unprofitable) now actually binds, because the gate it taxes is real.**
+Whale first-mover lock: saturating GEO unilaterally needs 153 occupying
+buildings; ×1.15/copy same-def cost scaling prices that at ~$1.9e18 —
+impossible. Saturation is a multi-corp phenomenon; the gate prices
+entry, it cannot be engineered as a lock.
+
+**Residual gaps (documented, deliberate — no server round-trips invented
+in the deterministic tick):**
+
+1. **Fail-open when never-synced / snapshot lag.** The gate reads only
+   the sync-delivered `orbitalSlotOccupancy`/`orbitalSlotLeases` stash;
+   a save that never synced (solo/offline — can't be contending anyway)
+   or whose snapshot lags by up to one sync interval (~60s) is not
+   gated. The server occupancy cron remains the truth; a burst of builds
+   racing the snapshot can overshoot 85% briefly — bounded by build
+   costs and construction slots, and self-corrects at the next cron.
+2. **One lease opens the whole location for its term.** The client
+   cannot attribute a specific building to a specific lease row, so an
+   active lease permits builds at that location for its 90-day term
+   (N builds on one lease is possible). Same-def cost scaling and the
+   S1 pool floor make bulk exploitation uneconomic; a per-lease
+   one-build ledger would need server-side build settlement — noted as
+   a possible E7 follow-up, not built.
+3. Lease-table read failure on sync degrades to "no leases" — at worst
+   over-blocks a real leaseholder until the next successful sync; never
+   under-blocks.
+
+### Fresh re-audit (all three runners re-run, deterministic — diff-clean on double-run)
+
+- **sim-pvp S1–S7, S9–S11: unchanged** from Pass 3 (the two fixes touch
+  no revenue/cost formula those scenarios exercise) — crowding still
+  saturates at the floor with 2 players, geography gradient intact
+  (contest −$6.7M vs spread +$1.7M), labor tax self-limiting, campaign
+  ROI unchanged, newcomer-crush cost:damage still 1.6:1, takeover desk
+  unchanged (dormant).
+- **sim-strategies / sim-resources: byte-identical concerns** — neither
+  imports the changed surfaces (harness untouched; `countPlayerBuildingsAt`
+  is not a harness input), and the M1 first-copy-ROI CI guard
+  (`tier-ladder-first-copy-roi.test.ts`) stays green: no building's
+  first-copy economics moved.
+- **New dominant strategies checked:** (a) early hiring at high-index
+  moments — see the newcomer check above, no cliff; (b) whale GEO lock —
+  S12c, impossible; (c) lease-then-spam under one lease — residual #2,
+  bounded by per-copy cost scaling + pool floors; (d) mothball-to-free-
+  slot cycling — mothball already costs 25% maintenance + a reactivation
+  fee + a game-month spin-up, and freeing a slot only ever HELPS rivals,
+  so there is no offensive use; it is the intended exit valve.
+- **Wage-index UI/handler parity:** WorkforcePanel button, tooltip, and
+  the hire handler all read the same wrapper — guarded by tests; the S8
+  poach inbox retention flow is unchanged (retention numbers already
+  carried the index server-side).
+
+### Surfaced (no mechanic change)
+
+- **NPC-liquidation FIFO priority** (Pass 3 S6 follow-up): the
+  `order-book-depth` glossary concept now states price-time priority
+  explicitly — same price, earlier order fills first, including against
+  the NPC maker's absorption budget ("being early on the book is a real
+  advantage"). `orbital-slot` and `wage-index-concept` bodies updated in
+  the same PR per the concepts.ts invariant (they describe the newly
+  enforced gate and the newly indexed hire cost).
+
+### Proposed, NOT implemented
+
+1. **Per-lease one-build accounting** (residual #2) — needs server-side
+   build settlement; revisit if lease-spam is ever observed in telemetry.
+2. **Auction cadence at saturation** — one open auction per location ×
+   7-day window caps lease supply at ~1/week/location: an entry queue,
+   not a wall (weekly loop; leases are P2P transferable). If real
+   populations queue up, consider batching K slots per auction.
+3. **Frontier payroll cap parity** — SALARIES still pay the live index
+   inside Frontier (only the demand pools, hazards, spot floor, hire
+   cost, etc. are shielded). Asymmetric but mild (small crews, 0.8–1.6×
+   band); flagging for a future pass rather than widening this one's
+   blast radius.
+4. Pass 3's offense-floor alignment item ($100–200M one-way campaign
+   window) — still open, unchanged by these fixes.
+
+### Files
+
+`labor-market.ts` (+`getHireWageIndex`/`getHireCostWithWageIndex`),
+`workforce.ts` (doc), `page.tsx` (hire handler, handleBuild gate, lease
+stash), `WorkforcePanel.tsx` (real price display),
+`spatial-strategy.ts` (`isSlotOccupant`, `hasActiveSlotLease`,
+`checkOrbitalSlotGate`; `countPlayerBuildingsAt` mothball-aware),
+`command-queue.ts` (gate), `BuildPanel.tsx` (gate UI),
+`types.ts`/`save-load.ts` (**`orbitalSlotLeases` — new optional field, no
+migration**), `sync/route.ts` (lease read + payload),
+`useGameSync.ts` ([] preserved as "synced, none"),
+`orbital-slots/resolve/route.ts` (occupancy via `isSlotOccupant`),
+`concepts.ts` (3 bodies), `sim-pvp.ts` (S8 before/after, S12),
+tests: `hire-cost-wage-index.test.ts` (new), `spatial-strategy.test.ts`
+(+13 gate/occupancy tests).

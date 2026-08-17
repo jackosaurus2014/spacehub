@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { GameState } from '@/lib/game/types';
-import { WORKER_TYPES, getWorkforceBonuses, getHireCost, getCrewCapacity, canHireWorker } from '@/lib/game/workforce';
+import { WORKER_TYPES, getWorkforceBonuses, getCrewCapacity, canHireWorker } from '@/lib/game/workforce';
 import type { WorkerType } from '@/lib/game/workforce';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
@@ -12,7 +12,11 @@ import { getCapabilityCrewQuarters } from '@/lib/game/building-capabilities';
 import { buildCareerCrossoverLine } from '@/lib/game/career-crossover';
 // Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.6/§E5): salary is now base × the
 // server-wide wage index per crew type — replaces the flat-constant payroll.
-import { getMonthlyPayrollWithWageIndex, getWageIndex, getWageAdjustedSalary, WAGE_INDEX_MAX, GUILD_STRIKE_WAGE_THRESHOLD } from '@/lib/game/labor-market';
+// Balance Pass 4 (docs/BALANCE.md "Pass 4"): hire cost is ALSO wage-indexed
+// now (getHireCostWithWageIndex — base 6-month bonus × live index, Frontier
+// corps capped at neutral), so the button shows exactly what the hire
+// handler charges.
+import { getMonthlyPayrollWithWageIndex, getWageIndex, getWageAdjustedSalary, getHireCostWithWageIndex, getHireWageIndex, WAGE_INDEX_MAX, GUILD_STRIKE_WAGE_THRESHOLD } from '@/lib/game/labor-market';
 
 interface WorkforcePanelProps {
   state: GameState;
@@ -288,7 +292,11 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
         <div className="space-y-3">
           {WORKER_TYPES.map(worker => {
             const count = workforce[`${worker.type}s` as keyof typeof workforce] || 0;
-            const hireCost = getHireCost(worker.type);
+            // Balance Pass 4: the REAL charged cost — wage-indexed (Frontier
+            // capped at 1.0) with any active headhunt voucher applied. Must
+            // match page.tsx's hire handler exactly (no silent divergence).
+            const hireCost = getHireCostWithWageIndex(state, worker.type as WorkerType);
+            const hireIndex = getHireWageIndex(state, worker.type as WorkerType);
             const canAfford = state.money >= hireCost;
             const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew, capabilityCrewQuarters);
             const canHire = canAfford && hireCheck.allowed;
@@ -325,7 +333,12 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
                         Salary: {formatMoney(adjustedSalary)}/mo{wageIndex !== 1.0 ? ` (base ${formatMoney(worker.salary)})` : ''}
                       </span>
                       <span className="text-slate-600 text-[10px]">·</span>
-                      <span className="text-slate-600 text-[10px]">Hire cost: {formatMoney(hireCost)}</span>
+                      <span
+                        className="text-slate-600 text-[10px]"
+                        title={`6-month signing bonus at the live wage index (×${hireIndex.toFixed(2)}). Frontier corporations never pay above the base rate.`}
+                      >
+                        Hire cost: {formatMoney(hireCost)}{hireIndex !== 1.0 ? ` (×${hireIndex.toFixed(2)})` : ''}
+                      </span>
                     </div>
                   </div>
                 </div>

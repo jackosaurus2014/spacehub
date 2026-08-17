@@ -1128,6 +1128,23 @@ export async function POST(request: Request) {
       );
     } catch { /* equity snapshot non-critical (schema may lag deploy) */ }
 
+    // ── Balance Pass 4 (docs/BALANCE.md "Pass 4"): this player's ACTIVE
+    // orbital-slot leases — the client-side slot-gate (spatial-strategy.ts
+    // checkOrbitalSlotGate) needs them to allow builds at saturated pools.
+    // Same cheap-read posture as orbitalSlotOccupancy above. ────────────────
+    let orbitalSlotLeases: { locationId: string; expiresAtMs: number }[] | null = null;
+    try {
+      const leaseRows = await prisma.orbitalSlotLease.findMany({
+        where: { holderId: profile.id, status: 'active', expiresAt: { gt: new Date() } },
+        select: { locationId: true, expiresAt: true },
+        take: 50,
+      });
+      orbitalSlotLeases = leaseRows.map(l => ({
+        locationId: l.locationId,
+        expiresAtMs: l.expiresAt.getTime(),
+      }));
+    } catch { /* lease table may not exist yet (pre-migration) — gate falls back open only where occupancy is also absent */ }
+
     return NextResponse.json({
       success: true,
       profileId: profile.id,
@@ -1164,6 +1181,9 @@ export async function POST(request: Request) {
       // the REAL saturation bucket instead of the old hardcoded 'low'.
       // Additive; absent = pre-E7 fallback behavior.
       orbitalSlotOccupancy,
+      // Balance Pass 4: this player's active slot leases — lets the client
+      // slot-gate (checkOrbitalSlotGate) permit builds at saturated pools.
+      orbitalSlotLeases,
       // Wave E7 (§E7 / §5 item 6, audit §1d): world-shared cooperative
       // mega-project bonuses — see server-effects.ts's MegaProjectBonusSnapshot.
       megaProjectBonuses,
