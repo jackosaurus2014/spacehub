@@ -59,7 +59,7 @@ import {
   extractionKey,
 } from '../src/lib/game/extraction-pressure';
 import { priceLinkedMiningRevenue } from '../src/lib/game/mining-pricing';
-import type { MarketSnapshot } from '../src/lib/game/spot-price';
+import { clampSpotToBand, type MarketSnapshot } from '../src/lib/game/spot-price';
 import type { GameState } from '../src/lib/game/types';
 // ─── Balance Pass 3 (PvP): shared-world modules the multi-player world
 // config exercises — all REAL engine imports, never reimplemented.
@@ -133,6 +133,15 @@ export interface SimPlayer {
   /** Balance Pass 3: this player's crew trainingLevel (0-1) for the labor
    *  aggregation's mitigation term. Default 0.5 (labor-market.ts default). */
   trainingLevel?: number;
+  /** Balance Pass 5 (50-year playtest): private revenue-multiplier stack
+   *  (research/commanders/tiers), applied to service revenue AND price-linked
+   *  mining revenue — the same place marginalCurve's `revenueMult` opt
+   *  applies it. The 50-year runner ramps this 1.0 → 2.0 as a player's
+   *  scripted research schedule completes (engine cap: formulas.ts
+   *  `revenueMultiplier` caps at 2.0), so veteran-vs-late-joiner income gaps
+   *  are honest. Mutable between months (runner-driven). Absent/1.0 = every
+   *  legacy table byte-identical. */
+  revenueMult?: number;
   history: MonthRow[];
 }
 
@@ -331,7 +340,7 @@ export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
@@ -342,6 +351,7 @@ export function newPlayer(
     craftPlan: opts.craftPlan,
     headcount: opts.headcount,
     trainingLevel: opts.trainingLevel,
+    revenueMult: opts.revenueMult,
     history: [],
   };
 }
@@ -570,6 +580,10 @@ export function stepMonth(world: SimWorld, month: number): void {
     // isn't double-applied.
     const power = getPowerByLocation(p.buildings);
     const saturationCounts = new Map<string, number>();
+    // Balance Pass 5: opt-in private multiplier stack (default 1.0 — legacy
+    // tables byte-identical). Applied where marginalCurve applies its
+    // `revenueMult` opt: service revenue and price-linked mining revenue.
+    const rMult = p.revenueMult ?? 1;
     let revenue = 0, operating = 0, maintenance = 0;
     const effVals: number[] = [];
     for (const b of p.buildings) {
@@ -593,6 +607,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         const cat = getServiceCategory(svcId);
         const poolMult = cat ? (poolMults[demandPoolKey(b.locationId, cat)] ?? 1) : 1;
         revenue += sDef.revenuePerMonth
+          * rMult
           * serviceSaturationMultiplier(pos)
           * poolMult
           * powerRatio
@@ -643,7 +658,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         // physical byproduct units are still credited to inventory (loop
         // above), unaffected by M3.
         if (isMiningOutput) {
-          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, world.spotSnapshot) * saturationMult;
+          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, world.spotSnapshot) * rMult * saturationMult;
         }
       }
     }
@@ -862,7 +877,15 @@ export function stepMonth(world: SimWorld, month: number): void {
           price = calculateIdleDecay(price, base, 60, minP, maxP);
         }
       }
-      prices[res] = price;
+      // Balance Pass 5 fidelity: what the economy PAYS is the sync-down
+      // MarketSnapshot, which is band-clamped server-side (spot-price.ts
+      // buildMarketSnapshot → clampSpotToBand, base × 0.3–3.0). The raw DB
+      // currentPrice can drift below the band (market-engine clamps only to
+      // the resource's hard minPrice, e.g. lunar_water 0.2×base) but no
+      // revenue surface ever reads that raw value. A no-op whenever the
+      // price is inside the band (verified byte-identical on the legacy
+      // sim-pvp S6 tables, whose prices never leave it).
+      prices[res] = clampSpotToBand(price, base, minP, maxP);
     }
     world.spotSnapshot = { ...world.spotSnapshot, prices };
   }

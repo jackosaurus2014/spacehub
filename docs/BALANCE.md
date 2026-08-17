@@ -1285,3 +1285,260 @@ migration**), `sync/route.ts` (lease read + payload),
 `concepts.ts` (3 bodies), `sim-pvp.ts` (S8 before/after, S12),
 tests: `hire-cost-wage-index.test.ts` (new), `spatial-strategy.test.ts`
 (+13 gate/occupancy tests).
+
+## Pass 5 — 50-year playtest (2026-08, pre-relaunch economy gate)
+
+**Founder directive:** *"Play test through the first 50 years of our game
+using NPC characters and try to identify potential issues with the
+competitive economy that need to be corrected before we do the server
+relaunch."* The shared world restarts fresh 2026-08-24; this pass is the
+economy gate for that relaunch.
+
+**Runner:** `npx tsx scripts/sim-50yr.ts` — 600 game-months (50 game-years
+= 150 real days at 6h/game-month), **8 scripted archetype players in ONE
+shared world with every realism switch on** (npcSaleCaps + contendedNpcCaps
+FIFO, laborMarket, dynamicSpot, constructionMaterials, contractOutlet
+5/day). Deterministic (double-run diff-identical). Archetypes: aggressive
+mono-expander (LEO/GEO telecom spam + reactive decommission), diversified
+integrator (41-step ladder to the outer system), vertical industrialist
+(belt + fabs + crafting queue), market-warfare aggressor (price campaigns
+on the real 28-active/56-cooldown game-month cadence), passive turtle
+(8 first-copy buildings then nothing), resource hoarder (max extraction,
+sells nothing), and two late joiners entering at month 120 and month 360
+with $200M (S9 fresh-graduate scale). Founders start with the harness's
+standing $2B mid-game convention.
+
+### Coverage (honest statement of what the playtest can and cannot see)
+
+| system | status |
+|---|---|
+| Service revenue stack (saturation × shared pools × power × supply eff) | REAL engine modules |
+| Price-linked mining, shared extraction pressure, E3 consumption + storage integrity | REAL |
+| NPC absorption caps (contended FIFO), delivery-contract outlet, crafting queue | REAL |
+| Overhead, bracketed exec comp on book NW, labor-market payroll at the live index | REAL |
+| Dynamic spot from combined flows; price campaigns (fee burn, mean-revert skip, sell impact, band floor) | REAL |
+| Serial research: real `baseCostMoney`/`realResearchSeconds`/`resourceCost`, prereq-resolved beelines, stall-until-affordable | REAL data, scripted scheduling |
+| Decommission (real 40%/50% recovery constants, mono archetype exercised 6 teardowns) | REAL constants, runner-driven |
+| Research revenue multiplier (engine 2.0 cap) + workforce serviceRevenue bonus (real 0.5 cap) via harness opt-in `revenueMult` | APPROXIMATED (levels shift, shapes don't) |
+| Corp tier (totalEarned thresholds only; T6/7 legacy-power gate not modeled, reported tier caps at 5) | APPROXIMATED |
+| Contract cap fixed 5/day for all (real: 4 base +1 research +1 T5); headcounts formulaic so poaching audited analytically, not in-world; doctrine locks/repeatables ignored (≤7 techs) | APPROXIMATED |
+| Megastructures, interstellar expeditions, story chapters, senate/factions, ships/lanes, hazards+insurance, espionage, takeovers, seasonal events, mentorship, Frontier shields, P2P order-book trades, mothball | **NOT MODELED** — the sim says nothing about them |
+
+Frontier shields are deliberately absent: the late joiners enter at $200M,
+i.e. already past the $100M graduation bar — the run measures the
+POST-shield newcomer, which is exactly the relaunch question.
+
+### Headline per-decade numbers (full tables printed by the runner)
+
+Book NW / trailing-12-month net at decade ends:
+
+| archetype | y10 | y20 | y30 | y40 | y50 |
+|---|---:|---:|---:|---:|---:|
+| integrator | $16.1B / $451M | $40.5B / $528M | $70.1B / $681M | $128.3B / $967M | $136.2B / $986M |
+| turtle (8 buildings, passive) | $1.1B / $64M | $1.5B / $61M | $1.2B / $61M | $1.3B / $61M | $5.2B / $55M |
+| industrialist | $5.2B / $48M | $3.2B / $47M | $5.8B / $47M | $5.0B / $46M | $4.1B / $48M |
+| aggressor | $1.3B / $33M | $1.1B / $32M | $1.0B / $32M | $1.1B / $30M | $1.2B / $31M |
+| hoarder | $1.2B / $9M | $1.3B / $9M | $1.9B / $9M | $3.6B / $22M | $6.5B / $36M |
+| mono-expander | $270M / $6M | $186M / $0.1M | $198M / $0.1M | $213M / $1M | $165M / $0.8M |
+| joiner-y10 (mo 120, $200M) | — | **−$108M / −$1.5M** | −$286M / −$1.5M | −$480M / −$1.6M | **−$676M / −$1.6M** |
+| joiner-y30 (mo 360, $200M) | — | — | — | −$129M / −$1.6M | **−$325M / −$1.6M** |
+
+Gini (negatives clamped) 0.61 → 0.77 → 0.79 → 0.84 → 0.82; top-1 share of
+positive NW 64% → 89%. Money supply: sink coverage 95–103% every decade;
+cumulative net minted +$15.0B over 50 years (≈6% of decade-5 gross flow) —
+**no unbounded inflation**, but note it is research spend ($237B destroyed
+world-wide) doing much of that work. Labor index: **0.80 (the floor) in
+every decade for all types.** Spot prices: organic excursion never exceeded
+−12% from base in 50 years; only campaigns move price meaningfully (to the
+0.3 band floor, where the clamp holds). Stockpiles: max book value $335M
+(hoarder), all bounded — **Pass-1 caps hold at 50-year scale.**
+
+### Findings — CRITICAL (fix before relaunch)
+
+**C1. The graduation cliff: a post-Frontier newcomer cannot survive a
+crowded world.** Both late joiners: first profitable month **never**
+(0/60 profitable months), tier 3 never reached, insolvent by ~+40 months,
+−$1.5M/mo forever. The controlled counterfactual (§6b of the runner) is
+decisive — the SAME portfolio, budget, and scripted decisions alone in an
+empty world: **+$13.7M/mo at +12 months, $1.67B NW at +60 months**
+(vs −$19.6M in the shared world). The delta is entirely pool crowding
+(leo:telecom mult 1.136 empty vs 0.380 crowded) plus FIFO NPC-book
+position. Mechanism: everything a $100–200M graduate can AFFORD sits in
+exactly the pools week-1 players crowd first (LEO telecom/compute, GEO,
+Earth launch/ops — all floored at 0.35 within the first weeks per Pass 3
+S1, which showed TWO over-built players suffice), so the entire
+reachable build menu is net-negative at position N. M1's "every first
+copy is profitable" guard holds solo but not at the pool floor. This
+bites at week 2 of the new world, not year 10.
+*Proposed fix (worked):* **post-graduation pool-mult glide** — for
+`GRADUATION_GLIDE_MS` (recommend 6 real days = 24 game-months) after
+graduation, a corp's demand-pool multiplier floors at a value decaying
+linearly 1.0 → market rate. Revenue-side, bounded, no new state beyond a
+graduation timestamp (already stored), and it reuses the exact
+service-pricing floor mechanic the Frontier shield already has. At the
+sim's year-10 pool state this converts the joiner's −$1.4M/mo into
+≈ +$8M/mo during the glide — enough to bank toward a genuinely
+uncrowded niche instead of dying inside the starter menu. Alternatives
+considered: income-gated graduation (gameable — sandbag your net), and
+rotating newcomer demand bonuses (more moving parts). The glide is the
+smallest honest fix.
+
+**C2. The deep-tier ladder is unreachable-by-design — the interstellar
+era cannot begin.** Full research tree costs **$5.62T** ($4.88T of it
+tier 5, avg $143B/tech) against a 50-year cumulative gross of ~$611B for
+the BEST archetype (the integrator's totalEarned). Money, not time, gates the tree (serial time is only
+~124 game-months). Result: nobody touched a T5 flagship in 50 years —
+`deep_space_relay` ($50B) and `mining_kuiper` ($150B) were built by
+NOBODY; `outpost_outer` ($200B + T5 techs) is pure fiction. First-copy
+self-paybacks: mining_titan 618 mo (52 y), mining_europa 737 mo (61 y),
+fabrication_titan 1,372 mo (114 y), mining_kuiper 1,558 mo (130 y),
+datacenter_jupiter **3,393 mo (283 y)** — confirming and extending the
+M-wave "1,300–3,400 month" flag with the research bill now honestly
+attached. Even the integrator, whose $986M/mo at y50 matches the game's
+own late-tier daily benchmarks, needs 152 income-months for kuiper capex
+alone. **Decide the intended pace BEFORE the fresh world** — repricing
+research after players have paid old prices is a rollback problem.
+*Proposed fix (worked):* target = first T5 flagship lands year ~25–35 of
+a world for a committed player ($500M–1B/mo era), i.e. a total
+chain budget (prereq techs + capex) of $30–80B. That means ÷15–÷20 on
+T5 research money (avg $143B → $7–10B), ÷3–÷4 on T4 ($11.6B avg →
+~$3B), AND raising deep-tier first-copy net so self-payback lands in
+the 120–240-month band (e.g. datacenter_jupiter $5.9M/mo on $20B must
+become ~$100M/mo, or its price must fall to ~$1.5B). Sinks-first note:
+cutting the tree's cost removes ~$150–200B of 50-year money
+destruction — pair with a flagship-scale maintenance/logistics sink
+(the T5 buildings' maintenance is currently only $6–60M/mo on $50–200B
+assets, 0.01–0.03%/mo — realistic upkeep of 0.3–0.5%/mo would both
+sink cash and make mothball/decommission live decisions at the top).
+
+### Findings — HIGH (first month of the new world)
+
+**H1. Offense constants are mis-scaled at BOTH ends.** Measured against
+achieved incomes: campaign fee cap $500M = **10–16× median monthly net in
+every decade** (the aggressor burned 8 months of income per declaration —
+it is never locally rational below whale tier), while for the y50
+integrator the same cap is 0.4% of NW (trivial). Poach action fee
+(0.28×), freight toll cap ($2M = 0.06×), and intel report ($5M = 0.14×
+median monthly net) are rounding errors from y30 on. The $200M offense NW
+floor falls from 0.16× median NW (y10) to 0.05× (y50). And the campaign's
+50-unit "real shells" inventory floor costs **$2.7M to buy outright** —
+cosmetic next to the $250M fee. *Proposal:* index the offense schedule to
+world wealth: fee = max(resource-keyed fee, 0.5% of attacker book NW)
+with the cap raised to $5B; min inventory = the fee's own
+`FEE_REFERENCE_UNITS` (5,000 u) so ammunition is real; toll cap and
+report fees × the published world median-income factor each quarter (the
+quarterly telemetry already exists). No constant changed in this pass —
+each re-anchors a shipped PvP price and needs the founder's call.
+
+**H2. The labor market is a dead signal at any realistic population.**
+Index pinned at the 0.80 floor for all 50 years. Root cause is structural:
+workforce bonus caps (`serviceRevenue` +50% caps at 10 engineers,
+`miningOutput` +100% at 5 miners, `researchSpeed` at ~4 scientists) bound
+RATIONAL per-corp demand at ~19 heads, while `LABOR_SUPPLY_BASE` is
+500–700 per type (+2 per crew-quarters, which grow passively with
+stations). The index cannot leave the floor until ~30–50 corps mass-hire
+simultaneously; Pass 3's S5 whale spree (900 engineers) is economically
+irrational (heads past the cap buy nothing), so Pass 4's wage-indexed
+hiring and the poach damage model all price off a signal that never
+moves. *Proposal (pick one):* per-building crew REQUIREMENTS (efficiency
+droops without staff — STATS_DESIGN already specs this) so labor demand
+scales with fleets; or divide `LABOR_SUPPLY_BASE` by ~5 so a small-world
+population can move the index. Either makes E5 live at relaunch scale.
+
+**H3. Dead decades are real for every archetype except the deepest
+ladder-climber.** Decision cadence (months/decade with any build,
+research completion, decommission, or campaign): mono 13→1→0→3→2,
+industrialist 7→2→1→1→2, hoarder 3→3→0→2→2, joiners ~2 then 0 forever;
+even the integrator falls 25→8→9→3→3. Measured causes: (i) pool floors
+make copy N+1 worthless (mono plateaus at ~20 sats by y10 and has
+nothing rational to do for 40 years — its cost-scaled next sat is
+$185M+ into a 0.35-floored pool); (ii) the next ladder rung costs
+10–100× current cash (industrialist stalls on $8B deep_drilling for
+literal decades); (iii) C2's research wall. The catalog jumps from ~$2B
+buildings straight to $8–80B with nothing between. The non-economic
+loops (chapters, seasons, expeditions, megaprojects — not modeled) must
+carry those decades; the economic core alone goes static by year ~12.
+*Proposal:* a mid-band construction rung ($2–8B capex, real ROI, new
+locations/deposits rather than more copies) + C2's repricing.
+
+**H4. The mining/vertical specialist stays capped for five decades.**
+Industrialist: $47M/mo, 9–12 buildings, flat from y10 to y50 (vs
+integrator ×20). Every touched deposit sits at the 0.4 extraction floor
+permanently from ~y10 (by y50 the Jovian/Saturnian deposits too). This
+is the 50-year confirmation of Pass 2's verdict; the proposed
+**extraction duty-cycle opex scaling** (`opexMult = clamp(pressure,
+0.55, 1.0)`, worked numbers in Pass 2) remains the recommended fix and
+is now upgraded to "ship with the relaunch" priority — it is the only
+lever on the table that makes geographic mining diversification viable.
+
+### Findings — WATCH (telemetry after relaunch)
+
+- **Money supply:** healthy (95–103% sink coverage per decade, +$15B
+  cumulative minted over 50 y). CAVEAT: research spend does ~30% of the
+  destruction ($237B of $782B); if C2's repricing ships, re-run `sim-50yr` and keep
+  coverage ≥90% — the flagship-maintenance sink above is the offset.
+- **Compounding:** no exponential runaway anywhere — the integrator's
+  net/mo grew 2.2× over 40 years (sublinear); concentration (Gini 0.82,
+  top-1 89%) is strategy-driven, not interest-on-wealth. Exec-comp
+  brackets only bind above ~$100B book NW; below that (turtle at $5B,
+  0.36%/yr drag vs ~65%/yr income) "wealth erodes if idle" is FALSE —
+  acceptable, but stop claiming it in copy for sub-$10B scales.
+- **Price texture:** organic flows moved no spot more than −12% in 50
+  years (NPC caps bound volume before impact compounds; hourly mean
+  reversion heals). Alive-feeling prices depend wholly on the NPC
+  event layer, not player flow. Fine — but the market-intelligence
+  features should expect campaign/event signals, not organic drift.
+- **Storage:** Pass-1 caps hold at year-50 fleets (max stockpile $335M
+  book, all asymptotes finite). PASS — no action.
+- **Campaign band floor:** campaigns pinned lunar_water at exactly the
+  0.3 band floor for their 28-game-month windows; the paying surfaces
+  (MarketSnapshot) clamp there even though the raw DB price can drift
+  to the resource's hard `minPrice` (0.2× for lunar_water). Verified
+  consistent — no exploit; documented here because the two floors
+  differ and future code must always read through the snapshot.
+
+### Implemented in this pass (tooling only — no game-engine changes)
+
+Nothing in the engine met the Pass-1-4 "unambiguous constant-level
+defect" bar; every finding above re-anchors a design-scale decision and
+is left to the founder pre-relaunch. Tooling shipped:
+
+1. `scripts/sim-harness.ts`: opt-in `SimPlayer.revenueMult` (private
+   multiplier stack; absent = 1.0) applied to service + price-linked
+   mining revenue exactly where `marginalCurve`'s `revenueMult` opt
+   applies; **dynamic-spot snapshot now band-clamped** through the real
+   `clampSpotToBand` (fidelity: the economy pays the band-clamped
+   MarketSnapshot, never the raw DB price). Legacy outputs verified
+   **byte-identical** (sim-strategies, sim-resources, sim-pvp diffed
+   against pre-change captures).
+2. `scripts/sim-50yr.ts` (new runner): the 600-month shared world,
+   money-gated serial research on the real tree, corp-tier tracking,
+   campaign scheduling, decade ledgers (money supply), Gini,
+   late-joiner probes + empty-world counterfactual, offense-constant
+   era audit, flagship economics. Deterministic; double-run
+   diff-identical.
+3. Model iterations are documented in the runner header — two honest
+   corrections mid-pass: (a) research spending needed a cash-reserve
+   rule (the first iteration let archetypes research themselves into
+   death spirals); (b) payroll without the workforce bonus side was a
+   phantom tax (now paired with the real capped `getWorkforceBonuses`
+   revenue term).
+
+Verification: full jest suite **4,387/194 green** (M1 first-copy-ROI
+guard included), `tsc --noEmit` clean (covers scripts/), determinism
+double-run diff-identical, defaults-off invariance byte-diffed.
+
+### Follow-ups
+
+- Simulate the C1 glide (add a harness `poolMultFloor(month)` per-player
+  opt) before shipping it, to pick the glide length with numbers.
+- Mothball never became rational in any run (no revenue collapse deep
+  enough outside campaign windows) — exercise it in the C2 re-run once
+  flagship upkeep exists.
+- In-world poach duel (headcounts as real state, not formula) if H2's
+  crew-requirements route is chosen.
+- Per-player contract caps (4/5/6 by tier+research) instead of the
+  world-level 5/day approximation.
+- The 41-step integrator order and the research cash-reserve heuristics
+  are scripted, not optimal — treat absolute levels as lower bounds on
+  skilled play; the SHAPES (floors, walls, cliffs) are the findings.
