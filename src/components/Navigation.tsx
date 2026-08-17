@@ -71,6 +71,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Contracts & Opportunities', href: '/procurement', description: 'Contracts, grants, SBIR & budgets' },
   { label: 'Marketplace', href: '/marketplace', description: 'Services, RFQs & providers' },
   { label: 'Regulatory & Compliance', href: '/compliance', description: 'Compliance, space law & filings' },
+  { label: 'Regulatory Radar', href: '/regulatory-radar', description: 'Live rules, enforcement & deadlines' },
   { label: 'Patents', href: '/patents', description: 'Space technology patent trends' },
   { label: 'Spectrum', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Space Manufacturing', href: '/space-manufacturing', description: 'In-space manufacturing & imagery' },

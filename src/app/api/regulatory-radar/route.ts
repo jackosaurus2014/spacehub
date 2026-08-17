@@ -4,7 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { RADAR_CATEGORIES, type RadarCategory } from '@/lib/regulatory-categorizer';
+import { serializeDeadlineWeeks } from '@/lib/regulatory-deadlines';
 import {
+  collectRegulatoryDeadlines,
   getClosingCommentWindows,
   getRadarTimeline,
   type RadarSource,
@@ -46,16 +48,23 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const [entries, closingSoon] = await Promise.all([
+    const [entries, closingSoon, deadlines] = await Promise.all([
       getRadarTimeline({
         limit,
         category: (categoryParam as RadarCategory) || undefined,
         source: (sourceParam as RadarSource) || undefined,
       }),
       getClosingCommentWindows(30),
+      collectRegulatoryDeadlines(),
     ]);
 
-    return NextResponse.json({ entries, closingSoon, total: entries.length });
+    return NextResponse.json({
+      entries,
+      closingSoon,
+      // Week-grouped next-90-days compliance calendar (fail-soft [])
+      deadlineWeeks: serializeDeadlineWeeks(deadlines),
+      total: entries.length,
+    });
   } catch (error) {
     logger.error('Error fetching regulatory radar', {
       error: error instanceof Error ? error.message : String(error),

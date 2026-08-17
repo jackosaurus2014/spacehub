@@ -209,6 +209,7 @@ export async function POST(request: Request) {
       const { fetchAndStoreFederalRegister } = await import('@/lib/fetchers/federal-register-fetcher');
       const { fetchAndStoreITUFilings } = await import('@/lib/fetchers/itu-filings-fetcher');
       const { fetchAndStoreCongressActions } = await import('@/lib/fetchers/congress-fetcher');
+      const { fetchAndStoreEnforcementActions } = await import('@/lib/fetchers/enforcement-fetcher');
       const faaCount = await fetchAndStoreFAALicenses();
       const fccCount = await fetchAndStoreFCCFilings();
       const fedRegResult = await fetchAndStoreFederalRegister();
@@ -216,13 +217,17 @@ export async function POST(request: Request) {
       // Env-gated (CONGRESS_GOV_API_KEY): returns { skipped: true } without
       // touching the network when the key is absent.
       const congressResult = await fetchAndStoreCongressActions();
+      // Enforcement Watch — FR term searches for BIS/DDTC/FCC/FAA penalty,
+      // denial-order, debarment, and settlement documents (keyless, fail-soft).
+      const enforcementResult = await fetchAndStoreEnforcementActions();
       results.regulatoryFeeds = {
         faaLicenses: faaCount,
         fccFilings: fccCount,
         federalRegister: fedRegResult,
         ituFilings: ituResult,
         congress: congressResult,
-        totalUpdated: faaCount + fccCount + fedRegResult.stored + ituResult.seeded + ituResult.notices + congressResult.stored,
+        enforcement: enforcementResult,
+        totalUpdated: faaCount + fccCount + fedRegResult.stored + ituResult.seeded + ituResult.notices + congressResult.stored + enforcementResult.stored,
       };
     }
 

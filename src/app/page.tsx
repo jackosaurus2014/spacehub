@@ -117,6 +117,13 @@ export default async function HomePage() {
 
   try {
     // status is a new schema field — cast for Prisma client compat
+    // NOTE: this query is also what makes the weekly data briefs eligible for
+    // Today's Reads — the Monday economy brief (category 'market') AND the
+    // Monday regulatory brief (category 'regulatory') both publish as
+    // status='published' AIInsight rows (see api/cron/weekly-economy-post and
+    // weekly-regulatory-post), so they rotate through here on equal footing.
+    // Freshness gating is inherent: cards sort newest-first, so a stale brief
+    // only appears when nothing newer exists site-wide.
     const recentInsights = await (prisma.aIInsight as any).findMany({
       where: { status: 'published' },
       select: { slug: true, title: true, summary: true, category: true, generatedAt: true },

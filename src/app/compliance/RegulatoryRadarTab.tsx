@@ -10,6 +10,7 @@ import {
   SOURCE_LABELS,
   type RadarTimelineEntry,
 } from '@/components/regulatory/RadarTimeline';
+import DeadlineCalendar, { type DeadlineCalendarWeek } from '@/components/regulatory/DeadlineCalendar';
 
 /**
  * Regulatory Radar tab on /compliance — unified reverse-chron timeline of
@@ -23,6 +24,7 @@ const SOURCE_FILTERS = ['congress', 'federal-register'] as const;
 export default function RegulatoryRadarTab() {
   const [entries, setEntries] = useState<RadarTimelineEntry[]>([]);
   const [closingSoon, setClosingSoon] = useState<RadarTimelineEntry[]>([]);
+  const [deadlineWeeks, setDeadlineWeeks] = useState<DeadlineCalendarWeek[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [category, setCategory] = useState<RadarCategory | 'all'>('all');
@@ -40,6 +42,7 @@ export default function RegulatoryRadarTab() {
       const data = await res.json();
       setEntries(Array.isArray(data?.entries) ? data.entries : []);
       setClosingSoon(Array.isArray(data?.closingSoon) ? data.closingSoon : []);
+      setDeadlineWeeks(Array.isArray(data?.deadlineWeeks) ? data.deadlineWeeks : []);
     } catch (err) {
       clientLogger.error('Failed to fetch regulatory radar', {
         error: err instanceof Error ? err.message : String(err),
@@ -139,6 +142,12 @@ export default function RegulatoryRadarTab() {
       </div>
 
       <RadarTimelineList entries={entries} />
+
+      {/* Live compliance calendar — next 90 days of tracked comment closings
+          and rule effective dates (honest empty state when nothing tracked). */}
+      <div className="mt-8">
+        <DeadlineCalendar weeks={deadlineWeeks} />
+      </div>
     </div>
   );
 }

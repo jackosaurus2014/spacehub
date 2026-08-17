@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { RADAR_CATEGORY_LABELS, type RadarCategory } from '@/lib/regulatory-categorizer';
 
 /**
@@ -151,7 +152,15 @@ export function RadarTimelineList({ entries, now }: { entries: RadarTimelineEntr
           >
             <div className="flex flex-wrap items-center gap-2 mb-2">
               <SourceBadge source={entry.source} />
-              <span className="inline-block text-[11px] font-medium px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/[0.08] whitespace-nowrap">
+              {/* Enforcement gets a distinct badge — text-labeled ("Enforcement
+                  Watch"), never color-alone, per accessibility rules. */}
+              <span
+                className={`inline-block text-[11px] px-2 py-0.5 rounded-full border whitespace-nowrap ${
+                  entry.category === 'enforcement'
+                    ? 'font-semibold bg-rose-500/15 text-rose-300 border-rose-500/30'
+                    : 'font-medium bg-white/[0.06] text-slate-300 border-white/[0.08]'
+                }`}
+              >
                 {categoryLabel(entry.category)}
               </span>
               {entry.significant && (
@@ -175,9 +184,18 @@ export function RadarTimelineList({ entries, now }: { entries: RadarTimelineEntr
               </h4>
             </a>
             <p className="text-xs text-slate-500 mt-1">
-              {[entry.agency, entry.documentType && entry.source !== 'congress' ? entry.documentType : null]
-                .filter(Boolean)
-                .join(' · ')}
+              {(() => {
+                const meta = [entry.agency, entry.documentType && entry.source !== 'congress' ? entry.documentType : null]
+                  .filter(Boolean)
+                  .join(' · ');
+                return meta ? `${meta} · ` : null;
+              })()}
+              <Link
+                href={`/regulatory-radar/action/${entry.id}`}
+                className="text-slate-400 hover:text-slate-200 underline underline-offset-2 transition-colors"
+              >
+                Details<span className="sr-only"> for {entry.title}</span>
+              </Link>
             </p>
             {entry.source === 'congress' && entry.actionText && (
               <p className="text-xs text-blue-300/90 mt-1.5">Latest action: {entry.actionText}</p>

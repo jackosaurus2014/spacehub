@@ -61,9 +61,11 @@ export function composeRegulatoryBrief(data: RegulatoryBriefData, now = new Date
     (a) => !['rule', 'proposed rule'].includes((a.documentType || '').toLowerCase())
   );
   const significant = weekActions.filter((a) => a.significant);
+  const enforcement = weekActions.filter((a) => a.category === 'enforcement');
 
   const byCategory = new Map<RadarCategory, RadarEntry[]>();
   for (const a of federalRegister) {
+    if (a.category === 'enforcement') continue; // has its own section above
     const list = byCategory.get(a.category) || [];
     list.push(a);
     byCategory.set(a.category, list);
@@ -84,8 +86,27 @@ export function composeRegulatoryBrief(data: RegulatoryBriefData, now = new Date
   lines.push(`| Final rules | ${rules.length} |`);
   lines.push(`| Proposed rules | ${proposedRules.length} |`);
   lines.push(`| Notices & other documents | ${notices.length} |`);
+  lines.push(`| Enforcement actions | ${enforcement.length} |`);
   lines.push(`| Comment windows closing in 14 days | ${closingWindows.length} |`);
   lines.push('');
+
+  if (enforcement.length > 0) {
+    lines.push('## Enforcement watch');
+    lines.push('');
+    lines.push('Penalties, denial orders, debarments, and settlements published this week:');
+    lines.push('');
+    for (const e of enforcement.slice(0, 8)) {
+      // Penalty amounts, when parseable from the source document, are already
+      // prefixed onto the summary by the fetcher ("Penalty: $X.").
+      const penalty = e.summary?.match(/^Penalty: (.+?)\.(?:\s|$)/)?.[1];
+      const detail = penalty ? ` — **${penalty}**` : '';
+      lines.push(`- [${e.title}](${e.url}) — ${e.agency || 'Federal Register'}${detail} (${fmtDate(e.actionDate)})`);
+    }
+    if (enforcement.length > 8) {
+      lines.push(`- …and ${enforcement.length - 8} more on the [Radar](/regulatory-radar?category=enforcement)`);
+    }
+    lines.push('');
+  }
 
   if (closingWindows.length > 0) {
     lines.push('## Action windows closing soon');

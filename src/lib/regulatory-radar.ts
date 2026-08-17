@@ -30,6 +30,8 @@ export interface RadarEntryInput {
   actionText?: string | null;
   commentUrl?: string | null;
   commentCloseDate?: Date | null;
+  /** When a rule takes effect (FR effective_on). Written only once the column exists. */
+  effectiveDate?: Date | null;
   significant?: boolean;
   raw?: unknown;
 }
@@ -77,10 +79,34 @@ export async function isRegulatoryRadarAvailable(): Promise<boolean> {
   return radarTableAvailable;
 }
 
+// The effectiveDate column shipped after the table itself (Regulatory Wave A)
+// — between deploy and `prisma db push` the generated client knows a column
+// the database doesn't have. Writes and effective-date reads are gated behind
+// their own probe so the base radar keeps working untouched in that window.
+let effectiveDateColumnAvailable: boolean | null = null;
+let lastColumnProbeAt = 0;
+
+export async function isEffectiveDateColumnAvailable(): Promise<boolean> {
+  if (effectiveDateColumnAvailable === true) return true;
+  const now = Date.now();
+  if (effectiveDateColumnAvailable === false && now - lastColumnProbeAt < PROBE_TTL_MS) return false;
+  lastColumnProbeAt = now;
+  try {
+    await prisma.regulatoryAction.findFirst({ select: { effectiveDate: true } });
+    effectiveDateColumnAvailable = true;
+  } catch {
+    effectiveDateColumnAvailable = false;
+    logger.warn('RegulatoryAction.effectiveDate column unavailable — effective dates skipped (run prisma db push)');
+  }
+  return effectiveDateColumnAvailable;
+}
+
 /** Test helper — reset the cached probe. */
 export function __resetRegulatoryRadarAvailability(): void {
   radarTableAvailable = null;
   lastProbeAt = 0;
+  effectiveDateColumnAvailable = null;
+  lastColumnProbeAt = 0;
 }
 
 // ─── Writes ──────────────────────────────────────────────────────────────────
@@ -93,11 +119,13 @@ export function __resetRegulatoryRadarAvailability(): void {
 export async function upsertRadarEntries(entries: RadarEntryInput[]): Promise<number> {
   if (entries.length === 0) return 0;
   if (!(await isRegulatoryRadarAvailable())) return 0;
+  const withEffectiveDate = await isEffectiveDateColumnAvailable();
 
   let written = 0;
   for (const entry of entries) {
     try {
       const data = {
+        ...(withEffectiveDate ? { effectiveDate: entry.effectiveDate ?? null } : {}),
         source: entry.source,
         category: entry.category,
         title: entry.title,
@@ -190,7 +218,7 @@ export async function getClosingCommentWindows(withinDays = 30, now = new Date()
         commentCloseDate: { gte: now, lte: horizon },
       },
       orderBy: { commentCloseDate: 'asc' },
-      take: 20,
+      take: 40, // callers slice; the 90-day compliance calendar needs the fuller window
       select: RADAR_SELECT,
     });
     return rows as RadarEntry[];
@@ -202,4 +230,102 @@ export async function getClosingCommentWindows(withinDays = 30, now = new Date()
 /** Whole days until a date (>= 0), for "closes in N days" copy. */
 export function daysUntil(date: Date, now = new Date()): number {
   return Math.max(0, Math.ceil((date.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
+}
+
+/** RadarEntry plus the rule's effective date (compliance-calendar read). */
+export interface RadarEffectiveEntry extends RadarEntry {
+  effectiveDate: Date;
+}
+
+/**
+ * Rules whose effective date falls in the next `withinDays`, soonest first.
+ * Fails soft to [] both while the table is missing AND while the
+ * effectiveDate column hasn't been pushed yet (its own probe), so this can
+ * never blank the rest of the radar.
+ */
+export async function getUpcomingEffectiveDates(withinDays = 90, now = new Date()): Promise<RadarEffectiveEntry[]> {
+  try {
+    if (!(await isEffectiveDateColumnAvailable())) return [];
+    const horizon = new Date(now.getTime() + withinDays * 24 * 60 * 60 * 1000);
+    const rows = await prisma.regulatoryAction.findMany({
+      where: { effectiveDate: { gte: now, lte: horizon } },
+      orderBy: { effectiveDate: 'asc' },
+      take: 40,
+      select: { ...RADAR_SELECT, effectiveDate: true },
+    });
+    return rows.filter((r) => r.effectiveDate) as RadarEffectiveEntry[];
+  } catch {
+    return [];
+  }
+}
+
+/** Single entry by id, for the /regulatory-radar/action/[id] detail page. Fails soft to null. */
+export async function getRadarEntryById(id: string): Promise<RadarEntry | null> {
+  if (!id || id.length > 64 || !/^[a-z0-9]+$/i.test(id)) return null;
+  try {
+    const row = await prisma.regulatoryAction.findUnique({
+      where: { id },
+      select: RADAR_SELECT,
+    });
+    return (row as RadarEntry) || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Newest actions in any of the given categories — powers the "Related
+ * regulatory actions" strip on article pages. Fails soft to [].
+ */
+export async function getRecentActionsByCategories(
+  categories: RadarCategory[],
+  limit = 3,
+  withinDays = 180,
+  now = new Date()
+): Promise<RadarEntry[]> {
+  if (categories.length === 0) return [];
+  try {
+    const since = new Date(now.getTime() - withinDays * 24 * 60 * 60 * 1000);
+    const rows = await prisma.regulatoryAction.findMany({
+      where: { category: { in: categories }, actionDate: { gte: since } },
+      orderBy: { actionDate: 'desc' },
+      take: Math.min(Math.max(limit, 1), 10),
+      select: RADAR_SELECT,
+    });
+    return rows as RadarEntry[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Query + assemble the next-90-days compliance calendar (comment closings +
+ * rule effective dates). Fails soft to [] at every layer (missing table,
+ * missing effectiveDate column, query errors). Assembly itself is pure —
+ * see src/lib/regulatory-deadlines.ts.
+ */
+export async function collectRegulatoryDeadlines(
+  now = new Date(),
+  horizonDays = 90
+): Promise<import('@/lib/regulatory-deadlines').RegulatoryDeadlineItem[]> {
+  const { assembleRegulatoryDeadlines } = await import('@/lib/regulatory-deadlines');
+  const [commentWindows, effectiveEntries] = await Promise.all([
+    getClosingCommentWindows(horizonDays, now),
+    getUpcomingEffectiveDates(horizonDays, now),
+  ]);
+  return assembleRegulatoryDeadlines(commentWindows, effectiveEntries, now, horizonDays);
+}
+
+/** Significant entries for sitemap inclusion (id + actionDate only). Fails soft to []. */
+export async function getSignificantEntryIds(limit = 200): Promise<Array<{ id: string; actionDate: Date }>> {
+  try {
+    return await prisma.regulatoryAction.findMany({
+      where: { significant: true },
+      orderBy: { actionDate: 'desc' },
+      take: limit,
+      select: { id: true, actionDate: true },
+    });
+  } catch {
+    return [];
+  }
 }

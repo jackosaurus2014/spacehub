@@ -131,4 +131,30 @@ describe('composeRegulatoryBrief', () => {
     expect(brief.summary).toContain('1 tracked action');
     expect(brief.summary).toContain('0 congressional');
   });
+
+  it('includes the Enforcement watch section only when enforcement actions exist', () => {
+    const without = composeRegulatoryBrief({ weekActions: [entry()], closingWindows: [] }, NOW)!;
+    expect(without.content).not.toContain('## Enforcement watch');
+    expect(without.content).toContain('| Enforcement actions | 0 |');
+
+    const withEnforcement = composeRegulatoryBrief(
+      {
+        weekActions: [
+          entry({
+            category: 'enforcement',
+            title: 'In the Matter of: Acme Components LLC; Order Relating to Acme Components LLC',
+            summary: 'Penalty: $1,500,000. Settlement of unauthorized satellite component exports.',
+            agency: 'Industry and Security Bureau',
+            documentType: 'Notice',
+          }),
+        ],
+        closingWindows: [],
+      },
+      NOW
+    )!;
+    expect(withEnforcement.content).toContain('## Enforcement watch');
+    expect(withEnforcement.content).toContain('| Enforcement actions | 1 |');
+    // Penalty amount pulled from the stored summary — bolded in the brief
+    expect(withEnforcement.content).toContain('**$1,500,000**');
+  });
 });

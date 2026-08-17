@@ -10,7 +10,12 @@
 import { createCircuitBreaker } from '@/lib/circuit-breaker';
 import { bulkUpsertContent } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
-import { categorizeRegulatoryAction, isExportControlRelevant } from '@/lib/regulatory-categorizer';
+import {
+  categorizeRegulatoryAction,
+  extractPenaltyAmount,
+  isEnforcementAction,
+  isExportControlRelevant,
+} from '@/lib/regulatory-categorizer';
 import { upsertRadarEntries, type RadarEntryInput } from '@/lib/regulatory-radar';
 
 const circuitBreaker = createCircuitBreaker('federal-register-space', {
@@ -170,7 +175,16 @@ export function isRelevantFederalRegisterDoc(doc: FederalRegisterApiDocument): b
   const spaceHit = isSpaceRelevant(doc.title, doc.abstract);
   const fromExportControlAgency = slugs.some((slug) => EXPORT_CONTROL_AGENCY_SLUGS.includes(slug));
   if (fromExportControlAgency) {
-    return spaceHit || isExportControlRelevant(`${doc.title} ${doc.abstract || ''}`);
+    return (
+      spaceHit ||
+      isExportControlRelevant(`${doc.title} ${doc.abstract || ''}`) ||
+      // BIS/DDTC enforcement (denial orders, settlements, debarments) names
+      // only the penalized party — often zero space OR export-control words
+      // in the title and a null abstract. Export-control enforcement is per
+      // se relevant to space companies; FCC/FAA enforcement still needs a
+      // space hook (a broadcast-station forfeiture is not radar material).
+      isEnforcementAction({ title: doc.title, actionText: doc.action })
+    );
   }
   return spaceHit;
 }
@@ -200,16 +214,31 @@ export function mapFederalRegisterDoc(doc: FederalRegisterApiDocument): FederalR
 /** Build the RegulatoryAction dual-write row for a FR entry (pure, exported for tests). */
 export function federalRegisterEntryToRadarInput(entry: FederalRegisterEntry): RadarEntryInput {
   const commentClose = entry.commentsCloseOn ? new Date(`${entry.commentsCloseOn}T23:59:59Z`) : null;
+  const effective = entry.effectiveDate ? new Date(`${entry.effectiveDate}T12:00:00Z`) : null;
+  const category = categorizeRegulatoryAction({
+    title: entry.title,
+    summary: entry.abstract,
+    agencies: entry.agencies,
+    actionText: entry.action,
+  });
+
+  // Enforcement entries surface the penalty amount in the summary when (and
+  // only when) one is parseable from the document's own title/abstract —
+  // never invented, never reformatted.
+  let summary = entry.abstract;
+  if (category === 'enforcement') {
+    const penalty = extractPenaltyAmount(`${entry.title} ${entry.abstract || ''}`);
+    if (penalty && !(summary || '').startsWith('Penalty:')) {
+      summary = `Penalty: ${penalty}.${summary ? ` ${summary}` : ''}`;
+    }
+  }
+
   return {
     dedupKey: `federal-register:${entry.documentNumber}`,
     source: 'federal-register',
-    category: categorizeRegulatoryAction({
-      title: entry.title,
-      summary: entry.abstract,
-      agencies: entry.agencies,
-    }),
+    category,
     title: entry.title,
-    summary: entry.abstract,
+    summary,
     actionDate: new Date(`${entry.publicationDate}T12:00:00Z`),
     url: entry.htmlUrl,
     agency: entry.agencies[0] || null,
@@ -217,6 +246,7 @@ export function federalRegisterEntryToRadarInput(entry: FederalRegisterEntry): R
     actionText: entry.action,
     commentUrl: entry.commentUrl,
     commentCloseDate: commentClose && !Number.isNaN(commentClose.getTime()) ? commentClose : null,
+    effectiveDate: effective && !Number.isNaN(effective.getTime()) ? effective : null,
     significant: entry.significant,
     raw: entry,
   };

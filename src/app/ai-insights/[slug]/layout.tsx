@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import prisma from '@/lib/db';
+import RelatedRegulatoryActions from '@/components/regulatory/RelatedRegulatoryActions';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -30,6 +31,41 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function AIInsightLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+/**
+ * Server layout for AI-insight articles. The page itself is a client
+ * component, so the server-rendered "Related regulatory actions" cross-link
+ * strip lives here: when the article's text matches regulatory keyword sets,
+ * up to 3 recent matching RegulatoryAction entries render below the article.
+ * Fail-soft — null render (no layout shift) for non-matching articles, DB
+ * errors, or a missing table.
+ */
+export default async function AIInsightLayout({ children, params }: Props & { children: React.ReactNode }) {
+  const { slug } = await params;
+
+  let articleText = '';
+  try {
+    const insight = await prisma.aIInsight.findUnique({
+      where: { slug },
+      select: { title: true, summary: true, content: true },
+    });
+    if (insight) {
+      // Title + summary + leading body — enough signal for the keyword
+      // matcher without scanning multi-thousand-word articles.
+      articleText = `${insight.title} ${insight.summary || ''} ${(insight.content || '').slice(0, 4000)}`;
+    }
+  } catch {
+    // fail soft — article text stays empty, strip renders nothing
+  }
+
+  return (
+    <>
+      {children}
+      {articleText && (
+        <RelatedRegulatoryActions
+          text={articleText}
+          wrapperClassName="container mx-auto px-4 pb-10 max-w-3xl"
+        />
+      )}
+    </>
+  );
 }

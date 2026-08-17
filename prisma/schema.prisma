@@ -1880,6 +1880,7 @@ model RegulatoryAction {
   actionText       String? // FR: action line ("Interim final rule"); Congress: latest action text
   commentUrl       String?
   commentCloseDate DateTime?
+  effectiveDate    DateTime? // FR effective_on — when a rule takes effect (compliance calendar)
   significant      Boolean   @default(false)
   digestIncludedAt DateTime? // set when included in a newsletter digest Export Control Watch (dedupe cursor)
   raw              String?   @db.Text // raw source JSON for debugging/reprocessing
@@ -1890,6 +1891,7 @@ model RegulatoryAction {
   @@index([source, actionDate])
   @@index([category, actionDate])
   @@index([commentCloseDate])
+  @@index([effectiveDate])
   @@index([category, significant, digestIncludedAt])
 }
 

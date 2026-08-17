@@ -552,5 +552,22 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  return [...blogRoutes, ...insightRoutes, ...explainerRoutes];
+  // Significant Regulatory Radar actions — share-ready detail pages.
+  // Separate try/catch: fails soft to [] while the RegulatoryAction table
+  // is missing without dropping the insight/explainer routes above.
+  let radarActionRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const { getSignificantEntryIds } = await import('@/lib/regulatory-radar');
+    const significantActions = await getSignificantEntryIds(200);
+    radarActionRoutes = significantActions.map((action) => ({
+      url: `${BASE_URL}/regulatory-radar/action/${action.id}`,
+      lastModified: action.actionDate,
+      changeFrequency: 'monthly' as const,
+      priority: 0.4,
+    }));
+  } catch {
+    // getSignificantEntryIds already fails soft; this guards the import.
+  }
+
+  return [...blogRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes];
 }
