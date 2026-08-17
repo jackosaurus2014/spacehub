@@ -58,6 +58,32 @@ describe('isRelevantFederalRegisterDoc', () => {
     ).toBe(false);
   });
 
+  it('rejects routine FAA aviation actions whose titles substring-match "space"', () => {
+    // "airspace"/"aerospace" contain "space" — without the title exclusion the
+    // FAA's daily Class D/E airspace and airworthiness drumbeat floods the
+    // Radar (caught live on day one, 8/17).
+    expect(
+      isRelevantFederalRegisterDoc(makeDoc({ title: 'Establishment of Class E Airspace; Havana, IL' }))
+    ).toBe(false);
+    expect(
+      isRelevantFederalRegisterDoc(makeDoc({ title: 'Revocation of Class E Airspace; Santa Elena, TX' }))
+    ).toBe(false);
+    expect(
+      isRelevantFederalRegisterDoc(
+        makeDoc({ title: 'Airworthiness Directives; Gulfstream Aerospace LP Airplanes' })
+      )
+    ).toBe(false);
+    expect(
+      isRelevantFederalRegisterDoc(makeDoc({ title: 'Standard Instrument Approach Procedures' }))
+    ).toBe(false);
+    // Genuinely space-relevant FAA actions still pass:
+    expect(
+      isRelevantFederalRegisterDoc(
+        makeDoc({ title: 'Commercial Space Launch Vehicle Reentry Site Requirements' })
+      )
+    ).toBe(true);
+  });
+
   it('passes BIS documents on export-control terms with zero space-hardware words', () => {
     const doc = makeDoc({
       title: 'Additions to the Entity List; revisions to license exception availability',

@@ -128,7 +128,27 @@ const SPACE_KEYWORDS = [
   'asteroid',
 ];
 
+/**
+ * Routine-FAA-noise exclusion (Radar quality pass, 8/17). The bare 'space'
+ * keyword substring-matches "airspace"/"aerospace", so the FAA's daily
+ * drumbeat of Class D/E airspace amendments and airworthiness directives
+ * (aviation, not space) flooded the Radar's Launch Licensing lane on day
+ * one. These titles are formulaic — match the title prefix, not the body.
+ */
+const ROUTINE_FAA_TITLE_PATTERNS = [
+  /^(establishment|amendment|revocation|modification) of (class [a-g]|multiple) airspace/i,
+  /^airworthiness directives[;:]/i,
+  /^airworthiness criteria[;:]/i,
+  /^standard instrument approach procedures/i,
+  /^ifr altitudes[;:]?/i,
+];
+
+function isRoutineAviationAction(title: string): boolean {
+  return ROUTINE_FAA_TITLE_PATTERNS.some((p) => p.test(title.trim()));
+}
+
 function isSpaceRelevant(title: string, abstract: string | null): boolean {
+  if (isRoutineAviationAction(title)) return false;
   const text = `${title} ${abstract || ''}`.toLowerCase();
   return SPACE_KEYWORDS.some((kw) => text.includes(kw));
 }
