@@ -84,6 +84,154 @@ export const PROCUREMENT_RESOURCE_CAP = 8;
 /** Catch-up safety valve — matches away-operations.ts MAX_CATCHUP_MONTHS. */
 const MAX_CONSUMPTION_CATCHUP_MONTHS = 20_000;
 
+// ─── Balance Pass 1: storage integrity — boiloff & warehouse overflow ───────
+// docs/BALANCE.md "Pass 1 — Resource generation vs sinks". The 2026-08
+// resource audit (scripts/sim-resources.ts) showed mining specialists
+// generating raw/refined stockpiles with sink-coverage ratios of 0.06–0.4 —
+// unbounded pileups the NPC volume caps can't absorb. Sinks-first fix:
+// stored matter now has real carrying physics.
+//
+//   1. VOLATILE BOILOFF — cryogenic/volatile resources lose a small fraction
+//      of TOTAL stored units every game-month (methalox boils off, ice
+//      sublimates, He-3 permeates). Real-world cryo boiloff is 1–5%/month;
+//      these rates sit in that band.
+//   2. WAREHOUSE OVERFLOW — every resource has a soft storage cap (units,
+//      scaled by rarity tier). Stock ABOVE the cap decays 15%/game-month
+//      (unsheltered stockpiles degrade, drift, and get pilfered). Buildings
+//      with the `inventoryProtection` capability (refineries, belt stations —
+//      the game's warehousing) extend capacity, so storage investment is a
+//      real decision. Below the cap, non-volatiles never decay.
+//
+// Both effects ramp 0 → 100% over STORAGE_DECAY_RAMP_MONTHS from a lazily
+// stamped anchor (storageDecayStartMonth), so existing saves get a
+// 36-real-hour grace window with no save migration. Protected Frontier corps
+// are fully exempt (advanceConsumptionToMonth's existing shield). Losses are
+// surfaced in a monthly event when material — transparent, per BALANCE.md's
+// invariant checklist.
+
+/** Fraction of TOTAL stored units lost per game-month, per volatile. */
+export const VOLATILE_BOILOFF_PER_MONTH: Record<string, number> = {
+  rocket_fuel: 0.05, // cryo methalox — the classic boiloff
+  methane: 0.04,
+  ethane: 0.04,
+  helium3: 0.05,     // ultra-cryo isotope, permeates everything
+  lunar_water: 0.02, // ice sublimation + handling losses
+  mars_water: 0.02,
+  ammonia: 0.03,
+  deuterium: 0.02,
+};
+
+/** Fraction of ABOVE-CAP stock lost per game-month (any resource). */
+export const STORAGE_OVERFLOW_DECAY_PER_MONTH = 0.15;
+
+/** Ramp window: decay scales 0 → 100% over this many game-months from the
+ *  storageDecayStartMonth anchor (6 game-months = 36 real hours). */
+export const STORAGE_DECAY_RAMP_MONTHS = 6;
+
+/** Corporate base storage capacity (units per resource) by rarity tier. */
+export function baseStorageCapUnits(resourceId: string): number {
+  const cat = RESOURCE_MAP.get(resourceId as ResourceId)?.category;
+  switch (cat) {
+    case 'refined': return 400;
+    case 'component': return 150;
+    case 'product': return 60;
+    case 'precious':
+    case 'rare_earth':
+    case 'exotic': return 300; // high-value cargo needs vaulted storage
+    default: return 1_500;     // bulk raw: water, metal, hydrocarbon, industrial, energy
+  }
+}
+
+/** Warehousing: summed `inventoryProtection` capability (its own cap here —
+ *  a different consumer than hazards' 0.40 location cap) scales capacity up
+ *  to ×(1 + WEIGHT × SUM_CAP) = ×2.2 fleet-wide. */
+export const STORAGE_WAREHOUSE_SUM_CAP = 0.6;
+export const STORAGE_WAREHOUSE_CAPACITY_WEIGHT = 2;
+
+/** Total storage capacity for one resource given the player's buildings. */
+export function storageCapacityUnits(buildings: GameState['buildings'], resourceId: string): number {
+  let warehouse = 0;
+  for (const b of buildings || []) {
+    if (!b.isComplete || !isBuildingOperational(b)) continue;
+    const v = BUILDING_MAP.get(b.definitionId)?.capabilities?.inventoryProtection;
+    if (typeof v === 'number' && v > 0) warehouse += v;
+  }
+  warehouse = Math.min(STORAGE_WAREHOUSE_SUM_CAP, warehouse);
+  return baseStorageCapUnits(resourceId) * (1 + STORAGE_WAREHOUSE_CAPACITY_WEIGHT * warehouse);
+}
+
+/** Apply one game-month of storage-integrity losses (boiloff + overflow
+ *  decay) across the global pool AND every location inventory, mutating the
+ *  passed tick-owned copies proportionally. Returns per-resource units lost
+ *  and the (possibly newly stamped) ramp anchor. Pure w.r.t. inputs. */
+function runStorageIntegrity(
+  buildings: GameState['buildings'],
+  cs: ConsumptionState,
+  resources: Record<string, number>,
+  locationInventories: Record<string, Record<string, number>>,
+  monthIndex: number,
+): { losses: Record<string, number>; anchor: number } {
+  const anchor = (cs.storageDecayStartMonth === null || cs.storageDecayStartMonth === undefined)
+    ? monthIndex
+    : cs.storageDecayStartMonth;
+  const losses: Record<string, number> = {};
+  const ramp = Math.max(0, Math.min(1, (monthIndex - anchor) / STORAGE_DECAY_RAMP_MONTHS));
+  if (ramp <= 0) return { losses, anchor };
+
+  // Total holdings per resource across all pools.
+  const totals: Record<string, number> = {};
+  for (const [res, q] of Object.entries(resources)) {
+    if (q > 0) totals[res] = (totals[res] || 0) + q;
+  }
+  for (const inv of Object.values(locationInventories)) {
+    for (const [res, q] of Object.entries(inv || {})) {
+      if (q > 0) totals[res] = (totals[res] || 0) + q;
+    }
+  }
+
+  for (const [res, total] of Object.entries(totals)) {
+    const boiloff = VOLATILE_BOILOFF_PER_MONTH[res] || 0;
+    const cap = storageCapacityUnits(buildings, res);
+    const overflow = Math.max(0, total - cap);
+    const loss = (total * boiloff + overflow * STORAGE_OVERFLOW_DECAY_PER_MONTH) * ramp;
+    if (loss <= 1e-9) continue;
+    const frac = Math.min(1, loss / total);
+    if ((resources[res] || 0) > 0) {
+      resources[res] = Math.max(0, resources[res] - resources[res] * frac);
+    }
+    for (const [locId, inv] of Object.entries(locationInventories)) {
+      const q = inv?.[res] || 0;
+      if (q <= 0) continue;
+      const next = { ...inv };
+      next[res] = Math.max(0, q - q * frac);
+      if (next[res] <= 1e-9) delete next[res];
+      locationInventories[locId] = next;
+    }
+    losses[res] = Math.round(loss * 100) / 100;
+  }
+  return { losses, anchor };
+}
+
+/** Storage-loss event threshold: only report months where the combined loss
+ *  is materially visible (keeps the Situation Log signal-dense). */
+const STORAGE_LOSS_EVENT_MIN_UNITS = 25;
+
+function storageLossEvent(losses: Record<string, number>, gameDate: { year: number; month: number }): GameEvent | null {
+  const entries = Object.entries(losses).filter(([, q]) => q > 0.01);
+  const totalUnits = entries.reduce((a, [, q]) => a + q, 0);
+  if (totalUnits < STORAGE_LOSS_EVENT_MIN_UNITS) return null;
+  const top = entries
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([res, q]) => `${RESOURCE_MAP.get(res as ResourceId)?.name || res} −${Math.round(q)}`)
+    .join(', ');
+  return {
+    id: generateId(), date: gameDate, type: 'random_event',
+    title: '📦 Storage losses — boiloff & overflowing warehouses',
+    description: `Stockpiles lost ${Math.round(totalUnits)} units this month (${top}${entries.length > 3 ? ', …' : ''}). Volatiles boil off in storage, and stock above your warehouse capacity degrades. Sell surplus, consume it in production, or build warehousing (inventory-protection facilities extend capacity).`,
+  };
+}
+
 export type ConsumptionState = NonNullable<GameState['consumptionState']>;
 
 export const DEFAULT_CONSUMPTION_STATE: ConsumptionState = {
@@ -185,6 +333,10 @@ function creditToPool(
 interface MonthPassResult {
   state: GameState;
   events: GameEvent[];
+  /** Balance Pass 1: per-resource units destroyed this month by storage
+   *  integrity (boiloff + overflow decay) — telemetry for the sim harness
+   *  and future UI; not persisted. */
+  storageLosses?: Record<string, number>;
 }
 
 /**
@@ -206,17 +358,31 @@ export function processConsumptionForMonth(state: GameState, monthIndex: number)
     b => b.isComplete && hasRecipe(BUILDING_MAP.get(b.definitionId)) && isBuildingOperational(b),
   );
   if (completed.length === 0) {
+    // No recipe buildings — but storage integrity (boiloff/overflow) still
+    // applies to whatever is sitting in the pools (Balance Pass 1).
+    const cs0 = state.consumptionState || DEFAULT_CONSUMPTION_STATE;
+    const resources0 = { ...(state.resources || {}) };
+    const locationInventories0: Record<string, Record<string, number>> = { ...(state.locationInventories || {}) };
+    const integrity0 = runStorageIntegrity(state.buildings, cs0, resources0, locationInventories0, monthIndex);
+    const gameDate0 = { year: GAME_START_YEAR + Math.floor(monthIndex / 12), month: (monthIndex % 12) + 1 };
+    const lossEvent0 = storageLossEvent(integrity0.losses, gameDate0);
+    if (lossEvent0) events.push(lossEvent0);
     return {
       state: {
         ...state,
+        resources: resources0,
+        locationInventories: locationInventories0,
         consumptionState: {
-          ...(state.consumptionState || DEFAULT_CONSUMPTION_STATE),
+          ...cs0,
           lastProcessedMonth: monthIndex,
           efficiency: {},
           shortfallResources: {},
+          storageDecayStartMonth: integrity0.anchor,
         },
+        eventLog: events.length > 0 ? [...events, ...state.eventLog].slice(0, MAX_EVENT_LOG) : state.eventLog,
       },
       events,
+      storageLosses: integrity0.losses,
     };
   }
 
@@ -295,6 +461,12 @@ export function processConsumptionForMonth(state: GameState, monthIndex: number)
     }
   }
 
+  // ── Storage integrity (Balance Pass 1): boiloff + warehouse-overflow
+  //    decay on end-of-month holdings — after consumption drew and
+  //    production credited, so a month's working flow is never taxed, only
+  //    what actually sits in storage. ─────────────────────────────────────
+  const integrity = runStorageIntegrity(state.buildings, cs, resources, locationInventories, monthIndex);
+
   // ── Life-support ⇒ morale coupling (§2.2 "Life-support shortfall
   //    additionally hits morale") — deterministic additive writer on the
   //    existing morale field, same post-hoc pattern as research crewMorale.
@@ -319,6 +491,8 @@ export function processConsumptionForMonth(state: GameState, monthIndex: number)
       description: `${names}${extra} could not draw full recipe inputs this month and are operating at reduced efficiency (never below 50%). Stock local inventories, freight supplies in, or switch the building to a standing market order.${lsShortFraction > 0 ? ' Life-support shortages are also wearing on crew morale.' : ''}`,
     });
   }
+  const lossEvent = storageLossEvent(integrity.losses, gameDate);
+  if (lossEvent) events.push(lossEvent);
   const procurementResources = Object.keys(procurement);
   if (procurementResources.length > 0) {
     events.push({
@@ -354,11 +528,12 @@ export function processConsumptionForMonth(state: GameState, monthIndex: number)
       shortfallResources,
       pendingDemandFlows,
       pendingProcurement,
+      storageDecayStartMonth: integrity.anchor,
     },
     eventLog: events.length > 0 ? [...events, ...state.eventLog].slice(0, MAX_EVENT_LOG) : state.eventLog,
   };
 
-  return { state: newState, events };
+  return { state: newState, events, storageLosses: integrity.losses };
 }
 
 /**

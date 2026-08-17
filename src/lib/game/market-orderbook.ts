@@ -17,56 +17,13 @@ const NPC_SPREAD_HALF = 0.10; // 10% each side = 20% total NPC spread
 const MAX_OPEN_ORDERS = 20; // Base max open orders per player
 const NPC_PROFILE_ID = '__NPC_MARKET_MAKER__';
 
-/**
- * NPC daily volume caps by resource. A key present with value `0` means the
- * NPC maker places NO standing orders at all for that resource (checked via
- * `Object.prototype.hasOwnProperty`, NOT `||`, below — `0 || 50` would
- * silently resurrect a "zero" cap to the 50 default, which is exactly the
- * free-money-printer bug Wave E2's [BAL] note warns about: an NPC standing
- * BUY order pays real money out of nowhere on every fill (see matchOrders —
- * the NPC counterparty has no real wallet), so a top-of-chain crafted good
- * with unlimited NPC buy liquidity would be a mint. Keys absent entirely
- * fall back to the 50-unit default below.
- */
-const NPC_VOLUME_CAPS: Record<string, number> = {
-  // Common
-  iron: 200, aluminum: 200, lunar_water: 200, methane: 200, ethane: 200,
-  // Mid-tier
-  titanium: 50, gold: 50, rare_earth: 50, platinum_group: 50, mars_water: 50,
-  // Exotic
-  exotic_materials: 10, helium3: 10,
-
-  // ─── Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2) ─────
-  // Adopted colony orphan slugs — real NPC colony production exists
-  // (colonies.ts COLONY_MINING_PRODUCTION), so these get ordinary caps
-  // scaled to their rarity tier (mirrors the raw-resource tiers above).
-  sulfur: 150, ammonia: 120, solar_concentrate: 80,
-  organic_compounds: 15, deuterium: 8, bio_samples: 5, antimatter_precursors: 3,
-
-  // Crafted goods — no NPC production yet (E3 lands it), so caps are tight
-  // by design, tapering to zero at the top of the chain. Tier 1 (refined):
-  steel_ingots: 25, aluminum_alloy: 25, rocket_fuel: 20, refined_rare_earth: 15,
-  // Tier 2 (components) — "tight" per spec:
-  structural_beams: 8, electronics_package: 6, solar_panel_array: 6,
-  propulsion_unit: 4, life_support_pack: 0,
-  // Tier 3 (products) — tighter still, real scarcity:
-  station_module: 2, satellite_bus: 2, ai_compute_cluster: 2,
-  // Tier 4 (top-of-chain products) — zero: player-only markets, no NPC
-  // buyer/seller, per the MINED_ONLY precedent.
-  fusion_core: 0, habitat_pod: 0,
-
-  // exotic_fuel/xenogenic_biomatter are MINED_ONLY (interstellar-only
-  // production) — explicit zero rather than falling through to the default.
-  exotic_fuel: 0, xenogenic_biomatter: 0,
-};
-
-/** `0` is a valid, meaningful cap (see NPC_VOLUME_CAPS doc comment) — only an
- *  absent key falls back to the default. */
-function getNpcVolumeCap(resourceSlug: string): number {
-  return Object.prototype.hasOwnProperty.call(NPC_VOLUME_CAPS, resourceSlug)
-    ? NPC_VOLUME_CAPS[resourceSlug]
-    : 50;
-}
+// NPC daily volume caps by resource — extracted to npc-volume-caps.ts
+// (pure, client-safe) in Balance Pass 1 so the sim harness can read them
+// without importing this prisma-backed module. Same numbers, same semantics
+// (`0` = no standing orders at all; absent key = 50-unit default). See that
+// file's doc comment for the free-money-printer rationale.
+import { getNpcVolumeCap } from './npc-volume-caps';
+export { NPC_VOLUME_CAPS, getNpcVolumeCap } from './npc-volume-caps';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

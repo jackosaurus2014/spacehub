@@ -486,3 +486,155 @@ tier bonus slots, and confirms accept/deadline-processing stay unaffected).
   rate PLUS a separate 100%-of-leftover auto-sale, something the real
   engine never did); the unified price-linked figure is the more accurate
   read of the real post-M3 engine.
+
+---
+
+## Pass 1 — Resource generation vs sinks (2026-08 resource audit)
+
+**Founder directive:** *"Make sure that players aren't generating so many
+of the resources/materials in the game that it makes the game trivial."*
+The M-waves sim-proved the MONEY curves; this pass is the first audit of
+the RESOURCE curves — hunting material post-scarcity (mining + recipes
+outrunning consumption/construction/market absorption ⇒ unbounded
+stockpiles, floor-pinned prices, decorative supply decisions).
+
+### Tooling (additive; legacy tables unchanged)
+
+- `scripts/sim-harness.ts` now tracks per-month resource **flows**
+  (mined / produced / consumed / construction / sold / unsold / decayed /
+  bought), stockpile snapshots by bucket (raw/refined/component/product),
+  and a `sinkCoverage()` analyzer (monthly drains ÷ monthly generation).
+  Two opt-in world realism switches — `npcSaleCaps` (leftover sales
+  bounded by what the NPC maker can actually absorb per game-month:
+  per-REAL-day cap × 0.25, since a game-month is 6 real hours) and
+  `constructionMaterials` (builds settle their real `resourceCost`, as
+  command-queue.ts does) — both **default off** so the historical M-wave
+  tables don't shift.
+- `scripts/sim-resources.ts` (new runner): integrator / belt-baron /
+  **resource-hoarder** (max mining + production, sells NOTHING — the
+  worst case) over 24 game-months in the audit world, plus floor-dump
+  scenarios.
+- `src/lib/game/npc-volume-caps.ts` (new): the NPC maker's daily volume
+  caps extracted from prisma-backed `market-orderbook.ts` into a pure
+  module (market-orderbook re-exports; numbers byte-identical) so the
+  harness and client surfaces can read them.
+
+### Findings (pre-tuning, audit world, month 24)
+
+- **Diversified play is healthy.** The integrator's coverage is ≥ 1.0 on
+  every resource — E3's consumption engine is a real sink when you build
+  the consumers. No pileup, no change needed.
+- **Mining specialists pile up unboundedly.** Belt baron (6 rigs +
+  refinery): iron coverage **0.31**, steel_ingots **0.06** (the orbital
+  refinery's 100/mo passive output has almost no recurring sink),
+  aluminum_alloy 0.16, titanium 0.26 — ~17K units/mo of surplus the NPC
+  caps can't absorb, stock growing linearly forever. Hoarder: 39.6K raw
+  units by month 24, +~2K/mo, with methane/ethane/steel/gold/platinum/
+  exotics at **zero** recurring drains.
+- **Extraction pressure binds but is not a dam.** Every hot deposit sits
+  at the 0.4 floor by month ~3 — yet 0.4 × N rigs is still a firehose
+  (hoarder: 2,300 iron/mo at month 24).
+- **Floor-dumping is NOT a money printer** (good news): with NPC caps
+  honored, dumping at the anti-cornering band floor (base × 0.3) yields
+  the belt baron ~$4M/game-month (vs ~$13.5M at neutral spot). Analytic
+  ceiling if a 24/7 player saturates EVERY minable resource's NPC cap at
+  the floor: **~$42M/real-day** — 4-8% of the late-tier $500M-1B/day
+  diversified benchmarks, and reaching it requires Europa+Titan+Kuiper
+  infrastructure that itself out-earns it. The M4 event-spread widening
+  and per-resource caps already did this job. **No cap tightening needed.**
+- Colony output is a non-issue: `COLONY_MINING_PRODUCTION` is not wired
+  into the tick (audited — comments only), so colonies generate nothing.
+
+### Levers chosen (sinks-first, per this doc's thesis)
+
+**1. Volatile boiloff** (`consumption.ts::VOLATILE_BOILOFF_PER_MONTH`) —
+stored volatiles lose a fraction of TOTAL stock each game-month:
+rocket_fuel 5%, helium3 5%, methane/ethane 4%, ammonia 3%, water ices
+2%, deuterium 2%. Physically honest (real-world cryo boiloff is 1-5%/mo;
+LH2 is worse) and it hits hoarders hardest while a working 1-month input
+buffer loses pennies (integrator's net moved $27.5M → $27.4M/mo).
+
+**2. Warehouse-overflow decay** (`consumption.ts`) — every resource has a
+soft storage cap by rarity tier (`baseStorageCapUnits`: bulk raw 1,500 u;
+precious/rare-earth/exotic 300; refined 400; component 150; product 60).
+Stock ABOVE the cap decays **15%/game-month** (degradation, drift,
+pilferage). Buildings with the `inventoryProtection` capability
+(refineries, belt stations — the game's warehousing) extend capacity up
+to ×2.2 (`storageCapacityUnits`), so storage investment is now a real
+decision. Below the cap, non-volatiles never decay — working stockpiles
+stay free. **This bounds every stockpile:** the worst-case asymptote is
+`cap + monthly-generation / 0.15` (≈ cap + 6.7 months of output), so
+hoarding converges instead of growing linearly, and the marginal hoarded
+unit above that is pure loss — sell it, consume it, or lose it.
+
+Both effects ramp 0 → 100% over 6 game-months (36 real hours) from a
+**lazily stamped anchor** (`consumptionState.storageDecayStartMonth`,
+optional field — no save migration), are Frontier-exempt via
+`advanceConsumptionToMonth`'s existing shield, and surface a monthly
+Situation-Log event when losses exceed 25 units (transparency invariant).
+
+**Deliberately unchanged, with rationale:**
+- **Extraction pressure curve** — it already floors at 0.4 on every
+  contested deposit; steepening it is a generation nerf and sinks-first
+  says drain the surplus instead. *Pass-2 seam:* if the tuned numbers
+  still under-drain, lower `EXTRACTION_PRESSURE_MIN` toward 0.25 for
+  over-saturated deposits (M3/F7's floor-decay pattern).
+- **NPC volume caps** — floor-dumping quantified as non-viable (above).
+- **No new `consumesPerMonth` inputs on existing buildings** — adding
+  recipe lines to live buildings would brown-out existing saves with no
+  grandfather grace; maintenance-consumes-materials remains a candidate
+  for a future wave WITH its own grace credit.
+
+### Before/after sink coverage (audit world, month 24)
+
+| resource | belt baron before | after | hoarder before | after |
+|---|---:|---:|---:|---:|
+| iron | 0.31 | **0.96** | 0.09 | **0.82** |
+| steel_ingots | 0.06 | **0.94** | 0 | **0.92** |
+| aluminum_alloy | 0.16 | **0.77** | 0 | **0.68** |
+| rare_earth | 0.39 | **0.78** | 0 | **0.54** |
+| platinum_group | 0.78 | 0.78 | 0 | **0.68** |
+| gold | 0.52 | **0.55** | 0 | **0.76** |
+| methane | — | — | 0 | **0.59** |
+| ethane | — | — | 0 | **0.63** |
+| lunar_water | — | — | 0.31 | **0.62** |
+| helium3 | — | — | 0.10 | **0.72** |
+| titanium | 0.26 | 0.26† | 0 | 0† |
+
+† Still under its storage cap at month 24 — decay hasn't engaged yet, but
+the asymptote is finite (≈ 3,300-4,200 u for the hoarder). Slow-filling
+resources are *allowed* a working stockpile before the cap bites; that is
+the design, not a leak.
+
+**Healthy-band statement:** target is 0.6-1.2 coverage for the majority
+of actively-generated resources as stocks approach equilibrium.
+Post-tuning at month 24, 10 of the hoarder's 16 generated resources sit
+in 0.54-0.92 (converging on 1.0 at equilibrium by construction — the
+decay drain grows with stock), and hoarder raw stock fell 39.6K → 22.9K
+units with a flattening curve; belt-baron raw stock 14.7K → 7.7K and
+visibly asymptoting (7.06K at mo17 → 7.73K at mo23, vs linear before).
+
+### Verification
+
+- `__tests__/storage-integrity.test.ts` (new): boiloff rates, cap tiers,
+  overflow decay, warehouse capacity extension + its sum cap, lazy-anchor
+  zero-loss first pass, linear ramp, proportional location-pool decay,
+  and the finite-asymptote boundedness proof.
+- M1 guards green: `tier-ladder-first-copy-roi.test.ts` (marginal-ROI
+  probe never runs the monthly pass, so first-copy ROI is untouched) and
+  the demand-pool floor sweeps. Full game suite green.
+- Legacy `sim-strategies.ts` money tables essentially unchanged (boiloff
+  on 1-month buffers only); no strategy's net income degraded below the
+  M1 viability bars.
+
+### Seams left for Pass 2
+
+- Re-run `npx tsx scripts/sim-resources.ts` — it prints the same tables
+  fresh against whatever constants are live.
+- Candidate follow-ups, in preference order: (a) storage-cap UI (show
+  capacity + overflow warning in the inventory panel — the mechanic is
+  live but only surfaced via the Situation-Log event); (b) recurring
+  refined/component sinks via maintenance-consumes-materials WITH a
+  grandfather grace credit; (c) extraction-pressure floor decay for
+  over-saturated deposits; (d) crafting-queue modeling in the harness
+  (steel→beams is a real player sink the sim can't see yet).

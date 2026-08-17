@@ -50,7 +50,8 @@ import {
   type ProfileActivitySummary,
 } from '../src/lib/game/demand-pools';
 import { computePoolMultiplier } from '../src/lib/game/service-pricing';
-import { processConsumptionForMonth, DEFAULT_CONSUMPTION_STATE } from '../src/lib/game/consumption';
+import { processConsumptionForMonth, DEFAULT_CONSUMPTION_STATE, CONSUMPTION_EFFICIENCY_FLOOR } from '../src/lib/game/consumption';
+import { getNpcVolumeCap } from '../src/lib/game/npc-volume-caps';
 import {
   applyExtractionEvent,
   computeExtractionPressure,
@@ -91,7 +92,68 @@ export interface SimPlayer {
   maxBuildsPerMonth: number;
   /** if false, shortfalls are NOT bought from the market (runs degraded) */
   buysInputs: boolean;
+  /** Balance Pass 1: if false, leftover inventory is never sold — the
+   *  "resource hoarder" worst case (stockpiles only grow). Default true
+   *  (the original always-liquidate behavior). */
+  sellsLeftovers: boolean;
   history: MonthRow[];
+}
+
+// ─── Balance Pass 1: per-month resource flow decomposition ──────────────────
+// GENERATION: mined (MINING_PRODUCTION × extraction pressure × eff) +
+// produced (producesPerMonth recipes). Colony output is intentionally absent:
+// COLONY_MINING_PRODUCTION is not wired into the live tick (audited 2026-08),
+// so the real engine generates nothing from colonies either.
+// DRAINS: consumed (consumesPerMonth recipes), construction (resourceCost on
+// builds, when the world models it), sold (leftover sales — optionally capped
+// at what the NPC maker can actually absorb per game-month).
+export interface ResourceFlows {
+  mined: Record<string, number>;
+  produced: Record<string, number>;
+  consumed: Record<string, number>;
+  /** Full resourceCost units settled for this month's builds (drawn from
+   *  stock first, shortfall market-bought) — only when
+   *  world.opts.constructionMaterials is on. */
+  construction: Record<string, number>;
+  /** Leftover units actually sold this month. */
+  sold: Record<string, number>;
+  /** Leftover units the NPC absorption cap refused (npcSaleCaps mode) —
+   *  they stay in inventory. */
+  unsold: Record<string, number>;
+  /** Units destroyed by storage integrity (volatile boiloff + warehouse
+   *  overflow decay — consumption.ts, Balance Pass 1). */
+  decayed: Record<string, number>;
+  /** Units bought from the market (recipe-input shortfall + construction
+   *  material shortfall). */
+  bought: Record<string, number>;
+}
+
+export function emptyFlows(): ResourceFlows {
+  return { mined: {}, produced: {}, consumed: {}, construction: {}, sold: {}, unsold: {}, decayed: {}, bought: {} };
+}
+
+function addFlow(rec: Record<string, number>, res: string, qty: number): void {
+  if (qty <= 0) return;
+  rec[res] = (rec[res] || 0) + qty;
+}
+
+/** Reporting bucket for stockpile totals (CLAUDE.md stat categories). */
+export type ResourceBucket = 'raw' | 'refined' | 'component' | 'product';
+
+export function resourceBucket(resourceId: string): ResourceBucket {
+  const cat = RESOURCE_MAP.get(resourceId as ResourceId)?.category;
+  if (cat === 'refined' || cat === 'component' || cat === 'product') return cat;
+  return 'raw';
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Units/game-month the NPC market maker can absorb for one resource: the
+ *  per-REAL-day standing-order cap × (game-month length ÷ one real day).
+ *  With 6h game months this is cap ÷ 4 — the honest ceiling on "just dump
+ *  it on the NPC" liquidation for a continuously-online player. */
+export function npcAbsorptionPerMonth(resourceId: string, monthMs: number = GAME_MONTH_MS): number {
+  return getNpcVolumeCap(resourceId) * (monthMs / DAY_MS);
 }
 
 export interface MonthRow {
@@ -110,6 +172,28 @@ export interface MonthRow {
   capex: number;
   poolMults: Record<string, number>;
   avgEfficiency: number;
+  // ─── Balance Pass 1 (optional, populated by every stepMonth run) ────────
+  /** This month's resource flow decomposition. */
+  flows?: ResourceFlows;
+  /** End-of-month stockpile snapshot (units, rounded to 2dp). */
+  stock?: Record<string, number>;
+  /** End-of-month stockpile totals by bucket (units). */
+  stockByBucket?: Record<ResourceBucket, number>;
+  /** End-of-month stockpile book value at base prices ($). */
+  stockValue?: number;
+}
+
+export interface SimWorldOpts {
+  /** Balance Pass 1: cap each month's leftover sales per resource at what
+   *  the NPC maker's standing orders can actually absorb
+   *  (npcAbsorptionPerMonth). Off by default — the original harness fiction
+   *  of infinite liquidation, kept for the historical M-wave tables. */
+  npcSaleCaps?: boolean;
+  /** Balance Pass 1: settle each build's `resourceCost` (drawn from stock,
+   *  shortfall bought at base × INPUT_BUY_MULT) — the construction material
+   *  drain the real engine charges (command-queue.ts). Off by default so the
+   *  historical money tables don't shift. */
+  constructionMaterials?: boolean;
 }
 
 export interface SimWorld {
@@ -118,6 +202,7 @@ export interface SimWorld {
   extraction: Map<string, { acc: number; atMs: number }>;
   active30d: number;
   monthMs: number;
+  opts: SimWorldOpts;
   /** Wave M5 (§3.2 O2 / §6 "price-campaign duel"): optional world spot
    *  snapshot. Absent = base prices everywhere (the pre-M5 default). A
    *  scenario can pin a resource at the anti-cornering band floor
@@ -127,21 +212,27 @@ export interface SimWorld {
   spotSnapshot?: MarketSnapshot | null;
 }
 
-export function newWorld(players: SimPlayer[], active30d = 0, spotSnapshot: MarketSnapshot | null = null): SimWorld {
-  return { players, extraction: new Map(), active30d, monthMs: GAME_MONTH_MS, spotSnapshot };
+export function newWorld(
+  players: SimPlayer[],
+  active30d = 0,
+  spotSnapshot: MarketSnapshot | null = null,
+  opts: SimWorldOpts = {},
+): SimWorld {
+  return { players, extraction: new Map(), active30d, monthMs: GAME_MONTH_MS, spotSnapshot, opts };
 }
 
 export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
     buildings: [], resources: {}, efficiency: {},
     plan, maxBuildsPerMonth: opts.maxBuildsPerMonth ?? 2,
     buysInputs: opts.buysInputs ?? true,
+    sellsLeftovers: opts.sellsLeftovers ?? true,
     history: [],
   };
 }
@@ -206,6 +297,8 @@ export function stepMonth(world: SimWorld, month: number): void {
 
   // ── 1. Purchases ──────────────────────────────────────────────────────
   for (const p of world.players) {
+    const flows = emptyFlows();
+    (p as SimPlayer & { _flows?: ResourceFlows })._flows = flows;
     const wants = p.plan(p, month).slice(0, p.maxBuildsPerMonth);
     let capex = 0;
     for (const want of wants) {
@@ -217,6 +310,25 @@ export function stepMonth(world: SimWorld, month: number): void {
       p.totalSpent += cost;
       capex += cost;
       p.buildings.push(makeBuilding(want.definitionId, want.locationId));
+      // Balance Pass 1 (opt-in): settle the build's resourceCost the way
+      // command-queue.ts does — draw stock first, buy the shortfall.
+      if (world.opts.constructionMaterials && def.resourceCost) {
+        for (const [res, qty] of Object.entries(def.resourceCost)) {
+          if (!qty || qty <= 0) continue;
+          const fromStock = Math.min(p.resources[res] || 0, qty);
+          const shortfall = qty - fromStock;
+          if (fromStock > 0) p.resources[res] = (p.resources[res] || 0) - fromStock;
+          if (shortfall > 0) {
+            const price = (RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0) * INPUT_BUY_MULT;
+            const matCost = shortfall * price;
+            p.money -= matCost;
+            p.totalSpent += matCost;
+            capex += matCost;
+            addFlow(flows.bought, res, shortfall);
+          }
+          addFlow(flows.construction, res, qty);
+        }
+      }
     }
     (p as SimPlayer & { _capex?: number })._capex = capex;
   }
@@ -237,6 +349,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         need[res] = (need[res] || 0) + amt;
       }
     }
+    const flows = (p as SimPlayer & { _flows?: ResourceFlows })._flows || emptyFlows();
     if (p.buysInputs) {
       for (const [res, amt] of Object.entries(need)) {
         const shortfall = Math.max(0, amt - (p.resources[res] || 0));
@@ -247,6 +360,7 @@ export function stepMonth(world: SimWorld, month: number): void {
           p.money -= cost;
           p.totalSpent += cost;
           p.resources[res] = (p.resources[res] || 0) + shortfall;
+          addFlow(flows.bought, res, shortfall);
         }
       }
     }
@@ -256,13 +370,44 @@ export function stepMonth(world: SimWorld, month: number): void {
       locationInventories: {},
       logisticsUnlocked: false, // draw everything from the global pool
       completedResearch: [] as string[],
-      consumptionState: { ...DEFAULT_CONSUMPTION_STATE, lastProcessedMonth: month - 1, phaseInStartMonth: null },
+      // storageDecayStartMonth −9999 ⇒ the storage-integrity ramp
+      // (consumption.ts, Balance Pass 1) is at FULL rate — the sim measures
+      // steady-state behavior, not the 36-real-hour migration grace.
+      consumptionState: { ...DEFAULT_CONSUMPTION_STATE, lastProcessedMonth: month - 1, phaseInStartMonth: null, storageDecayStartMonth: -9999 },
       eventLog: [] as unknown[],
       gameDate: { year: 2026 + Math.floor(month / 12), month: (month % 12) + 1 },
     } as unknown as GameState;
     const consResult = processConsumptionForMonth(pseudoState, month);
     p.resources = { ...(consResult.state.resources || {}) };
     p.efficiency = { ...(consResult.state.consumptionState?.efficiency || {}) };
+    for (const [res, q] of Object.entries(consResult.storageLosses || {})) {
+      addFlow(flows.decayed, res, q);
+    }
+    // Balance Pass 1: reconstruct the engine's per-resource recipe flows from
+    // the efficiency it reported. In the sim, phase-in = 1 and research
+    // consumption-reduction = 1, so:
+    //   supplied  = (eff − FLOOR) / (1 − FLOOR)
+    //   consumed_i = consumesPerMonth_i × supplied
+    //   produced_o = producesPerMonth_o × eff
+    // — exactly processConsumptionForMonth's math inverted (eff is rounded
+    // to 3dp by the engine; flow error ≤0.1%, fine for reporting).
+    for (const b of p.buildings) {
+      const bDef = BUILDING_MAP.get(b.definitionId);
+      if (!bDef || (!bDef.consumesPerMonth && !bDef.producesPerMonth)) continue;
+      const eff = p.efficiency[b.instanceId] ?? 1;
+      const supplied = Math.max(0, Math.min(1,
+        (eff - CONSUMPTION_EFFICIENCY_FLOOR) / (1 - CONSUMPTION_EFFICIENCY_FLOOR)));
+      if (bDef.consumesPerMonth) {
+        for (const [res, amt] of Object.entries(bDef.consumesPerMonth)) {
+          addFlow(flows.consumed, res, amt * supplied);
+        }
+      }
+      if (bDef.producesPerMonth) {
+        for (const [res, amt] of Object.entries(bDef.producesPerMonth)) {
+          addFlow(flows.produced, res, amt * eff);
+        }
+      }
+    }
 
     // 4. Service revenue & operating costs (engine §1 structural stack:
     //    saturation × pool × power × supplyEfficiency; private multipliers 1.0)
@@ -338,6 +483,7 @@ export function stepMonth(world: SimWorld, month: number): void {
           world.extraction.set(key, { acc: updated.accumulated, atMs: updated.updatedAtMs });
           p.resources[resource] = (p.resources[resource] || 0) + mined;
           unitsPerResource[resource] = mined;
+          addFlow(flows.mined, resource, mined);
         }
         // Only true mining_output services price-link cash revenue here —
         // fabrication_output byproduct producers (e.g. svc_fabrication_lunar)
@@ -351,16 +497,29 @@ export function stepMonth(world: SimWorld, month: number): void {
     }
     let resourceSales = 0;
     // Sell every resource not needed as next month's input, at spot −3%.
-    for (const [res, qty] of Object.entries(p.resources)) {
-      const keep = need[res] || 0;
-      const sell = Math.max(0, qty - keep);
-      if (sell > 0) {
-        const base = RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0;
-        // M5: leftover sales read the world spot snapshot when one is set
-        // (price-campaign scenarios) — base price otherwise, as before.
-        const price = world.spotSnapshot?.prices?.[res] ?? base;
-        resourceSales += sell * price * OUTPUT_SELL_MULT;
-        p.resources[res] = qty - sell;
+    // Balance Pass 1: a hoarder (sellsLeftovers=false) skips this entirely;
+    // npcSaleCaps mode caps each resource's monthly sale at what the NPC
+    // maker's standing orders can absorb (per-real-day cap × month length) —
+    // the unabsorbed remainder stays in inventory.
+    if (p.sellsLeftovers) {
+      for (const [res, qty] of Object.entries(p.resources)) {
+        const keep = need[res] || 0;
+        let sell = Math.max(0, qty - keep);
+        if (sell > 0 && world.opts.npcSaleCaps) {
+          const absorbable = npcAbsorptionPerMonth(res, world.monthMs);
+          const unabsorbed = Math.max(0, sell - absorbable);
+          if (unabsorbed > 0) addFlow(flows.unsold, res, unabsorbed);
+          sell = Math.min(sell, absorbable);
+        }
+        if (sell > 0) {
+          const base = RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0;
+          // M5: leftover sales read the world spot snapshot when one is set
+          // (price-campaign scenarios) — base price otherwise, as before.
+          const price = world.spotSnapshot?.prices?.[res] ?? base;
+          resourceSales += sell * price * OUTPUT_SELL_MULT;
+          p.resources[res] = qty - sell;
+          addFlow(flows.sold, res, sell);
+        }
       }
     }
 
@@ -380,6 +539,16 @@ export function stepMonth(world: SimWorld, month: number): void {
     p.totalSpent += grossOut;
 
     const effAvg = effVals.length ? effVals.reduce((a, b) => a + b, 0) / effVals.length : 1;
+    // Balance Pass 1: end-of-month stockpile snapshot + bucket totals.
+    const stock: Record<string, number> = {};
+    const stockByBucket: Record<ResourceBucket, number> = { raw: 0, refined: 0, component: 0, product: 0 };
+    let stockValue = 0;
+    for (const [res, qty] of Object.entries(p.resources)) {
+      if (!qty || qty <= 0) continue;
+      stock[res] = Math.round(qty * 100) / 100;
+      stockByBucket[resourceBucket(res)] += qty;
+      stockValue += qty * (RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0);
+    }
     p.history.push({
       month,
       money: p.money,
@@ -396,8 +565,61 @@ export function stepMonth(world: SimWorld, month: number): void {
       capex: (p as SimPlayer & { _capex?: number })._capex || 0,
       poolMults,
       avgEfficiency: Math.round(effAvg * 1000) / 1000,
+      flows,
+      stock,
+      stockByBucket,
+      stockValue: Math.round(stockValue),
     });
   }
+}
+
+// ─── Balance Pass 1: sink-coverage analytics ────────────────────────────────
+
+export interface SinkCoverageRow {
+  resource: string;
+  generated: number; // mined + produced (units/mo)
+  drained: number;   // consumed + construction + sold + decayed (units/mo)
+  ratio: number;     // drained / generated (Infinity when generated = 0)
+  stock: number;     // end-of-month stock (units)
+}
+
+/** Per-resource sink-coverage at one month of a player's history: monthly
+ *  drains ÷ monthly generation. Ratios far below 1 = unbounded pileup. */
+export function sinkCoverage(row: MonthRow): SinkCoverageRow[] {
+  const f = row.flows;
+  if (!f) return [];
+  const resourceSet = new Set<string>([
+    ...Object.keys(f.mined), ...Object.keys(f.produced),
+    ...Object.keys(f.consumed), ...Object.keys(f.construction), ...Object.keys(f.sold),
+    ...Object.keys(f.decayed),
+  ]);
+  const out: SinkCoverageRow[] = [];
+  for (const res of Array.from(resourceSet)) {
+    const generated = (f.mined[res] || 0) + (f.produced[res] || 0);
+    const drained = (f.consumed[res] || 0) + (f.construction[res] || 0) + (f.sold[res] || 0) + (f.decayed[res] || 0);
+    out.push({
+      resource: res,
+      generated: Math.round(generated * 100) / 100,
+      drained: Math.round(drained * 100) / 100,
+      ratio: generated > 0 ? Math.round((drained / generated) * 100) / 100 : Infinity,
+      stock: Math.round((row.stock?.[res] || 0) * 10) / 10,
+    });
+  }
+  out.sort((a, b) => (a.ratio - b.ratio) || (b.generated - a.generated));
+  return out;
+}
+
+/** Extraction-pressure readout per (location:resource) key at "now" for a
+ *  finished world — how hard the deposit brake is biting at the end. */
+export function extractionPressureReport(world: SimWorld, months: number): { key: string; pressure: number }[] {
+  const nowMs = months * world.monthMs;
+  const out: { key: string; pressure: number }[] = [];
+  world.extraction.forEach((v, key) => {
+    const acc = v.acc * Math.pow(0.9, Math.max(0, nowMs - v.atMs) / DAY_MS);
+    out.push({ key, pressure: Math.round(computeExtractionPressure(acc) * 1000) / 1000 });
+  });
+  out.sort((a, b) => a.pressure - b.pressure);
+  return out;
 }
 
 export function runWorld(world: SimWorld, months: number): void {
