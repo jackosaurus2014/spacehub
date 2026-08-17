@@ -567,6 +567,11 @@ export interface GameState {
    *  systems). Pruned to the rolling window on write. */
   legacyContractCompletionsAt?: number[];
 
+  /** V42: world epoch this save belongs to (world-reset.ts). When the shared
+   *  world restarts fresh, WORLD_EPOCH is bumped and older-epoch saves are
+   *  archived on load — the player starts the new era from scratch. */
+  worldEpoch?: number;
+
   // Competitive milestones
   claimedMilestones?: Record<string, string>;
 
@@ -1394,6 +1399,13 @@ export interface GameState {
      *  MarketLimitOrder rows (source 'standing') and escrow flows through
      *  the One-Wallet ledger like any MarketPanel trade. */
     pendingProcurement: Record<string, number>;
+    /** Balance Pass 1 (docs/BALANCE.md "Pass 1 — Resource generation vs
+     *  sinks"): world-month anchor for the storage-integrity ramp (volatile
+     *  boiloff + warehouse-overflow decay ramp 0 → 100% over 6 game-months
+     *  from here). Absent/null = not yet anchored — the next monthly pass
+     *  lazily stamps the current month, so existing saves get a 36-real-hour
+     *  grace window with NO save migration. Optional by design. */
+    storageDecayStartMonth?: number | null;
   };
 
   /** V33 — Wave E4 "Finite Demand Pools" (docs/ECONOMY_PVP_2026-08.md

@@ -477,10 +477,25 @@ export function getDeliveryCapStatus(state: GameState, now: number = Date.now())
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
+/** Max simultaneously-accepted (undelivered) delivery contracts — the same
+ *  number as the daily completion cap, so a player can hold at most one
+ *  day's worth of queued work. Founder follow-up 8/17: acceptance was
+ *  unlimited, which let players hoover the whole pool into an infinite
+ *  drip-fed backlog even with completions capped. */
+export function getActiveDeliveryLimit(state: GameState): number {
+  return getDailyDeliveryCap(state);
+}
+
+export function getActiveDeliveryCount(state: GameState): number {
+  return (state.activeDeliveries || []).filter(c => c.status === 'accepted').length;
+}
+
 export function acceptDelivery(state: GameState, contractId: string, now: number = Date.now()): GameState {
   const pool = state.availableDeliveries || [];
   const contract = pool.find(c => c.id === contractId);
   if (!contract || contract.status !== 'open') return state;
+  // Active-slot cap (authoritative regardless of UI state)
+  if (getActiveDeliveryCount(state) >= getActiveDeliveryLimit(state)) return state;
 
   // E2 (§2.3): lock the LIVE SPOT AT ACCEPTANCE. The generated paymentMoney is
   // a base-price preview (basePrice × qty × faction × posture × noise); we

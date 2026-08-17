@@ -209,12 +209,16 @@ export async function buildWeeklyEconomyReport(now = new Date()): Promise<Weekly
 
   const fundingTotal = funding.reduce((s, f) => s + (f.amount || 0), 0);
 
-  const weekOf = fmtDate(weekAgo);
+  // Title by the publish Monday, not the start of the trailing data window —
+  // founder feedback 8/17: "Week of <last Monday>" made a fresh Monday brief
+  // read as last week's article.
+  const weekOf = fmtDate(now);
+  const coverageStart = fmtDate(weekAgo);
   const slug = `state-of-the-space-economy-${fmtDate(now)}`;
   const title = `State of the Space Economy — Week of ${weekOf}`;
 
   const lines: string[] = [];
-  lines.push(`*A weekly data brief generated from SpaceNexus tracking: ${articles.length} news items, ${funding.length} funding rounds, ${launches.length} upcoming launches, and ${totalJobs.toLocaleString()} open industry positions.*`);
+  lines.push(`*A weekly data brief generated from SpaceNexus tracking over the seven days ending ${weekOf} (${coverageStart} → ${weekOf}): ${articles.length} news items, ${funding.length} funding rounds, ${launches.length} upcoming launches, and ${totalJobs.toLocaleString()} open industry positions.*`);
   lines.push('');
 
   lines.push('## The week in numbers');

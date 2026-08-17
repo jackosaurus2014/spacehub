@@ -16,6 +16,8 @@ import {
   getDailyDeliveryCap,
   getRecentDeliveryCompletions,
   getDeliveryCapStatus,
+  getActiveDeliveryLimit,
+  getActiveDeliveryCount,
   DELIVERY_CAP_BASE,
   DELIVERY_CAP_WINDOW_MS,
   DELIVERY_CAP_RESEARCH_BONUS_ID,
@@ -137,6 +139,47 @@ describe('delivery-contracts — accept flow', () => {
     const s = baseState({ availableDeliveries: [] });
     const after = acceptDelivery(s, 'ghost');
     expect(after).toBe(s);
+  });
+});
+
+describe('delivery-contracts — active-slot cap (founder 8/17: acceptance was unlimited)', () => {
+  it('active limit equals the daily completion cap', () => {
+    const s = baseState();
+    expect(getActiveDeliveryLimit(s)).toBe(getDailyDeliveryCap(s));
+  });
+
+  it('counts only accepted (undelivered) contracts', () => {
+    const accepted = { ...generateContract('the-dominion', 1, 1000), status: 'accepted' as const };
+    const completed = { ...generateContract('the-dominion', 2, 1000), status: 'completed' as const };
+    const s = baseState({ activeDeliveries: [accepted, completed] });
+    expect(getActiveDeliveryCount(s)).toBe(1);
+  });
+
+  it('refuses acceptance once active slots are full', () => {
+    const s0 = baseState();
+    const limit = getActiveDeliveryLimit(s0);
+    const active = Array.from({ length: limit }, (_, i) => ({
+      ...generateContract('the-dominion', i, 1000),
+      status: 'accepted' as const,
+    }));
+    const next = generateContract('the-dominion', 999, 1000);
+    const s = baseState({ activeDeliveries: active, availableDeliveries: [next] });
+    const after = acceptDelivery(s, next.id);
+    expect(after).toBe(s); // authoritative refusal — contract stays in the pool
+    expect(getActiveDeliveryCount(after)).toBe(limit);
+  });
+
+  it('accepts again once below the limit', () => {
+    const s0 = baseState();
+    const limit = getActiveDeliveryLimit(s0);
+    const active = Array.from({ length: limit - 1 }, (_, i) => ({
+      ...generateContract('the-dominion', i, 1000),
+      status: 'accepted' as const,
+    }));
+    const next = generateContract('the-dominion', 999, 1000);
+    const s = baseState({ activeDeliveries: active, availableDeliveries: [next] });
+    const after = acceptDelivery(s, next.id, 5000);
+    expect(getActiveDeliveryCount(after)).toBe(limit);
   });
 });
 

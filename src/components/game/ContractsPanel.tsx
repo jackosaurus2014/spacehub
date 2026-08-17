@@ -85,6 +85,9 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
           {capStatus.atCap && capStatus.resetInMs > 0 && (
             <span className="text-[10px] text-slate-500"> · frees in {formatMsShort(capStatus.resetInMs)}</span>
           )}
+          <span className={`text-[10px] ml-1 ${activeIds.length >= capStatus.cap ? 'text-amber-400' : 'text-slate-500'}`}>
+            {' '}· active {activeIds.length}/{capStatus.cap}
+          </span>
         </span>
       </div>
       {/* Timed Competitive Events */}
@@ -227,12 +230,22 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                 <div className="text-[10px] text-slate-500 mb-3">
                   Reward: <span className="game-number text-green-400">{formatMoney(contract.reward.money || 0)}</span>
                 </div>
-                <button
-                  onClick={() => { playSound('click'); onAcceptContract(contract.id); }}
-                  className="w-full min-h-[44px] py-1.5 text-xs font-medium bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition-colors"
-                >
-                  Accept Contract
-                </button>
+                {activeIds.length >= capStatus.cap ? (
+                  <button
+                    disabled
+                    className="w-full min-h-[44px] py-1.5 text-xs font-medium bg-white/[0.04] text-slate-500 rounded-lg cursor-not-allowed border border-white/[0.06]"
+                    title="Active contract slots full — complete or wait out a contract before accepting more"
+                  >
+                    Slots full ({activeIds.length}/{capStatus.cap})
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { playSound('click'); onAcceptContract(contract.id); }}
+                    className="w-full min-h-[44px] py-1.5 text-xs font-medium bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition-colors"
+                  >
+                    Accept Contract
+                  </button>
+                )}
               </div>
             ))}
           </div>

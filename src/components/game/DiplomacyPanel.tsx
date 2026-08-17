@@ -9,6 +9,8 @@ import {
   canDeliver,
   formatDeadline,
   getDeliveryCapStatus,
+  getActiveDeliveryCount,
+  getActiveDeliveryLimit,
   type DeliveryContract,
   type DeliveryCapStatus,
 } from '@/lib/game/delivery-contracts';
@@ -124,9 +126,20 @@ function MarketTab({ state, pool, now, onAccept }: { state: GameState; pool: Del
   const [factionFilter, setFactionFilter] = useState<FactionId | 'all'>('all');
 
   const visible = pool.filter(c => factionFilter === 'all' || c.issuerFactionId === factionFilter);
+  const activeCount = getActiveDeliveryCount(state);
+  const activeLimit = getActiveDeliveryLimit(state);
+  const atActiveLimit = activeCount >= activeLimit;
 
   return (
     <>
+      {atActiveLimit && (
+        <div className="card p-3 border border-amber-500/25 bg-amber-500/[0.06] text-amber-300 text-xs flex items-center gap-2">
+          <span aria-hidden="true">⛔</span>
+          Active contract slots full ({activeCount}/{activeLimit}) — deliver or let one expire before
+          accepting more. Slots match your daily completion budget, so you can hold at most one
+          day&apos;s worth of committed work.
+        </div>
+      )}
       {/* Faction filter chips */}
       <div className="card p-2 flex flex-wrap gap-1 items-center text-[10px]">
         <span className="text-slate-500 px-1">Issuer:</span>
@@ -154,7 +167,11 @@ function MarketTab({ state, pool, now, onAccept }: { state: GameState; pool: Del
               contract={c}
               state={state}
               now={now}
-              action={{ label: 'Accept Contract', onClick: () => onAccept(c.id), tone: 'primary' }}
+              action={
+                atActiveLimit
+                  ? { label: `Slots full (${activeCount}/${activeLimit})`, tone: 'disabled' as const }
+                  : { label: 'Accept Contract', onClick: () => onAccept(c.id), tone: 'primary' }
+              }
             />
           ))}
         </div>

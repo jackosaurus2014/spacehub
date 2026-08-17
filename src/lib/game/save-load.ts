@@ -14,11 +14,13 @@ import { DEFAULT_CORPORATE_ERAS } from './corporate-eras';
 import { DEFAULT_CONSUMPTION_STATE, applyGrandfatherGrace } from './consumption';
 import { getGlobalGameDate } from './server-time';
 import { ONBOARDING_CHAIN_VERSION, ONBOARDING_DONE_STEP } from './onboarding';
+import { WORLD_EPOCH, ARCHIVED_SAVE_KEY } from './world-reset';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
   return {
     version: SAVE_VERSION,
+    worldEpoch: WORLD_EPOCH,
     createdAt: Date.now(),
     lastTickAt: Date.now(),
     money: STARTING_MONEY,
@@ -268,6 +270,15 @@ export function loadGame(): GameState | null {
     if (!raw) return null;
     const state = JSON.parse(raw) as GameState;
     if (!state || typeof state.version !== 'number') return null;
+
+    // V42 — world epoch gate (world-reset.ts). A save from a pre-restart
+    // epoch is archived (never destroyed) and the player starts the new
+    // era fresh. Saves with no stamp are epoch 1 (pre-epoch-system).
+    if ((state.worldEpoch ?? 1) < WORLD_EPOCH) {
+      try { localStorage.setItem(ARCHIVED_SAVE_KEY, raw); } catch { /* archive best-effort */ }
+      localStorage.removeItem(SAVE_KEY);
+      return null;
+    }
 
     // Restore NPCs from save, or create fresh if missing/corrupt
     if (!Array.isArray(state.npcCompanies) || state.npcCompanies.length === 0) {
@@ -791,6 +802,10 @@ export function loadGame(): GameState | null {
       state.onboardingChainVersion = ONBOARDING_CHAIN_VERSION;
     }
     if (state.hasTradedOnMarket === undefined) state.hasTradedOnMarket = false;
+
+    // V42 — stamp current-epoch saves so a future WORLD_EPOCH bump can tell
+    // them apart from new-era saves.
+    if (state.worldEpoch === undefined) state.worldEpoch = WORLD_EPOCH;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

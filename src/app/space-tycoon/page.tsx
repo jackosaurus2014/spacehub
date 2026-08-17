@@ -119,6 +119,7 @@ import { commitLobbying } from '@/lib/game/accord-senate';
 import type { LobbyStance } from '@/lib/game/accord-senate';
 import { acceptDelivery, deliverContract, getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
+import WorldResetNotice from '@/components/game/WorldResetNotice';
 import FrontierGraduationModal from '@/components/game/FrontierGraduationModal';
 import { graduateFrontier } from '@/lib/game/frontier';
 import ModulesPanel from '@/components/game/ModulesPanel';
@@ -1794,6 +1795,7 @@ export default function SpaceTycoonPage() {
   if (showMenu || !state) {
     return (
       <>
+        <WorldResetNotice />
         <GameStartMenu
           onNewGame={handleNewGame}
           onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); setTab(pickInitialTab(saved)); setShowMenu(false); } }}
@@ -1919,6 +1921,9 @@ export default function SpaceTycoonPage() {
       <GlobalEffectsLayer state={state} />
       {/* Resource Bar */}
       <ResourceBar state={state} density={density} onDensityChange={setDensityState} />
+
+      {/* Scheduled world-restart notice — renders only while a restart is pending */}
+      <WorldResetNotice />
 
       {/* Protected Frontier banner — renders only when active */}
       <FrontierBadge
@@ -2339,6 +2344,10 @@ export default function SpaceTycoonPage() {
                 if (!prev) return prev;
                 const activeContracts = [...(prev.activeContracts || [])];
                 if (activeContracts.includes(contractId)) return prev;
+                // Active-slot cap (founder 8/17): legacy contracts share the
+                // same limit as delivery contracts — at most one day's worth
+                // of queued work may be held at once.
+                if (activeContracts.length >= getDeliveryCapStatus(prev).cap) return prev;
                 activeContracts.push(contractId);
                 return { ...prev, activeContracts };
               });
