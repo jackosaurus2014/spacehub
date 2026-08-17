@@ -9,7 +9,7 @@ import { AVAILABLE_MODULES } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
-type Tab = 'feature' | 'help' | 'feedback' | 'data-status';
+type Tab = 'feature' | 'help' | 'feedback' | 'compliance-qa' | 'data-status';
 
 // Matches the FeedbackSubmission Prisma model (see prisma/schema.prisma)
 interface FeedbackSubmissionRow {
@@ -35,6 +35,26 @@ const FEEDBACK_CATEGORY_ICONS: Record<string, string> = {
   content: '📊',
   praise: '🎉',
   general: '💬',
+};
+
+// Matches the ComplianceQuestion Prisma model (see prisma/schema.prisma)
+interface ComplianceQuestionRow {
+  id: string;
+  question: string;
+  askerName: string | null;
+  askerEmail: string | null;
+  status: 'new' | 'answered' | 'archived';
+  answer: string | null;
+  answeredAt: string | null;
+  published: boolean;
+  notifiedAt: string | null;
+  createdAt: string;
+}
+
+const COMPLIANCE_QA_STATUS_META: Record<ComplianceQuestionRow['status'], { label: string; color: string }> = {
+  new: { label: 'New', color: 'bg-amber-500' },
+  answered: { label: 'Answered', color: 'bg-emerald-600' },
+  archived: { label: 'Archived', color: 'bg-slate-600' },
 };
 
 // Init endpoints for the data status panel
@@ -106,13 +126,15 @@ export default function AdminPage() {
   const [helpRequests, setHelpRequests] = useState<HelpRequest[]>([]);
   const [feedbackSubmissions, setFeedbackSubmissions] = useState<FeedbackSubmissionRow[]>([]);
   const [feedbackTableMissing, setFeedbackTableMissing] = useState(false);
+  const [complianceQuestions, setComplianceQuestions] = useState<ComplianceQuestionRow[]>([]);
+  const [complianceQaTableMissing, setComplianceQaTableMissing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Deep-link support: /admin?tab=feedback (used by notification emails)
+  // Deep-link support: /admin?tab=feedback / ?tab=compliance-qa (used by notification emails)
   useEffect(() => {
     try {
       const wanted = new URLSearchParams(window.location.search).get('tab');
-      if (wanted === 'feedback' || wanted === 'help' || wanted === 'data-status') {
+      if (wanted === 'feedback' || wanted === 'help' || wanted === 'compliance-qa' || wanted === 'data-status') {
         setTab(wanted);
       }
     } catch {
@@ -141,6 +163,13 @@ export default function AdminPage() {
           const data = await res.json();
           setFeedbackSubmissions(data.data?.submissions || []);
           setFeedbackTableMissing(!!data.data?.tableMissing);
+        }
+      } else if (tab === 'compliance-qa') {
+        const res = await fetch('/api/admin/compliance-qa');
+        if (res.ok) {
+          const data = await res.json();
+          setComplianceQuestions(data.data?.questions || []);
+          setComplianceQaTableMissing(!!data.data?.tableMissing);
         }
       }
     } catch (err) {
@@ -232,6 +261,16 @@ export default function AdminPage() {
             Feedback
           </button>
           <button
+            onClick={() => setTab('compliance-qa')}
+            className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+              tab === 'compliance-qa'
+                ? 'border-white/15 text-white'
+                : 'border-transparent text-star-300 hover:text-white'
+            }`}
+          >
+            Compliance Q&amp;A
+          </button>
+          <button
             onClick={() => setTab('data-status')}
             className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
               tab === 'data-status'
@@ -255,6 +294,12 @@ export default function AdminPage() {
           <FeedbackSubmissionList
             items={feedbackSubmissions}
             tableMissing={feedbackTableMissing}
+            onUpdate={fetchData}
+          />
+        ) : tab === 'compliance-qa' ? (
+          <ComplianceQuestionList
+            items={complianceQuestions}
+            tableMissing={complianceQaTableMissing}
             onUpdate={fetchData}
           />
         ) : (
@@ -805,6 +850,156 @@ function FeedbackSubmissionItem({ item, onUpdate }: { item: FeedbackSubmissionRo
             {saving === status ? 'Saving...' : `Mark ${FEEDBACK_STATUS_META[status].label.toLowerCase()}`}
           </button>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// --------------- Compliance Q&A ---------------
+
+function ComplianceQuestionList({
+  items,
+  tableMissing,
+  onUpdate,
+}: {
+  items: ComplianceQuestionRow[];
+  tableMissing: boolean;
+  onUpdate: () => void;
+}) {
+  if (tableMissing) {
+    return (
+      <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 text-yellow-400 text-sm">
+        The ComplianceQuestion table has not been migrated yet — run <code>npx prisma db push</code> after deploy.
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <p className="text-star-300 text-center py-12">
+        No export-compliance questions yet. Questions asked on /compliance or /export-compliance-qa land here.
+      </p>
+    );
+  }
+
+  const newCount = items.filter((i) => i.status === 'new').length;
+
+  return (
+    <div>
+      <p className="text-star-300 text-sm mb-4">
+        {items.length} question{items.length === 1 ? '' : 's'}
+        {newCount > 0 && <span className="text-amber-400"> · {newCount} awaiting an answer</span>}
+        <span className="text-slate-500"> · Published answers appear on /export-compliance-qa (not legal advice)</span>
+      </p>
+      <StaggerContainer className="space-y-4">
+        {items.map((item) => (
+          <StaggerItem key={item.id}>
+            <ComplianceQuestionItem item={item} onUpdate={onUpdate} />
+          </StaggerItem>
+        ))}
+      </StaggerContainer>
+    </div>
+  );
+}
+
+function ComplianceQuestionItem({ item, onUpdate }: { item: ComplianceQuestionRow; onUpdate: () => void }) {
+  const [answer, setAnswer] = useState(item.answer || '');
+  const [saving, setSaving] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const runAction = async (action: 'publish' | 'draft' | 'archive') => {
+    setSaving(action);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/compliance-qa/${item.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, answer }),
+      });
+      if (res.ok) {
+        onUpdate();
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error?.message || 'Update failed');
+      }
+    } catch (err) {
+      clientLogger.error('Error updating compliance question', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setError('Network error');
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const statusMeta = COMPLIANCE_QA_STATUS_META[item.status] || COMPLIANCE_QA_STATUS_META.new;
+
+  return (
+    <div className="card p-5 border border-space-600/50">
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+        <div>
+          <p className="text-star-300 text-sm">
+            {new Date(item.createdAt).toLocaleString('en-US', { timeZone: 'UTC' })} UTC
+            {item.askerName && <> &middot; {item.askerName}</>}
+            {item.askerEmail && <> &middot; {item.askerEmail}</>}
+            {!item.askerName && !item.askerEmail && <> &middot; anonymous</>}
+            {!item.notifiedAt && item.status === 'new' && (
+              <> &middot; <span className="text-amber-400">email notification pending</span></>
+            )}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {item.published && (
+            <span className="text-xs px-2 py-0.5 rounded bg-violet-600 text-white">Published</span>
+          )}
+          <span className={`text-xs px-2 py-0.5 rounded ${statusMeta.color} text-white`}>{statusMeta.label}</span>
+        </div>
+      </div>
+
+      <p className="text-star-200 text-sm mb-4 whitespace-pre-wrap font-medium">{item.question}</p>
+
+      <textarea
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+        placeholder="Write your answer… (published answers appear verbatim on the public Q&A as general information, not legal advice)"
+        rows={4}
+        className="input text-sm w-full resize-y mb-3"
+      />
+
+      {error && <p className="text-red-400 text-xs mb-3">{error}</p>}
+
+      <div className="flex flex-wrap gap-2 items-center">
+        <button
+          onClick={() => runAction('publish')}
+          disabled={saving !== null || answer.trim().length === 0}
+          className="btn-primary text-sm py-1.5 px-4 disabled:opacity-50"
+        >
+          {saving === 'publish' ? 'Publishing…' : item.published ? 'Update published answer' : 'Publish answer'}
+        </button>
+        <button
+          onClick={() => runAction('draft')}
+          disabled={saving !== null}
+          className="text-xs px-3 py-1.5 rounded-lg border bg-space-700/40 border-space-600/40 text-star-300 hover:text-white hover:bg-space-600/40 disabled:opacity-60"
+        >
+          {saving === 'draft' ? 'Saving…' : 'Save draft'}
+        </button>
+        {item.status !== 'archived' && (
+          <button
+            onClick={() => runAction('archive')}
+            disabled={saving !== null}
+            className="text-xs px-3 py-1.5 rounded-lg border bg-space-700/40 border-space-600/40 text-star-300 hover:text-red-300 hover:bg-space-600/40 disabled:opacity-60"
+          >
+            {saving === 'archive' ? 'Archiving…' : 'Archive'}
+          </button>
+        )}
+        {item.answeredAt && (
+          <span className="text-xs text-slate-500">
+            Answered {new Date(item.answeredAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
+          </span>
+        )}
+        {item.published && item.status === 'answered' && item.askerEmail && (
+          <span className="text-xs text-slate-500">Asker was emailed on first publish</span>
+        )}
       </div>
     </div>
   );

@@ -134,6 +134,21 @@ export default async function RegulatoryRadarPage({
         </div>
 
         <section className="mt-10 card p-6">
+          <h2 className="text-lg font-semibold text-white mb-2">Have an export-compliance question?</h2>
+          <p className="text-sm text-slate-400 mb-4">
+            Ask the SpaceNexus team about ITAR, EAR, sanctions, or space export controls — answered
+            questions are published in the free{' '}
+            <Link href="/export-compliance-qa" className="text-violet-300 hover:text-violet-200 underline underline-offset-2">
+              Export Compliance Q&amp;A
+            </Link>
+            . Answers are general information, not legal advice.
+          </p>
+          <Link href="/export-compliance-qa" className="btn-primary text-sm py-2 px-4 inline-flex">
+            Ask a question
+          </Link>
+        </section>
+
+        <section className="mt-6 card p-6">
           <h2 className="text-lg font-semibold text-white mb-2">Never miss a regulatory shift</h2>
           <p className="text-sm text-slate-400 mb-4">
             Significant export-control actions ship automatically in the SpaceNexus newsletter

@@ -72,6 +72,7 @@ import { AllRegulationsTab } from './AllRegulationsTab';
 import { LegalResourceDirectoryTab } from './LegalResourceDirectoryTab';
 import { RiskAssessmentTab } from './RiskAssessmentTab';
 import RegulatoryRadarTab from './RegulatoryRadarTab';
+import ExportComplianceQA from '@/components/compliance/ExportComplianceQA';
 import type { BidProtest } from './ProtestsSection';
 
 // Runtime-populated data (populated from DynamicContent API)
@@ -492,7 +493,14 @@ function RegulatoryHubContent() {
       {activeSubTab === 'policy' && <PolicyTrackerTab />}
       {activeSubTab === 'wizard' && <ComplianceWizardTab />}
       {activeSubTab === 'cases' && <CaseLawArchiveTab />}
-      {activeSubTab === 'export' && <ExportControlMonitorTab />}
+      {activeSubTab === 'export' && (
+        <>
+          <ExportControlMonitorTab />
+          {/* Ask-a-question + published Q&A — asking is never Pro-gated on the
+              public page; this in-hub copy sits behind the existing gate. */}
+          <ExportComplianceQA />
+        </>
+      )}
       {activeSubTab === 'experts' && <ExpertCommentaryTab />}
       {activeSubTab === 'risk' && <RiskAssessmentTab />}
 

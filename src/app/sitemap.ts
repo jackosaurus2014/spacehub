@@ -51,6 +51,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/mission-cost`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/compliance`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/regulatory-radar`, changeFrequency: 'daily' as const, priority: 0.8 },
+    { url: `${BASE_URL}/export-compliance-qa`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/solar-exploration`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/space-talent`, changeFrequency: 'daily' as const, priority: 0.8 },
 

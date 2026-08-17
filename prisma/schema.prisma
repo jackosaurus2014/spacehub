@@ -561,6 +561,29 @@ model FeedbackSubmission {
   @@index([status, createdAt])
 }
 
+// Export Compliance Q&A — public "ask a question" funnel on the Compliance
+// hub / /export-compliance-qa. Each new question emails the founder
+// (COMPLIANCE_QA_NOTIFY_EMAIL in src/lib/compliance-qa.ts); answers are
+// written in /admin (Compliance Q&A tab) and, once published, render as the
+// public FAQ list (answers are general information, never legal advice).
+model ComplianceQuestion {
+  id         String  @id @default(cuid())
+  question   String  @db.Text
+  askerName  String? // Optional display-less contact name (never shown publicly)
+  askerEmail String? // Optional — courtesy "your question was answered" email
+  status     String  @default("new") // new | answered | archived
+  answer     String? @db.Text // Founder's answer (draft until published=true)
+  answeredAt DateTime?
+  published  Boolean @default(false)
+  notifiedAt DateTime? // When the founder notification email was sent (null = retry on next submission)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([published, answeredAt])
+}
+
 model NewsArticle {
   id          String           @id @default(cuid())
   title       String
