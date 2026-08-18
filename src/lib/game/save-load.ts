@@ -234,6 +234,12 @@ export function getNewGameState(): GameState {
     // only via sync (same posture as orbitalSlotOccupancy) — null until then,
     // and the slot gate stays open for never-synced saves.
     orbitalSlotLeases: null,
+    // Balance Pass 9 ([SAVE] optional field, no version bump / no
+    // migration): the offense-fee-index snapshot arrives only via sync
+    // (same posture as orbitalSlotLeases) — null until then, and every
+    // consumer reads factor 1 (pre-Pass-9 behavior; also the by-design
+    // relaunch value).
+    feeIndex: null,
     // V38 — Meaningful Decisions Wave M5 "Offense Toolkit I" (docs/
     // MEANINGFUL_2026-08.md §M5). A fresh save has never been targeted by
     // (or launched) an economic offense — the offense snapshot arrives only
@@ -721,6 +727,14 @@ export function loadGame(): GameState | null {
     // identically until it syncs.
     if (state.orbitalSlotLeases === undefined) {
       state.orbitalSlotLeases = null;
+    }
+
+    // Balance Pass 9 (docs/BALANCE.md "Pass 9"): additive optional field,
+    // no version bump — the offense-fee-index snapshot defaults to null
+    // (factor 1 everywhere, byte-identical pre-Pass-9 behavior) and is
+    // populated only by the next authenticated sync.
+    if (state.feeIndex === undefined) {
+      state.feeIndex = null;
     }
 
     // V36 — Meaningful Decisions Wave M2 "The Exit Decision" (docs/

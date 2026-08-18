@@ -9,6 +9,8 @@ import {
   type OpenBuyOrderLite,
 } from '@/lib/game/cornering-intel';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { getServerFeeIndexFactor } from '@/lib/game/fee-index-server';
+import { applyFeeIndex } from '@/lib/game/fee-index';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,9 +37,15 @@ export async function POST(_request: NextRequest) {
         error: 'Requires the Market Microstructure Analysis research.',
       }, { status: 400 });
     }
-    if (profile.money < STANDING_DEMAND_REPORT_FEE) {
+    // Balance Pass 9: report fee × the quarterly fee-index factor
+    // (server-computed; factor 1 at relaunch by design).
+    const reportFee = applyFeeIndex(
+      STANDING_DEMAND_REPORT_FEE,
+      await getServerFeeIndexFactor().catch(() => 1),
+    );
+    if (profile.money < reportFee) {
       return NextResponse.json({
-        error: `Report fee: $${(STANDING_DEMAND_REPORT_FEE / 1_000_000).toFixed(0)}M (burned).`,
+        error: `Report fee: $${(reportFee / 1_000_000).toFixed(0)}M (burned).`,
       }, { status: 400 });
     }
 
@@ -45,11 +53,11 @@ export async function POST(_request: NextRequest) {
     await prisma.$transaction(async (tx) => {
       await tx.gameProfile.update({
         where: { id: profile.id },
-        data: { money: { decrement: STANDING_DEMAND_REPORT_FEE }, totalSpent: { increment: STANDING_DEMAND_REPORT_FEE } },
+        data: { money: { decrement: reportFee }, totalSpent: { increment: reportFee } },
       });
       if (ledgerOn) {
         await recordLedger(tx, {
-          profileId: profile.id, moneyDelta: -STANDING_DEMAND_REPORT_FEE,
+          profileId: profile.id, moneyDelta: -reportFee,
           reason: 'standing_demand_report_fee', refId: profile.id,
         });
       }
@@ -71,7 +79,7 @@ export async function POST(_request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      feePaid: STANDING_DEMAND_REPORT_FEE,
+      feePaid: reportFee,
       asOf: new Date().toISOString(),
       // Rival demand only — the requester's own orders are excluded.
       demand: aggregateStandingDemand(openBuys as OpenBuyOrderLite[], profile.id),

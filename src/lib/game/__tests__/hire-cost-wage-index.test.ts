@@ -13,10 +13,15 @@
  * service-pricing's pool floor and mining's frontierSpotFloor postures).
  */
 import type { GameState } from '../types';
+import type { WorkforceState } from '../workforce';
 import { getHireCost, WORKER_MAP } from '../workforce';
 import {
   getHireWageIndex,
   getHireCostWithWageIndex,
+  getPayrollWageIndex,
+  getMonthlyPayrollForState,
+  getPayrollAdjustedSalary,
+  getMonthlyPayrollWithWageIndex,
   WAGE_INDEX_MAX,
 } from '../labor-market';
 import { isInFrontier } from '../frontier';
@@ -98,6 +103,41 @@ describe('getHireCostWithWageIndex — the REAL charged hire price', () => {
     const discountedBase = getHireCost('engineer', s, NOW); // voucher applied
     expect(discountedBase).toBe(Math.round(ENGINEER_BASE_HIRE * 0.5));
     expect(getHireCostWithWageIndex(s, 'engineer', NOW)).toBe(Math.round(discountedBase * 1.6));
+  });
+
+  it('Pass 9 — PAYROLL shield: getPayrollWageIndex mirrors getHireWageIndex exactly', () => {
+    // Frontier: hot index capped at neutral, slack index still discounts.
+    const hot = baseState({ frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000, laborMarket: laborMarket(1.6) });
+    expect(getPayrollWageIndex(hot, 'engineer', NOW)).toBe(1.0);
+    expect(getPayrollWageIndex(hot, 'engineer', NOW)).toBe(getHireWageIndex(hot, 'engineer', NOW));
+    const slack = baseState({ frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000, laborMarket: laborMarket(0.85) });
+    expect(getPayrollWageIndex(slack, 'engineer', NOW)).toBe(0.85);
+    // Graduated: full index, hot or slack.
+    const grad = baseState({ frontierStatus: 'graduated', laborMarket: laborMarket(1.6) });
+    expect(getPayrollWageIndex(grad, 'engineer', NOW)).toBe(1.6);
+  });
+
+  it('Pass 9 — getMonthlyPayrollForState: Frontier caps hot payroll at base; graduated pays in full', () => {
+    const wf: WorkforceState = { engineers: 10, scientists: 0, miners: 5, operators: 0 };
+    const salaryE = WORKER_MAP.get('engineer')!.salary;
+    const salaryM = WORKER_MAP.get('miner')!.salary;
+    const snap = { index: { engineer: 1.6, miner: 0.9 }, asOf: NOW };
+    // Frontier: engineer capped at 1.0, miner keeps its 0.9 discount.
+    const frontier = baseState({ frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000, laborMarket: snap });
+    expect(getMonthlyPayrollForState(wf, frontier, NOW))
+      .toBe(Math.round(10 * salaryE * 1.0 + 5 * salaryM * 0.9));
+    // Graduated: identical to the unshielded Wave-E5 payroll.
+    const grad = baseState({ frontierStatus: 'graduated', laborMarket: snap });
+    expect(getMonthlyPayrollForState(wf, grad, NOW))
+      .toBe(getMonthlyPayrollWithWageIndex(wf, snap, NOW));
+  });
+
+  it('Pass 9 — getPayrollAdjustedSalary shows what payroll charges (Frontier-capped)', () => {
+    const salaryE = WORKER_MAP.get('engineer')!.salary;
+    const frontier = baseState({ frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000, laborMarket: laborMarket(1.6) });
+    expect(getPayrollAdjustedSalary(frontier, 'engineer', NOW)).toBe(salaryE);
+    const grad = baseState({ frontierStatus: 'graduated', laborMarket: laborMarket(1.6) });
+    expect(getPayrollAdjustedSalary(grad, 'engineer', NOW)).toBe(Math.round(salaryE * 1.6));
   });
 
   it('S8 economics: rehire is no longer strictly dominant over retention', () => {

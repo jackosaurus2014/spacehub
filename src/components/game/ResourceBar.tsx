@@ -8,7 +8,7 @@ import { SERVICE_MAP } from '@/lib/game/services';
 import { getWorkforceBonuses } from '@/lib/game/workforce';
 // Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.6/§E5): the burn-rate estimate
 // should reflect the same wage-index-adjusted payroll the engine charges.
-import { getMonthlyPayrollWithWageIndex } from '@/lib/game/labor-market';
+import { getMonthlyPayrollForState } from '@/lib/game/labor-market';
 import { getResearchBonuses } from '@/lib/game/research-tree';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
 import { getActiveMultipliers } from '@/lib/game/random-events';
@@ -147,7 +147,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
     costs += def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyBonuses.costMultiplier * (1 - tierBonuses.maintenanceReduction);
   }
-  costs += getMonthlyPayrollWithWageIndex(workforce, state.laborMarket);
+  costs += getMonthlyPayrollForState(workforce, state); // Pass 9: Frontier-shielded
   for (const ship of (state.ships || [])) {
     if (!ship.isBuilt) continue;
     const shipDef = SHIP_MAP.get(ship.definitionId);

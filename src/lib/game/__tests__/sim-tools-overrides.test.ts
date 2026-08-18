@@ -54,8 +54,17 @@ function crashedSnapshot(): MarketSnapshot {
   return { prices, asOf: 0 };
 }
 
-describe('Pass 8 — laborSupplyDivisor (H2 override switch)', () => {
-  it('defaults off: divisor absent and divisor 1 produce identical histories', () => {
+describe('Pass 9 — LABOR_SUPPLY_BASE ships the Pass-8 ÷4 prescription EXACTLY', () => {
+  it('engineer 150, scientist 125, miner 175, operator 138, pilot 100, negotiator 75, security 100, medic 88', () => {
+    expect(LABOR_SUPPLY_BASE).toEqual({
+      engineer: 150, scientist: 125, miner: 175, operator: 138,
+      pilot: 100, negotiator: 75, security: 100, medic: 88,
+    });
+  });
+});
+
+describe('Pass 8/9 — laborSupplyDivisor (H2 sweep switch over the shipped base)', () => {
+  it('defaults off: divisor absent and divisor 1 produce identical histories (both = shipped ÷4 base)', () => {
     const a = corpWithHeads('c', 40);
     runWorld(newWorld([a], 0, null, { laborMarket: true }), 3);
     const b = corpWithHeads('c', 40);
@@ -65,26 +74,34 @@ describe('Pass 8 — laborSupplyDivisor (H2 override switch)', () => {
 
   it('divisor scales only the base supply — payroll matches computeWageIndex(effective, base/div)', () => {
     // 40 engineers at default trainingLevel 0.5 → effective 40 × (1 − 0.15) = 34.
-    // ÷5 supply: 600/5 = 120 (no buildings → zero crew quarters). Index = 34/120
-    // is below the 0.8 floor → clamped; use enough heads to leave the floor:
-    // 200 engineers → effective 170; 170/120 = 1.4167.
-    const p = corpWithHeads('c', 200);
+    // ÷5 supply of the SHIPPED base: 150/5 = 30 (no buildings → zero crew
+    // quarters). Index = 34/30 ≈ 1.1333 — inside the band, no clamp.
+    const p = corpWithHeads('c', 40);
     runWorld(newWorld([p], 0, null, { laborMarket: true, laborSupplyDivisor: 5 }), 1);
-    const expectedIdx = computeWageIndex(170, LABOR_SUPPLY_BASE.engineer / 5);
-    expect(expectedIdx).toBeCloseTo(170 / 120, 10);
+    const expectedIdx = computeWageIndex(34, LABOR_SUPPLY_BASE.engineer / 5);
+    expect(expectedIdx).toBeCloseTo(34 / 30, 10);
     const salary = WORKER_MAP.get('engineer')!.salary;
-    expect(p.history[0].payroll).toBe(Math.round(200 * salary * expectedIdx));
+    expect(p.history[0].payroll).toBe(Math.round(40 * salary * expectedIdx));
   });
 
-  it('same heads without the divisor stay on the 0.8 floor (the H2 dead-signal case)', () => {
+  it('Pass 9 alive-signal: a 200-engineer boom moves the index OFF the floor at the shipped base (the old 600 base kept this dead)', () => {
     const p = corpWithHeads('c', 200);
     runWorld(newWorld([p], 0, null, { laborMarket: true }), 1);
     const salary = WORKER_MAP.get('engineer')!.salary;
-    expect(p.history[0].payroll).toBe(Math.round(200 * salary * WAGE_INDEX_MIN));
+    const expectedIdx = computeWageIndex(170, LABOR_SUPPLY_BASE.engineer); // 170/150 ≈ 1.133
+    expect(expectedIdx).toBeGreaterThan(1.0);
+    expect(p.history[0].payroll).toBe(Math.round(200 * salary * expectedIdx));
+  });
+
+  it('small-world hiring still sits on the 0.8 floor (no newcomer wage squeeze from the ÷4)', () => {
+    const p = corpWithHeads('c', 40); // effective 34 / 150 = 0.227 → floor
+    runWorld(newWorld([p], 0, null, { laborMarket: true }), 1);
+    const salary = WORKER_MAP.get('engineer')!.salary;
+    expect(p.history[0].payroll).toBe(Math.round(40 * salary * WAGE_INDEX_MIN));
   });
 });
 
-describe('Pass 8 — glideSpotFloor (proposed graduate mining-spot shield)', () => {
+describe('Pass 8/9 — glideSpotFloor (graduate mining-spot shield, SHIPPED in mining-pricing.ts; this guards the harness mirror)', () => {
   const base = RESOURCE_MAP.get('lunar_water' as ResourceId)!.baseMarketPrice;
 
   it('defaults off: a glide-carrying miner with glideSpotFloor absent is unchanged by the new code path', () => {

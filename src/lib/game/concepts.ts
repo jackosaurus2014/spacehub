@@ -256,7 +256,7 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   'mothball': c({
     id: 'mothball', name: 'Mothball', icon: 'idle',
     short: 'Reversible pause: zero revenue, zero consumption, 25% maintenance',
-    body: 'A mothballed building earns nothing and draws no recipe inputs, but still pays 25% of its normal maintenance — parked, not abandoned. It also stops claiming demand-pool capacity, a visible supply withdrawal rivals can see in the market intelligence view. Reactivating charges a small spin-up fee and takes a game-month before revenue and consumption resume — the tool for riding out a market crash without bleeding full costs or scrapping the investment.',
+    body: 'A mothballed building earns nothing and draws no recipe inputs, but still pays 25% of its normal maintenance — parked, not abandoned. It also stops claiming demand-pool capacity, a visible supply withdrawal rivals can see in the market intelligence view. Reactivating charges a small spin-up fee and takes a game-month before revenue and consumption resume. Know when it pays: for a small corporation whose income depends on the paused buildings, riding out a crash or spreading into other markets usually beats mothballing — the pause suits larger, diversified operations that can afford to idle one arm while deposits recover.',
     related: ['decommission', 'supply-efficiency'],
   }),
   'decommission': c({
@@ -270,7 +270,7 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   'price-campaign': c({
     id: 'price-campaign', name: 'Price Campaign', icon: 'trending-down',
     short: 'Public, week-long dumping attack on one commodity market',
-    body: 'A corporation may pay a burned fee to declare a public price campaign on one resource: for 7 days that market\'s price stops mean-reverting and the NPC maker halves its buying — so real sell volume below spot can crash the price toward the band floor, cutting every price-linked miner\'s income. Counterplay: buy the dumped goods cheap, mothball marginal producers to ride it out, or simply out-wait the clock — sustaining a crash costs the attacker real margin every day. Frontier corporations\' input purchases are unaffected.',
+    body: 'A corporation may pay a burned fee — 15% of that market\'s weekly turnover — to declare a public price campaign on one resource: for 7 days that market\'s price stops mean-reverting and the NPC maker halves its buying — so real sell volume below spot can crash the price toward the band floor, cutting every price-linked miner\'s income. Counterplay: buy the dumped goods cheap, spread into other markets, or simply out-wait the clock — sustaining a crash costs the attacker real margin every day, and for smaller corporations riding it out or diversifying usually beats mothballing. Frontier corporations\' input purchases are unaffected, and fresh graduates keep a decaying spot-price shield through the glide window.',
     related: ['mean-reversion', 'mothball', 'cornering'],
   }),
   cornering: c({
@@ -288,7 +288,7 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   'wage-index-concept': c({
     id: 'wage-index-concept', name: 'Wage Index', icon: 'workforce',
     short: 'Server-wide pay multiplier per crew type (0.8×–1.6×)',
-    body: 'Each crew type\'s salary AND one-time hire cost (the 6-month signing bonus) multiply by a server-wide wage index driven by total hiring versus labor supply. Mass hiring booms (and successful poaching raids) push it up for everyone; building crew quarters grows the labor pool and relieves it. Training your own crew reduces your contribution to the pressure. Protected-Frontier corporations never pay above the base rate when hiring — a slack market still discounts for them, an overheated one doesn\'t bite until graduation.',
+    body: 'Each crew type\'s salary AND one-time hire cost (the 6-month signing bonus) multiply by a server-wide wage index driven by total hiring versus labor supply. Mass hiring booms (and successful poaching raids) push it up for everyone; building crew quarters grows the labor pool and relieves it. Training your own crew reduces your contribution to the pressure. Protected-Frontier corporations never pay above the base rate — for hiring or monthly payroll: a slack market still discounts for them, an overheated one doesn\'t bite until graduation.',
     related: ['talent-poaching'],
   }),
   'lane-toll': c({

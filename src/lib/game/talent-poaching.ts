@@ -32,6 +32,7 @@ import type { WorkerType } from './workforce';
 import { WORKER_MAP } from './workforce';
 import { WAGE_INDEX_MIN, WAGE_INDEX_MAX } from './labor-market';
 import { FRONTIER_DURATION_MS, FRONTIER_HARD_CAP_NET_WORTH } from './frontier';
+import { applyFeeIndex } from './fee-index';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -55,8 +56,21 @@ export const POACH_COUNTEROFFER_WINDOW_MS = 48 * 60 * 60 * 1000;
 export const POACH_COUNTEROFFER_MATCH_FRACTION = 0.75;
 
 /** Burned action fee per offer (espionage-style, never refunded — even a
- *  withdrawn or defeated offer cost something real). */
+ *  withdrawn or defeated offer cost something real). Balance Pass 9: the
+ *  CHARGED fee is this × the quarterly fee-index factor (fee-index.ts,
+ *  clamp(worldMedianMonthlyNet / $30M, 1, 50)) — sim-validated: factor 1
+ *  at relaunch (this $10M is correctly sized there), rising to ~×3.7 at
+ *  mid-game where the flat fee had become a rounding error. Use
+ *  computePoachActionFee — never this raw constant — at charge/display
+ *  sites. */
 export const POACH_ACTION_FEE = 10_000_000;
+
+/** The REAL charged/displayed poach action fee: base × fee-index factor.
+ *  Server routes pass getServerFeeIndexFactor(); UI passes
+ *  getFeeIndexFactor(state) — both fail-soft to 1. */
+export function computePoachActionFee(feeIndexFactor: number = 1): number {
+  return applyFeeIndex(POACH_ACTION_FEE, feeIndexFactor);
+}
 
 /** Per-(attacker, target) cooldown between offers — 30 real days. */
 export const POACH_TARGET_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;

@@ -16,7 +16,7 @@ import { buildCareerCrossoverLine } from '@/lib/game/career-crossover';
 // now (getHireCostWithWageIndex — base 6-month bonus × live index, Frontier
 // corps capped at neutral), so the button shows exactly what the hire
 // handler charges.
-import { getMonthlyPayrollWithWageIndex, getWageIndex, getWageAdjustedSalary, getHireCostWithWageIndex, getHireWageIndex, WAGE_INDEX_MAX, GUILD_STRIKE_WAGE_THRESHOLD } from '@/lib/game/labor-market';
+import { getMonthlyPayrollForState, getWageIndex, getPayrollAdjustedSalary, getHireCostWithWageIndex, getHireWageIndex, WAGE_INDEX_MAX, GUILD_STRIKE_WAGE_THRESHOLD } from '@/lib/game/labor-market';
 
 interface WorkforcePanelProps {
   state: GameState;
@@ -93,7 +93,8 @@ function CareerCrossoverFooter() {
 
 export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrainingBudget }: WorkforcePanelProps) {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
-  const payroll = getMonthlyPayrollWithWageIndex(workforce, state.laborMarket);
+  // Pass 9: Frontier-shielded payroll (matches what the tick charges).
+  const payroll = getMonthlyPayrollForState(workforce, state);
   const bonuses = getWorkforceBonuses(workforce);
   const totalWorkers =
     workforce.engineers + workforce.scientists + workforce.miners + workforce.operators
@@ -300,9 +301,11 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
             const canAfford = state.money >= hireCost;
             const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew, capabilityCrewQuarters);
             const canHire = canAfford && hireCheck.allowed;
-            // Wave E5 (§2.6): server-wide wage index for this crew type.
+            // Wave E5 (§2.6): server-wide wage index for this crew type
+            // (market badge shows the RAW index; salary shows the shielded
+            // figure payroll actually charges — Pass 9).
             const wageIndex = getWageIndex(state.laborMarket, worker.type as WorkerType);
-            const adjustedSalary = getWageAdjustedSalary(worker.type as WorkerType, state.laborMarket);
+            const adjustedSalary = getPayrollAdjustedSalary(state, worker.type as WorkerType);
             const wagePinned = wageIndex >= GUILD_STRIKE_WAGE_THRESHOLD;
             const wageHot = wageIndex >= 1.2;
 

@@ -31,6 +31,7 @@ import { WORKER_MAP } from './workforce';
 import { LOCATION_TO_ZONE } from './zone-influence';
 import { RESOURCE_MAP, type ResourceId } from './resources';
 import { isInFrontier } from './frontier';
+import { getFeeIndexFactor } from './fee-index';
 import type { CorneringAlertEntry } from './cornering-intel';
 
 // ─── Snapshot types ─────────────────────────────────────────────────────────
@@ -98,10 +99,14 @@ export const OFFENSE_SNAPSHOT_STALE_MS = 7 * 24 * 60 * 60 * 1000;
 
 export const FREIGHT_TOLL_MIN = 0.005;
 export const FREIGHT_TOLL_MAX = 0.02;
-/** Absolute per-zone-per-dispatch cap — a toll is a squeeze, not a wall. */
+/** Absolute per-zone-per-dispatch cap — a toll is a squeeze, not a wall.
+ *  Balance Pass 9: this cap (and the server credit cap below) scales by the
+ *  quarterly fee-index factor (fee-index.ts) so tolls stay a real squeeze
+ *  at mid-game economy scale — factor 1 at relaunch by design. */
 export const FREIGHT_TOLL_CAP_PER_DISPATCH = 2_000_000;
 /** Max toll the server will credit a governor per payer per sync (defense
- *  in depth against a forged payment payload). */
+ *  in depth against a forged payment payload). Pass 9: × fee-index factor,
+ *  server-recomputed in sync/route.ts. */
 export const FREIGHT_TOLL_SERVER_CREDIT_CAP_PER_SYNC = 10_000_000;
 
 export function clampTollPct(pct: number): number {
@@ -152,6 +157,11 @@ export function computeFreightTolls(
   const myGovernorZones = new Set(
     (state.zoneStandings || []).filter(z => z.isGovernor).map(z => z.zoneSlug),
   );
+  // Balance Pass 9: the per-dispatch cap scales by the quarterly fee-index
+  // factor (server-computed, sync-delivered — fail-soft 1). The toll PCT is
+  // untouched (it already scales with cargo value); only the fixed cap
+  // stops being an era-frozen constant.
+  const feeFactor = getFeeIndexFactor(state, nowMs);
 
   const zones = new Set<string>();
   const fromZone = LOCATION_TO_ZONE.get(from);
@@ -166,7 +176,7 @@ export function computeFreightTolls(
     const pct = clampTollPct(t.tollPct);
     if (pct <= 0) continue;
     const amount = Math.min(
-      FREIGHT_TOLL_CAP_PER_DISPATCH,
+      Math.round(FREIGHT_TOLL_CAP_PER_DISPATCH * feeFactor),
       Math.round(cargoValue * pct * (1 - treatyReduction)),
     );
     if (amount <= 0) continue;

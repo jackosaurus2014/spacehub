@@ -562,7 +562,7 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
             category: 'economic_attack',
             icon: 'trending-down',
             label: `Price war declared on ${resName}`,
-            detail: `${c.byCompanyName} is dumping ${resName} — spot won't mean-revert until ${formatHoursOrDays(Math.max(0, c.endsAtMs - nowMs))} from now, and price-linked mining income follows spot. Counterplay: buy the dumped goods cheap, mothball marginal miners to ride it out, or out-wait the campaign clock.`,
+            detail: `${c.byCompanyName} is dumping ${resName} — spot won't mean-revert until ${formatHoursOrDays(Math.max(0, c.endsAtMs - nowMs))} from now, and price-linked mining income follows spot. Counterplay: buy the dumped goods cheap, spread into other markets, or out-wait the campaign clock — riding it out usually beats mothballing for smaller corporations (the pause suits larger, diversified operations).`,
             severity: 'warning',
             atMs: c.endsAtMs,
             tab: 'market',

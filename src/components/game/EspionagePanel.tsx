@@ -13,6 +13,7 @@ import {
   getSecurityUpgradeCost,
   type EspionageActionType,
 } from '@/lib/game/espionage-system';
+import { getFeeIndexFactor } from '@/lib/game/fee-index';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -481,7 +482,9 @@ function OperationsTab({
             {(Object.keys(ESPIONAGE_ACTIONS) as EspionageActionType[]).map((actionType) => {
               const action = ESPIONAGE_ACTIONS[actionType];
               const isUnlocked = espState?.actions.unlockedActions.includes(actionType);
-              const cost = getActionCost(actionType, state.money > 0 ? state.money : 0);
+              // Pass 9: M5 intel products display the fee-indexed cost —
+              // the same factor the server charges (sync-delivered).
+              const cost = getActionCost(actionType, state.money > 0 ? state.money : 0, getFeeIndexFactor(state));
               const canAfford = state.money >= cost;
               const actionsLeft = espState?.actions.remaining ?? 0;
 

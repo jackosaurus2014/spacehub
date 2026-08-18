@@ -1,6 +1,14 @@
-// ─── Space Tycoon: Balance Pass 8 — dynamic competitive-tools campaign sim ──
-// docs/BALANCE.md "Pass 8". Founder directive: "Run a simulated game where
-// you test out the competitive tools and balance test them."
+// ─── Space Tycoon: Balance Pass 8/9 — dynamic competitive-tools campaign sim ─
+// docs/BALANCE.md "Pass 8" (findings + prescriptions) and "Pass 9"
+// (implementation acceptance). Founder directive: "Run a simulated game
+// where you test out the competitive tools and balance test them."
+// PASS 9 NOTE: the Pass-8 override switches are now redundant with engine
+// defaults — LABOR_SUPPLY_BASE ships ÷4, the campaign fee ships
+// market-keyed (computeMarketKeyedCampaignFee), the mining-spot glide ships
+// in mining-pricing.ts, and the poach fee ships fee-indexed
+// (computePoachActionFee × computeFeeIndexFactor). Default runs therefore
+// exercise the REAL shipped constants; overrides only exist for §6
+// band-verification sweeps.
 //
 // Prior passes tested each offense lever in ISOLATION (one duel at a time,
 // static postures — sim-pvp.ts S7-S11 analytic ledgers). This runner is the
@@ -54,15 +62,17 @@ import { BUILDING_MAP } from '../src/lib/game/buildings';
 import { RESOURCE_MAP } from '../src/lib/game/resources';
 import type { ResourceId } from '../src/lib/game/resources';
 import {
-  computeCampaignFee, PRICE_CAMPAIGN_DURATION_MS, PRICE_CAMPAIGN_COOLDOWN_MS,
-  PRICE_CAMPAIGN_MIN_FEE, PRICE_CAMPAIGN_MAX_FEE, PRICE_CAMPAIGN_FEE_REFERENCE_UNITS,
-  PRICE_CAMPAIGN_MIN_INVENTORY, PRICE_CAMPAIGN_MIN_NET_WORTH,
+  computeCampaignFee, computeMarketKeyedCampaignFee, computeCampaignMinInventory,
+  PRICE_CAMPAIGN_DURATION_MS, PRICE_CAMPAIGN_COOLDOWN_MS,
+  PRICE_CAMPAIGN_MIN_FEE, PRICE_CAMPAIGN_MAX_FEE,
+  PRICE_CAMPAIGN_MIN_NET_WORTH,
 } from '../src/lib/game/price-campaigns';
 import {
-  computeSigningBonus, computeRetentionCost, maxPoachableCount,
-  POACH_ACTION_FEE, POACH_TARGET_COOLDOWN_MS, POACH_MIN_NET_WORTH,
+  computeSigningBonus, computeRetentionCost, maxPoachableCount, computePoachActionFee,
+  POACH_TARGET_COOLDOWN_MS, POACH_MIN_NET_WORTH,
   POACH_WAGE_BUMP_PER_CREW,
 } from '../src/lib/game/talent-poaching';
+import { computeFeeIndexFactor } from '../src/lib/game/fee-index';
 import {
   computeLaborAggregates, computeWageIndex, sumCrewQuarters,
   LABOR_SUPPLY_BASE, LABOR_SUPPLY_PER_QUARTERS, WAGE_INDEX_MIN, WAGE_INDEX_MAX,
@@ -246,24 +256,22 @@ const ERA_B_RESEARCH_MULT = 2.0;  // engine cap (formulas.ts revenueMultiplier)
 // ─── Scenario config ────────────────────────────────────────────────────────
 
 interface OverrideConfig {
-  /** H1 candidate: fee = clamp(max(feePctNW × attacker book NW,
-   *  base × FEE_FLOOR_UNITS), $25M, $5B); depth purchased =
-   *  0.7 × min(1, feePaid / computeCampaignFee(base)) — the campaign's pin
-   *  floor is base × (1 − depth). Absent = shipped constants (full depth,
-   *  resource-keyed fee). */
+  /** REFUTED Pass-5 shape, kept for the §6b comparison row: fee =
+   *  clamp(max(feePctNW × attacker book NW, base × FEE_FLOOR_UNITS), $25M,
+   *  $5B); depth purchased = 0.7 × min(1, feePaid / computeCampaignFee(base))
+   *  — the campaign's pin floor is base × (1 − depth). */
   campaignWealthFee?: { feePctNW: number; feeFloorUnits: number };
-  /** H1 candidate: poach action fee × clamp(worldMedianMonthlyNet /
-   *  $30M, 1, 50) — the Pass-5 "quarterly median-income factor". */
-  poachFeeIncomeIndexed?: boolean;
-  /** Pass-8 candidate (found in this pass — see §6b): fee =
-   *  clamp(fraction × trailing-month world production value of the resource
-   *  × the 28-game-month window, $25M, $5B), FULL depth retained. Keys the
-   *  fee to the MARKET'S size instead of the attacker's wallet. */
+  /** Pass 9: SHIPPED default is the market-keyed fee at the real
+   *  PRICE_CAMPAIGN_FEE_TURNOVER_FRACTION (computeMarketKeyedCampaignFee).
+   *  This override swaps in an alternate fraction for the §6b band sweep. */
   campaignMarketFee?: { fraction: number };
-  /** Pass-8 proposed shield: extend the graduation glide to the mining spot
-   *  floor for the glide-carrying graduate (harness glideSpotFloor opt). */
+  /** Pass 9: the graduation mining-spot glide is SHIPPED (default ON for
+   *  glide-carrying players — mining-pricing.ts graduationGlideFraction).
+   *  Set false to measure the without-shield world (§6b comparison row). */
   gradSpotFloorGlide?: boolean;
-  /** H2 candidate: LABOR_SUPPLY_BASE ÷ divisor (harness world switch). */
+  /** LABOR_SUPPLY_BASE ÷ divisor (harness world switch). Pass 9: the ÷4 is
+   *  SHIPPED into LABOR_SUPPLY_BASE itself — absent/1 = the real engine
+   *  constants; the §6a sweep divides the NEW (already-÷4) base further. */
   laborSupplyDivisor?: number;
 }
 
@@ -389,7 +397,10 @@ function runScenario(cfg: ScenarioConfig): ScenarioResult {
     maxBuildsPerMonth: r.maxBuilds,
     headcount: { ...r.headcount },
     graduationGlide: r.glide ? { startMonth: 0, glideMonths: GLIDE_MONTHS } : undefined,
-    glideSpotFloor: r.glide && ov.gradSpotFloorGlide ? true : undefined,
+    // Pass 9: the mining-spot glide SHIPPED — default ON for glide players
+    // (matches game-engine.ts/away-operations.ts graduationGlideFraction);
+    // gradSpotFloorGlide:false measures the without-shield world.
+    glideSpotFloor: r.glide && ov.gradSpotFloorGlide !== false ? true : undefined,
   }));
   for (let i = 0; i < popCount; i++) {
     players.push(newPlayer(`pop-${i + 1}`, 5_000_000_000, () => [], {
@@ -446,16 +457,24 @@ function runScenario(cfg: ScenarioConfig): ScenarioResult {
 
   const spotOf = (res: string): number => world.spotSnapshot?.prices?.[res] ?? RESOURCE_MAP.get(res as ResourceId)!.baseMarketPrice;
 
-  /** Pass-8 market-keyed fee candidate: fraction × the market's window
-   *  turnover (last-month world production of the resource × spot × the
-   *  28-game-month window), clamped to the shipped min and a $5B cap. */
-  function marketKeyedFee(fraction: number): number {
-    const spot = spotOf(CAMPAIGN_RES);
+  /** The market's trailing-window turnover estimator — last-month world
+   *  production of the resource × spot × the 28-game-month (7-real-day)
+   *  window. Mirrors the server telemetry (offense-server.ts
+   *  getCampaignMarketTelemetry) the live declare route reads. */
+  function windowTurnoverOf(res: string): { turnover: number; windowUnits: number } {
+    const spot = spotOf(res);
     let worldUnits = 0;
     for (const p of world.players) {
-      worldUnits += p.history[p.history.length - 1]?.flows?.mined?.[CAMPAIGN_RES] || 0;
+      worldUnits += p.history[p.history.length - 1]?.flows?.mined?.[res] || 0;
     }
-    const turnover = worldUnits * spot * CAMPAIGN_WINDOW_MONTHS;
+    const windowUnits = worldUnits * CAMPAIGN_WINDOW_MONTHS;
+    return { turnover: windowUnits * spot, windowUnits };
+  }
+
+  /** Pass 9: the SHIPPED market-keyed fee (real helper), or an alternate
+   *  fraction for the §6b band sweep. */
+  function marketKeyedFee(fraction: number): number {
+    const { turnover } = windowTurnoverOf(CAMPAIGN_RES);
     const raw = Math.round(fraction * turnover);
     return Math.max(PRICE_CAMPAIGN_MIN_FEE, Math.min(5_000_000_000, raw));
   }
@@ -467,11 +486,15 @@ function runScenario(cfg: ScenarioConfig): ScenarioResult {
   function evaluateCampaign(who: SimPlayer, month: number, coolUntil: number): { fire: boolean; ratio: number; fee: number; note: string } {
     const nw = bookNetWorth(who);
     const spot = spotOf(CAMPAIGN_RES);
+    // Pass 9: the SHIPPED default fee is the real market-keyed helper
+    // (computeMarketKeyedCampaignFee at the shipped 0.15 fraction) over the
+    // sim's window-turnover estimator — the harness reads the engine
+    // constants, no override needed.
     const fee = ov.campaignMarketFee
       ? marketKeyedFee(ov.campaignMarketFee.fraction)
       : ov.campaignWealthFee
         ? overrideCampaignFee(ov.campaignWealthFee, nw, base)
-        : computeCampaignFee(base);
+        : computeMarketKeyedCampaignFee(windowTurnoverOf(CAMPAIGN_RES).turnover);
     const depth = ov.campaignWealthFee ? purchasedDepth(fee, base) : 0.7;
     const pinFloor = Math.round(base * (1 - depth));
     let rivalUnits = 0, ownUnits = 0;
@@ -491,14 +514,25 @@ function runScenario(cfg: ScenarioConfig): ScenarioResult {
     const worldFlowHalfWindow = (rivalUnits + ownUnits) * CAMPAIGN_WINDOW_MONTHS * 0.5;
     const selfDumpUnits = Math.max(0, ammoUnits - worldFlowHalfWindow);
     const marginSacrifice = selfDumpUnits * Math.max(0, spot - (spot + pinFloor) / 2);
-    const minInv = PRICE_CAMPAIGN_MIN_INVENTORY;
+    // Pass 9: scaled ammunition gate (real helper — 10% of window production).
+    const minInv = computeCampaignMinInventory(windowTurnoverOf(CAMPAIGN_RES).windowUnits);
     const ammoShortfall = Math.max(0, minInv - (who.resources[CAMPAIGN_RES] || 0));
-    const ammoCost = ammoShortfall * spot * INPUT_BUY_MULT;
+    // Cash needed up front to satisfy the gate (affordability check below).
+    const ammoOutlay = ammoShortfall * spot * INPUT_BUY_MULT;
+    // DECISION cost of the gate: the ammunition ROUND-TRIP loss, not the
+    // full purchase. The bought units stay in inventory and the measured
+    // twin-diff world recovers them through the normal leftover-sale
+    // channel (worst case: sold at the average pin price during the
+    // window). With the old 50-unit gate the distinction was ~$2.6M noise;
+    // at the Pass-9 scaled gate (10% of window production) expensing the
+    // full outlay would double-count against the very accounting the crush
+    // ratio is measured by — the model must charge what the world charges.
+    const ammoCost = ammoShortfall * Math.max(0, spot * INPUT_BUY_MULT - ((spot + pinFloor) / 2) * OUTPUT_SELL_MULT);
     const totalCost = fee + selfDamage + marginSacrifice + ammoCost;
     const ratio = totalCost > 0 ? expRivalDamage / totalCost : 0;
     const gates =
       nw >= PRICE_CAMPAIGN_MIN_NET_WORTH &&
-      who.money >= fee + ammoCost &&
+      who.money >= fee + ammoOutlay &&
       month >= coolUntil &&
       (!campaignRef.cur || campaignRef.cur.by !== who.name);
     const note = `nw ${fm(nw)} fee ${fm(fee)} depth ${(depth * 100).toFixed(0)}% expRival ${fm(expRivalDamage)} self ${fm(selfDamage)} margin ${fm(marginSacrifice)}`;
@@ -510,7 +544,8 @@ function runScenario(cfg: ScenarioConfig): ScenarioResult {
     const nw = bookNetWorth(who);
     const depth = ov.campaignWealthFee ? purchasedDepth(fee, base) : 0.7;
     const pinFloor = Math.round(base * (1 - depth));
-    const ammoShortfall = Math.max(0, PRICE_CAMPAIGN_MIN_INVENTORY - (who.resources[CAMPAIGN_RES] || 0));
+    const minInv = computeCampaignMinInventory(windowTurnoverOf(CAMPAIGN_RES).windowUnits); // Pass 9
+    const ammoShortfall = Math.max(0, minInv - (who.resources[CAMPAIGN_RES] || 0));
     const ammoCost = ammoShortfall * spot * INPUT_BUY_MULT;
     if (ammoShortfall > 0) {
       chargeOob(who, ammoCost);
@@ -534,7 +569,7 @@ function runScenario(cfg: ScenarioConfig): ScenarioResult {
   function evaluatePoach(who: SimPlayer, target: SimPlayer, month: number, idx: number): { fire: boolean; ratio: number; note: string; n: number; bonus: number; fee: number } {
     const targetEng = target.headcount?.engineer || 0;
     const n = maxPoachableCount(targetEng);
-    const fee = ov.poachFeeIncomeIndexed ? indexedPoachFee() : POACH_ACTION_FEE;
+    const fee = indexedPoachFee(); // Pass 9: fee-index factor is SHIPPED (factor 1 at relaunch medians)
     if (n <= 0) return { fire: false, ratio: 0, note: `target below min headcount (${targetEng})`, n, bonus: 0, fee };
     const bonus = computeSigningBonus('engineer', n, idx);
     const myRev = who.history[who.history.length - 1]?.revenue || 0;
@@ -556,14 +591,14 @@ function runScenario(cfg: ScenarioConfig): ScenarioResult {
   }
 
   function indexedPoachFee(): number {
-    // Pass-5 H1 proposal: fees × the published world median-income factor.
+    // Pass 9 SHIPPED mechanism (real helpers): fee × the quarterly
+    // fee-index factor over the world median monthly net.
     const nets = world.players
       .filter(p => !p.name.startsWith('pop-'))
       .map(p => p.history[p.history.length - 1]?.net || 0)
       .sort((a, b) => a - b);
     const median = nets.length ? nets[Math.floor(nets.length / 2)] : 0;
-    const factor = Math.max(1, Math.min(50, median / 30_000_000));
-    return Math.round(POACH_ACTION_FEE * factor);
+    return computePoachActionFee(computeFeeIndexFactor(median));
   }
 
   function executePoach(who: SimPlayer, target: SimPlayer, month: number, n: number, bonus: number, fee: number, idx: number): void {
@@ -777,7 +812,7 @@ function medianNonPopNet(r: ScenarioResult, month: number): number {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-console.log('# Balance Pass 8 — dynamic competitive-tools campaign (twin-scenario differencing, real engine constants)\n');
+console.log('# Balance Pass 9 acceptance — dynamic competitive-tools campaign (twin-scenario differencing, SHIPPED engine constants)\n');
 console.log(`World: ${MONTHS} game-months (${MONTHS / 4} real days), all realism switches on (npcSaleCaps+contended FIFO, laborMarket, dynamicSpot, constructionMaterials, contractOutlet 5/day). Campaign resource: ${CAMPAIGN_RES}. One campaign window = ${CAMPAIGN_WINDOW_MONTHS} game-months; cooldown ${CAMPAIGN_COOLDOWN_MONTHS}; poach per-target cooldown ${POACH_COOLDOWN_MONTHS}. Era A pop ${ERA_A_POP + ERA_A.length} corps; era B pop ${ERA_B_POP + ERA_B.length}.\n`);
 
 // ─── §0 Coverage ────────────────────────────────────────────────────────────
@@ -825,7 +860,8 @@ for (const era of ['A', 'B'] as const) {
     })));
   const med23 = medianNonPopNet(baseline, CUT_EARLY);
   const med95 = medianNonPopNet(baseline, MONTHS - 1);
-  console.log(`\nMedian monthly net (non-pop): ${fm(med23)} @ mo ${CUT_EARLY}, ${fm(med95)} @ mo ${MONTHS - 1}. Campaign fee (${CAMPAIGN_RES}) = ${fm(computeCampaignFee(RESOURCE_MAP.get(CAMPAIGN_RES as ResourceId)!.baseMarketPrice))} = ${(computeCampaignFee(50_000) / Math.max(1, med23)).toFixed(1)}× median monthly net at mo ${CUT_EARLY}. Poach fee ${fm(POACH_ACTION_FEE)} = ${(POACH_ACTION_FEE / Math.max(1, med23)).toFixed(1)}×.`);
+  const poachFee23 = computePoachActionFee(computeFeeIndexFactor(med23));
+  console.log(`\nMedian monthly net (non-pop): ${fm(med23)} @ mo ${CUT_EARLY}, ${fm(med95)} @ mo ${MONTHS - 1}. Campaign fee (${CAMPAIGN_RES}) is MARKET-KEYED (Pass 9): 15% of window turnover, floor ${fm(PRICE_CAMPAIGN_MIN_FEE)} / cap ${fm(PRICE_CAMPAIGN_MAX_FEE)} (legacy base-price fee would have been ${fm(computeCampaignFee(RESOURCE_MAP.get(CAMPAIGN_RES as ResourceId)!.baseMarketPrice))}). Poach fee at this median: ${fm(poachFee23)} (fee-index factor ${computeFeeIndexFactor(med23).toFixed(2)}) = ${(poachFee23 / Math.max(1, med23)).toFixed(1)}× median monthly net.`);
 
   // §1b Firing rates under current constants.
   console.log('\n## §1b Firing rate under CURRENT constants (policy run: fire when rational-per-model)\n');
@@ -913,7 +949,7 @@ for (const era of ['A', 'B'] as const) {
 
     // §6a H2 threshold sweep: analytic through the real aggregate math,
     // plus in-world index trajectories per divisor at this world's 26 corps.
-    console.log('### §6a H2 — corp-count thresholds for the wage index (rational-cap corp = 10 eng, effective 8.5 after training mitigation; no quarters)\n');
+    console.log('### §6a H2 — corp-count thresholds for the wage index (rational-cap corp = 10 eng, effective 8.5 after training mitigation; no quarters). NOTE (Pass 9): LABOR_SUPPLY_BASE already ships the Pass-8 ÷4 — the ÷1 row IS the shipped engine; further divisors are diagnostic only.\n');
     {
       const sweep: (string | number)[][] = [];
       for (const divisor of [1, 2, 3, 4, 5, 8]) {
@@ -941,18 +977,21 @@ for (const era of ['A', 'B'] as const) {
     }
 
     // §6b H1 sweep: three fee families, policy runs, crush ratios.
-    console.log('\n### §6b H1 — campaign fee override sweep (policy runs, H2 ÷4 + income-indexed poach fee active in all rows)\n');
+    console.log('\n### §6b H1 — campaign fee band sweep (policy runs; all rows run the shipped ÷4 base + fee-indexed poach fee)\n');
     console.log('Fee families: `wealth` = clamp(pct × attacker NW, $25M+, $5B) buying proportional DEPTH (Pass-5 shape); `market` = fraction × the resource\'s 28-game-month window turnover at FULL depth (Pass-8 candidate). Crush ratio = attacker all-in ÷ graduate window damage (best counterplay = ride-out per §3); requirement ≥ 1.5 : 1.\n');
     const h1rows: (string | number)[][] = [];
+    // Pass 9: {} = the SHIPPED engine defaults (market-keyed fee at the real
+    // 0.15 fraction, spot-floor glide ON, fee-indexed poach fee, ÷4 labor
+    // base) — the Pass-8 overrides are redundant with defaults now. The
+    // sweep rows vary ONE dimension at a time for band verification.
     const sweepCases: { label: string; ovr: OverrideConfig }[] = [
-      { label: 'current constants (reference)', ovr: { poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
-      { label: 'wealth 5% NW + depth', ovr: { campaignWealthFee: { feePctNW: 0.05, feeFloorUnits: 500 }, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
-      { label: 'market 10%', ovr: { campaignMarketFee: { fraction: 0.10 }, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
-      { label: 'market 15%', ovr: { campaignMarketFee: { fraction: 0.15 }, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
-      { label: 'market 20%', ovr: { campaignMarketFee: { fraction: 0.20 }, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
-      { label: 'market 25%', ovr: { campaignMarketFee: { fraction: 0.25 }, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
-      { label: 'market 40%', ovr: { campaignMarketFee: { fraction: 0.40 }, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
-      { label: 'market 15% + graduate spot-floor glide', ovr: { campaignMarketFee: { fraction: 0.15 }, gradSpotFloorGlide: true, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 } },
+      { label: 'SHIPPED defaults (market 15% + spot glide)', ovr: {} },
+      { label: 'shipped minus spot glide', ovr: { gradSpotFloorGlide: false } },
+      { label: 'legacy wealth 5% NW + depth (refuted shape)', ovr: { campaignWealthFee: { feePctNW: 0.05, feeFloorUnits: 500 } } },
+      { label: 'market 10%', ovr: { campaignMarketFee: { fraction: 0.10 } } },
+      { label: 'market 20%', ovr: { campaignMarketFee: { fraction: 0.20 } } },
+      { label: 'market 25%', ovr: { campaignMarketFee: { fraction: 0.25 } } },
+      { label: 'market 40% (out of band)', ovr: { campaignMarketFee: { fraction: 0.40 } } },
     ];
     for (const { label, ovr } of sweepCases) {
       const oBase = runScenario({ era, campaign: null, poach: 'policy', defenderPolicy: 'rideout', defenderPoachResponse: 'auto', opportunistTrades: false, overrides: ovr });
@@ -987,27 +1026,25 @@ for (const era of ['A', 'B'] as const) {
     }
     console.log(mdTable(['fee schedule', 'fee paid', 'depth', 'campaigns fired', 'best model ratio', 'poaches', 'attacker all-in (measured)', 'defender window damage', 'graduate window damage', 'crush ratio (≥1.5 req)'], h1rows));
 
-    // §6c Shields + newcomer posture under the recommended center.
-    console.log('\n### §6c Shields under the recommended center (market 15% + grad spot-floor glide + H2 ÷4 + income-indexed poach fee)\n');
-    const ovrC: OverrideConfig = { campaignMarketFee: { fraction: 0.15 }, gradSpotFloorGlide: true, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 };
-    const shBase = runScenario({ era, campaign: null, poach: null, defenderPolicy: 'rideout', defenderPoachResponse: 'auto', opportunistTrades: false, overrides: ovrC });
+    // §6c Shields + newcomer posture under the SHIPPED defaults.
+    console.log('\n### §6c Shields under the SHIPPED defaults (Pass 9: market-keyed fee + spot glide + ÷4 base + fee-indexed poach — all real constants now)\n');
+    const shBase = runScenario({ era, campaign: null, poach: null, defenderPolicy: 'rideout', defenderPoachResponse: 'auto', opportunistTrades: false });
     const gBase = playerRow(baseline, 'graduate');
     const gOvr = playerRow(shBase, 'graduate');
-    console.log(`- graduate net/mo @ mo ${CUT_EARLY}: current world ${fm(gBase.history[CUT_EARLY]?.net ?? 0)} vs override world ${fm(gOvr.history[CUT_EARLY]?.net ?? 0)} — any delta is the H2 payroll term on a 4-engineer corp (the demand-pool glide itself is untouched by every override).`);
-    console.log(`- graduate book NW @ mo ${MONTHS - 1}: ${fm(gBase.history[MONTHS - 1]?.netWorthEst ?? 0)} current vs ${fm(gOvr.history[MONTHS - 1]?.netWorthEst ?? 0)} override.`);
+    console.log(`- graduate net/mo @ mo ${CUT_EARLY}: baseline (= shipped, no offense) ${fm(gBase.history[CUT_EARLY]?.net ?? 0)} vs no-offense re-run ${fm(gOvr.history[CUT_EARLY]?.net ?? 0)} — should match (both worlds run the shipped constants; the demand-pool glide is untouched by this pass).`);
+    console.log(`- graduate book NW @ mo ${MONTHS - 1}: ${fm(gBase.history[MONTHS - 1]?.netWorthEst ?? 0)} vs ${fm(gOvr.history[MONTHS - 1]?.netWorthEst ?? 0)}.`);
     console.log(`- poach reach: graduate holds 4 engineers → maxPoachable ${maxPoachableCount(4)} head/offer; Frontier corps remain unreachable by construction (isServerFrontierProtected gates both directions — all sim corps are post-Frontier, which is the honest relaunch case).`);
     const idxOv = Math.max(...shBase.engineerIndexByMonth);
-    console.log(`- H2 in-world at ${shBase.players.length} corps with ÷4: engineer index max ${idxOv.toFixed(3)} vs floor ${WAGE_INDEX_MIN} — signal ${idxOv > WAGE_INDEX_MIN + 1e-9 ? 'ALIVE' : 'dead'}.`);
+    console.log(`- H2 in-world at ${shBase.players.length} corps (shipped ÷4 base): engineer index max ${idxOv.toFixed(3)} vs floor ${WAGE_INDEX_MIN} — signal ${idxOv > WAGE_INDEX_MIN + 1e-9 ? 'ALIVE' : 'dead'}.`);
   }
 
   if (era === 'B') {
     // §7 The recommended era-A center re-validated at MID-GAME scale — a
     // market-keyed fee gets CHEAPER than the current $250M for a whale, so
     // the mid-game griefing check must hold too.
-    console.log('\n## §7 Recommended center at era B (market 15% + grad spot-floor glide + ÷4 + income-indexed poach fee)\n');
-    const ovrB: OverrideConfig = { campaignMarketFee: { fraction: 0.15 }, gradSpotFloorGlide: true, poachFeeIncomeIndexed: true, laborSupplyDivisor: 4 };
-    const bBase = runScenario({ era, campaign: null, poach: 'policy', defenderPolicy: 'rideout', defenderPoachResponse: 'auto', opportunistTrades: false, overrides: ovrB });
-    const bPol = runScenario({ era, campaign: 'policy', poach: 'policy', defenderPolicy: 'rideout', defenderPoachResponse: 'auto', opportunistTrades: true, overrides: ovrB });
+    console.log('\n## §7 SHIPPED defaults at era B (Pass 9 real constants — mid-game griefing check)\n');
+    const bBase = runScenario({ era, campaign: null, poach: 'policy', defenderPolicy: 'rideout', defenderPoachResponse: 'auto', opportunistTrades: false });
+    const bPol = runScenario({ era, campaign: 'policy', poach: 'policy', defenderPolicy: 'rideout', defenderPoachResponse: 'auto', opportunistTrades: true });
     const cFires = bPol.firingLog.filter(r => r.tool === 'price-campaign' && r.fired);
     const pFires = bPol.firingLog.filter(r => r.tool === 'talent-poach' && r.fired);
     const bestRatio = bPol.firingLog.filter(r => r.tool === 'price-campaign').reduce((a, r) => Math.max(a, r.ratio), 0);

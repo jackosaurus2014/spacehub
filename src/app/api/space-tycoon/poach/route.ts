@@ -7,9 +7,10 @@ import { WORKER_MAP, type WorkerType } from '@/lib/game/workforce';
 import {
   maxPoachableCount, computeSigningBonus, computeRetentionCost,
   computePoachDetectionChance, applyPoachWageBump, isServerFrontierProtected,
-  POACH_ACTION_FEE, POACH_COUNTEROFFER_WINDOW_MS, POACH_TARGET_COOLDOWN_MS,
+  computePoachActionFee, POACH_COUNTEROFFER_WINDOW_MS, POACH_TARGET_COOLDOWN_MS,
   POACH_MIN_NET_WORTH, GUILD_ARBITRATION_TECH_ID,
 } from '@/lib/game/talent-poaching';
+import { getServerFeeIndexFactor } from '@/lib/game/fee-index-server';
 import { resolveExpiredPoachOffers, freeRetentionUsed } from '@/lib/game/offense-server';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
@@ -167,10 +168,14 @@ export async function POST(request: NextRequest) {
       } catch { /* neutral fallback */ }
 
       const signingBonus = computeSigningBonus(crewType, count, wageIndex);
-      const totalCost = signingBonus + POACH_ACTION_FEE;
+      // Balance Pass 9: action fee × the quarterly fee-index factor
+      // (server-computed; factor 1 at relaunch by design).
+      const feeFactor = await getServerFeeIndexFactor().catch(() => 1);
+      const actionFee = computePoachActionFee(feeFactor);
+      const totalCost = signingBonus + actionFee;
       if (profile.money < totalCost) {
         return NextResponse.json({
-          error: `Insufficient funds: signing bonuses $${(signingBonus / 1_000_000).toFixed(1)}M (escrowed) + $${(POACH_ACTION_FEE / 1_000_000).toFixed(0)}M action fee.`,
+          error: `Insufficient funds: signing bonuses $${(signingBonus / 1_000_000).toFixed(1)}M (escrowed) + $${(actionFee / 1_000_000).toFixed(0)}M action fee.`,
         }, { status: 400 });
       }
 
@@ -189,7 +194,7 @@ export async function POST(request: NextRequest) {
       const offer = await prisma.$transaction(async (tx) => {
         await tx.gameProfile.update({
           where: { id: profile.id },
-          data: { money: { decrement: totalCost }, totalSpent: { increment: POACH_ACTION_FEE } },
+          data: { money: { decrement: totalCost }, totalSpent: { increment: actionFee } },
         });
         const created = await tx.poachOffer.create({
           data: {
@@ -199,7 +204,7 @@ export async function POST(request: NextRequest) {
             count,
             signingBonusTotal: signingBonus,
             retentionCost: computeRetentionCost(signingBonus),
-            actionFee: POACH_ACTION_FEE,
+            actionFee,
             wageIndexAtOffer: wageIndex,
             detected,
             status: 'pending',
@@ -212,7 +217,7 @@ export async function POST(request: NextRequest) {
             reason: 'poach_offer_escrow', refId: created.id,
           });
           await recordLedger(tx, {
-            profileId: profile.id, moneyDelta: -POACH_ACTION_FEE,
+            profileId: profile.id, moneyDelta: -actionFee,
             reason: 'poach_action_fee', refId: created.id,
           });
         }
@@ -239,7 +244,7 @@ export async function POST(request: NextRequest) {
         success: true,
         offerId: offer.id,
         signingBonusEscrowed: signingBonus,
-        actionFee: POACH_ACTION_FEE,
+        actionFee,
         detected,
         respondBy: offer.respondBy.toISOString(),
       });

@@ -223,7 +223,11 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Cost check ──
-    const cost = getActionCost(validActionType, attackerGameProfile.netWorth);
+    // Balance Pass 9: the M5 intel products carry the quarterly fee-index
+    // factor (server-computed, fail-soft 1 — factor 1 at relaunch by design).
+    const { getServerFeeIndexFactor } = await import('@/lib/game/fee-index-server');
+    const feeIndexFactor = await getServerFeeIndexFactor().catch(() => 1);
+    const cost = getActionCost(validActionType, attackerGameProfile.netWorth, feeIndexFactor);
     if (attackerGameProfile.money < cost) {
       return NextResponse.json({
         error: `Insufficient funds. Cost: $${(cost / 1_000_000).toFixed(1)}M. Available: $${(attackerGameProfile.money / 1_000_000).toFixed(1)}M.`,
@@ -284,6 +288,7 @@ export async function POST(request: NextRequest) {
       targetEspData,
       targetData,
       attackerGameProfile.id,
+      feeIndexFactor, // Pass 9: keep the result's cost identical to the charged cost
     );
 
     // Wave E6 (docs/ECONOMY_PVP_2026-08.md §E6): market_spy's recent-orders

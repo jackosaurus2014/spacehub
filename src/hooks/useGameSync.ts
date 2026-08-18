@@ -266,7 +266,7 @@ export function useGameSync(
           data.allianceBonuses || data.zoneStandings || data.espionagePerks || data.leagueBoost
           || data.mentorshipBonuses || data.demandPools
           || data.extractionPressure || data.laborMarket || data.laneBonuses
-          || data.megaProjectBonuses || data.offense || data.equity
+          || data.megaProjectBonuses || data.offense || data.equity || data.feeIndex
         ) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
@@ -284,6 +284,9 @@ export function useGameSync(
             extractionPressure: data.extractionPressure || undefined,
             laborMarket: data.laborMarket || undefined,
             laneBonuses: data.laneBonuses || undefined,
+            // Balance Pass 9: the quarterly offense-fee-index snapshot rides
+            // the same hop (clamped in applyServerEffectsToState).
+            feeIndex: data.feeIndex || undefined,
             // Wave E7: world-shared cooperative mega-project bonus rides the
             // same hop.
             megaProjectBonuses: data.megaProjectBonuses || null,

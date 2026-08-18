@@ -25,6 +25,98 @@ import {
   applyPoachWageBump, GUILD_ARBITRATION_TECH_ID, POACH_FREE_RETENTION_WINDOW_MS,
 } from './talent-poaching';
 import { detectCorneringAlerts, CORNERING_WINDOW_DAYS, type OpenBuyOrderLite } from './cornering-intel';
+import { readAccumulated, getExtractionSensitivity, EXTRACTION_DECAY_PER_DAY } from './extraction-pressure';
+import { computeSpotPrice } from './spot-price';
+import { RESOURCE_MAP, type ResourceId } from './resources';
+
+// ─── Balance Pass 9: campaign market telemetry (docs/BALANCE.md "Pass 9") ───
+// The market-keyed campaign fee (price-campaigns.ts
+// computeMarketKeyedCampaignFee) and the scaled min-inventory gate both key
+// off the target market's trailing-7-real-day window. Two real telemetry
+// sources, best of both taken (fail-soft to 0 individually):
+//
+//   PRODUCTION — LocationExtraction accumulators (E5). `accumulated` is
+//   rarity-weighted mined units decaying 10%/day, so at steady state the
+//   decayed sum equals 1/(1−0.9) = 10 days' worth of (units × sensitivity).
+//   7-day-equivalent units = Σ decayed ÷ sensitivity × 7 × (1 − decay).
+//   This matches Pass 8's sim definition of window turnover (world mined
+//   units × spot × the 28-game-month window).
+//
+//   TRADE — TradeStatDaily (E6) sellValue summed over the last 7 UTC days
+//   (sell side only — each fill lands once per side, so summing one side
+//   counts each fill exactly once). Covers crafted/colony resources that
+//   never touch a mining accumulator.
+//
+// windowTurnover = max(productionUnits × spot, tradedValue): a market is as
+// big as its larger real flow. Empty telemetry ⇒ zeros ⇒ the fee falls back
+// to the $25M floor and the inventory gate to 50 units (documented
+// fail-soft in price-campaigns.ts — correct at relaunch day one).
+
+export interface CampaignMarketTelemetry {
+  /** Trailing-7-real-day-equivalent server-wide production units. */
+  windowProductionUnits: number;
+  /** Trailing-7-day traded value from TradeStatDaily (sell side). */
+  windowTradedValue: number;
+  /** max(production value at spot, traded value) — the fee driver. */
+  windowTurnover: number;
+  /** Band-clamped live spot used for the production valuation. */
+  spot: number;
+}
+
+export async function getCampaignMarketTelemetry(resourceSlug: string): Promise<CampaignMarketTelemetry> {
+  const nowMs = Date.now();
+  const def = RESOURCE_MAP.get(resourceSlug as ResourceId);
+  let spot = def?.baseMarketPrice || 0;
+  try {
+    const row = await prisma.marketResource.findUnique({
+      where: { slug: resourceSlug },
+      select: { currentPrice: true, basePrice: true, minPrice: true, maxPrice: true },
+    });
+    if (row) {
+      spot = computeSpotPrice({
+        currentPrice: row.currentPrice,
+        basePrice: row.basePrice,
+        minPrice: row.minPrice,
+        maxPrice: row.maxPrice,
+      });
+    }
+  } catch { /* spot falls back to base price */ }
+
+  let windowProductionUnits = 0;
+  try {
+    const rows = await prisma.locationExtraction.findMany({
+      where: { resourceId: resourceSlug },
+      select: { accumulated: true, updatedAt: true },
+    });
+    const sensitivity = getExtractionSensitivity(resourceSlug);
+    if (sensitivity > 0) {
+      let decayedSum = 0;
+      for (const r of rows) {
+        decayedSum += readAccumulated(r.accumulated, r.updatedAt.getTime(), nowMs);
+      }
+      // steady-state decayed sum ≈ 10 days of (units × sensitivity) →
+      // 7-day-equivalent units = sum ÷ sensitivity × 7 × (1 − decay/day).
+      windowProductionUnits = (decayedSum / sensitivity) * 7 * (1 - EXTRACTION_DECAY_PER_DAY);
+    }
+  } catch { /* production telemetry fail-soft */ }
+
+  let windowTradedValue = 0;
+  try {
+    const since = new Date(nowMs - 7 * 24 * 60 * 60 * 1000);
+    const agg = await prisma.tradeStatDaily.aggregate({
+      where: { resourceSlug, day: { gte: since } },
+      _sum: { sellValue: true },
+    });
+    windowTradedValue = agg._sum.sellValue || 0;
+  } catch { /* trade telemetry fail-soft */ }
+
+  return {
+    windowProductionUnits: Math.round(windowProductionUnits),
+    windowTradedValue: Math.round(windowTradedValue),
+    windowTurnover: Math.round(Math.max(windowProductionUnits * spot, windowTradedValue)),
+    spot,
+  };
+}
 
 /**
  * Resolve pending poach offers whose counteroffer window lapsed. Bounded.

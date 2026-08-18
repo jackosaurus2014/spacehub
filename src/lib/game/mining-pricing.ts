@@ -35,6 +35,7 @@
 import { MINING_PRODUCTION, RESOURCE_MAP, type ResourceId } from './resources';
 import { SERVICE_MAP } from './services';
 import { getSpotPrice, type MarketSnapshot } from './spot-price';
+import { applyGraduationGlide } from './frontier';
 
 // ─── Revenue scale (memoized — pure function of static authored data) ───────
 
@@ -101,6 +102,23 @@ export function getMiningSpotPrice(
  */
 export interface MiningRevenueOpts {
   frontierSpotFloor?: boolean;
+  /** Balance Pass 9 (docs/BALANCE.md "Pass 9", Pass 8 prescription #3 —
+   *  ships WITH the market-keyed campaign fee, non-negotiable): the
+   *  Pass-6 graduation glide extended to the MINING SPOT FLOOR. Pass the
+   *  save's live getGraduationGlideFraction(state) (0 for veterans /
+   *  never-graduated / Frontier-active saves — Frontier saves carry the
+   *  full frontierSpotFloor instead, and getGraduationGlideFraction is 0
+   *  while frontierStatus is 'active', so the two shields are mutually
+   *  exclusive by construction). While the glide is active, a below-base
+   *  spot is priced at `spot + (base − spot) × fraction` — the decaying
+   *  mirror of the Frontier floor. Implemented via frontier.ts's
+   *  applyGraduationGlide on the spot/base ratio so the blend math lives in
+   *  exactly ONE place (premiums, i.e. ratio ≥ 1, pass through untouched —
+   *  same "premiums pay, penalties wait" posture as every other shield).
+   *  Sim-validated (sim-tools.ts): crush ratio 2.2:1 → 3.4:1 at glide-age
+   *  24 months; a week-one graduate is near-fully shielded. Absent/0 =
+   *  byte-identical to pre-Pass-9 behavior. */
+  graduationGlideFraction?: number;
 }
 
 export function priceLinkedMiningRevenue(
@@ -111,13 +129,20 @@ export function priceLinkedMiningRevenue(
 ): number {
   const scale = getMiningRevenueScale(definitionId);
   const floorAtBase = opts?.frontierSpotFloor === true;
+  const glideFrac = typeof opts?.graduationGlideFraction === 'number' && opts.graduationGlideFraction > 0
+    ? Math.min(1, opts.graduationGlideFraction)
+    : 0;
   let total = 0;
   for (const [resource, units] of Object.entries(unitsPerResource)) {
     if (!units) continue;
     let spot = getMiningSpotPrice(snapshot, resource);
+    const base = RESOURCE_MAP.get(resource as ResourceId)?.baseMarketPrice || 0;
     if (floorAtBase) {
-      const base = RESOURCE_MAP.get(resource as ResourceId)?.baseMarketPrice || 0;
       spot = Math.max(spot, base);
+    } else if (glideFrac > 0 && base > 0 && spot < base) {
+      // spot + (base − spot) × frac ≡ applyGraduationGlide(spot/base, frac) × base
+      // — one shared blend implementation (frontier.ts).
+      spot = applyGraduationGlide(spot / base, glideFrac) * base;
     }
     total += units * spot;
   }

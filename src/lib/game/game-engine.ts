@@ -47,7 +47,7 @@ import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-co
 // nothing here is persisted beyond the one-shot "already announced" flag.
 import { getCurrentRealignmentEpoch, getNpcFactionBiasMultiplier, assembleEpochAddress } from './realignment';
 import { NPC_SEEDS } from './npc-companies';
-import { shouldAutoGraduate, graduateFrontier, isInFrontier, computeBookNetWorth } from './frontier';
+import { shouldAutoGraduate, graduateFrontier, isInFrontier, computeBookNetWorth, getGraduationGlideFraction } from './frontier';
 import { rollMonthlyHazards, applyHazards, forecastSevereHazards } from './hazards';
 // Audit Wave D+E (Change #4 hazards/insurance, Change #5 markets, Change #9
 // sinks — see docs/GAME_SYSTEMS_AUDIT_2026-08.md A4/A5/C5) imports:
@@ -97,7 +97,7 @@ import { getGlobalCapabilityBonus, getCapabilityCrewQuarters } from './building-
 // happens outside the tick loop.
 import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
-import { getMonthlyPayrollWithWageIndex, getWageIndex } from './labor-market';
+import { getMonthlyPayrollForState, getPayrollWageIndex } from './labor-market';
 import { rollLocationInventoryShocks, applyInventoryShocks } from './hazards';
 import { consumeLaneUsageFlush, subtractTransmittedLaneUsage } from './trade-lanes';
 // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O6): freight-toll settlement
@@ -299,10 +299,11 @@ export function processTick(state: GameState): GameState {
   // ─── 0. Workforce payroll (fractional per tick) ──────────────────
   // W13: compensation-philosophy policy multiplies payroll (Generous ×1.15 /
   // Lean ×0.90 / neutral ×1.0). Wave E5 (§2.6): salary is base × the
-  // server-wide wage index per crew type (getMonthlyPayrollWithWageIndex
-  // falls back to plain getMonthlyPayroll behavior — index 1.0 — when no
-  // labor-market snapshot has arrived yet).
-  const payroll = Math.round(getMonthlyPayrollWithWageIndex(workforce, state.laborMarket) * fraction * doctrineBonuses.payrollMultiplier);
+  // server-wide wage index per crew type (index 1.0 when no labor-market
+  // snapshot has arrived yet). Balance Pass 9: routed through the
+  // Frontier-shielded payroll index (min(index, 1.0) while isInFrontier) —
+  // the required pairing for the ÷4 labor-supply change (see labor-market.ts).
+  const payroll = Math.round(getMonthlyPayrollForState(workforce, state) * fraction * doctrineBonuses.payrollMultiplier);
   if (payroll > 0) {
     money -= payroll;
     totalSpent += payroll;
@@ -312,9 +313,10 @@ export function processTick(state: GameState): GameState {
   // Small monthly salary per hired commander, rarity-scaled and riding the
   // same wage index crew payroll uses — roster size becomes a recurring
   // decision instead of a permanent free multiplier stack after a one-time
-  // hire cost.
+  // hire cost. Pass 9: "the same wage index crew payroll uses" now means the
+  // Frontier-shielded payroll index (commander salaries are payroll too).
   const commanderUpkeep = Math.round(
-    computeCommanderUpkeepMonthly(state, getWageIndex(state.laborMarket, 'negotiator', Date.now())) * fraction,
+    computeCommanderUpkeepMonthly(state, getPayrollWageIndex(state, 'negotiator')) * fraction,
   );
   if (commanderUpkeep > 0) {
     money -= commanderUpkeep;
@@ -400,7 +402,15 @@ export function processTick(state: GameState): GameState {
   // never bites a Frontier miner's income; spot premiums still pay. Mirrors
   // service-pricing.ts's demand-pool shield ("premiums pay, penalties wait
   // for graduation"). Hoisted once per tick.
-  const miningFrontierShield = { frontierSpotFloor: isInFrontier(state) };
+  // Balance Pass 9 (Pass 8 prescription #3): the Pass-6 graduation glide
+  // extends to the mining spot floor — a fresh graduate's below-base spot
+  // decays from the full Frontier floor to the true market price over the
+  // 14-day glide (mining-pricing.ts graduationGlideFraction; fraction is 0
+  // while Frontier-active, so the two shields never stack).
+  const miningFrontierShield = {
+    frontierSpotFloor: isInFrontier(state),
+    graduationGlideFraction: getGraduationGlideFraction(state),
+  };
 
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);

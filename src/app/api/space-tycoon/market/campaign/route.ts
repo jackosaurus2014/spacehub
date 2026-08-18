@@ -8,12 +8,13 @@ import type { ResourceId } from '@/lib/game/resources';
 import {
   PRICE_CAMPAIGN_DURATION_MS,
   PRICE_CAMPAIGN_COOLDOWN_MS,
-  PRICE_CAMPAIGN_MIN_INVENTORY,
   PRICE_CAMPAIGN_MIN_NET_WORTH,
   MAX_ACTIVE_CAMPAIGNS_PER_PROFILE,
-  computeCampaignFee,
+  computeMarketKeyedCampaignFee,
+  computeCampaignMinInventory,
 } from '@/lib/game/price-campaigns';
 import { isServerFrontierProtected } from '@/lib/game/talent-poaching';
+import { getCampaignMarketTelemetry } from '@/lib/game/offense-server';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
@@ -21,16 +22,35 @@ export const dynamic = 'force-dynamic';
 /**
  * Price campaigns — targeted dumping (Wave M5, docs/MEANINGFUL_2026-08.md
  * §3.2 O2). GET: all active campaigns (fully public — reputation is
- * legible, canon). POST { action: 'declare', resourceSlug }: pay the burned
- * fee, hold real inventory ammunition, and open a 7-day campaign; while it
- * runs, mean-revert skips the resource and the NPC maker halves its bid
- * volume (see price-campaigns.ts header for the full mechanics).
+ * legible, canon); with `?quote=<resourceSlug>` also returns the
+ * SERVER-computed declare quote (Balance Pass 9: market-keyed fee =
+ * clamp(0.15 × trailing-7d window turnover, $25M, $5B) + scaled
+ * min-inventory) — the UI must display THIS quote, never a client-side
+ * guess that could diverge from the charge.
+ * POST { action: 'declare', resourceSlug }: pay the burned fee, hold real
+ * inventory ammunition, and open a 7-day campaign; while it runs,
+ * mean-revert skips the resource and the NPC maker halves its bid volume
+ * (see price-campaigns.ts header for the full mechanics).
  * POST { action: 'cancel', campaignId }: end your campaign early (no fee
  * refund; the cooldown still applies — retreat isn't free).
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const now = new Date();
+    // Pass 9: server-computed declare quote (fee + min inventory).
+    let quote: { resourceSlug: string; fee: number; minInventory: number; windowTurnover: number } | null = null;
+    const quoteSlug = request.nextUrl.searchParams.get('quote');
+    if (quoteSlug && RESOURCE_MAP.has(quoteSlug as ResourceId)) {
+      try {
+        const t = await getCampaignMarketTelemetry(quoteSlug);
+        quote = {
+          resourceSlug: quoteSlug,
+          fee: computeMarketKeyedCampaignFee(t.windowTurnover),
+          minInventory: computeCampaignMinInventory(t.windowProductionUnits),
+          windowTurnover: t.windowTurnover,
+        };
+      } catch { /* quote best-effort — UI falls back to "computed at declare time" */ }
+    }
     const campaigns = await prisma.priceCampaign.findMany({
       where: { status: 'active', endsAt: { gt: now } },
       include: { profile: { select: { companyName: true } } },
@@ -46,10 +66,11 @@ export async function GET() {
         endsAt: c.endsAt.toISOString(),
         feePaid: c.feePaid,
       })),
+      quote,
     });
   } catch (error) {
     logger.error('Price campaign list error', { error: String(error) });
-    return NextResponse.json({ campaigns: [] });
+    return NextResponse.json({ campaigns: [], quote: null });
   }
 }
 
@@ -123,20 +144,27 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // ── Pass 9: market-keyed fee + scaled ammunition, from real telemetry ──
+    // (trailing-7d window turnover / production units; fail-soft to the
+    // $25M fee floor and 50-unit inventory floor when telemetry is empty —
+    // see price-campaigns.ts + offense-server.ts).
+    const telemetry = await getCampaignMarketTelemetry(resourceSlug);
+    const minInventory = computeCampaignMinInventory(telemetry.windowProductionUnits);
+    const fee = computeMarketKeyedCampaignFee(telemetry.windowTurnover);
+
     // ── Ammunition check: real inventory of the resource ──
     const resources = (profile.resources as Record<string, number>) || {};
     const held = resources[resourceSlug] || 0;
-    if (held < PRICE_CAMPAIGN_MIN_INVENTORY) {
+    if (held < minInventory) {
       return NextResponse.json({
-        error: `A price war needs ammunition: hold at least ${PRICE_CAMPAIGN_MIN_INVENTORY} units of ${resourceDef.name} (you have ${held}).`,
+        error: `A price war needs ammunition: hold at least ${minInventory} units of ${resourceDef.name} — 10% of this market's weekly production (you have ${held}).`,
       }, { status: 400 });
     }
 
     // ── Burned declaration fee ──
-    const fee = computeCampaignFee(resourceDef.baseMarketPrice);
     if (profile.money < fee) {
       return NextResponse.json({
-        error: `Insufficient funds. Campaign fee: $${(fee / 1_000_000).toFixed(0)}M (burned).`,
+        error: `Insufficient funds. Campaign fee: $${(fee / 1_000_000).toFixed(0)}M (burned — 15% of this market's weekly turnover).`,
       }, { status: 400 });
     }
 

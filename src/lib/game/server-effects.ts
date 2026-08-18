@@ -30,6 +30,9 @@ import {
 } from './extraction-pressure';
 import { WAGE_INDEX_MIN, WAGE_INDEX_MAX, type LaborMarketSnapshot } from './labor-market';
 import { LANE_BONUS_CAP, type LaneBonusSnapshot } from './trade-lanes';
+// Balance Pass 9: the quarterly offense-fee-index snapshot rides the same
+// hop (fee-index.ts — factor clamp shared with every consumer).
+import { clampFeeIndexFactor } from './fee-index';
 // Wave M5 (docs/MEANINGFUL_2026-08.md §M5): the offense snapshot — price
 // campaigns, poach offers/outcomes, freight tolls, cornering alerts — rides
 // the same hop. Clamping AND poach-outcome application live in offense.ts
@@ -141,6 +144,9 @@ export interface ServerEffectsSnapshot {
   laborMarket?: { index: LaborMarketSnapshot; asOf: number } | null;
   /** Wave E5 (§2.8): per-lane fuel-discount snapshot (trade-lanes.ts). */
   laneBonuses?: LaneBonusSnapshot | null;
+  /** Balance Pass 9: quarterly offense-fee-index snapshot (fee-index.ts) —
+   *  factor clamp(worldMedianMonthlyNet / $30M, 1, 50), fail-soft 1. */
+  feeIndex?: import('./fee-index').FeeIndexSnapshot | null;
   /** Wave M5 (§M5): offense snapshot — campaigns/poach/tolls/cornering
    *  (offense.ts). Applied via applyOffenseToState (idempotent). */
   offense?: OffenseSnapshot | null;
@@ -182,6 +188,20 @@ function clampLaborMarketSnapshot(
     index[type as keyof LaborMarketSnapshot] = Math.max(WAGE_INDEX_MIN, Math.min(WAGE_INDEX_MAX, v));
   }
   return { index, asOf: typeof snap.asOf === 'number' ? snap.asOf : Date.now() };
+}
+
+// Balance Pass 9: fee-index snapshot clamp — factor bounded [1, 50], a
+// bugged aggregate can never turn offense fees into discounts or ×1000s.
+function clampFeeIndexSnapshot(
+  snap: import('./fee-index').FeeIndexSnapshot | null | undefined,
+): import('./fee-index').FeeIndexSnapshot | null {
+  if (!snap || typeof snap !== 'object') return null;
+  return {
+    factor: clampFeeIndexFactor(snap.factor),
+    medianMonthlyNet: typeof snap.medianMonthlyNet === 'number' && Number.isFinite(snap.medianMonthlyNet)
+      ? Math.round(snap.medianMonthlyNet) : 0,
+    asOf: typeof snap.asOf === 'number' ? snap.asOf : Date.now(),
+  };
 }
 
 function clampLaneBonusSnapshot(snap: LaneBonusSnapshot | null | undefined): LaneBonusSnapshot | null {
@@ -369,6 +389,11 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     laneBonuses: eff.laneBonuses !== undefined
       ? clampLaneBonusSnapshot(eff.laneBonuses)
       : state.laneBonuses,
+    // Balance Pass 9: the offense-fee-index snapshot reaches the tick the
+    // same hop laborMarket does.
+    feeIndex: eff.feeIndex !== undefined
+      ? clampFeeIndexSnapshot(eff.feeIndex)
+      : state.feeIndex,
     // Wave M6: the equity snapshot reaches the tick the same hop demandPools
     // does. Plain clamped stash — the consumers (Situation Log, calendar,
     // the integration-malus multiplier in game-engine.ts) are all pure

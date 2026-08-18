@@ -23,6 +23,9 @@ import { BUILDING_MAP } from './buildings';
 // Construction Purposes wave: target's sensor/tracking buildings raise the
 // detection roll (pure list helper — server routes pass raw buildingsData).
 import { getDetectionBonusFromBuildingList } from './building-capabilities';
+// Balance Pass 9: quarterly offense-fee-index applied to the M5 intel
+// products (see getActionCost).
+import { applyFeeIndex } from './fee-index';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -356,10 +359,30 @@ export const ESPIONAGE_ACTIONS: Record<EspionageActionType, EspionageActionDef> 
   },
 };
 
-export function getActionCost(actionType: EspionageActionType, attackerNetWorth: number): number {
+/** Balance Pass 9: the three M5 (O8) intel PRODUCTS carry the quarterly
+ *  offense-fee-index factor (fee-index.ts) — Pass 8's "intel/report fees"
+ *  prescription. The classic espionage actions already scale via the
+ *  net-worth bracket term and are untouched. */
+export const FEE_INDEXED_ESPIONAGE_PRODUCTS: ReadonlySet<EspionageActionType> = new Set([
+  'pool_share_trend', 'input_dependency_report', 'labor_roster_report',
+] as EspionageActionType[]);
+
+/**
+ * Charged/displayed action cost. `feeIndexFactor` (default 1) multiplies
+ * ONLY the M5 intel products above — server routes pass
+ * getServerFeeIndexFactor(), UI passes getFeeIndexFactor(state); both
+ * fail-soft to 1 (the by-design relaunch value), so shown and charged
+ * numbers always agree.
+ */
+export function getActionCost(
+  actionType: EspionageActionType,
+  attackerNetWorth: number,
+  feeIndexFactor: number = 1,
+): number {
   const action = ESPIONAGE_ACTIONS[actionType];
   const bracket = getBracket(attackerNetWorth);
-  return action.baseCost + (bracket.id * action.bracketCostMultiplier);
+  const base = action.baseCost + (bracket.id * action.bracketCostMultiplier);
+  return FEE_INDEXED_ESPIONAGE_PRODUCTS.has(actionType) ? applyFeeIndex(base, feeIndexFactor) : base;
 }
 
 // ─── Success Rate Calculation ───────────────────────────────────────────────
@@ -717,9 +740,10 @@ export function executeEspionageAction(
   targetEspionageProfile: TargetEspionageProfile,
   targetGameProfile: TargetGameProfile,
   attackerProfileId?: string,
+  feeIndexFactor: number = 1, // Pass 9: applies to M5 intel products only
 ): EspionageExecutionResult {
   const action = ESPIONAGE_ACTIONS[actionType];
-  const cost = getActionCost(actionType, attackerProfile.netWorth);
+  const cost = getActionCost(actionType, attackerProfile.netWorth, feeIndexFactor);
   const successRate = calculateSuccessRate(actionType, attackerProfile, targetEspionageProfile, attackerProfileId);
   // Wave M5 (O8): sharper products carry a guaranteed-exposure floor —
   // the victim sees a counterintelligence event at least minDetectionChance

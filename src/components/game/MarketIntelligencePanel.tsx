@@ -1058,6 +1058,12 @@ interface StandingDemandView {
   standingQty: number;
 }
 
+interface CampaignQuoteView {
+  resourceSlug: string;
+  fee: number;
+  minInventory: number;
+}
+
 function EconWarfareTab() {
   const [campaigns, setCampaigns] = useState<CampaignView[]>([]);
   const [declareSlug, setDeclareSlug] = useState<string>('iron');
@@ -1065,18 +1071,23 @@ function EconWarfareTab() {
   const [message, setMessage] = useState<string | null>(null);
   const [demandReport, setDemandReport] = useState<StandingDemandView[] | null>(null);
   const [reportMessage, setReportMessage] = useState<string | null>(null);
+  // Balance Pass 9: the declare fee is market-keyed and SERVER-computed
+  // (15% of the resource's trailing-7d window turnover, $25M-$5B) — the
+  // pre-purchase display fetches the server quote, never a client guess.
+  const [quote, setQuote] = useState<CampaignQuoteView | null>(null);
 
-  const loadCampaigns = useCallback(async () => {
+  const loadCampaigns = useCallback(async (quoteSlug?: string) => {
     try {
-      const res = await fetch('/api/space-tycoon/market/campaign');
+      const res = await fetch(`/api/space-tycoon/market/campaign${quoteSlug ? `?quote=${encodeURIComponent(quoteSlug)}` : ''}`);
       if (res.ok) {
         const data = await res.json();
         setCampaigns(Array.isArray(data.campaigns) ? data.campaigns : []);
+        if (data.quote && data.quote.resourceSlug) setQuote(data.quote as CampaignQuoteView);
       }
     } catch { /* best-effort */ }
   }, []);
 
-  useEffect(() => { loadCampaigns(); }, [loadCampaigns]);
+  useEffect(() => { loadCampaigns(declareSlug); }, [loadCampaigns, declareSlug]);
 
   const declare = async () => {
     setBusy(true);
@@ -1122,7 +1133,7 @@ function EconWarfareTab() {
 
   return (
     <div className="space-y-4">
-      <ConsolePanel title="Active Price Campaigns" icon="trending-down" subtitle="Public dumping declarations — every campaign is visible to every corporation. Producers: buy the dip, mothball, or out-wait the clock.">
+      <ConsolePanel title="Active Price Campaigns" icon="trending-down" subtitle="Public dumping declarations — every campaign is visible to every corporation. Producers: buy the dip, spread into other markets, or out-wait the clock — mothballing mainly suits larger, diversified operations.">
         {campaigns.length === 0 ? (
           <p className="text-xs text-slate-500 py-3">No active price campaigns anywhere on the server. Markets are healing normally.</p>
         ) : (
@@ -1145,8 +1156,13 @@ function EconWarfareTab() {
 
         <div className="mt-3 pt-3 border-t border-white/[0.06]">
           <p className="text-[11px] text-slate-400 mb-2">
-            Declare your own campaign: burned fee scaled to the market, requires holding real inventory of the resource, one campaign at a time, 14-day per-market cooldown. Frontier corporations cannot declare or be starved.
+            Declare your own campaign: burned fee = 15% of the market&apos;s weekly turnover ($25M-$5B), requires holding real inventory of the resource, one campaign at a time, 14-day per-market cooldown. Frontier corporations cannot declare or be starved.
           </p>
+          {quote && quote.resourceSlug === declareSlug && (
+            <p className="text-[11px] text-amber-300/90 mb-2">
+              Current quote for {RESOURCE_MAP.get(declareSlug as ResourceId)?.name || declareSlug}: fee {formatMoney(quote.fee)} (burned) · ammunition required: {quote.minInventory} units held.
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-2">
             <select
               value={declareSlug}

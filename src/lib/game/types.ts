@@ -1462,6 +1462,16 @@ export interface GameState {
    *  Delivered through server-effects.ts exactly like demandPools. */
   laborMarket?: { index: LaborMarketSnapshot; asOf: number } | null;
 
+  /** Balance Pass 9 ([SAVE] optional field, no migration): the last
+   *  offense-fee-index snapshot (fee-index.ts) — a quarterly, server-
+   *  computed factor clamp(worldMedianMonthlyNet / $30M, 1, 50) that
+   *  multiplies poach action fees, freight-toll caps, and intel/report
+   *  fees so fixed offense prices scale with the economy's era. null/
+   *  absent/stale = factor 1 (pre-Pass-9 behavior, and the by-design
+   *  relaunch value). Delivered through server-effects.ts exactly like
+   *  laborMarket. */
+  feeIndex?: import('./fee-index').FeeIndexSnapshot | null;
+
   /** The last per-lane fuel-discount snapshot (trade-lanes.ts) — heavily
    *  used lanes discount the Δv fuel bill up to LANE_BONUS_CAP; null/absent/
    *  stale = 0 (no bonus, pre-E5 fuel-cost behavior). Delivered through

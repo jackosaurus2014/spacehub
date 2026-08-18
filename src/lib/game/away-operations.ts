@@ -44,10 +44,10 @@ import { getWorkforceBonuses } from './workforce';
 // live tick applies must also apply to the offline catch-up estimate,
 // reading the SAME last-synced snapshots off `working` (no live network
 // call — this module stays pure/deterministic).
-import { getMonthlyPayrollWithWageIndex } from './labor-market';
+import { getMonthlyPayrollForState } from './labor-market';
 import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
-import { isInFrontier } from './frontier';
+import { isInFrontier, getGraduationGlideFraction } from './frontier';
 import { getResearchBonuses } from './research-tree';
 import {
   TICKS_PER_GAME_MONTH, TICK_INTERVALS, MAX_EVENT_LOG,
@@ -244,7 +244,11 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   // §1: Frontier saves floor mining spot at base (crashes can't bite;
   // premiums still pay). Same isInFrontier read the demand-pool shield in
   // getServiceDemandMultiplier (called above) already performs at `now`.
-  const miningFrontierShield = { frontierSpotFloor: isInFrontier(working, now) };
+  // Balance Pass 9: away-parity for the graduation-glide spot floor too.
+  const miningFrontierShield = {
+    frontierSpotFloor: isInFrontier(working, now),
+    graduationGlideFraction: getGraduationGlideFraction(working, now),
+  };
 
   let revenuePerTick = 0;
   let costsPerTick = 0;
@@ -310,7 +314,10 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     const mothballMaintMult = getMothballMaintenanceMultiplier(bld);
     costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction));
   }
-  const payrollPerTick = Math.round(getMonthlyPayrollWithWageIndex(workforce, working.laborMarket) * fraction);
+  // Pass 9: Frontier-shielded payroll index — away-parity with
+  // game-engine.ts §0 (same isInFrontier read at `now` the mining shield
+  // above already performs).
+  const payrollPerTick = Math.round(getMonthlyPayrollForState(workforce, working, now) * fraction);
   costsPerTick += payrollPerTick;
 
   const weightedTicks = getWeightedTicks(timeAwayMs, investmentBonus);

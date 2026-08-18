@@ -2037,3 +2037,192 @@ Verification: `tsc --noEmit` clean; full jest **4,589/208 green**;
 sim-tools double-run diff-identical; all four legacy runners
 (sim-strategies, sim-resources, sim-pvp, sim-50yr) re-run and diffed
 against pre-change captures — **byte-identical**.
+
+## Pass 9 — competitive-tools implementation wave (2026-08-17, pre-relaunch)
+
+**The founder-approved implementation of Pass 8's Prescriptions §1-5,
+shipped before the 2026-08-24 world restart.** Pass 8's sim-validated
+constants and passing bands are the tuning authority; this pass implements
+them AS VALIDATED (no re-derivation) and re-runs the acceptance sim against
+the now-shipped engine constants.
+
+### What shipped (per prescription)
+
+1. **H2 — labor supply ÷4** (`labor-market.ts LABOR_SUPPLY_BASE`):
+   engineer 600→**150**, scientist 500→**125**, miner 700→**175**,
+   operator 550→**138**, pilot 400→**100**, negotiator 300→**75**,
+   security 400→**100**, medic 350→**88** (current values verified as
+   exactly 4× the prescription before dividing).
+   `LABOR_SUPPLY_PER_QUARTERS` stays 2 — housing counterplay is relatively
+   4× stronger. Single source of truth: the constant feeds `laborSupply()`
+   → `computeLaborAggregates` (the weekly labor cron at
+   `/api/space-tycoon/labor/update`) — server-computed index and every
+   client display read the same LaborIndex rows via the sync snapshot;
+   parity holds by construction.
+2. **H2 required pairing — Frontier PAYROLL shield** (closes Pass-4
+   follow-up #3): `getPayrollWageIndex` = min(live index, 1.0) while
+   `isInFrontier`, mirroring `getHireWageIndex` exactly. New state-aware
+   `getMonthlyPayrollForState` / `getPayrollAdjustedSalary` now used by:
+   live tick (game-engine.ts §0 **and** commander upkeep §0a — commander
+   salaries ride the same payroll index), away catch-up
+   (away-operations.ts, tick parity at `now`), economy-report (payroll +
+   the per-type `wageIndexByType` P&L display), WorkforcePanel (payroll
+   header + per-worker salary line; the wage-index *badge* still shows the
+   raw market index), DashboardPanel, ResourceBar. The espionage
+   `labor_roster_report` payroll *estimate of a target* stays unshielded
+   (espionage cannot target Frontier corps). Slack markets (<1.0) still
+   discount; the shield ends at graduation.
+3. **H1 — market-keyed campaign fee** (`price-campaigns.ts`):
+   `computeMarketKeyedCampaignFee(turnover) = clamp(0.15 × trailing-7d
+   window turnover, $25M, $5B)`; `PRICE_CAMPAIGN_MAX_FEE` $500M → **$5B**.
+   Depth stays FULL (band floor 0.3× — fee-scaled depth remains refuted).
+   Turnover source (`offense-server.ts getCampaignMarketTelemetry`):
+   max(LocationExtraction production value, TradeStatDaily 7-day traded
+   value) — production units recovered from the decaying E5 accumulator
+   (÷ rarity sensitivity × 7 × (1 − 0.9/day) = the 7-day-equivalent of the
+   10-day steady-state window), valued at the band-clamped server spot;
+   TradeStatDaily covers crafted/colony resources with no mining
+   accumulator. **Fail-soft (documented in code): empty telemetry ⇒ the
+   $25M floor** — correct at relaunch day one, where Pass 8 measured the
+   floor binding anyway. UI: the declare form fetches the SERVER quote
+   (`GET /api/space-tycoon/market/campaign?quote=<slug>` → fee +
+   min-inventory) — never a client-side guess; `computeCampaignFee`
+   (base-price formula) is retained as reference math only.
+4. **Graduate mining-spot glide (ships with #3, non-negotiable)**:
+   `MiningRevenueOpts.graduationGlideFraction` — below-base spot floors at
+   `spot + (base − spot) × glideFraction`, implemented as
+   `applyGraduationGlide(spot/base, frac) × base` so the blend math lives
+   in exactly one place (frontier.ts). Wired where `frontierSpotFloor`
+   already passes: game-engine.ts §1 + away-operations.ts (tick/away
+   parity). Frontier-active saves keep the full floor; the two shields are
+   mutually exclusive by construction (glide fraction is 0 while
+   frontierStatus is 'active'); premiums always pass through; veterans
+   byte-identical.
+5. **Poach/toll/intel fee indexing (mechanism now, factor 1 at relaunch by
+   design)**: new `fee-index.ts` — `factor = clamp(worldMedianMonthlyNet /
+   $30M, 1, 50)`, recomputed per real-world UTC calendar quarter (the LS9
+   Realignment boundary) by `fee-index-server.ts` (median over
+   recently-synced, ≥7-day-old profiles of server-reconciled
+   (totalEarned − totalSpent) ÷ elapsed 6h-game-months; per-quarter
+   module cache; every failure path degrades to factor 1). Delivered as
+   the optional `GameState.feeIndex` sync snapshot (laborMarket pattern —
+   [SAVE] optional field, **no migration, no version bump**; stale ⇒ 1).
+   Applied at charge time, server-recomputed at every server charge site
+   and never trusted from the client: poach action fee
+   (`computePoachActionFee`, poach route), freight-toll per-dispatch cap
+   (client `computeFreightTolls` reads `state.feeIndex`) + the per-sync
+   server credit cap (sync route), cornering standing-demand report fee,
+   and the three M5 espionage intel products ONLY
+   (`FEE_INDEXED_ESPIONAGE_PRODUCTS` — classic espionage actions already
+   scale via the net-worth bracket term). UI displays show the multiplied
+   number (EspionagePanel passes `getFeeIndexFactor(state)`; route
+   error/response strings carry the charged figure).
+6. **Campaign min-inventory scaling**: `computeCampaignMinInventory` =
+   max(50, 10% of the trailing-window production units) — same telemetry
+   as #3, fail-soft to the 50-unit floor, shown in the declare quote.
+7. **Counterplay copy** (Pass 8 Q3: mothball is a −19% NW trap at relaunch
+   scale, ≈neutral mid-game, spread best everywhere): concepts.ts
+   (`mothball`, `price-campaign`, `wage-index-concept`), the Situation Log
+   campaign victim alert, and the MarketIntelligencePanel campaign
+   subtitles now say riding it out or spreading to other markets usually
+   beats mothballing for smaller corporations (mothball suits larger,
+   diversified operations).
+
+### Acceptance (sim-tools.ts re-run on the SHIPPED constants)
+
+The Pass-8 override switches are now redundant with engine defaults —
+`sim-tools.ts` default runs read the real constants
+(`computeMarketKeyedCampaignFee`, `computeCampaignMinInventory`,
+`computePoachActionFee × computeFeeIndexFactor`, shipped
+`LABOR_SUPPLY_BASE`, spot glide default-ON for glide players). One
+model-fidelity correction was required (documented in code): the runner's
+campaign decision model expensed the ammunition purchase at FULL price
+while the measured twin-diff world recovers the units through the normal
+leftover-sale channel — noise at the old 50-unit gate, but a
+double-count that silenced the tool at the Pass-9 scaled gate. The model
+now charges the ammunition ROUND-TRIP loss (buy at spot×1.02, worst-case
+recovery at the average pin price); the affordability gate still requires
+the full cash outlay. The crush ratios below are MEASURED twin-diffs,
+unaffected by the model change.
+
+| acceptance check | requirement | result |
+|---|---|---:|
+| era A campaign fires organically (policy run) | ≥1 | **1× @ mo 24** (best model ratio 1.04) ✓ |
+| era A crush ratio (attacker all-in ÷ graduate window damage) | ≥1.5:1 | **3.5:1** (Pass-8 center 3.4:1); without spot glide **2.2:1** (Pass 8: 2.2:1) ✓ |
+| era A attacker all-in / defender damage | — | $44.1M / $88.4M (Pass 8: $43.2M / $88.5M) |
+| era A labor index alive (26 corps, in-world) | off the 0.80 floor | max **1.377** (Pass-8 ÷4 table: 1.377 exactly) ✓ |
+| era A poach fee factor | 1 by design | **1.00** ($10.0M) ✓ |
+| era B (shipped defaults) | griefing check | fee $74.4M (Pass 8: $74.4M), fired 2×, all-in $264.6M vs defender $309.9M, crush **21.8:1**; poach factor 3.72 (Pass 8: ~3.7) ✓ |
+| band edge | 0.40 kills the tool | market 40% ⇒ 0 fires (ratio 0.81) ✓ |
+| graduate shields | unchanged | net/mo @ mo 23 $10.6M, book NW @ mo 95 $1.05B, poach reach 1 head — all match baseline ✓ |
+| counterplay matrix | era-dependence holds | era A: rideout $3.18B / mothball $2.59B (trap) / spread $3.33B (best) |
+| determinism | double-run identical | ✓ |
+
+### Legacy-runner movements (before/after captures, full diffs)
+
+| runner | movement | attribution |
+|---|---|---|
+| sim-strategies | analytic wage-scenario table only: supply 600→150 etc., indexes reach 1.6 at lower populations | labor supply ÷4 (no P&L row moved) |
+| sim-resources | **byte-identical** | — |
+| sim-pvp | whale-hiring analytic table: post-whale engineer index 1.45→1.60, miner 0.80→1.60; small-corp payroll $21.4M→$26.4M; quarters counterplay 245→470 | labor supply ÷4 |
+| sim-50yr | one sink-severity display line: campaign fee cap $500M→$5B (10.2×→102× median net/mo — the CAP, not a typical fee; typical relaunch fees sit at the $25M floor) | PRICE_CAMPAIGN_MAX_FEE raise |
+
+No payroll-shield movement appears in any runner — every sim corp is
+post-Frontier (the honest relaunch case); the shield is guarded by unit +
+live-tick tests instead.
+
+### Guard tests (extended, none weakened)
+
+- `sim-tools-overrides.test.ts`: + exact-value guard on the shipped
+  LABOR_SUPPLY_BASE; divisor math rewritten against the new base (÷5 of
+  150 = 30); + Pass-9 alive-signal test (200-engineer boom leaves the
+  floor at the shipped base — the old base kept it dead) and a
+  small-world floor test (no newcomer wage squeeze). glideSpotFloor
+  harness guards unchanged (now mirror the shipped engine mechanic).
+- `mining-frontier-shield.test.ts`: + 4 unit tests for
+  `graduationGlideFraction` (fraction 1 ≡ Frontier floor, 0.5 = exact
+  midpoint blend, 0/absent byte-identical, premiums never reduced) and
+  + 3 live-tick tests (fresh graduate near-fully shielded, mid-glide
+  partial and between fresh/veteran, premiums still pay mid-glide).
+  The "graduated save takes the crash" guard now pins
+  `frontierGraduatedAtMs` 100 days back (glide expired) — extended, not
+  weakened.
+- `hire-cost-wage-index.test.ts`: + 3 payroll-shield tests
+  (getPayrollWageIndex mirrors getHireWageIndex; Frontier payroll caps
+  hot types while slack types keep discounting; graduated payroll equals
+  the unshielded Wave-E5 figure; salary display parity).
+- `price-campaigns.test.ts`: + market-keyed fee tests (0.15 fraction,
+  $25M/$5B clamps, fail-soft floor) + min-inventory scaling tests.
+- new `fee-index.test.ts` (16 tests): factor formula/clamps, stale/absent
+  fail-soft reads, applyFeeIndex, computePoachActionFee identity at
+  factor 1, espionage products-only wiring (classic actions untouched at
+  any factor), fee-index-server pure core (median math, empty-world
+  factor 1, UTC quarter key).
+
+### Schema / sync-field additions (flagged)
+
+- **No Prisma schema changes, no db push needed** — telemetry reuses
+  LocationExtraction, TradeStatDaily, MarketResource, GameProfile.
+- New sync response field `feeIndex` (+ optional `GameState.feeIndex`,
+  default null, no save migration) delivered through the standard
+  server-effects hop with a defensive clamp.
+- `GET /api/space-tycoon/market/campaign` gains the optional
+  `?quote=<slug>` server quote; POST declare now charges the
+  market-keyed fee + scaled inventory gate.
+
+### Deviations from the Pass-8 text (all within the prescriptions)
+
+- Fee fail-soft: the prompt-approved **$25M-floor fallback** on empty
+  telemetry (documented in code) rather than Pass 8's "fall back to the
+  old basePrice × 5,000" wording — at relaunch volumes the floor binds
+  either way; the floor version can never resurrect the dead 9.2×-median
+  fee on an empty market.
+- Window turnover takes max(production value, traded value) so
+  crafted/colony markets (no mining accumulator) key off their real
+  traded flow instead of always sitting at the floor.
+- Commander upkeep joined the payroll shield (it explicitly rides "the
+  same wage index crew payroll uses").
+- sim-tools ammunition round-trip model correction (see Acceptance).
+
+Verification: `tsc --noEmit` clean; full jest **4,620/209 green**;
+sim-tools double-run diff-identical; `next build` passes.

@@ -1077,11 +1077,17 @@ export async function POST(request: Request) {
       try {
         const { FREIGHT_TOLL_SERVER_CREDIT_CAP_PER_SYNC } = await import('@/lib/game/offense');
         const { recordLedger, isLedgerAvailable: ledgerAvail } = await import('@/lib/game/server-ledger');
+        // Balance Pass 9: the per-sync credit cap scales by the quarterly
+        // fee-index factor — server-recomputed here (never trusted from the
+        // client payload), matching the client-side per-dispatch cap scaling
+        // in offense.ts computeFreightTolls. Factor 1 at relaunch by design.
+        const { getServerFeeIndexFactor } = await import('@/lib/game/fee-index-server');
+        const tollFeeFactor = await getServerFeeIndexFactor().catch(() => 1);
         const tollLedgerOn = await ledgerAvail();
         if (tollLedgerOn) {
           for (const [zoneSlug, amount] of Object.entries(tollPaymentsThisTick as Record<string, unknown>).slice(0, 10)) {
             if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) continue;
-            const safeAmount = Math.min(FREIGHT_TOLL_SERVER_CREDIT_CAP_PER_SYNC, Math.round(amount));
+            const safeAmount = Math.min(Math.round(FREIGHT_TOLL_SERVER_CREDIT_CAP_PER_SYNC * tollFeeFactor), Math.round(amount));
             const zone = await prisma.zone.findUnique({
               where: { slug: zoneSlug },
               select: { governorId: true, freightTollPct: true },
@@ -1102,6 +1108,15 @@ export async function POST(request: Request) {
         }
       } catch { /* toll settlement non-critical (schema may lag deploy) */ }
     }
+
+    // ── Balance Pass 9: quarterly offense-fee-index snapshot ───────────────
+    // (fee-index-server.ts — per-quarter cached median-monthly-net factor).
+    // Additive field; older clients ignore it (factor 1 behavior).
+    let feeIndex = null;
+    try {
+      const { getServerFeeIndexSnapshot } = await import('@/lib/game/fee-index-server');
+      feeIndex = await getServerFeeIndexSnapshot();
+    } catch { /* fee index non-critical — client falls back to factor 1 */ }
 
     // ── Wave M5 (§M5): offense snapshot — active price campaigns (public),
     // this player's poach inbox + outcomes, zone freight tolls (public),
@@ -1171,6 +1186,9 @@ export async function POST(request: Request) {
       extractionPressure: extractionPressureSnapshot,
       laborMarket: laborMarketSnapshot,
       laneBonuses: laneBonusesSnapshot,
+      // Balance Pass 9: quarterly offense-fee-index — additive field; older
+      // clients simply fall back to factor 1.
+      feeIndex,
       // Wave E2 (§2.5 "one price truth"): band-clamped live spot per resource,
       // the single price the client tick now uses to value delivery contracts
       // (spot-at-acceptance) and settle the NPC backdrop. Additive field —

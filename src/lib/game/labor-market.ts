@@ -44,12 +44,25 @@ export const WAGE_INDEX_MAX = 1.6;
 export const WAGE_INDEX_NEUTRAL = 1.0;
 
 /** Global (server-wide) headcount slots per crew type before any housing is
- *  built. Sized so a small/early population (dozens of active corporations,
- *  each running a handful of crew) sits comfortably below saturation — wages
- *  only climb once a real hiring boom is underway. */
+ *  built.
+ *
+ *  Balance Pass 9 (docs/BALANCE.md "Pass 9", implementing Pass 8's H2
+ *  prescription — sim-validated, `npx tsx scripts/sim-tools.ts`): the
+ *  original bases (600/500/700/550/400/300/400/350) kept the wage index
+ *  pinned at the 0.80 floor for 96 straight game-months at BOTH tested eras
+ *  (26-36 corps employing 244-353 engineers) — the labor market was dead
+ *  content at any realistic population. ÷4 (the Pass-8 recommended center of
+ *  the ÷3-÷5 passing band, keyed to a 15-30-corp relaunch expectation)
+ *  brings it alive: the index leaves the floor at 15 corps, crosses neutral
+ *  at 18, and pins 1.6 only at 29+. LABOR_SUPPLY_PER_QUARTERS is
+ *  deliberately NOT divided — housing counterplay is relatively 4× stronger,
+ *  the intended cooperative loop. REQUIRED PAIRING (shipped together): the
+ *  Frontier payroll shield below (getPayrollWageIndex) — with ÷4 a
+ *  relaunch-week hiring boom genuinely reaches 1.3-1.6, and Frontier corps
+ *  must not pay it. */
 export const LABOR_SUPPLY_BASE: Record<WorkerType, number> = {
-  engineer: 600, scientist: 500, miner: 700, operator: 550,
-  pilot: 400, negotiator: 300, security: 400, medic: 350,
+  engineer: 150, scientist: 125, miner: 175, operator: 138,
+  pilot: 100, negotiator: 75, security: 100, medic: 88,
 };
 
 /** Additional labor-supply slots per crewQuarters unit built server-wide
@@ -285,4 +298,59 @@ export function getHireCostWithWageIndex(
   nowMs: number = Date.now(),
 ): number {
   return Math.round(getHireCost(type, state, nowMs) * getHireWageIndex(state, type, nowMs));
+}
+
+// ─── Balance Pass 9: Frontier PAYROLL shield (docs/BALANCE.md "Pass 9") ─────
+// Pass 8's H2 prescription ships LABOR_SUPPLY_BASE ÷4 (above), which makes
+// relaunch-week wage indexes of 1.3-1.6 genuinely reachable — so the Pass-4
+// hire-cost shield posture is REQUIRED on payroll too (Pass-4 follow-up #3,
+// closed here): while in the Protected Frontier, salaries pay
+// min(wageIndex, 1.0) per crew type — a slack labor market (<1.0) still
+// discounts, an overheated one (>1.0) waits for graduation. Mirrors
+// getHireWageIndex exactly ("premiums pay, penalties wait"). Every REAL
+// payroll surface — live tick (game-engine.ts §0), away catch-up
+// (away-operations.ts), and every UI payroll/salary display — must route
+// through these state-aware functions so shown and charged never diverge.
+
+/** The wage index PAYROLL actually pays for this save: the live snapshot
+ *  index, capped at neutral (1.0) while in the Protected Frontier. */
+export function getPayrollWageIndex(
+  state: GameState,
+  type: WorkerType,
+  nowMs: number = Date.now(),
+): number {
+  const idx = getWageIndex(state.laborMarket, type, nowMs);
+  return isInFrontier(state, nowMs) ? Math.min(WAGE_INDEX_NEUTRAL, idx) : idx;
+}
+
+/** Monthly payroll at the Frontier-shielded payroll wage index — the REAL
+ *  charged figure. Identical to getMonthlyPayrollWithWageIndex for any
+ *  graduated/veteran save (the shield only ever caps >1.0 indexes for
+ *  Frontier-active saves). `workforce` is passed explicitly (not read off
+ *  state) because the tick paths carry a locally-normalized WorkforceState. */
+export function getMonthlyPayrollForState(
+  workforce: WorkforceState,
+  state: GameState,
+  nowMs: number = Date.now(),
+): number {
+  let total = 0;
+  for (const wDef of WORKER_TYPES) {
+    const count = (workforce[`${wDef.type}s` as keyof WorkforceState] as number | undefined) || 0;
+    if (count === 0) continue;
+    total += count * wDef.salary * getPayrollWageIndex(state, wDef.type, nowMs);
+  }
+  return Math.round(total);
+}
+
+/** Per-head monthly salary at the Frontier-shielded payroll index — the
+ *  display counterpart of getMonthlyPayrollForState (WorkforcePanel salary
+ *  rows must show what payroll actually charges). */
+export function getPayrollAdjustedSalary(
+  state: GameState,
+  type: WorkerType,
+  nowMs: number = Date.now(),
+): number {
+  const def = WORKER_MAP.get(type);
+  if (!def) return 0;
+  return Math.round(def.salary * getPayrollWageIndex(state, type, nowMs));
 }

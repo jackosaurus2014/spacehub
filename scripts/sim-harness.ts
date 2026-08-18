@@ -154,17 +154,15 @@ export interface SimPlayer {
    *  table byte-identical). GRADUATION_GLIDE_GAME_MONTHS converts the shipped
    *  real-time constant. */
   graduationGlide?: { startMonth: number; glideMonths: number };
-  /** Balance Pass 8 (PROPOSED-mechanic override — sim-only, default off):
-   *  extend the graduation glide to the MINING SPOT FLOOR. While this
-   *  player's graduationGlide is active, the spot each of its mined
-   *  resources is priced at floors at `spot + (base − spot) × glideFrac`
-   *  (the exact blend applyGraduationGlide uses for pool mults, applied to
-   *  the price axis — the decaying mirror of the Frontier shield's
-   *  frontierSpotFloor). The REAL engine does NOT do this today: the
-   *  shipped glide covers demand pools only, leaving a freshly-graduated
-   *  miner fully exposed to price campaigns. This opt exists to measure
-   *  that gap and validate the proposed fix. Absent/false = every legacy
-   *  table byte-identical. */
+  /** Balance Pass 8 override, SHIPPED by Pass 9: the graduation glide
+   *  extended to the MINING SPOT FLOOR. While this player's
+   *  graduationGlide is active, each mined resource's below-base spot is
+   *  priced at `spot + (base − spot) × glideFrac` — the exact blend the
+   *  REAL engine now applies (mining-pricing.ts
+   *  MiningRevenueOpts.graduationGlideFraction, wired in game-engine.ts §1
+   *  and away-operations.ts). Runners modeling a glide-carrying graduate
+   *  should set this to mirror the live engine; absent/false models a
+   *  pre-Pass-9 world (and keeps every legacy table byte-identical). */
   glideSpotFloor?: boolean;
   history: MonthRow[];
 }
@@ -345,16 +343,15 @@ export interface SimWorldOpts {
    *  (the mean-revert route consults active campaigns — price-campaigns.ts
    *  mechanic #1). Only meaningful with dynamicSpot on. */
   campaignSlugs?: string[];
-  /** Balance Pass 8 (H2 override validation — SIM-ONLY world switch, not an
-   *  engine change): divide labor-market.ts's LABOR_SUPPLY_BASE by this
-   *  factor when computing the shared wage index, modeling Pass 5's H2
-   *  "divide LABOR_SUPPLY_BASE by ~5 so a small-world population can move
-   *  the index" proposal. The crew-quarters supply term
-   *  (LABOR_SUPPLY_PER_QUARTERS) is deliberately NOT divided — housing
-   *  investment keeps its full counterplay weight, so the override makes
-   *  quarters RELATIVELY stronger, matching the proposal's intent.
-   *  Only meaningful with laborMarket on. Absent/1 = the real engine
-   *  constants (every legacy table byte-identical). */
+  /** Balance Pass 8 (H2 override validation): divide labor-market.ts's
+   *  LABOR_SUPPLY_BASE by this factor when computing the shared wage index.
+   *  The crew-quarters supply term (LABOR_SUPPLY_PER_QUARTERS) is
+   *  deliberately NOT divided — housing investment keeps its full
+   *  counterplay weight. Only meaningful with laborMarket on. Absent/1 =
+   *  the real engine constants. PASS 9 NOTE: the engine's
+   *  LABOR_SUPPLY_BASE now SHIPS the Pass-8 ÷4 (engineer 150 etc.), so
+   *  absent/1 already runs the recommended center; this switch divides the
+   *  new base further (diagnostic sweeps only). */
   laborSupplyDivisor?: number;
 }
 

@@ -4,8 +4,10 @@
  * mean-revert skip + NPC bid-halving both key off.
  */
 import {
-  computeCampaignFee, isCampaignActive, activeCampaignSlugs,
+  computeCampaignFee, computeMarketKeyedCampaignFee, computeCampaignMinInventory,
+  isCampaignActive, activeCampaignSlugs,
   PRICE_CAMPAIGN_MIN_FEE, PRICE_CAMPAIGN_MAX_FEE, PRICE_CAMPAIGN_FEE_REFERENCE_UNITS,
+  PRICE_CAMPAIGN_FEE_TURNOVER_FRACTION, PRICE_CAMPAIGN_MIN_INVENTORY_WINDOW_FRACTION,
   PRICE_CAMPAIGN_DURATION_MS, PRICE_CAMPAIGN_COOLDOWN_MS,
   PRICE_CAMPAIGN_MIN_INVENTORY, MAX_ACTIVE_CAMPAIGNS_PER_PROFILE,
   CAMPAIGN_NPC_BID_VOLUME_FACTOR, PRICE_CAMPAIGN_MIN_NET_WORTH,
@@ -37,6 +39,50 @@ describe('M5 O2 — campaign fee math', () => {
     expect(computeCampaignFee(0)).toBe(PRICE_CAMPAIGN_MIN_FEE);
     expect(computeCampaignFee(-5)).toBe(PRICE_CAMPAIGN_MIN_FEE);
     expect(computeCampaignFee(NaN)).toBe(PRICE_CAMPAIGN_MIN_FEE);
+  });
+});
+
+// ─── Balance Pass 9 (Pass 8 H1 prescription — sim-validated bands) ─────────
+describe('Pass 9 — market-keyed campaign fee (the CHARGED fee)', () => {
+  it('ships the exact Pass-8 prescription constants: fraction 0.15, floor $25M, cap $5B', () => {
+    expect(PRICE_CAMPAIGN_FEE_TURNOVER_FRACTION).toBe(0.15);
+    expect(PRICE_CAMPAIGN_MIN_FEE).toBe(25_000_000);
+    expect(PRICE_CAMPAIGN_MAX_FEE).toBe(5_000_000_000);
+  });
+
+  it('fee = 15% of window turnover between the bounds', () => {
+    expect(computeMarketKeyedCampaignFee(1_000_000_000)).toBe(150_000_000);
+    expect(computeMarketKeyedCampaignFee(2_000_000_000)).toBe(300_000_000);
+  });
+
+  it('clamps to the $25M floor and the $5B cap', () => {
+    expect(computeMarketKeyedCampaignFee(1_000_000)).toBe(PRICE_CAMPAIGN_MIN_FEE);
+    expect(computeMarketKeyedCampaignFee(1e15)).toBe(PRICE_CAMPAIGN_MAX_FEE);
+  });
+
+  it('fail-soft: empty/absent telemetry falls back to the $25M floor (documented relaunch-day-one posture)', () => {
+    expect(computeMarketKeyedCampaignFee(0)).toBe(PRICE_CAMPAIGN_MIN_FEE);
+    expect(computeMarketKeyedCampaignFee(null)).toBe(PRICE_CAMPAIGN_MIN_FEE);
+    expect(computeMarketKeyedCampaignFee(undefined)).toBe(PRICE_CAMPAIGN_MIN_FEE);
+    expect(computeMarketKeyedCampaignFee(NaN)).toBe(PRICE_CAMPAIGN_MIN_FEE);
+    expect(computeMarketKeyedCampaignFee(-100)).toBe(PRICE_CAMPAIGN_MIN_FEE);
+  });
+});
+
+describe('Pass 9 — scaled campaign min inventory', () => {
+  it('max(50, 10% of window production units)', () => {
+    expect(PRICE_CAMPAIGN_MIN_INVENTORY_WINDOW_FRACTION).toBe(0.10);
+    expect(computeCampaignMinInventory(10_000)).toBe(1_000);
+    expect(computeCampaignMinInventory(3_500)).toBe(350);
+    // Below the floor: 100 units → 10 < 50 → floor.
+    expect(computeCampaignMinInventory(100)).toBe(PRICE_CAMPAIGN_MIN_INVENTORY);
+  });
+
+  it('fail-soft to the 50-unit floor on empty/absent telemetry', () => {
+    expect(computeCampaignMinInventory(0)).toBe(PRICE_CAMPAIGN_MIN_INVENTORY);
+    expect(computeCampaignMinInventory(null)).toBe(PRICE_CAMPAIGN_MIN_INVENTORY);
+    expect(computeCampaignMinInventory(undefined)).toBe(PRICE_CAMPAIGN_MIN_INVENTORY);
+    expect(computeCampaignMinInventory(NaN)).toBe(PRICE_CAMPAIGN_MIN_INVENTORY);
   });
 });
 

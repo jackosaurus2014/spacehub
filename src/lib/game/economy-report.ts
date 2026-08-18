@@ -16,7 +16,7 @@ import { getWorkforceBonuses } from './workforce';
 // the P&L panel with their inputs"): the report must reflect the SAME
 // wage-index-adjusted payroll the live tick actually charges, not the flat
 // base-salary figure.
-import { getMonthlyPayrollWithWageIndex, getWageIndex } from './labor-market';
+import { getMonthlyPayrollForState, getPayrollWageIndex } from './labor-market';
 import { WORKER_TYPES } from './workforce';
 // LS6 (Programs Queue): same effective-workforce + program-bonus merge as
 // game-engine.ts's live tick, so the P&L report never disagrees with actual
@@ -188,7 +188,9 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   // All the bonus sources, in the same order as game-engine.ts
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(state)), state);
-  const payroll = getMonthlyPayrollWithWageIndex(workforce, state.laborMarket, now);
+  // Pass 9: Frontier-shielded payroll index — must mirror game-engine.ts §0
+  // exactly (the P&L never disagrees with actual tick behavior).
+  const payroll = getMonthlyPayrollForState(workforce, state, now);
   const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
 
   const legacy = state.legacy || DEFAULT_LEGACY;
@@ -434,7 +436,8 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   const wageIndexByType: Partial<Record<string, number>> = {};
   for (const wDef of WORKER_TYPES) {
     const count = (workforce[`${wDef.type}s` as keyof typeof workforce] as number | undefined) || 0;
-    if (count > 0) wageIndexByType[wDef.type] = getWageIndex(state.laborMarket, wDef.type, now);
+    // Pass 9: show the index payroll actually PAYS (Frontier-shielded).
+    if (count > 0) wageIndexByType[wDef.type] = getPayrollWageIndex(state, wDef.type, now);
   }
 
   const costs: CostBreakdown = {
