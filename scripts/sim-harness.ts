@@ -65,7 +65,10 @@ import type { GameState } from '../src/lib/game/types';
 // config exercises — all REAL engine imports, never reimplemented.
 import {
   computeLaborAggregates,
+  computeWageIndex,
   sumCrewQuarters,
+  LABOR_SUPPLY_BASE,
+  LABOR_SUPPLY_PER_QUARTERS,
   type LaborActivitySummary,
 } from '../src/lib/game/labor-market';
 import { WORKER_TYPES, type WorkerType } from '../src/lib/game/workforce';
@@ -151,6 +154,18 @@ export interface SimPlayer {
    *  table byte-identical). GRADUATION_GLIDE_GAME_MONTHS converts the shipped
    *  real-time constant. */
   graduationGlide?: { startMonth: number; glideMonths: number };
+  /** Balance Pass 8 (PROPOSED-mechanic override — sim-only, default off):
+   *  extend the graduation glide to the MINING SPOT FLOOR. While this
+   *  player's graduationGlide is active, the spot each of its mined
+   *  resources is priced at floors at `spot + (base − spot) × glideFrac`
+   *  (the exact blend applyGraduationGlide uses for pool mults, applied to
+   *  the price axis — the decaying mirror of the Frontier shield's
+   *  frontierSpotFloor). The REAL engine does NOT do this today: the
+   *  shipped glide covers demand pools only, leaving a freshly-graduated
+   *  miner fully exposed to price campaigns. This opt exists to measure
+   *  that gap and validate the proposed fix. Absent/false = every legacy
+   *  table byte-identical. */
+  glideSpotFloor?: boolean;
   history: MonthRow[];
 }
 
@@ -330,6 +345,17 @@ export interface SimWorldOpts {
    *  (the mean-revert route consults active campaigns — price-campaigns.ts
    *  mechanic #1). Only meaningful with dynamicSpot on. */
   campaignSlugs?: string[];
+  /** Balance Pass 8 (H2 override validation — SIM-ONLY world switch, not an
+   *  engine change): divide labor-market.ts's LABOR_SUPPLY_BASE by this
+   *  factor when computing the shared wage index, modeling Pass 5's H2
+   *  "divide LABOR_SUPPLY_BASE by ~5 so a small-world population can move
+   *  the index" proposal. The crew-quarters supply term
+   *  (LABOR_SUPPLY_PER_QUARTERS) is deliberately NOT divided — housing
+   *  investment keeps its full counterplay weight, so the override makes
+   *  quarters RELATIVELY stronger, matching the proposal's intent.
+   *  Only meaningful with laborMarket on. Absent/1 = the real engine
+   *  constants (every legacy table byte-identical). */
+  laborSupplyDivisor?: number;
 }
 
 /** Balance Pass 2: expected units per delivery contract. Derivation from
@@ -367,7 +393,7 @@ export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult' | 'graduationGlide'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult' | 'graduationGlide' | 'glideSpotFloor'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
@@ -380,6 +406,7 @@ export function newPlayer(
     trainingLevel: opts.trainingLevel,
     revenueMult: opts.revenueMult,
     graduationGlide: opts.graduationGlide,
+    glideSpotFloor: opts.glideSpotFloor,
     history: [],
   };
 }
@@ -477,7 +504,20 @@ export function stepMonth(world: SimWorld, month: number): void {
     }));
     const aggregates = computeLaborAggregates(summaries);
     wageIndexByType = new Map();
-    aggregates.forEach((agg, type) => wageIndexByType!.set(type, agg.index));
+    // Balance Pass 8 (opt-in): H2 supply-side override — recompute the index
+    // through the REAL computeWageIndex with LABOR_SUPPLY_BASE ÷ divisor.
+    // The crew-quarters term keeps full weight (see SimWorldOpts doc).
+    const divisor = world.opts.laborSupplyDivisor;
+    if (divisor && divisor !== 1) {
+      const quartersServerWide = world.players.reduce((a, p) => a + sumCrewQuarters(p.buildings), 0);
+      aggregates.forEach((agg, type) => {
+        const scaledSupply = LABOR_SUPPLY_BASE[type] / divisor
+          + Math.max(0, quartersServerWide) * LABOR_SUPPLY_PER_QUARTERS;
+        wageIndexByType!.set(type, computeWageIndex(agg.employedEffective, scaledSupply));
+      });
+    } else {
+      aggregates.forEach((agg, type) => wageIndexByType!.set(type, agg.index));
+    }
   }
   // Combined physical flows for the dynamic-spot update (0a) — filled in
   // during the per-player loop, applied at month end (§7).
@@ -710,7 +750,19 @@ export function stepMonth(world: SimWorld, month: number): void {
         // physical byproduct units are still credited to inventory (loop
         // above), unaffected by M3.
         if (isMiningOutput) {
-          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, world.spotSnapshot) * rMult * saturationMult;
+          // Balance Pass 8 (opt-in, PROPOSED mechanic): glide-blended spot
+          // floor for gliding graduates — see SimPlayer.glideSpotFloor doc.
+          let snapshotForPlayer = world.spotSnapshot;
+          if (p.glideSpotFloor && glideFrac > 0 && snapshotForPlayer?.prices) {
+            const floored: Record<string, number> = { ...snapshotForPlayer.prices };
+            for (const res of Object.keys(unitsPerResource)) {
+              const b = RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0;
+              const s = floored[res] ?? b;
+              if (s < b) floored[res] = s + (b - s) * glideFrac;
+            }
+            snapshotForPlayer = { ...snapshotForPlayer, prices: floored };
+          }
+          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, snapshotForPlayer) * rMult * saturationMult;
         }
       }
     }

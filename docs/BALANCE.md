@@ -1795,3 +1795,245 @@ Standing consequences of the ruling:
   H3 (dead decades) remain HIGH / first-month-of-new-world items, per their
   original ranking. H3's research-wall component is now partially canon by
   this ruling; its rung-gap component ($2B → $8–80B catalog jump) stands.
+
+## Pass 8 — dynamic competitive-tools campaign (2026-08, pre-relaunch)
+
+**Founder directive:** *"Run a simulated game where you test out the
+competitive tools and balance test them."* Passes 3–5 priced every offense
+lever in ISOLATION (static duels, analytic ledgers). Pass 8 is the missing
+integration test: one shared world where rule-based archetypes actively USE
+the tools against each other over time, with counterplay — an AGGRESSOR
+(fires campaigns/poaches when rational per a documented model), a DEFENDER
+(ride-out / mothball / spread; retain / rehire), an OPPORTUNIST (buys the
+crash, sells the reversion), two bystanders (one with collateral exposure),
+and a fresh $300M GRADUATE carrying the shipped Pass-6 glide. Mid-pass, the
+founder approved implementing H1 + H2 before the 2026-08-24 relaunch —
+**§"Prescriptions" below is the tuning authority for that implementation
+wave**, with sim-validated constants and passing bands.
+
+**Runner:** `npx tsx scripts/sim-tools.ts` — deterministic (double-run
+diff-identical), 96 game-months (24 real days) per era, all realism switches
+on plus a background population (era A: 26 corps total; era B: 36 — the
+labor market sees a realistic employed base). Two eras: **A** = relaunch
+scale ($200M–2B), **B** = mid-game ($10–50B). Campaign market: lunar_water
+(the S7/Pass-5 reference). Every attack's ROI is measured by
+**twin-scenario differencing** (same world run with and without the attack,
+per-player deltas diffed, out-of-band fees ledgered separately from
+in-world P&L, end-of-run book NW as the cross-check).
+
+**Tempo note (a finding in itself):** the offense clocks are REAL-time —
+one campaign window is 7 real days = 28 game-months and its cooldown 14
+days = 56 more, so a "24-game-month" era (6 real days) cannot contain even
+one complete campaign cycle. Economic offense lives on the weekly/monthly
+loop by construction; tables are cut at month 23 and month 95.
+
+### Coverage (honest statement)
+
+| tool / mechanic | status |
+|---|---|
+| Campaign fee/gates/window/cooldown, mean-revert skip, band floor, crash dynamics via combined-flow price impact + NPC caps | REAL modules |
+| Poach bonus/retention/fee/cooldowns/min-headcount + Pass-4 wage-indexed rehire; workforce bonus transmission (headcounts are STATE, poach-mutable) | REAL modules |
+| Labor index (computeLaborAggregates monthly over live headcounts), payroll, hire cost | REAL modules |
+| Mothball/reactivation counterplay (25% / 5% / 1-month constants; pools + deposits react to the exit) | REAL constants, runner-driven |
+| Campaign NPC bid-halving during the pin; poach wage-bump transient | APPROXIMATED (both attacker-favorable ⇒ attacker ROI here is an upper bound) |
+| Poach detection/reputation roll | OUT OF COVERAGE (more attacker risk ⇒ again upper bound) |
+| Slot auctions/denial | OUT OF DYNAMIC COVERAGE — world GEO occupancy peaked at 2–3 of 180 slots (trigger: 153); population-gated, not price-gated, at BOTH eras |
+| Freight tolls, takeovers, cornering/espionage products | OUT OF COVERAGE / ANALYTIC ONLY (no lanes/governors in harness; takeovers dormant; campaigns are PUBLIC so the crash-trade needs no intel fee) |
+
+### Q1 — Does the toolkit ever fire? (policy runs, current constants)
+
+| era | median net/mo | campaign fee ÷ median | campaign fires / 96 mo | best model ratio (fires ≥1) | poach fires |
+|---|---:|---:|---:|---:|---:|
+| A (relaunch) | $27.3M | **9.2×** | **0** | 0.18 | 1 (mo 21, ratio 1.21) |
+| B (mid-game) | $111.5M | 2.2× | **0** | 0.59 | 1 (mo 1, ratio 5.84) |
+
+**Pass-5 H1 CONFIRMED dynamically — and extended:** the campaign never
+fires at relaunch scale, and (new) it never fires at mid-game either. Even
+zeroing the fee doesn't fully fix era A: total rival lunar_water exposure
+(~$65–125M/window at pressure-scaled volumes) is small against the $250M
+fee **plus** the attacker's own self-damage (the campaign is market-wide
+and the natural aggressor produces the resource it crashes). Poaching is
+alive post-Pass-4 (fires once per era) but at trivially small stakes —
+see Q2. **H2 CONFIRMED:** engineer index pinned at 0.80 for all 96 months
+in both eras with 26/36 corps employing 244/353 engineers.
+
+### Q2 — When tools fire, are they balanced? (forced fire at mo 20, twin-diff, total Δ incl. out-of-band fees)
+
+Campaign (defender rides out; window = mo 20–47):
+
+| era | attacker total Δ | defender | bystander-2 (collateral) | graduate | opportunist | rival damage ÷ attacker cost |
+|---|---:|---:|---:|---:|---:|---:|
+| A | **−$264.7M** | −$85.7M | −$14.6M | −$18.7M | +$24.8M (crash trade) | **0.45** |
+| B | **−$402.2M** | −$307.3M | −$148.6M | −$26.2M | +$30.4M | **1.20** |
+
+At era A the campaign is a pure own-goal (attacker burns $2.2 for every $1
+of rival damage). At era B measured damage finally exceeds cost (1.2×) —
+but only because the whale-defender's exposure is huge; the aggressor's
+own model (which can't see post-window trailing effects) still reads 0.59
+and correctly declines. The opportunist's crash-buy → reversion-sell trade
+is real but NPC-cap-bounded (+$25–30M per campaign) — warfare leaks value
+to third parties, which is the healthy direction. Poach (forced, n=1 @
+idx 0.80): attacker all-in $13.6M (fee + bonus burned) vs defender rehire
+$2.5M, or attacker $10M sunk vs $2.7M retention burn if countered —
+**fee-for-burn griefing costs the attacker 3.7× what it costs the
+victim; no dominant tool exists at either era.** New structural finding:
+a capped attacker (10 engineers = the serviceRevenue cap) gains ZERO
+acquisition value from poached heads — poaching is pure damage unless the
+attacker is below its bonus caps (ties to Pass-5 H2's crew-requirements
+route).
+
+### Q3 — Are counterplay decisions real? (campaign forced mo 20; defender book NW @ mo 95)
+
+| response | era A NW | era B NW |
+|---|---:|---:|
+| ride out | $3.21B | $21.82B |
+| mothball | **$2.59B (trap: −19%)** | $21.73B (≈ neutral — deposit-pressure recovery pays back the pause) |
+| spread (build 1 uncrowded service) | **$3.34B (best)** | **$22.29B (best)** |
+| (no attack) | $3.30B | $22.14B |
+
+Real, era-dependent choices: mothball is a trap for an early lunar miner
+(its whole income is the mines) but ≈ break-even at mid-game where pausing
+lets shared extraction pressure recover; diversifying out is best
+everywhere (and its capex is +EV regardless — the campaign mostly punishes
+under-diversification). Glossary/counterplay copy should stop implying
+mothball is the default answer for small miners.
+
+### Q5 — Escalation (attack mo 20; defender retaliates with counter-campaign + counter-poach)
+
+Era A full-run total Δ: aggressor −$265.5M, retaliating defender
+**−$1.35B** (counter-campaigning in its own primary market extends the pin
+against itself), bystanders +$5.6M/+$25.9M, graduate +$13.5M, opportunist
++$23.5M. Era B: aggressor −$449M, defender −$609M, third parties flat-to-
+positive. **Tit-for-tat with the same tools is strictly value-destroying
+for the victim; the best response is defensive + diversification. Sustained
+warfare bankrupts both sides while bystanders collect the leak — deterrence
+by cost-asymmetry, no reward for the aggressor.** (Model wrinkle,
+documented: concurrent campaigns on one resource collapse to a single pin
+window in the sim.)
+
+### Q4/Q6 — Override validation (era A; sim-only world switches, zero engine changes)
+
+**H2 corp-count thresholds** (real `computeLaborAggregates`; rational-cap
+corp = 10 engineers, 8.5 effective):
+
+| divisor | supply base | leaves 0.80 floor at | reaches 1.00 at | pins 1.60 at | in-world max idx (26 corps) |
+|---|---:|---:|---:|---:|---:|
+| ÷1 (today) | 600 | 57 corps | 71 | 113 | 0.800 (dead) |
+| ÷2 | 300 | 29 | 36 | 57 | 0.800 (dead) |
+| ÷3 | 200 | 19 | 24 | 38 | 1.033 |
+| **÷4** | **150** | **15** | **18** | **29** | **1.377** |
+| ÷5 | 120 | 12 | 15 | 23 | 1.600 (pinned hot) |
+| ÷8 | 75 | 8 | 9 | 15 | 1.600 (pinned hot) |
+
+**H1 campaign-fee sweep** (policy runs; H2 ÷4 + income-indexed poach fee
+active; crush ratio = measured attacker all-in ÷ graduate window damage
+with best counterplay, requirement ≥1.5):
+
+| schedule | fee paid | fires | attacker all-in | defender dmg | graduate dmg | crush |
+|---|---:|---:|---:|---:|---:|---:|
+| current constants | — | 0 | — | — | — | — |
+| Pass-5 wealth 5% NW buying proportional depth | — | 0 (ratio 0.18) | — | — | — | — |
+| market-keyed 10–25% | $25M (min-fee floor binds) | 1 @ mo 24 | $41.8M | $87.2M | $19.0M | 2.2 : 1 ✓ |
+| market-keyed 40% | — | 0 (ratio 0.83) | — | — | — | — |
+| **market 15% + graduate mining-spot glide** | $25M | 1 @ mo 24 | $43.2M | $88.5M | **$12.7M** | **3.4 : 1 ✓** |
+
+**Pass-5's wealth-indexed-depth shape is REFUTED with data:** when the fee
+buys proportional crash depth, expected damage scales with the fee and the
+damage/cost ratio is fee-invariant (~0.2 at era A) — no percentage ever
+brings the tool alive. The variable that matters is the **fee relative to
+the market's window turnover**. Market-keyed fees at 10–25% of window
+turnover fire organically at era A (in practice the $25M min-fee floor
+binds at relaunch volumes) with crush 2.2:1, and at era B (**§7**: fee
+$74.4M, fired 2×, attacker all-in $232M vs defender damage $310M, crush
+19:1). Shields verified intact under the full override stack: graduate
+net/mo unchanged ($10.5M → $10.6M; the demand-pool glide untouched),
+graduate NW @ mo 95 unchanged, poach reach still 1 head vs a 4-engineer
+graduate, Frontier immunity structural.
+
+### PRESCRIPTIONS (the tuning authority for the approved H1/H2 wave)
+
+1. **H2 — labor supply.** `LABOR_SUPPLY_BASE` ÷4 (engineer 600→**150**,
+   scientist 500→**125**, miner 700→**175**, operator 550→**138**, pilot
+   400→**100**, negotiator 300→**75**, security 400→**100**, medic
+   350→**88**). `LABOR_SUPPLY_PER_QUARTERS` stays 2 — housing counterplay
+   gets relatively 4× stronger, which is the intended cooperative loop.
+   **Passing band ÷3–÷5**, keyed to expected relaunch population: ÷3 if
+   25–40 active corps expected, **÷4 for 15–30 (recommended center)**, ÷5
+   only if ≤20; ÷2 stays dead below 29 corps, ÷8 pins 1.6 at 15. **Required
+   pairing:** extend the Frontier hire-cost shield to PAYROLL
+   (`min(index, 1.0)` while `isInFrontier` — Pass-4 follow-up #3): with ÷4
+   a relaunch-week hiring boom can genuinely reach 1.3–1.6, and Frontier
+   corps must not pay it.
+2. **H1 — campaign fee.** Replace the 5,000-unit reference with a
+   market-keyed fee: `fee = clamp(0.15 × windowTurnover, $25M, $5B)`,
+   where `windowTurnover` = trailing-7-real-day server-wide production
+   value of the resource (units × spot — LocationExtraction/TradeStatDaily
+   telemetry already exists; fall back to the old `basePrice × 5,000` when
+   telemetry is empty). **Passing band 0.10–0.25** (0.40 kills the tool
+   again). Depth stays FULL (band floor 0.3×) — do NOT ship fee-scaled
+   depth (refuted above). Raise `PRICE_CAMPAIGN_MAX_FEE` $500M → $5B
+   (Pass-5 H1's whale-end fix, unchanged).
+3. **Graduate mining-spot glide (ships WITH #2, non-negotiable).** Extend
+   `applyGraduationGlide` to the mining spot floor: while the Pass-6 glide
+   is active, a below-base spot is priced for that save at
+   `spot + (base − spot) × glideFraction` (the decaying mirror of
+   Frontier's `frontierSpotFloor`; live tick + away-operations parity,
+   same as Pass 6). Cheapening campaigns without this exposes fresh
+   graduates; with it, crush moves 2.2:1 → 3.4:1 at glide-age 24 months
+   and a week-one graduate is near-fully shielded. Sim-validated via the
+   harness `glideSpotFloor` opt (guarded by
+   `sim-tools-overrides.test.ts`).
+4. **Poach action fee.** `POACH_ACTION_FEE × clamp(worldMedianMonthlyNet
+   / $30M, 1, 50)`, republished with the quarterly balance telemetry
+   (Pass-5's median-income factor, now sim-validated: factor 1 at relaunch
+   — the $10M fee is correctly sized there — rising to ~×3.7 at era B
+   where poaching still fired at ratio 1.41). Apply the same factor to the
+   freight-toll cap and intel/report fees (era-anchored: toll cap is 7.3%
+   of median monthly net at era A — fine; 1.8% at era B — rounding error).
+5. **Campaign min inventory.** Raise `PRICE_CAMPAIGN_MIN_INVENTORY` from
+   50 to `max(50, 10% of trailing-window server production units)` —
+   analytic, not simmed: today's "real shells" gate costs $2.6M next to a
+   $250M fee (cosmetic); at era A volumes this makes it ~300–450 units
+   (~$15–22M) of genuine production presence.
+
+### Ranked findings
+
+- **HIGH (relaunch): H1 confirmed + remedy corrected.** Campaign fee 9.2×
+  median monthly net at era A, 0 fires in 96 months at BOTH eras; the
+  approved fix must be the market-keyed fee family above — the
+  wealth-×-depth shape does not work (fee-invariant ratio).
+- **HIGH (relaunch): H2 confirmed + prescribed.** Index pinned 0.80 with
+  26–36 corps; ÷4 with the Frontier payroll pairing brings it alive at
+  15+ corps without crushing newcomers (graduate delta +$0.1M/mo — the
+  4-engineer payroll term is noise).
+- **HIGH: campaign self-exposure is a design feature to keep.** The
+  natural campaigner produces what it crashes (era B self-damage $34M/mo
+  scale); this — not the fee — is the deep griefing brake. The market-
+  keyed fee preserves it.
+- **WATCH: poach acquisition value is zero for capped attackers** (bonus
+  caps) — poaching is pure damage at 1–2 heads/offer at relaunch
+  headcounts. Becomes content when Pass-5 H2's crew-requirements route
+  lands; until then it is correctly priced but small.
+- **WATCH: counterplay copy.** Mothball is a trap at relaunch scale
+  (−19% NW vs ride-out) and only neutral at mid-game; spread is best
+  everywhere. Update HoloTip/glossary counterplay text accordingly.
+- **WATCH: escalation is defensively healthy** — retaliation-in-kind is
+  self-destructive, bystanders profit from wars, aggressors always pay
+  more than they destroy at relaunch scale. Re-verify after the fee wave
+  with `sim-tools.ts` (§5 prints it every run).
+- **Structural: slot auctions cannot fire at either era** (GEO occupancy
+  2–3 of 180 after 96 months; trigger 153) — population-gated. No pricing
+  change can revive them; nothing to do before relaunch.
+
+### Tooling shipped (audit-only — zero engine changes)
+
+`scripts/sim-tools.ts` (new runner, all tables above);
+`scripts/sim-harness.ts` + two opt-in switches (`SimWorldOpts.
+laborSupplyDivisor`, `SimPlayer.glideSpotFloor`), both absent-by-default;
+`src/lib/game/__tests__/sim-tools-overrides.test.ts` (7 guards:
+defaults-off invariance for both switches, divisor payroll math vs
+`computeWageIndex`, spot-floor blend/expiry/premium-passthrough).
+Verification: `tsc --noEmit` clean; full jest **4,589/208 green**;
+sim-tools double-run diff-identical; all four legacy runners
+(sim-strategies, sim-resources, sim-pvp, sim-50yr) re-run and diffed
+against pre-change captures — **byte-identical**.
