@@ -132,6 +132,14 @@ const SPACE_RELEVANCE_KEYWORDS: string[] = Array.from(new Set([
   // audit): genuine space-science terms that were missing, so SETI and
   // first-contact pieces read as off-topic to the guard.
   'extraterrestrial', 'seti', 'astrobiolog', 'technosignature', 'biosignature',
+  // Radio astronomy + space-defense program vocabulary (added 2026-08-20
+  // after the guard wrongly dropped "What Did the ASKAP VAST Pilot Survey
+  // Reveal About the Dynamic Radio Sky?" and "Is Golden Dome Another SDI?").
+  // 'missile defense' sits in GENERIC_KEYWORD_DENYLIST as generic military
+  // vocabulary, so the space-based programs need naming directly.
+  'radio astronomy', 'radio telescope', 'square kilometre array', 'askap',
+  'radio sky', 'sky survey', 'golden dome', 'strategic defense initiative',
+  'space-based interceptor', 'missile warning',
 ]));
 
 // --- Feed boilerplate ---

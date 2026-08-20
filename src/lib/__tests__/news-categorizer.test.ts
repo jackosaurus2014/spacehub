@@ -374,3 +374,21 @@ describe('all-feeds audit 2026-08-20', () => {
     expect(isEntertainmentCoverage('New series trailer lands ahead of the Disney+ premiere')).toBe(true);
   });
 });
+
+describe('regression: guard dropped these real articles before the vocabulary was added', () => {
+  const src = 'New Space Economy';
+  it('keeps radio astronomy', () => {
+    expect(
+      isSpaceRelevant('What Did the ASKAP VAST Pilot Survey Reveal About the Dynamic Radio Sky?', '', src)
+    ).toBe(true);
+  });
+  it('keeps space-based missile-defense program coverage', () => {
+    expect(isSpaceRelevant('Is Golden Dome Another SDI?', '', src)).toBe(true);
+    expect(isSpaceRelevant('Golden Dome faces 2027 funding cliff', '', src)).toBe(true);
+  });
+  it('still blocks the generic AI/business explainers', () => {
+    expect(isSpaceRelevant('Is AI a Market Bubble?', '', src)).toBe(false);
+    expect(isSpaceRelevant('What Is the Difference Between an NVIDIA GPU and Google TPU?', '', src)).toBe(false);
+    expect(isSpaceRelevant('How TAM Headlines Turn Market Opportunity into Investor Bait', '', src)).toBe(false);
+  });
+});
