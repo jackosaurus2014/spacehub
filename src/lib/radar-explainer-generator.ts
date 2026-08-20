@@ -16,6 +16,7 @@ import {
   type ExplainerCandidate,
   type GeneratedExplainerSections,
 } from '@/lib/radar-explainers';
+import { resolveFactCheckGate, type FactCheckResult } from '@/lib/fact-check-gate';
 
 /**
  * Radar rule explainer generator (Regulatory Wave B, item 3).
@@ -45,12 +46,6 @@ export interface RadarExplainerRunResult {
   held: number;
   errors: number;
   skips: string[];
-}
-
-interface FactCheckResult {
-  overallVerdict: 'pass' | 'minor_issues' | 'major_issues';
-  notes: string;
-  corrections: string[];
 }
 
 /**
@@ -252,15 +247,9 @@ export async function generateRadarExplainers(now = new Date()): Promise<RadarEx
         // Fact-check gate (same pattern as AI dailies): pass/minor → publish,
         // major → hold for admin review.
         const factCheck = await factCheckExplainer(anthropic, prompt, title, content);
-        let factCheckNote: string;
-        if (factCheck.overallVerdict === 'major_issues') {
-          factCheckNote = `MAJOR ISSUES: ${factCheck.notes}${factCheck.corrections.length > 0 ? `\nCorrections needed: ${factCheck.corrections.join('; ')}` : ''}`;
-        } else if (factCheck.overallVerdict === 'minor_issues') {
-          factCheckNote = `Minor notes: ${factCheck.notes}${factCheck.corrections.length > 0 ? `\nSuggestions: ${factCheck.corrections.join('; ')}` : ''}`;
-        } else {
-          factCheckNote = factCheck.notes || 'Passed fact-check';
-        }
-        const status = factCheck.overallVerdict === 'major_issues' ? 'pending_review' : 'published';
+        // Status and note come from ONE gate evaluation so they can never
+        // disagree — see src/lib/fact-check-gate.ts for why that matters.
+        const { status, note: factCheckNote } = resolveFactCheckGate(factCheck);
 
         const raw = parseExplainerRaw(action.raw);
         const sources: Array<{ title: string; url: string }> = [

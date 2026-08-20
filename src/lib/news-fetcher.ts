@@ -95,6 +95,12 @@ const GENERIC_KEYWORD_DENYLIST = new Set([
 const AMBIGUOUS_TERM_DENYLIST = new Set([
   'vast', 'virgin', 'gateway', 'probe', 'rover', 'engine', 'delta', 'atlas',
   'ses ', 'sda ', 'reconnaissance', 'apollo',
+  // 'mars' and 'moon' are genuine space signals but disastrous as
+  // SUBSTRINGS — they match "marsh", "Marshall", "honeymoon". Both are
+  // re-added below in SPACE_RELEVANCE_WORD_TERMS, which matches on word
+  // boundaries. (categorizeArticle still uses them as substrings; a
+  // mislabeled category is low-stakes, a wrongly-stored article is not.)
+  'mars', 'moon',
 ]);
 
 const SPACE_RELEVANCE_KEYWORDS: string[] = Array.from(new Set([
@@ -124,21 +130,111 @@ const SPACE_RELEVANCE_KEYWORDS: string[] = Array.from(new Set([
   'solar flare', 'solar wind', 'solar storm', 'heliosphere', 'aurora',
 ]));
 
+// --- Feed boilerplate ---
+//
+// WHY THIS EXISTS (2026-08-20): most WordPress-backed feeds append a
+// self-referential trailer to every item's content snippet:
+//
+//   "The post <full title> appeared first on Space Daily."
+//
+// The outlet name inside that trailer contains the substring "space", which
+// matched the SPACE_RELEVANCE_KEYWORDS entry 'space' on EVERY SpaceDaily
+// item. The relevance guard was therefore a no-op for the single feed that
+// most needs it, and SpaceDaily's general-interest science filler — the
+// chemistry of mown grass, raven cognition, Marcus Aurelius quotes, octopus
+// behaviour, Sardinian centenarians — reached the top of the live news feed.
+//
+// Stripping the trailer before scoring restores the guard without touching
+// the keyword list, so legitimate astronomy, planetary science, launch,
+// policy and industry stories are unaffected.
+const FEED_BOILERPLATE_PATTERNS: RegExp[] = [
+  // "The post <title> appeared first on <Outlet>."  (WordPress default)
+  /\bthe post\b[\s\S]*?\bappeared first on\b[^.]*\.?/gi,
+  // Bare "appeared first on <Outlet>." / "originally appeared on <Outlet>."
+  /\b(?:originally\s+)?appeared\s+(?:first\s+)?on\b[^.]*\.?/gi,
+  // "This article was originally published on <Outlet>."
+  /\bthis (?:article|post|story|piece)\b[^.]*\b(?:published|appeared)\b[^.]*\.?/gi,
+  // Common feed footers
+  /\bread more at\b[^.]*\.?/gi,
+  /\bcontinue reading\b[^.]*\.?/gi,
+];
+
+/**
+ * Remove syndication trailers that name the publishing outlet. Exported for
+ * tests and for the off-topic purge script.
+ */
+export function stripFeedBoilerplate(text: string): string {
+  if (!text) return '';
+  let out = text;
+  for (const pattern of FEED_BOILERPLATE_PATTERNS) {
+    out = out.replace(pattern, ' ');
+  }
+  return out.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Remove a feed's own name from the text being scored. An outlet called
+ * "SpaceDaily", "CNN Space" or "ScienceAlert Space" must not vouch for its
+ * own articles' topicality just by being mentioned in them.
+ */
+function stripSourceSelfReference(text: string, sourceName: string): string {
+  if (!sourceName) return text;
+  const spaced = sourceName.replace(/([a-z])([A-Z])/g, '$1 $2');
+  const variants = new Set<string>([
+    sourceName,
+    spaced,
+    sourceName.replace(/\s+/g, ''),
+    `${sourceName.replace(/\s+/g, '').toLowerCase()}.com`,
+  ]);
+  let out = text;
+  for (const variant of Array.from(variants)) {
+    if (variant.length < 4) continue;
+    out = out.replace(new RegExp(variant.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), ' ');
+  }
+  return out;
+}
+
+// Solar-system and astronomy proper nouns that are valuable relevance
+// signals but UNSAFE as substrings ('titan' inside "titanium", 'sun' inside
+// "Sunday", 'io' inside "region"). Matched on word boundaries instead.
+// Without these, closing the boilerplate hole over-blocked real planetary
+// science from SpaceDaily — Titan's methane cycle, habitable altitudes over
+// Venus, Uranus/Neptune atmospheric temperatures.
+const SPACE_RELEVANCE_WORD_TERMS: string[] = [
+  'mars', 'martian', 'moon', 'moons', 'lunar', 'venus', 'venusian',
+  'jupiter', 'jovian', 'saturn', 'saturnian', 'titan', 'europa',
+  'enceladus', 'ganymede', 'callisto', 'triton', 'uranus', 'neptune',
+  'pluto', 'ceres', 'milky way', 'eclipse', 'sunspot', 'universe',
+  'light-year', 'light years', 'big bang', 'star formation', 'spacewalk',
+  'launch pad', 'launch site', 'payload fairing',
+];
+
+const SPACE_RELEVANCE_WORD_PATTERN = new RegExp(
+  `\\b(?:${SPACE_RELEVANCE_WORD_TERMS.map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`,
+  'i'
+);
+
 /**
  * Conservative relevance check: does the title+summary contain at least
  * one keyword that signals the article is genuinely about space? Used to
  * gate feeds that aren't space-dedicated (see RELEVANCE_GUARD_FEEDS).
+ *
+ * `sourceName` is optional for backwards compatibility; pass it whenever it
+ * is known so the feed's own branding can't satisfy the guard.
  */
-export function isSpaceRelevant(title: string, summary: string): boolean {
-  const text = `${title} ${summary}`.toLowerCase();
-  return SPACE_RELEVANCE_KEYWORDS.some(keyword => text.includes(keyword));
+export function isSpaceRelevant(title: string, summary: string, sourceName?: string): boolean {
+  let text = `${title} ${stripFeedBoilerplate(summary)}`;
+  if (sourceName) text = stripSourceSelfReference(text, sourceName);
+  const lowered = text.toLowerCase();
+  if (SPACE_RELEVANCE_KEYWORDS.some(keyword => lowered.includes(keyword))) return true;
+  return SPACE_RELEVANCE_WORD_PATTERN.test(lowered);
 }
 
 // Feeds that require at least one space-relevance keyword match before an
 // article is stored. Space-dedicated feeds (NASA, ESA, SpaceNews,
 // NASASpaceflight, Payload, etc.) bypass this guard entirely — everything
 // they publish is presumed on-topic.
-const RELEVANCE_GUARD_FEEDS = new Set([
+export const RELEVANCE_GUARD_FEEDS = new Set([
   'SpaceDaily',
   'ScienceAlert Space',
   'CNN Space',
@@ -524,10 +620,15 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
         if (!item.link || !item.title) continue;
 
         const summary = item.contentSnippet || item.content || item.summary || '';
-        const cleanSummary = sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} }).slice(0, 500);
+        // Strip the syndication trailer ("The post … appeared first on Space
+        // Daily.") before storing: it is reader-visible cruft that repeats the
+        // headline verbatim, and it is what defeated the relevance guard.
+        const cleanSummary = stripFeedBoilerplate(
+          sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} })
+        ).slice(0, 500);
 
         // Conservative relevance guard for feeds that aren't space-dedicated
-        if (RELEVANCE_GUARD_FEEDS.has(feed.name) && !isSpaceRelevant(item.title, cleanSummary)) {
+        if (RELEVANCE_GUARD_FEEDS.has(feed.name) && !isSpaceRelevant(item.title, cleanSummary, feed.name)) {
           offtopicSkipped++;
           continue;
         }

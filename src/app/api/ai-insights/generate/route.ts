@@ -8,6 +8,11 @@ import crypto from 'crypto';
 import { logger } from '@/lib/logger';
 import { unauthorizedError, internalError, requireCronSecret } from '@/lib/errors';
 import { generateEditorialReviewEmail } from '@/lib/newsletter/email-templates';
+import {
+  resolveFactCheckGate,
+  releaseMisheldInsights,
+  type FactCheckResult,
+} from '@/lib/fact-check-gate';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,10 +28,20 @@ interface ClaudeInsightsResponse {
   insights: GeneratedInsight[];
 }
 
-interface FactCheckResult {
-  overallVerdict: 'pass' | 'minor_issues' | 'major_issues';
-  notes: string;
-  corrections: string[];
+/**
+ * A fact-check attempt that failed for PLUMBING reasons (no text block,
+ * unparseable body, transport/API error) rather than for editorial ones.
+ * These are not article defects, so they get one bounded retry before the
+ * article is held.
+ */
+type FactCheckAttempt =
+  | { ok: true; result: FactCheckResult }
+  | { ok: false; reason: string };
+
+/** Backoff between the two fact-check attempts. Overridable for tests. */
+function factCheckRetryDelayMs(): number {
+  const raw = Number(process.env.FACT_CHECK_RETRY_DELAY_MS);
+  return Number.isFinite(raw) && raw >= 0 ? raw : 2000;
 }
 
 /**
@@ -57,14 +72,16 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 }
 
 /**
- * Fact-check an AI-generated article using a second Claude call.
+ * One fact-check attempt against Claude. Returns a structured failure
+ * instead of a verdict when the call itself misbehaves, so the caller can
+ * distinguish "the article has problems" from "the API hiccupped".
  */
-async function factCheckArticle(
+async function attemptFactCheck(
   anthropic: Anthropic,
   title: string,
   content: string,
   sources: string[]
-): Promise<FactCheckResult> {
+): Promise<FactCheckAttempt> {
   try {
     const response = await anthropic.messages.create({
       model: EDITORIAL_MODEL,
@@ -114,24 +131,74 @@ IMPORTANT GUIDELINES:
 
     const textBlock = response.content.find((block) => block.type === 'text');
     if (!textBlock || textBlock.type !== 'text') {
-      logger.warn('Fact-check returned no text block, flagging for review', { title });
-      return { overallVerdict: 'major_issues', notes: 'Fact-check returned no response — requires manual review', corrections: [] };
+      return { ok: false, reason: 'Fact-check returned no response' };
     }
 
     const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      logger.warn('Fact-check response could not be parsed, flagging for review', { title });
-      return { overallVerdict: 'major_issues', notes: 'Could not parse fact-check response — requires manual review', corrections: [] };
+      return { ok: false, reason: 'Could not parse fact-check response' };
     }
 
-    return JSON.parse(jsonMatch[0]) as FactCheckResult;
+    try {
+      return { ok: true, result: JSON.parse(jsonMatch[0]) as FactCheckResult };
+    } catch {
+      return { ok: false, reason: 'Could not parse fact-check response' };
+    }
   } catch (error) {
-    logger.warn('Fact-check failed, flagging article for manual review', {
-      title,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return { overallVerdict: 'major_issues', notes: 'Fact-check service unavailable — requires manual review', corrections: [] };
+    return {
+      ok: false,
+      reason: `Fact-check service unavailable (${error instanceof Error ? error.message : String(error)})`,
+    };
   }
+}
+
+/**
+ * Fact-check an AI-generated article, with ONE bounded retry.
+ *
+ * The three failure modes above are AI-plumbing failures, not article
+ * defects — an overloaded API or a single malformed response used to freeze
+ * a perfectly good article on the review shelf on every occurrence (two such
+ * holds in the 2026-08-19/20 runs alone). One retry absorbs the transient
+ * class; a second consecutive failure still fails CLOSED, holding the
+ * article with both attempts recorded in the note and the logs.
+ */
+async function factCheckArticle(
+  anthropic: Anthropic,
+  title: string,
+  content: string,
+  sources: string[]
+): Promise<FactCheckResult> {
+  const first = await attemptFactCheck(anthropic, title, content, sources);
+  if (first.ok) return first.result;
+
+  logger.warn('Fact-check attempt 1/2 failed — retrying once before holding', {
+    title,
+    reason: first.reason,
+  });
+
+  const delayMs = factCheckRetryDelayMs();
+  if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs));
+
+  const second = await attemptFactCheck(anthropic, title, content, sources);
+  if (second.ok) {
+    logger.info('Fact-check attempt 2/2 succeeded after a transient failure', {
+      title,
+      firstAttemptReason: first.reason,
+    });
+    return second.result;
+  }
+
+  logger.warn('Fact-check attempt 2/2 failed — holding article for manual review', {
+    title,
+    firstAttemptReason: first.reason,
+    secondAttemptReason: second.reason,
+  });
+
+  return {
+    overallVerdict: 'major_issues',
+    notes: `${second.reason} — requires manual review (retried once; first attempt: ${first.reason})`,
+    corrections: [],
+  };
 }
 
 /**
@@ -209,6 +276,14 @@ export async function POST(request: NextRequest) {
       return unauthorizedError('Valid CRON_SECRET token or admin session required');
     }
 
+    // Self-heal BEFORE any early return. Every invocation of this route —
+    // including the ones that bail on the daily lock or the already-generated
+    // guard — reconciles the table, so an article held without a MAJOR ISSUES
+    // justification (by a stale build, an aborted run, or any future writer)
+    // is released within one cron tick instead of starving the feed for days.
+    // Normally a no-op: one indexed query returning zero rows.
+    const reconciled = await releaseMisheldInsights();
+
     if (!process.env.ANTHROPIC_API_KEY) {
       logger.error('AI insights generation failed — ANTHROPIC_API_KEY not set');
       return NextResponse.json(
@@ -228,6 +303,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         skipped: true,
+        releasedMisheld: reconciled.released,
         message: `${existingToday} insights already generated today`,
       });
     }
@@ -250,7 +326,12 @@ export async function POST(request: NextRequest) {
       });
     } catch {
       logger.info('AI insights generation already in progress or done for today (lock exists), skipping', { lockKey });
-      return NextResponse.json({ success: true, skipped: true, message: 'Generation lock held — another run is in progress or completed today' });
+      return NextResponse.json({
+        success: true,
+        skipped: true,
+        releasedMisheld: reconciled.released,
+        message: 'Generation lock held — another run is in progress or completed today',
+      });
     }
 
     // Fetch recent content for analysis
@@ -505,22 +586,20 @@ Respond with valid JSON in this exact format (no markdown code fences):
       // (pass / minor_issues) auto-publish; only major_issues are held for
       // manual admin review. The daily email remains as a published-digest +
       // held-articles notice rather than a required approval step.
+      //
+      // Status and note come from ONE call so they can never disagree — the
+      // 2026-08-20 defect was rows held as pending_review while carrying a
+      // passing note. See src/lib/fact-check-gate.ts.
       const finalContent = insight.content;
-      let factCheckNote: string | null = null;
+      const { status: publishStatus, note: factCheckNote } = resolveFactCheckGate(factCheck);
 
-      if (factCheck.overallVerdict === 'major_issues') {
-        factCheckNote = `MAJOR ISSUES: ${factCheck.notes}\nCorrections needed: ${factCheck.corrections.join('; ')}`;
+      if (publishStatus === 'pending_review') {
         logger.warn('AI insight has major fact-check issues — held for review', { slug, notes: factCheck.notes });
-      } else if (factCheck.overallVerdict === 'minor_issues') {
-        factCheckNote = `Minor notes: ${factCheck.notes}${factCheck.corrections.length > 0 ? `\nSuggestions: ${factCheck.corrections.join('; ')}` : ''}`;
-      } else {
-        factCheckNote = factCheck.notes || 'Passed fact-check';
       }
 
       // Review token still generated for every article — admins can unpublish
       // or edit via the same review links even after auto-publish.
       const reviewToken = crypto.randomUUID();
-      const publishStatus = factCheck.overallVerdict === 'major_issues' ? 'pending_review' : 'published';
 
       try {
         // status, factCheckNote, reviewToken are new schema fields — cast for Prisma client compat
@@ -612,6 +691,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
       count: upsertedInsights.length,
       autoPublished,
       pendingReview: heldForReview,
+      releasedMisheld: reconciled.released,
       message: `${autoPublished} insight(s) auto-published (fact-check passed); ${heldForReview} held for admin review`,
       insights: upsertedInsights.map((i) => ({
         id: i.id,
