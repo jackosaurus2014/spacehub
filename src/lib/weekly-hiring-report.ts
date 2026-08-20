@@ -164,7 +164,13 @@ export async function generateWeeklyHiringPost(now = new Date()): Promise<Weekly
     if (r.companyProfile?.slug) slugByCompany.set(r.company, r.companyProfile.slug);
   }
 
-  const weekOf = fmtDate(weekAgo);
+  // Title by the PUBLISH date, not the start of the trailing data window —
+  // same fix (and same founder report) as weekly-economy-report.ts on
+  // 2026-08-17: "Week of <last Wednesday>" made a freshly published brief
+  // read as last week's article on the homepage. The coverage window is
+  // stated explicitly in the lead instead.
+  const weekOf = fmtDate(now);
+  const coverageStart = fmtDate(weekAgo);
   const slug = `whos-hiring-week-of-${fmtDate(now)}`;
   const title = `Who's Hiring in Space — Week of ${weekOf}`;
 
@@ -187,7 +193,7 @@ export async function generateWeeklyHiringPost(now = new Date()): Promise<Weekly
     const sign = weekOverWeek.delta > 0 ? '+' : '';
     leadLine += ` — ${sign}${weekOverWeek.delta.toLocaleString()} vs. last week`;
   }
-  leadLine += `.*`;
+  leadLine += `. Hiring activity below covers the seven days ending ${weekOf} (${coverageStart} → ${weekOf}).*`;
   lines.push(leadLine);
   lines.push('');
 
