@@ -336,3 +336,41 @@ describe('isEntertainmentCoverage — regression: comparative and enthusiast hea
     ).toBe(true);
   });
 });
+
+describe('all-feeds audit 2026-08-20', () => {
+  it('New Space Economy is relevance-guarded (mixes generic AI/business explainers)', () => {
+    expect(RELEVANCE_GUARD_FEEDS.has('New Space Economy')).toBe(true);
+  });
+
+  it('blocks that feed’s non-space explainers', () => {
+    const src = 'New Space Economy';
+    expect(isSpaceRelevant('Which AI Models Does Each Major Provider Offer in 2026?', '', src)).toBe(false);
+    expect(isSpaceRelevant('How Computers Talk to Each Other', '', src)).toBe(false);
+    expect(isSpaceRelevant('What Types of Business Documents Should a Company Prepare, and Why?', '', src)).toBe(false);
+    expect(isSpaceRelevant('Can Meta Make Personal Superintelligence Available to Everyone?', '', src)).toBe(false);
+  });
+
+  it('keeps that feed’s real space coverage', () => {
+    const src = 'New Space Economy';
+    expect(isSpaceRelevant('What Does the New Mars Science Strategy Mean for Human Exploration of Mars?', '', src)).toBe(true);
+    expect(isSpaceRelevant('Could Nuclear Asteroid Defense Stop a Large Near-Earth Object?', '', src)).toBe(true);
+    expect(isSpaceRelevant('Can Space-Based Solar Power Become a Competitive Source of Firm Clean Energy?', '', src)).toBe(true);
+    expect(isSpaceRelevant('What Is the U.S. Space Force Becoming as Its Mission Expands?', '', src)).toBe(true);
+  });
+
+  it('recognizes astrobiology/SETI vocabulary as space-relevant', () => {
+    const src = 'New Space Economy';
+    expect(
+      isSpaceRelevant('What Do Earth’s First Contact Scenarios Teach About Contact With Extraterrestrial Intelligence?', '', src)
+    ).toBe(true);
+    expect(isSpaceRelevant('SETI survey expands to 1,000 nearby stars', '', src)).toBe(true);
+    expect(isSpaceRelevant('Astrobiology roadmap updated for icy-moon targets', '', src)).toBe(true);
+  });
+
+  it('does not treat an agency video trailer as entertainment', () => {
+    // NASA published this; a bare /trailer/ pattern flagged it.
+    expect(isEntertainmentCoverage('2026 Total Solar Eclipse (Official NASA Trailer)')).toBe(false);
+    // ...while real screen trailers still drop:
+    expect(isEntertainmentCoverage('New series trailer lands ahead of the Disney+ premiere')).toBe(true);
+  });
+});

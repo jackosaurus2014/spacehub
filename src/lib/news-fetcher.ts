@@ -128,6 +128,10 @@ const SPACE_RELEVANCE_KEYWORDS: string[] = Array.from(new Set([
   'quasar', 'pulsar', 'gravitational wave', 'neutron star', 'white dwarf',
   'red giant', 'star system', 'stellar', 'planetary', 'solar system',
   'solar flare', 'solar wind', 'solar storm', 'heliosphere', 'aurora',
+  // Astrobiology / SETI vocabulary (added 2026-08-20 during the all-feeds
+  // audit): genuine space-science terms that were missing, so SETI and
+  // first-contact pieces read as off-topic to the guard.
+  'extraterrestrial', 'seti', 'astrobiolog', 'technosignature', 'biosignature',
 ]));
 
 // --- Feed boilerplate ---
@@ -244,6 +248,13 @@ export const RELEVANCE_GUARD_FEEDS = new Set([
   'Federal News Network Defense',
   'Defense One',
   'DefenseScoop',
+  // Added 2026-08-20 after an all-feeds audit: despite the name, this feed
+  // mixes generic AI/business explainers into its space coverage ("Which AI
+  // Models Does Each Major Provider Offer in 2026?", "How Computers Talk to
+  // Each Other", "What Types of Business Documents Should a Company
+  // Prepare?"). 22 of 121 recent items were non-space; the other 99 (Mars
+  // strategy, asteroid defense, space-based solar, Space Force) pass cleanly.
+  'New Space Economy',
 ]);
 
 /**
@@ -273,7 +284,12 @@ const ENTERTAINMENT_TITLE_PATTERNS: RegExp[] = [
   // Unambiguous screen-coverage vocabulary. NOTE: bare "review" is
   // deliberately absent — "NASA completes design review for Artemis IV" is
   // real news; review only counts paired with film framing below.
-  /\b(episode|season \d|series finale|recap|spoilers?|trailer|teaser)\b/i,
+  /\b(episode|season \d|series finale|recap|spoilers?)\b/i,
+  // trailer/teaser need screen context: NASA released "2026 Total Solar
+  // Eclipse (Official NASA Trailer)" — a space agency's own video, not
+  // entertainment. Caught by the audit before it could bite.
+  /\b(movie|film|series|season|show|game)\s+(trailer|teaser)\b/i,
+  /\b(trailer|teaser)\b.*\b(premiere|streaming|disney|netflix|hbo|prime video|theaters?)\b/i,
   /\b(tv show|television series|streaming (?:service|deal|debut)|box office)\b/i,
   // "movie"/"film" need entertainment CONTEXT, never the bare word. Science
   // writing uses both metaphorically — "the greatest cosmic movie ever made"
