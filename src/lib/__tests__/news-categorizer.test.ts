@@ -4,6 +4,7 @@ import {
   stripFeedBoilerplate,
   isEntertainmentCoverage,
   RELEVANCE_GUARD_FEEDS,
+  ENTERTAINMENT_GUARD_FEEDS,
 } from '../news-fetcher';
 
 describe('categorizeArticle', () => {
@@ -226,8 +227,17 @@ describe('isSpaceRelevant — SpaceDaily general-science filler (2026-08-20 defe
 });
 
 describe('isEntertainmentCoverage (founder directive 2026-08-20: drop entertainment)', () => {
-  it('Space.com is guarded so its entertainment items are reachable by the filter', () => {
-    expect(RELEVANCE_GUARD_FEEDS.has('Space.com')).toBe(true);
+  it('Space.com gets the ENTERTAINMENT filter only, not keyword relevance', () => {
+    // Space.com is a space-dedicated outlet: its non-entertainment output is
+    // all on-topic. Subjecting it to the keyword check wrongly dropped real
+    // enthusiast astronomy ("My 5 favorite sights to see in the night sky
+    // with binoculars" carries no keyword from our list).
+    expect(ENTERTAINMENT_GUARD_FEEDS.has('Space.com')).toBe(true);
+    expect(RELEVANCE_GUARD_FEEDS.has('Space.com')).toBe(false);
+    // Relevance-guarded feeds are all still entertainment-guarded too.
+    for (const feed of Array.from(RELEVANCE_GUARD_FEEDS)) {
+      expect(ENTERTAINMENT_GUARD_FEEDS.has(feed)).toBe(true);
+    }
   });
 
   it('drops the real items that reached the live news page', () => {
@@ -274,5 +284,55 @@ describe('isEntertainmentCoverage (founder directive 2026-08-20: drop entertainm
     // pattern is title-only and deliberately blunt; assert the realistic form
     // used by our other feeds instead:
     expect(isEntertainmentCoverage('NASA completes design review for Artemis IV lander')).toBe(false);
+  });
+});
+
+describe('isEntertainmentCoverage — regression: science uses "movie" metaphorically', () => {
+  it('KEEPS real astronomy that says movie/film (both were wrongly deleted on first ship)', () => {
+    expect(
+      isEntertainmentCoverage(
+        "Rubin Observatory kicks off 10-year campaign to capture ‘the greatest cosmic movie ever made’"
+      )
+    ).toBe(false);
+    expect(
+      isEntertainmentCoverage(
+        "Every Frame of a Black Hole Movie Is a Time Machine – And Physicists Think We're Oversimplifying"
+      )
+    ).toBe(false);
+    expect(isEntertainmentCoverage('Time-lapse film of Jupiter’s clouds reveals new storm dynamics')).toBe(false);
+    expect(isEntertainmentCoverage('Actor-turned-astronaut? Crew to film a feature aboard the ISS')).toBe(false);
+  });
+
+  it('still drops genuine entertainment coverage', () => {
+    expect(
+      isEntertainmentCoverage(
+        "'Wet Hot American Summer': The raunchy 2000s teen movie that was actually about a space station falling to Earth"
+      )
+    ).toBe(true);
+    expect(isEntertainmentCoverage('New sci-fi movie imagines a Mars colony')).toBe(true);
+    expect(isEntertainmentCoverage('The best space films to stream in theaters this month')).toBe(true);
+  });
+});
+
+describe('isEntertainmentCoverage — regression: comparative and enthusiast headlines', () => {
+  it('KEEPS space reporting that merely references Hollywood comparatively', () => {
+    // Real ISRO/Mangalyaan reporting; deleted by an over-broad first version.
+    expect(
+      isEntertainmentCoverage(
+        'India reached Mars on its first attempt with a mission that cost less than many Hollywood films'
+      )
+    ).toBe(false);
+  });
+
+  it('KEEPS enthusiast observing guides (they carry no industry keywords)', () => {
+    expect(isEntertainmentCoverage('My 5 favorite sights to see in the night sky with binoculars')).toBe(false);
+  });
+
+  it('still drops franchise and streaming coverage', () => {
+    expect(isEntertainmentCoverage("'The Mandalorian and Grogu' finally blasts onto Disney+ next month")).toBe(true);
+    expect(isEntertainmentCoverage('13 sci-fi books that inspired our favorite shows and movies')).toBe(true);
+    expect(
+      isEntertainmentCoverage("Forget 'Halo' — the latest 'Futurama' episode has a ring world covered in super-intelligent rats")
+    ).toBe(true);
   });
 });

@@ -244,11 +244,21 @@ export const RELEVANCE_GUARD_FEEDS = new Set([
   'Federal News Network Defense',
   'Defense One',
   'DefenseScoop',
-  // Founder directive 2026-08-20: Space.com mixes entertainment coverage
-  // (movie/TV retrospectives, sci-fi recaps, streaming deals) into its feed —
-  // "'Wet Hot American Summer': The raunchy 2000s teen movie" reached slot #2
-  // of the live news page. Guarded now, with the entertainment denylist below
-  // dropping the entertainment items outright.
+]);
+
+/**
+ * Feeds subject to the ENTERTAINMENT filter (founder directive 2026-08-20:
+ * "Add Space.com to the guard and drop the entertainment stuff").
+ *
+ * This is deliberately a SEPARATE set from RELEVANCE_GUARD_FEEDS. Space.com is
+ * a space-dedicated outlet — its non-entertainment output is all on-topic, and
+ * subjecting it to the keyword-relevance check wrongly dropped genuine
+ * enthusiast astronomy ("My 5 favorite sights to see in the night sky with
+ * binoculars" carries no keyword from our list). So Space.com gets the
+ * entertainment filter only, while the relevance-guarded feeds get both.
+ */
+export const ENTERTAINMENT_GUARD_FEEDS = new Set<string>([
+  ...Array.from(RELEVANCE_GUARD_FEEDS),
   'Space.com',
 ]);
 
@@ -265,16 +275,31 @@ const ENTERTAINMENT_TITLE_PATTERNS: RegExp[] = [
   // real news; review only counts paired with film framing below.
   /\b(episode|season \d|series finale|recap|spoilers?|trailer|teaser)\b/i,
   /\b(tv show|television series|streaming (?:service|deal|debut)|box office)\b/i,
-  // "movie" in a headline is entertainment coverage in practice; "film" is
-  // not, because a crew filming aboard the ISS IS space-industry news — so
-  // film only counts alongside review/retrospective framing.
-  /\bmovies?\b/i,
-  /\bfilms?\b.*\b(review|retrospective|anniversary|rewatch|sequel|reboot|franchise)\b/i,
+  // "movie"/"film" need entertainment CONTEXT, never the bare word. Science
+  // writing uses both metaphorically — "the greatest cosmic movie ever made"
+  // (Rubin Observatory's 10-year survey) and "Every Frame of a Black Hole
+  // Movie Is a Time Machine" are real astronomy, and a bare /\bmovies?\b/
+  // deleted both when this shipped. A crew *filming* aboard the ISS is also
+  // space-industry news. So: match a genre/studio qualifier before the word,
+  // or screen-industry vocabulary after it.
+  // 'hollywood' is deliberately absent: space-budget reporting leans on it
+  // comparatively ("a mission that cost less than many Hollywood films" is
+  // real ISRO coverage, wrongly deleted by the first version of this list).
+  /\b(teen|sci-?fi|horror|comedy|action|animated|blockbuster|disney|marvel|pixar|netflix)\s+(movies?|films?)\b/i,
+  /\b(movies?|films?)\b.*\b(review|retrospective|rewatch|sequel|reboot|franchise|cast|premiere|box office|streaming|theaters?|theatres?)\b/i,
+  /\b(movie|film) (night|club|adaptation)\b/i,
+  // Fandom listicles ("13 sci-fi books that inspired our favorite shows and
+  // movies"). Requires the media noun right after sci-fi, so "sci-fi becomes
+  // reality as NASA tests ..." stays.
+  /\bsci-?fi\s+(books?|shows?|series|movies?|films?|tv)\b/i,
   // Named franchises whose coverage is fandom, not industry news
   /\b(star trek|star wars|strange new worlds|doctor who|the mandalorian|for all mankind|the expanse|battlestar)\b/i,
-  // Screen-industry roles: these appear in entertainment pieces, not in
-  // launch/policy/industry reporting
-  /\b(actor|actress|showrunner|screenwriter)\b/i,
+  // Screen-industry roles. Deliberately EXCLUDES bare "actor"/"actress":
+  // private astronauts and spaceflight participants are sometimes actors, and
+  // "Actor-turned-astronaut" or a film crew flying to the ISS is real
+  // spaceflight news. Showrunner/screenwriter/voice actor never appear in
+  // launch, policy, or industry reporting.
+  /\b(showrunner|screenwriter|voice actor)\b/i,
   // Merch / games / collectibles
   /\b(lego set|collectible|action figure|video game)\b/i,
 ];
@@ -674,15 +699,16 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
         // Entertainment coverage is checked FIRST (founder directive
         // 2026-08-20): a Star Trek recap is full of space vocabulary and would
         // pass the keyword tiers on its own.
-        if (RELEVANCE_GUARD_FEEDS.has(feed.name)) {
-          if (isEntertainmentCoverage(item.title)) {
-            offtopicSkipped++;
-            continue;
-          }
-          if (!isSpaceRelevant(item.title, cleanSummary, feed.name)) {
-            offtopicSkipped++;
-            continue;
-          }
+        if (ENTERTAINMENT_GUARD_FEEDS.has(feed.name) && isEntertainmentCoverage(item.title)) {
+          offtopicSkipped++;
+          continue;
+        }
+        if (
+          RELEVANCE_GUARD_FEEDS.has(feed.name) &&
+          !isSpaceRelevant(item.title, cleanSummary, feed.name)
+        ) {
+          offtopicSkipped++;
+          continue;
         }
 
         // Use keyword-based categorization when it finds a specific match;

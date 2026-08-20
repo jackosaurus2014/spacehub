@@ -28,6 +28,7 @@ import {
   isSpaceRelevant,
   isEntertainmentCoverage,
   RELEVANCE_GUARD_FEEDS,
+  ENTERTAINMENT_GUARD_FEEDS,
 } from '../src/lib/news-fetcher';
 
 interface Row {
@@ -52,7 +53,7 @@ async function main() {
 
   const rows = (await prisma.newsArticle.findMany({
     where: {
-      source: { in: Array.from(RELEVANCE_GUARD_FEEDS) },
+      source: { in: Array.from(ENTERTAINMENT_GUARD_FEEDS) },
       publishedAt: { gte: since },
     },
     orderBy: { publishedAt: 'desc' },
@@ -62,11 +63,14 @@ async function main() {
   // Entertainment coverage is checked first, mirroring the live fetch path
   // (founder directive 2026-08-20) — a Star Trek recap passes the space
   // keyword tiers on its own vocabulary.
-  const offTopic = rows.filter(
-    (row) =>
-      isEntertainmentCoverage(row.title) ||
-      !isSpaceRelevant(row.title, row.summary || '', row.source)
-  );
+  // Mirrors the live fetch path exactly: entertainment applies to the wider
+  // ENTERTAINMENT_GUARD_FEEDS set; the keyword-relevance check applies only to
+  // RELEVANCE_GUARD_FEEDS (Space.com is space-dedicated — entertainment only).
+  const offTopic = rows.filter((row) => {
+    if (ENTERTAINMENT_GUARD_FEEDS.has(row.source) && isEntertainmentCoverage(row.title)) return true;
+    if (RELEVANCE_GUARD_FEEDS.has(row.source) && !isSpaceRelevant(row.title, row.summary || '', row.source)) return true;
+    return false;
+  });
 
   const bySource = new Map<string, number>();
   for (const row of offTopic) bySource.set(row.source, (bySource.get(row.source) || 0) + 1);
