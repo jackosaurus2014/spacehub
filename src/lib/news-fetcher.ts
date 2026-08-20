@@ -244,7 +244,50 @@ export const RELEVANCE_GUARD_FEEDS = new Set([
   'Federal News Network Defense',
   'Defense One',
   'DefenseScoop',
+  // Founder directive 2026-08-20: Space.com mixes entertainment coverage
+  // (movie/TV retrospectives, sci-fi recaps, streaming deals) into its feed —
+  // "'Wet Hot American Summer': The raunchy 2000s teen movie" reached slot #2
+  // of the live news page. Guarded now, with the entertainment denylist below
+  // dropping the entertainment items outright.
+  'Space.com',
 ]);
+
+// Entertainment denylist (founder directive 2026-08-20: "drop the
+// entertainment stuff"). Applies to GUARDED feeds only, and is checked BEFORE
+// the keyword tiers — a Star Trek recap is full of space words and would
+// otherwise sail through. Deliberately narrow: it targets the vocabulary of
+// screen/media coverage, not the subject matter, so real reporting about the
+// film industry in orbit (e.g. a studio shooting aboard the ISS) still needs
+// only its space terms to pass unless it also reads as a review/recap.
+const ENTERTAINMENT_TITLE_PATTERNS: RegExp[] = [
+  // Unambiguous screen-coverage vocabulary. NOTE: bare "review" is
+  // deliberately absent — "NASA completes design review for Artemis IV" is
+  // real news; review only counts paired with film framing below.
+  /\b(episode|season \d|series finale|recap|spoilers?|trailer|teaser)\b/i,
+  /\b(tv show|television series|streaming (?:service|deal|debut)|box office)\b/i,
+  // "movie" in a headline is entertainment coverage in practice; "film" is
+  // not, because a crew filming aboard the ISS IS space-industry news — so
+  // film only counts alongside review/retrospective framing.
+  /\bmovies?\b/i,
+  /\bfilms?\b.*\b(review|retrospective|anniversary|rewatch|sequel|reboot|franchise)\b/i,
+  // Named franchises whose coverage is fandom, not industry news
+  /\b(star trek|star wars|strange new worlds|doctor who|the mandalorian|for all mankind|the expanse|battlestar)\b/i,
+  // Screen-industry roles: these appear in entertainment pieces, not in
+  // launch/policy/industry reporting
+  /\b(actor|actress|showrunner|screenwriter)\b/i,
+  // Merch / games / collectibles
+  /\b(lego set|collectible|action figure|video game)\b/i,
+];
+
+/**
+ * True when a guarded-feed item reads as entertainment/media coverage rather
+ * than space news. Title-only by design: summaries of legitimate articles
+ * often name a film in passing ("... like something out of Star Wars"), and
+ * blocking on that would over-reach.
+ */
+export function isEntertainmentCoverage(title: string): boolean {
+  return ENTERTAINMENT_TITLE_PATTERNS.some((p) => p.test(title));
+}
 
 // --- Deduplication helpers ---
 
@@ -627,10 +670,19 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
           sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} })
         ).slice(0, 500);
 
-        // Conservative relevance guard for feeds that aren't space-dedicated
-        if (RELEVANCE_GUARD_FEEDS.has(feed.name) && !isSpaceRelevant(item.title, cleanSummary, feed.name)) {
-          offtopicSkipped++;
-          continue;
+        // Conservative relevance guard for feeds that aren't space-dedicated.
+        // Entertainment coverage is checked FIRST (founder directive
+        // 2026-08-20): a Star Trek recap is full of space vocabulary and would
+        // pass the keyword tiers on its own.
+        if (RELEVANCE_GUARD_FEEDS.has(feed.name)) {
+          if (isEntertainmentCoverage(item.title)) {
+            offtopicSkipped++;
+            continue;
+          }
+          if (!isSpaceRelevant(item.title, cleanSummary, feed.name)) {
+            offtopicSkipped++;
+            continue;
+          }
         }
 
         // Use keyword-based categorization when it finds a specific match;

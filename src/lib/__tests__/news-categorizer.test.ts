@@ -1,4 +1,10 @@
-import { categorizeArticle, isSpaceRelevant, stripFeedBoilerplate } from '../news-fetcher';
+import {
+  categorizeArticle,
+  isSpaceRelevant,
+  stripFeedBoilerplate,
+  isEntertainmentCoverage,
+  RELEVANCE_GUARD_FEEDS,
+} from '../news-fetcher';
 
 describe('categorizeArticle', () => {
   it('categorizes launch-related articles', () => {
@@ -216,5 +222,57 @@ describe('isSpaceRelevant — SpaceDaily general-science filler (2026-08-20 defe
     expect(isSpaceRelevant('Titanium mining output rose sharply in Australia', 'Metal prices rose.', 'SpaceDaily')).toBe(false);
     expect(isSpaceRelevant('Many assume honeymoon came from a month of honey wine', 'An etymology story.', 'SpaceDaily')).toBe(false);
     expect(isSpaceRelevant('Marshland restoration in the Netherlands', 'The Dutch gave rivers more room.', 'SpaceDaily')).toBe(false);
+  });
+});
+
+describe('isEntertainmentCoverage (founder directive 2026-08-20: drop entertainment)', () => {
+  it('Space.com is guarded so its entertainment items are reachable by the filter', () => {
+    expect(RELEVANCE_GUARD_FEEDS.has('Space.com')).toBe(true);
+  });
+
+  it('drops the real items that reached the live news page', () => {
+    // Was sitting at slot #2 of /news when the founder flagged it.
+    expect(
+      isEntertainmentCoverage(
+        "'Wet Hot American Summer': The raunchy 2000s teen movie that was actually about space camp"
+      )
+    ).toBe(true);
+    expect(
+      isEntertainmentCoverage(
+        "Ludicrous, nonsensical, an affront to canon — 'Strange New Worlds'' puppet episode is the best thing on TV"
+      )
+    ).toBe(true);
+  });
+
+  it('drops the general shape of screen coverage', () => {
+    expect(isEntertainmentCoverage('Star Trek: Discovery season 6 review')).toBe(true);
+    expect(isEntertainmentCoverage('For All Mankind renewed for another season')).toBe(true);
+    expect(isEntertainmentCoverage('The Expanse cast reunites for an anniversary panel')).toBe(true);
+    expect(isEntertainmentCoverage('New Star Wars trailer drops ahead of premiere')).toBe(true);
+  });
+
+  it('does NOT drop real space journalism', () => {
+    // Every one of these was live on the feed and must survive.
+    expect(
+      isEntertainmentCoverage(
+        'A weather satellite 22,000 miles above Earth saved my 2026 total solar eclipse cruise'
+      )
+    ).toBe(false);
+    expect(
+      isEntertainmentCoverage(
+        'Mars Express orbiter captures detailed new video of the crater where Mark Watney was stranded'
+      )
+    ).toBe(false);
+    expect(isEntertainmentCoverage('Rocket Lab launches 9th satellite for iQPS')).toBe(false);
+    expect(
+      isEntertainmentCoverage('Muon Space Reaches $1.5 Billion Valuation Following $250 Million Series C')
+    ).toBe(false);
+    expect(
+      isEntertainmentCoverage('Scientists reported phosphine in Venus’s clouds in 2020')
+    ).toBe(false);
+    // "Review" as in a policy/program review is not screen coverage... but the
+    // pattern is title-only and deliberately blunt; assert the realistic form
+    // used by our other feeds instead:
+    expect(isEntertainmentCoverage('NASA completes design review for Artemis IV lander')).toBe(false);
   });
 });

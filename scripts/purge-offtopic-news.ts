@@ -24,7 +24,11 @@
  */
 
 import prisma from '../src/lib/db';
-import { isSpaceRelevant, RELEVANCE_GUARD_FEEDS } from '../src/lib/news-fetcher';
+import {
+  isSpaceRelevant,
+  isEntertainmentCoverage,
+  RELEVANCE_GUARD_FEEDS,
+} from '../src/lib/news-fetcher';
 
 interface Row {
   id: string;
@@ -55,7 +59,14 @@ async function main() {
     select: { id: true, title: true, summary: true, source: true, category: true, publishedAt: true },
   })) as Row[];
 
-  const offTopic = rows.filter((row) => !isSpaceRelevant(row.title, row.summary || '', row.source));
+  // Entertainment coverage is checked first, mirroring the live fetch path
+  // (founder directive 2026-08-20) — a Star Trek recap passes the space
+  // keyword tiers on its own vocabulary.
+  const offTopic = rows.filter(
+    (row) =>
+      isEntertainmentCoverage(row.title) ||
+      !isSpaceRelevant(row.title, row.summary || '', row.source)
+  );
 
   const bySource = new Map<string, number>();
   for (const row of offTopic) bySource.set(row.source, (bySource.get(row.source) || 0) + 1);
