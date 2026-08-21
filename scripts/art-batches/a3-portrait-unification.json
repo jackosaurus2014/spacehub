@@ -1,0 +1,302 @@
+[
+  {
+   "prompt": "Portrait bust of a 22nd-century Fresh Recruit — Rookie Alpha, a young white man in his early twenties with short brown hair and a clean-shaven earnest face, newly badged and eager to prove himself, futuristic corporate uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no insignia text",
+   "output": "public/game/commander-rookie-alpha.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Fresh Recruit — Rookie Beta, a young white woman in her early twenties with a short ash-blonde pixie cut and a level steady gaze, quietly competent and watchful, futuristic corporate uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no insignia text",
+   "output": "public/game/commander-rookie-beta.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Academy Graduate — Cadet Delta, a young Black man in his early twenties with close-cropped hair and a composed formal bearing, freshly commissioned from the orbital academy, futuristic corporate dress uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no insignia text",
+   "output": "public/game/commander-cadet-delta.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Academy Graduate — Cadet Gamma, a young mixed-race woman in her early twenties with warm brown skin and dark hair gathered in a topknot, disciplined and quick to learn, futuristic corporate dress uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no insignia text",
+   "output": "public/game/commander-cadet-gamma.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Deployment Hand — Grunt, a weathered white man in his forties with heavy stubble and a broad jaw, the dependable hand who does the unglamorous work of standing up a new site, futuristic industrial work uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no armour, no military gear, no fire or explosions",
+   "output": "public/game/commander-grunt.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Apprentice Engineer — Sparks, a white woman in her early thirties with wavy shoulder-length auburn hair and freckles, a bright grin and clear safety eyewear pushed up on her brow, futuristic engineering coverall with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-sparks.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Systems Technician — Ember, a white woman in her early thirties with short dark spiky brown hair and a sharp intent expression, runs hot-side systems maintenance without flinching, futuristic engineering uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no name tapes, no weapons, no fire or explosions",
+   "output": "public/game/commander-ember.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Junior Miner — Digger, a white man in his late forties with a greying brown beard and sun-creased eyes, a regolith hand who knows every seam by feel, futuristic mining coverall with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-digger.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Prospector Scout — Ore Hound, a lean white man in his fifties with a grey beard and a weather-beaten squint, a lifelong wildcat prospector of marginal claims, futuristic prospecting field kit with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-ore-hound.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Pit Trader — Reyes, a Latino man in his forties with dark hair, a trimmed beard and a shrewd appraising look, works the open outcry floor of a belt exchange, futuristic trading-floor uniform with subtle gold-amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no pirate hat, no skull motifs",
+   "output": "public/game/commander-reyes.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Security Lead — Hawk, a white man in his late thirties with short brown hair and a strong straight nose, runs facility access control and loss prevention, futuristic corporate security uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no birds, no outdoor scenery",
+   "output": "public/game/commander-hawk.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Field Coordinator — Viper, a white man in his forties with close-cropped dark hair and a lined focused face, coordinates dispersed crews across a whole operating region, futuristic flight-operations uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no aircraft, no missiles, no fire or explosions",
+   "output": "public/game/commander-viper.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Facility Sentry — Sentry, a white man in his forties with short greying brown hair and a calm unblinking watchfulness, keeps the night watch over pressurised infrastructure, futuristic monitoring uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-sentry.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Fabrication Specialist — Foreman Holt, a heavyset white man in his forties with a buzz cut and a blunt no-nonsense expression, runs a fabrication line to tolerances measured in microns, futuristic fabrication-shop uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no combat armour, no tactical webbing",
+   "output": "public/game/commander-gunner-holt.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Quartermaster — Supply Chief Ross, a balding white man in his fifties with thin-framed glasses and a patient methodical air, knows the location of every pallet in a five-station inventory, futuristic logistics uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no name tapes, no flags, no weapons",
+   "output": "public/game/commander-supply-chief-ross.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Field Mechanic — Ratchet, a white man in his forties with dark stubble and a welding visor pushed up onto his forehead, can bring a dead reactor loop back with improvised parts, futuristic mechanic's coverall with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-ratchet.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Crew Medic — Medic Kai, a young white man in his late twenties with short brown hair and an attentive steady gaze, keeps long-duration crews alive and certified fit, futuristic medical uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no red cross symbols, no weapons",
+   "output": "public/game/commander-medic-kai.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Rapid Response Lead — Striker, a white man in his late thirties with a short dark high-and-tight crop and a decisive set to his jaw, first on scene when a habitat decompresses or a lane goes dark, futuristic emergency-response uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no rifles, no combat armour, face visible and unhelmeted",
+   "output": "public/game/commander-striker.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Logistics Contractor — Siege Volkov, a broad white man in his late forties with a full greying beard and heavy brows, moves outsized cargo nobody else will underwrite, futuristic heavy-logistics uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no combat armour, no fire or explosions",
+   "output": "public/game/commander-siege-volkov.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Production Champion — Champion Rex, a Mediterranean man in his late thirties with dark hair, heavy stubble and a competitive glint, holds the standing record for quarterly throughput, futuristic production-floor uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no war paint, no fire or explosions",
+   "output": "public/game/commander-gladiator-rex.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Guild Speaker — Iron Mara, a white woman in her forties with cropped dark-auburn hair and a faint scar across one cheekbone, negotiates for forty thousand belt workers and never blinks first, futuristic labour-guild uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no combat armour",
+   "output": "public/game/commander-iron-mara.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Deep-Belt Miner — Prospector Jin, an East Asian man in his late thirties with short black hair and a quietly assured expression, works claims further out than the insurers will cover, futuristic mining uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-prospector-jin.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Orbital Cartographer — Surveyor, a white woman in her forties with a short tousled brown bob and pale attentive eyes, maps terrain and orbital slots before anyone else can price them, futuristic survey field uniform with subtle cyan accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no name tapes, no weapons, no vehicles",
+   "output": "public/game/commander-surveyor.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Vein Specialist — Kira Deepvein, a white woman in her early thirties with windblown brown hair and tinted goggles pushed up on her forehead, reads ore density from the sound a drill makes, futuristic mining uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-kira-deepvein.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century R&D Engineer — Tech Nova, a young white woman in her late twenties with light-brown hair in a high ponytail and an inquisitive expression, prototypes the hardware the rest of the company will use in five years, futuristic laboratory uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no readable screens",
+   "output": "public/game/commander-tech-nova.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Site Supervisor — Foreman Brick, a white man in his fifties with a grey moustache and a deeply lined practical face, has stood up more habitat frames than anyone alive, futuristic construction supervisor uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no flags",
+   "output": "public/game/commander-foreman-brick.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Structural Engineer — Elena Ward, a white woman in her thirties with long auburn hair worn in a loose braid, designs load paths that survive a century of thermal cycling, futuristic engineering uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no armour, no fantasy costume",
+   "output": "public/game/commander-elena-ward.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Fleet Handler — Beastmaster Luna, a white woman in her late thirties with dark-brown hair in tight braids and a steady handler's patience, shepherds autonomous drone flocks as if they were livestock, futuristic fleet-operations uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no animal ears, no face paint, no forest, entirely human",
+   "output": "public/game/commander-beastmaster-luna.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Corporate Intelligence Lead — Shadow Weaver, a man in his thirties with dark hair and sharp hooded eyes, half his face falling into shadow beneath a raised dark collar, assembles rival production figures from public filings and market noise, futuristic dark analyst's uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, ordinary human skin tone, no glowing eyes, no magic, no sorcery",
+   "output": "public/game/commander-shadow-weaver.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Reconnaissance Specialist — Phantom Wraith, a figure in a dark hood and a smooth featureless respirator mask that leaves only sharp pale eyes visible, surveys contested corridors without ever being logged, futuristic low-profile survey suit with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no ninja costume",
+   "output": "public/game/commander-phantom-wraith.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Corridor Warden — Warden Cole, a white man in his late twenties with short brown hair and an earnest conscientious expression, certifies that a shipping corridor is safe before a single hull enters it, futuristic safety-inspection uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no red cross symbols, no weapons, no tents",
+   "output": "public/game/commander-warden-cole.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Ace Pilot — Pilot Jax, a white man in his thirties with curly light-brown hair and short stubble, clear blue eyes plainly visible, flies the transfer windows other crews decline, dark futuristic flight suit with subtle amber accents, faint holographic console glow from below, dark navy background, painterly sci-fi character art in soft realistic rendering, head-and-shoulders bust only, facing slightly left, absolutely no lettering numbers words or writing anywhere, no goggles, no visor, no sunglasses, no eyewear, no weapons, no aircraft, no bright saturated costume colours",
+   "output": "public/game/commander-pilot-jax.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Senior Envoy — Ambassador Thane, a distinguished white man in his late sixties with swept white hair and a courteous unreadable composure, has signed treaties on four worlds, futuristic formal diplomatic uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no medals with text",
+   "output": "public/game/commander-ambassador-thane.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Colonial Envoy — Ambassador Vale, a white man in his fifties with greying brown hair and a cool diplomatic reserve, negotiates settlement charters with colonies that resent being negotiated with, futuristic formal diplomatic uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-ambassador-vale.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Chief of Operations — Chief Patel, a South Asian woman in her fifties with greying dark hair and a firm decisive expression, runs day-to-day operations across an entire orbital division, futuristic operations uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no high-visibility workwear",
+   "output": "public/game/commander-chief-patel.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Executive Officer — Lt. Frost, a white woman in her thirties with a sharp platinum-white bob and cool pale eyes, the second chair who actually runs the room, futuristic executive uniform with subtle cyan accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-lt-frost.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Guild Negotiator — Marcus Stellaris, a white man in his late thirties with tousled brown hair and close stubble, a persuasive dealmaker who works the room before the session opens, futuristic tailored negotiator's jacket with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no viewport, no planets",
+   "output": "public/game/commander-marcus-stellaris.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Long-Haul Captain — Hauler Grim, a powerfully built bald white man in his forties with a heavy brow and an unhurried stare, runs eighteen-month freight rotations to the outer system, futuristic freight captain's uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no name tapes, no weapons, no tactical vest",
+   "output": "public/game/commander-hauler-grim.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Master Navigator — Navigator Sol, a white woman in her late sixties with soft white wavy hair and a serene practised authority, has plotted transfers for half a century without a single missed window, futuristic navigation uniform with subtle amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no flags, no orrery",
+   "output": "public/game/commander-navigator-sol.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Market Maker — Magnate Zara, a Mediterranean woman in her late thirties with dark hair in a sleek low updo and a knowing confident smile, quotes both sides of the book and profits either way, futuristic tailored executive suit with subtle gold-amber accents, faint holographic console glow from below, dark background, painterly sci-fi character art, head-and-shoulders bust only, facing slightly left, empty hands, no books, no documents, no screens in front of her, absolutely no lettering numbers words or writing anywhere in the image, no weapons, no tiara, no crown",
+   "output": "public/game/commander-magnate-zara.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Trade Royalty — Merchant Prince, a white man in his forties with swept-back brown hair and a short trimmed beard, heir to a trading house older than the Accord and dressed with restrained expense, futuristic luxurious executive coat with subtle gold-amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no medieval armour, no crown, no gemstone breastplate",
+   "output": "public/game/commander-merchant-prince.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Grey Market Fixer — Blackjack, a white man in his forties with dark hair and a neat goatee, wearing a dark high-collared coat and a gambler's half-smile, can source anything if you stop asking where it came from, futuristic dark tailored coat with subtle gold-amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no tricorn hat, no pirate costume, no lanterns",
+   "output": "public/game/commander-blackjack.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Sector Marshal — Marshal Kai, an East Asian man in his forties with short black hair and an impassive authoritative bearing, the ranking regulatory authority for an entire trade sector, futuristic formal regulatory uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no ribbon bars with text",
+   "output": "public/game/commander-marshal-kai.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century House Baroness — Baroness Storm, a white woman in her forties with long silver-white hair and an imperious level gaze, head of an old orbital house that still controls three Lagrange anchorages, futuristic formal house uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no plate armour, no lightning, no storm effects",
+   "output": "public/game/commander-baroness-storm.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Theoretician — Professor Quark, an elderly white man in his seventies with wild white hair, a bushy white moustache and small round spectacles, publishes the field equations everyone else builds engines from, futuristic academic laboratory coat with subtle cyan accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no equations, no formulas, no chalkboards, no weapons",
+   "output": "public/game/commander-professor-quark.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Research Director — Sage, an East Asian woman in her thirties with a sleek black bob and fine-framed glasses, directs an entire research programme with unnerving calm, futuristic laboratory uniform with subtle cyan accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no readable screens, no charts, no weapons",
+   "output": "public/game/commander-sage.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Industrial Overseer — Overseer Magna, a white woman in her sixties with steel-grey hair pinned severely back and a hard appraising stare, commands the largest heavy-industry group in the inner system, futuristic industrial executive uniform with subtle gold-amber accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no military decorations, no fire",
+   "output": "public/game/commander-overseer-magna.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Dockmaster — Dockmaster Titan, a heavyset man in his fifties with a shaven head, a greying short beard and a commanding weathered face, sequences every berth and crane movement in a major shipyard, futuristic dockmaster's uniform with subtle indigo accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no helmet, no mask, no power armour, human face fully visible",
+   "output": "public/game/commander-warlord-titan.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Principal Researcher — Dr. Vale, a white man in his forties with dark hair, thin-rimmed glasses and a precise scholarly manner, principal investigator on the materials programme, futuristic laboratory coat with subtle cyan accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no labelled bottles, no weapons",
+   "output": "public/game/commander-dr-vale.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Materials Alchemist — Alchemist Nora, a white woman in her late thirties with brown hair in a loose updo and tinted analysis lenses pushed up on her brow, coaxes new alloys out of impossible pressure regimes, futuristic laboratory uniform with subtle cyan accents, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no labelled glassware, no weapons",
+   "output": "public/game/commander-alchemist-nora.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Solar Magnate — Aria Solaris, a white woman in her thirties with long wavy golden-blonde hair and a poised celebrity-executive confidence, celebrity chief executive of the Sunlight Consortium solar-power conglomerate, immaculate futuristic white-and-gold executive uniform with subtle gold-amber accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no armour",
+   "output": "public/game/commander-aria-solaris.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Fleet Admiral — Lyra Chen, an East Asian woman in her late thirties with black hair and fine-framed glasses, the Dominion's fleet admiral of logistics who has never lost a convoy, immaculate futuristic dark admiral's uniform with subtle cyan accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-lyra-chen.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Surge Commander — Nova Blitz, a white woman in her early thirties with vivid short purple hair and a fierce decisive expression, clear unblemished skin, mobilises an entire corporate response in hours, futuristic operations uniform with subtle indigo accents and richer rim lighting befitting a legendary figure, faint holographic console glow from below, dark background, painterly sci-fi character art, head-and-shoulders bust only, facing slightly left, absolutely no lettering numbers words or writing anywhere in the image, nothing projected onto her face, no weapons, no lightning",
+   "output": "public/game/commander-nova-blitz.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Grand Strategist — Orion Vex, a white man in his late thirties with dark hair swept back and a calculating confident expression, clan-fleet strategist of the Nebula Reavers who thinks five moves out, futuristic dark strategist's coat with subtle indigo accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no plate armour",
+   "output": "public/game/commander-orion-vex.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Warchief — Rex Ironhide, a hard-bitten man in his fifties with a shaven scarred scalp, a heavy jaw and one clouded eye, a former Dominion officer who defected to become the second-most-respected Void Corsair warchief, rugged futuristic patched flight jacket with subtle amber accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no power armour, no helmet, human face fully visible",
+   "output": "public/game/commander-rex-ironhide.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Elder-Navigator — The Nomad, a deeply weathered white man well past a hundred years old on life-extension treatment, close-cropped greying hair, a lined patient face and faint neural-interface glints at his temple, elder-navigator of the Nebula Reavers clan-fleets, layered futuristic nomadic flight gear with subtle sky-blue and amber accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, calm distant-eyed expression, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-the-nomad.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Master Architect — Valeria Starforge, a white woman in her late thirties with dark brown hair worn in a fine braid and a guarded intelligent gaze, Grand Master archivist of the Echo Remnants and master architect of precursor-informed structures, dark futuristic archival uniform with subtle indigo accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no plate armour, no cape",
+   "output": "public/game/commander-valeria-starforge.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Clan Warchief — Warchief Kraal, a scarred human veteran in his fifties with short greying hair, a broken nose and a hard weathered expression, first among equals of the Void Corsair clan-ships, rugged futuristic patched flight armour with subtle amber accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no horns, no tusks, no skull motifs, entirely human, not an orc",
+   "output": "public/game/commander-warchief-kraal.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century Grand Theorist — Zahn Eclipse, a man in his thirties with dark hair swept back, sharp features and a knowing half-smile, the Syndicate's Ghost Director and its most dangerous theoretician, sleek dark tailored futuristic coat with subtle indigo and violet accents and richer rim lighting befitting a legendary figure, half his face falling into shadow, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons, no glowing eyes, no magic, no hood",
+   "output": "public/game/commander-zahn-eclipse.webp",
+   "aspectRatio": "1:1"
+  },
+  {
+   "prompt": "Portrait bust of a 22nd-century enigma known only as Zero — a figure in a smooth featureless mirrored visor helmet with a thin cyan light seam, no visible face, identity entirely unknown, sleek dark futuristic suit with subtle cyan accents and richer rim lighting befitting a legendary figure, holographic console light, dark background, painterly sci-fi character art, head-and-shoulders, facing slightly left, absolutely no lettering numbers words or writing anywhere, no weapons",
+   "output": "public/game/commander-zero.webp",
+   "aspectRatio": "1:1"
+  }
+]
