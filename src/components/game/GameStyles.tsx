@@ -1203,6 +1203,385 @@ export default function GameStyles() {
       html.high-contrast .bg-amber-500\\/8      { background-color: rgba(251, 191, 36, 0.16) !important; }
       html.high-contrast .border-cyan-500\\/25  { border-color: rgba(34, 211, 238, 0.65) !important; }
       html.high-contrast .bg-cyan-500\\/8       { background-color: rgba(34, 211, 238, 0.16) !important; }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE A1 — PANEL MATERIALITY (docs/VISUAL_AAA_2026-08.md §A1.1)
+         Master of Orion 2 benchmark: panels must read as physical hardware
+         housings, not flat translucent tints. Three layers of construction:
+
+           1. OUTER BEVEL  — a 1px lit top edge + shaded bottom edge, so the
+              housing catches light from above like a moulded console shell.
+           2. INSET WELL   — an inner vignette that pushes content *into* the
+              housing instead of letting it float on a wash.
+           3. HARDWARE     — corner brackets promoted to milled corner plates
+              plus (on chrome.tsx primitives) screw dots + edge tick rulers.
+
+         DELIBERATELY EXTENDS '.hud-frame' rather than forking a parallel
+         system: 77 of the game's ~102 panel files already carry '.hud-frame',
+         so the housing propagates for free with zero call-site edits.
+
+         Why box-shadow and not background-image: 15 existing '.hud-frame'
+         call sites also apply Tailwind 'bg-gradient-to-*' (which is
+         'background-image'), so painting the bevel with gradients would
+         silently erase their tints. box-shadow is free on all of them. The
+         cost is that box-shadow-setting classes co-applied with '.hud-frame'
+         (the 5 '.game-glow-*' / '.game-panel-glow' variants) must be
+         re-composed explicitly — done immediately below via the
+         higher-specificity '.hud-frame.game-glow-*' rules, which append the
+         glow to the housing instead of replacing it. Elements running an
+         animated glow-pulse keyframe lose the housing for the duration of
+         the pulse (the animation owns box-shadow); those are small nodes
+         (season/phase track pips), not panels, so it is not visible.
+
+         Density: the inset-well spread scales with --density-scale, so
+         compact mode gets a proportionally tighter housing rather than a
+         cavernous one. High-contrast overrides live at the end of the
+         section. No new image assets — gradients, box-shadow, pseudo-
+         elements only. No animation is introduced here at all, so there is
+         nothing for reduced-motion to disable (the only transition,
+         border-color on the corner plates, predates this wave).
+         ═══════════════════════════════════════════════════════════════════ */
+
+      .hud-frame {
+        /* Housing tokens — variants below re-point these, never the shadow
+           composition itself, so a variant is a 4-line override. */
+        --mat-hi: rgba(255, 255, 255, 0.075);
+        --mat-lo: rgba(0, 0, 0, 0.55);
+        --mat-side-hi: rgba(255, 255, 255, 0.025);
+        --mat-side-lo: rgba(0, 0, 0, 0.3);
+        --mat-well: rgba(0, 0, 0, 0.34);
+        --mat-well-size: calc(22px * var(--density-scale, 1));
+        --mat-drop: 0 2px 10px rgba(0, 0, 0, 0.45);
+        --mat-depth:
+          inset 0 1px 0 var(--mat-hi),
+          inset 0 -1px 0 var(--mat-lo),
+          inset 1px 0 0 var(--mat-side-hi),
+          inset -1px 0 0 var(--mat-side-lo),
+          inset 0 0 var(--mat-well-size) var(--mat-well);
+        box-shadow: var(--mat-depth), var(--mat-drop);
+      }
+
+      /* Re-compose the glow treatments on top of the housing (see note above). */
+      .hud-frame.game-panel-glow {
+        box-shadow: var(--mat-depth), var(--mat-drop), 0 0 30px rgba(6, 182, 212, 0.05);
+      }
+      .hud-frame.game-glow-cyan {
+        box-shadow: var(--mat-depth), var(--mat-drop), 0 0 15px rgba(6, 182, 212, 0.2), 0 0 40px rgba(6, 182, 212, 0.05);
+      }
+      .hud-frame.game-glow-purple {
+        box-shadow: var(--mat-depth), var(--mat-drop), 0 0 15px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.05);
+      }
+      .hud-frame.game-glow-green {
+        box-shadow: var(--mat-depth), var(--mat-drop), 0 0 15px rgba(34, 197, 94, 0.2), 0 0 40px rgba(34, 197, 94, 0.05);
+      }
+      .hud-frame.game-glow-amber {
+        box-shadow: var(--mat-depth), var(--mat-drop), 0 0 15px rgba(245, 158, 11, 0.2), 0 0 40px rgba(245, 158, 11, 0.05);
+      }
+
+      /* ── Frame variants keyed to MEANING (not decoration) ──────────────
+         primary   — a lit console housing. The default; nothing to add.
+         secondary — a recessed data well: bevel inverted (dark lip on top,
+                     faint light catch on the bottom), no outer drop, deeper
+                     vignette. Reads as "carved into the primary console".
+         alert     — a primary housing with an amber hazard keyline ring and
+                     amber corner plates. NON-COMBAT canon: a caution rail,
+                     never damage/impact/weapon language.
+         inert     — locked, mothballed, empty-state or unavailable. Flat,
+                     desaturated, minimal light. Communicates "no power".
+         Variants are additive classes, so a raw '.hud-frame' consumer can
+         opt in without going through chrome.tsx. */
+      .hud-frame.mat-secondary {
+        --mat-hi: rgba(0, 0, 0, 0.5);
+        --mat-lo: rgba(255, 255, 255, 0.05);
+        --mat-side-hi: rgba(0, 0, 0, 0.28);
+        --mat-side-lo: rgba(0, 0, 0, 0.28);
+        --mat-well: rgba(0, 0, 0, 0.55);
+        --mat-drop: 0 0 0 rgba(0, 0, 0, 0);
+        --hud-color: rgba(34, 211, 238, 0.22);
+      }
+      .hud-frame.mat-alert {
+        --hud-color: rgba(245, 158, 11, 0.6);
+        --mat-hi: rgba(253, 230, 138, 0.14);
+        --mat-drop: 0 2px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(245, 158, 11, 0.2);
+      }
+      .hud-frame.mat-inert {
+        --hud-color: rgba(148, 163, 184, 0.22);
+        --mat-hi: rgba(255, 255, 255, 0.028);
+        --mat-lo: rgba(0, 0, 0, 0.35);
+        --mat-side-hi: rgba(255, 255, 255, 0.012);
+        --mat-side-lo: rgba(0, 0, 0, 0.18);
+        --mat-well: rgba(0, 0, 0, 0.2);
+        --mat-drop: 0 1px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      /* ── Corner plates — the brackets promoted to milled hardware ──────
+         Same four pseudo/child elements as before (no markup change), now
+         slightly larger, 2px on the visible edges, and carrying a small
+         filled diagonal nub so the corner reads as a bolted plate rather
+         than a hairline tick. Size rides --density-scale. */
+      .hud-frame::before,
+      .hud-frame::after,
+      .hud-frame > .hud-corner-bl,
+      .hud-frame > .hud-corner-br {
+        width: calc(13px * var(--density-scale, 1));
+        height: calc(13px * var(--density-scale, 1));
+        background-repeat: no-repeat;
+        background-size: 5px 5px;
+      }
+      .hud-frame::before {
+        border-width: 2px 0 0 2px;
+        background-image: linear-gradient(135deg, var(--hud-color), transparent 85%);
+        background-position: top left;
+      }
+      .hud-frame::after {
+        border-width: 2px 2px 0 0;
+        background-image: linear-gradient(225deg, var(--hud-color), transparent 85%);
+        background-position: top right;
+      }
+      .hud-frame > .hud-corner-bl {
+        border-width: 0 0 2px 2px;
+        background-image: linear-gradient(45deg, var(--hud-color), transparent 85%);
+        background-position: bottom left;
+      }
+      .hud-frame > .hud-corner-br {
+        border-width: 0 2px 2px 0;
+        background-image: linear-gradient(315deg, var(--hud-color), transparent 85%);
+        background-position: bottom right;
+      }
+
+      /* ── Edge hardware layer — opted into by chrome.tsx primitives ─────
+         A single decorative, pointer-events-none child span. Four screw
+         dots inboard of the corner plates plus a ticked ruler down each
+         side edge. Purely CSS gradients; suppressed under 640px where the
+         detail would crowd a phone's content column, and under
+         high-contrast where the low-alpha detailing is noise rather than
+         signal. Never carries information (aria-hidden at the call site). */
+      .mat-hardware {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background-image:
+          radial-gradient(circle at 11px 11px, rgba(255, 255, 255, 0.17) 0 1.1px, transparent 1.7px),
+          radial-gradient(circle at calc(100% - 11px) 11px, rgba(255, 255, 255, 0.17) 0 1.1px, transparent 1.7px),
+          radial-gradient(circle at 11px calc(100% - 11px), rgba(255, 255, 255, 0.1) 0 1.1px, transparent 1.7px),
+          radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), rgba(255, 255, 255, 0.1) 0 1.1px, transparent 1.7px);
+      }
+      .mat-hardware::before,
+      .mat-hardware::after {
+        content: '';
+        position: absolute;
+        top: 26%;
+        bottom: 26%;
+        width: 2px;
+        background: repeating-linear-gradient(to bottom, var(--hud-color) 0 2px, transparent 2px 7px);
+        opacity: 0.45;
+      }
+      .mat-hardware::before { left: 0; }
+      .mat-hardware::after  { right: 0; }
+      @media (max-width: 640px) {
+        .mat-hardware::before,
+        .mat-hardware::after { display: none; }
+      }
+
+      /* ── Header rail — a lit seam under a ConsolePanel's header band, so
+         the header reads as a separate machined face of the same housing. */
+      .mat-rail {
+        position: relative;
+      }
+      .mat-rail::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 1px;
+        background: linear-gradient(90deg, var(--hud-color), rgba(255, 255, 255, 0.05) 45%, transparent 85%);
+        pointer-events: none;
+      }
+
+      /* ── HoloCard materiality — repeated items *inside* a console read as
+         shallow wells stamped into the housing face, not as floating tiles.
+         Deliberately NOT '.hud-frame': corner plates on every list row would
+         be visual noise (and '.hud-frame''s bottom two plates need markup
+         spans, so a bracketed card would be asymmetric). Same --mat-* token
+         vocabulary, one notch shallower. */
+      .holo-card {
+        --mat-hi: rgba(0, 0, 0, 0.35);
+        --mat-lo: rgba(255, 255, 255, 0.04);
+        --mat-well: rgba(0, 0, 0, 0.4);
+        box-shadow:
+          inset 0 1px 0 var(--mat-hi),
+          inset 0 -1px 0 var(--mat-lo),
+          inset 0 0 calc(16px * var(--density-scale, 1)) var(--mat-well);
+      }
+      /* Raised variant — a card that is an actionable console button rather
+         than a data well (build options, selectable modules). */
+      .holo-card.mat-primary {
+        --mat-hi: rgba(255, 255, 255, 0.07);
+        --mat-lo: rgba(0, 0, 0, 0.5);
+        --mat-well: rgba(0, 0, 0, 0.22);
+        box-shadow:
+          inset 0 1px 0 var(--mat-hi),
+          inset 0 -1px 0 var(--mat-lo),
+          inset 0 0 calc(16px * var(--density-scale, 1)) var(--mat-well),
+          0 1px 6px rgba(0, 0, 0, 0.4);
+      }
+      .holo-card.mat-alert {
+        box-shadow:
+          inset 0 1px 0 rgba(253, 230, 138, 0.12),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+          inset 0 0 calc(16px * var(--density-scale, 1)) rgba(0, 0, 0, 0.3),
+          0 0 0 1px rgba(245, 158, 11, 0.2);
+      }
+      .holo-card.mat-inert {
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.02),
+          inset 0 0 calc(12px * var(--density-scale, 1)) rgba(0, 0, 0, 0.18);
+        opacity: 0.72;
+      }
+      html.high-contrast .holo-card.mat-inert { opacity: 0.9; }
+      html.high-contrast .holo-card {
+        --mat-hi: rgba(0, 0, 0, 0.7) !important;
+        --mat-lo: rgba(255, 255, 255, 0.22) !important;
+        --mat-well: rgba(0, 0, 0, 0.12) !important;
+      }
+
+      /* ── High-contrast: the housing must stay legible when the low-alpha
+         detailing is boosted. Strengthen the bevel lips (the depth cue) and
+         drop the decorative hardware layer entirely (it is noise at high
+         contrast, and it carries no information by contract). ─────────── */
+      html.high-contrast .hud-frame {
+        --mat-hi: rgba(255, 255, 255, 0.3) !important;
+        --mat-lo: rgba(0, 0, 0, 0.85) !important;
+        --mat-side-hi: rgba(255, 255, 255, 0.14) !important;
+        --mat-side-lo: rgba(0, 0, 0, 0.6) !important;
+        --mat-well: rgba(0, 0, 0, 0.15) !important;
+      }
+      html.high-contrast .hud-frame.mat-secondary {
+        --mat-hi: rgba(0, 0, 0, 0.85) !important;
+        --mat-lo: rgba(255, 255, 255, 0.3) !important;
+      }
+      html.high-contrast .mat-hardware { display: none; }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE A1 — NUMERIC READOUT TYPOGRAPHY (docs/VISUAL_AAA_2026-08.md §A1.2)
+         MoO2 is readable at a glance because figures are chunky, tabular and
+         icon-adjacent, and the label/value hierarchy is unambiguous. These
+         classes back the <StatReadout>/<Figure> primitives in chrome.tsx.
+         Type floor (V8 canon) is respected: nothing here is below 10px.
+         ═══════════════════════════════════════════════════════════════════ */
+
+      /* Every figure in the game — the one rule that guarantees columns of
+         numbers line up. Applied by <Figure>, and retro-applied to the two
+         table primitives so existing tables inherit it without edits. */
+      .mat-figure,
+      .holo-table td,
+      .holo-table th,
+      .holo-row .game-number {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: 'tnum' 1, 'lnum' 1;
+      }
+      /* NOTE: deliberately sets no 'color'. styled-jsx global rules are
+         injected after the Tailwind sheet, so a colour here would outrank
+         every 'text-green-400'-style tint call sites pass in — figures
+         inherit instead, and the Figure/StatReadout components supply a
+         bright default in Tailwind-land, where a caller can override it. */
+      .mat-figure {
+        font-family: var(--font-hud), var(--font-mono), ui-monospace, monospace;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.05;
+        white-space: nowrap;
+      }
+      /* Unit/suffix rides at 0.72em and steps down one contrast notch, so
+         "$1.2" reads as the number and "M/mo" reads as the unit — the MoO2
+         "big number, small unit" composition. */
+      .mat-unit {
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        font-size: 0.72em;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: #94a3b8;
+        margin-left: 0.15em;
+      }
+      /* Stat block: label above, icon + value below, aligned as a column so
+         a row of readouts forms a proper instrument cluster. */
+      .mat-stat {
+        display: flex;
+        flex-direction: column;
+        gap: calc(3px * var(--density-scale, 1));
+        min-width: 0;
+      }
+      .mat-stat-label {
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #64748b;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+      }
+      .mat-stat-value {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+        min-width: 0;
+      }
+      /* Icon sits on the value's baseline row, never above the label — the
+         "icon inline with the value" rule. align-self keeps it optically
+         centered against a taller numeral. */
+      .mat-stat-value > .game-icon {
+        align-self: center;
+      }
+      .mat-stat-sub {
+        font-size: 10px;
+        line-height: 1.25;
+        color: #64748b;
+      }
+      /* Trend/sign token. Colour is ALWAYS redundant with the glyph and the
+         explicit +/- sign carried in the text, per CLAUDE.md colourblind
+         canon — removing all colour must not remove any meaning. */
+      .mat-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        font-family: var(--font-hud), var(--font-mono), ui-monospace, monospace;
+        font-variant-numeric: tabular-nums;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+      .mat-trend-up   { color: #4ade80; }
+      .mat-trend-down { color: #f87171; }
+      .mat-trend-flat { color: #94a3b8; }
+      html.high-contrast .mat-trend-up   { color: #86efac; }
+      html.high-contrast .mat-trend-down { color: #fca5a5; }
+      html.high-contrast .mat-trend-flat { color: #cbd5e1; }
+      html.high-contrast .mat-stat-label { color: #94a3b8; }
+      html.high-contrast .mat-unit       { color: #cbd5e1; }
+
+      /* Dense numeric table: right-aligned tabular figure columns with a
+         hairline column rule, the MoO2 ledger look. Opt-in via .mat-table
+         on an existing .holo-table (additive, no markup change needed). */
+      .mat-table td.mat-num,
+      .mat-table th.mat-num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .mat-table tbody tr > td {
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      html.high-contrast .mat-table tbody tr > td {
+        border-top-color: rgba(255, 255, 255, 0.18);
+      }
     `}</style>
   );
 }

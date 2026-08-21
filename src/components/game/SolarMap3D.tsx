@@ -46,6 +46,20 @@ import { useWorldState } from '@/hooks/useWorldState';
 import { onMapPing, getPingVisual, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
 import { EFFECT_ASSETS, SKYBOX_ASSETS } from '@/lib/game/assets';
 import { computeModeVisuals, type MapMode, type ModeVisual } from '@/lib/game/map-modes';
+// Wave A2 (map as command theater) — zoom tiers, body presentation data and
+// orbital-slot ring math, shared verbatim with the 2D canvas (map-modes.ts
+// precedent: one derivation, two renderers, never disagreeing).
+import {
+  zoomTierFromCameraDistance,
+  isMajorLocation,
+  nameVisibleAt,
+  lensVisibleAt,
+  detailVisibleAt,
+  reticleLockState,
+  MAP_ZOOM_TIER_LABEL,
+  type MapZoomTier,
+} from '@/lib/game/map-zoom';
+import { getAtmosphere, computeSlotRings, SLOT_SEGMENT_STYLE, type SlotRingModel } from '@/lib/game/map-bodies';
 import { REGION_LABELS, LOCATIONS_BY_REGION } from './SolarSystemCanvas';
 import {
   ORBITAL_BODIES,
@@ -72,8 +86,16 @@ type PositionsRef = React.MutableRefObject<ScenePositions>;
 
 interface SolarMap3DProps {
   state: GameState;
-  onSelectLocation?: (locId: string | null) => void;
+  /** Wave A2: an optional `anchor` (container-relative px) accompanies scene
+   *  clicks / context requests so the shell can open the radial command menu
+   *  AT the body. Omitted = open the full context panel (keyboard path). */
+  onSelectLocation?: (locId: string | null, anchor?: { x: number; y: number }) => void;
   selectedLocationId?: string | null;
+  /** Wave A2 — force every label/badge at every zoom (accessibility override
+   *  for the zoom-based information layering). */
+  alwaysLabels?: boolean;
+  /** Wave A2 — report the live zoom tier to the shell HUD. */
+  onZoomTierChange?: (tier: MapZoomTier) => void;
   /** Freeze rendering entirely (page hidden / map covered by the desktop
    *  panels-as-overlays stage — Wave V4). frameloop drops to 'never'; the
    *  retained framebuffer is the only cost. */
@@ -239,68 +261,106 @@ function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, 
   return { tex, aspect: w / h };
 }
 
-// ── Wave V4: zoom-level information layering (LOD bands) ────────────────────
-// Camera distance → three bands. far: planet names only (pip labels hidden);
-// mid: names + standing glyphs (badge rows suppressed); near: everything.
-// The band lives in a shared ref written once per frame (LodTracker) and
+// ── Zoom-level information layering (V4 LOD bands → Wave A2 zoom tiers) ─────
+// The V4 wave introduced three camera-distance bands here; Wave A2 promotes
+// the thresholds and the visibility rules into map-zoom.ts so the 2D canvas
+// answers identically, and adds the accessibility override (`alwaysLabels`).
+// The tier lives in a shared ref written once per frame (ZoomTierTracker) and
 // read by each LabelSprite's own useFrame — no React state churn at 60Hz.
+// A throttled callback mirrors it to the shell HUD (state, but ≤1 set/tier
+// change, not per frame).
 
-type LodBand = 'far' | 'mid' | 'near';
-type LodRef = React.MutableRefObject<LodBand>;
+type TierRef = React.MutableRefObject<MapZoomTier>;
 
-const LOD_FAR_DIST = 95;
-const LOD_NEAR_DIST = 38;
-
-function LodTracker({ lodRef }: { lodRef: LodRef }) {
+function ZoomTierTracker({ tierRef, onChange }: { tierRef: TierRef; onChange?: (t: MapZoomTier) => void }) {
   useFrame(({ camera }) => {
-    const d = camera.position.length();
-    lodRef.current = d > LOD_FAR_DIST ? 'far' : d > LOD_NEAR_DIST ? 'mid' : 'near';
+    const next = zoomTierFromCameraDistance(camera.position.length());
+    if (next !== tierRef.current) {
+      tierRef.current = next;
+      onChange?.(next);
+    }
   });
   return null;
 }
 
-/** Screen-constant label sprite under a body/pip. V4: renders a "full"
- *  texture (badges + mode rows) and a "name-only" texture, toggling sprite
- *  visibility per frame from the LOD band ref — textures regenerate only on
- *  data change, never on camera motion. */
-function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = null, lodRef, kind = 'body' }: {
+/** Screen-constant label sprite under a body/pip.
+ *
+ *  Three textures, one per zoom tier — regenerated only on DATA change, never
+ *  on camera motion, and de-duplicated when two tiers would render the same
+ *  pixels (the common case: a location with no badges and no lens badge uses
+ *  one texture for all three tiers):
+ *    detail   — name + standing + mode glyph + count badges + mode badge
+ *    location — name + standing + mode glyph + mode badge  (no counts)
+ *    system   — name + standing + mode glyph               (no badge rows)
+ *  Visibility is chosen per frame by the allocation-free predicates in
+ *  map-zoom.ts. `alwaysLabels` pins everything to the detail texture. */
+function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = null, tierRef, locationId, alwaysLabels = false }: {
   name: string; unlocked: boolean; badges: BadgeCounts; yOffset: number; standing?: ZoneStandingKind;
-  mode?: ModeVisual | null; lodRef?: LodRef; kind?: 'body' | 'pip';
+  mode?: ModeVisual | null; tierRef?: TierRef; locationId?: string; alwaysLabels?: boolean;
 }) {
   const modeLabel: ModeLabel | null = mode ? { glyph: mode.glyph, badge: mode.badge, color: mode.tint } : null;
-  const full = useMemo(
-    () => makeLabelTexture(name, unlocked, badges, standing, modeLabel),
-    [name, unlocked, badges.buildings, badges.npc, badges.world, standing, mode?.glyph, mode?.badge, mode?.tint], // eslint-disable-line react-hooks/exhaustive-deps
-  );
-  const hasBadges = badges.buildings > 0 || badges.npc > 0 || badges.world > 0;
-  const needsNameOnly = hasBadges || !!modeLabel?.badge;
-  const nameOnly = useMemo(
-    () => needsNameOnly ? makeLabelTexture(name, unlocked, { buildings: 0, npc: 0, world: 0 }, standing, modeLabel ? { ...modeLabel, badge: null } : null) : null,
-    [name, unlocked, standing, needsNameOnly, mode?.glyph, mode?.tint], // eslint-disable-line react-hooks/exhaustive-deps
-  );
-  useEffect(() => () => full.tex.dispose(), [full]);
-  useEffect(() => () => { nameOnly?.tex.dispose(); }, [nameOnly]);
-  const fullRef = useRef<THREE.Sprite>(null);
-  const nameRef = useRef<THREE.Sprite>(null);
+  const isMajor = locationId ? isMajorLocation(locationId) : true;
+  const hasHoldings = badges.buildings > 0;
+
+  const variants = useMemo(() => {
+    const NO_BADGE_COUNTS: BadgeCounts = { buildings: 0, npc: 0, world: 0 };
+    const specs: { tier: MapZoomTier; badges: BadgeCounts; mode: ModeLabel | null }[] = [
+      { tier: 'detail', badges, mode: modeLabel },
+      { tier: 'location', badges: NO_BADGE_COUNTS, mode: modeLabel },
+      { tier: 'system', badges: NO_BADGE_COUNTS, mode: modeLabel ? { ...modeLabel, badge: null } : null },
+    ];
+    const bySig = new Map<string, { tex: THREE.CanvasTexture; aspect: number; scale: number }>();
+    const byTier: Record<MapZoomTier, { tex: THREE.CanvasTexture; aspect: number; scale: number }> = {} as never;
+    for (const spec of specs) {
+      const sig = `${spec.badges.buildings}|${spec.badges.npc}|${spec.badges.world}|${spec.mode?.badge ?? ''}`;
+      let entry = bySig.get(sig);
+      if (!entry) {
+        const made = makeLabelTexture(name, unlocked, spec.badges, standing, spec.mode);
+        const anyBadges = spec.badges.buildings > 0 || spec.badges.npc > 0 || spec.badges.world > 0;
+        entry = { ...made, scale: (anyBadges ? 0.085 : 0.05) + (spec.mode?.badge ? 0.028 : 0) };
+        bySig.set(sig, entry);
+      }
+      byTier[spec.tier] = entry;
+    }
+    return { byTier, unique: Array.from(bySig.values()) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, unlocked, badges.buildings, badges.npc, badges.world, standing, mode?.glyph, mode?.badge, mode?.tint]);
+
+  useEffect(() => () => { variants.unique.forEach(v => v.tex.dispose()); }, [variants]);
+
+  const refs = useRef<Partial<Record<MapZoomTier, THREE.Sprite | null>>>({});
   useFrame(() => {
-    const band = lodRef?.current ?? 'near';
-    const hidden = band === 'far' && kind === 'pip';
-    const showFull = !hidden && (band === 'near' || !nameOnly);
-    if (fullRef.current) fullRef.current.visible = showFull;
-    if (nameRef.current) nameRef.current.visible = !hidden && !showFull && !!nameOnly;
+    const tier = tierRef?.current ?? 'detail';
+    const showName = nameVisibleAt(tier, isMajor, hasHoldings, alwaysLabels);
+    const showDetail = detailVisibleAt(tier, alwaysLabels);
+    const showLens = lensVisibleAt(tier, alwaysLabels);
+    const pick: MapZoomTier = showDetail ? 'detail' : showLens ? 'location' : 'system';
+    const d = refs.current.detail;
+    const l = refs.current.location;
+    const s = refs.current.system;
+    if (d) d.visible = showName && pick === 'detail';
+    if (l) l.visible = showName && pick === 'location';
+    if (s) s.visible = showName && pick === 'system';
   });
-  const hScale = (hasBadges ? 0.085 : 0.05) + (modeLabel?.badge ? 0.028 : 0);
-  const nScale = 0.05;
+
+  const tiers: MapZoomTier[] = ['detail', 'location', 'system'];
   return (
     <group>
-      <sprite ref={fullRef} position={[0, yOffset, 0]} scale={[hScale * full.aspect, hScale, 1]} renderOrder={10}>
-        <spriteMaterial map={full.tex} sizeAttenuation={false} transparent depthTest={false} />
-      </sprite>
-      {nameOnly && (
-        <sprite ref={nameRef} visible={false} position={[0, yOffset, 0]} scale={[nScale * nameOnly.aspect, nScale, 1]} renderOrder={10}>
-          <spriteMaterial map={nameOnly.tex} sizeAttenuation={false} transparent depthTest={false} />
-        </sprite>
-      )}
+      {tiers.map(tier => {
+        const v = variants.byTier[tier];
+        return (
+          <sprite
+            key={tier}
+            ref={el => { refs.current[tier] = el; }}
+            visible={tier === 'detail'}
+            position={[0, yOffset, 0]}
+            scale={[v.scale * v.aspect, v.scale, 1]}
+            renderOrder={10}
+          >
+            <spriteMaterial map={v.tex} sizeAttenuation={false} transparent depthTest={false} />
+          </sprite>
+        );
+      })}
     </group>
   );
 }
@@ -442,11 +502,12 @@ interface BodyMeshProps {
   badges: BadgeCounts;
   standing: ZoneStandingKind;
   mode: ModeVisual | null;
-  lodRef: LodRef;
-  onPick: (locId: string) => void;
+  tierRef: TierRef;
+  alwaysLabels: boolean;
+  onPick: (locId: string, anchor?: { x: number; y: number }) => void;
 }
 
-function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, lodRef, onPick }: BodyMeshProps) {
+function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, tierRef, alwaysLabels, onPick }: BodyMeshProps) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
@@ -468,13 +529,19 @@ function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, lodR
   const handleClick = useCallback((e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     if (e.delta > 6) return; // was a drag, not a click
-    if (def.locationId) onPick(def.locationId);
+    if (def.locationId) onPick(def.locationId, { x: e.clientX, y: e.clientY });
   }, [def.locationId, onPick]);
 
   const setCursor = useCallback((on: boolean) => (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     document.body.style.cursor = on && def.locationId ? 'pointer' : 'auto';
   }, [def.locationId]);
+
+  // Wave A2 (item 3) — atmospheric shell, data-driven from ATMOSPHERES
+  // (map-bodies.ts) instead of the previous hardcoded three-body check. The
+  // BackSide sphere reads as a rim glow against the lit limb; the terminator
+  // itself is real (a single point light at the Sun).
+  const atmo = getAtmosphere(def.locationId);
 
   return (
     <group ref={groupRef}>
@@ -496,24 +563,32 @@ function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, lodR
           <meshStandardMaterial map={clouds} transparent opacity={0.5} depthWrite={false} />
         </mesh>
       )}
-      {/* Thin atmosphere shell (BackSide trick from the site's PlanetarySphere). */}
-      {(def.id === 'earth' || def.id === 'venus' || def.id === 'titan') && (
-        <mesh>
-          <sphereGeometry args={[r * 1.07, 24, 24]} />
-          <meshBasicMaterial color={def.color} transparent opacity={0.1} side={THREE.BackSide} depthWrite={false} />
-        </mesh>
+      {/* Atmosphere shell (BackSide trick from the site's PlanetarySphere),
+          sized + tinted from the shared ATMOSPHERES table. */}
+      {atmo && (
+        <>
+          <mesh>
+            <sphereGeometry args={[r * atmo.shellScale, 24, 24]} />
+            <meshBasicMaterial color={atmo.color} transparent opacity={atmo.opacity * 0.62} side={THREE.BackSide} depthWrite={false} />
+          </mesh>
+          <mesh>
+            <sphereGeometry args={[r * (atmo.shellScale + 0.05), 20, 20]} />
+            <meshBasicMaterial color={atmo.color} transparent opacity={atmo.opacity * 0.26} side={THREE.BackSide} depthWrite={false} />
+          </mesh>
+        </>
       )}
       {def.ring && <PlanetRing texUrl={def.ring.texture} innerScale={def.ring.innerScale} outerScale={def.ring.outerScale} bodyR={r} />}
-      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} mode={mode} lodRef={lodRef} kind="body" yOffset={-(r + 0.45)} />}
+      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={def.locationId} alwaysLabels={alwaysLabels} yOffset={-(r + 0.45)} />}
     </group>
   );
 }
 
 // ── Orbital pips (LEO / GEO / belt ops / deep-space relay …) ────────────────
 
-function PipMesh({ pip, posRef, unlocked, badges, standing, mode, lodRef, onPick }: {
+function PipMesh({ pip, posRef, unlocked, badges, standing, mode, tierRef, alwaysLabels, onPick }: {
   pip: OrbitalPip; posRef: PositionsRef; unlocked: boolean; badges: BadgeCounts; standing: ZoneStandingKind;
-  mode: ModeVisual | null; lodRef: LodRef; onPick: (locId: string) => void;
+  mode: ModeVisual | null; tierRef: TierRef; alwaysLabels: boolean;
+  onPick: (locId: string, anchor?: { x: number; y: number }) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   useFrame(() => {
@@ -523,7 +598,7 @@ function PipMesh({ pip, posRef, unlocked, badges, standing, mode, lodRef, onPick
   const handleClick = useCallback((e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     if (e.delta > 6) return;
-    onPick(pip.locationId);
+    onPick(pip.locationId, { x: e.clientX, y: e.clientY });
   }, [pip.locationId, onPick]);
   const setCursor = useCallback((on: boolean) => (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
@@ -540,7 +615,7 @@ function PipMesh({ pip, posRef, unlocked, badges, standing, mode, lodRef, onPick
         <sphereGeometry args={[0.5, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} lodRef={lodRef} kind="pip" yOffset={-0.5} />
+      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={pip.locationId} alwaysLabels={alwaysLabels} yOffset={-0.5} />
     </group>
   );
 }
@@ -1128,6 +1203,108 @@ function ModeTints({ posRef, visuals }: { posRef: PositionsRef; visuals: Record<
   );
 }
 
+// ── Wave A2 (item 3): orbital-slot occupancy rings ──────────────────────────
+// "Orbital slots are finite" is a core design pillar (CLAUDE.md §Spatial
+// strategy) that until now existed only as rows in a popover table. Every
+// location with an ORBITAL_SLOT_POOL now wears its occupancy: contiguous arc
+// segments for yours / other corporations / free, read from the REAL
+// sync-delivered snapshot (state.orbitalSlotOccupancy) via map-bodies.ts —
+// the same model the 2D canvas draws, so the two can't disagree.
+//
+// Colour is reinforcement only. The three kinds also differ in RADIAL BAND
+// THICKNESS (yours thick, rivals medium, free hairline) and the numeric
+// badge sprite states the counts in text; a saturated pool adds a separate
+// full hairline ring, so "you cannot build here without a lease" is a shape,
+// not a hue. Geometry is static per model — the frame loop only repositions.
+
+const SLOT_RING_BASE_INNER = 0.86;
+
+function SlotRings({ posRef, rings, tierRef, alwaysLabels }: {
+  posRef: PositionsRef; rings: SlotRingModel[]; tierRef: TierRef; alwaysLabels: boolean;
+}) {
+  return (
+    <group>
+      {rings.map(ring => (
+        <SlotRing key={ring.locationId} ring={ring} posRef={posRef} tierRef={tierRef} alwaysLabels={alwaysLabels} />
+      ))}
+    </group>
+  );
+}
+
+function SlotRing({ ring, posRef, tierRef, alwaysLabels }: {
+  ring: SlotRingModel; posRef: PositionsRef; tierRef: TierRef; alwaysLabels: boolean;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const badgeRef = useRef<THREE.Sprite>(null);
+  const badge = useMemo(
+    () => makeGlyphTexture(ring.badge, ring.saturated ? '#fca5a5' : '#c4b5fd'),
+    [ring.badge, ring.saturated],
+  );
+  useEffect(() => () => badge.tex.dispose(), [badge]);
+
+  useFrame(() => {
+    const a = posRef.current.anchors[ring.locationId];
+    const g = groupRef.current;
+    const b = badgeRef.current;
+    const visible = lensVisibleAt(tierRef.current, alwaysLabels);
+    if (!a || !g) {
+      if (g) g.visible = false;
+      if (b) b.visible = false;
+      return;
+    }
+    g.visible = visible;
+    if (visible) {
+      g.position.set(a.pos[0], a.pos[1], a.pos[2]);
+      const s = a.r + 0.62;
+      g.scale.set(s, s, s);
+    }
+    if (b) {
+      b.visible = visible;
+      if (visible) b.position.set(a.pos[0], a.pos[1] + a.r + 1.05, a.pos[2]);
+    }
+  });
+
+  return (
+    <group>
+      <group ref={groupRef} visible={false}>
+        <Billboard>
+          {ring.segments.map(seg => {
+            const style = SLOT_SEGMENT_STYLE[seg.kind];
+            const band = (1 - SLOT_RING_BASE_INNER) * style.weight;
+            const inner = 1 - band;
+            // ringGeometry sweeps counter-clockwise from +X; remap so the
+            // segments run clockwise from 12 o'clock like the 2D canvas.
+            const thetaLength = Math.max(0.001, (seg.endFrac - seg.startFrac) * Math.PI * 2);
+            const thetaStart = Math.PI / 2 - seg.endFrac * Math.PI * 2;
+            return (
+              <mesh key={seg.kind} renderOrder={4}>
+                <ringGeometry args={[inner, 1, 64, 1, thetaStart, thetaLength]} />
+                <meshBasicMaterial
+                  color={style.color}
+                  transparent
+                  opacity={seg.kind === 'free' ? 0.5 : 0.92}
+                  side={THREE.DoubleSide}
+                  depthTest={false}
+                  depthWrite={false}
+                />
+              </mesh>
+            );
+          })}
+          {ring.saturated && (
+            <mesh renderOrder={4}>
+              <ringGeometry args={[1.06, 1.09, 64]} />
+              <meshBasicMaterial color="#f87171" transparent opacity={0.85} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
+            </mesh>
+          )}
+        </Billboard>
+      </group>
+      <sprite ref={badgeRef} visible={false} scale={[0.036 * badge.aspect, 0.036, 1]} renderOrder={11}>
+        <spriteMaterial map={badge.tex} sizeAttenuation={false} transparent depthTest={false} />
+      </sprite>
+    </group>
+  );
+}
+
 // ── Science-mission presence (W9) — state.scienceMissions ───────────────────
 // Active flagship missions put a 🔬 instrument glyph on their target body.
 // Order Queue HUD rows for the same missions focus the same location, and
@@ -1180,9 +1357,23 @@ function ScienceMarker({ locId, count, posRef }: { locId: string; count: number;
 const RETICLE_SEGMENTS = 8;
 const RETICLE_ARC = (Math.PI * 2) / RETICLE_SEGMENTS * 0.55; // 55% duty cycle
 
+// Wave A2 (item 4) — the reticle now ACQUIRES: it converges from a wide
+// radius on to the body over RETICLE_LOCK_MS, brightening as it locks, with
+// four corner brackets so "locked" is a shape and not a hue. Reduced motion
+// snaps straight to the locked state (reticleLockState returns it directly).
+const RETICLE_BRACKETS = 4;
+const RETICLE_BRACKET_ARC = 0.30;
+
 function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: PositionsRef; selectedLocationId: string | null; reduced: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
   const dashRef = useRef<THREE.Group>(null);
+  // Fixed-size, index-keyed material refs (no growing registry — this
+  // component re-renders whenever the selection changes).
+  const dashMats = useRef<(THREE.MeshBasicMaterial | null)[]>(Array(RETICLE_SEGMENTS).fill(null));
+  const bracketMats = useRef<(THREE.MeshBasicMaterial | null)[]>(Array(RETICLE_BRACKETS).fill(null));
+  const outerMat = useRef<THREE.MeshBasicMaterial | null>(null);
+  const lockStartRef = useRef<number>(0);
+  useEffect(() => { lockStartRef.current = performance.now(); }, [selectedLocationId]);
   useFrame(({ clock }) => {
     const g = groupRef.current;
     if (!g) return;
@@ -1191,10 +1382,20 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
     if (!a) { g.visible = false; return; }
     g.visible = true;
     g.position.set(a.pos[0], a.pos[1], a.pos[2]);
-    const pulse = reduced ? 1 : 1 + Math.sin(clock.elapsedTime * 3) * 0.08;
-    const s = (a.r + 0.42) * pulse;
+    const lock = reticleLockState(performance.now() - lockStartRef.current, reduced);
+    const pulse = reduced || !lock.locked ? 1 : 1 + Math.sin(clock.elapsedTime * 3) * 0.08;
+    const s = (a.r + 0.42) * pulse * lock.radiusScale;
     g.scale.set(s, s, s);
     if (dashRef.current && !reduced) dashRef.current.rotation.z = clock.elapsedTime * 0.9;
+    for (let i = 0; i < dashMats.current.length; i++) {
+      const m = dashMats.current[i];
+      if (m) m.opacity = 0.95 * lock.opacity;
+    }
+    for (let i = 0; i < bracketMats.current.length; i++) {
+      const m = bracketMats.current[i];
+      if (m) m.opacity = 0.95 * lock.opacity;
+    }
+    if (outerMat.current) outerMat.current.opacity = 0.35 * lock.opacity;
   });
   return (
     <group ref={groupRef} visible={false}>
@@ -1203,14 +1404,21 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
           {Array.from({ length: RETICLE_SEGMENTS }).map((_, i) => (
             <mesh key={i} renderOrder={5}>
               <ringGeometry args={[0.9, 1, 12, 1, (i / RETICLE_SEGMENTS) * Math.PI * 2, RETICLE_ARC]} />
-              <meshBasicMaterial color="#22d3ee" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
+              <meshBasicMaterial ref={el => { dashMats.current[i] = el; }} color="#22d3ee" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
             </mesh>
           ))}
         </group>
         <mesh renderOrder={5}>
           <ringGeometry args={[1.18, 1.24, 48]} />
-          <meshBasicMaterial color="#22d3ee" transparent opacity={0.35} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
+          <meshBasicMaterial ref={outerMat} color="#22d3ee" transparent opacity={0.35} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
         </mesh>
+        {/* Corner brackets at the diagonals — the "lock acquired" shape. */}
+        {Array.from({ length: RETICLE_BRACKETS }).map((_, i) => (
+          <mesh key={`bracket-${i}`} renderOrder={6}>
+            <ringGeometry args={[1.16, 1.30, 10, 1, Math.PI / 4 + i * (Math.PI / 2) - RETICLE_BRACKET_ARC / 2, RETICLE_BRACKET_ARC]} />
+            <meshBasicMaterial ref={el => { bracketMats.current[i] = el; }} color="#67e8f9" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} depthWrite={false} />
+          </mesh>
+        ))}
       </Billboard>
     </group>
   );
@@ -1218,7 +1426,7 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard' }: SolarMap3DProps) {
+export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange }: SolarMap3DProps) {
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
   const [showLanes, setShowLanes] = useState(true);
   const [showShips, setShowShips] = useState(true);
@@ -1228,8 +1436,16 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const cameraRef = useRef<THREE.Camera | null>(null);
   const pointerDownRef = useRef<{ x: number; y: number } | null>(null);
   const posRef = useRef<ScenePositions>(computeScenePositions(0));
-  // Wave V4 — LOD band shared ref (LodTracker writes, LabelSprites read).
-  const lodRef = useRef<LodBand>('mid');
+  const rootRef = useRef<HTMLDivElement>(null);
+  // Wave A2 — zoom tier shared ref (ZoomTierTracker writes, LabelSprites and
+  // SlotRings read). Same "one ref, no 60Hz React state" pattern as the V4
+  // LOD bands it replaces.
+  const tierRef = useRef<MapZoomTier>('location');
+  const [zoomTier, setZoomTier] = useState<MapZoomTier>('location');
+  const handleTierChange = useCallback((t: MapZoomTier) => {
+    setZoomTier(t);
+    onZoomTierChange?.(t);
+  }, [onZoomTierChange]);
 
   // Defensive: MapCommandCenter already falls back to 2D under
   // prefers-reduced-motion, but honor it here too in case of direct use.
@@ -1290,14 +1506,36 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const { world, available: worldAvailable } = useWorldState();
   const worldLayerActive = showWorld && worldAvailable;
 
-  const selectLocation = useCallback((locId: string) => {
+  const selectLocation = useCallback((locId: string, anchor?: { x: number; y: number }) => {
     playSound('click');
     setSelectedLoc(prev => {
-      const next = prev === locId ? null : locId;
-      onSelectLocation?.(next);
+      // Wave A2: an anchored request always SELECTS (it opens the radial
+      // command menu at the body); un-anchored requests keep the V4
+      // click-again-to-deselect behavior.
+      const next = !anchor && prev === locId ? null : locId;
+      onSelectLocation?.(next, next ? anchor : undefined);
       return next;
     });
   }, [onSelectLocation]);
+
+  /** Scene clicks arrive in client coordinates; the radial menu is positioned
+   *  inside this component's container, so translate once here. */
+  const pickFromScene = useCallback((locId: string, anchor?: { x: number; y: number }) => {
+    const root = rootRef.current;
+    if (!anchor || !root) { selectLocation(locId, anchor); return; }
+    const r = root.getBoundingClientRect();
+    selectLocation(locId, { x: anchor.x - r.left, y: anchor.y - r.top });
+  }, [selectLocation]);
+
+  /** Container-relative centre of a DOM element (Location List rows opening
+   *  the radial menu by keyboard / right-click). */
+  const anchorForElement = useCallback((el: HTMLElement | null): { x: number; y: number } | undefined => {
+    const root = rootRef.current;
+    if (!el || !root) return undefined;
+    const r = el.getBoundingClientRect();
+    const rr = root.getBoundingClientRect();
+    return { x: r.left + r.width / 2 - rr.left, y: r.top + r.height / 2 - rr.top };
+  }, []);
 
   const deselect = useCallback(() => {
     setSelectedLoc(null);
@@ -1351,6 +1589,15 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     [state.hazardWarnings],
   );
 
+  // Wave A2 — orbital-slot occupancy rings. Real sync-delivered occupancy;
+  // fail-soft to your-footprint-only when the save has never synced.
+  const slotRings = useMemo(() => computeSlotRings(state), [state]);
+  const slotRingByLoc = useMemo(() => {
+    const out: Record<string, SlotRingModel> = {};
+    for (const r of slotRings) out[r.locationId] = r;
+    return out;
+  }, [slotRings]);
+
   const ships = (state.ships || []).filter(s => s.isBuilt);
   const transitShips = ships.filter(s => s.status === 'in_transit' && s.route);
   const stationShips = ships.filter(s => !(s.status === 'in_transit' && s.route));
@@ -1373,6 +1620,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
 
   return (
     <div
+      ref={rootRef}
       className="relative w-full h-full"
       onPointerDownCapture={e => { pointerDownRef.current = { x: e.clientX, y: e.clientY }; }}
     >
@@ -1400,7 +1648,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <NebulaSkybox />
         <Stars radius={420} depth={80} count={4200} factor={5} saturation={0} fade speed={reduced ? 0 : 0.6} />
         <SceneClock posRef={posRef} reduced={reduced} />
-        <LodTracker lodRef={lodRef} />
+        <ZoomTierTracker tierRef={tierRef} onChange={handleTierChange} />
         <Sun reduced={reduced} />
         {ORBITAL_BODIES.filter(b => !b.parent).map(b => (
           <OrbitRing key={`orbit-${b.id}`} aAU={b.aAU!} inclinationDeg={b.inclinationDeg || 0} />
@@ -1418,8 +1666,9 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             badges={(b.locationId && badgesByLoc[b.locationId]) || NO_BADGES}
             standing={(b.locationId && standingByLoc[b.locationId]) || null}
             mode={(b.locationId && modeVisuals[b.locationId]) || null}
-            lodRef={lodRef}
-            onPick={selectLocation}
+            tierRef={tierRef}
+            alwaysLabels={alwaysLabels}
+            onPick={pickFromScene}
           />
         ))}
         {ORBITAL_PIPS.map(p => (
@@ -1431,10 +1680,12 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             badges={badgesByLoc[p.locationId] || NO_BADGES}
             standing={standingByLoc[p.locationId] || null}
             mode={modeVisuals[p.locationId] || null}
-            lodRef={lodRef}
-            onPick={selectLocation}
+            tierRef={tierRef}
+            alwaysLabels={alwaysLabels}
+            onPick={pickFromScene}
           />
         ))}
+        <SlotRings posRef={posRef} rings={slotRings} tierRef={tierRef} alwaysLabels={alwaysLabels} />
         {showLanes && <LaneLines posRef={posRef} state={state} reduced={reduced} />}
         {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
         {showShips && stationShips.map(s => <StationShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
@@ -1555,7 +1806,17 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                         key={loc.id}
                         type="button"
                         onClick={() => selectLocation(loc.id)}
+                        // Wave A2 — keyboard/right-click route into the radial
+                        // command menu, anchored on this row.
+                        onContextMenu={e => { e.preventDefault(); selectLocation(loc.id, anchorForElement(e.currentTarget)); }}
+                        onKeyDown={e => {
+                          if (e.key === 'c' || e.key === 'C' || e.key === 'ContextMenu') {
+                            e.preventDefault();
+                            selectLocation(loc.id, anchorForElement(e.currentTarget));
+                          }
+                        }}
                         aria-pressed={isSelected}
+                        aria-keyshortcuts="C"
                         className={`min-h-[44px] px-2 py-1.5 rounded-lg text-[11px] text-left border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                           isSelected
                             ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-200'
@@ -1577,6 +1838,8 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                           {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
                           {hasWarning ? ', severe hazard forecast next month' : ''}
                           {modeVis ? `, ${modeVis.srText}` : ''}
+                          {slotRingByLoc[loc.id] ? `. ${slotRingByLoc[loc.id].srText}` : ''}
+                          . Press C for the command menu.
                         </span>
                       </button>
                     );
@@ -1595,9 +1858,13 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
       )}
 
       <p id="solar-map-3d-hint" className="sr-only">
-        Click a planet, moon, or orbital marker to open its command panel. Drag to orbit the camera, scroll to zoom.
+        Click a planet, moon, or orbital marker to open its radial command menu — build, dispatch, demand,
+        standing orders and full detail, right at the body. Drag to orbit the camera, scroll to zoom.
+        Camera distance controls how much per-location detail is drawn; the Location List always shows
+        everything, and the Labels toggle forces full labels at every zoom.
         This 3D view is mouse/touch-only — use the Location List overlay (bottom-left) to browse and select every
-        location by keyboard, or switch to the 2D map with the 2D/3D toggle.
+        location by keyboard and press C on a row for its command menu, or switch to the 2D map with the 2D/3D toggle.
+        Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}.
       </p>
     </div>
   );

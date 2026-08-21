@@ -24,6 +24,9 @@ import {
 } from '@/lib/game/consumption';
 import GameIcon from './GameIcon';
 import { Concept } from './HoloTip';
+// Wave A1 (docs/VISUAL_AAA_2026-08.md §A1.2) — shared numeric readout
+// primitives so the price ledger reads as one instrument, not per-row markup.
+import { ConsolePanel, Figure, FlowValue } from './chrome';
 import Image from 'next/image';
 
 interface MarketPrices {
@@ -519,12 +522,15 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
       })()}
 
       {/* Market Prices */}
-      <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <span className="hud-corner-bl" aria-hidden="true" />
-        <span className="hud-corner-br" aria-hidden="true" />
-        <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">
-          📊 Global Market Prices
-        </h3>
+      {/* Wave A1: promoted from a hand-rolled hud-frame div with an emoji
+          header to the shared ConsolePanel housing, so the price ledger picks
+          up the same bevel/hardware materiality as every other console. */}
+      <ConsolePanel
+        title="Global Market Prices"
+        icon="market"
+        asH3
+        subtitle="Bid, ask and live spot for every traded commodity."
+      >
         <div className="space-y-1.5">
           {RESOURCES.map(r => {
             const priceData = prices[r.id];
@@ -558,22 +564,30 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-right">
-                    <div className="flex items-baseline justify-end gap-2 text-[10px] font-mono">
+                  {/* Wave A1: the three price lines are now a tabular column —
+                      fixed min-width + tabular-nums means bids, asks and spots
+                      line up decimal-for-decimal down the whole ledger instead
+                      of ragging with each figure's width. */}
+                  <div className="text-right min-w-[112px] sm:min-w-[132px]">
+                    <div className="flex items-baseline justify-end gap-2 text-[10px]">
                       <span className="text-amber-300" title="Bid — what you receive per unit when selling (includes 3% broker fee)">
-                        B: {formatMoney(Math.round(current * 0.97))}
+                        <span className="text-slate-500 mr-0.5">B</span>
+                        <Figure value={formatMoney(Math.round(current * 0.97))} className="text-[10px] text-amber-300" />
                       </span>
                       <span className="text-cyan-300" title="Ask — what you pay per unit when buying (includes scarcity premium)">
-                        A: {formatMoney(ask)}
+                        <span className="text-slate-500 mr-0.5">A</span>
+                        <Figure value={formatMoney(ask)} className="text-[10px] text-cyan-300" />
                       </span>
                     </div>
                     <div className="game-number text-white text-xs">
-                      {formatMoney(current)}
-                      <span className={`text-[10px] ml-1.5 ${
-                        change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-slate-500'
-                      }`}>
-                        {change > 0 ? '▲+' : change < 0 ? '▼' : ''}{change}%
-                      </span>
+                      <Figure value={formatMoney(current)} className="text-xs" />
+                      <FlowValue
+                        className="ml-1.5"
+                        text={`${change > 0 ? '+' : change < 0 ? '−' : ''}${Math.abs(change)}`}
+                        unit="%"
+                        direction={change > 0 ? 'up' : change < 0 ? 'down' : 'flat'}
+                        srDirection={change > 0 ? 'price up' : change < 0 ? 'price down' : 'price unchanged'}
+                      />
                       {/* V8 density mode — compact reveals scarcity (supply
                           multiplier) inline; comfortable keeps the row to
                           price + change only. */}
@@ -658,7 +672,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
         <p className="text-slate-600 text-[11px] mt-3 text-center">
           Prices change based on global player activity. Buying pushes prices up, selling pushes them down.
         </p>
-      </div>
+      </ConsolePanel>
     </div>
   );
 }

@@ -160,23 +160,39 @@ export function storageCapacityUnits(buildings: GameState['buildings'], resource
   return baseStorageCapUnits(resourceId) * (1 + STORAGE_WAREHOUSE_CAPACITY_WEIGHT * warehouse);
 }
 
-/** Apply one game-month of storage-integrity losses (boiloff + overflow
- *  decay) across the global pool AND every location inventory, mutating the
- *  passed tick-owned copies proportionally. Returns per-resource units lost
- *  and the (possibly newly stamped) ramp anchor. Pure w.r.t. inputs. */
-function runStorageIntegrity(
+export interface StorageIntegrityProjection {
+  /** Per-resource units lost this month, rounded to 2dp (reporting form). */
+  losses: Record<string, number>;
+  /** Per-resource fraction removed from EVERY pool — what the applier uses. */
+  fractions: Record<string, number>;
+  /** Ramp anchor, stamped on first use. */
+  anchor: number;
+}
+
+/** Pure projection of one game-month of storage-integrity losses (volatile
+ *  boiloff + over-capacity spoilage) across the global pool AND every
+ *  location inventory. Reads nothing it does not mutate — it mutates
+ *  nothing at all.
+ *
+ *  Extracted from `runStorageIntegrity` (Wave A1,
+ *  docs/VISUAL_AAA_2026-08.md §A1.3) so the ResourceBar flow lens can show
+ *  the SAME storage drain the month-end pass will actually charge, instead
+ *  of a lookalike re-derivation that could drift from it. `runStorageIntegrity`
+ *  below is now nothing but "project, then apply". */
+export function projectStorageIntegrityLosses(
   buildings: GameState['buildings'],
   cs: ConsumptionState,
   resources: Record<string, number>,
   locationInventories: Record<string, Record<string, number>>,
   monthIndex: number,
-): { losses: Record<string, number>; anchor: number } {
+): StorageIntegrityProjection {
   const anchor = (cs.storageDecayStartMonth === null || cs.storageDecayStartMonth === undefined)
     ? monthIndex
     : cs.storageDecayStartMonth;
   const losses: Record<string, number> = {};
+  const fractions: Record<string, number> = {};
   const ramp = Math.max(0, Math.min(1, (monthIndex - anchor) / STORAGE_DECAY_RAMP_MONTHS));
-  if (ramp <= 0) return { losses, anchor };
+  if (ramp <= 0) return { losses, fractions, anchor };
 
   // Total holdings per resource across all pools.
   const totals: Record<string, number> = {};
@@ -195,7 +211,27 @@ function runStorageIntegrity(
     const overflow = Math.max(0, total - cap);
     const loss = (total * boiloff + overflow * STORAGE_OVERFLOW_DECAY_PER_MONTH) * ramp;
     if (loss <= 1e-9) continue;
-    const frac = Math.min(1, loss / total);
+    fractions[res] = Math.min(1, loss / total);
+    losses[res] = Math.round(loss * 100) / 100;
+  }
+  return { losses, fractions, anchor };
+}
+
+/** Apply one game-month of storage-integrity losses (boiloff + overflow
+ *  decay) across the global pool AND every location inventory, mutating the
+ *  passed tick-owned copies proportionally. Returns per-resource units lost
+ *  and the (possibly newly stamped) ramp anchor. Pure w.r.t. inputs. */
+function runStorageIntegrity(
+  buildings: GameState['buildings'],
+  cs: ConsumptionState,
+  resources: Record<string, number>,
+  locationInventories: Record<string, Record<string, number>>,
+  monthIndex: number,
+): { losses: Record<string, number>; anchor: number } {
+  const { losses, fractions, anchor } = projectStorageIntegrityLosses(
+    buildings, cs, resources, locationInventories, monthIndex,
+  );
+  for (const [res, frac] of Object.entries(fractions)) {
     if ((resources[res] || 0) > 0) {
       resources[res] = Math.max(0, resources[res] - resources[res] * frac);
     }
@@ -207,7 +243,6 @@ function runStorageIntegrity(
       if (next[res] <= 1e-9) delete next[res];
       locationInventories[locId] = next;
     }
-    losses[res] = Math.round(loss * 100) / 100;
   }
   return { losses, anchor };
 }

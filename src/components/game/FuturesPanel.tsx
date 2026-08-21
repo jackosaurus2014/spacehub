@@ -422,7 +422,7 @@ export default function FuturesPanel({ state, setState }: Props) {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="holo-table w-full text-xs">
+              <table className="holo-table mat-table w-full text-xs">
                 <thead>
                   <tr className="bg-white/[0.03]">
                     <th className="text-left text-slate-500 font-medium py-2 px-3">Resource</th>
@@ -491,7 +491,7 @@ export default function FuturesPanel({ state, setState }: Props) {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="holo-table w-full text-xs">
+              <table className="holo-table mat-table w-full text-xs">
                 <thead>
                   <tr className="bg-white/[0.03]">
                     <th className="text-left text-slate-500 font-medium py-2 px-3">Resource</th>

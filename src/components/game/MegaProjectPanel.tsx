@@ -1069,7 +1069,7 @@ function LeaderboardAlliances({ data }: { data: Record<string, unknown> }) {
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="overflow-x-auto">
-      <table className="holo-table w-full text-xs">
+      <table className="holo-table mat-table w-full text-xs">
         <thead>
           <tr className="bg-white/[0.03]">
             <th className="text-left text-slate-500 font-medium py-2 px-3 w-10">#</th>
@@ -1137,7 +1137,7 @@ function LeaderboardIndividuals({ data }: { data: Record<string, unknown> }) {
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="overflow-x-auto">
-      <table className="holo-table w-full text-xs">
+      <table className="holo-table mat-table w-full text-xs">
         <thead>
           <tr className="bg-white/[0.03]">
             <th className="text-left text-slate-500 font-medium py-2 px-3 w-10">#</th>

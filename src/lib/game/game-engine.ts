@@ -96,6 +96,16 @@ import { getGlobalCapabilityBonus, getCapabilityCrewQuarters } from './building-
 // (§2.8) is wired in cargo-logistics.ts / trade-lanes.ts instead — dispatch
 // happens outside the tick loop.
 import { getExtractionPressureMultiplier } from './extraction-pressure';
+// Wave A1 (docs/VISUAL_AAA_2026-08.md §A1.3): the mining-output formulas and
+// the two mining side-bonuses below used to live inline in this file. They
+// were moved to resource-flow.ts so the ResourceBar's per-resource flow-rate
+// readout computes them from the SAME code the tick charges, rather than a
+// lookalike copy that could drift. Behaviour here is unchanged — these are
+// the identical expressions, relocated.
+import {
+  buildingMiningMultiplier, shipMiningMultiplier,
+  freighterLogisticsBonus, surveyProbeMiningBonus,
+} from './resource-flow';
 import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
 import { getMonthlyPayrollForState, getPayrollWageIndex } from './labor-market';
 import { rollLocationInventoryShocks, applyInventoryShocks } from './hazards';
@@ -341,34 +351,33 @@ export function processTick(state: GameState): GameState {
   const activeBoosts: ActiveBoost[] = (state.activeBoosts || []) as ActiveBoost[];
   const currentTotalMonths = newDate.year * 12 + newDate.month;
   const miningBonuses = state.miningBonuses || [];
-  const waveBMiningMult = Math.min(2.0,
-    (1 + specBonuses.miningOutput)
-    * victoryBonuses.miningMultiplier
-    * (1 + allianceB.miningBonus)
-    * (1 + mentorshipB.miningBonus) // LS2: mentee mining share
-    * (1 + coopMegaB.miningBonus) // E7: completed cooperative mega-projects
-    * getActiveBoostMultiplier(activeBoosts, 'mining')
-  );
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * eraModifiers.miningMultiplier * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier * waveBMiningMult;
+  // Wave A1: formula bodies now live in resource-flow.ts (single definition
+  // site, shared with the ResourceBar flow lens). Same math, same terms.
+  const miningMult = buildingMiningMultiplier({
+    wfMiningOutput: wfBonuses.miningOutput,
+    resMiningOutputBonus: resBonuses.miningOutputBonus,
+    legacyMiningMult,
+    eraMiningMult: eraModifiers.miningMultiplier,
+    tierMiningBonus: tierBonuses.miningBonus,
+    megaMiningMult: megaBonuses.miningMultiplier || 1,
+    repMiningMult: repBonuses.miningMultiplier,
+    commanderMiningMult: commanderBonuses.miningMultiplier,
+    specMiningOutput: specBonuses.miningOutput,
+    victoryMiningMult: victoryBonuses.miningMultiplier,
+    allianceMiningBonus: allianceB.miningBonus,
+    mentorshipMiningBonus: mentorshipB.miningBonus, // LS2: mentee mining share
+    coopMegaMiningBonus: coopMegaB.miningBonus, // E7: cooperative mega-projects
+    boostMiningMult: getActiveBoostMultiplier(activeBoosts, 'mining'),
+  });
   /** Freighter/tanker logistics bonus for mining at a location — shared by
    *  §1's price-linked mining revenue and §6's physical unit production so
    *  the two can never drift apart. */
-  const computeFreighterBonusAt = (locationId: string): number => {
-    let count = 0;
-    for (const ship of (state.ships || [])) {
-      if (!ship.isBuilt || ship.status !== 'idle') continue;
-      if (ship.currentLocation !== locationId) continue;
-      const sDef = SHIP_MAP.get(ship.definitionId);
-      if (sDef?.role === 'transport' || sDef?.role === 'tanker') count++;
-    }
-    return Math.min(count * 0.10, 0.50); // +10% per freighter/tanker, cap +50%
-  };
+  const computeFreighterBonusAt = (locationId: string): number =>
+    freighterLogisticsBonus(state.ships, locationId);
   /** Survey-probe mining bonus for one (location, resource) — same shared
    *  purpose as computeFreighterBonusAt above. */
   const computeMiningLocationBonus = (locationId: string, resource: string): number =>
-    miningBonuses
-      .filter(b => b.locationId === locationId && b.resourceId === resource && b.expiresAtMonth > currentTotalMonths)
-      .reduce((sum, b) => sum + b.bonusPct / 100, 0);
+    surveyProbeMiningBonus(miningBonuses, locationId, resource, currentTotalMonths);
 
   // ─── 1. Revenue collection from active services ───────────────────
   // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus,
@@ -1866,8 +1875,15 @@ export function processFullTick(state: GameState): GameState {
       );
       const shipVictoryBonuses = getVictoryBonuses(newState.earnedVictories || []);
       const shipAllianceB = clampAllianceBonuses(newState.allianceBonuses);
-      const shipMiningMult = (1 + wfBonuses.miningOutput) * shipLegacyBonuses.miningMultiplier * (1 + shipTierBonuses.miningBonus)
-        * (1 + shipSpecBonuses.miningOutput) * shipVictoryBonuses.miningMultiplier * (1 + (shipAllianceB?.miningBonus || 0));
+      // Wave A1: formula body in resource-flow.ts (shared with the flow lens).
+      const shipMiningMult = shipMiningMultiplier({
+        wfMiningOutput: wfBonuses.miningOutput,
+        legacyMiningMult: shipLegacyBonuses.miningMultiplier,
+        tierMiningBonus: shipTierBonuses.miningBonus,
+        specMiningOutput: shipSpecBonuses.miningOutput,
+        victoryMiningMult: shipVictoryBonuses.miningMultiplier,
+        allianceMiningBonus: shipAllianceB?.miningBonus || 0,
+      });
       const shipEvents: typeof newState.eventLog = [];
       const shipReports: GameReport[] = [];
       const shipsToRemove: string[] = []; // For consumed survey probes

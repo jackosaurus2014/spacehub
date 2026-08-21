@@ -11,6 +11,20 @@ import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
 import { onMapPing, getPingVisual, hexToRgba, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
 import { computeModeVisuals, type MapMode } from '@/lib/game/map-modes';
+// Wave A2 (map as command theater) — zoom tiers, body presentation data and
+// orbital-slot ring math, all shared with SolarMap3D so the two renderers can
+// never disagree (same precedent as map-modes.ts).
+import {
+  zoomTierFromCanvasZoom,
+  isMajorLocation,
+  nameVisibleAt,
+  lensVisibleAt,
+  detailVisibleAt,
+  reticleLockState,
+  MAP_ZOOM_TIER_LABEL,
+  type MapZoomTier,
+} from '@/lib/game/map-zoom';
+import { getAtmosphere, computeSlotRing, SLOT_SEGMENT_STYLE, type SlotRingModel } from '@/lib/game/map-bodies';
 import GameIcon from './GameIcon';
 import { ConsolePanel, DataChip } from './chrome';
 
@@ -63,8 +77,18 @@ interface SolarSystemCanvasProps {
   onUnlock: (locId: string) => void;
   /** Notify the parent shell when the user focuses a location, so the region
    *  backdrop + any ambient ops can follow the player's attention. Passing
-   *  null means the user deselected (clicked empty space). */
-  onSelectLocation?: (locId: string | null) => void;
+   *  null means the user deselected (clicked empty space).
+   *  Wave A2: an optional `anchor` (container-relative px) accompanies map
+   *  clicks / context requests so the parent can open the radial command
+   *  menu AT the body. Omitted (Location List, external focus) = open the
+   *  full context panel instead, which is the keyboard-friendly path. */
+  onSelectLocation?: (locId: string | null, anchor?: { x: number; y: number }) => void;
+  /** Wave A2 — accessibility override for zoom-based information layering:
+   *  when true every label/badge renders at every zoom level, so no value is
+   *  ever zoom-only. */
+  alwaysLabels?: boolean;
+  /** Wave A2 — report the live zoom tier so the shell HUD can name it. */
+  onZoomTierChange?: (tier: MapZoomTier) => void;
   /** Map-first command mode (Wave 9): canvas fills its container's full
    *  height instead of a fixed 460px, the inline "Selected Location Details"
    *  card is suppressed (the parent's MapContextPanel takes over that job),
@@ -204,9 +228,10 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
   return { cache: cacheRef.current, loaded };
 }
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
 
   // Stay in sync with an externally-driven selection (e.g. the Order Queue
@@ -329,6 +354,30 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     () => computeModeVisuals(state, mapMode, Date.now()),
     [state, mapMode],
   );
+
+  // ── Wave A2 ────────────────────────────────────────────────────────────────
+  // Zoom tier: derived from the canvas zoom multiplier by the SAME module the
+  // 3D renderer feeds camera distance into. Kept in a ref for the draw loop
+  // (no re-render at 60Hz) and mirrored to the parent HUD via a state echo.
+  const zoomTier = useMemo(() => zoomTierFromCanvasZoom(zoom), [zoom]);
+  useEffect(() => { onZoomTierChange?.(zoomTier); }, [zoomTier, onZoomTierChange]);
+
+  // Orbital-slot rings (item 3): REAL sync-delivered occupancy, fail-soft to
+  // your-footprint-only when the save has never synced.
+  const slotRings = useMemo(() => {
+    const out: Record<string, SlotRingModel> = {};
+    for (const loc of LOCATIONS) {
+      const ring = computeSlotRing(state, loc.id);
+      if (ring) out[loc.id] = ring;
+    }
+    return out;
+  }, [state]);
+
+  // Selection lock-on (item 4): the reticle converges on to the body when a
+  // new selection is acquired. Timestamped in a ref so the draw loop can ease
+  // it without re-rendering.
+  const selectionAtRef = useRef<number>(0);
+  useEffect(() => { selectionAtRef.current = performance.now(); }, [selectedLoc]);
 
   const draw = useCallback((timestampMs: number) => {
     const canvas = canvasRef.current;
@@ -474,6 +523,13 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       const completedHere = buildingsHere.filter(b => b.isComplete).length;
       const npcCount = (state.npcCompanies || []).filter(n => n.unlockedLocations.includes(loc.id)).length;
 
+      // Wave A2 — zoom-based information layering. Allocation-free predicates
+      // shared with SolarMap3D (map-zoom.ts); `alwaysLabels` forces the full
+      // detail answer so information is never zoom-only.
+      const showName = nameVisibleAt(zoomTier, isMajorLocation(loc.id), completedHere > 0, alwaysLabels);
+      const showLens = lensVisibleAt(zoomTier, alwaysLabels);
+      const showDetail = detailVisibleAt(zoomTier, alwaysLabels);
+
       // Outer glow for unlocked locations
       if (unlocked) {
         const glow = ctx.createRadialGradient(lx, ly, 0, lx, ly, r * 3);
@@ -486,24 +542,46 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         ctx.fill();
       }
 
-      // Selection reticle (Wave V4) — rotating dashed ring + steady outer
-      // ring, replacing the color-only pulse. Static under reduced motion.
+      // Selection reticle (Wave V4, upgraded to a lock-on in Wave A2) — the
+      // ring converges from a wide radius on to the body over ~420ms, then
+      // settles into the V4 idle spin. Corner brackets make the acquisition
+      // read as a target lock rather than a highlight. Reduced motion snaps
+      // straight to the locked state (reticleLockState handles that).
       if (isSelected) {
-        const pulse = reducedMotion ? 1 : 1 + Math.sin(tSec * 3) * 0.08;
+        const lock = reticleLockState(timestampMs - selectionAtRef.current, reducedMotion);
+        const pulse = reducedMotion || !lock.locked ? 1 : 1 + Math.sin(tSec * 3) * 0.08;
+        const ringR = (r + 6) * pulse * lock.radiusScale;
         ctx.save();
+        ctx.globalAlpha = lock.opacity;
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 2;
         ctx.setLineDash([7, 5]);
         ctx.lineDashOffset = reducedMotion ? 0 : -tSec * 14;
         ctx.beginPath();
-        ctx.arc(lx, ly, (r + 6) * pulse, 0, Math.PI * 2);
+        ctx.arc(lx, ly, ringR, 0, Math.PI * 2);
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.strokeStyle = 'rgba(34,211,238,0.35)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(lx, ly, r + 11, 0, Math.PI * 2);
+        ctx.arc(lx, ly, ringR + 5, 0, Math.PI * 2);
         ctx.stroke();
+        // Four corner brackets at the diagonals — shape, not colour, is what
+        // says "locked", so the state survives a colourblind palette.
+        const bracketR = ringR + 5;
+        const tick = 5 * zoom;
+        ctx.strokeStyle = 'rgba(103,232,249,0.95)';
+        ctx.lineWidth = 1.6;
+        for (let q = 0; q < 4; q++) {
+          const a0 = Math.PI / 4 + q * (Math.PI / 2);
+          ctx.beginPath();
+          ctx.arc(lx, ly, bracketR, a0 - 0.22, a0 + 0.22);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(lx + Math.cos(a0) * bracketR, ly + Math.sin(a0) * bracketR);
+          ctx.lineTo(lx + Math.cos(a0) * (bracketR + tick), ly + Math.sin(a0) * (bracketR + tick));
+          ctx.stroke();
+        }
         ctx.restore();
       }
 
@@ -511,7 +589,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       // Color is reinforcement only: the glyph/badge text rows below carry
       // the information (colorblind-safe, per-draw lookup — no extra pass).
       const modeVis = modeVisuals[loc.id];
-      if (modeVis) {
+      if (modeVis && showLens) {
         ctx.save();
         ctx.strokeStyle = hexToRgba(modeVis.tint, 0.35 + modeVis.intensity * 0.6);
         ctx.lineWidth = 2.5;
@@ -589,29 +667,122 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       ctx.arc(lx, ly, r, 0, Math.PI * 2);
       ctx.stroke();
 
+      // Wave A2 (item 3) — atmospheric rim. Data-driven from ATMOSPHERES
+      // (map-bodies.ts), keyed by location id and scaled from real surface
+      // pressure; airless bodies are absent from the table and get nothing,
+      // so the presence of the glow is itself information. The 3D renderer
+      // reads the SAME table for its BackSide haze shell.
+      const atmo = getAtmosphere(loc.id);
+      if (atmo && unlocked) {
+        const inner = r * 0.94;
+        const outer = r * (atmo.shellScale + 0.06);
+        const rim = ctx.createRadialGradient(lx, ly, inner, lx, ly, outer);
+        rim.addColorStop(0, `${atmo.color}00`);
+        rim.addColorStop(0.55, hexToRgba(atmo.color, atmo.opacity));
+        rim.addColorStop(1, `${atmo.color}00`);
+        ctx.save();
+        ctx.fillStyle = rim;
+        ctx.beginPath();
+        ctx.arc(lx, ly, outer, 0, Math.PI * 2);
+        ctx.fill();
+        // Terminator: the sun sits to the LEFT of every body in this layout,
+        // so darken the anti-sunward limb to keep the sphere illusion.
+        const term = ctx.createLinearGradient(lx - r, ly, lx + r, ly);
+        term.addColorStop(0, 'rgba(0,0,0,0)');
+        term.addColorStop(0.62, 'rgba(0,0,0,0)');
+        term.addColorStop(1, 'rgba(0,0,0,0.42)');
+        ctx.beginPath();
+        ctx.arc(lx, ly, r, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.fillStyle = term;
+        ctx.fillRect(lx - r, ly - r, r * 2, r * 2);
+        ctx.restore();
+      }
+
+      // Wave A2 (item 3) — orbital-slot occupancy ring. Only locations with a
+      // finite ORBITAL_SLOT_POOL have one; arcs are yours / other
+      // corporations / free from the REAL sync-delivered snapshot. Line
+      // pattern distinguishes the three kinds so colour is never the only
+      // carrier, and the numeric badge below states the counts in text.
+      const slotRing = slotRings[loc.id];
+      if (slotRing && showLens) {
+        const ringR = r + 9 * zoom;
+        ctx.save();
+        ctx.lineCap = 'butt';
+        for (const seg of slotRing.segments) {
+          const style = SLOT_SEGMENT_STYLE[seg.kind];
+          const a0 = -Math.PI / 2 + seg.startFrac * Math.PI * 2;
+          const a1 = -Math.PI / 2 + seg.endFrac * Math.PI * 2;
+          ctx.strokeStyle = style.color;
+          ctx.lineWidth = Math.max(1, 3.2 * style.weight * zoom);
+          ctx.setLineDash(style.dash.map(d => d * zoom));
+          ctx.globalAlpha = seg.kind === 'free' ? 0.55 : 0.95;
+          ctx.beginPath();
+          ctx.arc(lx, ly, ringR, a0, a1);
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+        if (slotRing.saturated) {
+          // Saturation gets a second, unmistakable shape: a full hairline
+          // ring outside the segments.
+          ctx.strokeStyle = 'rgba(248,113,113,0.85)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(lx, ly, ringR + 3 * zoom, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
       // Label — bigger and bolder. W9: zone-standing text glyph prefix
       // (♛ governor / ◆ stakeholder) so standing is never color-only.
       const standing = standingByLoc[loc.id];
       // Wave V4 — mode glyph rides IN the label text (shape + text, never
       // color alone), and the mode badge draws as a second text row.
-      const modeGlyphSuffix = modeVis?.glyph ? ` ${modeVis.glyph}` : '';
-      const labelText = (standing === 'governor' ? `♛ ${loc.name}` : standing === 'stakeholder' ? `◆ ${loc.name}` : loc.name) + modeGlyphSuffix;
-      ctx.fillStyle = unlocked ? '#e2e8f0' : '#64748b';
-      ctx.font = `${10 * zoom}px Inter, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText(labelText, lx, ly + r + 14 * zoom);
-      if (modeVis?.badge) {
+      const modeGlyphSuffix = showLens && modeVis?.glyph ? ` ${modeVis.glyph}` : '';
+      const standingPrefix = showLens && standing === 'governor' ? '♛ ' : showLens && standing === 'stakeholder' ? '◆ ' : '';
+      const labelText = standingPrefix + loc.name + modeGlyphSuffix;
+      let labelRow = ly + r + 14 * zoom;
+      if (showName) {
+        ctx.fillStyle = unlocked ? '#e2e8f0' : '#64748b';
+        ctx.font = `${10 * zoom}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(labelText, lx, labelRow);
+        labelRow += 11 * zoom;
+      }
+      if (showLens && modeVis?.badge) {
         ctx.save();
         ctx.font = `600 ${9 * zoom}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
         ctx.shadowColor = 'rgba(0,0,0,0.85)';
         ctx.shadowBlur = 3;
         ctx.fillStyle = hexToRgba(modeVis.tint, 0.95);
-        ctx.fillText(modeVis.badge, lx, ly + r + 25 * zoom);
+        ctx.fillText(modeVis.badge, lx, labelRow);
+        ctx.restore();
+        labelRow += 11 * zoom;
+      }
+      // Slot-pressure readout — the numbers behind the occupancy ring, in
+      // text. Lens tier shows the compact badge; detail tier adds the split.
+      if (slotRing && showLens) {
+        ctx.save();
+        ctx.font = `600 ${9 * zoom}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.85)';
+        ctx.shadowBlur = 3;
+        ctx.fillStyle = slotRing.saturated ? 'rgba(248,113,113,0.95)' : 'rgba(167,139,250,0.95)';
+        ctx.fillText(slotRing.badge, lx, labelRow);
+        labelRow += 11 * zoom;
+        if (showDetail && slotRing.synced) {
+          ctx.fillStyle = 'rgba(148,163,184,0.9)';
+          ctx.fillText(`you ${slotRing.yours} · rivals ${slotRing.others} · free ${slotRing.free}`, lx, labelRow);
+          labelRow += 11 * zoom;
+        }
         ctx.restore();
       }
 
       // Building count badge
-      if (completedHere > 0) {
+      if (showDetail && completedHere > 0) {
         const badgeX = lx + r * 0.7;
         const badgeY = ly - r * 0.7;
         ctx.fillStyle = '#06b6d4';
@@ -627,7 +798,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       }
 
       // NPC count badge
-      if (npcCount > 0) {
+      if (showDetail && npcCount > 0) {
         const npcBadgeX = lx - r * 0.7;
         const npcBadgeY = ly - r * 0.7;
         ctx.fillStyle = '#ef444470';
@@ -646,7 +817,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       // Change #3). Distinct purple/gold from the red NPC badge and cyan
       // building badge so scarcity reads as "other players", not noise.
       const worldCount = worldLayerActive ? (world?.world.colonyCounts[loc.id] || 0) : 0;
-      if (worldCount > 0) {
+      if (showDetail && worldCount > 0) {
         const wBadgeX = lx + r * 0.7;
         const wBadgeY = ly + r * 0.75;
         ctx.fillStyle = '#a855f7c8';
@@ -666,7 +837,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
       // Small orbiting dots for player satellites.
       // Reduced motion: hold each dot at a fixed angle instead of orbiting.
-      if (completedHere > 0) {
+      if (showDetail && completedHere > 0) {
         const time = tSec;
         for (let s = 0; s < Math.min(completedHere, 5); s++) {
           const angle = reducedMotion
@@ -873,7 +1044,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -918,16 +1089,31 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   // Shared selection logic — used by both the canvas click handler and the
   // keyboard-focusable Location List buttons below, so the two entry points
   // always stay in sync (same toggle-off behavior, same parent notification).
-  const selectLocation = useCallback((locId: string) => {
+  const selectLocation = useCallback((locId: string, anchor?: { x: number; y: number }) => {
     playSound('click');
     setSelectedLoc(prev => {
-      const next = prev === locId ? null : locId;
-      onSelectLocation?.(next);
+      // Wave A2: an anchored request (map click / context key) always SELECTS
+      // — it opens the radial command menu at the body rather than toggling
+      // the selection off, which would leave the menu pointing at nothing.
+      const next = !anchor && prev === locId ? null : locId;
+      onSelectLocation?.(next, next ? anchor : undefined);
       return next;
     });
   }, [onSelectLocation]);
 
-  // Click detection
+  /** Container-relative point for an element (Location List rows opening the
+   *  radial menu by keyboard/right-click need an anchor too). */
+  const anchorForElement = useCallback((el: HTMLElement | null): { x: number; y: number } | undefined => {
+    const root = rootRef.current;
+    if (!el || !root) return undefined;
+    const r = el.getBoundingClientRect();
+    const rr = root.getBoundingClientRect();
+    return { x: r.left + r.width / 2 - rr.left, y: r.top + r.height / 2 - rr.top };
+  }, []);
+
+  // Click detection. Wave A2: a hit passes the click point up as an anchor so
+  // the shell opens the radial command menu AT the body (Sins-style); a miss
+  // deselects exactly as before.
   const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -945,13 +1131,15 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       const r = layout.radius * zoom + 10;
       const dist = Math.sqrt(Math.pow(mx - lx, 2) + Math.pow(my - ly, 2));
       if (dist < r) {
-        selectLocation(loc.id);
+        // The radial menu only exists in the map-command shell; the legacy
+        // stacked layout keeps its original click-to-toggle behavior.
+        selectLocation(loc.id, embedded ? { x: mx, y: my } : undefined);
         return;
       }
     }
     setSelectedLoc(null);
     onSelectLocation?.(null);
-  }, [zoom, offset, onSelectLocation, selectLocation]);
+  }, [zoom, offset, onSelectLocation, selectLocation, embedded]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setDragging(true);
@@ -1015,7 +1203,19 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                       key={loc.id}
                       type="button"
                       onClick={() => selectLocation(loc.id)}
+                      // Wave A2 — keyboard/right-click route into the radial
+                      // command menu: C (or the Context Menu key) opens the
+                      // arc anchored on this row, so every verb the mouse can
+                      // reach at the body is reachable without a mouse.
+                      onContextMenu={e => { e.preventDefault(); selectLocation(loc.id, anchorForElement(e.currentTarget)); }}
+                      onKeyDown={e => {
+                        if (e.key === 'c' || e.key === 'C' || e.key === 'ContextMenu') {
+                          e.preventDefault();
+                          selectLocation(loc.id, anchorForElement(e.currentTarget));
+                        }
+                      }}
                       aria-pressed={isSelected}
+                      aria-keyshortcuts="C"
                       className={`min-h-[44px] px-2 py-1.5 rounded-lg text-[11px] text-left border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                         isSelected
                           ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-200'
@@ -1037,6 +1237,8 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                         {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
                         {hasWarning ? ', severe hazard forecast next month' : ''}
                         {modeVis ? `, ${modeVis.srText}` : ''}
+                        {slotRings[loc.id] ? `. ${slotRings[loc.id].srText}` : ''}
+                        . Press C for the command menu.
                       </span>
                     </button>
                   );
@@ -1051,7 +1253,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
   if (embedded) {
     return (
-      <div className="relative w-full h-full">
+      <div ref={rootRef} className="relative w-full h-full">
         <canvas
           ref={canvasRef}
           onClick={handleClick}
@@ -1130,13 +1332,19 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           </div>
         )}
 
-        <p id="solar-system-canvas-hint" className="sr-only">Click a location to open its command panel. Drag to pan, scroll to zoom. This canvas is mouse/touch-only — use the Location List overlay (bottom-left) to browse and select every location by keyboard.</p>
+        <p id="solar-system-canvas-hint" className="sr-only">
+          Click a location to open its radial command menu — build, dispatch, demand, standing orders and full detail, at the body.
+          Drag to pan, scroll to zoom. Zoom controls how much per-location detail is drawn; the Location List always shows everything,
+          and the Labels toggle forces full labels at every zoom. This canvas is mouse/touch-only — use the Location List overlay
+          (bottom-left) to browse and select every location by keyboard, and press C on a row for its command menu.
+          Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div ref={rootRef} className="space-y-3">
       {/* Canvas */}
       <div
         ref={containerRef}

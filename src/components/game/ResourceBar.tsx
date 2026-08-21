@@ -22,8 +22,14 @@ import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
 import { getServiceDemandMultiplier } from '@/lib/game/service-pricing';
 import { gameDateToMonthIndex } from '@/lib/game/demand-pools';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
+// Wave A1 (docs/VISUAL_AAA_2026-08.md §A1.3) — Stellaris-style stock + flow.
+// Every figure below comes from the engine's own code paths; see
+// resource-flow.ts's header for the drift rule and the omissions list.
+import { computeResourceFlows, formatFlow, flowDirection, type ResourceFlow } from '@/lib/game/resource-flow';
+import { resourceCategoryIcon } from '@/lib/game/icons';
 import GameIcon from './GameIcon';
 import HoloTip, { Concept } from './HoloTip';
+import { Figure, FlowValue } from './chrome';
 
 interface ResourceBarProps {
   state: GameState;
@@ -35,17 +41,33 @@ interface ResourceBarProps {
   onDensityChange?: (density: GameDensity) => void;
 }
 
-/** Animated number that rolls toward a target value via RAF easing. Also emits
- *  a one-shot `.delta-flash-up/down` class on its wrapper when the value jumps
- *  by more than `flashThreshold`, so the caller can layer the flash reaction. */
-function AnimatedMoney({ value, className }: { value: number; className?: string }) {
+/** Animated number that rolls toward a target value via RAF easing.
+ *
+ *  Wave A1: generalized out of the old money-only `AnimatedMoney` so resource
+ *  stocks get the SAME roll-up treatment rather than a second implementation
+ *  of it (the brief: "extend the treatment consistently, don't duplicate").
+ *  `AnimatedMoney` below is now just this with `formatMoney` bound.
+ *
+ *  `minDelta` is the jump below which we snap instead of animating — a
+ *  rounding tick shouldn't spend a frame budget. Money uses 100 (dollars);
+ *  resource stocks use a much smaller unit-scale threshold. */
+function AnimatedValue({
+  value, format, className, minDelta = 100,
+}: { value: number; format: (n: number) => string; className?: string; minDelta?: number }) {
   const [display, setDisplay] = useState(value);
   const ref = useRef(value);
+  // Honor reduced-motion: a rolling counter is decorative motion, and the
+  // final value is identical either way, so we simply snap.
+  const reducedMotion = useRef(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    reducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
 
   useEffect(() => {
     const start = ref.current;
     const diff = value - start;
-    if (Math.abs(diff) < 100) {
+    if (Math.abs(diff) < minDelta || reducedMotion.current) {
       setDisplay(value);
       ref.current = value;
       return;
@@ -58,15 +80,29 @@ function AnimatedMoney({ value, className }: { value: number; className?: string
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.round(start + diff * eased);
+      const current = start + diff * eased;
       setDisplay(current);
       if (progress < 1) requestAnimationFrame(animate);
       else ref.current = value;
     }
     requestAnimationFrame(animate);
-  }, [value]);
+  }, [value, minDelta]);
 
-  return <span className={className}>{formatMoney(display)}</span>;
+  return <span className={className}>{format(display)}</span>;
+}
+
+function AnimatedMoney({ value, className }: { value: number; className?: string }) {
+  return <AnimatedValue value={value} format={(n) => formatMoney(Math.round(n))} className={className} />;
+}
+
+/** Compact unit count for a resource stockpile: 12 345 → "12.3k". */
+function formatUnits(n: number): string {
+  const v = Math.round(n);
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
+  if (abs >= 10_000) return `${Math.round(v / 1000)}k`;
+  if (abs >= 1_000) return `${(v / 1000).toFixed(1)}k`;
+  return `${v}`;
 }
 
 /** 30-point sparkline of recent money readings. Renders at ~64×18 so it fits
@@ -95,6 +131,85 @@ function MoneySparkline({ history, positive }: { history: number[]; positive: bo
 
 const SPARKLINE_MAX_POINTS = 30;
 
+/** How many resource cells the strip renders. The strip scrolls, so this is
+ *  a DOM budget rather than a hard limit on what the player can reach — and
+ *  `computeResourceFlows` sorts by depletion urgency, so the ones that need
+ *  a decision are always the ones in front. */
+const FLOW_STRIP_MAX = 12;
+
+/**
+ * One resource cell: icon, stock, and net flow per game month.
+ *
+ * The Stellaris pattern — stock AND flow together, with a hover/focus
+ * breakdown itemizing the contributions. Accessibility:
+ *  - the icon carries the resource NAME as visually-hidden text, so the cell
+ *    is never icon-only for a screen-reader user;
+ *  - direction is carried by an arrow glyph, an explicit +/− sign, and a
+ *    hidden word (see <FlowValue>) — never by colour alone;
+ *  - HoloTip makes the whole cell a focusable, Enter/Space-activatable
+ *    trigger with `aria-describedby`, so the breakdown is keyboard-reachable.
+ */
+function ResourceFlowCell({ flow, omitted }: { flow: ResourceFlow; omitted: readonly string[] }) {
+  const dir = flowDirection(flow.net);
+  const icon = resourceCategoryIcon(flow.category);
+
+  const coverage = flow.depletionMonths !== null
+    ? `Stock runs out in about ${flow.depletionMonths} month${flow.depletionMonths === 1 ? '' : 's'} at this rate.`
+    : flow.net > 0
+      ? 'Stock is growing.'
+      : 'Stock is stable.';
+
+  return (
+    <HoloTip
+      as="div"
+      underline={false}
+      className="shrink-0"
+      content={{
+        title: flow.name,
+        icon,
+        iconGlow: dir === 'down' ? 'amber' : 'cyan',
+        body: (
+          <>
+            <p>
+              {coverage}
+              {flow.short && ' Some facilities are currently running short on this input.'}
+            </p>
+            {flow.contributions.length === 0 && (
+              <p className="text-slate-500">
+                Nothing in your corporation currently produces or consumes this on a monthly cycle.
+              </p>
+            )}
+            <p className="text-slate-500">
+              Not counted here: {omitted.join(' ')}
+            </p>
+          </>
+        ),
+        rows: [
+          { label: 'Stock', value: `${Math.round(flow.stock).toLocaleString()} u` },
+          ...flow.contributions.map(c => ({
+            label: c.label,
+            value: `${formatFlow(c.perMonth)} /mo`,
+          })),
+          { label: 'Net', value: `${formatFlow(flow.net)} /mo` },
+        ],
+        source: 'Live from the simulation — same code paths the monthly tick charges.',
+      }}
+    >
+      <span
+        className={`flex items-center gap-1.5 rounded px-1.5 py-0.5 border ${
+          flow.short || (flow.depletionMonths !== null && flow.depletionMonths <= 3)
+            ? 'border-amber-500/30 bg-amber-500/[0.06]'
+            : 'border-white/[0.06] bg-white/[0.02]'
+        }`}
+      >
+        <GameIcon name={icon} size={13} label={flow.name} />
+        <Figure value={<AnimatedValue value={flow.stock} format={formatUnits} minDelta={1} />} className="text-[11px]" />
+        <FlowValue text={formatFlow(flow.net)} direction={dir} unit="/mo" />
+      </span>
+    </HoloTip>
+  );
+}
+
 export default function ResourceBar({ state, density = 'comfortable', onDensityChange }: ResourceBarProps) {
   const [muted, setMuted] = useState(true);
   const [ambient, setAmbient] = useState(false);
@@ -119,41 +234,53 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
   }, []);
 
   // ─── P&L computation — must match game engine exactly ────────────────────
-  const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
-  const wfBonuses = getWorkforceBonuses(workforce);
-  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
-  const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
-  const tierBonuses = getTierBonuses(state.corporationTier || 1);
-  const multipliers = getActiveMultipliers(state);
-
   const corpTier = state.corporationTier || 1;
   const tierDef = getTierDef(corpTier);
+  const tierBonuses = getTierBonuses(corpTier);
 
-  let revenue = 0, costs = 0;
-  for (const svc of state.activeServices) {
-    const def = SERVICE_MAP.get(svc.definitionId);
-    if (!def) continue;
-    const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
-    const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, gameDateToMonthIndex(state.gameDate));
-    revenue += def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost
-      * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * legacyBonuses.revenueMultiplier * (1 + tierBonuses.revenueBonus) * supplyMult;
-    costs += def.operatingCostPerMonth * multipliers.costMultiplier * legacyBonuses.costMultiplier * (1 - tierBonuses.maintenanceReduction);
-  }
-  for (const bld of state.buildings) {
-    if (!bld.isComplete) continue;
-    const def = BUILDING_MAP.get(bld.definitionId);
-    if (!def) continue;
-    const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    costs += def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyBonuses.costMultiplier * (1 - tierBonuses.maintenanceReduction);
-  }
-  costs += getMonthlyPayrollForState(workforce, state); // Pass 9: Frontier-shielded
-  for (const ship of (state.ships || [])) {
-    if (!ship.isBuilt) continue;
-    const shipDef = SHIP_MAP.get(ship.definitionId);
-    if (shipDef?.maintenancePerMonth) costs += shipDef.maintenancePerMonth;
-  }
-  const net = Math.round(revenue - costs);
+  // Wave A1: this block used to run on EVERY render (it was bare statements in
+  // the component body). Now that the bar also derives per-resource flows, it
+  // is memoized on `state` — the only input it reads.
+  const { revenue, costs, net } = useMemo(() => {
+    const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
+    const wfBonuses = getWorkforceBonuses(workforce);
+    const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
+    const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
+    const tb = getTierBonuses(state.corporationTier || 1);
+    const multipliers = getActiveMultipliers(state);
+
+    let rev = 0, cost = 0;
+    for (const svc of state.activeServices) {
+      const def = SERVICE_MAP.get(svc.definitionId);
+      if (!def) continue;
+      const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
+      const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+      const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, gameDateToMonthIndex(state.gameDate));
+      rev += def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost
+        * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * legacyBonuses.revenueMultiplier * (1 + tb.revenueBonus) * supplyMult;
+      cost += def.operatingCostPerMonth * multipliers.costMultiplier * legacyBonuses.costMultiplier * (1 - tb.maintenanceReduction);
+    }
+    for (const bld of state.buildings) {
+      if (!bld.isComplete) continue;
+      const def = BUILDING_MAP.get(bld.definitionId);
+      if (!def) continue;
+      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
+      cost += def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyBonuses.costMultiplier * (1 - tb.maintenanceReduction);
+    }
+    cost += getMonthlyPayrollForState(workforce, state); // Pass 9: Frontier-shielded
+    for (const ship of (state.ships || [])) {
+      if (!ship.isBuilt) continue;
+      const shipDef = SHIP_MAP.get(ship.definitionId);
+      if (shipDef?.maintenancePerMonth) cost += shipDef.maintenancePerMonth;
+    }
+    return { revenue: rev, costs: cost, net: Math.round(rev - cost) };
+  }, [state]);
+
+  // ─── Wave A1: per-resource stock + monthly flow ──────────────────────────
+  // One pass over services/buildings/ships plus the engine's own consumption
+  // and storage lenses. Memoized on `state` for the same reason as the P&L.
+  const flowReport = useMemo(() => computeResourceFlows(state), [state]);
+  const strip = flowReport.flows.slice(0, FLOW_STRIP_MAX);
 
   // ─── Client-side money history (sparkline) + delta-flash driver ──────────
   const historyRef = useRef<number[]>([]);
@@ -259,14 +386,23 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               source: 'ResourceBar.tsx — recomputed live from services, buildings, workforce, ships',
             }}
           >
+            {/* Wave A1: same FlowValue composition as every resource cell —
+                arrow glyph + explicit sign + hidden direction word, so the
+                headline rate reads identically to the ones below it. */}
             <div
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-mono font-medium transition-colors ${
+              className={`flex items-center px-2 py-0.5 rounded-full border transition-colors ${
                 net >= 0
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                  : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                  ? 'bg-green-500/10 border-green-500/20'
+                  : 'bg-red-500/10 border-red-500/20'
               }`}
             >
-              {net >= 0 ? '▲' : '▼'} {formatMoney(Math.abs(net))}/mo
+              <FlowValue
+                text={`${net >= 0 ? '+' : '−'}${formatMoney(Math.abs(net))}`}
+                direction={net > 0 ? 'up' : net < 0 ? 'down' : 'flat'}
+                unit="/mo"
+                srDirection={net >= 0 ? 'net profit per month' : 'net loss per month'}
+                className="text-[10px] sm:text-xs"
+              />
             </div>
           </HoloTip>
 
@@ -379,6 +515,27 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
           </button>
         </div>
       </div>
+
+      {/* ─── Wave A1: resource stock + flow strip ──────────────────────────
+          Stellaris's defining top-bar feature. Horizontally scrollable, so it
+          holds at 375px without clipping or wrapping the bar above it; each
+          cell is its own focus stop with a HoloTip breakdown. Hidden entirely
+          when the player holds and moves nothing (a brand-new corporation),
+          rather than showing an empty rail. */}
+      {strip.length > 0 && (
+        <div className="max-w-5xl mx-auto mt-1.5 border-t border-white/[0.05] pt-1.5">
+          <ul
+            className="flex items-center gap-1.5 overflow-x-auto game-scroll scrollbar-hide"
+            aria-label="Resource stocks and net monthly flow"
+          >
+            {strip.map(flow => (
+              <li key={flow.resourceId} className="shrink-0">
+                <ResourceFlowCell flow={flow} omitted={flowReport.omitted} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

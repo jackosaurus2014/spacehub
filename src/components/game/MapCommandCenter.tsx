@@ -27,7 +27,11 @@ const SolarMap3D = dynamic(() => import('./SolarMap3D'), {
   ),
 });
 import OrderQueueHUD, { type OrderQueueTarget } from './OrderQueueHUD';
-import MapContextPanel, { type MapSelection } from './MapContextPanel';
+import MapContextPanel, { type MapSelection, type MapContextView } from './MapContextPanel';
+import RadialCommandMenu from './map/RadialCommandMenu';
+import type { RadialActionId } from '@/lib/game/map-radial';
+import { MAP_ZOOM_TIER_LABEL, type MapZoomTier } from '@/lib/game/map-zoom';
+import { SLOT_SEGMENT_STYLE } from '@/lib/game/map-bodies';
 import GlobalActivityFeed from './GlobalActivityFeed';
 import SpatialStrategyPanel from './SpatialStrategyPanel';
 import { playSound } from '@/lib/game/sound-engine';
@@ -45,6 +49,9 @@ type Layer = 'solar' | 'galactic';
 // choice persists in localStorage.
 
 const MAP_RENDERER_KEY = 'tycoon-map-renderer'; // '3d' | '2d'
+/** Wave A2 — "Labels: Always" accessibility override for the zoom-based
+ *  information layering. '1' = every label/badge at every zoom. */
+const MAP_LABELS_KEY = 'tycoon-map-labels-always';
 
 function detectWebGL2(): boolean {
   try {
@@ -114,6 +121,30 @@ export default function MapCommandCenter({
   const [selection, setSelection] = useState<MapSelection | null>(null);
   const [showActivity, setShowActivity] = useState(false);
 
+  // ── Wave A2: map as command theater ───────────────────────────────────────
+  // Selecting a body no longer *implies* the side panel. A map click puts the
+  // verbs at the body (radial command menu, Sins-style); the panel opens from
+  // the menu's Detail/Build/Dispatch actions, from the Location List (Enter),
+  // from Order-Queue chips, and from Outliner deep-links — every keyboard and
+  // deep-link path still lands straight in the panel.
+  const [radial, setRadial] = useState<{ locationId: string; x: number; y: number } | null>(null);
+  const [detail, setDetail] = useState<{ view: MapContextView; token: number } | null>(null);
+  const [zoomTier, setZoomTier] = useState<MapZoomTier>('location');
+  const [labelsAlways, setLabelsAlways] = useState(false);
+  useEffect(() => {
+    try { setLabelsAlways(localStorage.getItem(MAP_LABELS_KEY) === '1'); } catch { /* default off */ }
+  }, []);
+  const toggleLabelsAlways = useCallback(() => {
+    playSound('click');
+    setLabelsAlways(prev => {
+      const next = !prev;
+      try { localStorage.setItem(MAP_LABELS_KEY, next ? '1' : '0'); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+  // A panel overlay covering the map must not leave a floating arc behind it.
+  useEffect(() => { if (covered) setRadial(null); }, [covered]);
+
   // Wave V4 — map mode ("Stellaris lens"). Pure recolor/re-badge of existing
   // data via map-modes.ts, consumed by BOTH renderers. Keyboard: `M` cycles.
   const [mapMode, setMapMode] = useState<MapMode>('standard');
@@ -124,8 +155,8 @@ export default function MapCommandCenter({
   useEffect(() => {
     if (covered) return; // never steal keys while a panel overlay is up
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'm' && e.key !== 'M') return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key !== 'm' && e.key !== 'M') return;
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
       playSound('click');
@@ -174,30 +205,56 @@ export default function MapCommandCenter({
   // viewport, with a floor so tiny landscape phones still get a usable map.
   const rootRef = useRef<HTMLDivElement>(null);
   const [mapHeight, setMapHeight] = useState<number | null>(null);
+  // Wave A2 — the radial menu is positioned inside this container, so it needs
+  // the container's live size for its near-edge repositioning.
+  const [mapWidth, setMapWidth] = useState<number>(0);
   useLayoutEffect(() => {
     const measure = () => {
       const el = rootRef.current;
       if (!el) return;
-      const top = el.getBoundingClientRect().top;
+      const rect = el.getBoundingClientRect();
       const vh = window.visualViewport?.height ?? window.innerHeight;
-      setMapHeight(Math.max(420, Math.floor(vh - top)));
+      setMapHeight(Math.max(420, Math.floor(vh - rect.top)));
+      setMapWidth(Math.floor(rect.width));
     };
     measure();
     window.addEventListener('resize', measure);
     window.visualViewport?.addEventListener('resize', measure);
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    if (rootRef.current) ro?.observe(rootRef.current);
     return () => {
       window.removeEventListener('resize', measure);
       window.visualViewport?.removeEventListener('resize', measure);
+      ro?.disconnect();
     };
   }, []);
 
-  const selectLocation = useCallback((locId: string | null) => {
+  /** Solar-layer selection.
+   *  `anchor` present  → a map click / context request: select the body and
+   *                      open the radial command menu AT it (Wave A2).
+   *  `anchor` absent   → keyboard list, Order-Queue chip, Outliner deep-link:
+   *                      select and open the full context panel directly. */
+  const selectLocation = useCallback((locId: string | null, anchor?: { x: number; y: number }) => {
     setSelection(locId ? { kind: 'location', id: locId } : null);
     onRegionFocus(locId);
+    if (!locId) {
+      setRadial(null);
+      setDetail(null);
+      return;
+    }
+    if (anchor) {
+      setDetail(null);
+      setRadial({ locationId: locId, x: anchor.x, y: anchor.y });
+    } else {
+      setRadial(null);
+      setDetail({ view: 'overview', token: Date.now() });
+    }
   }, [onRegionFocus]);
 
   const selectSystem = useCallback((sysId: string | null) => {
     setSelection(sysId ? { kind: 'system', id: sysId } : null);
+    setRadial(null);
+    setDetail(sysId ? { view: 'overview', token: Date.now() } : null);
   }, []);
 
   const handleOrderQueueSelect = useCallback((target: OrderQueueTarget) => {
@@ -209,6 +266,52 @@ export default function MapCommandCenter({
       selectLocation(target.id);
     }
   }, [layer, selectLocation, selectSystem]);
+
+  /** Radial action → the SAME handlers the context panel and HUD already use.
+   *  Nothing here forks business logic; the menu is a faster route to it. */
+  const runRadialAction = useCallback((id: RadialActionId) => {
+    const locId = radial?.locationId;
+    setRadial(null);
+    if (!locId) return;
+    switch (id) {
+      case 'detail': setDetail({ view: 'overview', token: Date.now() }); break;
+      case 'build': setDetail({ view: 'build', token: Date.now() }); break;
+      case 'dispatch': setDetail({ view: 'dispatch', token: Date.now() }); break;
+      case 'unlock': onUnlock(locId); setDetail({ view: 'overview', token: Date.now() }); break;
+      case 'demand': onNavigateTab('market'); break;
+      case 'orders': onNavigateTab('fleet'); break;
+      case 'slots': setShowSpatial(true); break;
+    }
+  }, [radial, onUnlock, onNavigateTab]);
+
+  // Keyboard route into the radial menu from anywhere on the map: with a
+  // location selected, `C` opens its command arc in the centre of the stage.
+  // (The Location List rows handle `C` themselves and anchor the arc on the
+  // row — this is the fallback for selections made any other way.) CLAUDE.md
+  // requires every action to be reachable without a mouse.
+  useEffect(() => {
+    if (covered || layer !== 'solar') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'c' && e.key !== 'C' && e.key !== 'ContextMenu') return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      // The Location List rows own `C` for themselves (anchored arc).
+      if (el?.getAttribute?.('aria-keyshortcuts') === 'C') return;
+      if (radial) return;
+      if (selection?.kind !== 'location') return;
+      e.preventDefault();
+      playSound('click');
+      setDetail(null);
+      setRadial({
+        locationId: selection.id,
+        x: (rootRef.current?.clientWidth ?? 0) / 2,
+        y: (rootRef.current?.clientHeight ?? 0) / 2,
+      });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [covered, layer, radial, selection]);
 
   // Wave V3: consume an external focus request (Outliner deep-link) — the
   // EXACT same selection logic OrderQueueHUD's own chips use, just fed by a
@@ -235,6 +338,8 @@ export default function MapCommandCenter({
             onSelectLocation={selectLocation}
             active={!covered}
             mapMode={mapMode}
+            alwaysLabels={labelsAlways}
+            onZoomTierChange={setZoomTier}
           />
         ) : (
           <SolarSystemCanvas
@@ -245,6 +350,8 @@ export default function MapCommandCenter({
             onSelectLocation={selectLocation}
             active={!covered}
             mapMode={mapMode}
+            alwaysLabels={labelsAlways}
+            onZoomTierChange={setZoomTier}
           />
         )
       ) : (
@@ -266,7 +373,7 @@ export default function MapCommandCenter({
       >
         <button
           type="button"
-          onClick={() => { playSound('click'); setLayer('solar'); setSelection(null); }}
+          onClick={() => { playSound('click'); setLayer('solar'); setSelection(null); setRadial(null); setDetail(null); }}
           aria-pressed={layer === 'solar'}
           className={`min-h-[44px] px-3 text-[11px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
             layer === 'solar' ? 'bg-cyan-500/20 text-cyan-200' : 'text-slate-400 hover:text-white'
@@ -276,7 +383,7 @@ export default function MapCommandCenter({
         </button>
         <button
           type="button"
-          onClick={() => { playSound('click'); setLayer('galactic'); setSelection(null); }}
+          onClick={() => { playSound('click'); setLayer('galactic'); setSelection(null); setRadial(null); setDetail(null); }}
           aria-pressed={layer === 'galactic'}
           className={`min-h-[44px] px-3 text-[11px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 border-l border-white/[0.08] ${
             layer === 'galactic' ? 'bg-indigo-500/20 text-indigo-200' : 'text-slate-400 hover:text-white'
@@ -374,6 +481,38 @@ export default function MapCommandCenter({
               {MAP_MODE_MAP.get(mapMode)?.legend}
             </p>
           )}
+
+          {/* Wave A2 — zoom-tier readout + the accessibility override.
+              The tier is named in TEXT (never inferred from what happens to
+              be drawn), and "Labels: All" pins every label/badge on at every
+              zoom so information is never zoom-only for keyboard/screen-
+              reader users. */}
+          <div className="hud-frame flex items-center gap-1 rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm overflow-hidden">
+            <span className="px-2 text-[10px] text-slate-400 whitespace-nowrap" role="status" aria-live="polite">
+              Zoom: <span className="text-cyan-300 font-semibold">{MAP_ZOOM_TIER_LABEL[zoomTier]}</span>
+            </span>
+            <button
+              type="button"
+              onClick={toggleLabelsAlways}
+              aria-pressed={labelsAlways}
+              title="Show every label and badge at every zoom level (accessibility override for zoom-based detail)"
+              className={`min-h-[44px] px-2.5 text-[10px] font-semibold whitespace-nowrap border-l border-white/[0.08] transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                labelsAlways ? 'bg-cyan-500/20 text-cyan-200' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {labelsAlways ? '● Labels: All' : '○ Labels: Zoom'}
+            </button>
+          </div>
+
+          {/* Orbital-slot ring legend — the ring is colour + line pattern +
+              numbers; this names all three in text. */}
+          {mapMode === 'logistics' && (
+            <p className="hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] text-slate-300 max-w-[min(94vw,460px)] text-center">
+              Orbital slot rings: <span style={{ color: SLOT_SEGMENT_STYLE.yours.color }}>solid = yours</span> ·{' '}
+              <span style={{ color: SLOT_SEGMENT_STYLE.others.color }}>dashed = other corporations</span> ·{' '}
+              <span style={{ color: SLOT_SEGMENT_STYLE.free.color }}>dotted = free</span>. A full outer ring means the pool is saturated — a lease auction is required to build.
+            </p>
+          )}
         </div>
       )}
 
@@ -433,11 +572,27 @@ export default function MapCommandCenter({
         </div>
       )}
 
-      {selection && (
+      {/* Wave A2 — radial command menu. Solar layer only: the galactic layer
+          is a DOM node graph with its own affordances, and the radial action
+          set is location-shaped (build / dispatch / slots / demand). */}
+      {radial && layer === 'solar' && !covered && mapWidth > 0 && mapHeight && (
+        <RadialCommandMenu
+          state={state}
+          locationId={radial.locationId}
+          anchor={{ x: radial.x, y: radial.y }}
+          viewport={{ w: mapWidth, h: mapHeight }}
+          onAction={runRadialAction}
+          onClose={() => setRadial(null)}
+        />
+      )}
+
+      {selection && detail && (
         <MapContextPanel
           state={state}
           selection={selection}
-          onClose={() => { setSelection(null); if (selection.kind === 'location') onRegionFocus(null); }}
+          initialView={detail.view}
+          viewToken={detail.token}
+          onClose={() => { setSelection(null); setDetail(null); if (selection.kind === 'location') onRegionFocus(null); }}
           onUnlock={onUnlock}
           onBuild={onBuild}
           onSellBuilding={onSellBuilding}

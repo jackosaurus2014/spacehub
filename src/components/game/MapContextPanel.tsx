@@ -53,9 +53,20 @@ import { useWorldState, getColonySlotCap, LOCATION_MILESTONE_MAP } from '@/hooks
 
 export type MapSelection = { kind: 'location'; id: string } | { kind: 'system'; id: string };
 
+/** Sub-views this panel can open on. Wave A2: the radial command menu jumps
+ *  straight to 'build' / 'dispatch' instead of making the player land on the
+ *  overview and click again. */
+export type MapContextView = 'overview' | 'build' | 'dispatch' | 'plan-expedition';
+
 interface MapContextPanelProps {
   state: GameState;
   selection: MapSelection;
+  /** Wave A2 — which sub-view to open on (default 'overview'). */
+  initialView?: MapContextView;
+  /** Monotonic nonce so re-requesting the SAME view for the SAME selection
+   *  re-applies it (a plain value-equality prop would not — same pattern as
+   *  MapCommandCenter's focusRequest token). */
+  viewToken?: number;
   onClose: () => void;
   onUnlock: (locId: string) => void;
   onBuild: (buildingId: string, locationId: string) => void;
@@ -85,17 +96,19 @@ const CATEGORY_META: Record<string, { label: string; icon: string }> = {
 };
 
 export default function MapContextPanel({
-  state, selection, onClose, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab,
+  state, selection, initialView = 'overview', viewToken, onClose, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab,
 }: MapContextPanelProps) {
-  const [view, setView] = useState<'overview' | 'build' | 'dispatch' | 'plan-expedition'>('overview');
+  const [view, setView] = useState<MapContextView>(initialView);
   const [pickedShip, setPickedShip] = useState<string | null>(null);
 
   // Reset the sub-view whenever the selection itself changes, so switching
   // locations doesn't leave you stuck on a stale Build/Dispatch screen.
+  // Wave A2: also re-applies an explicitly requested view (radial menu →
+  // Build / Dispatch), keyed by the caller's monotonic token.
   useEffect(() => {
-    setView('overview');
+    setView(initialView);
     setPickedShip(null);
-  }, [selection.kind, selection.id]);
+  }, [selection.kind, selection.id, initialView, viewToken]);
 
   const panelShell = (title: React.ReactNode, body: React.ReactNode) => (
     <div

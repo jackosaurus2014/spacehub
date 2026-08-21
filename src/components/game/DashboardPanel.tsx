@@ -45,7 +45,7 @@ import { useActivityFeed, formatRelativeTime, usePrefersReducedMotion } from '@/
 // the core loop. CLAUDE.md: "information density that scales with the
 // player's expertise." Skipping the guide opts out immediately.
 import { isNewcomerHud } from '@/lib/game/onboarding';
-import { ConsolePanel, HoloCard, DataChip } from '@/components/game/chrome';
+import { ConsolePanel, HoloCard, DataChip, StatReadout, Figure } from '@/components/game/chrome';
 import GameIcon, { type GameIconGlow } from '@/components/game/GameIcon';
 import type { IconName } from '@/lib/game/icons';
 
@@ -632,53 +632,71 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
 
       {/* Hero Stats */}
       <ConsolePanel title="Key Metrics" icon="dashboard" subtitle="Monthly financial and infrastructure snapshot.">
+      {/* Wave A1 (docs/VISUAL_AAA_2026-08.md §A1.2): the tiles were
+          value-over-label with the icon exiled to a corner. The MoO2
+          composition is the inverse — LABEL first (so the reader knows what
+          they're looking at before they read the number), then the icon
+          inline with a chunky tabular figure and its unit split off at a
+          smaller weight. Same four metrics, same data; the tiles are now
+          recessed wells inside the console rather than floating chips. */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {([
           {
-            label: 'Revenue/mo',
+            label: 'Revenue',
             value: formatMoney(financials.revenue),
+            unit: '/mo',
             color: 'text-green-400',
             bgGlow: 'bg-green-500/5',
             borderColor: 'border-green-500/20',
             icon: 'trending-up',
             glow: 'green',
+            sub: `${financials.revenue > 0 ? Math.round((financials.net / financials.revenue) * 100) : 0}% margin`,
           },
           {
-            label: 'Costs/mo',
+            label: 'Costs',
             value: formatMoney(financials.costs),
+            unit: '/mo',
             color: 'text-red-400',
             bgGlow: 'bg-red-500/5',
             borderColor: 'border-red-500/20',
             icon: 'trending-down',
             glow: 'red',
+            sub: `${formatMoney(financials.payroll)} payroll`,
           },
           {
             label: 'Buildings',
             value: `${completedBuildings.length}`,
+            unit: 'built',
             color: 'text-cyan-400',
             bgGlow: 'bg-cyan-500/5',
             borderColor: 'border-cyan-500/20',
             icon: 'build',
             glow: 'cyan',
+            sub: `${state.buildings.length - completedBuildings.length} under construction`,
           },
           {
             label: 'Research',
-            value: `${state.completedResearch.length}/${visibleResearchCount}`,
+            value: `${state.completedResearch.length}`,
+            unit: `/${visibleResearchCount}`,
             color: 'text-purple-400',
             bgGlow: 'bg-purple-500/5',
             borderColor: 'border-purple-500/20',
             icon: 'research',
             glow: 'purple',
+            sub: 'technologies unlocked',
           },
-        ] as { label: string; value: string; color: string; bgGlow: string; borderColor: string; icon: IconName; glow: GameIconGlow }[]).map(s => (
-          <div key={s.label} className={`relative overflow-hidden rounded-xl border ${s.borderColor} ${s.bgGlow} p-3`}>
-            <div className="flex items-start justify-between">
-              <div>
-                <p className={`text-lg font-bold ${s.color} font-mono`}>{s.value}</p>
-                <p className="text-slate-500 text-[10px] uppercase tracking-wider mt-0.5">{s.label}</p>
-              </div>
-              <span className={`${s.color} opacity-50`}><GameIcon name={s.icon} size={20} glow={s.glow} /></span>
-            </div>
+        ] as { label: string; value: string; unit: string; color: string; bgGlow: string; borderColor: string; icon: IconName; glow: GameIconGlow; sub: string }[]).map(s => (
+          <div key={s.label} className={`holo-card relative overflow-hidden rounded-xl border ${s.borderColor} ${s.bgGlow} p-3`}>
+            <StatReadout
+              label={s.label}
+              icon={s.icon}
+              iconGlow={s.glow}
+              value={s.value}
+              unit={s.unit}
+              size="lg"
+              valueClassName={s.color}
+              sub={s.sub}
+            />
           </div>
         ))}
       </div>

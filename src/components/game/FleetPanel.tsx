@@ -19,7 +19,7 @@ import { getWorkforceBonuses } from '@/lib/game/workforce';
 import { getFreightFuelCost, getShipCargoCapacity, getCargoLoadUnits } from '@/lib/game/cargo-logistics';
 import CargoLoader from './CargoLoader';
 import Image from 'next/image';
-import { ConsolePanel } from './chrome';
+import { ConsolePanel, StatReadout } from './chrome';
 import GameIcon from './GameIcon';
 import type { IconName } from '@/lib/game/icons';
 
@@ -82,19 +82,28 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
     <div className="space-y-4">
       {/* Fleet Overview */}
       <ConsolePanel title="Fleet" icon="fleet" subtitle="Every ship you operate, at a glance.">
+        {/* Wave A1 (docs/VISUAL_AAA_2026-08.md §A1.2): centred number-over-
+            caption tiles replaced by the shared label-first instrument
+            readout — icon inline with the figure, unit split off small, and
+            a sub-line that turns three bare counts into a fleet status. */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-center">
-            <p className="text-cyan-400 text-lg font-bold game-number">{builtShips.length}</p>
-            <p className="text-slate-500 text-xs">Active Ships</p>
-          </div>
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
-            <p className="text-amber-400 text-lg font-bold game-number">{builtShips.filter(s => s.status === 'mining').length}</p>
-            <p className="text-slate-500 text-xs">Mining</p>
-          </div>
-          <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
-            <p className="text-green-400 text-lg font-bold game-number">{builtShips.filter(s => s.status === 'in_transit').length}</p>
-            <p className="text-slate-500 text-xs">In Transit</p>
-          </div>
+          {([
+            { label: 'Active', icon: 'fleet' as const, glow: 'cyan' as const, value: builtShips.length, tint: 'text-cyan-400', border: 'border-cyan-500/20 bg-cyan-500/5', sub: 'ships operating' },
+            { label: 'Mining', icon: 'ship-mining' as const, glow: 'amber' as const, value: builtShips.filter(s => s.status === 'mining').length, tint: 'text-amber-400', border: 'border-amber-500/20 bg-amber-500/5', sub: 'on station' },
+            { label: 'In Transit', icon: 'ship-transport' as const, glow: 'green' as const, value: builtShips.filter(s => s.status === 'in_transit').length, tint: 'text-green-400', border: 'border-green-500/20 bg-green-500/5', sub: 'under way' },
+          ]).map(tile => (
+            <div key={tile.label} className={`holo-card rounded-xl border ${tile.border} p-3`}>
+              <StatReadout
+                label={tile.label}
+                icon={tile.icon}
+                iconGlow={tile.glow}
+                value={`${tile.value}`}
+                size="lg"
+                valueClassName={tile.tint}
+                sub={tile.sub}
+              />
+            </div>
+          ))}
         </div>
       </ConsolePanel>
 
