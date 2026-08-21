@@ -121,6 +121,19 @@ import { hireCommander, dismissCommander, assignCommander, unassignCommander } f
 import FactionPanel from '@/components/game/FactionPanel';
 import AccordSenatePanel from '@/components/game/AccordSenatePanel';
 import { sendEnvoy, purchaseFactionLicense } from '@/lib/game/factions';
+import type { FactionId } from '@/lib/game/factions';
+// Wave A2.3 (docs/VISUAL_AAA_2026-08.md §A2.3) — portrait-framed leader moments.
+import LeaderMomentOverlay from '@/components/game/LeaderMomentOverlay';
+import {
+  buildAppointmentMoment,
+  detectLeaderMomentsFromEvents,
+  detectStandingMoments,
+  dequeueLeaderMoment,
+  enqueueLeaderMoments,
+  readFactionReputation,
+  resolveChoiceSpeaker,
+  type LeaderMoment,
+} from '@/lib/game/leader-moments';
 import { commitLobbying } from '@/lib/game/accord-senate';
 import type { LobbyStance } from '@/lib/game/accord-senate';
 import { acceptDelivery, deliverContract, getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
@@ -909,6 +922,15 @@ export default function SpaceTycoonPage() {
   const [cinematicQueue, setCinematicQueue] = useState<CinematicMoment[]>([]);
   const cinematicSeenEventIdsRef = useRef<Set<string> | null>(null);
   const cinematicPendingChoiceMountedRef = useRef(false);
+
+  // Wave A2.3 (docs/VISUAL_AAA_2026-08.md §A2.3) — portrait-framed leader
+  // moments. Same queue discipline as the cinematic queue above: the page
+  // owns the list, the overlay presents only the head. Both watcher refs
+  // baseline on first run, so a loaded save never replays months of
+  // retirements and standing shifts as a stack of modals.
+  const [leaderQueue, setLeaderQueue] = useState<LeaderMoment[]>([]);
+  const leaderSeenEventIdsRef = useRef<Set<string> | null>(null);
+  const leaderStandingRef = useRef<Partial<Record<FactionId, number>> | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevFrontierStatusRef = useRef<GameState['frontierStatus'] | undefined>(undefined);
@@ -1485,6 +1507,41 @@ export default function SpaceTycoonPage() {
     if (moment) setCinematicQueue(q => enqueueCinematicMoments(q, [moment]));
   }, [state?.pendingChoice?.eventId]);
 
+  // Wave A2.3 — leader moments, eventLog watcher. Today the only leader
+  // event the engine writes is commanders.ts' retirement entry
+  // (`evt_retire_<defId>_<ts>`), which until now surfaced as one line in the
+  // log and nothing else. Mirrors the cinematic watcher's baseline-on-first-
+  // run rule for the same reason.
+  useEffect(() => {
+    if (!state) return;
+    if (leaderSeenEventIdsRef.current === null) {
+      leaderSeenEventIdsRef.current = new Set((state.eventLog || []).map(e => e.id));
+      return;
+    }
+    const seen = leaderSeenEventIdsRef.current;
+    const newEntries = (state.eventLog || []).filter(e => !seen.has(e.id));
+    if (newEntries.length === 0) return;
+    for (const e of newEntries) seen.add(e.id);
+    const moments = detectLeaderMomentsFromEvents(newEntries);
+    if (moments.length > 0) setLeaderQueue(q => enqueueLeaderMoments(q, moments));
+  }, [state?.eventLog]);
+
+  // Wave A2.3 — leader moments, faction-standing watcher. Reputation moves
+  // through half a dozen systems (envoys, chain consequences, senate
+  // measures, chapter acts) and none of them announce a TIER change; the
+  // player only ever found out by opening the Factions tab. This diffs
+  // getStanding() across renders — a pure presentation-layer derivation of
+  // state the engine already owns, adding no field and no event.
+  useEffect(() => {
+    if (!state) return;
+    const next = readFactionReputation(state);
+    const prev = leaderStandingRef.current;
+    leaderStandingRef.current = next;
+    if (prev === null) return; // baseline the loaded save
+    const moments = detectStandingMoments(prev, next, `${state.gameDate.year}-${state.gameDate.month}`);
+    if (moments.length > 0) setLeaderQueue(q => enqueueLeaderMoments(q, moments));
+  }, [state?.factionReputation]);
+
   // Protected Frontier graduation — detect the active→graduated transition
   // (auto-graduation happens inside processTick in game-engine.ts; manual
   // "Graduate Early" goes through the same state field via FrontierBadge
@@ -1901,7 +1958,7 @@ export default function SpaceTycoonPage() {
   const activeInSecondary = secondaryTabs.find(t => t.id === tab);
 
   return (
-    <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines" data-density={density}>
+    <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines bezel-shell" data-density={density}>
       {/* Subtle starfield background */}
       <Image
         src="/game/bg-starfield.webp"
@@ -1911,6 +1968,15 @@ export default function SpaceTycoonPage() {
         priority={false}
       />
       <GameStyles />
+      {/* Wave A2.1 (docs/VISUAL_AAA_2026-08.md §A2.1) — the docked command
+          bezel's surround. A single decorative overlay: it paints the
+          machined console edge and the lip that seats the whole stage
+          inside it, so the ResourceBar plate, the selector channel, the
+          Outliner rail and the panels between them read as one instrument
+          housing. Fixed + pointer-events-none + zero box-model properties,
+          so it costs no layout and cannot intercept an interaction — the
+          V4 map-as-stage behaviour underneath is untouched. */}
+      <div className="bezel-surround" aria-hidden="true" />
       {/* Region-themed backdrop — tint shifts based on selected map location */}
       <RegionBackdrop region={selectedRegion} />
       {/* Passive ambient stardust + lens flares behind the UI */}
@@ -1925,6 +1991,21 @@ export default function SpaceTycoonPage() {
       <CinematicOverlay
         moment={cinematicQueue[0] ?? null}
         onDismiss={() => setCinematicQueue(q => dequeueCinematicMoment(q))}
+      />
+      {/* Wave A2.3 — portrait-framed leader moments (appointment, retirement,
+          faction standing).
+
+          Presentation order is cinematic (z-95) → leader (z-80) → choice
+          (z-70), and each layer is GATED on the one above it being empty
+          rather than merely stacked. Stacking alone is not enough: every one
+          of these surfaces installs its own focus trap via useModalA11y, and
+          sibling effects run in document order, so the LOWER surface would
+          mount last and pull focus into itself underneath the visible one —
+          a keyboard or screen-reader user would be tabbing through a dialog
+          they cannot see. Gating means exactly one trap is ever installed. */}
+      <LeaderMomentOverlay
+        moment={cinematicQueue.length === 0 ? (leaderQueue[0] ?? null) : null}
+        onDismiss={() => setLeaderQueue(q => dequeueLeaderMoment(q))}
       />
       {/* Hero art background */}
       <div className="relative overflow-hidden">
@@ -1952,8 +2033,13 @@ export default function SpaceTycoonPage() {
         }}
       />
 
-      {/* Tab Navigation — V3: primary tabs + overflow dropdown */}
-      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 game-tab-bar">
+      {/* Tab Navigation — V3: primary tabs + overflow dropdown.
+          Wave A2.1: `bezel-selector` mills this row into a recessed channel
+          in the console face and `bezel-key` seats each tab in it as a key
+          (raised when idle, pressed when active). Purely a paint change —
+          no padding, height or spacing was altered, so the row occupies
+          exactly the pixels it did before. */}
+      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 game-tab-bar bezel-selector">
         {/* Scrollable primary tabs region */}
         <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
           {primaryTabs.map(t => {
@@ -1962,7 +2048,7 @@ export default function SpaceTycoonPage() {
             <button
               key={t.id}
               onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
-              className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] shrink-0 ${
+              className={`bezel-key px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] shrink-0 ${
                 tab === t.id
                   ? 'bg-white/[0.08] text-white game-tab-active'
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
@@ -1979,7 +2065,7 @@ export default function SpaceTycoonPage() {
           <div className="relative shrink-0">
             <button
               onClick={() => setShowMoreTabs(!showMoreTabs)}
-              className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
+              className={`bezel-key px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
                 activeInSecondary
                   ? 'bg-white/[0.08] text-white game-tab-active'
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
@@ -2024,6 +2110,11 @@ export default function SpaceTycoonPage() {
         )}
 
         <div className="flex-1" />
+        {/* Wave A2.1 — the trailing controls are console switches, not
+            navigation, so they get their own recessed sub-plate. The wrapper
+            carries the same gap the tab bar used between these buttons, so
+            spacing is unchanged. */}
+        <div className="bezel-utility flex items-center gap-0.5 sm:gap-1 shrink-0">
         <button
           onClick={handleRestartTutorial}
           className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors whitespace-nowrap shrink-0"
@@ -2066,6 +2157,7 @@ export default function SpaceTycoonPage() {
         >
           <GameIcon name="quit" size={14} /> Quit
         </button>
+        </div>
       </div>
 
       {/* Wave V3 — the map-or-tabs column and the persistent Outliner rail
@@ -2413,7 +2505,21 @@ export default function SpaceTycoonPage() {
             state={state}
             onHire={(defId) => {
               playSound('click');
+              // Wave A2.3 — an appointment is a person joining the
+              // corporation, so present it as one. The moment is gated on
+              // the hire actually LANDING: hireCommander is a no-op when
+              // funds, the roster cap or an unlock gate say no, so a refused
+              // hire must not produce a leader reporting for duty. The check
+              // runs the pure hire against the current state (cheap, no side
+              // effects) rather than inside the updater, which React may
+              // invoke more than once.
+              const landed = (hireCommander(state, defId).hiredCommanders?.length ?? 0)
+                !== (state.hiredCommanders?.length ?? 0);
               setState(prev => prev ? hireCommander(prev, defId) : prev);
+              if (landed) {
+                const moment = buildAppointmentMoment(defId, Date.now());
+                if (moment) setLeaderQueue(q => enqueueLeaderMoments(q, [moment]));
+              }
             }}
             onDismiss={(defId) => {
               playSound('click');
@@ -2648,8 +2754,12 @@ export default function SpaceTycoonPage() {
         />
       )}
 
-      {/* Random Event / Narrative Chain Choice Modal */}
-      {state.pendingChoice && (
+      {/* Random Event / Narrative Chain Choice Modal.
+          Wave A2.3: held until the leader queue drains — see the focus-trap
+          note on LeaderMomentOverlay above. pendingChoice lives in GameState,
+          so nothing is lost by deferring it a click; the decision is still
+          mandatory and still waiting. */}
+      {state.pendingChoice && leaderQueue.length === 0 && (
         <EventChoiceModal
           eventName={state.pendingChoice.eventName}
           eventIcon={state.pendingChoice.eventIcon}
@@ -2658,6 +2768,10 @@ export default function SpaceTycoonPage() {
           chainName={state.pendingChoice.chainName || state.pendingChoice.chapterName}
           stageIndex={state.pendingChoice.stageIndex}
           totalStages={state.pendingChoice.totalStages}
+          // Wave A2.3 — null whenever the content doesn't identify a
+          // counterparty, in which case the modal keeps its original
+          // presentation. See resolveChoiceSpeaker for the derivation rules.
+          speaker={resolveChoiceSpeaker(state.pendingChoice)}
           onChoose={(choiceIndex) => {
             playSound('click');
             setState(prev => {

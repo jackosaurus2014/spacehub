@@ -200,3 +200,43 @@ export function deriveCompletionEvents(prev: CompletionDiffState | null, next: C
 
   return events;
 }
+
+// ─── Outliner row flash (Wave A4.2, docs/VISUAL_AAA_2026-08.md §A4.2) ───────
+// V3 shipped the outliner with a documented row-DOM convention explicitly so
+// a consumer could "target a specific row for a transient visual effect", and
+// V7 shipped this bus — but nothing ever connected the two, so a completion
+// pinged the map and left the outliner inert. These three exports close that
+// loop. Kept here rather than in Outliner.tsx because they are pure and
+// therefore testable without a DOM tree.
+//
+// Accessibility: the flash is REINFORCEMENT only. The row's own label, sub-
+// line and countdown already changed, the event is in the log, and a sound
+// already played — removing the flash removes no information. It is a
+// luminance lift first and a tint second, so it survives colourblindness,
+// and CSS collapses it to a short blink under prefers-reduced-motion.
+
+export const OUTLINER_FLASH_MS = 900;
+
+/** Class applied to a matching row per ping kind. 'warp' reuses the ack
+ *  treatment: from the outliner's point of view a jump is an acknowledgment
+ *  that an order was accepted, not a completion. */
+export const OUTLINER_FLASH_CLASS: Record<PingKind, string> = {
+  ack: 'outliner-row-flash-ack',
+  complete: 'outliner-row-flash-complete',
+  warp: 'outliner-row-flash-ack',
+};
+
+/**
+ * Attribute selector matching every outliner row that represents this ping's
+ * target, across all three responsive outliner variants.
+ *
+ * Returns null for an id that cannot be safely embedded in a selector. Real
+ * location/system ids are slugs, so this never fires in practice — it exists
+ * so that a future id format can never turn a decorative flash into a
+ * selector-injection or a thrown TypeError inside a bus listener (which would
+ * take down every other subscriber on the same emit).
+ */
+export function outlinerFlashSelector(target: PingTarget): string | null {
+  if (!target?.id || !/^[A-Za-z0-9_\-.:]+$/.test(target.id)) return null;
+  return `.outliner-row[data-ping-target="${target.id}"]`;
+}

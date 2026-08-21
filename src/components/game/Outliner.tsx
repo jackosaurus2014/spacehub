@@ -43,6 +43,7 @@ import { REGION_LABELS } from './SolarSystemCanvas';
 import GameIcon from './GameIcon';
 import HoloTip from './HoloTip';
 import { calendarCategoryIcon, type IconName } from '@/lib/game/icons';
+import { onMapPing, outlinerFlashSelector, OUTLINER_FLASH_CLASS, OUTLINER_FLASH_MS } from '@/lib/game/map-ping';
 import { useModalA11y } from './useModalA11y';
 
 const COLLAPSE_KEY = 'tycoon-outliner-collapsed';
@@ -109,16 +110,23 @@ function Section({
   );
 }
 
-function Row({ id, icon, label, sub, badge, severity, onClick }: {
+function Row({ id, icon, label, sub, badge, severity, onClick, pingTarget }: {
   /** Stable row id — see the file-header "Row DOM convention" comment. */
   id: string;
   icon: IconName; label: string; sub?: string;
   badge?: string; severity?: SituationItem['severity']; onClick: () => void;
+  /** Wave A4.2 — the map-ping target this row represents, so the completion
+   *  bus can flash it. Selected on rather than the row id because the three
+   *  responsive variants render the SAME ids (a pre-existing duplicate-id
+   *  quirk), and because an operations row's own id is its queue-item id,
+   *  not the location the ping names. */
+  pingTarget?: string;
 }) {
   return (
     <button
       type="button"
       id={id}
+      data-ping-target={pingTarget}
       onClick={onClick}
       className="outliner-row w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left hover:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
       style={{ minHeight: 40 }}
@@ -222,6 +230,7 @@ function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyPro
             icon={item.icon}
             label={item.label}
             sub={item.etaSeconds !== null ? `${item.sub} · ${formatCountdown(item.etaSeconds)}` : item.sub}
+            pingTarget={item.target.id}
             onClick={() => activateOperation(item)}
           />
         ))}
@@ -241,6 +250,7 @@ function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyPro
                   icon="map"
                   label={loc.name}
                   sub={`${loc.completeBuildingCount}/${loc.buildingCount} built · ${loc.shipCount} ship${loc.shipCount === 1 ? '' : 's'}`}
+                  pingTarget={loc.id}
                   onClick={() => activateHolding(loc.id)}
                 />
                 {loc.powerRatio !== null && (
@@ -294,6 +304,30 @@ export interface OutlinerProps {
 }
 
 export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }: OutlinerProps) {
+  // Wave A4.2 (docs/VISUAL_AAA_2026-08.md §A4.2) — the money-flash hook the
+  // V3 row-DOM convention was written for. Subscribes once, on the outer
+  // shell rather than inside OutlinerBody, because the rail/drawer/sheet can
+  // be mounted simultaneously and would otherwise each open their own
+  // subscription. Touches the DOM directly and deliberately: a ping is a
+  // transient decoration on a row React did not re-render, so routing it
+  // through state would re-render the whole tree several times a minute for
+  // an effect that is over in 900ms.
+  useEffect(() => onMapPing(ping => {
+    const selector = outlinerFlashSelector(ping.target);
+    if (!selector) return;
+    const cls = OUTLINER_FLASH_CLASS[ping.kind];
+    const rows = Array.from(document.querySelectorAll<HTMLElement>(selector));
+    if (rows.length === 0) return;
+    for (const row of rows) {
+      // Remove-reflow-add so a second ping on the same row restarts the
+      // animation instead of being swallowed as a no-op class change.
+      row.classList.remove(cls);
+      void row.offsetWidth;
+      row.classList.add(cls);
+    }
+    window.setTimeout(() => { for (const row of rows) row.classList.remove(cls); }, OUTLINER_FLASH_MS);
+  }), []);
+
   const [now, setNow] = useState(() => Date.now());
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -344,7 +378,12 @@ export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }
       {/* Desktop >=1280px — docked rail, collapsible to a glyph rail. */}
       <nav
         aria-label="Corporate outliner"
-        className={`hidden xl:flex flex-col shrink-0 border-l border-white/[0.06] bg-[#050510]/95 backdrop-blur-sm overflow-y-auto game-scroll transition-[width] duration-200 ${collapsed ? 'w-11' : 'w-[300px]'}`}
+        // Wave A2.1 (docs/VISUAL_AAA_2026-08.md §A2.1) — `bezel-rail` makes
+        // the docked rail the RIGHT plate of the command bezel: a brushed
+        // face with a lit inner lip toward the stage, matching the top plate
+        // on the ResourceBar. Paint only — the width contract above (44px
+        // collapsed / 300px open) is untouched.
+        className={`bezel-rail hidden xl:flex flex-col shrink-0 border-l border-white/[0.06] bg-[#050510]/95 backdrop-blur-sm overflow-y-auto game-scroll transition-[width] duration-200 ${collapsed ? 'w-11' : 'w-[300px]'}`}
         style={{ maxHeight: 'calc(100vh - 0px)' }}
       >
         <button
@@ -386,7 +425,9 @@ export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }
           type="button"
           onClick={() => setDrawerOpen(true)}
           aria-label={`Open corporate outliner${attentionCount > 0 ? ` — ${attentionCount} item${attentionCount === 1 ? '' : 's'} need attention` : ''}`}
-          className="fixed left-0 top-1/2 -translate-y-1/2 z-30 w-11 min-h-[44px] py-3 flex flex-col items-center gap-1 rounded-r-xl border border-l-0 border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm hover:bg-white/[0.06] transition-colors"
+          // A2.1: the same bezel plate, mirrored — this variant docks to the
+          // LEFT edge, so its lit lip faces right, into the stage.
+          className="bezel-rail-left fixed left-0 top-1/2 -translate-y-1/2 z-30 w-11 min-h-[44px] py-3 flex flex-col items-center gap-1 rounded-r-xl border border-l-0 border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm hover:bg-white/[0.06] transition-colors"
         >
           <GameIcon name="map" size={16} />
           {attentionSeverity && <span className={`w-2 h-2 rounded-full ${SEVERITY_DOT[attentionSeverity]}`} aria-hidden="true" />}
@@ -434,7 +475,11 @@ export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }
           type="button"
           onClick={() => setSheetOpen(true)}
           aria-label={`Open corporate outliner${attentionCount > 0 ? ` — ${attentionCount} item${attentionCount === 1 ? '' : 's'} need attention` : ''}`}
-          className="fixed bottom-0 left-0 right-0 z-30 min-h-[44px] flex items-center justify-center gap-2 border-t border-white/[0.08] bg-[#050510]/95 backdrop-blur-sm text-[10px] text-slate-300"
+          // A2.1: on a phone this strip IS the bottom bezel plate — the only
+          // piece of the surround the player sees at 375px besides the
+          // hairline edge. Paint only; the 44px touch-target floor is
+          // unchanged.
+          className="bezel-rail-bottom fixed bottom-0 left-0 right-0 z-30 min-h-[44px] flex items-center justify-center gap-2 border-t border-white/[0.08] bg-[#050510]/95 backdrop-blur-sm text-[10px] text-slate-300"
         >
           {attentionSeverity ? (
             <>

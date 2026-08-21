@@ -6,6 +6,7 @@
  */
 import {
   deriveRadialActions,
+  deriveSystemRadialActions,
   computeRadialLayout,
   cycleRadialIndex,
   RADIAL_DEFAULT_ITEM_RADIUS,
@@ -255,5 +256,88 @@ describe('cycleRadialIndex', () => {
     expect(cycleRadialIndex(4, 1, 5)).toBe(0);
     expect(cycleRadialIndex(2, 1, 5)).toBe(3);
     expect(cycleRadialIndex(0, 1, 0)).toBe(0);
+  });
+});
+
+// ─── Wave A4 — the galactic action set ──────────────────────────────────────
+// The solar arc's verbs (build / dispatch / slots / demand) do not exist at a
+// star four light-years away. These tests pin the two action sets apart and
+// hold the galactic gating to the same rule the expedition planner enforces.
+
+describe('deriveSystemRadialActions', () => {
+  it('never offers a location-shaped verb at a star system', () => {
+    const actions = deriveSystemRadialActions(makeState(), 'proxima_centauri');
+    const ids = actions.map(a => a.id);
+    for (const solarOnly of ['build', 'dispatch', 'slots', 'demand', 'unlock', 'orders']) {
+      expect(ids).not.toContain(solarOnly);
+    }
+    expect(ids.every(id => id.startsWith('sys-'))).toBe(true);
+  });
+
+  it('is order-stable so the ring never reshuffles under the cursor', () => {
+    const a = deriveSystemRadialActions(makeState(), 'sirius').map(x => x.id);
+    const b = deriveSystemRadialActions(
+      makeState({ completedResearch: ['jump_drive'], resources: { exotic_fuel: 9_999 } }),
+      'sirius',
+    ).map(x => x.id);
+    expect(a).toEqual(b);
+    expect(a[0]).toBe('sys-detail'); // 'open the dossier' is always first
+  });
+
+  it('always keeps Dossier available, even on an unknown system', () => {
+    const actions = deriveSystemRadialActions(makeState(), 'not_a_system');
+    const detail = actions.find(a => a.id === 'sys-detail')!;
+    expect(detail.enabled).toBe(true);
+  });
+
+  it('blocks the expedition verb with the REAL reason, never by hiding it', () => {
+    const fresh = deriveSystemRadialActions(makeState(), 'proxima_centauri');
+    const exp = fresh.find(a => a.id === 'sys-expedition')!;
+    expect(exp.enabled).toBe(false);
+    expect(exp.reason).toMatch(/research required/i);
+
+    const researched = deriveSystemRadialActions(
+      makeState({ completedResearch: ['jump_drive'], resources: { exotic_fuel: 1 } }),
+      'proxima_centauri',
+    ).find(a => a.id === 'sys-expedition')!;
+    expect(researched.enabled).toBe(false);
+    expect(researched.reason).toMatch(/exotic fuel/i);
+
+    const fuelled = deriveSystemRadialActions(
+      makeState({ completedResearch: ['jump_drive'], resources: { exotic_fuel: 100_000 } }),
+      'proxima_centauri',
+    ).find(a => a.id === 'sys-expedition')!;
+    // Research and fuel are satisfied; the only remaining blocker is the hull.
+    expect(fuelled.enabled).toBe(false);
+    expect(fuelled.reason).toMatch(/Starfarer|Colony Ark/i);
+  });
+
+  it('reports the research prerequisite count without ever disabling the route to it', () => {
+    const blocked = deriveSystemRadialActions(makeState(), 'sirius').find(a => a.id === 'sys-research')!;
+    expect(blocked.enabled).toBe(true);
+    expect(blocked.detail).toMatch(/missing/);
+
+    const done = deriveSystemRadialActions(
+      makeState({ completedResearch: ['jump_drive', 'exotic_matter_refining', 'heavy_radiation_shielding'] }),
+      'sirius',
+    ).find(a => a.id === 'sys-research')!;
+    expect(done.detail).toBe('complete');
+  });
+
+  it('gates the shipyard on the Fleet tab, with the tier reason spelled out', () => {
+    const locked = deriveSystemRadialActions(makeState({ corporationTier: 1 }), 'wolf_359')
+      .find(a => a.id === 'sys-fleet')!;
+    if (!locked.enabled) expect(locked.reason).toBeTruthy();
+    const open = deriveSystemRadialActions(makeState({ corporationTier: 5 }), 'wolf_359')
+      .find(a => a.id === 'sys-fleet')!;
+    expect(open.enabled).toBe(true);
+  });
+
+  it('gives every action a description and a non-empty label', () => {
+    for (const a of deriveSystemRadialActions(makeState(), 'alpha_centauri')) {
+      expect(a.label.length).toBeGreaterThan(0);
+      expect(a.description.length).toBeGreaterThan(0);
+      if (!a.enabled) expect(a.reason).toBeTruthy();
+    }
   });
 });

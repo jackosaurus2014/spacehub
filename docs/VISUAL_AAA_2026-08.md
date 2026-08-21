@@ -226,6 +226,140 @@ the ResourceBar's P&L block — which was bare statements in the component body,
 
 ---
 
+## Part 2b — What Wave A2 shipped
+
+### A2.1 — Docked command bezel
+
+**Before.** The shell was a web page: a header bar (`ResourceBar`), a row of text buttons
+(the tab strip), a content column, and a right rail. A1.1 had given every *panel* a machined
+housing, but the thing containing them still read as browser chrome.
+
+**After.** One instrument housing, assembled from five pieces that all speak A1.1's `--mat-*`
+vocabulary (no second system was forked):
+
+| Piece | What it becomes |
+|---|---|
+| `.bezel-surround` | A fixed, `pointer-events: none` overlay painting the console edge, a lit inner lip, machined corner gussets (≥1024px), and the vignette that seats the whole stage *inside* the housing. |
+| `.bezel-plate-top` | `ResourceBar` as the top bezel plate — brushed face, lit top lip, hard shadow onto the channel below, plus a `.bezel-seam` hairline at the join. |
+| `.bezel-selector` / `.bezel-key` | The tab strip as a channel milled into the console face, with each tab a key: raised when idle, **pressed into the channel when active**. |
+| `.bezel-utility` | The trailing tutorial/FAQ/achievements/save/restart/quit cluster as a recessed bank of switches, visually separated from navigation. |
+| `.bezel-rail` / `-left` / `-bottom` | All three Outliner variants as the side (or, on a phone, bottom) bezel plate, with the lip always facing into the stage. |
+
+**The layout contract, which is load-bearing.** *Nothing in the A2.1 CSS sets padding, margin,
+width, height, or any other box-model property.* Every rule paints with `background-image` and
+`box-shadow` only, and the surround is `position: fixed`. That is why the bezel cannot steal
+content height at 375px — there is no pixel for it to take, at any viewport. The only markup
+additions are one `aria-hidden` overlay div, one `aria-hidden` seam span, and a wrapper around
+the already-adjacent utility buttons that carries the exact gap they already had. The mobile
+degradation (`--bezel-t` 4px → 3px → 1px, corner gussets and the brushed comb dropped under
+640px) is therefore about visual *noise*, not about reclaiming space.
+
+**Composition rule, inherited and enforced.** `.bezel-plate-top` co-applies with `.hud-frame`,
+so it re-points the `--mat-*` tokens rather than setting `box-shadow` — the A1.1 note about
+box-shadow-setting classes silently erasing the housing applies verbatim here.
+
+**Why z-index 25 for the surround.** Above the stage and the ResourceBar (z-20), so the plate
+genuinely overlaps and frames them; below the Outliner rail/drawer (z-30/40) and every modal
+(z-70+), because a viewport vignette must never dim a dialog the player is reading, and the rail
+is itself a bezel plate meant to sit on the surround's right edge. V4's map-as-stage is
+untouched: the overlay is decorative and non-interactive, so the map stays mounted, stays frozen
+when covered, and stays reachable exactly as before.
+
+**Reduced motion / high contrast.** No animation is introduced at all — a bezel is the most
+persistent surface in the game and motion on it would be a permanent distraction, so there is
+nothing for reduced-motion to disable. High contrast drops the vignette and the brushed faces
+(decorative dimming actively hurts there) and hardens the lip and key bevels instead.
+
+### A2.3 — Portrait-framed leader moments
+
+**Before.** 80 commander portraits and 6 faction-leader portraits sat on disk. Commander
+retirement was one line in `eventLog`. Hiring was a card click and a sound. Faction standing
+crossing a tier boundary surfaced *nowhere*. Narrative and Story-Chapter decisions rendered as an
+emoji above a paragraph. `FACTION_LEADER_ASSETS` had zero consumers anywhere in `src/`.
+
+**After.** Five real decision points now put a person in front of the player, in one shared
+housing (`LeaderPortraitFrame`). **No new game events were invented, and no attribution was
+authored by hand** — every speaker is derived from data the content already declares:
+
+| Hook | Where it comes from | Speaker derivation |
+|---|---|---|
+| **Commander appointment** | the existing `onHire` handler; gated on the hire actually landing | the commander hired |
+| **Commander retirement** | `processLeaderRetirements`' `evt_retire_<defId>_<ts>` eventLog id, read back structurally rather than by parsing the title | the commander retiring |
+| **Faction standing tier change** | a diff of `getStanding()` across renders — no new field, no new event | that faction's LORE.md leader |
+| **Story Chapter act / finale** | `ChapterDefinition.factionId`, which the content already declares as "which LORE.md faction drives this arc" | that faction's leader |
+| **Narrative chain choice** | the *intersection rule* below | the faction at the table, when there is exactly one |
+
+**The intersection rule (chains).** Chain stages carry no speaker field, and authoring ~40
+attributions by hand would be inventing content. Instead: *the speaker is the faction whose
+reputation moves on **every** branch, and only when exactly one faction qualifies.* This is
+correct in both directions — "support vs oppose licensing" moves the Dominion on both branches
+(the Dominion is the proposer → portrait), while "fund the Remnants survey vs back the Dominion's
+dismissal" moves both factions on both branches (nobody is speaking, the player is picking a side
+→ no portrait, plain modal). It fires on **4 of 25** chain choice stages, and a test guards both
+that it is not dead code *and* that it stays conservative.
+
+**How the frame normalizes the portrait library.** Four cooperating layers inside
+`.leader-portrait`, calibrated by compositing real portraits from both cohorts through these exact
+layers offline and comparing three strengths:
+
+1. **Fixed focal crop** — a 4:5 window, `object-fit: cover`. Every source is square, so the crop
+   is horizontal only: vertical framing survives (heads land in the upper third in both cohorts)
+   while ~20% comes off each side, which is where the busiest periphery and most of the garbled
+   holo-panel pseudo-text live.
+2. **Unifying colour cast** — `saturate(0.86) contrast(1.06) brightness(0.97)` plus a 12% navy
+   wash, dragging any photoreal frame onto the painterly cohort's blue-grey ground.
+3. **Inner vignette** with its focus biased to the face (50%/32%) and fully transparent for the
+   middle 55%, so no face is ever dimmed while busy backgrounds die at the rim.
+4. **Seating shadow + bottom fade** — every portrait sits at the same depth, and the lower third
+   (clothing pseudo-text) dissolves into the name plate so the subject emerges from the frame.
+
+A heavier pass knocked legacy backgrounds down further but went muddy on painterly faces, which
+is the wrong trade — the frame is tuned to flatter a clean painterly bust and to degrade
+acceptably, not to hide a mismatch it should not have to hide.
+
+**Accessibility.** Portrait art is decorative (`alt=""`, every ornamental layer `aria-hidden`);
+name, title, affiliation, status and message are real text, so the moment is fully legible with
+images off and the no-art fallback is a monogram plate with zero information loss. Accent colour
+appears only as a keyline and is always redundant with the affiliation text beside it. Direction
+in standing moments is a **word** ("Improved to Allied" / "Fallen to Hostile"), never an arrow
+colour. Acknowledge-only moments are `role="dialog"`, labelled, focus-trapped, Escape-closable;
+the mandatory-choice modal keeps `role="alertdialog"` and its deliberate no-Escape contract. The
+entrance is a single 260ms landing that reduced motion collapses. At 375px the two-column split
+stacks and the portrait is capped at 108px so text is never crowded out by art.
+
+**Deliberately not routed through `CinematicOverlay`.** That surface auto-dismisses after 8s. An
+address from a person must not time out from under a slow reader, so leader moments use their own
+queue (same pure enqueue/dequeue/dedupe/cap pattern) and wait for acknowledgement.
+
+### A4.2 — Outliner money-flash hook (also shipped)
+
+V3 documented a row-DOM convention explicitly "for the V7 juice pass — money-flash the outliner
+row", V7 shipped the `map-ping` bus, and nothing ever joined them. Now joined: rows carry
+`data-ping-target`, `map-ping.ts` exports the selector/class/duration (pure, tested), and the
+Outliner's outer shell subscribes once. Selection is by ping target rather than row id, because
+the three responsive variants render the same ids and because an operations row's id is its
+queue-item id, not the location the ping names. The flash is luminance-first, carries no unique
+information, and reduced motion collapses it to V7's 200ms blink.
+
+### Files touched (Wave A2)
+
+| File | Change |
+|---|---|
+| `src/components/game/GameStyles.tsx` | +3 sections: A2.1 bezel (surround, plates, selector/keys, utility bank, rails, HC overrides), A2.3 portrait housing + the four normalization layers, A4.2 flash keyframes |
+| `src/lib/game/leader-moments.ts` | **new** — speaker resolution (commander / faction / choice), the intersection rule, moment builders, queue helpers |
+| `src/components/game/LeaderPortraitFrame.tsx` | **new** — the one shared housing, used by both consumers |
+| `src/components/game/LeaderMomentOverlay.tsx` | **new** — acknowledge-only presenter for the head of the queue |
+| `src/components/game/EventChoiceModal.tsx` | optional `speaker`; when present the decision is delivered in the portrait frame, choices and handlers byte-identical |
+| `src/app/space-tycoon/page.tsx` | `bezel-shell` + surround; `bezel-selector`/`bezel-key`/`bezel-utility`; leader queue + two watchers; hire-handler moment; overlay mount; `speaker` on the choice modal |
+| `src/components/game/ResourceBar.tsx` | `bezel-plate-top` + `.bezel-seam` |
+| `src/components/game/Outliner.tsx` | `bezel-rail` on all three variants; `data-ping-target` on rows; the flash subscription |
+| `src/lib/game/map-ping.ts` | +`outlinerFlashSelector` / `OUTLINER_FLASH_CLASS` / `OUTLINER_FLASH_MS` |
+| `src/lib/game/__tests__/leader-moments.test.ts` | **new** — 33 tests |
+| `src/components/game/__tests__/LeaderPortraitFrame.test.tsx` | **new** — 7 tests |
+| `src/lib/game/__tests__/map-ping.test.ts` | +4 tests |
+
+---
+
 ## Part 3 — Prioritized backlog for follow-on waves
 
 Ordered by leverage-per-effort. Each item names its benchmark, the loop it serves, and its
@@ -233,7 +367,7 @@ dependencies.
 
 ### A2 — Entity presentation (highest remaining leverage)
 
-**A2.1 — Docked command bezel** *(Sins of a Solar Empire)* — **Effort: M.**
+**A2.1 — Docked command bezel** *(Sins of a Solar Empire)* — ✅ **SHIPPED (Wave A2, see Part 2b).**
 Sins's UI is a fixed machined bezel around a live theatre; ours is still a web header above a content
 column. Now that A1.1 gives us a housing vocabulary, extend it to the *shell*: the ResourceBar
 becomes the top bezel plate, the V3 outliner rail becomes the right bezel plate, and the tab strip
@@ -247,7 +381,7 @@ the rim (`.module-socket` already exists), hazard exposure as an outer band, and
 tint. Pure lens over existing state — buildings, slots, hazards and standing are all already on
 GameState. *Depends:* A1.1 for the socket/housing treatment. *Loop:* tactical + strategic.
 
-**A2.3 — Portrait-framed leader moments** *(MoO2 / Stellaris)* — **Effort: M.**
+**A2.3 — Portrait-framed leader moments** *(MoO2 / Stellaris)* — ✅ **SHIPPED (Wave A2, see Part 2b).**
 70 commander portraits sit on disk and are currently rendered as small thumbnails. Promote hiring,
 retirement, era transitions, and first contact to full portrait-framed moments using the existing
 `CinematicOverlay` queue — portrait in a `sprite-frame` mount, name plate, faction insignia, one line
@@ -309,13 +443,18 @@ starfields on `transform: translate3d`, per-system vista thumbnails behind node 
 radial washes per system colour. Static under reduced motion. *Note:* `GalacticMapView` is DOM and is
 **not** owned by the map wave, so this is safe to pick up here.
 
-**A4.2 — Outliner money-flash hook** — **Effort: S.**
+**A4.2 — Outliner money-flash hook** — ✅ **SHIPPED (Wave A2, see Part 2b).**
 Carried over from V7/V3: the row-id convention and the `onMapPing` bus are both already in place; the
 outliner row simply never subscribes. Small, closes a documented loop.
 
-**A4.3 — `.holo-row` density scaling** — **Effort: S.**
-Carried over from V8: `.holo-row` heights don't respond to `--density-scale`, so compact mode tightens
-panels but not list rows.
+**A4.3 — `.holo-row` density scaling** — **Effort: S.** *(Attempted in Wave A2 and deliberately
+deferred.)* `.holo-row` owns no padding of its own — every call site sets its own Tailwind
+`py-1.5`/`py-2`/`p-3`, which vary. Making the row respond to `--density-scale` therefore means
+overriding those call-site paddings with a single forced value in compact mode, which changes
+row rhythm in ways that need a visual pass across all five `.holo-table` surfaces to confirm.
+Not worth shipping unverified against a fixed restart date. The honest fix is to move row padding
+off the call sites and onto `.holo-row` first, then scale it — a small refactor with its own
+review, not a CSS one-liner.
 
 ### A5 — Deferred / explicitly not now
 

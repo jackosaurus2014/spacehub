@@ -49,6 +49,10 @@ import { playSound } from '@/lib/game/sound-engine';
 import { REGION_LABELS } from './SolarSystemCanvas';
 import { SYSTEM_RISK_META, RISK_TONE_CLASS } from './GalacticMapView';
 import BuildPanel from './BuildPanel';
+// Wave A2.2 (docs/VISUAL_AAA_2026-08.md §A2.2) — the Sins-style location
+// detail console: the body rendered at scale, ringed by its REAL orbital-slot
+// occupancy, with engine-sourced vitals under it.
+import LocationDetailConsole from './map/LocationDetailConsole';
 import { useWorldState, getColonySlotCap, LOCATION_MILESTONE_MAP } from '@/hooks/useWorldState';
 
 export type MapSelection = { kind: 'location'; id: string } | { kind: 'system'; id: string };
@@ -288,6 +292,14 @@ function LocationOverview({
 
   return (
     <div className="space-y-3">
+      {/* Wave A2.2 — the body itself, its orbital-slot ring, and the vitals.
+          This is the panel's hero; the prose and the action rail follow it. */}
+      <LocationDetailConsole
+        state={state}
+        locationId={locationId}
+        onNavigate={target => onNavigateTab(target as GameTab)}
+      />
+
       <p className="text-slate-400 text-[11px] leading-relaxed">{loc.description}</p>
 
       <WorldPresenceBlock locationId={locationId} />

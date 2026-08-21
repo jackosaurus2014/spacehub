@@ -1,6 +1,8 @@
 'use client';
 
 import { playSound } from '@/lib/game/sound-engine';
+import type { LeaderSpeaker } from '@/lib/game/leader-moments';
+import LeaderPortraitFrame from './LeaderPortraitFrame';
 import { useModalA11y } from './useModalA11y';
 
 interface EventChoiceModalProps {
@@ -16,6 +18,14 @@ interface EventChoiceModalProps {
   chainName?: string;
   stageIndex?: number;
   totalStages?: number;
+  /** Wave A2.3 (docs/VISUAL_AAA_2026-08.md §A2.3): when the content's own
+   *  data identifies a counterparty for this decision, the modal is
+   *  presented as that leader delivering it — MoO2's framed-portrait moment
+   *  — instead of an emoji over a paragraph. Resolved by
+   *  `resolveChoiceSpeaker` (leader-moments.ts), which returns null whenever
+   *  attribution would be a guess, so an unattributed decision keeps the
+   *  original presentation rather than getting a stand-in face. */
+  speaker?: LeaderSpeaker | null;
 }
 
 /**
@@ -24,72 +34,102 @@ interface EventChoiceModalProps {
  * does not dismiss it (the underlying hook is given a no-op close). We still get Tab
  * focus-trapping between the choice buttons and initial focus placed inside the modal.
  */
-export default function EventChoiceModal({ eventName, eventIcon, eventDescription, choices, onChoose, chainName, stageIndex, totalStages }: EventChoiceModalProps) {
+export default function EventChoiceModal({ eventName, eventIcon, eventDescription, choices, onChoose, chainName, stageIndex, totalStages, speaker }: EventChoiceModalProps) {
   const modalRef = useModalA11y<HTMLDivElement>(() => {});
   const isChain = !!chainName && typeof stageIndex === 'number' && typeof totalStages === 'number' && totalStages > 0;
 
-  return (
-    <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="alertdialog" aria-modal="true" aria-labelledby="event-title" aria-describedby="event-desc">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" aria-hidden="true" />
+  const progress = isChain ? (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[10px] uppercase tracking-wider text-cyan-400 font-semibold">{chainName}</span>
+        <span className="text-[10px] text-slate-500">Stage {(stageIndex as number) + 1} of {totalStages}</span>
+      </div>
+      <div className="h-1 w-full rounded-full bg-white/[0.06] overflow-hidden" role="progressbar" aria-valuenow={(stageIndex as number) + 1} aria-valuemin={1} aria-valuemax={totalStages} aria-label={`${chainName} progress`}>
+        <div
+          className="h-full bg-gradient-to-r from-cyan-500 to-amber-500 transition-all"
+          style={{ width: `${(((stageIndex as number) + 1) / (totalStages as number)) * 100}%` }}
+        />
+      </div>
+    </div>
+  ) : null;
 
-      <div className="relative w-full max-w-md rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #12122a 0%, #0a0a1a 100%)' }}>
-        {/* Accent bar */}
-        <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-amber-500" aria-hidden="true" />
-
-        <div className="p-6">
-          {/* Chain progress indicator */}
-          {isChain && (
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] uppercase tracking-wider text-cyan-400 font-semibold">{chainName}</span>
-                <span className="text-[10px] text-slate-500">Stage {(stageIndex as number) + 1} of {totalStages}</span>
-              </div>
-              <div className="h-1 w-full rounded-full bg-white/[0.06] overflow-hidden" role="progressbar" aria-valuenow={(stageIndex as number) + 1} aria-valuemin={1} aria-valuemax={totalStages} aria-label={`${chainName} progress`}>
-                <div
-                  className="h-full bg-gradient-to-r from-cyan-500 to-amber-500 transition-all"
-                  style={{ width: `${(((stageIndex as number) + 1) / (totalStages as number)) * 100}%` }}
-                />
-              </div>
+  // The choice list is identical in both presentations — same markup, same
+  // handlers, same consequence previews. Only the surround changes.
+  const choiceList = (
+    <div className="space-y-3">
+      {choices.map((choice, i) => (
+        <button
+          key={i}
+          onClick={() => { playSound('click'); onChoose(i); }}
+          className="w-full text-left p-4 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/30 transition-all group focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+        >
+          <p className="text-white text-sm font-semibold group-hover:text-cyan-300 transition-colors">
+            {choice.label}
+          </p>
+          <p className="text-slate-500 text-xs mt-0.5">{choice.description}</p>
+          {choice.consequencePreview && choice.consequencePreview.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2" aria-label="Expected consequences">
+              {choice.consequencePreview.map((p, pi) => (
+                <span key={pi} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] text-slate-400 font-mono">
+                  {p}
+                </span>
+              ))}
             </div>
           )}
+        </button>
+      ))}
+    </div>
+  );
 
-          {/* Event header */}
-          <div className="text-center mb-5">
-            <span className="text-4xl block mb-3" aria-hidden="true">{eventIcon}</span>
-            <h3 id="event-title" className="text-xl font-bold text-white mb-1">{eventName}</h3>
-            <p id="event-desc" className="text-slate-400 text-sm leading-relaxed">{eventDescription}</p>
-          </div>
+  const finality = (
+    <p className="text-slate-600 text-[10px] text-center">
+      Choose wisely — this decision cannot be undone.
+    </p>
+  );
 
-          {/* Choices */}
-          <div className="space-y-3">
-            {choices.map((choice, i) => (
-              <button
-                key={i}
-                onClick={() => { playSound('click'); onChoose(i); }}
-                className="w-full text-left p-4 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/30 transition-all group"
-              >
-                <p className="text-white text-sm font-semibold group-hover:text-cyan-300 transition-colors">
-                  {choice.label}
-                </p>
-                <p className="text-slate-500 text-xs mt-0.5">{choice.description}</p>
-                {choice.consequencePreview && choice.consequencePreview.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2" aria-label="Expected consequences">
-                    {choice.consequencePreview.map((p, pi) => (
-                      <span key={pi} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] text-slate-400 font-mono">
-                        {p}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
+  return (
+    <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-6 overflow-y-auto game-scroll" role="alertdialog" aria-modal="true" aria-labelledby="event-title" aria-describedby="event-desc">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" aria-hidden="true" />
 
-          <p className="text-slate-600 text-[10px] text-center mt-4">
-            Choose wisely — this decision cannot be undone.
-          </p>
+      {speaker ? (
+        // ── Wave A2.3: the leader delivers the decision in person. ────────
+        // The event name becomes the eyebrow (it is the *situation*, not the
+        // speaker), the speaker's name is the accessible label, and the
+        // event description is the spoken message.
+        <div className="relative w-full max-w-xl">
+          <LeaderPortraitFrame
+            speaker={speaker}
+            eyebrow={eventName}
+            titleId="event-title"
+            messageId="event-desc"
+            message={eventDescription}
+            aside={progress}
+            actions={choiceList}
+            footer={finality}
+          />
         </div>
-      </div>
+      ) : (
+        <div className="relative w-full max-w-md rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #12122a 0%, #0a0a1a 100%)' }}>
+          {/* Accent bar */}
+          <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-amber-500" aria-hidden="true" />
+
+          <div className="p-6">
+            {/* Chain progress indicator */}
+            {progress && <div className="mb-4">{progress}</div>}
+
+            {/* Event header */}
+            <div className="text-center mb-5">
+              <span className="text-4xl block mb-3" aria-hidden="true">{eventIcon}</span>
+              <h3 id="event-title" className="text-xl font-bold text-white mb-1">{eventName}</h3>
+              <p id="event-desc" className="text-slate-400 text-sm leading-relaxed">{eventDescription}</p>
+            </div>
+
+            {choiceList}
+
+            <div className="mt-4">{finality}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1582,6 +1582,499 @@ export default function GameStyles() {
       html.high-contrast .mat-table tbody tr > td {
         border-top-color: rgba(255, 255, 255, 0.18);
       }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE A2.1 — DOCKED COMMAND BEZEL (docs/VISUAL_AAA_2026-08.md §A2.1)
+         Sins of a Solar Empire benchmark: the UI is a fixed machined bezel
+         around a live theatre. Panels dock INTO the chrome; they do not
+         float on a page. Ours was a web header above a content column.
+
+         This is A1.1's housing language applied to the SHELL rather than to
+         individual panels — same --mat-* vocabulary, same box-shadow-only
+         construction, no second system. Five pieces:
+
+           .bezel-surround   a fixed, pointer-events-none overlay painting the
+                             console surround + the lip that seats the stage
+                             inside it. Zero layout cost by construction.
+           .bezel-plate-top  the ResourceBar as the top bezel plate.
+           .bezel-selector   the tab strip as a machined selector channel,
+                             with .bezel-key for the individual keys.
+           .bezel-utility    the trailing console switches, recessed.
+           .bezel-rail       the Outliner (all three responsive variants) as
+                             the side/bottom bezel plate.
+
+         LAYOUT CONTRACT — LOAD-BEARING. Nothing in this section sets
+         padding, margin, width, height, or any box-model property. Every
+         rule paints with background-image and box-shadow only. That is why
+         the bezel cannot steal a single pixel of content height at 375px:
+         there is no pixel for it to take. The mobile degradation below is
+         therefore about VISUAL noise (thinner plate, no corner gussets,
+         weaker vignette), not about reclaiming space.
+
+         Composition rule inherited from A1.1: classes that co-apply with
+         '.hud-frame' must never set 'box-shadow' directly — they re-point
+         the --mat-* tokens instead, or the housing is silently erased.
+
+         No animation is introduced here at all. A bezel is the most
+         persistent surface in the game; motion on it would be a permanent
+         distraction, so there is nothing for reduced-motion to disable.
+         ═══════════════════════════════════════════════════════════════════ */
+
+      .bezel-shell {
+        /* Plate thickness. Phone-first: a hairline edge, promoted to a real
+           machined surround only where there are pixels to spare. */
+        --bezel-t: 1px;
+        --bezel-plate: rgba(6, 10, 20, 0.92);
+        --bezel-lip-hi: rgba(255, 255, 255, 0.07);
+        --bezel-lip-lo: rgba(0, 0, 0, 0.6);
+        --bezel-vignette: rgba(0, 0, 0, 0.2);
+        --bezel-corner: rgba(148, 163, 184, 0.16);
+        /* Brushed-metal face: a 1px vertical comb at 3px pitch. Sub-pixel
+           on HiDPI, which is the point — it reads as machining, not stripes. */
+        --bezel-brush: repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.016) 0 1px,
+          rgba(0, 0, 0, 0.016) 1px 3px
+        );
+      }
+      @media (min-width: 640px) {
+        .bezel-shell {
+          --bezel-t: 3px;
+          --bezel-vignette: rgba(0, 0, 0, 0.28);
+        }
+      }
+      @media (min-width: 1024px) {
+        .bezel-shell {
+          --bezel-t: 4px;
+          --bezel-vignette: rgba(0, 0, 0, 0.34);
+        }
+      }
+
+      /* ── The surround ─────────────────────────────────────────────────
+         A single decorative overlay. Fixed to the viewport, so it frames the
+         theatre rather than scrolling with it, and pointer-events:none so it
+         is invisible to every interaction underneath.
+
+         z-index 25 is chosen deliberately: ABOVE the stage and the
+         ResourceBar (z-20) so the plate genuinely overlaps and frames them,
+         but BELOW the Outliner rail/drawer (z-30/40) and every modal
+         (z-70+) — a viewport vignette must never dim a dialog the player is
+         reading, and the rail is itself a bezel plate (below), so it is
+         meant to sit on top of the surround's right edge.
+
+         The four inset rings stack outside-in: box-shadow paints earlier
+         shadows on top, so the smaller plate ring covers the larger lip
+         ring except for the 1px band between them. */
+      .bezel-surround {
+        position: fixed;
+        inset: 0;
+        z-index: 25;
+        pointer-events: none;
+        box-shadow:
+          inset 0 0 0 var(--bezel-t) var(--bezel-plate),
+          inset 0 0 0 calc(var(--bezel-t) + 1px) var(--bezel-lip-hi),
+          inset 0 0 0 calc(var(--bezel-t) + 2px) var(--bezel-lip-lo),
+          inset 0 0 48px var(--bezel-vignette);
+      }
+      /* Machined corner gussets — four corner-anchored gradient blocks, so
+         no extra markup is needed. Desktop only: at phone width the corners
+         are where the content column already runs closest to the edge. */
+      @media (min-width: 1024px) {
+        .bezel-surround {
+          background-image:
+            linear-gradient(135deg, var(--bezel-corner), transparent 62%),
+            linear-gradient(225deg, var(--bezel-corner), transparent 62%),
+            linear-gradient(45deg, var(--bezel-corner), transparent 62%),
+            linear-gradient(315deg, var(--bezel-corner), transparent 62%);
+          background-repeat: no-repeat;
+          background-size: 38px 38px;
+          background-position: top left, top right, bottom left, bottom right;
+        }
+      }
+      /* High contrast: the vignette is decorative dimming and actively hurts
+         here, so it goes; the lip becomes a hard, unambiguous edge. */
+      html.high-contrast .bezel-surround {
+        --bezel-lip-hi: rgba(255, 255, 255, 0.34);
+        --bezel-lip-lo: rgba(0, 0, 0, 0.9);
+        --bezel-vignette: rgba(0, 0, 0, 0);
+        --bezel-corner: rgba(203, 213, 225, 0.4);
+      }
+
+      /* ── Top plate (ResourceBar) ──────────────────────────────────────
+         Co-applied with '.hud-frame', so it re-points tokens instead of
+         setting box-shadow (A1.1 composition rule). The background-image is
+         free: the call site sets bg-black/90, a background-COLOR. */
+      .hud-frame.bezel-plate-top {
+        --mat-hi: rgba(255, 255, 255, 0.1);
+        --mat-lo: rgba(0, 0, 0, 0.7);
+        --mat-well: rgba(0, 0, 0, 0.18);
+        --mat-drop: 0 2px 0 rgba(0, 0, 0, 0.65), 0 6px 18px rgba(0, 0, 0, 0.55);
+        background-image:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 42%, rgba(0, 0, 0, 0.3) 100%),
+          var(--bezel-brush);
+      }
+      /* The seam where the top plate meets the selector channel below it —
+         a lit hairline, the same trick .mat-rail plays under a panel header. */
+      .bezel-seam {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 1px;
+        pointer-events: none;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(34, 211, 238, 0.28) 18%,
+          rgba(255, 255, 255, 0.09) 50%,
+          rgba(34, 211, 238, 0.28) 82%,
+          transparent 100%
+        );
+      }
+      html.high-contrast .bezel-seam {
+        background: rgba(255, 255, 255, 0.45);
+      }
+
+      /* ── Selector channel (tab strip) ─────────────────────────────────
+         A recessed machined channel milled into the console face, with the
+         tabs as keys seated in it. Dark lip on top + light catch on the
+         bottom is the same inversion '.mat-secondary' uses for a data well,
+         so the channel reads as carved out of the top plate above it. */
+      .bezel-selector {
+        background-image:
+          linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.16) 55%, rgba(255, 255, 255, 0.012) 100%),
+          var(--bezel-brush);
+        box-shadow:
+          inset 0 2px 4px rgba(0, 0, 0, 0.55),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.045);
+      }
+      /* A key. Raised, catching light from above — until it is the active
+         one, at which point it is pressed INTO the channel. The pressed
+         state is a geometry change (bevel inverts, key sits in shadow), so
+         it survives greyscale on its own; the existing .game-tab-active
+         gradient underline and the text-colour change remain as the other
+         two redundant carriers. */
+      .bezel-key {
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.05),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+      }
+      .bezel-key.game-tab-active {
+        box-shadow:
+          inset 0 2px 5px rgba(0, 0, 0, 0.65),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.07),
+          0 0 12px rgba(34, 211, 238, 0.12);
+      }
+      html.high-contrast .bezel-key {
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.28),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.85);
+      }
+      html.high-contrast .bezel-key.game-tab-active {
+        box-shadow:
+          inset 0 2px 5px rgba(0, 0, 0, 0.95),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.4);
+      }
+      /* Trailing console switches (tutorial / FAQ / achievements / save /
+         restart / quit) — a small recessed sub-plate so they read as a
+         separate bank of switches rather than more navigation. */
+      .bezel-utility {
+        box-shadow:
+          inset 0 1px 2px rgba(0, 0, 0, 0.5),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+          inset 1px 0 0 rgba(255, 255, 255, 0.035);
+        border-radius: 8px;
+      }
+
+      /* ── Side / bottom plate (Outliner, all three variants) ───────────
+         The rail is the right bezel plate on desktop; the mid-viewport glyph
+         tab and the phone status strip are the same plate rotated to
+         whichever edge they dock to. Directional lip + brushed face. */
+      .bezel-rail {
+        background-image:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.008) 26%, rgba(0, 0, 0, 0.22) 100%),
+          var(--bezel-brush);
+        box-shadow:
+          inset 1px 0 0 rgba(255, 255, 255, 0.075),
+          -2px 0 0 rgba(0, 0, 0, 0.55),
+          -8px 0 20px rgba(0, 0, 0, 0.4);
+      }
+      .bezel-rail-left {
+        background-image:
+          linear-gradient(270deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.008) 26%, rgba(0, 0, 0, 0.22) 100%),
+          var(--bezel-brush);
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.075),
+          2px 0 0 rgba(0, 0, 0, 0.55),
+          8px 0 20px rgba(0, 0, 0, 0.4);
+      }
+      .bezel-rail-bottom {
+        background-image:
+          linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.008) 40%, rgba(0, 0, 0, 0.25) 100%),
+          var(--bezel-brush);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.075),
+          0 -2px 0 rgba(0, 0, 0, 0.55),
+          0 -8px 20px rgba(0, 0, 0, 0.4);
+      }
+      html.high-contrast .bezel-rail,
+      html.high-contrast .bezel-rail-left,
+      html.high-contrast .bezel-rail-bottom,
+      html.high-contrast .bezel-selector,
+      html.high-contrast .bezel-utility {
+        background-image: none;
+      }
+      /* The brushed comb is sub-pixel decoration; on a phone it costs a
+         full-viewport repeating gradient for detail nobody can resolve. */
+      @media (max-width: 640px) {
+        .bezel-shell { --bezel-brush: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE A2.3 — PORTRAIT-FRAMED LEADER MOMENTS
+         (docs/VISUAL_AAA_2026-08.md §A2.3)
+
+         Master of Orion 2's personality came from leaders APPEARING: a large
+         framed portrait in ornate housing delivering a decision. The housing
+         below is A1.1's bevel vocabulary given a crest, gussets and rivets —
+         one notch more ornate than a panel, because this surface appears
+         rarely and is meant to feel like an occasion.
+
+         ── THE FRAME'S REAL JOB: NORMALIZING THE PORTRAIT LIBRARY ─────────
+         The art library is not homogeneous. It carries painterly busts on
+         clean navy backgrounds AND legacy photoreal portraits with busy
+         environmental backgrounds (labs, thrones, machinery), several of
+         which also carry garbled pseudo-text on clothing and screens. Put
+         side by side in large frames, that split shows.
+
+         This is exactly the problem MoO2's frames solved, and the treatment
+         here is FOUR cooperating layers, all inside .leader-portrait:
+
+           1. FIXED FOCAL CROP. A 4:5 window with object-fit:cover. Every
+              source in the library is square, so the crop is horizontal
+              only: vertical framing is preserved (heads already land in the
+              upper third in both cohorts) while ~20% is taken off each side.
+              That side crop is doing double duty — it is where the busiest
+              periphery lives, including most of the garbled holo-panel
+              pseudo-text.
+           2. UNIFYING COLOUR CAST. saturation pulled to 0.86 with a small
+              contrast lift, then a 12% navy wash. This is what drags a
+              photoreal frame toward the painterly cohort's palette; both
+              cohorts land on the same blue-grey ground.
+           3. INNER VIGNETTE, focus point biased to the face (50%/32%), fully
+              transparent for the middle 55% so no face is ever dimmed, then
+              ramping hard to near-black at the rim. Busy backgrounds die at
+              the edges; clean ones simply gain depth.
+           4. SEATING SHADOW + BOTTOM FADE. An inset shadow seats every
+              portrait at the same depth in the housing, and a bottom fade
+              dissolves the lower third into the name plate, so the subject
+              emerges from the frame rather than being pasted into it. The
+              lower third is also where clothing pseudo-text sits.
+
+         Calibrated by compositing real portraits from both cohorts through
+         these exact layers offline and comparing three strengths; a heavier
+         pass knocked the legacy backgrounds down further but went muddy on
+         the painterly cohort's faces, which is the wrong trade.
+
+         Accessibility: the portrait is decorative (alt="" at the call site)
+         — the name, title, affiliation and message carry all the meaning, so
+         the frame degrades to a monogram plate with zero information loss
+         when a speaker has no art. Colour appears only as the accent keyline,
+         always redundant with the affiliation text beside it.
+         ═══════════════════════════════════════════════════════════════════ */
+
+      .leader-housing {
+        --leader-accent: #22d3ee;
+        position: relative;
+        border-radius: 18px;
+        background:
+          linear-gradient(180deg, rgba(18, 22, 40, 0.97) 0%, rgba(7, 9, 20, 0.98) 55%, rgba(4, 5, 12, 0.99) 100%);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.11),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.75),
+          inset 1px 0 0 rgba(255, 255, 255, 0.035),
+          inset -1px 0 0 rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.06),
+          0 24px 60px rgba(0, 0, 0, 0.75);
+      }
+      /* Crest — a lit rail across the top of the housing, tinted by the
+         speaker's accent. The ornate flourish that says "occasion". */
+      .leader-housing::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 12%;
+        right: 12%;
+        height: 2px;
+        border-radius: 0 0 3px 3px;
+        background: linear-gradient(90deg, transparent, var(--leader-accent), transparent);
+        opacity: 0.8;
+        pointer-events: none;
+      }
+      /* Machined corner gussets + rivets, one decorative layer, no markup. */
+      .leader-housing::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        background-image:
+          linear-gradient(135deg, rgba(148, 163, 184, 0.2), transparent 60%),
+          linear-gradient(225deg, rgba(148, 163, 184, 0.2), transparent 60%),
+          linear-gradient(45deg, rgba(148, 163, 184, 0.12), transparent 60%),
+          linear-gradient(315deg, rgba(148, 163, 184, 0.12), transparent 60%),
+          radial-gradient(circle at 14px 14px, rgba(255, 255, 255, 0.2) 0 1.2px, transparent 1.9px),
+          radial-gradient(circle at calc(100% - 14px) 14px, rgba(255, 255, 255, 0.2) 0 1.2px, transparent 1.9px);
+        background-repeat: no-repeat;
+        background-size: 30px 30px, 30px 30px, 30px 30px, 30px 30px, 100% 100%, 100% 100%;
+        background-position: top left, top right, bottom left, bottom right, 0 0, 0 0;
+      }
+      html.high-contrast .leader-housing::after { background-image: none; }
+
+      /* ── The portrait window ──────────────────────────────────────────── */
+      .leader-portrait {
+        position: relative;
+        aspect-ratio: 4 / 5;
+        overflow: hidden;
+        border-radius: 10px;
+        background: radial-gradient(ellipse at 50% 30%, #17203a 0%, #070a14 75%);
+        box-shadow:
+          inset 0 0 0 1px rgba(125, 211, 252, 0.3),
+          inset 0 2px 14px rgba(0, 0, 0, 0.85),
+          0 2px 10px rgba(0, 0, 0, 0.6);
+      }
+      .leader-portrait > img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* Square sources crop horizontally only, so this mainly guards any
+           future non-square art: keep the head, sacrifice the feet. */
+        object-position: 50% 12%;
+        /* Layer 2 — the unifying cast, half of it. */
+        filter: saturate(0.86) contrast(1.06) brightness(0.97);
+      }
+      /* Layers 2b/3/4 as one non-interactive overlay. */
+      .leader-portrait-treatment {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background:
+          /* bottom fade into the name plate */
+          linear-gradient(180deg, rgba(4, 6, 15, 0) 55%, rgba(4, 6, 15, 0.8) 100%),
+          /* inner vignette, focus biased to the face */
+          radial-gradient(ellipse 72% 72% at 50% 32%, rgba(2, 4, 10, 0) 0%, rgba(2, 4, 10, 0) 55%, rgba(2, 4, 10, 0.85) 100%),
+          /* navy cast */
+          linear-gradient(0deg, rgba(13, 27, 51, 0.12), rgba(13, 27, 51, 0.12));
+      }
+      /* High contrast: the cast and vignette are decorative dimming and
+         reduce legibility of the art itself, so they go. The keyline stays
+         and hardens — the frame's job there is a clear boundary. */
+      html.high-contrast .leader-portrait > img { filter: none; }
+      html.high-contrast .leader-portrait-treatment { background: none; }
+      html.high-contrast .leader-portrait {
+        box-shadow:
+          inset 0 0 0 2px rgba(186, 230, 253, 0.75),
+          0 2px 10px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Fallback when a speaker has no portrait art — a monogram plate, never
+         a broken image. Same window geometry so layout never shifts. */
+      .leader-monogram {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        font-weight: 800;
+        font-size: clamp(28px, 9vw, 48px);
+        letter-spacing: 0.06em;
+        color: rgba(226, 232, 240, 0.72);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      }
+
+      /* ── Name plate ───────────────────────────────────────────────────── */
+      .leader-plate {
+        position: relative;
+        border-radius: 8px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(0, 0, 0, 0.3));
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.09),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.55);
+      }
+      .leader-plate::after {
+        content: '';
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 0;
+        height: 1px;
+        background: linear-gradient(90deg, var(--leader-accent), transparent 80%);
+        opacity: 0.65;
+        pointer-events: none;
+      }
+
+      /* ── Entrance ─────────────────────────────────────────────────────────
+         A leader arriving should land, once. 260ms, no loop, no persistent
+         compositing work. Reduced motion collapses it to a plain appearance —
+         the final frame is identical either way. */
+      @keyframes leader-arrive {
+        from { opacity: 0; transform: translateY(10px) scale(0.985); }
+        to   { opacity: 1; transform: none; }
+      }
+      .leader-arrive {
+        animation: leader-arrive 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .leader-arrive { animation: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         WAVE A4.2 — OUTLINER ROW FLASH (docs/VISUAL_AAA_2026-08.md §A4.2)
+         V3 documented a row-DOM convention "for the V7 juice pass — money-
+         flash the outliner row on build/order completion", V7 shipped the
+         map-ping bus, and nothing ever joined them. map-ping.ts now supplies
+         the selector + class names; these are the paints.
+
+         Colourblind-safe: the dominant channel is LUMINANCE — the row lifts
+         out of the rail and settles back. The green/cyan tint is a second,
+         redundant channel, and the row's own text (built count, ETA, status)
+         has already changed anyway, so the flash carries no unique meaning.
+         Reduced motion collapses both to the single short opacity blink V7
+         established as the house reduced-motion ping treatment.
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes outliner-flash-complete {
+        0%   { background-color: rgba(52, 211, 153, 0.3); box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.55); }
+        100% { background-color: rgba(52, 211, 153, 0); box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0); }
+      }
+      @keyframes outliner-flash-ack {
+        0%   { background-color: rgba(34, 211, 238, 0.24); box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.45); }
+        100% { background-color: rgba(34, 211, 238, 0); box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0); }
+      }
+      .outliner-row-flash-complete {
+        animation: outliner-flash-complete 900ms ease-out both;
+      }
+      .outliner-row-flash-ack {
+        animation: outliner-flash-ack 900ms ease-out both;
+      }
+      html.high-contrast .outliner-row-flash-complete,
+      html.high-contrast .outliner-row-flash-ack {
+        outline: 2px solid rgba(255, 255, 255, 0.85);
+        outline-offset: -2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        @keyframes outliner-blink {
+          0%, 100% { opacity: 1; }
+          50%      { opacity: 0.55; }
+        }
+        .outliner-row-flash-complete,
+        .outliner-row-flash-ack {
+          animation: outliner-blink 200ms linear 1;
+        }
+      }
     `}</style>
   );
 }

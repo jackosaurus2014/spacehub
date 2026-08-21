@@ -1,43 +1,65 @@
 'use client';
 
-// ─── Galactic Map View (Wave 9 map-first shell + Wave 10 expedition flow) ───
-// The zoomed-out layer: Sol at center, the five interstellar destinations
-// from lib/game/interstellar.ts laid out as selectable star nodes. Plain
-// HTML/CSS + a static starfield image — no canvas, no WebGL — so every node
-// is a real <button>, keyboard-reachable and screen-reader friendly by
-// construction (unlike the solar canvas, which needed the wave-8 keyboard
-// list bolted on as an alternative).
+// ─── Galactic Map View (Wave 9 shell → Wave A4 restage) ─────────────────────
+// The zoomed-out layer: Sol at centre, the five interstellar destinations from
+// lib/game/interstellar.ts laid out as selectable star nodes. Plain HTML/CSS +
+// SVG — no canvas, no WebGL — so every node is a real <button>, keyboard-
+// reachable and screen-reader friendly by construction.
 //
-// Wave 10 adds live expedition tracking: ships currently in jump-transit
-// render as a moving glyph along a route line from Sol to their target
-// system, position driven by the expedition's actual elapsed/outbound
-// months (same numbers the engine uses — no invented physics). Expeditions
-// holding at their destination ('exploring') show as a pulse ring on the
-// system node instead of a duplicate hit-target.
+// ── Wave A4 (docs/VISUAL_AAA_2026-08.md §A4.1, spec VISUAL_DEPTH §V4.5) ─────
+// The V4 audit called this surface "hand-placed nodes on a static starfield
+// image; no parallax, no depth, no per-system identity art". Three changes:
 //
-// 4X wave W9 (galactic restage — parity with the W7 solar overlays):
-//   - expedition routes become curved progress ARCS: faint dashed full
-//     route + bright stroke up to the ship's position, ETA chip under the
-//     transit glyph (the solar map's transit-arc treatment at galactic scale)
-//   - colony markers grow production glyphs (the colony's localResources)
-//   - active interstellar trade routes render as amber flow lines with
-//     shipment dots positioned by real departure/arrival game-months
-// All positions derive from existing engine state — no new mechanics; every
-// interactive element remains a real <button> (a11y by construction).
+//   1. PARALLAX DEPTH — four plates (nebula wash, far/mid/near starfields)
+//      translated on `transform: translate3d` by galactic-map.parallaxOffsets().
+//      The transforms are written IMPERATIVELY to layer refs inside one rAF, so
+//      pointer movement causes ZERO React re-renders and the ~180 star dots are
+//      never reconciled. Keyboard players get the same depth response because
+//      selecting a system also drives the offset — parallax is not mouse-only.
+//      Disabled outright (hard zero, not damped) under prefers-reduced-motion,
+//      on coarse pointers, and whenever the map is covered by a panel overlay.
+//
+//   2. PER-SYSTEM IDENTITY — nodes are no longer uniform dots. Colour comes
+//      from the star's real spectral class, size from its real radius in solar
+//      radii, and the ring/chip from YOUR presence there (colony / on site /
+//      en route / ready / locked). Layout radius is now proportional to real
+//      distanceLy. All of it derived in galactic-map.deriveSystemIdentity().
+//
+//   3. INTERACTION PARITY WITH THE SOLAR LAYER — selection lock-on (the same
+//      RETICLE_LOCK_MS convergence the solar renderers use) and the radial
+//      command menu, opened by click or by `C` on a focused node. The action
+//      set is the galactic one (map-radial.deriveSystemRadialActions): the
+//      solar arc's verbs — build, dispatch, orbital slots, demand pools — do
+//      not exist at a star four light-years away, so forcing them here would
+//      have been five disabled items and a lie about the layer.
+//
+// Retained from W9/W10/V7: expedition progress arcs with ETA chips, colony
+// production glyphs, interstellar trade-route flow lines, warp-jump and
+// arrival pings. All positions still derive from existing engine state.
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import type { GameState, ExpeditionState } from '@/lib/game/types';
-import { INTERSTELLAR_SYSTEMS, getJumpPrerequisites } from '@/lib/game/interstellar';
+import { INTERSTELLAR_SYSTEMS } from '@/lib/game/interstellar';
 import { getExpeditionProgress, getTotalGameMonths } from '@/lib/game/expeditions';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { BG_ASSETS, EFFECT_ASSETS } from '@/lib/game/assets';
 import { onMapPing, getPingVisual, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
+import { RETICLE_LOCK_MS } from '@/lib/game/map-zoom';
+import {
+  PARALLAX_LAYERS,
+  parallaxOffsets,
+  normalizePointer,
+  deriveSystemIdentities,
+  SYSTEM_POSITIONS,
+  SOL_POSITION,
+  type SystemIdentity,
+} from '@/lib/game/galactic-map';
 
 /** Self-contained reduced-motion flag — this view has no parent-supplied one
  *  (unlike SolarMap3D/SolarSystemCanvas, which track it for orbit/pulse
- *  animation). Only Wave V7's warp-flash/arrival-ping effects consume it. */
+ *  animation). Consumed by Wave V7's ping effects and Wave A4's parallax. */
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -48,6 +70,20 @@ function usePrefersReducedMotion(): boolean {
     return () => mq.removeEventListener('change', onChange);
   }, []);
   return reduced;
+}
+
+/** Fine pointer (mouse/trackpad). Touch devices get the static field — a
+ *  parallax that follows a finger is both useless and a scroll hazard. */
+function useFinePointer(): boolean {
+  const [fine, setFine] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(pointer: fine)');
+    setFine(mq.matches);
+    const onChange = () => setFine(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return fine;
 }
 
 /** Wave V7 — system-targeted map pings (expedition launch warp-flash at Sol,
@@ -70,15 +106,9 @@ function useSystemPings(reduced: boolean): MapPingEvent[] {
   return pings;
 }
 
-// Fixed layout (percent of container), hand-placed for readable spacing —
-// same pattern as SolarSystemCanvas's LOCATION_LAYOUT table.
-export const SYSTEM_LAYOUT: Record<string, { x: number; y: number }> = {
-  proxima_centauri: { x: 0.30, y: 0.32 },
-  alpha_centauri:   { x: 0.22, y: 0.58 },
-  barnards_star:    { x: 0.50, y: 0.22 },
-  wolf_359:         { x: 0.66, y: 0.62 },
-  sirius:           { x: 0.80, y: 0.38 },
-};
+/** Layout kept exported for continuity; positions now come from
+ *  galactic-map.SYSTEM_POSITIONS (authored bearing × REAL distanceLy). */
+export const SYSTEM_LAYOUT: Record<string, { x: number; y: number }> = SYSTEM_POSITIONS as Record<string, { x: number; y: number }>;
 
 /** Presentational risk tier per destination — a UI-only readout of the
  *  qualitative hazard cues already in each system's description (flare
@@ -101,7 +131,7 @@ export const RISK_TONE_CLASS: Record<string, string> = {
 
 const ACTIVE_PHASES: ExpeditionState['phase'][] = ['outbound', 'exploring', 'returning'];
 
-const SOL_POS = { x: 0.5, y: 0.5 };
+const SOL_POS = SOL_POSITION;
 
 interface Pt { x: number; y: number }
 
@@ -131,18 +161,135 @@ function routePathD(from: Pt, ctrl: { cx: number; cy: number }, to: Pt): string 
   return `M ${from.x * 100} ${from.y * 100} Q ${ctrl.cx * 100} ${ctrl.cy * 100} ${to.x * 100} ${to.y * 100}`;
 }
 
+// ── Procedural starfield plates ─────────────────────────────────────────────
+// Deterministic (fixed seed) so server and client render identical markup —
+// a Math.random() field would hydration-mismatch. Generated once at module
+// load; the plates are pure decoration and never re-render.
+
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+interface StarDot { x: number; y: number; r: number; o: number }
+
+function makePlate(seed: number, count: number, rMin: number, rMax: number, oMin: number, oMax: number): StarDot[] {
+  const rnd = mulberry32(seed);
+  const out: StarDot[] = [];
+  for (let i = 0; i < count; i++) {
+    out.push({
+      x: rnd() * 100,
+      y: rnd() * 100,
+      r: rMin + rnd() * (rMax - rMin),
+      o: oMin + rnd() * (oMax - oMin),
+    });
+  }
+  return out;
+}
+
+const PLATE_MID: StarDot[] = makePlate(0x5EED01, 110, 0.10, 0.28, 0.25, 0.65);
+const PLATE_NEAR: StarDot[] = makePlate(0x5EED02, 46, 0.22, 0.50, 0.45, 0.95);
+
+function StarPlate({ dots }: { dots: StarDot[] }) {
+  return (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      {dots.map((d, i) => (
+        <circle key={i} cx={d.x} cy={d.y} r={d.r} fill="#e2e8f0" opacity={d.o} />
+      ))}
+    </svg>
+  );
+}
+const StarPlateMid = () => <StarPlate dots={PLATE_MID} />;
+const StarPlateNear = () => <StarPlate dots={PLATE_NEAR} />;
+
+// Scoped styles — class-prefixed; GameStyles.tsx is owned by another wave.
+const GALACTIC_CSS = `
+.stc-gal-layer { will-change: transform; transform: translate3d(0,0,0); }
+.stc-gal-lock { animation-name: stc-gal-lock; animation-timing-function: cubic-bezier(0.2,0.8,0.3,1); animation-fill-mode: both; }
+.stc-gal-spin { animation: stc-gal-spin 14s linear infinite; }
+@keyframes stc-gal-lock { from { transform: scale(1.9); opacity: 0.15; } to { transform: scale(1); opacity: 1; } }
+@keyframes stc-gal-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .stc-gal-layer { transform: none !important; will-change: auto; }
+  .stc-gal-lock { animation: none; }
+  .stc-gal-spin { animation: none; }
+}
+`;
+
 interface GalacticMapViewProps {
   state: GameState;
   selectedSystemId: string | null;
-  onSelectSystem: (systemId: string | null) => void;
+  /** `anchor` present → a node click / `C` keypress: the caller opens the
+   *  radial command menu AT the node (parity with the solar layer). Absent →
+   *  select and open the full context panel directly. */
+  onSelectSystem: (systemId: string | null, anchor?: { x: number; y: number }) => void;
+  /** Wave V4 parity — false while a desktop panel overlay covers the map.
+   *  Parallax listeners detach entirely (no work behind an overlay). */
+  active?: boolean;
 }
 
-export default function GalacticMapView({ state, selectedSystemId, onSelectSystem }: GalacticMapViewProps) {
-  // Wave V7 — warp-jump flash at Sol on expedition launch + arrival/return
-  // ping at the destination node. See map-ping.ts; page.tsx's
-  // handleLaunchExpedition/GlobalEffectsLayer are the emitters.
+export default function GalacticMapView({ state, selectedSystemId, onSelectSystem, active = true }: GalacticMapViewProps) {
   const reducedMotion = usePrefersReducedMotion();
+  const finePointer = useFinePointer();
   const systemPings = useSystemPings(reducedMotion);
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const layerRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const rafRef = useRef<number | null>(null);
+
+  const parallaxEnabled = active && !reducedMotion;
+
+  /** Write the plate transforms directly — no React state, so a pointer move
+   *  costs four style writes and never a reconciliation pass. */
+  const applyOffsets = useCallback((nx: number, ny: number) => {
+    const offsets = parallaxOffsets(nx, ny, !parallaxEnabled);
+    for (const o of offsets) {
+      const el = layerRefs.current[o.id];
+      if (el) el.style.transform = `translate3d(${o.dx.toFixed(2)}px, ${o.dy.toFixed(2)}px, 0)`;
+    }
+  }, [parallaxEnabled]);
+
+  // Pointer-driven parallax (fine pointers only, coalesced into one rAF).
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || !parallaxEnabled || !finePointer) {
+      applyOffsets(0, 0);
+      return;
+    }
+    let pending: { x: number; y: number } | null = null;
+    const onMove = (e: PointerEvent) => {
+      const rect = el.getBoundingClientRect();
+      pending = normalizePointer(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height);
+      if (rafRef.current !== null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        if (pending) applyOffsets(pending.x, pending.y);
+      });
+    };
+    const onLeave = () => applyOffsets(0, 0);
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerleave', onLeave);
+    return () => {
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerleave', onLeave);
+      if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    };
+  }, [parallaxEnabled, finePointer, applyOffsets]);
+
+  // Selection-driven parallax — a keyboard-only player gets the identical
+  // depth cue when they move the selection, without touching a pointer.
+  useEffect(() => {
+    if (finePointer) return;
+    const pos = selectedSystemId ? SYSTEM_POSITIONS[selectedSystemId] : null;
+    if (!pos) { applyOffsets(0, 0); return; }
+    applyOffsets(pos.x * 2 - 1, pos.y * 2 - 1);
+  }, [selectedSystemId, finePointer, applyOffsets]);
+
   const nowPing = Date.now();
   type VisualPing = { ping: MapPingEvent; visual: NonNullable<ReturnType<typeof getPingVisual>> };
   const withVisual = (kind: MapPingEvent['kind']): VisualPing[] =>
@@ -153,17 +300,21 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
   const warpPings = withVisual('warp');
   const completePings = withVisual('complete');
 
-  const exoticFuel = state.resources?.exotic_fuel || 0;
+  // Per-system identity: star class/colour/size, presence, blockers, sr text.
+  const identities: SystemIdentity[] = useMemo(() => deriveSystemIdentities(state), [state]);
+  const identityById = useMemo(
+    () => new Map(identities.map(i => [i.systemId, i])),
+    [identities],
+  );
+
   const expeditions = (state.expeditions || []).filter(e => ACTIVE_PHASES.includes(e.phase));
-  const exploringSystemIds = new Set(expeditions.filter(e => e.phase === 'exploring').map(e => e.targetSystemId));
-  const colonizedSystemIds = new Set((state.interstellarColonies || []).map(c => c.systemId));
 
   // In-transit expeditions (outbound/returning) — position along a curved
   // Sol↔system arc (W9: bezier progress arcs, parity with the solar map).
   const transitMarkers = expeditions
     .filter(e => e.phase === 'outbound' || e.phase === 'returning')
     .map(e => {
-      const layout = SYSTEM_LAYOUT[e.targetSystemId];
+      const layout = SYSTEM_POSITIONS[e.targetSystemId];
       if (!layout) return null;
       const progress = getExpeditionProgress(state, e.id);
       const shipDef = SHIP_MAP.get(e.shipDefinitionId);
@@ -192,7 +343,7 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
   const colonyBySystem = new Map((state.interstellarColonies || []).map(c => [c.systemId, c]));
   const tradeFlows = (state.interstellarTradeRoutes || [])
     .map(r => {
-      const layout = SYSTEM_LAYOUT[r.systemId];
+      const layout = SYSTEM_POSITIONS[r.systemId];
       if (!layout) return null;
       if (r.status !== 'active' && r.inTransit.length === 0) return null;
       const ctrl = routeCurve(layout, SOL_POS);
@@ -209,10 +360,75 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
     inboundBySystem.set(f.route.systemId, (inboundBySystem.get(f.route.systemId) || 0) + f.route.inTransit.length);
   }
 
+  /** Container-relative centre of a node button, for anchoring the radial. */
+  const anchorOf = (el: HTMLElement | null): { x: number; y: number } | undefined => {
+    const root = rootRef.current;
+    if (!el || !root) return undefined;
+    const r = el.getBoundingClientRect();
+    const b = root.getBoundingClientRect();
+    return { x: r.left - b.left + r.width / 2, y: r.top - b.top + r.height / 2 };
+  };
+
   return (
-    <div className="relative w-full h-full overflow-hidden bg-[#020208]">
-      <Image src={BG_ASSETS.starfield} alt="" fill className="object-cover opacity-30" priority={false} />
-      <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/20 to-black/70" />
+    <div ref={rootRef} className="relative w-full h-full overflow-hidden bg-[#020208]">
+      <style>{GALACTIC_CSS}</style>
+
+      {/* ── Parallax plates, back → front ─────────────────────────────────── */}
+      {/* Nebula wash: a base gradient plus one radial bloom per destination,
+          tinted by that star's REAL spectral colour, so the backdrop encodes
+          the same identity the nodes do. */}
+      <div
+        ref={el => { layerRefs.current['nebula'] = el; }}
+        className="stc-gal-layer absolute pointer-events-none"
+        style={{ inset: '-6%' }}
+        aria-hidden="true"
+      >
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(56,189,248,0.10), rgba(2,2,8,0) 62%)',
+        }} />
+        {identities.map(id => (
+          <div
+            key={id.systemId}
+            className="absolute rounded-full"
+            style={{
+              left: `${id.position.x * 100}%`,
+              top: `${id.position.y * 100}%`,
+              width: 210, height: 210,
+              transform: 'translate(-50%, -50%)',
+              background: `radial-gradient(circle, ${id.star.haloColor}22 0%, ${id.star.haloColor}0A 45%, transparent 70%)`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div
+        ref={el => { layerRefs.current['stars-far'] = el; }}
+        className="stc-gal-layer absolute pointer-events-none"
+        style={{ inset: '-4%' }}
+        aria-hidden="true"
+      >
+        <Image src={BG_ASSETS.starfield} alt="" fill className="object-cover opacity-25" priority={false} />
+      </div>
+
+      <div
+        ref={el => { layerRefs.current['stars-mid'] = el; }}
+        className="stc-gal-layer absolute pointer-events-none"
+        style={{ inset: '-5%' }}
+        aria-hidden="true"
+      >
+        <StarPlateMid />
+      </div>
+
+      <div
+        ref={el => { layerRefs.current['stars-near'] = el; }}
+        className="stc-gal-layer absolute pointer-events-none"
+        style={{ inset: '-7%' }}
+        aria-hidden="true"
+      >
+        <StarPlateNear />
+      </div>
+
+      <div className="absolute inset-0 pointer-events-none bg-gradient-radial from-transparent via-black/15 to-black/65" aria-hidden="true" />
 
       {/* Route arcs — expedition progress arcs + trade flow lines (W9) */}
       {(transitMarkers.length > 0 || tradeFlows.length > 0) && (
@@ -266,14 +482,13 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
       {/* Sol — home reference point, not selectable (no gameplay there) */}
       <div
         className="absolute flex flex-col items-center gap-1"
-        style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
+        style={{ left: `${SOL_POS.x * 100}%`, top: `${SOL_POS.y * 100}%`, transform: 'translate(-50%, -50%)' }}
       >
         <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-200 to-amber-500" style={{ boxShadow: '0 0 24px 8px rgba(251,191,36,0.5)' }} aria-hidden="true" />
-        <span className="text-[10px] text-amber-200 font-medium bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">Sol (home)</span>
-        {/* Wave V7 — warp-jump flash on expedition launch (EFFECT_ASSETS.warpJump,
-            previously unused on the map). Non-visual twin: the launch already
-            plays 'milestone' + appends an eventLog entry (handleLaunchExpedition,
-            page.tsx), so this is reinforcement, not the only signal. */}
+        <span className="text-[10px] text-amber-200 font-medium bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">Sol (home) · G2V</span>
+        {/* Wave V7 — warp-jump flash on expedition launch (EFFECT_ASSETS.warpJump).
+            Non-visual twin: the launch already plays 'milestone' + appends an
+            eventLog entry (handleLaunchExpedition, page.tsx). */}
         {warpPings.map(({ ping, visual }) => (
           <div
             key={ping.id}
@@ -291,70 +506,115 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
       </div>
 
       {INTERSTELLAR_SYSTEMS.map(sys => {
-        const layout = SYSTEM_LAYOUT[sys.id] || { x: 0.5, y: 0.5 };
-        const missing = getJumpPrerequisites(sys.id, state.completedResearch);
-        const fuelMissing = exoticFuel < sys.jumpFuelRequired;
-        const ready = missing.length === 0 && !fuelMissing;
+        const id = identityById.get(sys.id);
+        if (!id) return null;
         const isSelected = selectedSystemId === sys.id;
-        const isExploring = exploringSystemIds.has(sys.id);
-        const isColonized = colonizedSystemIds.has(sys.id);
         const colony = colonyBySystem.get(sys.id);
         const inbound = inboundBySystem.get(sys.id) || 0;
-        const producesText = colony && colony.localResources.length > 0
-          ? ` — colony producing ${colony.localResources.map(r => RESOURCE_MAP.get(r as ResourceId)?.name || r.replace(/_/g, ' ')).join(', ')}`
-          : '';
+        const size = id.nodeSizePx;
+        const ready = id.presence === 'ready' || id.presence === 'colonized';
 
         return (
           <button
             key={sys.id}
             type="button"
-            onClick={() => onSelectSystem(isSelected ? null : sys.id)}
+            onClick={e => onSelectSystem(sys.id, anchorOf(e.currentTarget))}
+            onKeyDown={e => {
+              if (e.key !== 'c' && e.key !== 'C' && e.key !== 'ContextMenu') return;
+              if (e.metaKey || e.ctrlKey || e.altKey) return;
+              e.preventDefault();
+              e.stopPropagation();
+              onSelectSystem(sys.id, anchorOf(e.currentTarget));
+            }}
+            onContextMenu={e => { e.preventDefault(); onSelectSystem(sys.id, anchorOf(e.currentTarget)); }}
             aria-pressed={isSelected}
-            aria-label={`${sys.name}${isExploring ? ' — expedition on site' : ''}${isColonized ? ' — colonized' : ''}${producesText}${inbound > 0 ? `, ${inbound} shipment${inbound === 1 ? '' : 's'} inbound to Sol` : ''}`}
-            className="absolute flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center focus:outline-none group"
-            style={{ left: `${layout.x * 100}%`, top: `${layout.y * 100}%`, transform: 'translate(-50%, -50%)' }}
+            aria-keyshortcuts="C"
+            aria-label={`${id.srText} Press C for the command menu.`}
+            className="absolute flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-lg group"
+            style={{ left: `${id.position.x * 100}%`, top: `${id.position.y * 100}%`, transform: 'translate(-50%, -50%)' }}
           >
-            {isExploring && (
+            {/* Selection lock-on — the reticle converges once on selection
+                (RETICLE_LOCK_MS, the same constant the solar renderers use)
+                then holds as a slowly rotating dashed ring. Reduced motion
+                snaps straight to the held state (scoped @media above). */}
+            {isSelected && (
               <span
-                className="absolute w-7 h-7 rounded-full glow-pulse-cyan"
-                style={{ border: '1.5px solid rgba(34,211,238,0.6)' }}
+                key={`lock-${sys.id}`}
+                className="stc-gal-lock absolute rounded-full pointer-events-none"
+                style={{
+                  width: size + 18, height: size + 18,
+                  animationDuration: `${RETICLE_LOCK_MS}ms`,
+                }}
+                aria-hidden="true"
+              >
+                <span
+                  className="stc-gal-spin absolute inset-0 rounded-full block"
+                  style={{ border: '1.5px dashed rgba(34,211,238,0.85)' }}
+                />
+              </span>
+            )}
+            {/* Expedition-on-site ring (persistent, distinct from lock-on). */}
+            {id.presence === 'expedition_onsite' && (
+              <span
+                className="absolute rounded-full glow-pulse-cyan"
+                style={{ width: size + 10, height: size + 10, border: '1.5px solid rgba(34,211,238,0.6)' }}
                 aria-hidden="true"
               />
             )}
-            {/* Wave V7 — expedition arrival/return completion ping (green,
-                distinct from the persistent cyan "on site" ring above). */}
+            {/* Wave V7 — expedition arrival/return completion ping. */}
             {completePings.filter(cp => cp.ping.target.id === sys.id).map(({ ping, visual }) => (
               <span
                 key={ping.id}
                 className="absolute rounded-full"
                 style={{
-                  width: `${28 + visual.radiusProgress * 40}px`,
-                  height: `${28 + visual.radiusProgress * 40}px`,
+                  width: `${size + 12 + visual.radiusProgress * 40}px`,
+                  height: `${size + 12 + visual.radiusProgress * 40}px`,
                   border: `2px solid ${PING_COLOR.complete}`,
                   opacity: visual.alpha,
                 }}
                 aria-hidden="true"
               />
             ))}
+
+            {/* The star itself — real spectral colour, real relative radius. */}
             <span
-              className={`w-4 h-4 rounded-full transition-transform group-hover:scale-125 ${isSelected ? 'scale-125' : ''}`}
+              className="rounded-full transition-transform group-hover:scale-110 block"
               style={{
-                background: isColonized ? '#a78bfa' : ready ? '#22d3ee' : '#64748b',
-                boxShadow: isSelected
-                  ? '0 0 0 3px rgba(34,211,238,0.5), 0 0 18px 6px rgba(34,211,238,0.6)'
-                  : ready ? '0 0 12px 4px rgba(34,211,238,0.5)' : '0 0 6px 2px rgba(100,116,139,0.3)',
+                width: size, height: size,
+                background: `radial-gradient(circle at 38% 34%, #ffffff 0%, ${id.star.color} 42%, ${id.star.haloColor} 100%)`,
+                boxShadow: `0 0 ${Math.round(size * 0.7)}px ${Math.round(size * 0.25)}px ${id.star.haloColor}66`,
+                opacity: id.presence === 'locked' ? 0.62 : 1,
               }}
               aria-hidden="true"
             />
+            {/* Binary companion pip — canon: Alpha Centauri A/B, Sirius A/B. */}
+            {id.star.binary && (
+              <span
+                className="absolute rounded-full"
+                style={{
+                  width: Math.max(4, Math.round(size * 0.32)),
+                  height: Math.max(4, Math.round(size * 0.32)),
+                  background: id.star.haloColor,
+                  transform: `translate(${Math.round(size * 0.72)}px, -${Math.round(size * 0.5)}px)`,
+                }}
+                aria-hidden="true"
+              />
+            )}
+
             <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded backdrop-blur-sm whitespace-nowrap ${
-              ready ? 'text-cyan-200 bg-black/50' : 'text-slate-400 bg-black/50'
+              ready ? 'text-cyan-200 bg-black/55' : 'text-slate-400 bg-black/55'
             }`}>
               {sys.name}
-              {isColonized && <span className="ml-1 text-[10px] font-bold uppercase text-purple-300">COLONY</span>}
-              <span className={`ml-1 text-[10px] font-bold uppercase ${ready ? 'text-emerald-300' : 'text-red-300'}`}>
-                {ready ? 'READY' : 'LOCKED'}
+              <span className="ml-1 text-[10px] font-bold uppercase text-slate-300" aria-hidden="true">
+                {id.presenceMeta.glyph} {id.presenceMeta.chip}
               </span>
             </span>
+            {/* Star-class chip — the TEXT twin of the node's colour, so class
+                is never conveyed by hue alone. */}
+            <span className="text-[10px] text-slate-500 bg-black/45 px-1 rounded backdrop-blur-sm whitespace-nowrap" aria-hidden="true">
+              {id.star.spectralClass} · {id.distanceLy.toFixed(2)} ly
+            </span>
+
             {/* W9: colony production glyphs + inbound-shipment count (text
                 lives in the button's aria-label above) */}
             {colony && colony.localResources.length > 0 && (
@@ -370,8 +630,9 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
         );
       })}
 
-      {/* In-transit expedition glyphs — W9: visible ETA chip under the glyph
-          (same information the solar map's transit ETA sprites carry) */}
+      {/* In-transit expedition glyphs — W9: visible ETA chip under the glyph.
+          These are informational markers, so they open the DOSSIER directly
+          rather than the command arc (no anchor passed). */}
       {transitMarkers.map(m => {
         const icon = m.shipDef?.icon || '🌠';
         const monthsLeft = m.progress ? Math.max(0, Math.round(m.progress.monthsRemaining)) : null;
@@ -399,9 +660,16 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
         );
       })}
 
-      <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[11px] text-slate-500 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none">
-        Galactic Layer — select a system to plan an expedition or check its dossier
-      </p>
+      {/* Legend — every node signal named in TEXT: the glyph set, and the fact
+          that colour encodes spectral class and size encodes stellar radius. */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 max-w-[min(96vw,540px)] text-center pointer-events-none">
+        <p className="text-[11px] text-slate-400 bg-black/50 px-2 py-0.5 rounded backdrop-blur-sm">
+          Galactic Layer — select a system for its dossier, or press <kbd className="font-mono text-cyan-300">C</kbd> on a system for its command menu
+        </p>
+        <p className="text-[10px] text-slate-500 bg-black/45 px-2 py-0.5 rounded backdrop-blur-sm mt-0.5">
+          ⌂ colony · ◎ on site · ➜ en route · ● jump ready · ○ locked. Node colour = spectral class, size = stellar radius, distance from Sol = real light-years.
+        </p>
+      </div>
     </div>
   );
 }

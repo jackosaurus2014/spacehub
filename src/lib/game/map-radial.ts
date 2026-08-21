@@ -27,6 +27,8 @@ import { getTierUnlockedTabs, isFoldedFeatureUnlocked, FOLDED_FEATURE_TIERS } fr
 import { getCommandQueueCapacity } from './command-queue';
 import { ORBITAL_SLOT_MAP, checkOrbitalSlotGate } from './spatial-strategy';
 import { computeSlotRing } from './map-bodies';
+import { INTERSTELLAR_SYSTEM_MAP, getJumpPrerequisites } from './interstellar';
+import { getExpeditionCapableShips } from './expeditions';
 
 export type RadialActionId =
   | 'detail'    // open the full MapContextPanel overview
@@ -221,6 +223,124 @@ export function deriveRadialActions(state: GameState, locationId: string, now: n
   }
 
   return ACTION_ORDER.map(id => byId.get(id)).filter((a): a is RadialAction => !!a);
+}
+
+// ─── Galactic-layer action set (Wave A4) ─────────────────────────────────────
+// The solar action set above is LOCATION-shaped (build / dispatch / slots /
+// demand) and none of those verbs exist at a star system: you cannot site a
+// construction 4.24 light-years away, there is no orbital-slot pool out there,
+// and the demand-pool map is a Sol-system instrument. Rather than force the
+// same seven items and disable five of them — which would be a lie about what
+// the interstellar layer is — the galactic layer gets its OWN, smaller arc of
+// verbs that are all genuinely meaningful there. Every one routes to an
+// existing handler or tab; nothing new is invented.
+
+export type SystemRadialActionId =
+  | 'sys-detail'      // open the full MapContextPanel system dossier
+  | 'sys-expedition'  // MapContextPanel → Plan Expedition sub-view
+  | 'sys-research'    // Research tab — the jump-drive chain gating this system
+  | 'sys-fleet'       // Fleet tab — build a Starfarer / Colony Ark
+  | 'sys-gateway';    // Interstellar Gateway (Mission Control)
+
+/** Same shape as RadialAction so the menu component renders one thing. */
+export interface SystemRadialAction {
+  id: SystemRadialActionId;
+  label: string;
+  icon: IconName;
+  description: string;
+  enabled: boolean;
+  reason?: string;
+  detail: string | null;
+}
+
+const SYSTEM_ACTION_ORDER: SystemRadialActionId[] = [
+  'sys-detail', 'sys-expedition', 'sys-research', 'sys-fleet', 'sys-gateway',
+];
+
+/**
+ * The galactic action set for `systemId`. Gating mirrors the expedition
+ * planner exactly (getJumpPrerequisites + exotic-fuel stock +
+ * getExpeditionCapableShips) so the arc can never offer a launch the planner
+ * would then refuse.
+ */
+export function deriveSystemRadialActions(state: GameState, systemId: string): SystemRadialAction[] {
+  const sys = INTERSTELLAR_SYSTEM_MAP.get(systemId);
+  const name = sys?.name || systemId;
+  const missing = sys ? getJumpPrerequisites(systemId, state.completedResearch) : [];
+  const exoticFuel = state.resources?.exotic_fuel || 0;
+  const fuelShort = sys ? exoticFuel < sys.jumpFuelRequired : true;
+  const ships = getExpeditionCapableShips(state);
+  const colony = (state.interstellarColonies || []).find(c => c.systemId === systemId);
+
+  const byId = new Map<SystemRadialActionId, SystemRadialAction>();
+
+  byId.set('sys-detail', {
+    id: 'sys-detail',
+    label: 'Dossier',
+    icon: 'map',
+    description: `Open the full system dossier for ${name}`,
+    enabled: true,
+    detail: sys ? `${sys.distanceLy.toFixed(2)} ly` : null,
+  });
+
+  {
+    let enabled = true;
+    let reason: string | undefined;
+    if (!sys) {
+      enabled = false;
+      reason = 'Unknown destination system';
+    } else if (missing.length > 0) {
+      enabled = false;
+      reason = `Research required: ${missing.map(r => r.replace(/_/g, ' ')).join(', ')}`;
+    } else if (fuelShort) {
+      enabled = false;
+      reason = `Exotic fuel short — need ${sys.jumpFuelRequired.toLocaleString()}, have ${Math.floor(exoticFuel).toLocaleString()}`;
+    } else if (ships.length === 0) {
+      enabled = false;
+      reason = 'No idle Starfarer Explorer or Colony Ark — build one in Fleet';
+    }
+    byId.set('sys-expedition', {
+      id: 'sys-expedition',
+      label: 'Expedition',
+      icon: 'comet',
+      description: `Plan an expedition to ${name}`,
+      enabled,
+      reason,
+      detail: ships.length > 0 ? `${ships.length} ready` : null,
+    });
+  }
+
+  byId.set('sys-research', {
+    id: 'sys-research',
+    label: 'Research',
+    icon: 'research',
+    description: missing.length > 0
+      ? `Open the research tree — ${missing.length} prerequisite${missing.length === 1 ? '' : 's'} still block ${name}`
+      : `Open the research tree — every jump prerequisite for ${name} is complete`,
+    enabled: true,
+    detail: missing.length > 0 ? `${missing.length} missing` : 'complete',
+  });
+
+  byId.set('sys-fleet', {
+    id: 'sys-fleet',
+    label: 'Shipyard',
+    icon: 'fleet',
+    description: 'Open the shipyard — expedition-capable hulls are built here',
+    enabled: tabUnlocked(state, 'fleet'),
+    reason: tabUnlocked(state, 'fleet') ? undefined : 'The Fleet tab unlocks as your corporation grows',
+    detail: `${ships.length} idle`,
+  });
+
+  byId.set('sys-gateway', {
+    id: 'sys-gateway',
+    label: 'Gateway',
+    icon: 'interstellar',
+    description: 'Open the Interstellar Gateway — expeditions, colonies and trade routes',
+    enabled: true,
+    detail: colony ? 'colony' : null,
+  });
+
+  return SYSTEM_ACTION_ORDER.map(id => byId.get(id)).filter((a): a is SystemRadialAction => !!a);
 }
 
 // ─── Arc geometry ────────────────────────────────────────────────────────────

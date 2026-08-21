@@ -24,7 +24,7 @@ import {
   MAP_ZOOM_TIER_LABEL,
   type MapZoomTier,
 } from '@/lib/game/map-zoom';
-import { getAtmosphere, computeSlotRing, SLOT_SEGMENT_STYLE, type SlotRingModel } from '@/lib/game/map-bodies';
+import { getAtmosphere, computeSlotRing, getBodyPalette, SLOT_SEGMENT_STYLE, type SlotRingModel, type BodyKind } from '@/lib/game/map-bodies';
 import GameIcon from './GameIcon';
 import { ConsolePanel, DataChip } from './chrome';
 
@@ -110,36 +110,46 @@ interface SolarSystemCanvasProps {
   active?: boolean;
 }
 
-// Visual layout: positions, radius, color, emoji per location.
+// Visual layout: positions per location (this flat projection's own geometry).
 // y values intentionally spread to give the belt + moons some visual depth.
-const LOCATION_LAYOUT: Record<string, {
-  x: number; y: number; radius: number; color: string; glowColor: string; type: 'star' | 'rocky' | 'gas' | 'orbital' | 'belt' | 'moon';
-}> = {
-  earth_surface: { x: 0.18, y: 0.50, radius: 22, color: '#38bdf8', glowColor: '#0ea5e9', type: 'rocky' },
-  leo:           { x: 0.215, y: 0.36, radius: 7,  color: '#22d3ee', glowColor: '#0891b2', type: 'orbital' },
-  geo:           { x: 0.25,  y: 0.66, radius: 7,  color: '#a78bfa', glowColor: '#7c3aed', type: 'orbital' },
-  lunar_orbit:   { x: 0.32,  y: 0.40, radius: 6,  color: '#94a3b8', glowColor: '#64748b', type: 'orbital' },
-  lunar_surface: { x: 0.33,  y: 0.58, radius: 13, color: '#cbd5e1', glowColor: '#94a3b8', type: 'moon' },
-  mars_orbit:    { x: 0.48,  y: 0.40, radius: 6,  color: '#fdba74', glowColor: '#f97316', type: 'orbital' },
-  mars_surface:  { x: 0.48,  y: 0.60, radius: 14, color: '#ef4444', glowColor: '#dc2626', type: 'rocky' },
-  asteroid_belt: { x: 0.60,  y: 0.50, radius: 11, color: '#a8a29e', glowColor: '#78716c', type: 'belt' },
-  jupiter_system:{ x: 0.73,  y: 0.45, radius: 20, color: '#fbbf24', glowColor: '#f59e0b', type: 'gas' },
-  saturn_system: { x: 0.85,  y: 0.55, radius: 17, color: '#fde68a', glowColor: '#eab308', type: 'gas' },
-  outer_system:  { x: 0.94,  y: 0.50, radius: 11, color: '#818cf8', glowColor: '#6366f1', type: 'rocky' },
+// Wave A2.2: colour / kind / radius moved to map-bodies.BODY_PALETTE so the
+// location detail console renders the SAME body — merged back in below, so
+// every `layout.color` / `layout.radius` read site is unchanged.
+const LOCATION_POSITION: Record<string, { x: number; y: number }> = {
+  earth_surface: { x: 0.18, y: 0.50 },
+  leo:           { x: 0.215, y: 0.36 },
+  geo:           { x: 0.25,  y: 0.66 },
+  lunar_orbit:   { x: 0.32,  y: 0.40 },
+  lunar_surface: { x: 0.33,  y: 0.58 },
+  mars_orbit:    { x: 0.48,  y: 0.40 },
+  mars_surface:  { x: 0.48,  y: 0.60 },
+  asteroid_belt: { x: 0.60,  y: 0.50 },
+  jupiter_system:{ x: 0.73,  y: 0.45 },
+  saturn_system: { x: 0.85,  y: 0.55 },
+  outer_system:  { x: 0.94,  y: 0.50 },
   // Colony locations — share body positions with orbits for visual proximity
-  mercury_surface: { x: 0.10, y: 0.52, radius: 8,  color: '#d97706', glowColor: '#b45309', type: 'rocky' },
-  venus_orbit:     { x: 0.14, y: 0.48, radius: 9,  color: '#fde047', glowColor: '#facc15', type: 'rocky' },
-  ceres_surface:   { x: 0.58, y: 0.47, radius: 5,  color: '#78716c', glowColor: '#57534e', type: 'rocky' },
-  io_surface:      { x: 0.70, y: 0.44, radius: 4,  color: '#fcd34d', glowColor: '#f59e0b', type: 'moon' },
-  europa_surface:  { x: 0.72, y: 0.42, radius: 4,  color: '#e0f2fe', glowColor: '#7dd3fc', type: 'moon' },
-  ganymede_surface:{ x: 0.74, y: 0.46, radius: 4,  color: '#f3f4f6', glowColor: '#94a3b8', type: 'moon' },
-  callisto_surface:{ x: 0.76, y: 0.48, radius: 4,  color: '#d1d5db', glowColor: '#9ca3af', type: 'moon' },
-  titan_surface:   { x: 0.84, y: 0.58, radius: 5,  color: '#fef3c7', glowColor: '#fde68a', type: 'moon' },
-  enceladus_surface:{ x: 0.86, y: 0.53, radius: 3, color: '#e0f2fe', glowColor: '#7dd3fc', type: 'moon' },
-  titania_surface: { x: 0.93, y: 0.48, radius: 3,  color: '#e0e7ff', glowColor: '#a5b4fc', type: 'moon' },
-  triton_surface:  { x: 0.95, y: 0.52, radius: 3,  color: '#bfdbfe', glowColor: '#93c5fd', type: 'moon' },
-  pluto_surface:   { x: 0.97, y: 0.50, radius: 3,  color: '#fecaca', glowColor: '#fca5a5', type: 'rocky' },
+  mercury_surface: { x: 0.10, y: 0.52 },
+  venus_orbit:     { x: 0.14, y: 0.48 },
+  ceres_surface:   { x: 0.58, y: 0.47 },
+  io_surface:      { x: 0.70, y: 0.44 },
+  europa_surface:  { x: 0.72, y: 0.42 },
+  ganymede_surface:{ x: 0.74, y: 0.46 },
+  callisto_surface:{ x: 0.76, y: 0.48 },
+  titan_surface:   { x: 0.84, y: 0.58 },
+  enceladus_surface:{ x: 0.86, y: 0.53 },
+  titania_surface: { x: 0.93, y: 0.48 },
+  triton_surface:  { x: 0.95, y: 0.52 },
+  pluto_surface:   { x: 0.97, y: 0.50 },
 };
+
+const LOCATION_LAYOUT: Record<string, {
+  x: number; y: number; radius: number; color: string; glowColor: string; type: BodyKind;
+}> = Object.fromEntries(
+  Object.entries(LOCATION_POSITION).map(([id, pos]) => {
+    const p = getBodyPalette(id);
+    return [id, { x: pos.x, y: pos.y, radius: p.baseRadius, color: p.color, glowColor: p.glowColor, type: p.kind }];
+  }),
+);
 
 // Role → color for ship rendering (fallback chevron color when sprite unloaded)
 const SHIP_COLOR: Record<string, string> = {

@@ -9,7 +9,7 @@
 // down from space-tycoon/page.tsx — this component only manages which
 // location/system is selected and which layer (solar/galactic) is showing.
 
-import { useState, useCallback, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type { GameState, GameTab } from '@/lib/game/types';
 import type { ExpeditionPlanRequest } from '@/lib/game/expeditions';
@@ -28,8 +28,15 @@ const SolarMap3D = dynamic(() => import('./SolarMap3D'), {
 });
 import OrderQueueHUD, { type OrderQueueTarget } from './OrderQueueHUD';
 import MapContextPanel, { type MapSelection, type MapContextView } from './MapContextPanel';
-import RadialCommandMenu from './map/RadialCommandMenu';
-import type { RadialActionId } from '@/lib/game/map-radial';
+import RadialCommandMenu, { type RadialMenuItem } from './map/RadialCommandMenu';
+import {
+  deriveRadialActions,
+  deriveSystemRadialActions,
+  type RadialActionId,
+  type SystemRadialActionId,
+} from '@/lib/game/map-radial';
+import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { INTERSTELLAR_SYSTEM_MAP } from '@/lib/game/interstellar';
 import { MAP_ZOOM_TIER_LABEL, type MapZoomTier } from '@/lib/game/map-zoom';
 import { SLOT_SEGMENT_STYLE } from '@/lib/game/map-bodies';
 import GlobalActivityFeed from './GlobalActivityFeed';
@@ -127,7 +134,10 @@ export default function MapCommandCenter({
   // the menu's Detail/Build/Dispatch actions, from the Location List (Enter),
   // from Order-Queue chips, and from Outliner deep-links — every keyboard and
   // deep-link path still lands straight in the panel.
-  const [radial, setRadial] = useState<{ locationId: string; x: number; y: number } | null>(null);
+  // Wave A4: the arc now serves BOTH layers. The solar action set is
+  // location-shaped and the galactic one is system-shaped (see map-radial.ts),
+  // so the target carries its kind and the derivation is chosen from it.
+  const [radial, setRadial] = useState<{ kind: 'location' | 'system'; id: string; x: number; y: number } | null>(null);
   const [detail, setDetail] = useState<{ view: MapContextView; token: number } | null>(null);
   const [zoomTier, setZoomTier] = useState<MapZoomTier>('location');
   const [labelsAlways, setLabelsAlways] = useState(false);
@@ -244,17 +254,30 @@ export default function MapCommandCenter({
     }
     if (anchor) {
       setDetail(null);
-      setRadial({ locationId: locId, x: anchor.x, y: anchor.y });
+      setRadial({ kind: 'location', id: locId, x: anchor.x, y: anchor.y });
     } else {
       setRadial(null);
       setDetail({ view: 'overview', token: Date.now() });
     }
   }, [onRegionFocus]);
 
-  const selectSystem = useCallback((sysId: string | null) => {
+  /** Galactic-layer selection. Mirrors selectLocation's contract exactly:
+   *  `anchor` present -> open the command arc AT the node; absent -> open the
+   *  full dossier panel (Order-Queue chip, deep-link, transit marker). */
+  const selectSystem = useCallback((sysId: string | null, anchor?: { x: number; y: number }) => {
     setSelection(sysId ? { kind: 'system', id: sysId } : null);
-    setRadial(null);
-    setDetail(sysId ? { view: 'overview', token: Date.now() } : null);
+    if (!sysId) {
+      setRadial(null);
+      setDetail(null);
+      return;
+    }
+    if (anchor) {
+      setDetail(null);
+      setRadial({ kind: 'system', id: sysId, x: anchor.x, y: anchor.y });
+    } else {
+      setRadial(null);
+      setDetail({ view: 'overview', token: Date.now() });
+    }
   }, []);
 
   const handleOrderQueueSelect = useCallback((target: OrderQueueTarget) => {
@@ -269,11 +292,22 @@ export default function MapCommandCenter({
 
   /** Radial action → the SAME handlers the context panel and HUD already use.
    *  Nothing here forks business logic; the menu is a faster route to it. */
-  const runRadialAction = useCallback((id: RadialActionId) => {
-    const locId = radial?.locationId;
+  const runRadialAction = useCallback((rawId: string) => {
+    const target = radial;
     setRadial(null);
-    if (!locId) return;
-    switch (id) {
+    if (!target) return;
+    if (target.kind === 'system') {
+      switch (rawId as SystemRadialActionId) {
+        case 'sys-detail': setDetail({ view: 'overview', token: Date.now() }); break;
+        case 'sys-expedition': setDetail({ view: 'plan-expedition', token: Date.now() }); break;
+        case 'sys-research': onNavigateTab('research'); break;
+        case 'sys-fleet': onNavigateTab('fleet'); break;
+        case 'sys-gateway': onNavigateTab('interstellar'); break;
+      }
+      return;
+    }
+    const locId = target.id;
+    switch (rawId as RadialActionId) {
       case 'detail': setDetail({ view: 'overview', token: Date.now() }); break;
       case 'build': setDetail({ view: 'build', token: Date.now() }); break;
       case 'dispatch': setDetail({ view: 'dispatch', token: Date.now() }); break;
@@ -284,27 +318,46 @@ export default function MapCommandCenter({
     }
   }, [radial, onUnlock, onNavigateTab]);
 
+  /** Action list + name for whichever target the arc is open on. Order is
+   *  stable within each derivation, so the ring never reshuffles. */
+  const radialActions: RadialMenuItem[] = useMemo(() => {
+    if (!radial) return [];
+    return radial.kind === 'system'
+      ? deriveSystemRadialActions(state, radial.id)
+      : deriveRadialActions(state, radial.id, Date.now());
+  }, [radial, state]);
+  const radialName = radial
+    ? (radial.kind === 'system'
+        ? INTERSTELLAR_SYSTEM_MAP.get(radial.id)?.name || radial.id
+        : LOCATION_MAP.get(radial.id)?.name || radial.id)
+    : '';
+
   // Keyboard route into the radial menu from anywhere on the map: with a
   // location selected, `C` opens its command arc in the centre of the stage.
   // (The Location List rows handle `C` themselves and anchor the arc on the
   // row — this is the fallback for selections made any other way.) CLAUDE.md
   // requires every action to be reachable without a mouse.
   useEffect(() => {
-    if (covered || layer !== 'solar') return;
+    if (covered) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'c' && e.key !== 'C' && e.key !== 'ContextMenu') return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
-      // The Location List rows own `C` for themselves (anchored arc).
+      // The Location List rows and the galactic system nodes own `C` for
+      // themselves (they anchor the arc on the row / node).
       if (el?.getAttribute?.('aria-keyshortcuts') === 'C') return;
       if (radial) return;
-      if (selection?.kind !== 'location') return;
+      if (!selection) return;
+      // The arc's action set must match the layer being shown.
+      if (layer === 'solar' && selection.kind !== 'location') return;
+      if (layer === 'galactic' && selection.kind !== 'system') return;
       e.preventDefault();
       playSound('click');
       setDetail(null);
       setRadial({
-        locationId: selection.id,
+        kind: selection.kind,
+        id: selection.id,
         x: (rootRef.current?.clientWidth ?? 0) / 2,
         y: (rootRef.current?.clientHeight ?? 0) / 2,
       });
@@ -359,6 +412,7 @@ export default function MapCommandCenter({
           state={state}
           selectedSystemId={selection?.kind === 'system' ? selection.id : null}
           onSelectSystem={selectSystem}
+          active={!covered}
         />
       )}
 
@@ -572,13 +626,16 @@ export default function MapCommandCenter({
         </div>
       )}
 
-      {/* Wave A2 — radial command menu. Solar layer only: the galactic layer
-          is a DOM node graph with its own affordances, and the radial action
-          set is location-shaped (build / dispatch / slots / demand). */}
-      {radial && layer === 'solar' && !covered && mapWidth > 0 && mapHeight && (
+      {/* Wave A2 — radial command menu, now on BOTH layers (Wave A4). The
+          component is presentational; the action set comes from the layer's
+          own derivation, so the solar verbs (build / dispatch / slots /
+          demand) never appear at a star system and vice versa. */}
+      {radial && !covered && mapWidth > 0 && mapHeight
+        && ((radial.kind === 'location' && layer === 'solar') || (radial.kind === 'system' && layer === 'galactic')) && (
         <RadialCommandMenu
-          state={state}
-          locationId={radial.locationId}
+          targetId={radial.id}
+          targetName={radialName}
+          actions={radialActions}
           anchor={{ x: radial.x, y: radial.y }}
           viewport={{ w: mapWidth, h: mapHeight }}
           onAction={runRadialAction}

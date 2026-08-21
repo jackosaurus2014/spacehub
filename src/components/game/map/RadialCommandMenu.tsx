@@ -6,10 +6,14 @@
 // on the far side of the screen.
 //
 // Contract:
-//   • Actions come from map-radial.deriveRadialActions() — real engine
-//     handlers / real tabs only. Unavailable actions render DISABLED WITH
-//     THEIR REASON (the orbital-slot gate's copy passes straight through),
-//     never hidden.
+//   • Actions come from map-radial's derivations — real engine handlers /
+//     real tabs only. Unavailable actions render DISABLED WITH THEIR REASON
+//     (the orbital-slot gate's copy passes straight through), never hidden.
+//   • Wave A4 made this component PURELY PRESENTATIONAL: the caller supplies
+//     the derived action list and the target's name, so the same ring serves
+//     the solar layer (deriveRadialActions, location-shaped) and the galactic
+//     layer (deriveSystemRadialActions, system-shaped) without either action
+//     set leaking into the other.
 //   • Geometry comes from map-radial.computeRadialLayout() — a full circle
 //     that slides inward near container edges so every 52px target stays on
 //     screen at 375px, with a tether back to the true click point.
@@ -22,16 +26,12 @@
 //     does not own that file).
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { GameState } from '@/lib/game/types';
-import { LOCATION_MAP } from '@/lib/game/solar-system';
 import {
-  deriveRadialActions,
   computeRadialLayout,
   cycleRadialIndex,
   RADIAL_DEFAULT_ITEM_RADIUS,
-  type RadialAction,
-  type RadialActionId,
 } from '@/lib/game/map-radial';
+import type { IconName } from '@/lib/game/icons';
 import { playSound } from '@/lib/game/sound-engine';
 import GameIcon from '../GameIcon';
 
@@ -53,33 +53,43 @@ const RADIAL_CSS = `
 }
 `;
 
+/** The subset of a derived action the ring actually renders. Both
+ *  RadialAction and SystemRadialAction structurally satisfy it. */
+export interface RadialMenuItem {
+  id: string;
+  label: string;
+  icon: IconName;
+  description: string;
+  enabled: boolean;
+  reason?: string;
+  detail: string | null;
+}
+
 export interface RadialCommandMenuProps {
-  state: GameState;
-  locationId: string;
+  /** Stable identity of the target — used to re-focus the ring when the
+   *  player opens the menu on a different body/system. */
+  targetId: string;
+  /** Human name of the target, rendered in the centre puck. */
+  targetName: string;
+  /** Derived, ORDER-STABLE action list (see map-radial.ts). */
+  actions: RadialMenuItem[];
   /** Click point relative to the map container. */
   anchor: { x: number; y: number };
   /** Map container size (the menu is absolutely positioned inside it). */
   viewport: { w: number; h: number };
-  onAction: (id: RadialActionId) => void;
+  onAction: (id: string) => void;
   onClose: () => void;
 }
 
 export default function RadialCommandMenu({
-  state, locationId, anchor, viewport, onAction, onClose,
+  targetId, targetName, actions, anchor, viewport, onAction, onClose,
 }: RadialCommandMenuProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const [active, setActive] = useState(0);
 
-  const name = LOCATION_MAP.get(locationId)?.name || locationId;
-
-  // Derived once per open (and on state ticks) — the ring never reshuffles
-  // because ACTION_ORDER is stable in map-radial.ts.
-  const actions = useMemo(
-    () => deriveRadialActions(state, locationId, Date.now()),
-    [state, locationId],
-  );
+  const name = targetName;
 
   const layout = useMemo(
     () => computeRadialLayout({
@@ -104,14 +114,14 @@ export default function RadialCommandMenu({
       if (el && document.contains(el)) el.focus();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationId]);
+  }, [targetId]);
 
   const focusIndex = useCallback((i: number) => {
     setActive(i);
     itemRefs.current[i]?.focus();
   }, []);
 
-  const activate = useCallback((action: RadialAction) => {
+  const activate = useCallback((action: RadialMenuItem) => {
     if (!action.enabled) {
       playSound('error');
       return;

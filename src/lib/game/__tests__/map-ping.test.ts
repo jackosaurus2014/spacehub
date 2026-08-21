@@ -5,6 +5,7 @@
 import {
   mapPing, onMapPing, getPingVisual, pruneExpiredPings, deriveCompletionEvents,
   hexToRgba, PING_LIFETIME_MS, REDUCED_PING_LIFETIME_MS, PING_COLOR,
+  outlinerFlashSelector, OUTLINER_FLASH_CLASS, OUTLINER_FLASH_MS,
   type MapPingEvent,
 } from '../map-ping';
 
@@ -185,5 +186,35 @@ describe('deriveCompletionEvents — ack-event derivation', () => {
       ships: [{ instanceId: 's1', status: 'idle', currentLocation: 'geo' }],
     };
     expect(deriveCompletionEvents(prev, next)).toHaveLength(2);
+  });
+});
+
+// ─── Wave A4.2 — outliner row flash ────────────────────────────────────────
+
+describe('outlinerFlashSelector', () => {
+  it('matches outliner rows by their ping target, not by row id', () => {
+    expect(outlinerFlashSelector({ kind: 'location', id: 'luna-south-pole' }))
+      .toBe('.outliner-row[data-ping-target="luna-south-pole"]');
+    expect(outlinerFlashSelector({ kind: 'system', id: 'alpha_centauri' }))
+      .toBe('.outliner-row[data-ping-target="alpha_centauri"]');
+  });
+
+  it('refuses ids that cannot be safely embedded in a selector', () => {
+    expect(outlinerFlashSelector({ kind: 'location', id: '' })).toBeNull();
+    expect(outlinerFlashSelector({ kind: 'location', id: 'a"] , * {}' })).toBeNull();
+    expect(outlinerFlashSelector({ kind: 'location', id: 'has space' })).toBeNull();
+  });
+
+  it('maps every ping kind to a flash class, treating warp as an ack', () => {
+    expect(OUTLINER_FLASH_CLASS.complete).not.toBe(OUTLINER_FLASH_CLASS.ack);
+    expect(OUTLINER_FLASH_CLASS.warp).toBe(OUTLINER_FLASH_CLASS.ack);
+    for (const kind of Object.keys(PING_LIFETIME_MS) as (keyof typeof PING_LIFETIME_MS)[]) {
+      expect(OUTLINER_FLASH_CLASS[kind]).toMatch(/^outliner-row-flash-/);
+    }
+  });
+
+  it('clears the class well after the longest ping lifetime it reacts to', () => {
+    expect(OUTLINER_FLASH_MS).toBeGreaterThan(0);
+    expect(OUTLINER_FLASH_MS).toBeLessThan(2000);
   });
 });

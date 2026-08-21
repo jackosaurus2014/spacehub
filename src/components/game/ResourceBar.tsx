@@ -347,10 +347,18 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
   };
 
   return (
-    <div className="hud-frame relative bg-black/90 border-b border-cyan-500/10 px-3 sm:px-4 py-2 z-20">
+    // Wave A2.1 (docs/VISUAL_AAA_2026-08.md §A2.1) — `bezel-plate-top` makes
+    // this the top plate of the docked command bezel rather than a web
+    // header: a brushed console face with a lit top lip and a hard shadow
+    // onto the selector channel below. It re-points the A1 --mat-* tokens
+    // instead of setting box-shadow, so the .hud-frame housing survives.
+    // No padding or height changed — the bar is exactly as tall as before.
+    <div className="hud-frame bezel-plate-top relative bg-black/90 border-b border-cyan-500/10 px-3 sm:px-4 py-2 z-20">
       {/* Bottom corner brackets (top brackets are painted by ::before/::after) */}
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
+      {/* The seam where the plate meets the tab selector channel. */}
+      <span className="bezel-seam" aria-hidden="true" />
 
       <div className="flex items-center justify-between gap-2 sm:gap-4 flex-wrap max-w-5xl mx-auto">
         {/* Money + sparkline + net income chip */}

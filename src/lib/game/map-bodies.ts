@@ -256,3 +256,73 @@ export const SLOT_SEGMENT_STYLE: Record<SlotRingSegmentKind, {
   others: { color: '#f59e0b', dash: [5, 3],  weight: 0.62, label: 'Other corporations' },
   free:   { color: '#64748b', dash: [2, 4],  weight: 0.34, label: 'Free' },
 };
+
+// ─── 3. Body palette (Wave A2.2) ─────────────────────────────────────────────
+// Colour / kind / relative size per body, lifted VERBATIM out of
+// SolarSystemCanvas's private LOCATION_LAYOUT so the 2D map, the 3D map's
+// fallbacks and the A2.2 location detail console all render the same Mars.
+// SolarSystemCanvas still owns the x/y layout (that geometry is specific to
+// its flat projection); only the *presentation* half moved here, which is
+// exactly this module's remit.
+
+export type BodyKind = 'star' | 'rocky' | 'gas' | 'orbital' | 'belt' | 'moon';
+
+export interface BodyPalette {
+  /** Body fill. The 2D canvas builds a lighten→base→darken gradient from it. */
+  color: string;
+  /** Halo / glow tint. */
+  glowColor: string;
+  kind: BodyKind;
+  /** 2D map base radius (px at zoom 1). Also the RELATIVE size cue the detail
+   *  console scales its rendition by, so a 3px pip still reads as a pip and
+   *  Jupiter still reads as the biggest thing on screen. */
+  baseRadius: number;
+}
+
+export const BODY_PALETTE: Readonly<Record<string, BodyPalette>> = {
+  earth_surface:     { color: '#38bdf8', glowColor: '#0ea5e9', kind: 'rocky',   baseRadius: 22 },
+  leo:               { color: '#22d3ee', glowColor: '#0891b2', kind: 'orbital', baseRadius: 7 },
+  geo:               { color: '#a78bfa', glowColor: '#7c3aed', kind: 'orbital', baseRadius: 7 },
+  lunar_orbit:       { color: '#94a3b8', glowColor: '#64748b', kind: 'orbital', baseRadius: 6 },
+  lunar_surface:     { color: '#cbd5e1', glowColor: '#94a3b8', kind: 'moon',    baseRadius: 13 },
+  mars_orbit:        { color: '#fdba74', glowColor: '#f97316', kind: 'orbital', baseRadius: 6 },
+  mars_surface:      { color: '#ef4444', glowColor: '#dc2626', kind: 'rocky',   baseRadius: 14 },
+  asteroid_belt:     { color: '#a8a29e', glowColor: '#78716c', kind: 'belt',    baseRadius: 11 },
+  jupiter_system:    { color: '#fbbf24', glowColor: '#f59e0b', kind: 'gas',     baseRadius: 20 },
+  saturn_system:     { color: '#fde68a', glowColor: '#eab308', kind: 'gas',     baseRadius: 17 },
+  outer_system:      { color: '#818cf8', glowColor: '#6366f1', kind: 'rocky',   baseRadius: 11 },
+  mercury_surface:   { color: '#d97706', glowColor: '#b45309', kind: 'rocky',   baseRadius: 8 },
+  venus_orbit:       { color: '#fde047', glowColor: '#facc15', kind: 'rocky',   baseRadius: 9 },
+  ceres_surface:     { color: '#78716c', glowColor: '#57534e', kind: 'rocky',   baseRadius: 5 },
+  io_surface:        { color: '#fcd34d', glowColor: '#f59e0b', kind: 'moon',    baseRadius: 4 },
+  europa_surface:    { color: '#e0f2fe', glowColor: '#7dd3fc', kind: 'moon',    baseRadius: 4 },
+  ganymede_surface:  { color: '#f3f4f6', glowColor: '#94a3b8', kind: 'moon',    baseRadius: 4 },
+  callisto_surface:  { color: '#d1d5db', glowColor: '#9ca3af', kind: 'moon',    baseRadius: 4 },
+  titan_surface:     { color: '#fef3c7', glowColor: '#fde68a', kind: 'moon',    baseRadius: 5 },
+  enceladus_surface: { color: '#e0f2fe', glowColor: '#7dd3fc', kind: 'moon',    baseRadius: 3 },
+  titania_surface:   { color: '#e0e7ff', glowColor: '#a5b4fc', kind: 'moon',    baseRadius: 3 },
+  triton_surface:    { color: '#bfdbfe', glowColor: '#93c5fd', kind: 'moon',    baseRadius: 3 },
+  pluto_surface:     { color: '#fecaca', glowColor: '#fca5a5', kind: 'rocky',   baseRadius: 3 },
+};
+
+/** Neutral fallback so an unmapped location renders as an anonymous grey
+ *  body rather than crashing or vanishing. */
+export const DEFAULT_BODY_PALETTE: BodyPalette = {
+  color: '#64748b', glowColor: '#475569', kind: 'rocky', baseRadius: 8,
+};
+
+export function getBodyPalette(locationId: string | undefined | null): BodyPalette {
+  if (!locationId) return DEFAULT_BODY_PALETTE;
+  return BODY_PALETTE[locationId] ?? DEFAULT_BODY_PALETTE;
+}
+
+/** Human label per body kind — the detail console prints it, so "gas giant"
+ *  is never inferred from a colour alone. */
+export const BODY_KIND_LABEL: Record<BodyKind, string> = {
+  star: 'Star',
+  rocky: 'Rocky body',
+  gas: 'Gas giant',
+  orbital: 'Orbital station keeping',
+  belt: 'Debris field',
+  moon: 'Moon',
+};
