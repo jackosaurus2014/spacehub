@@ -1987,9 +1987,20 @@ export default function SpaceTycoonPage() {
       <MilestoneVignette state={state} />
       {/* 4X Wave W5 — cinematic presentation queue: narrative chain-heads,
           science discoveries, expedition arrivals/first contact, victories,
-          megastructure completions. One at a time; never blocks the tick. */}
+          megastructure completions. One at a time; never blocks the tick.
+
+          ONBOARDING GATE (2026-08-21, pre-relaunch): full-screen moments are
+          SUPPRESSED — not dropped — while the FTUE objective chain is running.
+          Chapters carry no tier gate and a leader moment fires the instant a
+          commander is hired, so a first-session player could take a
+          full-screen interrupt while the tutorial was mid-instruction. That is
+          the same failure the 8/16 FTUE audit fixed once already (two
+          surfaces giving conflicting first instructions), and it matters most
+          on restart day when EVERY player is in onboarding at once. The
+          queues are untouched, so anything raised during the chain plays as
+          soon as the player graduates. */}
       <CinematicOverlay
-        moment={cinematicQueue[0] ?? null}
+        moment={isOnboardingActive(state) ? null : (cinematicQueue[0] ?? null)}
         onDismiss={() => setCinematicQueue(q => dequeueCinematicMoment(q))}
       />
       {/* Wave A2.3 — portrait-framed leader moments (appointment, retirement,
@@ -2004,7 +2015,11 @@ export default function SpaceTycoonPage() {
           a keyboard or screen-reader user would be tabbing through a dialog
           they cannot see. Gating means exactly one trap is ever installed. */}
       <LeaderMomentOverlay
-        moment={cinematicQueue.length === 0 ? (leaderQueue[0] ?? null) : null}
+        moment={
+          isOnboardingActive(state) || cinematicQueue.length > 0
+            ? null
+            : (leaderQueue[0] ?? null)
+        }
         onDismiss={() => setLeaderQueue(q => dequeueLeaderMoment(q))}
       />
       {/* Hero art background */}
