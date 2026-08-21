@@ -1,0 +1,12 @@
+[
+  {
+    "prompt": "Orthographic top-down plan view of a single civilian industrial ORE HARVESTER spacecraft, centered and filling the frame. Role must read instantly: a wide bucket-wheel regolith scoop and grinding intake across the entire bow, two bulging enclosed ore hoppers along the flanks, a stubby armoured crew module set back near the tail, four blunt cylindrical thruster bells at the stern, folded loading conveyor arms tucked along the hull. Heavy stocky utilitarian proportions. Graphite and off-white panelled hard-surface plating with safety-ORANGE accent panels on the scoop and hoppers. Isolated on a flat near-black background with a soft contact shadow. Crisp readable silhouette, clean matte finish. No starfield, no planet, no nebula, no ground, no landscape, no background scenery, no other vehicles. STRICTLY NO text, no lettering, no numbers, no letters, no hull markings, no insignia, no logos, no signage of any kind anywhere in the image. This is an unarmed commercial mining vessel: absolutely no weapons, no turrets, no gun barrels, no cannons, no missiles, no missile racks, no torpedo tubes, no military markings, no sharp spike prongs.",
+    "output": "public/game/ship-ore-harvester.webp",
+    "aspectRatio": "1:1"
+  },
+  {
+    "prompt": "Orthographic top-down plan view of a single colossal civilian COLONY ARK generation-ship, centered and filling the frame. Role must read instantly: an enormous slow settlement vessel — a broad blunt forward debris shield, a long central truss spine, a large rotating toroidal habitat ring encircling the spine amidships, rows of stacked colony cargo and fabricator modules clustered along the spine, wide flat radiator panels, eight blunt cylindrical fusion thruster bells in a cluster at the stern. Immense, slow, heavy proportions. Graphite and off-white panelled hard-surface plating with soft CYAN accent lighting along the habitat ring. Isolated on a flat near-black background with a soft contact shadow. Crisp readable silhouette, clean matte finish. No starfield, no planet, no nebula, no background scenery, no other vehicles. STRICTLY NO text, no lettering, no numbers, no letters, no hull markings, no insignia, no logos, no signage of any kind anywhere in the image. This is an unarmed civilian colony transport: absolutely no weapons, no turrets, no gun barrels, no cannons, no missiles, no missile racks, no torpedo tubes, no military markings, no sharp spike prongs.",
+    "output": "public/game/ship-colony-ark.webp",
+    "aspectRatio": "1:1"
+  }
+]

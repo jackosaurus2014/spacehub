@@ -81,21 +81,47 @@ export const RESOURCE_ASSETS: Record<string, string> = {
 };
 
 // ─── SHIP ASSETS ─────────────────────────────────────────────────────────────
-// Keys must match the `id` field in src/lib/game/ships.ts.
+// Keys must match the `id` field in src/lib/game/ships.ts. Every hull in SHIPS
+// has a dedicated image — the map is complete, so getShipAsset's cargo_shuttle
+// fallback is a defensive backstop rather than a load-bearing default.
+//
+// Wave A6 (fleet art pass) regenerated ALL of these. The prior set had been
+// documented as "19 images / 11 hull ids, good coverage" but had never been
+// visually audited: five of the eleven mapped images were not spacecraft at all
+// (a station ring for asteroid_miner, a ground mining facility for
+// deep_space_miner, a rail yard of cargo trains for colony_ark, a Mars surface
+// base for ore_harvester), the starfarer_explorer reused a swept-wing fighter
+// render, and several carried hull lettering — both of which violate canon
+// (CLAUDE.md's absolute no-combat rule; the generator's own no-text directive).
+//
+// A6 replaced all of them with one unified silhouette treatment: orthographic
+// top-down plan view, bow toward the top of the frame, single vessel isolated
+// on a flat near-black field with a soft contact shadow, and a role-keyed
+// accent (cyan = transport, amber = tanker, orange = mining, violet = survey)
+// so role is legible from the thumbnail alone. Ships render small in fleet
+// lists and as map markers, so silhouette legibility is the governing
+// constraint — deliberately NOT the starfield hero-render treatment the old
+// ship-scout used, which turns to mush below ~64px.
 export const SHIP_ASSETS: Record<string, string> = {
   cargo_shuttle: `${BASE}/ship-cargo-shuttle.webp`,
   freighter: `${BASE}/ship-space-freighter.webp`,
   heavy_transport: `${BASE}/ship-heavy-transport.webp`,
   fuel_tanker: `${BASE}/ship-fuel-tanker.webp`,
+  // Wave A6 addition — prospector_drone (the no-research starter miner) had no
+  // entry at all and silently fell through to the cargo_shuttle image, showing
+  // a crewed cargo hauler for an uncrewed mining drone.
+  prospector_drone: `${BASE}/ship-prospector-drone.webp`,
   mining_drone: `${BASE}/ship-mining-drone.webp`,
   ore_harvester: `${BASE}/ship-ore-harvester.webp`,
   asteroid_miner: `${BASE}/ship-mining-m.webp`,
   deep_space_miner: `${BASE}/ship-mining-l.webp`,
   survey_probe: `${BASE}/ship-scout.webp`,
-  // Interstellar hulls (Wave 10) — distinct angle/hull variants so they read
-  // differently from their solar-system cousins (survey_probe, heavy_transport).
-  starfarer_explorer: `${BASE}/ship-scout-angle2.webp`,
-  colony_ark: `${BASE}/ship-transport-l.webp`,
+  // Interstellar hulls (Wave 10) — these previously borrowed other hulls' art
+  // (ship-scout-angle2 / ship-transport-l). Wave A6 gave them dedicated
+  // renders: the Starfarer's warp-coil rings and the Ark's rotating habitat
+  // ring are the silhouette cues that mark the interstellar era.
+  starfarer_explorer: `${BASE}/ship-starfarer-explorer.webp`,
+  colony_ark: `${BASE}/ship-colony-ark.webp`,
 };
 
 // ─── BACKGROUND ASSETS ───────────────────────────────────────────────────────
@@ -293,8 +319,11 @@ export const SKYBOX_ASSETS = {
 // ─── MULTI-SIZE VARIANTS (Wave V6) ──────────────────────────────────────────
 // scripts/resize-art.ts emits 1536/512/128px WebP siblings next to a base
 // asset (e.g. `commander-dr-solene-marchetti-512.webp`) for every asset
-// generated as part of Wave V6 (2026-08-15 onward). The pre-existing
-// 377-image backlog does NOT have these siblings — deferred per
+// generated as part of Wave V6 (2026-08-15 onward) — and, as of Wave A6, for
+// every entry in SHIP_ASSETS above (all 12 hulls have -512/-128 siblings; the
+// -1536 tier is absent because Gemini returns 1024² and resize-art.ts never
+// upscales, exactly as with the commander portraits). The rest of the
+// pre-existing legacy backlog does NOT have these siblings — deferred per
 // docs/VISUAL_DEPTH_2026-08.md Wave V6 ("do not block on the 377-image
 // legacy backlog"). Use getArtVariant() rather than string-splicing a size
 // onto a path directly so intent is documented at the call site; this
