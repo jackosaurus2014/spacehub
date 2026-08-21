@@ -42,6 +42,13 @@ export async function GET(request: NextRequest) {
 
     const entries = profiles.map((p, i) => ({
       rank: i + 1,
+      // PvP Discoverability pass (2026-08): the opaque profile id was already
+      // selected here and is already public elsewhere (the /space-tycoon/corp/
+      // [id] pages and the espionage target list both expose it). Emitting it
+      // lets client surfaces that need to NAME a counterparty — the talent-
+      // poaching launcher — do so without a second round trip or a new
+      // endpoint. No additional information is disclosed.
+      profileId: p.id,
       companyName: p.companyName,
       title: p.title,
       netWorth: p.netWorth,

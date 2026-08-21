@@ -16,6 +16,7 @@ import { resolveIcon, type IconName } from '@/lib/game/icons';
 // replaces scattered alerts... lives as the promoted content of the Reports
 // tab (Reports remains the tab id — no IA change for mechanics)."
 import SituationLog from './SituationLog';
+import CompetitivePosturePanel from './CompetitivePosturePanel';
 import type { OrderQueueTarget } from '@/lib/game/order-queue';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -473,7 +474,14 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
       />
 
       {topTab === 'log' ? (
-        <SituationLog state={state} onNavigate={onNavigateTab} onFocusMap={onFocusMap} compact />
+        <div className="space-y-3">
+          {/* PvP Discoverability pass (2026-08): the Situation Log is already
+              the "everything that needs a decision" surface, so the
+              competitive posture readout belongs directly above it. Renders
+              nothing for Frontier-protected or mid-FTUE saves. */}
+          <CompetitivePosturePanel state={state} onNavigate={onNavigateTab} />
+          <SituationLog state={state} onNavigate={onNavigateTab} onFocusMap={onFocusMap} compact />
+        </div>
       ) : topTab === 'quarterly' ? (
         <QuarterlyReportsView state={state} />
       ) : reports.length === 0 ? (

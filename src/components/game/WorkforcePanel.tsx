@@ -17,6 +17,13 @@ import { buildCareerCrossoverLine } from '@/lib/game/career-crossover';
 // corps capped at neutral), so the button shows exactly what the hire
 // handler charges.
 import { getMonthlyPayrollForState, getWageIndex, getPayrollAdjustedSalary, getHireCostWithWageIndex, getHireWageIndex, WAGE_INDEX_MAX, GUILD_STRIKE_WAGE_THRESHOLD } from '@/lib/game/labor-market';
+// PvP Discoverability pass (2026-08): the outgoing poach launcher. Prices are
+// previewed with the SAME pure functions the server charges with.
+import { computeSigningBonus, computePoachActionFee } from '@/lib/game/talent-poaching';
+import { getFeeIndexFactor } from '@/lib/game/fee-index';
+import { COMPETITIVE_TOOL_MAP } from '@/lib/game/competitive-posture';
+import { consumeSubViewRequest } from '@/lib/game/sub-view';
+import { Concept } from './HoloTip';
 
 interface WorkforcePanelProps {
   state: GameState;
@@ -133,6 +140,16 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
       {/* Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O4): the poach inbox —
           incoming signing-bonus raids with the 48h counteroffer decision. */}
       <PoachInbox state={state} />
+
+      {/* PvP Discoverability pass (2026-08): the OUTGOING half of the same
+          mechanic. M5 shipped /api/space-tycoon/poach with a fully
+          implemented `offer` action, complete escrow, detection and
+          cooldowns — and shipped no client that ever called it. Production
+          telemetry: zero poach offers, ever. That is not a balance problem,
+          it is a missing button. This is the button; every rule below is
+          enforced server-side and every error string here is the server's
+          own. */}
+      <PoachLauncher state={state} />
 
       {/* Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -524,5 +541,201 @@ function PoachInbox({ state }: { state: GameState }) {
       </div>
       {message && <p className="text-[11px] text-slate-300 mt-2">{message}</p>}
     </div>
+  );
+}
+
+// ─── PvP Discoverability pass (2026-08): the OUTGOING poach launcher ────────
+//
+// Why this exists: talent poaching shipped in Wave M5 with a complete server
+// implementation (escrowed signing bonuses, 10%-of-roster cap, 48h
+// counteroffer window, 30-day per-target cooldown, detection roll, wage-index
+// feedback) and NO client entry point — nothing in the game ever called
+// `POST /api/space-tycoon/poach { action: 'offer' }`. Production telemetry
+// reported zero poach offers across the entire life of the world, which was
+// never a balance result: the verb was unreachable.
+//
+// This surfaces the existing mechanic. It invents nothing:
+//   • The counterparty list is the existing public leaderboard endpoint
+//     (profile ids are already public — the /space-tycoon/corp/[id] pages and
+//     the espionage target list both expose them).
+//   • Every rule is enforced server-side and every failure message rendered
+//     here is the server's own string, so the UI can never promise something
+//     the route would refuse.
+//   • The cost preview is computed from the SAME pure functions the route
+//     charges with (computeSigningBonus at the live synced wage index,
+//     computePoachActionFee at the synced fee index) and is labelled as an
+//     estimate, because the authoritative wage index is the server's.
+//
+// The block renders only when the tool is genuinely available to this
+// corporation (post-Frontier, past the $200M offense floor) — a Protected
+// Frontier player is never shown an attack they are not allowed to make.
+
+interface LeaderboardLite {
+  profileId?: string;
+  companyName: string;
+  netWorth: number;
+  allianceTag?: string | null;
+}
+
+function PoachLauncher({ state }: { state: GameState }) {
+  const [targets, setTargets] = useState<LeaderboardLite[] | null>(null);
+  const [targetId, setTargetId] = useState('');
+  const [crewType, setCrewType] = useState<WorkerType>('engineer');
+  const [count, setCount] = useState(1);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const tool = COMPETITIVE_TOOL_MAP.get('talent_poaching');
+  const available = !!tool && tool.isAvailable(state, Date.now());
+
+  // PvP Discoverability pass: a `workforce:poach` request (from a posture
+  // signal, a Situation Log row, or the tool-unlock briefing) opens the
+  // launcher directly. The DEFENCE token 'workforce:poach-defend' is
+  // deliberately not honoured here — a player sent to answer a raid must not
+  // have an attack form spring open in front of them.
+  useEffect(() => {
+    if (consumeSubViewRequest('workforce') === 'poach') setOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open || targets !== null) return;
+    let cancelled = false;
+    fetch('/api/space-tycoon/leaderboard?limit=50')
+      .then(r => r.json())
+      .then((d: { entries?: LeaderboardLite[] }) => {
+        if (cancelled) return;
+        setTargets((d.entries || []).filter(e => !!e.profileId));
+      })
+      .catch(() => { if (!cancelled) setTargets([]); });
+    return () => { cancelled = true; };
+  }, [open, targets]);
+
+  if (!available) return null;
+
+  const wageIndex = getWageIndex(state.laborMarket, crewType);
+  const bonus = computeSigningBonus(crewType, count, wageIndex);
+  const actionFee = computePoachActionFee(getFeeIndexFactor(state));
+  const crewDef = WORKER_TYPES.find(w => w.type === crewType);
+
+  const submit = async () => {
+    if (!targetId) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      const res = await fetch('/api/space-tycoon/poach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'offer', targetProfileId: targetId, crewType, count }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success !== false && !data.error) {
+        playSound('notification');
+        setMessage('Offer filed. Signing bonuses are escrowed; the target has 48 hours to counteroffer. The action fee is burned either way.');
+      } else {
+        // The server's string verbatim — it is the one that teaches the rules
+        // (10% roster cap, 30-day cooldown, Frontier shield, funds).
+        setMessage(data.error || 'The offer was refused.');
+      }
+    } catch {
+      setMessage('Network error — try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section
+      aria-labelledby="poach-launcher-heading"
+      className="rounded-xl border border-amber-500/20 bg-amber-500/[0.03] p-3"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <h3 id="poach-launcher-heading" className="text-[11px] font-bold uppercase tracking-wider text-amber-200 flex items-center gap-1.5">
+          <span aria-hidden="true">🧲</span>
+          <Concept id="talent-poaching">Talent poaching</Concept>
+          <span className="text-[9px] px-1 py-0.5 rounded border border-white/15 text-slate-400">Offense</span>
+        </h3>
+        <button
+          type="button"
+          onClick={() => { playSound('click'); setOpen(v => !v); }}
+          aria-expanded={open}
+          aria-controls="poach-launcher-body"
+          className="min-h-[36px] px-2 text-[10px] uppercase tracking-wider text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded transition-colors"
+        >
+          {open ? 'Close' : 'Open'}
+        </button>
+      </div>
+
+      <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+        Offer signing bonuses to up to 10% of one crew type inside a rival corporation. They get 48
+        hours to match 75% and keep them. Your escrow is refunded if they do; the action fee is
+        burned either way, and every successful head pushes the global wage index up — including
+        your own payroll. Protected Frontier corporations cannot be targeted.
+      </p>
+
+      <div id="poach-launcher-body" hidden={!open} className="mt-2.5 space-y-2">
+        <div className="grid sm:grid-cols-3 gap-2">
+          <label className="block">
+            <span className="game-label block mb-1">Target corporation</span>
+            <select
+              value={targetId}
+              onChange={e => setTargetId(e.target.value)}
+              className="w-full min-h-[44px] rounded-lg bg-black/40 border border-white/10 text-[11px] text-slate-200 px-2"
+            >
+              <option value="">{targets === null ? 'Loading…' : 'Select a corporation'}</option>
+              {(targets || []).map(t => (
+                <option key={t.profileId} value={t.profileId}>
+                  {t.companyName}{t.allianceTag ? ` [${t.allianceTag}]` : ''}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="game-label block mb-1">Crew type</span>
+            <select
+              value={crewType}
+              onChange={e => setCrewType(e.target.value as WorkerType)}
+              className="w-full min-h-[44px] rounded-lg bg-black/40 border border-white/10 text-[11px] text-slate-200 px-2"
+            >
+              {WORKER_TYPES.map(w => (
+                <option key={w.type} value={w.type}>{w.name}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="game-label block mb-1">Heads (server caps at 10% of their roster)</span>
+            <input
+              type="number"
+              min={1}
+              max={25}
+              value={count}
+              onChange={e => setCount(Math.max(1, Math.min(25, Math.floor(Number(e.target.value) || 1))))}
+              className="w-full min-h-[44px] rounded-lg bg-black/40 border border-white/10 text-[11px] text-slate-200 px-2"
+            />
+          </label>
+        </div>
+
+        <p className="text-[11px] text-slate-400 leading-relaxed">
+          Estimated cost at the current {crewDef?.name.toLowerCase() || crewType} wage index of{' '}
+          <span className="font-mono text-slate-200">{wageIndex.toFixed(2)}×</span>:{' '}
+          <span className="font-mono text-amber-300">{formatMoney(bonus)}</span> escrowed in signing
+          bonuses plus a <span className="font-mono text-amber-300">{formatMoney(actionFee)}</span>{' '}
+          burned action fee. The server prices the offer at its own live index, so the charged figure
+          may differ slightly.
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={submit}
+            disabled={busy || !targetId}
+            className="min-h-[44px] px-3 rounded-lg text-[11px] font-bold bg-amber-500/15 border border-amber-500/30 text-amber-200 hover:bg-amber-500/25 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
+          >
+            File the offer
+          </button>
+        </div>
+        {message && <p className="text-[11px] text-slate-200 leading-relaxed" role="status">{message}</p>}
+      </div>
+    </section>
   );
 }

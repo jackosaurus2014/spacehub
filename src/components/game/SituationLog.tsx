@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { GameState, GameTab } from '@/lib/game/types';
 import { deriveSituationLog, type SituationCategory, type SituationItem, type SituationSeverity } from '@/lib/game/situation-log';
 import type { OrderQueueTarget } from '@/lib/game/order-queue';
+import { requestSubView } from '@/lib/game/sub-view';
 import GameIcon from './GameIcon';
 import { ConsolePanel, DataChip } from './chrome';
 
@@ -46,6 +47,8 @@ const CATEGORY_LABEL: Record<SituationCategory, string> = {
   economic_attack: 'Economic Attack',
   poach_offer: 'Poach Offer',
   lane_toll: 'Freight Toll',
+  // PvP Discoverability pass (competitive-posture.ts)
+  competitive_signal: 'Competitive',
 };
 
 const CATEGORY_FRAME: Record<SituationCategory, string> = {
@@ -78,6 +81,9 @@ const CATEGORY_FRAME: Record<SituationCategory, string> = {
   economic_attack: 'border-red-500/25 bg-red-500/[0.03]',
   poach_offer: 'border-red-500/25 bg-red-500/[0.03]',
   lane_toll: 'border-amber-500/25 bg-amber-500/[0.03]',
+  // PvP Discoverability pass — deliberately the calmest frame in the table:
+  // an opportunity must never read as an alarm.
+  competitive_signal: 'border-indigo-500/25 bg-indigo-500/[0.03]',
 };
 
 const SEVERITY_TONE: Record<SituationSeverity, 'bad' | 'warn' | 'info'> = {
@@ -119,7 +125,10 @@ export default function SituationLog({ state, onNavigate, onFocusMap, compact }:
     () => deriveSituationLog(state, { nowMs: now }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [state.hazardWarnings, state.recentHazards, state.activeDeliveries, state.accordDocket,
-      state.corporateEras, state.commandQueue, state.reports, state.storyChapters, now],
+      state.corporateEras, state.commandQueue, state.reports, state.storyChapters,
+      // PvP Discoverability pass — the snapshots the competitive signals read.
+      state.demandPools, state.laborMarket, state.marketSnapshot,
+      state.orbitalSlotOccupancy, state.orbitalSlotLeases, state.offense, now],
   );
 
   const presentCategories = useMemo(() => {
@@ -132,6 +141,10 @@ export default function SituationLog({ state, onNavigate, onFocusMap, compact }:
 
   const handleActivate = (item: SituationItem) => {
     if (!item.tab) return;
+    // PvP Discoverability pass: park the sub-view request BEFORE navigating,
+    // so the hub panel picks it up on the mount that the setTab triggers.
+    // Items without a token behave exactly as they did before.
+    if (item.subView) requestSubView(item.subView);
     if (item.tab === 'map' && item.target) {
       onFocusMap(item.target);
     } else {

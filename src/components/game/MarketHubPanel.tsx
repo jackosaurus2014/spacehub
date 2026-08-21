@@ -8,8 +8,10 @@
 // original corp-tier gate (FOLDED_FEATURE_TIERS).
 
 import { useEffect, useState } from 'react';
-import type { GameState } from '@/lib/game/types';
+import type { GameState, GameTab } from '@/lib/game/types';
 import { isFoldedFeatureUnlocked, FOLDED_FEATURE_TIERS } from '@/lib/game/corporation-tiers';
+import { consumeSubViewRequest } from '@/lib/game/sub-view';
+import CompetitivePosturePanel from './CompetitivePosturePanel';
 import { playSound } from '@/lib/game/sound-engine';
 import { Concept } from './HoloTip';
 import MarketPanel from './MarketPanel';
@@ -28,6 +30,10 @@ interface MarketHubPanelProps {
   setState: (fn: (prev: GameState | null) => GameState | null) => void;
   onSellResource: (resourceId: string, quantity: number, revenue: number) => void;
   onBuyResource: (resourceId: string, quantity: number, cost: number) => void;
+  /** PvP Discoverability pass: lets the posture strip route to Crew / Map /
+   *  Territory for the verbs that do not live in this hub. Optional so every
+   *  existing call site keeps compiling. */
+  onNavigateTab?: (tab: GameTab) => void;
 }
 
 type MarketTab = 'spot' | 'analytics' | 'economy' | 'futures';
@@ -88,13 +94,29 @@ function MarketFirstOpenIntro() {
   );
 }
 
-export default function MarketHubPanel({ state, setState, onSellResource, onBuyResource }: MarketHubPanelProps) {
+export default function MarketHubPanel({ state, setState, onSellResource, onBuyResource, onNavigateTab }: MarketHubPanelProps) {
   const tier = state.corporationTier || 1;
   const economyUnlocked = isFoldedFeatureUnlocked(tier, 'economy');
   const analyticsUnlocked = isFoldedFeatureUnlocked(tier, 'intelligence');
   const futuresUnlocked = isFoldedFeatureUnlocked(tier, 'futures');
 
   const [tab, setTab] = useState<MarketTab>('spot');
+
+  // PvP Discoverability pass (2026-08): honour a parked sub-view request so a
+  // Situation Log row, a posture readout, or a tool-unlock briefing that says
+  // "the price-campaign form is here" actually lands on Analytics instead of
+  // on Spot & Orders. A request for a tier-locked view is ignored (the lock
+  // notice would be a dead end); everything else behaves as before.
+  useEffect(() => {
+    const requested = consumeSubViewRequest('market');
+    if (!requested) return;
+    if (requested === 'analytics' && !analyticsUnlocked) return;
+    if (requested === 'economy' && !economyUnlocked) return;
+    if (requested === 'futures' && !futuresUnlocked) return;
+    if (requested === 'spot' || requested === 'analytics' || requested === 'economy' || requested === 'futures') {
+      setTab(requested);
+    }
+  }, [analyticsUnlocked, economyUnlocked, futuresUnlocked]);
 
   const tabs: { id: MarketTab; label: string; icon: IconName; locked: boolean }[] = [
     { id: 'spot', label: 'Spot & Orders', icon: 'market', locked: false },
@@ -134,7 +156,16 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
           <MarketOrderBook state={state} />
         </div>
       )}
-      {tab === 'analytics' && (analyticsUnlocked ? <MarketIntelligencePanel /> : <LockedSubtabNotice icon="📊" label="Analytics" tier={FOLDED_FEATURE_TIERS.intelligence} />)}
+      {tab === 'analytics' && (analyticsUnlocked ? (
+        <div className="space-y-3">
+          {/* PvP Discoverability pass: Analytics is where the offense verbs
+              live (price-campaign declare form, the campaign register,
+              the demand map). The posture readout tells the player WHICH of
+              them, if any, today's real state makes worth opening. */}
+          {onNavigateTab && <CompetitivePosturePanel state={state} onNavigate={onNavigateTab} />}
+          <MarketIntelligencePanel />
+        </div>
+      ) : <LockedSubtabNotice icon="📊" label="Analytics" tier={FOLDED_FEATURE_TIERS.intelligence} />)}
       {tab === 'economy' && (economyUnlocked ? <EconomyPanel state={state} /> : <LockedSubtabNotice icon="🌐" label="Economy" tier={FOLDED_FEATURE_TIERS.economy} />)}
       {tab === 'futures' && (futuresUnlocked ? <FuturesPanel state={state} setState={setState} /> : <LockedSubtabNotice icon="🔮" label="Futures" tier={FOLDED_FEATURE_TIERS.futures} />)}
     </div>

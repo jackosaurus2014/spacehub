@@ -1508,6 +1508,24 @@ export interface GameState {
    *  server credits the governor via the One-Wallet ledger (capped) and the
    *  client drains via offense.ts's own hand-off queue. */
   pendingTollPayments?: Record<string, number>;
+
+  // ─── PvP Discoverability pass (2026-08, competitive-posture.ts) ──────────
+
+  /** [SAVE] NEW OPTIONAL FIELD — no migration, no version bump. Ids from
+   *  competitive-posture.ts's COMPETITIVE_TOOLS whose one-time "this tool is
+   *  now available to you" announcement has already fired for this save.
+   *
+   *  ABSENT is a legal, expected value meaning "this save has never been
+   *  read by the announcer". reconcileToolAnnouncements treats that as a
+   *  silent BASELINE — it records everything currently available WITHOUT
+   *  announcing any of it — so a veteran loading a build that contains this
+   *  pass never receives a backlog of toasts, and a fresh Frontier corp
+   *  (which qualifies for none of the tools) baselines to the empty array
+   *  and then gets each unlock announced exactly once, at the moment it
+   *  happens. Once written it is ordinary save data on the normal
+   *  localStorage/sync path; re-announcement is impossible because the id is
+   *  recorded before the announcement is rendered. */
+  seenCompetitiveTools?: string[];
 }
 
 /** One chapter act's live/catch-up progress marker (0..acts.length-1 while

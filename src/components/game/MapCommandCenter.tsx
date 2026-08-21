@@ -36,6 +36,7 @@ import {
   type SystemRadialActionId,
 } from '@/lib/game/map-radial';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { consumeSubViewRequest, requestSubView } from '@/lib/game/sub-view';
 import { INTERSTELLAR_SYSTEM_MAP } from '@/lib/game/interstellar';
 import { MAP_ZOOM_TIER_LABEL, type MapZoomTier } from '@/lib/game/map-zoom';
 import { SLOT_SEGMENT_STYLE } from '@/lib/game/map-bodies';
@@ -208,6 +209,16 @@ export default function MapCommandCenter({
   const [showSpatial, setShowSpatial] = useState(false);
   const spatialUnlocked = isFoldedFeatureUnlocked(state.corporationTier || 1, 'spatial');
 
+  // PvP Discoverability pass (2026-08): honour a parked `map:slots` sub-view
+  // request (sub-view.ts) so a Situation Log row or posture readout that says
+  // "GEO is saturated — leases are the only way in" opens the Spatial
+  // Strategy overlay it is talking about, rather than dropping the player on
+  // a bare map. A request for a tier-locked overlay is ignored.
+  useEffect(() => {
+    const requested = consumeSubViewRequest('map');
+    if (requested === 'slots' && spatialUnlocked) setShowSpatial(true);
+  }, [spatialUnlocked]);
+
   // Explicit measured height. `flex-1` under the shell's `min-h-screen` flex
   // column is unreliable (min-height parents don't guarantee flex-grow space,
   // and the game page sits below variable site chrome), which collapsed the
@@ -312,7 +323,11 @@ export default function MapCommandCenter({
       case 'build': setDetail({ view: 'build', token: Date.now() }); break;
       case 'dispatch': setDetail({ view: 'dispatch', token: Date.now() }); break;
       case 'unlock': onUnlock(locId); setDetail({ view: 'overview', token: Date.now() }); break;
-      case 'demand': onNavigateTab('market'); break;
+      // PvP Discoverability pass: the demand map lives in Markets →
+      // Analytics, which is also where the price-campaign register and
+      // declare form live. Before this pass the radial dropped the player on
+      // Spot & Orders and the surface it promised was two clicks away.
+      case 'demand': requestSubView('market:analytics'); onNavigateTab('market'); break;
       case 'orders': onNavigateTab('fleet'); break;
       case 'slots': setShowSpatial(true); break;
     }

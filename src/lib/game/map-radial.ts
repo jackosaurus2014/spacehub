@@ -174,15 +174,28 @@ export function deriveRadialActions(state: GameState, locationId: string, now: n
   if (ORBITAL_SLOT_MAP.has(locationId)) {
     const spatialUnlocked = isFoldedFeatureUnlocked(state.corporationTier || 1, 'spatial');
     const ring = computeSlotRing(state, locationId, now);
+    // PvP Discoverability pass (2026-08): when the pool is SATURATED, the
+    // arc says so in the description a screen reader reads out and a
+    // keyboard user sees under the ring. The state was already in `ring`
+    // (map-bodies.computeSlotRing) — it just never reached this verb, so
+    // the one moment a player most needs to know that leases exist passed
+    // silently. No new derivation, no new mechanic.
+    const saturated = !!ring && ring.synced && ring.bucket === 'saturated';
+    const leased = !!ring && ring.leased;
     byId.set('slots', {
       id: 'slots',
       label: 'Slots',
       icon: 'target',
-      description: `Orbital slot inventory and lease auctions at ${name}`,
+      description: saturated && !leased
+        ? `${name} is at capacity — new construction here needs a slot lease won at auction`
+        : `Orbital slot inventory and lease auctions at ${name}`,
       enabled: spatialUnlocked,
       reason: spatialUnlocked ? undefined : `Spatial Strategy unlocks at Corporation Tier ${FOLDED_FEATURE_TIERS.spatial}`,
       detail: ring
-        ? (ring.synced ? `${ring.occupied}/${ring.total} slots` : `you ${ring.yours}/${ring.total}`)
+        ? (ring.synced
+            // "FULL" is a WORD, not a colour — greyscale/screen-reader safe.
+            ? `${ring.occupied}/${ring.total} slots${saturated ? ' · FULL' : ''}`
+            : `you ${ring.yours}/${ring.total}`)
         : null,
     });
   }

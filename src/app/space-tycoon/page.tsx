@@ -134,6 +134,15 @@ import {
   resolveChoiceSpeaker,
   type LeaderMoment,
 } from '@/lib/game/leader-moments';
+// PvP Discoverability pass (2026-08) — "these tools exist" / "someone is
+// doing it to me". See src/lib/game/competitive-posture.ts for the honesty
+// rule governing every string these two surfaces render.
+import CompetitiveUnlockToast from '@/components/game/CompetitiveUnlockToast';
+import CompetitiveAlertLayer from '@/components/game/CompetitiveAlertLayer';
+import {
+  reconcileToolAnnouncements,
+  type CompetitiveToolDef,
+} from '@/lib/game/competitive-posture';
 import { commitLobbying } from '@/lib/game/accord-senate';
 import type { LobbyStance } from '@/lib/game/accord-senate';
 import { acceptDelivery, deliverContract, getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
@@ -929,6 +938,12 @@ export default function SpaceTycoonPage() {
   // baseline on first run, so a loaded save never replays months of
   // retirements and standing shifts as a stack of modals.
   const [leaderQueue, setLeaderQueue] = useState<LeaderMoment[]>([]);
+  // PvP Discoverability pass (2026-08, competitive-posture.ts) — the
+  // "these tools exist" queue. Same discipline as the two queues above: the
+  // page owns the list, the toast presents only the head, and the ONCE-ONLY
+  // guarantee lives in the save (GameState.seenCompetitiveTools), not here,
+  // so it survives a reload and a device change.
+  const [competitiveQueue, setCompetitiveQueue] = useState<CompetitiveToolDef[]>([]);
   const leaderSeenEventIdsRef = useRef<Set<string> | null>(null);
   const leaderStandingRef = useRef<Partial<Record<FactionId, number>> | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1556,6 +1571,51 @@ export default function SpaceTycoonPage() {
     prevFrontierStatusRef.current = state.frontierStatus;
   }, [state?.frontierStatus]);
 
+  // PvP Discoverability pass (2026-08) — "these tools exist". Production
+  // telemetry before this pass: every competitive tool had been used ZERO
+  // times, ever. They were never broken, only invisible. This watcher
+  // announces each one ONCE, at the moment the corporation actually
+  // qualifies for it (research completed, corp tier reached, Frontier
+  // graduated, governorship won).
+  //
+  // The once-only guarantee is persisted, not in-memory:
+  // reconcileToolAnnouncements writes the fired ids into the optional
+  // GameState.seenCompetitiveTools field, and an ABSENT field baselines
+  // silently — so an existing save loading this build gets zero backlog
+  // toasts, and a fresh corporation (which qualifies for none of these
+  // inside the Protected Frontier) baselines to empty and then hears about
+  // each unlock exactly once. The reconciler also refuses to announce while
+  // the FTUE chain is running WITHOUT consuming the announcement, so
+  // anything unlocked mid-tutorial arrives right after the chain finishes.
+  useEffect(() => {
+    if (!state) return;
+    const result = reconcileToolAnnouncements(state);
+    const stored = state.seenCompetitiveTools;
+    // nextSeen is always a superset of stored, so a length change is a
+    // sufficient (and allocation-free) "did anything move" test. Guarding
+    // this is what keeps the effect from looping on its own setState.
+    if (!Array.isArray(stored) || result.nextSeen.length !== stored.length) {
+      setState(prev => (prev ? { ...prev, seenCompetitiveTools: result.nextSeen } : prev));
+    }
+    if (result.announce.length > 0) {
+      setCompetitiveQueue(q => {
+        const have = new Set(q.map(t => t.id));
+        return [...q, ...result.announce.filter(t => !have.has(t.id))].slice(0, 4);
+      });
+    }
+  }, [
+    state?.seenCompetitiveTools,
+    state?.corporationTier,
+    state?.frontierStatus,
+    state?.completedResearch,
+    state?.zoneStandings,
+    state?.tutorialStep,
+    // Two of the gates are net-worth thresholds ($200M for the offense
+    // tools), which move continuously rather than in discrete events — a
+    // game-month tick is a cheap, bounded re-check for those.
+    state?.gameDate?.month,
+  ]);
+
   // Speed boost activation listener
   useEffect(() => {
     const handler = (e: Event) => {
@@ -2039,6 +2099,18 @@ export default function SpaceTycoonPage() {
       {/* Scheduled world-restart notice — renders only while a restart is pending */}
       <WorldResetNotice />
 
+      {/* PvP Discoverability pass — "someone is doing it to me". M5 shipped
+          victim telemetry whose only surface was a Situation Log row on the
+          Reports tab; an attack with a 48-hour clock on it needs to reach
+          the player where they already are. Renders nothing for Frontier-
+          protected saves (they cannot be targeted), nothing mid-FTUE, and
+          every banner is dismissible — the permanent record stays in the
+          Situation Log either way. */}
+      <CompetitiveAlertLayer
+        state={state}
+        onNavigate={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+      />
+
       {/* Protected Frontier banner — renders only when active */}
       <FrontierBadge
         state={state}
@@ -2462,6 +2534,7 @@ export default function SpaceTycoonPage() {
             setState={setState}
             onSellResource={handleSellResource}
             onBuyResource={handleBuyResource}
+            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
           />
         )}
         {tab === 'contracts' && (
@@ -2722,6 +2795,7 @@ export default function SpaceTycoonPage() {
         <FrontierGraduationModal
           state={state}
           onClose={() => setShowFrontierGraduation(false)}
+          onNavigate={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
         />
       )}
 
@@ -2755,6 +2829,20 @@ export default function SpaceTycoonPage() {
         availableTabsKey={tabIdsKey}
         availableTabs={allTabs.map(t => t.id)}
         onNavigateToTab={(t) => setTab(resolveLegacyTab(t))}
+      />
+      {/* PvP Discoverability pass — "these tools exist". Non-blocking and
+          non-modal on purpose (it never steals focus), one at a time, once
+          per tool ever. Held behind the full-screen queues for the same
+          reason FeatureUnlockToast is: a briefing under a cinematic is a
+          briefing nobody reads. */}
+      <CompetitiveUnlockToast
+        tool={
+          isOnboardingActive(state) || cinematicQueue.length > 0 || leaderQueue.length > 0 || state.pendingChoice
+            ? null
+            : (competitiveQueue[0] ?? null)
+        }
+        onDismiss={() => setCompetitiveQueue(q => q.slice(1))}
+        onNavigate={(t) => setTab(resolveLegacyTab(t))}
       />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 

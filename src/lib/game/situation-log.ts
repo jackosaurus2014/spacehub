@@ -56,6 +56,11 @@ import { getGlobalGameDate, REAL_SECONDS_PER_GAME_MONTH } from './server-time';
 // else here. LOCATION_TO_ZONE maps a building's location to its toll zone.
 import { OFFENSE_SNAPSHOT_STALE_MS } from './offense';
 import { LOCATION_TO_ZONE } from './zone-influence';
+// PvP Discoverability pass (2026-08): the "these tools exist / right now is a
+// moment to use one" surface. Pure lens like everything else here — see
+// competitive-posture.ts's header for the honesty rule governing what is and
+// is not derivable.
+import { deriveCompetitiveSignals } from './competitive-posture';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -99,7 +104,14 @@ export type SituationCategory =
   // Wave M5 (O4): a rival's signing-bonus raid on this player's crew —
   // counteroffer window closing (the [SAVE] V38 "counteroffer inbox").
   | 'poach_offer'
-  | 'lane_toll';
+  | 'lane_toll'
+  // PvP Discoverability pass (2026-08, competitive-posture.ts): the
+  // "right now is a moment to use one of these tools" surface. Every entry
+  // is derived from real synced state (demand pools, wage indexes, slot
+  // occupancy, spot vs base) — see that module's honesty rule for what was
+  // deliberately NOT derived. Always severity 'info' (an opportunity is not
+  // an emergency) and hard-capped at MAX_COMPETITIVE_SIGNALS.
+  | 'competitive_signal';
 
 export interface SituationItem {
   id: string;
@@ -117,6 +129,12 @@ export interface SituationItem {
   /** When tab === 'map', which location/system to focus (reuses the exact
    *  OrderQueueHUD/Outliner "Operations" target shape). */
   target?: OrderQueueTarget;
+  /** PvP Discoverability pass: an optional `<tab>:<view>` token (sub-view.ts)
+   *  so activating the row lands on the SUB-tab where the verb actually
+   *  lives — Markets → Analytics, Map HUD → Spatial Strategy — instead of on
+   *  the hub's default view. Renderers pass it to requestSubView() alongside
+   *  the existing setTab call; ignoring it degrades to today's behaviour. */
+  subView?: string;
 }
 
 const HAZARD_ICON: Record<string, IconName> = {
@@ -616,6 +634,25 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
         });
       }
     }
+  }
+
+  // ── Competitive opportunity signals (PvP Discoverability pass) ──────────
+  // "Right now is a moment to use one of these tools." Delegated wholesale
+  // to competitive-posture.ts so the honesty rules, the eligibility gates
+  // (never mid-FTUE, never inside the Protected Frontier) and the cap live
+  // in exactly one place. All 'info' severity: they sort below every real
+  // deadline in this log and can never outrank a hazard or a poach window.
+  for (const sig of deriveCompetitiveSignals(state, { nowMs })) {
+    items.push({
+      id: `sit-${sig.id}`,
+      category: 'competitive_signal',
+      icon: sig.icon,
+      label: sig.label,
+      detail: sig.detail,
+      severity: 'info',
+      tab: sig.tab,
+      subView: sig.subView,
+    });
   }
 
   // ── Queue idle warning (wasted automation capacity) ─────────────────────
