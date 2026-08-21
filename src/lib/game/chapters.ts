@@ -70,7 +70,7 @@ import type {
 import { generateId, mulberry32, hashStringToSeed } from './formulas';
 import type { ChainConsequence } from './narrative-events';
 import { applyChainConsequence, consequencePreview } from './narrative-events';
-import { PLANET_ASSETS, BG_ASSETS } from './assets';
+import { PLANET_ASSETS, BG_ASSETS, getChapterArt } from './assets';
 
 // ─── Calendar constants ──────────────────────────────────────────────────
 
@@ -737,14 +737,22 @@ export function resolveChapterEpilogue(
 
 // ─── Cinematic detection (W5 precedent, extended for chapters) ────────────
 
-const CHAPTER_ART: Record<string, string> = {
+/** Thematic biome backdrop per chapter, drawn from the existing
+ *  PLANET_ASSETS/BG_ASSETS library. Since Wave A3 this is the SECOND choice,
+ *  not the first: all three authored chapters now have a dedicated 16:9
+ *  illustration in CHAPTER_ART_ASSETS (assets.ts). This map is retained as
+ *  the on-theme middle rung so a future chapter authored without dedicated
+ *  art still gets something better than the generic anomaly fallback —
+ *  mirroring cinematic-moments.ts's NARRATIVE_CHAIN_ART contract exactly. */
+const CHAPTER_BIOME_ART: Record<string, string> = {
   the_second_silence: PLANET_ASSETS.ancient_ruins,
   the_pallas_ledger: BG_ASSETS.starfield,
   triton_archive_second_breach: PLANET_ASSETS.ancient_ruins,
 };
 
+/** Dedicated illustration → thematic biome art → generic anomaly backdrop. */
 export function pickChapterArt(chapterId: string): string | undefined {
-  return CHAPTER_ART[chapterId] ?? PLANET_ASSETS.anomaly;
+  return getChapterArt(chapterId) ?? CHAPTER_BIOME_ART[chapterId] ?? PLANET_ASSETS.anomaly;
 }
 
 /** Chapter-open beats — Act 1 of each chapter, matching narrative-events.ts's

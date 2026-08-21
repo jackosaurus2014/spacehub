@@ -115,11 +115,22 @@ export const BG_ASSETS = {
 // (docs/VISUAL_DEPTH_2026-08.md) audited the live chain list and found
 // exactly one chain added since (W13's board_politics_demand) lacked art —
 // generated and added below, so this map is now complete for all chains in
-// CHAIN_DEFINITIONS. Still keep the fallback contract for future chains:
-// consumers MUST fall back to PLANET_ASSETS/BG_ASSETS biome art (see
-// cinematic-moments.ts pickNarrativeArt) when a chainId has no entry here,
-// so a future chain added without art still renders something on-theme
-// instead of a broken image.
+// CHAIN_DEFINITIONS.
+//
+// Wave A3 (docs/VISUAL_AAA_2026-08.md) re-audited this map against live
+// content and CONFIRMED it complete: 13/13 chains covered. The A3.2 backlog
+// entry's "~32 missing event illustrations" counted individual chain STAGES
+// (45 total) rather than chains, but only a stage flagged
+// `presentationHint: 'cinematic'` ever reaches CinematicOverlay and thus ever
+// renders art — and all 11 such stages today are chain-HEADS (stage 0), every
+// one of which resolves through the chain-keyed entry below. Per-stage art
+// would therefore be generated for surfaces that never display it. No
+// generation was needed; see the A3 section of the AAA spec.
+//
+// Still keep the fallback contract for future chains: consumers MUST fall
+// back to PLANET_ASSETS/BG_ASSETS biome art (see cinematic-moments.ts
+// pickNarrativeArt) when a chainId has no entry here, so a future chain added
+// without art still renders something on-theme instead of a broken image.
 export const EVENT_ART: Record<string, string> = {
   space_weather_ladder: `${BASE}/event-space_weather_ladder.webp`,
   europa_biosignature: `${BASE}/event-europa_biosignature.webp`,
@@ -136,6 +147,36 @@ export const EVENT_ART: Record<string, string> = {
   // Wave V6 addition — W13's Governance/board-politics chain.
   board_politics_demand: `${BASE}/event-board_politics_demand.webp`,
 };
+
+// ─── STORY CHAPTER ILLUSTRATIONS (Wave A3) ──────────────────────────────────
+// docs/VISUAL_AAA_2026-08.md §A3. The Live-Service LS8 Story Chapters
+// (src/lib/game/chapters.ts CHAPTER_DEFINITIONS ids) open on a
+// `presentationHint: 'cinematic'` Act 1 — the SAME full-screen
+// CinematicOverlay surface the narrative chains use — but shipped with no
+// dedicated art, falling back to reused PLANET_ASSETS biome imagery. A3's
+// art audit found this to be the only genuine illustration gap left on that
+// surface, so all three chapters got a dedicated 16:9 illustration in the
+// established EVENT_ART house style (same 1344x768 / `--batch` /
+// resize-art.ts pipeline as Wave V6's board_politics_demand).
+//
+// Lore-anchored per docs/LORE.md: the Great Nest bio-structure gone dark
+// (Hive Collective, the 2103 Great Silence recurring), the Pallas-4 Free
+// Port trading concourse (Syndicate), and the Triton Archive vault sealing
+// (Echo Remnants, the unsolved 2149 breach). Keyed by chapterId; consumers
+// keep the biome-art fallback for any future chapter authored without art
+// (see chapters.ts pickChapterArt).
+export const CHAPTER_ART_ASSETS: Record<string, string> = {
+  the_second_silence: `${BASE}/chapter-the_second_silence.webp`,
+  the_pallas_ledger: `${BASE}/chapter-the_pallas_ledger.webp`,
+  triton_archive_second_breach: `${BASE}/chapter-triton_archive_second_breach.webp`,
+};
+
+/** Get a Story Chapter's dedicated illustration, or null if none exists yet
+ *  (same graceful-fallback contract as getMissionPatchAsset — callers should
+ *  fall back to thematic biome art rather than request a 404). */
+export function getChapterArt(chapterId: string): string | null {
+  return CHAPTER_ART_ASSETS[chapterId] ?? null;
+}
 
 // ─── MISSION PATCH ASSETS (4X Wave W2) ──────────────────────────────────────
 // docs/4X_BASELINE_2026-08.md Part 3.3 "Mission patches/emblems" gap. Flat

@@ -45,9 +45,13 @@ export interface CinematicMoment {
   /** Hex accent used for glow/ring/title color. */
   accent: string;
   /** Backdrop art path. Narrative moments prefer a dedicated 16:9 event
-   *  illustration (EVENT_ART, generated in 4X Wave W2 — 12 of the 44 event
-   *  chain-heads have one so far) and fall back to thematic PLANET_ASSETS/
-   *  BG_ASSETS biome art for the rest (see pickNarrativeArt below).
+   *  illustration (EVENT_ART) and fall back to thematic PLANET_ASSETS/
+   *  BG_ASSETS biome art (see pickNarrativeArt below). As of Wave A3's art
+   *  audit that fallback is dormant for narrative moments — all 13 chains in
+   *  CHAIN_DEFINITIONS have dedicated art, so every cinematic chain-head
+   *  resolves to a real illustration — but it stays as the standing contract
+   *  for any future chain authored without art. Chapter moments follow the
+   *  same shape via pickChapterArt (all 3 chapters got dedicated art in A3).
    *  Undefined falls back to a plain radial-glow backdrop, same as
    *  MilestoneVignette. */
   art?: string;
@@ -92,7 +96,13 @@ export function dequeueCinematicMoment(queue: CinematicMoment[]): CinematicMomen
  *  PLANET_ASSETS/BG_ASSETS biome library (src/lib/game/assets.ts). Used only
  *  when EVENT_ART has no dedicated illustration for the chain (see
  *  pickNarrativeArt) — kept as the permanent fallback so a future chain
- *  added without art still renders something on-theme instead of nothing. */
+ *  added without art still renders something on-theme instead of nothing.
+ *  Every entry below is currently shadowed by a real EVENT_ART illustration
+ *  (Wave A3 audit) and none of them is reachable today; that is intended —
+ *  this is a safety net, not a live code path. Note it does not even cover
+ *  every chain (board_politics_demand has art but no biome entry), which is
+ *  fine: pickNarrativeArt returns undefined and CinematicOverlay renders its
+ *  plain radial-glow backdrop. */
 const NARRATIVE_CHAIN_ART: Record<string, string> = {
   space_weather_ladder: BG_ASSETS.spaceNebula, // unused today (chain deliberately not cinematic-flagged) — kept for completeness
   europa_biosignature: PLANET_ASSETS.ice,

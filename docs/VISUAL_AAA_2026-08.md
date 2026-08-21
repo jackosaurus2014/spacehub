@@ -251,28 +251,55 @@ GameState. *Depends:* A1.1 for the socket/housing treatment. *Loop:* tactical + 
 70 commander portraits sit on disk and are currently rendered as small thumbnails. Promote hiring,
 retirement, era transitions, and first contact to full portrait-framed moments using the existing
 `CinematicOverlay` queue — portrait in a `sprite-frame` mount, name plate, faction insignia, one line
-of character voice. *Depends:* A3 art fill for the 20 leaders with no portrait. *Loop:* monthly /
-campaign — this is a *pacing* feature, not a per-session one.
+of character voice. ~~*Depends:* A3 art fill for the 20 leaders with no portrait.~~ **Dependency
+cleared** — the A3 audit found all 80 roster portraits already on disk (see A3.1); A2.3 can start
+immediately. *Loop:* monthly / campaign — this is a *pacing* feature, not a per-session one.
 
-### A3 — Art fill (parallelizable, no code contention)
+### A3 — Art fill (parallelizable, no code contention) — ✅ COMPLETE
 
-Carried forward unchanged from `VISUAL_DEPTH_2026-08.md` §V6, which enumerated these and shipped
-41 of them. The remaining, enumerated holes:
+> **Audit correction (Wave A3, 2026-08-21).** The three items below were carried forward from
+> `VISUAL_DEPTH_2026-08.md` §V6 *verbatim and without re-auditing*, describing the state of the world
+> **before** V6 ran. V6 then generated exactly this art and shipped it. A3 re-audited every art map
+> against disk and found **A3.1 and A3.3 already closed, and A3.2 based on a miscount.** No portrait
+> generation was required. **A2.3 is unblocked — its stated dependency does not exist.**
 
-**A3.1 — 20 missing leader portraits** — **Effort: S** (wall-clock + curation).
-The W8 scientist/engineer leaders (`commanders.ts` W8 block) have no portraits and every UI falls
-back. Blocks A2.3.
+**A3.1 — 20 missing leader portraits** — ✅ **already shipped in V6.**
+All 80 `COMMANDER_DEFS` entries have a portrait on disk (plus the 10 legendary fullbodies); the
+20 W8 scientist/engineer leaders were generated in V6 batch B1 and the `hasPortrait: false`
+override was removed at the same time, so `hasPortraitArt()` already returns true for the whole
+roster. Verified: 0 missing base portraits, 0 duplicate-content files, all valid WebP.
 
-**A3.2 — ~32 missing event illustrations** — **Effort: M.**
-W4 added 44 events across 12 chains; only the 12 original chains have art. The newer chains fall
-back to biome art (a documented, intentional partial map in `assets.ts`).
+**A3.2 — "~32 missing event illustrations"** — ✅ **not a real gap (miscount).**
+The 32 counted individual chain **stages** (45 total across 13 chains) against 13 chain-level
+illustrations. But `EVENT_ART` is deliberately keyed by `chainId`, and — decisively — only a stage
+carrying `presentationHint: 'cinematic'` ever reaches `CinematicOverlay` and therefore ever renders
+art at all. There are **11 such stages and every one is a chain-head (stage 0)**, each already
+resolving to a dedicated illustration. Per-stage art would be generated for surfaces that never
+display it. All 13/13 chains covered.
 
-**A3.3 — 6 faction leader portraits** — **Effort: S.**
-`docs/LORE.md` names them; only faction emblems exist. Needed before faction diplomacy surfaces can
-feel inhabited.
+**A3.3 — 6 faction leader portraits** — ✅ **already shipped in V6.**
+`FACTION_LEADER_ASSETS` (assets.ts) is fully populated and all six files are on disk with
+512/128 variants, lore-anchored per `LORE.md` (Hive Collective correctly depicts a rotating
+spokesbody interface rather than a named individual, per its "no singular leader" canon).
 
-All three via the existing `scripts/generate-art.ts --batch` pipeline, emitting 1536/512/128 sizes
-from day one per the V6 contract, with every consumer's documented null-fallback preserved.
+**A3.4 — 3 Story Chapter illustrations** — ✅ **the one genuine gap A3 found, now shipped.**
+A full sweep of every art reference in `src/` (136 paths, literal + `${BASE}` template) found **zero
+broken references** — but the LS8 Story Chapters open on a `presentationHint: 'cinematic'` Act 1, the
+same full-screen surface the narrative chains use, while falling back to *reused* biome art. Three
+dedicated 16:9 illustrations generated in the EVENT_ART house style and wired via new
+`CHAPTER_ART_ASSETS` / `getChapterArt()`, with `pickChapterArt` now resolving
+dedicated → thematic biome → generic anomaly:
+`chapter-the_second_silence` (the Great Nest gone dark), `chapter-the_pallas_ledger` (Pallas-4 Free
+Port trading concourse), `chapter-triton_archive_second_breach` (the Archive vault sealing).
+
+**Carried forward from A3 (not blocking A2.3):** the 26 V6-generated portraits are 1024² and
+painterly-illustrated, while the 60 legacy portraits are 1536² and photoreal — two visibly different
+treatments, and several legacy images carry garbled pseudo-text artifacts on lab coats and screens
+that violate the pipeline's own `no text overlays` house-style directive. The V6 cohort is the more
+spec-compliant one. A2.3 renders portraits from `getPortraitUrl()` at base resolution (never via
+`getArtVariant`, which is used only for interstellar vistas), so nothing breaks — but putting two
+cohorts side by side in large portrait frames will expose the split. Unifying them is a ~60-image
+regeneration and a curation call for the coordinator, not a silent A3 side effect.
 
 ### A4 — Motion and depth
 
