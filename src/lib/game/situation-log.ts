@@ -61,6 +61,11 @@ import { LOCATION_TO_ZONE } from './zone-influence';
 // competitive-posture.ts's header for the honesty rule governing what is and
 // is not derivable.
 import { deriveCompetitiveSignals } from './competitive-posture';
+// AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the systemic-crisis
+// alert surface. getCrisisStatus is the same pure derivation the Emergency
+// panel renders, so the Log and the panel can never describe one crisis two
+// different ways.
+import { getCrisisStatus, CRISIS_APPROACH_MAP } from './systemic-crises';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -111,7 +116,12 @@ export type SituationCategory =
   // occupancy, spot vs base) — see that module's honesty rule for what was
   // deliberately NOT derived. Always severity 'info' (an opportunity is not
   // an emergency) and hard-capped at MAX_COMPETITIVE_SIGNALS.
-  | 'competitive_signal';
+  | 'competitive_signal'
+  // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): an Accord emergency
+  // is forecast, an exposure bar is running against this corporation, or the
+  // Stabilization Assessment is still short of its target. Pure lens over
+  // state.systemicCrisis + state.crisisSituation.
+  | 'systemic_crisis';
 
 export interface SituationItem {
   id: string;
@@ -187,6 +197,9 @@ const CALENDAR_CATEGORY_TAB: Partial<Record<CalendarCategory, GameTab>> = {
   procurement_drive: 'contracts',
   // Wave M6: tender contests live with board politics on the Governance tab.
   tender_offer: 'governance',
+  // AAA Round 2: the Emergency view lives in the Reports hub, alongside the
+  // Situation Log itself.
+  systemic_crisis: 'reports',
 };
 
 const CALENDAR_CATEGORY_TO_SITUATION: Partial<Record<CalendarCategory, SituationCategory>> = {
@@ -197,6 +210,11 @@ const CALENDAR_CATEGORY_TO_SITUATION: Partial<Record<CalendarCategory, Situation
   economic_cycle: 'economic_cycle',
   slot_auction: 'slot_auction',
   procurement_drive: 'procurement_drive',
+  // NOTE: 'systemic_crisis' is deliberately ABSENT for the same reason
+  // 'tender_offer' is — the crisis section below emits richer, exposure-aware
+  // items across the whole cycle (forecast, running bar, assessment), not
+  // only inside the 48h closing-soon window this calendar pass covers, so
+  // mapping it here would double-report every crisis appointment.
   // NOTE: 'tender_offer' is deliberately ABSENT — the equity section below
   // emits its own richer items for the full 7-day tender window (a tender
   // on your corporation warrants attention immediately, not only inside
@@ -473,6 +491,66 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
         severity: pinned ? 'warning' : 'info',
         atMs: laborSnapshot.asOf,
         tab: 'workforce',
+      });
+    }
+  }
+
+  // ── Systemic crisis (AAA Round 2 — systemic-crises.ts) ──────────────────
+  // Three items at most, and every one of them is actionable:
+  //   1. an exposure bar running against this corporation (the decision),
+  //   2. the assessment still short with the window closing (the
+  //      cooperation decision),
+  //   3. the forecast, so the crisis is never a surprise.
+  // Nothing surfaces for a Frontier / mid-FTUE / pre-Round-2 save: the
+  // status object reports `eligibility.eligible === false` and the forecast
+  // item is suppressed for exactly those two protected cases.
+  {
+    const cs = getCrisisStatus(state, nowMs);
+    const protectedNewcomer = cs.eligibility.reason === 'frontier' || cs.eligibility.reason === 'onboarding';
+    const sit = cs.situation;
+    if (sit && !sit.outcome) {
+      const pct = Math.round(sit.progress * 100);
+      const projected = Math.round(cs.projectedProgress * 100);
+      items.push({
+        id: `sit-crisis-situation-${sit.cycleIndex}`,
+        category: 'systemic_crisis',
+        icon: 'cal-systemic-crisis',
+        label: `${cs.def.name}: exposure ${pct}%`,
+        detail: cs.projectedProgress >= 1
+          ? `On your current posture (${CRISIS_APPROACH_MAP.get(sit.approachId)?.name ?? sit.approachId}) the bar reaches 100% before the window closes and the loss is realized. Change posture or pledge to the Accord assessment.`
+          : `On your current posture (${CRISIS_APPROACH_MAP.get(sit.approachId)?.name ?? sit.approachId}) the bar peaks at ${projected}% and the emergency is contained.`,
+        severity: cs.projectedProgress >= 1 ? 'critical' : pct >= 60 ? 'warning' : 'info',
+        atMs: cs.window.activeEndMs,
+        tab: 'reports',
+        subView: 'reports:emergency',
+      });
+    }
+    if (cs.enabled && cs.window.phase === 'active' && !protectedNewcomer && cs.containment < 1
+      && (cs.snapshot?.assessmentTargetUsd ?? 0) > 0) {
+      const remaining = cs.window.activeEndMs - nowMs;
+      items.push({
+        id: `sit-crisis-assessment-${cs.window.cycleIndex}`,
+        category: 'systemic_crisis',
+        icon: 'cal-systemic-crisis',
+        label: `Accord assessment ${Math.round(cs.containment * 100)}% subscribed`,
+        detail: `$${Math.round((cs.snapshot!.pledgedUsd) / 1e6).toLocaleString()}M of a $${Math.round(cs.snapshot!.assessmentTargetUsd / 1e6).toLocaleString()}M target, from ${cs.snapshot!.pledgeCount} corporation${cs.snapshot!.pledgeCount === 1 ? '' : 's'} — closes in ${formatHoursOrDays(remaining)}. If the target is missed every corporation the emergency reached carries the shortfall, pledger or not.`,
+        severity: remaining <= 48 * 60 * 60 * 1000 ? 'warning' : 'info',
+        atMs: cs.window.activeEndMs,
+        tab: 'reports',
+        subView: 'reports:emergency',
+      });
+    }
+    if (cs.window.phase === 'forecast' && !protectedNewcomer) {
+      items.push({
+        id: `sit-crisis-forecast-${cs.window.cycleIndex}`,
+        category: 'systemic_crisis',
+        icon: 'cal-systemic-crisis',
+        label: `Forecast: ${cs.def.name}`,
+        detail: `${cs.def.tagline} Opens in ${formatHoursOrDays(cs.window.activeStartMs - nowMs)}. Your measured exposure: ${cs.exposure.detail}`,
+        severity: 'info',
+        atMs: cs.window.activeStartMs,
+        tab: 'reports',
+        subView: 'reports:emergency',
       });
     }
   }

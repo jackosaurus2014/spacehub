@@ -75,7 +75,8 @@ wave. Plus a shared **rejected ideas** register at the end of the document.
 | Round | Topic | Status |
 |---|---|---|
 | 1 | **End-game design** — what carries a committed player from year 10 to year 50 | Design complete; **wave E3 (plumbing repair) implemented 2026-08-21** — see "E3 implementation" at the end of this document. **Wave E4 (the Legacy Hall) implemented 2026-08-22** — see "E4 implementation". **Wave E1 (the Accord Chair) implemented 2026-08-22** — see "E1 implementation". All three Round-1 waves shipped. |
-| 2+ | (to be assigned — candidates: mid-game decision density; interface/screens; onboarding-to-mastery progression; the intelligence layer as gameplay) | Not started |
+| 2 | **Escalating pressure and progression pacing** — R1-E2 (Systemic Crises + the Situation mechanic), deferred by Round 1 to headline this round | **Designed and implemented 2026-08-22** — see "Round 2" at the end of this document. Ships the Accord Emergency Register: five telemetry-scaled emergencies on an 8-week cycle, the per-corporation exposure bar with three costed postures, the Accord Stabilization Assessment (forced cooperation, free-riding visible), a second Chair verb, and a permanent public register. **`prisma db push` required.** |
+| 3+ | (to be assigned — **strongest candidate: R1-E6 mid-band construction rungs**, which Round 2's §9b independently re-measured as the remaining answer for small portfolios. Other candidates: R1-E5 capstone verbs; interface/screens; the intelligence layer as gameplay) | Not started |
 
 ---
 
@@ -1880,3 +1881,596 @@ unchanged.
    error. Noted for the next wave that burns a fee.
 5. **Prisma 5.22 rejects `/** ... *` doc comments in the schema** — `//` and `///` only. Worth a line
    in the codebase map; it cost a validation cycle.
+
+---
+
+# Round 2 — Escalating pressure and progression pacing
+
+**Round question.** `BALANCE.md` Pass 5 §H3 measured the economic core's decision cadence collapsing
+to **0–3 months per decade** after year ~10 for every archetype except the deepest ladder-climber, and
+concluded verbatim: *"the economic core alone goes static by year ~12."* Round 1 named the structural
+cause — **H1, there is no escalating external pressure** — and deferred `R1-E2` (Systemic Crises) to
+headline this round as *"the biggest idea in the round and the best answer to 'escalating external
+pressure'."* Round 2 designs and ships it.
+
+**The framing that decided every call in this round:** the pacing failure is **decision starvation,
+not difficulty**. A crisis that is merely *hard* makes a static decade unpleasant instead of empty. A
+crisis that is a **decision generator** — recurring, costed, counterplayable, and on a loop the game
+under-serves — is the actual fix. Every element below is measured against "how many real decisions
+does this put in front of a player in the decades where the economy has stopped producing any."
+
+**Method.** Code read against this repository on 2026-08-22; every constant that changes economy math
+was run through the harness *before* shipping, per the standing bar. Where a document and the code
+disagreed, the code was treated as truth. The one designed constant this round shipped with was
+**changed by the simulation** before it went out (§2f) — the Pass-5→Pass-6 lesson applied verbatim.
+
+---
+
+## 2a. Reference analysis — what the three benchmarks actually do, and the realistic analogue
+
+### Stellaris — the endgame crisis, and the mechanic nobody here has ever shipped
+
+Two separate devices, routinely conflated:
+
+| Stellaris device | What it actually solves | The realistic analogue |
+|---|---|---|
+| **Endgame crisis** (Prethoryn / Unbidden / Contingency) — spawns on a published year, **scales to galaxy strength**, threatens everyone at once, and forces rivals into temporary alignment | The "I have won, now it is maintenance" state. A dominant empire must *re-tool*, and the crisis is the only content that reliably makes enemies cooperate | A **systemic economic emergency** whose severity is keyed to *measured* server scale — a Kessler cascade, an insurance-mutual failure, a deposit-exhaustion shock, a clearing failure, a post-disaster regulatory order |
+| **Situations** — a progress bar ticking toward a bad outcome, with "approach" choices that trade money or capacity for time | Turns a *problem* into a *managed problem*: instead of one modal with one choice, it produces a decision every time the bar advances a stage | Exactly the same mechanic, unchanged. `4X_BASELINE_2026-08.md` Part 2c specced it and **it was never built**; `situation-log.ts` is a derived alert list, not this |
+| **Mid/late-game year sliders** — the game *tells you* when pressure ramps | Anticipation. Players plan around a published escalation | A **published forecast phase** and a **published world index**, so the emergency is a plan, not an ambush |
+
+The critical detail Round 1 recorded but did not resolve: Stellaris scales its crisis **to player
+power**. Reproducing that naively — "the peril you are biggest in is the peril you get" — turns the
+mechanic into a punishment for succeeding. §2c resolves this.
+
+### Master of Orion 2 — Antaran raids
+
+Periodic, on a timer the player can partly influence, escalating with turn count, genuinely
+dangerous, and — the part that matters — **they punctuate an otherwise flat mid-game**. A MoO2 raid
+is not primarily a difficulty spike; it is an *event* that makes turn 180 different from turn 179.
+The analogue is a **scheduled emergency window** on a cadence slow enough to be a beat and fast
+enough that a player who logs in weekly meets one.
+
+### Sins of a Solar Empire — the persistent tug-of-war
+
+Sins never lets territory go uncontested: a gravity well is always in the process of changing hands.
+The economic analogue is **a pooled obligation that is always either subscribed or short** — a
+scoreboard the whole server can see moving, where the interesting state is the *contested* one. That
+is the Accord Stabilization Assessment (§2d).
+
+### What the three agree on, restated for this round
+
+Round 1's deepest finding was that all three solve the post-tech-tree problem the same way: **the
+world starts acting on you.** Round 2's addition: in all three, *the world acting on you produces
+DECISIONS at a steady rate*. The Antaran raid is not one decision, it is a re-tooling. A Stellaris
+situation is not one modal, it is a bar with five stage boundaries. That rate is the thing to copy.
+
+---
+
+## 2b. Design — the Accord Emergency Register
+
+One new pure module (`src/lib/game/systemic-crises.ts`), one server module, one API route pair, one
+panel inside an existing hub. Five authored emergencies on an eight-week cycle.
+
+### The cycle (pure function of the wall clock)
+
+```
+week 0-1   FORECAST     published; ZERO mechanical effect
+week 2-5   ACTIVE       situations tick; the assessment is open; the insurance market hardens
+week 6     AFTERMATH    the relief allocation lands; the cycle is sealed into the register
+week 7     RECESS
+```
+
+Eight weeks against `chapters.ts`'s six, deliberately: the two beat against each other on a 24-week
+LCM instead of colliding every cycle, and a crisis stage boundary (a Thursday, epoch-week-aligned)
+can never land on a chapter finale weekend (fixed Saturday 18:00 UTC). Five definitions × eight weeks
+= **40 weeks before the catalogue repeats**, against chapters' 18.
+
+### The loops each element lives on (CLAUDE.md's naming requirement)
+
+| Element | Loop | Why there |
+|---|---|---|
+| The emergency itself (forecast → active → aftermath) | **Campaign** | Two real weeks of anticipation, four live, one of consequence. The slowest, largest beat the game has outside the epoch. |
+| **Posture stages** — five per emergency, one every ~5.6 real days | **Weekly** | `SESSION_DESIGN.md` maps *nothing corporate* to the weekly loop except seasons, leagues and alliance rotations. Pass 8 independently found the offense toolkit's own clocks are weekly ("one campaign window is 7 real days"). This is the loop with room. |
+| **The Assessment pledge** | **Weekly**, resolving on a **campaign** deadline | One decision per emergency, but its *value* moves continuously as the pool fills — the Sins tug-of-war shape. |
+| **The Chair's relief directive** | **Monthly** (the Chair's own term) acting on a **campaign** outcome | Reuses R1-E1's office. One directive per emergency. |
+| **Price dislocations** | **Tactical** | Two authored market events per emergency, on the existing published 48h forecast. Trading them is a session-scale decision inside a campaign-scale event — the tempo layering CLAUDE.md asks for. |
+
+### The five emergencies, and the realism test
+
+The bar Round 1 set: *would a financial historian or an orbital-mechanics engineer recognise this as
+a thing that could actually happen?* Each is drawn from a real systemic-risk category **and** a LORE
+precedent:
+
+| Emergency | Real-world class | LORE precedent | Telemetry channel |
+|---|---|---|---|
+| **The Cascade** | Kessler syndrome; the 2007 FengYun ASAT test; the 2009 Iridium–Cosmos collision | Accord Article 4 makes debris the one universally-recognised orbital hazard | orbital objects on the shared registry |
+| **The Mutual's Reserves** | A reinsurance hard market / mutual insolvency — Lloyd's LMX spiral 1988–92, Florida property carriers | Outer Rim Insurance Mutual, *"its risk models influence where corporations will operate"* | published corporate net worth in the filing window |
+| **The Thin Seam** | Ore-grade exhaustion and cut-off-grade resets; the 2010 rare-earth supply shock | the Belt Rush of 2112–2128; Psyche-16 | accumulated extraction pressure |
+| **The Clearing Failure** | Counterparty contagion through novation chains — Herstatt, LTCM, 2008 | the Kepler Merger Wave of 2128 left the clearing arrangements behind | largest single supplier share across demand pools |
+| **The Retrofit Order** | Post-disaster mandatory retrofit regimes — Piper Alpha, Challenger, Deepwater Horizon | the Ring Fire of 2137 produced the modern safety regime | installed facilities across recently-synced corporations |
+
+Every loss is hazard-, regulatory- or counterparty-driven, forecast-visible, and never PvP. No
+mechanic in this round lets one player damage another.
+
+---
+
+## 2c. The load-bearing design decision: identity is PURE, severity is MEASURED
+
+This is the split the whole round rests on, and it resolves two problems at once.
+
+**Which emergency runs is a pure function of the wall clock** — `CRISIS_DEFINITIONS[cycleIndex % 5]`.
+No database, no snapshot, no per-observer variance. That is the same boundary `market-events.ts`
+documents at its head (*"every client and the server must agree on which event is live without a DB
+round trip"*), and it is **the only reason the crisis price channel is safe**: if severity reached the
+price, a player holding a stale snapshot would be shown a different price from the one the server
+charges, which is a direct violation of §2.5 "one price truth" (`ECONOMY_PVP_2026-08.md`).
+
+**How hard it bites is measured**, from two independent real sources:
+
+```
+worldIndex     = clamp(measured server telemetry / anchor, 0, 2)   -- published at forecast, frozen for the cycle
+exposureIndex  = clamp(this corporation's own measure / anchor, 0, 2)
+severity       = tier( max(worldIndex, exposureIndex) )
+```
+
+Four tiers: **Advisory** (< 0.35 — a published forecast and *nothing else*), **Elevated** (0.35),
+**Severe** (0.80), **Systemic** (1.40).
+
+Three consequences worth defending:
+
+- **`max`, not the world alone.** A whale on a quiet shard still faces a real emergency, because the
+  exposure is genuinely theirs: a corporation with forty platforms in a crossing orbit is exposed to
+  a debris cascade whether or not anybody else has any. This is the honest version of Stellaris's
+  scale-to-player-power, and it arrives through physics rather than through a difficulty slider.
+- **A rotating catalogue, not a targeted one.** A catalogue that only ever fires the peril you are
+  biggest in is a punishment mechanic. A rotating catalogue whose *bite* is priced off your exposure
+  to it is a risk model — and it is what insurers actually do. They do not choose which peril occurs;
+  they price your exposure to it.
+- **Advisory is genuinely inert, and that is the shipped state today.** On a shard with no orbital
+  registry, no published filings and no extraction rows, every world index reads ~0 and the emergency
+  publishes a forecast and applies nothing at all. That is an honest measured dormancy rather than a
+  hidden feature flag — a strictly better version of the `TAKEOVER_MIN_ACTIVE_CORPS` boolean gate,
+  because it recovers continuously as the world grows instead of flipping.
+
+**The world index is measured once, at forecast time, and frozen on the cycle row.** Everyone plans
+against the same number for the whole cycle, and it cannot move under a corporation mid-emergency.
+
+### Where each number actually comes from
+
+`server-crises.ts::measureWorldIndex` — five real aggregates over rows the game already maintains for
+other reasons. A failed query returns 0, which reads as Advisory: **a telemetry outage can never
+manufacture an emergency.**
+
+| Channel | Query | Anchor | Provenance |
+|---|---|---:|---|
+| `orbital_density` | `OrbitalSlotOccupancy.count()` | 60 | ESTIMATE. Pass 8 measured GEO occupancy at 2–3 of 180 after 96 sim-months against a 153 congestion trigger; 60 sits well below it, so density severity climbs long before the slot machinery would fire |
+| `insured_capital` | Σ latest `PublishedCorpReport.netWorth` inside the 90-day window | $50B | ESTIMATE. Pass 5 C2 measured the best archetype's 50-year gross at ~$611B; $50B of *disclosed* net worth is roughly where one insurer failure becomes a market event |
+| `extraction_pressure` | Σ decayed `LocationExtraction.accumulated` (mirrors the module's own 10%/day lazy decay) | 40 | ESTIMATE. ~66 deposits worked to the 0.4 floor |
+| `market_concentration` | mean top-supplier share × contested pools ÷ 20, over `LocationDemandPool` rows with >1 supplier | 1.0 | ESTIMATE. 20 genuinely contested markets each fully dominated reads 1.0 |
+| `built_capacity` | Σ `GameProfile.buildingCount` for profiles synced in 30 days | 400 | ESTIMATE. §9b measured the eight 50-year archetypes at 119 installations between them; 400 ≈ 20 mature corporations |
+
+Anchors are estimates and **say so in the game**, on the panel, beside the measured numerator. The
+numerator is never an estimate.
+
+---
+
+## 2d. Forced cooperation without combat — the Accord Stabilization Assessment
+
+The round brief calls this the prize: *the most interesting pressure makes rivals cooperate
+temporarily without any combat.* Three mechanisms make it real rather than rhetorical.
+
+**1. The arithmetic requires it at the top tier, and only at the top tier.** Progress accrued over a
+full four-week window at exposure index 2.0 (factor 1.5); 1.0 realizes the loss:
+
+| Posture | Elevated | Severe | Systemic |
+|---|---:|---:|---:|
+| Absorb (free) | **1.58** ✗ | 2.40 ✗ | 3.60 ✗ |
+| Harden (recurring) | 0.63 ✓ | 0.96 ✓ | **1.44 ✗** |
+| Harden **+ pledge** | 0.32 ✓ | 0.48 ✓ | **0.72 ✓** |
+| Reposition (one-off + revenue drag) | 0.24 ✓ | 0.36 ✓ | 0.54 ✓ |
+
+(Test-asserted in `systemic-crises.test.ts` §"the posture ladder is arithmetic, not scripted".)
+
+Read the third row: **at Systemic, a heavily-exposed corporation cannot defend its way out alone.**
+It must either pull capacity out of the exposed lane — giving up revenue — or pay into the collective
+fund. The cooperation pressure is arithmetic, not a scripted "you must cooperate" beat, and it
+appears exactly where a systemic emergency should force collective action.
+
+**2. Free-riding works, and is visible.** Whether the pooled target is met changes the aftermath for
+*every corporation the emergency reached*, pledger or not. So the individually optimal move is
+usually to let someone else fund it — right up until enough corporations reason the same way. The
+pledge roll is public (top pledgers, count, share of pool), so reputation is legible: this is
+CLAUDE.md's "public diplomacy feed" principle applied to a commons problem. It is also exactly how
+real industry mutuals, the 1907 Morgan syndicate and the LTCM consortium behaved.
+
+**3. The seated Accord Chair gets a second verb.** R1-E1 gave the Chair agenda writs — power over
+*what the Accord debates*. Round 2 gives it power over *what the Accord's emergency money buys*: one
+**relief directive** per emergency, choosing among three published allocations, each a different
+authored consequence for the whole board in the aftermath week. It is committed **once**, before the
+pool fills — a Chair cannot watch the subscription and then re-allocate, because the corporations
+deciding whether to pledge are entitled to know what they are funding. Same shape as the writ: an
+action on a shared public good, non-destructive, structurally incapable of being PvP.
+
+**Anti-pay-to-win, stated precisely.** A pledge buys (a) a bounded 20pp mitigation on the pledger's
+*own* exposure bar, capped with everything else at the pre-existing 0.90 ceiling, and (b) a share of
+a public good every reached corporation receives anyway. It buys no resources, no multiplier, and no
+advantage over another corporation. The **qualifying pledge scales to the pledging corporation**
+(0.25% of its own capital at risk, floored at $1M), so a small corporation buys the identical
+protection proportionally — money cannot buy a bigger shield, only an earlier one. The money is
+**burned** (`crisis_assessment_burn`), not escrowed: there is nothing to withdraw and nothing to
+exploit by pledging and un-pledging.
+
+---
+
+## 2e. Newcomer safety — the exact rules, and why the glide is not a suppression
+
+`isCrisisEligible` is one function with four gates, each test-asserted:
+
+1. **Protected Frontier → exempt outright.** No situation ever opens, at any severity, at any
+   exposure. Asserted with a maximum-severity snapshot and a 40-building portfolio.
+2. **Still inside the FTUE chain → exempt outright** (`isOnboardingComplete`). Same assertion.
+3. **Outside the active window → nothing opens.**
+4. **Advisory tier → nothing opens.**
+
+Both protected cases also pay **exactly the pre-Round-2 insurance premium** — the crisis multiplier
+returns literal `1`, asserted against `calculateInsurancePremium` directly.
+
+**The graduation glide is deliberately a taper, not a fifth gate.** A fresh graduate's exposure bar
+advances at `(1 − glideFraction)` of the normal rate, decaying linearly to full over the same 14 real
+days Pass 6 measured for the demand-pool glide. Suppressing crises outright until day 15 would
+manufacture a cliff on day 15 — which is precisely the defect Pass 5 C1 found and Pass 6 fixed. The
+rate is asserted monotone in the glide fraction with no discontinuity anywhere.
+
+**And the loss is bounded twice, so no archetype can be driven insolvent by a single emergency** —
+Round 1's own acceptance requirement (b):
+
+```
+loss = min( LOSS_PCT[tier] x capital held AT ONSET , 0.25 x cash on hand )
+```
+
+The onset basis means nothing a player does during the emergency can inflate it. The cash ceiling
+means solvency is guaranteed — asserted at $10M, $500M and $20B cash against a $500B notional
+portfolio, and at zero cash (where the loss is zero rather than negative).
+
+---
+
+## 2f. Sim validation
+
+Baseline captured by running each runner in a detached `git worktree` at `HEAD` (`5325b208`) — a true
+before/after byte diff, per the E3/E1 precedent.
+
+| Runner | Result |
+|---|---|
+| `sim-strategies.ts` | **BYTE-IDENTICAL** (0 lines added, 0 removed) |
+| `sim-resources.ts` | **BYTE-IDENTICAL** |
+| `sim-tools.ts` | **BYTE-IDENTICAL** |
+| `sim-50yr.ts` | **Zero lines removed.** Movement = **43 new lines**, entirely the new §9b probe |
+
+**M1 first-copy-ROI CI guard** (`tier-ladder-first-copy-roi.test.ts`) and the **F2/F6 demand-pool
+floor guard** (`demand-pools-population-scaling.test.ts`) are green. Suite **225 suites / 5,160
+tests**, all passing (from 224 / 5,082). `npx tsc --noEmit` clean. `next build` passes with both new
+routes registered dynamic.
+
+**Why byte-identity was the expected result, stated so the runs are a check and not a hope.** No sim
+runner imports `systemic-crises`, `economic-sinks`, `hazards`, `chapters` or `market-events` — the
+50-year runner's own header lists *"hazards & insurance"* among the systems it explicitly does not
+model. And every reachable change is provably inert by default: `state.systemicCrisis` is `null` on
+every save until a server sync delivers one, and no sim syncs; `getCrisisInsurancePremiumMultiplier`
+returns literal `1` in that case; and `advanceSystemicCrisis` returns *the same GameState object it
+was given* when no crisis exists (an identity assertion, not a value one — see §2h finding 1).
+
+### §9b — the acceptance measurement this round actually needed
+
+Byte-identity proves no unintended spill. It cannot answer the round question. So `sim-50yr.ts` gains
+a new **§9b**, which imports the shipped module's own pure functions (calendar, tier thresholds,
+posture cost table — never a re-implementation, so the probe cannot drift from what players face) and
+lays the real crisis calendar over the existing 600-month shared world.
+
+**Coverage, stated plainly:** §9b is a *calendar + exposure* probe, not an in-world simulation of the
+crisis. The harness does not tick `systemic-crises.ts`. What it measures honestly is the **decision
+supply**, whether each archetype's own measured portfolio clears the Advisory threshold, and what the
+containing posture **costs** as a share of that decade's net income.
+
+Measured decision supply: a crisis cycle is 8 real weeks = **224 game-months**; onset + 5 stage
+boundaries + the assessment deadline = **7 decision points per cycle**; **3 emergencies open inside
+the 600-month run** (2–5 crisis decision-months per decade).
+
+**Result — decision cadence, economic core → economic core + crisis layer:**
+
+| archetype | y0–10 | y10–20 | y20–30 | y30–40 | y40–50 |
+|---|---|---|---|---|---|
+| mono-expander | 13 → 16 | **1 → 4** | **1 → 5** | 3 → 5 | **1 → 6** |
+| integrator | 25 → 27 | 8 → 11 | 9 → 13 | 3 → 5 | 3 → 8 |
+| industrialist | 7 → 10 | **2 → 5** | **1 → 5** | **1 → 3** | 2 → 6 |
+| aggressor | 24 → 27 | 9 → 11 | 12 → 15 | 7 → 8 | 6 → 11 |
+| turtle | 31 → 33 | 17 → 20 | 17 → 21 | 14 → 15 | 10 → 15 |
+| hoarder | 4 → 4 | 2 → 2 | 1 → 1 | 2 → 2 | 1 → 1 |
+| joiner-y10 | — | 7 → 7 | 8 → 11 | 23 → 25 | 11 → 15 |
+| joiner-y30 | — | — | — | 5 → 5 | **0 → 0** |
+
+> **Dead decades (y10–50, 30 archetype-decades): mean cadence 6.23 → 8.70 months/decade (×1.40).**
+> **STARVED decades only (baseline ≤ 3 decisions, n = 15): mean 1.60 → 3.87 (×2.42).**
+
+The mean is the weaker number and is reported anyway, because it is diluted by archetypes whose
+*scripted* build order keeps their cadence high (turtle 31, aggressor 24) — those decades were never
+starved. The starved-decade figure is the one that answers Pass 5 H3, and **it is a 2.4×**.
+
+**Cost weight, so the added cadence is not free clicks.** The containing posture costs 0.0%–2.7% of
+the decade's net income for every archetype-decade except one: mono-expander's y20–30, at **12.5%**,
+which is an archetype whose income had already collapsed to ~$17M across the whole decade. In
+absolute terms the posture is $2.16M against a $5.4M expected loss — the intended ~40% ratio, holding
+even where the corporation is nearly dead.
+
+### The constant the simulation changed
+
+The first authoring pass set the Retrofit Order's exposure anchor at **30 installations**. §9b
+measured the consequence immediately: **five of the eight archetypes** — industrialist (9 buildings),
+turtle (8), aggressor (7), hoarder (6), joiner-y30 (4) — sat permanently at index 0.23–0.30, i.e.
+*below* the 0.35 Advisory threshold, and therefore saw **no measure in force across fifty game-years**.
+Those are exactly the archetypes whose dead decades Pass 5 ranked worst. The anchor was re-derived
+from Pass 5's own measured distribution (50-year plateaus of 2–37 installations) to **20** — the top
+of the observed range rather than above it. That single change moved the starved-decade lift from
+×1.18 to ×2.42 and put the industrialist from *permanently Advisory* to *Elevated*, while still
+leaving a genuinely tiny 6-building corporation exempt.
+
+This is recorded because it is the honest provenance of that number: **it was produced by the
+simulation, not merely rubber-stamped by it** — the same discipline E3.4 recorded for the colony
+demand floors, and the direct application of Pass 5's standing warning that *"Pass 5's worked
+recommendation (6 days) was measurably insufficient; this is exactly why the pass bar says sim
+first."*
+
+### The honest gap §9b exposed and did not close
+
+**5 of the 15 starved decades remain unserved**, and one archetype-decade (joiner-y30, y40–50) stays
+at literally zero. Those are corporations with 4–6 installations. A systemic emergency *should not*
+reach them — a 4-building corporation is not systemically exposed, and manufacturing a crisis for it
+would be exactly the fabrication this program forbids. **Pressure is not the answer for a tiny
+portfolio; a reason to build is.** That is `R1-E6` (mid-band construction rungs, $2–8B capex tied to
+new geography), which Pass 5 prescribed, Pass 7 explicitly preserved, and Round 1 deferred. Round 2's
+measurement is now a second, independent argument for it, and it is the strongest candidate to
+headline Round 3.
+
+---
+
+## 2g. What shipped
+
+### SCHEMA CHANGE — `prisma db push` REQUIRED
+
+**Two new tables** at the end of `prisma/schema.prisma`. **Nothing in this wave works until they are
+pushed**, and everything degrades honestly until then: `server-crises.ts::isCrisisSchemaAvailable`
+probes once per 5 minutes (the `server-chair.ts` / `server-equity.ts` pattern), the sync route's
+`crisis` field stays `null`, the panel renders an honest inert state, no situation ever opens, and the
+insurance premium multiplier is literal `1`.
+
+| Table | Purpose |
+|---|---|
+| `SystemicCrisisCycle` | One row per 8-week cycle. `cycleIndex` is the primary key. Holds the **measured, frozen** world index (value, raw numerator, anchor, channel), the assessment target, the Chair's relief directive, and the sealed containment fraction |
+| `SystemicCrisisPledge` | One pledge per corporation per cycle. `@@unique([cycleIndex, profileId])` |
+
+Profile ids are stored **without relations or cascades**, matching `PublishedCorpReport`,
+`CorpEraRecord` and the `AccordChair*` family: the emergency register is permanent public history and
+must survive a profile deletion rather than vanish from the record.
+
+### Save-format note (flagged prominently, as instructed)
+
+**No save migration. No `GameState.version` bump. Three optional fields.**
+
+- `systemicCrisis?: CrisisSnapshot | null` — **server-authoritative, read-only**, null-until-sync.
+  Exactly the `accordChair` (E1) / `equity` (M6) / `demandPools` (E4) pattern. The client never
+  writes it.
+- `crisisSituation?: CorporateSituation | null` and `crisisHistory?: CrisisRecord[]` — client-owned
+  save state with the same shape and lifecycle `storyChapters` has. `save-load.ts` is **untouched**;
+  `advanceSystemicCrisis` creates both lazily on the first tick that needs them, and a pre-Round-2
+  save simply has `undefined` in all three.
+
+### Files
+
+**New**
+
+- `src/lib/game/systemic-crises.ts` — the pure rule-set (calendar, catalogue, exposure, severity,
+  situation advance, postures, assessment math, aftermath, snapshot clamp).
+- `src/lib/game/server-crises.ts` — Prisma glue (schema probe, the five telemetry measurements, cycle
+  rows, pledges, the relief directive, sealing, snapshot assembly).
+- `src/app/api/space-tycoon/crisis/route.ts` — GET + two POST actions (`pledge`, `set_relief`).
+- `src/app/api/space-tycoon/crisis/resolve/route.ts` — the sealer cron.
+- `src/components/game/SystemicCrisisPanel.tsx` — the surface.
+- `src/lib/game/__tests__/systemic-crises.test.ts` — 78 tests.
+
+**Modified**
+
+- `prisma/schema.prisma` — two tables (**db push required**).
+- `src/lib/game/types.ts` — three optional fields (above).
+- `src/lib/game/economic-sinks.ts` — the crisis premium loading inside `getMonthlyInsurancePremium`.
+- `src/lib/game/market-events.ts` — crisis dislocations on the existing active + forecast schedules.
+- `src/lib/game/game-engine.ts` — step 1d, `advanceSystemicCrisis` in `processFullTick`.
+- `src/lib/game/server-effects.ts`, `src/hooks/useGameSync.ts`,
+  `src/app/api/space-tycoon/sync/route.ts` — the snapshot hop.
+- `src/lib/game/server-ledger.ts` — one burned reason (`crisis_assessment_burn`).
+- `src/lib/game/world-calendar.ts` — the `systemic_crisis` category and four appointment kinds.
+- `src/lib/game/situation-log.ts` — three crisis items + a `reports:emergency` deep-link.
+- `src/components/game/ReportsPanel.tsx` — the fifth sub-view + the deep-link consumer.
+- `src/components/game/LegacyHallPanel.tsx` — the **Emergencies weathered** ledger.
+- `src/components/game/SituationLog.tsx` — category label + frame.
+- `src/lib/game/icons.tsx`, `src/lib/game/concepts.ts` — one glyph, three glossary entries.
+- `src/lib/cron-scheduler.ts`, `src/middleware.ts` — the sealer cron + its CSRF allowlist entry.
+- `src/app/space-tycoon/page.tsx` — the posture-commit hop.
+- `scripts/sim-50yr.ts` — the §9b probe plus three inert per-decade accumulators.
+
+### Folded in: the tab-navigation guard (standing FTUE follow-up, coordinator-requested)
+
+Carried in this wave because Round 2 already owned `space-tycoon/page.tsx`. **The defect:** navigation
+ran through a raw `useState` setter with **23 call sites**, exactly **one** of which checked whether
+the destination was corporation-tier unlocked. Every other path could render a panel with no matching
+entry in the tab bar — a render hole outside the staged-unlock design, with no lit tab to leave by.
+Recent waves had only added routing surfaces (the sub-view request bus, map radial verbs, Legacy Hall
+deep-links, and Round 2's own crisis rows), so the call-site count was growing.
+
+**The fix is structural, in three parts, so a future caller cannot reintroduce it:**
+
+1. **`src/lib/game/tab-access.ts`** (new) holds the decision as pure functions — `getUnlockedTabIds`,
+   `isTabUnlocked`, `resolveTabNavigation` — so it is unit-testable without mounting the page, which
+   is precisely what made the previous ad-hoc guard un-regressible.
+2. **Legacy-alias resolution moved in with the lock check.** `LEGACY_TAB_MAP` / `resolveLegacyTab`
+   were in `page.tsx`, one line away from the guard, which is the order-of-operations trap: resolve
+   the alias, forget to re-check, sail through. `resolveTabNavigation` now resolves *inside* the
+   check, and a test asserts a legacy alias whose target is locked is still refused.
+3. **The raw setter is renamed `setTabUnsafe` and called exactly once**, inside `navigateToTab`. Any
+   future caller writing `setTab(...)` now gets a **compile error**; writing `setTabUnsafe(...)` is a
+   deliberate, greppable act. All 23 call sites route through the guard, the 12 redundant outer
+   `resolveLegacyTab(...)` wrappers are gone, and the single ad-hoc guard in the tutorial deck was
+   deleted rather than duplicated.
+
+**Refusal is a no-op, not a redirect.** A deep-link into a surface this corporation has not unlocked
+quietly does nothing rather than yanking the player out of what they were reading — the same
+behaviour the ad-hoc guard had, so no shipped path changes meaning. And an *empty* unlock set (state
+not loaded yet) reads as "no gating information" and does not gate, so the boot path — which
+navigates to the initial tab before the first render that could compute the set — is untouched.
+
+**Regression coverage:** `src/lib/game/__tests__/tab-access.test.ts`, 17 tests. The headline block
+asserts a tier-locked tab is refused for five deep gates; two further tests are *structural* — they
+read `page.tsx` from disk and fail if `setTab(` ever reappears or if `setTabUnsafe` is called more
+than once. A value-only test would not have caught the original defect (the guard was *missing*, not
+wrong), which is the same reasoning E3.2 used for the `accrueLegacyTrackers` writer guard.
+
+### Where it lives, and why not the obvious alternatives
+
+**Reports → Emergency**, a fifth sub-view alongside Situation Log / Mail / Quarterly / Legacy Hall.
+**No 29th tab** (standing convention; and E4 already recorded that `TAB_CATALOG` holds 31 entries, so
+the *spirit* — fold into hubs — is what is being followed).
+
+- **A new tab** — rejected by standing convention and by Round 1's own rejected-ideas register.
+- **Governance (Tier 4)** — too deep. The insurance loading and the price dislocations reach a
+  corporation well before Tier 4, and a surface that explains a cost you are already paying must not
+  be gated behind a tier you have not reached.
+- **Dashboard (Tier 1)** — too shallow in the other direction: a Tier-1 corporation is inside the
+  Frontier or the FTUE chain and is *exempt by design*, so the panel would render its inert state as
+  a newcomer's first impression.
+- **Reports (Tier 2)** is where the Situation Log already lives — the hub whose stated job is
+  "everything that needs a decision" — and Tier 2 is roughly where the FTUE chain ends.
+
+### Permanence — the aftermath is written down
+
+Round 1's requirement: *a crisis the world forgets is a cutscene; one that writes into the permanent
+record is history.* Three ledgers:
+
+1. **`GameState.crisisHistory`** — a bounded per-corporation record (emergency, severity, posture,
+   outcome, pledge, world containment), written once per cycle in the aftermath week.
+2. **The Legacy Hall's "Emergencies weathered" block** — emergencies on record, contained vs
+   realized, total pledged, and the full table. Deliberately a **pure display lens over
+   `crisisHistory`**, so E4's licence to ship the Hall without a sim run (zero economy math anywhere
+   in the Hall) is preserved intact.
+3. **`SystemicCrisisCycle`** — the sealed public register: the measured world index, the containment
+   fraction, the directed relief, the pledge count. Surfaced in-game on the panel's "The register"
+   table.
+
+### Accessibility
+
+- **Meters** are real `role="progressbar"` elements with `aria-valuenow/min/max` and a label that
+  repeats the same numbers, and **every bar's value is also printed in visible text beside it** — no
+  meter is the sole carrier of its own value.
+- **Never colour alone.** Severity is always the *word* (Advisory/Elevated/Severe/Systemic); the
+  ladder chips carry `medal` vs `medal-outline` (shape-distinct, the V1 convention); posture state
+  reads "Current"; subscription reads a percentage and "met"/"short"; the crisis Situation Log frame
+  is category identity only, with urgency carried by the row's severity tone and its ordering.
+- **Keyboard.** Every action is a real `<button>` or a labelled `<input>`; the posture group is a
+  labelled `role="group"`; targets are ≥38px.
+- **Tables** (the pledge roll, the register, the Hall ledger) are real `<table>`s with `sr-only`
+  captions, scoped headers and an `overflow-x-auto` container — the wide-content rule.
+- **Reduced motion.** No bespoke animation is introduced; the only transitions are the existing
+  chrome's, already covered by the global `prefers-reduced-motion` block.
+- **375px.** Every grid starts `grid-cols-1`; every row is `flex-wrap`; the register and pledge roll
+  scroll inside themselves rather than pushing the page wide.
+- **Chrome.** `ConsolePanel` / `HoloCard` / `DataChip` / `StatReadout` / `Figure` / `GameIcon` /
+  `HoloTip`, one new `cal-systemic-crisis` glyph (a hazard triangle over a progress bar —
+  silhouette-distinct from every other calendar glyph), three new glossary concepts, and
+  `LeaderPortraitFrame` carrying Secretary-General **Anatole Priest**, who has no portrait in the art
+  roster and therefore renders the monogram plate. Inventing a portrait would be fabricating content.
+
+---
+
+## 2h. What implementing this found (all verified against code)
+
+1. **`advanceSystemicCrisis`'s first identity check was wrong, and the test caught it.** Comparing
+   `history !== (state.crisisHistory ?? [])` allocates a fresh array on the right-hand side every
+   call, so a quiet tick reported a change and handed the engine a new `GameState` for nothing. The
+   fix compares against the original reference. Worth knowing generally: **`?? []` is not a safe
+   identity sentinel**, and the same shape is easy to write in any tick-path module.
+2. **`isInFrontier` is wealth-capped, so a "Frontier" test fixture must be poor.** The first
+   newcomer-safety fixture carried the suite's default $5B and `isInFrontier` correctly returned
+   `false` (the $500M `FRONTIER_HARD_CAP_NET_WORTH`), which made the shield test pass vacuously in
+   the wrong direction. Both fixtures now assert `isInFrontier(...) === true` before testing the
+   exemption. Any future wave writing a Frontier test needs the same guard.
+3. **`economic-sinks.ts` and any crisis module are one import away from a cycle.** `economic-sinks`
+   must import the premium multiplier; `systemic-crises` therefore cannot import
+   `computeInsuredAssetValue`. It recomputes the identical arithmetic as `crisisOperationalCapital`,
+   and a **drift test asserts the two agree on arbitrary states** — the same discipline E3.3
+   introduced for mega-project bonus consumers, and the only thing that makes the duplication
+   acceptable.
+4. **`BuildingCategory` has no `'mining'` or `'extraction'` member** — the mining category is
+   `mining_enterprise`. TypeScript caught it, but a string-keyed lookup would not have.
+5. **`concepts.test.ts` enforces a ≤5-sentence ceiling on every glossary body.** Three entries had to
+   be tightened. Worth knowing before writing glossary copy.
+6. **`AccordChairTerm`'s winner column is `chairProfileId`, not `winnerProfileId`.** The Chair check
+   in the crisis route reads it directly from the table rather than trusting a client claim.
+7. **The Situation Log's `subView` token needs a consumer on the target hub.** `ReportsPanel` had
+   none; it now consumes `reports:emergency` with the same one-shot pattern `MarketHubPanel` and
+   `WorkforcePanel` use. Any earlier `tab: 'reports'` row that wanted a sub-view was silently landing
+   on the hub default.
+8. **The relief consequence reaches only corporations the emergency *reached*.** A corporation that
+   is Frontier-protected, mid-FTUE, or at Advisory severity has no situation, and therefore takes
+   neither the aftermath's upside nor its shortfall. That is the correct and safest reading — a
+   world-shared *malus* landing on a Protected Frontier corporation would violate the newcomer bar —
+   and every copy string in the game was corrected from "everyone on the board" to "every corporation
+   the emergency reached" once the code made the distinction explicit.
+
+---
+
+## 2i. Designed, not built — with reasons (so Round 3 does not re-propose them)
+
+- **Crisis legacy milestones.** The natural next step ("weathered N emergencies", "top-decile
+  pledger", "contained a Systemic emergency uninsured") and deliberately *not* shipped: legacy
+  milestones feed `getLegacyBonuses`, which the tick reads every game-month and applies at five
+  sites. Adding them is an economy-math change requiring its own harness pass, and doing it inside
+  this wave would have forfeited the Legacy Hall's standing licence to be display-only. The
+  `crisisHistory` record they would read is already shipped and shaped for them.
+- **Hazard severity escalation during a crisis.** Considered and dropped. `rollHazardOccurrence` is
+  shared-world weather — a pure function of `(monthIndex, locationId, type)` by explicit design, so
+  only the per-player *mitigation* channel may legitimately vary (the rule E3.6 established for
+  faction licences). Making severity crisis-dependent would either break that or require a server
+  snapshot on the hazard roll. It is also entirely outside sim coverage.
+- **A crisis that closes orbital slots.** The physically obvious Cascade consequence, and
+  population-gated dead on arrival: Pass 8 measured GEO occupancy at 2–3 of 180 slots against a 153
+  trigger and concluded *"population-gated, not price-gated… No pricing change can revive them."*
+- **Crisis severity reaching the price channel.** Explicitly rejected in §2c: it would let a stale
+  snapshot show a different price from the one the server charges. The crisis price channel carries
+  crisis *identity* only, which is pure.
+- **A public chronicle page for the emergency register.** `SystemicCrisisCycle` already stores
+  everything such a page would render and the in-game register is public, but no chronicle or public
+  page was touched this wave. It is a read-only page section whenever that surface is free.
+- **Feeding crisis outcomes into `realignment.ts`'s epoch aggregate.** Same reason E1 deferred the
+  Chair: `realignment.ts` is pure and DB-free by design, and `world-calendar.ts`,
+  `delivery-contracts.ts` and the market/trade route all depend on being able to call it from either
+  side with no plumbing. It wants a cached epoch-aggregate row, which is a feature.
+- **Shortening the cycle or adding stages to raise cadence further.** Measured and rejected: five
+  stages over four weeks lands the posture decision on the *weekly* loop, which is the loop
+  `SESSION_DESIGN.md` leaves thinnest. More stages would push it toward daily, which CLAUDE.md
+  explicitly warns against ("don't collapse the tempo"), and §9b shows the remaining gap is not a
+  cadence problem at all — it is small portfolios that a systemic emergency correctly cannot reach.
+- **`docs/SESSION_DESIGN.md` re-audit.** Deferred for the third consecutive wave (E3 and E1 both
+  parked it). Round 2 adds a third piece of evidence for it: the weekly corporate loop it describes
+  as served by "seasons, leagues and alliance rotations" is now also occupied by the crisis posture
+  stage, and the senate's "quarterly" entry remains an ~18-hour loop misfiled as quarterly. It should
+  be rewritten once, recording E3 + E4 + E1 + Round 2 together.
+
+---
+
+## 2j. Round 2's addition to the rejected-ideas register (Part 2)
+
+| Idea | Why rejected |
+|---|---|
+| **A crisis that targets the peril you are biggest in** (the naive reading of Stellaris's scale-to-player-power) | Turns success into punishment. The shipped split — rotating *identity*, measured *bite* — is the risk-model version and is more realistic besides: insurers do not choose the peril, they price your exposure to it. |
+| **Making crisis severity a secret** | The same reasoning M4 applied to market events: secrecy just hands the edge to whoever reads the source. The world index is published at forecast, frozen for the cycle, and shown beside its raw numerator and anchor so a player can audit the scaling from inside the game. |
+| **Paid crisis mitigation of any kind** | Pay-to-win (`POLICY.md`). Already in the register from Round 1; Round 2 restates it because a pooled emergency fund is precisely where a "just let them buy protection" proposal will surface. A pledge buys a bounded mitigation on your *own* bar that a proportionally-scaled small pledge buys identically. |
+| **Escrowing the assessment pool instead of burning it** | An escrow that can be withdrawn turns a commons problem into a free option, and a refundable pledge that still grants mitigation is a pure exploit. The pool is a money sink, which is also what `BALANCE.md`'s sinks-first discipline wants. |
+| **Letting the Chair re-allocate the relief after watching the pool fill** | The directive is the Chair's *commitment*; corporations decide whether to pledge on the strength of it. Revisable direction makes the pledge decision uninformed. One directive, committed early, public. |
+| **Suppressing crises entirely for fresh graduates** | Would manufacture a day-15 cliff — the exact defect Pass 5 C1 found and Pass 6 fixed with a 14-day linear glide. The crisis rate uses the same glide instead. |

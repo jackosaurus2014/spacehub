@@ -31,6 +31,7 @@ import { queueTollFlush, type OffenseSnapshot } from '@/lib/game/offense';
 import type { EquitySnapshot } from '@/lib/game/share-registry';
 // AAA Round 1 wave E1: the Accord Chair snapshot type for the same hop.
 import type { ChairSnapshot } from '@/lib/game/accord-chair';
+import type { CrisisSnapshot } from '@/lib/game/systemic-crises';
 import type { ExtractionPressureSnapshot } from '@/lib/game/extraction-pressure';
 import type { LaborMarketSnapshot } from '@/lib/game/labor-market';
 import type { LaneBonusSnapshot } from '@/lib/game/trade-lanes';
@@ -273,7 +274,7 @@ export function useGameSync(
           || data.mentorshipBonuses || data.demandPools
           || data.extractionPressure || data.laborMarket || data.laneBonuses
           || data.megaProjectBonuses || data.offense || data.equity || data.feeIndex
-          || data.chair
+          || data.chair || data.crisis
         ) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
@@ -310,6 +311,12 @@ export function useGameSync(
             // applyServerEffectsToState. Read-only — the client never writes
             // back to it.
             chair: (data.chair as ChairSnapshot) || undefined,
+            // AAA Round 2: the systemic-crisis snapshot (published world
+            // index, assessment target/pool, this corporation's pledge, the
+            // Chair's relief directive) rides the same hop;
+            // clampCrisisSnapshot re-clamps inside applyServerEffectsToState.
+            // Read-only — the client never writes back to it.
+            crisis: (data.crisis as CrisisSnapshot) || undefined,
             fetchedAtMs: Date.now(),
           });
         }

@@ -58,6 +58,10 @@ import { formatMoney } from '@/lib/game/formulas';
 import { ConsolePanel, HoloCard, DataChip, StatReadout, Figure } from './chrome';
 import GameIcon from './GameIcon';
 import HoloTip, { Concept } from './HoloTip';
+// AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the emergency ledger.
+// Display-only — no economy math enters the Hall, which is what lets this
+// panel keep E4's licence to ship without a sim-harness run.
+import { CRISIS_TIER_LABEL, CRISIS_APPROACH_MAP } from '@/lib/game/systemic-crises';
 import type { IconName } from '@/lib/game/icons';
 
 // ─── Shared formatting ──────────────────────────────────────────────────────
@@ -756,6 +760,95 @@ function FilingsBlock({ state, onOpenQuarterly }: { state: GameState; onOpenQuar
   );
 }
 
+
+/** AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md "Round 2"): the emergency
+ *  ledger. Round 1's E4 licence to skip the sim harness was that the Hall
+ *  contains ZERO economy math, and this block keeps that: it is a pure lens
+ *  over `state.crisisHistory`, a bounded client-owned record that
+ *  `advanceSystemicCrisis` writes when a cycle's aftermath lands. Nothing
+ *  here grants a bonus, and no legacy milestone reads it — see the Round 2
+ *  section's "designed, not built" list for why crisis milestones were
+ *  deliberately left out of this wave. */
+function EmergencyLedgerBlock({ state }: { state: GameState }) {
+  const history = [...(state.crisisHistory || [])].reverse();
+  const contained = history.filter(h => h.outcome === 'contained').length;
+  const realized = history.filter(h => h.outcome === 'realized').length;
+  const pledged = history.reduce((a, h) => a + (h.pledgedUsd || 0), 0);
+  const pledgedCount = history.filter(h => (h.pledgedUsd || 0) > 0).length;
+
+  return (
+    <ConsolePanel
+      title="Emergencies weathered"
+      icon="cal-systemic-crisis"
+      asH3
+      variant="secondary"
+      subtitle="Every Accord emergency your corporation lived through, how it came out, and whether it paid into the Stabilization Assessment. A crisis the world forgets is a cutscene; this is the part that makes it history."
+      bodyClassName="mt-3 space-y-3"
+    >
+      {history.length === 0 ? (
+        <p className="text-[11px] text-slate-500">
+          No emergency has yet closed against your corporation. The Accord register runs on an eight-week
+          cycle — Reports &rarr; Emergency carries the current forecast.
+        </p>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <StatReadout label="Emergencies on record" value={history.length.toLocaleString()} icon="cal-systemic-crisis" />
+            <StatReadout label="Contained" value={contained.toLocaleString()} icon="check" sub="closed without a realized loss" />
+            <StatReadout label="Losses realized" value={realized.toLocaleString()} icon="warning" sub="the bar reached 100%" />
+            <StatReadout
+              label="Pledged to the Accord"
+              value={formatMoney(pledged)}
+              icon="alliance"
+              sub={`${pledgedCount} of ${history.length} emergenc${history.length === 1 ? 'y' : 'ies'}`}
+            />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-[11px]">
+              <caption className="sr-only">Accord emergencies weathered by this corporation</caption>
+              <thead>
+                <tr className="text-slate-500 text-left">
+                  <th scope="col" className="py-1 pr-2 font-medium">Emergency</th>
+                  <th scope="col" className="py-1 pr-2 font-medium">Severity</th>
+                  <th scope="col" className="py-1 pr-2 font-medium">Posture</th>
+                  <th scope="col" className="py-1 pr-2 font-medium">Outcome</th>
+                  <th scope="col" className="py-1 pr-2 font-medium text-right">Pledged</th>
+                  <th scope="col" className="py-1 font-medium text-right">World subscribed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.map(h => (
+                  <tr key={`${h.cycleIndex}-${h.crisisId}`} className="border-t border-white/[0.06]">
+                    <td className="py-1 pr-2 text-slate-200">{h.crisisName}</td>
+                    <td className="py-1 pr-2 text-slate-400">{CRISIS_TIER_LABEL[h.tier]}</td>
+                    <td className="py-1 pr-2 text-slate-400">
+                      {CRISIS_APPROACH_MAP.get(h.approachId)?.name ?? h.approachId}
+                    </td>
+                    <td className="py-1 pr-2">
+                      <DataChip
+                        icon={h.outcome === 'contained' ? 'medal' : 'medal-outline'}
+                        tone={h.outcome === 'contained' ? 'good' : h.outcome === 'realized' ? 'bad' : 'neutral'}
+                      >
+                        {h.outcome === 'contained' ? 'Contained' : h.outcome === 'realized' ? 'Loss realized' : 'Exempt'}
+                      </DataChip>
+                    </td>
+                    <td className="py-1 pr-2 text-right">
+                      {h.pledgedUsd > 0 ? <Figure value={formatMoney(h.pledgedUsd)} /> : <span className="text-slate-600">none</span>}
+                    </td>
+                    <td className="py-1 text-right text-slate-400">
+                      {Math.round((h.containment || 0) * 100)}%{(h.containment || 0) >= 1 ? ' met' : ' short'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </ConsolePanel>
+  );
+}
+
 // ─── The Hall ───────────────────────────────────────────────────────────────
 
 export interface LegacyHallPanelProps {
@@ -787,6 +880,7 @@ export default function LegacyHallPanel({ state, onNavigateTab, onOpenQuarterly 
       <TitlesBlock state={state} onNavigateTab={onNavigateTab} victoryUnlocked={unlocked.has('victory')} />
       <EraCaseBlock state={state} onNavigateTab={onNavigateTab} governanceUnlocked={unlocked.has('governance')} />
       <BenchBlock state={state} onNavigateTab={onNavigateTab} commandersUnlocked={unlocked.has('commanders')} />
+      <EmergencyLedgerBlock state={state} />
       <FilingsBlock state={state} onOpenQuarterly={onOpenQuarterly} />
     </div>
   );

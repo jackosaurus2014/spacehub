@@ -54,7 +54,10 @@ export async function GET(req: NextRequest) {
         where,
         include: {
           user: {
-            select: { id: true, name: true, email: true, verifiedBadge: true },
+            // NEVER select email here: this GET is unauthenticated, so any
+            // field on this join is world-readable. Walking ?page= would
+            // otherwise dump every public profile's email address.
+            select: { id: true, name: true, verifiedBadge: true },
           },
         },
         orderBy: { updatedAt: 'desc' },
@@ -164,7 +167,7 @@ export async function POST(req: NextRequest) {
       },
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, name: true },
         },
       },
     });

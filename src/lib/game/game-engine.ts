@@ -16,6 +16,7 @@ import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpired
 import { advanceNarrativeChains } from './narrative-events';
 import { advanceAccordSenate } from './accord-senate';
 import { advanceStoryChapters } from './chapters';
+import { advanceSystemicCrisis } from './systemic-crises';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
@@ -1765,6 +1766,29 @@ export function processFullTick(state: GameState): GameState {
     };
   } catch (err) {
     console.error('Story Chapters advance error (non-fatal):', err);
+  }
+
+  // 1d. AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md "Round 2"): the
+  // systemic-crisis situation. Wall-clock driven like the chapter staging
+  // above (so an offline corporation accrues exactly what an online one
+  // does, and a fast-ticking save gains nothing), and deliberately NOT a
+  // pendingChoice claimant: a situation is a MANAGED problem surfaced in the
+  // Emergency panel, not a modal — which also means it never contends with
+  // the chains or the chapters for the single choice slot.
+  //
+  // No-ops entirely when `state.systemicCrisis` is null (pre-Round-2 save,
+  // logged out, or schema not pushed), when the corporation is in the
+  // Protected Frontier or still inside the FTUE chain, and at Advisory tier.
+  try {
+    const crisisResult = advanceSystemicCrisis(newState, Date.now());
+    newState = {
+      ...crisisResult.state,
+      eventLog: crisisResult.events.length > 0
+        ? [...crisisResult.events, ...crisisResult.state.eventLog].slice(0, MAX_EVENT_LOG)
+        : crisisResult.state.eventLog,
+    };
+  } catch (err) {
+    console.error('Systemic crisis advance error (non-fatal):', err);
   }
 
   // 2. Process NPC companies (can fail safely)

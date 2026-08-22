@@ -9,6 +9,17 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+// SECTORS (src/lib/sector-data.ts) is a static, build-time-known array, so
+// generateStaticParams() below enumerates every valid slug. dynamicParams=false
+// makes Next's router 404 anything outside that list at the ROUTING layer,
+// before this file's notFound() ever runs — which is the only way to get a real
+// 404 status code. notFound() called from inside a matched route is caught by a
+// client-side error boundary that can swap the UI but cannot set the status, so
+// unknown sectors were returning HTTP 200 and burning crawl budget. Safe here
+// because adding a sector requires a code change and redeploy anyway (see the
+// same treatment and fuller rationale in blog/[slug]/page.tsx).
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return SECTORS.map(s => ({ slug: s.slug }));
 }

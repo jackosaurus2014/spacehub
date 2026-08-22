@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import {
   getChairPhase,
   getChairTermWindow,
@@ -22,8 +23,13 @@ export const maxDuration = 60;
 
 /**
  * AAA Round 1 wave E1: the Accord Chair certifier
- * (cron-scheduler.ts 'tycoon-chair-resolve', CRON_SECRET-authenticated via
- * middleware.ts's cronPaths — the "CSRF-for-new-cron gotcha").
+ * (cron-scheduler.ts 'tycoon-chair-resolve').
+ *
+ * AUTH: requireCronSecret. The previous comment here claimed CRON_SECRET
+ * authentication "via middleware.ts's cronPaths" — that was false. cronPaths
+ * only *skips CSRF* when a valid secret is presented; it never *requires* one,
+ * so with no Bearer token this endpoint was reachable by anyone who sent a
+ * matching `Origin` header, letting them certify elections on demand.
  *
  * Deterministic and idempotent. Every run:
  *   1. certifies every term whose ballot has closed and which is still
@@ -55,7 +61,10 @@ function toPlatform(measureId: string, mode: string, patron: string): ChairPlatf
   };
 }
 
-export async function POST() {
+export async function POST(request: Request) {
+  const unauthorized = requireCronSecret(request);
+  if (unauthorized) return unauthorized;
+
   try {
     if (!(await isChairSchemaAvailable())) {
       return NextResponse.json({ skipped: 'accord chair schema not provisioned' });

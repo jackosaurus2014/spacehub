@@ -26,6 +26,12 @@ import CompetitivePosturePanel from './CompetitivePosturePanel';
 // extraterrestrial assets is required by the Accord to report publicly; this
 // is the corporate history that reporting produces."
 import LegacyHallPanel from './LegacyHallPanel';
+// AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md "Round 2"): the fifth
+// Reports sub-view — the Accord emergency register, the exposure bar and
+// its postures, and the Stabilization Assessment. No 29th tab.
+import SystemicCrisisPanel from './SystemicCrisisPanel';
+import { getCrisisStatus, type CrisisApproachId } from '@/lib/game/systemic-crises';
+import { consumeSubViewRequest } from '@/lib/game/sub-view';
 import type { OrderQueueTarget } from '@/lib/game/order-queue';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -410,14 +416,30 @@ interface ReportsPanelProps {
    *  either surface). */
   onNavigateTab: (tab: GameTab) => void;
   onFocusMap: (target: OrderQueueTarget) => void;
+  /** AAA Round 2 (docs/AAA_PROGRAM_2026-08.md): commit an emergency posture
+   *  change. page.tsx owns the GameState hop; SystemicCrisisPanel is a pure
+   *  lens like every other sub-view here. */
+  onSetCrisisApproach: (approachId: CrisisApproachId) => { ok: boolean; reason?: string };
 }
 
-export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavigateTab, onFocusMap }: ReportsPanelProps) {
+export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavigateTab, onFocusMap, onSetCrisisApproach }: ReportsPanelProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   // 'log' (Situation Log) is the promoted default — it's the surface the
   // Outliner's Attention section deep-links into.
-  const [topTab, setTopTab] = useState<'log' | 'mail' | 'quarterly' | 'legacy'>('log');
+  const [topTab, setTopTab] = useState<'log' | 'mail' | 'quarterly' | 'legacy' | 'emergency'>('log');
+  // AAA Round 2: derived once so the tab strip can badge a live emergency —
+  // a crisis a player has to go looking for is a crisis they will miss.
+  const crisisStatus = getCrisisStatus(state);
+  // AAA Round 2: honour a `reports:emergency` deep-link from the Situation
+  // Log / Outliner so a crisis row lands on the Emergency view rather than
+  // on the hub's default. Same one-shot consume pattern MarketHubPanel and
+  // WorkforcePanel already use.
+  useEffect(() => {
+    if (consumeSubViewRequest('reports') === 'emergency') setTopTab('emergency');
+  }, []);
+  const crisisLive = crisisStatus.eligibility.eligible
+    || (crisisStatus.situation != null && !crisisStatus.situation.outcome);
 
   const reports = [...(state.reports || [])].reverse(); // newest first
   const filteredReports = filter === 'unread' ? reports.filter(r => !r.read) : reports;
@@ -484,6 +506,17 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
       >
         <GameIcon name="scroll" size={13} /> Legacy Hall
       </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={topTab === 'emergency'}
+        onClick={() => setTopTab('emergency')}
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          topTab === 'emergency' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        }`}
+      >
+        <GameIcon name="cal-systemic-crisis" size={13} /> Emergency{crisisLive ? ' •' : ''}
+      </button>
     </div>
   );
 
@@ -492,7 +525,7 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
       <ConsolePanel
         title="Reports & Mail"
         icon="reports"
-        subtitle="The Situation Log surfaces everything that needs a decision; Mail holds discovery reports and dispatches; Quarterly holds automated corporate filings; the Legacy Hall holds the permanent record."
+        subtitle="The Situation Log surfaces everything that needs a decision; Mail holds discovery reports and dispatches; Quarterly holds automated corporate filings; the Legacy Hall holds the permanent record; Emergency holds the Accord’s active crisis register."
         right={TopTabs}
       />
 
@@ -513,6 +546,8 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
           onNavigateTab={onNavigateTab}
           onOpenQuarterly={() => setTopTab('quarterly')}
         />
+      ) : topTab === 'emergency' ? (
+        <SystemicCrisisPanel state={state} onSetApproach={onSetCrisisApproach} />
       ) : reports.length === 0 ? (
         <ConsolePanel
           title="No Reports Yet"

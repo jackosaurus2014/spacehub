@@ -89,6 +89,8 @@ import MegaProjectPanel from '@/components/game/MegaProjectPanel';
 import MegastructurePanel from '@/components/game/MegastructurePanel';
 import { startMegastructure, advanceMegastructurePhase } from '@/lib/game/personal-megastructures';
 import ReportsPanel from '@/components/game/ReportsPanel';
+import { getUnlockedTabIds, resolveTabNavigation } from '@/lib/game/tab-access';
+import { setCrisisApproach } from '@/lib/game/systemic-crises';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import { SHIP_MAP, generateShipName } from '@/lib/game/ships';
 // 4X Wave W14 (audit C1): freight dispatch goes through the one sanctioned
@@ -115,7 +117,7 @@ import {
 } from '@/lib/game/onboarding';
 import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
-import { getTierUnlockedTabs, getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
+import { getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
 import GameChat from '@/components/game/GameChat';
 import CommanderPanel from '@/components/game/CommanderPanel';
 import { hireCommander, dismissCommander, assignCommander, unassignCommander } from '@/lib/game/commanders';
@@ -836,31 +838,36 @@ function pickInitialTab(state: GameState): GameTab {
   return isOnboardingComplete(state) || state.tutorialDismissed ? 'map' : 'dashboard';
 }
 
-/** Audit Wave F (§B2-B5): 8 tabs were merged away into hub tabs. GameState
- *  never persists a "last active tab," so there's no literal old-save vector
- *  today — but child panels (tutorial steps, feature-unlock toasts, nav
- *  callbacks) hand back tab ids as plain strings, and a future URL/deep-link
- *  entry point could too. Route any of the six removed ids to the hub tab
- *  that now owns that functionality instead of rendering a dead branch. */
-const LEGACY_TAB_MAP: Record<string, GameTab> = {
-  diplomacy: 'contracts',
-  bidding: 'contracts',
-  rivals: 'leaderboard',
-  leagues: 'leaderboard',
-  intelligence: 'market',
-  economy: 'market',
-  futures: 'market',
-  spatial: 'map',
-};
-function resolveLegacyTab(id: string): GameTab {
-  return LEGACY_TAB_MAP[id] ?? (id as GameTab);
-}
+// Audit Wave F (§B2-B5) legacy-tab aliasing now lives in
+// src/lib/game/tab-access.ts alongside the unlock check, so a caller cannot
+// resolve an alias and then skip the lock test — see that module's header.
 
 // ─── Main Game Page ─────────────────────────────────────────────────────────
 
 export default function SpaceTycoonPage() {
   const [state, setState] = useState<GameState | null>(null);
-  const [tab, setTab] = useState<GameTab>('dashboard');
+  // The raw setter is deliberately named `setTabUnsafe` and is never called
+  // outside this block: every navigation goes through `navigateToTab` below,
+  // which refuses a corporation-tier-locked tab. A future caller writing
+  // `navigateToTab(...)` gets a compile error instead of a render hole — see
+  // src/lib/game/tab-access.ts for the whole rationale.
+  const [tab, setTabUnsafe] = useState<GameTab>('dashboard');
+  // Recomputed whenever the corporation's tier or building roster changes —
+  // the two inputs getUnlockedTabIds actually reads. Shared by the tab bar
+  // (allTabs), by every deep-link guard, and by navigateToTab, so the bar and
+  // the navigator can never disagree about what is unlocked.
+  const unlockedTabIds = useMemo(
+    () => getUnlockedTabIds(state),
+    [state?.corporationTier, state?.buildings],
+  );
+  /** The ONLY navigation entry point. Resolves legacy tab aliases, refuses a
+   *  locked tab (no-op — the player stays where they are), and is safe to
+   *  call before the save has loaded (the unlock set is empty then, which
+   *  tab-access.ts reads as "no gating information yet"). */
+  const navigateToTab = useCallback((requested: string) => {
+    const next = resolveTabNavigation(state, requested, unlockedTabIds);
+    if (next) setTabUnsafe(next);
+  }, [state, unlockedTabIds]);
   // Region focus drives the shell's background tint + planet texture overlay.
   // Set when the user clicks a location on the map, null = neutral palette.
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
@@ -896,7 +903,7 @@ export default function SpaceTycoonPage() {
       if (!dismissTo) return;
       e.preventDefault();
       playSound('click');
-      setTab(dismissTo);
+      navigateToTab(dismissTo);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -1014,7 +1021,7 @@ export default function SpaceTycoonPage() {
       // Wave 9: players who've finished the 5-step tutorial land on the
       // map-first command center by default — brand-new players (still
       // mid-tutorial) keep the guided Dashboard as their entry point.
-      setTab(pickInitialTab(loadedState));
+      navigateToTab(pickInitialTab(loadedState));
     } else {
       setShowMenu(true);
     }
@@ -1304,7 +1311,7 @@ export default function SpaceTycoonPage() {
     saveGame(newState);
     setShowArchetypePicker(false);
     setShowMenu(false);
-    setTab('dashboard'); // fresh corp always starts on the guided Dashboard, even if a prior save had reached the map
+    navigateToTab('dashboard'); // fresh corp always starts on the guided Dashboard, even if a prior save had reached the map
     // Reset tutorial so it shows for new games
     try {
       localStorage.removeItem('spacetycoon_tutorial_complete');
@@ -1949,7 +1956,7 @@ export default function SpaceTycoonPage() {
         <WorldResetNotice />
         <GameStartMenu
           onNewGame={handleNewGame}
-          onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); setTab(pickInitialTab(saved)); setShowMenu(false); } }}
+          onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); navigateToTab(pickInitialTab(saved)); setShowMenu(false); } }}
         />
         {showArchetypePicker && (
           <ArchetypePicker
@@ -2006,17 +2013,10 @@ export default function SpaceTycoonPage() {
     { id: 'governance', label: 'Governance', icon: 'governance' },
   ];
 
-  // Corporation tier-based tab unlocking
+  // Corporation tier-based tab unlocking. `unlockedTabIds` is the memo
+  // declared at the top of the component (shared with navigateToTab), so the
+  // tab bar and the navigation guard read the identical set.
   const corpTier = state.corporationTier || 1;
-  const unlockedTabIds = new Set(getTierUnlockedTabs(corpTier));
-  // Building-driven unlock overrides. The Orbital Fabrication Lab tooltip
-  // promises the Crafting tab, so honour that regardless of corp tier.
-  const hasFabLab = state.buildings.some(b => {
-    if (!b.isComplete) return false;
-    const def = BUILDING_MAP.get(b.definitionId);
-    return def?.category === 'fabrication_facility';
-  });
-  if (hasFabLab) unlockedTabIds.add('crafting');
   const allTabs = TAB_CATALOG.filter(t => unlockedTabIds.has(t.id));
 
   // Stable key for FeatureUnlockToast (avoids infinite re-render from array reference)
@@ -2124,7 +2124,7 @@ export default function SpaceTycoonPage() {
           Situation Log either way. */}
       <CompetitiveAlertLayer
         state={state}
-        onNavigate={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+        onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }}
       />
 
       {/* Protected Frontier banner — renders only when active */}
@@ -2150,7 +2150,7 @@ export default function SpaceTycoonPage() {
             return (
             <button
               key={t.id}
-              onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
+              onClick={() => { navigateToTab(t.id); setShowMoreTabs(false); }}
               className={`bezel-key px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] shrink-0 ${
                 tab === t.id
                   ? 'bg-white/[0.08] text-white game-tab-active'
@@ -2193,7 +2193,7 @@ export default function SpaceTycoonPage() {
                 {secondaryTabs.map(t => (
                   <button
                     key={t.id}
-                    onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
+                    onClick={() => { navigateToTab(t.id); setShowMoreTabs(false); }}
                     className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 transition-colors ${
                       tab === t.id ? 'text-white bg-white/[0.06]' : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
@@ -2292,7 +2292,7 @@ export default function SpaceTycoonPage() {
             onReactivateBuilding={handleReactivateBuilding}
             onDispatchShip={handleDispatchShip}
             onLaunchExpedition={handleLaunchExpedition}
-            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
             onRegionFocus={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }}
             focusRequest={mapFocusRequest}
             covered={stageLayout.mapCovered}
@@ -2309,7 +2309,7 @@ export default function SpaceTycoonPage() {
         {stageLayout.overlayOpen && (
           <button
             type="button"
-            onClick={() => { playSound('click'); setTab('map'); }}
+            onClick={() => { playSound('click'); navigateToTab('map'); }}
             aria-label="Close panel and return to the map"
             title="Return to the map (Esc)"
             className="absolute inset-0 w-full h-full bg-black/55 backdrop-blur-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400"
@@ -2329,7 +2329,7 @@ export default function SpaceTycoonPage() {
         {tab === 'dashboard' && <DashboardPanel
           state={state}
           onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)}
-          onNavigate={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+          onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }}
           onSetInsuranceActive={(active) => {
             playSound('click');
             setState(prev => prev ? setInsuranceActive(prev, active) : prev);
@@ -2555,7 +2555,7 @@ export default function SpaceTycoonPage() {
             setState={setState}
             onSellResource={handleSellResource}
             onBuyResource={handleBuyResource}
-            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
           />
         )}
         {tab === 'contracts' && (
@@ -2681,14 +2681,14 @@ export default function SpaceTycoonPage() {
           // a client-state handler prop.
           <ScienceMissionsPanel
             state={state}
-            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
             onStartMission={handleStartScienceMission}
           />
         )}
         {tab === 'interstellar' && (
           <InterstellarPanel
             state={state}
-            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
             onEstablishColony={handleEstablishColony}
             onUpgradeColony={handleUpgradeColony}
             onEstablishTradeRoute={handleEstablishTradeRoute}
@@ -2758,11 +2758,23 @@ export default function SpaceTycoonPage() {
                 return { ...prev, reports };
               });
             }}
-            onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+            onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
             onFocusMap={(target) => {
               playSound('click');
-              setTab('map');
+              navigateToTab('map');
               setMapFocusRequest({ target, token: Date.now() });
+            }}
+            /* AAA Round 2: the Emergency view's only state mutation. The
+               panel never touches GameState itself; systemic-crises.ts owns
+               the rule (cost, window, and the "already this posture" guard)
+               and this hop just commits the result. */
+            onSetCrisisApproach={(approachId) => {
+              const result = setCrisisApproach(state, approachId, Date.now());
+              if (result.ok) {
+                playSound('click');
+                setState(result.state);
+              }
+              return { ok: result.ok, reason: result.reason };
             }}
           />
         )}
@@ -2775,10 +2787,10 @@ export default function SpaceTycoonPage() {
       <Outliner
         state={state}
         activeTab={tab}
-        onNavigateTab={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+        onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
         onFocusMap={(target) => {
           playSound('click');
-          setTab('map');
+          navigateToTab('map');
           setMapFocusRequest({ target, token: Date.now() });
         }}
       />
@@ -2820,7 +2832,7 @@ export default function SpaceTycoonPage() {
         <FrontierGraduationModal
           state={state}
           onClose={() => setShowFrontierGraduation(false)}
-          onNavigate={(navTab) => { playSound('click'); setTab(resolveLegacyTab(navTab)); }}
+          onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }}
         />
       )}
 
@@ -2831,7 +2843,7 @@ export default function SpaceTycoonPage() {
           currentTab={tab}
           onAdvance={handleTutorialAdvance}
           onSkip={handleTutorialSkip}
-          onSetTab={(t) => setTab(t)}
+          onSetTab={(t) => navigateToTab(t)}
         />
       )}
       {/* Advanced-systems handbook — shown only AFTER the guided chain is
@@ -2840,20 +2852,17 @@ export default function SpaceTycoonPage() {
       {!isOnboardingActive(state) && (
         <GameTutorial
           key={state.createdAt}
-          onSetTab={(t) => {
-            // Never navigate into a tier-locked tab (the deck tours systems
-            // the player may not have unlocked yet — its copy names the
-            // unlock tier instead; navigating would render a panel outside
-            // the staged-unlock design with no active tab in the bar).
-            const resolved = resolveLegacyTab(t);
-            if (unlockedTabIds.has(resolved)) setTab(resolved);
-          }}
+          // The deck tours systems the player may not have unlocked yet; its
+          // copy names the unlock tier instead. navigateToTab refuses a
+          // locked tab structurally, so the ad-hoc guard that used to live
+          // here is gone rather than duplicated.
+          onSetTab={navigateToTab}
         />
       )}
       <FeatureUnlockToast
         availableTabsKey={tabIdsKey}
         availableTabs={allTabs.map(t => t.id)}
-        onNavigateToTab={(t) => setTab(resolveLegacyTab(t))}
+        onNavigateToTab={(t) => navigateToTab(t)}
       />
       {/* PvP Discoverability pass — "these tools exist". Non-blocking and
           non-modal on purpose (it never steals focus), one at a time, once
@@ -2867,7 +2876,7 @@ export default function SpaceTycoonPage() {
             : (competitiveQueue[0] ?? null)
         }
         onDismiss={() => setCompetitiveQueue(q => q.slice(1))}
-        onNavigate={(t) => setTab(resolveLegacyTab(t))}
+        onNavigate={(t) => navigateToTab(t)}
       />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
@@ -2878,7 +2887,7 @@ export default function SpaceTycoonPage() {
         <OperationsDebriefModal
           debrief={operationsDebrief}
           onDismiss={() => setOperationsDebrief(null)}
-          onNavigate={(t) => setTab(resolveLegacyTab(t))}
+          onNavigate={(t) => navigateToTab(t)}
         />
       )}
 

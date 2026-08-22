@@ -181,6 +181,25 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
     body: 'A corporation may withdraw from Accord oversight, as three of the six factions did in the Treaty Fracture of 2143. While fractured you are exempt from every Senate measure — the tariffs and the subsidies alike — and gain standing with the non-signatory factions, but you lose your vote, your lobbying, your eligibility for the Chair, and your standing with the Dominion, Echo Remnants and Nebula Reavers. Re-accession costs a burned bond and cannot happen until the term after you filed.',
     related: ['accord-chair', 'senate-docket'],
   }),
+  // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md) — systemic-crises.ts.
+  'systemic-crisis': c({
+    id: 'systemic-crisis', name: 'Accord Emergency', icon: 'cal-systemic-crisis',
+    short: 'A scheduled, world-shared emergency whose bite is measured, not scripted',
+    body: 'Every eight real weeks the Accord register carries an emergency: two weeks of published forecast, four weeks live, then a week of aftermath. WHICH emergency runs is fixed by the calendar, so everybody plans the same schedule, but HOW HARD it bites is measured — a published world index computed from real server telemetry (orbital objects on the registry, disclosed corporate net worth, accumulated extraction pressure, supplier concentration, installed capacity) together with your own measured exposure to that particular peril, taking the worse of the two. So a quiet world stays at Advisory with no measures in force at all, while a corporation that built heavily in the exposed lane feels it regardless — and Protected Frontier corporations, plus any still completing their charter filings, are exempt outright.',
+    related: ['crisis-situation', 'accord-assessment'],
+  }),
+  'crisis-situation': c({
+    id: 'crisis-situation', name: 'Exposure Bar', icon: 'warning',
+    short: 'A managed problem with a clock — pick a posture, pay for it, contain it',
+    body: 'While an emergency is live your corporation carries an exposure bar that advances on the wall clock toward a realized loss, and you choose a posture you can change at any stage: ABSORB spends nothing and runs the full course, HARDEN buys a large reduction for a recurring per-stage cost, REPOSITION buys the largest reduction for a one-time cost plus a revenue drag while capacity is out of the exposed lane. Pledging to the Accord assessment adds a further reduction on top, capped in total at 90%, so no posture is ever completely safe; every cost is a fraction of YOUR OWN capital at risk rather than a flat number, so the decision carries the same weight at every scale. If the bar reaches 100% the loss is bounded twice over: by a fraction of the capital you held at onset, and by a hard ceiling of a quarter of your cash.',
+    related: ['systemic-crisis', 'accord-assessment'],
+  }),
+  'accord-assessment': c({
+    id: 'accord-assessment', name: 'Stabilization Assessment', icon: 'alliance',
+    short: 'The pooled fund every corporation can free-ride on — and pay for if it fails',
+    body: 'The Accord opens a pooled emergency fund with a published target sized to the disclosed world economy, and any corporation may pledge into it; the money is burned, not escrowed. A pledge buys a bounded reduction on your own exposure bar plus a share of a public good — never resources, never an advantage over another corporation. Whether the target is MET changes the aftermath for every corporation the emergency reached, pledger or not, which is precisely the tension: free-riding works right up until enough people do it, and the pledge roll is public so who paid and who did not is on the record. The seated Accord Chair directs which of the emergency\'s three published relief allocations the pool funds — a real action on the shared world, once per emergency, committed before the pool fills.',
+    related: ['systemic-crisis', 'accord-chair'],
+  }),
   'alliance-charter': c({
     id: 'alliance-charter', name: 'Season Charter', icon: 'cal-alliance-charter',
     short: 'A corp\'s chosen alliance-season focus + deadline',

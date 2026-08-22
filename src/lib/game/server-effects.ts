@@ -47,6 +47,12 @@ import { clampEquitySnapshot, type EquitySnapshot } from './share-registry';
 // this corporation's fracture status — rides the same hop. Clamp lives in
 // accord-chair.ts (pure), same type-only posture as demandPools above.
 import { clampChairSnapshot, type ChairSnapshot } from './accord-chair';
+// AAA Round 2 (docs/AAA_PROGRAM_2026-08.md): the systemic-crisis snapshot —
+// the published world index, the assessment target and pool, this
+// corporation's pledge, and the seated Chair's relief directive — rides the
+// same hop. Clamp lives in systemic-crises.ts (pure), same type-only posture
+// as demandPools above.
+import { clampCrisisSnapshot, type CrisisSnapshot } from './systemic-crises';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -165,6 +171,11 @@ export interface ServerEffectsSnapshot {
    *  pushed, or never synced (pre-E1 behavior — no election, no writs,
    *  never fractured). Read-only: the client never mutates it. */
   chair?: ChairSnapshot | null;
+  /** AAA Round 2: the systemic-crisis snapshot (systemic-crises.ts).
+   *  Re-clamped via clampCrisisSnapshot; null = schema not pushed, no cycle
+   *  published, or never synced (pre-Round-2 behaviour — no crisis at all).
+   *  Read-only: the client never mutates it. */
+  crisis?: CrisisSnapshot | null;
   fetchedAtMs: number;
 }
 
@@ -418,6 +429,14 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     accordChair: eff.chair !== undefined
       ? (eff.chair ? clampChairSnapshot(eff.chair) : null)
       : state.accordChair,
+    // AAA Round 2: the crisis snapshot reaches the tick the same hop the
+    // Chair snapshot does. Plain clamped stash — every consumer
+    // (advanceSystemicCrisis, the insurance premium loading, the Situation
+    // Log, the Mission Calendar, the Emergency panel) is a pure lens over
+    // state.systemicCrisis.
+    systemicCrisis: eff.crisis !== undefined
+      ? (eff.crisis ? clampCrisisSnapshot(eff.crisis) : null)
+      : state.systemicCrisis,
   };
 
   // Wave M5: the offense snapshot reaches the tick the same hop demandPools

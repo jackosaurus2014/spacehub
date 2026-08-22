@@ -94,7 +94,9 @@ export async function GET(req: NextRequest) {
     const users = userIds.length
       ? await prisma.user.findMany({
           where: { id: { in: userIds } },
-          select: { id: true, name: true, email: true, verifiedBadge: true },
+          // NEVER select email here: this GET is unauthenticated, so the
+          // mentor directory would otherwise hand out every mentor's email.
+          select: { id: true, name: true, verifiedBadge: true },
         })
       : [];
     const userMap = new Map(users.map((u) => [u.id, u]));

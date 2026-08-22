@@ -10,8 +10,6 @@ import {
   internalError,
   createSuccessResponse,
 } from '@/lib/errors';
-import { getStripe } from '@/lib/stripe';
-import { APP_URL } from '@/lib/constants';
 import { createNotification } from '@/lib/notifications/create';
 
 export const dynamic = 'force-dynamic';
@@ -48,18 +46,28 @@ export async function POST(req: NextRequest) {
     const { eventId, status, ticketTier, notes } = validation.data;
     const userId = session.user.id;
 
-    // Optional paid-tier checkout request
+    // Paid-ticket checkout is DISABLED.
+    //
+    // This path used to mint a Stripe Checkout session using `paidTier.amount`
+    // straight from the request body, which meant any logged-in user could name
+    // their own price for a ticket (POST { paidTier: { tier: 'VIP', amount: 50 } }
+    // => a $0.50 checkout) and the webhook would still mark the RSVP paid.
+    // There is no server-side price for a ticket to validate against: SpaceEvent
+    // carries no ticket-pricing fields (see prisma/schema.prisma), and no live UI
+    // sends `paidTier` (RSVPButton.tsx is not rendered anywhere), so the safe
+    // behaviour is to refuse rather than to trust the client.
+    //
+    // To re-enable: add ticket tiers + prices to the event model, look the price
+    // up server-side by tier name, and pass THAT to Stripe — never the body.
     const paidTier =
       body && typeof body === 'object' && 'paidTier' in body
         ? (body as { paidTier?: unknown }).paidTier
         : undefined;
-    const isPaidGoing =
-      status === 'going' &&
-      paidTier &&
-      typeof paidTier === 'object' &&
-      'amount' in (paidTier as Record<string, unknown>) &&
-      typeof (paidTier as Record<string, unknown>).amount === 'number' &&
-      (paidTier as Record<string, number>).amount > 0;
+    if (paidTier !== undefined && paidTier !== null) {
+      return validationError(
+        'Paid ticket checkout is not available for this event.'
+      );
+    }
 
     // Optional event metadata for the checkout session
     const eventName =
@@ -107,76 +115,6 @@ export async function POST(req: NextRequest) {
         relatedContentType: 'event',
         relatedContentId: eventId,
       });
-    }
-
-    // If it's a paid ticket, hand back a Stripe Checkout URL
-    if (isPaidGoing) {
-      const tierData = paidTier as {
-        tier: string;
-        amount: number;
-        currency?: string;
-      };
-      const currency = (tierData.currency || 'USD').toLowerCase();
-      const amount = Math.round(tierData.amount); // amount in smallest currency unit (cents)
-
-      try {
-        const checkout = await getStripe().checkout.sessions.create({
-          mode: 'payment',
-          line_items: [
-            {
-              price_data: {
-                currency,
-                product_data: {
-                  name: `${eventName} — ${tierData.tier}`,
-                },
-                unit_amount: amount,
-              },
-              quantity: 1,
-            },
-          ],
-          customer_email: session.user.email || undefined,
-          success_url: `${APP_URL}/space-events?ticket_success=1&event=${encodeURIComponent(eventId)}`,
-          cancel_url: `${APP_URL}/space-events?ticket_canceled=1&event=${encodeURIComponent(eventId)}`,
-          metadata: {
-            kind: 'event_ticket',
-            rsvpId: rsvp.id,
-            eventId,
-            userId,
-            ticketTier: tierData.tier,
-          },
-        });
-
-        await prisma.eventRSVP.update({
-          where: { id: rsvp.id },
-          data: {
-            stripeSessionId: checkout.id,
-            amount: amount / 100,
-            currency: currency.toUpperCase(),
-            ticketTier: tierData.tier,
-          },
-        });
-
-        logger.info('Created Stripe checkout for event ticket', {
-          userId,
-          eventId,
-          rsvpId: rsvp.id,
-          sessionId: checkout.id,
-          amount,
-          currency,
-        });
-
-        return createSuccessResponse({
-          rsvp: { ...rsvp, stripeSessionId: checkout.id },
-          checkoutUrl: checkout.url,
-        });
-      } catch (err) {
-        logger.error('Failed to create Stripe checkout for event ticket', {
-          userId,
-          eventId,
-          error: err instanceof Error ? err.message : String(err),
-        });
-        return internalError('Failed to create checkout session');
-      }
     }
 
     return createSuccessResponse({ rsvp });

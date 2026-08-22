@@ -71,6 +71,14 @@ import { STANDING_DEMAND_REPORT_FEE } from '../src/lib/game/cornering-intel';
 import { FRONTIER_GRADUATION_NET_WORTH } from '../src/lib/game/frontier';
 import { computeLaborAggregates, sumCrewQuarters, LABOR_SUPPLY_BASE, type LaborActivitySummary } from '../src/lib/game/labor-market';
 import { DEFAULT_WORKFORCE, getWorkforceBonuses } from '../src/lib/game/workforce';
+// AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md "Round 2"): 9b's crisis
+// decision-supply probe imports the SHIPPED pure module - the calendar, the
+// severity thresholds and the posture cost table are the real ones, never a
+// re-implementation, so this probe cannot drift from what players face.
+import {
+  getCrisisWindow, crisisTierForIndex,
+  CRISIS_CYCLE_WEEKS, CRISIS_STAGES, CRISIS_APPROACH_MAP, CRISIS_MAP,
+} from '../src/lib/game/systemic-crises';
 
 const MONTHS = 600;                 // 50 game-years
 const DECADE = 120;                 // game-months per decade
@@ -484,6 +492,12 @@ interface Meta {
   decisionMonths: Set<number>; // months with a real decision (build/research/decommission/campaign)
   firstProfitMonth: number | null; // months SINCE JOIN of first net>0
   tier3Month: number | null;       // months since join reaching totalEarned >= $5B
+  // AAA Round 2 (docs/AAA_PROGRAM_2026-08.md): inert per-decade snapshots
+  // read ONLY by §9b. Recording them prints nothing and changes no existing
+  // table — every legacy section of this runner stays byte-identical.
+  buildingsAtDecadeEnd: number[];
+  capitalAtDecadeEnd: number[];
+  netByDecade: number[];
 }
 
 interface DecadeLedger {
@@ -574,6 +588,7 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
       arch, player, rs, joined: arch.joinMonth === 0,
       negStreak: 0, decommissioned: 0, decomRecovered: 0,
       decisionMonths: new Set<number>(), firstProfitMonth: null, tier3Month: null,
+      buildingsAtDecadeEnd: [], capitalAtDecadeEnd: [], netByDecade: [],
     };
   });
 
@@ -672,6 +687,8 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
       + (row.payroll || 0) + row.inputCost + row.capex;
     // Decision cadence: building capex counts.
     if (row.capex > 0) m.decisionMonths.add(month);
+    // AAA Round 2 §9b (inert accumulator — printed only by §9b).
+    m.netByDecade[decadeIdx] = (m.netByDecade[decadeIdx] || 0) + row.net;
     // First-profit / tier-3 milestones (months since join).
     if (m.firstProfitMonth === null && row.net > 0) m.firstProfitMonth = month - m.arch.joinMonth;
     if (m.tier3Month === null && m.player.totalEarned >= 5_000_000_000) m.tier3Month = month - m.arch.joinMonth;
@@ -707,6 +724,22 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
   }
   // Campaign fees are burned money — count them destroyed too.
   // (Added at declaration time below via the ledger's campaignFees line.)
+
+  // AAA Round 2 §9b: inert per-decade portfolio snapshot. Reads the SAME
+  // building list and the SAME catalogue prices the rest of the runner uses,
+  // so the exposure figures in §9b are measurements, not estimates.
+  if ((month + 1) % DECADE === 0 || month === months - 1) {
+    const dIdx = Math.floor(month / DECADE);
+    for (const m of metas) {
+      let capital = 0;
+      for (const b of m.player.buildings) {
+        const def = BUILDING_MAP.get(b.definitionId);
+        if (def) capital += def.baseCost;
+      }
+      m.buildingsAtDecadeEnd[dIdx] = m.player.buildings.length;
+      m.capitalAtDecadeEnd[dIdx] = capital;
+    }
+  }
 
   // Decade-end snapshots.
   if ((month + 1) % DECADE === 0 || month === months - 1) {
@@ -1093,6 +1126,202 @@ console.log('\n## 9. Decision cadence by decade (months with a real decision: bu
   console.log(mdTable(['player', 'y0-10', 'y10-20', 'y20-30', 'y30-40', 'y40-50'], rows));
   const mono = metas[0];
   console.log(`\nmono-expander decommissions: ${mono.decommissioned} sats, ${fm(mono.decomRecovered)} recovered (real 40%-of-unscaled-base constants).`);
+}
+
+
+// ─── 9b. AAA Round 2: does the systemic-crisis layer attack the dead decades?
+// docs/AAA_PROGRAM_2026-08.md "Round 2". §9 above measures the ECONOMIC
+// CORE's decision cadence and finds it collapsing to 0-3 months per decade
+// after year ~10 (BALANCE.md Pass 5, H3). Round 2's thesis is that the
+// failure is decision STARVATION, not difficulty, and that a scheduled
+// world-shared emergency is a decision GENERATOR.
+//
+// This probe imports the shipped module's pure functions and lays its real
+// calendar over this run's 600-month timeline. It measures three things and
+// invents none of them:
+//
+//   (a) how many months per decade the crisis layer puts a costed decision
+//       in front of a corporation (onset, each of the five stage
+//       boundaries, and the assessment deadline);
+//   (b) whether each archetype's OWN measured portfolio clears the Advisory
+//       threshold — i.e. whether the layer is live for it at all — using the
+//       real exposure term of the Retrofit Order (the one crisis whose
+//       exposure is a pure function of the building list this runner
+//       already tracks);
+//   (c) what those decisions COST, as a share of the decade's net income, so
+//       the added cadence is shown to be real economic weight rather than
+//       free clicks.
+//
+// COVERAGE, stated plainly: this is a CALENDAR + EXPOSURE probe, not an
+// in-world simulation of the crisis. The harness does not model hazards,
+// insurance, chapters or the senate (see this file's header), and it does
+// not tick systemic-crises.ts. What it CAN measure honestly is the decision
+// supply and its price against a portfolio this run actually produced — and
+// that is exactly the question Round 2 has to answer. Nothing in §1-§10 is
+// affected: this section reads inert snapshots and prints.
+console.log('\n## 9b. AAA Round 2 - crisis decision supply vs the dead decades\n');
+{
+  // Game-month -> wall clock. Anchored at 0 so the probe is deterministic
+  // (no Date.now anywhere in the sim path — this file's own header rule).
+  const tOf = (month: number) => month * GAME_MONTH_MS;
+  const CRISIS_DEF = CRISIS_MAP.get('regulatory_upheaval')!;
+  const emptyState = { buildings: [], ships: [] } as unknown as Parameters<typeof CRISIS_DEF.exposure>[0];
+  const RETROFIT_ANCHOR = CRISIS_DEF.exposure(emptyState).anchor;
+  const ADVISORY_BUILDINGS = Math.ceil(0.35 * RETROFIT_ANCHOR);
+
+  // (a) Calendar-derived decision months, archetype-independent.
+  const crisisDecisionMonths = new Set<number>();
+  const onsets: number[] = [];
+  for (let month = 0; month < MONTHS; month++) {
+    const a = getCrisisWindow(tOf(month));
+    const b = getCrisisWindow(tOf(month + 1));
+    // Onset: this game-month contains the moment the window opened.
+    if (a.phase !== 'active' && b.phase === 'active') { crisisDecisionMonths.add(month); onsets.push(month); }
+    // Stage boundary: the posture is re-charged and can be re-chosen.
+    if (a.phase === 'active' && b.phase === 'active' && b.stage > a.stage) crisisDecisionMonths.add(month);
+    // Assessment deadline: the pledge decision.
+    if (a.phase === 'active' && b.phase !== 'active') crisisDecisionMonths.add(month);
+  }
+
+  const decades = MONTHS / DECADE;
+  const supplyRow: (string | number)[] = ['crisis decision-months'];
+  for (let d = 0; d < decades; d++) {
+    let n = 0;
+    crisisDecisionMonths.forEach(mm => { if (mm >= d * DECADE && mm < (d + 1) * DECADE) n++; });
+    supplyRow.push(n);
+  }
+  const cycleMonths = (CRISIS_CYCLE_WEEKS * 7 * 24 * 3600_000) / GAME_MONTH_MS;
+  console.log(
+    'Crisis cycle = ' + CRISIS_CYCLE_WEEKS + ' real weeks = ' + cycleMonths.toFixed(0) + ' game-months; '
+    + CRISIS_STAGES + ' stages + onset + assessment close = ' + (CRISIS_STAGES + 2)
+    + ' decision points per cycle. ' + onsets.length + ' emergencies open inside the '
+    + MONTHS + '-month run.\n',
+  );
+  console.log(mdTable(['supply', 'y0-10', 'y10-20', 'y20-30', 'y30-40', 'y40-50'], [supplyRow]));
+
+  // (b) + (c) Per archetype: is the layer live, and what does it cost?
+  const rows: (string | number)[][] = [];
+  const combinedRows: (string | number)[][] = [];
+  for (const m of metas) {
+    const cells: (string | number)[] = [m.arch.name];
+    const comb: (string | number)[] = [m.arch.name];
+    for (let d = 0; d < decades; d++) {
+      const lo = d * DECADE, hi = (d + 1) * DECADE;
+      if (m.arch.joinMonth >= hi) { cells.push('-'); comb.push('-'); continue; }
+      const buildings = m.buildingsAtDecadeEnd[d] ?? 0;
+      const capital = m.capitalAtDecadeEnd[d] ?? 0;
+      // The Retrofit Order's REAL exposure term over this runner's own
+      // building list, against the SHIPPED anchor (read from the definition,
+      // never re-typed here, so the probe cannot drift from the constant a
+      // player actually faces). Its hazardous-site double-weighting is
+      // omitted because this runner's location mix is dominated by
+      // leo/lunar, so the figure below is a conservative floor, never an
+      // inflation.
+      const exposureIndex = Math.min(2, buildings / RETROFIT_ANCHOR);
+      const tier = crisisTierForIndex(exposureIndex);
+      // Cost of the defensive posture that CONTAINS at this tier, over one
+      // emergency: the recurring per-stage charge times every stage.
+      const harden = CRISIS_APPROACH_MAP.get('harden')!;
+      const perStagePct = harden.perStageCostPct[tier] ?? 0;
+      const hardenCost = capital * perStagePct * CRISIS_STAGES;
+      const decadeNet = m.netByDecade[d] ?? 0;
+      const share = decadeNet > 0 ? (hardenCost / decadeNet) * 100 : NaN;
+      cells.push(
+        buildings + 'b ' + fm(capital) + ' / ' + exposureIndex.toFixed(2) + ' / ' + tier
+        + ' ~ solv ' + Math.min(2, capital / 20e9).toFixed(2),
+      );
+
+      let baseline = 0;
+      m.decisionMonths.forEach(mm => { if (mm >= lo && mm < hi) baseline++; });
+      let crisisN = 0;
+      if (tier !== 'advisory') {
+        crisisDecisionMonths.forEach(mm => {
+          if (mm >= lo && mm < hi && mm >= m.arch.joinMonth && !m.decisionMonths.has(mm)) crisisN++;
+        });
+      }
+      comb.push(
+        baseline + ' -> ' + (baseline + crisisN)
+        + (crisisN > 0 && Number.isFinite(share) ? ' (' + share.toFixed(1) + '% net)' : ''),
+      );
+    }
+    rows.push(cells);
+    combinedRows.push(comb);
+  }
+
+  console.log('\n### Measured exposure at each decade end (buildings, capital / Retrofit index / severity | Mutual-solvency index)\n');
+  console.log(mdTable(['player', 'y10', 'y20', 'y30', 'y40', 'y50'], rows));
+
+  console.log('\n### Decision cadence: economic core -> economic core + crisis layer\n');
+  console.log('(months per decade with a real decision; the percentage is the containing posture cost as a share of that decade net income)\n');
+  console.log(mdTable(['player', 'y0-10', 'y10-20', 'y20-30', 'y30-40', 'y40-50'], combinedRows));
+
+  // Headline: the dead decades specifically (Pass 5 H3 measured decades 2-5).
+  let deadBefore = 0, deadAfter = 0, deadCells = 0, zeroBefore = 0, zeroAfter = 0;
+  for (const m of metas) {
+    for (let d = 1; d < decades; d++) {
+      const lo = d * DECADE, hi = (d + 1) * DECADE;
+      if (m.arch.joinMonth >= hi) continue;
+      let baseline = 0;
+      m.decisionMonths.forEach(mm => { if (mm >= lo && mm < hi) baseline++; });
+      const tier = crisisTierForIndex(Math.min(2, (m.buildingsAtDecadeEnd[d] ?? 0) / RETROFIT_ANCHOR));
+      let crisisN = 0;
+      if (tier !== 'advisory') {
+        crisisDecisionMonths.forEach(mm => {
+          if (mm >= lo && mm < hi && mm >= m.arch.joinMonth && !m.decisionMonths.has(mm)) crisisN++;
+        });
+      }
+      deadBefore += baseline; deadAfter += baseline + crisisN; deadCells++;
+      if (baseline === 0) zeroBefore++;
+      if (baseline + crisisN === 0) zeroAfter++;
+    }
+  }
+  console.log(
+    '\nDead decades (y10-50, ' + deadCells + ' archetype-decades): mean cadence '
+    + (deadBefore / deadCells).toFixed(2) + ' -> ' + (deadAfter / deadCells).toFixed(2)
+    + ' months/decade (x' + (deadAfter / Math.max(1, deadBefore)).toFixed(2) + ').',
+  );
+  console.log(
+    'Archetype-decades with ZERO decisions: ' + zeroBefore + ' -> ' + zeroAfter + '.',
+  );
+
+  // The sharper measure. The mean above is diluted by archetypes whose
+  // SCRIPTED build order keeps their cadence high (turtle 31, aggressor 24)
+  // — those decades were never starved. Pass 5 H3's finding is specifically
+  // about decades that collapse to 0-3 decisions, so measure THOSE.
+  {
+    let n = 0, before = 0, after = 0, worst = 0;
+    for (const m of metas) {
+      for (let d = 1; d < decades; d++) {
+        const lo = d * DECADE, hi = (d + 1) * DECADE;
+        if (m.arch.joinMonth >= hi) continue;
+        let baseline = 0;
+        m.decisionMonths.forEach(mm => { if (mm >= lo && mm < hi) baseline++; });
+        if (baseline > 3) continue; // not a starved decade
+        const tier = crisisTierForIndex(Math.min(2, (m.buildingsAtDecadeEnd[d] ?? 0) / RETROFIT_ANCHOR));
+        let crisisN = 0;
+        if (tier !== 'advisory') {
+          crisisDecisionMonths.forEach(mm => {
+            if (mm >= lo && mm < hi && mm >= m.arch.joinMonth && !m.decisionMonths.has(mm)) crisisN++;
+          });
+        }
+        n++; before += baseline; after += baseline + crisisN;
+        if (crisisN === 0) worst++;
+      }
+    }
+    console.log(
+      '\nSTARVED decades only (baseline <= 3 decisions, n=' + n + '): mean '
+      + (before / n).toFixed(2) + ' -> ' + (after / n).toFixed(2)
+      + ' months/decade (x' + (after / Math.max(1, before)).toFixed(2) + '). '
+      + worst + ' of ' + n + ' are still unserved because the corporation sits below the '
+      + 'Advisory threshold — those are portfolios too small for a systemic emergency to '
+      + 'reach, and the answer for them is R1-E6 mid-band construction rungs, not pressure.',
+    );
+  }
+  console.log(
+    '\nSeverity note: an archetype below the Advisory threshold (index < 0.35, i.e. fewer than '
+    + ADVISORY_BUILDINGS + ' installations) gets a published forecast and NO measures in force. '
+    + 'That is the designed floor, not a gap - see ' + CRISIS_DEF.name + ' exposure term.',
+  );
 }
 
 // ─── 10. Deep-tier ladder at 50-year income scales ──────────────────────────

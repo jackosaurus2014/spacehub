@@ -239,6 +239,14 @@ const CRON_JOBS: CronJobDef[] = [
   // contend. Registered in middleware.ts cronPaths (the CSRF-for-new-cron
   // gotcha).
   { schedule: '50 */2 * * *', path: '/api/space-tycoon/chair/resolve',              label: 'tycoon-chair-resolve',         maxStaleMinutes: 1440 },
+  // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md "Round 2"): the
+  // systemic-crisis sealer. Seals cycles whose active window has closed and
+  // MEASURES/PUBLISHES the world index for the current one, so the forecast
+  // is on the register from the first hour of the forecast phase rather than
+  // from the first player sync. Offset to :20 so it contends with neither
+  // the equity settler (:30) nor the Chair certifier (:50). Registered in
+  // middleware.ts cronPaths (the CSRF-for-new-cron gotcha).
+  { schedule: '20 */2 * * *', path: '/api/space-tycoon/crisis/resolve',             label: 'tycoon-crisis-resolve',        maxStaleMinutes: 1440 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

@@ -117,7 +117,14 @@ export type LedgerReason =
   // The filing fee buys ballot access and cannot move a single vote; the
   // re-accession bond is forfeit to the Accord on signature.
   | 'chair_filing_fee_burn'
-  | 'accord_reaccession_bond_burn';
+  | 'accord_reaccession_bond_burn'
+  // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the Accord
+  // Stabilization Assessment. BURNED — the pool is a sink, not an escrow, so
+  // there is nothing to refund and nothing to exploit by pledging and
+  // withdrawing. A pledge buys a share of a public good and a bounded
+  // mitigation on the pledger's own situation; it buys no resources, no
+  // multiplier, and no advantage over another corporation.
+  | 'crisis_assessment_burn';
 
 export interface LedgerWrite {
   profileId: string;

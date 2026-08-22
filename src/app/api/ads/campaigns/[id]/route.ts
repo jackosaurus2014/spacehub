@@ -195,8 +195,19 @@ export async function PUT(
       }
     }
 
-    // Validate budget increase (cannot decrease below spent)
+    // Budget is PREPAID: /api/ads/checkout charges the draft campaign's declared
+    // budget in full, and there is no top-up flow. So once a campaign leaves
+    // "draft" the budget is locked for advertisers — otherwise an advertiser
+    // could pay the $100 minimum, wait for admin approval, then PUT
+    // { budget: 1000000 } and receive up to $1M of ad delivery for $100
+    // (ad-server.ts gates serving purely on `spent < budget`).
+    // Admins may still adjust it to support manual/invoiced campaigns.
     if (updateData.budget !== undefined && campaign) {
+      if (!isAdmin && campaign.status !== 'draft') {
+        return forbiddenError(
+          'The campaign budget is prepaid and cannot be changed after submission. Contact us at /contact to run a larger campaign.'
+        );
+      }
       if (updateData.budget < campaign.spent) {
         return validationError(
           `Budget cannot be less than amount already spent ($${campaign.spent.toFixed(2)})`

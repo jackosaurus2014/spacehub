@@ -292,6 +292,11 @@ import type { GameState } from './types';
 import { BUILDING_MAP } from './buildings';
 import { SHIP_MAP } from './ships';
 import { mulberry32, hashStringToSeed } from './formulas';
+// AAA Round 2: the crisis premium loading. One-way import — systemic-crises
+// deliberately does NOT import this module (it recomputes the insured-asset
+// arithmetic itself as `crisisOperationalCapital`, guarded by a drift test),
+// because the reciprocal import would be a cycle.
+import { getCrisisInsurancePremiumMultiplier } from './systemic-crises';
 
 /** Locations whose occupancy raises the insurance risk surcharge
  *  (economic-sinks §2: "+0.2% per hazardous location (Io, Mercury, etc.)").
@@ -333,9 +338,19 @@ export function countInsuranceRiskLocations(state: GameState): number {
 /** Monthly premium for the active policy: 0.5% of asset value + 0.2% per
  *  hazardous location (§2 rates, unchanged — "at the audit's recommended
  *  rates"). Returns 0 when no policy is active. */
-export function getMonthlyInsurancePremium(state: GameState): number {
+export function getMonthlyInsurancePremium(state: GameState, nowMs: number = Date.now()): number {
   if (state.insuranceActive !== true) return 0;
-  return calculateInsurancePremium(computeInsuredAssetValue(state), countInsuranceRiskLocations(state));
+  const base = calculateInsurancePremium(computeInsuredAssetValue(state), countInsuranceRiskLocations(state));
+  // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): while an Accord
+  // emergency is in force the reinsurance market hardens. Bounded
+  // (1.0-1.6x), published two real weeks ahead, and applied only to this
+  // OPT-IN sink — a corporation carrying no policy pays nothing extra and
+  // simply retains its own risk. Returns exactly 1 for a pre-Round-2 save,
+  // a Frontier corporation, a corporation still in the FTUE chain, an
+  // Advisory-tier crisis, or any moment outside the active/aftermath
+  // window, so the shipped premium is unchanged in every one of those
+  // cases.
+  return Math.round(base * getCrisisInsurancePremiumMultiplier(state, nowMs));
 }
 
 /** Engine-facing toggle for the UI wave (opt-in/out is a real economic

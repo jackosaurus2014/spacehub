@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { getGlobalGameDate, REAL_SECONDS_PER_GAME_MONTH } from '@/lib/game/server-time';
 import {
@@ -32,8 +33,16 @@ export const maxDuration = 60;
 
 /**
  * Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity resolution cron
- * (cron-scheduler.ts 'tycoon-equity-resolve', CRON_SECRET-authenticated via
- * middleware.ts's cronPaths — the "CSRF-for-new-cron gotcha").
+ * (cron-scheduler.ts 'tycoon-equity-resolve').
+ *
+ * AUTH: requireCronSecret. NOTE — an earlier version of this comment claimed
+ * the route was "CRON_SECRET-authenticated via middleware.ts's cronPaths".
+ * That was false and left this endpoint world-callable: middleware's cronPaths
+ * list only *skips the CSRF check* when a valid secret is present; it never
+ * *requires* one. With no Bearer token the request fell through to the plain
+ * Origin/Referer comparison, which any attacker satisfies by sending
+ * `Origin: https://<host>`. Since this route settles tenders, moves shares,
+ * refunds escrow and pays dividends, it must authenticate itself.
  *
  * Deterministic settler for everything time-boxed in the equity system:
  *   1. orphan healing — holdings whose holder profile no longer exists
@@ -57,7 +66,10 @@ export const maxDuration = 60;
  * while enabled must resolve — never strand escrow), but no NEW distress
  * tranches or dividends are initiated while the gate is closed.
  */
-export async function POST() {
+export async function POST(request: Request) {
+  const unauthorized = requireCronSecret(request);
+  if (unauthorized) return unauthorized;
+
   try {
     if (!(await isEquitySchemaAvailable())) {
       return NextResponse.json({ skipped: 'equity schema not provisioned' });

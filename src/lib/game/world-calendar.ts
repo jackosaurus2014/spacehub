@@ -81,6 +81,13 @@ import { getCurrentChapterInstance, getActRevealMs, getChapterForCycle } from '.
 // election. Pure/DB-free (accord-chair.ts's term math is a function of the
 // UTC clock alone), world-shared like senate/league/season.
 import { getChairPhase, getChairTermWindow } from './accord-chair';
+// AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the systemic-crisis
+// calendar. Pure wall-clock functions plus a display-only tier lookup — no
+// DB, so this module keeps the property senate/league/season depend on.
+import {
+  getCrisisWindow, getCrisisForCycle, effectiveCrisisTier,
+  CRISIS_STAGES, CRISIS_TIER_LABEL,
+} from './systemic-crises';
 // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): alliance season
 // charter deadline entry — a SEPARATE deriver function per this file's
 // existing convention (each system gets its own function; see
@@ -109,7 +116,13 @@ export type CalendarCategory =
   // election — nominations open, nominations close, ballot certifies. Pure
   // function of the UTC clock (accord-chair.ts's term math), so it needs no
   // state at all and stays DB-free like senate/league/season.
-  | 'chair_election';
+  | 'chair_election'
+  // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the systemic-crisis
+  // cycle — onset, each stage boundary, the assessment deadline, and the
+  // aftermath. Which crisis runs is a pure function of the wall clock, so
+  // the ONSET and STAGE entries need no state and this module stays DB-free;
+  // the severity a player reads beside them comes from the sync snapshot.
+  | 'systemic_crisis';
 
 export type CalendarEntryKind =
   | 'lock' | 'opens' | 'closes' | 'starts' | 'ends' | 'returns' | 'completes' | 'transition';
@@ -861,11 +874,97 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...procurementDriveEntries(opts.openNpcDrives, nowMs, horizonMs),
     ...tenderOfferEntries(state, nowMs, horizonMs),
     ...chairElectionEntries(state, nowMs, horizonMs),
+    ...systemicCrisisEntries(state, nowMs, horizonMs),
   ];
 
   return entries
     .filter(e => e.atMs >= nowMs && e.atMs <= nowMs + horizonMs)
     .sort((a, b) => a.atMs - b.atMs);
+}
+
+/** AAA Round 2 — the systemic-crisis cycle. Four kinds of appointment, all
+ *  world-shared and all derivable from the wall clock alone (this module
+ *  stays DB-free — the same property `senate`, `league` and `season` rely
+ *  on): the next crisis's ONSET, the next STAGE boundary inside an open
+ *  window, the ASSESSMENT deadline (= the close of the active window), and
+ *  the AFTERMATH week when the relief lands.
+ *
+ *  The severity shown alongside comes from `state.systemicCrisis` when a
+ *  snapshot has arrived; with no snapshot the entries still publish — a
+ *  forecast that says "this is what is scheduled, severity not yet
+ *  measured" is honest, while hiding the calendar until a network round trip
+ *  lands is not. */
+function systemicCrisisEntries(state: GameState, nowMs: number, horizonMs: number): CalendarEntry[] {
+  const win = getCrisisWindow(nowMs);
+  const def = getCrisisForCycle(win.cycleIndex);
+  const snap = state.systemicCrisis;
+  const severity = snap?.enabled && snap.cycleIndex === win.cycleIndex
+    ? `Published severity: ${CRISIS_TIER_LABEL[effectiveCrisisTier(state, snap)]}.`
+    : 'Severity is measured and published when the forecast phase opens.';
+  const entries: CalendarEntry[] = [];
+  const inHorizon = (t: number) => t >= nowMs && t <= nowMs + horizonMs;
+
+  if (inHorizon(win.activeStartMs)) {
+    entries.push({
+      id: `crisis_onset_${win.cycleIndex}`,
+      category: 'systemic_crisis',
+      title: `${def.name}: emergency window opens`,
+      icon: def.icon,
+      atMs: win.activeStartMs,
+      endMs: win.activeEndMs,
+      kind: 'opens',
+      worldShared: true,
+      detail: `${def.tagline} ${severity}`,
+    });
+  }
+
+  // Next stage boundary inside an open window — the recurring weekly beat.
+  if (win.phase === 'active') {
+    const nextStage = Math.min(CRISIS_STAGES, win.stage + 1);
+    const stageMs = win.activeStartMs + (nextStage / CRISIS_STAGES) * (win.activeEndMs - win.activeStartMs);
+    if (nextStage < CRISIS_STAGES && inHorizon(stageMs)) {
+      entries.push({
+        id: `crisis_stage_${win.cycleIndex}_${nextStage}`,
+        category: 'systemic_crisis',
+        title: `${def.name}: stage ${nextStage + 1} of ${CRISIS_STAGES}`,
+        icon: def.icon,
+        atMs: stageMs,
+        kind: 'transition',
+        worldShared: true,
+        detail: 'Your chosen posture is charged again and the exposure bar advances. Change posture in Reports → Emergency before the boundary if you mean to.',
+      });
+    }
+  }
+
+  if (inHorizon(win.activeEndMs)) {
+    entries.push({
+      id: `crisis_assessment_${win.cycleIndex}`,
+      category: 'systemic_crisis',
+      title: `${def.name}: Accord assessment closes`,
+      icon: '🤝',
+      atMs: win.activeEndMs,
+      kind: 'closes',
+      worldShared: true,
+      detail: snap?.enabled && snap.assessmentTargetUsd > 0
+        ? `$${Math.round(snap.pledgedUsd / 1e6).toLocaleString()}M pledged of a $${Math.round(snap.assessmentTargetUsd / 1e6).toLocaleString()}M target from ${snap.pledgeCount} corporation${snap.pledgeCount === 1 ? '' : 's'}. Whether the target is met changes the aftermath for every corporation the emergency reached — pledger or not.`
+        : 'The last moment to pledge to the Accord Stabilization Assessment. Whether the target is met changes the aftermath for every corporation the emergency reached.',
+    });
+  }
+
+  if (inHorizon(win.aftermathStartMs)) {
+    entries.push({
+      id: `crisis_aftermath_${win.cycleIndex}`,
+      category: 'systemic_crisis',
+      title: `${def.name}: relief allocated`,
+      icon: '📋',
+      atMs: win.aftermathStartMs,
+      kind: 'starts',
+      worldShared: true,
+      detail: 'The assessment is spent on the directed relief allocation and the cycle is sealed into the Accord register.',
+    });
+  }
+
+  return entries;
 }
 
 /** M6 — tender-offer contest deadlines (docs/MEANINGFUL_2026-08.md §M6:

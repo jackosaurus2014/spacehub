@@ -484,4 +484,65 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     expect(res.status).toBe(403);
     expect(mockRefundsCreate).not.toHaveBeenCalled();
   });
+
+  // ── Prepaid-budget integrity (SECURITY) ───────────────────────────────────
+  // The budget is charged in full at checkout while the campaign is a draft,
+  // and there is no top-up flow. ad-server.ts serves impressions purely on
+  // `spent < budget`, so a budget that can be raised after payment is a way to
+  // get unpaid ad delivery. These tests fail if the freeze is removed.
+
+  it('SECURITY: owners cannot raise the budget after payment (pending_review)', async () => {
+    setupUsers({ isAdmin: false });
+    (mockPrisma.adCampaign.findUnique as jest.Mock).mockResolvedValue(pendingCampaign);
+
+    const res = await campaignPUT(putRequest({ budget: 1000000 }), {
+      params: { id: 'camp-1' },
+    });
+
+    expect(res.status).toBe(403);
+    expect(mockPrisma.adCampaign.update).not.toHaveBeenCalled();
+  });
+
+  it('SECURITY: owners cannot raise the budget on an approved/active campaign', async () => {
+    setupUsers({ isAdmin: false });
+    (mockPrisma.adCampaign.findUnique as jest.Mock).mockResolvedValue({
+      ...pendingCampaign,
+      status: 'active',
+    });
+
+    const res = await campaignPUT(putRequest({ budget: 250000 }), {
+      params: { id: 'camp-1' },
+    });
+
+    expect(res.status).toBe(403);
+    expect(mockPrisma.adCampaign.update).not.toHaveBeenCalled();
+  });
+
+  it('owners may still edit the budget while the campaign is an unpaid draft', async () => {
+    setupUsers({ isAdmin: false });
+    (mockPrisma.adCampaign.findUnique as jest.Mock).mockResolvedValue({
+      ...pendingCampaign,
+      status: 'draft',
+    });
+    (mockPrisma.adCampaign.update as jest.Mock).mockResolvedValue({ id: 'camp-1' });
+
+    const res = await campaignPUT(putRequest({ budget: 750 }), { params: { id: 'camp-1' } });
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.adCampaign.update).toHaveBeenCalled();
+  });
+
+  it('admins may still adjust the budget of a paid campaign (manual/invoiced deals)', async () => {
+    setupUsers({ isAdmin: true });
+    (mockPrisma.adCampaign.findUnique as jest.Mock).mockResolvedValue({
+      ...pendingCampaign,
+      status: 'active',
+    });
+    (mockPrisma.adCampaign.update as jest.Mock).mockResolvedValue({ id: 'camp-1' });
+
+    const res = await campaignPUT(putRequest({ budget: 20000 }), { params: { id: 'camp-1' } });
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.adCampaign.update).toHaveBeenCalled();
+  });
 });

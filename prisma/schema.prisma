@@ -7506,3 +7506,68 @@ model AccordFracture {
 
   @@index([reaccededAt])
 }
+
+// ─── AAA Program Round 2 — Systemic Crises ──────────────────────────────────
+// docs/AAA_PROGRAM_2026-08.md "Round 2". Two tables. Profile ids are stored
+// WITHOUT relations or cascades, matching PublishedCorpReport, CorpEraRecord
+// and the AccordChair* family: the crisis register is permanent public
+// history and must survive a profile deletion rather than vanish from the
+// record.
+
+// One row per 8-week crisis cycle. Created by the resolve cron (or lazily by
+// the crisis route) at the start of the cycle's forecast phase, which is when
+// the world index is measured and PUBLISHED — every corporation then plans
+// against the identical number for the whole cycle.
+model SystemicCrisisCycle {
+  // The cycle index is the primary key: floor(weekIndex / 8), epoch-anchored,
+  // identical for every observer.
+  cycleIndex Int    @id
+  crisisId   String
+
+  // Measured world telemetry, frozen at forecast time. `worldIndex` is
+  // measured/anchor clamped to [0, 2]; the raw measure and the anchor are
+  // stored beside it so the scaling is auditable from inside the game.
+  worldIndex        Float  @default(0)
+  worldIndexMeasured Float @default(0)
+  worldIndexAnchor  Float  @default(1)
+  worldIndexChannel String
+  // World economic scale ($) the assessment target was derived from.
+  worldScaleUsd     Float  @default(0)
+  assessmentTargetUsd Float @default(0)
+
+  // The Accord Chair's relief directive for this crisis, if one was issued.
+  reliefId        String
+  reliefSetByProfileId String?
+  reliefSetByCorp String?
+  reliefSetAt     DateTime?
+
+  // Sealed by the resolve cron once the aftermath week opens.
+  status       String    @default("open") // open | sealed
+  pledgedUsd   Float     @default(0)
+  pledgeCount  Int       @default(0)
+  containment  Float     @default(0)
+  sealedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+// One pledge row per corporation per cycle. Money is BURNED at pledge time
+// through the standard server ledger (reason `crisis_assessment_burn`) — the
+// pool is a sink, not an escrow, so there is nothing to refund and nothing
+// to exploit by pledging and withdrawing.
+model SystemicCrisisPledge {
+  id         String @id @default(cuid())
+  cycleIndex Int
+  profileId  String
+  corpName   String
+  amountUsd  Float  @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cycleIndex, profileId])
+  @@index([cycleIndex])
+}

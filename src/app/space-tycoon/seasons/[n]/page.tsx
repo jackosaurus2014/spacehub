@@ -50,6 +50,13 @@ export default async function SeasonChroniclePage({ params }: PageProps) {
   if (!Number.isFinite(seasonNumber)) notFound();
 
   const record = await getSealedSeasonChronicle(seasonNumber);
+  // A season with no sealed Chronicle has nothing to show — rendering the
+  // header shell anyway made /space-tycoon/seasons/<any integer> an
+  // unbounded supply of near-empty indexable pages. middleware.ts's
+  // SLUG_EXISTENCE_CHECKS entry gives crawlers a real 404 status for these;
+  // this is the in-render backstop for when that check fails open, and it
+  // at least gets Next's automatic noindex onto the response.
+  if (!record) notFound();
 
   return (
     <div className="min-h-screen bg-black text-white">

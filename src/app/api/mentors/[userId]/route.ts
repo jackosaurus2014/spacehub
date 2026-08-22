@@ -29,9 +29,10 @@ export async function GET(
       prisma.user.findUnique({
         where: { id: userId },
         select: {
+          // NEVER select email here: this GET has no session check, so
+          // /api/mentors/<userId> would disclose that user's email to anyone.
           id: true,
           name: true,
-          email: true,
           verifiedBadge: true,
           reputation: true,
         },

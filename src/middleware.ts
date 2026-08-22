@@ -314,6 +314,10 @@ function checkCsrf(req: NextRequest): boolean {
         // Chair certifier — closes each monthly ballot and seats (or
         // honestly vacates) the Chair.
         '/api/space-tycoon/chair/resolve',
+        // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the
+        // systemic-crisis sealer — seals closed cycles and publishes the
+        // measured world index for the current one.
+        '/api/space-tycoon/crisis/resolve',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {
@@ -386,7 +390,10 @@ function checkCsrf(req: NextRequest): boolean {
 // any reason (network hiccup, DB blip, timeout), we fail OPEN — the
 // request proceeds normally — so a transient error in this check can never
 // incorrectly 404 real content.
-const SLUG_EXISTENCE_CHECKS: Array<{
+// Exported for src/lib/__tests__/route-404-status.test.ts, which asserts
+// every entry here has a real `exists` route handler behind it — the guard
+// that catches "new dynamic route shipped, middleware entry forgotten".
+export const SLUG_EXISTENCE_CHECKS: Array<{
   match: RegExp;
   excludedSlugs?: Set<string>;
   existsApiPath: (slug: string) => string;
@@ -401,13 +408,103 @@ const SLUG_EXISTENCE_CHECKS: Array<{
     match: /^\/marketplace\/listings\/([^/]+)\/?$/,
     existsApiPath: (slug) => `/api/marketplace/listings/${encodeURIComponent(slug)}/exists`,
   },
+  {
+    // /build-guides/new is a real static page, not a guide slug.
+    match: /^\/build-guides\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['new']),
+    existsApiPath: (slug) => `/api/build-guides/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // Cap tables are keyed by CompanyProfile.slug — the same column
+    // /company-profiles/[slug] uses — so reuse that existence endpoint
+    // rather than shipping a second identical query.
+    match: /^\/cap-tables\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/company-profiles/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // /countdown/new is a real static page, not a countdown slug.
+    match: /^\/countdown\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['new']),
+    existsApiPath: (slug) => `/api/countdown/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // /gig-work/post and /gig-work/my-gigs are real static pages.
+    match: /^\/gig-work\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['post', 'my-gigs']),
+    existsApiPath: (id) => `/api/gig-work/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    match: /^\/history\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/history/${encodeURIComponent(slug)}/exists`,
+  },
+  // Learning Zone, three depths. The capture group deliberately spans '/'
+  // so the whole trailing path travels as one ?path= value — middleware's
+  // check shape only carries a single captured string per entry, and one
+  // endpoint resolving all three depths keeps it that way. Anchored regexes
+  // mean exactly one of these three can match a given URL.
+  {
+    // /learn/zone is a real static page, not a track. The /learn/* entries
+    // in next.config.js's redirects() are listed too: those 301s are
+    // evaluated before middleware runs, so this is belt-and-braces only —
+    // an over-broad exclusion set is harmless (it just leaves today's
+    // behaviour in place), an under-broad one would 404 a live page.
+    match: /^\/learn\/([^/]+)\/?$/,
+    excludedSlugs: new Set([
+      'zone',
+      'space-industry',
+      'space-industry-market-size',
+      'satellite-launch-cost',
+      'how-to-track-satellites',
+      'space-companies-to-watch',
+    ]),
+    existsApiPath: (p) => `/api/learn/exists?path=${encodeURIComponent(p)}`,
+  },
+  {
+    match: /^\/learn\/([^/]+\/[^/]+)\/?$/,
+    existsApiPath: (p) => `/api/learn/exists?path=${encodeURIComponent(p)}`,
+  },
+  {
+    match: /^\/learn\/([^/]+\/[^/]+\/[^/]+)\/?$/,
+    existsApiPath: (p) => `/api/learn/exists?path=${encodeURIComponent(p)}`,
+  },
+  {
+    // These are in sitemap.ts, so unknown ids are directly wasted crawl.
+    match: /^\/regulatory-radar\/action\/([^/]+)\/?$/,
+    existsApiPath: (id) => `/api/regulatory-radar/action/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    // Highest-volume case: ~6,500 ATS postings, all in jobs-sitemap.xml,
+    // and expired ids are the URLs Google re-crawls most.
+    match: /^\/space-talent\/job\/([^/]+)\/?$/,
+    existsApiPath: (id) => `/api/space-jobs/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    match: /^\/space-tycoon\/corp\/([^/]+)\/?$/,
+    existsApiPath: (id) => `/api/space-tycoon/corp/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    // Also covers the page's second, worse failure mode: a numeric but
+    // unsealed season renders a real 200 "Season N" shell, making
+    // /space-tycoon/seasons/<any integer> an unbounded supply of thin
+    // indexable pages. The exists route rejects both.
+    match: /^\/space-tycoon\/seasons\/([^/]+)\/?$/,
+    existsApiPath: (n) => `/api/space-tycoon/seasons/${encodeURIComponent(n)}/exists`,
+  },
 ];
 
 async function checkKnownSlugMissing(req: NextRequest, pathname: string): Promise<boolean> {
   for (const check of SLUG_EXISTENCE_CHECKS) {
     const m = pathname.match(check.match);
     if (!m) continue;
-    const slug = decodeURIComponent(m[1]);
+    // decodeURIComponent throws URIError on a malformed % sequence; with
+    // this list now covering a dozen route families it is worth not letting
+    // that become a 500. Fail open, same as every other failure here.
+    let slug: string;
+    try {
+      slug = decodeURIComponent(m[1]);
+    } catch {
+      return false;
+    }
     if (check.excludedSlugs?.has(slug)) return false;
 
     const controller = new AbortController();

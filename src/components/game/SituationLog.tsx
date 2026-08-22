@@ -49,6 +49,8 @@ const CATEGORY_LABEL: Record<SituationCategory, string> = {
   lane_toll: 'Freight Toll',
   // PvP Discoverability pass (competitive-posture.ts)
   competitive_signal: 'Competitive',
+  // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md)
+  systemic_crisis: 'Accord Emergency',
 };
 
 const CATEGORY_FRAME: Record<SituationCategory, string> = {
@@ -84,6 +86,12 @@ const CATEGORY_FRAME: Record<SituationCategory, string> = {
   // PvP Discoverability pass — deliberately the calmest frame in the table:
   // an opportunity must never read as an alarm.
   competitive_signal: 'border-indigo-500/25 bg-indigo-500/[0.03]',
+  // AAA Round 2 — the same amber the hazard FORECAST uses, because a crisis
+  // is the same class of thing at world scale: a warning with a clock on it.
+  // Severity (and therefore the row's tone chip and its ordering) still
+  // carries the urgency; the frame is category identity only, never the
+  // sole carrier of state.
+  systemic_crisis: 'border-amber-500/25 bg-amber-500/[0.03]',
 };
 
 const SEVERITY_TONE: Record<SituationSeverity, 'bad' | 'warn' | 'info'> = {

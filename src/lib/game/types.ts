@@ -1185,6 +1185,24 @@ export interface GameState {
    *  save-load.ts writes nothing. The client never mutates it. */
   accordChair?: import('./accord-chair').ChairSnapshot | null;
 
+  // ─── AAA Program Round 2 — Systemic Crises (docs/AAA_PROGRAM_2026-08.md) ──
+  // THREE OPTIONAL FIELDS. NO SAVE MIGRATION, NO VERSION BUMP.
+  //
+  //  - `systemicCrisis` is SERVER-AUTHORITATIVE and READ-ONLY, exactly like
+  //    `accordChair` (E1) and `equity` (M6): the published world index, the
+  //    assessment target and pool, and this corporation's own pledge all
+  //    live in the SystemicCrisis* Prisma tables. Null/undefined = "no
+  //    crisis system", which is what a pre-Round-2 save, a logged-out
+  //    session, and an un-pushed schema all read as.
+  //  - `crisisSituation` and `crisisHistory` are CLIENT-OWNED save state,
+  //    the same shape and lifecycle `storyChapters` has: a progress bar and
+  //    a bounded record of resolved crises. `save-load.ts` is untouched;
+  //    `advanceSystemicCrisis` creates both lazily on the first tick that
+  //    needs them.
+  systemicCrisis?: import('./systemic-crises').CrisisSnapshot | null;
+  crisisSituation?: import('./systemic-crises').CorporateSituation | null;
+  crisisHistory?: import('./systemic-crises').CrisisRecord[];
+
   // ─── V23 (4X Wave W14) — Cargo Logistics + Per-Location Inventory ────────
   // docs/GAME_SYSTEMS_AUDIT_2026-08.md C1. Both fields additive-only; engine
   // logic + freight mutator live in cargo-logistics.ts.

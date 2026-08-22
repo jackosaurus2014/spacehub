@@ -1166,6 +1166,23 @@ export async function POST(request: Request) {
       chair = await buildChairSnapshot({ id: profile.id, companyName: profile.companyName });
     } catch { /* chair snapshot non-critical (schema may lag deploy) */ }
 
+    // ── AAA Round 2: the systemic-crisis snapshot ─────────────────────────
+    // The published world index for this cycle, the assessment target and
+    // pool, this corporation's own pledge, and the seated Chair's relief
+    // directive. Read-only on this hot path (the resolve cron owns sealing;
+    // the crisis route owns pledges); null until the schema is pushed — the
+    // client treats null as "no crisis system", which is exactly pre-Round-2
+    // behaviour: no situation ever opens and the insurance premium loading
+    // is exactly 1.
+    let crisis = null;
+    try {
+      const { buildCrisisSnapshot } = await import('@/lib/game/server-crises');
+      crisis = await buildCrisisSnapshot(
+        { id: profile.id, companyName: profile.companyName },
+        { isSeatedChair: chair?.seat?.isMe === true },
+      );
+    } catch { /* crisis snapshot non-critical (schema may lag deploy) */ }
+
     // ── Balance Pass 4 (docs/BALANCE.md "Pass 4"): this player's ACTIVE
     // orbital-slot leases — the client-side slot-gate (spatial-strategy.ts
     // checkOrbitalSlotGate) needs them to allow builds at saturated pools.
@@ -1238,6 +1255,10 @@ export async function POST(request: Request) {
       // AAA E1: Accord Chair snapshot — additive field; older clients simply
       // ignore it (pre-E1 behavior: no election, no writs, never fractured).
       chair,
+      // AAA Round 2: systemic-crisis snapshot — additive field; older clients
+      // simply ignore it (pre-Round-2 behavior: no crisis, no situation, no
+      // premium loading).
+      crisis,
       rivals: rivalsSummary,
       leagueInfo,
       // Audit Wave B: server-computed effects consumed by the client tick

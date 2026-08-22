@@ -13,6 +13,16 @@ interface Props {
   params: { city: string };
 }
 
+// SPACE_CITIES (src/lib/city-data.ts) is a static, build-time-known array, so
+// generateStaticParams() below enumerates every valid slug. dynamicParams=false
+// 404s anything outside that list at the ROUTING layer, before this file's
+// notFound() runs — the only way to return a real 404 status, since notFound()
+// inside a matched route is caught by a client-side boundary that cannot set
+// the status code (unknown cities were returning HTTP 200). Safe here because
+// adding a city requires a code change and redeploy anyway; see the fuller
+// rationale in blog/[slug]/page.tsx.
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return SPACE_CITIES.map((city) => ({ city: city.slug }));
 }

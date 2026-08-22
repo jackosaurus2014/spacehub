@@ -46,13 +46,18 @@ export async function GET(
     const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       include: {
+        // NEVER select email on these joins. This GET calls getServerSession
+        // only to decorate vote state — an anonymous caller is allowed through,
+        // so every field here is public. With email selected, walking the
+        // public category -> thread listings dumped the address of the thread
+        // author and every replier.
         author: {
-          select: { id: true, name: true, email: true, verifiedBadge: true, isAdmin: true },
+          select: { id: true, name: true, verifiedBadge: true, isAdmin: true },
         },
         posts: {
           include: {
             author: {
-              select: { id: true, name: true, email: true, verifiedBadge: true, isAdmin: true },
+              select: { id: true, name: true, verifiedBadge: true, isAdmin: true },
             },
           },
           orderBy: { createdAt: 'asc' },
@@ -236,7 +241,7 @@ export async function POST(
         },
         include: {
           author: {
-            select: { id: true, name: true, email: true, verifiedBadge: true, isAdmin: true },
+            select: { id: true, name: true, verifiedBadge: true, isAdmin: true },
           },
         },
       }),
@@ -405,7 +410,7 @@ export async function PATCH(
       data: updateData,
       include: {
         author: {
-          select: { id: true, name: true, email: true, verifiedBadge: true },
+          select: { id: true, name: true, verifiedBadge: true },
         },
         _count: {
           select: { posts: true },

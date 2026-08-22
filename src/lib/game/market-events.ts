@@ -17,6 +17,20 @@
 
 import { mulberry32, hashStringToSeed } from './formulas';
 import { SERVER_EPOCH_MS } from './server-time';
+// AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md "Round 2"): a systemic
+// crisis publishes two authored price dislocations inside its four-week
+// active window. Only the crisis's IDENTITY and CALENDAR are consulted here
+// — both pure functions of the wall clock — so the boundary this file's
+// header documents ("every client and the server must agree on which event
+// is live without a DB round trip") is preserved exactly. Crisis SEVERITY,
+// which is server-measured, deliberately does NOT reach the price channel:
+// if it did, the price a player is shown and the price the server charges
+// could disagree for anyone whose snapshot was stale. See §2.5 "one price
+// truth" (docs/ECONOMY_PVP_2026-08.md).
+import {
+  getCrisisWindow, getCrisisForCycle, getCrisisCycleStartMs,
+  CRISIS_FORECAST_WEEKS, type CrisisMarketEventDef,
+} from './systemic-crises';
 
 export interface MarketEvent {
   id: string;
@@ -166,7 +180,50 @@ export function getGlobalActiveMarketEvents(nowMs: number = Date.now()): ActiveM
       expiresAtMs,
     });
   }
+  for (const ev of getCrisisMarketEventInstances(nowMs)) {
+    if (nowMs < ev.startedAtMs || nowMs >= ev.expiresAtMs) continue;
+    active.push(ev);
+  }
   return active;
+}
+
+// ─── Crisis dislocations (AAA Round 2) ─────────────────────────────────────
+
+const CRISIS_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** Every dislocation the crisis running at `nowMs`'s cycle publishes, as
+ *  concrete instances with absolute timestamps. Pure: a function of the
+ *  cycle index and the authored catalogue only. Exported so the active feed,
+ *  the forecast and the tests all read one derivation. */
+export function getCrisisMarketEventInstances(
+  nowMs: number,
+  untilMs: number = nowMs,
+): ActiveMarketEvent[] {
+  const out: ActiveMarketEvent[] = [];
+  // A dislocation can straddle a cycle boundary only if it starts in the
+  // final active week, so starting one cycle back covers every case; the
+  // upper bound follows the caller's horizon so a wide forecast scan cannot
+  // silently skip an intermediate cycle.
+  const first = getCrisisWindow(nowMs).cycleIndex - 1;
+  const last = getCrisisWindow(Math.max(nowMs, untilMs)).cycleIndex;
+  for (let c = first; c <= last; c++) {
+    if (c < 0) continue;
+    const def = getCrisisForCycle(c);
+    const activeStartMs = getCrisisCycleStartMs(c) + CRISIS_FORECAST_WEEKS * CRISIS_WEEK_MS;
+    for (const ev of def.marketEvents as CrisisMarketEventDef[]) {
+      const startedAtMs = activeStartMs + ev.startWeek * CRISIS_WEEK_MS;
+      out.push({
+        eventId: ev.id,
+        name: ev.name,
+        icon: ev.icon,
+        affectedResources: ev.affectedResources,
+        priceMultiplier: ev.priceMultiplier,
+        startedAtMs,
+        expiresAtMs: startedAtMs + ev.durationHours * 3600_000,
+      });
+    }
+  }
+  return out;
 }
 
 /** Effective event multiplier for a resource from the global schedule —
@@ -237,6 +294,23 @@ export function getGlobalMarketEventForecast(
       startsAtMs,
       expiresAtMs,
       durationHours: def.durationHours,
+    });
+  }
+  // AAA Round 2: crisis dislocations ride the SAME public forecast. Because
+  // they are derived from the identical pure calendar the active feed uses,
+  // a forecast entry always becomes the active event it promised — the
+  // property `market-events-forecast.test.ts` asserts for the base schedule.
+  for (const ev of getCrisisMarketEventInstances(nowMs, nowMs + horizonMs)) {
+    if (ev.startedAtMs <= nowMs || ev.startedAtMs > nowMs + horizonMs) continue;
+    forecast.push({
+      eventId: ev.eventId,
+      name: ev.name,
+      icon: ev.icon,
+      affectedResources: ev.affectedResources,
+      priceMultiplier: ev.priceMultiplier,
+      startsAtMs: ev.startedAtMs,
+      expiresAtMs: ev.expiresAtMs,
+      durationHours: Math.round((ev.expiresAtMs - ev.startedAtMs) / 3600_000),
     });
   }
   return forecast.sort((a, b) => a.startsAtMs - b.startsAtMs);
