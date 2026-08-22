@@ -77,6 +77,10 @@ import { getCurrentRealignmentEpoch, getEpochWindow, POSTURE_BAND_MIN, POSTURE_B
 // senate/league/season above — the whole entry is forecastable straight off
 // the clock, no chapter row or save state required.
 import { getCurrentChapterInstance, getActRevealMs, getChapterForCycle } from './chapters';
+// AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md): the Accord Chair
+// election. Pure/DB-free (accord-chair.ts's term math is a function of the
+// UTC clock alone), world-shared like senate/league/season.
+import { getChairPhase, getChairTermWindow } from './accord-chair';
 // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): alliance season
 // charter deadline entry — a SEPARATE deriver function per this file's
 // existing convention (each system gets its own function; see
@@ -100,7 +104,12 @@ export type CalendarCategory =
   // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): tender offers are public,
   // priced, time-boxed — and calendar-visible. Derived from state.equity
   // (the sync snapshot), keeping this module DB-free.
-  | 'tender_offer';
+  | 'tender_offer'
+  // AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md): the Accord Chair
+  // election — nominations open, nominations close, ballot certifies. Pure
+  // function of the UTC clock (accord-chair.ts's term math), so it needs no
+  // state at all and stays DB-free like senate/league/season.
+  | 'chair_election';
 
 export type CalendarEntryKind =
   | 'lock' | 'opens' | 'closes' | 'starts' | 'ends' | 'returns' | 'completes' | 'transition';
@@ -221,6 +230,56 @@ function senateEntries(state: GameState, nowMs: number, horizonMs: number): Cale
     worldShared: true,
     detail: `${docket.measureIds.length} measure${docket.measureIds.length === 1 ? '' : 's'} up for a vote resolve; the lobbying window ends and the next quarter's docket publishes immediately after.`,
   }];
+}
+
+/** AAA Round 1 wave E1 — the Accord Chair election. Three world-shared
+ *  appointments per monthly term, all derived from the UTC clock alone
+ *  (getChairTermWindow), so — like senate/league/season above — the whole
+ *  entry is forecastable straight off the calendar with no save state and no
+ *  DB read. `state.accordChair` is consulted only to colour the detail line
+ *  with the live tally when a snapshot happens to be present. */
+function chairElectionEntries(state: GameState, nowMs: number, horizonMs: number): CalendarEntry[] {
+  const phase = getChairPhase(nowMs);
+  const win = getChairTermWindow(phase.contestedTermIndex);
+  const snap = state.accordChair;
+  // Honest copy: while the gate is closed the calendar says so rather than
+  // advertising an election that will certify a vacancy.
+  const gateNote = snap && !snap.enabled
+    ? ` The chamber is short of the ${snap.requiredElectorate}-corporation electorate the Accord requires (${snap.electorate} publishing today), so the seat will stand vacant.`
+    : '';
+  const out: CalendarEntry[] = [
+    {
+      id: `chair_nominations_open_${win.termIndex}`,
+      category: 'chair_election',
+      title: `Accord Chair nominations open — ${win.label} term`,
+      icon: '🏛️',
+      atMs: win.campaignOpensMs,
+      kind: 'opens',
+      worldShared: true,
+      detail: `Candidacies and ballots open for the ${win.label} term of the Accord Chair. Vote weight comes from your published quarterly reports.${gateNote}`,
+    },
+    {
+      id: `chair_nominations_close_${win.termIndex}`,
+      category: 'chair_election',
+      title: 'Accord Chair nominations close',
+      icon: '🏛️',
+      atMs: win.nominationsCloseMs,
+      kind: 'closes',
+      worldShared: true,
+      detail: 'No further candidacies may be filed; every platform is public for the remaining 72 hours of the ballot.',
+    },
+    {
+      id: `chair_certification_${win.termIndex}`,
+      category: 'chair_election',
+      title: `Accord Chair certified — ${win.label} term`,
+      icon: '🏛️',
+      atMs: win.ballotClosesMs,
+      kind: 'closes',
+      worldShared: true,
+      detail: 'The ballot closes and the Council certifies the result. The seated Chair may then exercise agenda writs over the Senate docket.',
+    },
+  ];
+  return out.filter(e => e.atMs >= nowMs && e.atMs <= nowMs + horizonMs);
 }
 
 function leagueEntries(nowMs: number, horizonMs: number): CalendarEntry[] {
@@ -801,6 +860,7 @@ export function getMissionCalendarEntries(state: GameState, opts: MissionCalenda
     ...slotAuctionEntries(opts.openSlotAuctions, nowMs, horizonMs),
     ...procurementDriveEntries(opts.openNpcDrives, nowMs, horizonMs),
     ...tenderOfferEntries(state, nowMs, horizonMs),
+    ...chairElectionEntries(state, nowMs, horizonMs),
   ];
 
   return entries

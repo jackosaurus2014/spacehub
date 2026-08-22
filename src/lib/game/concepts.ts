@@ -168,6 +168,19 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
     short: 'The quarter\'s open measures you can lobby on',
     body: 'Each quarter the Accord Council opens a docket of measures; players can commit lobbying resources any time the docket is open, and the published odds shift live as commitments come in. The docket resolves at the quarter boundary and the next one opens automatically.',
   }),
+  // AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md) — accord-chair.ts.
+  'accord-chair': c({
+    id: 'accord-chair', name: 'The Accord Chair', icon: 'cal-chair-election',
+    short: 'A monthly election won with published quarterly reports',
+    body: 'Each real calendar month the Accord Council elects a Chair. Your vote weight comes from your PUBLISHED quarterly corporate reports — book net worth, growth rate, and how many consecutive quarters you have filed — never from cash on hand, and a corporation that never publishes has no vote at all. The Chair may exercise a small number of agenda writs, each substituting one measure into (or out of) one upcoming Senate docket for the whole world.',
+    related: ['senate-docket', 'accord-fracture'],
+  }),
+  'accord-fracture': c({
+    id: 'accord-fracture', name: 'Articles of Fracture', icon: 'governance',
+    short: 'Refusing Accord jurisdiction — and what it costs',
+    body: 'A corporation may withdraw from Accord oversight, as three of the six factions did in the Treaty Fracture of 2143. While fractured you are exempt from every Senate measure — the tariffs and the subsidies alike — and gain standing with the non-signatory factions, but you lose your vote, your lobbying, your eligibility for the Chair, and your standing with the Dominion, Echo Remnants and Nebula Reavers. Re-accession costs a burned bond and cannot happen until the term after you filed.',
+    related: ['accord-chair', 'senate-docket'],
+  }),
   'alliance-charter': c({
     id: 'alliance-charter', name: 'Season Charter', icon: 'cal-alliance-charter',
     short: 'A corp\'s chosen alliance-season focus + deadline',

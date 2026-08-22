@@ -56,6 +56,7 @@ export type IconName =
   | 'cal-appointment-event' | 'cal-real-launch' | 'cal-alliance-charter'
   | 'cal-corporate-era' | 'cal-economic-cycle' | 'cal-program'
   | 'cal-leader-retirement' | 'cal-realignment' | 'cal-story-chapter'
+  | 'cal-chair-election'
   // ── Hazards (types.ts recentHazards.type + generic severity fallback) ──
   | 'hazard-solar-storm' | 'hazard-micrometeorite' | 'hazard-pirate-raid'
   | 'hazard-equipment-failure' | 'hazard-generic'
@@ -169,6 +170,11 @@ export const ICONS: Record<IconName, IconDef> = {
 
   // ── Mission calendar categories ──────────────────────────────────────
   'cal-senate': { meaning: 'Accord Senate calendar entries', els: [l(4, 21, 20, 21), l(4, 8, 20, 8), pg('3,8 12,3 21,8'), l(6, 8, 6, 18), l(10, 8, 10, 18), l(14, 8, 14, 18), l(18, 8, 18, 18)] },
+  // AAA Round 1 wave E1 — the Accord Chair election. A gavel over the
+  // Council's own colonnade: distinct in SILHOUETTE from 'cal-senate' (which
+  // is the colonnade alone), so the two never rely on colour to be told
+  // apart.
+  'cal-chair-election': { meaning: 'Accord Chair election calendar entries', els: [l(3, 20, 21, 20), pg('4,10 12,5 20,10'), l(7, 10, 7, 17), l(12, 10, 12, 17), l(17, 10, 17, 17), p('M14.5 2.5l5 5', 'none'), p('M13 4l3-3 4 4-3 3z')] },
   'cal-league': { meaning: 'League week calendar entries', els: [p('M7 4h10v5a5 5 0 0 1-10 0z'), l(12, 14, 12, 18), l(8, 21, 16, 21)] },
   'cal-season': { meaning: 'Season transition calendar entries', els: [p('M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z')] },
   'cal-alliance-event': { meaning: 'Alliance event window calendar entries', els: [p('M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'), p('M16 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'), p('M4 20c0-3 2-5 4-5s4 2 4 5'), p('M12 20c0-3 2-5 4-5s4 2 4 5')] },

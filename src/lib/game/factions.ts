@@ -97,6 +97,49 @@ export function getFactionArtUrl(id: FactionId): string {
   return `/game/faction-${id}.webp`;
 }
 
+// ─── AAA Round 1 E1 — Fracture standing shifts ──────────────────────────────
+// Defined HERE, not in accord-chair.ts, deliberately: these are faction
+// standing rules, and accord-chair.ts already imports FACTION_MAP from this
+// file — putting them there and importing back would be a module cycle.
+// accord-chair.ts re-exports both for its routes and panel.
+
+/**
+ * Standing consequences of filing Articles of Fracture (LORE.md, the Treaty
+ * Fracture of 2143 — "Void Corsairs, Syndicate, and Hive Collective formally
+ * step outside Accord oversight").
+ *
+ * Expressed as a modifier over stored reputation rather than as a new
+ * economic channel, so every effect a fractured corporation feels flows
+ * through systems that already exist and are already balanced:
+ * STANDING_BROKER_MODIFIER, isEmbargoed, FACTION_LICENSES.minStanding,
+ * getEnvoyCost, and delivery-contracts' faction flavour. Fracture adds no
+ * multiplier the game did not already have.
+ *
+ * The signs are canon. The Dominion's -40 is the sharpest because the
+ * Dominion IS Accord enforcement: a fractured corporation sitting at neutral
+ * drops a full two tiers to Unfriendly with it, and one already cool with the
+ * enforcer lands Hostile and is embargoed out of Dominion licences entirely
+ * (isEmbargoed). Meanwhile the Syndicate's +25 can carry a merely-Friendly
+ * relationship all the way to Allied — the trade is real in both directions.
+ */
+export const FRACTURE_REP_SHIFTS: Record<FactionId, number> = {
+  'the-dominion': -40,
+  'echo-remnants': -25,
+  'nebula-reavers': -15,
+  'the-syndicate': 25,
+  'void-corsairs': 25,
+  'hive-collective': 15,
+};
+
+/** Pure: effective standing for a (possibly fractured) corporation. Shared by
+ *  the client (getFactionRep below) and the server (market/trade's broker
+ *  fee), so the two can never disagree. */
+export function applyFractureRepModifier(baseRep: number, factionId: FactionId, fractured: boolean): number {
+  const base = Number.isFinite(baseRep) ? baseRep : 0;
+  if (!fractured) return Math.max(-100, Math.min(100, base));
+  return Math.max(-100, Math.min(100, base + (FRACTURE_REP_SHIFTS[factionId] ?? 0)));
+}
+
 export function getStanding(rep: number): FactionStanding {
   if (rep >= 50) return 'allied';
   if (rep >= 10) return 'friendly';
@@ -121,8 +164,37 @@ export const STANDING_ACCENT: Record<FactionStanding, string> = {
   hostile: 'text-red-300',
 };
 
-export function getFactionRep(state: GameState, id: FactionId): number {
+/** RAW stored standing — the number shiftReputation writes. Used where the
+ *  base value itself must be read or written (envoy shifts, lobbying favor
+ *  spend); everywhere that asks "how does this faction treat me right now"
+ *  should call getFactionRep instead. */
+export function getRawFactionRep(state: GameState, id: FactionId): number {
   return state.factionReputation?.[id] ?? 0;
+}
+
+/**
+ * EFFECTIVE standing — the number every economic consumer reads.
+ *
+ * AAA Round 1 E1 (the Accord Chair): a corporation that has filed Articles
+ * of Fracture is outside Accord jurisdiction, and the six factions react to
+ * that per LORE.md's 2143 alignment. The reaction is applied here as a
+ * DERIVED modifier over the stored value rather than as a one-time
+ * reputation mutation, for three reasons: it needs no save migration, it
+ * reverses exactly on re-accession, and it cannot double-apply if a snapshot
+ * arrives twice. Every downstream consumer — broker fee bands, licence
+ * eligibility, embargo, envoy pricing, delivery-contract flavour — reads
+ * this one function and therefore picks the modifier up for free.
+ *
+ * The identical pure helper (accord-chair.ts::applyFractureRepModifier) runs
+ * on the server for the market/trade broker fee, so client and server can
+ * never disagree about what a fractured corporation pays.
+ */
+export function getFactionRep(state: GameState, id: FactionId): number {
+  return applyFractureRepModifier(
+    state.factionReputation?.[id] ?? 0,
+    id,
+    !!state.accordChair?.fractured,
+  );
 }
 
 /** Cost of a Diplomatic Envoy: escalates at higher standings to cap progression. */

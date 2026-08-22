@@ -220,16 +220,69 @@ export const MEASURE_MAP = new Map(MEASURE_CATALOG.map(m => [m.id, m]));
 
 // ─── Docket generation (world-shared, deterministic) ───────────────────────
 
-/** Deterministic Fisher-Yates using the quarter-seeded rng — same docket for
- *  every player on the same quarter. */
-export function pickDocketMeasures(quarterIndex: number, count: number = DOCKET_SIZE): string[] {
+/** Deterministic Fisher-Yates using the quarter-seeded rng — the full
+ *  world-shared ordering the docket is sliced from. Exposed (AAA E1) so the
+ *  Chair's `table` writ can draw its replacement from the SAME shuffle the
+ *  docket already came from rather than inventing an id: every amended
+ *  docket is therefore one the un-amended game could already have produced. */
+export function shuffleMeasurePool(quarterIndex: number): string[] {
   const rng = worldRng('docket', quarterIndex);
   const pool = MEASURE_CATALOG.map(m => m.id);
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
-  return pool.slice(0, Math.min(count, pool.length));
+  return pool;
+}
+
+/** The measures up this quarter — same docket for every player on the same
+ *  quarter.
+ *
+ *  AAA Round 1 E1 (the Accord Chair) adds the optional `writs` parameter.
+ *  It is declared STRUCTURALLY (not as an imported `ChairWrit`) so this
+ *  module keeps zero dependencies on accord-chair.ts — accord-chair imports
+ *  MEASURE_MAP from here, and a reciprocal import would be a cycle.
+ *  Omitting it reproduces the pre-E1 behaviour byte-for-byte, which is why
+ *  realignment.ts's `getSenateAggregateScore` (which calls this bare) is
+ *  unaffected and every existing sim run stays identical. */
+export function pickDocketMeasures(
+  quarterIndex: number,
+  count: number = DOCKET_SIZE,
+  writs?: { measureId: string; mode: 'seat' | 'table' }[],
+): string[] {
+  const pool = shuffleMeasurePool(quarterIndex);
+  const base = pool.slice(0, Math.min(count, pool.length));
+  if (!writs || writs.length === 0) return base;
+  return applyDocketWrits(base, pool, writs);
+}
+
+/** Substitution rules for a Chair writ. Kept here (rather than in
+ *  accord-chair.ts) because it operates on this module's shuffle, and
+ *  re-exported by accord-chair as `applyChairWritToDocket` so the Chair's
+ *  own module owns the player-facing name. Invariants: docket LENGTH never
+ *  changes, replacements come from the same shuffle, and nothing about
+ *  published odds or effect magnitudes is touched. */
+export function applyDocketWrits(
+  measureIds: string[],
+  shuffledPool: string[],
+  writs: { measureId: string; mode: 'seat' | 'table' }[],
+): string[] {
+  let out = [...measureIds];
+  for (const writ of writs) {
+    if (!MEASURE_MAP.has(writ.measureId)) continue;
+    if (writ.mode === 'seat') {
+      if (out.includes(writ.measureId)) continue;
+      if (out.length === 0) continue;
+      out = [...out.slice(0, out.length - 1), writ.measureId];
+    } else {
+      const idx = out.indexOf(writ.measureId);
+      if (idx < 0) continue;
+      const replacement = shuffledPool.find(id => !out.includes(id));
+      if (!replacement) continue;
+      out = out.map((id, i) => (i === idx ? replacement : id));
+    }
+  }
+  return out;
 }
 
 /** Published odds: baseOdds ± a small world-shared variance (±5pp),
@@ -297,6 +350,10 @@ export function commitLobbying(
 ): GameState {
   const docket = state.accordDocket;
   if (!docket || docket.resolved || !docket.measureIds.includes(measureId)) return state;
+  // AAA E1 (Fracture): a corporation outside Accord jurisdiction has no
+  // standing before the Council. It cannot lobby, and — symmetrically — the
+  // Council's measures do not reach it (see resolveMeasure below).
+  if (state.accordChair?.fractured) return state;
   const existing = (state.accordLobbying || []).find(l => l.measureId === measureId);
   if (existing) return state;
 
@@ -368,16 +425,28 @@ function resolveMeasure(
   const roll = rng();
   const passed = roll < finalOdds;
   const effect = passed ? def.onPass : def.onFail;
-  const nextState = applyChainConsequence(state, effect, monthIndex);
+
+  // AAA E1 (Fracture, LORE.md 2143): "The SCC retains binding authority over
+  // contracts between Accord-signatory corporations but has no writ over
+  // non-signatory faction space." A fractured corporation still SEES the
+  // vote — the Council's record is public — but the measure does not apply
+  // to it. Deliberately two-sided: it escapes the tariffs AND forfeits the
+  // subsidies, which is what makes Fracture a computable bet rather than a
+  // free pass.
+  const exempt = !!state.accordChair?.fractured;
+  const nextState = exempt ? state : applyChainConsequence(state, effect, monthIndex);
 
   const result: AccordVoteResult = {
     quarterIndex: docket.quarterIndex, measureId, measureName: def.name, icon: def.icon, category: def.category,
-    passed, playerStance: lobby?.stance ?? null, publishedOdds, finalOdds, effectLabel: effect.label,
+    passed, playerStance: lobby?.stance ?? null, publishedOdds, finalOdds,
+    effectLabel: exempt ? `${effect.label} — not applicable outside Accord jurisdiction` : effect.label,
   };
   const event: GameEvent = {
     id: generateId(), date: nextState.gameDate, type: 'random_event',
     title: `${def.icon} ${def.name}: ${passed ? 'PASSED' : 'FAILED'}`,
-    description: `${def.description} — ${effect.label}`,
+    description: exempt
+      ? `${def.description} — ${effect.label}. Your charter stands outside Accord jurisdiction; the measure does not reach you.`
+      : `${def.description} — ${effect.label}`,
   };
   return { state: nextState, result, event };
 }
@@ -443,17 +512,28 @@ export function advanceAccordSenate(
   }
 
   if (isQuarterBoundary(monthIndex) && (!out.accordDocket || out.accordDocket.resolved)) {
-    const measureIds = pickDocketMeasures(monthIndex);
+    // AAA E1: the seated Chair's agenda writs, delivered server-side on the
+    // sync snapshot (state.accordChair — null-until-sync). A writ names the
+    // quarter it amends, so every player reaching that quarter index gets
+    // the identical docket regardless of when they get there; the docket
+    // stays world-shared and deterministic, exactly as before.
+    const writs = (out.accordChair?.activeWrits || [])
+      .filter(w => w.quarterIndex === monthIndex)
+      .map(w => ({ measureId: w.measureId, mode: w.mode }));
+    const measureIds = pickDocketMeasures(monthIndex, DOCKET_SIZE, writs);
     out = {
       ...out,
       accordDocket: { quarterIndex: monthIndex, measureIds, resolved: false },
       accordLobbying: [],
     };
     const names = measureIds.map(id => MEASURE_MAP.get(id)?.name || id).join(', ');
+    const chairNote = writs.length > 0
+      ? ` The Chair exercised an agenda writ on this session${out.accordChair?.seat?.corpName ? ` (${out.accordChair.seat.corpName})` : ''}.`
+      : '';
     events.push({
       id: generateId(), date: out.gameDate, type: 'random_event',
       title: '🏛️ Accord Council Docket Published',
-      description: `This quarter's docket: ${names}. Lobbying is open until the next quarterly session.`,
+      description: `This quarter's docket: ${names}. Lobbying is open until the next quarterly session.${chairNote}`,
     });
   }
 

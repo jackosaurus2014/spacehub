@@ -7388,3 +7388,121 @@ model PoachOffer {
   @@index([attackerId, status])
   @@index([status, respondBy])
 }
+
+// ─── AAA Round 1 wave E1: The Accord Chair ───────────────────────────────────
+// docs/AAA_PROGRAM_2026-08.md §1c R1-E1 + "E1 implementation". A fixed
+// real-calendar (monthly, UTC) election for the chair of the Accord Council,
+// whose votes are weighted by PUBLISHED quarterly corporate reports
+// (PublishedCorpReport above) — never by cash on hand.
+//
+// All five tables are SHARED WORLD STATE and server-authoritative; the client
+// receives a read-only ChairSnapshot on the sync response (same
+// null-until-sync pattern as the M6 equity snapshot) and never writes here.
+// Decision logic is pure and lives in src/lib/game/accord-chair.ts; the
+// Prisma glue is src/lib/game/server-chair.ts; mutations happen only in
+// /api/space-tycoon/chair (player actions) and /api/space-tycoon/chair/resolve
+// (the cron certifier).
+//
+// Population gate: dormant until CHAIR_MIN_ELECTORATE corporations have
+// published a quarterly inside the lookback window (accord-chair.ts), with
+// TYCOON_CHAIR_ENABLED / TYCOON_CHAIR_FORCE overrides — the same shape as
+// TAKEOVER_MIN_ACTIVE_CORPS.
+//
+// Profile ids are stored WITHOUT relations/cascades on purpose, matching
+// PublishedCorpReport and CorpEraRecord: the Chair roll is permanent public
+// history and must survive a profile deletion rather than silently vanish
+// from the record.
+
+// One certified (or vacant) term of the Accord Chair. termIndex is
+// (UTC year - 2026) * 12 + UTC month index — accord-chair.ts's term math.
+// status: open | certified | vacant. platformMode: seat | table.
+model AccordChairTerm {
+  termIndex         Int       @id
+  status            String    @default("open")
+  chairProfileId    String?
+  chairCorpName     String?
+  patronFactionId   String?
+  platformMeasureId String?
+  platformMode      String?
+  winningVotes      Int       @default(0)
+  totalPlayerVotes  Int       @default(0)
+  totalNpcVotes     Int       @default(0)
+  electorate        Int       @default(0)
+  vacancyReason     String?
+  // Full ChairElectionResult, sanitized, for the public record.
+  tallyJson         String?   @db.Text
+  certifiedAt       DateTime?
+  createdAt         DateTime  @default(now())
+
+  @@index([status])
+  @@index([chairProfileId])
+}
+
+// A corporation standing for the Chair in a given term, with the agenda writ
+// it pledges (measureId + mode: seat | table) and the faction banner it runs
+// under.
+model AccordChairCandidacy {
+  id              String    @id @default(cuid())
+  termIndex       Int
+  profileId       String
+  corpName        String
+  patronFactionId String
+  measureId       String
+  mode            String
+  filingFee       Float     @default(0)
+  withdrawnAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@unique([termIndex, profileId])
+  @@index([termIndex, withdrawnAt])
+}
+
+// One corporation's ballot in one term. Weight is recomputed server-side from
+// PublishedCorpReport at cast time and stored so the tally stays auditable
+// after the fact; weightJson keeps the itemised derivation.
+model AccordChairBallot {
+  id             String   @id @default(cuid())
+  termIndex      Int
+  voterProfileId String
+  candidacyId    String
+  weight         Int      @default(0)
+  weightJson     String?  @db.Text
+  castAt         DateTime @default(now())
+
+  @@unique([termIndex, voterProfileId])
+  @@index([termIndex, candidacyId])
+}
+
+// An exercised agenda writ: the Chair substituting one measure into (or out
+// of) ONE upcoming Senate docket. quarterIndex is an accord-senate.ts quarter
+// (world game-month). Unique per (term, quarter) so a writ can never be
+// double-spent on the same session. mode: seat | table.
+model AccordChairWrit {
+  id                String   @id @default(cuid())
+  termIndex         Int
+  quarterIndex      Int
+  measureId         String
+  mode              String
+  issuedByProfileId String
+  issuedAt          DateTime @default(now())
+
+  @@unique([termIndex, quarterIndex])
+  @@index([quarterIndex])
+}
+
+// Articles of Fracture — a corporation withdrawing from Accord oversight
+// (LORE.md, the Treaty Fracture of 2143). One row per profile; reaccededAt
+// closes it. Public: the fracture roster is a declaration, not a secret.
+model AccordFracture {
+  id                 String    @id @default(cuid())
+  profileId          String    @unique
+  corpName           String
+  declaredTermIndex  Int
+  declaredAt         DateTime  @default(now())
+  reaccededAt        DateTime?
+  reaccessionBond    Float?
+  // Term after which this corporation may stand for the Chair again.
+  probationTermIndex Int?
+
+  @@index([reaccededAt])
+}

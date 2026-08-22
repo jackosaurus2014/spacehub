@@ -29,6 +29,8 @@ import { queueTollFlush, type OffenseSnapshot } from '@/lib/game/offense';
 // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity snapshot type for the
 // server-effects hand-off (share registry / tenders / holdings).
 import type { EquitySnapshot } from '@/lib/game/share-registry';
+// AAA Round 1 wave E1: the Accord Chair snapshot type for the same hop.
+import type { ChairSnapshot } from '@/lib/game/accord-chair';
 import type { ExtractionPressureSnapshot } from '@/lib/game/extraction-pressure';
 import type { LaborMarketSnapshot } from '@/lib/game/labor-market';
 import type { LaneBonusSnapshot } from '@/lib/game/trade-lanes';
@@ -173,6 +175,10 @@ export function useGameSync(
         // MODIFIER server-side. Stored under workforceData._factionRep —
         // same pattern/trust level as commanderIds above.
         factionReputation: state.factionReputation || {},
+        // AAA Round 1 E3.6: owned faction licences, so the server-authoritative
+        // trade route can apply the Syndicate Gray-Market broker discount.
+        // Same stash/trust level as factionReputation above.
+        factionLicenses: state.factionLicenses || [],
         // One Wallet (audit A1): ack cursor — highest server ledger seq this
         // state has already applied. The server only reconciles/returns
         // entries beyond it (idempotent under retries).
@@ -267,6 +273,7 @@ export function useGameSync(
           || data.mentorshipBonuses || data.demandPools
           || data.extractionPressure || data.laborMarket || data.laneBonuses
           || data.megaProjectBonuses || data.offense || data.equity || data.feeIndex
+          || data.chair
         ) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
@@ -297,6 +304,12 @@ export function useGameSync(
             // holdings) rides the same hop; clampEquitySnapshot re-clamps
             // inside applyServerEffectsToState.
             equity: (data.equity as EquitySnapshot) || undefined,
+            // AAA Round 1 wave E1: the Accord Chair snapshot (election phase,
+            // live tally, the seated Chair's agenda writs, fracture status)
+            // rides the same hop; clampChairSnapshot re-clamps inside
+            // applyServerEffectsToState. Read-only — the client never writes
+            // back to it.
+            chair: (data.chair as ChairSnapshot) || undefined,
             fetchedAtMs: Date.now(),
           });
         }

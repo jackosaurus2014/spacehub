@@ -17,7 +17,10 @@ import { RESOURCE_MAP } from '@/lib/game/resources';
 // DB-free (realignment.ts header) — safe to call server-side with zero new
 // plumbing, exactly like delivery-contracts.ts already does client-side.
 import { getGoverningFactionForResource, computeTariffFeeRate } from '@/lib/game/delivery-contracts';
-import { getFactionStandingBrokerModifier, getFactionLicenseBonuses } from '@/lib/game/factions';
+import { getFactionStandingBrokerModifier, getFactionLicenseBonuses, applyFractureRepModifier } from '@/lib/game/factions';
+// AAA Round 1 wave E1: fracture status is server-owned (AccordFracture), and
+// the same pure modifier runs on both sides of the wire.
+import { isProfileFractured } from '@/lib/game/server-chair';
 
 /**
  * Audit Wave B (Change #2): per-player sell-side broker-fee reductions.
@@ -51,7 +54,16 @@ async function computeSellerFeeRate(profileId: string, resourceSlug: string): Pr
     if (governingFaction) {
       const factionRep = (profileRow?.workforceData as { _factionRep?: Record<string, number> } | null)?._factionRep;
       const rep = factionRep?.[governingFaction] ?? 0;
-      factionStandingModifier = getFactionStandingBrokerModifier(rep);
+      // AAA Round 1 E1 (Fracture): a corporation outside Accord jurisdiction
+      // is treated differently by all six factions. The client applies the
+      // identical modifier through factions.ts::getFactionRep, so client and
+      // server can never disagree about what a fractured corp pays. Fracture
+      // status is SERVER-owned (AccordFracture) — never read from the
+      // client's payload.
+      const fractured = await isProfileFractured(profileId);
+      factionStandingModifier = getFactionStandingBrokerModifier(
+        applyFractureRepModifier(rep, governingFaction, fractured),
+      );
     }
 
     // AAA Round 1 E3.6: the Syndicate Gray-Market Access licence was a

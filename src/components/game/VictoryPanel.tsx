@@ -323,6 +323,16 @@ export default function VictoryPanel({ state }: VictoryPanelProps) {
           Achieving multiple victories compounds their rewards. Endgame victories require completing
           megastructures -- massive multi-phase construction projects.
         </p>
+        {/* AAA Round 1, wave E4. The Victory board is the in-progress view; the
+            permanent record — milestones, dynasties, era medals and the titles
+            these victories grant — lives in the Legacy Hall. Named rather than
+            linked deliberately: VictoryPanel has no navigation handler, and
+            adding one to page.tsx for a Tier-5-only surface buys less than it
+            risks. See the E4 section of docs/AAA_PROGRAM_2026-08.md. */}
+        <p className="text-slate-500 text-[11px] mt-2">
+          Titles won here are recorded in the <span className="text-cyan-300">Legacy Hall</span>{' '}
+          (Reports &rarr; Legacy Hall), alongside your milestones, dynasties and era medals.
+        </p>
       </div>
 
       {/* Hall of Fame (only if any victories earned) */}

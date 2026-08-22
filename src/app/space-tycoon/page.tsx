@@ -121,6 +121,11 @@ import CommanderPanel from '@/components/game/CommanderPanel';
 import { hireCommander, dismissCommander, assignCommander, unassignCommander } from '@/lib/game/commanders';
 import FactionPanel from '@/components/game/FactionPanel';
 import AccordSenatePanel from '@/components/game/AccordSenatePanel';
+// AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md): the Accord Chair — the
+// monthly election, its ballot, the Chair's agenda writs and the Fracture
+// ledger. Sits ABOVE the Senate it sets the agenda for, inside the existing
+// Factions tab (no 29th tab — standing convention).
+import AccordChairPanel from '@/components/game/AccordChairPanel';
 import { sendEnvoy, purchaseFactionLicense } from '@/lib/game/factions';
 import type { FactionId } from '@/lib/game/factions';
 // Wave A2.3 (docs/VISUAL_AAA_2026-08.md §A2.3) — portrait-framed leader moments.
@@ -2641,6 +2646,10 @@ export default function SpaceTycoonPage() {
         )}
         {tab === 'factions' && (
           <div className="space-y-4">
+            {/* AAA E1 — the Accord Chair: the election above the legislature
+                it sets the agenda for. Renders nothing at all on a client
+                that has never synced a Chair snapshot (pre-E1 behaviour). */}
+            <AccordChairPanel state={state} />
             {/* 4X Wave W11 — Accord Council Senate: docket + lobbying, above
                 the faction roster it draws standing from. */}
             <AccordSenatePanel

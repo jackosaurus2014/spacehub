@@ -47,6 +47,7 @@ const CATEGORY_LABEL: Partial<Record<CalendarCategory, string>> = {
   leader_retirement: 'Leader Retirement', // Live-Service Wave LS6
   story_chapter: 'Story Chapter', // Live-Service Wave LS8
   tender_offer: 'Tender Offer', // Wave M6 (docs/MEANINGFUL_2026-08.md §M6)
+  chair_election: 'Accord Chair', // AAA Round 1 wave E1
 };
 
 const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
@@ -65,6 +66,7 @@ const CATEGORY_FRAME: Partial<Record<CalendarCategory, string>> = {
   program: 'border-sky-500/25 bg-sky-500/[0.03]', // Live-Service Wave LS6
   leader_retirement: 'border-fuchsia-500/25 bg-fuchsia-500/[0.03]', // Live-Service Wave LS6
   story_chapter: 'border-violet-500/25 bg-violet-500/[0.03]', // Live-Service Wave LS8
+  chair_election: 'border-purple-500/25 bg-purple-500/[0.03]', // AAA Round 1 wave E1
 };
 const FALLBACK_CATEGORY_LABEL = 'Event';
 const FALLBACK_CATEGORY_FRAME = 'border-slate-500/25 bg-slate-500/[0.03]';
@@ -78,6 +80,7 @@ const CATEGORY_CONCEPT: Partial<Record<CalendarCategory, string>> = {
   corporate_era: 'era-charter',
   alliance_charter: 'alliance-charter',
   queue: 'command-queue',
+  chair_election: 'accord-chair', // AAA Round 1 wave E1
 };
 
 function formatCountdown(msRemaining: number): string {

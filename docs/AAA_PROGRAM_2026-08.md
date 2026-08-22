@@ -74,7 +74,7 @@ wave. Plus a shared **rejected ideas** register at the end of the document.
 
 | Round | Topic | Status |
 |---|---|---|
-| 1 | **End-game design** — what carries a committed player from year 10 to year 50 | Design complete; **wave E3 (plumbing repair) implemented 2026-08-21** — see "E3 implementation" at the end of this document. E4 (Legacy Hall) and E1 (Accord Chair) still pending. |
+| 1 | **End-game design** — what carries a committed player from year 10 to year 50 | Design complete; **wave E3 (plumbing repair) implemented 2026-08-21** — see "E3 implementation" at the end of this document. **Wave E4 (the Legacy Hall) implemented 2026-08-22** — see "E4 implementation". **Wave E1 (the Accord Chair) implemented 2026-08-22** — see "E1 implementation". All three Round-1 waves shipped. |
 | 2+ | (to be assigned — candidates: mid-game decision density; interface/screens; onboarding-to-mastery progression; the intelligence layer as gameplay) | Not started |
 
 ---
@@ -1150,3 +1150,733 @@ Found while implementing; all verified against code.
   12 populated destinations to hang rungs on.
 - **`docs/SESSION_DESIGN.md` re-audit** (§1a.7's recommendation) not done — it is a documentation
   pass, not a repair, and it should record E3+E4+E1 together rather than be rewritten twice.
+
+---
+
+# E4 implementation — the Legacy Hall (shipped 2026-08-22)
+
+Round 1 recommended **R1-E3 → R1-E4 → R1-E1**. This section records **R1-E4**, the surface wave,
+as built. It closes structural hole **H4** ("long-horizon progression is invisible") and it is
+deliberately the cheapest large win in the round: **zero economy math, therefore no sim-harness
+run** (`sim-50yr`, `sim-strategies`, `sim-pvp`, `sim-tools`, `sim-resources` are untouched by
+construction — nothing in this wave reads or writes a price, a payout, a cost or a multiplier).
+
+Suite: **222 suites / 4,997 tests** (from 221 / 4,944 — one new suite, +53 tests).
+`npx tsc --noEmit` clean. `next build` passes. **No save migration; no new `GameState` field**,
+optional or otherwise — the Hall is pure derivation over state that already exists.
+
+## E4 scorecard
+
+| Round-1 promise (§1c-E4) | Status |
+|---|---|
+| 48 milestones with **real progress**, not locked/unlocked | **SHIPPED** — one authored progress term per milestone, drift-guarded |
+| 7 infinite stretches with the real next rung | **SHIPPED** — "Dynasties" |
+| `getLegacyDisplayTier` (Pioneer → Legend) made legible | **SHIPPED** — the ladder, with live counts per rung |
+| `getLegacyPower` | **SHIPPED** — headline readout with its own scoring rule spelled out |
+| "The six soft-capped bonus categories with their *current* effective values … a genuinely interesting strategic readout that no player can see today" | **SHIPPED** — raw vs applied vs ceiling vs absorbed-by-the-cap |
+| Victory titles (E3.5 applied them; nowhere showed them) | **SHIPPED** — the title roll, with worn-title precedence |
+| `corporate-eras.ts` medals and charters | **SHIPPED** — the medal case + live era |
+| Retired leaders (LS6) | **SHIPPED** — the bench |
+| Quarterly reports "published but under-surfaced" | **SHIPPED as a cross-reference**, not a duplicate — see §E4.6 |
+| `milestones.ts` server-wide first-claim races | **NOT INCLUDED** — see §E4.8 |
+| A section on the public corp page | **DEFERRED** — see §E4.8 |
+
+---
+
+## E4.1 — where it lives, and why not the three obvious alternatives
+
+**The Legacy Hall is a fourth sub-view of the Reports hub** (`Reports → Legacy Hall`), alongside
+Situation Log / Mail / Quarterly. One canonical home; no 29th tab.
+
+Three alternatives were considered and rejected on evidence, not taste:
+
+- **A new tab.** Rejected by standing convention (`LIVE_SERVICE_2026-08.md` §LS1) and by Round 1's
+  own rejected-ideas register.
+- **Inside the Victory tab.** This is the intuitive answer and it is *wrong*: `victory` unlocks at
+  **corporation Tier 5** (`corporation-tiers.ts:131`), i.e. $500B `totalEarned` — which §1a.3
+  measured at 0.8x the best 50-year gross. Putting a system whose **first ten milestones fire in
+  the first hour** behind the game's second-deepest tier gate would reproduce exactly the defect
+  E4 exists to fix (Legacy Power is currently visible *only* inside the Tier-6-gated
+  `SpeedRunPanel`). The Hall lands at Tier 2 instead, which is where `reports` unlocks — roughly
+  where the FTUE chain ends, so it arrives as a staged unlock rather than as noise during
+  onboarding.
+- **Inside Governance.** Round 1 offered "Governance or Reports". Governance is Tier 4, and it is
+  the *management* surface — charter an era, switch doctrine, face the board. The Hall is a
+  read-only ledger. Splitting them keeps `CorporateEraPanel` (chartering) and the medal case
+  (record) doing different jobs instead of two panels showing the same eras.
+
+**Reports is the right identity for a second reason.** Round 1's realism note for E4 is that the
+Hall "is not a new mechanic; it is a ledger… a 22nd-century corporation with >$1B extraterrestrial
+assets is *required by the Accord* to report publicly (LORE, Accord of Geneva 2089) — this is the
+corporate history that reporting produces." The tab that holds the automatic quarterly filings is
+literally the tab that produces it.
+
+**Reachability.** One inbound home, several outbound links. The Hall deep-links to Governance
+("Charter an era"), the Victory board, the Commanders roster, and its own sibling Quarterly view —
+and each of those links is rendered **only if the player's corporation tier has actually unlocked
+the target** (`getTierUnlockedTabs`), because a link into a locked tab is a render hole, not a
+teaser (the standing E3 follow-up). Inbound, `VictoryPanel` names the Hall in text rather than
+linking: `VictoryPanel` has no navigation handler, and threading one through `page.tsx` for a
+Tier-5-only surface buys less than it risks while a parallel wave is editing that file.
+
+## E4.2 — the shape, and why that shape
+
+Master of Orion 2 and Stellaris both make long-horizon achievement read as a **record of a
+civilisation**, not a checklist: a standing, the standing's ceiling, the deeds behind it, the names
+attached to them. So the Hall is one continuous scroll in that order, and it never sorts a player's
+own history into a to-do list:
+
+| # | Section | What it answers |
+|---|---|---|
+| 1 | **Standing** | Who you are now (Pioneer → Legend), what the next rung literally requires, with live counts. Legacy Power and its scoring rule. |
+| 2 | **Standing bonuses** | What the record is *worth* — six channels, raw vs applied vs ceiling vs absorbed by the cap. |
+| 3 | **Deeds** | All 48 milestones, grouped by tier, filterable All / Earned / Outstanding. |
+| 4 | **Dynasties** | The 7 infinite stretches and the real next rung of each. |
+| 5 | **The Record** | Titles worn and won · era medal case · the retired bench · filings on record. |
+
+A single scroll rather than a second row of sub-tabs: this is a *browse-y* surface (the brief's own
+word), and a trophy room that makes you click four times to see your trophies is a filing cabinet.
+The one filter that does exist is on Deeds, where 48 rows genuinely need one.
+
+Chrome is Wave A's, not new: `ConsolePanel` (with `variant="secondary"` for the recessed data wells
+— sections 2, 4, 5 are read-only readouts stamped into the console face, sections 1 and 3 are
+primary housings), `HoloCard`, `DataChip`, `StatReadout`, `Figure`, `GameIcon`, `HoloTip`/`Concept`.
+No new CSS, no new animation — which is also how the wave inherits the global reduced-motion guard
+in `GameStyles.tsx` for free.
+
+## E4.3 — the honesty contract (this is the load-bearing part)
+
+`LegacyMilestone.check` is an **opaque `(state) => boolean`**. `legacy-system.ts` declares no
+progress metric anywhere. So a generic "percentage complete" **cannot be derived** from a milestone
+definition, and any panel that produced one would be fabricating telemetry.
+
+`src/lib/game/legacy-hall.ts` therefore authors **one progress term per milestone**, mirroring that
+milestone's own check, and two structural rules keep it honest:
+
+1. **A term whose target is 1 is BINARY by construction.** A bar sweeping 0 → 1 asserts a gradient
+   that does not exist — "do you hold GEO?" has no 43%. Binary rows render a state word
+   (`Achieved` / `Not yet`) and carry `fraction: null`. **`null` is not `0`**, and there is a test
+   that says so, because a fabricated 0% is indistinguishable from a real one on a metered row.
+   17 of the 48 milestones are binary under this rule: the six location unlocks, the four
+   era-medal predicates, the first-facility deeds, and the first-retirement deed.
+2. **A drift guard, not a value test.** `legacy-hall.test.ts` runs **every** milestone's `check()`
+   against **every** authored term over a battery of 8 hand-built states, and fails on any
+   disagreement. The battery is itself guarded: a further test asserts every milestone is satisfied
+   by at least one state *and* unsatisfied by at least one other, so the guard can never pass by
+   only ever seeing `false`. A completeness test fails if a new milestone ships without a term, and
+   an orphan test fails if a term outlives its milestone. This is the same discipline E3.3
+   introduced for mega-project bonus consumers, and it is the only reason a hand-authored mirror of
+   48 predicates is acceptable at all.
+
+**`achieved` is read from `legacy.completedMilestones`, never recomputed from `check`.** A
+milestone is permanent: decommission the buildings that earned `legacy_ten_buildings` and the deed
+stays yours. Recomputing would silently un-earn it — the exact failure mode `accrueLegacyTrackers`
+was written to avoid on the write side (E3.2). Both directions are tested.
+
+Where an *earned* deed's live counter has since regressed, the row shows **Achieved** and the term
+reports the true current value rather than a shaming percentage.
+
+### What turned out to be underivable, and how it is presented instead
+
+| Thing | Why no honest percentage exists | Presented as |
+|---|---|---|
+| Location unlocks (`geo`, `mars_surface`, `jupiter_system`, `saturn_system`, `outer_system`) | A boolean membership test; there is no partial GEO | Binary state |
+| Era medals (`legacy_era_silver` / `_gold` / `_platinum`) | "Best medal so far" is ordinal, not fractional | Binary state |
+| First-of-a-kind deeds (first LEO facility, first belt facility, first charter, first retirement) | Target of one | Binary state |
+| **Achievement titles** | `Achievement.check` is an opaque boolean with no declared metric, and unlike victories there is no `progress()` function to borrow | Only **earned** achievement titles are listed at all; `fraction: null` |
+| Speed-run records and season prestige titles | Server-side only; not present in `GameState` and not on the sync payload | **Omitted entirely** rather than shown empty — see §E4.8 |
+
+## E4.4 — reachability honesty
+
+§1a.3 measured the best archetype's lifetime cumulative gross over 50 game-years at **~$611B**
+(`BALANCE.md` Pass 5, C2). Several legacy targets sit one to two orders of magnitude past it. Per
+the founder's Pass 7 ruling those horizons are intentional generational content, so the Hall
+**labels** them rather than hiding them or dressing them as almost-there. Only two bases are used,
+and both are arithmetic:
+
+- **Money targets**, against the $611B measurement. `legacy_trillion` ($1T) and `legacy_ten_trillion`
+  ($10T) are flagged; `legacy_hundred_billion` and below are not. `stretch_revenue` flags its next
+  rung once the requirement crosses the line (level 3 = $1.25T).
+- **Wall-clock targets**, against `corporate-eras.ts`'s real `ERA_DURATION_MS` (90 real days).
+  `legacy_era_decade` = 10 x 90 = 900 real days ≈ 2.5 real years → generational.
+  `legacy_era_veteran` = 270 days → **not** flagged.
+
+**A count target with no published measurement gets no label at all.** There is no measured
+"buildings at 50 years" figure, so calling `legacy_hundred_buildings` generational *or* reachable
+would be invention in either direction. The chip is a `HoloTip` whose `source` line always cites
+the measurement it derives from, so the claim is auditable from inside the game.
+
+## E4.5 — what was added to `legacy-system.ts`, and why it cannot move the economy
+
+Two additive exports, no behaviour change:
+
+- `LEGACY_CATEGORY_CAPS` — the previously-private `CATEGORY_CAPS`, exported so the Hall can show
+  the ceiling. `CATEGORY_CAPS` is now an alias, so every existing reference is untouched.
+- `getLegacyBonusBreakdown(legacy)` — per-category `{ raw, effective, cap, hardCap, capUsed,
+  lostToCap }`.
+
+To build it, `getCategoryBonus` was split into `getCategoryRaw` (the un-capped sum) plus the
+identical soft-cap expression. **`getLegacyBonuses` — read by the tick every game-month and applied
+at five sites — is a pure re-shuffle**, and two tests pin it: one locks the zero case to its exact
+prior output, and one asserts the breakdown's `effective` values reproduce `getLegacyBonuses`'s
+multipliers to 12 decimal places. The breakdown re-derives nothing; it reports what the engine
+already computes.
+
+The soft-cap readout is the one genuinely *strategic* thing in the Hall: `cap x (1 - e^(-raw/cap))`
+means the tenth revenue milestone pays a fraction of the first, and until now no player could see
+that, or see how much of their earned bonus the cap was absorbing. Both numbers are now on screen.
+
+## E4.6 — victory titles and quarterly reports (the "also in scope" items)
+
+**Victory titles fit, and are in.** E3.5 made `playerTitle` real but left it visible only on the
+player's own leaderboard row. The Hall's title roll shows: the title **currently worn**, every
+title **held** (victory + achievement), and every **unclaimed victory title** with its real
+`getVictoryProgress` percentage. The worn-slot rule is display-only and mirrors what `page.tsx`
+already does when it writes the field — **victory outranks achievement**, the rarer honour wins —
+so the Hall explains the precedence rather than inventing one. Nothing is written back to state.
+Note that all 11 victory titles are listed even though the Victory *board* is Tier-5 gated: for a
+Tier 2–4 player this is the only place those titles exist at all.
+
+**Quarterly reports fit as a cross-reference, not as a duplicate.** They are already the sibling
+sub-view in the same hub, so re-rendering the report cards inside the Hall would be two surfaces
+drifting apart. Instead the Hall carries a **Filings on record** block — quarters on file, latest
+quarter, latest net worth, growth, and lifetime profit summed across stored filings (real
+arithmetic over real rows, never an extrapolation) — plus a button that switches the hub to the
+Quarterly view. That is the Hall doing its ledger job: telling you the filings exist, what they add
+up to, and where to read them.
+
+## E4.7 — accessibility and 375px
+
+- **Meters.** Every bar is a real `role="progressbar"` with `aria-valuenow/min/max` and a label
+  that repeats the same numbers the bar draws ("Infrastructure Titan: Buildings standing 27 of 50,
+  54 percent"). The numeric readout sits beside every bar in visible text, so no meter is the sole
+  carrier of its own value.
+- **Never colour alone.** Milestone state is `medal` vs `medal-outline` (shape-distinct, the V1
+  convention `corp-era-registry.ts` already established) plus the words *Achieved* / *Not yet*;
+  medal tiers carry `ERA_MEDAL_LABEL` text; the generational horizon is a labelled chip with a
+  clock glyph; ladder rungs read *Current* / *Passed* / *Ahead* in text.
+- **Keyboard.** The Deeds filter is a labelled `role="group"` of `aria-pressed` buttons at the 44px
+  target; every deep-link is a real `<button>`; `HoloTip` triggers are already keyboard-openable
+  and Escape-closable by design.
+- **Headings.** h2 (the Hall) → h3 (each section, via `ConsolePanel asH3`) → h4 (tier groups,
+  each `aria-labelledby`-bound to its `<section>`). No level is skipped.
+- **Reduced motion.** No bespoke animation is introduced; the only transitions are the existing
+  chrome's, which the global `prefers-reduced-motion` block already disables.
+- **Type floor.** 10px minimum throughout (V8 canon); figures 11px+.
+- **375px.** Authored phone-first: every grid starts `grid-cols-1` and widens at `sm`/`lg`/`xl`,
+  every row is `flex-wrap` with `min-w` guards, and the deed row's progress column drops to full
+  width below `sm` so the meter never competes with the description. The bench avatars are text
+  monograms, so the phone layout costs no image bytes.
+
+## E4.8 — deliberately not included, with reasons
+
+- **Speed-run records.** Round 1 listed them as Hall content. They live entirely server-side
+  (`speed-runs.ts` + four API routes) and are **not on `GameState` or the sync payload**, so
+  surfacing them means a network fetch inside a panel that is otherwise a pure lens over state.
+  Rendering an empty section, or an always-spinning one, would be worse than omitting it. It is a
+  clean follow-up once the Hall proves out: one `GET` and a section.
+- **Season prestige titles** (`season-chronicle.ts::derivePrestigeTitles`). Same reason — server
+  data, and additionally scoped to the opt-in seasonal sandbox rather than to the main economy.
+- **`milestones.ts`' 10 progression milestones.** These are *time-boxed onboarding* rewards
+  (deadlines in real days from account creation, cash payouts), not permanent legacy. Putting a
+  deadline clock inside the permanent record would confuse two different things.
+- **The public corp-page section** (`/space-tycoon/corp/[id]`). `legacy` is not synced to the
+  server at all, so a public Legacy section would need a publish path with its own sanitisation and
+  opt-in trust boundary — exactly the shape `corp-era-registry.ts` and `corp-report-registry.ts`
+  already have, and exactly the amount of work that makes it a wave of its own rather than a
+  footnote on this one. The Chronicle and the published quarterlies already give the public page a
+  history spine.
+- **Defect #8 (move the victory check into the tick).** E3.9 parked this "with R1-E4". It stays
+  parked, and E4 is the reason it should: relocating the *award* changes when victory multipliers
+  switch on for real players, which is **economy timing with no sim coverage**, and this wave's
+  entire licence to skip the sim harness is that it contains zero economy math. Doing it here would
+  forfeit that. It belongs in a wave that runs `sim-50yr`.
+- **Client → server sync of `playerTitle`.** Also parked by E3.9 pending a precedence rule. E4
+  supplies the *display* precedence (victory > achievement) and documents it, which is the design
+  half; the sync route change is still a server wave.
+
+## E4.9 — what E4 found while building
+
+1. **`victory-conditions.ts`'s file header still says "7 victory conditions"** — there are 11. Same
+   class of drift as `legacy-system.ts`'s "40 fixed milestones" header (there are 48) and
+   `corporate-eras.ts`'s counts. Not fixed here (header-only, and parallel waves are editing
+   neighbouring files); worth a sweep.
+2. **`TAB_CATALOG` holds 31 entries, not 28.** `LIVE_SERVICE_2026-08.md` §LS1's "28 is enough" and
+   §0.2's "no 29th tab" rule are both quoted against a number the code passed some waves ago
+   (`victory`, `governance` and `predictions` are all in the catalogue). The *spirit* — don't add
+   tabs, fold into hubs — is what E4 followed. The literal count should be re-stated somewhere
+   before the next wave quotes it again.
+3. **`getLegacyDisplayTier`'s Legend rung is unreachable through Architect-tier milestones alone.**
+   It needs `t4Count >= 10` and there are exactly 10 Tier-4 milestones — so Legend requires *every*
+   Architect deed plus 50 total dynasty levels. That is intentional-looking, but it means the
+   Architect → Legend step is an all-or-nothing wall rather than a ladder rung. The Hall now makes
+   this visible for the first time; whether it should be repriced is a design question for a later
+   round, not a bug.
+4. **`stretch_revenue`'s `getRequirement(0)` is $10B, a curve constant rather than a cleared bar.**
+   Using it as the level-0 floor would render a negative (clamped-to-zero) fraction on every new
+   save until $10B. The Hall measures level 0 from zero and only uses `getRequirement(level)` as
+   the floor from level 1 up. Tested.
+5. **`legacy.trackers` now has a *reader with a face*.** E3.2 gave the four counters a writer;
+   until E4 nothing showed them to a player. `legacy_first_mine` and `stretch_mining` are the two
+   deeds whose progress bars are only meaningful because of that repair — the Hall is where E3's
+   plumbing fix becomes visible work.
+
+---
+
+# E1 implementation — the Accord Chair (shipped 2026-08-22)
+
+Round 1 recommended **R1-E3 → R1-E4 → R1-E1**. This section records **R1-E1**, the political
+contest, as built. It closes the third of the four structural end-game holes §1a named: *no
+political contest with a prize.*
+
+The Accord Senate was already live — a docket, real lobbying, a vote history. What it did not have
+was **a chair, an election, or a shared tally**. There was nothing to win. MoO2's Galactic Council
+is the reference: a scheduled political event that forces engagement between players who would
+otherwise never touch each other, with a refusal option that makes the result a decision rather
+than an announcement.
+
+## E1 scorecard
+
+| Requirement (wave brief) | Where |
+|---|---|
+| Vote weight derives from **published quarterly reports**, not cash | `accord-chair.ts::computeChairVoteWeight`, fed by `server-chair.ts::buildChairVoterRecord` over `PublishedCorpReport` |
+| Winning grants a **verb**, not a percentage | `accord-chair.ts::applyChairWritToDocket` -> `accord-senate.ts::applyDocketWrits`, exercised via `POST /api/space-tycoon/chair {action:'issue_writ'}` |
+| Losers get a **real refusal** | Fracture: `AccordFracture`, `factions.ts::FRACTURE_REP_SHIFTS`, the measure exemption in `accord-senate.ts::resolveMeasure` |
+| **Population gate** with env override | `accord-chair.ts::getChairGateStatus`, `CHAIR_MIN_ELECTORATE = 16` |
+| **NPC participation** is coherent, not RNG | `accord-chair.ts::decideNpcBloc` / `scoreCandidatesForNpc` / `factionMeasureInterest` |
+| Sim validation | Four runners, **all byte-identical** — see below |
+
+Regression coverage: `src/lib/game/__tests__/accord-chair.test.ts` (70 tests). Suite **224 suites /
+5,082 tests**, all green (that count includes the parallel E4 wave's suites). `npx tsc --noEmit`
+clean; `next build` passes with both new routes registered dynamic.
+
+## SCHEMA CHANGE — `prisma db push` REQUIRED
+
+**Five new tables** at the end of `prisma/schema.prisma`. **Nothing in this wave works until they
+are pushed**, and everything degrades honestly until then: `server-chair.ts::isChairSchemaAvailable`
+probes once per 5 minutes (the `server-equity.ts` / `server-ledger.ts` pattern), the sync route's
+`chair` field stays `null`, the panel renders nothing at all, and both engine consumers
+(`accord-senate`'s writ lookup and its fracture exemption) already treat null as "no Chair system".
+
+| Table | Purpose |
+|---|---|
+| `AccordChairTerm` | One row per monthly term. `termIndex` is the primary key; `status` is `open` / `certified` / `vacant`; `tallyJson` holds the full public count |
+| `AccordChairCandidacy` | A corporation standing in a term, with its pledged writ and patron faction. `@@unique([termIndex, profileId])` |
+| `AccordChairBallot` | One ballot per corporation per term. Weight is recomputed server-side at cast time and stored with its itemised derivation so the count stays auditable. `@@unique([termIndex, voterProfileId])` |
+| `AccordChairWrit` | An exercised agenda writ. `@@unique([termIndex, quarterIndex])` — a writ can never be double-spent on one session |
+| `AccordFracture` | Articles of Fracture; `reaccededAt` closes the row. One per profile |
+
+Profile ids are stored **without relations or cascades**, matching `PublishedCorpReport` and
+`CorpEraRecord`: the Chair roll is permanent public history and must survive a profile deletion
+rather than silently vanish from the record.
+
+Optional Railway env, only when a shard wants the office open early: `TYCOON_CHAIR_FORCE=true`.
+`TYCOON_CHAIR_ENABLED=false` is the kill switch and wins over the force flag.
+
+## E1.1 — the calendar: why monthly, and why not the senate's quarter
+
+`SESSION_DESIGN.md`'s most under-served loop is the ~30-real-day cadence, and
+`LIVE_SERVICE_2026-08.md` §1.3 says so explicitly. The senate's own "quarter" is **~18 real hours**
+(3 game-months at 6 real hours each) — a term on that cadence would be over before a player noticed
+it had started, and `SESSION_DESIGN.md` misfiling it as *quarterly* is precisely the drift §1a.7
+recorded.
+
+So a **Chair term is one real UTC calendar month**, and the cycle is:
+
+```
+day 1 .............................. term begins; the ballot for it closed at 00:00 UTC
+       (recess — the seated Chair spends writs)
+last 7 days ........................ nominations AND ballot open
+last 3 days ........................ nominations closed; ballot still open
+00:00 UTC on the 1st ............... certification
+```
+
+Two deliberate asymmetries. **Ballots are open for the whole 7-day window**, not just the final 72
+hours, because a corporation that logs in once a week must not be structurally disenfranchised.
+**Nominations close 3 days early** so every platform is public and scrutinised before the count —
+late filing cannot dodge the NPC bloc's published reasoning or a rival's counter-campaign.
+
+Certification is done by `POST /api/space-tycoon/chair/resolve`, a 2-hourly idempotent settler
+(`cron-scheduler.ts` label `tycoon-chair-resolve`, offset to `:50` so it never contends with the
+equity settler at `:30`). It certifies every closed-but-open term oldest-first, bounded at 24, so a
+shard that was down for weeks fills its Chair roll in order with no holes. It is registered in
+`middleware.ts`'s `cronPaths` — the CSRF-for-new-cron gotcha every prior wave has flagged.
+
+## E1.2 — vote weight: exactly how it derives from quarterlies
+
+The franchise reads **four fields of a published report and nothing else**:
+
+```
+weight = charter(1)
+       + scale        floor(log10(netWorth / $100M) x 4),        cap 16
+       + record       consecutive published quarters,            cap  6
+       + performance  growth-rate band from the same report,     cap  4
+                                                          raw maximum 27
+```
+
+then a **chamber concentration cap**: no corporation may cast more than `CHAIR_MAX_VOTE_SHARE`
+(25%) of the total player vote, floor 1.
+
+Five choices worth defending:
+
+- **Cash on hand is not an input, and structurally cannot become one.** `ChairVoterRecord` has
+  exactly four fields (a test asserts the key set), all read out of `reportJson`. `money` is
+  liquid, un-published, and the single most manipulable number in a save; weighting by it would
+  make the franchise a wallet. **Book net worth** — the M1/F4 asset-aware figure already used for
+  Frontier graduation, exec comp, leagues and takeover valuation — is the scale input, and it only
+  counts **if the corporation chose to publish it where rivals can read it.** That is the
+  information-disclosure trade the mechanic exists to create: publish to vote heavier, and your
+  competitors get your numbers on the public registry.
+- **Scale is log-scaled, deliberately.** Pass 5 measured Gini at 0.79–0.82. A linear
+  wealth-weighted franchise would hand the office to the top of that curve every single month and
+  the election would stop being a contest. $1B is worth 4 scale votes; $1T is worth 16 — a
+  thousand-fold wealth advantage buys a four-fold vote advantage, and the 25% chamber cap bounds
+  even that.
+- **A charter seat for every publisher.** One vote, unconditional, for anyone who files. A small
+  corporation is not voiceless; it is simply outnumbered, which is the honest version.
+- **The record term rewards *consecutive* filing.** Publish, skip two quarters, publish again, and
+  the counter starts over. The mechanic pays for standing disclosure, not for one opportunistic
+  filing the week before a ballot.
+- **The concentration cap is applied in ONE pass.** An iterative re-normalisation converges on an
+  equal-weight chamber whenever a whale is present, which would erase exactly the "demonstrated
+  standing" signal being measured. One pass clips the outlier without flattening everyone else, and
+  it is trivially deterministic — the number the panel shows a voter before they commit is computed
+  by the same function the tally uses.
+
+A stale record (last filing older than the 90-day lookback) loses the franchise **entirely**, not
+partially. Publishing is the price of admission, and it is a recurring price.
+
+## E1.3 — the verb: agenda writs
+
+Round 1's audit found that this game's capstones grant percentage bonuses and never actions — the
+measured gap versus Sins and MoO2. So the Chair's prize is an **action on the shared world**:
+
+> **A writ substitutes one measure into — or out of — one upcoming Senate docket, for every
+> corporation in the game.**
+
+`CHAIR_WRITS_PER_TERM = 4`. Two modes: `seat` (put this measure on the next docket) and `table`
+(take it off). The Chair therefore decides **what the Accord debates**, which is real power over a
+shared world, non-destructive, and structurally incapable of being PvP combat.
+
+### Why this needed no repricing, and the bound it sits inside
+
+Three invariants, all test-asserted:
+
+1. **The docket length never changes.** A `seat` writ *substitutes* into the last slot; it does not
+   add a fourth measure. More measures resolving per quarter would be a real economy delta; this is
+   not.
+2. **A `table` writ draws its replacement from the same deterministic shuffle** the docket was
+   already sliced from (`accord-senate.ts::shuffleMeasurePool`, extracted for exactly this).
+   Therefore **every amended docket is one the un-amended game could already have produced** — the
+   set of reachable economic states is unchanged. The writ moves probability mass between existing
+   states; it does not create new ones.
+3. **Nothing about published odds, effect magnitudes, or lobbying caps is touched.** The Chair
+   cannot pass a measure, cannot improve its odds, and cannot change what it is worth.
+
+And the *frequency* bound: a real month holds about 40 accord quarters, so four writs shape ~10% of
+a term's dockets — roughly **3% of all measure resolutions**, one slot at a time. Small enough that
+a Chair cannot park a favourable measure on every session and re-price the world; large enough that
+spending a writ is a genuine tactical decision (before a super-cycle, ahead of a chapter beat,
+against a rival's build order). It also lands the verb on the *tactical* loop inside a *monthly*
+prize, which is the tempo layering CLAUDE.md asks for.
+
+One more property worth stating: the docket is **world-shared**, so a Chair's writ benefits or costs
+*everyone* equally. The Chair's edge is not that they get the subsidy — it is that they choose
+*which* risk or subsidy the whole board faces, and they can choose the one that differentially suits
+their own portfolio. That is competitive advantage expressed entirely through public goods, which is
+about as far from pay-to-win as a capstone can get.
+
+### How it reaches the client without breaking determinism
+
+A writ names the **quarter index** it amends, not a wall-clock instant. `advanceAccordSenate` reads
+`state.accordChair?.activeWrits` (the sync snapshot) when publishing a docket and applies any writ
+whose `quarterIndex` matches. Every player reaching quarter Q therefore gets the identical docket
+*whenever* they get there, and the docket stays a pure function of (quarter index, writ set). A
+player behind the world clock encounters a past Chair's amendment when they reach that session —
+the honest reading of "the Council's record for that session", and the same rule for everybody.
+
+**The one honest bound on that claim**, stated rather than hidden: the snapshot carries
+`WRIT_SNAPSHOT_TERMS = 3` terms of writs (the seated term plus the two before it, ≈120 accord
+quarters of coverage), not the whole history. A save more than three real months behind the world
+clock publishes those long-past dockets unamended. Widening the window is a one-line change; the
+alternative — shipping the entire writ history on every sync — is unbounded growth on the hot path
+for a case nobody is in. Only the seated term's writs count against the Chair's budget of four.
+
+`pickDocketMeasures(quarterIndex, count, writs?)` takes the writ list as an **optional, structural**
+parameter — declared inline rather than importing `ChairWrit`, because `accord-chair.ts` imports
+`MEASURE_MAP` from `accord-senate.ts` and the reciprocal import would be a cycle. **Omitting it
+reproduces the pre-E1 behaviour byte-for-byte.** That is what keeps `realignment.ts`'s
+`getSenateAggregateScore` — which calls it bare across ~120 quarters per epoch — completely unmoved,
+and it is asserted directly by a test.
+
+## E1.4 — Fracture: the refusal, and what it costs
+
+LORE.md's Treaty Fracture of 2143 is canon: three of the six factions walked out of Accord oversight
+and the SCC "has no writ over non-signatory faction space." A corporation may do the same.
+
+**What it buys**
+
+- **Exemption from every Senate measure.** `resolveMeasure` still records the vote in the player's
+  history — the Council's record is public — but does not apply the consequence. Deliberately
+  **two-sided**: you escape the tariffs *and* forfeit the subsidies. With the current catalogue that
+  is close to a wash in expectation, which is what makes Fracture a computable bet rather than a
+  free pass.
+- **Standing with the three factions that already left**: Syndicate +25, Void Corsairs +25, Hive
+  Collective +15.
+- No Accord compliance to lobby over: lobbying spend stops entirely.
+
+**What it costs**
+
+- **No vote, no candidacy, no lobbying.** Live candidacies are withdrawn and live ballots deleted at
+  the moment of filing.
+- **Standing collapse with the signatories**: Dominion -40, Echo Remnants -25, Nebula Reavers -15.
+- **Re-accession** costs a burned bond (1% of published book net worth, banded $100M–$5B), is barred
+  until the term *after* the one it was filed in, and carries one further term of probation before
+  the corporation may stand for the Chair again.
+
+### The design decision that matters here
+
+**Fracture introduces no new economic channel.** Every consequence is a *derived modifier over
+faction standing*, so it flows through machinery that already exists and has already been balanced:
+`STANDING_BROKER_MODIFIER`, `isEmbargoed`, `FACTION_LICENSES.minStanding`, `getEnvoyCost`, and
+`delivery-contracts`' faction flavour. There is no `fractureRevenueMultiplier` anywhere, and there
+never will be.
+
+Mechanically it is one chokepoint. `factions.ts::getFactionRep` — which had exactly six call sites —
+now returns `applyFractureRepModifier(raw, id, fractured)`, and `getRawFactionRep` was added for the
+two places that legitimately need the stored value. Consequences of doing it this way:
+
+- **No save migration and no mutation.** A snapshot arriving twice cannot double-apply, and
+  re-accession reverses the modifier exactly. (A one-time -40 rep shift would have needed an
+  idempotency key and a rollback story.)
+- **Client and server cannot disagree.** `market/trade` re-derives the broker fee server-side; it now
+  calls the *same pure function* against the server-owned `AccordFracture` row
+  (`server-chair.ts::isProfileFractured`) — never a client claim.
+- The magnitudes are legible in tier terms: a fractured corporation sitting at neutral drops two
+  tiers to *Unfriendly* with the Dominion; one already cool with the enforcer lands *Hostile* and is
+  embargoed out of Dominion licences entirely. Meanwhile a merely-Friendly Syndicate relationship is
+  carried all the way to *Allied*.
+
+## E1.5 — the dormancy gate: 16, and why not 25
+
+`share-registry.ts` set the precedent with `TAKEOVER_MIN_ACTIVE_CORPS = 25`. E1 ships the same shape
+— `CHAIR_MIN_ELECTORATE = 16`, `TYCOON_CHAIR_ENABLED='false'` to force-disable,
+`TYCOON_CHAIR_FORCE='true'` to force-enable, kill switch wins — but a **different number measured
+over a different population**, and both differences are deliberate.
+
+- **Different number.** The two gates protect against different failure modes. A takeover market
+  needs *counterparties*: every participant must be able to find a target, so its threshold scales
+  with pair-finding. An election needs a *chamber*: the failure mode is one corporation deciding the
+  office by itself. The 25% concentration cap means a winner needs at least three independent
+  backers on the player side; at ~16 electors that cap actually **binds** (below about 12 it is
+  usually slack, because raw weights are small and similar), so 16 is the smallest chamber where the
+  anti-whale rule does real work and a plurality means something.
+- **Different population.** The gate counts the **electorate** — distinct corporations with a
+  quarterly published inside the 90-day lookback — not active profiles. A shard with 5,000 players
+  where nobody files a report has no legitimate electorate, and seating a Chair elected by four
+  people would be exactly the "fake contest on day one" the brief rules out. Today that count is
+  effectively zero, so the system is genuinely dormant: real code waiting for a real population.
+
+While the gate is closed: every mutation answers **409 `awaiting_electorate`** with the live count,
+the panel renders an `inert`-variant console stating the requirement and the current number, and the
+certifier marks closing terms **vacant with the gate's own reason** rather than seating a cheap
+Chair. Ballots already cast are *not* deleted — if the electorate recovers before the next close
+they still count.
+
+## E1.6 — NPC participation: coherent, canon, and capped
+
+Per `docs/NPC_BACKDROP.md`. Three rules, no randomness anywhere.
+
+**1. Only Accord signatories hold seats.** LORE.md's own "Accord relation" lines decide the roster:
+the Dominion ("signatory and principal enforcer"), Nebula Reavers ("signatory in name") and Echo
+Remnants ("signatory") sit; the Syndicate ("non-signatory"), Void Corsairs ("treated as pirates")
+and Hive Collective ("observer status. Has not signed") do not. A Syndicate NPC voting in a body the
+Syndicate walked out of would be a lore contradiction. It also gives the chamber a *political shape*:
+the standing NPC vote leans Dominion, so an insurgent candidate must out-organise the establishment
+rather than out-spend it — the MoO2 council feeling, arrived at from canon rather than invented.
+
+**2. Seats come from authored data.** `seats = max(1, round(progressionSpeed x 20))`, using each
+NPC's own published `progressionSpeed` from `NPC_SEEDS` — the one number that already expresses "how
+big is this NPC's economy". Fixed, published, identical for every observer on every shard.
+
+**3. Votes come from authored data too.** An NPC scores each candidate on two terms:
+
+```
+interest = (measure.onPass.factionRep[myFaction] ?? 0) - (measure.onFail.factionRep[myFaction] ?? 0)
+           x (+1 if the platform SEATS the measure, -1 if it TABLES it)
+patron   = +6 if the candidate runs under my faction's banner
+           -6 if the candidate runs under my faction's declared rivalId
+```
+
+Both inputs are things a designer already wrote: a measure's own `factionRep` deltas say which
+factions want it passed, and `factions.ts`'s `rivalId` says whom they will not back. **If no
+candidate scores above zero the seat ABSTAINS** — it never picks at random, and the abstention is
+reported in the tally with a written rationale. Ties break on the lower candidacy id. The whole bloc
+decision is reproducible byte-for-byte, and the panel publishes each seat's reasoning *before* a
+player files, so the bloc is intelligence to be read rather than a dice roll to be survived.
+
+**The bloc is a floor, never a ceiling.** `scaleNpcBloc` caps NPC seats at `NPC_BLOC_MAX_SHARE` (40%)
+of the whole chamber by largest-remainder apportionment. On an empty shard the bloc stands at full
+strength so the chamber feels alive; as player weight grows its share falls monotonically and
+automatically. NPCs can never elect a Chair once players show up in numbers — and **only a player
+corporation can hold the office**. If nobody stands, the seat is certified **vacant**. There is no
+fabricated winner and no fabricated participant anywhere in this wave.
+
+## Sim validation
+
+Baseline captured by running each runner in a detached `git worktree` at `HEAD` (7b06bd6f) with the
+repo's `node_modules` junctioned in — a true before/after byte diff, per the E3 precedent.
+
+| Runner | Result |
+|---|---|
+| `sim-strategies.ts` | **BYTE-IDENTICAL** |
+| `sim-resources.ts` | **BYTE-IDENTICAL** |
+| `sim-tools.ts` | **BYTE-IDENTICAL** |
+| `sim-50yr.ts` | **BYTE-IDENTICAL** |
+
+The **M1 first-copy-ROI CI guard** (`tier-ladder-first-copy-roi.test.ts`) and the F2 floor-authoring
+guard (`demand-pools.test.ts`) are green.
+
+**Why byte-identity was the expected result, stated so the runs are a check and not a hope.** Two
+independent reasons:
+
+1. **Coverage.** No sim runner imports `accord-senate`, `accord-chair`, `factions`, `realignment`,
+   `world-calendar` or `server-effects`. Their import graph is `sim-harness` -> `{buildings,
+   consumption, demand-pools, extraction-pressure, formulas, frontier, labor-market, market-engine,
+   mining-pricing, npc-volume-caps, production-chains, resources, service-pricing, services,
+   spot-price, types, workforce}` plus a handful of tool modules. The senate is **outside sim
+   coverage entirely** — the same honest caveat `BALANCE.md` Pass 5's coverage table records and
+   E3.2 restated. So these four runs prove *no unintended spill*, which is what they are for; they
+   cannot and do not validate the senate itself. That is Jest's job here (70 tests), and it is why
+   the writ invariants are asserted structurally rather than statistically.
+2. **Substance.** Every change this wave makes to a module the sims *can* reach is provably inert by
+   default: `pickDocketMeasures` without writs returns the identical shuffle slice (tested);
+   `getFactionRep` with `accordChair` absent returns `clamp(raw, -100, 100)` where raw was already
+   clamped on every write path; `state.accordChair` is `undefined` on every save until a server sync
+   delivers it, and no sim syncs.
+
+**On the agenda power specifically**, which §1d flagged as requiring a harness run: it is **not
+economically inert in the abstract** — it changes which measures resolve — but the change is bounded
+by construction rather than by tuning, and the bound is the argument. The reachable set of dockets is
+unchanged (invariant 2 above), docket size is unchanged (invariant 1), magnitudes and odds are
+unchanged (invariant 3), and the frequency is ~3% of measure resolutions per term. There is no
+constant here that a sim could have priced, because the wave introduces no new magnitude — only a
+re-selection among magnitudes that Pass 7 and W11 already balanced. The `realignment.ts` posture band
+(0.8–1.2) that §1d suggested mirroring is untouched for the same reason: folding Chair identity or
+the Fracture roster into the epoch aggregate would make `realignment.ts` depend on server state and
+destroy the pure/DB-free property `world-calendar.ts` and `delivery-contracts.ts` rely on. That is
+recorded as deferred below, not done quietly.
+
+## Accessibility
+
+- **The ballot is a real radiogroup** — `<fieldset>` + `role="radiogroup"` + native
+  `<input type="radio">`, so arrow-key navigation, a single tab stop and screen-reader announcement
+  all come for free. Every action in the panel (file, withdraw, vote, writ, fracture, re-accede) is a
+  button or a select; keyboard-only play works end to end.
+- **No state is carried by colour.** Vote counts are text figures with an explicit percentage; the
+  bar is `aria-hidden` decoration layered on top. The front-runner is marked with the word
+  *"Leading"*, your own ballot with *"Your vote"*, your own candidacy with *"You"*. Faction identity
+  is always the faction's **name**; its accent hex appears only as a 2px keyline.
+- **The Chair roll is a real `<table>`** with an sr-only `<caption>`, scoped headers, and a
+  horizontal-scroll container — the wide-content rule.
+- **Fracture is a two-step confirm.** It is consequential and semi-permanent; a single mis-tap must
+  not file it.
+- **Honest inert state.** Below the gate the panel uses the `inert` frame variant, whose bevel
+  geometry (not just colour) says "no power", and states the real requirement and the real count.
+- **375px.** Every row stacks; the writ form and candidacy form are single-column on narrow
+  viewports and the ballot never needs horizontal scroll. Touch targets are >= 38px.
+- **Chrome.** `ConsolePanel` / `HoloCard` / `DataChip` / `StatReadout`, `GameIcon` (a new
+  `cal-chair-election` glyph — a gavel over the Council colonnade, distinct in *silhouette* from
+  `cal-senate`, which is the colonnade alone), and two new `HoloTip` glossary concepts
+  (`accord-chair`, `accord-fracture`). `LeaderPortraitFrame` carries the Council's own voice:
+  Secretary-General **Anatole Priest**, who has no portrait in the art roster and therefore renders
+  the frame's monogram plate — inventing a portrait would be fabricating content.
+
+## Files touched
+
+**New**
+
+- `src/lib/game/accord-chair.ts` — the pure rule-set (term calendar, gate, vote weight, candidacy,
+  NPC bloc, resolution, writs, fracture, snapshot clamp).
+- `src/lib/game/server-chair.ts` — Prisma glue (schema probe, electorate count, voter record from
+  `PublishedCorpReport`, fracture status/roster, writs, snapshot assembly).
+- `src/app/api/space-tycoon/chair/route.ts` — GET + six POST actions.
+- `src/app/api/space-tycoon/chair/resolve/route.ts` — the certifier cron.
+- `src/components/game/AccordChairPanel.tsx` — the surface.
+- `src/lib/game/__tests__/accord-chair.test.ts` — 70 tests.
+
+**Modified**
+
+- `prisma/schema.prisma` — five tables (**db push required**).
+- `src/lib/game/accord-senate.ts` — `shuffleMeasurePool` extracted; `pickDocketMeasures` gains an
+  optional structural writ list; `applyDocketWrits`; fracture exemption in `resolveMeasure`; fracture
+  lock in `commitLobbying`; writ lookup + Chair note at docket publication.
+- `src/lib/game/factions.ts` — `FRACTURE_REP_SHIFTS`, `applyFractureRepModifier`,
+  `getRawFactionRep`; `getFactionRep` now returns effective standing.
+- `src/lib/game/types.ts` — **one optional field**, `accordChair?: ChairSnapshot | null`.
+- `src/lib/game/server-effects.ts`, `src/hooks/useGameSync.ts`,
+  `src/app/api/space-tycoon/sync/route.ts` — the snapshot hop.
+- `src/app/api/space-tycoon/market/trade/route.ts` — server-side fracture parity on the broker fee.
+- `src/lib/game/server-ledger.ts` — two burned reasons (`chair_filing_fee_burn`,
+  `accord_reaccession_bond_burn`).
+- `src/lib/game/world-calendar.ts` + `src/components/game/MissionCalendarPanel.tsx` — the
+  `chair_election` category and its three appointments.
+- `src/lib/game/icons.tsx`, `src/lib/game/concepts.ts` — one glyph, two glossary entries.
+- `src/lib/cron-scheduler.ts`, `src/middleware.ts` — the certifier cron + its CSRF allowlist entry.
+- `src/app/space-tycoon/page.tsx` — the panel, inside the existing **Factions** tab. **No 29th tab**
+  (standing convention).
+
+## Save-format note (flagged prominently, as instructed)
+
+**No save migration. One optional `GameState` field.** `accordChair` is server-authoritative,
+read-only and null-until-sync — the `equity` (M6) and `demandPools` (E4) pattern exactly.
+`save-load.ts` is untouched: a pre-E1 save has `undefined` there, every reader treats
+null/undefined as "no Chair system", and the client never writes to it. `GameState.version` is
+unchanged.
+
+## Deliberately deferred, with reasons
+
+- **Chair identity and the Fracture roster as inputs to `realignment.ts`'s epoch aggregate** (§1c-E1
+  listed this). Not done: `realignment.ts` is pure and DB-free by design, and `world-calendar.ts`,
+  `delivery-contracts.ts` and the market/trade route all depend on being able to call it server-side
+  and client-side with no plumbing. Feeding it server-owned election state would destroy that
+  property *and* make every posture non-deterministic per observer. It wants a cached
+  epoch-aggregate row, which is a feature, not a wiring change.
+- **The public Chair roll on `/space-tycoon/registry` and `/space-tycoon/chronicle`.** The roll and
+  the fracture roster are public *in-game* (both are in the snapshot and rendered in the panel), but
+  no chronicle or public page was touched — a parallel agent owns the Legacy Hall wave and the brief
+  ruled those surfaces out of scope. `AccordChairTerm.tallyJson` already stores everything such a
+  page would render, so this is a read-only page section whenever the surface is free.
+- **`GameProfile.title` for the seated Chair.** E3.9 left the title-precedence question open
+  (victory > record > league > ?); adding a fourth claimant without resolving it would make the
+  collision worse. The Chair is displayed from the snapshot instead.
+- **Lobbying weighted by Chair standing, and a Chair stipend.** Both considered and dropped: the
+  first would let the office buy odds (a magnitude change, and uncomfortably close to purchased
+  advantage); the second is a percentage, which is the exact anti-pattern this wave exists to avoid.
+- **Coalition / preference voting.** Plurality is the right v1: auditable, explicable in one
+  sentence, and a transferable-vote count would make the live tally impossible to publish
+  continuously — and the continuous public tally is what makes the campaign a *game*.
+- **`docs/SESSION_DESIGN.md` re-audit.** Still not done (E3 deferred it too), but E1 sharpens the
+  case: the senate's "quarterly" entry is an ~18-hour loop misfiled as quarterly, and the monthly row
+  it should have had is now genuinely occupied by the Chair.
+
+## What implementing this found
+
+1. **The senate's docket generator and `realignment.ts` were one refactor away from a cycle.**
+   `realignment.ts` calls `pickDocketMeasures` bare across ~120 quarters per epoch to build its
+   posture aggregate. Any writ parameter typed by importing from `accord-chair.ts` would have created
+   `accord-senate -> accord-chair -> accord-senate`. The structural inline type is not a style
+   choice; it is the only shape that works.
+2. **`getFactionRep` was never clamped.** It returned `state.factionReputation?.[id] ?? 0` raw. It
+   happens to be safe because every writer clamps, but the derived-modifier rewrite now clamps on
+   read as well, which is where it belongs.
+3. **`PublishedCorpReport.quarter` is the right key for a *consecutive* count and the wrong one for a
+   recency check.** `quarterKey()` encodes the player's own game clock, which advances at different
+   real rates for different players; `publishedAt` is wall-clock. The franchise uses `quarter` for the
+   consecutive-filing run and `publishedAt` for the 90-day window — mixing them up would have let a
+   fast-ticking corporation manufacture a filing record in an afternoon.
+4. **`recordLedger` takes a transaction client first.** Non-transactional charges want
+   `recordLedgerStandalone`; the signature difference is easy to miss and shows up only as an arity
+   error. Noted for the next wave that burns a fee.
+5. **Prisma 5.22 rejects `/** ... *` doc comments in the schema** — `//` and `///` only. Worth a line
+   in the codebase map; it cost a validation cycle.

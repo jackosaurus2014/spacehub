@@ -17,6 +17,15 @@ import { resolveIcon, type IconName } from '@/lib/game/icons';
 // tab (Reports remains the tab id — no IA change for mechanics)."
 import SituationLog from './SituationLog';
 import CompetitivePosturePanel from './CompetitivePosturePanel';
+// AAA Round 1 wave E4 (docs/AAA_PROGRAM_2026-08.md §R1-E4). The Legacy Hall
+// lands here rather than in a 29th tab, and rather than in the Victory tab
+// that would gate a Tier-1 milestone system behind a Tier-5 unlock. Reports is
+// where the corporation's *record* already lives — mail, situation log, and
+// the automatic quarterly filings — and Round 1's own framing for the Hall is
+// a ledger, not a mechanic: "a 22nd-century corporation with >$1B
+// extraterrestrial assets is required by the Accord to report publicly; this
+// is the corporate history that reporting produces."
+import LegacyHallPanel from './LegacyHallPanel';
 import type { OrderQueueTarget } from '@/lib/game/order-queue';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -408,7 +417,7 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   // 'log' (Situation Log) is the promoted default — it's the surface the
   // Outliner's Attention section deep-links into.
-  const [topTab, setTopTab] = useState<'log' | 'mail' | 'quarterly'>('log');
+  const [topTab, setTopTab] = useState<'log' | 'mail' | 'quarterly' | 'legacy'>('log');
 
   const reports = [...(state.reports || [])].reverse(); // newest first
   const filteredReports = filter === 'unread' ? reports.filter(r => !r.read) : reports;
@@ -425,9 +434,12 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
     }
   };
 
-  // Top-level tab strip — shared between Log, Mail, and Quarterly sub-views
+  // Top-level tab strip — shared between the Log, Mail, Quarterly and Legacy
+  // Hall sub-views. E4's fourth entry is where this strip stops fitting a
+  // 375px viewport, so it scrolls horizontally inside itself (the pattern
+  // StandingsHubPanel already uses) rather than pushing the page body wide.
   const TopTabs = (
-    <div className="game-tab-bar flex gap-1" role="tablist" aria-label="Reports view">
+    <div className="game-tab-bar flex gap-1 overflow-x-auto max-w-full" role="tablist" aria-label="Reports view">
       <button
         type="button"
         role="tab"
@@ -461,6 +473,17 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
       >
         <GameIcon name="market" size={13} /> Quarterly{(state.quarterlyReports || []).length > 0 ? ` (${(state.quarterlyReports || []).length})` : ''}
       </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={topTab === 'legacy'}
+        onClick={() => setTopTab('legacy')}
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          topTab === 'legacy' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        }`}
+      >
+        <GameIcon name="scroll" size={13} /> Legacy Hall
+      </button>
     </div>
   );
 
@@ -469,7 +492,7 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
       <ConsolePanel
         title="Reports & Mail"
         icon="reports"
-        subtitle="The Situation Log surfaces everything that needs a decision; Mail holds discovery reports and dispatches; Quarterly holds automated corporate filings."
+        subtitle="The Situation Log surfaces everything that needs a decision; Mail holds discovery reports and dispatches; Quarterly holds automated corporate filings; the Legacy Hall holds the permanent record."
         right={TopTabs}
       />
 
@@ -484,6 +507,12 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
         </div>
       ) : topTab === 'quarterly' ? (
         <QuarterlyReportsView state={state} />
+      ) : topTab === 'legacy' ? (
+        <LegacyHallPanel
+          state={state}
+          onNavigateTab={onNavigateTab}
+          onOpenQuarterly={() => setTopTab('quarterly')}
+        />
       ) : reports.length === 0 ? (
         <ConsolePanel
           title="No Reports Yet"

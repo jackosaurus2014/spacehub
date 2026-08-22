@@ -310,6 +310,10 @@ function checkCsrf(req: NextRequest): boolean {
         // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity/takeover
         // resolution cron — tender contests, distress checks, dividends.
         '/api/space-tycoon/equity/resolve',
+        // AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md): the Accord
+        // Chair certifier — closes each monthly ballot and seats (or
+        // honestly vacates) the Chair.
+        '/api/space-tycoon/chair/resolve',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {

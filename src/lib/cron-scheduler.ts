@@ -229,6 +229,16 @@ const CRON_JOBS: CronJobDef[] = [
   // cadence keeps closings settled within ~2h of their deadline. Registered
   // in middleware.ts cronPaths (the CSRF-for-new-cron gotcha).
   { schedule: '30 */2 * * *', path: '/api/space-tycoon/equity/resolve',             label: 'tycoon-equity-resolve',        maxStaleMinutes: 1440 },
+
+  // AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md "E1 implementation"):
+  // the Accord Chair certifier. The election lives on the MONTHLY loop (a
+  // term is one real UTC calendar month, ballot closing at 00:00 UTC on the
+  // 1st), so a 2-hourly idempotent settler certifies within ~2h of the
+  // close and also keeps the contested-term row open for candidacies.
+  // Deliberately offset from the equity settler above so the two never
+  // contend. Registered in middleware.ts cronPaths (the CSRF-for-new-cron
+  // gotcha).
+  { schedule: '50 */2 * * *', path: '/api/space-tycoon/chair/resolve',              label: 'tycoon-chair-resolve',         maxStaleMinutes: 1440 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

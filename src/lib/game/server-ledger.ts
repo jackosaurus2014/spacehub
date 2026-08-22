@@ -111,7 +111,13 @@ export type LedgerReason =
   | 'standing_demand_report_fee'
   | 'bid_insurance_fee'
   | 'slot_idle_fee'
-  | 'lane_toll_income';
+  | 'lane_toll_income'
+  // AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md): the Accord Chair.
+  // Both are BURNED (no matching credit anywhere — BALANCE.md money sinks).
+  // The filing fee buys ballot access and cannot move a single vote; the
+  // re-accession bond is forfeit to the Accord on signature.
+  | 'chair_filing_fee_burn'
+  | 'accord_reaccession_bond_burn';
 
 export interface LedgerWrite {
   profileId: string;

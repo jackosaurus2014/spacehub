@@ -542,7 +542,11 @@ export const STRETCH_LEGACY_MAP = new Map(STRETCH_LEGACIES.map(s => [s.id, s]));
 
 // ─── Soft Cap Values ─────────────────────────────────────────────────────────
 
-const CATEGORY_CAPS: Record<LegacyBonusCategory, number> = {
+/** Exported (AAA Round 1, E4) so the Legacy Hall can show players the ceiling
+ *  they are converging on. Round 1 §R1-E4: "the six soft-capped bonus
+ *  categories with their *current* effective values (the caps are a genuinely
+ *  interesting strategic readout that no player can see today)." */
+export const LEGACY_CATEGORY_CAPS: Record<LegacyBonusCategory, number> = {
   revenue: 5.0,        // Max 500% -> ~6x multiplier
   buildSpeed: 2.0,     // Max 200% -> 3x faster
   researchSpeed: 2.0,  // Max 200% -> 3x faster
@@ -550,6 +554,8 @@ const CATEGORY_CAPS: Record<LegacyBonusCategory, number> = {
   costReduction: 0.6,  // Max 60% off
   crewCapacity: 30,    // Max +30 slots (hard cap)
 };
+
+const CATEGORY_CAPS = LEGACY_CATEGORY_CAPS;
 
 // ─── Core Functions ──────────────────────────────────────────────────────────
 
@@ -608,7 +614,7 @@ export function checkStretchProgress(state: GameState): Record<string, number> {
  * Compute the effective bonus for a single category from all legacy sources.
  * Applies the soft cap formula: effective = cap * (1 - e^(-raw / cap))
  */
-function getCategoryBonus(
+function getCategoryRaw(
   category: LegacyBonusCategory,
   completedMilestones: string[],
   stretchLevels: Record<string, number>,
@@ -630,6 +636,16 @@ function getCategoryBonus(
       rawTotal += stretch.basePercent * Math.log(1 + n * 0.5);
     }
   }
+
+  return rawTotal;
+}
+
+function getCategoryBonus(
+  category: LegacyBonusCategory,
+  completedMilestones: string[],
+  stretchLevels: Record<string, number>,
+): number {
+  const rawTotal = getCategoryRaw(category, completedMilestones, stretchLevels);
 
   if (rawTotal <= 0) return 0;
 
@@ -666,6 +682,67 @@ export function getLegacyBonuses(legacy: LegacyState): LegacyBonuses {
     costMultiplier: 1 - costBonus,         // Cost reduction: 0.19 -> 0.81x costs
     bonusCrewCapacity: Math.floor(crewBonus),
   };
+}
+
+// ─── Bonus breakdown (AAA Round 1, E4 — read-only) ───────────────────────────
+
+export interface LegacyCategoryBreakdown {
+  category: LegacyBonusCategory;
+  /** Un-capped sum of every contributing milestone + stretch level. Percentage
+   *  points for the five percentage categories; crew SLOTS for crewCapacity. */
+  raw: number;
+  /** What the engine actually applies, after the cap. Same units as `raw`
+   *  (percentage points / slots) — NOT the multiplier form. */
+  effective: number;
+  /** The category ceiling, in the same units as `raw`/`effective`. */
+  cap: number;
+  /** crewCapacity is a hard clamp; the other five converge asymptotically via
+   *  `cap * (1 - e^(-raw/cap))` and can never actually reach the cap. */
+  hardCap: boolean;
+  /** How much of the cap is currently realised, 0–1. */
+  capUsed: number;
+  /** Percentage points (or slots) lost to the soft cap right now — the number
+   *  that tells a player when another milestone in this category stops paying
+   *  for itself. Zero for a hard cap below its clamp. */
+  lostToCap: number;
+}
+
+/**
+ * Per-category raw vs effective vs cap, derived from the SAME functions the
+ * engine uses (`getCategoryRaw` + the identical soft-cap expression), so the
+ * readout can never disagree with the bonuses actually applied.
+ *
+ * Pure and read-only — introduced for the Legacy Hall, which is the first
+ * surface in the game to expose the soft-cap structure to players.
+ */
+export function getLegacyBonusBreakdown(legacy: LegacyState): LegacyCategoryBreakdown[] {
+  const completedMilestones = legacy.completedMilestones || [];
+  const stretchLevels = legacy.stretchLevels || {};
+  const categories: LegacyBonusCategory[] = [
+    'revenue', 'costReduction', 'miningOutput', 'buildSpeed', 'researchSpeed', 'crewCapacity',
+  ];
+
+  return categories.map(category => {
+    const raw = getCategoryRaw(category, completedMilestones, stretchLevels);
+    const cap = CATEGORY_CAPS[category];
+    const hardCap = category === 'crewCapacity';
+    // getCategoryBonus returns a FRACTION for percentage categories (0.19 =
+    // 19%) and raw slots for crewCapacity. Normalise both to the units `raw`
+    // is expressed in so the three numbers are directly comparable.
+    const effective = hardCap
+      ? getCategoryBonus(category, completedMilestones, stretchLevels)
+      : getCategoryBonus(category, completedMilestones, stretchLevels) * 100;
+    const capUnits = hardCap ? cap : cap * 100;
+    return {
+      category,
+      raw,
+      effective,
+      cap: capUnits,
+      hardCap,
+      capUsed: capUnits > 0 ? Math.max(0, Math.min(1, effective / capUnits)) : 0,
+      lostToCap: Math.max(0, raw - effective),
+    };
+  });
 }
 
 /**

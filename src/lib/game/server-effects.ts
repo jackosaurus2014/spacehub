@@ -42,6 +42,11 @@ import { applyOffenseToState, type OffenseSnapshot } from './offense';
 // registry, tenders, holdings — delivered the same hop. Clamp lives in
 // share-registry.ts (pure), same type-only posture as demandPools above.
 import { clampEquitySnapshot, type EquitySnapshot } from './share-registry';
+// AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md): the Accord Chair
+// snapshot — election phase, live tally, the seated Chair's agenda writs and
+// this corporation's fracture status — rides the same hop. Clamp lives in
+// accord-chair.ts (pure), same type-only posture as demandPools above.
+import { clampChairSnapshot, type ChairSnapshot } from './accord-chair';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -155,6 +160,11 @@ export interface ServerEffectsSnapshot {
    *  my holdings (share-registry.ts). Re-clamped via clampEquitySnapshot;
    *  null = gate closed or never synced (pre-M6 behavior). */
   equity?: EquitySnapshot | null;
+  /** AAA Round 1 wave E1: the Accord Chair snapshot (accord-chair.ts).
+   *  Re-clamped via clampChairSnapshot; null = gate closed, schema not
+   *  pushed, or never synced (pre-E1 behavior — no election, no writs,
+   *  never fractured). Read-only: the client never mutates it. */
+  chair?: ChairSnapshot | null;
   fetchedAtMs: number;
 }
 
@@ -401,6 +411,13 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     equity: eff.equity !== undefined
       ? clampEquitySnapshot(eff.equity)
       : state.equity,
+    // AAA E1: the Chair snapshot reaches the tick the same hop equity does.
+    // Plain clamped stash — its consumers (accord-senate's docket writs and
+    // fracture exemption, factions.ts's effective standing, the Chair panel)
+    // are all pure lenses over state.accordChair.
+    accordChair: eff.chair !== undefined
+      ? (eff.chair ? clampChairSnapshot(eff.chair) : null)
+      : state.accordChair,
   };
 
   // Wave M5: the offense snapshot reaches the tick the same hop demandPools

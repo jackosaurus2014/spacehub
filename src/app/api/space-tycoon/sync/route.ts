@@ -1153,6 +1153,19 @@ export async function POST(request: Request) {
       );
     } catch { /* equity snapshot non-critical (schema may lag deploy) */ }
 
+    // ── AAA Round 1 wave E1: the Accord Chair snapshot ────────────────────
+    // Election phase, live tally, the seated Chair's agenda writs, and this
+    // profile's fracture status. Read-only on this hot path (the resolve
+    // cron owns every mutation); null until the schema is pushed — the
+    // client treats null as "no Chair system" (pre-E1 behaviour), and both
+    // consumers (accord-senate's writ lookup + fracture exemption,
+    // factions.ts's effective standing) already default that way.
+    let chair = null;
+    try {
+      const { buildChairSnapshot } = await import('@/lib/game/server-chair');
+      chair = await buildChairSnapshot({ id: profile.id, companyName: profile.companyName });
+    } catch { /* chair snapshot non-critical (schema may lag deploy) */ }
+
     // ── Balance Pass 4 (docs/BALANCE.md "Pass 4"): this player's ACTIVE
     // orbital-slot leases — the client-side slot-gate (spatial-strategy.ts
     // checkOrbitalSlotGate) needs them to allow builds at saturated pools.
@@ -1222,6 +1235,9 @@ export async function POST(request: Request) {
       // Wave M6 (§M6): share-registry/takeover snapshot — additive field;
       // older clients simply ignore it (pre-M6 behavior).
       equity,
+      // AAA E1: Accord Chair snapshot — additive field; older clients simply
+      // ignore it (pre-E1 behavior: no election, no writs, never fractured).
+      chair,
       rivals: rivalsSummary,
       leagueInfo,
       // Audit Wave B: server-computed effects consumed by the client tick

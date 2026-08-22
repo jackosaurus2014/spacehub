@@ -1171,6 +1171,20 @@ export interface GameState {
    *  standing-gated, pay-once unlocks for tech/route access. */
   factionLicenses?: string[];
 
+  /** AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md "E1 implementation"):
+   *  the Accord Chair snapshot. SERVER-AUTHORITATIVE and READ-ONLY — the
+   *  election, the tally, the writs and the fracture roster are shared
+   *  world state and live in the AccordChair* Prisma tables; this field is
+   *  the sync-delivered view, exactly like `equity` (M6) and `demandPools`
+   *  (E4).
+   *
+   *  NO SAVE MIGRATION. The field is optional and null-until-sync: a save
+   *  written before E1 simply has `undefined` here, every reader
+   *  (accord-senate's writ lookup and fracture exemption, factions.ts's
+   *  effective standing) treats null/undefined as "no Chair system", and
+   *  save-load.ts writes nothing. The client never mutates it. */
+  accordChair?: import('./accord-chair').ChairSnapshot | null;
+
   // ─── V23 (4X Wave W14) — Cargo Logistics + Per-Location Inventory ────────
   // docs/GAME_SYSTEMS_AUDIT_2026-08.md C1. Both fields additive-only; engine
   // logic + freight mutator live in cargo-logistics.ts.
