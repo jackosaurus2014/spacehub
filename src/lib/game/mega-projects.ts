@@ -59,6 +59,50 @@ export interface PhaseRequirement {
   resourceCosts: Partial<Record<ResourceId, number>>;
 }
 
+/**
+ * The closed set of completion-reward kinds. AAA Round 1 E3.3: this used to
+ * be a bare `string`, which is exactly how `launch_cost_reduction` shipped
+ * with no reader — nothing could tell you that a declared reward had no
+ * consumer. Widening this union now forces a compile error unless you also
+ * add a row to MEGA_PROJECT_BONUS_CONSUMERS below, and the structural test
+ * (`__tests__/mega-project-rewards.test.ts`) verifies that row points at a
+ * real reference in a real file.
+ */
+export type MegaProjectBonusKind =
+  | 'revenue_boost'
+  | 'mining_boost'
+  | 'research_speed'
+  | 'launch_cost_reduction';
+
+/**
+ * Where each reward kind is actually consumed. This is a *contract*, not a
+ * comment: the structural regression test reads each `module` and asserts it
+ * contains `symbol`, so deleting or renaming a consumer fails CI instead of
+ * silently turning a completion payoff back into a decoration.
+ */
+export const MEGA_PROJECT_BONUS_CONSUMERS: Record<MegaProjectBonusKind, { module: string; symbol: string; note: string }> = {
+  revenue_boost: {
+    module: 'src/lib/game/game-engine.ts',
+    symbol: 'coopMegaB.revenueBonus',
+    note: 'Service revenue multiplier in processTick (capped with the other Wave-B revenue terms at 2.0x).',
+  },
+  mining_boost: {
+    module: 'src/lib/game/resource-flow.ts',
+    symbol: 'coopMegaMiningBonus',
+    note: 'Mining-output multiplier, shared by the tick and the resource-flow lens (capped at 2.0x).',
+  },
+  research_speed: {
+    module: 'src/lib/game/game-engine.ts',
+    symbol: 'coopMegaB.researchBonus',
+    note: 'Research-speed multiplier on both research queues (capped at 2.0x).',
+  },
+  launch_cost_reduction: {
+    module: 'src/lib/game/mega-projects.ts',
+    symbol: 'getLaunchCostMultiplier',
+    note: 'Discounts money spent putting mass into space: ship hull orders (space-tycoon/page.tsx onBuildShip, FleetPanel affordability) and interstellar expedition launch bills (expeditions.ts planExpedition).',
+  },
+};
+
 export interface MegaProjectDefinition {
   type: string;
   title: string;
@@ -67,7 +111,7 @@ export interface MegaProjectDefinition {
   totalPhases: number;
   phases: PhaseRequirement[];
   permanentBonus: {
-    type: string;
+    type: MegaProjectBonusKind;
     label: string;
     baseValue: number; // e.g. 0.15 for -15%
   };
@@ -499,10 +543,19 @@ export function getProjectDefinition(projectType: string): MegaProjectDefinition
  * header), so `completedProjectTypes` is simply every `type` whose server
  * row has reached status 'completed' — the caller (sync/route.ts) queries
  * that once and this stays a pure aggregator, unit-testable without Prisma.
- * `launchCostReduction` is aggregated for completeness/display but has no
- * tick-level consumer yet — no single "launch cost" multiplier site exists
- * in the deterministic tick (launches are priced in ships.ts/expeditions.ts
- * dispatch-time functions, out of E7's file-boundary scope this wave).
+ *
+ * AAA Round 1 E3.3 UPDATE: the note that used to sit here — "launchCostReduction
+ * is aggregated for completeness/display but has no tick-level consumer yet"
+ * — is no longer true, and it was the defect. The Space Elevator is the only
+ * mega-project any live server can currently instantiate (see
+ * scripts/seed-mega-project.ts), so completing the game's flagship
+ * cooperative project bought literally nothing. E7 was right that no *tick*
+ * multiplier site exists; launch spending is not a per-tick flow, it is a
+ * per-order transaction. So the consumer is transactional instead:
+ * `getLaunchCostMultiplier` below, applied where the game actually charges
+ * for putting mass into space (ship hull orders and interstellar expedition
+ * launch bills). See MEGA_PROJECT_BONUS_CONSUMERS at the top of this file —
+ * that registry is asserted by a structural test.
  */
 export function getMegaProjectBonuses(completedProjectTypes: string[]): {
   revenueBonus: number;
@@ -521,6 +574,46 @@ export function getMegaProjectBonuses(completedProjectTypes: string[]): {
     else if (bonusType === 'launch_cost_reduction') bonuses.launchCostReduction += baseValue;
   }
   return bonuses;
+}
+
+// ─── E3.3: the launch-cost consumer ─────────────────────────────────────────
+
+/**
+ * Multiplier applied to money spent putting mass into space, from completed
+ * cooperative mega-projects (today: the Space Elevator's -15%).
+ *
+ * Returns exactly `1` when no project is complete — `state.megaProjectBonuses`
+ * is `null` on every save until a server row reaches 'completed', so this is
+ * a no-op for the entire economy until a whole server finishes a $225B
+ * project together. That is why it needs no rebalancing pass: it cannot fire
+ * without a cooperative achievement that does not exist yet on any shard.
+ *
+ * The value is already clamped to MEGA_PROJECT_LAUNCH_COST_REDUCTION_CAP
+ * (0.30) by `clampMegaProjectBonuses` on the way into state; the second clamp
+ * here is belt-and-braces against a hand-edited save.
+ *
+ * Applied at:
+ *   • ship hull orders — src/app/space-tycoon/page.tsx `onBuildShip`, and the
+ *     matching affordability/price readout in FleetPanel.tsx
+ *   • interstellar expedition launch bills — expeditions.ts `planExpedition`
+ * Deliberately NOT applied to building construction: buildings already carry
+ * their own research-driven `buildCostReduction` channel, and stacking a
+ * server-wide discount onto the core build economy is a balance change this
+ * repair wave has no mandate for (see docs/AAA_PROGRAM_2026-08.md §E3).
+ */
+export function getLaunchCostMultiplier(state: { megaProjectBonuses?: { launchCostReduction?: number } | null }): number {
+  const raw = state?.megaProjectBonuses?.launchCostReduction;
+  if (typeof raw !== 'number' || !Number.isFinite(raw) || raw <= 0) return 1;
+  return 1 - Math.min(0.30, raw);
+}
+
+/** `cost` after the launch-cost discount, rounded. */
+export function applyLaunchCostReduction(
+  cost: number,
+  state: { megaProjectBonuses?: { launchCostReduction?: number } | null },
+): number {
+  const mult = getLaunchCostMultiplier(state);
+  return mult === 1 ? cost : Math.round(cost * mult);
 }
 
 /**

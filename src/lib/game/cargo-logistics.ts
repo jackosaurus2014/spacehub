@@ -44,6 +44,8 @@ import { MAX_EVENT_LOG } from './constants';
 // discount (server-shared, delivered via state.laneBonuses), and every
 // dispatch here records one usage tick for the next sync to transmit.
 import { getLaneBonus, accumulateLaneUsage } from './trade-lanes';
+// AAA Round 1 E3.6: Dominion/Reaver route licences discount the fuel bill.
+import { getFactionLicenseBonuses } from './factions';
 // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O6 "chokepoint squeeze — lane
 // concessions"): zone governors may levy a small public freight toll
 // (0.5-2% of cargo value, capped) on rival dispatches crossing their zone.
@@ -311,7 +313,17 @@ export function getFreightFuelCost(
     getLocationCapabilityBonus(state, from, 'logisticsSupport')
       + getLocationCapabilityBonus(state, to, 'logisticsSupport'),
   );
-  const cost = Math.round(raw * getFuelEfficiencyMultiplier(state) * (1 - laneDiscount) * (1 - endpointDiscount));
+  // AAA Round 1 E3.6: Dominion Priority Routing / Reaver Route Charts.
+  // Escorted lanes and charted short-cuts are exactly what those two
+  // licences promise in their own description text; before this wave the
+  // `grants` flags were read by nothing at all. Capped at 12% inside
+  // getFactionLicenseBonuses and applied as a third independent discount
+  // term, the same shape as the lane and endpoint discounts above.
+  const freightFuelDiscount = getFactionLicenseBonuses(state).freightFuelDiscount;
+  const cost = Math.round(
+    raw * getFuelEfficiencyMultiplier(state)
+      * (1 - laneDiscount) * (1 - endpointDiscount) * (1 - freightFuelDiscount),
+  );
   return Math.max(FREIGHT_MIN_FUEL_COST, cost);
 }
 

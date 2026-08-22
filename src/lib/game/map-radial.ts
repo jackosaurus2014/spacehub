@@ -28,7 +28,7 @@ import { getCommandQueueCapacity } from './command-queue';
 import { ORBITAL_SLOT_MAP, checkOrbitalSlotGate } from './spatial-strategy';
 import { computeSlotRing } from './map-bodies';
 import { INTERSTELLAR_SYSTEM_MAP, getJumpPrerequisites } from './interstellar';
-import { getExpeditionCapableShips } from './expeditions';
+import { getExpeditionCapableShips, getExpeditionLaunchReadiness } from './expeditions';
 
 export type RadialActionId =
   | 'detail'    // open the full MapContextPanel overview
@@ -271,17 +271,19 @@ const SYSTEM_ACTION_ORDER: SystemRadialActionId[] = [
 ];
 
 /**
- * The galactic action set for `systemId`. Gating mirrors the expedition
- * planner exactly (getJumpPrerequisites + exotic-fuel stock +
- * getExpeditionCapableShips) so the arc can never offer a launch the planner
- * would then refuse.
+ * The galactic action set for `systemId`. Gating runs the expedition planner
+ * itself (getExpeditionLaunchReadiness) so the arc can never offer a launch
+ * the planner would refuse — nor refuse one the planner would accept.
+ *
+ * E3.1: this used to require `exotic_fuel` in inventory, which no Sol-side
+ * source can supply. The planner buys the shortfall at a 1.25x premium; the
+ * arc now gates on that same affordability rule.
  */
 export function deriveSystemRadialActions(state: GameState, systemId: string): SystemRadialAction[] {
   const sys = INTERSTELLAR_SYSTEM_MAP.get(systemId);
   const name = sys?.name || systemId;
   const missing = sys ? getJumpPrerequisites(systemId, state.completedResearch) : [];
-  const exoticFuel = state.resources?.exotic_fuel || 0;
-  const fuelShort = sys ? exoticFuel < sys.jumpFuelRequired : true;
+  const readiness = sys ? getExpeditionLaunchReadiness(state, systemId) : null;
   const ships = getExpeditionCapableShips(state);
   const colony = (state.interstellarColonies || []).find(c => c.systemId === systemId);
 
@@ -299,18 +301,12 @@ export function deriveSystemRadialActions(state: GameState, systemId: string): S
   {
     let enabled = true;
     let reason: string | undefined;
-    if (!sys) {
+    if (!sys || !readiness) {
       enabled = false;
       reason = 'Unknown destination system';
-    } else if (missing.length > 0) {
+    } else if (!readiness.canLaunch) {
       enabled = false;
-      reason = `Research required: ${missing.map(r => r.replace(/_/g, ' ')).join(', ')}`;
-    } else if (fuelShort) {
-      enabled = false;
-      reason = `Exotic fuel short — need ${sys.jumpFuelRequired.toLocaleString()}, have ${Math.floor(exoticFuel).toLocaleString()}`;
-    } else if (ships.length === 0) {
-      enabled = false;
-      reason = 'No idle Starfarer Explorer or Colony Ark — build one in Fleet';
+      reason = readiness.blockers[0] || 'Launch unavailable';
     }
     byId.set('sys-expedition', {
       id: 'sys-expedition',

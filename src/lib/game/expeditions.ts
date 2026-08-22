@@ -48,6 +48,10 @@ import { getExpeditionScienceBonuses } from './science-missions';
 // Construction Purposes wave: deep-space support buildings trim transit
 // hazard damage (expeditionSupport — see processExpeditionTick).
 import { getGlobalCapabilityBonus } from './building-capabilities';
+// AAA Round 1 E3.3: completed cooperative mega-projects discount launch
+// spending — the consumer that turns the Space Elevator's reward from a
+// label into a payoff.
+import { applyLaunchCostReduction } from './mega-projects';
 
 // ─── Tuning constants ────────────────────────────────────────────────────────
 
@@ -355,7 +359,14 @@ export function planExpedition(
   const insuranceBasis = shipDef.baseCost + suppliesCost + Math.round(fuelUnitsRequired * fuelSpot) + shieldingCost;
   const insurancePremium = req.insured ? Math.round(insuranceBasis * INSURANCE_PREMIUM_RATE) : 0;
 
-  const totalMoneyCost = fuelPurchaseCost + suppliesCost + shieldingCost + insurancePremium;
+  // E3.3: an interstellar departure is the single largest "put mass into
+  // space" transaction in the game, so a completed Space Elevator discounts
+  // it. Identity (x1) on every save until a server finishes the project —
+  // see mega-projects.ts::getLaunchCostMultiplier.
+  const totalMoneyCost = applyLaunchCostReduction(
+    fuelPurchaseCost + suppliesCost + shieldingCost + insurancePremium,
+    state,
+  );
   if (state.money < totalMoneyCost) {
     return { ok: false, reason: 'insufficient_funds', detail: `Launch requires ${formatMoney(totalMoneyCost)}.` };
   }
@@ -1149,6 +1160,167 @@ export function getExpeditionCapableShips(state: GameState): NonNullable<GameSta
   return (state.ships || []).filter(
     s => s.isBuilt && s.status === 'idle' && (EXPEDITION_CAPABLE_SHIP_IDS as readonly string[]).includes(s.definitionId),
   );
+}
+
+// ─── Launch readiness — the ONE gate every surface must use (E3.1) ──────────
+//
+// AAA Round 1 defect #1 (docs/AAA_PROGRAM_2026-08.md §1a.5): every UI entry
+// point used to block a launch unless the player already held
+// `sys.jumpFuelRequired` units of `exotic_fuel` in inventory. But exotic_fuel
+// has no Sol-side source at all — startingSupply 0, npcRestockPerHour 0, it is
+// in MINED_ONLY_RESOURCE_IDS, npc-volume-caps.ts caps it at 0, and no building
+// produces it. Its only producer is an interstellar colony, which can only be
+// founded by an expedition. You needed a colony to get fuel and (per the UI)
+// fuel to launch the expedition that founds the colony: the entire
+// interstellar pillar was unreachable.
+//
+// `planExpedition` never had that rule. It procures the shortfall on the open
+// market at FUEL_PROCUREMENT_PREMIUM (1.25x spot) and charges it as money —
+// that is the DESIGNED first-jump path, and it is what the module's own tests
+// exercise. The three gates were simply wrong.
+//
+// This function is the single source of truth those gates now share. It is
+// deliberately expressed in terms of `planExpedition` itself, so the two can
+// never diverge again: it runs the real planner over the player's actual
+// eligible hulls and reports the cheapest plan the player could launch today.
+//
+// Sanity of the procurement path at the point a player first reaches it
+// (numbers from interstellar.ts / resources.ts / the constants above):
+//   Proxima Centauri, Colony Ark (1 jump): 500 units x $5M x 1.25 = $3.13B
+//     fuel, + 140 months of supplies at $50M = $7.0B -> ~$10.1B uninsured.
+//     Against an $80B ark hull already paid for and a $20B founding cost, the
+//     fuel line is ~4% of the program. It is not a loophole; it is a rounding
+//     error on a decision the player has already committed to.
+//   Proxima, Starfarer Explorer (2 jumps): 1,000 units -> $6.25B fuel +
+//     $13.4B supplies -> ~$19.7B uninsured against a ~$8.5B survey payout.
+//     Explorer round trips are structurally net-negative on cash and are sold
+//     as reconnaissance, not revenue (see SURVEY_DATA_PAYOUT_PER_LY above) —
+//     unblocking the gate does not open an income exploit.
+// Colonies then refine exotic_fuel at 20 units/level/month, so later jumps
+// skip the premium: the compounding "it gets cheaper once you're out there"
+// loop this module was designed around.
+
+export interface ExpeditionLaunchReadiness {
+  systemId: string;
+  /** Missing jump-drive research ids. Empty when satisfied. */
+  missingResearch: string[];
+  /** Idle, expedition-capable hulls the player owns right now. */
+  eligibleShipCount: number;
+  /** Fuel units the cheapest eligible plan needs (1 jump for an ark, 2 for an explorer). */
+  fuelUnitsRequired: number;
+  /** Of those, how many come out of inventory. */
+  fuelFromInventory: number;
+  /** …and how many must be procured on the open market. */
+  fuelUnitsPurchased: number;
+  /** Cost of that procurement at the 1.25x broker premium. */
+  fuelPurchaseCost: number;
+  /** Total money the cheapest uninsured, unshielded plan would cost. */
+  cheapestPlanCost: number;
+  /** True when research is done, a hull is idle, and the money is there. */
+  canLaunch: boolean;
+  /** Player-facing blockers, in text (never colour-only). Empty when ready. */
+  blockers: string[];
+}
+
+/**
+ * What it would take to launch at `systemId` today, computed by running the
+ * real planner. `null` for an unknown system.
+ *
+ * The quote is for the CHEAPEST eligible hull with insurance and extra
+ * shielding OFF — the floor, so the gate never blocks a launch the planner
+ * would accept. Players choose insurance/shielding in the planner itself.
+ */
+export function getExpeditionLaunchReadiness(
+  state: GameState,
+  systemId: string,
+): ExpeditionLaunchReadiness | null {
+  const sys = INTERSTELLAR_SYSTEM_MAP.get(systemId);
+  if (!sys) return null;
+
+  const missingResearch = getJumpPrerequisites(systemId, state.completedResearch);
+  const eligible = getExpeditionCapableShips(state);
+
+  // Quote every eligible hull; keep the cheapest plan that the planner
+  // actually accepts, and remember the cheapest quote overall (even when
+  // unaffordable) so the blocker copy can state the real shortfall.
+  let best: ExpeditionPlan | null = null;
+  let cheapestQuote: ExpeditionPlan | null = null;
+  let sawInsufficientFunds = false;
+  let otherReason: string | null = null;
+
+  for (const ship of eligible) {
+    const plan = planExpedition(state, {
+      targetSystemId: systemId,
+      shipInstanceId: ship.instanceId,
+      insured: false,
+      extraShielding: false,
+    });
+    if (plan.ok) {
+      if (!best || plan.costs.totalMoneyCost < best.costs.totalMoneyCost) best = plan;
+      if (!cheapestQuote || plan.costs.totalMoneyCost < cheapestQuote.costs.totalMoneyCost) cheapestQuote = plan;
+    } else if (plan.reason === 'insufficient_funds') {
+      sawInsufficientFunds = true;
+      // Re-quote against a state with unlimited money purely to obtain the
+      // cost figure the player needs to see. Pure function, no mutation of
+      // the real state.
+      const quote = planExpedition({ ...state, money: Number.MAX_SAFE_INTEGER }, {
+        targetSystemId: systemId,
+        shipInstanceId: ship.instanceId,
+        insured: false,
+        extraShielding: false,
+      });
+      if (quote.ok && (!cheapestQuote || quote.costs.totalMoneyCost < cheapestQuote.costs.totalMoneyCost)) {
+        cheapestQuote = quote;
+      }
+    } else if (!otherReason) {
+      otherReason = plan.detail || plan.reason.replace(/_/g, ' ');
+    }
+  }
+
+  // No eligible hull at all — quote the explorer round trip (the conservative
+  // 2-jump case) so the dossier can still show an honest fuel requirement.
+  const fuelSpot = RESOURCE_MAP.get('exotic_fuel')?.baseMarketPrice || 5_000_000;
+  const fallbackUnits = sys.jumpFuelRequired * 2;
+  const fuelInInventory = state.resources?.exotic_fuel || 0;
+  const fallbackFromInventory = Math.min(fuelInInventory, fallbackUnits);
+
+  const costs = cheapestQuote?.costs;
+  const fuelUnitsRequired = costs ? costs.fuelUnitsRequired : fallbackUnits;
+  const fuelFromInventory = costs ? costs.fuelFromInventory : fallbackFromInventory;
+  const fuelUnitsPurchased = costs ? costs.fuelUnitsPurchased : fallbackUnits - fallbackFromInventory;
+  const fuelPurchaseCost = costs
+    ? costs.fuelPurchaseCost
+    : Math.round(fuelUnitsPurchased * fuelSpot * FUEL_PROCUREMENT_PREMIUM);
+  const cheapestPlanCost = costs ? costs.totalMoneyCost : 0;
+
+  const blockers: string[] = [];
+  if (missingResearch.length > 0) {
+    blockers.push(`Research required: ${missingResearch.map(r => r.replace(/_/g, ' ')).join(', ')}`);
+  }
+  if (eligible.length === 0) {
+    blockers.push('No idle Starfarer Explorer or Colony Ark — build one in Fleet');
+  } else if (!best) {
+    if (sawInsufficientFunds) {
+      blockers.push(`Launch budget short — the cheapest plan costs ${formatMoney(cheapestPlanCost)}`);
+    } else if (otherReason) {
+      blockers.push(otherReason);
+    } else {
+      blockers.push('No eligible hull can be dispatched right now');
+    }
+  }
+
+  return {
+    systemId,
+    missingResearch,
+    eligibleShipCount: eligible.length,
+    fuelUnitsRequired,
+    fuelFromInventory,
+    fuelUnitsPurchased,
+    fuelPurchaseCost,
+    cheapestPlanCost,
+    canLaunch: !!best,
+    blockers,
+  };
 }
 
 export interface ExpeditionProgress {

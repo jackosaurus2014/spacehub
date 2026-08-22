@@ -45,9 +45,24 @@ export interface WeeklyChallenge {
   endsAt: number;
 }
 
+/**
+ * A speed-run payout.
+ *
+ * AAA Round 1 E3.5: this interface used to carry `legacyPoints`, and the
+ * check route dutifully computed it — but there is no such currency. Legacy
+ * Power is a PURE DERIVATION of completed milestones and stretch levels
+ * (legacy-system.ts::getLegacyPower); `LegacyState` has no additive pool, by
+ * the deliberate design decision that replaced prestige with
+ * "permanent progression without resets". Inventing a pool so that a
+ * Tier-6-gated leaderboard could feed the very stat that sets its own
+ * brackets would have been a balance change smuggled in as a bug fix.
+ *
+ * So the field is gone rather than faked. What remains — cash and a title —
+ * is now actually credited, server-side, in
+ * `api/space-tycoon/speed-runs/check/route.ts`.
+ */
 export interface SpeedRunReward {
   cash: number;
-  legacyPoints: number;
   title?: string;
   badge?: string;
 }
@@ -410,14 +425,13 @@ export function getSpeedRunRewards(
 ): SpeedRunReward {
   // Participation reward (everyone who completes)
   if (rank <= 0 || totalParticipants <= 0) {
-    return { cash: 25_000_000, legacyPoints: 5 };
+    return { cash: 25_000_000 };
   }
 
   // Rank-based rewards
   if (rank === 1) {
     return {
       cash: 500_000_000,
-      legacyPoints: 100,
       title: 'Speed Demon',
       badge: 'speed_demon_nameplate',
     };
@@ -425,28 +439,24 @@ export function getSpeedRunRewards(
   if (rank === 2) {
     return {
       cash: 350_000_000,
-      legacyPoints: 75,
       title: 'Velocity',
     };
   }
   if (rank === 3) {
     return {
       cash: 250_000_000,
-      legacyPoints: 50,
       title: 'Swift',
     };
   }
   if (rank <= 10) {
     return {
       cash: 150_000_000,
-      legacyPoints: 30,
       badge: 'speed_animated',
     };
   }
   if (rank <= 25) {
     return {
       cash: 100_000_000,
-      legacyPoints: 20,
       badge: 'speed_badge',
     };
   }
@@ -454,18 +464,17 @@ export function getSpeedRunRewards(
   // Top 50%
   const percentile = rank / totalParticipants;
   if (percentile <= 0.5) {
-    return { cash: 50_000_000, legacyPoints: 10 };
+    return { cash: 50_000_000 };
   }
 
   // Everyone else who completed
-  return { cash: 25_000_000, legacyPoints: 5 };
+  return { cash: 25_000_000 };
 }
 
 /** Personal best improvement reward */
 export function getPersonalBestReward(): SpeedRunReward {
   return {
     cash: 75_000_000,
-    legacyPoints: 15,
   };
 }
 
@@ -473,7 +482,6 @@ export function getPersonalBestReward(): SpeedRunReward {
 export function getRecordReward(): SpeedRunReward {
   return {
     cash: 250_000_000,
-    legacyPoints: 250,
     title: 'Record Holder',
     badge: 'record_holder_nameplate',
   };

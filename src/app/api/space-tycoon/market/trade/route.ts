@@ -17,7 +17,7 @@ import { RESOURCE_MAP } from '@/lib/game/resources';
 // DB-free (realignment.ts header) — safe to call server-side with zero new
 // plumbing, exactly like delivery-contracts.ts already does client-side.
 import { getGoverningFactionForResource, computeTariffFeeRate } from '@/lib/game/delivery-contracts';
-import { getFactionStandingBrokerModifier } from '@/lib/game/factions';
+import { getFactionStandingBrokerModifier, getFactionLicenseBonuses } from '@/lib/game/factions';
 
 /**
  * Audit Wave B (Change #2): per-player sell-side broker-fee reductions.
@@ -34,6 +34,7 @@ async function computeSellerFeeRate(profileId: string, resourceSlug: string): Pr
   let espionageDiscount = 0;
   let diplomacyTradeBonus = 0;
   let factionStandingModifier = 0;
+  let licenseDiscount = 0;
 
   try {
     const profileRow = await prisma.gameProfile.findUnique({
@@ -51,6 +52,15 @@ async function computeSellerFeeRate(profileId: string, resourceSlug: string): Pr
       const factionRep = (profileRow?.workforceData as { _factionRep?: Record<string, number> } | null)?._factionRep;
       const rep = factionRep?.[governingFaction] ?? 0;
       factionStandingModifier = getFactionStandingBrokerModifier(rep);
+    }
+
+    // AAA Round 1 E3.6: the Syndicate Gray-Market Access licence was a
+    // $250M money sink whose `grants` flag nothing read. Same synced-blob
+    // pattern as _factionRep directly above; the discount is re-derived from
+    // definitions server-side and clamped inside getEffectiveBrokerFeeRate.
+    const ownedLicenses = (profileRow?.workforceData as { _factionLicenses?: string[] } | null)?._factionLicenses;
+    if (Array.isArray(ownedLicenses) && ownedLicenses.length > 0) {
+      licenseDiscount = getFactionLicenseBonuses(ownedLicenses).brokerFeeDiscount;
     }
 
     // Magnate commanders (audit §1c)
@@ -101,7 +111,7 @@ async function computeSellerFeeRate(profileId: string, resourceSlug: string): Pr
     // Fee bonuses are best-effort — fall back to the base rate.
   }
 
-  return getEffectiveBrokerFeeRate({ commanderMarketMultiplier, espionageDiscount, diplomacyTradeBonus, factionStandingModifier });
+  return getEffectiveBrokerFeeRate({ commanderMarketMultiplier, espionageDiscount, diplomacyTradeBonus, factionStandingModifier, licenseDiscount });
 }
 
 /**

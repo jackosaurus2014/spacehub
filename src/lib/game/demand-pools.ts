@@ -151,6 +151,36 @@ export const NPC_DEMAND_FLOOR: Record<string, Partial<Record<ServiceCategory, nu
   // bump (35M->50M) to keep the 2.5-3.5x floor-authoring rule intact.
   saturn_system: { fabrication: 130_000_000, telecom: 20_000_000, logistics: 30_000_000, sensor: 12_000_000 },
   outer_system:  { telecom: 130_000_000, logistics: 30_000_000, sensor: 25_000_000 },
+
+  // ─── AAA Round 1 E3.4 — the 12 colony markets ────────────────────────────
+  // Authored at exactly 3.0x each market's flagship service, inside the
+  // 2.5-3.5x band this table's own header specifies, so a first mover at a
+  // newly unlocked body is undersupplied and earns the scarcity premium while
+  // the market still carries two or three suppliers before saturation bites.
+  //
+  // Without these entries the 12 bodies fell through to
+  // DEFAULT_FLOOR_BY_CATEGORY, which is sized for a small market: the colony
+  // services saturated their own pools at N=1 and the M1 first-copy ROI guard
+  // (tier-ladder-first-copy-roi.test.ts) failed all 23 of them. That failure
+  // is where these numbers come from — they were derived from the guard, not
+  // guessed and then rubber-stamped by it.
+  //
+  // Magnitudes stay frontier-scaled (compare jupiter_system compute $30M,
+  // saturn_system logistics $30M, outer_system sensor $25M). Nobody is buying
+  // $800M/month of compute at Pluto.
+  // mining_output has no pool category (§2.4) and needs no floor.
+  ceres_surface:     { fabrication: 42_000_000, tourism: 42_000_000 },
+  venus_orbit:       { sensor: 42_000_000, tourism: 42_000_000 },
+  mercury_surface:   { fabrication: 42_000_000, tourism: 42_000_000 },
+  io_surface:        { fabrication: 54_000_000, tourism: 54_000_000 },
+  europa_surface:    { sensor: 54_000_000, tourism: 54_000_000 },
+  ganymede_surface:  { compute: 54_000_000, tourism: 54_000_000 },
+  callisto_surface:  { fabrication: 54_000_000, tourism: 54_000_000 },
+  titan_surface:     { fabrication: 66_000_000, tourism: 66_000_000 },
+  enceladus_surface: { sensor: 66_000_000, tourism: 66_000_000 },
+  titania_surface:   { compute: 66_000_000, tourism: 66_000_000 },
+  triton_surface:    { fabrication: 78_000_000, tourism: 78_000_000 },
+  pluto_surface:     { compute: 78_000_000, tourism: 78_000_000 },
 };
 
 /** Fallback floor per category when a location has no authored entry (future

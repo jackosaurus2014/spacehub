@@ -16,6 +16,7 @@ import {
   getFactionStandingBrokerModifier,
   isEmbargoed,
   FACTION_LICENSES,
+  LICENSE_EFFECT_SUMMARY,
   type FactionId,
   type FactionStanding,
 } from '@/lib/game/factions';
@@ -239,8 +240,19 @@ export default function FactionPanel({ state, onSendEnvoy, onPurchaseLicense }: 
                             {isOwned && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">OWNED</span>}
                           </div>
                           <p className="text-[10px] text-slate-500 mt-0.5">{l.description}</p>
+                          {/* AAA Round 1 E3.6: until this wave the card showed
+                              only flavour text and a price — the six `grants`
+                              flags were read by nothing, so the descriptions
+                              made mechanical promises the game never kept.
+                              This line is generated FROM the effect table
+                              (factions.ts LICENSE_EFFECT_SUMMARY), so the copy
+                              cannot drift from the numbers. */}
+                          <p className={`text-[10px] mt-1 ${isOwned ? 'text-emerald-300/90' : 'text-cyan-300/80'}`}>
+                            <span className="font-bold">{isOwned ? 'Active: ' : 'Effect: '}</span>
+                            {LICENSE_EFFECT_SUMMARY[l.id]}
+                          </p>
                           <div className="flex items-center justify-between mt-1.5">
-                            <span className="text-[10px] text-slate-500">Requires {STANDING_LABEL[getStanding(l.minStanding)]}+ standing</span>
+                            <span className="text-[10px] text-slate-500">Requires {STANDING_LABEL[getStanding(l.minStanding)]}+ standing ({l.minStanding}+ rep)</span>
                             {!isOwned && (
                               <button
                                 onClick={purchasable ? () => onPurchaseLicense!(l.id) : undefined}

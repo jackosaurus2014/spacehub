@@ -11,6 +11,7 @@ import { playSound } from '@/lib/game/sound-engine';
 import { getShipAsset } from '@/lib/game/assets';
 import { getShipyardSlots, getActiveShipBuilds, canBuildShip, getShipyardBreakdown } from '@/lib/game/shipyard-slots';
 import { calculateRushRepairCost } from '@/lib/game/hazards';
+import { applyLaunchCostReduction } from '@/lib/game/mega-projects';
 import { getShipTransitSpeedMultiplier } from '@/lib/game/modules';
 import { getSpecializationBonuses } from '@/lib/game/specializations';
 import { getWorkforceBonuses } from '@/lib/game/workforce';
@@ -444,7 +445,11 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
         ) : (
           <div className="grid md:grid-cols-2 gap-3">
             {availableShipDefs.map(ship => {
-              const canAffordMoney = state.money >= ship.baseCost;
+              // E3.3: the Space Elevator's -15% launch-cost bonus is a real
+              // discount on hull orders — price and affordability must show
+              // the SAME number page.tsx will actually charge.
+              const hullCost = applyLaunchCostReduction(ship.baseCost, state);
+              const canAffordMoney = state.money >= hullCost;
               const hasResources = Object.entries(ship.resourceCost).every(
                 ([resId, qty]) => (state.resources[resId] || 0) >= qty
               );
@@ -534,7 +539,10 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
 
                   <div className="flex items-center justify-between">
                     <span className={`text-xs font-mono ${canAffordMoney ? 'text-green-400' : 'text-red-400'}`}>
-                      {formatMoney(ship.baseCost)}
+                      {formatMoney(hullCost)}
+                      {hullCost !== ship.baseCost && (
+                        <span className="ml-1 text-[10px] text-cyan-300/80">(mega-project discount)</span>
+                      )}
                     </span>
                     <button
                       onClick={() => { playSound('build_start'); onBuildShip(ship.id, selectedShipyard); }}

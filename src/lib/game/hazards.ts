@@ -65,6 +65,9 @@ import type { ResourceId } from './resources';
 // losses (inventoryProtection, capped 0.40). Both are additive terms into
 // the formulas below — MITIGATION_CAP still binds, risk stays real.
 import { getLocationCapabilityBonus } from './building-capabilities';
+// AAA Round 1 E3.6: Corsair safe-passage / Dominion escort licences add
+// pirate-raid mitigation (see getFactionLicenseBonuses).
+import { getFactionLicenseBonuses } from './factions';
 
 export type HazardType = 'solar_storm' | 'micrometeorite' | 'pirate_raid' | 'equipment_failure';
 export type HazardSeverity = 'minor' | 'major' | 'severe';
@@ -243,9 +246,16 @@ export function getShipHazardMitigation(
   const wf = getWorkforceHazardMitigation(state);
   const chainBonus = getChainHazardMitigationBonus(state);
   const localShield = locationId ? getLocationCapabilityBonus(state, locationId, 'hazardShielding') : 0;
+  // AAA Round 1 E3.6: the Corsair Safe-Passage Tribute and Dominion escort
+  // licences. Deliberately a MITIGATION term, not a probability edit: hazard
+  // occurrence rolls are identical for every player by design (shared-world
+  // weather, see rollHazardOccurrence) and only the per-player mitigation
+  // channel may legitimately vary. Same additive, capped shape as
+  // getChainHazardMitigationBonus, which is the precedent.
+  const pirateMitigation = type === 'pirate_raid' ? getFactionLicenseBonuses(state).pirateMitigation : 0;
   return Math.min(
     MITIGATION_CAP,
-    eff.shieldingRating + (type === 'pirate_raid' ? eff.pointDefenseRating : 0) + wf + chainBonus + localShield,
+    eff.shieldingRating + (type === 'pirate_raid' ? eff.pointDefenseRating : 0) + wf + chainBonus + localShield + pirateMitigation,
   );
 }
 
@@ -255,6 +265,10 @@ export function getBuildingHazardMitigation(
   state: GameState,
   definitionId: string,
   locationId?: string,
+  /** E3.6: hazard type, so the pirate-raid-only licence mitigation applies
+   *  to the right threat. Optional — omitting it reproduces pre-wave
+   *  behaviour exactly (no licence term). */
+  type?: HazardType,
 ): number {
   const def = BUILDING_MAP.get(definitionId);
   if (!def) return 0;
@@ -262,7 +276,9 @@ export function getBuildingHazardMitigation(
   const wf = getWorkforceHazardMitigation(state);
   const chainBonus = getChainHazardMitigationBonus(state);
   const localShield = locationId ? getLocationCapabilityBonus(state, locationId, 'hazardShielding') : 0;
-  return Math.min(MITIGATION_CAP, stats.shieldingRating + stats.stabilityRating * 0.2 + wf + chainBonus + localShield);
+  // E3.6 — buildings get the same tribute/escort protection ships do.
+  const pirateMitigation = type === 'pirate_raid' ? getFactionLicenseBonuses(state).pirateMitigation : 0;
+  return Math.min(MITIGATION_CAP, stats.shieldingRating + stats.stabilityRating * 0.2 + wf + chainBonus + localShield + pirateMitigation);
 }
 
 // ─── Hit resolution (pure — unit-testable core) ──────────────────────────────
@@ -375,7 +391,8 @@ export function rollMonthlyHazards(state: GameState, now: number, monthIndex: nu
         if (!target) continue;
         const def = BUILDING_MAP.get(target.definitionId);
         if (!def) continue;
-        const mitigation = getBuildingHazardMitigation(state, target.definitionId, locationId);
+        // E3.6: pass the hazard type so the pirate-raid licence mitigation applies.
+        const mitigation = getBuildingHazardMitigation(state, target.definitionId, locationId, type);
         const hit = resolveHazardHit({
           rawDamage: occ.rawDamage,
           mitigation,

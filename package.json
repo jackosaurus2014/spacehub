@@ -14,6 +14,7 @@
     "test:watch": "jest --watch",
     "postinstall": "prisma generate",
     "generate-icons": "tsx scripts/generate-icons.ts",
+    "seed:mega-project": "tsx scripts/seed-mega-project.ts",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {

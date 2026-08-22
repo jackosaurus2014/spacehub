@@ -8,9 +8,15 @@ import {
   formatElapsedTime,
   getSpeedRunRewards,
   getPersonalBestReward,
+  getRecordReward,
   getMilestoneById,
 } from '@/lib/game/speed-runs';
 import type { GameState } from '@/lib/game/types';
+// AAA Round 1 E3.5: rewards are credited through the SAME server-authoritative
+// path league payouts use (gameProfile.update + server ledger), so the client
+// picks them up on its next sync reconciliation instead of the payload being
+// discarded by the panel.
+import { isLedgerAvailable, recordLedger } from '@/lib/game/server-ledger';
 
 /**
  * POST /api/space-tycoon/speed-runs/check
@@ -206,12 +212,57 @@ export async function POST(request: Request) {
 
     const isNewRecord = !currentRecord || durationSeconds < (currentRecord.durationSeconds ?? Infinity);
 
-    // Calculate rewards
+    // ─── Rewards (E3.5) ────────────────────────────────────────────────
+    // Before this wave the block below computed `rewards` and returned it,
+    // and SpeedRunPanel threw the body away — a completed speed run paid
+    // nothing at all despite the panel advertising a rank-reward table.
+    // Both halves are fixed: the cash is credited here (authoritative, with
+    // a ledger row the client reconciles) and the title is written to the
+    // profile, which the leaderboard already renders.
     const rewards = getSpeedRunRewards(rank, totalInBracket, bracket);
     if (isPersonalBest) {
-      const pbReward = getPersonalBestReward();
-      rewards.cash += pbReward.cash;
-      rewards.legacyPoints += pbReward.legacyPoints;
+      rewards.cash += getPersonalBestReward().cash;
+    }
+    // A new bracket record supersedes the rank title and pays the record
+    // bonus — `getRecordReward` was authored and had zero callers.
+    if (isNewRecord) {
+      const rec = getRecordReward();
+      rewards.cash += rec.cash;
+      rewards.title = rec.title;
+      rewards.badge = rec.badge || rewards.badge;
+    }
+    // Unverified (suspicion >= 100) runs are recorded but never paid — the
+    // anti-cheat floor already refuses sub-minimum times above; this is the
+    // softer tier.
+    const paid = suspicionScore < 100;
+    let rewardCredited = 0;
+    let titleAwarded: string | null = null;
+    if (paid) {
+      try {
+        const ledgerOn = await isLedgerAvailable();
+        await prisma.$transaction(async (tx) => {
+          await tx.gameProfile.update({
+            where: { id: profile.id },
+            data: {
+              money: { increment: rewards.cash },
+              totalEarned: { increment: rewards.cash },
+              ...(rewards.title ? { title: rewards.title } : {}),
+            },
+          });
+          if (ledgerOn) {
+            await recordLedger(tx, {
+              profileId: profile.id,
+              moneyDelta: rewards.cash,
+              reason: 'speed_run_reward',
+              refId: activeAttempt.id,
+            });
+          }
+        });
+        rewardCredited = rewards.cash;
+        titleAwarded = rewards.title ?? null;
+      } catch (err) {
+        console.error('Speed run reward credit failed (attempt still recorded):', err);
+      }
     }
 
     return NextResponse.json({
@@ -237,6 +288,11 @@ export async function POST(request: Request) {
         : null,
       suspicionScore,
       rewards,
+      /** Cash actually credited to the profile (0 when the run was not
+       *  verified). The panel reads this to show an honest confirmation. */
+      rewardCredited,
+      /** Title written to GameProfile.title, or null. */
+      titleAwarded,
     });
   } catch (error) {
     console.error('Speed run check error:', error);

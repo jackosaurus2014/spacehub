@@ -228,6 +228,11 @@ export function getEffectiveBrokerFeeRate(opts: {
    * omits it is byte-for-byte unchanged.
    */
   factionStandingModifier?: number;
+  /** AAA Round 1 E3.6: Syndicate Gray-Market Access licence — a fraction off
+   *  the broker fee, from factions.ts::getFactionLicenseBonuses. Joins the
+   *  same clamped `totalCut` stack as the espionage/diplomacy discounts, so
+   *  it can never push the fee below the existing 0.85 total-cut ceiling. */
+  licenseDiscount?: number;
 }): number {
   const base = opts.baseRate ?? MARKET_BROKER_FEE_RATE;
   const clampFrac = (v: number | undefined, cap: number) =>
@@ -235,7 +240,8 @@ export function getEffectiveBrokerFeeRate(opts: {
   const commanderCut = clampFrac((opts.commanderMarketMultiplier ?? 1) - 1, 0.50);
   const espionageCut = clampFrac(opts.espionageDiscount, 0.50);
   const diplomacyCut = clampFrac(opts.diplomacyTradeBonus, 0.50);
-  const totalCut = Math.min(0.85, commanderCut + espionageCut + diplomacyCut);
+  const licenseCut = clampFrac(opts.licenseDiscount, 0.20);
+  const totalCut = Math.min(0.85, commanderCut + espionageCut + diplomacyCut + licenseCut);
   // Faction standing applies AFTER the discount-only stack above, as its own
   // signed multiplier — capped to STATS_DESIGN §12's stated tier range
   // (+15% allied discount .. -25% hostile surcharge) regardless of what the

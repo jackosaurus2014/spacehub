@@ -46,6 +46,25 @@
 // ─── New Location Definitions ────────────────────────────────────────────────
 // These extend the existing LOCATIONS array in solar-system.ts
 
+/**
+ * AAA Round 1 E3.4 — `availableBuildings` is now a REAL list.
+ *
+ * Every id in every body's `availableBuildings` resolves in BUILDING_MAP, and
+ * an invariant test (__tests__/colony-content.test.ts) fails the build if that
+ * ever stops being true. Before this wave all 50 ids named here resolved to
+ * nothing: the field is decorative to the engine (BuildPanel filters forward,
+ * BUILDINGS -> requiredLocation), so 12 purchasable bodies costing $8B-$750B
+ * had no buildable content and nothing detected it.
+ *
+ * NOTE on the rest of this file: COLONY_BUILDINGS, COLONY_SERVICES,
+ * COLONY_RESEARCH and COLONY_MINING_PRODUCTION below are UNIMPORTED SKETCHES
+ * and remain so. They are untyped literals — COLONY_BUILDINGS uses
+ * `category: 'habitat'`, which is not a member of BuildingCategory, and omits
+ * required fields. The live definitions live in buildings.ts / services.ts /
+ * resources.ts, which is where every consumer reads from. They are kept, not
+ * deleted, because the design register explicitly rejects deleting authored
+ * colony content (docs/AAA_PROGRAM_2026-08.md Part 2).
+ */
 export interface ColonyLocation {
   id: string;
   name: string;
@@ -83,7 +102,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 6,
     unlockCost: 25_000_000_000,
     requiredResearch: ['super_heavy_lift', 'radiation_hardening', 'extreme_thermal'],
-    availableBuildings: ['colony_mercury', 'mining_mercury', 'solar_mega_array', 'metal_refinery_mercury'],
+    availableBuildings: ['colony_mercury', 'mining_mercury', 'solar_mega_array'],
     tier: 3,
     maxColonySlots: 50,
     surfaceGravity: 0.38,
@@ -104,8 +123,14 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 7500,
     travelTimeMonths: 5,
     unlockCost: 15_000_000_000,
-    requiredResearch: ['super_heavy_lift', 'atmospheric_processing', 'aerostat_tech'],
-    availableBuildings: ['colony_venus', 'atmospheric_processor', 'sulfuric_refinery', 'venus_observatory'],
+    // E3.4: was 'aerostat_tech', a research id that exists NOWHERE in
+    // research-tree.ts (the tree has 'aerostat_technology'; the 4X baseline
+    // wave renamed astraeus_tech -> aerostat_technology and this file kept a
+    // third spelling). Because both unlock buttons test
+    // `requiredResearch.every(r => completedResearch.includes(r))`, Venus was
+    // the one body in the game that could never be unlocked at all.
+    requiredResearch: ['super_heavy_lift', 'atmospheric_processing', 'aerostat_technology'],
+    availableBuildings: ['colony_venus', 'atmospheric_processor', 'venus_observatory'],
     tier: 3,
     maxColonySlots: 30,
     surfaceGravity: 0.91,
@@ -129,7 +154,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 15,
     unlockCost: 8_000_000_000,
     requiredResearch: ['asteroid_capture', 'autonomous_docking', 'resource_prospecting'],
-    availableBuildings: ['colony_ceres', 'mining_ceres', 'trade_hub_ceres', 'ice_refinery_ceres', 'shipyard_ceres'],
+    availableBuildings: ['colony_ceres', 'mining_ceres', 'trade_hub_ceres'],
     tier: 3,
     maxColonySlots: 100, // Major hub, more slots
     surfaceGravity: 0.03,
@@ -153,7 +178,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 28,
     unlockCost: 30_000_000_000,
     requiredResearch: ['nuclear_thermal', 'radiation_hardening', 'extreme_thermal'],
-    availableBuildings: ['colony_io', 'mining_io', 'geothermal_plant', 'sulfur_refinery'],
+    availableBuildings: ['colony_io', 'mining_io', 'geothermal_plant'],
     tier: 4,
     maxColonySlots: 20, // Very hostile, few slots
     surfaceGravity: 0.18,
@@ -175,7 +200,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 30,
     unlockCost: 45_000_000_000,
     requiredResearch: ['nuclear_thermal', 'deep_drilling', 'cryogenic_systems'],
-    availableBuildings: ['colony_europa', 'mining_europa_deep', 'ocean_lab', 'bio_research_lab'],
+    availableBuildings: ['colony_europa', 'mining_europa_deep', 'ocean_lab'],
     tier: 4,
     maxColonySlots: 25,
     surfaceGravity: 0.13,
@@ -197,7 +222,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 32,
     unlockCost: 90_000_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers', 'rotating_habitats'],
-    availableBuildings: ['colony_ganymede', 'mining_ganymede', 'research_campus', 'orbital_dock_ganymede'],
+    availableBuildings: ['colony_ganymede', 'mining_ganymede', 'research_campus'],
     tier: 4,
     maxColonySlots: 60, // Most hospitable Jupiter moon
     surfaceGravity: 0.15,
@@ -219,7 +244,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 33,
     unlockCost: 70_000_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers'],
-    availableBuildings: ['colony_callisto', 'mining_callisto', 'fuel_depot_callisto', 'deep_space_observatory'],
+    availableBuildings: ['colony_callisto', 'mining_callisto', 'fuel_depot_callisto'],
     tier: 4,
     maxColonySlots: 40,
     surfaceGravity: 0.13,
@@ -243,7 +268,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 55,
     unlockCost: 150_000_000_000,
     requiredResearch: ['nuclear_thermal', 'deep_drilling', 'atmospheric_processing'],
-    availableBuildings: ['colony_titan', 'mining_titan_deep', 'chemical_plant', 'methane_refinery', 'titan_shipyard'],
+    availableBuildings: ['colony_titan', 'mining_titan_deep', 'methane_refinery'],
     tier: 5,
     maxColonySlots: 40,
     surfaceGravity: 0.14,
@@ -265,7 +290,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 58,
     unlockCost: 180_000_000_000,
     requiredResearch: ['nuclear_thermal', 'deep_drilling', 'cryogenic_systems'],
-    availableBuildings: ['colony_enceladus', 'geyser_collector', 'bio_lab_enceladus', 'exotic_refinery'],
+    availableBuildings: ['colony_enceladus', 'geyser_collector', 'bio_lab_enceladus'],
     tier: 5,
     maxColonySlots: 15, // Very small moon, limited slots
     surfaceGravity: 0.01,
@@ -289,7 +314,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 84,
     unlockCost: 300_000_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships', 'cryogenic_systems'],
-    availableBuildings: ['colony_titania', 'mining_titania', 'deep_space_relay_uranus', 'cryo_lab'],
+    availableBuildings: ['colony_titania', 'mining_titania', 'cryo_lab'],
     tier: 5,
     maxColonySlots: 20,
     surfaceGravity: 0.04,
@@ -313,7 +338,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 120,
     unlockCost: 400_000_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships', 'antimatter_propulsion'],
-    availableBuildings: ['colony_triton', 'mining_triton', 'nitrogen_plant', 'frontier_outpost'],
+    availableBuildings: ['colony_triton', 'mining_triton', 'nitrogen_plant'],
     tier: 6,
     maxColonySlots: 10, // Extreme frontier, very few slots
     surfaceGravity: 0.08,
@@ -337,7 +362,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     travelTimeMonths: 180,
     unlockCost: 750_000_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships', 'antimatter_propulsion', 'mega_structures'],
-    availableBuildings: ['colony_pluto', 'mining_pluto', 'interstellar_beacon', 'gravity_lens_observatory'],
+    availableBuildings: ['colony_pluto', 'mining_pluto', 'interstellar_beacon'],
     tier: 6,
     maxColonySlots: 5, // Ultimate frontier, extremely limited
     surfaceGravity: 0.06,

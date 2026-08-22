@@ -460,6 +460,288 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 2400, resourceCost: { structural_beams: 15, electronics_package: 3, steel_ingots: 25, titanium: 60 }, powerRequired: 12,
     consumesPerMonth: { iron: 200, aluminum: 80 }, producesPerMonth: { steel_ingots: 100, aluminum_alloy: 40 },
     capabilities: { inventoryProtection: 0.10 } },
+
+  // ─── AAA Round 1 E3.4 — colony bodies made buildable ─────────────────────
+  // docs/AAA_PROGRAM_2026-08.md §1a.5 defect #4: the 12 colonizable bodies in
+  // colonies.ts were merged into ALL_LOCATIONS and made PURCHASABLE (Ceres
+  // $8B … Pluto $750B) while every id in their `availableBuildings` list
+  // resolved to nothing in BUILDING_MAP. Because BuildPanel filters FORWARD
+  // (BUILDINGS → requiredLocation) rather than resolving the location's id
+  // list, nothing crashed — it just silently showed "No buildings available
+  // at this location yet." A $750B Pluto unlock bought an empty map pin.
+  //
+  // These 36 definitions close that. Three per body: a habitat, an extraction
+  // rig, and one site-specific specialist, matching the ids the bodies
+  // already named. `colonies.ts`'s COLONY_BUILDINGS array is NOT the source —
+  // those literals are untyped, use a `category: 'habitat'` that is not in
+  // BuildingCategory, and omit required fields; they stay as the historical
+  // sketch they always were.
+  //
+  // Economics are derived uniformly, not hand-waved:
+  //     revenuePerMonth = baseCost / 100      → ~400-month first-copy payback
+  //     operatingCost   = 0.40 × revenue
+  //     maintenance     = 0.0035 × baseCost
+  //     first-copy net  = 0.6×rev − maint = baseCost/400 (positive by
+  //                       construction — the M1 CI guard in
+  //                       tier-ladder-first-copy-roi.test.ts enforces it)
+  // For every mining service the flat `revenuePerMonth` baseline is set to the
+  // exact spot value of its monthly resource mix, so the pre-phase-in flat
+  // figure and the price-linked mining revenue the engine actually pays agree
+  // instead of drifting apart.
+  //
+  // Capex is deliberately anchored to the CATALOGUE tier ladder ($3B–$34B),
+  // not to the body's unlock price. The unlock cost is what you pay for the
+  // territory — a scarcity/geography decision; the buildings on it are
+  // ordinary industrial assets. Pricing a Pluto habitat at a fraction of
+  // $750B would have created a new flagship tier, which is R1-E6's job
+  // (mid-band rungs, deferred to its own wave with a full sim-50yr run), not
+  // this repair wave's.
+  //
+  // `requiredResearch: []` throughout, by design: each body's LOCATION unlock
+  // already gates on two-to-four techs (colonies.ts EXPANDED_LOCATIONS), so a
+  // second per-building gate would be a second lock on the same door — and
+  // every id it could reference is one more chance to repeat the
+  // `aerostat_tech` typo that made Venus permanently unreachable.
+
+  // ── Ceres (ceres_surface, tier 3) ──
+  { id: 'colony_ceres', name: 'Ceres Colony', category: 'space_station', tier: 3,
+    description: "Spin-gravity habitat rings cut into Occator crater. Houses the Belt's largest permanent civilian population.",
+    tooltip: "Belt anchor habitat. Population services and berthing fees for the busiest crossroads in the asteroid belt.",
+    baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
+    requiredResearch: [], requiredLocation: 'ceres_surface', enabledServices: ['svc_ceres_habitation'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { crewQuarters: 40, logisticsSupport: 0.03 } },
+  { id: 'mining_ceres', name: 'Ceres Volatile Extraction', category: 'mining_enterprise', tier: 3,
+    description: "Brine wells and ammonia-ice mining across the Ceres regolith.",
+    tooltip: "The Belt's volatile source. Ammonia and organics for life support and chemical feedstock, plus bulk iron.",
+    baseCost: 5_900_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 3_687_500,
+    requiredResearch: [], requiredLocation: 'ceres_surface', enabledServices: ['svc_mining_ceres'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 } },
+  { id: 'trade_hub_ceres', name: 'Ceres Trade Hub', category: 'space_station', tier: 3,
+    description: "Bonded warehousing and a clearing exchange at the Belt's natural crossroads.",
+    tooltip: "Logistics infrastructure. Trims freight fuel on every route touching the Belt and raises inventory protection.",
+    baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
+    requiredResearch: [], requiredLocation: 'ceres_surface', enabledServices: ['svc_ceres_logistics'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { logisticsSupport: 0.05, inventoryProtection: 0.05 } },
+
+  // ── Venus (venus_orbit, tier 3) ──
+  { id: 'colony_venus', name: 'Venus Cloud Habitat', category: 'space_station', tier: 3,
+    description: "Buoyant aerostat city floating at 50 km, where pressure and temperature are Earth-like.",
+    tooltip: "The most habitable real estate off Earth. Tourism and long-stay research residency at one atmosphere.",
+    baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
+    requiredResearch: [], requiredLocation: 'venus_orbit', enabledServices: ['svc_venus_habitation'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { crewQuarters: 35 } },
+  { id: 'atmospheric_processor', name: 'Venus Atmospheric Processor', category: 'mining_enterprise', tier: 3,
+    description: "Scoops and separators harvesting the Venusian atmosphere for sulfur compounds and carbon feedstock.",
+    tooltip: "Atmospheric mining. Sulfur and ammonia at volume with no drilling and no regolith handling.",
+    baseCost: 6_001_500_000, buildTimeMonths: 24, maintenanceCostPerMonth: 3_750_938,
+    requiredResearch: [], requiredLocation: 'venus_orbit', enabledServices: ['svc_venus_volatiles'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 } },
+  { id: 'venus_observatory', name: 'Venus Atmospheric Observatory', category: 'satellite', tier: 3,
+    description: "Sensor platform studying super-rotation, sulfuric weather and surface radar mapping.",
+    tooltip: "Planetary-science data sales. Steady sensor revenue and a detection bonus for corporate intelligence.",
+    baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
+    requiredResearch: [], requiredLocation: 'venus_orbit', enabledServices: ['svc_venus_research'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { detectionBonus: 0.04 } },
+
+  // ── Mercury (mercury_surface, tier 3) ──
+  { id: 'colony_mercury', name: 'Mercury Polar Outpost', category: 'space_station', tier: 3,
+    description: "Permanently-shadowed crater base at the north pole, where ice survives beside a 430 C dayside.",
+    tooltip: "Extreme-environment station. Crew quarters plus the thermal shielding the rest of the site depends on.",
+    baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
+    requiredResearch: [], requiredLocation: 'mercury_surface', enabledServices: ['svc_mercury_habitation'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { crewQuarters: 25, hazardShielding: 0.05 } },
+  { id: 'mining_mercury', name: 'Mercury Metal Extraction', category: 'mining_enterprise', tier: 3,
+    description: "Strip mining Mercury's unusually metal-rich crust \u2014 the densest ore bodies in the inner system.",
+    tooltip: "Highest-grade metal in the inner system. Iron and platinum-group at grades no asteroid matches.",
+    baseCost: 6_050_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 3_781_250,
+    requiredResearch: [], requiredLocation: 'mercury_surface', enabledServices: ['svc_mercury_mining'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 } },
+  { id: 'solar_mega_array', name: 'Solar Mega-Array', category: 'solar_farm', tier: 3,
+    description: "Square kilometres of collectors at 0.39 AU, beaming power system-wide by microwave relay.",
+    tooltip: "Power at six times Earth-orbit insolation. Generates the site's power and sells the surplus.",
+    baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
+    requiredResearch: [], requiredLocation: 'mercury_surface', enabledServices: ['svc_beamed_power'],
+    realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, powerGenerated: 60 },
+
+  // ── Io (io_surface, tier 4) ──
+  { id: 'colony_io', name: 'Io Volcanic Station', category: 'space_station', tier: 4,
+    description: "Hardened, radiation-shielded station riding the most volcanically active body in the system.",
+    tooltip: "Survival infrastructure inside Jupiter's radiation belt. Heavy shielding for everything else on Io.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'io_surface', enabledServices: ['svc_io_habitation'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 20, hazardShielding: 0.08 } },
+  { id: 'mining_io', name: 'Io Sulfur Works', category: 'mining_enterprise', tier: 4,
+    description: "Harvesting sulfur and silicate ejecta straight from the Loki Patera flow fields.",
+    tooltip: "Sulfur at industrial volume plus silicate metals. The volcanoes do the excavation for you.",
+    baseCost: 9_999_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_249_375,
+    requiredResearch: [], requiredLocation: 'io_surface', enabledServices: ['svc_io_mining'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
+  { id: 'geothermal_plant', name: 'Io Geothermal Plant', category: 'solar_farm', tier: 4,
+    description: "Tidal-heating tap sunk into a lava tube \u2014 the only baseload power source in the outer system that needs no fuel.",
+    tooltip: "Fuel-free baseload power where sunlight is 4% of Earth's. Powers the whole Jovian operation.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'io_surface', enabledServices: ['svc_io_geothermal'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, powerGenerated: 70 },
+
+  // ── Europa (europa_surface, tier 4) ──
+  { id: 'colony_europa', name: 'Europa Ice Station', category: 'space_station', tier: 4,
+    description: "Sub-ice habitat bored into the Conamara chaos, twenty metres below the radiation line.",
+    tooltip: "The ice is the shielding. Quarters and shielding for the deepest-value site in the Jovian system.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'europa_surface', enabledServices: ['svc_europa_habitation'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 25, hazardShielding: 0.07 } },
+  { id: 'mining_europa_deep', name: 'Europa Deep-Ocean Rig', category: 'mining_enterprise', tier: 4,
+    description: "Cryobot boreholes reaching the subsurface ocean and the hydrothermal floor beneath it.",
+    tooltip: "Exotic materials and organics from a live ocean. The richest non-interstellar exotic source in the game.",
+    baseCost: 9_900_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_187_500,
+    requiredResearch: [], requiredLocation: 'europa_surface', enabledServices: ['svc_europa_deep_mining'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
+  { id: 'ocean_lab', name: 'Europa Ocean Laboratory', category: 'datacenter', tier: 4,
+    description: "Astrobiology laboratory working live samples from the Europan water column.",
+    tooltip: "Biosignature research. Sensor revenue plus a research-speed bonus across the whole corporation.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'europa_surface', enabledServices: ['svc_europa_biolab'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { researchSpeed: 0.04 } },
+
+  // ── Ganymede (ganymede_surface, tier 4) ──
+  { id: 'colony_ganymede', name: 'Ganymede Colony', category: 'space_station', tier: 4,
+    description: "The Jovian system's administrative capital, sheltered by the only moon with its own magnetosphere.",
+    tooltip: "Regional capital. The largest crew capacity in the outer system, protected by a natural magnetic field.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'ganymede_surface', enabledServices: ['svc_ganymede_habitation'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 60, hazardShielding: 0.04 } },
+  { id: 'mining_ganymede', name: 'Ganymede Core Metals', category: 'mining_enterprise', tier: 4,
+    description: "Deep shafts reaching differentiated core metals under the ice shell.",
+    tooltip: "Bulk structural metal in the outer system \u2014 iron and titanium without the haul from the Belt.",
+    baseCost: 10_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_250_000,
+    requiredResearch: [], requiredLocation: 'ganymede_surface', enabledServices: ['svc_mining_ganymede'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
+  { id: 'research_campus', name: 'Ganymede Research Campus', category: 'datacenter', tier: 4,
+    description: "The outer system's largest compute cluster, cooled for free by the ambient 110 K.",
+    tooltip: "Free cooling at 110 Kelvin. Compute revenue plus corporation-wide research speed and training throughput.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'ganymede_surface', enabledServices: ['svc_ganymede_research'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { researchSpeed: 0.06, trainingSpeed: 0.05 } },
+
+  // ── Callisto (callisto_surface, tier 4) ──
+  { id: 'colony_callisto', name: 'Callisto Base', category: 'space_station', tier: 4,
+    description: "Surface base on the only large Jovian moon outside the hard radiation belt.",
+    tooltip: "The safe Jovian moon. Low radiation means cheap habitats and a natural staging point.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'callisto_surface', enabledServices: ['svc_callisto_habitation'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 45 } },
+  { id: 'mining_callisto', name: 'Callisto Regolith Works', category: 'mining_enterprise', tier: 4,
+    description: "Surface mining of ancient, undisturbed regolith across the most heavily-cratered body known.",
+    tooltip: "Bulk feedstock with no radiation surcharge. Iron, aluminium and ammonia for outer-system construction.",
+    baseCost: 10_000_500_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_250_312,
+    requiredResearch: [], requiredLocation: 'callisto_surface', enabledServices: ['svc_mining_callisto'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
+  { id: 'fuel_depot_callisto', name: 'Callisto Fuel Depot', category: 'space_station', tier: 4,
+    description: "Cryogenic propellant farm and berthing complex \u2014 the outer system's refuelling stop.",
+    tooltip: "The gateway depot. Cuts freight fuel on every route through the Jovian system and shelters inventory.",
+    baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
+    requiredResearch: [], requiredLocation: 'callisto_surface', enabledServices: ['svc_callisto_staging'],
+    realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { logisticsSupport: 0.06, expeditionSupport: 0.05 } },
+
+  // ── Titan (titan_surface, tier 5) ──
+  { id: 'colony_titan', name: 'Titan Colony', category: 'space_station', tier: 5,
+    description: "Pressurised settlement under a nitrogen sky thick enough to walk in with nothing but a coat and a mask.",
+    tooltip: "The outer system's most liveable surface. Large crew capacity and a real atmosphere overhead.",
+    baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
+    requiredResearch: [], requiredLocation: 'titan_surface', enabledServices: ['svc_titan_habitation'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { crewQuarters: 70, hazardShielding: 0.05 } },
+  { id: 'mining_titan_deep', name: 'Titan Lake Extraction', category: 'mining_enterprise', tier: 5,
+    description: "Floating extraction platforms working Kraken Mare's liquid methane and ethane.",
+    tooltip: "Hydrocarbons by the lake-full. The largest volume-mining operation available anywhere in Sol.",
+    baseCost: 16_001_250_000, buildTimeMonths: 48, maintenanceCostPerMonth: 10_000_781,
+    requiredResearch: [], requiredLocation: 'titan_surface', enabledServices: ['svc_titan_lake_mining'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
+  { id: 'methane_refinery', name: 'Titan Chemical Works', category: 'fabrication_facility', tier: 5,
+    description: "Cracking plant turning lake hydrocarbons and tholins into polymers, propellant and feedstock.",
+    tooltip: "Adds value on top of Titan extraction \u2014 refined chemistry sells for far more than raw hydrocarbons.",
+    baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
+    requiredResearch: [], requiredLocation: 'titan_surface', enabledServices: ['svc_titan_chemicals'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
+
+  // ── Enceladus (enceladus_surface, tier 5) ──
+  { id: 'colony_enceladus', name: 'Enceladus Station', category: 'space_station', tier: 5,
+    description: "Tethered station over the south-polar tiger stripes, riding the plume field.",
+    tooltip: "Quarters at the most scientifically valuable site in Sol, with the shielding the plume work needs.",
+    baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
+    requiredResearch: [], requiredLocation: 'enceladus_surface', enabledServices: ['svc_enceladus_habitation'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { crewQuarters: 30, hazardShielding: 0.05 } },
+  { id: 'geyser_collector', name: 'Enceladus Plume Collector', category: 'mining_enterprise', tier: 5,
+    description: "Collector array flying through the cryovolcanic plumes, sampling an ocean without ever landing.",
+    tooltip: "Free ocean samples. The plumes deliver hydrothermal organics and biosignature material to orbit.",
+    baseCost: 14_150_500_000, buildTimeMonths: 48, maintenanceCostPerMonth: 8_844_062,
+    requiredResearch: [], requiredLocation: 'enceladus_surface', enabledServices: ['svc_enceladus_collection'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
+  { id: 'bio_lab_enceladus', name: 'Enceladus Hydrothermal Laboratory', category: 'datacenter', tier: 5,
+    description: "Sealed laboratory culturing and sequencing hydrothermal material straight from the plume stream.",
+    tooltip: "The highest-value science in the solar system. Strong research speed and premium data licensing.",
+    baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
+    requiredResearch: [], requiredLocation: 'enceladus_surface', enabledServices: ['svc_enceladus_biolab'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { researchSpeed: 0.07 } },
+
+  // ── Titania (titania_surface, tier 5) ──
+  { id: 'colony_titania', name: 'Titania Outpost', category: 'space_station', tier: 5,
+    description: "Frontier outpost on the largest Uranian moon \u2014 nineteen astronomical units from any help.",
+    tooltip: "The Uranian foothold. Quarters and an away-operations relay for the loneliest station crewed by humans.",
+    baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
+    requiredResearch: [], requiredLocation: 'titania_surface', enabledServices: ['svc_titania_habitation'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { crewQuarters: 25, awayAutomation: 0.04 } },
+  { id: 'mining_titania', name: 'Titania Deuterium Works', category: 'mining_enterprise', tier: 5,
+    description: "Isotope separation plant pulling deuterium out of Titania's water ice mantle.",
+    tooltip: "Fusion fuel at the source. Deuterium is worth more per tonne than anything you can dig in the Belt.",
+    baseCost: 15_200_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 9_500_000,
+    requiredResearch: [], requiredLocation: 'titania_surface', enabledServices: ['svc_titania_mining'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
+  { id: 'cryo_lab', name: 'Titania Cryogenics Laboratory', category: 'datacenter', tier: 5,
+    description: "Materials laboratory exploiting an ambient 60 K for superconductor and cryostructure work.",
+    tooltip: "Ambient temperatures no Earth lab can buy. Research speed plus premium materials-science data.",
+    baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
+    requiredResearch: [], requiredLocation: 'titania_surface', enabledServices: ['svc_titania_cryo_research'],
+    realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { researchSpeed: 0.06 } },
+
+  // ── Triton (triton_surface, tier 6) ──
+  { id: 'colony_triton', name: 'Triton Frontier Base', category: 'space_station', tier: 6,
+    description: "Base camp on a captured Kuiper body in retrograde orbit \u2014 the last permanent settlement before the dark.",
+    tooltip: "The edge of the crewed frontier. Quarters, automation and the staging point for interstellar work.",
+    baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
+    requiredResearch: [], requiredLocation: 'triton_surface', enabledServices: ['svc_triton_habitation'],
+    realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 }, capabilities: { crewQuarters: 30, awayAutomation: 0.05, expeditionSupport: 0.06 } },
+  { id: 'mining_triton', name: 'Triton Exotic Extraction', category: 'mining_enterprise', tier: 6,
+    description: "Nitrogen-ice mining and exotic isotope separation on a body that formed beyond Neptune.",
+    tooltip: "Antimatter precursors and deuterium. Kuiper-origin chemistry that exists nowhere closer to the Sun.",
+    baseCost: 25_301_500_000, buildTimeMonths: 60, maintenanceCostPerMonth: 15_813_438,
+    requiredResearch: [], requiredLocation: 'triton_surface', enabledServices: ['svc_triton_mining'],
+    realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 } },
+  { id: 'nitrogen_plant', name: 'Triton Nitrogen Plant', category: 'fabrication_facility', tier: 6,
+    description: "Cryogenic plant liquefying Triton's nitrogen for propellant, life support and industrial feedstock.",
+    tooltip: "Propellant and breathing gas at the frontier \u2014 the reason deep-space missions can stage from Neptune at all.",
+    baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
+    requiredResearch: [], requiredLocation: 'triton_surface', enabledServices: ['svc_triton_nitrogen'],
+    realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 }, capabilities: { logisticsSupport: 0.05, expeditionSupport: 0.05 } },
+
+  // ── Pluto-Charon (pluto_surface, tier 6) ──
+  { id: 'colony_pluto', name: 'Pluto Colony', category: 'space_station', tier: 6,
+    description: "Sunken habitat under Sputnik Planitia's nitrogen glacier, tidally locked to Charon overhead.",
+    tooltip: "Humanity's furthest permanent city. Maximum away-automation and the deepest crew capacity out here.",
+    baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
+    requiredResearch: [], requiredLocation: 'pluto_surface', enabledServices: ['svc_pluto_habitation'],
+    realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 }, capabilities: { crewQuarters: 35, awayAutomation: 0.06, expeditionSupport: 0.05 } },
+  { id: 'mining_pluto', name: 'Charon Minerals Operation', category: 'mining_enterprise', tier: 6,
+    description: "Mining Charon's cryovolcanic plains and the interstellar dust that has settled there for four billion years.",
+    tooltip: "Interstellar particles and primordial exotics \u2014 material older than the Sun, and priced accordingly.",
+    baseCost: 27_000_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 16_875_000,
+    requiredResearch: [], requiredLocation: 'pluto_surface', enabledServices: ['svc_pluto_mining'],
+    realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 } },
+  { id: 'interstellar_beacon', name: 'Pluto Interstellar Beacon', category: 'ground_station', tier: 6,
+    description: "Phased array at the edge of the heliosphere, holding the comms link to everything beyond it.",
+    tooltip: "The relay every expedition talks through. Compute revenue plus the strongest expedition support in Sol.",
+    baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
+    requiredResearch: [], requiredLocation: 'pluto_surface', enabledServices: ['svc_interstellar_research'],
+    realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 }, capabilities: { expeditionSupport: 0.1, detectionBonus: 0.05 } },
 ];
 
 export const BUILDING_MAP = new Map(BUILDINGS.map(b => [b.id, b]));

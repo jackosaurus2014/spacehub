@@ -53,7 +53,10 @@ import {
   TICKS_PER_GAME_MONTH, TICK_INTERVALS, MAX_EVENT_LOG,
   AWAY_EFFICIENCY_TIERS, AWAY_EFFICIENCY_INVESTMENT_CAP,
 } from './constants';
-import { DEFAULT_LEGACY, getLegacyBonuses } from './legacy-system';
+import { DEFAULT_LEGACY, getLegacyBonuses, accrueLegacyTrackers, sumMinedUnits } from './legacy-system';
+// AAA Round 1 E3.6: the Hive biomaterial supply agreement keeps delivering
+// while the player is offline — away-parity with game-engine.ts §6b-bis.
+import { getFactionLicenseBonuses } from './factions';
 import { getActiveEraModifiers } from './corporate-eras';
 import { getGlobalGameDate } from './server-time';
 import { getTotalGameMonths } from './expeditions';
@@ -348,12 +351,33 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
 
   const resources = { ...working.resources };
   for (const [id, qty] of Object.entries(resourcesEarned)) resources[id] = (resources[id] || 0) + qty;
+  // AAA Round 1 E3.6 — away-parity with game-engine.ts §6b-bis: the Hive
+  // Biomaterial Supply Agreement is a standing contract, so it keeps
+  // delivering across an offline window. Efficiency-weighted like the rest of
+  // this block (weightedTicks) so it can never out-earn a live session.
+  // Deliberately NOT added to `resourcesEarned`, which the ledger reports as
+  // "mined" — this is a delivery, not extraction.
+  {
+    const awayLicenseB = getFactionLicenseBonuses(working);
+    if (awayLicenseB.biomaterialPerMonth > 0) {
+      const delivered = Math.round(awayLicenseB.biomaterialPerMonth * fraction * weightedTicks);
+      if (delivered > 0) resources.xenogenic_biomatter = (resources.xenogenic_biomatter || 0) + delivered;
+    }
+  }
   working = {
     ...working,
     money: working.money + grossEarned - grossSpent,
     totalEarned: working.totalEarned + grossEarned,
     totalSpent: working.totalSpent + grossSpent,
     resources,
+    // AAA Round 1 E3.2 — away-parity for the lifetime mining tracker. Ore
+    // pulled out of the ground while the player was offline is real
+    // production and must score toward legacy_first_mine / stretch_mining /
+    // the belt_century era charter identically to a live tick, or a player
+    // who plays in long sessions would out-earn an identical player who
+    // plays in short ones. `resourcesEarned` is this window's real mining
+    // output — the same figure the away ledger reports to the player.
+    legacy: accrueLegacyTrackers(working.legacy, { resourcesMined: sumMinedUnits(resourcesEarned) }),
   };
 
   // ── 2. Standing directives + forecast-only hazards, per elapsed calendar

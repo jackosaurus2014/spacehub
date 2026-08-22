@@ -1,11 +1,20 @@
 /**
- * Seed the first Mega-Project: Space Elevator
+ * Seed a cooperative Mega-Project.
  *
- * Run: npx tsx scripts/seed-mega-project.ts
+ * Run: npm run seed:mega-project             (defaults to space_elevator)
+ *      npm run seed:mega-project -- dyson_sphere
+ *      npx tsx scripts/seed-mega-project.ts interstellar_probe
  *
- * Creates a Space Elevator project with status 'active', sets start/end dates,
- * and populates phase cost configuration. Safe to re-run (checks for existing
+ * Creates the named project with status 'active', sets start/end dates, and
+ * populates phase cost configuration. Safe to re-run (checks for an existing
  * active project first).
+ *
+ * AAA Round 1 E3.3: this used to hardcode `space_elevator`, which meant three
+ * of the four authored definitions could never be instantiated on any server
+ * — and the one that could grants `launch_cost_reduction`, which until this
+ * wave had no consumer at all. The reward is wired now
+ * (mega-projects.ts::getLaunchCostMultiplier) and the seeder takes an
+ * argument. Pass `--list` to see what is available.
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -31,12 +40,26 @@ async function main() {
     return;
   }
 
-  // Get the Space Elevator definition
-  const definition = MEGA_PROJECT_DEFINITIONS.find(d => d.type === 'space_elevator');
-  if (!definition) {
-    console.error('Space Elevator definition not found!');
+  const args = process.argv.slice(2).filter(a => a !== '--');
+  if (args.includes('--list')) {
+    console.log('Available mega-project definitions:');
+    for (const d of MEGA_PROJECT_DEFINITIONS) {
+      const capex = d.phases.reduce((n, ph) => n + ph.moneyCost, 0);
+      console.log(`  ${d.type.padEnd(20)} ${d.title.padEnd(24)} $${(capex / 1e9).toFixed(0)}B over ${d.durationDays}d — reward: ${d.permanentBonus.label}`);
+    }
     return;
   }
+
+  const requestedType = args[0] || 'space_elevator';
+  const definition = MEGA_PROJECT_DEFINITIONS.find(d => d.type === requestedType);
+  if (!definition) {
+    console.error(`No mega-project definition named "${requestedType}".`);
+    console.error(`Known types: ${MEGA_PROJECT_DEFINITIONS.map(d => d.type).join(', ')}`);
+    process.exitCode = 1;
+    return;
+  }
+  console.log(`Seeding "${definition.title}" (${definition.type}) — reward: ${definition.permanentBonus.label}
+`);
 
   // Calculate dates
   const now = new Date();

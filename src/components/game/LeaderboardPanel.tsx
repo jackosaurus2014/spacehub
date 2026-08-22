@@ -53,7 +53,10 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
     all.push({
       rank: 0,
       companyName: state.companyName || 'Your Company',
-      title: null,
+      // E3.5: your own row hardcoded `null` here, so the title pill rendered
+      // for NPCs and rivals but never for you — even after earning one of the
+      // 11 victory titles. It now shows what you actually hold.
+      title: state.playerTitle || null,
       netWorth: state.money,
       totalEarned: state.totalEarned,
       buildingCount: playerBuildings,

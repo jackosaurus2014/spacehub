@@ -10,11 +10,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import type { GameState, GameTab, ExpeditionState } from '@/lib/game/types';
 import {
-  INTERSTELLAR_SYSTEMS, INTERSTELLAR_SYSTEM_MAP, getJumpPrerequisites,
+  INTERSTELLAR_SYSTEMS, INTERSTELLAR_SYSTEM_MAP,
   FIRST_CONTACT_EVENTS, JUMP_DRIVE_RESEARCH, EXOTIC_MATTER_REFINING_RESEARCH,
 } from '@/lib/game/interstellar';
 import {
-  getExpeditionProgress, getColonyUpgradeCost, getTotalGameMonths, GAME_MONTHS_PER_LY,
+  getExpeditionProgress, getExpeditionLaunchReadiness, getColonyUpgradeCost, getTotalGameMonths, GAME_MONTHS_PER_LY,
   COLONY_MAX_INFRASTRUCTURE, COLONY_FOUNDING_COST, COLONY_POP_CAP_PER_LEVEL,
   COLONY_UPGRADE_POP_THRESHOLD, COLONY_CAPABLE_SHIP_IDS, COLONY_OUTPUT_PER_LEVEL,
   TRADE_ROUTE_SETUP_COST, TRADE_MIN_SHIPMENT_UNITS,
@@ -101,10 +101,15 @@ export default function InterstellarPanel({
             met={hasExoticRefining}
             help={`T${EXOTIC_MATTER_REFINING_RESEARCH.tier} materials; unlocks exotic_fuel production.`}
           />
+          {/* E3.1: exotic fuel is NOT a prerequisite — it has no Sol-side
+              source, so presenting it as one made the whole pillar look
+              unreachable. It is a procurement line item on the launch bill:
+              the planner buys any shortfall at a 25% broker premium, and
+              only an interstellar colony can refine it more cheaply. */}
           <PrereqChip
-            label={`Exotic fuel reserve (have ${Math.floor(exoticFuel)})`}
-            met={exoticFuel >= 500}
-            help="Exotic-matter fuel units. Minimum 500 for the nearest system (Proxima)."
+            label={`Exotic fuel in stores: ${Math.floor(exoticFuel).toLocaleString()}`}
+            met
+            help="Not a prerequisite. Any shortfall is procured on the open market at a 25% broker premium and billed with the launch — see each destination's fuel line. Only interstellar colonies refine it, which is what makes later jumps cheaper."
           />
         </div>
 
@@ -159,9 +164,13 @@ export default function InterstellarPanel({
       {subTab === 'destinations' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {INTERSTELLAR_SYSTEMS.map(system => {
-            const missing = getJumpPrerequisites(system.id, state.completedResearch);
-            const fuelMissing = exoticFuel < system.jumpFuelRequired;
-            const anyBlockers = missing.length > 0 || fuelMissing;
+            // E3.1: readiness comes from the planner (getExpeditionLaunchReadiness),
+            // not from an exotic-fuel inventory test. Nothing in Sol produces
+            // exotic_fuel; planExpedition procures the shortfall at a 1.25x
+            // premium. The card now shows the procurement bill instead of a
+            // requirement no player could ever meet.
+            const readiness = getExpeditionLaunchReadiness(state, system.id);
+            const anyBlockers = !readiness?.canLaunch;
             const fc = FIRST_CONTACT_EVENTS[system.id];
             const faction = fc?.factionId ? FACTION_MAP.get(fc.factionId as FactionId) : null;
             const risk = SYSTEM_RISK_META[system.id] || { label: 'Unknown risk', glyph: '?', tone: 'moderate' as const };
@@ -214,10 +223,14 @@ export default function InterstellarPanel({
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] mb-2">
                     <div className="rounded bg-white/[0.03] p-1.5">
                       <div className="game-label">Fuel needed</div>
-                      <div className={`game-number font-bold flex items-center gap-1 ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>
-                        {fuelMissing && <GameIcon name="warning" size={11} />}
+                      <div className="game-number font-bold flex items-center gap-1 text-cyan-300">
                         {system.jumpFuelRequired.toLocaleString()}
                       </div>
+                      {readiness && readiness.fuelUnitsPurchased > 0 && (
+                        <div className="text-[9px] text-slate-500 mt-0.5">
+                          {Math.ceil(readiness.fuelUnitsPurchased).toLocaleString()} to procure · {formatMoney(readiness.fuelPurchaseCost)}
+                        </div>
+                      )}
                     </div>
                     <div className="rounded bg-white/[0.03] p-1.5">
                       <div className="game-label">Known resources</div>
@@ -231,8 +244,7 @@ export default function InterstellarPanel({
                     <div className="rounded bg-red-500/5 border border-red-500/20 p-2 text-[10px] text-red-200 mb-2">
                       <div className="font-bold mb-0.5">Blocked by:</div>
                       <ul className="pl-4 space-y-0.5" style={{ listStyle: 'disc' }}>
-                        {missing.map(r => <li key={r}>Research: {r.replace(/_/g, ' ')}</li>)}
-                        {fuelMissing && <li>Exotic fuel: need {system.jumpFuelRequired} (have {Math.floor(exoticFuel)})</li>}
+                        {(readiness?.blockers || ['Unknown destination system']).map(b => <li key={b}>{b}</li>)}
                       </ul>
                     </div>
                   )}

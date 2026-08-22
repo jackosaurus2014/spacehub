@@ -79,6 +79,85 @@ export const DEFAULT_LEGACY: LegacyState = {
   displayTier: 'Pioneer',
 };
 
+// ─── Tracker accrual (AAA Round 1, E3.2) ─────────────────────────────────────
+//
+// `legacy.trackers` is a lifetime counter set: it must only ever go up, and it
+// must count REAL occurrences, not a re-derived snapshot of current state
+// (buildings get decommissioned, resources get sold — a snapshot would go
+// backwards and silently un-earn a milestone).
+//
+// Before this wave the only writer in the repo was the save migration
+// (save-load.ts), which seeds the counters once and never touches them again.
+// The consequence was that `legacy_first_mine` was unreachable on a fresh
+// save, `stretch_mining` was pinned at level 0, and three of the eight
+// corporate-era charters (expansion_era / belt_century / logistics_empire)
+// scored 0 forever and always filed the worst medal — see
+// corporate-eras.ts::getEraStatSnapshot, which reads these four fields.
+//
+// Call sites (all engine-side, never UI):
+//   • game-engine.ts processTick   — service mining units + building completions
+//   • game-engine.ts processFullTick — ship mining units, ship builds, contracts
+//   • away-operations.ts            — mining accrued during an offline window
+// The away call is required for parity: mining that happened while the player
+// was offline is real production and must score identically.
+
+export interface LegacyTrackerDeltas {
+  /** Units of ore/gas actually produced by mining rigs or mining ships. */
+  resourcesMined?: number;
+  /** Contracts that transitioned into `completedContracts`. */
+  contractsCompleted?: number;
+  /** Ship hulls that finished construction (isBuilt false → true). */
+  shipsBuilt?: number;
+  /** Buildings that finished construction (isComplete false → true). */
+  buildingsCompleted?: number;
+}
+
+/**
+ * Accrue real occurrences into a LegacyState's lifetime trackers.
+ *
+ * Returns the SAME reference when every delta is zero or negative, so callers
+ * can assign unconditionally without perturbing tick identity (the sim
+ * harnesses diff state references, and `processTick` returning a fresh object
+ * every tick for a no-op would be a needless allocation).
+ *
+ * Negative deltas are ignored by design — these are lifetime counters.
+ */
+export function accrueLegacyTrackers(
+  legacy: LegacyState | undefined,
+  deltas: LegacyTrackerDeltas,
+): LegacyState | undefined {
+  const mined = Math.max(0, Math.floor(deltas.resourcesMined || 0));
+  const contracts = Math.max(0, Math.floor(deltas.contractsCompleted || 0));
+  const ships = Math.max(0, Math.floor(deltas.shipsBuilt || 0));
+  const buildings = Math.max(0, Math.floor(deltas.buildingsCompleted || 0));
+  if (mined === 0 && contracts === 0 && ships === 0 && buildings === 0) return legacy;
+
+  const base = legacy || DEFAULT_LEGACY;
+  const t = base.trackers || DEFAULT_LEGACY.trackers;
+  return {
+    ...base,
+    completedMilestones: base.completedMilestones || [],
+    stretchLevels: base.stretchLevels || {},
+    trackers: {
+      totalResourcesMined: (t.totalResourcesMined || 0) + mined,
+      totalContractsCompleted: (t.totalContractsCompleted || 0) + contracts,
+      totalShipsBuilt: (t.totalShipsBuilt || 0) + ships,
+      totalBuildingsCompleted: (t.totalBuildingsCompleted || 0) + buildings,
+    },
+  };
+}
+
+/** Sum of a `{resourceId: units}` flow map — the shape both the engine's
+ *  `minedFlowsThisTick` and away-operations' `resourcesEarned` already use. */
+export function sumMinedUnits(flows: Record<string, number> | undefined | null): number {
+  if (!flows) return 0;
+  let total = 0;
+  for (const v of Object.values(flows)) {
+    if (typeof v === 'number' && v > 0) total += v;
+  }
+  return total;
+}
+
 // ─── Helper: total workforce count ───────────────────────────────────────────
 
 function totalWorkforce(wf: GameState['workforce']): number {

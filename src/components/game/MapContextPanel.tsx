@@ -22,6 +22,7 @@ import { INTERSTELLAR_SYSTEM_MAP, getJumpPrerequisites } from '@/lib/game/inters
 import {
   planExpedition,
   getExpeditionCapableShips,
+  getExpeditionLaunchReadiness,
   getExpeditionProgress,
   getTotalGameMonths,
   GAME_MONTHS_PER_LY,
@@ -720,8 +721,12 @@ function GalacticBody({
 
   const missing = getJumpPrerequisites(systemId, state.completedResearch);
   const exoticFuel = state.resources?.exotic_fuel || 0;
-  const fuelMissing = exoticFuel < sys.jumpFuelRequired;
-  const ready = missing.length === 0 && !fuelMissing;
+  // E3.1: readiness now comes from the planner itself. Exotic fuel is NOT an
+  // inventory prerequisite — planExpedition procures any shortfall at a 1.25x
+  // broker premium — and it never could be, because nothing in Sol produces
+  // exotic_fuel. See expeditions.ts::getExpeditionLaunchReadiness.
+  const readiness = getExpeditionLaunchReadiness(state, systemId);
+  const ready = !!readiness?.canLaunch;
   const risk = SYSTEM_RISK_META[systemId] || { label: 'Unknown risk', glyph: '?', tone: 'moderate' as const };
   const outboundMonths = Math.ceil(sys.distanceLy * GAME_MONTHS_PER_LY);
 
@@ -744,7 +749,7 @@ function GalacticBody({
         </div>
         <div className="rounded bg-white/[0.02] p-2">
           <div className="text-slate-500">Fuel required / jump</div>
-          <div className={`font-mono ${fuelMissing ? 'text-red-300' : 'text-cyan-300'}`}>{sys.jumpFuelRequired.toLocaleString()}</div>
+          <div className="font-mono text-cyan-300">{sys.jumpFuelRequired.toLocaleString()}</div>
         </div>
         <div className="rounded bg-white/[0.02] p-2">
           <div className="text-slate-500">Outbound transit</div>
@@ -774,10 +779,22 @@ function GalacticBody({
         </div>
         {!ready && (
           <ul className="text-[11px] text-red-200 pl-4 space-y-0.5" style={{ listStyle: 'disc' }}>
-            {missing.map(r => <li key={r}>Research: {r.replace(/_/g, ' ')}</li>)}
-            {fuelMissing && <li>Exotic fuel: need {sys.jumpFuelRequired.toLocaleString()} (have {Math.floor(exoticFuel).toLocaleString()})</li>}
+            {(readiness?.blockers || ['Unknown destination system']).map(b => <li key={b}>{b}</li>)}
           </ul>
         )}
+        {/* E3.1: the real fuel line — inventory covers what it covers, the
+            rest is procured on the open market at a 25% broker premium. */}
+        {readiness && (
+          <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+            Fuel plan: {readiness.fuelUnitsRequired.toLocaleString()} units needed
+            {readiness.fuelFromInventory > 0 && <> · {Math.floor(readiness.fuelFromInventory).toLocaleString()} from stores</>}
+            {readiness.fuelUnitsPurchased > 0 && <> · {Math.ceil(readiness.fuelUnitsPurchased).toLocaleString()} procured for {formatMoney(readiness.fuelPurchaseCost)} (25% broker premium)</>}
+            {readiness.cheapestPlanCost > 0 && <> · cheapest uninsured plan {formatMoney(readiness.cheapestPlanCost)}</>}
+          </p>
+        )}
+        <p className="text-[10px] text-slate-500 mt-1">
+          You hold {Math.floor(exoticFuel).toLocaleString()} units of exotic-matter fuel. Only interstellar colonies refine it — until you found one, every jump buys fuel at a premium.
+        </p>
       </div>
 
       {/* Active expeditions targeting this system */}

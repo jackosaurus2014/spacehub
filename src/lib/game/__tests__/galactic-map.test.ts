@@ -247,21 +247,46 @@ describe('deriveSystemIdentity', () => {
     const id = deriveSystemIdentity(makeState(), 'proxima_centauri')!;
     expect(id.presence).toBe('locked');
     expect(id.missingResearch).toContain('jump_drive');
+    // E3.1: `fuelShort` now means "cannot PAY for the fuel", not "inventory
+    // is empty" - a fresh corporation has neither the research nor the cash.
     expect(id.fuelShort).toBe(true);
     expect(id.srText).toMatch(/research required/i);
-    expect(id.srText).toMatch(/exotic fuel short/i);
+    expect(id.srText).toMatch(/fuel procurement costs/i);
   });
 
-  it('reports READY only once research AND fuel are both satisfied', () => {
+  it('E3.1: an empty exotic-fuel store does NOT lock a system the player can pay for', () => {
+    // REGRESSION GUARD. This assertion used to be the inverse: a player with
+    // jump_drive but fewer than jumpFuelRequired units in inventory was
+    // reported `locked`, forever, because nothing in Sol produces
+    // exotic_fuel. The planner buys the shortfall; the map must agree.
     const sys = INTERSTELLAR_SYSTEM_MAP.get('proxima_centauri')!;
-    const researchedButDry = deriveSystemIdentity(
-      makeState({ completedResearch: ['jump_drive'], resources: { exotic_fuel: sys.jumpFuelRequired - 1 } } as Partial<GameState>),
+    const researchedAndSolvent = deriveSystemIdentity(
+      makeState({
+        completedResearch: ['jump_drive'],
+        resources: { exotic_fuel: 0 },
+        money: 500_000_000_000,
+      } as Partial<GameState>),
       'proxima_centauri',
     )!;
-    expect(researchedButDry.presence).toBe('locked');
-    expect(researchedButDry.missingResearch).toEqual([]);
-    expect(researchedButDry.fuelShort).toBe(true);
+    expect(researchedAndSolvent.missingResearch).toEqual([]);
+    expect(researchedAndSolvent.fuelShort).toBe(false);
+    expect(researchedAndSolvent.presence).toBe('ready');
 
+    // Broke, though, and it is genuinely blocked - with an honest reason.
+    const brokeAndDry = deriveSystemIdentity(
+      makeState({
+        completedResearch: ['jump_drive'],
+        resources: { exotic_fuel: sys.jumpFuelRequired - 1 },
+        money: 1_000,
+      } as Partial<GameState>),
+      'proxima_centauri',
+    )!;
+    expect(brokeAndDry.fuelShort).toBe(true);
+    expect(brokeAndDry.presence).toBe('locked');
+    expect(brokeAndDry.srText).toMatch(/fuel procurement costs/i);
+  });
+
+  it('reports READY once research is done and the fuel bill is affordable', () => {
     const ready = deriveSystemIdentity(makeState(jumpReady), 'proxima_centauri')!;
     expect(ready.presence).toBe('ready');
     expect(ready.fuelShort).toBe(false);

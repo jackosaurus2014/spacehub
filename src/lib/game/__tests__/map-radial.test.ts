@@ -296,20 +296,51 @@ describe('deriveSystemRadialActions', () => {
     expect(exp.enabled).toBe(false);
     expect(exp.reason).toMatch(/research required/i);
 
+    // AAA Round 1 E3.1 - REGRESSION GUARD. This case used to assert
+    // /exotic fuel/i: the radial refused to launch unless the player already
+    // held jumpFuelRequired units of exotic_fuel in inventory. That was
+    // unsatisfiable - exotic_fuel has no Sol-side source (startingSupply 0,
+    // npcRestockPerHour 0, MINED_ONLY, NPC cap 0, no producing building) and
+    // its only producer is an interstellar colony you cannot found without
+    // launching. planExpedition never had that rule; it procures the
+    // shortfall at a 1.25x premium. With research done and no hull, the
+    // blocker must be the HULL, never the fuel.
     const researched = deriveSystemRadialActions(
       makeState({ completedResearch: ['jump_drive'], resources: { exotic_fuel: 1 } }),
       'proxima_centauri',
     ).find(a => a.id === 'sys-expedition')!;
     expect(researched.enabled).toBe(false);
-    expect(researched.reason).toMatch(/exotic fuel/i);
+    expect(researched.reason).toMatch(/Starfarer|Colony Ark/i);
+    expect(researched.reason).not.toMatch(/exotic fuel/i);
 
+    // ...and holding a warehouse full of fuel changes nothing without a hull.
     const fuelled = deriveSystemRadialActions(
       makeState({ completedResearch: ['jump_drive'], resources: { exotic_fuel: 100_000 } }),
       'proxima_centauri',
     ).find(a => a.id === 'sys-expedition')!;
-    // Research and fuel are satisfied; the only remaining blocker is the hull.
     expect(fuelled.enabled).toBe(false);
     expect(fuelled.reason).toMatch(/Starfarer|Colony Ark/i);
+  });
+
+  it('E3.1: enables the expedition verb with an idle hull, cash, and ZERO exotic fuel', () => {
+    // The whole point of the repair: the intended first-jump path is
+    // "buy the fuel with money", and it must be reachable from a fuel-less
+    // Sol-side corporation.
+    const ready = deriveSystemRadialActions(
+      makeState({
+        completedResearch: ['jump_drive'],
+        resources: {},
+        money: 500_000_000_000,
+        workforce: { engineers: 400, scientists: 400, miners: 400, operators: 400, pilots: 400 },
+        ships: [{
+          instanceId: 'ark1', definitionId: 'colony_ark', name: 'Ark', status: 'idle',
+          currentLocation: 'leo', isBuilt: true,
+        }],
+      } as Partial<GameState>),
+      'proxima_centauri',
+    ).find(a => a.id === 'sys-expedition')!;
+    expect(ready.reason).toBeUndefined();
+    expect(ready.enabled).toBe(true);
   });
 
   it('reports the research prerequisite count without ever disabling the route to it', () => {

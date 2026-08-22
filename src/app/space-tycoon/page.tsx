@@ -42,6 +42,7 @@ import BountyPanel from '@/components/game/BountyPanel';
 import PredictionExchangePanel from '@/components/game/PredictionExchangePanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
+import { applyLaunchCostReduction } from '@/lib/game/mega-projects';
 import { useGameSync } from '@/hooks/useGameSync';
 import { postWithRetry, LOCATION_MILESTONE_MAP } from '@/hooks/useWorldState';
 import { toast } from '@/lib/toast';
@@ -1356,16 +1357,26 @@ export default function SpaceTycoonPage() {
       setState(prev => {
         if (!prev) return prev;
         const earnedVictories = [...(prev.earnedVictories || []), ...newlyWonVictories.map(v => v.id)];
+        // AAA Round 1 E3.5: a victory's `title` used to reach exactly one
+        // event-log string and nothing else — 11 authored titles ("Galactic
+        // Mogul", "Ascendant", …) that no player could ever wear. The most
+        // recent victory now becomes the corporation's equipped title,
+        // matching how achievements already write `playerTitle` in the tick
+        // (game-engine.ts §7a) and how league placements write
+        // GameProfile.title. Victories are the rarer honour, so they take
+        // precedence when both land.
+        const victoryTitle = newlyWonVictories[newlyWonVictories.length - 1]?.title;
         return {
           ...prev,
           earnedVictories,
+          playerTitle: victoryTitle || prev.playerTitle,
           eventLog: [
             ...newlyWonVictories.map(v => ({
               id: generateId(),
               date: prev.gameDate,
               type: 'milestone' as const,
               title: `🥇 Victory: ${v.name}`,
-              description: `"${v.title}" — permanent bonus applied.`,
+              description: `Title earned: "${v.title}". Permanent bonus applied — it now shows on your leaderboard row.`,
             })),
             ...prev.eventLog,
           ].slice(0, 50),
@@ -2351,7 +2362,12 @@ export default function SpaceTycoonPage() {
             if (!def) return;
             playSound('build_start');
             setState(prev => {
-              if (!prev || prev.money < def.baseCost) { playSound('error'); return prev; }
+              if (!prev) { playSound('error'); return prev; }
+              // E3.3: completed cooperative mega-projects (the Space Elevator's
+              // -15%) discount the cost of putting mass into space. Identity
+              // (x1) until a server actually finishes one.
+              const hullCost = applyLaunchCostReduction(def.baseCost, prev);
+              if (prev.money < hullCost) { playSound('error'); return prev; }
               // Check resources
               for (const [resId, qty] of Object.entries(def.resourceCost)) {
                 if ((prev.resources[resId] || 0) < qty) { playSound('error'); return prev; }
@@ -2372,8 +2388,8 @@ export default function SpaceTycoonPage() {
               };
               return {
                 ...prev,
-                money: prev.money - def.baseCost,
-                totalSpent: prev.totalSpent + def.baseCost,
+                money: prev.money - hullCost,
+                totalSpent: prev.totalSpent + hullCost,
                 resources: newResources,
                 ships: [...(prev.ships || []), newShip],
                 eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Ship ordered: ${newShip.name}`, description: `${def.name} — ready in ${formatDuration(def.buildTimeSeconds)}.` }, ...prev.eventLog].slice(0, 50),

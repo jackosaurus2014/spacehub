@@ -47,6 +47,9 @@ export type LedgerReason =
   | 'espionage_cost'
   | 'espionage_upgrade'
   | 'league_reward'
+  // AAA Round 1 E3.5: speed-run payouts (rank + personal-best + bracket
+  // record). Previously computed and discarded — see the check route.
+  | 'speed_run_reward'
   | 'competitive_contract_reward'
   | 'daily_bonus'
   | 'prediction_stake'

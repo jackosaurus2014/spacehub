@@ -95,6 +95,11 @@ export async function POST(request: Request) {
       // wire STANDING_BROKER_MODIFIER. Same stash-in-workforceData pattern
       // as _commanders below.
       factionReputation = null,
+      // AAA Round 1 E3.6: owned faction-licence ids, so market/trade can
+      // apply the Syndicate Gray-Market broker discount server-side. Same
+      // stash-in-workforceData pattern (and same client-claimed trust level,
+      // clamped at read time) as factionReputation above.
+      factionLicenses = null,
     } = body;
 
     // Audit Wave B (§1c commander marketPriceMultiplier): stash the hired
@@ -115,11 +120,16 @@ export async function POST(request: Request) {
         }
       }
     }
+    // E3.6: at most six licences exist; cap and type-filter defensively.
+    const safeFactionLicenses = Array.isArray(factionLicenses)
+      ? (factionLicenses as unknown[]).filter((x): x is string => typeof x === 'string').slice(0, 12)
+      : [];
     const extras: Record<string, unknown> = { _commanders: safeCommanderIds };
     if (Object.keys(safeFactionRep).length > 0) extras._factionRep = safeFactionRep;
+    if (safeFactionLicenses.length > 0) extras._factionLicenses = safeFactionLicenses;
     const workforceData = workforce && typeof workforce === 'object'
       ? { ...(workforce as Record<string, unknown>), ...extras }
-      : (safeCommanderIds.length > 0 || Object.keys(safeFactionRep).length > 0 ? extras : workforce);
+      : (safeCommanderIds.length > 0 || Object.keys(safeFactionRep).length > 0 || safeFactionLicenses.length > 0 ? extras : workforce);
 
     // ── One Wallet: reconcile client money against the server delta ledger ──
     // (see route header). Falls back to the raw client figure when the ledger

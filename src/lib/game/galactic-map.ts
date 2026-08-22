@@ -35,6 +35,7 @@
 
 import type { GameState } from './types';
 import { INTERSTELLAR_SYSTEMS, INTERSTELLAR_SYSTEM_MAP, getJumpPrerequisites } from './interstellar';
+import { getExpeditionLaunchReadiness } from './expeditions';
 
 // ─── 1. Star identity ────────────────────────────────────────────────────────
 
@@ -204,7 +205,14 @@ export interface SystemIdentity {
   presenceMeta: SystemPresenceMeta;
   /** Missing jump-drive prerequisites (research ids). Empty when satisfied. */
   missingResearch: string[];
-  /** True when the exotic-fuel stock is short of this system's jump cost. */
+  /**
+   * True when the player cannot pay for this system's fuel — NOT when
+   * inventory is empty.
+   *
+   * E3.1: `exotic_fuel` has no Sol-side source, so an inventory test made
+   * every system permanently `locked`. `planExpedition` procures the
+   * shortfall at a 1.25x premium, so the real question is affordability.
+   */
   fuelShort: boolean;
   /** Colony population when colonized, else null. */
   colonyPopulation: number | null;
@@ -219,8 +227,9 @@ const TRANSIT_PHASES = new Set(['outbound', 'returning']);
 /**
  * Everything the galactic node needs, derived from GameState + real stellar
  * data. Never invents: a system with no expedition and no colony simply
- * reports ready/locked from the SAME gate the expedition planner uses
- * (getJumpPrerequisites + the exotic-fuel stock).
+ * reports ready/locked from the SAME gate the expedition planner uses —
+ * which, since E3.1, means running `getExpeditionLaunchReadiness` (i.e. the
+ * planner itself) rather than a hand-copied predicate that could drift.
  */
 export function deriveSystemIdentity(state: GameState, systemId: string): SystemIdentity | null {
   const sys = INTERSTELLAR_SYSTEM_MAP.get(systemId);
@@ -228,8 +237,9 @@ export function deriveSystemIdentity(state: GameState, systemId: string): System
 
   const star = getStarIdentity(systemId);
   const missingResearch = getJumpPrerequisites(systemId, state.completedResearch);
-  const exoticFuel = state.resources?.exotic_fuel || 0;
-  const fuelShort = exoticFuel < sys.jumpFuelRequired;
+  const readiness = getExpeditionLaunchReadiness(state, systemId);
+  // "Fuel short" now means "cannot pay for the fuel", not "inventory empty".
+  const fuelShort = !!readiness && readiness.fuelUnitsPurchased > 0 && state.money < readiness.fuelPurchaseCost;
 
   const colony = (state.interstellarColonies || []).find(c => c.systemId === systemId) || null;
   const expeditions = (state.expeditions || []).filter(
@@ -238,6 +248,10 @@ export function deriveSystemIdentity(state: GameState, systemId: string): System
   const onSite = expeditions.some(e => e.phase === 'exploring');
   const inTransit = expeditions.some(e => TRANSIT_PHASES.has(e.phase));
 
+  // A system is 'ready' when the research is done and the fuel bill is
+  // payable. Having no idle hull is a fleet problem, not a locked system —
+  // the node stays 'ready' and the blocker text says why (matching how the
+  // radial and the dossier now read).
   const presence: SystemPresence = colony
     ? 'colonized'
     : onSite
@@ -255,7 +269,9 @@ export function deriveSystemIdentity(state: GameState, systemId: string): System
   const meta = PRESENCE_META[presence];
   const blockers: string[] = [];
   if (missingResearch.length > 0) blockers.push(`research required: ${missingResearch.map(r => r.replace(/_/g, ' ')).join(', ')}`);
-  if (fuelShort) blockers.push(`exotic fuel short by ${Math.ceil(sys.jumpFuelRequired - exoticFuel).toLocaleString()} units`);
+  if (fuelShort && readiness) {
+    blockers.push(`fuel procurement costs ${Math.round(readiness.fuelPurchaseCost).toLocaleString()} dollars — more than the treasury holds`);
+  }
 
   const srText = [
     `${sys.name}, ${sys.distanceLy.toFixed(2)} light-years from Sol`,

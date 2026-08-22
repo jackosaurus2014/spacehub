@@ -381,4 +381,75 @@ export const MINING_PRODUCTION: Record<string, { resource: ResourceId; amountPer
     { resource: 'methane', amountPerMonth: 15 },
     { resource: 'ethane', amountPerMonth: 10 },
   ],
+
+
+  // ─── AAA Round 1 E3.4 — colony extraction ────────────────────────────────
+  // Monthly output for the 12 colony mining services. These are the entries
+  // that make an unlocked body produce something: without a MINING_PRODUCTION
+  // key a `mining_output` service yields zero resources and falls back to its
+  // flat revenue figure (game-engine.ts §1 and §6 both key off this map).
+  //
+  // colonies.ts exports a parallel COLONY_MINING_PRODUCTION that no consumer
+  // has ever read (scripts/sim-harness.ts and docs/BALANCE.md both say so in
+  // as many words). This is the real one; every `resource` below is a genuine
+  // ResourceId, and every mix reflects the body's authored `uniqueResources`.
+  svc_mining_ceres: [
+    { resource: 'ammonia', amountPerMonth: 600 },
+    { resource: 'organic_compounds', amountPerMonth: 10 },
+    { resource: 'iron', amountPerMonth: 960 },
+  ],
+  svc_venus_volatiles: [
+    { resource: 'sulfur', amountPerMonth: 1000 },
+    { resource: 'ammonia', amountPerMonth: 467 },
+    { resource: 'methane', amountPerMonth: 240 },
+  ],
+  svc_mercury_mining: [
+    { resource: 'iron', amountPerMonth: 1440 },
+    { resource: 'platinum_group', amountPerMonth: 22 },
+    { resource: 'rare_earth', amountPerMonth: 30 },
+  ],
+  svc_io_mining: [
+    { resource: 'sulfur', amountPerMonth: 1333 },
+    { resource: 'iron', amountPerMonth: 2000 },
+    { resource: 'rare_earth', amountPerMonth: 70 },
+  ],
+  svc_europa_deep_mining: [
+    { resource: 'exotic_materials', amountPerMonth: 11 },
+    { resource: 'organic_compounds', amountPerMonth: 22 },
+  ],
+  svc_mining_ganymede: [
+    { resource: 'iron', amountPerMonth: 2000 },
+    { resource: 'titanium', amountPerMonth: 640 },
+    { resource: 'rare_earth', amountPerMonth: 70 },
+  ],
+  svc_mining_callisto: [
+    { resource: 'iron', amountPerMonth: 2400 },
+    { resource: 'aluminum', amountPerMonth: 1500 },
+    { resource: 'ammonia', amountPerMonth: 889 },
+  ],
+  svc_titan_lake_mining: [
+    { resource: 'methane', amountPerMonth: 1707 },
+    { resource: 'ethane', amountPerMonth: 1120 },
+    { resource: 'organic_compounds', amountPerMonth: 20 },
+  ],
+  svc_enceladus_collection: [
+    { resource: 'organic_compounds', amountPerMonth: 32 },
+    { resource: 'bio_samples', amountPerMonth: 1 },
+    { resource: 'ammonia', amountPerMonth: 889 },
+  ],
+  svc_titania_mining: [
+    { resource: 'deuterium', amountPerMonth: 4 },
+    { resource: 'titanium', amountPerMonth: 512 },
+    { resource: 'rare_earth', amountPerMonth: 80 },
+  ],
+  svc_triton_mining: [
+    { resource: 'antimatter_precursors', amountPerMonth: 1 },
+    { resource: 'deuterium', amountPerMonth: 4 },
+    { resource: 'ammonia', amountPerMonth: 1067 },
+  ],
+  svc_pluto_mining: [
+    { resource: 'antimatter_precursors', amountPerMonth: 1 },
+    { resource: 'exotic_materials', amountPerMonth: 17 },
+    { resource: 'rare_earth', amountPerMonth: 120 },
+  ],
 };

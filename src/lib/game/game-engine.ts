@@ -26,7 +26,11 @@ import { getGlobalActiveMarketEvents } from './market-events';
 import type { ActiveMarketEvent } from './market-events';
 import { checkAchievements } from './achievements';
 import { rollTimedEvent, calculateEventReward, EVENT_TEMPLATES } from './timed-events';
-import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchProgress, getLegacyPower, getLegacyDisplayTier, LEGACY_MILESTONE_MAP } from './legacy-system';
+// AAA Round 1 E3.6: owned faction licences confer real effects (the Hive
+// biomaterial supply agreement is delivered in the tick; the routing/tribute
+// licences are read by cargo-logistics.ts and hazards.ts).
+import { getFactionLicenseBonuses } from './factions';
+import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchProgress, getLegacyPower, getLegacyDisplayTier, LEGACY_MILESTONE_MAP, accrueLegacyTrackers, sumMinedUnits } from './legacy-system';
 import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
@@ -891,6 +895,30 @@ export function processTick(state: GameState): GameState {
     }
   }
 
+  // ─── 6b-bis. Faction licence deliveries (AAA Round 1 E3.6) ──────────────
+  // The Hive Biomaterial Supply Agreement ($400M, requires Friendly+ standing
+  // with the Hive Collective) is the ONLY source of xenogenic_biomatter that
+  // does not require an interstellar colony: the resource has startingSupply
+  // 0, npcRestockPerHour 0, an NPC volume cap of 0, and sits in
+  // MINED_ONLY_RESOURCE_IDS. Before this wave the licence's `grants` flag was
+  // read by nothing, so a $400M purchase bought an "OWNED" badge.
+  //
+  // Delivered like megastructure passiveResources directly above (global
+  // pool, fractional per tick with a month-end floor) — it is a bilateral
+  // supply contract fulfilled at HQ, not site extraction, so it deliberately
+  // does NOT enter minedFlowsThisTick / extraction pressure.
+  {
+    const licenseB = getFactionLicenseBonuses(state);
+    if (licenseB.biomaterialPerMonth > 0) {
+      const fractionalAmt = licenseB.biomaterialPerMonth * fraction;
+      if (fractionalAmt >= 1) {
+        resources.xenogenic_biomatter = (resources.xenogenic_biomatter || 0) + Math.round(fractionalAmt);
+      } else if (isMonthEnd) {
+        resources.xenogenic_biomatter = (resources.xenogenic_biomatter || 0) + Math.round(licenseB.biomaterialPerMonth);
+      }
+    }
+  }
+
   // ─── 6c. Subsidiary net income (audit Wave B, §1b "Subsidiaries") ────────
   // The audit called subsidiaries "a $66B purchase of a fake readout":
   // getTotalSubsidiaryIncome / getSubsidiaryServiceBonus were read only by
@@ -1278,6 +1306,18 @@ export function processTick(state: GameState): GameState {
     eventLog,
     stats,
     dailyMetrics: dm,
+    // AAA Round 1 E3.2: lifetime legacy trackers. `minedFlowsThisTick` is the
+    // SAME real production figure that feeds market supply pressure above (not
+    // an inventory diff, which would also count market buys and contract
+    // rewards), and the building count is the completion diff computed for
+    // dm.buildings_built a few lines up. Ship mining, ship builds, and
+    // contracts accrue in processFullTick §6e — they happen in that scope.
+    // Returns the same reference when both deltas are 0, so a quiet tick
+    // allocates nothing.
+    legacy: accrueLegacyTrackers(state.legacy, {
+      resourcesMined: sumMinedUnits(minedFlowsThisTick),
+      buildingsCompleted: Math.max(0, newCompleteCount - prevCompleteCount),
+    }),
     lastTickAt: Date.now(),
   };
 
@@ -1839,6 +1879,10 @@ export function processFullTick(state: GameState): GameState {
   }
 
   // 6. Process ships (build, mine, transit, survey expeditions, fleet maintenance)
+  // AAA Round 1 E3.2: hoisted out of the try so §6e can accrue ship-mined
+  // units into legacy.trackers even though the mining happens in the block
+  // below (and stays at 0 if the block throws).
+  let shipMinedUnitsThisTick = 0;
   try {
     if (newState.ships && newState.ships.length > 0) {
       const now = Date.now();
@@ -2114,6 +2158,9 @@ export function processFullTick(state: GameState): GameState {
         ? updatedShips.filter(s => !shipsToRemove.includes(s.instanceId))
         : updatedShips;
 
+      // E3.2: publish this block's real mining total to §6e.
+      shipMinedUnitsThisTick = sumMinedUnits(shipMinedFlows);
+
       newState = {
         ...newState,
         ships: finalShips,
@@ -2127,6 +2174,7 @@ export function processFullTick(state: GameState): GameState {
           : newState.dailyMetrics,
         // Audit Wave E (A5-i): ship-mined units join the pending flows.
         pendingMarketFlows: accumulateMinedFlows(newState.pendingMarketFlows, shipMinedFlows, shipMinedFlowsByLocation),
+        // E3.2: same real units also count toward the lifetime mining tracker.
         money: shipMoney,
         totalSpent: shipTotalSpent,
         eventLog: shipEvents.length > 0
@@ -2139,6 +2187,35 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Ship processing error (non-fatal):', err);
+  }
+
+  // 6e. AAA Round 1 E3.2 — lifetime legacy trackers, part 2.
+  //
+  // processTick already accrued service-mining units and building
+  // completions. The remaining three occurrences happen in THIS function's
+  // scope: ship-mined units (§6a), hull build completions (§6a), and
+  // contract completions (delivery/legacy contract processing). All three
+  // are measured as real diffs against the tick's INPUT state, so nothing is
+  // double-counted and nothing is re-derived from a snapshot.
+  //
+  // Placed before §7b so a milestone or era medal that this tick's mining
+  // just unlocked is scored on the same tick it was earned.
+  try {
+    let shipsNewlyBuilt = 0;
+    const prevShipBuilt = new Map<string, boolean>();
+    for (const s of state.ships || []) prevShipBuilt.set(s.instanceId, !!s.isBuilt);
+    for (const s of newState.ships || []) {
+      if (s.isBuilt && prevShipBuilt.get(s.instanceId) === false) shipsNewlyBuilt++;
+    }
+    const contractsDelta = (newState.completedContracts || []).length - (state.completedContracts || []).length;
+    const accrued = accrueLegacyTrackers(newState.legacy, {
+      resourcesMined: shipMinedUnitsThisTick,
+      shipsBuilt: shipsNewlyBuilt,
+      contractsCompleted: contractsDelta,
+    });
+    if (accrued !== newState.legacy) newState = { ...newState, legacy: accrued };
+  } catch (err) {
+    console.error('Legacy tracker accrual error (non-fatal):', err);
   }
 
   // 6a-bis. W14 grace ratchet: the first time the corporation owns a BUILT

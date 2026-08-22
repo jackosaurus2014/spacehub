@@ -202,13 +202,28 @@ export function isEmbargoed(rep: number): boolean {
 }
 
 // ─── Faction licensing deals (STATS_DESIGN §12 "faction-locked content") ───
-// Pay-once, standing-gated deals that unlock ongoing tech/route access.
-// `grants` is a forward-compatible flag string (mirrors narrative-events.ts's
-// unlockRareTechId pattern) — the license purchase itself is real (money
-// spent, standing required, hostile factions refuse to deal), while the
-// specific mechanical consumer of each `grants` flag is left for the wave
-// that builds that content (route bonuses, tech gates, etc.) so nothing
-// authored here is lost.
+//
+// Pay-once, standing-gated deals. The purchase was always real (money spent,
+// standing required, hostile factions refuse to deal) — but for four waves
+// the `grants` flags were read by NOTHING except an "OWNED" badge, while the
+// licence descriptions made concrete mechanical promises ("escorted lanes",
+// "raids redirect to rivals", "short-cut shipping lanes"). Six money sinks
+// that lied.
+//
+// AAA Round 1 E3.6 fixes that. `grants` is now a closed union, every member
+// has a numeric channel in `getFactionLicenseBonuses`, and every channel has
+// a named consumer (asserted structurally by
+// __tests__/faction-license-grants.test.ts). Where a promise could not be
+// honoured inside this wave's scope, the licence copy was changed to tell the
+// truth rather than left aspirational — see LICENSE_EFFECT_SUMMARY.
+
+export type FactionLicenseGrant =
+  | 'priority_routing'
+  | 'blackmarket_access'
+  | 'safe_passage'
+  | 'biomaterial_supply'
+  | 'route_charts'
+  | 'precursor_access';
 
 export interface FactionLicenseDefinition {
   id: string;
@@ -218,8 +233,8 @@ export interface FactionLicenseDefinition {
   cost: number;
   /** Minimum standing (rep points) required to be offered this deal. */
   minStanding: number;
-  /** Forward-compatible unlock flag, stored in state.factionLicenses. */
-  grants: string;
+  /** Mechanical effect this deal confers — see getFactionLicenseBonuses. */
+  grants: FactionLicenseGrant;
 }
 
 export const FACTION_LICENSES: FactionLicenseDefinition[] = [
@@ -281,7 +296,144 @@ export const FACTION_LICENSES: FactionLicenseDefinition[] = [
 
 export const FACTION_LICENSE_MAP = new Map(FACTION_LICENSES.map(l => [l.id, l]));
 
-/** Purchase a faction license: pay money → gain the deal's `grants` flag.
+// ─── E3.6: what a licence actually does ─────────────────────────────────────
+
+/**
+ * Numeric effect channels conferred by owned licences. Every field has a
+ * named consumer; `FACTION_LICENSE_CONSUMERS` records where, and the
+ * structural test asserts those references still exist.
+ *
+ * Magnitudes are deliberately small and all sit inside caps that already
+ * existed before this wave (hazard MITIGATION_CAP 0.90, the freight fuel
+ * discount stack, the broker-fee 0.85 total-cut ceiling). Nothing here can
+ * push a system past a bound the balance passes already validated, which is
+ * why this repair does not reprice anything: it fills authored, paid-for
+ * slots with the smallest honest number.
+ */
+export interface FactionLicenseBonuses {
+  /** Fraction off freight fuel cost (cargo-logistics.ts::getFreightFuelCost). */
+  freightFuelDiscount: number;
+  /** Additive pirate_raid mitigation (hazards.ts, under MITIGATION_CAP). */
+  pirateMitigation: number;
+  /** Fraction off the market broker fee (market-engine.ts::getEffectiveBrokerFeeRate). */
+  brokerFeeDiscount: number;
+  /** Units of xenogenic_biomatter delivered per game-month (game-engine.ts §0d). */
+  biomaterialPerMonth: number;
+}
+
+export const EMPTY_LICENSE_BONUSES: Readonly<FactionLicenseBonuses> = Object.freeze({
+  freightFuelDiscount: 0,
+  pirateMitigation: 0,
+  brokerFeeDiscount: 0,
+  biomaterialPerMonth: 0,
+});
+
+/** Per-grant effect table. One row per FactionLicenseGrant — the compiler
+ *  enforces completeness, so a future licence cannot ship inert again. */
+const LICENSE_GRANT_EFFECTS: Record<FactionLicenseGrant, Partial<FactionLicenseBonuses> & { summary: string }> = {
+  // "Enforcement-escorted shipping lanes through Dominion-patrolled
+  // inner-system space" — escorts make hauling cheaper and raids rarer.
+  priority_routing: {
+    freightFuelDiscount: 0.08,
+    pirateMitigation: 0.05,
+    summary: '-8% freight fuel cost; +5 percentage points of pirate-raid mitigation.',
+  },
+  // "Discreet logistics and gray-market contract access" — the Syndicate
+  // moves your goods around the official broker.
+  blackmarket_access: {
+    brokerFeeDiscount: 0.20,
+    summary: '-20% market broker fee on every trade.',
+  },
+  // "A standing tribute agreement — Corsair raids redirect to rivals."
+  // Implemented as mitigation, not as a probability edit: hazard rolls are
+  // deliberately identical for every player (shared-world weather, see
+  // hazards.ts) and only the per-player mitigation channel may vary.
+  safe_passage: {
+    pirateMitigation: 0.20,
+    summary: '+20 percentage points of pirate-raid mitigation (capped with your other shielding at 90%).',
+  },
+  // "Ongoing exotic bio-material trade" — the ONLY source of
+  // xenogenic_biomatter that does not require an interstellar colony.
+  biomaterial_supply: {
+    biomaterialPerMonth: 2,
+    summary: '2 units of xenogenic biomatter delivered per month — the only non-interstellar source in the game.',
+  },
+  // "Coordinates to resource-rich anomalies and short-cut shipping lanes."
+  route_charts: {
+    freightFuelDiscount: 0.05,
+    summary: '-5% freight fuel cost from charted short-cuts.',
+  },
+  // "Guarded access to precursor-technology research otherwise unreachable."
+  // Applied once, at purchase, through the existing rare-tech unlock channel
+  // (unlockedRareTechIds) rather than as a per-tick multiplier.
+  precursor_access: {
+    summary: 'Unlocks the rare tech "Precursor Studies" for research (otherwise reachable only via the Triton Archive chain).',
+  },
+};
+
+/** Rare research ids a licence unlocks on purchase. Uses the SAME channel
+ *  narrative-events.ts and exploration.ts already write to. */
+export const LICENSE_RARE_TECH_UNLOCKS: Partial<Record<FactionLicenseGrant, string[]>> = {
+  precursor_access: ['precursor_studies'],
+};
+
+/** One-line player-facing effect copy per licence id — rendered by
+ *  FactionPanel so the card states what it does, not just what it costs. */
+export const LICENSE_EFFECT_SUMMARY: Record<string, string> = Object.fromEntries(
+  FACTION_LICENSES.map(l => [l.id, LICENSE_GRANT_EFFECTS[l.grants].summary]),
+);
+
+/** Where each channel is consumed. Asserted structurally by
+ *  __tests__/faction-license-grants.test.ts — a renamed or deleted consumer
+ *  fails CI instead of quietly making a paid licence inert again. */
+export const FACTION_LICENSE_CONSUMERS: Record<keyof FactionLicenseBonuses | 'rareTechUnlock', { module: string; symbol: string }> = {
+  freightFuelDiscount: { module: 'src/lib/game/cargo-logistics.ts', symbol: 'freightFuelDiscount' },
+  pirateMitigation: { module: 'src/lib/game/hazards.ts', symbol: 'pirateMitigation' },
+  brokerFeeDiscount: { module: 'src/lib/game/market-engine.ts', symbol: 'licenseDiscount' },
+  biomaterialPerMonth: { module: 'src/lib/game/game-engine.ts', symbol: 'biomaterialPerMonth' },
+  rareTechUnlock: { module: 'src/lib/game/factions.ts', symbol: 'LICENSE_RARE_TECH_UNLOCKS' },
+};
+
+/** Caps applied after summing, so stacking every licence stays bounded. */
+const LICENSE_BONUS_CAPS: FactionLicenseBonuses = {
+  freightFuelDiscount: 0.12,
+  pirateMitigation: 0.25,
+  brokerFeeDiscount: 0.20,
+  biomaterialPerMonth: 4,
+};
+
+/**
+ * Aggregate the effects of every owned licence. Pure; safe to call every
+ * tick (the owned list is at most six strings).
+ *
+ * Accepts either a GameState or a bare id list so the server-side trade
+ * route — which only has the synced id array — can share this one table.
+ */
+export function getFactionLicenseBonuses(
+  source: GameState | string[] | undefined | null,
+): FactionLicenseBonuses {
+  const owned = Array.isArray(source) ? source : (source?.factionLicenses || []);
+  if (!owned || owned.length === 0) return { ...EMPTY_LICENSE_BONUSES };
+  const out: FactionLicenseBonuses = { ...EMPTY_LICENSE_BONUSES };
+  for (const id of owned) {
+    const def = FACTION_LICENSE_MAP.get(id);
+    if (!def) continue;
+    const eff = LICENSE_GRANT_EFFECTS[def.grants];
+    if (!eff) continue;
+    out.freightFuelDiscount += eff.freightFuelDiscount || 0;
+    out.pirateMitigation += eff.pirateMitigation || 0;
+    out.brokerFeeDiscount += eff.brokerFeeDiscount || 0;
+    out.biomaterialPerMonth += eff.biomaterialPerMonth || 0;
+  }
+  out.freightFuelDiscount = Math.min(LICENSE_BONUS_CAPS.freightFuelDiscount, out.freightFuelDiscount);
+  out.pirateMitigation = Math.min(LICENSE_BONUS_CAPS.pirateMitigation, out.pirateMitigation);
+  out.brokerFeeDiscount = Math.min(LICENSE_BONUS_CAPS.brokerFeeDiscount, out.brokerFeeDiscount);
+  out.biomaterialPerMonth = Math.min(LICENSE_BONUS_CAPS.biomaterialPerMonth, out.biomaterialPerMonth);
+  return out;
+}
+
+/** Purchase a faction license: pay money → gain the deal's mechanical
+ *  effects (see getFactionLicenseBonuses; one-shot unlocks are applied here).
  *  No-op (returns the same reference) if: unknown id, already owned,
  *  standing below the deal's minimum, the faction is hostile (embargo), or
  *  the player can't afford it. */
@@ -294,10 +446,23 @@ export function purchaseFactionLicense(state: GameState, licenseId: string): Gam
   if (isEmbargoed(rep)) return state;
   if (rep < def.minStanding) return state;
   if (state.money < def.cost) return state;
+
+  // E3.6: one-shot rare-tech unlocks ride the SAME `unlockedRareTechIds`
+  // channel narrative-events.ts::applyChainConsequence and exploration.ts
+  // already write — the Echo Remnants licence is a purchasable second route
+  // to the Triton Archive precursor research, not a parallel mechanism.
+  const rareUnlocks = LICENSE_RARE_TECH_UNLOCKS[def.grants] || [];
+  let unlockedRareTechIds = state.unlockedRareTechIds;
+  for (const techId of rareUnlocks) {
+    const known = unlockedRareTechIds || [];
+    if (!known.includes(techId)) unlockedRareTechIds = [...known, techId];
+  }
+
   return {
     ...state,
     money: state.money - def.cost,
     totalSpent: state.totalSpent + def.cost,
     factionLicenses: [...owned, licenseId],
+    unlockedRareTechIds,
   };
 }

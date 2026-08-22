@@ -12,6 +12,8 @@ import {
   checkMilestoneCompletion,
 } from '@/lib/game/speed-runs';
 import type { SpeedRunBracket } from '@/lib/game/speed-runs';
+import { formatMoney } from '@/lib/game/formulas';
+import { toast } from '@/lib/toast';
 
 // Rank 1-3 reuse existing achievement badge art as holo rank medals — same
 // palette used across the Leaderboard/League panels.
@@ -211,6 +213,17 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
         }),
       });
       if (res.ok) {
+        // E3.5: the response body used to be discarded outright, which is
+        // how a completed speed run came to pay nothing. The cash is now
+        // credited server-side (and arrives via the sync ledger); this reads
+        // the confirmation so the player is actually told.
+        const data = await res.json().catch(() => null);
+        if (data?.isComplete && data?.rewardCredited > 0) {
+          const titleNote = data.titleAwarded ? ` Title earned: "${data.titleAwarded}".` : '';
+          toast.success(`Speed run complete — rank #${data.rank}. ${formatMoney(data.rewardCredited)} credited.${titleNote}`);
+        } else if (data?.isComplete) {
+          toast.info('Speed run recorded, but the attempt was not verified — no payout.');
+        }
         await fetchData();
       }
     } catch {
@@ -637,29 +650,36 @@ export default function SpeedRunPanel({ state }: SpeedRunPanelProps) {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-[10px]">
             <div className="flex items-center gap-1.5">
               <span className="text-amber-400 font-bold">#1</span>
-              <span className="text-slate-400">$500M + 100 LP + &quot;Speed Demon&quot;</span>
+              <span className="text-slate-400">$500M + title &quot;Speed Demon&quot;</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-slate-300 font-bold">#2</span>
-              <span className="text-slate-400">$350M + 75 LP + &quot;Velocity&quot;</span>
+              <span className="text-slate-400">$350M + title &quot;Velocity&quot;</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-amber-700 font-bold">#3</span>
-              <span className="text-slate-400">$250M + 50 LP + &quot;Swift&quot;</span>
+              <span className="text-slate-400">$250M + title &quot;Swift&quot;</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-slate-500 font-bold">Top 10</span>
-              <span className="text-slate-400">$150M + 30 LP</span>
+              <span className="text-slate-400">$150M</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-slate-500 font-bold">Top 25</span>
-              <span className="text-slate-400">$100M + 20 LP</span>
+              <span className="text-slate-400">$100M</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-slate-500 font-bold">Top 50%</span>
-              <span className="text-slate-400">$50M + 10 LP</span>
+              <span className="text-slate-400">$50M</span>
             </div>
           </div>
+          {/* E3.5: these figures are what the server actually credits on
+              completion (api/space-tycoon/speed-runs/check). Personal best
+              adds $75M; a new bracket record adds $250M and the
+              "Record Holder" title. Titles appear on your leaderboard row. */}
+          <p className="text-[10px] text-slate-500 mt-2 leading-relaxed">
+            Paid straight into your treasury when the run verifies. Personal best adds $75M; a new bracket record adds $250M and the &quot;Record Holder&quot; title. Titles show on your leaderboard row.
+          </p>
         </div>
       )}
     </div>
