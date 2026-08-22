@@ -507,21 +507,48 @@ async function checkKnownSlugMissing(req: NextRequest, pathname: string): Promis
     }
     if (check.excludedSlugs?.has(slug)) return false;
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2500);
-    try {
-      const res = await fetch(new URL(check.existsApiPath(slug), req.nextUrl.origin), {
-        method: 'GET',
-        signal: controller.signal,
-        headers: { 'x-internal-existence-check': '1' },
-      });
-      return res.status === 404;
-    } catch {
-      // Fail open: never 404 real content because the check itself broke.
-      return false;
-    } finally {
-      clearTimeout(timeout);
+    // Try the container-internal loopback FIRST, then the public origin.
+    //
+    // WHY (found 2026-08-22 by curl-testing the deployed site): the
+    // origin-only version of this check silently did nothing in production.
+    // Middleware ran (the www redirect on the same path works), the exists
+    // endpoints answered correctly when called directly, yet unknown slugs
+    // still returned 200 — and returned it in ~370ms, far too fast to be the
+    // 2500ms timeout. That signature is an immediately-throwing fetch: the
+    // Railway container cannot reach its own PUBLIC hostname from inside
+    // (no hairpin), so every check threw and fail-open swallowed it. The
+    // mechanism had therefore never worked in production for ANY DB-backed
+    // route, while the static dynamicParams=false routes were fine — which
+    // is why earlier verification of "the 404 fix" looked convincing.
+    //
+    // Loopback is how the rest of the codebase addresses itself internally
+    // (see INTERNAL_APP_URL in src/lib/constants.ts). Fail-open is preserved
+    // at every step: any throw, timeout, or non-404 leaves content reachable.
+    const path = check.existsApiPath(slug);
+    const port = process.env.PORT || '3000';
+    const candidates = [`http://127.0.0.1:${port}${path}`, new URL(path, req.nextUrl.origin).toString()];
+
+    for (const url of candidates) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 2500);
+      try {
+        const res = await fetch(url, {
+          method: 'GET',
+          signal: controller.signal,
+          headers: { 'x-internal-existence-check': '1' },
+        });
+        // A reachable check is authoritative: 404 means missing, anything
+        // else means present (or the endpoint erred, which it answers 200 to).
+        return res.status === 404;
+      } catch {
+        // This candidate is unreachable — try the next one.
+        continue;
+      } finally {
+        clearTimeout(timeout);
+      }
     }
+    // Every candidate failed: fail open rather than 404 real content.
+    return false;
   }
   return false;
 }
