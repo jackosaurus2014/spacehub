@@ -77,6 +77,10 @@ function mapOutcome(status: string): WeeklyLaunch['outcome'] {
  * Secured by CRON_SECRET — called by the cron scheduler on Fridays at 9am UTC.
  */
 export async function POST(request: NextRequest) {
+  // Set once the digest row exists, so the catch can mark it failed instead
+  // of leaving it stuck in 'sending' forever (the pre-2026-08-24 behaviour
+  // whenever a send threw — four rows accumulated that way).
+  let digestIdForFailure: string | null = null;
   const authError = requireCronSecret(request);
   if (authError) return authError;
 
@@ -294,6 +298,7 @@ export async function POST(request: NextRequest) {
         aiModel: null,
       },
     });
+    digestIdForFailure = digest.id;
 
     // -----------------------------------------------------------------------
     // 10. Get subscribers and send
@@ -365,9 +370,14 @@ export async function POST(request: NextRequest) {
       failed: sendResult.failedCount,
     });
   } catch (error) {
-    logger.error('Weekly digest send failed', {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error('Weekly digest send failed', { error: message });
+    if (digestIdForFailure) {
+      await prisma.dailyDigest.update({
+        where: { id: digestIdForFailure },
+        data: { status: 'failed', sendCompletedAt: new Date(), errorLog: message },
+      }).catch(() => { /* best effort — the sentinel catches survivors */ });
+    }
     return internalError('Failed to send weekly digest');
   }
 }

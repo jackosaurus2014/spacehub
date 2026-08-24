@@ -392,6 +392,16 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     run: checkAdvertisedDiscounts,
   },
   {
+    id: 'stuck-transitional-rows',
+    label: 'No digests stuck sending / insights stuck in review',
+    run: checkStuckTransitionalRows,
+  },
+  {
+    id: 'table-pipeline-liveness',
+    label: 'Table-backed data pipelines are writing',
+    run: checkTablePipelineLiveness,
+  },
+  {
     id: 'mission-control-featured-future',
     label: 'Mission Control featured mission is upcoming, not past',
     run: checkMissionControlFeaturedFuture,
@@ -517,6 +527,87 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
 // ---------------------------------------------------------------------------
 // Runner
 // ---------------------------------------------------------------------------
+
+/**
+ * Rows stuck in transitional states. A digest row enters 'sending' before the
+ * send and is only updated after it — until 2026-08-24 a thrown send left it
+ * stuck forever, and four rows (back to April) accumulated with nobody
+ * noticing. The send routes now mark failures, but a crashed process still
+ * can't, so the sentinel sweeps for survivors. Same idea for AI insights
+ * parked in pending_review: the approval email went out once and there is no
+ * second nudge, so a forgotten one sits invisible forever.
+ */
+async function checkStuckTransitionalRows(): Promise<AccuracyCheckOutcome> {
+  const DAY = 86_400_000;
+  const problems: string[] = [];
+
+  const stuckDigests = await prisma.dailyDigest.count({
+    where: { status: 'sending', sendStartedAt: { lt: new Date(Date.now() - DAY) } },
+  });
+  if (stuckDigests > 0) {
+    problems.push(`${stuckDigests} digest(s) stuck in 'sending' for >24h — the send died mid-flight; mark failed and investigate the errorLog`);
+  }
+
+  const staleReviews = await prisma.aIInsight.count({
+    where: { status: 'pending_review', createdAt: { lt: new Date(Date.now() - 3 * DAY) } },
+  });
+  if (staleReviews > 0) {
+    problems.push(`${staleReviews} AI insight(s) awaiting review for >72h — approve or reject from the review email, or they never publish`);
+  }
+
+  if (problems.length > 0) return { ok: false, detail: problems.join(' | ') };
+  return { ok: true, detail: 'No rows stuck in transitional states.' };
+}
+
+/**
+ * Pipeline liveness for Prisma-table feeds. FRESHNESS_POLICIES only covers
+ * DynamicContent modules, so table-backed pipelines had NO watchdog — which
+ * is how executive-moves ran daily for ~146 days finding zero items, and the
+ * debris table (which the dashboard displays) went ~151 days without a write,
+ * with no alert either time. updatedAt is used because several fetchers
+ * upsert in place.
+ */
+async function checkTablePipelineLiveness(): Promise<AccuracyCheckOutcome> {
+  const DAY = 86_400_000;
+  const problems: string[] = [];
+  const checks: Array<{ label: string; maxAgeDays: number; newest: () => Promise<Date | null> }> = [
+    {
+      label: 'ExecutiveMove (daily cron)',
+      maxAgeDays: 14,
+      newest: async () => (await prisma.executiveMove.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }))?.updatedAt ?? null,
+    },
+    {
+      label: 'DebrisObject (dashboard reads it)',
+      maxAgeDays: 45,
+      newest: async () => (await prisma.debrisObject.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }))?.updatedAt ?? null,
+    },
+  ];
+  // Spectrum filings are gated on FCC_API_KEY (a known pending founder
+  // action) — only watch them once the key exists, so the sentinel doesn't
+  // nag about a feed that cannot run yet.
+  if (process.env.FCC_API_KEY) {
+    checks.push({
+      label: 'SpectrumFiling (FCC ECFS)',
+      maxAgeDays: 21,
+      newest: async () => (await prisma.spectrumFiling.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }))?.updatedAt ?? null,
+    });
+  }
+
+  for (const c of checks) {
+    try {
+      const newest = await c.newest();
+      const ageDays = newest ? (Date.now() - newest.getTime()) / DAY : Infinity;
+      if (ageDays > c.maxAgeDays) {
+        problems.push(`${c.label}: newest write ${newest ? Math.round(ageDays) + 'd ago' : 'never'} (threshold ${c.maxAgeDays}d)`);
+      }
+    } catch (err) {
+      problems.push(`${c.label}: query failed (${err instanceof Error ? err.message.split('\n')[0] : String(err)})`);
+    }
+  }
+
+  if (problems.length > 0) return { ok: false, detail: problems.join(' | ') };
+  return { ok: true, detail: `${checks.length} table pipeline(s) alive.` };
+}
 
 /**
  * Advertised discounts must match how Stripe will actually bill. Broken in

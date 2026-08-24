@@ -22,6 +22,10 @@ import {
  * Covers the period since the last successfully sent newsletter.
  */
 export async function POST(request: NextRequest) {
+  // Set once the digest row exists, so the catch can mark it failed instead
+  // of leaving it stuck in 'sending' forever (the pre-2026-08-24 behaviour
+  // whenever a send threw — four rows accumulated that way).
+  let digestIdForFailure: string | null = null;
   const authError = requireCronSecret(request);
   if (authError) return authError;
 
@@ -149,6 +153,7 @@ export async function POST(request: NextRequest) {
         aiModel: EDITORIAL_MODEL,
       },
     });
+    digestIdForFailure = digest.id;
 
     // 9b. Digest content is frozen — stamp the export-control dedupe cursor
     // so these actions never appear in a second digest.
@@ -219,9 +224,14 @@ export async function POST(request: NextRequest) {
       periodEnd: periodEnd.toISOString(),
     });
   } catch (error) {
-    logger.error('Newsletter digest send failed', {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error('Newsletter digest send failed', { error: message });
+    if (digestIdForFailure) {
+      await prisma.dailyDigest.update({
+        where: { id: digestIdForFailure },
+        data: { status: 'failed', sendCompletedAt: new Date(), errorLog: message },
+      }).catch(() => { /* best effort — the sentinel catches survivors */ });
+    }
     return internalError('Failed to send newsletter digest');
   }
 }
