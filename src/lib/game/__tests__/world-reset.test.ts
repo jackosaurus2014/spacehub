@@ -14,6 +14,10 @@ import {
   isWorldResetPending,
   daysUntilWorldReset,
   formatWorldResetDate,
+  EPOCH_BEGAN_AT,
+  NEW_ERA_NOTICE_DAYS,
+  isNewEraNoticeActive,
+  formatEpochStartDate,
 } from '../world-reset';
 
 describe('V42 — world epoch stamping', () => {
@@ -26,16 +30,24 @@ describe('V42 — world epoch stamping', () => {
     expect(getNewGameState().worldEpoch).toBe(WORLD_EPOCH);
   });
 
-  it('an unstamped (pre-V42) save is treated as epoch 1 and migrated in place', () => {
+  it('an unstamped (pre-V42) save counts as epoch 1', () => {
     const legacy = getNewGameState();
     delete (legacy as { worldEpoch?: number }).worldEpoch;
+    legacy.money = 999_111; // marker
     localStorage.setItem(SAVE_KEY, JSON.stringify(legacy));
 
-    const loaded = loadGame()!;
-    expect(loaded).not.toBeNull();
-    expect(loaded.worldEpoch).toBe(WORLD_EPOCH);
-    // Nothing archived — this save belongs to the current era.
-    expect(localStorage.getItem(ARCHIVED_SAVE_KEY)).toBeNull();
+    const loaded = loadGame();
+
+    if (WORLD_EPOCH > 1) {
+      // We are past epoch 1, so a founding-season save is archived, not loaded.
+      expect(loaded).toBeNull();
+      expect(JSON.parse(localStorage.getItem(ARCHIVED_SAVE_KEY)!).money).toBe(999_111);
+    } else {
+      // Still epoch 1 — the save belongs to the current era and is stamped in place.
+      expect(loaded).not.toBeNull();
+      expect(loaded!.worldEpoch).toBe(WORLD_EPOCH);
+      expect(localStorage.getItem(ARCHIVED_SAVE_KEY)).toBeNull();
+    }
   });
 
   it('a save from an OLDER epoch is archived and the player starts fresh', () => {
@@ -80,5 +92,34 @@ describe('world-reset schedule helpers', () => {
     if (WORLD_RESET_AT === null) return;
     const announcedAt = Date.UTC(2026, 7, 17, 16, 0, 0);
     expect(daysUntilWorldReset(announcedAt)).toBe(7);
+  });
+});
+
+describe('new-era notice window (post-restart banner)', () => {
+  const DAY = 24 * 60 * 60 * 1000;
+
+  it('is dark before the epoch opens', () => {
+    expect(isNewEraNoticeActive(EPOCH_BEGAN_AT - 1)).toBe(false);
+  });
+
+  it('is live from the moment the epoch opens through the notice window', () => {
+    if (WORLD_EPOCH < 2) return; // epoch 1 has no predecessor to announce
+    expect(isNewEraNoticeActive(EPOCH_BEGAN_AT)).toBe(true);
+    expect(isNewEraNoticeActive(EPOCH_BEGAN_AT + NEW_ERA_NOTICE_DAYS * DAY - 1)).toBe(true);
+  });
+
+  it('expires on its own once the window closes — no cleanup deploy needed', () => {
+    expect(isNewEraNoticeActive(EPOCH_BEGAN_AT + NEW_ERA_NOTICE_DAYS * DAY)).toBe(false);
+    expect(isNewEraNoticeActive(EPOCH_BEGAN_AT + 30 * DAY)).toBe(false);
+  });
+
+  it('never shows the countdown and the new-era notice at the same time', () => {
+    for (const t of [EPOCH_BEGAN_AT - DAY, EPOCH_BEGAN_AT, EPOCH_BEGAN_AT + DAY]) {
+      expect(isWorldResetPending(t) && isNewEraNoticeActive(t)).toBe(false);
+    }
+  });
+
+  it('names the date the epoch opened', () => {
+    expect(formatEpochStartDate()).toContain('2026');
   });
 });

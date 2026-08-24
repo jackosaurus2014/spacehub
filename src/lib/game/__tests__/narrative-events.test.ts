@@ -26,11 +26,15 @@ import { RANDOM_EVENTS, applyEventEffect } from '../random-events';
 import { loadGame } from '../save-load';
 import { SAVE_KEY } from '../constants';
 import type { GameState } from '../types';
+import { WORLD_EPOCH } from '../world-reset';
 
 const fixedNow = Date.UTC(2026, 2, 25, 12, 0, 0);
 
 function makeState(overrides: Partial<GameState> = {}): GameState {
   return {
+    // Current-epoch stamp: without it the V42 epoch gate archives this save
+    // (unstamped == epoch 1) and loadGame returns null — see world-reset.ts.
+    worldEpoch: WORLD_EPOCH,
     version: 1,
     createdAt: fixedNow - 86_400_000,
     lastTickAt: fixedNow - 1_000,

@@ -29,9 +29,13 @@ import {
 } from '../factions';
 import { loadGame } from '../save-load';
 import { SAVE_KEY } from '../constants';
+import { WORLD_EPOCH } from '../world-reset';
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
   return {
+    // Current-epoch stamp: without it the V42 epoch gate archives this save
+    // (unstamped == epoch 1) and loadGame returns null — see world-reset.ts.
+    worldEpoch: WORLD_EPOCH,
     version: 1, createdAt: 0, lastTickAt: 0,
     money: 10_000_000_000, totalEarned: 10_000_000_000, totalSpent: 0,
     gameDate: { year: 2150, month: 1 }, tickSpeed: 1,

@@ -18,6 +18,7 @@ import { processTick } from '../game-engine';
 import { getGlobalGameDate } from '../server-time';
 import { loadGame } from '../save-load';
 import { SAVE_KEY } from '../constants';
+import { WORLD_EPOCH } from '../world-reset';
 
 // ─── Band + defaults ─────────────────────────────────────────────────────────
 
@@ -211,6 +212,9 @@ describe('save-load V14 morale migration', () => {
 
   it('lifts the old hidden 0.8 morale default to 1.0 and seeds V14 fields', () => {
     const oldSave = {
+      // Current-epoch stamp: without it the V42 epoch gate archives this save
+      // (unstamped == epoch 1) and loadGame returns null — see world-reset.ts.
+      worldEpoch: WORLD_EPOCH,
       version: 1, createdAt: 1, lastTickAt: 1,
       money: 1_000_000, totalEarned: 0, totalSpent: 0,
       gameDate: { year: 2026, month: 5 }, tickSpeed: 1,

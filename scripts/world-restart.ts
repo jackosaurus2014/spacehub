@@ -1,5 +1,6 @@
 /**
- * World restart — Epoch 1 → Epoch 2 (scheduled 2026-08-24 16:00 UTC)
+ * World restart — bumps the shared world to a new epoch.
+ * Epoch 1 → 2 executed 2026-08-24 16:00 UTC; reusable for later restarts.
  *
  * Wipes SHARED-WORLD GAME STATE so every corporation starts the new era on
  * equal footing under the post-overhaul rules. Local player saves are handled
@@ -102,7 +103,7 @@ async function main() {
   const backup = process.argv.includes('--backup');
   const backupPath = path.join(process.cwd(), 'world-restart-backup.json');
 
-  console.log('World restart — Epoch 1 -> 2');
+  console.log('World restart — shared-world epoch wipe');
   console.log(apply ? 'Mode: APPLY (destructive)' : backup ? 'Mode: BACKUP' : 'Mode: DRY RUN');
   console.log('');
 
@@ -158,9 +159,11 @@ async function main() {
     const r = await d.deleteMany();
     console.log(`  ${String(r.count).padStart(8)}  ${model}`);
   }
-  console.log('\nWipe complete. Remaining step: bump WORLD_EPOCH 1 -> 2 in');
-  console.log('src/lib/game/world-reset.ts, set WORLD_RESET_AT = null, swap the');
-  console.log('banner copy to the new-era notice, then gate and deploy.');
+  console.log('\nWipe complete. Remaining steps in src/lib/game/world-reset.ts:');
+  console.log('  · bump WORLD_EPOCH (archives every older-epoch local save)');
+  console.log('  · set WORLD_RESET_AT = null and EPOCH_BEGAN_AT to this restart');
+  console.log('WorldResetNotice.tsx then flips itself from countdown to new-era');
+  console.log('copy for NEW_ERA_NOTICE_DAYS. Build, then deploy.');
 }
 
 main().finally(() => prisma.$disconnect());
