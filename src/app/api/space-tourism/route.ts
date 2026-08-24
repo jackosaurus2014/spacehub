@@ -7,7 +7,7 @@ import {
   TourismStatus,
   SpaceTourismOffering,
 } from '@/lib/space-tourism-data';
-import { getModuleContent } from '@/lib/dynamic-content';
+import { getModuleContent, mergeCuratedWithDynamic } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
 
 function applyFilters(
@@ -52,7 +52,17 @@ export async function GET(request: Request) {
     try {
       const dynamicData = await getModuleContent<SpaceTourismOffering>('space-tourism', 'offerings');
       if (dynamicData.length > 0) {
-        allOfferings = dynamicData.map((item) => item.data);
+        // Merge, never replace: a single AI-refreshed 'offerings' row was
+        // displacing the entire curated catalogue — production served exactly
+        // one offering. Valid refreshed items update their curated
+        // counterpart by id; the seed is the floor.
+        const res = mergeCuratedWithDynamic(
+          allOfferings,
+          dynamicData.map((item) => item.data),
+          (o) => o?.id,
+          (o) => typeof o?.id === 'string' && typeof o?.name === 'string' && typeof o?.provider === 'string',
+        );
+        allOfferings = res.merged;
         dataSource = 'database';
         // Use the most recent refreshedAt from the dynamic content items
         const latestRefresh = dynamicData.reduce((latest, item) =>

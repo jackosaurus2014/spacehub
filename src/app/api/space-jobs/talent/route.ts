@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SpaceTalent, TalentExpertiseArea, TalentAvailability } from '@/types';
 import { SPACE_TALENT_SEED } from '@/lib/talent-board-data';
-import { getModuleContent } from '@/lib/dynamic-content';
+import { getModuleContent, mergeCuratedWithDynamic } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +31,17 @@ export async function GET(request: NextRequest) {
     try {
       const dynamicData = await getModuleContent<SpaceTalent>('talent-board');
       if (dynamicData.length > 0) {
-        allTalent = dynamicData.map((item) => item.data);
+        // Merge, never replace, and validate shape first: the AI refresher
+        // had filled this module with 63 keyless prose rows which, mapped
+        // straight into SpaceTalent, took this endpoint down with a 500 and
+        // displaced every curated expert. See mergeCuratedWithDynamic.
+        const res = mergeCuratedWithDynamic(
+          allTalent,
+          dynamicData.map((item) => item.data),
+          (t) => t?.slug,
+          (t) => typeof t?.slug === 'string' && typeof t?.name === 'string' && typeof t?.title === 'string',
+        );
+        allTalent = res.merged;
         dataSource = 'database';
         const newest = dynamicData.reduce((latest, item) =>
           item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);

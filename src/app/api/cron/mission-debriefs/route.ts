@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { requireCronSecret } from '@/lib/errors';
+import { enrichAndMaybePublishDebrief } from '@/lib/mission-debrief-generator';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 120;
+export const maxDuration = 240;
 
 function slugify(value: string): string {
   return value
@@ -43,13 +44,20 @@ async function uniqueSlug(base: string): Promise<string> {
  *   - Had a launchDate at least 24h ago AND within the last 7 days
  *   - Have no MissionDebrief linked via eventId
  *
- * For each one we create an unpublished draft (publishedAt = null) so admins
- * can review and AI-generate the body. We do NOT call Claude here to keep the
- * cron cheap and deterministic — admins can hit "Generate with AI" from the
- * draft form.
+ * For each one we create an unpublished stub, then — new 2026-08-24 — run
+ * the shared generation pipeline over up to MAX_ENRICH_PER_RUN stubs and
+ * AUTO-PUBLISH those that pass the quality gate. The original design left
+ * publication to a manual admin step that was never operated: months of
+ * daily runs produced 24 placeholder stubs and zero published debriefs. The
+ * admin surface remains for review, unpublish, and manual generation.
  *
  * Auth: Bearer ${CRON_SECRET}.
  */
+/** How many drafts get AI enrichment per cron run. Each enrichment is one
+ *  Claude call (~30-60s); the cap keeps the run inside the route deadline
+ *  and the backlog drains across days rather than timing out in one. */
+const MAX_ENRICH_PER_RUN = 2;
+
 export async function POST(request: NextRequest) {
   const authError = requireCronSecret(request);
   if (authError) return authError;
@@ -143,10 +151,31 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ── Enrichment pass: give the oldest un-enriched stubs real content and
+    // publish the ones that earn it. Identified by the stub marker text so
+    // manually-authored drafts are never overwritten.
+    const stubs = await prisma.missionDebrief.findMany({
+      where: {
+        publishedAt: null,
+        eventId: { not: null },
+        executiveSummary: { startsWith: 'Auto-generated draft awaiting' },
+      },
+      orderBy: { missionDate: 'desc' },
+      take: MAX_ENRICH_PER_RUN,
+      select: { id: true },
+    });
+    const enrichResults = [];
+    for (const stub of stubs) {
+      enrichResults.push(await enrichAndMaybePublishDebrief(stub.id));
+    }
+    const publishedNow = enrichResults.filter((r) => r.published).length;
+
     logger.info('mission-debriefs cron completed', {
       scanned: events.length,
       created,
       skipped,
+      enriched: enrichResults.filter((r) => r.enriched).length,
+      publishedNow,
       errorCount: errors.length,
     });
 

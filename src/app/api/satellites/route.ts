@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
-import { getModuleContent } from '@/lib/dynamic-content';
+import { getModuleContent, mergeCuratedWithDynamic } from '@/lib/dynamic-content';
 
 // Satellite Types
 export type OrbitType = 'LEO' | 'MEO' | 'GEO' | 'HEO' | 'SSO' | 'Polar';
@@ -687,7 +687,17 @@ export async function GET(request: NextRequest) {
     try {
       const dynamicData = await getModuleContent<Satellite>('satellites', 'satellites');
       if (dynamicData.length > 0) {
-        SATELLITES = dynamicData.map((item) => item.data);
+        // Merge, never replace (latent today — the module has no dynamic
+        // rows yet — but the first successful AI refresh would otherwise
+        // displace the curated catalogue, as happened to webinars and
+        // space-tourism). Valid refreshed items update by id.
+        const res = mergeCuratedWithDynamic(
+          SATELLITES,
+          dynamicData.map((item) => item.data),
+          (s) => s?.id,
+          (s) => typeof s?.id === 'string' && typeof s?.name === 'string',
+        );
+        SATELLITES = res.merged;
         dataSource = 'database';
         const latestRefresh = dynamicData.reduce((latest, item) =>
           item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);

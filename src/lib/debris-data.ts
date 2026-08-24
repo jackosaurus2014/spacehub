@@ -176,6 +176,187 @@ export async function updateDebrisStatsFromCelesTrak(stats: {
   }
 }
 
+// ─── SATCAT-backed catalogue statistics (2026-08-24) ────────────────────────
+// The GP-group approach above undercounts badly: the daily snapshot showed
+// totalTracked 593 and totalDebris 0 while CelesTrak's full SATCAT lists
+// ~35,000 on-orbit objects, ~12,500 of them debris. SATCAT (satcat.csv, one
+// public ~6.7MB fetch, refreshed daily) carries OBJECT_TYPE, decay dates and
+// orbital elements — everything the stats page claims to show. It is also
+// what refreshes the DebrisObject showcase rows, which previously had NO
+// update path at all (last write ~151 days before this change).
+
+export interface SatcatRow {
+  name: string;
+  noradId: string;
+  objectType: string;      // PAY | R/B | DEB | UNK
+  decayed: boolean;
+  periodMinutes: number | null;
+  inclination: number | null;
+  apogeeKm: number | null;
+  perigeeKm: number | null;
+  orbitCenter: string;     // 'EA' for Earth
+}
+
+/** Minimal CSV field splitter that respects double-quoted fields (object
+ *  names can contain commas). */
+export function splitCsvLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      out.push(cur);
+      cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  out.push(cur);
+  return out;
+}
+
+export function parseSatcatCsv(csv: string): SatcatRow[] {
+  const lines = csv.split(/\r?\n/);
+  const rows: SatcatRow[] = [];
+  const num = (v: string) => {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) continue;
+    const f = splitCsvLine(line);
+    if (f.length < 17) continue;
+    rows.push({
+      name: f[0],
+      noradId: f[2],
+      objectType: f[3],
+      decayed: f[8].trim() !== '',
+      periodMinutes: num(f[9]),
+      inclination: num(f[10]),
+      apogeeKm: num(f[11]),
+      perigeeKm: num(f[12]),
+      orbitCenter: f[15] || 'EA',
+    });
+  }
+  return rows;
+}
+
+export interface CatalogStats {
+  totalTracked: number;
+  totalPayloads: number;
+  totalRocketBodies: number;
+  totalDebris: number;
+  totalUnknown: number;
+  leoCount: number;
+  meoCount: number;
+  geoCount: number;
+}
+
+/** Orbit bucket from period. Documented heuristic, not ephemeris truth:
+ *  LEO ≤ 128 min, GEO 1400–1500 min (the geosynchronous band), MEO between,
+ *  higher-period deep-space objects fall outside all three buckets. */
+export function orbitBucketFromPeriod(periodMinutes: number | null): 'LEO' | 'MEO' | 'GEO' | null {
+  if (periodMinutes === null) return null;
+  if (periodMinutes <= 128) return 'LEO';
+  if (periodMinutes >= 1400 && periodMinutes <= 1500) return 'GEO';
+  if (periodMinutes < 1400) return 'MEO';
+  return null;
+}
+
+export function computeCatalogStats(rows: SatcatRow[]): CatalogStats {
+  const s: CatalogStats = {
+    totalTracked: 0, totalPayloads: 0, totalRocketBodies: 0,
+    totalDebris: 0, totalUnknown: 0, leoCount: 0, meoCount: 0, geoCount: 0,
+  };
+  for (const r of rows) {
+    if (r.decayed || r.orbitCenter !== 'EA') continue;
+    s.totalTracked++;
+    switch (r.objectType) {
+      case 'PAY': s.totalPayloads++; break;
+      case 'R/B': s.totalRocketBodies++; break;
+      case 'DEB': s.totalDebris++; break;
+      default: s.totalUnknown++; break;
+    }
+    const bucket = orbitBucketFromPeriod(r.periodMinutes);
+    if (bucket === 'LEO') s.leoCount++;
+    else if (bucket === 'MEO') s.meoCount++;
+    else if (bucket === 'GEO') s.geoCount++;
+  }
+  return s;
+}
+
+export async function fetchSatcat(): Promise<SatcatRow[]> {
+  const res = await fetch('https://celestrak.org/pub/satcat.csv', {
+    headers: { 'User-Agent': 'SpaceNexus/2.0 (debris statistics; contact: owner@spacenexus.us)' },
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!res.ok) throw new Error(`SATCAT fetch failed: ${res.status}`);
+  const text = await res.text();
+  const rows = parseSatcatCsv(text);
+  if (rows.length < 10_000) {
+    // A truncated download must not overwrite good stats with tiny numbers.
+    throw new Error(`SATCAT suspiciously small (${rows.length} rows) — refusing to use it`);
+  }
+  return rows;
+}
+
+/** Write today's snapshot from the full catalogue. */
+export async function updateDebrisStatsFromSatcat(stats: CatalogStats): Promise<boolean> {
+  try {
+    const snapshotDate = new Date();
+    snapshotDate.setUTCHours(0, 0, 0, 0);
+    await prisma.debrisStats.upsert({
+      where: { snapshotDate },
+      update: { ...stats },
+      create: { snapshotDate, ...stats },
+    });
+    return true;
+  } catch (error) {
+    logger.error('Failed to update debris stats from SATCAT', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return false;
+  }
+}
+
+/**
+ * Refresh the curated DebrisObject showcase rows from the catalogue —
+ * orbital elements drift and decayed objects should say so. Only rows with a
+ * noradId can be matched; the rest are left untouched.
+ */
+export async function refreshDebrisObjectsFromSatcat(rows: SatcatRow[]): Promise<{ updated: number; decayed: number }> {
+  const byNorad = new Map(rows.map((r) => [r.noradId, r]));
+  const objects = await prisma.debrisObject.findMany({
+    where: { noradId: { not: null } },
+    select: { id: true, noradId: true },
+  });
+  let updated = 0;
+  let decayed = 0;
+  for (const obj of objects) {
+    const row = byNorad.get(obj.noradId!);
+    if (!row) continue;
+    const altitude = row.apogeeKm !== null && row.perigeeKm !== null
+      ? (row.apogeeKm + row.perigeeKm) / 2
+      : undefined;
+    await prisma.debrisObject.update({
+      where: { id: obj.id },
+      data: {
+        ...(altitude !== undefined ? { altitude } : {}),
+        ...(row.inclination !== null ? { inclination: row.inclination } : {}),
+        trackable: !row.decayed,
+        ...(row.decayed ? { deorbitDate: new Date() } : {}),
+      },
+    });
+    updated++;
+    if (row.decayed) decayed++;
+  }
+  return { updated, decayed };
+}
+
 // Helper to generate dates relative to now
 const daysFromNow = (days: number) => {
   const date = new Date();

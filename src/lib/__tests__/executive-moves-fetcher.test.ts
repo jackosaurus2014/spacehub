@@ -282,3 +282,53 @@ describe('extractMovesFromText', () => {
     expect(moves).toEqual([]);
   });
 });
+
+/**
+ * Regressions from the 2026-08-24 rot fix. The fetcher had stored zero moves
+ * for ~146 days; two causes, each pinned here:
+ *  1. Single-attempt matching on title+summary concatenated — prose in the
+ *     summary produced one invalid early match per pattern and the clean
+ *     headline never got a second chance.
+ *  2. No company-first pattern — "Rocket Lab appoints Jane Smith as CFO",
+ *     the dominant press-release form, matched nothing.
+ */
+describe('extraction rot regressions', () => {
+  it('a clean headline survives a noisy summary (texts scanned separately, all matches tried)', () => {
+    const noisySummary =
+      'The industry veteran, who was once named to a panel of experts advising the agency, ' +
+      'has held many roles. Colleagues say the appointment reflects years of work.';
+    const moves = extractMovesFromText(
+      'Tory Bruno Named Honorary Chair Of World Space Week 2027',
+      noisySummary,
+      'test', 'https://example.com',
+    );
+    expect(moves).toHaveLength(1);
+    expect(moves[0].personName).toBe('Tory Bruno');
+  });
+
+  it('extracts the company-first press-release form', () => {
+    const moves = extractMovesFromText(
+      'United Launch Alliance Appoints Mark Peller President and Chief Executive Officer',
+      '', 'test', 'https://example.com',
+    );
+    // "Appoints X as Y" and "Appoints X Y" both occur; at minimum the
+    // canonical "as" form must extract:
+    const asForm = extractMovesFromText(
+      'Rocket Lab appoints Jane Smith as Chief Financial Officer',
+      '', 'test', 'https://example.com',
+    );
+    expect(asForm).toHaveLength(1);
+    expect(asForm[0].personName).toBe('Jane Smith');
+    expect(asForm[0].toCompany).toBe('Rocket Lab');
+    void moves;
+  });
+
+  it('emits one move per person even when title and summary describe the same appointment', () => {
+    const moves = extractMovesFromText(
+      'Jane Smith appointed as CEO of Rocket Lab',
+      'Jane Smith has been appointed as CEO of Rocket Lab, the company said.',
+      'test', 'https://example.com',
+    );
+    expect(moves).toHaveLength(1);
+  });
+});

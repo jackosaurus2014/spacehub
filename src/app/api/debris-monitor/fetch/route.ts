@@ -5,7 +5,10 @@ import {
   fetchCelesTrakGPData,
   parseSatelliteCounts,
   calculateOrbitalStatistics,
-  updateDebrisStatsFromCelesTrak,
+  fetchSatcat,
+  computeCatalogStats,
+  updateDebrisStatsFromSatcat,
+  refreshDebrisObjectsFromSatcat,
 } from '@/lib/debris-data';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
@@ -74,14 +77,25 @@ export async function POST() {
       }
     }
 
-    // Update database with new statistics (only if we got data)
+    // Stats come from the FULL SATCAT, not the handful of GP groups above.
+    // The GP-group totals undercounted by ~60x (593 tracked, debris hardcoded
+    // to 0, while the real catalogue holds ~35k on-orbit objects, ~12.5k of
+    // them debris). The group fetches are kept for their per-event breakdown
+    // in the response; the database snapshot is catalogue truth.
     let statsUpdate = false;
-    if (totalObjects > 0) {
-      statsUpdate = await updateDebrisStatsFromCelesTrak({
-        totalTracked: totalObjects,
-        leoCount: totalLeo,
-        meoCount: totalMeo,
-        geoCount: totalGeo,
+    let catalog: { totalTracked: number; totalDebris: number } | null = null;
+    let objectRefresh: { updated: number; decayed: number } | null = null;
+    try {
+      const satcat = await fetchSatcat();
+      const stats = computeCatalogStats(satcat);
+      statsUpdate = await updateDebrisStatsFromSatcat(stats);
+      catalog = { totalTracked: stats.totalTracked, totalDebris: stats.totalDebris };
+      // Also the DebrisObject showcase rows' only refresh path.
+      objectRefresh = await refreshDebrisObjectsFromSatcat(satcat);
+      logger.info('SATCAT stats updated', { ...stats, objectRefresh });
+    } catch (error) {
+      logger.error('SATCAT stats update failed — keeping previous snapshot', {
+        error: error instanceof Error ? error.message : String(error),
       });
     }
 
@@ -89,6 +103,8 @@ export async function POST() {
       success: true,
       timestamp: new Date().toISOString(),
       summary: {
+        catalog,
+        objectRefresh,
         totalObjects,
         byOrbit: {
           leo: totalLeo,

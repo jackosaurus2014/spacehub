@@ -46,6 +46,57 @@ export async function getModuleContent<T = unknown>(
 }
 
 // Get a single content item by key
+/**
+ * Merge a hand-curated seed with AI-refreshed DynamicContent items, safely.
+ *
+ * Two production failures forced this (2026-08-24):
+ *   - DISPLACEMENT: routes did "if the DB has rows, use only those". The day
+ *     a module's AI refresh started succeeding, its generated rows silently
+ *     replaced the whole curated catalogue — /api/space-tourism served ONE
+ *     offering, the webinars calendar vanished.
+ *   - SHAPE DAMAGE: the generic refresher writes whatever sections/blobs the
+ *     model invents. talent-board accumulated 63 keyless prose rows that,
+ *     mapped straight into typed items, took the endpoint down with a 500.
+ *
+ * Contract: the curated seed is the floor — every seed item always survives.
+ * A dynamic item must pass `isValid` to be considered at all (the firewall
+ * against shape damage). Valid dynamic items REPLACE a seed item with the
+ * same key (they are the AI-refreshed version of it — that freshness is the
+ * whole point of the pipeline) and append when the key is new.
+ *
+ * Contrast with webinars' mergeWebinarSources, where CURATED wins collisions:
+ * conference dates are hand-verified there and model drift must not touch
+ * them. Pick the collision winner deliberately per dataset.
+ */
+export function mergeCuratedWithDynamic<T>(
+  seed: T[],
+  dynamic: T[],
+  keyOf: (item: T) => string | undefined,
+  isValid: (item: T) => boolean,
+): { merged: T[]; updated: number; added: number; rejected: number } {
+  const valid: T[] = [];
+  let rejected = 0;
+  for (const item of dynamic) {
+    if (item && isValid(item) && keyOf(item)) valid.push(item);
+    else rejected++;
+  }
+
+  const byKey = new Map<string, T>();
+  for (const item of seed) {
+    const k = keyOf(item);
+    if (k) byKey.set(k, item);
+  }
+  let updated = 0;
+  let added = 0;
+  for (const item of valid) {
+    const k = keyOf(item)!;
+    if (byKey.has(k)) updated++;
+    else added++;
+    byKey.set(k, item);
+  }
+  return { merged: Array.from(byKey.values()), updated, added, rejected };
+}
+
 export async function getContentItem<T = unknown>(
   contentKey: string
 ): Promise<ContentWithMeta<T> | null> {
