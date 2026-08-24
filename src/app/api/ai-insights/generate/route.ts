@@ -8,6 +8,7 @@ import crypto from 'crypto';
 import { logger } from '@/lib/logger';
 import { unauthorizedError, internalError, requireCronSecret } from '@/lib/errors';
 import { generateEditorialReviewEmail } from '@/lib/newsletter/email-templates';
+import { findLikelyDuplicate, buildRecentCoverageBlock } from '@/lib/insight-dedupe';
 import {
   resolveFactCheckGate,
   releaseMisheldInsights,
@@ -213,6 +214,7 @@ async function sendReviewEmail(
     content: string;
     factCheckNote: string | null;
     reviewToken: string;
+    possibleDuplicateOf?: { title: string; slug: string; status: string } | null;
   }>
 ): Promise<boolean> {
   try {
@@ -235,6 +237,7 @@ async function sendReviewEmail(
         contentPreview: a.content.slice(0, 300),
         factCheckNote: a.factCheckNote,
         reviewToken: a.reviewToken,
+        possibleDuplicateOf: a.possibleDuplicateOf ?? null,
       }))
     );
 
@@ -464,6 +467,18 @@ export async function POST(request: NextRequest) {
 
     const anthropic = new Anthropic();
 
+    // Recently covered stories — every status counts: a rejected insight is
+    // a story the editor explicitly killed, and it must not come back the
+    // next morning under a fresh headline. (The Zhuque-3 landing was covered
+    // three days running because the generator never saw its own output.)
+    const recentInsights = await prisma.aIInsight.findMany({
+      where: { generatedAt: { gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } },
+      select: { title: true, slug: true, status: true },
+      orderBy: { generatedAt: 'desc' },
+      take: 60,
+    });
+    const recentCoverageBlock = buildRecentCoverageBlock(recentInsights);
+
     const prompt = `You are a senior space industry analyst writing in-depth intelligence briefings for SpaceNexus, a professional space industry platform. Based on the following recent news articles, blog posts, and legal/regulatory updates, identify the ${articleCount} most significant space industry developments and write a comprehensive analysis for each.
 
 ## Recent News Articles (Last ${usedWidenedLookback ? '96' : '36'} Hours)
@@ -474,6 +489,8 @@ ${blogContext}
 
 ## Recent Legal & Regulatory Updates (Last ${usedWidenedLookback ? '168' : '72'} Hours)
 ${legalContext}
+
+${recentCoverageBlock}
 
 ## Instructions
 For each of the ${articleCount} most significant developments:
@@ -570,9 +587,25 @@ Respond with valid JSON in this exact format (no markdown code fences):
     }> = [];
 
     // Process each insight: fact-check, then auto-publish or hold
+    let skippedDuplicates = 0;
     for (const insight of parsed.insights) {
       const slug = generateSlug(insight.title);
       const category = validCategories.has(insight.category) ? insight.category : 'market';
+
+      // Mechanical duplicate backstop — the prompt steers the model away from
+      // covered stories, but a same-story piece under a fresh headline must
+      // not reach the catalogue (or the fact-check spend) at all.
+      const dup = findLikelyDuplicate(insight.title, recentInsights);
+      if (dup) {
+        skippedDuplicates++;
+        logger.warn('AI insight skipped as duplicate of recent coverage', {
+          candidate: insight.title,
+          existingSlug: dup.slug,
+          existingStatus: dup.status,
+          sharedTokens: dup.sharedTokens,
+        });
+        continue;
+      }
 
       // Fact-check the article
       const factCheck = await factCheckArticle(
@@ -659,6 +692,14 @@ Respond with valid JSON in this exact format (no markdown code fences):
         orderBy: { generatedAt: 'asc' },
       });
       if (allPending.length > 0) {
+        // Warn the approver when a held article's story is already covered
+        // by a published insight — the approval decision must be made with
+        // that in view (see insight-dedupe.ts for the incident).
+        const published = await prisma.aIInsight.findMany({
+          where: { status: 'published', generatedAt: { gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } },
+          select: { title: true, slug: true, status: true },
+          take: 60,
+        });
         await sendReviewEmail(
           allPending.map((i: any) => ({
             title: i.title,
@@ -668,6 +709,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
             content: i.content,
             factCheckNote: i.factCheckNote,
             reviewToken: i.reviewToken || '',
+            possibleDuplicateOf: findLikelyDuplicate(i.title, published.filter((r) => r.slug !== i.slug)),
           }))
         );
       }
@@ -679,6 +721,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
       total: upsertedInsights.length,
       autoPublished,
       heldForReview,
+      skippedDuplicates,
       categories: upsertedInsights.map((i) => i.category),
       factCheckResults: upsertedInsights.map((i) => ({
         slug: i.slug,
@@ -691,6 +734,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
       count: upsertedInsights.length,
       autoPublished,
       pendingReview: heldForReview,
+      skippedDuplicates,
       releasedMisheld: reconciled.released,
       message: `${autoPublished} insight(s) auto-published (fact-check passed); ${heldForReview} held for admin review`,
       insights: upsertedInsights.map((i) => ({

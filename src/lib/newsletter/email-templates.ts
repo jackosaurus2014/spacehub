@@ -1134,6 +1134,10 @@ interface EditorialReviewArticle {
   contentPreview: string;
   factCheckNote: string | null;
   reviewToken: string;
+  /** Set when a recent insight already covers this story — the approver must
+   *  see it BEFORE clicking approve. Two Zhuque-3 duplicates were published
+   *  because this warning did not exist. */
+  possibleDuplicateOf?: { title: string; slug: string; status: string } | null;
 }
 
 export function generateEditorialReviewEmail(articles: EditorialReviewArticle[]): { html: string; text: string; subject: string } {
@@ -1171,6 +1175,13 @@ export function generateEditorialReviewEmail(articles: EditorialReviewArticle[])
               <p style="margin:0 0 16px 0;color:#64748b;font-size:13px;line-height:1.5;border-left:3px solid #334155;padding-left:12px;">
                 ${escapeHtml(article.contentPreview)}...
               </p>
+              ${article.possibleDuplicateOf ? `
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">
+                <tr><td style="padding:12px;background-color:#2a1215;border-radius:6px;border-left:3px solid #ef4444;">
+                  <p style="margin:0 0 4px 0;color:#f87171;font-size:11px;font-weight:600;text-transform:uppercase;">Possible duplicate — read before approving</p>
+                  <p style="margin:0;color:#fca5a5;font-size:13px;line-height:1.5;">A recent insight already covers this story: &ldquo;${escapeHtml(article.possibleDuplicateOf.title)}&rdquo; (${escapeHtml(article.possibleDuplicateOf.status)}). Approving both publishes the same story twice.</p>
+                </td></tr>
+              </table>` : ''}
               ${article.factCheckNote ? `
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">
                 <tr><td style="padding:12px;background-color:#1e293b;border-radius:6px;border-left:3px solid #f59e0b;">
