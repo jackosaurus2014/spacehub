@@ -1,4 +1,4 @@
-import { parseXStreamUrl } from '../livestream-detector';
+import { parseXStreamUrl, isPlaceholderThumbnail } from '../livestream-detector';
 
 describe('parseXStreamUrl', () => {
   it('parses native X broadcast URLs (how SpaceX streams launches)', () => {
@@ -38,5 +38,18 @@ describe('parseXStreamUrl', () => {
   it('rejects bare x.com/i paths without a broadcast id', () => {
     expect(parseXStreamUrl('https://x.com/i')).toBeNull();
     expect(parseXStreamUrl('https://x.com/i/broadcasts')).toBeNull();
+  });
+});
+
+describe('isPlaceholderThumbnail', () => {
+  it('flags YouTube\'s grey "no thumbnail" static asset', () => {
+    // The exact URL the /live scrape returned for a real homepage stream.
+    expect(isPlaceholderThumbnail('//s.ytimg.com/yts/img/meh7-vflGevej7.png')).toBe(true);
+    expect(isPlaceholderThumbnail('https://s.ytimg.com/yts/img/no_thumbnail.jpg')).toBe(true);
+  });
+
+  it('leaves real video frames alone', () => {
+    expect(isPlaceholderThumbnail('https://i.ytimg.com/vi/TyXUaqscyiU/hqdefault.jpg')).toBe(false);
+    expect(isPlaceholderThumbnail('https://i.ytimg.com/vi/abc/maxresdefault.jpg')).toBe(false);
   });
 });

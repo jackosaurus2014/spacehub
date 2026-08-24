@@ -427,6 +427,10 @@ async function getRelevantNews(module: string, daysBack: number = 7): Promise<st
  *   caller wants prioritized in this pass. See refreshAllAIResearchedModules
  *   for how these are computed from actual per-key ages.
  */
+/** Output budget for a module refresh. Covers adaptive thinking AND the JSON
+ *  payload — the two share this cap. See the note at the API call below. */
+const MAX_REFRESH_TOKENS = 16000;
+
 export async function refreshModuleViaAI(module: string, priorityKeys?: string[]): Promise<AIUpdateResult> {
   const start = Date.now();
   const result: AIUpdateResult = {
@@ -509,20 +513,43 @@ Respond with valid JSON (no markdown code fences):
   "notes": "Summary of changes made and any uncertainties"
 }`;
 
-    // 5. Call Claude Sonnet
+    // 5. Call Claude.
+    //
+    // max_tokens is a HARD CAP ON THINKING + TEXT COMBINED, and Sonnet 5 runs
+    // adaptive thinking by default (see ai-models.ts). This call used to ask
+    // for 4000, which the reasoning alone could consume on a large module —
+    // leaving a response with a thinking block and no text block at all, or a
+    // text block cut off mid-JSON. That produced two misleading errors
+    // ("no text content" / "failed to parse JSON") that read like model
+    // misbehaviour, and silently flatlined several modules for days. Give the
+    // budget real headroom and cap the reasoning depth with effort instead.
     const anthropic = new Anthropic();
     const response = await anthropic.messages.create({
       model: EDITORIAL_MODEL,
-      max_tokens: 4000,
+      max_tokens: MAX_REFRESH_TOKENS,
+      output_config: { effort: 'medium' },
       messages: [{ role: 'user', content: prompt }],
     });
 
     result.tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
 
-    // 6. Parse response
+    // 6. Parse response. Check stop_reason FIRST — a truncated or refused
+    // response is a budget/policy problem, not a parsing problem, and saying
+    // so is the difference between a one-line fix and a week of stale data.
+    if (response.stop_reason === 'max_tokens') {
+      throw new Error(
+        `AI response hit the ${MAX_REFRESH_TOKENS}-token cap before finishing (thinking + output). ` +
+        'Raise max_tokens or lower output_config.effort for this module.',
+      );
+    }
+    if (response.stop_reason === 'refusal') {
+      throw new Error('AI declined to answer this refresh prompt (stop_reason: refusal)');
+    }
+
     const textBlock = response.content.find((block) => block.type === 'text');
     if (!textBlock || textBlock.type !== 'text') {
-      throw new Error('AI response contained no text content');
+      const kinds = response.content.map((b) => b.type).join(', ') || 'none';
+      throw new Error(`AI response contained no text block (blocks: ${kinds})`);
     }
 
     const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
@@ -534,7 +561,10 @@ Respond with valid JSON (no markdown code fences):
     try {
       parsed = JSON.parse(jsonMatch[0]);
     } catch {
-      throw new Error('Failed to parse AI response JSON');
+      throw new Error(
+        `Failed to parse AI response JSON (${jsonMatch[0].length} chars, ` +
+        `stop_reason: ${response.stop_reason})`,
+      );
     }
 
     // 7. Apply updates

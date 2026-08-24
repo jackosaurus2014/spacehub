@@ -172,10 +172,27 @@ interface YouTubeVideoItem {
   id: string;
   liveStreamingDetails?: {
     actualStartTime?: string;
+    actualEndTime?: string;
     concurrentViewers?: string;
   };
   statistics?: {
     viewCount?: string;
+  };
+  /** Authoritative metadata — the page scraper's title/thumbnail can be stale
+   *  or, on the /live path, lifted from the wrong element entirely. */
+  snippet?: {
+    title?: string;
+    channelId?: string;
+    channelTitle?: string;
+    liveBroadcastContent?: string;
+    thumbnails?: Record<string, { url?: string } | undefined>;
+  };
+  /** Embeddability + visibility. A stream that is live and popular can still
+   *  refuse to play inside our iframe; without this we'd render YouTube's
+   *  "Video unavailable" box on the homepage and never know. */
+  status?: {
+    embeddable?: boolean;
+    privacyStatus?: string;
   };
 }
 
@@ -232,7 +249,7 @@ async function youtubeVideoDetails(
   if (videoIds.length === 0) return map;
 
   const query = new URLSearchParams({
-    part: 'liveStreamingDetails,statistics',
+    part: 'liveStreamingDetails,statistics,snippet,status',
     id: videoIds.join(','),
     key: apiKey,
   });
@@ -263,6 +280,15 @@ async function youtubeVideoDetails(
 }
 
 /**
+ * YouTube serves a grey "no thumbnail available" placeholder from its static
+ * asset host when a scrape misses the real image. Treat those as absent so we
+ * fall back to the video's own hqdefault frame.
+ */
+export function isPlaceholderThumbnail(url: string): boolean {
+  return url.includes('s.ytimg.com/yts/img/');
+}
+
+/**
  * Convert raw YouTube search + video detail data into ActiveLiveStream objects.
  */
 function toActiveLiveStreams(
@@ -272,10 +298,23 @@ function toActiveLiveStreams(
   return searchItems.map((item) => {
     const videoId = item.id.videoId;
     const detail = videoDetails.get(videoId);
-    const thumbnail =
+
+    // The API's snippet wins over the scraped one. The /live scrape path
+    // regex-matches a title out of the page and has been observed lifting a
+    // neighbouring stream's title, and the thumbnail it finds is sometimes
+    // YouTube's grey "no thumbnail" placeholder rather than the real frame.
+    const title = detail?.snippet?.title?.trim() || item.snippet.title;
+    const apiThumb =
+      detail?.snippet?.thumbnails?.high?.url ??
+      detail?.snippet?.thumbnails?.medium?.url ??
+      detail?.snippet?.thumbnails?.default?.url;
+    const scrapedThumb =
       item.snippet.thumbnails.high?.url ??
       item.snippet.thumbnails.medium?.url ??
-      item.snippet.thumbnails.default?.url ??
+      item.snippet.thumbnails.default?.url;
+    const thumbnail =
+      apiThumb ??
+      (scrapedThumb && !isPlaceholderThumbnail(scrapedThumb) ? scrapedThumb : undefined) ??
       `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
     const viewerCount = detail?.liveStreamingDetails?.concurrentViewers
@@ -286,23 +325,28 @@ function toActiveLiveStreams(
       detail?.liveStreamingDetails?.actualStartTime ??
       item.snippet.publishedAt;
 
-    // Prefer our known channel name if available (never key on empty ids)
+    // Prefer our known channel name if available (never key on empty ids).
+    // The scraper leaves channelId empty for handle-only channels, so fall
+    // back to the API's before giving up on the name lookup.
+    const channelId = item.snippet.channelId || detail?.snippet?.channelId || '';
     const channelName =
-      (item.snippet.channelId && CHANNEL_NAME_MAP.get(item.snippet.channelId)) ||
-      item.snippet.channelTitle;
+      (channelId && CHANNEL_NAME_MAP.get(channelId)) ||
+      item.snippet.channelTitle ||
+      detail?.snippet?.channelTitle ||
+      '';
 
     return {
       videoId,
-      title: item.snippet.title,
+      title,
       channelName,
-      channelId: item.snippet.channelId,
+      channelId,
       thumbnailUrl: thumbnail,
       viewerCount,
       startedAt,
       embedUrl: `https://www.youtube.com/embed/${videoId}`,
       platform: 'youtube' as const,
       watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
-      isMajorEvent: isMajorEventTitle(`${item.snippet.title} ${channelName}`),
+      isMajorEvent: isMajorEventTitle(`${title} ${channelName}`),
     };
   });
 }
@@ -324,10 +368,6 @@ function channelBaseUrl(channel: SpaceChannel): string | null {
   if (channel.channelId) return `https://www.youtube.com/channel/${channel.channelId}`;
   if (channel.handle) return `https://www.youtube.com/@${channel.handle}`;
   return null;
-}
-
-function decodeYtTitle(title: string): string {
-  return title.replace(/\\u0026/g, '&').replace(/\\"/g, '"');
 }
 
 /**
@@ -489,19 +529,20 @@ async function checkChannelLivePage(channel: SpaceChannel): Promise<YouTubeSearc
 
     const videoId = videoIdMatch[1];
 
-    // Extract the video title (prefer the runs-format title over the first
-    // bare "title" key, which is often channel metadata)
-    const runsTitleMatch = html.match(/"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"/);
-    const bareTitleMatch = html.match(/"title":"([^"]+)"/);
-    const title = runsTitleMatch
-      ? decodeYtTitle(runsTitleMatch[1])
-      : bareTitleMatch
-        ? decodeYtTitle(bareTitleMatch[1])
-        : `${channel.name} Live`;
+    // Ownership + title, same as the /streams path. Regex-scraping the title
+    // out of this page picks up whatever "title" key appears first, which has
+    // been observed returning a neighbouring stream's title from the sidebar;
+    // oEmbed is free and authoritative, so use it and drop the video when it
+    // turns out not to belong to this channel.
+    const verifiedTitle = await verifyVideoOwner(videoId, channel);
+    if (verifiedTitle === null) return [];
+    const title = verifiedTitle;
 
-    // Extract thumbnail
+    // Extract thumbnail, ignoring YouTube's grey placeholder asset.
     const thumbMatch = html.match(/"thumbnail":\{"thumbnails":\[\{"url":"([^"]+)"/);
-    const thumbnail = thumbMatch ? thumbMatch[1] : `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    const thumbnail = thumbMatch && !isPlaceholderThumbnail(thumbMatch[1])
+      ? thumbMatch[1]
+      : `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
     return [{
       id: { videoId },
@@ -596,6 +637,41 @@ async function detectViaYouTube(apiKey: string | undefined): Promise<ActiveLiveS
   const confirmedLive = allStreams.filter((stream) => {
     if (!detailsAvailable) return true;
     const detail = videoDetails.get(stream.videoId);
+
+    // Embeddability + visibility gate. A stream can be live, public in search,
+    // and busy, and still refuse to play inside a third-party iframe (owner
+    // opt-out, members-only, age gate). We cannot detect that in the browser —
+    // YouTube renders its own error page inside the iframe and cross-origin
+    // rules hide it from us — so a non-embeddable stream would sit on the
+    // homepage as a dead "Video unavailable" box. Filter it server-side and
+    // let the next-best stream take the slot.
+    if (detail?.status?.embeddable === false) {
+      logger.info('[LivestreamDetector] Filtering out non-embeddable video', {
+        videoId: stream.videoId,
+        channel: stream.channelName,
+        title: stream.title,
+        reason: 'status.embeddable is false — would render a dead player',
+      });
+      return false;
+    }
+    if (detail?.status?.privacyStatus && detail.status.privacyStatus !== 'public') {
+      logger.info('[LivestreamDetector] Filtering out non-public video', {
+        videoId: stream.videoId,
+        channel: stream.channelName,
+        privacyStatus: detail.status.privacyStatus,
+      });
+      return false;
+    }
+    // An ended broadcast keeps its concurrentViewers reading for a while.
+    if (detail?.liveStreamingDetails?.actualEndTime) {
+      logger.info('[LivestreamDetector] Filtering out ended broadcast', {
+        videoId: stream.videoId,
+        channel: stream.channelName,
+        actualEndTime: detail.liveStreamingDetails.actualEndTime,
+      });
+      return false;
+    }
+
     if (!detail?.liveStreamingDetails?.concurrentViewers) {
       logger.info('[LivestreamDetector] Filtering out non-live video', {
         videoId: stream.videoId,
