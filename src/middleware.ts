@@ -490,6 +490,73 @@ export const SLUG_EXISTENCE_CHECKS: Array<{
     match: /^\/space-tycoon\/seasons\/([^/]+)\/?$/,
     existsApiPath: (n) => `/api/space-tycoon/seasons/${encodeURIComponent(n)}/exists`,
   },
+
+  // ── 2026-08-24 batch: the twelve remaining soft-404 client pages ──────────
+  // Live-tested with garbage slugs before this change: every one returned
+  // HTTP 200. All are client components, so notFound() can't set the status —
+  // this registry is the only mechanism that can.
+  {
+    match: /^\/ai-insights\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/ai-insights/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    match: /^\/amas\/([^/]+)\/?$/,
+    existsApiPath: (id) => `/api/sessions/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    match: /^\/community\/forums\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/community/forums/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // Thread level: the category slug is validated by the entry above on its
+    // own page; here only the thread id decides existence.
+    match: /^\/community\/forums\/[^/]+\/([^/]+)\/?$/,
+    existsApiPath: (id) => `/api/community/forum-threads/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    // /investor-hub/deal-memos/new is the authoring page.
+    match: /^\/investor-hub\/deal-memos\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['new']),
+    existsApiPath: (slug) => `/api/investor-hub/deal-memos/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // /investor-hub/theses/new is the authoring page.
+    match: /^\/investor-hub\/theses\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['new']),
+    existsApiPath: (slug) => `/api/investor-hub/theses/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // /marketplace/rfq/new is the authoring page.
+    match: /^\/marketplace\/rfq\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['new']),
+    existsApiPath: (id) => `/api/marketplace/rfq/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    match: /^\/mentors\/([^/]+)\/?$/,
+    existsApiPath: (userId) => `/api/mentors/${encodeURIComponent(userId)}/exists`,
+  },
+  {
+    // /mission-debriefs/admin is the operator surface.
+    match: /^\/mission-debriefs\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['admin']),
+    existsApiPath: (slug) => `/api/mission-debriefs/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    match: /^\/regulation-explainers\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/regulation-explainers/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // /speaking/submit is the submission form.
+    match: /^\/speaking\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['submit']),
+    existsApiPath: (id) => `/api/speaking/${encodeURIComponent(id)}/exists`,
+  },
+  {
+    // /ticket-resale/list and /ticket-resale/my-listings are real pages.
+    match: /^\/ticket-resale\/([^/]+)\/?$/,
+    excludedSlugs: new Set(['list', 'my-listings']),
+    existsApiPath: (id) => `/api/ticket-resale/${encodeURIComponent(id)}/exists`,
+  },
 ];
 
 async function checkKnownSlugMissing(req: NextRequest, pathname: string): Promise<boolean> {
