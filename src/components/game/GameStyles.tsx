@@ -443,6 +443,17 @@ export default function GameStyles() {
          four small angle brackets at the corners. Color via --hud-color. */
       .hud-frame {
         --hud-color: rgba(34, 211, 238, 0.35);
+      }
+      /* The corner brackets are positioned against this box, so .hud-frame
+         needs a positioning context — but it must not FIGHT one. As a plain
+         class selector it ties on specificity with Tailwind's absolute
+         utility, and this stylesheet is injected after Tailwind, so source
+         order made hud-frame win: every HUD panel marked "hud-frame absolute"
+         silently laid out in normal flow instead. That put the location
+         command panel below the map entirely, so picking a location looked
+         like it did nothing. :where() drops this rule to zero specificity so
+         any position utility on the element wins. */
+      :where(.hud-frame) {
         position: relative;
       }
       .hud-frame::before,
