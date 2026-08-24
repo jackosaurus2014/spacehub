@@ -1506,17 +1506,51 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const { world, available: worldAvailable } = useWorldState();
   const worldLayerActive = showWorld && worldAvailable;
 
-  const selectLocation = useCallback((locId: string, anchor?: { x: number; y: number }) => {
+  /** Frame a body in the viewport. The bodies near Earth sit within a few
+   *  pixels of each other at the default camera distance, so picking one from
+   *  the Location List has to bring the camera to it — otherwise the selection
+   *  reticle lands somewhere the player isn't looking. Keeps the current
+   *  viewing angle and only changes what the camera orbits and how close. */
+  const focusCameraOn = useCallback((locId: string) => {
+    const controls = controlsRef.current;
+    const cam = cameraRef.current;
+    const anchor = posRef.current.anchors[locId];
+    if (!controls || !cam || !anchor) return;
+
+    const target = new THREE.Vector3(anchor.pos[0], anchor.pos[1], anchor.pos[2]);
+    const dir = new THREE.Vector3().subVectors(cam.position, controls.target);
+    if (dir.lengthSq() < 1e-6) dir.set(0, 0.6, 1); // camera sat on its target
+    dir.setLength(Math.max(anchor.r * 8, 6));
+
+    controls.target.copy(target);
+    cam.position.copy(target).add(dir);
+    controls.update();
+  }, []);
+
+  /**
+   * @param anchor  Screen point to hang the radial command menu on.
+   * @param opts.toggle  Whether re-picking the current selection clears it.
+   *   Defaults to true for un-anchored picks, preserving click-again-to-
+   *   deselect on the map body. The Location List passes false: a list row
+   *   that silently deselects reads as "the button did nothing", which is
+   *   exactly how the first-hour "claim your next orbit" step got stuck.
+   * @param opts.focus  Move the camera to frame the body.
+   */
+  const selectLocation = useCallback((
+    locId: string,
+    anchor?: { x: number; y: number },
+    opts?: { toggle?: boolean; focus?: boolean },
+  ) => {
     playSound('click');
-    setSelectedLoc(prev => {
-      // Wave A2: an anchored request always SELECTS (it opens the radial
-      // command menu at the body); un-anchored requests keep the V4
-      // click-again-to-deselect behavior.
-      const next = !anchor && prev === locId ? null : locId;
-      onSelectLocation?.(next, next ? anchor : undefined);
-      return next;
-    });
-  }, [onSelectLocation]);
+    // Derive from current state rather than inside the updater — the updater
+    // must stay pure, and notifying the parent from inside it can double-fire
+    // or be dropped entirely under StrictMode and concurrent rendering.
+    const allowToggle = opts?.toggle ?? !anchor;
+    const next = allowToggle && selectedLoc === locId ? null : locId;
+    setSelectedLoc(next);
+    onSelectLocation?.(next, next ? anchor : undefined);
+    if (next && opts?.focus) focusCameraOn(next);
+  }, [selectedLoc, onSelectLocation, focusCameraOn]);
 
   /** Scene clicks arrive in client coordinates; the radial menu is positioned
    *  inside this component's container, so translate once here. */
@@ -1805,7 +1839,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                       <button
                         key={loc.id}
                         type="button"
-                        onClick={() => selectLocation(loc.id)}
+                        onClick={() => selectLocation(loc.id, undefined, { toggle: false, focus: true })}
                         // Wave A2 — keyboard/right-click route into the radial
                         // command menu, anchored on this row.
                         onContextMenu={e => { e.preventDefault(); selectLocation(loc.id, anchorForElement(e.currentTarget)); }}

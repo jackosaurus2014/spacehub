@@ -152,7 +152,7 @@ export default function NewsletterSignup({
           {title || 'Stay Ahead of the Curve'}
         </h2>
         <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-          {description || 'Subscribe to our daily digest and get curated space industry news, AI-powered analysis, and expert insights delivered to your inbox every morning.'}
+          {description || 'Subscribe to our Monday/Thursday digest and get curated space industry news, AI-powered analysis, and expert insights delivered to your inbox twice a week.'}
         </p>
 
         {status === 'success' ? (

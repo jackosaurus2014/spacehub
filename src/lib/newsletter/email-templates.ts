@@ -154,7 +154,7 @@ export function renderVerificationEmail(verificationUrl: string, name?: string):
           ${greeting}
         </p>
         <p style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: ${styles.textLight};">
-          Thank you for subscribing to the SpaceNexus newsletter! Please verify your email address to start receiving our daily digest of space industry news and insights.
+          Thank you for subscribing to the SpaceNexus newsletter! Please verify your email address to start receiving our Monday/Thursday digest of space industry news and insights.
         </p>
         <table role="presentation" cellspacing="0" cellpadding="0" border="0">
           <tr>
@@ -181,7 +181,7 @@ export function renderVerificationEmail(verificationUrl: string, name?: string):
 
 Thank you for subscribing to the SpaceNexus newsletter!
 
-Please verify your email address to start receiving our daily digest of space industry news and insights.
+Please verify your email address to start receiving our Monday/Thursday digest of space industry news and insights.
 
 Click here to verify: ${verificationUrl}
 
@@ -385,13 +385,16 @@ ${article.content}
     <tr>
       <td style="padding: 25px 30px; background-color: ${styles.bgCard}; text-align: center;">
         <p style="margin: 0 0 5px 0; font-size: 14px; color: ${styles.textMuted}; text-transform: uppercase; letter-spacing: 1px;">
-          Daily Space Digest
+          M/Th Space Digest
         </p>
         <h1 style="margin: 0; font-size: 22px; font-weight: 600; color: ${styles.textWhite};">
           ${formattedDate}
         </h1>
         <p style="margin: 15px 0 0 0; font-size: 14px; color: ${styles.textLight};">
           ${totalArticles} articles across ${categoryNames.length} categories
+        </p>
+        <p style="margin: 6px 0 0 0; font-size: 12px; color: ${styles.textMuted};">
+          Delivered Mondays &amp; Thursdays
         </p>
       </td>
     </tr>${watchSection.html}
@@ -412,11 +415,12 @@ ${article.content}
       </td>
     </tr>
     ${getFooter(unsubscribeUrl)}
-  `, `Your daily space industry digest for ${formattedDate} - ${totalArticles} articles`);
+  `, `Your Monday/Thursday space industry digest for ${formattedDate} - ${totalArticles} articles`);
 
-  const plain = `SPACENEXUS DAILY DIGEST
+  const plain = `SPACENEXUS M/TH DIGEST
 ${formattedDate}
 ${totalArticles} articles across ${categoryNames.length} categories
+Delivered Mondays & Thursdays
 ${watchSection.plain}
 ${featureArticlesPlain}
 ${newsPlain}
@@ -428,7 +432,7 @@ Unsubscribe: ${unsubscribeUrl}`;
   return {
     html,
     plain,
-    subject: `SpaceNexus Daily Digest - ${formattedDate}`,
+    subject: `SpaceNexus M/Th Digest - ${formattedDate}`,
   };
 }
 

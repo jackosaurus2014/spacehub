@@ -1099,17 +1099,43 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   // Shared selection logic — used by both the canvas click handler and the
   // keyboard-focusable Location List buttons below, so the two entry points
   // always stay in sync (same toggle-off behavior, same parent notification).
-  const selectLocation = useCallback((locId: string, anchor?: { x: number; y: number }) => {
-    playSound('click');
-    setSelectedLoc(prev => {
-      // Wave A2: an anchored request (map click / context key) always SELECTS
-      // — it opens the radial command menu at the body rather than toggling
-      // the selection off, which would leave the menu pointing at nothing.
-      const next = !anchor && prev === locId ? null : locId;
-      onSelectLocation?.(next, next ? anchor : undefined);
-      return next;
+  /** Pan the viewport so a body sits in the middle. Inverts the same layout
+   *  maths the draw loop and hit-test use: lx = layout.x * w * zoom + offset.x
+   *  (and ly likewise), solved for the offset that puts lx,ly at the centre. */
+  const centreOn = useCallback((locId: string) => {
+    const canvas = canvasRef.current;
+    const layout = LOCATION_LAYOUT[locId];
+    if (!canvas || !layout) return;
+    const rect = canvas.getBoundingClientRect();
+    setOffset({
+      x: rect.width / 2 - layout.x * rect.width * zoom,
+      y: rect.height / 2 - layout.y * rect.height,
     });
-  }, [onSelectLocation]);
+  }, [zoom]);
+
+  /**
+   * @param anchor  Screen point to hang the radial command menu on.
+   * @param opts.toggle  Whether re-picking the current selection clears it.
+   *   Defaults to true for un-anchored picks, preserving click-again-to-
+   *   deselect on the map body. The Location List passes false: a list row
+   *   that silently deselects reads as "the button did nothing".
+   * @param opts.focus  Pan the viewport to centre the body.
+   */
+  const selectLocation = useCallback((
+    locId: string,
+    anchor?: { x: number; y: number },
+    opts?: { toggle?: boolean; focus?: boolean },
+  ) => {
+    playSound('click');
+    // Derive from current state rather than inside the updater — the updater
+    // must stay pure, and notifying the parent from inside it can double-fire
+    // or be dropped entirely under StrictMode and concurrent rendering.
+    const allowToggle = opts?.toggle ?? !anchor;
+    const next = allowToggle && selectedLoc === locId ? null : locId;
+    setSelectedLoc(next);
+    onSelectLocation?.(next, next ? anchor : undefined);
+    if (next && opts?.focus) centreOn(next);
+  }, [selectedLoc, onSelectLocation, centreOn]);
 
   /** Container-relative point for an element (Location List rows opening the
    *  radial menu by keyboard/right-click need an anchor too). */
@@ -1212,7 +1238,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                     <button
                       key={loc.id}
                       type="button"
-                      onClick={() => selectLocation(loc.id)}
+                      onClick={() => selectLocation(loc.id, undefined, { toggle: false, focus: true })}
                       // Wave A2 — keyboard/right-click route into the radial
                       // command menu: C (or the Context Menu key) opens the
                       // arc anchored on this row, so every verb the mouse can

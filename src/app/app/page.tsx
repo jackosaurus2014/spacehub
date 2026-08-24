@@ -61,7 +61,7 @@ const appFeatures = [
       </svg>
     ),
     title: 'News & Analysis',
-    description: `160+ articles, AI insights, daily digests, and aggregated news from ${SITE_STATS.newsFeeds} RSS feeds.`,
+    description: `160+ articles, AI insights, twice-weekly digests, and aggregated news from ${SITE_STATS.newsFeeds} RSS feeds.`,
   },
   {
     icon: (

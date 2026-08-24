@@ -8,8 +8,9 @@ import type { FeatureRequest, HelpRequest } from '@/types';
 import { AVAILABLE_MODULES } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ReachoutsTab from '@/components/admin/ReachoutsTab';
 
-type Tab = 'feature' | 'help' | 'feedback' | 'compliance-qa' | 'data-status';
+type Tab = 'feature' | 'help' | 'feedback' | 'reachouts' | 'compliance-qa' | 'data-status';
 
 // Matches the FeedbackSubmission Prisma model (see prisma/schema.prisma)
 interface FeedbackSubmissionRow {
@@ -134,7 +135,13 @@ export default function AdminPage() {
   useEffect(() => {
     try {
       const wanted = new URLSearchParams(window.location.search).get('tab');
-      if (wanted === 'feedback' || wanted === 'help' || wanted === 'compliance-qa' || wanted === 'data-status') {
+      if (
+        wanted === 'feedback' ||
+        wanted === 'help' ||
+        wanted === 'reachouts' ||
+        wanted === 'compliance-qa' ||
+        wanted === 'data-status'
+      ) {
         setTab(wanted);
       }
     } catch {
@@ -261,6 +268,16 @@ export default function AdminPage() {
             Feedback
           </button>
           <button
+            onClick={() => setTab('reachouts')}
+            className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+              tab === 'reachouts'
+                ? 'border-white/15 text-white'
+                : 'border-transparent text-star-300 hover:text-white'
+            }`}
+          >
+            Reachouts
+          </button>
+          <button
             onClick={() => setTab('compliance-qa')}
             className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
               tab === 'compliance-qa'
@@ -284,6 +301,8 @@ export default function AdminPage() {
 
         {tab === 'data-status' ? (
           <DataStatusPanel />
+        ) : tab === 'reachouts' ? (
+          <ReachoutsTab />
         ) : loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner size="md" />

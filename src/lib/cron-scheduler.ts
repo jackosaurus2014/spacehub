@@ -57,9 +57,11 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 */4 * * *',   path: '/api/refresh?type=blogs',             label: 'blogs-fetch',                maxStaleMinutes: 360 },
   { schedule: '0 */4 * * *',   path: '/api/refresh?type=external-apis',     label: 'external-api-refresh',       maxStaleMinutes: 360 },
 
-  // Daily (data refresh only — newsletter sends every 3 days)
+  // Daily (data refresh only — the subscriber newsletter is twice weekly)
   { schedule: '0 0 * * *',     path: '/api/refresh?type=daily',             label: 'daily-refresh',              maxStaleMinutes: 1560 },
-  // Newsletter digest — every 3 days (Mon/Thu at 8am UTC)
+  // Subscriber newsletter — the M/Th Digest, Mondays and Thursdays at 08:00 UTC.
+  // Cadence is deliberate (founder decision 2026-08-24); the email is titled to
+  // match in src/lib/newsletter/email-templates.ts. Keep the two in sync.
   { schedule: '0 8 * * 1,4',   path: '/api/newsletter/send-digest',         label: 'newsletter-digest',          maxStaleMinutes: 5760 },
   { schedule: '0 1 * * *',     path: '/api/ai-insights/generate',           label: 'ai-insights',                maxStaleMinutes: 1560 },
   { schedule: '0 2 * * *',     path: '/api/refresh?type=ai-research',       label: 'ai-data-research',           maxStaleMinutes: 1560 },
@@ -104,6 +106,12 @@ const CRON_JOBS: CronJobDef[] = [
   // "current" content (featured mission dates, countdown widgets, curated as-of
   // stamps, ATS/news/AI pipeline liveness). See src/lib/content-accuracy.ts.
   { schedule: '0 12 * * *',    path: '/api/cron/content-accuracy',          label: 'content-accuracy',           maxStaleMinutes: 1560 },
+
+  // Reachout sentinel — one watchdog over every inbound channel (contact,
+  // feedback, help, feature/company/provider submissions, introductions,
+  // meetings, partnerships, marketplace interest, moderation reports).
+  // Emails only when something has sat unanswered past its threshold.
+  { schedule: '0 15 * * *',    path: '/api/cron/reachout-sentinel',         label: 'reachout-sentinel',          maxStaleMinutes: 1560 },
 
   // Weekly / twice-weekly
   { schedule: '0 9 * * 5',     path: '/api/newsletter/send-weekly-digest',                 label: 'weekly-digest-email',        maxStaleMinutes: 11520 },
