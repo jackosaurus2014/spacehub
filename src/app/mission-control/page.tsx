@@ -9,6 +9,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ExportButton from '@/components/ui/ExportButton';
 import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
+import { resolveStreamSource } from '@/lib/mission-stream';
 import type { AlternateStream as CommunityStream } from '@/lib/mission-stream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import AdSlot from '@/components/ads/AdSlot';
@@ -404,9 +405,9 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
                     timeZoneName: 'short',
                   })}
                 </div>
-                {event.streamUrl ? (
+                {watchUrlFor(event) ? (
                   <a
-                    href={event.streamUrl}
+                    href={watchUrlFor(event)!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-xs font-medium"
@@ -857,9 +858,9 @@ function EventCard({ event }: { event: SpaceEvent }) {
 
           <div className="flex flex-wrap gap-2 mt-2">
             {/* Watch Live button (only for verified streams) */}
-            {event.streamUrl ? (
+            {watchUrlFor(event) ? (
               <a
-                href={event.streamUrl}
+                href={watchUrlFor(event)!}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`text-xs font-medium px-3 py-2 rounded transition-colors flex items-center gap-1 ${
@@ -925,8 +926,25 @@ function EventCard({ event }: { event: SpaceEvent }) {
   );
 }
 
+/**
+ * The best watchable URL for an event. streamUrl has never been populated by
+ * any fetcher (0 of 442 events carry one), so reading it alone meant every
+ * "Watch Live" affordance on this page was dead while the real links sat in
+ * videoUrl. Route through resolveStreamSource, which already understands the
+ * streamUrl/videoUrl/xUrl precedence and platform quirks.
+ */
+function watchUrlFor(event: SpaceEvent): string | null {
+  const { source, youtubeId, xUrl } = resolveStreamSource(event);
+  if (source === 'youtube' && youtubeId) return `https://www.youtube.com/watch?v=${youtubeId}`;
+  if (source === 'x' && xUrl) return xUrl;
+  // Not YouTube/X but still a link (e.g. plus.nasa.gov schedule pages).
+  return event.streamUrl || event.videoUrl || null;
+}
+
 function LiveStreamEmbed({ event }: { event: SpaceEvent }) {
-  const videoId = extractYouTubeId(event.streamUrl);
+  // Same precedence as the watch links — the embed was reading streamUrl
+  // alone and therefore never rendered.
+  const videoId = extractYouTubeId(event.streamUrl || event.videoUrl);
   if (!videoId) return null;
 
   return (

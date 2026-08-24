@@ -247,3 +247,38 @@ describe('selectAlternateFeeds', () => {
     expect(selectAlternateFeeds([], null)).toEqual([]);
   });
 });
+
+/**
+ * Regression (2026-08-24): mission control read event.streamUrl RAW at three
+ * sites — the Watch Live buttons and the embed. No fetcher has ever populated
+ * streamUrl (0 of 442 production events carry one), so every watch affordance
+ * on the page was dead while real YouTube/X links sat in videoUrl. The page
+ * now routes through resolveStreamSource; these pin the fallback behaviour
+ * the page depends on.
+ */
+describe('streamUrl-absent events (the production shape)', () => {
+  it('resolves a YouTube videoUrl when streamUrl is null', () => {
+    const r = resolveStreamSource({
+      streamUrl: null,
+      videoUrl: 'https://www.youtube.com/watch?v=6uhVimd_l2s',
+      xUrl: null, agency: 'SpaceX', infoUrl: null,
+    });
+    expect(r.source).toBe('youtube');
+    expect(r.youtubeId).toBe('6uhVimd_l2s');
+  });
+
+  it('resolves an X broadcast videoUrl when streamUrl is null', () => {
+    const r = resolveStreamSource({
+      streamUrl: null,
+      videoUrl: 'https://x.com/i/broadcasts/1AKEmvvQLayKL',
+      xUrl: null, agency: 'SpaceX', infoUrl: null,
+    });
+    expect(r.source).toBe('x');
+    expect(r.xUrl).toBe('https://x.com/i/broadcasts/1AKEmvvQLayKL');
+  });
+
+  it('reports none when neither field is set — no dead Watch Live button', () => {
+    const r = resolveStreamSource({ streamUrl: null, videoUrl: null, xUrl: null, agency: null, infoUrl: null });
+    expect(r.source).toBe('none');
+  });
+});
