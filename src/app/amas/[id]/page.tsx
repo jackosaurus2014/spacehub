@@ -48,10 +48,10 @@ function getEmbedUrl(url: string): string | null {
     const u = new URL(url);
     // YouTube
     if (u.hostname.includes('youtube.com') && u.searchParams.get('v')) {
-      return `https://www.youtube.com/embed/${u.searchParams.get('v')}`;
+      return `https://www.youtube-nocookie.com/embed/${u.searchParams.get('v')}`;
     }
     if (u.hostname === 'youtu.be') {
-      return `https://www.youtube.com/embed${u.pathname}`;
+      return `https://www.youtube-nocookie.com/embed${u.pathname}`;
     }
     // Vimeo
     if (u.hostname.includes('vimeo.com')) {

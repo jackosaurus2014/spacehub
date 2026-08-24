@@ -221,7 +221,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose, co
           {showEmbed && displayVideoId ? (
             <>
               <iframe
-                src={`https://www.youtube.com/embed/${displayVideoId}?autoplay=0&rel=0&modestbranding=1`}
+                src={`https://www.youtube-nocookie.com/embed/${displayVideoId}?autoplay=0&rel=0&modestbranding=1`}
                 title={displayingCommunity ? `${activeCommunityFeed?.channelName} coverage` : mission.name}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

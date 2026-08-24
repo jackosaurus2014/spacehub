@@ -951,7 +951,7 @@ function LiveStreamEmbed({ event }: { event: SpaceEvent }) {
     <div className="mt-2 rounded-xl overflow-hidden border border-red-500/30 bg-black shadow-lg shadow-red-500/5">
       <div className="relative aspect-video">
         <iframe
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
           title={`${event.name} - Live Stream`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

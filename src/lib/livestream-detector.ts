@@ -343,7 +343,7 @@ function toActiveLiveStreams(
       thumbnailUrl: thumbnail,
       viewerCount,
       startedAt,
-      embedUrl: `https://www.youtube.com/embed/${videoId}`,
+      embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
       platform: 'youtube' as const,
       watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
       isMajorEvent: isMajorEventTitle(`${title} ${channelName}`),
@@ -820,7 +820,7 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
             event.imageUrl || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
           viewerCount: 0, // Not available from DB
           startedAt,
-          embedUrl: `https://www.youtube.com/embed/${videoId}`,
+          embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
           platform: 'youtube' as const,
           watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
           isMajorEvent: isMajorEventTitle(`${event.name} ${event.agency || ''}`),

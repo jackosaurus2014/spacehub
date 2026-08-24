@@ -115,7 +115,12 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
     <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
       <iframe
         ref={iframeRef}
-        src={`https://www.youtube.com/embed/${stream.videoId}?autoplay=1&mute=1`}
+        // Privacy-enhanced domain, sitewide policy (2026-08-24): web filters
+        // and managed-browser policies that block youtube.com/embed at the
+        // network level generally leave youtube-nocookie.com alone. A viewer
+        // hit exactly that — the watch page worked while our embed failed with
+        // a browser-level load error. Same player, no viewer tracking cookies.
+        src={`https://www.youtube-nocookie.com/embed/${stream.videoId}?autoplay=1&mute=1`}
         title={stream.title}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen

@@ -56,8 +56,8 @@ export default function StreamEmbed({
   if (isLive) {
     // Use specific video ID if available, otherwise embed NASA's official Artemis II stream
     const embedSrc = youtubeVideoId
-      ? `https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&rel=0`
-      : `https://www.youtube.com/embed/m3kR2KK8TEs?autoplay=1&rel=0`; // NASA Official Artemis II Mission Coverage
+      ? `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?autoplay=1&rel=0`
+      : `https://www.youtube-nocookie.com/embed/m3kR2KK8TEs?autoplay=1&rel=0`; // NASA Official Artemis II Mission Coverage
     return (
       <div className="relative w-full aspect-video bg-space-900 rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/5">
         <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
