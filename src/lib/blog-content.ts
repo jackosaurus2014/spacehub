@@ -18825,6 +18825,7 @@ ISS (ZARYA)
 <li><strong>ISS Detector</strong> — Augmented reality satellite pass predictions, great for visual observers</li>
 <li><strong>Heavens-Above</strong> — Long-standing satellite pass predictor with detailed sky charts</li>
 <li><strong>N2YO</strong> — Real-time satellite tracking with ground track visualization</li>
+<li><strong>AllMySat</strong> — Satellite tracking for iOS and Android covering a catalogue of 34,000+ objects, with a Doppler shift calculator that makes it genuinely useful to amateur radio operators working satellite passes, plus Kp index tracking. Built by a licensed radio amateur, which shows in the feature set. <a href="https://allmysat.com" target="_blank" rel="noopener noreferrer">allmysat.com</a></li>
 </ul>
 
 <h2 id="space-weather">Space Weather & Astronomy</h2>

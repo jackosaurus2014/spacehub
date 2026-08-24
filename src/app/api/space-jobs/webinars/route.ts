@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Webinar } from '@/types';
-import { WEBINARS_SEED } from '@/lib/webinar-data';
+import { WEBINARS_SEED, mergeWebinarSources } from '@/lib/webinar-data';
 import { getModuleContent } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
 
@@ -33,11 +33,16 @@ export async function GET(request: NextRequest) {
     try {
       const dynamicData = await getModuleContent<Webinar>('webinars');
       if (dynamicData.length > 0) {
-        allWebinars = dynamicData.map((item) => ({
-          ...item.data,
-          isPast: new Date(item.data.date) < now,
-        }));
-        dataSource = 'database';
+        // Merge, never replace — see mergeWebinarSources for why.
+        const merged = mergeWebinarSources(
+          allWebinars,
+          dynamicData.map((item) => ({
+            ...item.data,
+            isPast: new Date(item.data.date) < now,
+          })),
+        );
+        allWebinars = merged.webinars;
+        dataSource = merged.addedFromDynamic > 0 ? 'database' : 'fallback';
         const newest = dynamicData.reduce((latest, item) =>
           item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);
         const oldest = dynamicData.reduce((earliest, item) =>

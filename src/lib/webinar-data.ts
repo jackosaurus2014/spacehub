@@ -357,7 +357,84 @@ export const WEBINARS_SEED: Omit<Webinar, 'id' | 'createdAt' | 'updatedAt'>[] = 
     isLive: false,
     isPast: false,
   },
+
+  // ===== NASA SBIR Ignite Tech Spotlight Series (BMNT x NASA SBIR Ignite) =====
+  // Three-part series announced to us directly by the organiser, Sept 2026.
+  // Titles, dates, durations and registration URLs verified against the live
+  // Luma listings rather than the announcement text — the announcement called
+  // the third session "Drone Supply Chain"; the actual event is "Drone
+  // Propulsion Tech Spotlight".
+  {
+    slug: 'nasa-sbir-ignite-pleo-tech-spotlight-2026',
+    title: 'NASA SBIR Ignite Tech Spotlight: pLEO',
+    description:
+      'First of three NASA SBIR Ignite Tech Spotlights, run by BMNT in partnership with NASA SBIR Ignite. As proliferated LEO architectures scale, where does the next operational bottleneck appear — on-orbit processing, downlink capacity, or the ground infrastructure connecting orbital assets to end users? The session examines the engineering tradeoffs, commercialisation challenges, and NASA needs shaping the area, bringing founders, investors, technical leaders and NASA subject matter experts together.',
+    speaker: 'James Schalkwyk (Azora Space), Sergio Gallucci (Pivvot Space), Tim Deaver (Skyloom)',
+    speakerBio:
+      'Founders and technical leaders building proliferated-LEO infrastructure: Azora Space, Pivvot Space, and Skyloom, in conversation with NASA subject matter experts.',
+    topic: 'systems_engineering',
+    date: new Date('2026-09-01T19:00:00Z'),
+    duration: 60,
+    registrationUrl: 'https://luma.com/pqufe50s',
+    recordingUrl: null,
+    isLive: false,
+    isPast: false,
+  },
+  {
+    slug: 'nasa-sbir-ignite-drone-propulsion-tech-spotlight-2026',
+    title: 'NASA SBIR Ignite Tech Spotlight: Drone Propulsion',
+    description:
+      'Second NASA SBIR Ignite Tech Spotlight, run by BMNT in partnership with NASA SBIR Ignite. Which gaps in domestic manufacturing, propulsion, critical components and production capacity could limit the next generation of drone capabilities? The session works through the industrial-base constraints and the NASA needs behind them.',
+    speaker: 'NASA SBIR Ignite & BMNT',
+    speakerBio:
+      'Founders, investors, technical leaders and NASA subject matter experts convened by BMNT for the NASA SBIR Ignite programme.',
+    topic: 'propulsion',
+    date: new Date('2026-09-02T17:00:00Z'),
+    duration: 60,
+    registrationUrl: 'https://luma.com/nx6wa34m',
+    recordingUrl: null,
+    isLive: false,
+    isPast: false,
+  },
+  {
+    slug: 'nasa-sbir-ignite-space-nuclear-propulsion-tech-spotlight-2026',
+    title: 'NASA SBIR Ignite Tech Spotlight: Space Nuclear Propulsion',
+    description:
+      'Third NASA SBIR Ignite Tech Spotlight, run by BMNT in partnership with NASA SBIR Ignite. What technical and industrial capabilities are needed to move space nuclear systems from promising concepts to reliable, mission-ready technologies? The session covers the engineering tradeoffs and commercialisation path, alongside the NASA needs shaping the area.',
+    speaker: 'NASA SBIR Ignite & BMNT',
+    speakerBio:
+      'Founders, investors, technical leaders and NASA subject matter experts convened by BMNT for the NASA SBIR Ignite programme.',
+    topic: 'space_nuclear',
+    date: new Date('2026-09-02T18:00:00Z'),
+    duration: 60,
+    registrationUrl: 'https://luma.com/t5di1clq',
+    recordingUrl: null,
+    isLive: false,
+    isPast: false,
+  },
 ];
+
+/**
+ * Combine the hand-curated seed with AI-refreshed DynamicContent rows.
+ *
+ * The seed is verified by hand — real conferences with real dates, and
+ * partner sessions announced to us directly. Generated rows are useful for
+ * breadth but must never DISPLACE curated ones, which is what the previous
+ * "if the database has anything, use only that" behaviour did: a successful
+ * refresh silently hid every curated entry, including the NASA SBIR Ignite
+ * Tech Spotlights and the whole conference calendar.
+ *
+ * So: seed first, then any generated row whose slug the seed does not already
+ * claim. Curated data wins every collision.
+ */
+export function mergeWebinarSources(
+  seed: Webinar[],
+  dynamic: Webinar[],
+): { webinars: Webinar[]; addedFromDynamic: number } {
+  const claimed = new Set(seed.map((w) => w.slug).filter(Boolean));
+  const extra = dynamic.filter((w) => !w.slug || !claimed.has(w.slug));
+  return { webinars: [...seed, ...extra], addedFromDynamic: extra.length };
+}
 
 // Get webinars with optional filters
 export async function getWebinars(filters?: {
