@@ -50,33 +50,87 @@ function formatViewerCount(count: number): string {
 /*  Sub-component: YouTube Embed with Blocked-Embed Fallback           */
 /* ------------------------------------------------------------------ */
 
+/** Origins a healthy embedded player posts messages from. */
+const YT_EMBED_ORIGINS = ['https://www.youtube-nocookie.com', 'https://www.youtube.com'];
+
+/** Delay before probing — gives a normal page load time to settle first. */
+const EMBED_PROBE_DELAY_MS = 2_000;
+
 function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
   const [embedBlocked, setEmbedBlocked] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const aliveRef = useRef(false);
 
-  // Detect blocked/unavailable embeds via postMessage from YouTube iframe API
-  // and a visibility fallback button. YouTube geo-restricted videos load the
-  // iframe but display an error page inside it that we can't detect cross-origin.
+  // Two ways an embed dies, needing two detectors:
+  //  1. YouTube loads but refuses playback (owner opt-out, geo block) — the
+  //     player posts onError, which the message listener catches.
+  //  2. The request never reaches YouTube at all — a web filter, managed
+  //     browser, or TLS-intercepting proxy blocks the embed domain (observed
+  //     in the field as a cert error on youtube-nocookie.com while normal
+  //     watch pages worked). The iframe shows the browser's own error page,
+  //     which fires `load`, posts nothing, and is unreadable cross-origin.
+  //     Silence is the only symptom, so silence is what we detect: enablejsapi
+  //     makes a real player answer the API's "listening" handshake; if nothing
+  //     arrives by the deadline the player is not there, and the fallback card
+  //     (with its working watch link) takes over.
   useEffect(() => {
     setEmbedBlocked(false);
+    aliveRef.current = false;
 
-    // Listen for YouTube iframe API messages indicating playback errors
     const handleMessage = (event: MessageEvent) => {
+      if (!YT_EMBED_ORIGINS.includes(event.origin)) return;
+      aliveRef.current = true;
       try {
         if (typeof event.data === 'string') {
           const data = JSON.parse(event.data);
-          // YouTube sends error codes via postMessage
           if (data?.event === 'onError' || data?.info?.playerState === -1) {
             setEmbedBlocked(true);
           }
         }
       } catch {
-        // Not a YouTube message — ignore
+        // Not JSON — ignore.
       }
     };
-
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+
+    // Reachability probe for case 2, diagnosed in the field on a network
+    // whose router hijacks DNS for YouTube domains to a private filtering
+    // appliance (10.x answers even from 8.8.8.8). Two independent signals,
+    // and BOTH must fail before we flip to the fallback card:
+    //   - an <img> load of the domain's favicon (fails on 404 as well as on
+    //     network death, so alone it could false-positive), and
+    //   - a no-cors fetch of the embed page (resolves opaquely for any HTTP
+    //     status, rejects on network death — but bot-mitigation can reject it
+    //     on healthy networks, so alone IT could false-positive too).
+    // Only a domain-level block fails both. False positives matter here: the
+    // penalty is replacing a working player with a watch-on-YouTube card.
+    // CSP: youtube-nocookie.com is in connect-src for the fetch half.
+    let cancelled = false;
+    const probe = window.setTimeout(() => {
+      const imgFailed = new Promise<boolean>((resolve) => {
+        // document.createElement, not `new Image()` — this file imports
+        // next/image as `Image`, which shadows the DOM constructor.
+        const img = document.createElement('img');
+        const timer = window.setTimeout(() => resolve(false), 8_000); // slow ≠ blocked
+        img.onload = () => { window.clearTimeout(timer); resolve(false); };
+        img.onerror = () => { window.clearTimeout(timer); resolve(true); };
+        img.src = `https://www.youtube-nocookie.com/favicon.ico?_=${Date.now()}`;
+      });
+      const fetchFailed = fetch(`https://www.youtube-nocookie.com/embed/${stream.videoId}`, {
+        mode: 'no-cors',
+        cache: 'no-store',
+      }).then(() => false, () => true);
+
+      Promise.all([imgFailed, fetchFailed]).then(([a, b]) => {
+        if (a && b && !cancelled && !aliveRef.current) setEmbedBlocked(true);
+      });
+    }, EMBED_PROBE_DELAY_MS);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('message', handleMessage);
+      window.clearTimeout(probe);
+    };
   }, [stream.videoId]);
 
   if (embedBlocked) {
@@ -89,10 +143,11 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
             </svg>
           </div>
           <p className="text-white text-lg font-semibold mb-1 text-center">
-            Embedding restricted by the streamer
+            This stream can&apos;t play embedded here
           </p>
           <p className="text-slate-400 text-sm mb-4 text-center max-w-sm">
-            This livestream can&apos;t be embedded, but you can watch it directly on YouTube
+            The streamer may restrict embedding, or a network filter on your
+            connection may block embedded players. Watching directly on YouTube works either way.
           </p>
           <a
             href={`https://www.youtube.com/watch?v=${stream.videoId}`}
@@ -120,7 +175,7 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
         // network level generally leave youtube-nocookie.com alone. A viewer
         // hit exactly that — the watch page worked while our embed failed with
         // a browser-level load error. Same player, no viewer tracking cookies.
-        src={`https://www.youtube-nocookie.com/embed/${stream.videoId}?autoplay=1&mute=1`}
+        src={`https://www.youtube-nocookie.com/embed/${stream.videoId}?autoplay=1&mute=1&enablejsapi=1`}
         title={stream.title}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
