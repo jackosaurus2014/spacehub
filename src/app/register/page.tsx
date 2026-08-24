@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FOUNDING_MEMBER_OFFER_ENABLED } from '@/lib/pricing-integrity';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
@@ -148,7 +149,10 @@ function RegisterPageContent() {
   const searchParams = useSearchParams();
 
   // Parse monetization-relevant query params
-  const isFounding = searchParams.get('founding') === 'true';
+  // Gated on the offer flag, not just the query string — a bookmarked or
+  // shared ?founding=true link would otherwise still promise $4.99/month
+  // for life, which Stripe has never been able to charge.
+  const isFounding = FOUNDING_MEMBER_OFFER_ENABLED && searchParams.get('founding') === 'true';
   const isTrial = searchParams.get('trial') === 'true';
   const rawPlanParam = searchParams.get('plan'); // 'pro' ('enterprise' accepted from old links)
   const planParam = rawPlanParam === 'enterprise' ? 'pro' : rawPlanParam;

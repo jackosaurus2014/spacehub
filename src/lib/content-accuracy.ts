@@ -20,6 +20,7 @@ import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 import { getArtemisNewsArticles } from '@/lib/artemis-news';
 import { getStarshipNewsArticles } from '@/lib/starship-news';
 import { FRESHNESS_POLICIES, type FreshnessPolicy } from '@/lib/freshness-policies';
+import { checkAdvertisedDiscountsMatchStripe } from '@/lib/pricing-integrity';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -386,6 +387,11 @@ export async function checkStaleModuleContent(
 
 export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
   {
+    id: 'advertised-discounts-match-stripe',
+    label: 'Advertised discounts match Stripe billing',
+    run: checkAdvertisedDiscounts,
+  },
+  {
     id: 'mission-control-featured-future',
     label: 'Mission Control featured mission is upcoming, not past',
     run: checkMissionControlFeaturedFuture,
@@ -511,6 +517,15 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
 // ---------------------------------------------------------------------------
 // Runner
 // ---------------------------------------------------------------------------
+
+/**
+ * Advertised discounts must match how Stripe will actually bill. Broken in
+ * production once already (see pricing-integrity.ts), so it is checked daily
+ * rather than trusted.
+ */
+async function checkAdvertisedDiscounts(): Promise<AccuracyCheckOutcome> {
+  return checkAdvertisedDiscountsMatchStripe();
+}
 
 export async function runContentAccuracyChecks(
   checks: AccuracyCheckDef[] = CONTENT_ACCURACY_CHECKS

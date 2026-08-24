@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
+import { FOUNDING_MEMBER_OFFER_ENABLED } from '@/lib/pricing-integrity';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +26,12 @@ let cached: { data: PromoStatus; at: number } | null = null;
  */
 export async function GET() {
   try {
+    // Offer withdrawn 2026-08-24 — see pricing-integrity.ts for why. Reporting
+    // it inactive is what removes the banner from the pricing page.
+    if (!FOUNDING_MEMBER_OFFER_ENABLED) {
+      return NextResponse.json({ active: false } satisfies PromoStatus);
+    }
+
     if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
       return NextResponse.json(cached.data);
     }
