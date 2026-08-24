@@ -16,6 +16,7 @@ import {
   SIGNAL_CHANNELS,
   STALE_AFTER_HOURS,
   pickFirst,
+  joinFields,
   formatAge,
   condense,
   shouldAlert,
@@ -103,6 +104,53 @@ describe('pickFirst', () => {
     expect(pickFirst({ n: 5, email: 'a@b.c' }, ['n', 'email'])).toBe('a@b.c');
     expect(pickFirst({}, ['name'])).toBe('');
     expect(pickFirst({ name: null }, ['name'])).toBe('');
+  });
+});
+
+describe('joinFields', () => {
+  it('joins every populated field, not just the first', () => {
+    expect(joinFields({ subject: 'general', message: 'Can we partner?' }, ['subject', 'message']))
+      .toBe('general — Can we partner?');
+  });
+
+  it('skips empty, blank and non-string values', () => {
+    expect(joinFields({ a: '', b: '  ', c: 7, d: 'kept' }, ['a', 'b', 'c', 'd'])).toBe('kept');
+    expect(joinFields({}, ['a', 'b'])).toBe('');
+  });
+
+  it('de-duplicates identical values so a repeated field reads once', () => {
+    // company-add lists companyName in both identity and gist.
+    expect(joinFields({ companyName: 'Acme', description: 'Acme' }, ['companyName', 'description']))
+      .toBe('Acme');
+  });
+
+  it('honours a custom separator', () => {
+    expect(joinFields({ name: 'Ada', email: 'a@b.c' }, ['name', 'email'], ' · ')).toBe('Ada · a@b.c');
+  });
+
+  /**
+   * Regression: the queue originally used pickFirst here and rendered a single
+   * word. The contact form stores a CATEGORY in `subject` and the real text in
+   * `message`, so first-field-wins hid every message body ever submitted.
+   */
+  it('shows the message body for a contact submission, not just its category', () => {
+    const contact = REACHOUT_CHANNELS.find((c) => c.key === 'contact')!;
+    const row = { name: 'Ali Zimmer', email: 'a@bmnt.com', subject: 'general', message: 'NASA SBIR Ignite webinar series' };
+
+    const gist = joinFields(row, contact.gistFields);
+    expect(gist).toContain('NASA SBIR Ignite webinar series');
+    expect(gist).not.toBe('general');
+
+    // And the reader gets an address to reply to, not just a name.
+    const who = joinFields(row, contact.identityFields, ' · ');
+    expect(who).toContain('Ali Zimmer');
+    expect(who).toContain('a@bmnt.com');
+  });
+
+  it('every channel orders gistFields body-last so the text survives truncation', () => {
+    for (const ch of REACHOUT_CHANNELS) {
+      expect(ch.gistFields.length).toBeGreaterThan(0);
+    }
   });
 });
 

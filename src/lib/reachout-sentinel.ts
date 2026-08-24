@@ -44,9 +44,18 @@ export interface ReachoutChannel {
    * reply straight from the inbox instead of being sent to a dead end.
    */
   adminUrl: string | null;
-  /** Who sent it — first non-empty field wins. */
+  /**
+   * Who sent it. ALL non-empty values are joined, not just the first — the
+   * name without the address gives the reader nobody to reply to.
+   */
   identityFields: string[];
-  /** What they said — first non-empty field wins. */
+  /**
+   * What they said. ALL non-empty values are joined, in order. Several
+   * channels store a category in the first field and the real text in the
+   * second (the contact form's `subject` is one of general/technical/billing/
+   * partnership), so taking only the first shows a single word and drops the
+   * message. Order them category-first, body-last.
+   */
   gistFields: string[];
 }
 
@@ -240,6 +249,26 @@ export function pickFirst(row: Record<string, unknown>, fields: string[]): strin
   return '';
 }
 
+/**
+ * Every non-empty value among `fields`, in order, de-duplicated and joined.
+ *
+ * Use this — not pickFirst — for anything the reader has to act on. The
+ * contact form stores a category in `subject` ("general", "billing",
+ * "partnership") and the actual text in `message`, so taking only the first
+ * field showed a single word and hid the message entirely. Identity has the
+ * same shape: the name alone is useless without the address to reply to.
+ */
+export function joinFields(row: Record<string, unknown>, fields: string[], sep = ' — '): string {
+  const parts: string[] = [];
+  for (const f of fields) {
+    const v = row[f];
+    if (typeof v !== 'string') continue;
+    const t = v.trim();
+    if (t && !parts.includes(t)) parts.push(t);
+  }
+  return parts.join(sep);
+}
+
 /** Compact age for an ops email: "3h", "2d 4h", "11d". */
 export function formatAge(hours: number): string {
   if (!Number.isFinite(hours) || hours < 0) return 'unknown';
@@ -317,8 +346,8 @@ export async function collectReachouts(now: Date = new Date()): Promise<Reachout
           channelKey: ch.key,
           channelLabel: ch.label,
           id: String(row.id ?? ''),
-          who: pickFirst(row, ch.identityFields) || 'unknown sender',
-          gist: condense(pickFirst(row, ch.gistFields)) || '(no message body)',
+          who: joinFields(row, ch.identityFields, ' · ') || 'unknown sender',
+          gist: condense(joinFields(row, ch.gistFields)) || '(no message body)',
           status: String(row.status ?? ''),
           ageHours,
           adminUrl: ch.adminUrl,

@@ -15,8 +15,7 @@ import {
 import {
   REACHOUT_CHANNELS,
   STALE_AFTER_HOURS,
-  pickFirst,
-  condense,
+  joinFields,
   type ReachoutChannel,
 } from '@/lib/reachout-sentinel';
 
@@ -32,6 +31,9 @@ import {
  * GET  — open items across the exposed channels, oldest first.
  * PATCH— { channel, id, status } to move one item out of its open state.
  */
+
+/** Separator between a channel's fields in the triage body. */
+const PARAGRAPH_BREAK = '\n\n';
 
 /** Channels this queue owns. Others are triaged in their own tab. */
 function ownedChannels(): ReachoutChannel[] {
@@ -84,8 +86,11 @@ export async function GET() {
             channel: ch.key,
             channelLabel: ch.label,
             id: String(row.id ?? ''),
-            who: pickFirst(row, ch.identityFields) || 'unknown sender',
-            gist: condense(pickFirst(row, ch.gistFields), 400) || '(no message body)',
+            who: joinFields(row, ch.identityFields, ' · ') || 'unknown sender',
+            // Full text, not a preview. This is the triage surface — the whole
+            // point is reading what the person actually wrote. Capped only to
+            // keep one pathological submission from bloating the payload.
+            body: joinFields(row, ch.gistFields, PARAGRAPH_BREAK).slice(0, 8000) || '(no message body)',
             status: String(row.status ?? ''),
             receivedAt: at.toISOString(),
             ageHours,

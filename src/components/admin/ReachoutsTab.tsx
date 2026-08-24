@@ -20,7 +20,8 @@ interface ReachoutItem {
   channelLabel: string;
   id: string;
   who: string;
-  gist: string;
+  /** Full text of the reachout — every populated field, not a preview. */
+  body: string;
   status: string;
   receivedAt: string;
   ageHours: number;
@@ -162,8 +163,11 @@ export default function ReachoutsTab() {
                 </span>
               </div>
 
-              <p className="text-white text-sm font-medium mb-1 break-words">{item.who}</p>
-              <p className="text-star-200 text-sm whitespace-pre-wrap break-words">{item.gist}</p>
+              {/* select-all so the address can be copied straight into a reply */}
+              <p className="text-white text-sm font-medium mb-1 break-words select-all">{item.who}</p>
+              <p className="text-star-200 text-sm whitespace-pre-wrap break-words leading-relaxed">
+                {item.body}
+              </p>
 
               {CLOSING_STATUS[item.channel] && (
                 <button
