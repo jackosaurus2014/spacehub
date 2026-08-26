@@ -484,7 +484,12 @@ const nextConfig = {
       { source: '/market-intel', destination: '/space-stocks', permanent: true },
       // /blogs renamed — third-party blog aggregator vs our own /blog was a
       // perpetual naming collision (founder-approved rename)
-      { source: '/blogs', destination: '/industry-voices', permanent: true },
+      // /blogs used to point at /industry-voices (<=5 views/28d); /blog is
+      // the actual article hub and the site's top user-acquirer.
+      { source: '/blogs', destination: '/blog', permanent: true },
+      // Misspelled path observed receiving real traffic in GA4 (external or
+      // stale link somewhere) — catch it rather than 404 it.
+      { source: '/funding-tracjer', destination: '/funding-tracker', permanent: true },
       // Opportunity trio consolidated into the /procurement hub
       { source: '/business-opportunities', destination: '/procurement', permanent: true },
       { source: '/funding-opportunities', destination: '/procurement?tab=grants', permanent: true },

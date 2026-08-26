@@ -17,12 +17,16 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
   },
 
   // HIGH: Changes weekly or with news cycles
-  'constellations': {
-    ttlHours: 168, // 7 days
-    refreshPriority: 'high',
-    refreshSource: 'both', // CelesTrak API + AI for regulatory/licensing details
-    keywords: ['Starlink', 'OneWeb', 'Kuiper', 'constellation', 'satellite deploy'],
-  },
+  // NOTE: 'space-capital', 'cislunar', 'mars-planner', 'spaceports' and
+  // 'constellations' entries were removed 2026-08-26 (Phase-1 content
+  // consolidation). Each page drew <=5 views over the prior 28 days (GA4)
+  // while its ai-research entry spent daily Claude tokens refreshing content
+  // for essentially nobody — and the AI-written rows for exactly this class
+  // of module caused the 8/24 talent-board 500 and space-tourism
+  // displacement bugs. The pages still render their last-refreshed rows via
+  // /api/content/<module>; re-add an entry here to resume refreshing if a
+  // module earns traffic. Constellations' CelesTrak satellite sync is
+  // unaffected (it does not run off this registry).
   // NOTE: 'space-economy' and 'startups' entries were removed here
   // (2026-08-14 orphaned-pipeline cleanup). Neither module's DynamicContent
   // rows have a reader: /space-economy redirects to /market-intel (reads
@@ -34,23 +38,11 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
   // still separately writes space-economy:stock-quotes,
   // space-economy:government-budgets, and startups:sbir-awards via the
   // 'external-apis' cron.
-  'space-capital': {
-    ttlHours: 168, // 7 days
-    refreshPriority: 'moderate',
-    refreshSource: 'ai-research',
-    keywords: ['space VC', 'space venture capital', 'space investment fund', 'space SPAC', 'space IPO', 'space fund', 'Seraphim', 'Space Capital'],
-  },
   'space-defense': {
     ttlHours: 24,
     refreshPriority: 'high',
     refreshSource: 'both', // USAspending API + SAM.gov + AI
     keywords: ['Space Force', 'space defense', 'SDA', 'military space', 'space command', 'NRO', 'defense contract', 'NSSL', 'ASAT', 'counterspace'],
-  },
-  'cislunar': {
-    ttlHours: 168,
-    refreshPriority: 'high',
-    refreshSource: 'ai-research',
-    keywords: ['Artemis', 'lunar', 'moon mission', 'Gateway', 'CLPS', 'cislunar', 'Lunar Pathfinder'],
   },
   'compliance': {
     ttlHours: 48,
@@ -83,18 +75,6 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['Falcon 9', 'Starship', 'New Glenn', 'Vulcan', 'Ariane', 'launch vehicle', 'rocket', 'first flight'],
-  },
-  'mars-planner': {
-    ttlHours: 336, // 14 days — mission statuses change less frequently
-    refreshPriority: 'moderate',
-    refreshSource: 'ai-research',
-    keywords: ['Mars', 'Perseverance', 'Curiosity', 'Mars mission', 'Mars launch', 'ExoMars'],
-  },
-  'spaceports': {
-    ttlHours: 336, // 14 days — spaceport traffic + comms network status change regularly
-    refreshPriority: 'moderate',
-    refreshSource: 'ai-research',
-    keywords: ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex', 'DSN', 'TDRS', 'optical comms', 'LCRD', 'ESTRACK'],
   },
   'space-manufacturing': {
     ttlHours: 168, // 7 days

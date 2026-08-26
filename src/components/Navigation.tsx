@@ -76,8 +76,9 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Spectrum', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Space Manufacturing', href: '/space-manufacturing', description: 'In-space manufacturing & imagery' },
   { label: 'Mission Cost & Insurance', href: '/mission-cost', description: 'Cost estimates & risk pricing' },
-  { label: 'Deal Rooms', href: '/deal-rooms', description: 'Secure document sharing' },
-  { label: 'Gig Work', href: '/gig-work', description: 'Freelance & contract work' },
+  // Deal Rooms, Gig Work and Mentors were delisted 2026-08-26 (Phase-1
+  // consolidation): zero usage ever in production. Routes stay live;
+  // relist when the audience exists.
   { label: 'Hire Talent', href: '/hire', description: 'Post jobs & find space industry talent' },
 ];
 
@@ -96,7 +97,6 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Space History', href: '/history', description: 'Searchable historical milestones' },
   { label: 'Glossary', href: '/glossary', description: 'Key space terms defined' },
   { label: 'Community Forums', href: '/community/forums', description: 'Discuss with professionals' },
-  { label: 'Mentors', href: '/mentors', description: 'Industry advisors & office hours' },
 ];
 // Wire up items to category metadata after const arrays are defined
 ALL_CATEGORIES[0].items = NEWS_ITEMS;
