@@ -126,10 +126,10 @@ export default async function SpaceXVsBlueOrigin() {
       <div className="prose prose-invert max-w-none mb-12">
         <h2 className="text-display text-xl mb-3">Key Differences</h2>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-          SpaceX leads in operational scale with 500+ orbital launches and a Starlink constellation generating well over $10 billion a year. Blue Origin, despite being founded two years earlier, reached orbit for the first time with New Glenn in January 2025, landed a booster on its second flight that November, and lost its third vehicle in April 2026 — a normal early-programme record, but one that leaves it years behind on cadence. Its bet is long-horizon: BE-4 engines power ULA\'s Vulcan as well as New Glenn, and the Blue Moon lander anchors its NASA Artemis role.
+          SpaceX leads in operational scale with 500+ orbital launches and a Starlink constellation generating well over $10 billion a year. Blue Origin, despite being founded two years earlier, reached orbit for the first time with New Glenn in January 2025, landed a booster on its second flight that November, and lost its third vehicle in April 2026 — a normal early-programme record, but one that leaves it years behind on cadence. Its bet is long-horizon: BE-4 engines power ULA&apos;s Vulcan as well as New Glenn, and the Blue Moon lander anchors its NASA Artemis role.
         </p>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-          SpaceX&apos;s Starship represents the largest launch vehicle ever built, while Blue Origin&apos;s New Glenn targets the commercial and government launch market as a heavy-lift competitor to Falcon 9 and Falcon Heavy. Both are tied to LEO broadband constellations — SpaceX owns Starlink outright, while Blue Origin is one of several launchers for Amazon\'s Leo constellation (formerly Project Kuiper), a sister company rather than a subsidiary.
+          SpaceX&apos;s Starship represents the largest launch vehicle ever built, while Blue Origin&apos;s New Glenn targets the commercial and government launch market as a heavy-lift competitor to Falcon 9 and Falcon Heavy. Both are tied to LEO broadband constellations — SpaceX owns Starlink outright, while Blue Origin is one of several launchers for Amazon&apos;s Leo constellation (formerly Project Kuiper), a sister company rather than a subsidiary.
         </p>
       </div>
 
