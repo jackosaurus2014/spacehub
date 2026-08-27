@@ -11,12 +11,12 @@ import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootno
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
-  description: 'SpaceX has flown 300+ orbital missions; Blue Origin\'s New Glenn has flown 2. Compare launch vehicles, payload capacity, reusability, and roadmaps for 2026.',
+  title: 'Blue Origin vs SpaceX: Who Is Winning in 2026?',
+  description: 'New Glenn has flown three times (two successes, one failure) while Falcon 9 launches almost every other day. Rockets, reusability, Starlink vs Amazon Leo, NASA contracts, valuation and roadmaps — the full 2026 comparison.',
   keywords: ['Blue Origin vs SpaceX', 'SpaceX vs Blue Origin', 'SpaceX comparison', 'Blue Origin comparison', 'space company comparison', 'rocket companies compared'],
   openGraph: {
-    title: 'Blue Origin vs SpaceX 2026: 2 Launches vs 300+',
-    description: 'SpaceX has flown 300+ orbital missions; Blue Origin\'s New Glenn has flown 2. Compare launch vehicles, payload capacity, reusability, and roadmaps for 2026.',
+    title: 'Blue Origin vs SpaceX: Who Is Winning in 2026?',
+    description: 'New Glenn has flown three times (two successes, one failure) while Falcon 9 launches almost every other day. Rockets, reusability, Starlink vs Amazon Leo, NASA contracts, valuation and roadmaps — the full 2026 comparison.',
     url: 'https://spacenexus.us/compare/spacex-vs-blue-origin',
     type: 'article',
   },
@@ -31,13 +31,13 @@ const COMPARISON_DATA = [
   { metric: 'Total Funding', spacex: '~$10B+', blueOrigin: '~$13B+ (mostly Bezos)' },
   { metric: 'Valuation', spacex: '~$2T market cap (NASDAQ: SPCX)', blueOrigin: 'Private (est. $30B+)' },
   { metric: 'Primary Vehicle', spacex: 'Falcon 9 / Starship', blueOrigin: 'New Glenn / New Shepard' },
-  { metric: 'Orbital Launches (Career)', spacex: '300+', blueOrigin: '2 (New Glenn, 2025)' },
-  { metric: 'Reusability', spacex: 'Falcon 9 booster (200+ landings)', blueOrigin: 'New Shepard suborbital' },
+  { metric: 'Orbital Launches (Career)', spacex: '500+ (Falcon 9 & Falcon Heavy)', blueOrigin: '3 New Glenn flights: 2 successes (Jan & Nov 2025), 1 failure (Apr 2026)' },
+  { metric: 'Reusability', spacex: 'Falcon 9 booster (400+ landings, 20+ flights on a single booster)', blueOrigin: 'New Glenn booster landed once (Nov 2025); New Shepard routinely reused' },
   { metric: 'LEO Payload Capacity', spacex: '22,800 kg (F9) / 150,000 kg (Starship)', blueOrigin: '45,000 kg (New Glenn)' },
-  { metric: 'Constellation', spacex: 'Starlink (6,000+ sats)', blueOrigin: 'Project Kuiper (planned 3,236)' },
+  { metric: 'Constellation', spacex: 'Starlink (9,000+ sats in orbit)', blueOrigin: 'Amazon Leo (formerly Kuiper): 3,236 planned, deployment under way — launching on Atlas V, Vulcan, Falcon 9 and New Glenn' },
   { metric: 'Crewed Missions', spacex: 'Crew Dragon (12+ missions)', blueOrigin: 'New Shepard (6 crewed flights)' },
   { metric: 'NASA Contracts', spacex: 'HLS, CRS, Crew, Mars', blueOrigin: 'Artemis sustaining lander' },
-  { metric: 'Revenue Model', spacex: 'Launch services + Starlink', blueOrigin: 'Launch services + Kuiper' },
+  { metric: 'Revenue Model', spacex: 'Launch services + Starlink (the majority of revenue)', blueOrigin: 'Launch services, BE-4 engines (sold to ULA for Vulcan), Amazon Leo launches, Blue Moon lander' },
   { metric: 'Public/Private', spacex: 'Public (NASDAQ: SPCX, IPO June 2026)', blueOrigin: 'Private' },
 ];
 
@@ -126,10 +126,10 @@ export default async function SpaceXVsBlueOrigin() {
       <div className="prose prose-invert max-w-none mb-12">
         <h2 className="text-display text-xl mb-3">Key Differences</h2>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-          SpaceX leads in operational scale with 300+ orbital launches and the operational Starlink constellation generating billions in annual revenue. Blue Origin, despite being founded two years earlier, achieved its first orbital launch (New Glenn) in 2025 and is focused on building the foundation for a long-term space economy.
+          SpaceX leads in operational scale with 500+ orbital launches and a Starlink constellation generating well over $10 billion a year. Blue Origin, despite being founded two years earlier, reached orbit for the first time with New Glenn in January 2025, landed a booster on its second flight that November, and lost its third vehicle in April 2026 — a normal early-programme record, but one that leaves it years behind on cadence. Its bet is long-horizon: BE-4 engines power ULA\'s Vulcan as well as New Glenn, and the Blue Moon lander anchors its NASA Artemis role.
         </p>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-          SpaceX&apos;s Starship represents the largest launch vehicle ever built, while Blue Origin&apos;s New Glenn targets the commercial and government launch market as a heavy-lift competitor to Falcon 9 and Falcon Heavy. Both companies are building LEO broadband constellations (Starlink vs. Project Kuiper).
+          SpaceX&apos;s Starship represents the largest launch vehicle ever built, while Blue Origin&apos;s New Glenn targets the commercial and government launch market as a heavy-lift competitor to Falcon 9 and Falcon Heavy. Both are tied to LEO broadband constellations — SpaceX owns Starlink outright, while Blue Origin is one of several launchers for Amazon\'s Leo constellation (formerly Project Kuiper), a sister company rather than a subsidiary.
         </p>
       </div>
 

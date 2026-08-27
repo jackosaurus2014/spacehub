@@ -45,6 +45,14 @@ interface GroupedEvents {
 // Dynamic Content Interfaces
 // ════════════════════════════════════════
 
+interface DebriefLite {
+  slug: string;
+  missionName: string;
+  missionDate: string;
+  status: string;
+  executiveSummary: string;
+}
+
 interface EpicEarthImage {
   identifier: string;
   caption: string;
@@ -1163,6 +1171,9 @@ function MissionControlContent() {
   const [epicEarthImages, setEpicEarthImages] = useState<EpicEarthImage[]>(FALLBACK_EPIC_EARTH);
   const [nasaImages, setNasaImages] = useState<NasaImage[]>(FALLBACK_NASA_IMAGES);
   const [dsnAntennas, setDsnAntennas] = useState<DsnAntenna[]>(FALLBACK_DSN_ANTENNAS);
+  // Auto-published mission debriefs (src/lib/mission-debrief-generator.ts) — the
+  // post-flight half of Mission Control. Empty array = panel hidden.
+  const [debriefs, setDebriefs] = useState<DebriefLite[]>([]);
   const [contentLoading, setContentLoading] = useState(false);
 
   // Sync filters to URL
@@ -1242,6 +1253,11 @@ function MissionControlContent() {
     };
 
     fetchContent();
+
+    fetch('/api/mission-debriefs?limit=3')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (Array.isArray(j?.debriefs)) setDebriefs(j.debriefs); })
+      .catch(() => { /* panel simply stays hidden */ });
   }, []);
 
   const handleRefresh = useCallback(async () => {
@@ -1310,7 +1326,7 @@ function MissionControlContent() {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
         </div>
         <div className="container mx-auto px-4 pt-6">
-          <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" accentColor="cyan" />
+          <AnimatedPageHeader title="Mission Control" subtitle="Every launch, live stream and mission — before, during, and after — plus how to watch from the ground" accentColor="cyan" />
         </div>
       </div>
 
@@ -1448,6 +1464,32 @@ function MissionControlContent() {
           </Link>
         </div>
 
+        {/* ═══════ Enthusiast toolkit — the ground-side of Mission Control (2026-08-26) ═══════ */}
+        <ScrollReveal delay={0.15}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-8" aria-label="Sky-watching tools">
+            {[
+              { href: '/whats-overhead', icon: '🛰️', label: "What's Overhead", hint: 'ISS passes over you' },
+              { href: '/countdown', icon: '⏱️', label: 'Launch Countdown', hint: 'Next liftoff, live' },
+              { href: '/aurora-forecast', icon: '🌌', label: 'Aurora Forecast', hint: 'Northern lights tonight?' },
+              { href: '/satellites', icon: '📡', label: 'Satellite Tracker', hint: 'Live orbital map' },
+              { href: '/guide/watch-a-launch-cape-canaveral', icon: '🎟️', label: 'Watch in Person', hint: 'Cape, Vandenberg, Starbase' },
+              { href: '/learn/kids', icon: '🚀', label: 'Space for Kids', hint: 'Rockets, orbits, astronauts' },
+            ].map((t) => (
+              <Link
+                key={t.href}
+                href={t.href}
+                className="card p-3 flex items-center gap-2.5 hover:border-cyan-500/30 transition-colors group"
+              >
+                <span className="text-xl flex-shrink-0" aria-hidden="true">{t.icon}</span>
+                <span className="min-w-0">
+                  <span className="block text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors truncate">{t.label}</span>
+                  <span className="block text-[10px] text-slate-500 truncate">{t.hint}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </ScrollReveal>
+
         {/* Upcoming in 48 Hours Section */}
         {!loading && <ScrollReveal delay={0.2}><UpcomingIn48Hours events={events} /></ScrollReveal>}
 
@@ -1537,6 +1579,33 @@ function MissionControlContent() {
           </div>
         ) : (
           <>
+            {/* Mission Debriefs — what happened after the stream ended */}
+            {debriefs.length > 0 && (
+              <CollapsiblePanel panelId="mc-debriefs" title="📝 Mission Debriefs — after the flight" count={debriefs.length} className="mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {debriefs.map((d) => {
+                    const tone =
+                      d.status === 'success' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10'
+                      : d.status === 'failure' ? 'text-red-400 border-red-500/30 bg-red-500/10'
+                      : 'text-amber-400 border-amber-500/30 bg-amber-500/10';
+                    return (
+                      <Link key={d.slug} href={`/mission-debriefs/${d.slug}`} className="card p-4 hover:border-cyan-500/30 transition-colors group">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border ${tone}`}>{d.status}</span>
+                          <span className="text-[11px] text-slate-500">{new Date(d.missionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        </div>
+                        <h3 className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors mb-1.5 line-clamp-2">{d.missionName}</h3>
+                        <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">{d.executiveSummary}</p>
+                      </Link>
+                    );
+                  })}
+                </div>
+                <div className="mt-3 text-right">
+                  <Link href="/mission-debriefs" className="text-xs text-cyan-400 hover:text-cyan-300 font-medium">All mission debriefs →</Link>
+                </div>
+              </CollapsiblePanel>
+            )}
+
             {/* Earth from Space - EPIC Earth Images */}
             {epicEarthImages.length > 0 && (
               <CollapsiblePanel panelId="mc-epic-earth" title="🌍 Earth from Space — NASA EPIC" count={epicEarthImages.length} className="mb-4">
