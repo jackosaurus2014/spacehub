@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { checkLaunchAlerts, checkSpaceWeatherAlerts } from '@/lib/push-triggers';
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
-import { fetchLaunchLibraryEvents, expireStaleUpcomingEvents } from '@/lib/events-fetcher';
+import { fetchLaunchLibraryEvents, expireStaleUpcomingEvents, syncRecentLaunchOutcomes } from '@/lib/events-fetcher';
 import { fetchBlogPosts, initializeBlogSources } from '@/lib/blogs-fetcher';
 import { refreshDaily } from '@/lib/refresh-daily-chain';
 // Newsletter sending moved to dedicated /api/newsletter/send-digest endpoint (Mon/Thu schedule)
@@ -27,6 +27,18 @@ async function refreshEvents(): Promise<Record<string, string>> {
   const results: Record<string, string> = {};
   const eventsCount = await fetchLaunchLibraryEvents();
   results.events = `Refreshed ${eventsCount} events`;
+
+  // Real outcomes for launches that just flew — /upcoming drops them at
+  // liftoff, so this is the only path that records Success/Failure. Must run
+  // before the stale sweep below so an outcome always beats 'scrubbed'.
+  try {
+    const outcomes = await syncRecentLaunchOutcomes();
+    if (outcomes.updated > 0) {
+      results.eventOutcomes = `Recorded ${outcomes.updated} launch outcome(s) from ${outcomes.checked} recent launches`;
+    }
+  } catch (err) {
+    logger.error('Failed to sync recent launch outcomes', { error: err instanceof Error ? err.message : String(err) });
+  }
 
   // Transition rows LL2 stopped reporting (launchDate passed, status stuck
   // at 'upcoming'/'go') so they drop out of every status-filtered query.

@@ -160,7 +160,7 @@ function LaunchList({ launches, label }: { launches: ReportLaunch[]; label: stri
               l.status === 'completed' ? 'bg-emerald-400' :
               l.status === 'go' ? 'bg-green-400' :
               l.status === 'upcoming' ? 'bg-blue-400' :
-              l.status === 'scrubbed' ? 'bg-red-400' :
+              l.status === 'scrubbed' || l.status === 'failed' ? 'bg-red-400' :
               'bg-slate-500'
             }`} />
             <div className="flex-1 min-w-0">
@@ -173,7 +173,7 @@ function LaunchList({ launches, label }: { launches: ReportLaunch[]; label: stri
               l.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400' :
               l.status === 'go' ? 'bg-green-500/10 text-green-400' :
               l.status === 'upcoming' ? 'bg-blue-500/10 text-blue-400' :
-              l.status === 'scrubbed' ? 'bg-red-500/10 text-red-400' :
+              l.status === 'scrubbed' || l.status === 'failed' ? 'bg-red-500/10 text-red-400' :
               'bg-slate-500/10 text-slate-400'
             }`}>
               {l.status}

@@ -81,17 +81,46 @@ interface LaunchLibraryEvent {
   date: string;
 }
 
-function mapStatusToInternal(status: string): SpaceEventStatus {
-  const statusMap: Record<string, SpaceEventStatus> = {
+/**
+ * Launch Library status → our SpaceEventStatus.
+ *
+ * Keyed on LL2's `status.abbrev` ("Success", "Failure", "Go", "TBD"…), with
+ * the long `status.name` accepted as a fallback. History: this map was keyed
+ * on the short forms but fed `status.name`, whose values are "Launch
+ * Successful", "Go for Launch", "To Be Determined"… — so NOTHING matched,
+ * every launch defaulted to 'upcoming', and the stale-row sweep then marked
+ * every flown mission 'scrubbed'. On 2026-08-26, 39 of 39 launches from the
+ * previous 60 days were "scrubbed" in the DB. Fixed here; the previous-launch
+ * outcome sync below repairs rows the /upcoming feed has already dropped.
+ */
+export function mapLaunchLibraryStatus(status: { abbrev?: string | null; name?: string | null } | string | null | undefined): SpaceEventStatus {
+  const byAbbrev: Record<string, SpaceEventStatus> = {
     'Go': 'go',
     'TBD': 'tbd',
     'TBC': 'tbc',
     'Success': 'completed',
-    'Failure': 'completed',
+    'Partial Failure': 'completed', // it launched; the debrief judges the outcome
+    'Failure': 'failed',
     'In Flight': 'in_progress',
     'Hold': 'upcoming',
   };
-  return statusMap[status] || 'upcoming';
+  const byName: Record<string, SpaceEventStatus> = {
+    'Go for Launch': 'go',
+    'To Be Determined': 'tbd',
+    'To Be Confirmed': 'tbc',
+    'Launch Successful': 'completed',
+    'Launch was a Partial Failure': 'completed',
+    'Launch Failure': 'failed',
+    'Launch in Flight': 'in_progress',
+    'On Hold': 'upcoming',
+  };
+  if (!status) return 'upcoming';
+  if (typeof status === 'string') return byAbbrev[status] || byName[status] || 'upcoming';
+  return (status.abbrev && byAbbrev[status.abbrev]) || (status.name && byName[status.name]) || 'upcoming';
+}
+
+function mapStatusToInternal(status: LaunchLibraryLaunch['status'] | string | undefined): SpaceEventStatus {
+  return mapLaunchLibraryStatus(status as never);
 }
 
 function determineEventType(launch: LaunchLibraryLaunch): SpaceEventType {
@@ -147,7 +176,7 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
 
     for (const launch of launches) {
       const eventType = determineEventType(launch);
-      const status = mapStatusToInternal(launch.status?.name || 'TBD');
+      const status = mapStatusToInternal(launch.status);
 
       try {
         const padLat = launch.pad?.latitude ? Number(launch.pad.latitude) : null;
@@ -422,6 +451,46 @@ export const STALE_EVENT_GRACE_MS = 24 * 3600_000;
  * Pure DB update, no external I/O — safe to call every sync pass regardless
  * of whether the Launch Library fetch itself succeeded.
  */
+/**
+ * Pull final outcomes for recently flown launches from LL2's /launch/previous
+ * feed and write them onto rows we already track. The /upcoming feed drops a
+ * launch the moment it flies, so without this pass a mission's last recorded
+ * status is whatever it was minutes before liftoff. Runs before
+ * expireStaleUpcomingEvents so a real outcome always beats the 'scrubbed'
+ * fallback. Only touches rows that exist (updateMany by externalId); never
+ * creates. Returns the number of rows whose status changed.
+ */
+export const RECENT_OUTCOMES_LIMIT = 50;
+
+export async function syncRecentLaunchOutcomes(
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ checked: number; updated: number }> {
+  const res = await fetchImpl(
+    `https://ll.thespacedevs.com/2.2.0/launch/previous/?limit=${RECENT_OUTCOMES_LIMIT}&mode=list`,
+    { cache: 'no-store', headers: { Accept: 'application/json' } },
+  );
+  if (!res.ok) throw new Error(`Launch Library previous-launch API error: ${res.status}`);
+  const json = (await res.json()) as { results?: Array<{ id: string; net?: string | null; status?: { abbrev?: string; name?: string } }> };
+  const results = json.results || [];
+  let updated = 0;
+  for (const launch of results) {
+    const status = mapLaunchLibraryStatus(launch.status);
+    // A previous-feed launch whose status still maps to 'upcoming' (e.g. On
+    // Hold) is not an outcome — leave the row alone.
+    if (status === 'upcoming' || status === 'tbd' || status === 'tbc' || status === 'go') continue;
+    const r = await prisma.spaceEvent.updateMany({
+      where: { externalId: launch.id, NOT: { status } },
+      data: {
+        status,
+        ...(launch.net ? { launchDate: new Date(launch.net) } : {}),
+        updatedAt: new Date(),
+      },
+    });
+    updated += r.count;
+  }
+  return { checked: results.length, updated };
+}
+
 export async function expireStaleUpcomingEvents(now: Date = new Date()): Promise<number> {
   const cutoff = new Date(now.getTime() - STALE_EVENT_GRACE_MS);
   const result = await prisma.spaceEvent.updateMany({

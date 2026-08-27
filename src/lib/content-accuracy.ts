@@ -402,6 +402,11 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     run: checkTablePipelineLiveness,
   },
   {
+    id: 'launch-outcomes-flowing',
+    label: 'Flown launches are recording real outcomes (not all "scrubbed")',
+    run: checkLaunchOutcomesFlowing,
+  },
+  {
     id: 'mission-control-featured-future',
     label: 'Mission Control featured mission is upcoming, not past',
     run: checkMissionControlFeaturedFuture,
@@ -607,6 +612,28 @@ async function checkTablePipelineLiveness(): Promise<AccuracyCheckOutcome> {
 
   if (problems.length > 0) return { ok: false, detail: problems.join(' | ') };
   return { ok: true, detail: `${checks.length} table pipeline(s) alive.` };
+}
+
+/**
+ * Every launch that flies must end up 'completed' or 'failed', never
+ * 'scrubbed' by default. On 2026-08-26 the LL2 status mapper was found to
+ * have matched nothing for its entire life: 39/39 launches in 60 days sat at
+ * 'scrubbed', the monthly report counted zero launches, and the prediction
+ * exchange resolved every launch question 'no'. The world's launch cadence
+ * is >5/week, so a fortnight with ≥3 flown launches and zero real outcomes
+ * means the outcome sync is broken again.
+ */
+async function checkLaunchOutcomesFlowing(): Promise<AccuracyCheckOutcome> {
+  const now = Date.now();
+  const window = { gte: new Date(now - 14 * 86_400_000), lte: new Date(now - 86_400_000) };
+  const [flown, real] = await Promise.all([
+    prisma.spaceEvent.count({ where: { type: 'launch', launchDate: window } }),
+    prisma.spaceEvent.count({ where: { type: 'launch', launchDate: window, status: { in: ['completed', 'failed'] } } }),
+  ]);
+  if (flown >= 3 && real === 0) {
+    return { ok: false, detail: `${flown} launches in the last 14d, none recorded as completed/failed — LL2 outcome sync is not writing (all "scrubbed"?).` };
+  }
+  return { ok: true, detail: `${real}/${flown} launches in the last 14d carry a real outcome.` };
 }
 
 /**

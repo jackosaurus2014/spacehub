@@ -66,6 +66,7 @@ export type SpaceEventStatus =
   | 'upcoming'
   | 'in_progress'
   | 'completed'
+  | 'failed'
   | 'scrubbed'
   | 'tbd'
   | 'go'
@@ -974,6 +975,7 @@ export const EVENT_STATUS_INFO: Record<SpaceEventStatus, { label: string; color:
   upcoming: { label: 'Upcoming', color: 'bg-blue-500' },
   in_progress: { label: 'In Progress', color: 'bg-green-500' },
   completed: { label: 'Completed', color: 'bg-slate-500' },
+  failed: { label: 'Failed', color: 'bg-red-700' },
   scrubbed: { label: 'Scrubbed', color: 'bg-red-500' },
   tbd: { label: 'TBD', color: 'bg-yellow-500' },
   go: { label: 'GO', color: 'bg-green-600' },

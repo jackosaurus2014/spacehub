@@ -285,7 +285,8 @@ export function isReadyToResolve(question: ResolvableQuestion, now: Date): boole
  * has elapsed, or the event no longer exists) resolves 'no'.
  */
 export function resolveSpaceEventOutcome(status: string | null | undefined): 'yes' | 'no' {
-  if (status === 'completed' || status === 'in_progress') return 'yes';
+  // 'failed' = lifted off and was lost; the question asks whether it launched.
+  if (status === 'completed' || status === 'failed' || status === 'in_progress') return 'yes';
   return 'no';
 }
 
