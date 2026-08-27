@@ -7,7 +7,6 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import CategoryGrid from '@/components/marketplace/CategoryGrid';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
-import RFQCard from '@/components/marketplace/RFQCard';
 import Image from 'next/image';
 import { clientLogger } from '@/lib/client-logger';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
@@ -32,7 +31,6 @@ interface MarketplaceStats {
 export default function MarketplacePage() {
   const [stats, setStats] = useState<MarketplaceStats | null>(null);
   const [featuredListings, setFeaturedListings] = useState<any[]>([]);
-  const [recentRFQs, setRecentRFQs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,10 +38,9 @@ export default function MarketplacePage() {
     setLoading(true);
     setError(null);
     try {
-      const [statsRes, listingsRes, rfqRes] = await Promise.all([
+      const [statsRes, listingsRes] = await Promise.all([
         fetch('/api/marketplace/stats'),
         fetch('/api/marketplace/listings?limit=4&sort=newest'),
-        fetch('/api/marketplace/rfq?limit=4&status=open'),
       ]);
 
       if (statsRes.ok) setStats(await statsRes.json());
@@ -51,12 +48,7 @@ export default function MarketplacePage() {
         const data = await listingsRes.json();
         setFeaturedListings(data.listings || []);
       }
-      if (rfqRes.ok) {
-        const data = await rfqRes.json();
-        setRecentRFQs(data.rfqs || []);
-      }
-
-      if (!statsRes.ok && !listingsRes.ok && !rfqRes.ok) {
+      if (!statsRes.ok && !listingsRes.ok) {
         setError('Failed to load marketplace data. Please try again.');
       }
     } catch (err) {
@@ -104,7 +96,7 @@ export default function MarketplacePage() {
       <FAQSchema items={[
         { question: 'How do I list services on the SpaceNexus marketplace?', answer: 'Service providers can create listings through the Provider Dashboard. Listings include company details, service descriptions, pricing, certifications, and verification badges. Basic listings are free.' },
         { question: 'What types of space services are listed?', answer: 'The marketplace covers 10 categories including Launch Services, Satellite Manufacturing, Ground Station Services, Space Insurance, Mission Operations, Testing and Qualification, Consulting, Data and Analytics, Components and Materials, and Workforce and Recruitment.' },
-        { question: 'How does the RFQ process work?', answer: 'Submit a Request for Quote describing your needs, budget range, and timeline. Our AI-powered matching system identifies qualified providers based on capabilities, certifications, and past performance. Providers can submit proposals with pricing and technical details.' },
+        { question: 'How do I get a quote from a provider?', answer: 'Every listing carries the provider\'s direct contact. Open a listing and use Contact Provider to reach them with your requirements, budget range, and timeline.' },
       ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         {error && !loading && (
@@ -134,7 +126,7 @@ export default function MarketplacePage() {
           </div>
           <AnimatedPageHeader
             title="Space Industry Marketplace"
-            subtitle="Connect with verified providers, submit RFQs, and procure space services"
+            subtitle="Find verified providers across launch, manufacturing, ground stations, insurance, and more"
           />
           <div className="flex flex-wrap justify-center gap-3 mt-6">
             <Link href="/marketplace/search">
@@ -146,13 +138,13 @@ export default function MarketplacePage() {
                 Browse Services
               </motion.button>
             </Link>
-            <Link href="/marketplace/rfq/new">
+            <Link href="/provider-dashboard">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-6 py-3 min-h-[44px] bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg font-semibold transition-all"
               >
-                Post an RFQ
+                List Your Services
               </motion.button>
             </Link>
           </div>
@@ -161,12 +153,10 @@ export default function MarketplacePage() {
         {/* Stats Bar */}
         {stats && (
           <ScrollReveal>
-            <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <StaggerContainer className="grid grid-cols-2 gap-4">
               {[
                 { label: 'Active Providers', value: stats.activeProviders, color: 'text-slate-300' },
                 { label: 'Service Listings', value: stats.activeListings, color: 'text-emerald-400' },
-                { label: 'Open RFQs', value: stats.openRFQs, color: 'text-yellow-400' },
-                { label: 'Proposals Submitted', value: stats.totalProposals, color: 'text-white/70' },
               ].map((stat) => (
                 <StaggerItem key={stat.label}>
                   <div className="card p-4 text-center">
@@ -213,31 +203,11 @@ export default function MarketplacePage() {
           </ScrollReveal>
         )}
 
-        {/* Ad between listings and RFQs */}
         <div>
           <AdSlot position="in_feed" module="marketplace" adsenseSlot="in_feed_mktplace" adsenseFormat="rectangle" />
         </div>
 
-        {/* Recent RFQs */}
-        {recentRFQs.length > 0 && (
-          <ScrollReveal>
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">Open RFQs</h2>
-                <Link href="/marketplace/search?tab=rfqs" className="text-xs text-slate-300 hover:text-white">
-                  View All →
-                </Link>
-              </div>
-              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {recentRFQs.map((rfq, i) => (
-                  <StaggerItem key={rfq.id}>
-                    <RFQCard rfq={rfq} index={i} />
-                  </StaggerItem>
-                ))}
-              </StaggerContainer>
-            </div>
-          </ScrollReveal>
-        )}
+        {/* RFQ feed removed 2026-08-26: RFQ workflow mothballed (src/lib/mothballed-routes.ts) */}
 
         {/* How It Works */}
         <ScrollReveal>
@@ -247,20 +217,20 @@ export default function MarketplacePage() {
               {[
                 {
                   step: '1',
-                  title: 'Post Your Requirements',
-                  desc: 'Submit an RFQ describing what you need. Our algorithm matches you with qualified providers.',
-                  icon: '📝',
+                  title: 'Browse the Directory',
+                  desc: 'Filter verified providers by category, certification, and price range.',
+                  icon: '🔍',
                 },
                 {
                   step: '2',
-                  title: 'Receive Proposals',
-                  desc: 'Matched providers submit proposals with pricing, timelines, and technical approaches.',
+                  title: 'Contact Providers',
+                  desc: 'Reach providers directly from their listing with your requirements, budget, and timeline.',
                   icon: '📬',
                 },
                 {
                   step: '3',
                   title: 'Award & Procure',
-                  desc: 'Compare proposals and shortlist candidates. Secure contract awarding with integrated payments coming soon.',
+                  desc: 'Compare quotes and shortlist candidates. Contract awarding with integrated payments is staged for a later release.',
                   icon: '🏆',
                   comingSoon: true,
                 },
@@ -338,7 +308,7 @@ export default function MarketplacePage() {
         <div className="text-center card p-8 bg-gradient-to-r from-white/[0.04] to-blue-900/30 border-white/10">
           <h2 className="text-lg font-semibold text-white mb-2">Are you a space service provider?</h2>
           <p className="text-sm text-slate-400 mb-4">
-            Claim your company profile, list your services, and start receiving RFQs from buyers worldwide.
+            Claim your company profile and list your services so buyers worldwide can find and contact you.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/company-profiles">

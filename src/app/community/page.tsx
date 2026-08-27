@@ -1,201 +1,143 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
-interface CommunityStats {
-  totalMembers: number;
-  activeThreads: number;
-  messagesSent: number;
-}
+// Community hub — Phase 2 of the 2026-08 consolidation.
+//
+// The forums, professional directory, direct messaging, mentorship, study
+// groups, AMAs and speaking board are built but had zero usage ever, so they
+// are mothballed (see src/lib/mothballed-routes.ts) until the audience
+// exists. This page is the honest front door: it says what's staged, and
+// points at the places where the community actually gathers today. It used
+// to fetch member/thread/post counts — those are all zero, so no stats bar.
 
-const SECTIONS = [
+export const metadata: Metadata = {
+  title: 'Community Hub | SpaceNexus',
+  description:
+    'Where the SpaceNexus community gathers today — Space Tycoon corporations, the M/Th Digest, and the feedback line — and what is staged for launch as the community grows.',
+};
+
+const LIVE_NOW = [
   {
-    title: 'Professional Directory',
-    description: 'Browse and search space industry professionals. Connect with engineers, executives, investors, and researchers across the space sector.',
-    href: '/community/directory',
-    icon: (
-      <svg className="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    ),
-    accent: 'from-white/5 to-blue-500/20',
-    borderAccent: 'hover:border-white/10',
+    title: 'Space Tycoon',
+    description:
+      'The living multiplayer economy. Found a corporation, climb the leaderboard, and compete on the same map as every other player in Epoch 2.',
+    href: '/space-tycoon',
+    cta: 'Enter the command center',
+    accent: 'from-cyan-500/20 to-purple-500/20',
+    border: 'hover:border-cyan-500/30',
   },
   {
-    title: 'Messages',
-    description: 'Direct messaging with space professionals. Discuss opportunities, partnerships, and collaborate in private conversations.',
-    href: '/messages',
-    icon: (
-      <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-      </svg>
-    ),
-    accent: 'from-purple-500/20 to-pink-500/20',
-    borderAccent: 'hover:border-purple-500/30',
+    title: 'Corporate Leaderboard',
+    description:
+      'Public standings for every player corporation — net worth, growth, and rank. The rivalry board of the game.',
+    href: '/space-tycoon/leaderboard',
+    cta: 'See the standings',
+    accent: 'from-amber-500/20 to-orange-500/20',
+    border: 'hover:border-amber-500/30',
   },
   {
-    title: 'Discussion Forums',
-    description: 'Industry forums organized by topic. Share insights, ask questions, and engage with the space community on launch tech, policy, funding, and more.',
-    href: '/community/forums',
-    icon: (
-      <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-      </svg>
-    ),
+    title: 'M/Th Digest',
+    description:
+      'The twice-weekly briefing that most of the community reads. Launches, deals, policy, and the week’s delta — Mondays and Thursdays.',
+    href: '/newsletter',
+    cta: 'Subscribe',
     accent: 'from-emerald-500/20 to-teal-500/20',
-    borderAccent: 'hover:border-emerald-500/30',
+    border: 'hover:border-emerald-500/30',
+  },
+  {
+    title: 'Feedback Line',
+    description:
+      'Every message is read by a person and answered. Feature requests, corrections, and ideas shape the roadmap directly.',
+    href: '/feedback',
+    cta: 'Send feedback',
+    accent: 'from-white/5 to-blue-500/20',
+    border: 'hover:border-white/10',
   },
 ];
 
+const STAGED = [
+  'Discussion forums by topic',
+  'Professional directory and profiles',
+  'Direct messaging',
+  'Mentorship matching',
+  'Study groups',
+  'Live AMAs and office hours',
+  'Speaking-opportunity board',
+];
+
 export default function CommunityPage() {
-  // null until the real endpoint responds — the stats bar renders nothing on
-  // failure rather than falling back to invented numbers.
-  const [stats, setStats] = useState<CommunityStats | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await fetch('/api/community/stats');
-        if (res.ok) {
-          const data = await res.json();
-          if (typeof data.totalMembers === 'number') setStats(data);
-        }
-      } catch {
-        // Leave stats null — bar stays hidden
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Community Hub"
-          subtitle="Connect with space industry professionals, share knowledge, and collaborate on the next frontier."
-          icon={<span>{"👥"}</span>}
+          subtitle="Where the space community gathers on SpaceNexus today — and what's staged for launch as it grows."
+          icon={<span>{'\u{1F465}'}</span>}
         />
 
-        {/* Stats bar — real counts only; hidden entirely if the endpoint fails */}
-        {(loading || stats) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="grid grid-cols-3 gap-4 mb-8"
-          >
-            {[
-              { label: 'Members', value: stats?.totalMembers, icon: '👤' },
-              { label: 'Discussion Threads', value: stats?.activeThreads, icon: '💬' },
-              { label: 'Posts', value: stats?.messagesSent, icon: '✉️' },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="card px-4 py-3 text-center"
-              >
-                {loading || stat.value === undefined ? (
-                  <div className="flex justify-center py-2">
-                    <LoadingSpinner size="sm" />
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-2xl font-bold text-white">{stat.value.toLocaleString()}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{stat.label}</p>
-                  </>
-                )}
+        {/* Live now */}
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Live now</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {LIVE_NOW.map((item) => (
+            <Link
+              key={item.title}
+              href={item.href}
+              className={`card p-6 group relative overflow-hidden transition-transform hover:-translate-y-1 ${item.border}`}
+            >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.accent}`} />
               </div>
-            ))}
-          </motion.div>
-        )}
-
-        {/* Main sections */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {SECTIONS.map((section) => (
-            <StaggerItem key={section.title}>
-              <Link href={section.href}>
-                <motion.div
-                  whileHover={{ y: -4, scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={`card p-6 h-full group cursor-pointer relative overflow-hidden ${section.borderAccent}`}
-                >
-                  {/* Gradient background on hover */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${section.accent}`} />
-                  </div>
-
-                  <div className="relative z-10">
-                    <div className="w-14 h-14 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-4 group-hover:border-white/[0.08] transition-colors">
-                      {section.icon}
-                    </div>
-                    <h3 className="text-lg font-semibold text-white group-hover:text-white transition-colors mb-2">
-                      {section.title}
-                    </h3>
-                    <p className="text-sm text-slate-400 leading-relaxed">
-                      {section.description}
-                    </p>
-                    <div className="mt-4 flex items-center text-sm text-white/70 font-medium">
-                      Explore
-                      <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </motion.div>
-              </Link>
-            </StaggerItem>
+              <div className="relative z-10">
+                <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
+                <div className="mt-4 flex items-center text-sm text-white/70 font-medium">
+                  {item.cta}
+                  <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
           ))}
-        </StaggerContainer>
+        </div>
 
-        {/* Your profile CTA */}
-        <ScrollReveal>
+        {/* Staged */}
         <div className="card p-6 mb-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-1">Set Up Your Profile</h3>
-              <p className="text-sm text-slate-400">
-                Create your professional profile to be discoverable in the directory and connect with others.
+          <div className="flex flex-col md:flex-row md:items-start gap-6">
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-white mb-2">Staged for launch</h2>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                These community features are built and waiting. We&apos;re holding them until there are
+                enough of you here for a forum thread to get a reply and a mentor request to get a match —
+                an empty forum is worse than no forum. When they open, they open for everyone at once, free.
+              </p>
+              <p className="text-sm text-slate-400 leading-relaxed mt-3">
+                Want one of these sooner? Say so on the{' '}
+                <Link href="/feedback" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                  feedback line
+                </Link>
+                — demand is exactly what moves an item off this list.
               </p>
             </div>
-            <Link
-              href="/community/profile"
-              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Edit Profile
-            </Link>
+            <ul className="md:w-72 grid grid-cols-1 gap-2 text-sm text-slate-300">
+              {STAGED.map((s) => (
+                <li key={s} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500 flex-shrink-0" aria-hidden="true" />
+                  {s}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        </ScrollReveal>
 
-        {/* Activity feed placeholder */}
-        <ScrollReveal delay={0.1}>
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Activity Feed</h3>
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <p className="text-slate-400 text-sm font-medium">Coming Soon</p>
-            <p className="text-slate-500 text-xs mt-1 max-w-sm">
-              A real-time feed of community activity — new members, popular threads, and trending discussions.
-            </p>
-          </div>
-        </div>
-        </ScrollReveal>
+        <p className="text-xs text-slate-500">
+          Community standards apply everywhere on SpaceNexus, including the game.{' '}
+          <Link href="/community/guidelines" className="text-slate-400 hover:text-white underline underline-offset-2">
+            Read the guidelines
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

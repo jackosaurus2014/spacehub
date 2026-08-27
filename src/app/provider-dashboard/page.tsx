@@ -2379,15 +2379,6 @@ function DashboardContent() {
             <div className="card p-5">
               <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
                 <h3 className="text-sm font-semibold text-white">Cap Table Summary</h3>
-                {capTable && (
-                  <Link
-                    href={`/cap-tables/${company.slug}`}
-                    target="_blank"
-                    className="text-xs text-slate-400 hover:text-white"
-                  >
-                    View public page →
-                  </Link>
-                )}
               </div>
               <form onSubmit={handleCapTableSave} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

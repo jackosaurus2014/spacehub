@@ -31,6 +31,8 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
 
 // Segment 0: All static/module pages
 function getStaticRoutes(): MetadataRoute.Sitemap {
+  // Mothballed suites (src/lib/mothballed-routes.ts) are deliberately absent;
+  // the sitemap guard test enforces it.
   const routes = [
     // Homepage
     { url: BASE_URL, changeFrequency: 'daily' as const, priority: 1.0 },
@@ -97,7 +99,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/customer-discovery`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/business-models`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-calendar`, changeFrequency: 'daily' as const, priority: 0.7 },
-    { url: `${BASE_URL}/deal-rooms`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // Company Intelligence directory
     { url: `${BASE_URL}/company-profiles`, changeFrequency: 'daily' as const, priority: 0.8 },
@@ -236,7 +237,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Marketplace
     { url: `${BASE_URL}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/marketplace/search`, changeFrequency: 'daily' as const, priority: 0.6 },
-    { url: `${BASE_URL}/marketplace/rfq/new`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
     // Features directory
     { url: `${BASE_URL}/features`, changeFrequency: 'weekly' as const, priority: 0.8 },
@@ -290,8 +290,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/community/forums`, changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/community/directory`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/community/guidelines`, changeFrequency: 'monthly' as const, priority: 0.3 },
 
     // Additional content pages

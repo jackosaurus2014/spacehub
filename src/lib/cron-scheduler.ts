@@ -148,8 +148,9 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '*/10 * * * *', path: '/api/cron/satellite-pass-alerts',           label: 'satellite-pass-alerts',      maxStaleMinutes: 60 },
   // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)
   { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
-  // Forum digest — weekly on Sundays at 9am UTC
-  { schedule: '0 9 * * 0',    path: '/api/newsletter/forum-digest',              label: 'forum-digest-email',         maxStaleMinutes: 11520 },
+  // Forum digest — DISABLED 2026-08-26: forums mothballed (0 posts ever; see
+  // src/lib/mothballed-routes.ts). Restore this row when forums relist.
+  // { schedule: '0 9 * * 0',    path: '/api/newsletter/forum-digest',              label: 'forum-digest-email',         maxStaleMinutes: 11520 },
   // State of the Space Economy — weekly data brief, Mondays 1pm UTC (no AI, pure DB aggregation)
   { schedule: '0 13 * * 1',   path: '/api/cron/weekly-economy-post',             label: 'weekly-economy-post',        maxStaleMinutes: 11520 },
   // Regulatory Radar — weekly regulatory brief, Mondays 14:30 UTC (no AI, pure DB aggregation over RegulatoryAction)

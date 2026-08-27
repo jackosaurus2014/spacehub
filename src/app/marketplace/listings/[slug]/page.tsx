@@ -241,12 +241,6 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                 </a>
               )}
 
-              <Link href={`/marketplace/rfq/new?category=${listing.category}`}>
-                <button className="w-full py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg font-medium transition-colors">
-                  Request a Quote
-                </button>
-              </Link>
-
               <button
                 disabled
                 title="Direct hiring with secure payments coming soon"

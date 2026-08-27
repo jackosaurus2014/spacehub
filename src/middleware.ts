@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { resolveMothball } from '@/lib/mothballed-routes';
 
 /**
  * Edge Runtime compatible rate limiter and CSRF protection middleware
@@ -631,6 +632,19 @@ export async function middleware(req: NextRequest) {
   }
 
   const pathname = req.nextUrl.pathname;
+
+  // Mothballed feature suites (2026-08 consolidation Phase 2) — 307 to the
+  // hub that will relist them. Runs before the existence probes below so a
+  // mothballed detail route costs no DB read. Registry: src/lib/mothballed-routes.ts
+  const mothballed = resolveMothball(pathname);
+  if (mothballed) {
+    const hub = req.nextUrl.clone();
+    hub.pathname = mothballed.redirectTo;
+    hub.search = '';
+    const res = NextResponse.redirect(hub, 307);
+    res.headers.set('x-mothballed', mothballed.group);
+    return res;
+  }
 
   // Give the small set of DB-backed detail routes above a real 404 status
   // for unknown slugs — see SLUG_EXISTENCE_CHECKS comment.

@@ -38,7 +38,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Can I list contract or gig work instead of a full-time role?',
-    a: <>Yes — see <Link href="/gig-work" className="text-white underline hover:text-cyan-300">Gig Work</Link> for freelance and contract opportunities in the space industry.</>,
+    a: 'Contract and freelance roles sync the same way as full-time ones — if they are on your ATS board, we pick them up. A dedicated gig board is staged for when the freelance audience is here.',
   },
   {
     q: "What if my company isn't on Greenhouse, Lever, or Ashby?",

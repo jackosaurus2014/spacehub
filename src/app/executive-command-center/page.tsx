@@ -361,13 +361,9 @@ function PipelineSnapshotSection({ pipeline }: { pipeline: PipelineSnapshot }) {
       <h2 className="text-lg font-semibold text-slate-200 mb-4">Pipeline Snapshot</h2>
       {!hasData ? (
         <p className="text-sm text-slate-500">
-          No active RFQs or proposals.{' '}
-          <Link href="/marketplace/rfq/new" className="text-cyan-400 hover:text-cyan-300 transition-colors">
-            Create an RFQ
-          </Link>{' '}
-          or{' '}
+          No active pipeline items.{' '}
           <Link href="/marketplace/search" className="text-cyan-400 hover:text-cyan-300 transition-colors">
-            browse the marketplace
+            Browse the provider directory
           </Link>
           .
         </p>

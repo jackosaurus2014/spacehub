@@ -138,8 +138,8 @@ export default function RoadmapPage() {
                 <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-900 bg-white hover:bg-slate-100 rounded-lg transition-colors">
                   Submit a Request
                 </Link>
-                <Link href="/community/forums" className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
-                  Discuss on Forums
+                <Link href="/feedback" className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                  Send Feedback
                 </Link>
               </div>
             </div>

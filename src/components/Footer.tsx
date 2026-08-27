@@ -31,7 +31,7 @@ const footerLinks = {
       { label: 'Reference Library', href: '/resources' },
       { label: 'Newsletters Directory', href: '/newsletters-directory' },
       { label: 'Embeddable Widgets', href: '/widgets' },
-      { label: 'Community Forums', href: '/community/forums' },
+      { label: 'Community', href: '/community' },
       { label: 'Help Center', href: '/help' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'API', href: '/developer' },

@@ -881,13 +881,13 @@ export default function LaunchCostCalculatorPage() {
 
               {/* Request Quote CTA */}
               <Link
-                href="/marketplace/rfq/new"
+                href="/marketplace/search?category=launch-services"
                 className="block w-full text-center py-3 px-4 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/10 hover:shadow-black/15 mt-2"
               >
-                Request Launch Quote
+                Find Launch Providers
               </Link>
               <p className="text-xs text-slate-600 text-center -mt-2">
-                Get real pricing from verified providers
+                Contact verified providers for real pricing
               </p>
             </div>
           </div>

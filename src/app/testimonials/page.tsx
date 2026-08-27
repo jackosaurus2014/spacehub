@@ -113,7 +113,7 @@ export default function TestimonialsPage() {
                 <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-slate-900 bg-white hover:bg-slate-100 rounded-lg transition-colors">
                   Send Feedback
                 </Link>
-                <Link href="/community/forums" className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                <Link href="/community" className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
                   Join the Community
                 </Link>
               </div>

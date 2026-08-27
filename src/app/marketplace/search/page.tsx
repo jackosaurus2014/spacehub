@@ -143,7 +143,6 @@ function SearchContent() {
         <div className="flex items-center gap-1 bg-white/[0.06] rounded-lg p-1 w-fit mb-6">
           {[
             { key: 'listings', label: 'Service Listings' },
-            { key: 'rfqs', label: 'Open RFQs' },
           ].map((t) => (
             <button
               key={t.key}

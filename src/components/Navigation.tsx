@@ -69,7 +69,7 @@ const MARKETS_ITEMS: DropdownItem[] = [
 
 const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Contracts & Opportunities', href: '/procurement', description: 'Contracts, grants, SBIR & budgets' },
-  { label: 'Marketplace', href: '/marketplace', description: 'Services, RFQs & providers' },
+  { label: 'Marketplace', href: '/marketplace', description: 'Verified space service providers' },
   { label: 'Regulatory & Compliance', href: '/compliance', description: 'Compliance, space law & filings' },
   { label: 'Regulatory Radar', href: '/regulatory-radar', description: 'Live rules, enforcement & deadlines' },
   { label: 'Patents', href: '/patents', description: 'Space technology patent trends' },
@@ -96,7 +96,6 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Learning Zone', href: '/learn', description: 'Interactive courses & lessons' },
   { label: 'Space History', href: '/history', description: 'Searchable historical milestones' },
   { label: 'Glossary', href: '/glossary', description: 'Key space terms defined' },
-  { label: 'Community Forums', href: '/community/forums', description: 'Discuss with professionals' },
 ];
 // Wire up items to category metadata after const arrays are defined
 ALL_CATEGORIES[0].items = NEWS_ITEMS;
@@ -291,9 +290,6 @@ export default function Navigation() {
   const [recentModules, setRecentModules] = useState<RecentModule[]>([]);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
 
-  // Unread message count
-  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
-
   // Live launch indicator — lightweight poll of the same endpoint LiveNowBanner uses
   const [isLiveNow, setIsLiveNow] = useState(false);
 
@@ -324,31 +320,6 @@ export default function Navigation() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!session?.user) return;
-
-    let cancelled = false;
-
-    const fetchUnread = async () => {
-      try {
-        const res = await fetch('/api/messages/unread');
-        if (res.ok && !cancelled) {
-          const json = await res.json();
-          setUnreadMsgCount(json?.data?.unreadCount ?? 0);
-        }
-      } catch {
-        // silently fail
-      }
-    };
-
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 30000); // poll every 30s
-
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, [session?.user]);
 
   // Load recent modules from localStorage on mount
   useEffect(() => {
@@ -593,23 +564,7 @@ export default function Navigation() {
             {/* Notification Center (single bell — the old NotificationBell
                 called nonexistent /api/notifications endpoints) */}
             <NotificationCenter />
-            {/* Messages */}
-            {session && (
-              <Link
-                href="/messages"
-                className="relative p-2 text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/[0.05]"
-                aria-label={`Messages${unreadMsgCount > 0 ? ` (${unreadMsgCount} unread)` : ''}`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                {unreadMsgCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1 shadow-lg shadow-red-500/30">
-                    {unreadMsgCount > 99 ? '99+' : unreadMsgCount}
-                  </span>
-                )}
-              </Link>
-            )}
+            {/* Messages icon removed 2026-08-26: DMs mothballed (src/lib/mothballed-routes.ts) */}
             {status === 'loading' ? (
               <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             ) : session ? (
@@ -968,33 +923,6 @@ export default function Navigation() {
                   </Link>
                 </div>
 
-                {/* Messages (mobile) */}
-                {session && (
-                  <div className="pt-4 border-t border-white/[0.06]">
-                    <Link
-                      href="/messages"
-                      className="flex items-center gap-3 px-3 py-3 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium touch-target"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <svg
-                        className="w-4 h-4 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      Messages
-                      {unreadMsgCount > 0 && (
-                        <span className="ml-auto min-w-[20px] h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5">
-                          {unreadMsgCount > 99 ? '99+' : unreadMsgCount}
-                        </span>
-                      )}
-                    </Link>
-                  </div>
-                )}
 
                 {/* New user helper */}
                 <div className="pt-4 border-t border-white/[0.06]">
