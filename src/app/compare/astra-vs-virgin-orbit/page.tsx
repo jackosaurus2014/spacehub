@@ -132,7 +132,7 @@ export default async function Page() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { title: 'Relativity Space vs Firefly', href: '/compare/relativity-space-vs-firefly' },
-            { title: 'SpaceX vs Rocket Lab', href: '/compare/spacex-vs-rocket-lab' },
+            { title: 'Rocket Lab vs SpaceX', href: '/compare/rocket-lab-vs-spacex' },
             { title: 'SpaceX vs ULA', href: '/compare/spacex-vs-ula' },
           ].map(c => (
             <Link key={c.href} href={c.href} className="card-content text-center text-sm p-4">{c.title} →</Link>

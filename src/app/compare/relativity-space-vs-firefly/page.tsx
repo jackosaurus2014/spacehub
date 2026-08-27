@@ -132,7 +132,7 @@ export default async function Page() {
         <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-tertiary)' }}>Related Comparisons</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { title: 'SpaceX vs Rocket Lab', href: '/compare/spacex-vs-rocket-lab' },
+            { title: 'Rocket Lab vs SpaceX', href: '/compare/rocket-lab-vs-spacex' },
             { title: 'Astra vs Virgin Orbit', href: '/compare/astra-vs-virgin-orbit' },
             { title: 'Rocket Lab vs Relativity Space', href: '/compare/rocket-lab-vs-relativity-space' },
           ].map(c => (

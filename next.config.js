@@ -490,6 +490,10 @@ const nextConfig = {
       // Misspelled path observed receiving real traffic in GA4 (external or
       // stale link somewhere) — catch it rather than 404 it.
       { source: '/funding-tracjer', destination: '/funding-tracker', permanent: true },
+      // 2026-08-26: two compare pages ranked for the same queries and split the
+      // clicks (Search Console: 4.1k + 7.0k impressions, both <0.5% CTR). The
+      // stronger page absorbed the other's table rows; this consolidates the ranking.
+      { source: '/compare/spacex-vs-rocket-lab', destination: '/compare/rocket-lab-vs-spacex', permanent: true },
       // Opportunity trio consolidated into the /procurement hub
       { source: '/business-opportunities', destination: '/procurement', permanent: true },
       { source: '/funding-opportunities', destination: '/procurement?tab=grants', permanent: true },

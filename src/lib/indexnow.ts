@@ -61,7 +61,7 @@ export async function submitAllToIndexNow(): Promise<boolean> {
   // Add comparison pages
   const comparePaths = [
     '/compare/spacex-vs-blue-origin', '/compare/starlink-vs-kuiper',
-    '/compare/spacex-vs-rocket-lab', '/compare/axiom-vs-vast',
+    '/compare/rocket-lab-vs-spacex', '/compare/axiom-vs-vast',
     '/compare/starlink-vs-ast-spacemobile', '/compare/iceye-vs-capella-space',
   ];
 

@@ -10,11 +10,14 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 export const revalidate = 3600; // ISR: revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'Space Launch Cost 2026: From $3,070/kg',
+  title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
   description:
-    'Falcon 9 lands near $3,070/kg to LEO, the cheapest ride to orbit in 2026. Compare cost per kilogram across Starship, Electron, Ariane 6, New Glenn, and more.',
+    'A Falcon 9 lists at ~$70M (about $3,070/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
   keywords: [
     'space launch cost',
+    'how much does it cost to launch a satellite',
+    'cost to launch a satellite',
+    'falcon 9 launch cost',
     'launch cost comparison',
     'rocket launch price',
     'Falcon 9 cost',
@@ -26,9 +29,9 @@ export const metadata: Metadata = {
     'launch price 2026',
   ],
   openGraph: {
-    title: 'Space Launch Cost 2026: From $3,070/kg',
+    title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
     description:
-      'Falcon 9 lands near $3,070/kg to LEO, the cheapest ride to orbit in 2026. Compare cost per kilogram across Starship, Electron, Ariane 6, New Glenn, and more.',
+      'Falcon 9 ~$70M (about $3,070/kg), rideshare from $350k for 50 kg, Electron ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
     type: 'article',
     publishedTime: '2026-02-08T00:00:00Z',
     authors: ['SpaceNexus'],
@@ -59,6 +62,10 @@ const TOC = [
 /*  FAQ data                                                          */
 /* ------------------------------------------------------------------ */
 const FAQ_ITEMS = [
+  {
+    q: 'How much does it cost to launch a satellite?',
+    a: 'It depends almost entirely on mass and on whether you buy a whole rocket or a seat on one. A small satellite of 50 kg rides on a SpaceX Transporter rideshare mission for about $350,000 (roughly $7,000 per additional kilogram). A 150 kg satellite costs around $1 million to launch on rideshare, more once integration, transport and insurance are added. A dedicated small launcher such as Rocket Lab\'s Electron is about $8 million for up to ~300 kg to your exact orbit. A dedicated Falcon 9 lists at about $70 million and carries up to 22,800 kg to low Earth orbit, which is why large operators pay roughly $3,000 per kilogram while a lone smallsat pays more than double that. Add 5-10% of the satellite\'s insured value for launch insurance if you buy it.',
+  },
   {
     q: 'What is the cheapest rocket to launch to orbit?',
     a: 'On a cost-per-kilogram basis, SpaceX\'s Falcon 9 is currently the cheapest operational orbital launch vehicle, with published rideshare pricing of approximately $7,000 per kilogram to sun-synchronous orbit as of 2026. For dedicated missions, the Falcon 9 list price of approximately $70 million translates to roughly $3,000-$3,100 per kilogram for a full 22,800 kg payload to LEO. SpaceX\'s Starship, which began deploying operational payloads in 2026, is expected to reduce costs further, potentially to $100-$500 per kilogram at mature flight rates.',
@@ -221,6 +228,14 @@ export default function SpaceLaunchCostComparisonPage() {
                     (LEO) and expendable vehicles of the 2000s cost $10,000-$20,000/kg, SpaceX has
                     brought the effective cost down to roughly $3,000/kg and is targeting sub-$500/kg
                     with Starship.
+                  </p>
+                  <p>
+                    <strong>The short answer to &ldquo;how much does it cost to launch a satellite?&rdquo;:</strong>{' '}
+                    about $350,000 for a 50 kg smallsat on a SpaceX rideshare, roughly $8 million
+                    for a dedicated Electron, and about $70 million for a dedicated Falcon 9 that
+                    can carry 22,800 kg &mdash; which works out to roughly $3,000 per kilogram for
+                    whoever fills it. Everything below explains where those numbers come from and
+                    what they leave out.
                   </p>
                   <p>
                     This guide provides a comprehensive comparison of launch costs across all major

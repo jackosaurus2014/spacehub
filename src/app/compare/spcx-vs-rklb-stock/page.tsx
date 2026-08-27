@@ -81,7 +81,7 @@ export default async function Page() {
       <h1 className="text-display text-3xl md:text-4xl mb-3">SpaceX vs Rocket Lab: As Investments</h1>
       <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl mb-8">
         SpaceX (Nasdaq: SPCX) and Rocket Lab (Nasdaq: RKLB) are both publicly traded space companies, but they sit at opposite ends of the risk-and-scale spectrum &mdash; a freshly listed ~$2 trillion giant versus an established, still-scaling small-cap with a transformational acquisition in progress. This is a financial comparison, not a technical one; see our{' '}
-        <Link href="/compare/spacex-vs-rocket-lab" className="text-cyan-400 hover:text-cyan-300">vehicle-and-operations comparison</Link>{' '}
+        <Link href="/compare/rocket-lab-vs-spacex" className="text-cyan-400 hover:text-cyan-300">vehicle-and-operations comparison</Link>{' '}
         for the launch-vehicle side of the story.
       </p>
 
@@ -175,7 +175,7 @@ export default async function Page() {
         <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-tertiary)' }}>Related Comparisons</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { title: 'SpaceX vs Rocket Lab (Vehicles & Ops)', href: '/compare/spacex-vs-rocket-lab' },
+            { title: 'Rocket Lab vs SpaceX (Vehicles & Ops)', href: '/compare/rocket-lab-vs-spacex' },
             { title: 'Starship vs New Glenn', href: '/compare/starship-vs-new-glenn' },
             { title: 'Rocket Lab vs Astra Space', href: '/compare/rocket-lab-vs-astra' },
           ].map(c => (

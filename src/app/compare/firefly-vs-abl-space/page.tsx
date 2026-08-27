@@ -142,7 +142,7 @@ export default async function Page() {
           {[
             { title: 'Rocket Lab vs Astra', href: '/compare/rocket-lab-vs-astra' },
             { title: 'Relativity Space vs Firefly', href: '/compare/relativity-space-vs-firefly' },
-            { title: 'SpaceX vs Rocket Lab', href: '/compare/spacex-vs-rocket-lab' },
+            { title: 'Rocket Lab vs SpaceX', href: '/compare/rocket-lab-vs-spacex' },
           ].map(c => (
             <Link key={c.href} href={c.href} className="card-content text-center text-sm p-4 hover:border-indigo-500/20">{c.title} &rarr;</Link>
           ))}

@@ -107,7 +107,7 @@ export default function Page() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { title: 'SpaceX vs Blue Origin', href: '/compare/spacex-vs-blue-origin' },
-            { title: 'SpaceX vs Rocket Lab', href: '/compare/spacex-vs-rocket-lab' },
+            { title: 'Rocket Lab vs SpaceX', href: '/compare/rocket-lab-vs-spacex' },
             { title: 'Boeing Space vs Lockheed Martin Space', href: '/compare/boeing-vs-lockheed-space' },
           ].map(c => (
             <Link key={c.href} href={c.href} className="card-content text-center text-sm p-4">{c.title} →</Link>

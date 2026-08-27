@@ -35,6 +35,7 @@ const GUIDE_DESCRIPTIONS: Record<string, string> = {
   'space-industry': 'Markets, technologies, companies, and opportunities shaping the $630B+ space economy.',
   'space-industry-market-size': 'Sector-by-sector data, growth forecasts, and regional breakdowns of the global space economy.',
   'commercial-space-economy': 'How commercial space companies generate revenue across launch, satellites, and services.',
+  'space-economy-value-chain': 'Upstream, midstream, downstream — segment sizes, margins, and who captures the value.',
   'space-economy-investment': 'A practical guide to investing in space stocks, ETFs, and private space companies.',
   'space-business-opportunities': 'Where the addressable market is opening up for new space businesses in 2026.',
   'space-launch-cost-comparison': 'Vehicle-by-vehicle launch pricing, cost per kilogram, and hidden mission costs.',

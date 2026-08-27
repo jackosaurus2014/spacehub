@@ -24,6 +24,11 @@ export const GUIDE_LIST: GuideEntry[] = [
     shortTitle: 'Commercial Space Economy',
   },
   {
+    slug: 'space-economy-value-chain',
+    title: 'The Space Economy Value Chain',
+    shortTitle: 'Value Chain',
+  },
+  {
     slug: 'space-economy-investment',
     title: 'Investing in the Space Economy',
     shortTitle: 'Space Investment Guide',
