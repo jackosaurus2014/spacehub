@@ -407,6 +407,11 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     run: checkLaunchOutcomesFlowing,
   },
   {
+    id: 'stock-quotes-fresh',
+    label: 'Stock-sync is writing quotes (freshest public-company lastVerified < 4 days)',
+    run: checkStockQuotesFresh,
+  },
+  {
     id: 'mission-control-featured-future',
     label: 'Mission Control featured mission is upcoming, not past',
     run: checkMissionControlFeaturedFuture,
@@ -634,6 +639,29 @@ async function checkLaunchOutcomesFlowing(): Promise<AccuracyCheckOutcome> {
     return { ok: false, detail: `${flown} launches in the last 14d, none recorded as completed/failed — LL2 outcome sync is not writing (all "scrubbed"?).` };
   }
   return { ok: true, detail: `${real}/${flown} launches in the last 14d carry a real outcome.` };
+}
+
+/**
+ * Stock-sync (weekdays 21:30 UTC) writes stockPrice/marketCap/lastVerified on
+ * every public CompanyProfile. Found frozen since 2026-08-20 on 8/27: the
+ * cron ran and "succeeded" while skipping 66/66 tickers, because Railway's
+ * europe-west4 egress gets Yahoo's EU consent wall (redirect to
+ * ?guccounter=1) and yahoo-finance2's crumb handshake fails behind it.
+ * /space-stocks and every /compare page's market cap go stale silently.
+ * Four days covers a weekend plus one missed run.
+ */
+async function checkStockQuotesFresh(): Promise<AccuracyCheckOutcome> {
+  const newest = await prisma.companyProfile.findFirst({
+    where: { isPublic: true, ticker: { not: null } },
+    orderBy: { lastVerified: 'desc' },
+    select: { lastVerified: true, ticker: true },
+  });
+  if (!newest?.lastVerified) return { ok: false, detail: 'No public company has ever had a verified quote.' };
+  const ageDays = (Date.now() - newest.lastVerified.getTime()) / 86_400_000;
+  if (ageDays > 4) {
+    return { ok: false, detail: `Freshest stock quote is ${Math.round(ageDays)}d old (${newest.ticker}) — stock-sync is skipping every ticker (Yahoo consent wall from an EU region?).` };
+  }
+  return { ok: true, detail: `Freshest quote ${ageDays.toFixed(1)}d old.` };
 }
 
 /**
