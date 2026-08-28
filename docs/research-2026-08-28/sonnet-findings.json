@@ -1,0 +1,844 @@
+[
+ {
+  "lane": "Space Tycoon surfaces (website-facing)",
+  "summary": "The game's backend and public/shareable surfaces (leaderboard, corp pages, chronicle, registry, faq, NOAA/real-launch feed integration, referral system) are genuinely well built and consistent with CLAUDE.md's economic-PvP, no-pay-to-win, meaningful-decision principles. The acquisition funnel has one structural gap and one bad-timing bug: (1) the site-wide OnboardingTour persona picker has zero option for a game-curious visitor and fires as a blocking modal even when someone has just clicked the Space Tycoon nav link, forcing them through a business-persona flow before they see the game's own well-designed GameStartMenu pitch; (2) every public social-proof surface (leaderboard, registry) is currently displaying near-zero numbers post-Epoch-2-restart (\"1 corporations are competing\", \"Top 1 by net worth\"), which is honest but actively repels new signups on exactly the pages meant to convert them. Game-side onboarding (FTUE chain, tutorial overlay, corporate tiers) looks mature already; the leverage here is in the surrounding funnel, not the sim.",
+  "findings": [
+   {
+    "title": "Site-wide onboarding modal has no persona for game visitors and blocks the Space Tycoon pitch",
+    "kind": "fix",
+    "evidence": "src/components/ui/OnboardingTour.tsx defines exactly 6 personas (Investor/VC, Entrepreneur/Founder, Mission Planner/Engineer, CEO/Executive, Supply Chain, Legal/Compliance) — none map to an enthusiast/player. Mounted globally in src/app/layout.tsx:320; confirmed via live screenshot to fire as a full-screen blocking 'Welcome to SpaceNexus — Step 1 of 4' modal on first visit to /space-tycoon, on top of the game's own polished GameStartMenu.tsx pitch screen underneath.",
+    "proposal": "Add a 7th persona 'Enthusiast / Player — track launches, play Space Tycoon' with a PERSONA_DESTINATIONS entry routing to /space-tycoon, and skip firing OnboardingTour at all when the landing pathname is already /space-tycoon (GameStartMenu is a better first-touch pitch than a generic business tour that then dumps the visitor somewhere else).",
+    "effort": "S",
+    "impact": 4,
+    "audience": "enthusiast",
+    "files": [
+     "src/components/ui/OnboardingTour.tsx",
+     "src/app/layout.tsx"
+    ]
+   },
+   {
+    "title": "Public leaderboard and registry currently show near-empty social proof",
+    "kind": "fix",
+    "evidence": "Live screenshot of /space-tycoon/leaderboard: \"1 corporations are competing across the solar system right now. Top 1 by net worth, updated live.\" This is the Epoch 2 restart (8/24, 233 rows wiped per MEMORY.md) still being fresh. src/app/space-tycoon/registry/page.tsx has the identical pattern via getPublishedReportCount().",
+    "proposal": "For the first ~2-4 weeks after any world restart, below a floor threshold (e.g. <15 corporations), replace the raw-count copy with framing that doesn't read as a dead game — 'A new epoch just began — be one of the first names on this board' instead of 'Top 1 by net worth'. Small conditional in both page.tsx files; ties into the launch-materials push memory already flags as pending for the 8/24 restart.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/space-tycoon/leaderboard/page.tsx",
+     "src/app/space-tycoon/registry/page.tsx"
+    ]
+   },
+   {
+    "title": "/space-tycoon nav entry point is buried inside a generic 42-module carousel, not framed as a distinct game landing page",
+    "kind": "design",
+    "evidence": "Live screenshot of https://spacenexus.us/space-tycoon shows the top of viewport occupied by the site's 'Explore' module-swipe carousel ('3 of 42 modules', arrow-key hint) treating Space Tycoon identically to any content module (Company Profiles, Live Satellites, etc.), pushing the actual game hero/art below the fold; GameStartMenu.tsx's real pitch only renders after JS hydration replaces this shell.",
+    "proposal": "Space Tycoon is the site's flagship interactive product (highest-effort surface in the repo, ~3000-line page.tsx, dedicated corp/chronicle/seasons/registry/faq public tree) — it deserves to bypass the generic module-carousel chrome the way a distinct hub page would, so the GameStartMenu pitch is the first thing visible on load, not the third pane of a swipeable widget deck.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/space-tycoon/page.tsx"
+    ]
+   },
+   {
+    "title": "Space Tycoon SEO/metadata and public artifact suite is a strength worth protecting, not changing",
+    "kind": "improve",
+    "evidence": "src/app/space-tycoon/layout.tsx ships accurate VideoGame JSON-LD + honest metadata (no fabricated player counts, per its own code comment); leaderboard, corp/[id] (with ShareButton + OG metadata), chronicle, registry, faq are all server-rendered, force-dynamic, revalidate-tuned, and privacy-scoped (public-leaderboard.ts explicitly excludes userId/email/raw state). Referral loop (src/lib/game/referrals.ts + InvitePlayerCard.tsx) is wired into corp pages with mentee/mentor tracking.",
+    "proposal": "No fix needed — noted so future passes don't accidentally regress this. Keep the persona-picker and carousel changes above scoped away from these server-rendered public routes, which are already doing their job for organic search and social shares.",
+    "effort": "S",
+    "impact": 1,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/space-tycoon/layout.tsx",
+     "src/lib/game/public-leaderboard.ts",
+     "src/lib/game/referrals.ts"
+    ]
+   },
+   {
+    "title": "Real-world data (NOAA space weather, live launch windows) already feeds the sim — underexposed to the website side",
+    "kind": "new-content",
+    "evidence": "src/lib/game/real-world-feed.ts pulls NOAA SWPC Kp-index/GOES X-ray class and live launch-window timing into in-game contract bonuses and narrative events (narrative-events.ts:375, contracts.ts:295); this directly satisfies CLAUDE.md's NPC-backdrop and market-intelligence principles. But nothing on the website side (e.g. /launches or /mission-control pages) currently cross-links 'this live launch is also boosting Space Tycoon contract payouts right now' back toward the game.",
+    "proposal": "Add a one-line contextual callout on /launches/[site]/[yyyy-mm] and /mission-control when a tracked real launch is within the real-world-feed.ts live/imminent window, linking to Space Tycoon — turns existing site traffic (launch pages are the site's strongest organic surface per Search Console: 28.7k/25.3k impressions) into an acquisition funnel for the game using a mechanic that already exists server-side.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/game/real-world-feed.ts",
+     "src/app/mission-control/page.tsx"
+    ]
+   }
+  ]
+ },
+ {
+  "lane": "Visual design and graphics overhaul",
+  "summary": "The design system itself (globals.css V3 tokens, Tailwind config, GameStyles.tsx) is more mature than the rendered pages suggest — a real dark-mode token scale, fluid type, reduced-motion and high-contrast media handling, and focus-visible styling already exist. But live pages don't consistently draw from those tokens: accent color is inconsistent (indigo/violet/cyan/emerald/amber/blue all appear as gradient starts in the same hero component), and chrome has accreted to the point of actively breaking the pages it sits on. Every screenshot, desktop and mobile, on every one of the 10 URLs tested, showed a first-visit onboarding modal blocking the page, and even after dismissal two floating widgets (Quick Start checklist top-right, paywall meter bottom-right) permanently overlap page content and each other. On mobile the promo banner + Google Play banner alone consume roughly 230px of an 844px viewport before nav even renders. The game's HUD aesthetic (glassmorphism, neon glow, corner brackets, holo-cards) is well-built in GameStyles.tsx and reads distinctly as \"22nd-century mission control\"; the rest of the site (guides, compare, learn) uses a flatter Bloomberg-terminal language (monospace terminal-window motif on /compare is a highlight) but the two never share a visual bridge. The highest-traffic organic page (/guide/space-launch-cost-comparison, 28.7k impressions) opens on a flat gray gradient with no imagery at all, at <1.3% CTR alongside other guide/compare pages — this is the single highest-leverage imagery gap on the site given the art pipeline (scripts/generate-art.ts) already exists and is used well on /space-tycoon's marketing hero.",
+  "findings": [
+   {
+    "title": "Onboarding modal blocks every page on every viewport, first-load or not",
+    "kind": "fix",
+    "evidence": "All 20 screenshots (10 pages x desktop/mobile) captured a 4-step 'Welcome to SpaceNexus' role-select modal fully covering the page — including /rockets/falcon-9 and /compare on later navigations within the same browser session where it should have been dismissed once. Files: onboarding modal likely gated in Navigation.tsx or a top-level layout provider (not in QuickStartGuide.tsx, which is the separate floating checklist).",
+    "proposal": "Modal should fire once per session (sessionStorage) not once per pageview, and never re-render after Skip/Next is clicked mid-flow. Cap it to first visit only; move role-personalization into a dismissible one-line prompt in the dashboard instead of a full-screen blocking modal on content pages like a rocket spec sheet or a compare table.",
+    "effort": "S",
+    "impact": 5,
+    "audience": "all"
+   },
+   {
+    "title": "Two floating widgets permanently overlap page content and each other",
+    "kind": "fix",
+    "evidence": "Quick Start checklist (src/components/onboarding/QuickStartGuide.tsx, docked top-right) and the article-limit paywall meter (src/components/ui/ArticleLimitBanner.tsx, docked bottom-right) both persist across every page in every screenshot and visibly overlap each other's corner on /rockets/falcon-9, /learn, /space-tycoon, and /compare — the paywall meter sits directly under and behind the Quick Start card's bottom edge.",
+    "proposal": "Pick one floating-widget slot per corner, stack with z-index-aware spacing so they never collide, and auto-collapse Quick Start to a small pill after first dismissal rather than re-showing the full card on every navigation. On mobile, floating widgets should not span near-full-width over primary content (see rocket-m.png, tycoon-m.png: Quick Start covers ~70% of the viewport height).",
+    "effort": "S",
+    "impact": 4,
+    "audience": "all"
+   },
+   {
+    "title": "Mobile header chrome eats ~27% of the viewport before content starts",
+    "kind": "fix",
+    "evidence": "390x844 mobile screenshots (home-m.png, mc-m.png) show the TrialBanner ('Try SpaceNexus Professional...') stacked directly above the AnnouncementBanner ('SpaceNexus is now on Google Play...') stacked above the nav bar — roughly 230px of chrome, plus the Quick Start card layering another ~400px on first load. Combined, real page content doesn't appear until ~600-700px down a 844px screen.",
+    "proposal": "On mobile, show at most one dismissible banner at a time (queue TrialBanner and AnnouncementBanner rather than stacking both), and suppress promotional banners entirely while the onboarding modal or Quick Start card is also visible. Consider a single collapsed notification bell instead of two full-width banner bars.",
+    "effort": "S",
+    "impact": 4,
+    "audience": "all"
+   },
+   {
+    "title": "Accent color has no single brand identity — six competing gradient hues in one hero",
+    "kind": "design",
+    "evidence": "grep of src/components/LandingHero.tsx gradient classes returns indigo, violet, cyan, emerald, amber, and blue all used as gradient 'from-' colors within the same component. tailwind.config.ts defines a clean V3 zinc/neutral surface scale plus --accent-primary (indigo) and --accent-secondary (cyan) in globals.css, but components aren't drawing consistently from those two tokens.",
+    "proposal": "Enforce a 2-accent rule sitewide: indigo (--accent-primary) for primary CTAs/brand, cyan (--accent-secondary) for live/data/telemetry accents (matching the game's status-standby cyan). Reserve amber/red/green strictly for the existing --status-* semantic tokens (caution/critical/nominal), never for decorative gradients. Sweep LandingHero.tsx and the Learn page's blue/orange/purple/green module tiles down to a fixed 4-6 color category-coding set instead of ad hoc Tailwind picks.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "all"
+   },
+   {
+    "title": "Game HUD aesthetic and site aesthetic don't share a visual bridge",
+    "kind": "design",
+    "evidence": "GameStyles.tsx implements a distinct, well-built language (glassmorphism .game-panel with backdrop-blur, neon .game-glow-cyan/purple/green/amber box-shadows, corner-bracket ConsolePanel chrome per its own docstring). The rest of the site (companies-d.png, learn-d.png, guide-d.png) uses flat dark cards with thin borders and no glow/blur — a genuinely calmer register. /compare's terminal-window motif (red/yellow/green dots, monospace header, compare-d.png) is the one place a distinct 'Bloomberg terminal' identity shows through clearly.",
+    "proposal": "Don't unify the two languages (the founder explicitly wants the game to feel like 22nd-century mission control and the rest of the site to feel like a credible business terminal) — instead add one deliberate bridge element: apply the compare page's terminal-window chrome (dot header, monospace label — already referenced in globals.css as `.card-terminal`, so partially built) to Company Profiles, Space Stocks, and Mission Control data panels. Reserve actual glassmorphism/neon-glow exclusively for Space Tycoon so it reads as a deliberate escalation into 'the game,' not chrome inconsistency.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "all"
+   },
+   {
+    "title": "Highest-traffic organic page has zero imagery — flat gray gradient hero",
+    "kind": "design",
+    "evidence": "/guide/space-launch-cost-comparison (28.7k impressions/28d, highest-traffic organic page on the site per Search Console) renders as plain white text on a flat dark-gray linear gradient with no photo, illustration, or diagram (guide-d.png). Compare pages average <1.3% CTR. Meanwhile /space-tycoon's marketing hero (tycoon-d.png) already shows a high-quality illustrated space scene (planets, debris trails, glow ring) — the art pipeline (scripts/generate-art.ts, Gemini-based) clearly works and is used elsewhere.",
+    "proposal": "Generate a hero illustration set for the top 5-10 guide/compare pages by impression volume (launch-cost-comparison, launch-schedule-2026, spacex-vs-blue-origin, and the other compare pages at 1-7k impressions) using the existing art pipeline — rocket silhouettes, cost-bar motifs, or launch-pad scenes matching each guide's topic. This is a direct lever on the <1.3% CTR problem: search results and social shares pull the og:image, and a generic gray box gives searchers no reason to click.",
+    "effort": "M",
+    "impact": 4,
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Empty-state pattern exists nowhere in the token system despite thorough theming elsewhere",
+    "kind": "improve",
+    "evidence": "globals.css defines a full high-contrast (.high-contrast) override system and OLED true-black mode, both thorough — but no empty-state pattern class was found alongside them, and none of the 10 screenshotted pages happened to hit a true zero-data state to verify treatment.",
+    "proposal": "Audit low-traffic sections (52 of 115 sections had <=5 views/28d per the GA4 evidence) specifically for their empty/zero-data appearance — these are exactly the pages a new visitor bounces from if the empty state looks broken rather than intentional. Define one `.empty-state` pattern (icon + one-line explanation + single CTA) and apply it everywhere data can legitimately be zero.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Accessibility baseline is already solid — verify game status colors carry redundant labels",
+    "kind": "improve",
+    "evidence": "globals.css already implements: `@media (prefers-reduced-motion: reduce)` in 8 separate locations disabling movement animations; a full `.high-contrast` class system plus `@media (prefers-contrast: more)` OS-level pickup; global `*:focus-visible` indigo outline plus per-component focus rings. This is farther along than typical. Not verified in this pass: whether Space Tycoon's --status-nominal/caution/serious/critical colors (green/yellow/amber/red) carry a redundant icon or text label in the actual game UI, since no in-game screenshots beyond the marketing hero were captured.",
+    "proposal": "Short follow-up pass: screenshot live game panels (fleet status, research queue, market order book) and confirm every status-color use pairs with a text/icon label, not color alone, per CLAUDE.md's colorblind-safe requirement.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "all"
+   }
+  ]
+ },
+ {
+  "lane": "Module consolidation and information architecture",
+  "summary": "site-directory.ts's 124-entry map and module-relationships.ts's 539-line MODULES/PAGE_RELATIONS dictionary show a site that keeps building new full pages for concepts that already have a home, rather than adding tabs to an existing one — five separate launch/mission economics calculators, five separate compliance reference pages, five separate engineering-database pages, two digest pages, two investor pages, two company-scoring pages, and two space-history pages all exist in parallel, cross-linking each other exhaustively as if they were distinct topics. Nearly all of these overlapping clusters live in groups with no `menu: true` (ops, reference) or as unfeatured rows within a menu group, so they were already being routed around the nav into /tools — consolidation here is mostly about stopping the multiplication of near-duplicate shells and reducing the long tail that the 52-of-115-sections-≤5-views finding is measuring, not about reviving traffic. Separately, module-relationships.ts's PAGE_RELATIONS is mostly dead: only 13 of its ~150 keys are ever read by a page (grep for getRelatedModules calls), meaning the actual content pages (compare/*, guide/*, mission-cost, company-profiles, etc.) that have carefully hand-tuned 'related modules' data defined for them never render it — wiring that up is the cheapest lever available for the long-tail discovery problem this lane is scoped to fix.",
+  "findings": [
+   {
+    "title": "Five separate pages do launch/mission cost economics",
+    "kind": "consolidate",
+    "evidence": "src/app/{launch-cost-calculator,orbital-costs,unit-economics,launch-economics,mission-cost}/page.tsx (1012/695/1194/984/1054 lines, ~5000 lines total). None carry `nav: true` in site-directory.ts's 'ops' group (which itself has no `menu: true`, so none of the five appear in any nav dropdown — only reachable via /tools). module-relationships.ts lines 223-243 defines 'mission-cost', 'orbital-costs', 'launch-cost-calculator', 'launch-economics', 'unit-economics' as a mutually cross-referencing cluster (each one's related-modules list is mostly the other four) — the code itself is already treating them as one topic split five ways.",
+    "proposal": "Merge into one hub at /launch-economics with tabs: Cost Calculator | Orbital Costs | Mission Cost & Insurance | Unit Economics. 301 the other four slugs (/launch-cost-calculator, /orbital-costs, /unit-economics, /mission-cost) to the corresponding tab. Update the four site-directory.ts 'ops' entries to one row; update module-relationships.ts to a single 'launch-economics' MODULES entry.",
+    "effort": "L",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/app/launch-cost-calculator/page.tsx",
+     "src/app/orbital-costs/page.tsx",
+     "src/app/unit-economics/page.tsx",
+     "src/app/launch-economics/page.tsx",
+     "src/app/mission-cost/page.tsx",
+     "src/lib/site-directory.ts",
+     "src/lib/module-relationships.ts"
+    ]
+   },
+   {
+    "title": "Two 'digest' pages doing the same job under different names",
+    "kind": "consolidate",
+    "evidence": "src/app/briefs/page.tsx (186 lines, 'Live Digest — rolling 7-day data digest') and src/app/intelligence-brief/page.tsx (262 lines, 'Brief Archive — past intelligence briefs') both sit in the News nav group (site-directory.ts lines 73-74), both nav-reachable, both defined as MODULES.newsDigest/MODULES.intelligenceBrief and cross-linked in 6+ PAGE_RELATIONS entries (lines 39-40, 204-209, 394). A visitor can't tell 'Live Digest' from 'Brief Archive' from the third digest, /newsletter (M/Th Digest), without opening all three.",
+    "proposal": "Merge /briefs into /intelligence-brief as a 'Live' tab alongside 'Archive'; 301 /briefs -> /intelligence-brief?tab=live. Keep /newsletter separate since it's the actual email opt-in funnel, a different function from either.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/briefs/page.tsx",
+     "src/app/intelligence-brief/page.tsx",
+     "src/lib/site-directory.ts"
+    ]
+   },
+   {
+    "title": "/investor-hub is a thin duplicate wrapper around /investors",
+    "kind": "consolidate",
+    "evidence": "src/app/investor-hub/page.tsx is 153 lines, described in site-directory.ts line 92 as 'Everything an investor needs in one place' — i.e. an aggregator — while /investors (574 lines, line 90, nav:true) already covers the 'Investor directory and deal flow'. module-relationships.ts never defines a distinct 'investor-hub' entry, unlike every other real surface, suggesting it was bolted on without joining the relation graph.",
+    "proposal": "Fold investor-hub's content (links to funding-tracker, space-stocks, investors) into an intro/overview section at the top of /investors; 301 /investor-hub -> /investors. Remove the investor-hub row from site-directory.ts.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "investor",
+    "files": [
+     "src/app/investor-hub/page.tsx",
+     "src/app/investors/page.tsx",
+     "src/lib/site-directory.ts"
+    ]
+   },
+   {
+    "title": "Company scoring is split across /space-score and /report-cards",
+    "kind": "consolidate",
+    "evidence": "src/app/space-score/page.tsx (658 lines, 'Composite company scoring') and src/app/report-cards/page.tsx (1076 lines, 'Quarterly company grades') are both company-grading surfaces referenced together in module-relationships.ts's 'company-profiles' relations (line 178: both MODULES.reportCards and MODULES.spaceScore listed) and cross-link each other directly (lines 189, 193). A business/investor user landing on Company Profiles sees two competing 'go see the company's grade' links.",
+    "proposal": "Merge /space-score's composite score into /report-cards as a summary metric/tab on each company's report card; 301 /space-score -> /report-cards. One scoring methodology, one page.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "investor",
+    "files": [
+     "src/app/space-score/page.tsx",
+     "src/app/report-cards/page.tsx",
+     "src/lib/module-relationships.ts"
+    ]
+   },
+   {
+    "title": "Five regulatory-reference pages that already cross-link each other exhaustively",
+    "kind": "consolidate",
+    "evidence": "src/app/{compliance,regulatory-calendar,export-classifications,licensing-checker,export-compliance-qa}/page.tsx (641/834/713/549/107 lines). All five are Business-group nav rows (site-directory.ts lines 107, 115-118). module-relationships.ts's 'compliance' entry (line 266) lists regulatoryCalendar, licensingChecker, exportClassifications as related, and each of those relists compliance + the other two in turn (lines 269, 276-277) — a fully-connected clique of 5 pages about one topic (ITAR/EAR/licensing/deadlines). export-compliance-qa is only 107 lines, clearly a stub.",
+    "proposal": "Consolidate into /compliance as a tabbed hub: Overview | Regulatory Calendar | Export Classifications | Licensing Checker | Export Q&A. 301 the four other slugs with tab query params. Keep /regulatory-radar separate — it's a distinct live-feed feature shipped 8/17 and already public/hot, not a reference page.",
+    "effort": "L",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/app/compliance/page.tsx",
+     "src/app/regulatory-calendar/page.tsx",
+     "src/app/export-classifications/page.tsx",
+     "src/app/licensing-checker/page.tsx",
+     "src/app/export-compliance-qa/page.tsx",
+     "src/lib/site-directory.ts"
+    ]
+   },
+   {
+    "title": "Five engineering-reference database pages with no nav slot, cross-linked as one cluster",
+    "kind": "consolidate",
+    "evidence": "src/app/{propulsion-database,materials-database,standards-reference,clean-room-reference,tech-readiness}/page.tsx (1004/1042/1160/1486/1928 lines — 6600+ lines total). All sit in the 'ops' group which has no `menu: true` in site-directory.ts (lines 151-186), so none appear in any nav dropdown; the only path in is /tools or a deep link. module-relationships.ts MODULES lines 168-171 and PAGE_RELATIONS lines 314-318 show them referencing each other in a near-complete graph (materials<->propulsion<->standards<->clean-room). These are exactly the shape of the '52 of 115 trafficked sections at ≤5 views' finding.",
+    "proposal": "Merge into one '/engineering-reference' hub with tabs (Propulsion | Materials | Standards | Clean Room | Tech Readiness). 301 the five slugs. This is a content-preservation merge (tabs keep all existing data), not a deletion — the goal is one discoverable surface instead of five buried ones.",
+    "effort": "L",
+    "impact": 2,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/propulsion-database/page.tsx",
+     "src/app/materials-database/page.tsx",
+     "src/app/standards-reference/page.tsx",
+     "src/app/clean-room-reference/page.tsx",
+     "src/app/tech-readiness/page.tsx",
+     "src/lib/site-directory.ts"
+    ]
+   },
+   {
+    "title": "/history and /this-day-in-space are the same 'space history' idea split two ways",
+    "kind": "consolidate",
+    "evidence": "src/app/history/page.tsx (137 lines, 'Searchable milestones') and src/app/this-day-in-space/page.tsx (169 lines, 'What happened today, historically') are both thin, both in the Learn nav group (site-directory.ts lines 137, 141), and module-relationships.ts cross-links them directly (line 521: 'this-day-in-space' relates to MODULES.history; line 524: 'history' relates to MODULES.thisDayInSpace).",
+    "proposal": "Merge this-day-in-space into /history as a 'Today' tab selected by default on load (preserves the daily-hook UX) alongside a 'Search all milestones' tab. 301 /this-day-in-space -> /history?tab=today.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/history/page.tsx",
+     "src/app/this-day-in-space/page.tsx"
+    ]
+   },
+   {
+    "title": "module-relationships.ts's PAGE_RELATIONS is ~90% dead code — most content pages never render their curated related-links",
+    "kind": "fix",
+    "evidence": "module-relationships.ts defines ~150 PAGE_RELATIONS keys (compare/*, guide/*, mission-cost, company-profiles, news, jobs, etc.) but `grep -n \"getRelatedModules(\"` across src/app shows only 13 call sites, all on marketing/solutions pages (use-cases, book-demo, startups, features, solutions + 4 sub-pages, security, getting-started, media-kit, report/state-of-space-2026). None of the 45 compare/* pages, none of the guide/* pages (including the 28.7k-impression /guide/space-launch-cost-comparison), and none of company-profiles/mission-cost/jobs/etc. ever call it — the hand-curated cross-link data for those pages sits unused.",
+    "proposal": "Add a `<RelatedModules modules={getRelatedModules(usePathname())} />` block to the compare/[slug] and guide/[slug] templates and to other real content pages that already have entries defined (company-profiles, mission-cost, launch-vehicles, etc.). This is the cheapest lever available for surfacing low-traffic ops/reference pages (space-comms, propulsion-database, etc.) from the high-traffic guide/compare pages that already link to them in data but not in markup.",
+    "effort": "S",
+    "impact": 4,
+    "audience": "all",
+    "files": [
+     "src/lib/module-relationships.ts",
+     "src/app/compare/[slug]/page.tsx",
+     "src/app/guide/[slug]/page.tsx"
+    ]
+   },
+   {
+    "title": "~35 PAGE_RELATIONS/MODULES entries point at routes that don't exist as pages",
+    "kind": "remove",
+    "evidence": "Checked src/app for folders matching PAGE_RELATIONS keys: regulatory-tracker, regulatory-risk, regulations, regulatory-agencies, legal-resources, industry-scorecard, deals, portfolio-tracker, space-capital, market-intel, space-economy, market-sizing, investment-tracker, deal-flow, ma-tracker, startup-tracker, market-map, orbital-slots, ground-station-directory, debris-catalog, debris-remediation, debris-tracker, space-weather, space-events, launch-manifest, launch-sites, mission-pipeline, salary-benchmarks, career-guide, workforce-analytics, education-pathways, rf-spectrum, frequency-database, frequency-bands, compliance-checklist, space-investors, patent-landscape, blueprints, propulsion-comparison — none exist as `src/app/<name>/` directories. Combined with the previous finding (most keys are never read anyway), this is inert data, but it invites a future dev to build another near-duplicate page to match a phantom key.",
+    "proposal": "Once the RelatedModules-wiring fix above ships, delete PAGE_RELATIONS keys whose target route doesn't exist and whose MODULES href isn't a `?tab=` sub-view of a real page — most already have a real equivalent (regulatory-risk -> compliance, market-intel -> space-stocks); point call sites at the real key instead of leaving the phantom one.",
+    "effort": "S",
+    "impact": 1,
+    "audience": "all",
+    "files": [
+     "src/lib/module-relationships.ts"
+    ]
+   }
+  ]
+ },
+ {
+  "lane": "Accessibility, performance and polish",
+  "summary": "Core mechanics are notably solid — global focus-visible rings, prefers-reduced-motion handling in 11 places, forced-colors support, and a keyboard-navigable Navigation.tsx with proper aria-expanded/role=menu — someone has clearly done an accessibility pass before. The two real gaps are (1) two low-contrast text color tokens (--text-tertiary #666 and --text-muted #444) used 148 times across 88 files that fail WCAG AA against the site's true-black backgrounds, and (2) the first-run OnboardingTour modal — the very first UI every new visitor's browser renders — has no focus trap, no initial focus, and doesn't hide the page behind it from assistive tech. Page load times are excellent on inner pages (150-380ms) but the homepage's `load` event runs 2.2s, partly explained by a 1.2MB decorative hero PNG marked priority+fetchPriority=high at opacity-15. TODO/FIXME density is negligible (3 hits) and console.error usage in src/app is all legitimate server-side catch-block logging, not client noise.",
+  "findings": [
+   {
+    "title": "text-tertiary and text-muted fail WCAG AA contrast, used 148x",
+    "kind": "fix",
+    "evidence": "src/app/globals.css lines 60-61 define --text-tertiary:#666666 and --text-muted:#444444 against --bg-void:#000000. Computed contrast ratios: #666 on #000 = 3.66:1 (needs 4.5:1 for normal text), #666 on #0a0a0a/#111111 (card surfaces) = 3.45/3.29:1. #444 on #000 = 2.16:1, fails even the 3:1 large-text minimum. grep found 114 usages of text-tertiary across 54 files and 34 usages of text-muted across additional files — e.g. src/app/page.tsx:216 renders the homepage 'Today's Reads' section heading (h2, text-xs) in text-tertiary.",
+    "proposal": "Raise --text-tertiary to at least #949494 (~4.6:1 on black) and --text-muted to #6b6b6b (~4.5:1) or restrict --text-muted to genuinely non-text decorative uses (icon fills, divider lines) never body/label text. Since both are CSS custom properties, this is a two-line token change plus a grep audit of the ~15-20 text-muted call sites to confirm none carry meaningful copy.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "all",
+    "files": [
+     "src/app/globals.css"
+    ]
+   },
+   {
+    "title": "First-run onboarding modal has no focus trap and doesn't hide background from screen readers",
+    "kind": "fix",
+    "evidence": "src/components/ui/OnboardingTour.tsx: the dialog (role=\"dialog\" aria-modal=\"true\", line 217-219) has an Escape handler (line 196) but no Tab-key containment — keyboard users can Tab out of the modal into the dimmed page behind it. No .focus() or autoFocus call anywhere in the file, so focus stays wherever it was (often <body>) instead of moving into the dialog on open. The backdrop div (line 211) and rest of the page are not marked aria-hidden/inert while the modal is open, so a screen reader can still read and interact with backgrounded homepage content that's supposed to be inert. This is the first interactive surface nearly every new visitor hits.",
+    "proposal": "Add a small focus-trap effect (Tab/Shift+Tab cycling within the dialog's focusable elements, matching the existing keydown useEffect pattern already in the file), call .focus() on the dialog or first control when isOpen flips true, and set aria-hidden=\"true\" (or the native `inert` attribute) on the app root/backdrop siblings while the modal is mounted.",
+    "effort": "S",
+    "impact": 4,
+    "audience": "all",
+    "files": [
+     "src/components/ui/OnboardingTour.tsx"
+    ]
+   },
+   {
+    "title": "Decorative hero background: 1.2MB PNG requested at priority+fetchPriority=high, rendered at 15% opacity",
+    "kind": "fix",
+    "evidence": "src/components/LandingHero.tsx lines 184-192: <Image src=\"/art/hero-landing.png\" fill priority fetchPriority=\"high\" className=\"object-cover opacity-15\" sizes=\"100vw\" />. Source file public/art/hero-landing.png is 1.19MB; the live page requests it at w=3840. Puppeteer's `load` event timing showed the homepage at 2231ms vs 261-379ms for /mission-control, /rockets/falcon-9, /tools — the only page with a full hero art layer. Marking a low-opacity decorative image priority+fetchPriority=high forces the browser to prioritize it over actual above-the-fold content (headline text, CTA), directly competing for bandwidth on the LCP path.",
+    "proposal": "Drop `priority`/`fetchPriority=\"high\"` from the three hero art images (hero-landing.png, hero-space-operations.png, hero-mission-planning.png used similarly in BentoFeatures.tsx/ignition/mission-cost) since none is the actual LCP element at 15%/8% opacity, and re-export/compress the source PNGs (a WebP under 150KB at reduced resolution would be visually identical at opacity-15). Same fix pattern applies to the two other 1.2-1.4MB hero PNGs found in public/art/.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "all",
+    "files": [
+     "src/components/LandingHero.tsx",
+     "src/components/landing/BentoFeatures.tsx",
+     "src/app/ignition/page.tsx",
+     "src/app/mission-cost/page.tsx"
+    ]
+   },
+   {
+    "title": "Every page load fires several 401s and CSP-blocked ad script requests",
+    "kind": "fix",
+    "evidence": "Puppeteer console capture on /, /mission-control, /rockets/falcon-9, /tools all show 4-7 repeated 'Failed to load resource: 401' entries plus a recurring CSP violation blocking https://ep1.adtrafficquality.google/getconfig/sodar and https://fundingchoicesmessages.google.com/i/ca-pub-8192058569820929 on literally every page. Homepage additionally showed one 404 and one 429 (rate-limited) resource load.",
+    "proposal": "Identify the 401-returning endpoint(s) hit on every page (likely an auth/session probe or the ad-consent script) and either fix the credential/response-code mismatch or suppress the call for anonymous users; either allowlist the Google ad-quality domains in the CSP connect-src/script-src or, since ads aren't monetization-critical to the enthusiast-first mission, remove the funding-choices script if it isn't earning meaningfully. This is polish/console-hygiene, not a functional break — worth an hour of triage, not urgent.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "all",
+    "files": [
+     "src/middleware.ts"
+    ]
+   }
+  ]
+ },
+ {
+  "lane": "New content & SEO",
+  "summary": "Organic traffic is concentrated almost entirely in two content families — the cost/schedule guides (28.7k/25.3k impressions) and, much more thinly, the 49-page /compare suite (1-7k impressions, <1.3% CTR). The site already ships two strong programmatic-page precedents (/rockets/[slug] over 24 vehicles, /launches/[site]/[yyyy-mm] over 16 sites) built directly off registry files, but the newest and most directly-proven-to-work family — /guide/cost-to-launch/[thing] — has only 4 entries live against a design comment that explicitly says this pattern is the site's highest-value opportunity. Several guide pages (cost-to-launch hub, satellite-companies, space-companies-directory, space-mining-guide) exist but are absent from GUIDE_LIST's prev/next nav, orphaning them from the site's internal-link backbone. The compare suite's top query ('blue origin vs spacex', 1.2k impressions) is already matched almost exactly by /compare/spacex-vs-blue-origin's title, so its low CTR is a SERP-presentation problem, not a missing-content problem. 20 of the 25 proposals below extend the two data-driven page families that already have registries and matching data in the repo; the rest are guide/course content and consolidation aimed at query intent or cannibalization the current content is failing to convert on.",
+  "findings": [
+   {
+    "title": "Expand /guide/cost-to-launch/[thing] from 4 entries to ~16",
+    "kind": "new-content",
+    "evidence": "src/lib/cost-to-launch.ts has only 4 entries (cubesat, satellite, person, starlink-batch) despite its own header comment calling the launch-cost family 'the site's largest organic asset' (28.7k impressions/28d) and being purpose-built as a long-tail expansion of it.",
+    "proposal": "Add entries for: GPS/GNSS satellite, ISS cargo resupply mission, Mars rover/mission, reconnaissance/spy satellite, CLPS lunar lander, space telescope, geostationary weather satellite, Starlink/Kuiper constellation shell (not just one batch), hosted payload, crewed Artemis/Moon mission, dedicated Falcon Heavy mission, a national-security payload, and a full satellite constellation (100+ sats). Each is a data table + FAQ following the existing pattern, reusing rocket links from ROCKET_REGISTRY.",
+    "effort": "M",
+    "impact": 5,
+    "audience": "business",
+    "files": [
+     "src/lib/cost-to-launch.ts"
+    ]
+   },
+   {
+    "title": "Build a /guide/cost-to-launch index/hub page",
+    "kind": "new-content",
+    "evidence": "src/app/guide/cost-to-launch has only a [thing] dynamic segment — no page.tsx at the parent route, so there is no single page listing/linking all cost-to-launch entries.",
+    "proposal": "Add /guide/cost-to-launch/page.tsx as a hub that lists every COST_TO_LAUNCH entry with a card/table, targeting 'how much does it cost to launch [X]' as a category query and giving Google (and internal nav) one crawlable page that fans out to all entries.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "all",
+    "files": [
+     "src/app/guide/cost-to-launch"
+    ]
+   },
+   {
+    "title": "Add missing launch sites to LAUNCH_SITES for /launches/[site]/[yyyy-mm]",
+    "kind": "new-content",
+    "evidence": "src/lib/launch-site-registry.ts has 16 sites but is missing Vostochny Cosmodrome (Russia's newest and most active civilian pad) and Alcantara (Brazil, resurging commercial interest); both have real launch history addressable via SpaceEvent.location matching, the same mechanism already used for the other 16.",
+    "proposal": "Add registry rows for Vostochny (matcher /Vostochny/i) and Alcantara (matcher /Alcantara/i) to light up their /launches/[site]/[yyyy-mm] pages automatically — same effort as the existing rows, no new data source needed.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/launch-site-registry.ts"
+    ]
+   },
+   {
+    "title": "Light up rocket pages for vehicles with catalogue entries but no registry matcher",
+    "kind": "fix",
+    "evidence": "src/lib/rocket-registry.ts's own header comment says 'Vehicles without a catalogue entry (Long March 6C, Spectrum, Kinetica…) simply have no page yet — add a catalogue row and a matcher to light one up.'",
+    "proposal": "Add LAUNCH_VEHICLES catalogue rows + ROCKET_REGISTRY matchers for Spectrum (Isar Aerospace, flying from Andøya, already in LAUNCH_SITES), Kinetica-1, and Long March 6C if flight cadence justifies it. Same template as the 24 existing rocket pages, zero new page code.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/rocket-registry.ts",
+     "src/lib/launch-vehicles-data.ts"
+    ]
+   },
+   {
+    "title": "Backfill GUIDE_LIST with the four orphaned guide pages",
+    "kind": "fix",
+    "evidence": "src/app/guide contains cost-to-launch, satellite-companies, space-companies-directory, and space-mining-guide as live routes, but GUIDE_LIST in src/lib/guide-navigation.ts (used for prev/next nav across every guide page) omits all four — no internal-link path from the guide reading flow.",
+    "proposal": "Add all four to GUIDE_LIST in a sensible thematic position (space-mining-guide near space-business-opportunities; the two directory pages near space-industry-market-size). Pure internal-linking fix, restores link equity to pages that already target distinct query clusters.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "all",
+    "files": [
+     "src/lib/guide-navigation.ts"
+    ]
+   },
+   {
+    "title": "Long-form guide: 'Blue Origin vs SpaceX: The Complete 2026 Comparison'",
+    "kind": "new-content",
+    "evidence": "Search Console's top unserved query is 'blue origin vs spacex' (1.2k impressions), already targeted by /compare/spacex-vs-blue-origin at a matching title — yet the whole /compare family converts at <1.3% CTR, while the /guide family pulls 25-29k impressions on its top two pages. Format, not topic, looks like the gap.",
+    "proposal": "Publish a genuine long-form guide piece (not a comparison table) on the SpaceX/Blue Origin rivalry — narrative history, New Glenn vs Falcon 9 flight-rate trajectory, NASA contract stakes, valuation context — cross-linked from the existing compare page rather than replacing it.",
+    "effort": "M",
+    "impact": 4,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/compare/spacex-vs-blue-origin/page.tsx"
+    ]
+   },
+   {
+    "title": "Add FAQPage schema to the highest-impression /compare pages",
+    "kind": "fix",
+    "evidence": "src/components/seo/FAQSchema.tsx exists in the codebase but src/app/compare shows no use of it — the compare pages likely aren't emitting FAQ structured data despite the compare suite's stated CTR problem.",
+    "proposal": "Wire FAQSchema (or ToolFAQInjector) into the top 10 compare pages by impression volume (spacex-vs-blue-origin, starlink-vs-kuiper, rocket-lab-vs-spacex, etc.), each with 3-5 genuine FAQ entries. FAQ rich results are a low-effort lever on CTR without needing more impressions.",
+    "effort": "S",
+    "impact": 4,
+    "audience": "all",
+    "files": [
+     "src/components/seo/FAQSchema.tsx",
+     "src/app/compare"
+    ]
+   },
+   {
+    "title": "New Learn course: 'Space Investing Fundamentals'",
+    "kind": "new-content",
+    "evidence": "guide/space-economy-investment and guide/space-industry-market-size already carry real organic content, but Learn (25 users/28d) has no course touching investing — seed-learning.ts/seed-learning-wave2.ts cover orbital mechanics, propulsion, comms, supply chain and build-guides, not markets/finance.",
+    "proposal": "A short interactive course (5-6 lessons + quizzes, same format as wave2's 'Space Supply Chain Fundamentals') covering how to read a space company's fundamentals, SPAC/IPO structures, and government-contract revenue concentration, reusing guide/space-economy-investment's research rather than new reporting.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "investor",
+    "files": [
+     "scripts/seed-learning-wave2.ts"
+    ]
+   },
+   {
+    "title": "New Learn course: 'Reading a Space Company Balance Sheet' (SpaceNexus Score tie-in)",
+    "kind": "new-content",
+    "evidence": "blog-content.ts has a popular-titled post 'SpaceNexus Score: How We Rate 200+ Space Companies' and company-profiles gets 30 GA4 users, but no Learn course operationalizes that scoring methodology into a teachable format.",
+    "proposal": "Build a 3-4 lesson course walking through the SpaceNexus Score inputs as a worked example, quizzing readers on interpreting a real profile — cheap since it explains an existing feature and gives company-profiles a second traffic path via /learn.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "investor",
+    "files": [
+     "scripts/seed-learning.ts"
+    ]
+   },
+   {
+    "title": "Compare page: 'Vulcan Centaur vs Falcon 9'",
+    "kind": "new-content",
+    "evidence": "ROCKET_REGISTRY links falcon-9's compare array to 3 pages and vulcan-centaur to only spacex-vs-ula (company-level, not vehicle-level); no vehicle-vs-vehicle compare page exists despite Vulcan being Falcon 9's most direct national-security-launch competitor.",
+    "proposal": "Add /compare/vulcan-centaur-vs-falcon-9 as a rocket-spec-level comparison (payload, price, cadence, NSSL Phase 3 contract share) pulling directly from launch-vehicles-data.ts, the same source already used by the /rockets pages.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/lib/rocket-registry.ts",
+     "src/app/compare"
+    ]
+   },
+   {
+    "title": "Refresh 'Starship vs New Glenn' compare page for New Glenn's 2026 flight record",
+    "kind": "improve",
+    "evidence": "compare/spacex-starship-vs-new-glenn exists; New Glenn's flight record changed materially in 2026 per spacex-vs-blue-origin's own data (3 flights: 2 success, 1 failure), which likely needs reflecting here too.",
+    "proposal": "Audit and refresh this page's flight-count and outcome data alongside spacex-vs-blue-origin's data so the two pages stay internally consistent — a data-sync pass, not new content.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/compare/spacex-starship-vs-new-glenn/page.tsx"
+    ]
+   },
+   {
+    "title": "Guide: 'Space Industry Career Paths' promoted from blog to guide template",
+    "kind": "new-content",
+    "evidence": "blog-content.ts has 'The Complete Guide to Space Industry Careers in 2026' and 'Space Industry Jobs: 10 Companies Hiring Right Now' as blog posts (not the higher-performing guide template), and the jobs machine already indexes ~6,500 ATS jobs per project memory, a live data source to anchor against.",
+    "proposal": "Promote the strongest career content into a full /guide/space-industry-careers page with live links into the jobs board, matching the pattern that made space-launch-cost-comparison and space-launch-schedule-2026 the top two organic pages.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "jobseeker",
+    "files": [
+     "src/lib/blog-content.ts"
+    ]
+   },
+   {
+    "title": "Guide: watch-a-launch coverage for Wallops and Kourou",
+    "kind": "new-content",
+    "evidence": "Only 3 of 16 LAUNCH_SITES have a viewingGuide (Cape Canaveral, Vandenberg, Starbase) per launch-site-registry.ts; Wallops (Electron/Neutron/Antares) and Kourou (Ariane 6/Vega-C) are high-traffic sites with no public viewing guide, and the 3 existing guides sit in GUIDE_LIST's proven top-15.",
+    "proposal": "Write 'Where to Watch a Launch at Wallops' and 'Where to Watch a Launch at Kourou' following the existing 3-guide template exactly, add both to GUIDE_LIST and set viewingGuide on their LAUNCH_SITES rows.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/launch-site-registry.ts",
+     "src/lib/guide-navigation.ts"
+    ]
+   },
+   {
+    "title": "Guide: 'Amazon Leo (Kuiper) vs Starlink: Deployment Race 2026'",
+    "kind": "new-content",
+    "evidence": "compare/starlink-vs-kuiper already exists but is compare-format; the constellation deployment race is one of the most volatile-search topics in the sector, and blog post 'The Rise of Mega-Constellations' + 'Will Satellites Replace Cell Towers?' exist but aren't guide-format.",
+    "proposal": "A dedicated guide-format deep dive on constellation deployment pace, coverage milestones, and D2D rollout, consolidating the split blog content into the higher-performing guide template.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/blog-content.ts",
+     "src/app/compare/starlink-vs-kuiper"
+    ]
+   },
+   {
+    "title": "Guide: 'National Security Space Launch (NSSL) Phase 3 Explained'",
+    "kind": "new-content",
+    "evidence": "Golden Dome blog post shows government/defense space content resonates; Vulcan/Falcon 9/New Glenn are all NSSL Phase 3 competitors already covered individually in /rockets with no page tying the procurement story together.",
+    "proposal": "A guide-format explainer on how NSSL Phase 3 lane assignments work and which providers won what — cross-links to all three /rockets/[slug] pages and the vulcan-vs-falcon-9 compare page proposed above. Targets procurement-intent business/investor queries.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/lib/rocket-registry.ts"
+    ]
+   },
+   {
+    "title": "Refresh stale funding/market-size figures in space-business-opportunities and space-mining-guide",
+    "kind": "improve",
+    "evidence": "guide/space-business-opportunities/page.tsx cites 2024 Space Foundation figures ($613B) and 2025 VC totals ($8.5B) as its most current numbers on a 2026-dated guide; space-mining-guide/page.tsx references the VIPER rover cancellation (2024) as current-state with nothing since.",
+    "proposal": "Update both pages with 2026 figures (space-industry-market-size guide likely already has newer numbers to reuse) to keep the freshness signal these guides depend on for ranking, per feedback_article_freshness.md.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/app/guide/space-business-opportunities/page.tsx",
+     "src/app/guide/space-mining-guide/page.tsx"
+    ]
+   },
+   {
+    "title": "Retire or merge duplicate satellite-tracking content across blog and guide",
+    "kind": "consolidate",
+    "evidence": "blog-content.ts has two near-duplicate posts ('How to Track Real-Time Satellite Positions' and 'How to Track Satellites in Real-Time: A Complete 2026 Guide') alongside two guide pages on the same topic (satellite-tracking-guide, how-satellite-tracking-works) — four assets competing for one query cluster.",
+    "proposal": "Canonicalize on the two guide pages (higher-performing template), 301-redirect or trim the two duplicate blog posts into short news-style updates linking out to the guides instead of re-explaining the mechanics. Reduces internal keyword cannibalization.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/blog-content.ts"
+    ]
+   },
+   {
+    "title": "Consolidate 'Top 50 Space Companies' duplicate posts",
+    "kind": "consolidate",
+    "evidence": "blog-content.ts lists both 'The Top 50 Space Companies to Watch in 2026' and 'The Top 50 Space Companies to Watch in the 2nd Half of 2026' — same list, different vintage, both presumably still indexed and competing for the same query.",
+    "proposal": "Keep the more recent version as canonical (retitle without the 'H2' framing so it reads evergreen and gets refreshed in place going forward), 301 the older one into it.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/blog-content.ts"
+    ]
+   },
+   {
+    "title": "Cross-link the cost-to-launch guide family with /launch-cost-calculator",
+    "kind": "improve",
+    "evidence": "src/app/launch-cost-calculator exists as a standalone tool alongside the cost-to-launch guide family, and cost-to-launch.ts entries already have a related array, but it's unclear whether the calculator links into the new guide entries or vice versa.",
+    "proposal": "Ensure every cost-to-launch entry's related array links to /launch-cost-calculator and that the calculator's results page links out to the matching cost-to-launch entry (CubeSat inputs → /guide/cost-to-launch/cubesat). Turns two existing assets into one connected funnel.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "business",
+    "files": [
+     "src/lib/cost-to-launch.ts",
+     "src/app/launch-cost-calculator"
+    ]
+   },
+   {
+    "title": "Guide: 'Space Debris Removal & Space Traffic Management 2026'",
+    "kind": "new-content",
+    "evidence": "compare/clearspace-vs-astroscale and blog posts 'Space Debris: The Growing Threat' + 'Orbital Debris Tracking' exist, and project memory notes debris stats were recently fixed to pull from full SATCAT (34.5k tracked/12.5k debris) — fresh, accurate live data now exists with no guide-format page showcasing it.",
+    "proposal": "A guide-format page built on the now-correct SATCAT-derived debris statistics plus the regulatory angle (FCC/ESA debris mitigation rules), consolidating the two blog posts' research into the higher-performing guide template.",
+    "effort": "M",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/lib/blog-content.ts"
+    ]
+   },
+   {
+    "title": "Guide: 'Space Weather & Solar Storm Risk for Satellite Operators'",
+    "kind": "new-content",
+    "evidence": "Blog posts 'How to Monitor Space Weather and Why It Matters for Your Business' and 'Space Weather Explained' cover this from two angles with no guide-format consolidation, and CLAUDE.md's game design treats solar storms as a real Space Tycoon hazard mechanic — a cross-promotion opportunity.",
+    "proposal": "Merge the two blog posts' research into one guide-format page targeting 'satellite solar storm risk' / 'space weather business impact' queries; cross-link to Space Tycoon's hazard mechanic for a game-to-site funnel.",
+    "effort": "M",
+    "impact": 2,
+    "audience": "business",
+    "files": [
+     "src/lib/blog-content.ts"
+    ]
+   },
+   {
+    "title": "Extend /guide/cost-to-launch to cover 'a crew to the Moon' and 'a Mars mission'",
+    "kind": "new-content",
+    "evidence": "cost-to-launch.ts already has a 'person' entry (LEO/ISS crew) but Artemis crewed lunar missions and Mars have no cost-to-launch treatment despite Artemis II having two dedicated blog posts showing high current interest.",
+    "proposal": "Add 'a crew to the Moon' and 'a Mars mission' entries to COST_TO_LAUNCH — high search interest given Artemis II is imminent, low effort given the established data-row pattern.",
+    "effort": "S",
+    "impact": 4,
+    "audience": "enthusiast",
+    "files": [
+     "src/lib/cost-to-launch.ts"
+    ]
+   },
+   {
+    "title": "Compare page: defense-tech space entrants (lower confidence — verify demand first)",
+    "kind": "new-content",
+    "evidence": "compare/anduril-vs-l3harris-space exists, showing the defense-space compare cluster is being actively built, and Golden Dome content shows defense-space query demand; no page yet compares newer defense-tech entrants against traditional primes beyond L3Harris.",
+    "proposal": "Only pursue if company-profiles data confirms both companies have real, distinct space-segment presence with search demand behind the pairing — flagging as optional/lower-confidence relative to the other proposals here, not a firm recommendation.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "investor",
+    "files": [
+     "src/app/compare/anduril-vs-l3harris-space"
+    ]
+   }
+  ]
+ },
+ {
+  "lane": "Enthusiast experience",
+  "summary": "The enthusiast core pages (Mission Control, Rockets, What's Overhead, Learn, Satellites) are individually well-built with real live data, but the shell around them actively works against the founder's enthusiast-first mandate: the mandatory first-visit onboarding modal offers six personas and every single one is a business role (Investor/VC, Entrepreneur, Mission Planner, CEO, Supply Chain, Legal) with no 'space fan' option at all, on desktop or mobile. That same business framing recurs in a persistent Quick Start widget and a site-wide 'module' navigation carousel that eats the entire first viewport on content pages before any actual page content appears. Surfaces are largely siloed from each other — no cross-links from a rocket or launch to Predictions, Satellites, or alerts — and the retention hooks called out in the brief (streaks, shareables, notifications, collections) are essentially absent outside the game and one calendar-export button, despite the data for some of them (visit history) already being collected client-side and unused. Found one live data-sync bug (satellite tracker counts stuck at 0 while its own map renders live data) and one easy SEO win (no Blue Origin vs SpaceX comparison despite it being the top unserved query and the data already existing on /rockets).",
+  "findings": [
+   {
+    "title": "Onboarding has no 'space enthusiast / fan' persona — every option is a business role",
+    "kind": "fix",
+    "evidence": "src/components/ui/OnboardingTour.tsx lines 13-34: the six PERSONAS shown in the mandatory first-visit modal are Investor/VC, Entrepreneur/Founder, Mission Planner/Engineer, CEO/Executive, Supply Chain Professional, Legal/Compliance — all mapped via SITE_PERSONA_MAP to only 'investor' or 'professional' site personas. Verified live on desktop and mobile (390x844): the modal covers the full page, forces a scroll on mobile to even see 'Skip', and every route it fires on (home, mission-control, rockets, satellites) shows the identical business-role picker. CLAUDE.md: 'Prioritize enthusiasts, functionality and information over profit... this being a site for enthusiasts.'",
+    "proposal": "Add a 7th persona 'Space Fan / Enthusiast' (icon rocket/telescope) mapped to a new or existing 'enthusiast' site persona, with its destination pointing at Mission Control or Live. Reorder so it's the first/most prominent card, since it's the primary audience per the founder mandate. Update PERSONA_DESTINATIONS and PERSONA_MODULE_PRESETS accordingly.",
+    "effort": "S",
+    "impact": 5,
+    "audience": "enthusiast",
+    "files": [
+     "src/components/ui/OnboardingTour.tsx",
+     "src/lib/user-preferences.ts",
+     "src/lib/module-presets.ts"
+    ]
+   },
+   {
+    "title": "Quick Start checklist widget is business-first, not enthusiast-first, and never adapts",
+    "kind": "improve",
+    "evidence": "Floating 'Quick Start 0/5 completed' panel appears persistently (top-right, over nav) on every page screenshotted (mission-control, satellites, rockets, predictions, learn, tycoon). Its four visible items: 'Explore Company Profiles', 'Track Live Satellites', 'Browse Market Intelligence', 'Check Mission Control' — 3 of 4 are business/market-intel tasks, none reference launches, streaks, or the game. It does not reflect the persona the user might select.",
+    "proposal": "Branch the Quick Start item set on the (proposed) enthusiast persona: 'Set up launch alerts', 'Track a live launch', 'Try What's Overhead', 'Play a Prediction'. Keep the business set only for investor/professional personas.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/components/OnboardingChecklist.tsx"
+    ]
+   },
+   {
+    "title": "First viewport on every enthusiast page is consumed by chrome, not content",
+    "kind": "fix",
+    "evidence": "Screenshots at 1365x900: on /mission-control and /rockets, before any page content is visible the viewport already holds: promo banner ('Try Professional free'), Google Play banner, main nav, a global 'ModuleNavBar' carousel strip ('X of 42 modules', prev/next module, Explorer/Pro tier badge — rendered site-wide via src/app/layout.tsx per useModuleNavigation), plus a floating Quick Start panel and cookie-consent bar. On mission-control the H1 'Mission Control' doesn't clear the fold until well past 500px of scroll. GA4 shows 26 users/session on /mission-control despite it being a hero surface — this much pre-content chrome is a plausible contributor.",
+    "proposal": "Collapse the two dismissible top banners to one at a time (never stack promo + app-store banner), make ModuleNavBar collapse to a slim single-line strip (or hide entirely on primary content pages like mission-control/satellites/rockets — it reads as an internal dev/business-tools navigator, not something enthusiasts asked for), and default Quick Start to collapsed after first view.",
+    "effort": "M",
+    "impact": 4,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/layout.tsx",
+     "src/components/ModuleNavBar.tsx",
+     "src/components/OnboardingChecklist.tsx"
+    ]
+   },
+   {
+    "title": "No cross-links from a rocket page or launch to Predictions, Satellites, or Tycoon — dead ends instead of 'what's next'",
+    "kind": "improve",
+    "evidence": "Walked home -> mission-control -> rockets -> predictions -> satellites -> learn -> space-tycoon. Each page is self-contained: /rockets cards (Falcon 9, Starship, etc.) link only to their own [slug] detail, no 'predict this launch' or 'track this vehicle live' cross-link. /predictions references 'live manifest' and Space Tycoon credits but the rockets/mission-control pages never point a reader toward /predictions. /whats-overhead doesn't link into /satellites' live map or vice versa beyond one 'Full Satellite Tracker' text link.",
+    "proposal": "Add a standard 'what's next' rail at the bottom of rocket/launch detail pages and mission-control launch cards: 'Stake a prediction on this launch', 'Track it live on the satellite map after launch', 'Set a launch alert'. This is the single highest-leverage change for turning single-page sessions (5+ views/user territory is only space-tycoon per the GA4 data) into multi-page ones.",
+    "effort": "M",
+    "impact": 4,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/rockets/[slug]/page.tsx",
+     "src/app/mission-control/page.tsx",
+     "src/app/whats-overhead/page.tsx"
+    ]
+   },
+   {
+    "title": "Satellite tracker top stat tiles (TRACKED/LEO/MEO/GEO/HEO) show 0 while the map below is already rendering hundreds of live dots",
+    "kind": "fix",
+    "evidence": "Screenshot of /satellites after full load (6s+): the map has fully rendered a dense field of colored satellite dots (LEO label visible, blue/green/magenta/yellow markers by orbit type), but the counter tiles above still read '0 TRACKED / 0 LEO / 0 MEO / 0 GEO / 0 HEO'. The counts and the map are evidently populated by two different data paths that fall out of sync.",
+    "proposal": "Wire the stat tiles to the same satellite dataset the map renders from (or recompute counts on the same render pass) so they update together; this is a visible, easily-noticed correctness bug on a marquee live-data page.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/satellites/page.tsx"
+    ]
+   },
+   {
+    "title": "No streaks, shareable cards, or notification hooks anywhere in the enthusiast surfaces walked",
+    "kind": "new-content",
+    "evidence": "Grepped for streak/badge/achievement (game-only, not site-wide retention) and for navigator.share/ShareButton across src/app — 9 files use share, none are launches/rockets/satellites/predictions/mission-control/whats-overhead. /predictions has a code comment 'questions are public, shareable, and one click from staking' but no visible share affordance was found on the rendered page. Mission Control has an ExportButton (ICS calendar) but What's Overhead, Rockets, and Predictions have no share/export/notify actions at all. localStorage already tracks 'spacenexus-exploration-visits' (visit history) client-side but nothing surfaces it back to the user.",
+    "proposal": "Prioritized: (1) a 'Share this pass/prediction/launch' button (native Web Share API + OG image) on What's Overhead results and Predictions questions — cheap, high shareability, feeds organic growth toward the 10k MAU goal; (2) a lightweight visit streak ('3 launches watched this month') surfaced on Mission Control, built on the exploration-visits data already being collected but unused; (3) extend the existing launch-alerts feature (already built, CTA visible on Mission Control) with a per-rocket 'notify me' on /rockets/[slug].",
+    "effort": "M",
+    "impact": 4,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/whats-overhead/page.tsx",
+     "src/app/predictions/page.tsx",
+     "src/app/mission-control/page.tsx",
+     "src/app/rockets/[slug]/page.tsx"
+    ]
+   },
+   {
+    "title": "Rockets page doesn't serve the top unserved Search Console query ('blue origin vs spacex', 1.2k impressions)",
+    "kind": "new-content",
+    "evidence": "Search Console 28d: top unserved query 'blue origin vs spacex' at 1.2k impressions with no dedicated page; existing /compare pages get 1-7k impressions at <1.3% CTR. /rockets already has structured per-vehicle data (price, payload, reliability, cadence) for both companies' vehicles side by side in the same grid.",
+    "proposal": "Add a manufacturer/company head-to-head comparison view — either a filter on /rockets ('SpaceX vs Blue Origin') or a dedicated /compare/blue-origin-vs-spacex page reusing the existing rocket data and the /compare page pattern already in src/app/compare/*. Directly answers a proven unserved query with data the site already has.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/rockets/page.tsx",
+     "src/app/compare"
+    ]
+   },
+   {
+    "title": "Space Tycoon's landing view is visually cluttered by the generic page chrome on first paint",
+    "kind": "fix",
+    "evidence": "Screenshot of /space-tycoon: header row shows overlapping/truncated text ('Explore'/'Explorer' badge collide), the same 42-module progress carousel that appears on every other page sits above the actual game intro, and the game's own hero copy ('Space Tycoon / Build Your Space Empire / Research technologies, launch rockets, build...') only starts appearing at the very bottom of the first viewport, competing with the same Quick Start widget and free-article-count nag box that appear on non-game pages.",
+    "proposal": "Give /space-tycoon a distinct entry layout that suppresses the generic ModuleNavBar and Quick Start widget (or defers them below the game's own hero/CTA), consistent with CLAUDE.md's game-design principle that the game should feel like 'commanding a 22nd-century space conglomerate,' not another data page in the module carousel.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "enthusiast",
+    "files": [
+     "src/app/space-tycoon/page.tsx",
+     "src/app/layout.tsx"
+    ]
+   }
+  ]
+ },
+ {
+  "lane": "Business, investor and job-seeker experience",
+  "summary": "The company/investor data suite (company-profiles, space-stocks, funding-tracker, startups, investors) is genuinely deep and mostly honest about data vintage — company profiles carry a SpaceNexus Score with a stated confidence level, and several pages use a shared DataAsOf component to label curated data honestly. But two flagship pages misbehave in ways a professional would notice immediately: the primary 'Jobs' nav link 301-redirects to the wrong tab of /space-talent (landing job-seekers on a consultant marketplace, not job listings), and /procurement — pitched as 'the unified hub for government space contracts' — currently shows exactly 1 live contract opportunity and 0 upcoming deadlines. Regulatory content is duplicated wholesale across two nav destinations (/regulatory-radar and /compliance?tab=radar render the identical live feed via the same components and API). funding-tracker is fully Pro-gated while its sibling business pages are free, which paywalls the one page investors most want, in tension with the project's enthusiast-first, monetization-on-hold stance. A few smaller copy/credibility issues round this out.",
+  "findings": [
+   {
+    "title": "Jobs nav link 301-redirects to the wrong tab — job seekers land on a consultant marketplace",
+    "kind": "fix",
+    "evidence": "next.config.js:370 redirects /jobs -> /space-talent?tab=jobs (permanent). src/app/space-talent/page.tsx uses TopLevelTab values 'talent' | 'workforce' | 'gigs' only (see useSwipeTabs(['talent','workforce','gigs'],...) and initialTopTab = searchParams.get('tab') || 'talent'); 'jobs' is not a valid value so it silently falls back to the default 'talent' tab. Live screenshot of https://spacenexus.us/jobs confirms it renders 'Space Talent Hub' on the 'Talent & Experts / Expert Consultants' tab, not job listings — the actual job-postings UI lives at topTab='workforce' with wfSubTab='jobs' (default), i.e. the correct target is /space-talent?tab=workforce.",
+    "proposal": "Fix the next.config.js redirect to /space-talent?tab=workforce (wfTab already defaults to 'jobs' inside that tab). This is the single most consequential fix in this lane — 'Jobs' is a top-level, 'hot' nav item and the entry point for the ~6,500-listing ATS pipeline the memory log says is live; right now every click from primary nav sends job-seekers to the wrong audience's page.",
+    "effort": "S",
+    "impact": 5,
+    "audience": "jobseeker",
+    "files": [
+     "next.config.js",
+     "src/app/space-talent/page.tsx"
+    ]
+   },
+   {
+    "title": "Procurement — the flagship contracts hub — shows 1 live opportunity and 0 deadlines",
+    "kind": "fix",
+    "evidence": "Live screenshot of /procurement: 'Active Opportunities' stat tile = 1, 'Upcoming Deadlines (30d)' = 0, and the Contract Opportunities tab literally reads 'Showing 1-1 of 1 opportunities.' The page's own copy calls itself 'The unified hub for government space contracts, awards, grants, SBIR/STTR, market signals, agency budgets, and congressional activity.' src/app/procurement/page.tsx:592 fetchOpportunities() pulls live from the ProcurementOpportunity table (client fetch), so this isn't a curated-data page going stale gracefully — it's a live feed that has gone effectively empty. This matches an already-flagged open item in project memory ('ProcurementOpportunity soft-stale ~10d') but the live impact is worse than 'soft-stale' — it's down to a single row.",
+    "proposal": "Investigate and fix the ProcurementOpportunity ingestion cron (check for an upstream API/auth failure, not just staleness); until fixed, the DataAsOf-style honest caption pattern used elsewhere on this same page ('curated...data') should also cover the Opportunities tab so it doesn't read as broken to a business/investor visitor evaluating credibility.",
+    "effort": "M",
+    "impact": 4,
+    "audience": "business",
+    "files": [
+     "src/app/procurement/page.tsx"
+    ]
+   },
+   {
+    "title": "Regulatory Radar is duplicated verbatim across two separate nav destinations",
+    "kind": "consolidate",
+    "evidence": "Business nav lists both 'Regulatory Radar' (/regulatory-radar) and 'Compliance Hub' (/compliance) as separate top-level items. But src/app/compliance/page.tsx:261 has a 'Regulatory Radar' sub-tab (activeSubTab==='radar') that renders src/app/compliance/RegulatoryRadarTab.tsx, which imports the exact same shared components as the standalone page — ClosingSoonCallout, RadarTimelineList, DeadlineCalendar from @/components/regulatory/RadarTimeline — and hits the same /api/regulatory-radar endpoint. Both surfaces render the identical live congressional/Federal-Register/agency-action timeline; regulatory-radar/page.tsx even links to /compliance?tab=radar as if it were a distinct destination.",
+    "proposal": "Pick one canonical URL for the live regulatory timeline (recommend keeping the standalone /regulatory-radar, since it carries alternates.canonical) and turn the /compliance 'Regulatory Radar' tab into a lightweight teaser card that deep-links out to /regulatory-radar?category=X, rather than re-rendering the full timeline client-side. Removes a second full data-fetching implementation to maintain and removes the 'which page do I bookmark' ambiguity for a compliance-focused professional.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/app/compliance/page.tsx",
+     "src/app/compliance/RegulatoryRadarTab.tsx",
+     "src/app/regulatory-radar/page.tsx"
+    ]
+   },
+   {
+    "title": "funding-tracker cites Bloomberg/PitchBook/Crunchbase as data sources with no visible integration — a credibility risk for the exact audience it targets",
+    "kind": "fix",
+    "evidence": "src/app/funding-tracker/page.tsx:759-777, the page's 'Data Sources' footer lists 'SEC Filings (EDGAR)', 'Crunchbase -- Startup Funding Data', 'PitchBook -- Private Market Intelligence', 'Space Capital -- Quarterly Reports', 'Bloomberg -- Market Data' as sources, with no evidence elsewhere in the codebase of live Crunchbase/PitchBook/Bloomberg API integrations (these are commercial data licenses that typically cost five to six figures/year). By contrast, sibling pages (space-stocks, investors, procurement, compliance) use the honest DataAsOf component to label curated/hand-maintained data with a real vintage instead of naming premium data vendors.",
+    "proposal": "Verify whether any of these four named vendors are actually integrated; if not (most likely, given the project's Railway/Prisma stack and no vendor-key references found), replace the footer with the same honest DataAsOf pattern used elsewhere ('curated from public filings and press releases, as of <date>'). An investor who checks a number against Bloomberg and finds it doesn't match will discount the whole site, not just this page.",
+    "effort": "S",
+    "impact": 4,
+    "audience": "investor",
+    "files": [
+     "src/app/funding-tracker/page.tsx",
+     "src/components/ui/DataAsOf.tsx"
+    ]
+   },
+   {
+    "title": "funding-tracker is fully Pro-gated while every comparable business page is free",
+    "kind": "improve",
+    "evidence": "src/app/funding-tracker/page.tsx:788 wraps the entire page in <PremiumGate requiredTier=\"pro\" context=\"funding-tracker\" showPreview={true}>. grep across space-stocks, company-profiles, startups, investors, compare, procurement, regulatory-radar and hire found zero other full-page PremiumGate wraps (company-profiles and compliance only gate one sub-section each). CLAUDE.md: 'Prioritize enthusiasts, functionality and information over profit' and project memory: 'STRATEGY (Jay 8/12): monetization ON HOLD til ~Nov.'",
+    "proposal": "Either ungate funding-tracker to match its siblings, or (if the Pro gate predates the monetization-hold decision and was simply missed) confirm with Jay whether it should stay gated. As-is it's the one page in this lane that actively turns away the investor/business audience mid-lane with a paywall, which directly works against 'professional bookmarks the site.'",
+    "effort": "S",
+    "impact": 4,
+    "audience": "investor",
+    "files": [
+     "src/app/funding-tracker/page.tsx"
+    ]
+   },
+   {
+    "title": "Compare pages: high search impressions, sub-1.3% CTR — title/meta tuning opportunity",
+    "kind": "improve",
+    "evidence": "Hard evidence from this week's Search Console pull: individual /compare/* pages get 1-7k impressions each at <1.3% CTR, while /guide pages with similar impression volume (25-29k) draw far more site users (102 for /guide vs 45 for /compare in 28d). Compare pages are core content for the business/investor audience (company vs company, cost-per-kg, satellite bus comparisons) and already rank in Google — they're just not being clicked.",
+    "proposal": "Rewrite title tags and meta descriptions on the highest-impression /compare/* pages to be more specific and numeric (e.g. include concrete figures like cost/kg or funding totals in the title, matching how the unserved query 'blue origin vs spacex' 1.2k impressions is phrased) rather than the current generic 'Compare X and Y' pattern. No new content required, pure metadata pass.",
+    "effort": "S",
+    "impact": 3,
+    "audience": "business",
+    "files": [
+     "src/app/compare/page.tsx",
+     "src/app/compare/companies/page.tsx"
+    ]
+   },
+   {
+    "title": "Company Profiles: meta description says '100+ companies', live stat tile says 318",
+    "kind": "fix",
+    "evidence": "Live screenshot of /company-profiles: h1 subtitle reads 'Comprehensive intelligence on 100+ space industry companies,' while the stat tile directly below it reads '318 Companies Tracked.' The undersell reads as stale copy that wasn't updated as the roster grew from ~100 to 318+.",
+    "proposal": "Swap the static '100+' copy for the live SITE_STATS.companies value already used elsewhere on the same page (e.g. in /compare/page.tsx's stats: `${SITE_STATS.companies} companies`), so the two numbers can't drift apart again.",
+    "effort": "S",
+    "impact": 2,
+    "audience": "business",
+    "files": [
+     "src/app/company-profiles/page.tsx"
+    ]
+   }
+  ]
+ }
+]

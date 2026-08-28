@@ -1,0 +1,801 @@
+[
+ {
+  "ideas": [
+   {
+    "title": "CTR pass on the top 20 organic pages (titles, meta, structured data)",
+    "reasoning": "This is the only lever that pays out before any new page can rank. Two guides already draw 54,000 impressions/28d (launch-cost 28.7k, launch-schedule 25.3k) at a sitewide CTR of 0.65% — roughly 350 clicks. That CTR is 3-4x below what pages holding those impression volumes normally earn. Raising it to 2.0-2.5% converts the SAME impressions into 1,100-1,350 clicks/28d with zero new content and no ranking lag. Grep shows /guide/cost-to-launch/[thing]/page.tsx is 123 lines with a bare title and no FAQ/Dataset/HowTo schema; nothing competes for the rich-result slot. Every other idea in this plan takes 3-8 weeks to show up in search; this one shows up in 7-10 days.",
+    "firstVersion": "Pull the top 20 pages by impressions from Search Console. For each: rewrite <title> to lead with the answer and the year (\"Cost to Launch a Satellite in 2026: $2,720/kg on Falcon 9 Rideshare\" not \"Cost to launch a satellite\"), rewrite the meta description to a one-sentence answer plus a number, and add the matching schema.org block — FAQPage on the guides, Dataset on the cost tables, HowTo on the watch-a-launch pages. Add a shared <FaqSchema> component so it is one import per page. Ship all 20 in one commit and diff CTR at day 14 and day 28.",
+    "effort": "S",
+    "impact": 5,
+    "metric": "Sitewide Search Console CTR 0.65% -> 2.0%+ and clicks/28d from ~350 to 1,100+, measured at 28 days post-ship on the same impression base.",
+    "audience": "all"
+   },
+   {
+    "title": "Per-mission pages published T-14, the missing atom of the launch loop",
+    "reasoning": "Ground truth says organic traffic is almost entirely launch logistics, yet the site has no page per launch. /mission-control is a live index, /launches/[site]/[month] is a rollup, /mission-debriefs is post-hoc — but the query people actually type (\"Starlink 12-8 launch time\", \"when is Crew-13 launching\", \"USSF-87 how to watch\") has no landing page. ~200 catalogued launches a year, each with 5-20 search variants, is the single largest long-tail surface the site can generate at zero marginal authoring cost, because SpaceEvent already holds name, mission, date, status, location, rocket and imageUrl. It also completes the compounding loop: the page exists before the launch (indexable, alertable), during (stream), and after (outcome + debrief), so one URL earns three traffic moments.",
+    "firstVersion": "Add /launch/[slug] generated from SpaceEvent for any launch with a NET date inside T-14 days, plus every past launch of the last 90 days. Page shows: countdown, rocket (link /rockets/[slug]), pad and site (link /launches/[site]/[month]), where to watch, weather, the stream embed when live, and the outcome + debrief afterward. Register the slugs in registry-routes.ts so uncatalogued slugs 404 properly, and add them to sitemap segment 0 with changeFrequency hourly inside T-48h.",
+    "effort": "L",
+    "impact": 5,
+    "metric": "Number of /launch/* URLs indexed by Nov 12 (target 150+) and organic clicks to /launch/* per 28 days (target 800+).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "One-click launch alert with no account, on every launch surface",
+    "reasoning": "The highest-traffic pages have no email capture at all — grep of /guide/cost-to-launch/[thing]/page.tsx returns zero hits for Newsletter, Signup or Alert, while the launch-schedule guide has one NewsletterSignup at line 387, below the fold. The site converts 54k impressions into ~350 clicks and then lets every one of them leave forever. MAU is a returning-visitor metric: a one-shot organic visitor is worth 1 MAU-month; the same visitor on a launch alert list is worth 3-4, because launches fire ~4x/week. Alert delivery infrastructure already exists (src/lib/alerts/alert-delivery.ts, alert-processor.ts, alert-templates.ts) — this is a capture-surface problem, not a plumbing problem.",
+    "firstVersion": "A single <LaunchAlertCapture mission=… | rocket=… | site=…> component: one email field, no password, no account, copy reading \"Email me when this launches — one email at T-24h, one at T-1h.\" Place it above the fold on /launch/[slug], /rockets/[slug], /launches/[site], /mission-control, and in the results panel of /launch-cost-calculator. Double opt-in reusing the existing newsletter verify route; every alert email footers a one-click upgrade to the M/Th Digest.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Alert signups per week (target 400+/wk by week 6) and the share of alerted addresses that open a site page within 24h of a launch (target 25%+).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Expand the cost-to-launch family from 4 pages to 25",
+    "reasoning": "src/lib/cost-to-launch.ts has exactly four entries — cubesat, satellite, person, starlink-batch — and that four-page family is already the site's single biggest impression source. This is the rarest thing in SEO: a proven-intent template with demonstrated demand and no competition from the rest of your own site. Each new entry is a data object, not a new page build, because [thing]/page.tsx renders generically. The query family is enormous and commercially neutral: cost to launch a 1U cubesat, a 12U, a GEO comsat, a lunar lander, cargo to the ISS, a smallsat to SSO, a rideshare to TLI, cost per kg on each of the 24 registry rockets, cost to launch from each of the 16 sites. Twenty new entries at even 20% of the flagship's impression volume is +100k impressions/28d.",
+    "firstVersion": "Add 21 entries to COST_TO_LAUNCH covering the query variants above, each with the same table shape (option, provider, price, price/kg, source, asOf) and a rocket slug where one applies so they interlink to /rockets/[slug]. Ship all of them in week 1-2 so they have eight weeks to rank. Add an index at /guide/cost-to-launch listing all 25 with the headline number for each.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Impressions/28d across /guide/cost-to-launch/* rising from 28.7k to 90k+ by Nov 12, and 12+ of the 21 new pages holding a top-20 position.",
+    "audience": "all"
+   },
+   {
+    "title": "City-level launch viewing pages: \"watch a SpaceX launch from [city]\"",
+    "reasoning": "There are three watch-a-launch guides (Cape Canaveral, Vandenberg, Starbase) and they are in the nav, which means someone already believed this intent converts. But the search happens at city and state granularity, not spaceport granularity: people in Orlando, Tampa, Daytona, Jacksonville, Titusville, Santa Barbara, Los Angeles and Brownsville search \"can I see the launch from here tonight\". This is the lowest-competition, highest-intent long tail on the site, it matches the proven traffic profile exactly (launch logistics), and it is the natural place to drop the launch-alert capture because the visitor's intent is already \"tell me when\".",
+    "firstVersion": "Generate /watch/[city] for 40 cities within visibility range of Cape Canaveral, Vandenberg and Starbase, from a static city registry (name, lat/lon, distance and bearing to pad, expected visibility by time of day). Each page: the next launch visible from there with a countdown, what it will look like from that distance, where to stand, and the alert capture. Reuse the launch-site matchers already in launch-site-registry.ts.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Organic clicks/28d to /watch/* (target 500+ by Nov 12) and alert-capture conversion rate on those pages vs. sitewide (target 2x).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Per-city ISS pass pages — turn /whats-overhead from a geolocation widget into 300 indexable pages",
+    "reasoning": "/whats-overhead calls navigator.geolocation and renders client-side, which means it has exactly one indexable URL and captures none of the \"ISS pass times [city] tonight\" query family — one of the largest evergreen space search families that exists, and pure enthusiast intent. The computation is already there; only the URL surface is missing. This is the same pattern as the launch pages: static input list + existing calculation = hundreds of pages at near-zero marginal cost, all of them serving people who want a recurring reason to come back (passes happen nightly), which is precisely the MAU shape you need.",
+    "firstVersion": "Add /whats-overhead/[city] for the 300 largest cities in the US, UK, Canada, Australia and India from a static registry (name, region, lat/lon). Server-render tonight's and the next seven nights' ISS passes with times, direction, magnitude and duration, plus Tiangong and Hubble. Keep the geolocation flow on the index page as \"or use my exact location\". Alert capture: \"email me before the next bright pass over [city]\".",
+    "effort": "L",
+    "impact": 4,
+    "metric": "Indexed /whats-overhead/* pages (target 250+) and organic clicks/28d to that family (target 600+ by Nov 12).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Launch Space Tycoon into r/incremental_games and the browser-game ecosystem while Epoch 2 is fresh",
+    "reasoning": "Three facts line up for exactly one window. (1) The game is the stickiest surface on the site. (2) Epoch 2 just started, so \"every deposit, orbital slot and lane is unclaimed\" is true right now and will be false in three weeks — a fresh-world launch is the only honest hook a persistent MMO ever gets. (3) src/app/space-tycoon/page.tsx line 1251 shows anonymous local-only play works, so a Reddit visitor is one click from a decision, with no signup wall — the single biggest determinant of whether these posts convert. r/incremental_games (~500k), r/BrowserGames, r/MMORPG and r/EconomicGames are unusually receptive to a free, no-ads, no-pay-to-win browser economy game, and CLAUDE.md's no-pay-to-win commitment is a genuine differentiator worth leading the post with. A well-received r/incremental_games post routinely does 100k-300k impressions and 3-8k clicks.",
+    "firstVersion": "Prepare the surface first: a 60-second first decision on load (not a tutorial), the Epoch 2 fresh-world banner, and a visible \"no pay-to-win, no ads, free\" line. Then one honest self-post to r/incremental_games titled around the mechanic, not the brand (\"I built a free browser economy MMO where corporate warfare is purely economic — no combat, no pay-to-win\"), with a 20-second GIF of the market screen, and the developer answering every comment for 48 hours. Follow with r/BrowserGames and r/EconomicGames a week apart.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Unique visitors to /space-tycoon in the 7 days after each post (target 3,000+ combined) and day-7 retention of those visitors (target 12%+).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Surface the referral/mentorship loop that is already built but invisible",
+    "reasoning": "src/lib/game/referrals.ts is complete and well-designed — inviteUrl(), cookie capture in middleware, attachReferral() opening a mentorship, rewards tied to the mentee actually playing so signups cannot be farmed. Public corp pages and leaderboard OG images already exist (space-tycoon/corp/[id]/opengraph-image.tsx, leaderboard/opengraph-image.tsx), so a shared link already renders a real card. What is missing is anywhere a player is ever shown their invite link at a moment they want to share. A referral loop with a k-factor of even 0.3 turns 3,000 Reddit visitors into ~4,300; invisible, it turns them into 3,000.",
+    "firstVersion": "Add an invite panel to three places: the corporation dashboard header (\"Recruit a mentee — you earn up to +5% revenue while they grow\"), the public /space-tycoon/corp/[id] page, and a one-time prompt fired at the first real milestone (first profitable quarter). One button copies inviteUrl(profileId); a second shares the OG card. Show recruited/activeMentees from getReferralStats() so the reward is legible.",
+    "effort": "S",
+    "impact": 3,
+    "metric": "Referral-attributed profile creations per week (target 15%+ of new corporations by week 6), from the referredByProfileId column.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Free, one-line, no-signup countdown embed aimed at space clubs, teachers and newsletters",
+    "reasoning": "Four widgets already exist (/widgets: market-snapshot, next-launch, space-weather, jobs) with working APIs, but they are iframes on a page nobody visits and there is no distribution motion. Judged as a direct MAU channel this is weak — realistically a few hundred users in ten weeks. Judged as a backlink engine it is strong, and backlinks are what let the 54k existing impressions climb positions, which is where the organic thousands actually come from. The audience is specific and reachable: astronomy clubs, high-school STEM teachers, museum sites, model-rocketry forums, and the ~50 space newsletters already catalogued in /newsletters-directory.",
+    "firstVersion": "Replace the iframe snippet with a single <script> tag that injects a responsive countdown and carries a visible \"via SpaceNexus\" link (rel=dofollow). Rebuild /widgets as a gallery with live previews, a size/theme picker, and copy aimed at non-developers (\"paste this into your site — free forever, no account\"). Then email 200 clubs, teachers and newsletters personally, one at a time, offering it.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Referring domains to spacenexus.us (target +60 by Nov 12) and distinct embedding hosts hitting /api/widgets/next-launch (target 40+).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Newsletter cross-promotion swaps, using /newsletters-directory as the introduction",
+    "reasoning": "The site already publishes a curated directory of other space newsletters — that is a warm-outreach asset most people would have to build from scratch, and it inverts the usual cold email (\"we already feature you; want to trade a mention?\"). Newsletter swaps are the highest-conversion non-search channel available at this size because the audience is pre-qualified: a space newsletter's subscribers are exactly the enthusiasts and industry people the site wants. Ten swaps with mid-size lists (5k-30k each) plausibly yields 500-1,500 visits and, unlike search, they land already primed to subscribe. The M/Th Digest also gives something concrete to trade with.",
+    "firstVersion": "Pick the 12 newsletters in /newsletters-directory with lists between 3k and 50k. Send each a personal note: a link to their existing directory entry, an offer to feature them in a M/Th Digest issue, and a request for a reciprocal one-line mention. Prepare a 40-word blurb and a tracked link for each so the swap is one copy-paste for them.",
+    "effort": "S",
+    "impact": 3,
+    "metric": "Referral sessions from swap partners (target 800+ cumulative by Nov 12) and new digest subscribers attributed to swap links (target 300+).",
+    "audience": "all"
+   },
+   {
+    "title": "Run the 3-5 major launch days as events, not as a page that happens to be live",
+    "reasoning": "Between now and Nov 12 there will be a handful of events — a Starship flight, Artemis II if it flies, a crewed mission, a Kuiper batch — where global search volume for a few hours is orders of magnitude above the site's entire monthly traffic. This is the one channel where a small site can capture thousands of users in an afternoon, but only if the page exists and is indexed days beforehand, which is exactly what per-mission pages (T-14 publishing) enable. LiveStreamSection already portals a major-event slot above the hero (page.tsx line 201, NEXT_PUBLIC_FORCE_MAJOR_EVENT), so the homepage machinery is built; what is missing is the operating routine around it.",
+    "firstVersion": "Write a one-page launch-day runbook and execute it for the next major event: per-mission page live at T-14 and submitted to Search Console; a T-24h alert email to the whole launch list; the homepage major-event slot forced on at T-6h; a genuinely useful comment (not a link drop) in the r/space and r/SpaceX launch threads; and a mission debrief published within 12 hours while search interest is still elevated, linked from the same URL.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Unique visitors on the event day vs. the prior Wednesday (target 8x) and the share of event-day visitors who return within 14 days (target 15%).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Stop building new pages in the Engineering & Operations group — freeze and consolidate it",
+    "reasoning": "This is the explicit \"stop doing\" item. site-directory.ts puts 31 entries in the ops group and 15 more in reference, none marked nav, and 52 of 115 trafficked sections drew <=5 views in 28 days. Ten separate calculator pages (orbital, link budget, power, thermal, radiation, constellation designer, unit economics, launch economics, orbital costs, mission cost) each carrying its own thin page competes for crawl budget against the launch pages that actually rank, and every one is ongoing maintenance surface. Three Pro-gated surfaces (/company-research, /bd-pipeline, /executive-command-center) also cannot contribute to MAU while monetization is on hold. The scarce resource in the next ten weeks is engineering hours, and this group consumes them at roughly zero return.",
+    "firstVersion": "Declare a freeze: no new pages in the ops or reference groups before Nov 12. Merge the ten calculators into one /calculators hub with tabs, 301 the old URLs, and drop the merged singles from sitemap segment 0. Set the remaining <=5-view ops pages to noindex,follow so they stay reachable from /tools without diluting crawl budget. Write the rule into site-directory.ts's header comment so it survives the next session.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Share of Googlebot crawl requests hitting launch/guide/rocket URLs (target 60%+, from Search Console crawl stats) and zero new ops-group pages shipped before Nov 12.",
+    "audience": "business"
+   },
+   {
+    "title": "A per-page \"first visit -> returned within 30 days\" report in /admin/analytics",
+    "reasoning": "MAU is a retention metric and every idea above is a bet about which page families produce returning humans. Right now the evidence available is impressions, clicks and pageviews — none of which distinguish a page that earns 4,000 one-shot visitors from one that earns 800 who come back monthly. With ten weeks and a 22x gap, the difference between doubling down on the right family in week 4 versus week 8 is worth more than most of the individual features. /admin/analytics already exists, so this is a query and a table, not a system.",
+    "firstVersion": "Add a table to /admin/analytics: for each of the top 40 landing pages, first-touch sessions in the last 28 days, the share of those users with a second session within 30 days, and the share who took a capture action (launch alert, digest, game profile). Sort by returning users, not by pageviews. Review it every Monday alongside the growth snapshot the standing protocol already requires.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "The report exists and drives one documented reallocation decision per week from week 3 onward; sitewide new-user 30-day return rate tracked as the headline number (target 20%+ by Nov 12).",
+    "audience": "all"
+   },
+   {
+    "title": "Publish the cost-per-kg dataset as an open, citable, CC-licensed resource",
+    "reasoning": "There are 24 rockets in ROCKET_REGISTRY joined to LAUNCH_VEHICLES specs and live SpaceEvent flight records — a maintained, current, cross-provider cost-per-kg and reliability table that essentially nobody else publishes openly and keeps current. Journalists, Wikipedia editors, students and analysts cite datasets, and each citation is a high-authority backlink that lifts the launch-cost guide's position, which is where the largest existing impression pool sits. This is the only press-adjacent play worth spending time on: it does not require anyone to decide to write about you, it just requires the data to be the easiest thing to cite.",
+    "firstVersion": "Publish /data/launch-costs: one sortable table of all 24 rockets with cost per kg to LEO and GTO, payload, flights flown, success rate and last-updated date; every figure footnoted to a source; CSV and JSON download; an explicit CC BY 4.0 licence and a copy-paste citation line. Link it from the launch-cost guide, /data-sources and /rockets. Then add it to Wikipedia's external-links where genuinely relevant and mail it to the ten reporters who cover launch economics.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Referring domains linking to /data/launch-costs (target 25+ by Nov 12) and average Search Console position of /guide/space-launch-cost-comparison improving by 3+ places.",
+    "audience": "investor"
+   }
+  ],
+  "lens": "Product strategy for 450 -> 10,000 MAU in 10 weeks",
+  "thesis": "You need ~9,550 net new monthly actives in ten weeks — a 22x — and only three channels can plausibly deliver a thousand each. Channel math from ground truth: (1) Organic, 3,000-4,000. Two guides already earn 54k impressions/28d at 0.65% CTR — about 350 clicks. Half the organic win is free (fix titles and add structured data: same impressions, 4x the clicks, visible in 10 days), and half comes from multiplying the surface within the one intent that already works — launch logistics. The site has /launches/[site]/[month] and /rockets but no page per launch, only four cost-to-launch entries, three watch-a-launch guides at spaceport rather than city granularity, and /whats-overhead as a single client-side geolocation page instead of 300 indexable city pages. Every one of those is a proven-intent template with a static input list attached to data you already hold. Critical constraint: new pages need 3-8 weeks to rank, so all SEO surface must ship in weeks 1-4 or it cannot count by Nov 12. (2) Community, 2,000-3,500. Space Tycoon plays anonymously with no signup wall (page.tsx:1251), Epoch 2 is fresh right now, and CLAUDE.md's no-pay-to-win commitment is a real hook for r/incremental_games, r/BrowserGames and r/EconomicGames — audiences of hundreds of thousands who are unusually receptive to exactly this. That window closes in three weeks. Plus 3-5 major launch days where global search volume for six hours dwarfs your whole month. (3) Newsletter swaps and embeds, 800-1,500 — smaller, but /newsletters-directory is a warm-intro asset and the four existing widgets are a backlink engine that lifts channel 1. Sum: 8,000-13,000, so 10,000 is reachable only if organic and community both fire, which makes sequencing the whole strategy. Three compounding loops carry it: LAUNCH (search finds a per-mission page -> one-click alert with no account -> T-24h email -> return on launch day -> debrief on the same URL -> digest), which re-fires ~4x a week forever and is the only mechanism that converts one-shot organic into recurring monthly sessions; GAME (Reddit -> instant play -> referral/mentorship, already built in referrals.ts and completely invisible -> public corp pages that index); and CONTENT-COMPOUNDING (every launch that happens auto-generates mission, site-month and rocket pages with zero marginal authoring). What to stop: the Engineering & Operations group — 31 directory entries, none in nav, competing for crawl budget with the pages that rank — plus the three Pro-gated surfaces that cannot move MAU while monetization is on hold, and any further homepage sections; the homepage is already fourteen sections deep and search landing pages, not the homepage, are the growth surface. The single most damning finding: /guide/cost-to-launch/[thing]/page.tsx contains no email capture of any kind. Your biggest traffic source converts 28,700 impressions into visitors who then leave forever."
+ },
+ {
+  "lens": "Competitor teardown — what the places space people actually go own as a daily habit, and which habit SpaceNexus can take with data it already holds",
+  "thesis": "Every incumbent owns exactly one habit and defends it narrowly. Next Spaceflight and RocketLaunch.live own \"when's the next launch\" (countdown + push, RLL gates notifications and its API behind premium). Spaceflight Now owns the authoritative manifest as a flat text page. NASASpaceflight owns real-time deep-nerd video and its forum. Space.com owns SEO breadth. Payload owns the 9am inbox for professionals (~20k subs, $999 Pro) and SpaceNews owns institutional credibility behind a paywall. Everyday Astronaut owns the prelaunch explainer. Quilty and BryceTech own paid research, with BryceTech's free quarterly PDF the most-cited free artifact in the sector. Crucially, Orbital Index — the weekly technical digest for engineer-minded readers — published its last issue (#350) in January 2026, leaving its audience unhoused. Almost none of these connect anything to anything else: nobody links the manifest to the tickers, nobody keeps a longitudinal record of how far missions slip, nobody personalizes \"will I see it from my yard,\" nobody publishes a durable post-launch record, and nobody has a free game that resolves against real launch outcomes. SpaceNexus is the only site holding manifest + outcomes + rockets + stocks + funding + procurement + ~6,500 ATS jobs + an economic MMO in one database — the join is the product, and the join is what none of them do. The immediate blocker is self-inflicted: the anonymous homepage leads with \"The terminal for space business… 14-day full trial,\" while the actual organic traffic is enthusiasts asking what a launch costs and when it flies. Every competitor that owns an enthusiast habit shows the data first and asks for nothing. Fix the front door, then take the habits the incumbents have left on the table.",
+  "ideas": [
+   {
+    "title": "The Slip Index — a longitudinal record of how much every mission slips",
+    "reasoning": "No competitor keeps schedule history. Spaceflight Now overwrites the NET date, Next Spaceflight shows only the current one, Wikipedia is manually edited, r/spacex threads decay. The audience is already asking this question: the launch-schedule guide pulls 25.3k impressions/28d and the top user intent behind it is 'will it actually fly then.' SpaceNexus syncs SpaceEvent rows daily (src/lib/events-fetcher.ts) but throws away the previous date — the dataset is being generated and discarded right now. Once recorded it compounds daily into something genuinely proprietary that nobody can backfill.",
+    "firstVersion": "Add a LaunchDateChange table (eventId, oldDate, newDate, observedAt). In syncUpcomingEvents, write a row whenever launchDate moves. Ship /slip-index: a table of upcoming missions with 'first announced NET → today's NET → days slipped so far', plus a per-provider on-time scorecard (median slip from first-seen NET). Add a slip strip to each /rockets/[slug] and each launch detail page. It starts thin and gets better every day — say so on the page.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Indexed impressions for '[mission] delayed / launch date' queries within 60 days, and return-visit rate to /slip-index (target: >25% of visitors return within 14 days).",
+    "audience": "all"
+   },
+   {
+    "title": "Fix the front door: lead with the launch board, not a SaaS trial",
+    "reasoning": "Direct teardown finding. Fetching spacenexus.us anonymously returns 'The terminal for space business' and 'Instant access. No credit card. 14-day full trial.' Not one incumbent that owns an enthusiast habit does this — Next Spaceflight, RocketLaunch.live, Spaceflight Now and Everyday Astronaut all put the data above the fold with no ask. The founder's stated priority is enthusiasts over profit and monetization is on hold until ~Nov, yet the homepage is optimized for a trial funnel against traffic that is almost entirely launch-logistics search. This is a leak on the exact audience already being won.",
+    "firstVersion": "Rewrite the anonymous hero in src/components/LandingHero.tsx: headline becomes the next launch (mission, vehicle, live countdown, site, watch link), with the following three launches beneath it and one line of context. Primary CTA 'See every upcoming launch → /mission-control'; secondary 'What a launch costs → /guide/cost-to-launch/satellite'. Move pricing to the nav only. Keep the persona-aware secondary CTA for returning visitors.",
+    "effort": "S",
+    "impact": 5,
+    "metric": "Bounce rate on / for new organic sessions, and click-through from / into a second page (target: +15pp within 3 weeks).",
+    "audience": "all"
+   },
+   {
+    "title": "Beat Wikipedia on the rocket pages",
+    "reasoning": "For 'Falcon 9 payload to GTO' or 'New Glenn cost', the real competitor is not Next Spaceflight — it's Wikipedia, which is stale, has no live schedule, and no cost-per-kg. /rockets shipped 8/28 with price, payload, success rate and next launch already joined to the live manifest, which is exactly the combination Wikipedia structurally cannot do. The cost-to-launch guides already prove this query family converts (28.7k impressions/28d).",
+    "firstVersion": "On each /rockets/[slug]: add launches YTD, current success streak, days since last flight, cadence trend (last 90d vs prior 90d), a full launch log table, and cost-per-kg to LEO/GTO. Emit Product/Dataset structured data with a lastUpdated date, and add a 'compare this rocket to' widget linking into /compare. Cross-link every launch row on /mission-control and /launches/[site]/[month] to its rocket page.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Search Console average position and impressions for '[rocket] cost/payload/reliability' queries across all /rockets/* pages, 60-day trend.",
+    "audience": "all"
+   },
+   {
+    "title": "'Visible from your backyard' — personalized launch and satellite visibility",
+    "reasoning": "Heavens-Above owns this question with a 2003 interface; Space.com writes generic 'how to see the ISS' articles that don't know where you are; Next Spaceflight tells you a launch is happening but not whether you can see it. SpaceNexus already has pad latitude/longitude on SpaceEvent, a satellite pass predictor (src/lib/satellite-pass-predictor.ts), a satellite-pass-alerts cron, and /whats-overhead. Nobody joins pad geometry to a user's location to answer 'will I see this launch from here, and which way do I look.'",
+    "firstVersion": "Add a location capture (geolocation or ZIP) stored client-side. On /whats-overhead show one merged list for the next 14 days: ISS/Starlink passes plus every launch within visibility range of that location, each with look-direction, elevation, local time, and a 'sky darkness' flag. Add a per-launch 'visible from you' badge on /mission-control. One-click email/push alert per row.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Locations saved and visibility alerts enabled; weekly return rate of users with a saved location (target: >40% return within 7 days).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Claim the vacant Orbital Index seat with a weekly technical edition",
+    "reasoning": "Orbital Index closed with issue #350 on 7 Jan 2026 after nearly seven years. It served exactly the reader SpaceNexus under-serves — technically literate enthusiasts and engineers who want mission concepts and engine specs explained without dumbing down — and those readers have had no replacement for eight months. Payload is business/policy, SpaceNews is trade-paper, Everyday Astronaut is video. The M/Th Digest is business-flavored and does not fill this. This is the single clearest unoccupied habit in the whole landscape.",
+    "firstVersion": "Add a third edition to the newsletter machinery: a Sunday technical digest. Fixed structure borrowed from what worked — one deep-dive (an orbit, an engine, a mission architecture) written from site data, a technical link roundup, the week's launches with what was actually novel about each, and one 'number of the week' from the launch DB. Announce it explicitly as a home for Orbital Index readers on /newsletter and /newsletters-directory.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Net new newsletter subscribers attributable to the technical edition, and its open rate versus the M/Th Digest after 6 issues.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Launch-to-ticker: the money view of the manifest",
+    "reasoning": "Payload and Quilty write about this relationship in prose behind a $999 or enterprise wall; no free site draws the line at all. Next Spaceflight has no financial data; Yahoo Finance has no manifest. SpaceNexus is the only place holding SpaceEvent, CompanyProfile, /space-stocks quotes, FundingRound and GovernmentContractAward in one DB. The join — 'this week's launches, and who is exposed to them' — costs almost nothing to build and exists nowhere.",
+    "firstVersion": "On each launch detail page, a 'Who's exposed' panel: the public companies tied to the vehicle, payload operator and prime, each with today's quote and 5-day move, linked to /space-stocks and /company-profiles. Inverse view on /space-stocks: per ticker, 'upcoming missions' and 'launches in the last 90 days with outcomes'. Weekly auto-post 'The manifest and the tape' summarizing the coming week's launches against the affected tickers.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Cross-section sessions (a session touching both a launch surface and a markets surface), and pages/session for investor-persona visitors.",
+    "audience": "investor"
+   },
+   {
+    "title": "Universal 24-hour mission debriefs — own the post-launch record",
+    "reasoning": "There is a hole right after every launch. Spaceflight Now live-blogs and then stops, NSF is a video that nobody re-watches, r/spacex threads decay, and Wikipedia updates days later. Nobody owns the durable 'what actually happened' page that ranks for '[mission] result' forever. The machinery is already built and only just started producing: mission-debrief-generator.ts with a quality gate, auto-publishing since 8/24 with the first two ever published. It is under-used, not missing.",
+    "firstVersion": "Move the debrief cron to run within a few hours of every orbital launch outcome rather than daily, and loosen the queue so every completed mission gets a draft. Give each debrief a stable /mission-debriefs/[slug] URL with Article structured data, outcome, timeline, booster/fairing reuse, and links to the rocket, site and provider pages. Add an RSS feed and a 'debrief published' email option to /alerts.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Published debriefs per launch (target: >90% coverage of orbital launches) and organic impressions on /mission-debriefs/* after 60 days.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "'Today in Space' — one page, sixty seconds, the tab people open first",
+    "reasoning": "Payload owns the morning inbox but nobody owns the morning tab. Next Spaceflight answers one question, Space.com is a wall of headlines, Spaceflight Now is a schedule. The habit-forming artifact in adjacent categories is a single dense, fast, chrome-free page. SpaceNexus has all the ingredients scattered across 124 pages, which is precisely the problem — 52 of 115 sections got ≤5 views because there is no single entry point that pulls the good stuff forward.",
+    "firstVersion": "Ship /today: server-rendered, no login, under 40KB of content. Launches in the next 24h with countdowns; what slipped since yesterday (from the Slip Index); the biggest space-stock mover with one line of why; the top story; today's prediction question; one number from the launch DB; today in space history. Nothing else. Link it from the logo area and offer it as the PWA start_url.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Share of returning users whose session starts on /today, and DAU/MAU ratio for users who have visited it twice.",
+    "audience": "all"
+   },
+   {
+    "title": "Free embeddable widgets as a distribution channel",
+    "reasoning": "RocketLaunch.live gates push notifications and API access behind premium; nobody offers a free, good-looking, attributed launch countdown that other space sites, club pages, museum kiosks and Discord servers can paste in. This is how a small site gets referring domains without outranking Space.com. /widgets and /embed/countdown scaffolding already exists but is a preview page rather than a product, so the distribution value is unrealized.",
+    "firstVersion": "Turn /widgets into a real gallery: next-launch countdown, launches-this-week list, and a rocket stat card. Each with a live preview, a theme/size picker, and a copy-paste iframe snippet with a small 'via SpaceNexus' link. Ship a matching oEmbed endpoint and a lightweight public JSON endpoint for the next-launch feed with attribution required. Announce it on the newsletter and in the enthusiast forums that allow it.",
+    "effort": "S",
+    "impact": 3,
+    "metric": "Distinct referring domains loading an embed, and referral sessions from embed attribution links, at 60 days.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Daily launch prediction as the returning-visitor hook",
+    "reasoning": "Metaculus and Polymarket are not space-native and involve real money; no launch tracker gives you skin in the game. SpaceNexus is the only site that can pose a question and resolve it automatically against its own tracked outcomes — /predictions shipped 8/28 on top of the Space Tycoon Prediction Exchange, with game currency only, which sidesteps every regulatory and pay-to-win problem. The game is already the stickiest surface; this is the bridge from the launch audience into it, and it converts a one-shot launch lookup into a reason to come back tomorrow.",
+    "firstVersion": "Promote one 'question of the day' to the top of /predictions and embed it on /today and on every launch detail page ('Will this fly in its window?'), stakeable in one click with a guest stake that persists to an account on signup. Public leaderboard, resolution notification email, and a shareable result card ('I called Starship Flight 15 — 78% of players didn't').",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Daily unique stakers, and day-7 return rate of first-time stakers versus non-staking launch-page visitors.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Free quarterly 'State of Launch' data drop, as a live page not a PDF",
+    "reasoning": "BryceTech's free quarterly briefing is the most-cited free artifact in the industry and it is a static PDF; Quilty's equivalents are paywalled. SpaceNexus already has the underlying launch history (the launch-history-backfill cron walks LL2's previous-launch feed) and can generate the same analysis continuously, permalinked, linkable, embeddable and always current. Being the free thing journalists and analysts cite is the fastest route to authority links, which is the constraint on ranking against Space.com.",
+    "firstVersion": "Ship /state-of-launch: launches by quarter, by provider, by site and by orbit; success rates; cadence trends; mass to orbit; reuse rate. Generated from the DB, updated nightly, with a methodology note, CSV download and per-chart embed codes. Publish a written quarterly summary on the same URL each quarter and pitch it to the newsletters that currently cite BryceTech.",
+    "effort": "L",
+    "impact": 4,
+    "metric": "Referring domains and named citations of /state-of-launch in the first two quarters, plus CSV downloads.",
+    "audience": "all"
+   },
+   {
+    "title": "Hiring velocity — turn the biggest free space job board into market intelligence",
+    "reasoning": "Payload and SpaceNews run small paid-post job boards; nobody has ~6,500 continuously synced ATS listings across 16 boards. And nobody anywhere publishes what that data implies: which companies are staffing up and which have frozen. CompanyJobSnapshot, WorkforceTrend and hiring-snapshots.ts already compute the series — it is intelligence Quilty would charge for, sitting unused behind a job board. It serves job seekers and investors from the same table.",
+    "firstVersion": "Ship a 'Hiring Velocity' section on /space-talent and a per-company hiring chart on every /company-profiles page: active openings over time, 30-day change, and the biggest movers up and down. Add 'new since your last visit' to /jobs and a weekly personalized digest keyed to saved searches. Cross-link movers into /space-stocks and the funding tracker.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Job alert subscribers and 7-day return rate to /jobs; secondarily, sessions on company profiles reaching the hiring chart.",
+    "audience": "jobseeker"
+   },
+   {
+    "title": "Publish Space Tycoon's economy publicly, the way EVE's third-party sites do",
+    "reasoning": "EVE Online's retention is carried as much by out-of-game public data (zKillboard, Adam4EVE, the monthly economic report) as by the client; the public data is the recruiting funnel and the narrative engine. Space Tycoon has the same machinery — MarketPriceCandle, TradeStatDaily, league brackets, corp quarterly reports, the diplomacy feed — all locked behind sign-in, so the stickiest surface on the site is invisible to search engines and to the launch audience arriving from Google. Epoch 2 just started, which is exactly the moment a public standings page is most interesting.",
+    "firstVersion": "Ship logged-out public pages: /space-tycoon/economy (commodity price charts, volume, biggest movers this week), /space-tycoon/standings (corp leaderboard and league brackets), and /space-tycoon/corps/[slug] (public quarterly report, founding date, fleet count, alliances). Auto-post a weekly economy summary to the blog. No login to read, one click to join.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Logged-out sessions on public game pages and new game profiles created from them (attributed by landing page).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Launch weather odds — the number every launch fan wants and nobody surfaces",
+    "reasoning": "The single best predictor of whether tomorrow's launch happens is the weather probability-of-violation forecast, published for Cape and Vandenberg missions and buried in PDFs and press kits. Spaceflight Now occasionally quotes it in prose; Next Spaceflight and RocketLaunch.live ignore it entirely; enthusiast Discords pass screenshots around. SpaceNexus already runs a NOAA fetcher for space weather and has pad coordinates, so terrestrial launch weather is an adjacent, small addition that directly serves the site's dominant query family ('will it launch') and feeds the Slip Index.",
+    "firstVersion": "On each launch detail page and /mission-control row, a weather panel for the launch window: cloud cover, surface wind, precipitation and lightning risk at the pad from a public forecast API, expressed as a plain-language go/no-go read plus the official percentage when a published PoV forecast is available. Fold weather-caused scrubs into the Slip Index as a labelled cause. Note the source and its limits on the page.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Views of the weather panel on launch pages and click-through from launch alerts to the launch page in the 24h before T-0.",
+    "audience": "enthusiast"
+   }
+  ]
+ },
+ {
+  "lens": "The professional intelligence product",
+  "thesis": "Payload Pro, Quilty and BryceTech sell three things: (1) a recurring, citable dataset with a published methodology — the chart people paste into decks; (2) a searchable deal/company database; (3) an analyst POV. Note what the paid tier is NOT: capital-flow data is already free and excellent — Space Capital's Space IQ ($36B/148 cos in Q1'26), Seraphim's index ($8.0bn Q1'26), Generation Space, and Bryce's Start-Up Space all give quarterlies away as lead-gen. So SpaceNexus should not chase funding-round tables; its FundingRound data is curated and thin and it would lose that race. The white space is LABOR. SpaceNexus is quietly running something none of them have: a daily per-company census of every active job posting across 16 ATS boards. It is live right now at /api/hiring-trends — 6,535 postings on 2026-08-13 rising to 6,698 on 2026-08-28, per company, in CompanyJobSnapshot. Hiring is the leading indicator of revenue and program health that investors currently cannot buy from anyone. That is the flagship: \"The Space Hiring Index,\" free, monthly, methodology published, cite-this block attached. Second, the site is the only place where launch cadence, hiring, procurement, regulatory and market cap share one schema (306 Prisma models) — the cross-joins are the product, not any single table. Third, and most urgent: three credibility bugs will burn the first analyst who checks the numbers (the movers table is silently empty; the primes are excluded from the monthly report's market-cap totals by a known isPublic data gap; launch \"success rate\" counts Partial Failure as success). An analyst who catches one wrong number never returns. Fix those before publishing anything. Finally, discovery: /learn died at 25 users because nothing pointed at it, and 52 of 115 sections get ≤5 views — so the analyst artifacts must be planted inside the pages that already pull traffic (the launch-cost guide at 28.7k impressions/28d) rather than shipped as page #351.",
+  "ideas": [
+   {
+    "title": "The Space Hiring Index — the free monthly artifact nobody else can publish",
+    "reasoning": "This is the flagship. /api/hiring-trends is live today and returns a real daily series in CompanyJobSnapshot: _TOTAL went 6,535 (2026-08-13) → 6,698 (2026-08-28), captured per company by the hiring-snapshot cron after the 06:30 ATS sync, with _PRIVATE_TOTAL splitting private from public employers. Every competitor publishes capital flows (Space Capital, Seraphim, Generation Space, Bryce all free); none publishes labor. Hiring leads revenue by two to four quarters, so this is the forward-looking series analysts want and cannot buy. The data currently surfaces in exactly one place — src/components/company/HiringTrend.tsx on company profiles — which means the most defensible dataset on the site has no front door. src/lib/weekly-hiring-report.ts is a working template for deterministic, AI-free report generation, and mirrorInsightAsBrief() already routes briefs into the /intelligence-brief hub, so the plumbing exists.",
+    "firstVersion": "New /hiring-index page reading CompanyJobSnapshot: one hero line chart of total active openings (with the private/public split), a Top 25 employers table with 30-day deltas, a mix breakdown by category and seniority, and the clearance-required share. Add a monthly cron (modeled on whos-hiring-post) that freezes the month's numbers into a PublishedBrief of a new 'hiring_index' type so each edition gets a permanent citable URL like /intelligence-brief/space-hiring-index-2026-09. Ship with a visible methodology block: 16 ATS boards named, snapshot time, what counts as active, known gaps.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Referring domains linking to /hiring-index or a monthly edition URL — target ≥10 distinct external domains within 90 days (the citation is the product). Secondary: ≥25% of edition-1 readers return for edition 2.",
+    "audience": "all"
+   },
+   {
+    "title": "Unblock the hiring movers table — it is silently empty and will stay empty until mid-September",
+    "reasoning": "getHiringMovers(days = 30) in src/lib/hiring-snapshots.ts selects the comparison row with date <= latest.date - 30 days. Snapshot history only starts 2026-08-13, so no row satisfies that predicate. The live endpoint proves it: movers returns {asOf: '2026-08-28', compareDate: null, gainers: {byAbsolute: [], byPercent: []}, decliners: {...}}. The single most interesting analytic in the entire hiring dataset — which companies are ramping and which are freezing — is dark, and stays dark until roughly 2026-09-12. That is a hard blocker on the flagship's best section, and it is a few lines of code.",
+    "firstVersion": "Make the comparison window adaptive: try 30 days, and if compareMap comes back empty fall back to the oldest snapshot date available, returning both compareDate and an explicit windowDays in the payload so the UI can honestly label it 'change over the last 15 days' instead of implying 30. Keep the activeJobs >= 5 floor to suppress noise from tiny employers.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Movers response returns ≥8 named companies with a non-null delta on the day it deploys, and the hiring-index movers section renders with real names instead of an empty state.",
+    "audience": "investor"
+   },
+   {
+    "title": "Fix the isPublic gap that quietly deletes the primes from your flagship market numbers",
+    "reasoning": "src/app/space-stocks/page.tsx carries an in-code comment documenting that Lockheed/LMT, Boeing/BA, Northrop/NOC, L3Harris/LHX, Planet/PL, Spire/SPIR and Iridium/IRDM all sit in CompanyProfile with isPublic:false despite having live tickers and market caps — a seed/merge data gap. That page works around it by filtering on ticker presence. But src/lib/monthly-report-generator.ts does NOT: its Market Movers section queries where isPublic:true, so the published monthly report's 'Public Companies Tracked' count, 'Combined Market Cap' total, and top gainer/decliner all silently exclude the largest names in the sector. Two surfaces on the same site report irreconcilable market caps. This is the exact class of error that ends an analyst relationship on first contact, and it is a data fix, not a feature.",
+    "firstVersion": "Backfill isPublic:true for every CompanyProfile row that has a non-null ticker and a market cap (a one-off script under scripts/, run against prod), then switch monthly-report-generator's movers query to the same ticker-presence predicate space-stocks uses so the two can never diverge again. Extract that predicate into one shared helper both files import.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Combined market cap in the monthly report matches the /space-stocks roster total to within rounding, and the tracked-company count rises by the seven-plus names currently missing.",
+    "audience": "investor"
+   },
+   {
+    "title": "Publish a methodology page and put a Cite-this block on every data page",
+    "reasoning": "BryceTech's entire authority rests on published methodology — that is why its numbers end up in everyone's deck. Grepping for 'methodolog' across src/app returns nothing resembling a methodology page; the word appears only inside /compare/spacenexus-vs-bryce-tech (which claims parity with Bryce without showing any) and one guide. Meanwhile only 30 of 350 page.tsx files carry a DataAsOf or DataFreshnessBadge stamp. An analyst will not cite a number that has no as-of date and no stated source. This converts existing data into citable data at near-zero cost, which is the cheapest leverage available on this whole list.",
+    "firstVersion": "One /methodology page: for each headline dataset (job postings, launches, funding, contracts, regulatory actions, market caps) state the source, refresh cadence, what is counted and explicitly what is not, plus known gaps. Then a small <CiteThis /> component — permanent URL, as-of date, one-line suggested citation, copy button — dropped onto /hiring-index, /space-stocks, /funding-tracker, /launch-costs and /executive-moves. Enforce DataAsOf on those same pages.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Referring domains to any page carrying a Cite-this block; target the first external citation (newsletter, deck, Wikipedia, LinkedIn post) within 60 days.",
+    "audience": "investor"
+   },
+   {
+    "title": "Turn the highest-traffic page you own into the industry's citable cost-to-orbit dataset",
+    "reasoning": "Organic traffic is almost entirely launch logistics — the launch-cost guide alone pulls 28.7k impressions/28d, the single largest audience the site has. But the cost benchmarks backing it are five hardcoded rows in an INDUSTRY_BENCHMARKS array inside src/app/space-stocks/page.tsx, hand-maintained, sourceless, and annotated in-code as salvage from a retired page. That is a demand signal meeting an under-built asset. Cost-per-kg is the single most-cited number in space finance and there is no free, maintained, sourced, downloadable table of it anywhere. Building it here means the analyst artifact arrives inside traffic that already exists, rather than as page #351 that dies at 25 users like /learn.",
+    "firstVersion": "Promote cost-per-kg to a real table (a typed dataset module or the existing LaunchCostBenchmark model): vehicle, payload class, list price, $/kg to LEO and to GTO, reusability status, source URL, as-of date, and a confidence flag separating published prices from estimates. Render it on the existing launch-cost guide with CSV download and a Cite-this block. Quarterly refresh in the editorial pass.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Referring domains to the cost table, plus CSV downloads per month; secondarily, whether the guide's existing 28.7k impressions convert at a higher rate to a second pageview.",
+    "audience": "all"
+   },
+   {
+    "title": "An honest launch reliability dataset — and stop counting Partial Failure as a success",
+    "reasoning": "src/lib/events-fetcher.ts maps Launch Library's 'Partial Failure' to status 'completed' with the comment 'it launched; the debrief judges the outcome', and its own comments (around lines 463-485) note that 'completed' is also where outcome-unknown rows land. src/lib/monthly-report-generator.ts then computes success rate as completed/total and publishes it as a headline stat. So the site's published launch success rate is inflated by both partial failures and unconfirmed outcomes. Separately, the launch-history-backfill cron exists specifically to give /rockets and /launches real history, so the underlying record is being built — the taxonomy just needs to catch up before anyone cites it. Reliability by vehicle is a top-three analyst question and there is no good free source with a stated methodology.",
+    "firstVersion": "Add an explicit outcome field distinct from status ('success' | 'partial_failure' | 'failure' | 'unconfirmed'), populate it from the LL2 sync rather than collapsing into 'completed', and rebuild the monthly report's success rate to exclude unconfirmed rows and count partial failures separately. Surface a per-vehicle reliability table on /rockets: attempts, successes, partial failures, failures, consecutive successes, with the methodology note inline.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Zero discrepancy between the site's per-vehicle success counts and Launch Library's on a 20-vehicle spot check; /rockets returning-visitor rate as the reliability table matures.",
+    "audience": "all"
+   },
+   {
+    "title": "Company tearsheets — the one-screen artifact a BD person screenshots into a deck",
+    "reasoning": "The site holds CompanyProfile, FundingRound, GovernmentContractAward, CompanyJobSnapshot, ExecutiveMove, KeyPersonnel, SECFiling, Partnership and CompanyEvent for 318 companies, all joinable by companyId. No competitor can assemble that join because none of them tracks hiring. Right now the data is spread across separate tabs and pages, which is a browsing experience, not an analyst deliverable. The deliverable is one dense, print-clean screen. ExportPDFButton already exists (used on /intelligence-brief), so the export path is solved.",
+    "firstVersion": "A /company/[slug]/tearsheet route: header (name, ticker, market cap, HQ, sector, employee estimate), then five compact panels — funding history with total raised and last round, hiring trend sparkline plus 30-day delta from CompanyJobSnapshot, government contract awards with total value, recent executive moves, and last five news items. Print stylesheet plus PDF export. Link it prominently from the top of every company profile.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Tearsheet views per company-profile view (target ≥15%) and PDF exports per month; a tearsheet appearing in an external deck or post is the real win.",
+    "audience": "business"
+   },
+   {
+    "title": "Chart of the Week — pinned in the digest you already send, not a new newsletter",
+    "reasoning": "The forwardable unit of a research shop is one chart with one sentence, and the M/Th Digest is already a functioning distribution channel with a working Resend Pro pipeline. Adding a new email would split an already-small list; adding a fixed slot to the existing one costs nothing and gives the hiring index, cost-to-orbit table and reliability data a weekly excuse to travel. Critically, the chart needs a permalink and a downloadable PNG, because a chart trapped inside an email is never cited.",
+    "firstVersion": "A fixed top-of-digest slot: one chart image, a one-sentence read, and a 'see the data' permalink to /chart/[slug], which renders the chart with its underlying table, source, as-of date and Cite-this block. Rotate the source dataset weekly from what already exists (hiring total, launch cadence, contract awards, funding). Generate the PNG server-side so it renders in every mail client.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Digest CTR on the chart permalink versus the digest's current average link CTR; number of /chart/[slug] sessions arriving from outside the email.",
+    "audience": "all"
+   },
+   {
+    "title": "Ship the hiring index and cost-to-orbit as embeddable widgets",
+    "reasoning": "An embed in someone else's newsletter or company page is a permanent backlink plus an attributed impression — the cheapest distribution a data publisher gets, and precisely how free quarterlies like Seraphim's compound. The rails are already built: src/app/api/widgets/ has jobs, market-snapshot, next-launch and space-weather endpoints, /embed has a layout, and /api/v1 ships an openapi.json. This is packaging existing infrastructure around the two datasets worth spreading, not new infrastructure.",
+    "firstVersion": "Two /embed routes — the total-openings hiring chart and the cost-per-kg table — each a self-contained responsive iframe with a 'Data: SpaceNexus' attribution link back to the source page. A copy-the-embed-code button on both source pages. Theme-aware and keyboard-accessible per the accessibility commitments.",
+    "effort": "S",
+    "impact": 3,
+    "metric": "Distinct external domains loading an embed (measurable from referrer on the widget endpoint) — target 5 in 90 days.",
+    "audience": "business"
+   },
+   {
+    "title": "Capture where executives came from, then map the talent flow",
+    "reasoning": "The live /api/executive-moves response shows fromCompany and fromTitle null on all three most recent rows (Tory Bruno, Mark Peller to ULA, Renato Krpoun to Axiom) — the extractor is capturing the destination and dropping the origin. The schema has the fields; only the parse is incomplete. Without origin, the dataset is a list of announcements. With origin, it becomes a talent-flow map — who is bleeding senior people to whom — which is a genuine intelligence product and pairs naturally with the hiring index (senior departures plus a hiring freeze is a signal; senior arrivals plus a hiring ramp is a different one). Note this rests on a small sample of three live rows, so confirm the null rate across the table before scoping.",
+    "firstVersion": "Extend the executive-move extraction prompt and parser to pull fromCompany/fromTitle out of the article body rather than just the headline, and backfill the existing rows. Then add a flow view on /executive-moves: a ranked from→to table of company pairs over the last 12 months, plus a net-senior-headcount column per company.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Share of ExecutiveMove rows with a non-null fromCompany rising above 60%, and /executive-moves time-on-page after the flow view ships.",
+    "audience": "business"
+   },
+   {
+    "title": "Surface the contract competition data you already collect and never show",
+    "reasoning": "src/lib/fetchers/sam-awards-fetcher.ts pulls numberOfOffers, extentCompeted, competitionType and pscCode from the SAM.gov Awards API and writes them to GovernmentContractAward. Grepping the entire src/app tree, those fields appear in no page or API response — the data is captured and buried. 'How contested was this award, and how many bidders did the winner beat' is exactly the question a BD lead or a defense-focused investor is trying to answer, and it is not freely available anywhere in a space-filtered view. Zero new data acquisition required.",
+    "firstVersion": "Add competition columns to /procurement/awards (offers received, extent competed, set-aside) with filters for sole-source versus full-and-open. Then one derived view: agency-level win concentration — for NASA, Space Force, NRO and NOAA, the top awardees by value over 12 months, average number of offers, and the share of dollars awarded without competition.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Sessions on /procurement/awards versus its pre-change baseline, and filter-interaction rate (proof people are querying, not just landing).",
+    "audience": "business"
+   },
+   {
+    "title": "Make the competitor comparison pages prove the claim instead of asserting it",
+    "reasoning": "/compare already holds payload-space, quilty-analytics, spacenexus-vs-bryce-tech and bloomberg-terminal pages, which means the site is already bidding on the highest-intent query an analyst types — 'Payload Pro alternative.' But /compare only draws 45 users total, and the Bryce page discusses methodology while the site has no methodology page to point at. These pages currently assert parity. Once the hiring index, cost-to-orbit table and methodology page exist, they can demonstrate it — with the strongest possible line, which is that SpaceNexus publishes a labor dataset no paid service has at any price.",
+    "firstVersion": "Rewrite each comparison page to lead with a concrete, linked, free-versus-gated table: what the competitor charges for, what SpaceNexus gives away, and the two or three datasets only SpaceNexus has. Every row links to the live page proving it. Add the honest reverse column too — where the competitor is genuinely better (Quilty's financial models, Payload's editorial voice) — because a comparison that admits nothing converts nobody.",
+    "effort": "S",
+    "impact": 3,
+    "metric": "Organic impressions and clicks on the four comparison URLs in Search Console 60 days out, from a baseline near zero.",
+    "audience": "investor"
+   },
+   {
+    "title": "A forward-looking regulatory deadline feed for policy and BD calendars",
+    "reasoning": "RegulatoryAction already stores commentCloseDate and effectiveDate and indexes both, and DocketSnapshot adds organization-level comment intelligence from Regulations.gov. /regulatory-calendar exists and already emits ICS. But the indexed forward-looking fields are the underused half: everyone publishes what a regulator did; almost nobody publishes what is about to close. A comment window closing in eleven days is an action item a compliance lead will subscribe to, and comment-deadline calendars are exactly the recurring-utility hook that turns a professional into a weekly returning visitor.",
+    "firstVersion": "A 'What's closing' panel on /regulatory-radar and /regulatory-calendar: every open comment window and every rule taking effect in the next 90 days, sorted by deadline, with days-remaining, agency, category and a direct comment link. Wire it into the existing ICS feed so the deadlines land in Outlook and Google Calendar, and add the top three closing items to the weekly regulatory brief.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "ICS subscriptions to the regulatory calendar, and week-over-week returning-visitor rate on /regulatory-radar.",
+    "audience": "business"
+   }
+  ]
+ },
+ {
+  "lens": "Enthusiast delight from first principles — moments, rituals, collections, shareables",
+  "thesis": "SpaceNexus is already a very good enthusiast product wearing a B2B costume. Nearly everything a space fan would want is in the repo right now: real CelesTrak-TLE pass prediction (`src/lib/satellite-pass-predictor.ts`, plus a 10-minute ISS-pass alert cron), a genuinely rich launch-day room (`LaunchDayDashboard` with telemetry, live chat, polls, reactions, weather go/no-go, 3D trajectory, post-launch summary), per-launch pages, auto-published mission debriefs, on-this-day history indexed by monthDay, a MissionPhoto table, countdown embeds. Three things smother it. First, the front door: `OnboardingTour.tsx` blocks every cold visitor with \"tell us about yourself\" and offers exactly six identities — Investor/VC, Entrepreneur, Mission Planner, CEO, Supply Chain, Legal — none of which is \"space fan,\" under an H1 reading \"The terminal for space business,\" while ~all organic traffic arrives from launch-logistics guides. Second, the toll booth: on /mission-control the live player sits ~1,100px down behind a trial banner, a Play-Store banner, a ticker, a 42-module carousel, a breadcrumb, a second ticker, a floating Quick Start panel, a cookie bar, and a \"15/25 free articles today\" meter — a site that meters enthusiasts is not enthusiasts-first. Third, and deepest: the site remembers nothing a fan does. There is no model anywhere for a launch you watched, a scrub you sat through, a pass you caught, or a call you made; `events-fetcher.ts` even overwrites `launchDate` in place, so every slip in a mission's history is silently destroyed on the next poll. The unlock isn't new data — it's letting a fan be a legitimate identity at the door, clearing the chrome in front of the rocket, and giving the fan's own moments a permanent, shareable address. Memory is what turns a launch-cost search into a daily habit and a link sent to a friend.",
+  "ideas": [
+   {
+    "title": "Let a space fan be one of the people you're allowed to be",
+    "reasoning": "OnboardingTour.tsx defines exactly six PERSONAS — Investor/VC, Entrepreneur/Founder, Mission Planner, CEO/Executive, Supply Chain, Legal/Compliance — and the modal blocks the first paint on /, /mission-control and /whats-overhead (verified in cold puppeteer screenshots). The homepage H1 is 'The terminal for space business.' Ground truth says organic arrivals are overwhelmingly enthusiasts landing on launch-cost and launch-schedule guides. The very first interaction tells the actual audience they are in the wrong room. The site already contradicts itself: the homepage's own 'How do you use space?' section further down the page DOES list Enthusiast — the two front doors disagree.",
+    "firstVersion": "Add {id:'enthusiast', icon:🔭, title:'Space fan', description:'Watch launches, track the ISS, see what's overhead tonight'} as the FIRST card in PERSONAS in src/components/ui/OnboardingTour.tsx; add an 'enthusiast' bucket alongside investor/professional in the persona map; set PERSONA_DESTINATIONS.enthusiast = /mission-control, and skip steps 2-4 of the tour for them (a fan does not need a four-step B2B tour). Swap the homepage H1 to a launch-first line for sessions whose referrer is a /guide/* page or organic search.",
+    "effort": "S",
+    "impact": 5,
+    "metric": "Share of new sessions selecting 'Space fan' (if >40%, the positioning question is settled), and second-page rate for new visitors arriving on /guide/*.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Put the rocket above the fold — chrome diet on the launch surfaces",
+    "reasoning": "Cold screenshot of /mission-control: before you reach the H1 you pass a Professional-trial banner, a Google Play banner, the nav, a headline ticker, a '1 of 42 modules' carousel, a breadcrumb and a second ticker. The live NASA stream is ~1,100px down. Floating over it: a 'Quick Start 0/5' panel, a Feedback tab, and a 'You have 15/25 free articles today · Upgrade to Pro' meter, with a cookie bar covering the bottom. A fan who came to watch a launch pays an attention toll and then gets metered — directly against 'enthusiasts, functionality and information over profit'.",
+    "firstVersion": "On /mission-control, /launch/*, /live and /whats-overhead: suppress the trial banner, Play banner, module carousel and UsageLimitBanner; collapse Quick Start to a corner pill; hoist the live player plus the next three T-minus cards directly beneath the H1. Nothing is deleted — it is scoped off the launch-watching routes.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Live player present in the first viewport on load, and 'Watch Live' clicks per session on /mission-control before vs. after.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "My Launch Log — a one-tap 'I watched this'",
+    "reasoning": "Grepping the schema for watched/attended/launch-log turns up nothing; UserBadge is forum-only (first_post, helpful_10) and WatchlistItem tracks companies. The single most enthusiast-shaped artifact in the hobby — the list of launches you have personally seen — has no home anywhere on the internet that isn't somebody's spreadsheet. We already hold every completed SpaceEvent with rocket, pad, patch, agency and outcome. This is the memory layer everything else in this list hangs off.",
+    "firstVersion": "Prisma model WatchedLaunch { userId, eventId, mode: stream|in_person|scrub, note?, watchedAt } with @@unique([userId,eventId]); a single 👁 'I watched this' button on every launch card in Mission Control and on /launch/[id]; a /my/launches page showing the list plus counts by rocket, pad and provider, your first logged launch, and a share card.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Users with ≥2 logged launches, and their 30-day return rate against all other signed-in users.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Slip Tracker — record the thing every fan complains about",
+    "reasoning": "src/lib/events-fetcher.ts:290 upserts SpaceEvent by externalId and overwrites launchDate in place, so every NET change in a mission's life is destroyed on the next poll. The same block already diffs `status` to fire alerts via ALERTABLE_TRANSITIONS — we are literally one field away from diffing the date too. Nobody publishes a launch's slip history, it costs no new upstream data, and 'this thing has slipped eleven times' is exactly the trivia fans trade with each other.",
+    "firstVersion": "Prisma model LaunchDateChange { eventId, fromDate, toDate, seenAt }, written inside the existing before/after comparison in fetchLaunchLibraryEvents. On /launch/[id] render a slip strip: 'Slipped 6 times · first NET 2025-03-14 · 412 days later than originally planned.' Add /launches/slips ranking the most-slipped active missions.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Inbound links and social referrals to /launches/slips, plus repeat visits to individual /launch/* pages.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Give launches a real URL and a real share card",
+    "reasoning": "/launch/[eventId] is a raw cuid, and src/app/launch/[eventId]/layout.tsx ships one static OpenGraph card for every launch on the site: title 'Launch Event Details', description 'Real-time launch event details…'. A fan pasting a countdown into a group chat is the cheapest growth loop available and it currently renders as anonymous chrome that says nothing about which rocket, which mission, or how long until T-0. The /api/og edge route already exists and generates typed cards.",
+    "firstVersion": "Add a slug route (/launch/falcon-heavy-roman-space-telescope) resolving to the same page, 301 the cuid form to it; extend /api/og with a launch variant that renders mission patch, rocket, pad and a live-computed T-minus, and wire generateMetadata to it per launch.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Social and direct referral sessions landing on /launch/* per week (near zero today).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Scrub Club — make the worst moment in the hobby feel shared",
+    "reasoning": "The scrub is the most emotionally loaded moment a launch fan experiences and the one everyone goes through alone, refreshing a stream at 2am. events-fetcher already detects status transitions and real launch alerts shipped 8/28 — so the detection and the delivery pipe both exist. Right now a scrub just quietly mutates a database row and the person who set an alarm finds out from Twitter.",
+    "firstVersion": "On a status transition into 'scrubbed', push/email everyone holding an alert for that launch: 'SCRUBBED — new NET <date>. That's your 3rd scrub. You're in good company: 1,240 people were waiting on this one.' Log it to the launch log as mode:'scrub' — sitting through a scrub counts, and saying so out loud is the whole joke.",
+    "effort": "S",
+    "impact": 4,
+    "metric": "Launch-alert opt-ins per upcoming launch, and open rate of scrub notifications vs. liftoff notifications.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "The mission page that stays after T+0",
+    "reasoning": "LaunchDayDashboard is genuinely good — telemetry, MissionTimeline, LaunchLiveChat, LaunchPollCard, ReactionBar, WeatherGoNoGo, 3D trajectory, PostLaunchSummary — and all of it is keyed off isLive. The day after a launch the room is empty and the moment evaporates. Meanwhile MissionDebrief already auto-publishes with a quality gate and lands somewhere else entirely. Fans re-read launches for years; we throw the artifact away after six hours.",
+    "firstVersion": "At T+6h freeze /launch/[id] into a permanent record: final outcome, the poll's closing result, total reactions by emoji, the ten most-reacted chat lines, the replay embed, and the MissionDebrief inlined when it publishes. Link every entry in My Launch Log to it.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Pageviews on /launch/* pages older than 48 hours (approximately zero today).",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Tonight over your town — no click, no login",
+    "reasoning": "/whats-overhead is real and honest — /api/whats-overhead re-propagates CelesTrak TLEs for the request timestamp with proper observer elevation/slant-range geometry, and SatellitePassAlert plus a 10-minute cron already deliver ISS pass alerts end to end. But the cold screenshot shows a page with nothing on it: an empty state waiting on a geolocation permission prompt, with the actual passes gated behind a click, and alert creation gated behind an account. The best moment we own — 'that bright thing crossing your sky right now is the ISS' — is behind two doors.",
+    "firstVersion": "Coarse IP geolocation for the default render (with a visible 'not your city?' corrector), so the page arrives already saying 'ISS passes over Denver tonight at 20:14, 71° up, moving WSW→NE, bright.' Add an email-only alert signup that writes a SatellitePassAlert with a verified email and null userId — no account required.",
+    "effort": "M",
+    "impact": 5,
+    "metric": "Pass alerts created per week (structurally gated today), and dusk-window (17:00–22:00 local) return sessions.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "'Will I see this launch from my yard?'",
+    "reasoning": "SpaceEvent already carries padLatitude/padLongitude, and /api/whats-overhead already contains the observer geometry math (elevation, slant range, Earth-central angle). A Cape ascent is naked-eye visible across hundreds of miles at the right sun angle and almost nobody knows whether it's visible from their own house — the answer currently lives in Reddit threads. This is a first-light-grade moment assembled entirely from data and math we already hold, and the three /guide/watch-a-launch-{cape-canaveral,vandenberg,starbase} pages already rank for the adjacent intent.",
+    "firstVersion": "For launches with pad coordinates and a twilight/night T-0, compute an approximate ascent-track visibility estimate for the viewer's location: 'Look east-southeast at 20:47, rising to about 12° above the horizon, visible for ~90 seconds.' Render a simple compass graphic. Ship Cape/Vandenberg/Starbase first and cross-link from the three watch-a-launch guides.",
+    "effort": "L",
+    "impact": 4,
+    "metric": "Interaction rate on the visibility widget, and launch-alert signups originating from the watch-a-launch guides.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Today in Space — one dated card, every day, at a fixed address",
+    "reasoning": "/api/history/today already exists and SpaceHistoryEvent is indexed on monthDay for exactly this lookup; Mission Control already pulls NASA EPIC Earth images and the NASA image library. But there is no single surface on the site that changes daily and is worth checking as a habit — /blog gets 146 users, /learn 25, and 52 of 115 sections see ≤5 views. Rituals need a fixed address and a reason to be there today specifically.",
+    "firstVersion": "/today plus a dated permalink /today/2026-08-28: today's history beat, today's launches with live T-minus, tonight's ISS pass for the reader's city, one image of the day, and one number. Auto-generate a per-day OG card; offer a push at a user-chosen local hour.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "DAU/MAU ratio site-wide, and direct-traffic sessions to /today.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "Let anyone call it — predictions without the sign-in wall",
+    "reasoning": "/predictions shipped 8/28 as a public front door to the Prediction Exchange, but every answer option links to /space-tycoon?tab=predictions&q=… — i.e. sign in and play the game. Space Tycoon is the stickiest surface on the site and launch-watching is the biggest audience; the join between them currently opens with an account request. 'Will Starship fly this window?' is a question a fan wants to answer in one thumb-tap while reading, not after onboarding into an economic MMO.",
+    "firstVersion": "One-tap anonymous call stored against a cookie id; immediately reveal the crowd split ('68% say it slips'); on resolution, push/email 'you called it' with a prompt to claim the streak by making an account. Game credits and staking stay strictly inside Tycoon — this adds no real-money or competitive-advantage surface (CLAUDE.md no-pay-to-win invariant untouched).",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Calls per open question, and anonymous→account conversion at resolution time.",
+    "audience": "all"
+   },
+   {
+    "title": "Collections and streaks that come from what you actually did",
+    "reasoning": "UserBadge exists but is scoped entirely to forum behavior (first_post, helpful_10, top_contributor) — a social suite that is now mothballed for zero usage. Once launches are logged, the collection writes itself from data we already hold: rocket types seen, pads, providers, crewed flights, scrubs survived, ISS passes caught, first Starship. Collections are the mechanic that makes someone open an app on a day when nothing is launching.",
+    "firstVersion": "Twelve badges computed from WatchedLaunch plus SatellitePassAlert history, displayed as a shelf on /my/launches with a generated share image. Explicitly nothing purchasable — earned only.",
+    "effort": "S",
+    "impact": 3,
+    "metric": "Share-card generations per week, and median badge count per active fan at 30 days.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "'I was there' — reports and photos from the ground",
+    "reasoning": "MissionPhoto is already modelled (photoUrl, thumbnailUrl, credit, eventId, takenAt, approved for moderation) and is not used for this. The three /guide/watch-a-launch-* pages are among the few enthusiast surfaces with real organic traffic, and Mission Control's quick-links row already advertises 'Watch in Person'. Someone who drove to Playalinda at 5am has a photo and a story and currently nowhere on this site to put either. This is the one piece of user-generated content that is not the mothballed social suite — it's an artifact attached to a mission, not a feed.",
+    "firstVersion": "On any completed launch: 'Watched it in person?' → pick a viewing spot from a curated per-pad list, attach one photo, 280 characters. Render them on the launch's permanent page and syndicate back onto the watch-a-launch guides as 'what people actually saw from here'. Reuse MissionPhoto.approved for moderation.",
+    "effort": "M",
+    "impact": 4,
+    "metric": "Ground reports submitted per Cape/Vandenberg/Starbase launch, and click-through from the watch-a-launch guides into launch pages.",
+    "audience": "enthusiast"
+   },
+   {
+    "title": "The T-0 wall — evidence that other people are watching",
+    "reasoning": "LaunchReaction is already modelled per event with a mission phase, and LaunchLiveChat exists — the plumbing for co-presence is built. But during a window a solo viewer sees no sign anyone else is there, and the feeling of watching *with* people is most of the reason fans keep a chat open at all. Simulated telemetry is a weak draw; a live count of humans holding their breath is not.",
+    "firstVersion": "A persistent bar on /launch/[id] during the window: live count of people on the page, reactions per minute, and a coarse country/state heat strip of where reactions are coming from. Freeze the peak values into the permanent post-flight page.",
+    "effort": "M",
+    "impact": 3,
+    "metric": "Median session length on /launch/* during a live window, before vs. after.",
+    "audience": "enthusiast"
+   }
+  ]
+ },
+ {
+  "synthesis": "VERIFIED FACTS THAT RESHAPE THE SLATE (I checked the repo, not the pitches):\n\n1. `/launch/[eventId]` ALREADY EXISTS — page, layout, error, loading. But `src/app/launch/[eventId]/layout.tsx` hardcodes ONE static OG card for every launch on the site (\"Launch Event Details\", \"Real-time launch event details…\"), the URL is a raw cuid, and `src/app/sitemap.ts` contains zero `/launch/*` entries. So the SEO lens's \"L — build per-mission pages\" is wrong on effort and right on value: the pages are built and invisible. This is the single largest unforced error on the site.\n2. The CTR-pass premise is FALSE on its own flagship. `src/lib/cost-to-launch.ts` metaTitles already read \"How Much Does It Cost to Launch a CubeSat? (2026 Prices)\" — answer-first, with the year — and the page already emits FAQPage + Article + Breadcrumb JSON-LD. The 0.65% number is sitewide, dragged down by the 52 dead sections; you cannot 4x it by redoing work that shipped 8/28.\n3. Alerts REQUIRE an account (`src/app/api/alerts/route.ts` gates every path on `session.user.id`), and `/guide/cost-to-launch/[thing]/page.tsx` contains no capture of any kind. The biggest traffic source on the site converts 28.7k impressions into visitors who cannot be reached again by any mechanism.\n4. The referral loop is NOT invisible — `InvitePlayerCard` is already rendered on `/space-tycoon/corp/[id]` with copy + native share. That idea is half-shipped, not missing.\n5. `events-fetcher.ts:526` overwrites `launchDate` in place inside a block that is already diffing `status`. Slip history is being destroyed daily, one field away from being captured.\n6. `monthly-report-generator.ts:247` filters `isPublic: true` AND `ticker != null`; `/space-stocks` filters on ticker alone. Two pages on the same site publish irreconcilable market caps. Real, cheap, embarrassing.\n\nTHE REAL STRATEGY — five things, in this order:\n\nA. MAKE THE LAUNCH PAGES EXIST TO GOOGLE AND TO GROUP CHATS (S–M, week 1). Slug route over the cuid, per-launch `generateMetadata` wired to the existing `/api/og` route, T-14 through T+90 URLs into `sitemap.ts`. This is not a build, it is a wiring job on a page that already renders, and it is the only lever that turns \"organic traffic is almost entirely launch logistics\" into ~200 compounding URLs a year at zero authoring cost. Everything else in the launch loop hangs off it.\n\nB. CAPTURE WITHOUT AN ACCOUNT (M, weeks 1–2). One email field on the launch pages, the rockets pages, mission control and the cost guides: \"one email at T-24h, one at T-1h.\" Requires nullable-userId alerts, which is why it is M and not S. MAU is a return metric; launches fire four times a week; a one-shot organic visitor is worth one MAU-month and an alerted one is worth three or four. Nothing else on this list changes that arithmetic. Fold the scrub notification in — it is free once the transition detection is already firing, and it is the most emotionally loaded moment in the hobby.\n\nC. MULTIPLY THE ONE PROVEN TEMPLATE (M, weeks 1–3, then stop). Cost-to-launch is four data objects driving the site's largest impression pool on a generic renderer. Take it to ~20 — not 25 padded ones — plus roughly a dozen honest city viewing pages where distance, bearing and what you'll actually see genuinely differ. This must ship by week 3 or it cannot rank by Nov 12. It does NOT extend to 300 auto-generated ISS-pass city pages; that is a doorway-page farm and Google treats it as one.\n\nD. FIX THE FRONT DOOR, THEN SPEND THE EPOCH 2 WINDOW (S + S, weeks 2–3). The homepage still says \"The terminal for space business\" over \"14-day full trial,\" `OnboardingTour` offers six B2B identities and no space fan, and a \"free articles today\" meter runs on launch pages. That is the founder's stated principle inverted at the door. Fix it, then post Space Tycoon to r/incremental_games while \"every deposit and orbital slot is unclaimed\" is still true — the only channel on this list that can deliver thousands of humans in a week, and the only one with a hard expiry.\n\nE. START RECORDING WHAT ONLY YOU CAN RECORD (S, week 1; publish in November). Write the `LaunchDateChange` row inside the diff that already runs, and backfill `isPublic` so the two market-cap numbers agree. The slip dataset pays nothing in ten weeks and is proprietary forever, because nobody can backfill it. The same logic makes the Hiring Index the right professional flagship and the wrong sprint bet: `CompanyJobSnapshot` history starts 2026-08-13, so it is a labor series nobody else on Earth has and, at Nov 12, eleven weeks long. Publish it in Q4 with methodology attached. Migrate now, publish later.\n\nWHY THE REST ARE NOT:\n\nThe largest category of rejects is FEATURES THAT NEED A CROWD YOU DO NOT HAVE. The T-0 wall, live co-presence counts, ground reports, collections and badges, the public Tycoon economy, and the launch-day chat room all render as evidence of emptiness at 450 MAU — a bar reading \"3 people watching\" is worse than no bar. They become good at 5,000 MAU. Build them then.\n\nThe second category is NEW AGGREGATORS ON A SITE DYING OF AGGREGATION. Two separate lenses proposed `/today`. The site has 124 live pages and 52 of 115 sections at ≤5 views; the diagnosis was over-supply of surfaces, and the prescription is a 125th surface whose success metric is a DAU/MAU ratio that is unfalsifiable at this population. Same for the Sunday technical edition (a second newsletter splits a small list — the correct move, Chart of the Week, is a slot inside the digest that already sends), and for the /state-of-launch quarterly (L, and BryceTech's authority is the product of twenty years, not a nightly cron).\n\nThe third category is PROFESSIONAL DEPTH THAT CANNOT MOVE THE STATED GOAL. Tearsheets, contract competition fields, executive talent flow, regulatory deadline feeds and the comparison-page rewrite are all sound work with honest evidence behind them — and every one of them has a metric measured in referring domains or BD sessions, not monthly actives. They are the Q4/Q1 product. Two exceptions get pulled forward as hygiene, not growth: the isPublic backfill and the movers window, because both are hours of work and both are the exact wrong number an analyst finds on first contact.\n\nThe fourth category is REDOING SHIPPED WORK. The CTR pass and the referral-surfacing idea both rest on repo claims that the 8/28 push already falsified. Check before scheduling.\n\nAnd the honest arithmetic: A through E do not add to 9,550 net new actives. The channel math in the strategy lens is optimistic by roughly a factor of three — new pages on a low-authority domain rarely clear a few hundred clicks in eight weeks, and one strong Reddit post converts to hundreds of retained users, not thousands. The right posture is to build the compounding loop (A+B+E) that makes January's traffic worth four times what August's was, spend the perishable windows (D) now because they expire, and add the per-page return-rate report to `/admin/analytics` so that by week 3 the reallocation is driven by which families produce returning humans rather than by which pitch was most confident.",
+  "verdicts": [
+   {
+    "title": "The Slip Index — a longitudinal record of how much every mission slips",
+    "verdict": "strong",
+    "reason": "Verified: events-fetcher.ts:526 overwrites launchDate inside a block already diffing status, so the migration is near-free and the dataset is genuinely un-backfillable by anyone — but record it now and publish in November, because it pays zero traffic inside the 10-week window."
+   },
+   {
+    "title": "Fix the front door: lead with the launch board, not a SaaS trial",
+    "verdict": "strong",
+    "reason": "Confirmed verbatim in LandingHero.tsx: H1 'The terminal / for space / business.' over 'Instant access. No credit card. 14-day full trial.' — an S-effort fix to a direct contradiction of the founder's stated principle, sitting on the page every organic visitor lands behind."
+   },
+   {
+    "title": "Beat Wikipedia on the rocket pages",
+    "verdict": "promising",
+    "reason": "/rockets shipped 8/28 and is nav+hot in site-directory.ts, so this is enrichment of a live surface rather than a new bet; worth doing, but the launch-log and cadence tables are M effort for a page family that has had three days to prove anything."
+   },
+   {
+    "title": "'Visible from your backyard' — personalized launch and satellite visibility",
+    "verdict": "promising",
+    "reason": "The geometry math exists in the pass predictor and pads carry lat/lon, but a client-stored location produces one indexable URL and therefore no organic gain — its value is retention, and it duplicates the enthusiast lens's 'will I see this from my yard' idea at lower fidelity."
+   },
+   {
+    "title": "Claim the vacant Orbital Index seat with a weekly technical edition",
+    "verdict": "weak",
+    "reason": "A third email splits a list the memory file says has one paying subscriber and modest reach; the Orbital Index audience is real but a second send is not how you reach it — a fixed technical slot inside the M/Th Digest tests the same hypothesis for a fraction of the cost."
+   },
+   {
+    "title": "Launch-to-ticker: the money view of the manifest",
+    "verdict": "promising",
+    "reason": "The join is genuinely unique and cheap given CompanyProfile+SpaceEvent+quotes in one schema, but its metric is 'cross-section sessions' among investor-persona visitors — a rounding error against a 22x MAU target, and it inherits the isPublic bug until that is fixed."
+   },
+   {
+    "title": "Universal 24-hour mission debriefs — own the post-launch record",
+    "verdict": "strong",
+    "reason": "Honest S: the generator, quality gate and auto-publish all shipped 8/24 with only two debriefs produced — this is a cron cadence and a queue threshold, and it makes every launch URL earn a third traffic moment after T+0."
+   },
+   {
+    "title": "'Today in Space' — one page, sixty seconds, the tab people open first",
+    "verdict": "weak",
+    "reason": "The site's diagnosed illness is 124 surfaces and 52 sections at ≤5 views; the cure proposed is surface 125, with a DAU/MAU success metric that cannot be read at 450 MAU."
+   },
+   {
+    "title": "Free embeddable widgets as a distribution channel",
+    "verdict": "promising",
+    "reason": "Verified /widgets already ships next-launch, jobs, market-snapshot and space-weather with a /embed layout, so this is packaging plus outreach — the backlink logic is right, the '60 referring domains' target is not credible without someone actually sending 200 personal emails."
+   },
+   {
+    "title": "Daily launch prediction as the returning-visitor hook",
+    "verdict": "promising",
+    "reason": "/predictions shipped 8/28 but page.tsx:86 routes every answer to /space-tycoon?tab=predictions — the sign-in wall is the whole problem, and this idea's first version doesn't name it; the enthusiast lens's anonymous-call version is the correct one."
+   },
+   {
+    "title": "Free quarterly 'State of Launch' data drop, as a live page not a PDF",
+    "verdict": "weak",
+    "reason": "Honest L for an authority play that takes two to three quarters to pay, against a Nov 12 deadline — and BryceTech's citation weight comes from two decades of institutional trust, not from being a nightly cron."
+   },
+   {
+    "title": "Hiring velocity — turn the biggest free space job board into market intelligence",
+    "verdict": "promising",
+    "reason": "Right dataset, wrong lens — this framing buries the strongest asset on the site inside a jobs page; the professional lens's standalone Hiring Index with published methodology is the same data aimed at the audience that cites things."
+   },
+   {
+    "title": "Publish Space Tycoon's economy publicly, the way EVE's third-party sites do",
+    "verdict": "weak",
+    "reason": "Epoch 2 wiped 233 rows on 8/24, so every public price chart, league bracket and corp quarterly currently renders near-empty — the idea is right and the timing is exactly inverted; ship it once Epoch 2 has three months of history."
+   },
+   {
+    "title": "Launch weather odds — the number every launch fan wants and nobody surfaces",
+    "verdict": "promising",
+    "reason": "Generic forecast APIs are easy, but the thing fans actually want — the official probability-of-violation percentage — lives in PDFs and press kits with no feed, so the honest version is a plain-language read, not the headline number, and the pitch quietly assumes both."
+   },
+   {
+    "title": "CTR pass on the top 20 organic pages (titles, meta, structured data)",
+    "verdict": "weak",
+    "reason": "Premise falsified in the repo: cost-to-launch metaTitles already read 'How Much Does It Cost to Launch a CubeSat? (2026 Prices)' and the page already emits FAQPage + Article + Breadcrumb JSON-LD — the 0.65% is a sitewide average dragged down by 52 dead sections, not a title problem on the pages that rank."
+   },
+   {
+    "title": "Per-mission pages published T-14, the missing atom of the launch loop",
+    "verdict": "strong",
+    "reason": "Right target, wrong effort: src/app/launch/[eventId]/ already exists with page, layout, error and loading — what is missing is a slug, a real generateMetadata, and any /launch/* entry in sitemap.ts, which makes this the cheapest high-value item on the entire slate, not an L."
+   },
+   {
+    "title": "One-click launch alert with no account, on every launch surface",
+    "verdict": "strong",
+    "reason": "Verified: /api/alerts gates every path on session.user.id and the cost-to-launch page has zero capture of any kind — this is the only idea on the list that changes the MAU arithmetic of a one-shot organic visitor, and M is honest because it needs a nullable-userId schema change."
+   },
+   {
+    "title": "Expand the cost-to-launch family from 4 pages to 25",
+    "verdict": "strong",
+    "reason": "Confirmed four entries driving the site's largest impression pool on a generic renderer, so each addition is a data object — trim to ~20 defensible ones (per-rocket $/kg pages will cannibalise /rockets) and ship by week 3 or it cannot rank by Nov 12."
+   },
+   {
+    "title": "City-level launch viewing pages: \"watch a SpaceX launch from [city]\"",
+    "verdict": "promising",
+    "reason": "Matches proven intent and the three spaceport guides are already in nav, but 40 templated city pages is doorway-page territory — cap it at ~12 cities where distance, bearing and what you'd actually see genuinely differ, and drop the alert capture on them."
+   },
+   {
+    "title": "Per-city ISS pass pages — turn /whats-overhead from a geolocation widget into 300 indexable pages",
+    "verdict": "reject",
+    "reason": "300 auto-generated pages of the same computation with a different lat/lon is the textbook definition of a doorway-page farm, it is an honest L, and it risks sitewide quality classification on the exact domain whose launch pages you need Google to trust."
+   },
+   {
+    "title": "Launch Space Tycoon into r/incremental_games and the browser-game ecosystem while Epoch 2 is fresh",
+    "verdict": "strong",
+    "reason": "The only channel here that can deliver thousands of humans in a week, S effort, and the only one with a hard expiry — 'every deposit and orbital slot is unclaimed' stops being true in about three weeks; discount the 3,000-visitor target by half and it is still the best community bet available."
+   },
+   {
+    "title": "Surface the referral/mentorship loop that is already built but invisible",
+    "verdict": "weak",
+    "reason": "Falsified: InvitePlayerCard already renders on /space-tycoon/corp/[id] with copy-link and native share, and the referral loop is listed among the 8/28 ships — the remaining delta is a milestone-triggered prompt, which is a small tweak, not an idea."
+   },
+   {
+    "title": "Free, one-line, no-signup countdown embed aimed at space clubs, teachers and newsletters",
+    "verdict": "promising",
+    "reason": "Duplicates the competitor lens's widget idea with a more honest framing (backlinks, not MAU) — but the value is in the 200 personal emails, and that is unglamorous outreach labour the 'M' estimate quietly excludes."
+   },
+   {
+    "title": "Newsletter cross-promotion swaps, using /newsletters-directory as the introduction",
+    "verdict": "promising",
+    "reason": "Genuinely warm outreach and S effort, and the directory really is an asset most sites lack — but the memory file says outbound is gated on Jay, so this is a founder-action item dressed as an engineering one."
+   },
+   {
+    "title": "Run the 3-5 major launch days as events, not as a page that happens to be live",
+    "verdict": "strong",
+    "reason": "The highest-variance, lowest-cost play on the list: global search volume for six hours dwarfs the site's entire month, the homepage major-event slot already exists behind NEXT_PUBLIC_FORCE_MAJOR_EVENT, and it is entirely dependent on the per-mission pages being indexed first — which is why that sequencing matters."
+   },
+   {
+    "title": "Stop building new pages in the Engineering & Operations group — freeze and consolidate it",
+    "verdict": "strong",
+    "reason": "The only 'stop doing' on the slate and it is correct — site-directory.ts's own header comment already documents 52 of 115 sections at ≤5 views; the freeze is free, though the ten-calculator merge plus 301s is real work and should be scoped separately from the freeze itself."
+   },
+   {
+    "title": "A per-page \"first visit -> returned within 30 days\" report in /admin/analytics",
+    "verdict": "strong",
+    "reason": "This is what makes every other bet falsifiable by week 3 instead of week 8, GA4 and /admin/analytics already exist so it is closer to S than M, and without it the reallocation decision defaults to whichever pitch sounded most confident."
+   },
+   {
+    "title": "Publish the cost-per-kg dataset as an open, citable, CC-licensed resource",
+    "verdict": "promising",
+    "reason": "Overlaps the professional lens's version of the same idea; both are right that the benchmarks are five hardcoded rows, but licensing and Wikipedia outreach are a Q4 authority play whose payoff lands well after Nov 12."
+   },
+   {
+    "title": "Let a space fan be one of the people you're allowed to be",
+    "verdict": "strong",
+    "reason": "Verified in OnboardingTour.tsx: six personas, Investor through Legal, no enthusiast, and the destination map sends nobody to a launch surface by default — an S-effort fix to a modal that greets the site's actual audience by telling it that it is in the wrong room."
+   },
+   {
+    "title": "Put the rocket above the fold — chrome diet on the launch surfaces",
+    "verdict": "strong",
+    "reason": "UsageLimitBanner is mounted in the root layout, so a 'free articles today' meter runs on the launch pages — metering enthusiasts is the precise inverse of the stated principle, and route-scoping the banners is hours of work."
+   },
+   {
+    "title": "My Launch Log — a one-tap 'I watched this'",
+    "verdict": "promising",
+    "reason": "The most enthusiast-shaped artifact on the list and the memory layer that badges and streaks depend on — but it requires an account to be worth anything, which puts it behind the no-account alert capture in every sequencing that matters."
+   },
+   {
+    "title": "Slip Tracker — record the thing every fan complains about",
+    "verdict": "strong",
+    "reason": "Same insight as the Slip Index and the better framing of it: write LaunchDateChange inside the before/after comparison that already exists, ship the per-launch slip strip now, and let /launches/slips accumulate into something nobody can copy."
+   },
+   {
+    "title": "Give launches a real URL and a real share card",
+    "verdict": "strong",
+    "reason": "Confirmed the worst finding in the audit — layout.tsx ships one identical OG card titled 'Launch Event Details' for every launch on the site, over cuid URLs, with no /launch/* entry in sitemap.ts; /api/og already generates typed cards, so this is wiring, not building."
+   },
+   {
+    "title": "Scrub Club — make the worst moment in the hobby feel shared",
+    "verdict": "promising",
+    "reason": "Delightful, S, and rides the status-transition detection and alert pipeline that both already exist — but it is strictly downstream of no-account alerts, because today only signed-in users could ever receive it."
+   },
+   {
+    "title": "The mission page that stays after T+0",
+    "verdict": "promising",
+    "reason": "Correctly identifies that LaunchDayDashboard's best material is keyed off isLive and evaporates, but freezing polls, reactions and top chat lines is only worth freezing once a launch draws more than a handful of people — pair it with the debrief inline and skip the crowd artifacts for now."
+   },
+   {
+    "title": "Tonight over your town — no click, no login",
+    "verdict": "strong",
+    "reason": "Two verified doors on the site's single best emotional moment: a geolocation prompt before anything renders, and SatellitePassAlert creation gated on an account — coarse IP default plus an email-only alert row is the same no-account capture pattern, applied to a nightly recurring event."
+   },
+   {
+    "title": "'Will I see this launch from my yard?'",
+    "verdict": "promising",
+    "reason": "Genuinely novel and the math is largely present, but ascent-track visibility done badly is worse than not doing it (wrong bearings destroy trust fast), and the honest L means it lands too late to matter before Nov 12 — queue it behind the alert capture."
+   },
+   {
+    "title": "Today in Space — one dated card, every day, at a fixed address",
+    "verdict": "weak",
+    "reason": "The second /today proposal in the same slate, which is itself a signal — dated permalinks are marginally better than the other version, but it is still a new aggregator on a site whose measured problem is too many surfaces and no returning users."
+   },
+   {
+    "title": "Let anyone call it — predictions without the sign-in wall",
+    "verdict": "strong",
+    "reason": "Verified page.tsx:86 — every answer option on the 8/28 predictions page links straight to /space-tycoon, so the bridge between the biggest audience and the stickiest surface opens with an account request; a cookie-backed anonymous call with an immediate crowd-split reveal is the cheapest fix to the site's most expensive funnel gap."
+   },
+   {
+    "title": "Collections and streaks that come from what you actually did",
+    "verdict": "weak",
+    "reason": "Entirely dependent on My Launch Log existing first, and badge shelves are a retention multiplier on a population you don't yet have — this is a January feature that the S estimate makes look like a September one."
+   },
+   {
+    "title": "'I was there' — reports and photos from the ground",
+    "verdict": "weak",
+    "reason": "UGC with a moderation queue at 450 MAU produces empty states on most launches, and the memory file is explicit that the social suite was mothballed for zero usage — attaching it to a mission instead of a feed is a real distinction, but not enough to beat the population problem."
+   },
+   {
+    "title": "The T-0 wall — evidence that other people are watching",
+    "verdict": "reject",
+    "reason": "A live viewer count is a confidence signal that becomes a discouragement signal below a threshold you are nowhere near — shipping 'three people watching' during a Starship window actively damages the moment it is meant to amplify."
+   },
+   {
+    "title": "The Space Hiring Index — the free monthly artifact nobody else can publish",
+    "verdict": "strong",
+    "reason": "The correct professional flagship — a daily per-company labor census across 16 ATS boards genuinely exists nowhere else at any price — but be honest that CompanyJobSnapshot history starts 2026-08-13, so edition one is a two-month series and its citation payoff lands in Q4, not before Nov 12."
+   },
+   {
+    "title": "Unblock the hiring movers table — it is silently empty and will stay empty until mid-September",
+    "verdict": "strong",
+    "reason": "Confirmed in hiring-snapshots.ts: getHiringMovers computes a fixed latest-minus-30-days cutoff against a table that only starts 8/13, so the flagship's best section renders empty — an adaptive window with an honest windowDays label is a handful of lines and unblocks the idea above."
+   },
+   {
+    "title": "Fix the isPublic gap that quietly deletes the primes from your flagship market numbers",
+    "verdict": "strong",
+    "reason": "Confirmed: monthly-report-generator.ts:247 filters isPublic:true while /space-stocks filters on ticker presence, so two pages on one site publish irreconcilable market caps — hours of work, and exactly the number a first-time analyst checks."
+   },
+   {
+    "title": "Publish a methodology page and put a Cite-this block on every data page",
+    "verdict": "promising",
+    "reason": "Cheap and genuinely converts existing data into citable data, and the /compare/spacenexus-vs-bryce-tech page currently claims methodological parity with nothing to point at — but citations are a Q4 metric, so do it alongside the Hiring Index rather than as its own sprint item."
+   },
+   {
+    "title": "Turn the highest-traffic page you own into the industry's citable cost-to-orbit dataset",
+    "verdict": "promising",
+    "reason": "Correctly spots that the benchmarks are five hardcoded rows inside a stocks page, and correctly plants the artifact inside traffic that exists rather than shipping page #351 — but it competes for the same weeks as expanding the cost-to-launch family, which reaches more searchers per hour spent."
+   },
+   {
+    "title": "An honest launch reliability dataset — and stop counting Partial Failure as a success",
+    "verdict": "promising",
+    "reason": "Verified at events-fetcher.ts:102 and :112 — 'Partial Failure' maps to 'completed' and outcome-unknown rows land there too, so the published success rate is inflated; a real fix, though separating outcome from status touches the sync, the monthly report and /rockets at once, which is M bordering on L."
+   },
+   {
+    "title": "Company tearsheets — the one-screen artifact a BD person screenshots into a deck",
+    "verdict": "promising",
+    "reason": "The join across funding, hiring, contracts and exec moves is genuinely unavailable elsewhere and ExportPDFButton already exists — but its audience is BD professionals, monetization is on hold, and nothing about it moves monthly actives before November."
+   },
+   {
+    "title": "Chart of the Week — pinned in the digest you already send, not a new newsletter",
+    "verdict": "strong",
+    "reason": "The right answer to the Orbital-Index-edition temptation: a fixed slot in a channel that already sends, with a /chart/[slug] permalink so the chart can be cited outside the email — S effort, and it gives the hiring and cost datasets a weekly reason to travel."
+   },
+   {
+    "title": "Ship the hiring index and cost-to-orbit as embeddable widgets",
+    "verdict": "promising",
+    "reason": "Third widget proposal in the slate, and the rails genuinely exist under /api/widgets and /embed — but embeds only spread if the underlying dataset is already worth quoting, so this trails the Hiring Index rather than shipping beside it."
+   },
+   {
+    "title": "Capture where executives came from, then map the talent flow",
+    "verdict": "promising",
+    "reason": "Commendably flags its own three-row sample size, and origin-plus-destination genuinely upgrades a list of announcements into a flow map — but this is a re-extraction plus backfill for a page that serves the smallest audience segment on the site."
+   },
+   {
+    "title": "Surface the contract competition data you already collect and never show",
+    "verdict": "promising",
+    "reason": "Verified-shaped claim that the SAM fetcher writes numberOfOffers and extentCompeted that nothing renders, which is real waste — but 'how contested was this award' is a defense-BD question, and its own metric admits it measures filter interactions, not people."
+   },
+   {
+    "title": "Make the competitor comparison pages prove the claim instead of asserting it",
+    "verdict": "weak",
+    "reason": "/compare draws 45 users total and these four pages bid on queries where the site has no authority to win; the honest reverse column is a good instinct, but rewriting four pages that nobody reaches is motion, not progress."
+   },
+   {
+    "title": "A forward-looking regulatory deadline feed for policy and BD calendars",
+    "verdict": "weak",
+    "reason": "Genuinely useful recurring utility for compliance leads and the ICS plumbing exists — but it serves the professional segment while monetization is off, competes for the same engineering weeks as the launch loop, and /regulatory-radar's audience is a rounding error against a 22x target."
+   }
+  ]
+ }
+]
