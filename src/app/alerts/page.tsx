@@ -217,6 +217,14 @@ function AlertsPageInner() {
   // UI state
   const [loading, setLoading] = useState(true);
   const [showRuleBuilder, setShowRuleBuilder] = useState(false);
+  // Deep link from /rockets/[slug] and /launches/[site]: open the builder prefilled.
+  const prefillCreate = searchParams.get('create');
+  const builderInitial = prefillCreate === 'launch_status'
+    ? { triggerType: 'launch_status' as const, rockets: searchParams.getAll('rocket').filter(Boolean), sites: searchParams.getAll('site').filter(Boolean) }
+    : undefined;
+  useEffect(() => {
+    if (prefillCreate === 'launch_status') setShowRuleBuilder(true);
+  }, [prefillCreate]);
   const [expandedDeliveryId, setExpandedDeliveryId] = useState<string | null>(null);
   const [deletingRuleId, setDeletingRuleId] = useState<string | null>(null);
   const [togglingRuleId, setTogglingRuleId] = useState<string | null>(null);
@@ -2219,6 +2227,7 @@ function AlertsPageInner() {
         {/* Alert Rule Builder Modal */}
         {showRuleBuilder && (
           <AlertRuleBuilder
+            initial={builderInitial}
             onClose={() => setShowRuleBuilder(false)}
             onCreated={() => {
               setShowRuleBuilder(false);

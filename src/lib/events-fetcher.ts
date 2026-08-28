@@ -222,6 +222,45 @@ export function launchToEventData(launch: LaunchLibraryLaunch) {
   };
 }
 
+/** Status values whose arrival is worth telling an alert subscriber about. */
+export const ALERTABLE_TRANSITIONS = new Set<SpaceEventStatus>(['go', 'in_progress', 'completed', 'failed']);
+
+export interface LaunchStatusTransition {
+  eventId: string;
+  launch: LaunchLibraryLaunch;
+  from: string;
+  to: SpaceEventStatus;
+}
+
+/**
+ * Transitions observed by the most recent sync passes, drained by the
+ * refresh route so it can fire launch_status alerts exactly once each.
+ * Module-level because the syncs are called from several places and the
+ * alert fan-out belongs in one.
+ */
+let recordedTransitions: LaunchStatusTransition[] = [];
+export function drainLaunchStatusTransitions(): LaunchStatusTransition[] {
+  const out = recordedTransitions;
+  recordedTransitions = [];
+  return out;
+}
+
+/** Alert payload for a transition — the shape matchLaunchStatus() and the template read. */
+export function transitionToAlertData(t: LaunchStatusTransition): Record<string, unknown> {
+  const l = t.launch;
+  const status = t.to === 'completed' ? 'success' : t.to === 'failed' ? 'failure' : t.to === 'in_progress' ? 'in_flight' : t.to;
+  return {
+    eventId: t.eventId,
+    status,
+    provider: l.launch_service_provider?.name || '',
+    rocket: l.rocket?.configuration?.full_name || l.rocket?.configuration?.name || '',
+    missionName: l.mission?.name || l.name,
+    location: l.pad?.location?.name || l.pad?.name || '',
+    launchDate: l.net || null,
+    url: `https://spacenexus.us/launch/${t.eventId}`,
+  };
+}
+
 export async function fetchLaunchLibraryEvents(): Promise<number> {
   return launchLibraryBreaker.execute(async () => {
     // Fetch upcoming launches (next 5 years worth)
@@ -247,7 +286,11 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
     for (const launch of launches) {
       try {
         const data = launchToEventData(launch);
-        await prisma.spaceEvent.upsert({ where: { externalId: launch.id }, update: data.update, create: data.create });
+        const before = await prisma.spaceEvent.findUnique({ where: { externalId: launch.id }, select: { id: true, status: true } });
+        const row = await prisma.spaceEvent.upsert({ where: { externalId: launch.id }, update: data.update, create: data.create, select: { id: true } });
+        if (before && before.status !== data.update.status && ALERTABLE_TRANSITIONS.has(data.update.status)) {
+          recordedTransitions.push({ eventId: row.id, launch, from: before.status, to: data.update.status });
+        }
         savedCount++;
       } catch (err) {
         logger.error(`Failed to save launch ${launch.id}`, { error: err instanceof Error ? err.message : String(err) });
@@ -483,6 +526,7 @@ export async function syncRecentLaunchOutcomes(
         data: { status, ...(launch.net ? { launchDate: new Date(launch.net) } : {}), updatedAt: new Date() },
       });
       updated++;
+      if (ALERTABLE_TRANSITIONS.has(status)) recordedTransitions.push({ eventId: existing.id, launch, from: existing.status, to: status });
     } else {
       // First seen after it flew: full row, so rocket/site pages have history.
       await prisma.spaceEvent.create({ data: launchToEventData(launch).create });

@@ -43,6 +43,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/rockets`, changeFrequency: 'daily' as const, priority: 0.9 },
     ...allRocketSlugs().map((slug) => ({ url: `${BASE_URL}/rockets/${slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
     { url: `${BASE_URL}/launches`, changeFrequency: 'daily' as const, priority: 0.9 },
+    { url: `${BASE_URL}/predictions`, changeFrequency: 'hourly' as const, priority: 0.7 },
     ...LAUNCH_SITES.map((s) => ({ url: `${BASE_URL}/launches/${s.slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
     ...LAUNCH_SITES.flatMap((s) => monthWindow(new Date()).map((m) => ({ url: `${BASE_URL}/launches/${s.slug}/${monthParam(m.year, m.month)}`, changeFrequency: 'daily' as const, priority: 0.6 }))),
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveMothball } from '@/lib/mothballed-routes';
+import { registryRouteMissing } from '@/lib/registry-routes';
 
 /**
  * Edge Runtime compatible rate limiter and CSRF protection middleware
@@ -621,6 +622,21 @@ async function checkKnownSlugMissing(req: NextRequest, pathname: string): Promis
   return false;
 }
 
+
+/**
+ * A minimal, self-contained 404 page — middleware can't invoke Next's own
+ * React rendering pipeline (that's the exact mechanism that fails to set a
+ * real status code), so this is a small hand-written page rather than the
+ * site's styled not-found.tsx. Dark-themed, links back to a working page.
+ */
+function notFoundResponse(): NextResponse {
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Not Found | SpaceNexus</title><meta name="robots" content="noindex"><style>body{background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}main{text-align:center;padding:2rem}h1{font-size:1.5rem;margin:0 0 .5rem}p{color:#94a3b8;margin:0 0 1.5rem}a{color:#22d3ee;text-decoration:none}a:hover{text-decoration:underline}</style></head><body><main><h1>Page not found</h1><p>The page you're looking for doesn't exist or has been removed.</p><a href="/">Return to SpaceNexus</a></main></body></html>`;
+  return new NextResponse(html, {
+    status: 404,
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex' },
+  });
+}
+
 export async function middleware(req: NextRequest) {
   const hostname = req.headers.get('host') || '';
 
@@ -646,6 +662,13 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  // Registry-backed routes (/rockets/[slug], /launches/[site]/[month]) —
+  // valid params are known statically, so an unknown one is a real 404
+  // here, with no fetch or DB read. See src/lib/registry-routes.ts.
+  if (registryRouteMissing(pathname)) {
+    return notFoundResponse();
+  }
+
   // Give the small set of DB-backed detail routes above a real 404 status
   // for unknown slugs — see SLUG_EXISTENCE_CHECKS comment.
   if (!pathname.startsWith('/api/') && SLUG_EXISTENCE_CHECKS.some((c) => c.match.test(pathname))) {
@@ -657,11 +680,7 @@ export async function middleware(req: NextRequest) {
       // this is a small hand-written page rather than the site's styled
       // not-found.tsx. It matches the site's dark theme closely enough to
       // not look broken, and links back to a working page.
-      const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Not Found | SpaceNexus</title><meta name="robots" content="noindex"><style>body{background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}main{text-align:center;padding:2rem}h1{font-size:1.5rem;margin:0 0 .5rem}p{color:#94a3b8;margin:0 0 1.5rem}a{color:#22d3ee;text-decoration:none}a:hover{text-decoration:underline}</style></head><body><main><h1>Page not found</h1><p>The page you're looking for doesn't exist or has been removed.</p><a href="/">Return to SpaceNexus</a></main></body></html>`;
-      return new NextResponse(html, {
-        status: 404,
-        headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex' },
-      });
+      return notFoundResponse();
     }
   }
 

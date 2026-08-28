@@ -85,6 +85,14 @@ export default async function RocketPage({ params }: { params: { slug: string } 
           <Stat label="Next launch" value={live.nextLaunch ? formatLaunchDate(live.nextLaunch.launchDate, false) : 'None scheduled'} sub={live.nextLaunch ? missionTitle(live.nextLaunch) : undefined} />
         </div>
 
+        <div className="card p-4 mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold text-white">Never miss a {spec.name} launch</div>
+            <div className="text-xs text-slate-400">Email when it is GO, in flight, and when it lands. This rocket only.</div>
+          </div>
+          <Link href={`/alerts?create=launch_status&rocket=${encodeURIComponent(spec.name.split(' Block')[0].split(' /')[0])}`} className="btn-primary text-sm py-2 px-4 flex-shrink-0">Alert me</Link>
+        </div>
+
         {/* Live cadence */}
         <section className="mb-10">
           <h2 className="text-xl font-bold text-white mb-1">Launch activity, live</h2>

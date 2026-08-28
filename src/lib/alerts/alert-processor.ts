@@ -24,7 +24,11 @@ export interface RegulatoryFilingConfig {
 
 export interface LaunchStatusConfig {
   providers?: string[];
-  statusChanges?: string[]; // e.g., ["go", "scrub", "success", "failure"]
+  statusChanges?: string[]; // e.g., ["go", "success", "failure", "in_flight"]
+  /** Rocket names, matched case-insensitively as substrings ("Falcon 9", "Electron"). Added 2026-08-28. */
+  rockets?: string[];
+  /** Launch-site names, matched case-insensitively as substrings ("Vandenberg", "Cape Canaveral"). */
+  sites?: string[];
 }
 
 export interface ContractAwardConfig {
@@ -131,19 +135,20 @@ export function matchRegulatoryFiling(
 
 export function matchLaunchStatus(
   config: LaunchStatusConfig,
-  data: { provider: string; status: string }
+  data: { provider: string; status: string; rocket?: string; location?: string }
 ): boolean {
-  const providerMatch =
-    !config.providers ||
-    config.providers.length === 0 ||
-    config.providers.some((p) => data.provider.toLowerCase().includes(p.toLowerCase()));
+  const anyOf = (wanted: string[] | undefined, actual: string | undefined) =>
+    !wanted || wanted.length === 0 || (!!actual && wanted.some((w) => actual.toLowerCase().includes(w.toLowerCase())));
 
+  const providerMatch = anyOf(config.providers, data.provider);
+  const rocketMatch = anyOf(config.rockets, data.rocket);
+  const siteMatch = anyOf(config.sites, data.location);
   const statusMatch =
     !config.statusChanges ||
     config.statusChanges.length === 0 ||
     config.statusChanges.some((s) => s.toLowerCase() === data.status.toLowerCase());
 
-  return providerMatch && statusMatch;
+  return providerMatch && rocketMatch && siteMatch && statusMatch;
 }
 
 export function matchContractAward(
@@ -279,11 +284,15 @@ function generateAlertContent(
         title: `Regulatory Filing: ${data.agency || 'New Filing'}`,
         message: `New regulatory filing from ${data.agency}: ${(data.title as string) || (data.category as string) || 'See details'}`,
       };
-    case 'launch_status':
+    case 'launch_status': {
+      const status = String(data.status || '');
+      const verb = status === 'success' ? 'launched successfully' : status === 'failure' ? 'failed' : status === 'in_flight' ? 'is in flight' : status === 'go' ? 'is GO for launch' : `status: ${status}`;
+      const what = [data.rocket, data.missionName].filter(Boolean).join(' · ') || data.provider || 'Launch';
       return {
-        title: `Launch Status Update: ${data.provider || 'Launch Event'}`,
-        message: `${data.provider} launch status changed to "${data.status}"${data.missionName ? ` - ${data.missionName}` : ''}`,
+        title: `${what} ${verb}`,
+        message: `${data.provider ? `${data.provider}: ` : ''}${data.rocket || 'Launch'}${data.missionName ? ` (${data.missionName})` : ''} ${verb}${data.location ? ` from ${data.location}` : ''}${data.launchDate ? ` — ${new Date(String(data.launchDate)).toUTCString()}` : ''}.${data.url ? ` ${data.url}` : ''}`,
       };
+    }
     case 'contract_award':
       return {
         title: `Contract Alert: ${data.agency || 'New Contract'}`,

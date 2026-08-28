@@ -423,7 +423,7 @@ const nextConfig = {
       { source: '/propulsion-comparison', destination: '/propulsion-database', permanent: true },
       { source: '/engineering', destination: '/tools', permanent: true },
       { source: '/engineering-hub', destination: '/tools', permanent: true },
-      { source: '/launches', destination: '/mission-control', permanent: true },
+      // (2026-08-28) '/launches' is a real page again — launches by site.
 
       // ── URL consolidation (2026-08) — regulatory cluster folds into /compliance ──
       // Note: /regulation-explainers is intentionally NOT redirected — it's a live,

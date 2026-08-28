@@ -42,7 +42,10 @@ export default async function SitePage({ params }: { params: { site: string } })
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{site.name}</h1>
           <p className="text-slate-400">{site.region}, {site.country}</p>
           <p className="text-slate-300 leading-relaxed mt-3 max-w-3xl">{site.blurb}</p>
-          {site.viewingGuide && <Link href={site.viewingGuide} className="inline-block mt-4 btn-primary text-sm py-2 px-4">Where to watch a launch at {site.shortName}</Link>}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {site.viewingGuide && <Link href={site.viewingGuide} className="btn-primary text-sm py-2 px-4">Where to watch a launch at {site.shortName}</Link>}
+            <Link href={`/alerts?create=launch_status&site=${encodeURIComponent(site.shortName)}`} className="btn-secondary text-sm py-2 px-4">Alert me about {site.shortName} launches</Link>
+          </div>
         </header>
 
         {[thisMonth, nextMonth].map((d) => d && (

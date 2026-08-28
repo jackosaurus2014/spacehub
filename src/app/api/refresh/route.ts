@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { checkLaunchAlerts, checkSpaceWeatherAlerts } from '@/lib/push-triggers';
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
-import { fetchLaunchLibraryEvents, expireStaleUpcomingEvents, syncRecentLaunchOutcomes } from '@/lib/events-fetcher';
+import { fetchLaunchLibraryEvents, expireStaleUpcomingEvents, syncRecentLaunchOutcomes, drainLaunchStatusTransitions, transitionToAlertData } from '@/lib/events-fetcher';
+import { processAlerts } from '@/lib/alerts/alert-processor';
 import { fetchBlogPosts, initializeBlogSources } from '@/lib/blogs-fetcher';
 import { refreshDaily } from '@/lib/refresh-daily-chain';
 // Newsletter sending moved to dedicated /api/newsletter/send-digest endpoint (Mon/Thu schedule)
@@ -38,6 +39,20 @@ async function refreshEvents(): Promise<Record<string, string>> {
     }
   } catch (err) {
     logger.error('Failed to sync recent launch outcomes', { error: err instanceof Error ? err.message : String(err) });
+  }
+
+  // Launch-status alerts. Until 2026-08-28 users could create launch_status
+  // rules but nothing ever fired them; the two syncs above now record every
+  // GO / in-flight / success / failure transition and this fans them out.
+  try {
+    const transitions = drainLaunchStatusTransitions();
+    let fired = 0;
+    for (const t of transitions) fired += await processAlerts('launch_status', transitionToAlertData(t), prisma);
+    if (transitions.length > 0) {
+      results.launchAlerts = `${transitions.length} launch status transition(s) -> ${fired} alert(s) fired`;
+    }
+  } catch (err) {
+    logger.error('Failed to fan out launch status alerts', { error: err instanceof Error ? err.message : String(err) });
   }
 
   // Transition rows LL2 stopped reporting (launchDate passed, status stuck

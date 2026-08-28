@@ -250,9 +250,10 @@ describe('processAlerts — launch_status integration', () => {
       expect(inApp.channel).toBe('in_app');
       expect(inApp.userId).toBe('user-1');
       expect(inApp.status).toBe('pending');
-      expect(inApp.title).toContain('Launch Status Update');
-      expect(inApp.title).toContain('SpaceX');
-      expect(inApp.message).toContain('go');
+      // Template rewritten 2026-08-28: "<rocket · mission> is GO for launch" — human, not "status changed to".
+      expect(inApp.title).toContain('Starlink Group 6-42');
+      expect(inApp.title).toContain('GO for launch');
+      expect(inApp.message).toContain('SpaceX');
       expect(inApp.data.triggerType).toBe('launch_status');
       expect(inApp.data.priority).toBe('high');
 
@@ -438,7 +439,8 @@ describe('processAlerts — launch_status integration', () => {
         expect(count).toBe(1);
 
         const deliveryCall = mockPrisma.alertDelivery.createMany.mock.calls[0][0];
-        expect(deliveryCall.data[0].message).toContain(`"${status}"`);
+        const phrase: Record<string, string> = { go: 'GO for launch', scrub: 'status: scrub', success: 'launched successfully', failure: 'failed', in_flight: 'is in flight' };
+        expect(deliveryCall.data[0].message).toContain(phrase[status] ?? status);
       });
     }
   });

@@ -82,7 +82,9 @@ const EMAIL_FREQUENCY_OPTIONS = [
 const REGULATORY_AGENCIES = ['FAA', 'FCC', 'NOAA', 'NASA', 'USSF', 'DoD', 'ITAR', 'BIS'];
 const REGULATORY_CATEGORIES = ['licensing', 'export_control', 'spectrum', 'launch_safety', 'environmental', 'procurement'];
 const LAUNCH_PROVIDERS = ['SpaceX', 'Rocket Lab', 'ULA', 'Blue Origin', 'Arianespace', 'ISRO', 'JAXA', 'Relativity Space', 'Firefly'];
-const LAUNCH_STATUSES = ['go', 'hold', 'scrub', 'success', 'failure', 'tbd', 'in_flight'];
+const LAUNCH_STATUSES = ['go', 'in_flight', 'success', 'failure'];
+const LAUNCH_ROCKETS = ['Falcon 9', 'Falcon Heavy', 'Starship', 'Electron', 'Neutron', 'Vulcan', 'Atlas V', 'New Glenn', 'Ariane 6', 'Vega-C', 'H3', 'PSLV', 'LVM3', 'Long March', 'Soyuz'];
+const LAUNCH_SITE_NAMES = ['Cape Canaveral', 'Kennedy Space Center', 'Vandenberg', 'Starbase', 'Wallops', 'Mahia', 'Guiana Space Centre', 'Jiuquan', 'Wenchang', 'Satish Dhawan', 'Baikonur', 'Tanegashima'];
 const CONTRACT_AGENCIES = ['NASA', 'USSF', 'DARPA', 'DoD', 'NRO', 'NOAA', 'SDA', 'MDA'];
 const FUNDING_SECTORS = ['launch', 'satellite', 'space_station', 'earth_observation', 'communications', 'in_space_manufacturing', 'propulsion', 'defense'];
 const ROUND_TYPES = ['Seed', 'Series A', 'Series B', 'Series C', 'Series D+', 'SPAC', 'IPO', 'Debt', 'Grant'];
@@ -102,21 +104,30 @@ const COOLDOWN_PRESETS = [
 // Props
 // ============================================================
 
+export interface AlertRuleBuilderInitial {
+  triggerType?: TriggerType;
+  rockets?: string[];
+  sites?: string[];
+  providers?: string[];
+}
+
 interface AlertRuleBuilderProps {
   onClose: () => void;
   onCreated: () => void;
+  /** Prefill (e.g. from /rockets/[slug] "alert me" links). Jumps to the configure step. */
+  initial?: AlertRuleBuilderInitial;
 }
 
 // ============================================================
 // Component
 // ============================================================
 
-export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilderProps) {
-  const [step, setStep] = useState<Step>(1);
+export default function AlertRuleBuilder({ onClose, onCreated, initial }: AlertRuleBuilderProps) {
+  const [step, setStep] = useState<Step>(initial?.triggerType ? 2 : 1);
   const [submitting, setSubmitting] = useState(false);
 
   // Step 1: Trigger type
-  const [triggerType, setTriggerType] = useState<TriggerType>('keyword');
+  const [triggerType, setTriggerType] = useState<TriggerType>(initial?.triggerType ?? 'keyword');
 
   // Step 2: Trigger config (varies by type)
   // Keyword
@@ -131,8 +142,12 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
   const [selectedAgencies, setSelectedAgencies] = useState<string[]>([]);
   const [selectedRegCategories, setSelectedRegCategories] = useState<string[]>([]);
   // Launch
-  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
+  const [selectedProviders, setSelectedProviders] = useState<string[]>(initial?.providers ?? []);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [selectedRockets, setSelectedRockets] = useState<string[]>(initial?.rockets ?? []);
+  const [rocketInput, setRocketInput] = useState('');
+  const [selectedSites, setSelectedSites] = useState<string[]>(initial?.sites ?? []);
+  const [siteInput, setSiteInput] = useState('');
   // Contract
   const [contractAgencies, setContractAgencies] = useState<string[]>([]);
   const [contractNaics, setContractNaics] = useState('');
@@ -204,6 +219,8 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
         return {
           providers: selectedProviders.length > 0 ? selectedProviders : undefined,
           statusChanges: selectedStatuses.length > 0 ? selectedStatuses : undefined,
+          rockets: selectedRockets.length > 0 ? selectedRockets : undefined,
+          sites: selectedSites.length > 0 ? selectedSites : undefined,
         };
       case 'contract_award':
         return {
@@ -631,6 +648,42 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
                   />
                 ))}
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">
+                Rockets <span className="text-slate-400 font-normal">(optional; any of these)</span>
+              </label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {LAUNCH_ROCKETS.map((r) => (
+                  <Chip key={r} label={r} selected={selectedRockets.includes(r)} onClick={() => toggleArrayItem(selectedRockets, r, setSelectedRockets)} small />
+                ))}
+                {selectedRockets.filter((r) => !LAUNCH_ROCKETS.includes(r)).map((r) => (
+                  <Chip key={r} label={r} selected onClick={() => toggleArrayItem(selectedRockets, r, setSelectedRockets)} small />
+                ))}
+              </div>
+              <input
+                type="text" value={rocketInput} onChange={(e) => setRocketInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && rocketInput.trim()) { e.preventDefault(); if (!selectedRockets.includes(rocketInput.trim())) setSelectedRockets([...selectedRockets, rocketInput.trim()]); setRocketInput(''); } }}
+                placeholder="Other rocket, then Enter" className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">
+                Launch sites <span className="text-slate-400 font-normal">(optional; any of these)</span>
+              </label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {LAUNCH_SITE_NAMES.map((s) => (
+                  <Chip key={s} label={s} selected={selectedSites.includes(s)} onClick={() => toggleArrayItem(selectedSites, s, setSelectedSites)} small />
+                ))}
+                {selectedSites.filter((s) => !LAUNCH_SITE_NAMES.includes(s)).map((s) => (
+                  <Chip key={s} label={s} selected onClick={() => toggleArrayItem(selectedSites, s, setSelectedSites)} small />
+                ))}
+              </div>
+              <input
+                type="text" value={siteInput} onChange={(e) => setSiteInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && siteInput.trim()) { e.preventDefault(); if (!selectedSites.includes(siteInput.trim())) setSelectedSites([...selectedSites, siteInput.trim()]); setSiteInput(''); } }}
+                placeholder="Other site, then Enter" className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-white/70 mb-1.5">

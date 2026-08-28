@@ -1469,7 +1469,7 @@ function MissionControlContent() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-8" aria-label="Sky-watching tools">
             {[
               { href: '/whats-overhead', icon: '🛰️', label: "What's Overhead", hint: 'ISS passes over you' },
-              { href: '/countdown', icon: '⏱️', label: 'Launch Countdown', hint: 'Next liftoff, live' },
+              { href: '/predictions', icon: '🎯', label: 'Predictions', hint: 'Will it fly? Stake your call' },
               { href: '/aurora-forecast', icon: '🌌', label: 'Aurora Forecast', hint: 'Northern lights tonight?' },
               { href: '/satellites', icon: '📡', label: 'Satellite Tracker', hint: 'Live orbital map' },
               { href: '/guide/watch-a-launch-cape-canaveral', icon: '🎟️', label: 'Watch in Person', hint: 'Cape, Vandenberg, Starbase' },
