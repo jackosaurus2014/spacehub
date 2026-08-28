@@ -14,6 +14,7 @@ import RecentlyViewed from './ui/RecentlyViewed';
 import { usePlatformModifier } from '@/hooks/useKeyboardShortcut';
 import { trackGA4Event } from '@/lib/analytics';
 import { SITE_STATS } from '@/lib/site-stats';
+import { navItemsFor } from '@/lib/site-directory';
 
 interface DropdownItem {
   label: string;
@@ -30,79 +31,33 @@ const RECENT_MODULES_KEY = 'spacenexus-recent-modules';
 const MAX_RECENT_MODULES = 5;
 const MOBILE_INITIAL_ITEMS = 8;
 
-type CategoryKey = 'news' | 'markets' | 'business' | 'explore';
+type CategoryKey = 'launches' | 'news' | 'markets' | 'business' | 'learn';
+
+// Menus are fed from the site directory (src/lib/site-directory.ts): each
+// group's `nav: true` rows — the handful people actually use — plus a final
+// "Everything in …" row that opens the full group on /tools. The long tail
+// left the menus on 2026-08-28 (founder request; 52 of 115 sections had ≤5
+// views/28d) without any page going away.
+function menuItems(key: CategoryKey, label: string): DropdownItem[] {
+  return [
+    ...navItemsFor(key).map((e) => ({ label: e.name, href: e.href, description: e.description })),
+    { label: `Everything in ${label} →`, href: `/tools#${key}`, description: 'The full directory' },
+  ];
+}
+
+const LAUNCHES_ITEMS: DropdownItem[] = menuItems('launches', 'Launches');
+const NEWS_ITEMS: DropdownItem[] = menuItems('news', 'News');
+const MARKETS_ITEMS: DropdownItem[] = menuItems('markets', 'Markets');
+const BUSINESS_ITEMS: DropdownItem[] = menuItems('business', 'Business');
+const LEARN_ITEMS: DropdownItem[] = menuItems('learn', 'Learn');
 
 const ALL_CATEGORIES: { key: CategoryKey; label: string; items: DropdownItem[] }[] = [
-  { key: 'news', label: 'News', items: [] },
-  { key: 'markets', label: 'Markets', items: [] },
-  { key: 'business', label: 'Business', items: [] },
-  { key: 'explore', label: 'Explore', items: [] },
+  { key: 'launches', label: 'Launches', items: LAUNCHES_ITEMS },
+  { key: 'news', label: 'News', items: NEWS_ITEMS },
+  { key: 'markets', label: 'Markets', items: MARKETS_ITEMS },
+  { key: 'business', label: 'Business', items: BUSINESS_ITEMS },
+  { key: 'learn', label: 'Learn', items: LEARN_ITEMS },
 ];
-
-const NEWS_ITEMS: DropdownItem[] = [
-  { label: 'News Feed', href: '/news', description: 'Latest space industry news' },
-  { label: 'Industry Reports', href: '/reports', description: 'In-depth research reports & market analysis' },
-  { label: 'AI Insights & Analysis', href: '/ai-insights', description: 'AI-powered industry analysis' },
-  { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
-  { label: 'Industry Voices', href: '/industry-voices', description: 'Curated third-party expert blogs' },
-  { label: 'Live Digest', href: '/briefs', description: 'Rolling 7-day space news digest' },
-  { label: 'Brief Archive', href: '/intelligence-brief', description: 'Past weekly intelligence briefs' },
-  { label: 'Podcasts', href: '/podcasts', description: 'Space podcast directory' },
-  { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
-  { label: 'Newsletter', href: '/newsletter', description: 'Weekly intelligence brief' },
-  { label: 'Starship Tracker', href: '/starship', description: 'Live flight history, program roles & news' },
-];
-
-const MARKETS_ITEMS: DropdownItem[] = [
-  { label: 'Space Stocks & Markets', href: '/space-stocks', description: 'Live quotes, ETFs & industry benchmarks' },
-  { label: 'Company Profiles', href: '/company-profiles', description: `${SITE_STATS.companies} space company profiles` },
-  { label: 'Funding Rounds & M&A', href: '/funding-tracker', description: 'Live funding rounds & deals' },
-  { label: 'Investors', href: '/investors', description: 'Investor directory & deal flow' },
-  { label: 'Startups & Pre-IPO', href: '/startups', description: 'Private companies, funding & IPO watch' },
-  { label: 'Report Cards', href: '/report-cards', description: 'Quarterly company grades' },
-  { label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes' },
-  { label: 'Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain intel' },
-  { label: 'Industry Stats', href: '/space-stats', description: 'Key space industry statistics' },
-  { label: 'Constellations', href: '/constellations', description: 'Mega-constellation operator intel' },
-  { label: 'My Watchlists', href: '/my-watchlists', description: 'Track companies & topics you follow' },
-];
-
-const BUSINESS_ITEMS: DropdownItem[] = [
-  { label: 'Contracts & Opportunities', href: '/procurement', description: 'Contracts, grants, SBIR & budgets' },
-  { label: 'Marketplace', href: '/marketplace', description: 'Verified space service providers' },
-  { label: 'Regulatory & Compliance', href: '/compliance', description: 'Compliance, space law & filings' },
-  { label: 'Regulatory Radar', href: '/regulatory-radar', description: 'Live rules, enforcement & deadlines' },
-  { label: 'Patents', href: '/patents', description: 'Space technology patent trends' },
-  { label: 'Spectrum', href: '/spectrum', description: 'Allocations, auctions & filings' },
-  { label: 'Space Manufacturing', href: '/space-manufacturing', description: 'In-space manufacturing & imagery' },
-  { label: 'Mission Cost & Insurance', href: '/mission-cost', description: 'Cost estimates & risk pricing' },
-  // Deal Rooms, Gig Work and Mentors were delisted 2026-08-26 (Phase-1
-  // consolidation): zero usage ever in production. Routes stay live;
-  // relist when the audience exists.
-  { label: 'Hire Talent', href: '/hire', description: 'Post jobs & find space industry talent' },
-];
-
-const EXPLORE_ITEMS: DropdownItem[] = [
-  { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
-  { label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & more' },
-  { label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
-  { label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs and planetary defense' },
-  { label: 'Mars Planner', href: '/mars-planner', description: 'Mars missions & launch windows' },
-  { label: 'Cislunar', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
-  { label: 'Solar System', href: '/solar-exploration', description: '3D planetary visualization' },
-  { label: 'Rockets', href: '/rockets', description: 'Every rocket: cost, payload, next launch' },
-  { label: 'Launches by Site', href: '/launches', description: 'Cape, Vandenberg, Starbase… month by month' },
-  { label: 'Aurora Forecast', href: '/aurora-forecast', description: 'Northern lights & Kp index' },
-  { label: 'Tools & Calculators', href: '/tools', description: 'All calculators & analysis tools' },
-  { label: 'Learning Zone', href: '/learn', description: 'Interactive courses & lessons' },
-  { label: 'Space History', href: '/history', description: 'Searchable historical milestones' },
-  { label: 'Glossary', href: '/glossary', description: 'Key space terms defined' },
-];
-// Wire up items to category metadata after const arrays are defined
-ALL_CATEGORIES[0].items = NEWS_ITEMS;
-ALL_CATEGORIES[1].items = MARKETS_ITEMS;
-ALL_CATEGORIES[2].items = BUSINESS_ITEMS;
-ALL_CATEGORIES[3].items = EXPLORE_ITEMS;
 
 function DropdownMenu({
   label,
@@ -283,10 +238,11 @@ export default function Navigation() {
   const [mobileSearchQuery, setMobileSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<CategoryKey | null>(null);
   const [showAllItems, setShowAllItems] = useState<Record<CategoryKey, boolean>>({
+    launches: false,
     news: false,
     markets: false,
     business: false,
-    explore: false,
+    learn: false,
   });
   const [recentModules, setRecentModules] = useState<RecentModule[]>([]);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
@@ -339,7 +295,7 @@ export default function Navigation() {
     if (!pathname || pathname === '/') return;
 
     // Find matching item across all categories
-    const allItems = [...NEWS_ITEMS, ...MARKETS_ITEMS, ...BUSINESS_ITEMS, ...EXPLORE_ITEMS];
+    const allItems = ALL_CATEGORIES.flatMap((c) => c.items);
     const match = allItems.find((item) => item.href === pathname);
     if (!match) return;
 
@@ -360,7 +316,7 @@ export default function Navigation() {
     if (!isMenuOpen) {
       setMobileSearchQuery('');
       setExpandedCategory(null);
-      setShowAllItems({ news: false, markets: false, business: false, explore: false });
+      setShowAllItems({ launches: false, news: false, markets: false, business: false, learn: false });
     }
   }, [isMenuOpen]);
 
@@ -467,6 +423,13 @@ export default function Navigation() {
               {isLiveNow && <span className="sr-only">(broadcast in progress)</span>}
             </Link>
             <DropdownMenu
+              label="Launches"
+              items={LAUNCHES_ITEMS}
+              isOpen={openDropdown === 'launches'}
+              onToggle={() => toggleDropdown('launches')}
+              isPro={isPro}
+            />
+            <DropdownMenu
               label="News"
               items={NEWS_ITEMS}
               isOpen={openDropdown === 'news'}
@@ -488,10 +451,10 @@ export default function Navigation() {
               isPro={isPro}
             />
             <DropdownMenu
-              label="Explore"
-              items={EXPLORE_ITEMS}
-              isOpen={openDropdown === 'explore'}
-              onToggle={() => toggleDropdown('explore')}
+              label="Learn"
+              items={LEARN_ITEMS}
+              isOpen={openDropdown === 'learn'}
+              onToggle={() => toggleDropdown('learn')}
               isPro={isPro}
             />
             <Link
