@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { getPublicLeaderboard } from '@/lib/game/public-leaderboard';
+import { formatMoney } from '@/lib/game/formulas';
 import nextDynamic from 'next/dynamic';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
@@ -62,6 +64,9 @@ const SpacePhotoOfDay = nextDynamic(() => import('@/components/SpacePhotoOfDay')
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
+  // Public leaderboard teaser (2026-08-28): the game is the stickiest surface;
+  // give the homepage a live reason to click. Never fails the page.
+  const topCorps = await getPublicLeaderboard(5).catch(() => []);
   // Get default module configuration for SSR
   const modules = await getDefaultModulePreferences();
 
@@ -325,6 +330,29 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+      {topCorps.length > 0 && (
+        <section className="relative z-10 pb-6">
+          <div className="container mx-auto px-4 max-w-5xl">
+            <div className="card p-4 sm:p-5">
+              <div className="flex items-baseline justify-between mb-3">
+                <h3 className="text-sm font-semibold text-white">Top corporations right now</h3>
+                <Link href="/space-tycoon/leaderboard" className="text-xs text-cyan-400 hover:text-cyan-300">Full leaderboard &rarr;</Link>
+              </div>
+              <ol className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                {topCorps.map((c) => (
+                  <li key={c.id}>
+                    <Link href={`/space-tycoon/corp/${c.id}`} className="block rounded border border-white/[0.08] bg-white/[0.03] px-3 py-2 hover:border-cyan-500/30 transition-colors">
+                      <div className="text-[10px] text-slate-500">#{c.rank}{c.allianceTag ? ` · [${c.allianceTag}]` : ''}</div>
+                      <div className="text-xs font-semibold text-white truncate">{c.companyName}</div>
+                      <div className="text-[11px] text-cyan-300 font-mono">{formatMoney(c.netWorth)}</div>
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+      )}
       </PersonaAwareSpaceTycoon>
 
       {/* Latest from SpaceNexus — Original Content Showcase */}

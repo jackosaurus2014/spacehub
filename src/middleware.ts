@@ -779,6 +779,16 @@ export async function middleware(req: NextRequest) {
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
+  // Space Tycoon invite links: /space-tycoon?ref=<profileId>. Remember the
+  // referrer for 30 days so the attribution survives sign-up; the game's
+  // profile-creation path reads it (src/lib/game/referrals.ts).
+  if (pathname.startsWith('/space-tycoon')) {
+    const ref = req.nextUrl.searchParams.get('ref');
+    if (ref && /^[a-z0-9]{10,40}$/i.test(ref)) {
+      response.cookies.set('sn_ref', ref, { maxAge: 30 * 24 * 3600, path: '/', sameSite: 'lax' });
+    }
+  }
   return response;
 }
 

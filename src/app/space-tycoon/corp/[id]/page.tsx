@@ -8,6 +8,8 @@ import ShareButton from '@/components/ui/ShareButton';
 import { formatMoney } from '@/lib/game/formulas';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { getPublicCorp, getPublicCorpEquity } from '@/lib/game/public-leaderboard';
+import { getReferralStats, inviteUrl } from '@/lib/game/referrals';
+import InvitePlayerCard from '@/components/game/InvitePlayerCard';
 import { getCorpChronicle } from '@/lib/game/public-era-chronicle';
 import { ERA_CHARTER_MAP } from '@/lib/game/corporate-eras';
 import { ERA_MEDAL_LABEL } from '@/lib/game/corp-era-registry';
@@ -58,9 +60,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 export default async function PublicCorpPage({ params }: { params: { id: string } }) {
-  const [corp, chronicle] = await Promise.all([
+  const [corp, chronicle, referrals] = await Promise.all([
     getPublicCorp(params.id),
     getCorpChronicle(params.id),
+    getReferralStats(params.id).catch(() => ({ recruited: 0, activeMentees: 0 })),
   ]);
   if (!corp) notFound();
 
@@ -147,6 +150,8 @@ export default async function PublicCorpPage({ params }: { params: { id: string 
             ))}
           </div>
         </div>
+
+        <InvitePlayerCard inviteUrl={inviteUrl(corp.id, APP_URL)} companyName={corp.companyName} recruited={referrals.recruited} />
 
         {/* Market Activity — Wave E6, server-verified from MarketFill (not
             self-reported). Only rendered when the corp has actually traded

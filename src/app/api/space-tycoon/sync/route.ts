@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { attachReferral, REFERRAL_COOKIE } from '@/lib/game/referrals';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
@@ -329,6 +330,10 @@ export async function POST(request: Request) {
     const safeResearch = Array.isArray(completedResearch) ? completedResearch.filter((r: unknown) => typeof r === 'string').slice(0, 500) : [];
     const safeShips = Array.isArray(ships) ? ships.slice(0, 50) : [];
 
+    // Referral (2026-08-28): remember whether this sync is creating the
+    // profile so an invite cookie can be attributed exactly once.
+    const existedBefore = await prisma.gameProfile.findUnique({ where: { userId: session.user.id }, select: { id: true } });
+
     // Upsert game profile with full state
     const profile = await prisma.gameProfile.upsert({
       where: { userId: session.user.id },
@@ -360,6 +365,12 @@ export async function POST(request: Request) {
         lastSyncAt: new Date(),
       },
     });
+
+    if (!existedBefore) {
+      const cookieHeader = request.headers.get('cookie') || '';
+      const ref = cookieHeader.split(';').map((c) => c.trim()).find((c) => c.startsWith(REFERRAL_COOKIE + '='))?.slice(REFERRAL_COOKIE.length + 1);
+      if (ref) await attachReferral(profile.id, ref);
+    }
 
     // ── Ghost Rivals: Update peakNetWorth ──
     if (netWorth > (profile.peakNetWorth ?? 0)) {

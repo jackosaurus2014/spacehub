@@ -17,6 +17,7 @@ import CollapsiblePanel from '@/components/ui/CollapsiblePanel';
 import AlertNudge from '@/components/ui/AlertNudge';
 import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
+import { rocketSlugForName } from '@/lib/rocket-registry';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -44,6 +45,12 @@ interface GroupedEvents {
 // ════════════════════════════════════════
 // Dynamic Content Interfaces
 // ════════════════════════════════════════
+
+/** Rocket name → its /rockets page when catalogued (2026-08-28), plain text otherwise. */
+function RocketLink({ name }: { name: string }) {
+  const slug = rocketSlugForName(name);
+  return slug ? <Link href={`/rockets/${slug}`} className="hover:underline">{name}</Link> : <>{name}</>;
+}
 
 interface DebriefLite {
   slug: string;
@@ -386,7 +393,7 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
               )}
               {event.rocket && (
                 <span className="flex items-center gap-1 text-green-400">
-                  <span>🚀</span> {event.rocket}
+                  <span>🚀</span> <RocketLink name={event.rocket} />
                 </span>
               )}
             </div>
@@ -856,7 +863,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
 
           {event.rocket && (
             <p className="text-white/90 text-xs mt-2">
-              <span>🚀</span> {event.rocket}
+              <span>🚀</span> <RocketLink name={event.rocket} />
             </p>
           )}
 

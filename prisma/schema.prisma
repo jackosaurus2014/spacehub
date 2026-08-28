@@ -246,6 +246,11 @@ model GameProfile {
   // accepted mentor<->mentee pairs (see below). CLAUDE.md "mentorship
   // rewards" onramp commitment, additive column.
   mentorOptIn         Boolean          @default(false)
+  // Referral attribution (2026-08-28): the corporation whose invite link this
+  // player joined through. The invite auto-creates a GameMentorship, so the
+  // referrer's reward is the existing mentor revenue bonus tied to the
+  // mentee's success — recruiting is rewarded only when the recruit thrives.
+  referredByProfileId String?
   mentorshipsAsMentor GameMentorship[] @relation("mentorOf")
   mentorshipsAsMentee GameMentorship[] @relation("menteeOf")
 
