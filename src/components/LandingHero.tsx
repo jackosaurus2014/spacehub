@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { loadHomeModulePreset } from '@/lib/module-presets';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { SITE_STATS } from '@/lib/site-stats';
@@ -61,6 +62,20 @@ function DataCard({ label, value, sub, live, delay }: { label: string; value: st
 
 export default function LandingHero({ featuredArticle, trendingNews }: LandingHeroProps) {
   // Fetch live metrics for the data preview via the /api/pulse endpoint
+  // Persona-aware secondary CTA (2026-08-28): the PersonaPicker stores a
+  // choice in localStorage; returning enthusiasts get the game, investors the
+  // markets, professionals contracts, job seekers jobs. First visit: pricing.
+  const [secondaryCta, setSecondaryCta] = useState<{ href: string; label: string }>({ href: '/pricing', label: 'View pricing →' });
+  useEffect(() => {
+    const persona = loadHomeModulePreset()?.personaId;
+    const map: Record<string, { href: string; label: string }> = {
+      enthusiast: { href: '/space-tycoon', label: 'Play Space Tycoon →' },
+      investor: { href: '/space-stocks', label: 'Space stocks & funding →' },
+      professional: { href: '/procurement', label: 'Contracts & compliance →' },
+      jobseeker: { href: '/jobs', label: 'Space jobs, synced daily →' },
+    };
+    if (persona && map[persona]) setSecondaryCta(map[persona]);
+  }, []);
   const [nextLaunch, setNextLaunch] = useState<string>('—');
   const [launchName, setLaunchName] = useState<string>('');
   const [activeSats, setActiveSats] = useState<string>(SITE_STATS.satellites);
@@ -240,10 +255,10 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                   </svg>
                 </Link>
                 <Link
-                  href="/pricing"
+                  href={secondaryCta.href}
                   className="text-sm text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors font-medium py-3.5"
                 >
-                  View pricing →
+                  {secondaryCta.label}
                 </Link>
               </div>
             </Reveal>
