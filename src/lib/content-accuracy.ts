@@ -652,7 +652,8 @@ async function checkLaunchOutcomesFlowing(): Promise<AccuracyCheckOutcome> {
  */
 async function checkStockQuotesFresh(): Promise<AccuracyCheckOutcome> {
   const newest = await prisma.companyProfile.findFirst({
-    where: { isPublic: true, ticker: { not: null } },
+    // NOT null: Postgres sorts NULLs first on DESC, which read as "never".
+    where: { isPublic: true, ticker: { not: null }, NOT: { lastVerified: null } },
     orderBy: { lastVerified: 'desc' },
     select: { lastVerified: true, ticker: true },
   });
