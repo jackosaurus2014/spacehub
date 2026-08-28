@@ -33,8 +33,8 @@ async function refreshEvents(): Promise<Record<string, string>> {
   // before the stale sweep below so an outcome always beats 'scrubbed'.
   try {
     const outcomes = await syncRecentLaunchOutcomes();
-    if (outcomes.updated > 0) {
-      results.eventOutcomes = `Recorded ${outcomes.updated} launch outcome(s) from ${outcomes.checked} recent launches`;
+    if (outcomes.updated > 0 || outcomes.created > 0) {
+      results.eventOutcomes = `Recorded ${outcomes.updated} launch outcome(s), imported ${outcomes.created} newly seen launch(es), from ${outcomes.checked} recent launches`;
     }
   } catch (err) {
     logger.error('Failed to sync recent launch outcomes', { error: err instanceof Error ? err.message : String(err) });

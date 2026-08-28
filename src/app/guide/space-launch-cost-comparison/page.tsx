@@ -325,6 +325,14 @@ export default function SpaceLaunchCostComparisonPage() {
                 <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Vehicle-by-Vehicle Comparison
                 </h2>
+                <p className="text-star-200 leading-relaxed text-lg mb-4">
+                  Every vehicle below has a dedicated page with its live launch schedule and recent outcomes — start at{' '}
+                  <Link href="/rockets" className="text-cyan-400 hover:text-cyan-300">Rockets</Link>, or jump to{' '}
+                  <Link href="/rockets/falcon-9" className="text-cyan-400 hover:text-cyan-300">Falcon 9</Link>,{' '}
+                  <Link href="/rockets/starship" className="text-cyan-400 hover:text-cyan-300">Starship</Link>,{' '}
+                  <Link href="/rockets/new-glenn" className="text-cyan-400 hover:text-cyan-300">New Glenn</Link> or{' '}
+                  <Link href="/rockets/electron" className="text-cyan-400 hover:text-cyan-300">Electron</Link>.
+                </p>
                 <div className="space-y-6 text-star-200 leading-relaxed text-lg">
                   <h3 className="text-xl font-semibold text-white mt-4 mb-3">
                     SpaceX Falcon 9

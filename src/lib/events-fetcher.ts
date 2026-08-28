@@ -152,6 +152,76 @@ function determineEventType(launch: LaunchLibraryLaunch): SpaceEventType {
   return 'launch';
 }
 
+
+/**
+ * SpaceEvent fields from a Launch Library launch (either feed). Shared by the
+ * upcoming sync and the previous-launch outcome sync so a launch first seen
+ * AFTER it flew (the /upcoming feed drops it at liftoff) still gets a full
+ * row — pad, rocket, mission, image — not just a status.
+ */
+export function launchToEventData(launch: LaunchLibraryLaunch) {
+  const eventType = determineEventType(launch);
+  const status = mapStatusToInternal(launch.status);
+  const padLat = launch.pad?.latitude ? Number(launch.pad.latitude) : null;
+  const padLon = launch.pad?.longitude ? Number(launch.pad.longitude) : null;
+  const orbitType = launch.orbit?.name || launch.orbit?.abbrev || null;
+  const missionPatchUrl = launch.mission_patches?.[0]?.image_url || null;
+  const rocketImageUrl = launch.rocket?.configuration?.image_url || null;
+  const crewCount = launch.astronauts?.length || null;
+  const crewDetails = launch.astronauts && launch.astronauts.length > 0
+    ? launch.astronauts.map(a => ({ name: a.name, agency: a.agency?.name, role: a.role }))
+    : null;
+  const providerType = launch.launch_service_provider?.type || null;
+  const common = {
+    name: launch.name,
+    description: launch.mission?.description || null,
+    type: eventType,
+    status,
+    launchDate: launch.net ? new Date(launch.net) : null,
+    launchDatePrecision: 'exact',
+    windowStart: launch.window_start ? new Date(launch.window_start) : null,
+    windowEnd: launch.window_end ? new Date(launch.window_end) : null,
+    location: launch.pad?.location?.name || launch.pad?.name || null,
+    country: launch.pad?.location?.country_code || launch.launch_service_provider?.country_code || null,
+    agency: launch.launch_service_provider?.name || null,
+    rocket: launch.rocket?.configuration?.full_name || launch.rocket?.configuration?.name || null,
+    mission: launch.mission?.name || null,
+    imageUrl: launch.image || launch.infographic || null,
+    infoUrl: launch.infoURLs?.[0]?.url
+      || launch.mission?.info_urls?.[0]?.url
+      || (launch.slug ? `https://www.spacelaunchnow.me/launch/${launch.slug}` : null)
+      || null,
+    videoUrl: launch.vidURLs?.[0]?.url || null,
+    webcastLive: launch.webcast_live ?? false,
+  };
+  return {
+    update: {
+      ...common,
+      padLatitude: padLat && !isNaN(padLat) ? padLat : undefined,
+      padLongitude: padLon && !isNaN(padLon) ? padLon : undefined,
+      orbitType: orbitType ?? undefined,
+      missionPatchUrl: missionPatchUrl ?? undefined,
+      rocketImageUrl: rocketImageUrl ?? undefined,
+      crewCount: crewCount ?? undefined,
+      crewDetails: crewDetails as any ?? undefined,
+      providerType: providerType ?? undefined,
+      updatedAt: new Date(),
+    },
+    create: {
+      externalId: launch.id,
+      ...common,
+      padLatitude: padLat && !isNaN(padLat) ? padLat : null,
+      padLongitude: padLon && !isNaN(padLon) ? padLon : null,
+      orbitType,
+      missionPatchUrl,
+      rocketImageUrl,
+      crewCount,
+      crewDetails: crewDetails as any,
+      providerType,
+    },
+  };
+}
+
 export async function fetchLaunchLibraryEvents(): Promise<number> {
   return launchLibraryBreaker.execute(async () => {
     // Fetch upcoming launches (next 5 years worth)
@@ -175,86 +245,9 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
     let savedCount = 0;
 
     for (const launch of launches) {
-      const eventType = determineEventType(launch);
-      const status = mapStatusToInternal(launch.status);
-
       try {
-        const padLat = launch.pad?.latitude ? Number(launch.pad.latitude) : null;
-        const padLon = launch.pad?.longitude ? Number(launch.pad.longitude) : null;
-        const orbitType = launch.orbit?.name || launch.orbit?.abbrev || null;
-        const missionPatchUrl = launch.mission_patches?.[0]?.image_url || null;
-        const rocketImageUrl = launch.rocket?.configuration?.image_url || null;
-        const crewCount = launch.astronauts?.length || null;
-        const crewDetails = launch.astronauts && launch.astronauts.length > 0
-          ? launch.astronauts.map(a => ({ name: a.name, agency: a.agency?.name, role: a.role }))
-          : null;
-        const providerType = launch.launch_service_provider?.type || null;
-
-        await prisma.spaceEvent.upsert({
-          where: { externalId: launch.id },
-          update: {
-            name: launch.name,
-            description: launch.mission?.description || null,
-            type: eventType,
-            status,
-            launchDate: launch.net ? new Date(launch.net) : null,
-            launchDatePrecision: 'exact',
-            windowStart: launch.window_start ? new Date(launch.window_start) : null,
-            windowEnd: launch.window_end ? new Date(launch.window_end) : null,
-            location: launch.pad?.location?.name || launch.pad?.name || null,
-            country: launch.pad?.location?.country_code || launch.launch_service_provider?.country_code || null,
-            agency: launch.launch_service_provider?.name || null,
-            rocket: launch.rocket?.configuration?.full_name || launch.rocket?.configuration?.name || null,
-            mission: launch.mission?.name || null,
-            imageUrl: launch.image || launch.infographic || null,
-            infoUrl: launch.infoURLs?.[0]?.url
-              || launch.mission?.info_urls?.[0]?.url
-              || (launch.slug ? `https://www.spacelaunchnow.me/launch/${launch.slug}` : null)
-              || null,
-            videoUrl: launch.vidURLs?.[0]?.url || null,
-            webcastLive: launch.webcast_live ?? false,
-            padLatitude: padLat && !isNaN(padLat) ? padLat : undefined,
-            padLongitude: padLon && !isNaN(padLon) ? padLon : undefined,
-            orbitType: orbitType ?? undefined,
-            missionPatchUrl: missionPatchUrl ?? undefined,
-            rocketImageUrl: rocketImageUrl ?? undefined,
-            crewCount: crewCount ?? undefined,
-            crewDetails: crewDetails as any ?? undefined,
-            providerType: providerType ?? undefined,
-            updatedAt: new Date(),
-          },
-          create: {
-            externalId: launch.id,
-            name: launch.name,
-            description: launch.mission?.description || null,
-            type: eventType,
-            status,
-            launchDate: launch.net ? new Date(launch.net) : null,
-            launchDatePrecision: 'exact',
-            windowStart: launch.window_start ? new Date(launch.window_start) : null,
-            windowEnd: launch.window_end ? new Date(launch.window_end) : null,
-            location: launch.pad?.location?.name || launch.pad?.name || null,
-            country: launch.pad?.location?.country_code || launch.launch_service_provider?.country_code || null,
-            agency: launch.launch_service_provider?.name || null,
-            rocket: launch.rocket?.configuration?.full_name || launch.rocket?.configuration?.name || null,
-            mission: launch.mission?.name || null,
-            imageUrl: launch.image || launch.infographic || null,
-            infoUrl: launch.infoURLs?.[0]?.url
-              || launch.mission?.info_urls?.[0]?.url
-              || (launch.slug ? `https://www.spacelaunchnow.me/launch/${launch.slug}` : null)
-              || null,
-            videoUrl: launch.vidURLs?.[0]?.url || null,
-            webcastLive: launch.webcast_live ?? false,
-            padLatitude: padLat && !isNaN(padLat) ? padLat : null,
-            padLongitude: padLon && !isNaN(padLon) ? padLon : null,
-            orbitType,
-            missionPatchUrl,
-            rocketImageUrl,
-            crewCount,
-            crewDetails: crewDetails as any,
-            providerType,
-          },
-        });
+        const data = launchToEventData(launch);
+        await prisma.spaceEvent.upsert({ where: { externalId: launch.id }, update: data.update, create: data.create });
         savedCount++;
       } catch (err) {
         logger.error(`Failed to save launch ${launch.id}`, { error: err instanceof Error ? err.message : String(err) });
@@ -464,31 +457,39 @@ export const RECENT_OUTCOMES_LIMIT = 50;
 
 export async function syncRecentLaunchOutcomes(
   fetchImpl: typeof fetch = fetch,
-): Promise<{ checked: number; updated: number }> {
+  opts: { limit?: number; offset?: number } = {},
+): Promise<{ checked: number; updated: number; created: number }> {
+  const limit = opts.limit ?? RECENT_OUTCOMES_LIMIT;
+  const offset = opts.offset ?? 0;
   const res = await fetchImpl(
-    `https://ll.thespacedevs.com/2.2.0/launch/previous/?limit=${RECENT_OUTCOMES_LIMIT}&mode=list`,
+    `https://ll.thespacedevs.com/2.2.0/launch/previous/?limit=${limit}&offset=${offset}&mode=normal`,
     { cache: 'no-store', headers: { Accept: 'application/json' } },
   );
   if (!res.ok) throw new Error(`Launch Library previous-launch API error: ${res.status}`);
-  const json = (await res.json()) as { results?: Array<{ id: string; net?: string | null; status?: { abbrev?: string; name?: string } }> };
+  const json = (await res.json()) as { results?: LaunchLibraryLaunch[] };
   const results = json.results || [];
   let updated = 0;
+  let created = 0;
   for (const launch of results) {
     const status = mapLaunchLibraryStatus(launch.status);
-    // A previous-feed launch whose status still maps to 'upcoming' (e.g. On
-    // Hold) is not an outcome — leave the row alone.
+    // A previous-feed launch whose status still maps to a pre-flight value
+    // (On Hold, TBD) is not an outcome — leave whatever we have alone.
     if (status === 'upcoming' || status === 'tbd' || status === 'tbc' || status === 'go') continue;
-    const r = await prisma.spaceEvent.updateMany({
-      where: { externalId: launch.id, NOT: { status } },
-      data: {
-        status,
-        ...(launch.net ? { launchDate: new Date(launch.net) } : {}),
-        updatedAt: new Date(),
-      },
-    });
-    updated += r.count;
+    const existing = await prisma.spaceEvent.findUnique({ where: { externalId: launch.id }, select: { id: true, status: true } });
+    if (existing) {
+      if (existing.status === status) continue;
+      await prisma.spaceEvent.update({
+        where: { externalId: launch.id },
+        data: { status, ...(launch.net ? { launchDate: new Date(launch.net) } : {}), updatedAt: new Date() },
+      });
+      updated++;
+    } else {
+      // First seen after it flew: full row, so rocket/site pages have history.
+      await prisma.spaceEvent.create({ data: launchToEventData(launch).create });
+      created++;
+    }
   }
-  return { checked: results.length, updated };
+  return { checked: results.length, updated, created };
 }
 
 export async function expireStaleUpcomingEvents(now: Date = new Date()): Promise<number> {

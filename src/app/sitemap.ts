@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/db';
+import { allRocketSlugs } from '@/lib/rockets';
+import { LAUNCH_SITES, monthParam, monthWindow } from '@/lib/launch-sites';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
 import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
@@ -36,6 +38,13 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
   const routes = [
     // Homepage
     { url: BASE_URL, changeFrequency: 'daily' as const, priority: 1.0 },
+
+    // Rockets and launches-by-site (2026-08-28): registry-driven, no DB.
+    { url: `${BASE_URL}/rockets`, changeFrequency: 'daily' as const, priority: 0.9 },
+    ...allRocketSlugs().map((slug) => ({ url: `${BASE_URL}/rockets/${slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
+    { url: `${BASE_URL}/launches`, changeFrequency: 'daily' as const, priority: 0.9 },
+    ...LAUNCH_SITES.map((s) => ({ url: `${BASE_URL}/launches/${s.slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
+    ...LAUNCH_SITES.flatMap((s) => monthWindow(new Date()).map((m) => ({ url: `${BASE_URL}/launches/${s.slug}/${monthParam(m.year, m.month)}`, changeFrequency: 'daily' as const, priority: 0.6 }))),
 
     // Ignition Tracker — flagship program tracker
     { url: `${BASE_URL}/ignition`, changeFrequency: 'daily' as const, priority: 1.0 },

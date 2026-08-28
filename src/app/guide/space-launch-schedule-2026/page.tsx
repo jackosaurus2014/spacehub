@@ -275,6 +275,15 @@ export default function SpaceLaunchSchedule2026Page() {
             {/* Sites */}
             <section id="sites">
               <h2 className="text-2xl font-bold text-white mb-4">Global Launch Sites</h2>
+                <p className="text-slate-300 leading-relaxed mb-4">
+                  Each site now has its own live page with this month&apos;s manifest and a month-by-month archive:{' '}
+                  <Link href="/launches/cape-canaveral" className="text-cyan-400 hover:text-cyan-300">Cape Canaveral &amp; KSC</Link>,{' '}
+                  <Link href="/launches/vandenberg" className="text-cyan-400 hover:text-cyan-300">Vandenberg</Link>,{' '}
+                  <Link href="/launches/starbase" className="text-cyan-400 hover:text-cyan-300">Starbase</Link>,{' '}
+                  <Link href="/launches/kourou" className="text-cyan-400 hover:text-cyan-300">Kourou</Link>,{' '}
+                  <Link href="/launches/wenchang" className="text-cyan-400 hover:text-cyan-300">Wenchang</Link> — or{' '}
+                  <Link href="/launches" className="text-cyan-400 hover:text-cyan-300">all launch sites</Link>.
+                </p>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
