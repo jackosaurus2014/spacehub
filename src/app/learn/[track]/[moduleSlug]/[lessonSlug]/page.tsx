@@ -7,6 +7,7 @@ import prisma from '@/lib/db';
 import { LEARNING_TRACKS } from '@/lib/validations';
 import { logger } from '@/lib/logger';
 import LessonInteractive from '@/components/learn/LessonInteractive';
+import LessonCompleteButton from '@/components/learn/LessonCompleteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -162,6 +163,16 @@ export default async function LessonPage({ params }: PageProps) {
           </section>
         )}
 
+        <LessonCompleteButton
+          track={track}
+          moduleSlug={moduleSlug}
+          lessonSlug={nonNullLesson.slug}
+          lessonTitle={nonNullLesson.title}
+          nextHref={next ? `/learn/${track}/${moduleSlug}/${next.slug}` : null}
+          nextTitle={next ? next.title : null}
+          moduleHref={`/learn/${track}/${moduleSlug}`}
+          isLast={!next}
+        />
         <nav className="mt-10 flex items-center justify-between gap-3 border-t border-white/10 pt-6">
           {prev ? (
             <Link

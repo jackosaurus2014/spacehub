@@ -219,7 +219,10 @@ const CRON_JOBS: CronJobDef[] = [
   // Prediction Exchange — weekly question generation (Mondays 6:30am UTC,
   // after the seasons cron) + a daily resolve pass that settles any question
   // past its resolvesAt gate. See src/lib/game/prediction-exchange.ts.
-  { schedule: '30 6 * * 1',   path: '/api/cron/prediction-exchange?action=generate', label: 'tycoon-predictions-generate', maxStaleMinutes: 11520 },
+  // Daily since 2026-08-28 (was Mondays): /predictions is public now and a
+  // weekly batch left the board empty by midweek. Keys are deterministic, so
+  // re-running only adds questions for launches newly inside the window.
+  { schedule: '30 6 * * *',   path: '/api/cron/prediction-exchange?action=generate', label: 'tycoon-predictions-generate', maxStaleMinutes: 1560 },
   { schedule: '0 10 * * *',   path: '/api/cron/prediction-exchange?action=resolve',  label: 'tycoon-predictions-resolve',  maxStaleMinutes: 1560 },
   // Orbital-slot lease auctions — every 2 hours (Economic PvP Wave E7, docs/
   // ECONOMY_PVP_2026-08.md §E7/§5 item 5: recomputes server-aggregated

@@ -238,6 +238,13 @@ export default function SpaceLaunchCostComparisonPage() {
                     what they leave out.
                   </p>
                   <p>
+                    Looking for a specific case? See what it costs to launch{' '}
+                    <Link href="/guide/cost-to-launch/cubesat" className="text-cyan-400 hover:text-cyan-300">a CubeSat</Link>,{' '}
+                    <Link href="/guide/cost-to-launch/satellite" className="text-cyan-400 hover:text-cyan-300">a satellite by size</Link>,{' '}
+                    <Link href="/guide/cost-to-launch/person" className="text-cyan-400 hover:text-cyan-300">a person</Link>, or{' '}
+                    <Link href="/guide/cost-to-launch/starlink-batch" className="text-cyan-400 hover:text-cyan-300">a Starlink batch</Link>.
+                  </p>
+                  <p>
                     This guide provides a comprehensive comparison of launch costs across all major
                     operational and near-operational vehicles as of 2026. We cover listed prices,
                     estimated actual costs, cost-per-kilogram calculations, rideshare and smallsat

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ContinueLearning from '@/components/learn/ContinueLearning';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
@@ -85,6 +86,7 @@ async function getData() {
           level: true,
           estimatedMinutes: true,
           _count: { select: { lessons: true } },
+          lessons: { select: { slug: true, title: true }, orderBy: { orderIndex: 'asc' } },
         },
       }),
       prisma.lesson.findMany({
@@ -144,6 +146,8 @@ export default async function LearnPage() {
             really costs.
           </p>
         </header>
+
+        <ContinueLearning modules={modules.map((m) => ({ slug: m.slug, track: m.track, title: m.title, lessons: m.lessons }))} />
 
         <section className="mb-14">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

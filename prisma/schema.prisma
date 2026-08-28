@@ -25,10 +25,10 @@ model User {
   stripeSubscriptionId  String?   @unique
 
   // Free trial
-  trialTier        String? // The tier being trialed: "pro"
-  trialStartDate   DateTime?
-  trialEndDate     DateTime?
-  trialEmailsSent  Int       @default(0) // 0=none, 1=welcome, 2=mid-trial, 3=final-day
+  trialTier       String? // The tier being trialed: "pro"
+  trialStartDate  DateTime?
+  trialEndDate    DateTime?
+  trialEmailsSent Int       @default(0) // 0=none, 1=welcome, 2=mid-trial, 3=final-day
 
   // Admin
   isAdmin   Boolean @default(false)
@@ -137,12 +137,13 @@ model User {
   activityLogEvents ActivityLog[]
 
   // Wave 1: Verified badge + community adds
-  verifiedBadge         String?                @default("unverified") // unverified|email|domain|founder|investor|media|admin
-  verificationRequested Boolean                @default(false)
+  verifiedBadge         String?               @default("unverified") // unverified|email|domain|founder|investor|media|admin
+  verificationRequested Boolean               @default(false)
   verificationNote      String? // user-supplied justification for review
-  speakingOpportunities SpeakingOpportunity[]  @relation("SubmittedSpeakingOps")
-  companyAnnouncements  CompanyAnnouncement[]  @relation("AnnouncementAuthor")
-  eventRsvps            EventRSVP[]            @relation("UserEventRSVPs")
+  speakingOpportunities SpeakingOpportunity[] @relation("SubmittedSpeakingOps")
+  companyAnnouncements  CompanyAnnouncement[] @relation("AnnouncementAuthor")
+  eventRsvps            EventRSVP[]           @relation("UserEventRSVPs")
+  lessonProgress        LessonProgress[]
 }
 
 // â”€â”€â”€ Space Tycoon: Multiplayer Game Models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -244,7 +245,7 @@ model GameProfile {
   // a mentor (browsable by prospective mentees); GameMentorship rows record
   // accepted mentor<->mentee pairs (see below). CLAUDE.md "mentorship
   // rewards" onramp commitment, additive column.
-  mentorOptIn Boolean @default(false)
+  mentorOptIn         Boolean          @default(false)
   mentorshipsAsMentor GameMentorship[] @relation("mentorOf")
   mentorshipsAsMentee GameMentorship[] @relation("menteeOf")
 
@@ -266,8 +267,8 @@ model GameProfile {
   // MEANINGFUL_2026-08.md §M5 / §3.2 O2+O4): declared price campaigns and
   // targeted talent-poaching offers (see PriceCampaign/PoachOffer below).
   priceCampaigns      PriceCampaign[]
-  poachOffersMade     PoachOffer[] @relation("poachAttacker")
-  poachOffersReceived PoachOffer[] @relation("poachTarget")
+  poachOffersMade     PoachOffer[]    @relation("poachAttacker")
+  poachOffersReceived PoachOffer[]    @relation("poachTarget")
 
   @@index([netWorth])
   @@index([totalEarned])
@@ -290,7 +291,7 @@ model GameLedgerEntry {
   profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   // Signed money delta (positive = credit to player, negative = debit).
-  moneyDelta Float @default(0)
+  moneyDelta    Float   @default(0)
   // Optional signed resource delta (order fills, bounty deliveries, escrows).
   resourceSlug  String?
   resourceDelta Float   @default(0)
@@ -391,19 +392,19 @@ model MarketResource {
 // read by sync/route.ts (per-player snapshot) and the Market Intelligence
 // demand map. Additive — no existing table is touched.
 model LocationDemandPool {
-  id         String @id @default(cuid())
-  locationId String
-  category   String
+  id            String @id @default(cuid())
+  locationId    String
+  category      String
   // NPC backdrop floor demand ($/mo), already population-scaled (§2.9).
-  dNpc     Float @default(0)
+  dNpc          Float  @default(0)
   // Demand derived from real player activity at the location ($/mo).
-  dDerived Float @default(0)
+  dDerived      Float  @default(0)
   // Total supplier capacity ($/mo) — synced players + NPC backdrop.
-  cSupply  Float @default(0)
+  cSupply       Float  @default(0)
   // Top-3 supplier capacity shares (anonymized fractions) + supplier count —
   // the free intel tier ("competitor pressure" without named detail).
-  topShares     Json @default("[]")
-  supplierCount Int  @default(0)
+  topShares     Json   @default("[]")
+  supplierCount Int    @default(0)
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -420,12 +421,12 @@ model LocationDemandPool {
 // sync/route.ts to build the extractionPressure snapshot. Additive — no
 // existing table is touched.
 model LocationExtraction {
-  id         String @id @default(cuid())
-  locationId String
-  resourceId String
+  id          String @id @default(cuid())
+  locationId  String
+  resourceId  String
   // Decaying pressure score (see extraction-pressure.ts computeExtractionPressure).
   // Always read through decay-since-updatedAt before use.
-  accumulated Float @default(0)
+  accumulated Float  @default(0)
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -442,11 +443,11 @@ model LocationExtraction {
 // the spec's "server-shared where players share the labor pool" boundary).
 // Additive — no existing table is touched.
 model LaborIndex {
-  id           String @id @default(cuid())
-  crewType     String @unique
-  wageIndex    Float  @default(1.0)
-  employedRaw  Float  @default(0)
-  supply       Float  @default(0)
+  id          String @id @default(cuid())
+  crewType    String @unique
+  wageIndex   Float  @default(1.0)
+  employedRaw Float  @default(0)
+  supply      Float  @default(0)
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -461,10 +462,10 @@ model LaborIndex {
 // snapshot consumed by cargo-logistics.ts's freight fuel pricing. Additive —
 // no existing table is touched.
 model LaneUsage {
-  id       String @id @default(cuid())
+  id      String @id @default(cuid())
   // Canonical undirected lane key (trade-lanes.ts laneKey: "fromId|toId" sorted).
-  laneKey  String @unique
-  usage    Float  @default(0)
+  laneKey String @unique
+  usage   Float  @default(0)
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -570,14 +571,14 @@ model FeedbackSubmission {
 // written in /admin (Compliance Q&A tab) and, once published, render as the
 // public FAQ list (answers are general information, never legal advice).
 model ComplianceQuestion {
-  id         String  @id @default(cuid())
-  question   String  @db.Text
+  id         String    @id @default(cuid())
+  question   String    @db.Text
   askerName  String? // Optional display-less contact name (never shown publicly)
   askerEmail String? // Optional — courtesy "your question was answered" email
-  status     String  @default("new") // new | answered | archived
-  answer     String? @db.Text // Founder's answer (draft until published=true)
+  status     String    @default("new") // new | answered | archived
+  answer     String?   @db.Text // Founder's answer (draft until published=true)
   answeredAt DateTime?
-  published  Boolean @default(false)
+  published  Boolean   @default(false)
   notifiedAt DateTime? // When the founder notification email was sent (null = retry on next submission)
 
   createdAt DateTime @default(now())
@@ -3356,14 +3357,14 @@ model GovernmentContractAward {
 // ============================================================
 
 model IntroductionRequest {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   fromUserId      String
   toUserId        String
   aboutUserId     String
-  message         String   @db.Text
-  status          String   @default("pending") // pending, accepted, declined, completed
-  responseMessage String?  @db.Text
-  requestedAt     DateTime @default(now())
+  message         String    @db.Text
+  status          String    @default("pending") // pending, accepted, declined, completed
+  responseMessage String?   @db.Text
+  requestedAt     DateTime  @default(now())
   respondedAt     DateTime?
   completedAt     DateTime?
 
@@ -5482,7 +5483,7 @@ model MarketFill {
   // MarketFill without a relation join. Safe to add as a required column —
   // prod has 0 MarketFill rows as of this wave's ground truth (§0), so there
   // is nothing to backfill.
-  resourceSlug String @default("")
+  resourceSlug    String @default("")
 
   createdAt DateTime @default(now())
 
@@ -6043,28 +6044,28 @@ model ActivityLog {
 // â”€â”€â”€ Wave 1: Speaking Opportunities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SpeakingOpportunity {
-  id             String   @id @default(cuid())
-  title          String
-  organization   String
-  conferenceName String?
-  topic          String
-  description    String   @db.Text
-  eventDate      DateTime
+  id                 String    @id @default(cuid())
+  title              String
+  organization       String
+  conferenceName     String?
+  topic              String
+  description        String    @db.Text
+  eventDate          DateTime
   submissionDeadline DateTime?
-  location       String?
-  isRemote       Boolean  @default(false)
-  compensation   String? // "paid" | "travel" | "unpaid" | free text
-  audienceSize   Int?
-  cfpUrl         String? // Call-for-papers URL
-  contactEmail   String?
-  contactName    String?
-  submittedById  String?
-  submittedBy    User?    @relation("SubmittedSpeakingOps", fields: [submittedById], references: [id], onDelete: SetNull)
-  status         String   @default("pending") // pending | approved | rejected | expired
-  featured       Boolean  @default(false)
-  tags           String[] // e.g. ["policy", "GNC", "launch-ops"]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  location           String?
+  isRemote           Boolean   @default(false)
+  compensation       String? // "paid" | "travel" | "unpaid" | free text
+  audienceSize       Int?
+  cfpUrl             String? // Call-for-papers URL
+  contactEmail       String?
+  contactName        String?
+  submittedById      String?
+  submittedBy        User?     @relation("SubmittedSpeakingOps", fields: [submittedById], references: [id], onDelete: SetNull)
+  status             String    @default("pending") // pending | approved | rejected | expired
+  featured           Boolean   @default(false)
+  tags               String[] // e.g. ["policy", "GNC", "launch-ops"]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@index([eventDate])
   @@index([submissionDeadline])
@@ -6075,41 +6076,41 @@ model SpeakingOpportunity {
 // â”€â”€â”€ Wave 1: Pitch Decks & Data Room â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model PitchDeck {
-  id             String        @id @default(cuid())
-  companyId      String
-  company        CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  title          String
-  description    String?       @db.Text
-  fileUrl        String
-  fileSize       Int?
-  visibility     String        @default("logged_in") // public | logged_in | invite_only
-  roundType      String? // pre-seed | seed | series_a | series_b | growth
-  amountRaising  Float?
-  currency       String?       @default("USD")
+  id               String         @id @default(cuid())
+  companyId        String
+  company          CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?        @db.Text
+  fileUrl          String
+  fileSize         Int?
+  visibility       String         @default("logged_in") // public | logged_in | invite_only
+  roundType        String? // pre-seed | seed | series_a | series_b | growth
+  amountRaising    Float?
+  currency         String?        @default("USD")
   uploadedByUserId String?
-  views          Int           @default(0)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  views            Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
-  accessLogs     PitchDeckView[]
+  accessLogs PitchDeckView[]
 
   @@index([companyId])
   @@index([visibility])
 }
 
 model PitchDeckView {
-  id         String    @id @default(cuid())
+  id          String    @id @default(cuid())
   pitchDeckId String
-  pitchDeck  PitchDeck @relation(fields: [pitchDeckId], references: [id], onDelete: Cascade)
-  userId     String?
-  viewedAt   DateTime  @default(now())
+  pitchDeck   PitchDeck @relation(fields: [pitchDeckId], references: [id], onDelete: Cascade)
+  userId      String?
+  viewedAt    DateTime  @default(now())
 
   @@index([pitchDeckId])
   @@index([userId])
 }
 
 model DataRoomDocument {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   companyId   String
   company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
   title       String
@@ -6117,9 +6118,9 @@ model DataRoomDocument {
   fileUrl     String
   fileSize    Int?
   docType     String? // term_sheet | financials | cap_table | product_deck | market_research | other
-  visibility  String   @default("invite_only") // public | logged_in | invite_only
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  visibility  String         @default("invite_only") // public | logged_in | invite_only
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@index([companyId])
   @@index([docType])
@@ -6128,18 +6129,18 @@ model DataRoomDocument {
 // â”€â”€â”€ Wave 1: Company Announcements â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CompanyAnnouncement {
-  id          String         @id @default(cuid())
-  companyId   String
-  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  authorId    String? // the user who posted it (typically claimed owner)
-  author      User?          @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: SetNull)
-  title       String
-  body        String         @db.Text
-  linkUrl     String?
-  category    String?        @default("general") // general | product | hiring | funding | milestone
-  pinned      Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id        String         @id @default(cuid())
+  companyId String
+  company   CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  authorId  String? // the user who posted it (typically claimed owner)
+  author    User?          @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  title     String
+  body      String         @db.Text
+  linkUrl   String?
+  category  String?        @default("general") // general | product | hiring | funding | milestone
+  pinned    Boolean        @default(false)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([companyId])
   @@index([createdAt])
@@ -6149,26 +6150,26 @@ model CompanyAnnouncement {
 // â”€â”€â”€ Wave 2: Mission Photo Gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MissionPhoto {
-  id            String   @id @default(cuid())
-  missionName   String
-  missionSlug   String?
-  eventId       String? // optional link to SpaceEvent
-  companyId     String? // optional company association
-  title         String
-  description   String?  @db.Text
-  photoUrl      String
-  thumbnailUrl  String?
-  credit        String? // photographer / agency / source
-  creditUrl     String?
-  takenAt       DateTime?
-  tags          String[]
-  category      String? // launch | on_orbit | landing | test | infrastructure | crew
-  featured      Boolean  @default(false)
-  uploadedById  String?
-  approved      Boolean  @default(true) // admin moderation
-  views         Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String    @id @default(cuid())
+  missionName  String
+  missionSlug  String?
+  eventId      String? // optional link to SpaceEvent
+  companyId    String? // optional company association
+  title        String
+  description  String?   @db.Text
+  photoUrl     String
+  thumbnailUrl String?
+  credit       String? // photographer / agency / source
+  creditUrl    String?
+  takenAt      DateTime?
+  tags         String[]
+  category     String? // launch | on_orbit | landing | test | infrastructure | crew
+  featured     Boolean   @default(false)
+  uploadedById String?
+  approved     Boolean   @default(true) // admin moderation
+  views        Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@index([missionSlug])
   @@index([eventId])
@@ -6181,19 +6182,19 @@ model MissionPhoto {
 // â”€â”€â”€ Wave 2: Event RSVP + Ticketing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model EventRSVP {
-  id          String   @id @default(cuid())
-  eventId     String
-  userId      String
-  user        User     @relation("UserEventRSVPs", fields: [userId], references: [id], onDelete: Cascade)
-  status      String   @default("going") // going | maybe | not_going | waitlist
-  ticketTier  String? // free | paid | vip
+  id              String   @id @default(cuid())
+  eventId         String
+  userId          String
+  user            User     @relation("UserEventRSVPs", fields: [userId], references: [id], onDelete: Cascade)
+  status          String   @default("going") // going | maybe | not_going | waitlist
+  ticketTier      String? // free | paid | vip
   stripeSessionId String?
-  paid        Boolean  @default(false)
-  amount      Float?
-  currency    String?  @default("USD")
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  paid            Boolean  @default(false)
+  amount          Float?
+  currency        String?  @default("USD")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@unique([eventId, userId])
   @@index([eventId])
@@ -6204,26 +6205,26 @@ model EventRSVP {
 // â”€â”€â”€ Wave 2: Mentor Marketplace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MentorProfile {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  headline        String
-  bio             String   @db.Text
-  expertiseAreas  String[] // e.g. ["propulsion", "regulatory", "fundraising"]
-  yearsExperience Int?
-  hourlyRate      Float?
-  currency        String?  @default("USD")
-  availability    String? // weekly | monthly | project
-  remoteOnly      Boolean  @default(true)
-  acceptingMentees Boolean @default(true)
-  pastCompanies   String[]
-  linkedinUrl     String?
-  endorsementCount Int     @default(0)
-  rating          Float?
-  ratingCount     Int     @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  headline         String
+  bio              String   @db.Text
+  expertiseAreas   String[] // e.g. ["propulsion", "regulatory", "fundraising"]
+  yearsExperience  Int?
+  hourlyRate       Float?
+  currency         String?  @default("USD")
+  availability     String? // weekly | monthly | project
+  remoteOnly       Boolean  @default(true)
+  acceptingMentees Boolean  @default(true)
+  pastCompanies    String[]
+  linkedinUrl      String?
+  endorsementCount Int      @default(0)
+  rating           Float?
+  ratingCount      Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  matches  MentorMatch[]
+  matches MentorMatch[]
 
   @@index([userId])
   @@index([acceptingMentees])
@@ -6247,12 +6248,12 @@ model MentorMatch {
 }
 
 model SkillEndorsement {
-  id            String   @id @default(cuid())
-  endorserId    String // user doing the endorsing
-  endorseeId    String // user being endorsed
-  skill         String
-  note          String?
-  createdAt     DateTime @default(now())
+  id         String   @id @default(cuid())
+  endorserId String // user doing the endorsing
+  endorseeId String // user being endorsed
+  skill      String
+  note       String?
+  createdAt  DateTime @default(now())
 
   @@unique([endorserId, endorseeId, skill])
   @@index([endorseeId])
@@ -6262,7 +6263,7 @@ model SkillEndorsement {
 // â”€â”€â”€ Wave 2: Credentials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model UserCredential {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   userId           String
   credentialType   String // degree | certification | clearance | license | patent
   title            String
@@ -6272,12 +6273,12 @@ model UserCredential {
   credentialId     String? // license number, diploma id, etc.
   verificationUrl  String?
   supportingDocUrl String? // attached evidence
-  status           String   @default("self_reported") // self_reported | pending | verified | rejected
+  status           String    @default("self_reported") // self_reported | pending | verified | rejected
   verifiedAt       DateTime?
   verifierId       String? // admin who verified
   rejectionReason  String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([userId])
   @@index([status])
@@ -6287,19 +6288,19 @@ model UserCredential {
 // â”€â”€â”€ Wave 2: Cap Table Transparency â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CapTable {
-  id                 String   @id @default(cuid())
-  companyId          String   @unique
-  currentValuation   Float?
-  currency           String?  @default("USD")
-  sharesAuthorized   BigInt?
-  sharesOutstanding  BigInt?
-  asOfDate           DateTime?
-  visibility         String   @default("invite_only") // public | logged_in | invite_only
-  uploadedByUserId   String?
-  documentUrl        String? // optional supporting doc (e.g. Carta export)
-  notes              String?  @db.Text
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id                String    @id @default(cuid())
+  companyId         String    @unique
+  currentValuation  Float?
+  currency          String?   @default("USD")
+  sharesAuthorized  BigInt?
+  sharesOutstanding BigInt?
+  asOfDate          DateTime?
+  visibility        String    @default("invite_only") // public | logged_in | invite_only
+  uploadedByUserId  String?
+  documentUrl       String? // optional supporting doc (e.g. Carta export)
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   entries CapTableEntry[]
   shares  CapTableShare[]
@@ -6308,19 +6309,19 @@ model CapTable {
 }
 
 model CapTableEntry {
-  id           String   @id @default(cuid())
-  capTableId   String
-  capTable     CapTable @relation(fields: [capTableId], references: [id], onDelete: Cascade)
-  holderName   String
-  holderType   String // founder | employee | investor | other
-  shareClass   String // common | preferred_a | preferred_b | convertible | safe | option_pool
-  shareCount   BigInt?
-  percentage   Float?
+  id               String    @id @default(cuid())
+  capTableId       String
+  capTable         CapTable  @relation(fields: [capTableId], references: [id], onDelete: Cascade)
+  holderName       String
+  holderType       String // founder | employee | investor | other
+  shareClass       String // common | preferred_a | preferred_b | convertible | safe | option_pool
+  shareCount       BigInt?
+  percentage       Float?
   investmentAmount Float?
-  roundLabel   String? // seed | series_a | etc.
-  acquiredAt   DateTime?
-  notes        String?
-  createdAt    DateTime @default(now())
+  roundLabel       String? // seed | series_a | etc.
+  acquiredAt       DateTime?
+  notes            String?
+  createdAt        DateTime  @default(now())
 
   @@index([capTableId])
   @@index([holderType])
@@ -6328,13 +6329,13 @@ model CapTableEntry {
 }
 
 model CapTableShare {
-  id           String   @id @default(cuid())
-  capTableId   String
-  capTable     CapTable @relation(fields: [capTableId], references: [id], onDelete: Cascade)
+  id              String    @id @default(cuid())
+  capTableId      String
+  capTable        CapTable  @relation(fields: [capTableId], references: [id], onDelete: Cascade)
   grantedToUserId String // user who now has read access
   grantedByUserId String
-  expiresAt    DateTime?
-  createdAt    DateTime @default(now())
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
 
   @@unique([capTableId, grantedToUserId])
   @@index([grantedToUserId])
@@ -6360,12 +6361,12 @@ model CorporateChannel {
 }
 
 model ChannelMembership {
-  id         String          @id @default(cuid())
+  id         String           @id @default(cuid())
   channelId  String
   channel    CorporateChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   userId     String
-  role       String          @default("member") // owner | admin | member | readonly
-  joinedAt   DateTime        @default(now())
+  role       String           @default("member") // owner | admin | member | readonly
+  joinedAt   DateTime         @default(now())
   mutedUntil DateTime?
 
   @@unique([channelId, userId])
@@ -6373,15 +6374,15 @@ model ChannelMembership {
 }
 
 model ChannelMessage {
-  id         String          @id @default(cuid())
-  channelId  String
-  channel    CorporateChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  authorId   String
-  body       String          @db.Text
+  id              String           @id @default(cuid())
+  channelId       String
+  channel         CorporateChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  authorId        String
+  body            String           @db.Text
   parentMessageId String? // threading
-  pinned     Boolean         @default(false)
-  editedAt   DateTime?
-  createdAt  DateTime        @default(now())
+  pinned          Boolean          @default(false)
+  editedAt        DateTime?
+  createdAt       DateTime         @default(now())
 
   @@index([channelId])
   @@index([authorId])
@@ -6389,16 +6390,16 @@ model ChannelMessage {
 }
 
 model TeamProject {
-  id          String   @id @default(cuid())
-  companyId   String
-  name        String
-  description String?  @db.Text
-  ownerId     String
-  status      String   @default("active") // active | paused | completed | archived
-  dueDate     DateTime?
+  id            String    @id @default(cuid())
+  companyId     String
+  name          String
+  description   String?   @db.Text
+  ownerId       String
+  status        String    @default("active") // active | paused | completed | archived
+  dueDate       DateTime?
   memberUserIds String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([companyId])
   @@index([ownerId])
@@ -6408,20 +6409,20 @@ model TeamProject {
 // â”€â”€â”€ Wave 2: Podcast Directory + Transcripts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Podcast {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  name         String
-  description  String?  @db.Text
-  feedUrl      String?
-  websiteUrl   String?
-  artworkUrl   String?
-  author       String?
-  category     String?
-  language     String?  @default("en")
-  episodeCount Int      @default(0)
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  name          String
+  description   String?   @db.Text
+  feedUrl       String?
+  websiteUrl    String?
+  artworkUrl    String?
+  author        String?
+  category      String?
+  language      String?   @default("en")
+  episodeCount  Int       @default(0)
   lastFetchedAt DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   episodes PodcastEpisode[]
 
@@ -6430,20 +6431,20 @@ model Podcast {
 }
 
 model PodcastEpisode {
-  id          String   @id @default(cuid())
-  podcastId   String
-  podcast     Podcast  @relation(fields: [podcastId], references: [id], onDelete: Cascade)
-  slug        String
-  title       String
-  description String?  @db.Text
-  audioUrl    String?
-  durationSec Int?
-  publishedAt DateTime?
+  id            String             @id @default(cuid())
+  podcastId     String
+  podcast       Podcast            @relation(fields: [podcastId], references: [id], onDelete: Cascade)
+  slug          String
+  title         String
+  description   String?            @db.Text
+  audioUrl      String?
+  durationSec   Int?
+  publishedAt   DateTime?
   episodeNumber Int?
-  seasonNumber Int?
-  transcript  PodcastTranscript?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  seasonNumber  Int?
+  transcript    PodcastTranscript?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 
   @@unique([podcastId, slug])
   @@index([podcastId])
@@ -6451,14 +6452,14 @@ model PodcastEpisode {
 }
 
 model PodcastTranscript {
-  id         String   @id @default(cuid())
-  episodeId  String   @unique
-  episode    PodcastEpisode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
-  body       String   @db.Text
-  language   String   @default("en")
+  id          String         @id @default(cuid())
+  episodeId   String         @unique
+  episode     PodcastEpisode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  body        String         @db.Text
+  language    String         @default("en")
   generatedBy String? // "whisper" | "manual" | "host"
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@index([episodeId])
 }
@@ -6466,24 +6467,24 @@ model PodcastTranscript {
 // â”€â”€â”€ Wave 2: Mission Debrief â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MissionDebrief {
-  id             String   @id @default(cuid())
-  slug           String   @unique
-  eventId        String? // link to SpaceEvent
-  missionName    String
-  missionDate    DateTime
-  status         String // success | partial | failure | scrubbed
-  executiveSummary String @db.Text
-  timeline       Json? // array of { t, label, note }
-  costsEstimate  Float?
-  currency       String?  @default("USD")
-  companyIds     String[] // involved companies (scalar array)
-  keyTakeaways   String[]
-  sources        Json? // array of { url, title }
-  fullAnalysis   String   @db.Text // AI-generated long-form
-  generatedBy    String?  @default("claude") // claude | manual | mixed
-  publishedAt    DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  eventId          String? // link to SpaceEvent
+  missionName      String
+  missionDate      DateTime
+  status           String // success | partial | failure | scrubbed
+  executiveSummary String    @db.Text
+  timeline         Json? // array of { t, label, note }
+  costsEstimate    Float?
+  currency         String?   @default("USD")
+  companyIds       String[] // involved companies (scalar array)
+  keyTakeaways     String[]
+  sources          Json? // array of { url, title }
+  fullAnalysis     String    @db.Text // AI-generated long-form
+  generatedBy      String?   @default("claude") // claude | manual | mixed
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([slug])
   @@index([missionDate])
@@ -6493,14 +6494,14 @@ model MissionDebrief {
 // â”€â”€â”€ Wave 3: Universal Watchlist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model WatchlistItem {
-  id         String   @id @default(cuid())
-  userId     String
-  entityType String // company | person | mission | vehicle | technology | investor | podcast | conference
-  entityId   String
+  id          String   @id @default(cuid())
+  userId      String
+  entityType  String // company | person | mission | vehicle | technology | investor | podcast | conference
+  entityId    String
   entityLabel String? // denormalized for easy display
-  alertLevel String   @default("all") // all | major | none
-  notes      String?
-  createdAt  DateTime @default(now())
+  alertLevel  String   @default("all") // all | major | none
+  notes       String?
+  createdAt   DateTime @default(now())
 
   @@unique([userId, entityType, entityId])
   @@index([userId])
@@ -6537,44 +6538,44 @@ model ExpertSession {
 }
 
 model SessionQuestion {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   sessionId  String
   session    ExpertSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   askerId    String
-  body       String   @db.Text
-  upvotes    Int      @default(0)
-  answered   Boolean  @default(false)
-  answerText String?  @db.Text
+  body       String        @db.Text
+  upvotes    Int           @default(0)
+  answered   Boolean       @default(false)
+  answerText String?       @db.Text
   answeredAt DateTime?
-  createdAt  DateTime @default(now())
+  createdAt  DateTime      @default(now())
 
   @@index([sessionId])
   @@index([upvotes])
 }
 
 model SessionRSVP {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   sessionId String
   session   ExpertSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   userId    String
-  attended  Boolean  @default(false)
-  createdAt DateTime @default(now())
+  attended  Boolean       @default(false)
+  createdAt DateTime      @default(now())
 
   @@unique([sessionId, userId])
   @@index([userId])
 }
 
 model OfficeHourSlot {
-  id           String   @id @default(cuid())
-  mentorUserId String
-  startTime    DateTime
-  endTime      DateTime
-  status       String   @default("open") // open | booked | cancelled
+  id             String   @id @default(cuid())
+  mentorUserId   String
+  startTime      DateTime
+  endTime        DateTime
+  status         String   @default("open") // open | booked | cancelled
   bookedByUserId String?
-  topic        String?
-  notes        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  topic          String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([mentorUserId])
   @@index([startTime])
@@ -6584,17 +6585,17 @@ model OfficeHourSlot {
 // â”€â”€â”€ Wave 3: Satellite Pass Alerts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SatellitePassAlert {
-  id         String   @id @default(cuid())
-  userId     String
-  satellite  String // ISS | Starlink-XXXX | norad catalog ID
-  latitude   Float
-  longitude  Float
-  locationLabel String?
-  minElevation Float  @default(10) // degrees above horizon
-  enabled    Boolean  @default(true)
+  id             String    @id @default(cuid())
+  userId         String
+  satellite      String // ISS | Starlink-XXXX | norad catalog ID
+  latitude       Float
+  longitude      Float
+  locationLabel  String?
+  minElevation   Float     @default(10) // degrees above horizon
+  enabled        Boolean   @default(true)
   lastNotifiedAt DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([userId])
   @@index([satellite])
@@ -6604,17 +6605,17 @@ model SatellitePassAlert {
 // â”€â”€â”€ Wave 3: Countdown Widgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CountdownWidget {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  missionName  String
-  targetTime   DateTime
-  eventId      String? // optional SpaceEvent link
-  theme        String   @default("dark") // dark | light | minimal | retro
-  createdById  String?
-  views        Int      @default(0)
-  embedsCount  Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  missionName String
+  targetTime  DateTime
+  eventId     String? // optional SpaceEvent link
+  theme       String   @default("dark") // dark | light | minimal | retro
+  createdById String?
+  views       Int      @default(0)
+  embedsCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([slug])
   @@index([targetTime])
@@ -6623,18 +6624,18 @@ model CountdownWidget {
 // â”€â”€â”€ Wave 3: Study Groups + Reading Clubs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model StudyGroup {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  name        String
-  description String   @db.Text
-  topic       String // orbital-mechanics | space-law | supply-chain | propulsion | etc.
-  hostUserId  String
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  description    String   @db.Text
+  topic          String // orbital-mechanics | space-law | supply-chain | propulsion | etc.
+  hostUserId     String
   meetingCadence String? // weekly | biweekly | monthly
-  memberLimit Int?
-  isPrivate   Boolean  @default(false)
-  readingList Json? // array of { title, url, type }
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  memberLimit    Int?
+  isPrivate      Boolean  @default(false)
+  readingList    Json? // array of { title, url, type }
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   memberships GroupMembership[]
   meetings    GroupMeeting[]
@@ -6644,27 +6645,27 @@ model StudyGroup {
 }
 
 model GroupMembership {
-  id        String   @id @default(cuid())
-  groupId   String
-  group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  userId    String
-  role      String   @default("member") // host | member
-  joinedAt  DateTime @default(now())
+  id       String     @id @default(cuid())
+  groupId  String
+  group    StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String
+  role     String     @default("member") // host | member
+  joinedAt DateTime   @default(now())
 
   @@unique([groupId, userId])
   @@index([userId])
 }
 
 model GroupMeeting {
-  id         String   @id @default(cuid())
-  groupId    String
-  group      StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  title      String
+  id          String     @id @default(cuid())
+  groupId     String
+  group       StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title       String
   scheduledAt DateTime
-  durationMin Int @default(60)
-  streamUrl  String?
-  agendaMd   String? @db.Text
-  createdAt  DateTime @default(now())
+  durationMin Int        @default(60)
+  streamUrl   String?
+  agendaMd    String?    @db.Text
+  createdAt   DateTime   @default(now())
 
   @@index([groupId])
   @@index([scheduledAt])
@@ -6673,19 +6674,19 @@ model GroupMeeting {
 // â”€â”€â”€ Wave 3: Launch Cost Benchmarking + Supplier Reliability â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model LaunchCostBenchmark {
-  id            String   @id @default(cuid())
-  vehicle       String
-  provider      String
-  payloadKg     Float
-  orbitType     String // leo | meo | geo | lunar | hyperbolic
-  launchDate    DateTime
-  costUSD       Float
-  costPerKg     Float?
-  source        String? // article | filing | press_release
-  sourceUrl     String?
-  reliability   Float? // success rate for this vehicle as of this date
-  notes         String?
-  createdAt     DateTime @default(now())
+  id          String   @id @default(cuid())
+  vehicle     String
+  provider    String
+  payloadKg   Float
+  orbitType   String // leo | meo | geo | lunar | hyperbolic
+  launchDate  DateTime
+  costUSD     Float
+  costPerKg   Float?
+  source      String? // article | filing | press_release
+  sourceUrl   String?
+  reliability Float? // success rate for this vehicle as of this date
+  notes       String?
+  createdAt   DateTime @default(now())
 
   @@index([vehicle])
   @@index([provider])
@@ -6694,18 +6695,18 @@ model LaunchCostBenchmark {
 }
 
 model SupplierReliabilityScore {
-  id            String   @id @default(cuid())
-  companyId     String
-  scoredFor     String // overall | propulsion | avionics | comms | structures | launch_services
-  onTimePct     Float? // 0-100
-  qualityScore  Float? // 0-100
+  id                      String   @id @default(cuid())
+  companyId               String
+  scoredFor               String // overall | propulsion | avionics | comms | structures | launch_services
+  onTimePct               Float? // 0-100
+  qualityScore            Float? // 0-100
   costPredictabilityScore Float? // 0-100
-  overallScore  Float? // 0-100
-  sampleSize    Int    @default(0)
-  asOfDate      DateTime
-  methodology   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  overallScore            Float? // 0-100
+  sampleSize              Int      @default(0)
+  asOfDate                DateTime
+  methodology             String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   @@unique([companyId, scoredFor, asOfDate])
   @@index([companyId])
@@ -6715,41 +6716,41 @@ model SupplierReliabilityScore {
 // â”€â”€â”€ Wave 3: Investor Thesis + Deal Memos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model InvestorThesis {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  authorUserId String
-  title       String
-  summary     String   @db.Text
-  bodyMd      String   @db.Text
-  sectors     String[] // ["launch", "in-space-manufacturing"]
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  authorUserId    String
+  title           String
+  summary         String    @db.Text
+  bodyMd          String    @db.Text
+  sectors         String[] // ["launch", "in-space-manufacturing"]
   stagePreference String? // pre-seed | seed | series_a | growth
-  geography   String?
-  publishedAt DateTime?
-  views       Int      @default(0)
-  upvotes     Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  geography       String?
+  publishedAt     DateTime?
+  views           Int       @default(0)
+  upvotes         Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([authorUserId])
   @@index([publishedAt])
 }
 
 model DealMemo {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  authorUserId String
-  companyName  String
-  companyId    String? // optional link to CompanyProfile
-  dealStage    String // seed | series_a | etc.
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  authorUserId     String
+  companyName      String
+  companyId        String? // optional link to CompanyProfile
+  dealStage        String // seed | series_a | etc.
   investmentAmount Float?
-  currency     String? @default("USD")
-  thesis       String   @db.Text
-  risks        String?  @db.Text
-  recommendation String // invest | pass | more_info
-  visibility   String   @default("logged_in") // public | logged_in | private
-  publishedAt  DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  currency         String?   @default("USD")
+  thesis           String    @db.Text
+  risks            String?   @db.Text
+  recommendation   String // invest | pass | more_info
+  visibility       String    @default("logged_in") // public | logged_in | private
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([authorUserId])
   @@index([visibility])
@@ -6759,20 +6760,20 @@ model DealMemo {
 // â”€â”€â”€ Wave 3: This Day in Space â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SpaceHistoryEvent {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  description String   @db.Text
-  eventDate   DateTime // full date for sorting
-  monthDay    String // "MM-DD" for "this day" lookups
-  year        Int
-  category    String // launch | landing | mission | discovery | policy | milestone
-  imageUrl    String?
-  sourceUrls  String[]
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  description       String   @db.Text
+  eventDate         DateTime // full date for sorting
+  monthDay          String // "MM-DD" for "this day" lookups
+  year              Int
+  category          String // launch | landing | mission | discovery | policy | milestone
+  imageUrl          String?
+  sourceUrls        String[]
   relatedCompanyIds String[]
-  featured    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  featured          Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([monthDay])
   @@index([year])
@@ -6783,21 +6784,21 @@ model SpaceHistoryEvent {
 // â”€â”€â”€ Wave 3: Ticket Resale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model TicketListing {
-  id            String   @id @default(cuid())
-  rsvpId        String?  @unique // link to original RSVP being resold
+  id            String    @id @default(cuid())
+  rsvpId        String?   @unique // link to original RSVP being resold
   eventId       String
   sellerUserId  String
   ticketTier    String?
   askingPrice   Float
-  currency      String   @default("USD")
+  currency      String    @default("USD")
   originalPrice Float?
-  status        String   @default("listed") // listed | sold | cancelled | expired
+  status        String    @default("listed") // listed | sold | cancelled | expired
   buyerUserId   String?
   soldAt        DateTime?
   sellerRating  Float?
   notes         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([eventId])
   @@index([sellerUserId])
@@ -6805,17 +6806,17 @@ model TicketListing {
 }
 
 model ResaleTransaction {
-  id            String   @id @default(cuid())
-  ticketListingId String
-  buyerUserId   String
-  sellerUserId  String
-  amount        Float
-  currency      String   @default("USD")
-  platformFee   Float    @default(0)
+  id                    String   @id @default(cuid())
+  ticketListingId       String
+  buyerUserId           String
+  sellerUserId          String
+  amount                Float
+  currency              String   @default("USD")
+  platformFee           Float    @default(0)
   stripePaymentIntentId String?
-  status        String   @default("pending") // pending | completed | refunded
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  status                String   @default("pending") // pending | completed | refunded
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   @@index([ticketListingId])
   @@index([buyerUserId])
@@ -6825,18 +6826,18 @@ model ResaleTransaction {
 // â”€â”€â”€ Wave 3: Learning Zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CourseModule {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  title        String
-  description  String   @db.Text
-  track        String // orbital-mechanics | propulsion | space-law | supply-chain | communications | kids
-  level        String @default("beginner") // beginner | intermediate | advanced
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  title            String
+  description      String   @db.Text
+  track            String // orbital-mechanics | propulsion | space-law | supply-chain | communications | kids
+  level            String   @default("beginner") // beginner | intermediate | advanced
   estimatedMinutes Int?
-  heroImageUrl String?
-  published    Boolean  @default(false)
-  orderIndex   Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  heroImageUrl     String?
+  published        Boolean  @default(false)
+  orderIndex       Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   lessons Lesson[]
 
@@ -6845,21 +6846,38 @@ model CourseModule {
 }
 
 model Lesson {
-  id          String   @id @default(cuid())
-  moduleId    String
-  module      CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  slug        String
-  title       String
-  bodyMd      String   @db.Text
-  videoUrl    String?
-  interactiveType String? // calculator | simulator | quiz | none
+  id                String           @id @default(cuid())
+  moduleId          String
+  module            CourseModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  slug              String
+  title             String
+  bodyMd            String           @db.Text
+  videoUrl          String?
+  interactiveType   String? // calculator | simulator | quiz | none
   interactiveConfig Json?
-  orderIndex  Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  orderIndex        Int              @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  progress          LessonProgress[]
 
   @@unique([moduleId, slug])
   @@index([moduleId])
+}
+
+// Lesson completion for signed-in learners (2026-08-28). Anonymous progress
+// lives in localStorage (src/lib/learn-progress.ts); this row is the
+// cross-device copy and what course-completion nudges read.
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
 }
 
 // ─── Space Tycoon: Prediction Exchange ────────────────────────────────────────
@@ -6875,13 +6893,13 @@ model PredictionQuestion {
   id              String    @id @default(cuid())
   key             String    @unique // deterministic dedupe key, e.g. 'launch-<spaceEventId>', 'stocks-<mondayISO>-<ticker>'
   question        String
-  options         Json      // PredictionOption[] — [{ id, label }], MVP is always exactly 2 options
-  category        String    // 'launch' | 'stocks' | 'milestone'
-  closesAt        DateTime  // stakes locked after this instant
+  options         Json // PredictionOption[] — [{ id, label }], MVP is always exactly 2 options
+  category        String // 'launch' | 'stocks' | 'milestone'
+  closesAt        DateTime // stakes locked after this instant
   resolvesAt      DateTime? // earliest the daily resolver will attempt to settle; null = resolve opportunistically once closesAt has passed
-  outcomeOptionId String?   // set once resolved; null while still open
-  sourceHref      String?   // link to the real tracker page (launch-tracker, space-stocks, etc.)
-  sourceRef       Json?     // resolution bookkeeping, e.g. { spaceEventId } or { ticker, basePrice, basePriceAt }
+  outcomeOptionId String? // set once resolved; null while still open
+  sourceHref      String? // link to the real tracker page (launch-tracker, space-stocks, etc.)
+  sourceRef       Json? // resolution bookkeeping, e.g. { spaceEventId } or { ticker, basePrice, basePriceAt }
   resolvedAt      DateTime?
   createdAt       DateTime  @default(now())
 
@@ -6893,15 +6911,15 @@ model PredictionQuestion {
 }
 
 model PredictionStake {
-  id         String              @id @default(cuid())
+  id         String             @id @default(cuid())
   questionId String
-  question   PredictionQuestion  @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  profileId  String              // GameProfile.id — same server-auth identity as every other game route
+  question   PredictionQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  profileId  String // GameProfile.id — same server-auth identity as every other game route
   optionId   String
-  stake      Int                 // game credits, clamped [PREDICTION_STAKE_MIN, PREDICTION_STAKE_MAX] at write time
-  payout     Int?                // set on resolution: 0 if incorrect, stake*multiplier if correct; null until resolved
+  stake      Int // game credits, clamped [PREDICTION_STAKE_MIN, PREDICTION_STAKE_MAX] at write time
+  payout     Int? // set on resolution: 0 if incorrect, stake*multiplier if correct; null until resolved
   paidOutAt  DateTime?
-  createdAt  DateTime            @default(now())
+  createdAt  DateTime           @default(now())
 
   @@unique([questionId, profileId])
   @@index([questionId])
@@ -6909,19 +6927,19 @@ model PredictionStake {
 }
 
 model BuildGuide {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  title        String
-  description  String   @db.Text
-  track        String // diy-satellite | cansat | high-altitude-balloon | weather-station | amateur-radio
-  difficulty   String   @default("intermediate")
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  description    String   @db.Text
+  track          String // diy-satellite | cansat | high-altitude-balloon | weather-station | amateur-radio
+  difficulty     String   @default("intermediate")
   estimatedHours Int?
-  materialsList Json? // array of { name, qty, url? }
-  steps        Json // array of { title, body, imageUrl? }
-  authorUserId String?
-  published    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  materialsList  Json? // array of { name, qty, url? }
+  steps          Json // array of { title, body, imageUrl? }
+  authorUserId   String?
+  published      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([track])
   @@index([published])
@@ -6985,23 +7003,23 @@ model CorpEraRecord {
 // Visible-but-forgiving (CLAUDE.md): missing a week costs only that week's
 // stipend — never a punitive marker, never removes anything.
 model AllianceCharter {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   allianceId   String
-  alliance     Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  alliance     Alliance  @relation(fields: [allianceId], references: [id], onDelete: Cascade)
   seasonNumber Int // ties the charter to seasonal-events.ts's 28-day season clock
   charterType  String // AllianceCharterType — see alliance-charters.ts
   goalTarget   Float // absolute season-wide target for the charter's metric
-  escrowTotal  Float @default(0) // funded from alliance.treasury at ratification (real sink)
-  escrowSpent  Float @default(0) // running total of stipends paid out
-  progress     Float @default(0) // cumulative metric total across all weeks/members (denormalized cache — source of truth is SUM(AlliancePledge.contributed))
-  status       String @default("active") // active, completed, expired
+  escrowTotal  Float     @default(0) // funded from alliance.treasury at ratification (real sink)
+  escrowSpent  Float     @default(0) // running total of stipends paid out
+  progress     Float     @default(0) // cumulative metric total across all weeks/members (denormalized cache — source of truth is SUM(AlliancePledge.contributed))
+  status       String    @default("active") // active, completed, expired
   ratifiedBy   String // profileId of the officer/leader who ratified it
-  startsAt     DateTime @default(now())
+  startsAt     DateTime  @default(now())
   endsAt       DateTime // season end
   gradedAt     DateTime?
   grade        String? // CharterGrade: gold | silver | bronze | incomplete
   rewardXp     Int? // alliance XP granted at grading
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
 
   pledges AlliancePledge[]
 
@@ -7023,11 +7041,11 @@ model AlliancePledge {
   profile     GameProfile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
   weekIndex   Int // epoch-aligned week — Math.floor(nowMs / CHARTER_WEEK_MS), matches league week convention
   quotaAmount Float // this member's weekly quota (officer-adjustable)
-  contributed Float @default(0) // actual metric total this week, server-aggregated
-  met         Boolean @default(false)
-  stipendPaid Float @default(0)
+  contributed Float           @default(0) // actual metric total this week, server-aggregated
+  met         Boolean         @default(false)
+  stipendPaid Float           @default(0)
   closedAt    DateTime? // set once the weekly cron evaluates + pays this row
-  createdAt   DateTime @default(now())
+  createdAt   DateTime        @default(now())
 
   @@unique([charterId, profileId, weekIndex])
   @@index([charterId, weekIndex])
@@ -7095,15 +7113,15 @@ model ChapterContribution {
 // the old client-only computeOrbitalSlotReport TODO could never see. Read by
 // sync/route.ts and delivered into the client snapshot.
 model OrbitalSlotOccupancy {
-  locationId    String @id
-  occupiedCount Int    @default(0)
+  locationId    String   @id
+  occupiedCount Int      @default(0)
   totalSlots    Int
   // Precomputed bucket ('low'|'medium'|'high'|'saturated') — saturated
   // (>=85% per §5 item 5) is the gate: new leases require winning an
   // OrbitalSlotAuction once a pool crosses this threshold.
-  bucket    String   @default("low")
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  bucket        String   @default("low")
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
 }
 
 // Sealed-bid auction for a single orbital-slot lease at a saturated pool.
@@ -7115,12 +7133,12 @@ model OrbitalSlotOccupancy {
 // refunded in full. Chokepoint locations (spatial-strategy.ts
 // computeChokepoints severity) raise `minBid` via a premium multiplier.
 model OrbitalSlotAuction {
-  id         String @id @default(cuid())
-  locationId String
-  minBid     Float
+  id                String @id @default(cuid())
+  locationId        String
+  minBid            Float
   // Chokepoint-severity premium baked into minBid at creation time (1.0 =
   // no chokepoint, 1.25 = major, 1.5 = critical) — kept for display/audit.
-  chokepointPremium Float @default(1.0)
+  chokepointPremium Float  @default(1.0)
 
   status     String    @default("open") // open, resolved, expired (no bids)
   closesAt   DateTime
@@ -7157,17 +7175,17 @@ model OrbitalSlotBid {
 // the initial auction burn). Term-limited; `expiresAt` reaching now returns
 // the slot to the open pool (re-auctionable) unless renewed.
 model OrbitalSlotLease {
-  id          String      @id @default(cuid())
-  locationId  String
-  holderId    String
-  holder      GameProfile @relation(fields: [holderId], references: [id], onDelete: Cascade)
+  id                String      @id @default(cuid())
+  locationId        String
+  holderId          String
+  holder            GameProfile @relation(fields: [holderId], references: [id], onDelete: Cascade)
   // The price paid to ACQUIRE this lease (auction win or transfer buy-in) —
   // display/audit only; auction proceeds were already burned, transfer
   // proceeds already paid out at time of transfer.
-  leaseAmount Float
-  status      String      @default("active") // active, expired, transferred
-  startedAt   DateTime    @default(now())
-  expiresAt   DateTime
+  leaseAmount       Float
+  status            String      @default("active") // active, expired, transferred
+  startedAt         DateTime    @default(now())
+  expiresAt         DateTime
   // Set when this lease was sold player-to-player (transfer market) rather
   // than won at auction — audit trail for the "transferable at
   // market-clearing prices" canon line.
@@ -7212,7 +7230,7 @@ model CorpShareRegistry {
   // Set when another profile holds >= CONTROL_SHARES (51) — the target
   // continues as a subsidiary of this controller (spec "what control gets
   // you"). Null = founder-controlled.
-  controllerProfileId String?
+  controllerProfileId   String?
   // Post-acquisition integration malus (-10% target service revenue) active
   // until this instant (2 game-months after the control change).
   integrationMalusUntil DateTime?
@@ -7278,27 +7296,27 @@ model ShareTransaction {
 // rankContestOffers). Sell-side kinds (raise, distress) are first-come
 // purchasable listings. All offers are public and calendar-visible.
 model TenderOffer {
-  id              String            @id @default(cuid())
-  registryId      String
-  registry        CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
+  id                 String            @id @default(cuid())
+  registryId         String
+  registry           CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
   // Denormalized from registry for cheap "offers targeting me" queries.
-  targetProfileId String
+  targetProfileId    String
   // Buy-side: the bidder (for buyback this equals targetProfileId — the
   // board burning its own cash). Sell-side: the seller.
   initiatorProfileId String
-  kind            String // tender | white_knight | buyback | raise | distress
-  pricePerShare   Float
-  sharesSought    Int
-  sharesFilled    Int               @default(0)
-  escrowAmount    Float             @default(0)
-  arbitrationFee  Float             @default(0)
-  status          String            @default("open") // open | settled | settled_control | lost | expired | withdrawn
-  opensAt         DateTime          @default(now())
-  closesAt        DateTime
+  kind               String // tender | white_knight | buyback | raise | distress
+  pricePerShare      Float
+  sharesSought       Int
+  sharesFilled       Int               @default(0)
+  escrowAmount       Float             @default(0)
+  arbitrationFee     Float             @default(0)
+  status             String            @default("open") // open | settled | settled_control | lost | expired | withdrawn
+  opensAt            DateTime          @default(now())
+  closesAt           DateTime
   // Set when a settlement crossed 50%: minorities may sell to the new
   // controller at pricePerShare until this instant (mandatory bid rule).
   mandatoryBidEndsAt DateTime?
-  createdAt       DateTime          @default(now())
+  createdAt          DateTime          @default(now())
 
   acceptances TenderAcceptance[]
 
@@ -7324,12 +7342,12 @@ model TenderAcceptance {
 // paid pro-rata to minority holders by the resolve cron once per NEW
 // published quarterly report (PublishedCorpReport).
 model DividendPolicy {
-  id                String            @id @default(cuid())
-  registryId        String            @unique
-  registry          CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
-  payoutRatioPct    Int               @default(0)
+  id                 String            @id @default(cuid())
+  registryId         String            @unique
+  registry           CorpShareRegistry @relation(fields: [registryId], references: [id], onDelete: Cascade)
+  payoutRatioPct     Int               @default(0)
   lastPaidQuarterKey String?
-  updatedAt         DateTime          @updatedAt
+  updatedAt          DateTime          @updatedAt
 }
 
 // ─── Meaningful Decisions Wave M5 "Offense Toolkit I" ────────────────────────
@@ -7376,13 +7394,13 @@ model PoachOffer {
   count             Int
   signingBonusTotal Float // escrowed from the attacker at offer time
   retentionCost     Float // 75% of the bonus — what the target pays to retain
-  actionFee         Float   @default(0) // burned espionage-style fee
-  wageIndexAtOffer  Float   @default(1)
-  detected          Boolean @default(false) // target identified the attacker
-  status            String  @default("pending") // pending, retained, retained_free, poached, withdrawn
+  actionFee         Float       @default(0) // burned espionage-style fee
+  wageIndexAtOffer  Float       @default(1)
+  detected          Boolean     @default(false) // target identified the attacker
+  status            String      @default("pending") // pending, retained, retained_free, poached, withdrawn
   respondBy         DateTime
   resolvedAt        DateTime?
-  createdAt         DateTime  @default(now())
+  createdAt         DateTime    @default(now())
 
   @@index([targetId, status])
   @@index([attackerId, status])
@@ -7527,26 +7545,26 @@ model SystemicCrisisCycle {
   // Measured world telemetry, frozen at forecast time. `worldIndex` is
   // measured/anchor clamped to [0, 2]; the raw measure and the anchor are
   // stored beside it so the scaling is auditable from inside the game.
-  worldIndex        Float  @default(0)
-  worldIndexMeasured Float @default(0)
-  worldIndexAnchor  Float  @default(1)
-  worldIndexChannel String
+  worldIndex          Float  @default(0)
+  worldIndexMeasured  Float  @default(0)
+  worldIndexAnchor    Float  @default(1)
+  worldIndexChannel   String
   // World economic scale ($) the assessment target was derived from.
-  worldScaleUsd     Float  @default(0)
-  assessmentTargetUsd Float @default(0)
+  worldScaleUsd       Float  @default(0)
+  assessmentTargetUsd Float  @default(0)
 
   // The Accord Chair's relief directive for this crisis, if one was issued.
-  reliefId        String
+  reliefId             String
   reliefSetByProfileId String?
-  reliefSetByCorp String?
-  reliefSetAt     DateTime?
+  reliefSetByCorp      String?
+  reliefSetAt          DateTime?
 
   // Sealed by the resolve cron once the aftermath week opens.
-  status       String    @default("open") // open | sealed
-  pledgedUsd   Float     @default(0)
-  pledgeCount  Int       @default(0)
-  containment  Float     @default(0)
-  sealedAt     DateTime?
+  status      String    @default("open") // open | sealed
+  pledgedUsd  Float     @default(0)
+  pledgeCount Int       @default(0)
+  containment Float     @default(0)
+  sealedAt    DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -129,6 +129,9 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
     entries: [
       { name: 'Learning Zone', href: '/learn', description: 'Six tracks, calculators and quizzes', icon: '📚', nav: true, hot: true },
       { name: 'Guides', href: '/guide', description: 'Launch costs, schedules, the industry explained', icon: '🧭', nav: true, hot: true },
+      { name: 'Cost to launch a satellite', href: '/guide/cost-to-launch/satellite', description: 'By size and orbit, 2026 prices', icon: '💰', hot: true },
+      { name: 'Cost to launch a CubeSat', href: '/guide/cost-to-launch/cubesat', description: '1U to 12U, rideshare and ISS', icon: '🧊' },
+      { name: 'Cost to send a person to space', href: '/guide/cost-to-launch/person', description: 'Suborbital to ISS seat prices', icon: '🧑‍🚀' },
       { name: 'Compare', href: '/compare', description: 'Side-by-side company comparisons', icon: '⚖️', nav: true },
       { name: 'Build Guides', href: '/build-guides', description: 'CanSat, balloon and ISS-receiver projects', icon: '🛠️', nav: true },
       { name: 'Space History', href: '/history', description: 'Searchable milestones', icon: '⏳', nav: true },

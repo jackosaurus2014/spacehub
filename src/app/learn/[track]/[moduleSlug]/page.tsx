@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ModuleProgress from '@/components/learn/ModuleProgress';
 import { notFound } from 'next/navigation';
 import prisma from '@/lib/db';
 import { LEARNING_TRACKS } from '@/lib/validations';
@@ -122,6 +123,7 @@ export default async function ModulePage({ params }: PageProps) {
           <p className="text-white/70 leading-relaxed">{mod.description}</p>
         </header>
 
+        <ModuleProgress moduleSlug={moduleSlug} lessonSlugs={mod.lessons.map((l) => l.slug)} />
         <h2 className="text-lg font-semibold text-white mb-3">
           Lessons ({mod.lessons.length})
         </h2>
