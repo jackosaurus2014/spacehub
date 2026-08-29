@@ -69,3 +69,13 @@ describe('digest chart slot', () => {
     expect(s.plain).toContain('CHART OF THE WEEK');
   });
 });
+
+describe('launch source filter', () => {
+  const { isLaunchLibraryId } = jest.requireActual('../charts/data') as typeof import('../charts/data');
+  it('accepts Launch Library UUIDs and rejects curated seed ids', () => {
+    expect(isLaunchLibraryId('3f2a9b1c-7d4e-4f0a-9b1c-2d3e4f5a6b7c')).toBe(true);
+    expect(isLaunchLibraryId('event-1394')).toBe(false);
+    expect(isLaunchLibraryId('artemis-ii-mission')).toBe(false);
+    expect(isLaunchLibraryId(null)).toBe(false);
+  });
+});

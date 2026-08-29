@@ -41,6 +41,13 @@ function monthKeys(now: Date, count: number): { key: string; label: string; star
   return out;
 }
 
+// Launch Library ids are UUIDs; curated seed events carry ids like
+// 'event-1394' or 'artemis-ii-…' and are not launches to count.
+const LL2_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function isLaunchLibraryId(id: string | null | undefined): boolean {
+  return !!id && LL2_ID.test(id);
+}
+
 function keyOf(d: Date): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
 }
@@ -48,11 +55,12 @@ function keyOf(d: Date): string {
 async function launchesPerMonth(now: Date): Promise<ChartSeries | null> {
   const months = monthKeys(now, 12);
   const rows = await prisma.spaceEvent.findMany({
-    // Every Launch Library row (externalId set) is a launch, whatever mission
-    // type it was filed under — filtering on type='launch' dropped half of them.
+    // Every Launch Library row is a launch, whatever mission type it was filed
+    // under — filtering on type='launch' dropped half of them. Curated seed
+    // events (non-UUID ids) are excluded in code; Prisma has no regex filter.
     where: { externalId: { not: null }, status: { in: ['completed', 'failed'] }, launchDate: { gte: months[0].start, lte: now } },
-    select: { launchDate: true },
-  });
+    select: { launchDate: true, externalId: true },
+  }).then((r) => r.filter((x) => isLaunchLibraryId(x.externalId)));
   if (rows.length === 0) return null;
   const counts = new Map(months.map((m) => [m.key, 0]));
   for (const r of rows) {
@@ -65,15 +73,15 @@ async function launchesPerMonth(now: Date): Promise<ChartSeries | null> {
 
 async function launchesByAgency90d(now: Date): Promise<ChartSeries | null> {
   const since = new Date(now.getTime() - 90 * 86400000);
-  const rows = await prisma.spaceEvent.groupBy({
-    by: ['agency'],
+  const rows = (await prisma.spaceEvent.findMany({
     where: { externalId: { not: null }, status: { in: ['completed', 'failed'] }, launchDate: { gte: since, lte: now }, agency: { not: null } },
-    _count: { _all: true },
-    orderBy: { _count: { agency: 'desc' } },
-    take: 8,
-  });
+    select: { agency: true, externalId: true },
+  })).filter((r) => isLaunchLibraryId(r.externalId));
   if (rows.length === 0) return null;
-  return { labels: rows.map((r) => shortAgency(r.agency ?? 'Unknown')), values: rows.map((r) => r._count._all) };
+  const counts = new Map<string, number>();
+  for (const r of rows) counts.set(r.agency ?? 'Unknown', (counts.get(r.agency ?? 'Unknown') ?? 0) + 1);
+  const top = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  return { labels: top.map(([a]) => shortAgency(a)), values: top.map(([, v]) => v) };
 }
 
 async function fundingByMonth(now: Date): Promise<ChartSeries | null> {
