@@ -253,7 +253,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/sectors/microlauncher`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/sectors/space-legal-regulatory`, changeFrequency: 'monthly' as const, priority: 0.5 },
     // Briefs
-    { url: `${BASE_URL}/briefs`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // Marketplace
     { url: `${BASE_URL}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
@@ -293,7 +292,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/integrations`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/testimonials`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/discover`, changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/this-day-in-space`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/beginners`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/night-sky-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-quiz`, changeFrequency: 'monthly' as const, priority: 0.5 },
@@ -321,7 +319,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/reports`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/reports/space-economy-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/resources`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/space-score`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/launch-cost-calculator`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/startups`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/report-cards`, changeFrequency: 'monthly' as const, priority: 0.7 },

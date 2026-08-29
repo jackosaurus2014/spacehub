@@ -6,6 +6,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import HistoryTimeline from './HistoryTimeline';
+import TodayInSpace, { loadTodayInSpace } from './TodayInSpace';
 
 export const metadata: Metadata = {
   title: 'Space History Timeline',
@@ -99,7 +100,7 @@ async function loadEvents(params: HistoryPageProps['searchParams']) {
 }
 
 export default async function HistoryPage({ searchParams }: HistoryPageProps) {
-  const { events, decades, categories, totalAll } = await loadEvents(searchParams);
+  const [{ events, decades, categories, totalAll }, today] = await Promise.all([loadEvents(searchParams), loadTodayInSpace()]);
 
   return (
     <div className="min-h-screen bg-space-900">
@@ -110,12 +111,13 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
           icon="🛰️"
           accentColor="cyan"
         >
-          <Link href="/this-day-in-space" className="btn-secondary text-sm py-2 px-4">
-            This Day in Space
+          <Link href="#today" className="btn-secondary text-sm py-2 px-4">
+            Today in space history
           </Link>
         </AnimatedPageHeader>
 
         <div className="max-w-5xl mx-auto">
+          <TodayInSpace events={today.events} monthDay={today.monthDay} />
           <HistoryTimeline
             events={JSON.parse(JSON.stringify(events))}
             decades={decades}

@@ -227,7 +227,7 @@ function NewsContent() {
             : 'No articles available. Try refreshing the page.'}
           suggestions={[
             { label: 'Blog & Analysis', href: '/blog' },
-            { label: 'Live Digest', href: '/briefs' },
+            { label: 'Intelligence Brief', href: '/intelligence-brief' },
             { label: 'AI Insights', href: '/ai-insights' },
           ]}
         />

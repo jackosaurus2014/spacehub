@@ -413,7 +413,7 @@ const nextConfig = {
       { source: '/isru', destination: '/space-mining', permanent: true },
       { source: '/resource-exchange', destination: '/marketplace', permanent: true },
       { source: '/imagery-providers', destination: '/company-profiles', permanent: true },
-      { source: '/news-digest', destination: '/briefs', permanent: true },
+      { source: '/news-digest', destination: '/intelligence-brief', permanent: true },
       { source: '/watchlists', destination: '/my-watchlists', permanent: true },
       { source: '/materials-db', destination: '/materials-database', permanent: true },
       { source: '/clean-room', destination: '/clean-room-reference', permanent: true },
@@ -457,7 +457,7 @@ const nextConfig = {
       { source: '/newsletter-archive', destination: '/intelligence-brief', permanent: true },
       // /daily-digest retired (2026-08-14, founder decision): it was a thin
       // restyling of /news's top-5; /briefs is the canonical live digest.
-      { source: '/daily-digest', destination: '/briefs', permanent: true },
+      { source: '/daily-digest', destination: '/intelligence-brief', permanent: true },
       // SATELLITE 2026 ran Mar 23-26, 2026 — the event landing page was still
       // collecting meeting requests + offering a promo code 5 months later.
       { source: '/satellite-2026', destination: '/space-calendar', permanent: true },

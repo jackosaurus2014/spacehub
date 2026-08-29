@@ -73,7 +73,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/compare/quilty-analytics': 'vs Quilty Analytics',
   '/compare/payload-space': 'vs Payload Space',
   '/executive-moves': 'Executive Moves',
-  '/space-score': 'SpaceNexus Score',
   '/space-agencies': 'Space Agencies',
   '/space-defense': 'Space Defense',
   '/report-cards': 'Report Cards',

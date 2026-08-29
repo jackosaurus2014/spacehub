@@ -241,7 +241,7 @@ export default function IntelligenceBriefPage() {
         <ScrollReveal delay={0.6}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: 'Live Weekly Digest', href: '/briefs', icon: '📡' },
+              { label: 'Space History', href: '/history', icon: '⏳' },
               { label: 'News Feed', href: '/news', icon: '📰' },
               { label: 'Funding Tracker', href: '/funding-tracker', icon: '💰' },
               { label: 'Executive Moves', href: '/executive-moves', icon: '👤' },

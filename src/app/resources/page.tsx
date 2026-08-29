@@ -119,7 +119,7 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
       { name: 'Government Budgets', href: '/procurement?tab=global-budgets', description: 'Agency budget tracking' },
       { name: 'Space Stations', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
       { name: 'Spaceports', href: '/spaceports', description: 'Spaceports & comms networks' },
-      { name: 'This Day in Space', href: '/this-day-in-space', description: 'What happened in space history on today’s date' },
+      { name: 'This Day in Space', href: '/history#today', description: 'What happened in space history on today’s date' },
       { name: 'What’s Overhead', href: '/whats-overhead', description: 'Live overhead satellites plus the naked-eye spotting guide' },
     ],
   },

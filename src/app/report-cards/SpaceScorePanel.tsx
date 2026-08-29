@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import GradeViewSwitch from './GradeViewSwitch';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import SpaceScoreBadge, { SpaceScoreInlineBadge, SpaceScoreMiniBar } from '@/components/company/SpaceScoreBadge';
@@ -415,7 +416,8 @@ function MethodologyTab() {
 
 // ─── Main Content (inside Suspense) ───────────────────────────────────────────
 
-function SpaceScoreContent() {
+// Rendered by /report-cards?view=score (was the /space-score page).
+export default function SpaceScorePanel() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = (searchParams.get('tab') as TabId) || 'leaderboard';
@@ -462,7 +464,7 @@ function SpaceScoreContent() {
 
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab);
-    router.replace(`/space-score?tab=${tab}`, { scroll: false });
+    router.replace(`/report-cards?view=score&tab=${tab}`, { scroll: false });
   };
 
   // Stats
@@ -477,7 +479,7 @@ function SpaceScoreContent() {
       <ItemListSchema
         name="Space Score Leaderboard"
         description="Top-ranked space companies by composite Space Score rating across Innovation, Financial Health, Market Position, Operational Capacity, and Growth Trajectory."
-        url="/space-score"
+        url="/report-cards?view=score"
         items={filteredAndSorted.slice(0, 30).map(e => ({
           name: `${e.name} - Space Score ${e.score.total}`,
           url: `/company-profiles/${e.slug}`,
@@ -491,6 +493,7 @@ function SpaceScoreContent() {
         { question: 'How often are Space Scores updated?', answer: 'Space Scores are recalculated periodically as new data becomes available from financial filings, contract awards, launch events, and other public sources.' },
       ]} />
 
+      <GradeViewSwitch active="score" />
       <AnimatedPageHeader
         title="Space Score"
         subtitle="Composite 0-1000 rating system for 100+ space industry companies across Innovation, Financial Health, Market Position, Operations, and Growth"
@@ -639,20 +642,5 @@ function SpaceScoreContent() {
 
       <RelatedModules modules={PAGE_RELATIONS['space-score']} />
     </div>
-  );
-}
-
-// ─── Page Export (Suspense boundary for useSearchParams) ──────────────────────
-
-export default function SpaceScorePage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen p-4 lg:p-8 max-w-[1400px] mx-auto">
-        <div className="h-10 w-64 bg-white/[0.06] rounded animate-pulse mb-3" />
-        <div className="h-4 w-96 bg-white/[0.05] rounded animate-pulse" />
-      </div>
-    }>
-      <SpaceScoreContent />
-    </Suspense>
   );
 }

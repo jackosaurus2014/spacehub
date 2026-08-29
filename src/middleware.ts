@@ -654,9 +654,16 @@ export async function middleware(req: NextRequest) {
   // mothballed detail route costs no DB read. Registry: src/lib/mothballed-routes.ts
   const mothballed = resolveMothball(pathname);
   if (mothballed) {
+    // redirectTo may carry a query and/or hash ('/report-cards?view=score',
+    // '/history#today'); the visitor's own ?tab= survives so deep links
+    // into the old page land on the same tab of the new one.
+    const target = new URL(mothballed.redirectTo, req.nextUrl.origin);
     const hub = req.nextUrl.clone();
-    hub.pathname = mothballed.redirectTo;
-    hub.search = '';
+    hub.pathname = target.pathname;
+    hub.search = target.search;
+    hub.hash = target.hash;
+    const tab = req.nextUrl.searchParams.get('tab');
+    if (tab && !hub.searchParams.has('tab')) hub.searchParams.set('tab', tab);
     const res = NextResponse.redirect(hub, 307);
     res.headers.set('x-mothballed', mothballed.group);
     return res;

@@ -166,7 +166,7 @@ export default function NightSkyGuidePage() {
               <span className="hidden sm:inline text-white/10">|</span>
               <Link href="/space-calendar" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Space Calendar</Link>
               <span className="hidden sm:inline text-white/10">|</span>
-              <Link href="/this-day-in-space" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">This Day in Space</Link>
+              <Link href="/history#today" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">This Day in Space</Link>
             </div>
           </ScrollReveal>
 

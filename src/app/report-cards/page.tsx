@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { Suspense, useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
+import SpaceScorePanel from './SpaceScorePanel';
+import GradeViewSwitch from './GradeViewSwitch';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -610,7 +613,8 @@ function computeSummaryStats(cards: CompanyReportCard[]) {
 
 // ─── Page Component ───────────────────────────────────────────────────────────
 
-export default function ReportCardsPage() {
+function ReportCardsContent() {
+  const view = useSearchParams().get('view');
   const [gradeFilter, setGradeFilter] = useState<GradeRange>('');
   const [sectorFilter, setSectorFilter] = useState<Sector | ''>('');
   const [outlookFilter, setOutlookFilter] = useState<Outlook | ''>('');
@@ -651,9 +655,12 @@ export default function ReportCardsPage() {
     setExpandedCard(prev => prev === company ? null : company);
   };
 
+  if (view === 'score') return <SpaceScorePanel />;
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <GradeViewSwitch active="cards" />
 
         {/* ── Header ───────────────────────────────────────────────────── */}
         <div className="flex items-start justify-between gap-4">
@@ -1032,7 +1039,7 @@ export default function ReportCardsPage() {
               </Link>
 
               <Link
-                href="/space-score"
+                href="/report-cards?view=score"
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">🏆</div>
@@ -1072,5 +1079,14 @@ export default function ReportCardsPage() {
 
       </div>
     </main>
+  );
+}
+
+// Suspense boundary for useSearchParams (the ?view=score switch).
+export default function ReportCardsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen max-w-7xl mx-auto px-4 py-8"><div className="h-10 w-64 bg-white/[0.06] rounded animate-pulse mb-3" /><div className="h-4 w-96 bg-white/[0.05] rounded animate-pulse" /></div>}>
+      <ReportCardsContent />
+    </Suspense>
   );
 }

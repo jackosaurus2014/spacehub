@@ -22,7 +22,7 @@
 // /inbox (that's the notification inbox, not DMs), nor /hire (the jobs
 // machine is the best-run pipeline on the site).
 
-export type MothballGroup = 'social' | 'marketplace';
+export type MothballGroup = 'social' | 'marketplace' | 'consolidation';
 
 export interface MothballedRoute {
   /** Path prefix. Matches the path itself and anything beneath it. */
@@ -51,6 +51,15 @@ export const MOTHBALLED_ROUTES: readonly MothballedRoute[] = [
   { prefix: '/cap-tables', redirectTo: '/marketplace', group: 'marketplace' },
   { prefix: '/ticket-resale', redirectTo: '/marketplace', group: 'marketplace' },
   { prefix: '/gig-work', redirectTo: '/marketplace', group: 'marketplace' },
+
+  // ── Duplicate surfaces folded into their hub (roadmap 2026-09) ─────────
+  // /briefs was a second rolling digest next to the Intelligence Brief hub;
+  // /investor-hub (deal memos, theses) had zero rows in prod on 2026-08-29;
+  // /this-day-in-space now lives as the 'Today' strip at the top of /history.
+  { prefix: '/briefs', redirectTo: '/intelligence-brief', group: 'consolidation' },
+  { prefix: '/investor-hub', redirectTo: '/investors', group: 'consolidation' },
+  { prefix: '/this-day-in-space', redirectTo: '/history#today', group: 'consolidation' },
+  { prefix: '/space-score', redirectTo: '/report-cards?view=score', group: 'consolidation' },
 ];
 
 /**

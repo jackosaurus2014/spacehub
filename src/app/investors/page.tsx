@@ -9,7 +9,6 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PortfolioAnalysis from '@/components/investors/PortfolioAnalysis';
 import { clientLogger } from '@/lib/client-logger';
 import InvestorActivityBadge from '@/components/investors/InvestorActivityBadge';
-import FeaturedTheses from '@/components/investors/FeaturedTheses';
 import EmptyState from '@/components/ui/EmptyState';
 import type { InvestorActivityResult } from '@/lib/investor-sentiment';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -323,7 +322,6 @@ function InvestorsPageInner() {
         </div>
 
         {/* Featured Investor Theses (top 3 recent) */}
-        <FeaturedTheses />
 
         {/* Portfolio Analysis Section */}
         {investors.length > 0 && (

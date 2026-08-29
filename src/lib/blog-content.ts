@@ -1609,7 +1609,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     content: `
 <p>Evaluating a space company is fundamentally different from evaluating a SaaS startup or a traditional manufacturer. The capital intensity is higher, the regulatory landscape is more complex, the technology risk is more severe, and the timelines to revenue are often measured in years rather than quarters. Yet the tools and frameworks available for space industry due diligence have historically lagged far behind other sectors.</p>
 
-<p>This guide provides a structured approach to evaluating space companies using publicly available data, proprietary intelligence from <a href="/company-profiles">SpaceNexus company profiles</a>, and the <a href="/space-score">SpaceNexus Score</a> — our composite rating that distills six critical dimensions of company health into a single, actionable metric.</p>
+<p>This guide provides a structured approach to evaluating space companies using publicly available data, proprietary intelligence from <a href="/company-profiles">SpaceNexus company profiles</a>, and the <a href="/report-cards?view=score">SpaceNexus Score</a> — our composite rating that distills six critical dimensions of company health into a single, actionable metric.</p>
 
 <h2 id="why-space-due-diligence-is-different">Why Space Due Diligence Is Different</h2>
 
@@ -1625,7 +1625,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="six-dimensions-of-evaluation">The Six Dimensions of Space Company Evaluation</h2>
 
-<p>At SpaceNexus, we evaluate space companies across six dimensions, each scored from 0-100 and weighted to produce the composite <a href="/space-score">SpaceNexus Score</a>:</p>
+<p>At SpaceNexus, we evaluate space companies across six dimensions, each scored from 0-100 and weighted to produce the composite <a href="/report-cards?view=score">SpaceNexus Score</a>:</p>
 
 <h3>1. Financial Health (Weight: 20%)</h3>
 
@@ -1705,7 +1705,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Assess technical credibility:</strong> Check the <a href="/patents">Patent Intelligence module</a> for IP activity and review launch/mission history from public records.</li>
 <li><strong>Map competitive dynamics:</strong> Use SpaceNexus market data to understand where the company sits relative to competitors in its segment.</li>
 <li><strong>Monitor ongoing activity:</strong> Set up alerts for the company\'s news mentions, contract wins, executive moves, and regulatory filings.</li>
-<li><strong>Synthesize and score:</strong> Use the six-dimension framework above to create a structured assessment, or leverage the <a href="/space-score">SpaceNexus Score</a> as a starting point for deeper analysis.</li>
+<li><strong>Synthesize and score:</strong> Use the six-dimension framework above to create a structured assessment, or leverage the <a href="/report-cards?view=score">SpaceNexus Score</a> as a starting point for deeper analysis.</li>
 </ol>
 
 <h2 id="common-red-flags">Common Red Flags in Space Company Evaluation</h2>
@@ -1722,7 +1722,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="start-your-analysis">Start Your Due Diligence with SpaceNexus</h2>
 
-<p>SpaceNexus provides the data infrastructure for rigorous space company evaluation. With <a href="/company-profiles">200+ company profiles</a>, real-time <a href="/funding-tracker">funding data</a>, <a href="/patents">patent intelligence</a>, and the proprietary <a href="/space-score">SpaceNexus Score</a>, you can conduct thorough due diligence without spending weeks assembling data from scattered sources.</p>
+<p>SpaceNexus provides the data infrastructure for rigorous space company evaluation. With <a href="/company-profiles">200+ company profiles</a>, real-time <a href="/funding-tracker">funding data</a>, <a href="/patents">patent intelligence</a>, and the proprietary <a href="/report-cards?view=score">SpaceNexus Score</a>, you can conduct thorough due diligence without spending weeks assembling data from scattered sources.</p>
 
 <p><a href="/register">Create your free account</a> and start evaluating space companies with confidence.</p>
 `,
@@ -2090,7 +2090,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>For a deeper understanding of how to use SpaceNexus Scores in your due diligence workflow, see our companion article: <a href="/blog/space-industry-due-diligence-guide">The Complete Guide to Space Industry Due Diligence</a>.</p>
 
-<p><a href="/register">Create your free account</a> and explore the <a href="/space-score">SpaceNexus Score</a> today.</p>
+<p><a href="/register">Create your free account</a> and explore the <a href="/report-cards?view=score">SpaceNexus Score</a> today.</p>
 `,
   },
   {

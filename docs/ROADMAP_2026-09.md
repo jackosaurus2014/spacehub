@@ -51,12 +51,12 @@ Third: **the agents' MAU arithmetic is optimistic by ~3×** (the Opus advocate s
 
 | Merge | Verdict |
 |---|---|
-| `/briefs` → `/intelligence-brief?tab=live`; `/investor-hub` → `/investors`; `/this-day-in-space` → `/history?tab=today` | **Do** — three S merges, zero traffic risk. |
-| `/space-score` → `/report-cards` | **Do** (M) — two competing "see the grade" surfaces. |
+| `/briefs` → `/intelligence-brief`; `/investor-hub` → `/investors`; `/this-day-in-space` → `/history#today` | **DONE 2026-08-29** — mothballed (307) via `src/lib/mothballed-routes.ts` group `consolidation`; /history gained a "Today in space history" strip (`src/app/history/TodayInSpace.tsx`). investor-hub had 0 memos / 0 theses in prod. |
+| `/space-score` → `/report-cards?view=score` | **DONE 2026-08-29** — page moved to `src/app/report-cards/SpaceScorePanel.tsx` behind a `GradeViewSwitch`; old URL mothballed, `?tab=` deep links carried over by middleware. |
 | Compliance reference (4 pages) → `/compliance` tabs | **Do in October** (L). Keep `/regulatory-radar` separate; dedupe the compliance Radar tab into a teaser now (S). |
 | Engineering reference (5 pages, ~6,600 lines) → `/engineering-reference` | **Do in November** — corpus hygiene, no traffic. |
 | Launch-economics hub (5 pages) | **Defer.** Sonnet's skeptic found 20+ PAGE_RELATIONS references and a nav entry; effort is understated and the calculator pages are in the "hot" tools cluster. Revisit after the cost-to-launch family lands and we can see which calculators it feeds. |
-| Delete ~35 phantom `MODULES` keys pointing at non-existent routes | **Do** (S) — invites duplicate pages. |
+| Delete ~35 phantom `MODULES` keys pointing at non-existent routes | **Re-checked 2026-08-29: the claim was wrong.** 128 keys, 0 missing — 6 pointed at redirected legacy paths and were repointed at the live destination. Nothing to delete. |
 | Freeze new pages in Engineering & Operations | **Adopted as policy.** |
 
 ## Rejected, with reasons (so they are not re-proposed)

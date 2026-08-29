@@ -45,7 +45,7 @@ const topics = [
   {
     title: 'Learn Space History',
     description: 'What happened in space on this day? Explore milestones from Sputnik to Starship.',
-    href: '/this-day-in-space',
+    href: '/history#today',
     icon: '📅',
     articles: [
       { label: 'Space Timeline', href: '/timeline' },
