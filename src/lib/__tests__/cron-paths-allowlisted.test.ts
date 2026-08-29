@@ -10,7 +10,10 @@ describe('cron paths are CSRF-allow-listed', () => {
     const sched = readFileSync(join(root, 'lib', 'cron-scheduler.ts'), 'utf8');
     const mw = readFileSync(join(root, 'middleware.ts'), 'utf8');
     const block = mw.slice(mw.indexOf('const cronPaths = ['));
-    const allow = block.slice(0, block.indexOf('];'));
+    // the array closes on its own line; a '];' inside an earlier comment must not cut it short
+    const end = block.search(/
+\s*\];/);
+    const allow = block.slice(0, end > 0 ? end : undefined);
     const paths = Array.from(sched.matchAll(/path:\s*'([^'?]+)/g)).map((m) => m[1]);
     expect(paths.length).toBeGreaterThan(20);
     // middleware matches with pathname.startsWith(p) over every quoted entry

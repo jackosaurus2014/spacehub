@@ -236,7 +236,14 @@ async function produce(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury
     let batches = 0;
     while (have + (built[out] || 0) < target && batches < (BATCHES_PER_TICK[r.tier] ?? 1)) {
       const outcome = await runRecipe(r, inv, meta, treasury);
-      if (!outcome.ok) { skipped.push(`${seed.name}: ${r.id} — ${outcome.reason}`); break; }
+      if (!outcome.ok) {
+        skipped.push(`${seed.name}: ${r.id} — ${outcome.reason}`);
+        // A manufactured input we are short of becomes a standing buy order —
+        // real cross-corp/player demand (Nova bids for electronics; a player
+        // who fabricates them can fill it).
+        if (outcome.shortOf) meta.wanted[outcome.shortOf] = Math.min(24, (meta.wanted[outcome.shortOf] || 0) + (r.inputs[outcome.shortOf] || 1));
+        break;
+      }
       treasury = outcome.treasury;
       built[out] = (built[out] || 0) + r.outputQuantity;
       batches++;
@@ -245,14 +252,14 @@ async function produce(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury
   return { built, treasury };
 }
 
-async function runRecipe(r: ProductDefinition, inv: Inv, meta: CorpMeta, treasury: number): Promise<{ ok: true; treasury: number } | { ok: false; reason: string }> {
+async function runRecipe(r: ProductDefinition, inv: Inv, meta: CorpMeta, treasury: number): Promise<{ ok: true; treasury: number } | { ok: false; reason: string; shortOf?: string }> {
   // Manufactured inputs must already be in stock (built earlier this tick or
   // bought on the book); raw inputs come off the curve at live prices.
   let cost = 0;
   const rawBuys: Array<[string, number]> = [];
   for (const [id, qty] of Object.entries(r.inputs)) {
     if (MANUFACTURED_RESOURCE_IDS.includes(id)) {
-      if ((inv[id] || 0) < qty) return { ok: false, reason: `short of ${id}` };
+      if ((inv[id] || 0) < qty) return { ok: false, reason: `short of ${id}`, shortOf: id };
       cost += (meta.unitCost[id] || RESOURCE_MAP.get(id as never)?.baseMarketPrice || 0) * qty;
     } else {
       rawBuys.push([id, qty]);
@@ -298,7 +305,12 @@ async function relist(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, scale: nu
     if (!meta.listedAt[slug]) meta.listedAt[slug] = new Date(now).toISOString();
     const ageDays = Math.max(0, (now - firstListed) / 86400000);
     const markup = Math.max(MIN_MARKUP_OVER_COST, (1 + seed.marginPct) * Math.pow(1 - AGE_DISCOUNT_PER_DAY, ageDays));
-    const price = clampToBand(slug, unitCost * markup);
+    // Cost-plus, but not a fire sale: NPC corps are not charities, and spot
+    // (which pays contracts) follows the last fill. Floor at 75% of base,
+    // aging no lower than 60%.
+    const base = RESOURCE_MAP.get(slug as never)?.baseMarketPrice ?? unitCost;
+    const floor = base * Math.max(0.6, 0.75 * Math.pow(1 - AGE_DISCOUNT_PER_DAY, ageDays));
+    const price = clampToBand(slug, Math.max(unitCost * markup, floor));
     await prisma.marketLimitOrder.create({
       data: { profileId: seed.id, resourceSlug: slug, side: 'sell', quantity: listQty, pricePerUnit: price, escrowAmount: 0, status: 'open', source: 'npc-industry', expiresAt: new Date(now + 26 * 3600000) },
     });
@@ -320,10 +332,17 @@ async function procure(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury
   let exposure = 0;
   for (const [slug, perWeek] of Object.entries(seed.consumes)) {
     meta.wanted[slug] = (meta.wanted[slug] || 0) + (perWeek / 168) * TICK_HOURS * scale;
+  }
+  for (const slug of Object.keys(meta.wanted)) {
+    if (!MANUFACTURED_RESOURCE_IDS.includes(slug)) { delete meta.wanted[slug]; continue; }
     const want = Math.floor(meta.wanted[slug]);
     if (want < 1) continue;
+    const isConsumable = slug in seed.consumes;
     const use = Math.min(want, Math.floor(inv[slug] || 0));
-    if (use > 0) { inv[slug] -= use; meta.wanted[slug] -= use; consumed[slug] = use; }
+    if (use > 0) {
+      meta.wanted[slug] -= use;
+      if (isConsumable) { inv[slug] -= use; consumed[slug] = use; }
+    }
     const still = Math.floor(meta.wanted[slug]);
     if (still < 1) continue;
     const ref = await referencePrice(slug);

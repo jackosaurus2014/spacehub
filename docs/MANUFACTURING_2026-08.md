@@ -72,12 +72,19 @@ Spacecraft, Deep Space Holdings — factions per LORE.md), persisted in
 3. **List what they built** as sell orders at unit cost × (1 + margin 20–40%),
    never below cost ×1.05, aging −5 %/day unsold. They never undercut below
    cost; a player who fabricates cheaper wins the sale.
-4. **Buy what they consume** (e.g. Nova wants 8 beams/week) with buy orders at
+4. **Bid for inputs they are short of.** A recipe blocked on a manufactured
+   input (Nova short of electronics) turns into a standing buy order for it —
+   cross-corp and player-fillable demand. First live tick showed exactly this
+   starvation, so this is load-bearing.
+5. **Ask floor.** Cost-plus but never a fire sale: asks floor at 75 % of the
+   good's base value (aging to 60 %), because spot follows the last fill and
+   spot pays contracts.
+6. **Buy what they consume** (e.g. Nova wants 8 beams/week) with buy orders at
    95 % of reference, only while the treasury has a 3× cushion.
-5. **Finite money.** Seed treasuries $1.5–6B, a $25M/tick stipend (scaled),
+7. **Finite money.** Seed treasuries $1.5–6B, a $25M/tick stipend (scaled),
    capped at $8B. Fills settle against the corp row in
    `market-orderbook.ts` (`isNpcCorpId` branches) — no GameProfile.
-6. **Recede with population** (`populationScale`): full weight ≤10 active
+8. **Recede with population** (`populationScale`): full weight ≤10 active
    corporations, linear down to 25 % at 260+.
 
 `GET /api/space-tycoon/market/npc-industry` publishes each corp's stock, open
