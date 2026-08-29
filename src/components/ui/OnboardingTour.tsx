@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { setPersona } from '@/lib/user-preferences';
 import type { Persona } from '@/lib/user-preferences';
 import { PERSONA_MODULE_PRESETS, saveHomeModulePreset } from '@/lib/module-presets';
@@ -9,13 +10,14 @@ import { toast } from '@/lib/toast';
 const STORAGE_KEY = 'spacenexus-onboarding-complete';
 const PERSONA_KEY = 'spacenexus-user-persona';
 
-export type UserPersona = 'investor' | 'entrepreneur' | 'mission-planner' | 'executive' | 'supply-chain' | 'legal';
+export type UserPersona = 'enthusiast' | 'investor' | 'entrepreneur' | 'mission-planner' | 'executive' | 'supply-chain' | 'legal';
 
 /**
  * Map the tour's six role personas onto the site's three preference personas
  * (spacenexus_prefs + homepage module presets) so both pickers agree.
  */
 const SITE_PERSONA_MAP: Record<UserPersona, Persona> = {
+  enthusiast: 'enthusiast',
   investor: 'investor',
   executive: 'investor',
   entrepreneur: 'professional',
@@ -25,6 +27,8 @@ const SITE_PERSONA_MAP: Record<UserPersona, Persona> = {
 };
 
 const PERSONAS: { id: UserPersona; icon: string; title: string; description: string }[] = [
+  // First card on purpose (2026-08-29): enthusiasts are the stated priority and the audience search sends.
+  { id: 'enthusiast', icon: '\u{1F680}', title: 'Space Fan', description: 'Watch launches live, track the ISS over your house, follow every rocket, play Space Tycoon' },
   { id: 'investor', icon: '\u{1F4B8}', title: 'Investor / VC', description: 'Evaluate deals, track funding rounds, follow market trends' },
   { id: 'entrepreneur', icon: '\u{1F680}', title: 'Entrepreneur / Founder', description: 'Find grants, build business models, discover customers' },
   { id: 'mission-planner', icon: '\u{1F9ED}', title: 'Mission Planner / Engineer', description: 'Compare launch vehicles, calculate costs, track orbits' },
@@ -35,6 +39,7 @@ const PERSONAS: { id: UserPersona; icon: string; title: string; description: str
 
 // Map persona to a starting destination so the tour ends with a clear next step
 const PERSONA_DESTINATIONS: Record<UserPersona, { href: string; label: string }> = {
+  enthusiast: { href: '/mission-control', label: 'Open Mission Control' },
   investor: { href: '/market-intel', label: 'Open Market Intelligence' },
   entrepreneur: { href: '/procurement?tab=grants', label: 'Browse Funding Opportunities' },
   'mission-planner': { href: '/tools', label: 'Explore Engineering Tools' },
@@ -95,6 +100,8 @@ export function getUserPersona(): UserPersona | null {
 
 export default function OnboardingTour() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0); // 0 = persona selection, 1-3 = tour steps
   const [selectedPersona, setSelectedPersona] = useState<UserPersona | null>(null);
   const syncedFromServer = useRef(false);
@@ -127,13 +134,15 @@ export default function OnboardingTour() {
   }, []);
 
   useEffect(() => {
+    // The game has its own first-touch flow (GameStartMenu); never stack this modal on it.
+    if (pathname?.startsWith('/space-tycoon')) return;
     const completed = localStorage.getItem(STORAGE_KEY);
     if (!completed) {
       // Small delay so the page loads first
       const timer = setTimeout(() => setIsOpen(true), 1500);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [, pathname]);
 
   const handleComplete = useCallback(() => {
     if (selectedPersona) {
@@ -201,6 +210,34 @@ export default function OnboardingTour() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleNext, handleBack, handleSkip]);
 
+  // Accessibility (2026-08-29): move focus into the dialog when it opens,
+  // keep Tab inside it, and hide the page behind it from assistive tech.
+  useEffect(() => {
+    if (!isOpen) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const main = document.querySelector('main');
+    main?.setAttribute('inert', '');
+    const focusables = () => Array.from(dialog.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter((el) => !el.hasAttribute('disabled'));
+    (focusables()[0] ?? dialog).focus();
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const list = focusables();
+      if (list.length === 0) return;
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', trap);
+    return () => {
+      document.removeEventListener('keydown', trap);
+      main?.removeAttribute('inert');
+      previouslyFocused?.focus?.();
+    };
+  }, [isOpen, step]);
+
   if (!isOpen) return null;
 
   const totalSteps = TOUR_STEPS.length + 1; // persona step + tour steps
@@ -214,6 +251,8 @@ export default function OnboardingTour() {
 
       {/* Modal */}
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="Welcome to SpaceNexus"

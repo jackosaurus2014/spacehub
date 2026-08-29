@@ -6,7 +6,6 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PullToRefresh from '@/components/ui/PullToRefresh';
-import PremiumGate from '@/components/PremiumGate';
 import { clientLogger } from '@/lib/client-logger';
 import CompanyFundingComparison from '@/components/funding/CompanyFundingComparison';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -763,17 +762,16 @@ function FundingTrackerPageInner() {
               Data Sources
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs text-slate-500">
-              <div>SEC Filings (EDGAR)</div>
-              <div>Crunchbase -- Startup Funding Data</div>
-              <div>PitchBook -- Private Market Intelligence</div>
-              <div>Space Capital -- Quarterly Reports</div>
-              <div>Company Press Releases</div>
-              <div>Bloomberg -- Market Data</div>
+              <div>Company and investor press releases</div>
+              <div>SEC filings (EDGAR) for public companies</div>
+              <div>Space industry news coverage, cross-checked</div>
+              <div>SpaceNexus editorial tracking (curated, dated)</div>
             </div>
             <p className="text-slate-600 text-xs mt-3">
-              Funding data is compiled from publicly available sources and may
-              not reflect the most recent activity. This is not investment
-              advice. Always conduct your own due diligence.
+              Rounds are compiled from public announcements and filings and are
+              dated as of their last verification; we do not license third-party
+              databases. Not investment advice — always conduct your own due
+              diligence.
             </p>
           </div>
         </ScrollReveal>
@@ -783,10 +781,10 @@ function FundingTrackerPageInner() {
   );
 }
 
+// 2026-08-29 (founder ruling): the funding tracker is open. It was the only
+// fully paywalled business page while monetization is on hold, and the
+// principle is information over profit. PremiumGate stays available for
+// enterprise-utility tools.
 export default function FundingTrackerPage() {
-  return (
-    <PremiumGate requiredTier="pro" context="funding-tracker" showPreview={true}>
-      <FundingTrackerPageInner />
-    </PremiumGate>
-  );
+  return <FundingTrackerPageInner />;
 }

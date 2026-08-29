@@ -57,8 +57,8 @@ html {
   /* Text scale — high contrast white primary */
   --text-primary:   #ffffff;    /* Primary content — pure white */
   --text-secondary: #a0a0a0;    /* Descriptions, secondary */
-  --text-tertiary:  #666666;    /* Disabled, hints, timestamps */
-  --text-muted:     #444444;    /* Barely-there labels */
+  --text-tertiary:  #949494;    /* Disabled, hints, timestamps — AA on black (was #666, 3.66:1) */
+  --text-muted:     #6b6b6b;    /* Barely-there labels — AA-large on black (was #444, 2.16:1) */
 
   /* Border scale — clean white/gray edges */
   --border-subtle:  #2a2a2a;    /* Card edges, dividers */

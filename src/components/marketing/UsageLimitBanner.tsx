@@ -1,4 +1,5 @@
 'use client';
+import { usePathname } from 'next/navigation';
 
 import { useState } from 'react';
 import { useSubscription } from '@/components/SubscriptionProvider';
@@ -14,6 +15,11 @@ export default function UsageLimitBanner() {
   const [dismissed, setDismissed] = useState(false);
 
   // Only show for free tier
+  // 2026-08-29: the meter counts editorial articles; it has no business on
+  // launch, rocket, game or learning pages (CLAUDE.md: enthusiasts first).
+  const pathname = usePathname() || '';
+  const METERED_PREFIXES = ['/news', '/blog', '/ai-insights', '/industry-voices', '/reports', '/intelligence-brief'];
+  if (!METERED_PREFIXES.some((p) => pathname.startsWith(p))) return null;
   if (tier !== 'free') return null;
 
   const maxDaily = 25;

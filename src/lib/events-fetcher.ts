@@ -286,10 +286,18 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
     for (const launch of launches) {
       try {
         const data = launchToEventData(launch);
-        const before = await prisma.spaceEvent.findUnique({ where: { externalId: launch.id }, select: { id: true, status: true } });
+        const before = await prisma.spaceEvent.findUnique({ where: { externalId: launch.id }, select: { id: true, status: true, launchDate: true } });
         const row = await prisma.spaceEvent.upsert({ where: { externalId: launch.id }, update: data.update, create: data.create, select: { id: true } });
         if (before && before.status !== data.update.status && ALERTABLE_TRANSITIONS.has(data.update.status)) {
           recordedTransitions.push({ eventId: row.id, launch, from: before.status, to: data.update.status });
+        }
+        // Slip history (2026-08-29): the previous NET used to be overwritten and
+        // lost. Recording every move builds a schedule-reliability dataset nobody
+        // can backfill — the raw material for a slip index and per-provider
+        // on-time scorecards. Moves under a minute are noise, not slips.
+        const newDate = data.update.launchDate;
+        if (before?.launchDate && newDate && Math.abs(newDate.getTime() - before.launchDate.getTime()) > 60_000) {
+          await prisma.launchDateChange.create({ data: { eventId: row.id, fromDate: before.launchDate, toDate: newDate } }).catch(() => {});
         }
         savedCount++;
       } catch (err) {

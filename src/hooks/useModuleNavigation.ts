@@ -50,7 +50,10 @@ export function useModuleNavigation(): UseModuleNavigationResult {
   const [modules, setModules] = useState<ModuleInfo[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  const isModulePage = !EXCLUDED_PATHS.has(pathname);
+  // Prefix exclusions (2026-08-29): the game has its own chrome and the
+  // launch/rocket surfaces are destinations, not modules to browse past.
+  const EXCLUDED_PREFIXES = ['/space-tycoon', '/mission-control', '/rockets', '/launches', '/launch/', '/predictions', '/tools', '/learn'];
+  const isModulePage = !EXCLUDED_PATHS.has(pathname) && !EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p));
 
   useEffect(() => {
     if (!isModulePage) return;

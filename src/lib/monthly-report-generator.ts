@@ -244,7 +244,9 @@ export async function generateMonthlyReport(): Promise<MonthlyReport> {
 
   try {
     const publicCompanies = await prisma.companyProfile.findMany({
-      where: { isPublic: true, ticker: { not: null }, priceChange24h: { not: null } },
+      // 2026-08-29: match /space-stocks (ticker-based). isPublic was unset on
+      // several primes, so the two pages published different market numbers.
+      where: { ticker: { not: null }, priceChange24h: { not: null } },
       select: { name: true, slug: true, ticker: true, sector: true, priceChange24h: true, marketCap: true, stockPrice: true },
       orderBy: { priceChange24h: 'desc' },
       take: 20,

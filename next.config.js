@@ -367,7 +367,9 @@ const nextConfig = {
       { source: '/contract-awards', destination: '/procurement', permanent: true },
 
       // ── URL consolidation — talent & careers ──
-      { source: '/jobs', destination: '/space-talent?tab=jobs', permanent: true },
+      // 2026-08-29: 'jobs' is not a TopLevelTab on /space-talent ('talent' | 'workforce' | 'gigs');
+      // the nav's Jobs link was falling through to the default talent tab.
+      { source: '/jobs', destination: '/space-talent?tab=workforce', permanent: true },
       { source: '/salary-benchmarks', destination: '/space-talent?tab=salaries', permanent: true },
       { source: '/workforce-analytics', destination: '/space-talent?tab=trends', permanent: true },
       { source: '/career-intelligence', destination: '/space-talent?tab=trends', permanent: true },

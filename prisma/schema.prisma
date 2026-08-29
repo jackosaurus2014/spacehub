@@ -658,6 +658,7 @@ model SpaceEvent {
   chatMessages LaunchChatMessage[]
   polls        LaunchPoll[]
   reactions    LaunchReaction[]
+  dateChanges  LaunchDateChange[]
 
   @@index([type])
   @@index([status])
@@ -6867,6 +6868,60 @@ model Lesson {
 
   @@unique([moduleId, slug])
   @@index([moduleId])
+}
+
+// Slip history (2026-08-29): every change to a launch's NET, as observed by
+// the Launch Library sync. The previous date used to be overwritten in
+// place; this table is the raw material for a schedule-reliability index
+// and per-provider on-time scorecards that nobody else can backfill.
+model LaunchDateChange {
+  id         String     @id @default(cuid())
+  eventId    String
+  event      SpaceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fromDate   DateTime
+  toDate     DateTime
+  observedAt DateTime   @default(now())
+
+  @@index([eventId])
+  @@index([observedAt])
+}
+
+// Launch alerts WITHOUT an account (2026-08-29). AlertRule requires a user;
+// the site's largest traffic source (launch pages) could not be reached
+// twice. A LaunchWatch is an email plus a scope — one launch, a rocket, or a
+// site — double-opt-in, sending T-24h, T-1h and the outcome. Deliveries are
+// recorded per (watch, event, kind) so a scope never repeats a message.
+model LaunchWatch {
+  id                String    @id @default(cuid())
+  email             String
+  eventId           String?
+  rocket            String? // substring match against SpaceEvent.rocket, case-insensitive
+  site              String? // substring match against SpaceEvent.location
+  verified          Boolean   @default(false)
+  verificationToken String    @unique
+  unsubscribeToken  String    @unique
+  source            String    @default("launch-page")
+  createdAt         DateTime  @default(now())
+  verifiedAt        DateTime?
+  unsubscribedAt    DateTime?
+
+  deliveries LaunchWatchDelivery[]
+
+  @@index([email])
+  @@index([eventId])
+  @@index([verified, unsubscribedAt])
+}
+
+model LaunchWatchDelivery {
+  id      String      @id @default(cuid())
+  watchId String
+  watch   LaunchWatch @relation(fields: [watchId], references: [id], onDelete: Cascade)
+  eventId String
+  kind    String // t24 | t1 | outcome
+  sentAt  DateTime    @default(now())
+
+  @@unique([watchId, eventId, kind])
+  @@index([eventId])
 }
 
 // Lesson completion for signed-in learners (2026-08-28). Anonymous progress

@@ -528,6 +528,24 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
     priority: post.featured ? 0.8 : 0.6,
   }));
 
+  // Launch pages (2026-08-29): T-60d through T+90d. Each /launch/[id] renders
+  // a real card and record; until now none was listed, so Google never saw
+  // the site's most search-shaped URLs.
+  let launchRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const launches = await prisma.spaceEvent.findMany({
+      where: { rocket: { not: null }, launchDate: { gte: new Date(Date.now() - 90 * 86_400_000), lte: new Date(Date.now() + 60 * 86_400_000) } },
+      select: { id: true, updatedAt: true, launchDate: true },
+    });
+    launchRoutes = launches.map((l) => ({
+      url: `${BASE_URL}/launch/${l.id}`,
+      lastModified: l.updatedAt,
+      changeFrequency: (l.launchDate && l.launchDate.getTime() > Date.now() ? 'hourly' : 'weekly') as 'hourly' | 'weekly',
+      priority: 0.7,
+    }));
+  } catch (error) {
+    logger.error('Sitemap segment 3: Failed to fetch launch routes', { error: error instanceof Error ? error.message : String(error) });
+  }
   // AI insights from database
   let insightRoutes: MetadataRoute.Sitemap = [];
   let explainerRoutes: MetadataRoute.Sitemap = [];
@@ -584,5 +602,5 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
     // getSignificantEntryIds already fails soft; this guards the import.
   }
 
-  return [...blogRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes];
+  return [...blogRoutes, ...launchRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes];
 }

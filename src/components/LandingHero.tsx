@@ -183,13 +183,11 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
       {/* Hero background illustration */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/art/hero-landing.png"
+          src="/art/hero-landing.webp"
           alt=""
           fill
           sizes="100vw"
           className="object-cover opacity-15"
-          priority
-          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/70 to-[#09090b]" />
       </div>
@@ -222,17 +220,22 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
 
             {/* Headline — Satoshi Black, left-aligned, intentional line breaks */}
             <Reveal delay={0.3} className="mb-4">
+              {/* 2026-08-29: the anonymous front door now leads with launches —
+                  the audience search actually sends — instead of a SaaS pitch. */}
               <h1 className="text-display text-[clamp(2.25rem,4.5vw+1rem,3.75rem)] text-[var(--text-primary)]">
-                The terminal<br className="hidden sm:block" />
-                for space<br className="hidden sm:block" />
-                business.
+                Every launch.<br className="hidden sm:block" />
+                Live, tracked,<br className="hidden sm:block" />
+                explained.
               </h1>
             </Reveal>
 
             {/* Value prop */}
             <Reveal delay={0.45} className="mb-6">
               <p className="text-base md:text-lg text-[var(--text-secondary)] max-w-lg leading-relaxed">
-                Track launches, monitor satellites, analyze funding rounds, and research {SITE_STATS.companies} companies. Real-time intelligence for the space industry.
+                {launchName ? (
+                  <>Next up: <span className="text-[var(--text-primary)] font-semibold">{launchName}</span> in <span className="font-mono text-[var(--accent-secondary)]">{nextLaunch}</span>. </>
+                ) : null}
+                Countdowns, streams and outcomes for every mission, every rocket&apos;s cost and record, {SITE_STATS.companies} companies, and the space economy behind it all. Free for the space industry.
               </p>
             </Reveal>
 
@@ -249,7 +252,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-primary-bright)'; e.currentTarget.style.boxShadow = '0 0 24px rgba(99, 102, 241, 0.25)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 0 rgba(99, 102, 241, 0)'; }}
                 >
-                  Get Started — Free
+                  See every upcoming launch
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -266,7 +269,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
             {/* Trust line */}
             <Reveal delay={0.65}>
               <p className="text-xs text-[var(--text-muted)]">
-                Instant access. No credit card. 14-day full trial.
+                Free for enthusiasts, always. No account needed to watch.
               </p>
             </Reveal>
           </div>
