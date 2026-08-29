@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpaceNexus — The Journal (Brief C homepage mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   THE JOURNAL — design tokens
+   Two grounds, one system. Paper for reading, ink for live.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  /* paper ground */
+  --ground:#FBF8F3; --ground-raised:#FFFFFF; --ground-sunken:#F3EEE5;
+  --rule:#E3DDD2; --rule-strong:#C9C0B2;
+  --ink-900:#14110D; --ink-600:#4A4238; --ink-400:#6E665A;
+  --signal:#C8102E; --link:#1F4E79;
+  /* chart series, paper */
+  --s1:#1F4E79; --s2:#C8102E; --s3:#B45309; --s4:#2E6F5E; --s5:#6B4E8C;
+  /* columns */
+  --col-read:720px; --col-wide:1080px; --col-bleed:1440px;
+  --gutter:32px;
+  /* type */
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+[data-ground="ink"]{
+  --ground:#12100E; --ground-raised:#1B1815; --ground-sunken:#0C0A09;
+  --rule:#2E2924; --rule-strong:#443D35;
+  --ink-900:#F7F3EC; --ink-600:#B4ABA0; --ink-400:#8A8177;
+  --signal:#FF4D5E; --link:#7FB2E5;
+  --s1:#7FB2E5; --s2:#FF4D5E; --s3:#E8A33D; --s4:#56C4A7; --s5:#B695DC;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink-900);
+  font-family:var(--serif); font-optical-sizing:auto;
+  font-variation-settings:'opsz' 14,'SOFT' 0,'WONK' 0;
+  font-size:1.125rem; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%}
+a{color:var(--link); text-decoration:underline; text-decoration-thickness:1px;
+  text-underline-offset:2px; text-decoration-color:color-mix(in srgb,var(--link) 35%,transparent);
+  transition:text-decoration-color 200ms cubic-bezier(.2,0,0,1)}
+a:hover{text-decoration-color:var(--link)}
+a:focus-visible{outline:2px solid var(--link); outline-offset:3px; border-radius:2px}
+
+.wrap{max-width:var(--col-wide); margin:0 auto; padding:0 var(--gutter)}
+.read{max-width:var(--col-read)}
+.rule{border:0; border-top:1px solid var(--rule); margin:0}
+.rule-strong{border:0; border-top:2px solid var(--ink-900); margin:0}
+
+/* ── kickers, decks, meta ──────────────────────────────────────── */
+.kicker{font-family:var(--sans); font-weight:600; font-size:.75rem;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-600);
+  line-height:1.2; margin:0 0 12px}
+.kicker--signal{color:var(--signal)}
+.kicker-outline{display:inline-block; font-family:var(--sans); font-weight:600;
+  font-size:.6875rem; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-600); border:1px solid var(--rule-strong);
+  padding:3px 8px; border-radius:2px; line-height:1}
+.deck{font-family:var(--serif); font-style:italic; font-weight:400;
+  font-variation-settings:'opsz' 24; font-size:1.25rem; line-height:1.5;
+  color:var(--ink-600); margin:16px 0 0}
+.meta{font-family:var(--sans); font-size:.8125rem; color:var(--ink-400); margin:0}
+.source{font-family:var(--sans); font-size:.75rem; color:var(--ink-400);
+  margin:12px 0 0; line-height:1.5}
+.source a{color:var(--ink-400)}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ── section headings ──────────────────────────────────────────── */
+.sec-head{display:flex; align-items:baseline; justify-content:space-between;
+  gap:24px; padding-top:14px; margin-bottom:20px}
+.sec-head .kicker{margin:0}
+.sec-head .sec-link{font-family:var(--sans); font-size:.8125rem; white-space:nowrap}
+
+/* ══════════════════════════════════════════════════════════════════
+   1. LIVE RAIL — ink, server-rendered, present on every page
+   ══════════════════════════════════════════════════════════════════ */
+.rail{background:#12100E; color:#F7F3EC; font-family:var(--sans); font-size:.8125rem}
+.rail-inner{max-width:var(--col-bleed); margin:0 auto; padding:8px var(--gutter);
+  display:flex; align-items:center; gap:16px; min-height:32px}
+.rail-date{color:#8A8177; white-space:nowrap}
+.rail-dot{width:7px; height:7px; border-radius:50%; background:#FF4D5E;
+  display:inline-block; flex:none; animation:railpulse 2s ease-in-out infinite}
+@keyframes railpulse{0%,100%{opacity:1}50%{opacity:.45}}
+.rail-t{font-family:var(--mono); font-variant-numeric:tabular-nums;
+  font-weight:700; color:#FF4D5E; letter-spacing:.02em}
+.rail-mission{color:#F7F3EC; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.rail-sep{color:#443D35}
+.rail-watch{margin-left:auto; color:#F7F3EC; text-decoration-color:#443D35; white-space:nowrap}
+.rail-watch:hover{text-decoration-color:#F7F3EC}
+.rail-line2{display:none}
+
+/* ══════════════════════════════════════════════════════════════════
+   2. MASTHEAD — 5 sections, Index, Space Tycoon set apart
+   ══════════════════════════════════════════════════════════════════ */
+.masthead{border-bottom:2px solid var(--ink-900); background:var(--ground);
+  position:sticky; top:0; z-index:20}
+.masthead-inner{max-width:var(--col-bleed); margin:0 auto; padding:18px var(--gutter) 14px;
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:40px}
+.wordmark{font-family:var(--serif); font-variation-settings:'opsz' 96,'WONK' 1;
+  font-weight:900; font-size:1.75rem; letter-spacing:-.02em; line-height:1;
+  color:var(--ink-900); text-decoration:none}
+.wordmark span{color:var(--signal)}
+nav.sections{display:flex; gap:28px; justify-content:center}
+nav.sections a{font-family:var(--serif); font-variation-settings:'opsz' 24;
+  font-weight:600; font-size:1.0625rem; color:var(--ink-900); text-decoration:none;
+  padding-bottom:2px; border-bottom:2px solid transparent;
+  transition:border-color 200ms cubic-bezier(.2,0,0,1)}
+nav.sections a:hover{border-bottom-color:var(--signal)}
+.masthead-right{display:flex; flex-direction:column; align-items:flex-end; gap:4px;
+  font-family:var(--sans); font-size:.8125rem}
+.masthead-right .row1{display:flex; gap:18px; align-items:center}
+.masthead-right a{color:var(--ink-600); text-decoration:none}
+.masthead-right a:hover{color:var(--ink-900)}
+.tycoon-link{font-family:var(--sans); font-weight:600; font-size:.8125rem;
+  color:var(--ink-900) !important; border-top:1px solid var(--rule);
+  padding-top:4px; width:100%; text-align:right}
+.burger{display:none}
+
+/* ══════════════════════════════════════════════════════════════════
+   3. LEAD + NEXT FIVE
+   ══════════════════════════════════════════════════════════════════ */
+.lead-grid{display:grid; grid-template-columns:minmax(0,720px) 320px; gap:56px;
+  padding:48px 0 56px}
+.lead h1{font-family:var(--serif); font-variation-settings:'opsz' 144,'WONK' 1;
+  font-weight:900; font-size:clamp(2.75rem,5vw,4.25rem); line-height:1.02;
+  letter-spacing:-.022em; margin:0}
+.lead .rule{margin:24px 0}
+.ph{background:var(--ground-sunken); border:1px solid var(--rule);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--sans); font-size:.6875rem; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-400)}
+.ph-lead{aspect-ratio:21/9; margin:28px 0 16px}
+.lead-byline{font-family:var(--sans); font-size:.8125rem; color:var(--ink-400)}
+
+/* next five */
+.nextfive{border-left:1px solid var(--rule); padding-left:28px}
+.nf-item{padding:14px 0; border-bottom:1px solid var(--rule)}
+.nf-item:last-of-type{border-bottom:0}
+.nf-now{padding-bottom:16px}
+.nf-t{font-family:var(--mono); font-weight:700; font-size:1.5rem;
+  color:var(--signal); font-variant-numeric:tabular-nums; letter-spacing:-.01em;
+  display:flex; align-items:center; gap:8px}
+.nf-now .nf-dot{width:8px; height:8px; border-radius:50%; background:var(--signal)}
+.nf-mission{font-family:var(--serif); font-variation-settings:'opsz' 24;
+  font-weight:600; font-size:1.0625rem; line-height:1.25; margin:6px 0 2px}
+.nf-where{font-family:var(--sans); font-size:.8125rem; color:var(--ink-400)}
+.nf-row{display:grid; grid-template-columns:64px 1fr auto; gap:12px; align-items:baseline}
+.nf-date{font-family:var(--mono); font-size:.8125rem; color:var(--ink-400)}
+.nf-name{font-family:var(--serif); font-variation-settings:'opsz' 18;
+  font-weight:600; font-size:.9375rem}
+.nf-flag{font-family:var(--sans); font-size:.6875rem; color:var(--ink-600); white-space:nowrap}
+.btn{display:inline-block; font-family:var(--sans); font-weight:600; font-size:.875rem;
+  padding:10px 18px; border-radius:2px; text-decoration:none;
+  background:var(--link); color:#fff; border:1px solid var(--link)}
+.btn:hover{background:#173D5E; border-color:#173D5E}
+.btn-quiet{background:none; color:var(--ink-900); border-color:var(--rule-strong)}
+.btn-quiet:hover{background:var(--ground-sunken); border-color:var(--ink-900)}
+
+/* ══════════════════════════════════════════════════════════════════
+   4. CHART FRAME — a chart is an article
+   ══════════════════════════════════════════════════════════════════ */
+figure.chart{margin:0; padding:36px 0 44px; border-top:1px solid var(--rule)}
+figure.chart h2{font-family:var(--serif); font-variation-settings:'opsz' 48;
+  font-weight:600; font-size:1.75rem; line-height:1.2; letter-spacing:-.01em; margin:0}
+figure.chart .chart-deck{font-family:var(--serif); font-variation-settings:'opsz' 18;
+  font-size:1rem; color:var(--ink-600); margin:8px 0 24px; max-width:640px}
+.plot{width:100%; height:auto; display:block; background:var(--ground-raised);
+  border:1px solid var(--rule)}
+.legend{display:flex; gap:20px; font-family:var(--sans); font-size:.75rem;
+  color:var(--ink-600); margin-top:12px; flex-wrap:wrap}
+.legend i{display:inline-block; width:10px; height:10px; margin-right:6px;
+  vertical-align:-1px; border-radius:1px}
+
+/* ══════════════════════════════════════════════════════════════════
+   5. THIS WEEK — three stories
+   ══════════════════════════════════════════════════════════════════ */
+.stories{display:grid; grid-template-columns:repeat(3,1fr); gap:32px;
+  padding-bottom:52px}
+.story .ph{aspect-ratio:16/9; margin-bottom:14px}
+.story h3{font-family:var(--serif); font-variation-settings:'opsz' 36;
+  font-weight:600; font-size:1.375rem; line-height:1.2; letter-spacing:-.012em;
+  margin:10px 0 8px}
+.story h3 a{color:var(--ink-900); text-decoration:none}
+.story h3 a:hover{text-decoration:underline; text-decoration-color:var(--signal);
+  text-decoration-thickness:2px}
+.story p{font-family:var(--serif); font-variation-settings:'opsz' 14;
+  font-size:1rem; line-height:1.55; color:var(--ink-600); margin:0 0 10px}
+
+/* ══════════════════════════════════════════════════════════════════
+   6. THE NUMBERS
+   ══════════════════════════════════════════════════════════════════ */
+.numbers{border-top:1px solid var(--rule); padding:36px 0 48px}
+.num-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  background:var(--rule); border:1px solid var(--rule)}
+.num-cell{background:var(--ground-raised); padding:22px 20px; text-decoration:none;
+  display:block}
+.num-cell:hover{background:var(--ground-sunken)}
+.num-v{font-family:var(--mono); font-weight:700; font-size:1.75rem;
+  font-variant-numeric:tabular-nums; letter-spacing:-.02em; color:var(--ink-900);
+  line-height:1.1}
+.num-l{font-family:var(--sans); font-weight:600; font-size:.6875rem;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-400); margin-top:8px}
+
+/* ══════════════════════════════════════════════════════════════════
+   7. SPACE TYCOON — ink block inside a paper page
+   ══════════════════════════════════════════════════════════════════ */
+.tycoon{background:#12100E; color:#F7F3EC; margin:0 0 0}
+.tycoon-inner{max-width:var(--col-wide); margin:0 auto; padding:56px var(--gutter);
+  display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:48px; align-items:center}
+.tycoon .kicker{color:#8A8177}
+.tycoon h2{font-family:var(--serif); font-variation-settings:'opsz' 96,'WONK' 1;
+  font-weight:700; font-size:clamp(1.875rem,3vw,2.625rem); line-height:1.08;
+  letter-spacing:-.018em; margin:0; color:#F7F3EC}
+.tycoon p{font-family:var(--serif); font-variation-settings:'opsz' 14;
+  color:#B4ABA0; font-size:1.0625rem; line-height:1.6; max-width:56ch; margin:20px 0 26px}
+.tycoon .btn{background:#FF4D5E; border-color:#FF4D5E; color:#12100E}
+.tycoon .btn:hover{background:#F7F3EC; border-color:#F7F3EC}
+.tycoon a.quiet{color:#F7F3EC; font-family:var(--sans); font-size:.875rem;
+  font-weight:600; margin-left:22px; text-decoration-color:#443D35}
+.tycoon .ph{background:#1B1815; border-color:#2E2924; color:#8A8177; aspect-ratio:4/3}
+.leaders{margin-top:18px; font-family:var(--sans); font-size:.8125rem; color:#8A8177}
+.leaders b{color:#F7F3EC; font-weight:600}
+.leaders .num{color:#56C4A7}
+
+/* ══════════════════════════════════════════════════════════════════
+   8. DIGEST + COLOPHON
+   ══════════════════════════════════════════════════════════════════ */
+.digest{border-top:1px solid var(--rule); padding:48px 0 56px}
+.digest-grid{display:grid; grid-template-columns:1fr auto; gap:40px; align-items:end}
+.digest h2{font-family:var(--serif); font-variation-settings:'opsz' 72;
+  font-weight:600; font-size:2rem; line-height:1.12; letter-spacing:-.014em; margin:0}
+.digest form{display:flex; gap:10px}
+.digest input{font-family:var(--sans); font-size:.9375rem; padding:11px 14px;
+  border:1px solid var(--rule-strong); background:var(--ground-raised);
+  color:var(--ink-900); border-radius:2px; min-width:260px}
+.digest input:focus-visible{outline:2px solid var(--link); outline-offset:1px}
+.colophon{background:var(--ground-sunken); border-top:1px solid var(--rule);
+  padding:44px 0 56px; font-family:var(--sans); font-size:.8125rem}
+.col-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:32px}
+.colophon h4{font-family:var(--sans); font-weight:600; font-size:.6875rem;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-400);
+  margin:0 0 12px}
+.colophon ul{list-style:none; margin:0; padding:0; line-height:2}
+.colophon a{color:var(--ink-600); text-decoration:none}
+.colophon a:hover{color:var(--ink-900); text-decoration:underline}
+.colophon .fine{margin-top:36px; padding-top:20px; border-top:1px solid var(--rule);
+  color:var(--ink-400)}
+
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE — 390px. One column, because a phone is one column.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width:900px){
+  :root{--gutter:16px}
+  body{font-size:1.0625rem; line-height:1.60;
+       font-variation-settings:'opsz' 12,'SOFT' 0,'WONK' 0}
+
+  /* rail wraps to two lines — it never leaves */
+  .rail-inner{flex-wrap:wrap; row-gap:2px; padding:7px var(--gutter)}
+  .rail-date,.rail-sep{display:none}
+  .rail-watch{margin-left:auto}
+  .rail-line2{display:block; flex-basis:100%; color:#B4ABA0; font-size:.75rem}
+  .rail-mission{display:none}
+
+  /* masthead collapses to wordmark + search + menu */
+  .masthead-inner{grid-template-columns:auto 1fr; gap:12px; padding:14px var(--gutter) 12px}
+  nav.sections,.masthead-right{display:none}
+  .burger{display:flex; justify-self:end; gap:18px; align-items:center;
+    font-family:var(--sans); font-size:1.125rem; color:var(--ink-900)}
+  .burger span{cursor:default}
+
+  .lead-grid{grid-template-columns:1fr; gap:0; padding:28px 0 36px}
+  .lead h1{font-size:2.5rem}
+  .deck{font-size:1.125rem}
+  /* next five becomes the second block, not a sidebar */
+  .nextfive{border-left:0; padding-left:0; margin-top:36px;
+    border-top:2px solid var(--ink-900); padding-top:18px}
+  .stories{grid-template-columns:1fr; gap:0}
+  /* below the first story, drop the art — "brief" density */
+  .story{padding:24px 0; border-top:1px solid var(--rule)}
+  .story:first-child{border-top:0; padding-top:0}
+  .story:not(:first-child) .ph{display:none}
+  .story h3{font-size:1.25rem}
+  .num-grid{grid-template-columns:repeat(2,1fr)}
+  .num-v{font-size:1.5rem}
+  /* the chart is the one element allowed to break the gutter */
+  figure.chart .plot{margin-left:calc(var(--gutter)*-1); margin-right:calc(var(--gutter)*-1);
+    width:calc(100% + var(--gutter)*2); border-left:0; border-right:0}
+  .tycoon-inner{grid-template-columns:1fr; gap:28px; padding:40px var(--gutter)}
+  .tycoon-inner .ph{order:-1; aspect-ratio:16/9}
+  .digest-grid{grid-template-columns:1fr; gap:20px; align-items:start}
+  .digest h2{font-size:1.625rem}
+  .digest form{flex-direction:column}
+  .digest input{min-width:0; width:100%}
+  .col-grid{grid-template-columns:repeat(2,1fr); gap:28px}
+  .sec-head{flex-wrap:wrap; gap:6px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important}
+  .rail-dot{animation:none; opacity:1}          /* static filled dot */
+  .plot-anim{stroke-dasharray:none !important}  /* chart renders at final state */
+  a{transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ 1. LIVE RAIL — server-rendered, every page, above the fold ════════ -->
+<div class="rail" role="region" aria-label="Next launch">
+  <div class="rail-inner">
+    <span class="rail-date">Sat 29 Aug 2026</span>
+    <span class="rail-dot" aria-hidden="true"></span>
+    <span class="rail-t"><time datetime="2026-08-29T18:14:00Z">T&minus;04:12:07</time></span>
+    <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">T minus four hours, twelve minutes to the next launch.</span>
+    <span class="rail-sep">·</span>
+    <span class="rail-mission">Falcon&nbsp;9 · Starlink&nbsp;12-8 · Cape Canaveral SLC-40</span>
+    <a class="rail-watch" href="#">Watch&nbsp;&rarr;</a>
+    <span class="rail-line2">Falcon 9 · Starlink 12-8 · Cape SLC-40</span>
+  </div>
+</div>
+
+<!-- ════════ 2. MASTHEAD ════════ -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="#">Space<span>Nexus</span></a>
+    <nav class="sections" aria-label="Sections">
+      <a href="#">Launches</a>
+      <a href="#">News</a>
+      <a href="#">Markets</a>
+      <a href="#">Business</a>
+      <a href="#">Learn</a>
+    </nav>
+    <div class="masthead-right">
+      <div class="row1">
+        <a href="#">Index</a>
+        <a href="#" aria-label="Search" style="display:flex"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M10.8 10.8 L14.5 14.5" stroke-linecap="round"/></svg></a>
+        <a href="#">Sign in</a>
+      </div>
+      <a class="tycoon-link" href="#">Space Tycoon &rarr;</a>
+    </div>
+    <div class="burger" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5"/><path d="M10.8 10.8 L14.5 14.5" stroke-linecap="round"/></svg><span>&#9776;</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ════════ 3. LEAD STORY + NEXT FIVE ════════ -->
+  <div class="lead-grid">
+
+    <article class="lead">
+      <p class="kicker">Launch Analysis</p>
+      <h1>Artemis&nbsp;II Flew. Here Is What It Cost.</h1>
+      <p class="deck">Four days, one free-return trajectory, and the first crewed lunar
+        flyby since 1972 — against a program that has now spent $53.5&nbsp;billion. The
+        debrief, hour by hour, and what it means for Artemis&nbsp;III.</p>
+      <div class="ph ph-lead">Hero art &mdash; 21:9 &mdash; /art/hero-artemis-ii.webp</div>
+      <p class="lead-byline">SpaceNexus staff · 8 min read · 29 August 2026 ·
+        <a href="#">Mission debrief</a></p>
+    </article>
+
+    <aside class="nextfive" aria-label="Next five launches">
+      <div class="sec-head" style="padding-top:0">
+        <p class="kicker">Next five launches</p>
+      </div>
+      <hr class="rule-strong">
+
+      <div class="nf-item nf-now" style="padding-top:16px">
+        <div class="nf-t"><span class="nf-dot" aria-hidden="true"></span>T&minus;04:12:07</div>
+        <p class="nf-mission">Falcon&nbsp;9 · Starlink&nbsp;12-8</p>
+        <p class="nf-where">Cape Canaveral SLC-40 · 18:14&nbsp;UTC · 92% GO ·
+          <a href="#">Watch</a></p>
+      </div>
+
+      <div class="nf-item">
+        <div class="nf-row">
+          <span class="nf-date">31 Aug</span>
+          <span class="nf-name">Electron</span>
+          <span class="nf-flag">&#9679;&nbsp;scheduled</span>
+        </div>
+        <p class="nf-where" style="margin-top:3px">Mahia LC-1 · Rocket Lab</p>
+      </div>
+
+      <div class="nf-item">
+        <div class="nf-row">
+          <span class="nf-date">02 Sep</span>
+          <span class="nf-name">Falcon&nbsp;9</span>
+          <span class="nf-flag">&#9679;&nbsp;scheduled</span>
+        </div>
+        <p class="nf-where" style="margin-top:3px">Vandenberg SLC-4E · SpaceX</p>
+      </div>
+
+      <div class="nf-item">
+        <div class="nf-row">
+          <span class="nf-date">09 Sep</span>
+          <span class="nf-name">Soyuz-2.1b</span>
+          <span class="nf-flag" style="color:var(--signal)">&#9650;&nbsp;slipped 3d</span>
+        </div>
+        <p class="nf-where" style="margin-top:3px">Baikonur · Roscosmos</p>
+      </div>
+
+      <div class="nf-item">
+        <div class="nf-row">
+          <span class="nf-date">12 Sep</span>
+          <span class="nf-name">New Glenn</span>
+          <span class="nf-flag">&#9679;&nbsp;scheduled</span>
+        </div>
+        <p class="nf-where" style="margin-top:3px">LC-36 · Blue Origin</p>
+      </div>
+
+      <p style="margin-top:20px"><a href="#" style="font-family:var(--sans);font-size:.8125rem;font-weight:600">Full schedule, every site &rarr;</a></p>
+    </aside>
+  </div>
+
+  <!-- ════════ 4. CHART OF THE WEEK — a chart is an article ════════ -->
+  <figure class="chart">
+    <div class="sec-head">
+      <p class="kicker">Chart of the week</p>
+      <a class="sec-link" href="#">All charts &rarr;</a>
+    </div>
+    <h2>Orbital launches per month</h2>
+    <p class="chart-deck">Completed and failed attempts worldwide, last twelve months.
+      August is on pace to be the busiest month on record.</p>
+
+    <svg class="plot" viewBox="0 0 1080 300" role="img"
+         aria-label="Bar chart of orbital launch attempts per month, September 2025 to August 2026. Values rise from 21 to 34 completed launches; failures range from zero to two per month.">
+      <!-- gridlines -->
+      <g stroke="#E3DDD2" stroke-width="1">
+        <line x1="60" y1="250" x2="1040" y2="250"/>
+        <line x1="60" y1="187" x2="1040" y2="187"/>
+        <line x1="60" y1="124" x2="1040" y2="124"/>
+        <line x1="60" y1="61"  x2="1040" y2="61"/>
+      </g>
+      <g font-family="JetBrains Mono, monospace" font-size="11" fill="#6E665A" text-anchor="end">
+        <text x="48" y="254">0</text><text x="48" y="191">10</text>
+        <text x="48" y="128">20</text><text x="48" y="65">30</text>
+      </g>
+      <!-- bars: series 1 (completed) + series 2 (failed), stacked -->
+      <g>
+        <!-- Sep25 21 -->
+        <rect x="72"  y="118" width="52" height="132" fill="#1F4E79"/>
+        <!-- Oct25 23 / 1 fail -->
+        <rect x="153" y="112" width="52" height="138" fill="#1F4E79"/>
+        <rect x="153" y="106" width="52" height="6"   fill="#C8102E"/>
+        <!-- Nov25 22 -->
+        <rect x="234" y="112" width="52" height="138" fill="#1F4E79"/>
+        <!-- Dec25 25 -->
+        <rect x="315" y="93"  width="52" height="157" fill="#1F4E79"/>
+        <!-- Jan26 24 / 1 -->
+        <rect x="396" y="99"  width="52" height="151" fill="#1F4E79"/>
+        <rect x="396" y="93"  width="52" height="6"   fill="#C8102E"/>
+        <!-- Feb26 26 -->
+        <rect x="477" y="87"  width="52" height="163" fill="#1F4E79"/>
+        <!-- Mar26 28 -->
+        <rect x="558" y="74"  width="52" height="176" fill="#1F4E79"/>
+        <!-- Apr26 27 / 2 -->
+        <rect x="639" y="80"  width="52" height="170" fill="#1F4E79"/>
+        <rect x="639" y="68"  width="52" height="12"  fill="#C8102E"/>
+        <!-- May26 29 -->
+        <rect x="720" y="68"  width="52" height="182" fill="#1F4E79"/>
+        <!-- Jun26 31 -->
+        <rect x="801" y="55"  width="52" height="195" fill="#1F4E79"/>
+        <!-- Jul26 30 / 1 -->
+        <rect x="882" y="61"  width="52" height="189" fill="#1F4E79"/>
+        <rect x="882" y="55"  width="52" height="6"   fill="#C8102E"/>
+        <!-- Aug26 34 -->
+        <rect x="963" y="36"  width="52" height="214" fill="#1F4E79"/>
+      </g>
+      <!-- value label on the tallest bar, direct-labelled -->
+      <text x="989" y="28" font-family="JetBrains Mono, monospace" font-size="13"
+            font-weight="700" fill="#14110D" text-anchor="middle">34</text>
+      <!-- axis -->
+      <line x1="60" y1="250" x2="1040" y2="250" stroke="#14110D" stroke-width="1.5"/>
+      <g font-family="Inter, sans-serif" font-size="11" fill="#6E665A" text-anchor="middle">
+        <text x="98"  y="270">Sep</text><text x="179" y="270">Oct</text>
+        <text x="260" y="270">Nov</text><text x="341" y="270">Dec</text>
+        <text x="422" y="270">Jan</text><text x="503" y="270">Feb</text>
+        <text x="584" y="270">Mar</text><text x="665" y="270">Apr</text>
+        <text x="746" y="270">May</text><text x="827" y="270">Jun</text>
+        <text x="908" y="270">Jul</text><text x="989" y="270">Aug</text>
+      </g>
+      <g font-family="Inter, sans-serif" font-size="10" fill="#6E665A" text-anchor="middle">
+        <text x="98" y="288">2025</text><text x="989" y="288">2026</text>
+      </g>
+    </svg>
+
+    <div class="legend">
+      <span><i style="background:var(--s1)"></i>Completed</span>
+      <span><i style="background:var(--s2)"></i>Failed</span>
+    </div>
+    <figcaption class="source">
+      Source: SpaceNexus launch tracker, 414 launches backfilled · as of 29&nbsp;Aug&nbsp;2026 14:02&nbsp;UTC ·
+      <a href="#">Permalink</a> · <a href="#">PNG</a> · <a href="#">Table</a>
+    </figcaption>
+  </figure>
+
+  <!-- ════════ 5. THIS WEEK — three stories, not fourteen modules ════════ -->
+  <section aria-labelledby="thisweek">
+    <div class="sec-head" style="border-top:1px solid var(--rule)">
+      <p class="kicker" id="thisweek">This week</p>
+      <a class="sec-link" href="#">Everything we published &rarr;</a>
+    </div>
+
+    <div class="stories">
+      <article class="story">
+        <div class="ph">16:9 &mdash; /art/hero-space-capital.webp</div>
+        <span class="kicker-outline">Markets</span>
+        <h3><a href="#">SPCX Since the IPO: What Two Months of Trading Tell Us</a></h3>
+        <p>The float priced at $21. It has not traded below $26 since week three — and the
+          H2 outlook now depends on a single Starship cadence assumption.</p>
+        <p class="meta">6 min read · 27 August</p>
+      </article>
+
+      <article class="story">
+        <div class="ph">16:9 &mdash; /art/hero-regulatory.webp</div>
+        <span class="kicker-outline">Policy</span>
+        <h3><a href="#">The Artemis III Paradox</a></h3>
+        <p>Every schedule fix for the lunar landing makes the next one harder. A look at
+          the dependency chain that no amount of funding shortens.</p>
+        <p class="meta">5 min read · 26 August</p>
+      </article>
+
+      <article class="story">
+        <div class="ph">16:9 &mdash; /art/hero-launch-cost.webp</div>
+        <span class="kicker-outline">Guide</span>
+        <h3><a href="#">What It Costs to Launch a CubeSat in 2026</a></h3>
+        <p>1U to 12U, rideshare versus dedicated versus ISS deployment — with the
+          brokerage fees nobody quotes you up front.</p>
+        <p class="meta">Updated 25 August</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ════════ 6. THE NUMBERS — every figure links to the page that owns it ════════ -->
+  <section class="numbers" aria-labelledby="numbers">
+    <div class="sec-head" style="padding-top:0">
+      <p class="kicker" id="numbers">The numbers</p>
+      <a class="sec-link" href="#">Where every number comes from &rarr;</a>
+    </div>
+    <div class="num-grid">
+      <a class="num-cell" href="#">
+        <div class="num-v">34,512</div>
+        <div class="num-l">Tracked objects</div>
+      </a>
+      <a class="num-cell" href="#">
+        <div class="num-v">$2.4bn</div>
+        <div class="num-l">Private funding · Q3 2026</div>
+      </a>
+      <a class="num-cell" href="#">
+        <div class="num-v">6,512</div>
+        <div class="num-l">Open space jobs</div>
+      </a>
+      <a class="num-cell" href="#">
+        <div class="num-v">414</div>
+        <div class="num-l">Launches · 2026 YTD</div>
+      </a>
+    </div>
+    <p class="source">Sources: CelesTrak full SATCAT · SpaceNexus funding tracker ·
+      16 ATS job boards, synced daily 06:30&nbsp;UTC · SpaceNexus launch tracker ·
+      all as of 29&nbsp;Aug&nbsp;2026 14:02&nbsp;UTC</p>
+  </section>
+</main>
+
+<!-- ════════ 7. SPACE TYCOON — ink block, the other thing the site is ════════ -->
+<section class="tycoon" data-ground="ink" aria-labelledby="tycoon">
+  <div class="tycoon-inner">
+    <div>
+      <p class="kicker">Space Tycoon · Free · No account needed to look around</p>
+      <h2 id="tycoon">Most space games are about ships.<br>This one is about balance sheets.</h2>
+      <p>A browser MMO across eight regions of the solar system, built on the same launch
+        and market data as the rest of the site. Nothing is destroyed by other players —
+        solar storms, micrometeoroids and equipment failure are the risks. Hardware is
+        manufactured, not conjured.</p>
+      <a class="btn" href="#">Play free &rarr;</a>
+      <a class="quiet" href="#">Read how it plays</a>
+      <p class="leaders">Top corporations right now &nbsp;
+        <b>#1 Helios Freight</b> <span class="num">$4.2bn</span> &nbsp;·&nbsp;
+        <b>#2 Cerberus Mining</b> <span class="num">$3.8bn</span> &nbsp;·&nbsp;
+        <b>#3 Tanaka Orbital</b> <span class="num">$3.1bn</span></p>
+    </div>
+    <div class="ph">Live market chart &mdash; aluminium spot, 30 days</div>
+  </div>
+</section>
+
+<div class="wrap">
+  <!-- ════════ 8. THE DIGEST ════════ -->
+  <section class="digest" aria-labelledby="digest">
+    <div class="digest-grid">
+      <div>
+        <p class="kicker">The M/Th Digest</p>
+        <h2 id="digest">The week in space, twice a week.</h2>
+        <p class="deck" style="font-size:1.125rem">Mondays and Thursdays: what launched,
+          what slipped, what got funded, and one chart. Free, no account.</p>
+      </div>
+      <form onsubmit="return false">
+        <label for="em" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Email address</label>
+        <input id="em" type="email" placeholder="you@example.com" autocomplete="email">
+        <button class="btn" type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</div>
+
+<!-- ════════ COLOPHON ════════ -->
+<footer class="colophon">
+  <div class="wrap">
+    <div class="col-grid">
+      <div>
+        <h4>Sections</h4>
+        <ul>
+          <li><a href="#">Launches</a></li><li><a href="#">News</a></li>
+          <li><a href="#">Markets</a></li><li><a href="#">Business</a></li>
+          <li><a href="#">Learn</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>The Index</h4>
+        <ul>
+          <li><a href="#">Calculators &amp; engineering</a></li>
+          <li><a href="#">Trackers &amp; databases</a></li>
+          <li><a href="#">Guides &amp; courses</a></li>
+          <li><a href="#">Charts</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Data</h4>
+        <ul>
+          <li><a href="#">Data sources</a></li><li><a href="#">Developer API</a></li>
+          <li><a href="#">Embeddable widgets</a></li><li><a href="#">Alerts</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>SpaceNexus</h4>
+        <ul>
+          <li><a href="#">About</a></li><li><a href="#">Pricing</a></li>
+          <li><a href="#">Advertise</a></li><li><a href="#">Feedback</a></li>
+          <li><a href="#">Help</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">SpaceNexus LLC · Free for enthusiasts, always ·
+      Mockup: Brief C, &ldquo;The Journal&rdquo; · 29 August 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>

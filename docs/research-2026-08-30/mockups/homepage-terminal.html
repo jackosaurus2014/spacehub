@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpaceNexus — The Terminal (homepage mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink-void:#07080A; --ink-surface:#0D0F12; --ink-panel:#14171B;
+  --ink-raised:#1C2026; --ink-active:#262B33;
+  --rule-hairline:#2A2F37; --rule-default:#3A414B; --rule-strong:#59626F;
+  --text-primary:#F2F4F7; --text-secondary:#A8B0BB; --text-tertiary:#79828F;
+  --sig-up:#3DD68C; --sig-down:#FF5D5D; --sig-hold:#FFB020;
+  --sig-info:#57A6FF; --sig-live:#FF3B30;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:3px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{
+  background:var(--ink-void); color:var(--text-primary);
+  font-family:var(--sans); font-size:13px; line-height:20px;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.micro{font-size:10px;line-height:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
+.meta{font-size:11px;line-height:16px;letter-spacing:.04em;color:var(--text-tertiary);font-family:var(--mono)}
+.up{color:var(--sig-up)} .down{color:var(--sig-down)} .hold{color:var(--sig-hold)}
+.wrap{max-width:1600px;margin:0 auto;padding:0 24px}
+
+/* ── command bar ─────────────────────────────────────────── */
+.bar{
+  position:sticky;top:0;z-index:50;height:48px;
+  background:var(--ink-void);border-bottom:1px solid var(--rule-hairline);
+  display:flex;align-items:center;gap:24px;
+}
+.bar .wrap{display:flex;align-items:center;gap:24px;width:100%;height:48px}
+.mark{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.14em;color:var(--sig-hold);white-space:nowrap}
+.menus{display:flex;gap:18px;font-size:13px;font-weight:500;color:var(--text-secondary)}
+.menus a:hover{color:var(--text-primary)}
+.bar-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.search{
+  display:flex;align-items:center;gap:8px;height:28px;padding:0 10px;
+  border:1px solid var(--rule-hairline);border-radius:var(--r);
+  background:var(--ink-surface);color:var(--text-tertiary);font-size:12px;min-width:180px;
+}
+.search .kbd{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-tertiary);
+  border:1px solid var(--rule-default);border-radius:2px;padding:1px 4px}
+.live{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text-secondary)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--sig-live);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── ticker ──────────────────────────────────────────────── */
+.ticker{
+  height:36px;border-bottom:1px solid var(--rule-hairline);
+  background:var(--ink-surface);overflow:hidden;display:flex;align-items:center;
+}
+.ticker-track{display:flex;gap:0;white-space:nowrap;animation:slide 48s linear infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick{
+  display:inline-flex;align-items:center;gap:8px;padding:0 16px;
+  border-right:1px solid var(--rule-hairline);font-family:var(--mono);font-size:11px;
+}
+.tick .sym{color:var(--text-tertiary);font-weight:700}
+.tick .val{color:var(--text-primary)}
+
+/* ── next launch ─────────────────────────────────────────── */
+.nextrow{display:flex;align-items:baseline;justify-content:space-between;padding:20px 0 8px}
+.panel{
+  background:var(--ink-surface);border:1px solid var(--rule-hairline);border-radius:var(--r);
+}
+.panel-h{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:8px 12px;background:var(--ink-panel);border-bottom:1px solid var(--rule-hairline);
+}
+.panel-h .t{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--text-secondary)}
+.panel-h .s{font-family:var(--mono);font-size:10px;color:var(--text-tertiary)}
+.hero{padding:20px 24px;display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+.tminus{font-family:var(--mono);font-size:44px;line-height:48px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.hero-meta h1{font-size:26px;line-height:32px;font-weight:600;letter-spacing:-.02em}
+.hero-meta p{color:var(--text-secondary);font-size:13px;margin-top:2px}
+.prog{height:3px;background:var(--ink-active);border-radius:2px;overflow:hidden;margin-top:14px;width:100%}
+.prog>i{display:block;height:100%;width:62%;background:var(--sig-hold)}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;
+  border-radius:var(--r);font-size:12px;font-weight:600;border:1px solid var(--rule-default);
+  color:var(--text-primary);background:transparent;white-space:nowrap;
+}
+.btn-p{background:var(--text-primary);color:var(--ink-void);border-color:var(--text-primary)}
+.btn:focus-visible,a:focus-visible{outline:2px solid var(--sig-info);outline-offset:2px}
+
+/* ── 3 column grid ───────────────────────────────────────── */
+.cols{display:grid;grid-template-columns:4fr 5fr 3fr;gap:16px;margin-top:16px;align-items:start}
+.rowlist{display:flex;flex-direction:column}
+.row{
+  display:flex;align-items:baseline;gap:10px;padding:7px 12px;
+  border-bottom:1px solid var(--rule-hairline);min-height:34px;
+}
+.row:last-child{border-bottom:0}
+.row:hover{background:var(--ink-raised)}
+.row .k{font-family:var(--mono);font-size:11px;color:var(--sig-hold);min-width:56px;flex-shrink:0}
+.row .m{flex:1;min-width:0}
+.row .m b{display:block;font-size:12px;font-weight:500;color:var(--text-primary);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .m span{display:block;font-size:11px;color:var(--text-tertiary);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .v{font-family:var(--mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.panel-f{padding:7px 12px;border-top:1px solid var(--rule-hairline);background:var(--ink-panel)}
+.panel-f a{font-size:11px;color:var(--sig-info)}
+
+/* wire rows */
+.wire{padding:8px 12px;border-bottom:1px solid var(--rule-hairline)}
+.wire:last-child{border-bottom:0}
+.wire:hover{background:var(--ink-raised)}
+.wire .src{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.04em}
+.wire .hl{font-size:13px;font-weight:500;line-height:18px;margin-top:2px}
+.tag{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+  text-transform:uppercase;padding:1px 5px;border-radius:2px;border:1px solid var(--rule-default);
+  color:var(--text-secondary);margin-right:6px}
+
+/* markets rows */
+.mk{display:flex;align-items:center;gap:8px;padding:6px 12px;border-bottom:1px solid var(--rule-hairline);min-height:32px}
+.mk:last-child{border-bottom:0}
+.mk .sym{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text-secondary);width:52px}
+.mk .px{font-family:var(--mono);font-size:12px;margin-left:auto;font-variant-numeric:tabular-nums}
+.mk .ch{font-family:var(--mono);font-size:11px;width:70px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* ── chart ───────────────────────────────────────────────── */
+.chart{margin-top:16px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:72px;padding:16px 12px 12px}
+.spark i{flex:1;background:var(--rule-strong);border-radius:1px 1px 0 0}
+.spark i.hi{background:var(--sig-info)}
+
+/* ── table ───────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.tbl th{
+  text-align:left;font-family:var(--sans);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:600;color:var(--text-tertiary);padding:7px 12px;background:var(--ink-panel);
+  border-bottom:1px solid var(--rule-default);white-space:nowrap;
+}
+.tbl td{padding:7px 12px;border-bottom:1px solid var(--rule-hairline);white-space:nowrap;color:var(--text-secondary)}
+.tbl tbody tr:hover td{background:var(--ink-raised)}
+.tbl td.name{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text-primary)}
+.tbl .r{text-align:right}
+.scroll-x{overflow-x:auto}
+
+/* ── tycoon ──────────────────────────────────────────────── */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.pitch{padding:16px}
+.pitch h2{font-size:20px;line-height:26px;font-weight:600;letter-spacing:-.02em}
+.pitch p{color:var(--text-secondary);font-size:13px;margin:6px 0 12px;max-width:46ch}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--rule-hairline);
+  border-radius:var(--r);color:var(--text-secondary);background:var(--ink-panel)}
+
+/* ── footer ──────────────────────────────────────────────── */
+footer{border-top:1px solid var(--rule-hairline);margin-top:32px;padding:20px 0 48px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:12px;color:var(--text-tertiary)}
+footer nav a:hover{color:var(--text-primary)}
+
+/* ── first-visit strip (one decision, not a modal) ───────── */
+.strip{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:8px 12px;border:1px solid var(--rule-hairline);border-left:2px solid var(--sig-hold);
+  border-radius:var(--r);background:var(--ink-surface);margin-top:16px;font-size:12px;
+}
+.strip .q{color:var(--text-secondary)}
+.strip .sp{margin-left:auto;color:var(--text-tertiary);font-size:11px}
+
+/* ── 390px ───────────────────────────────────────────────── */
+@media (max-width:900px){
+  .cols{grid-template-columns:1fr;gap:12px}
+  .duo{grid-template-columns:1fr;gap:12px}
+}
+@media (max-width:640px){
+  .wrap{padding:0 12px}
+  .menus,.search,.bar-right .hide-sm{display:none}
+  .bar .wrap{gap:12px}
+  .burger{display:inline-flex!important}
+  .hero{padding:16px 14px;gap:16px}
+  .tminus{font-size:34px;line-height:38px}
+  .hero-meta h1{font-size:20px;line-height:26px}
+  /* touch density: 44px rows */
+  .row{min-height:44px;padding:9px 12px}
+  .mk{min-height:44px;padding:10px 12px}
+  .wire{padding:10px 12px}
+  .btn{height:40px;padding:0 16px}
+  /* tables → key/value blocks, never sideways scroll */
+  .tbl thead{display:none}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl tr{border-bottom:1px solid var(--rule-hairline);padding:10px 12px;min-height:44px}
+  .tbl tr:last-child{border-bottom:0}
+  .tbl td{border:0;padding:1px 0;white-space:normal}
+  .tbl td.name{font-size:14px;margin-bottom:3px}
+  .tbl td[data-l]:not(.name){display:inline-block;width:auto;margin-right:14px;font-size:11px}
+  .tbl td[data-l]:not(.name)::before{
+    content:attr(data-l) " ";color:var(--text-tertiary);font-family:var(--sans);
+    font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .scroll-x{overflow-x:visible}
+  footer{padding-bottom:72px}
+}
+.burger{display:none;margin-left:auto;font-size:16px;color:var(--text-secondary)}
+
+/* ── reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .ticker-track{animation:none}
+  .ticker{overflow-x:auto}
+  .dot{animation:none}
+  *{transition-duration:0ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- COMMAND BAR — one 48px row. No trial banner, no Play banner, no icon rail. -->
+<header class="bar">
+  <div class="wrap">
+    <a href="#" class="mark">SPACENEXUS</a>
+    <nav class="menus">
+      <a href="#">Launches</a><a href="#">News</a><a href="#">Markets</a>
+      <a href="#">Business</a><a href="#">Learn</a>
+    </nav>
+    <div class="bar-right">
+      <div class="search"><span>Search</span><span class="kbd">⌘K</span></div>
+      <span class="live"><span class="dot"></span>LIVE (1)</span>
+      <a href="#" class="hide-sm" style="font-size:13px;font-weight:500;color:var(--text-secondary)">Tycoon</a>
+      <a href="#" class="hide-sm" style="font-size:13px;font-weight:500;color:var(--text-secondary)">Account</a>
+    </div>
+    <span class="burger">☰</span>
+  </div>
+</header>
+
+<!-- TICKER — kept from IndustryTicker. Glyph + sign + colour, never colour alone. -->
+<div class="ticker" role="marquee" aria-label="Live market and launch ticker">
+  <div class="ticker-track">
+    <span class="tick"><span class="sym">UFO</span><span class="val">28.14</span><span class="up">▲ +1.2%</span></span>
+    <span class="tick"><span class="sym">RKLB</span><span class="val">41.09</span><span class="down">▼ −0.81%</span></span>
+    <span class="tick"><span class="sym">ARKX</span><span class="val">24.87</span><span class="up">▲ +0.4%</span></span>
+    <span class="tick"><span class="sym">ITA</span><span class="val">142.60</span><span class="up">▲ +0.2%</span></span>
+    <span class="tick"><span class="dot" style="display:inline-block"></span><span class="val">LIVE Starbase Rover 3 · 27 watching</span></span>
+    <span class="tick"><span class="sym">T-1d 1h</span><span class="val">RFA One · SaxaVord</span></span>
+    <span class="tick"><span class="sym">FUNDING</span><span class="val">$65.0B tracked · 131 rounds</span></span>
+    <!-- duplicate for seamless loop -->
+    <span class="tick"><span class="sym">UFO</span><span class="val">28.14</span><span class="up">▲ +1.2%</span></span>
+    <span class="tick"><span class="sym">RKLB</span><span class="val">41.09</span><span class="down">▼ −0.81%</span></span>
+    <span class="tick"><span class="sym">ARKX</span><span class="val">24.87</span><span class="up">▲ +0.4%</span></span>
+    <span class="tick"><span class="sym">ITA</span><span class="val">142.60</span><span class="up">▲ +0.2%</span></span>
+    <span class="tick"><span class="val">LIVE Starbase Rover 3 · 27 watching</span></span>
+    <span class="tick"><span class="sym">T-1d 1h</span><span class="val">RFA One · SaxaVord</span></span>
+    <span class="tick"><span class="sym">FUNDING</span><span class="val">$65.0B tracked · 131 rounds</span></span>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- First visit = ONE decision, inline. Data stays visible behind it. -->
+  <div class="strip">
+    <span class="q">Here for launches, or for the industry?</span>
+    <a href="#" class="btn" style="height:26px">Launches</a>
+    <a href="#" class="btn" style="height:26px">Industry</a>
+    <a href="#" class="btn" style="height:26px">Both</a>
+    <span class="sp">first visit only · dismiss ✕</span>
+  </div>
+
+  <!-- NEXT LAUNCH — the countdown is the hero. No headline, no subhead, no two CTAs. -->
+  <div class="nextrow">
+    <span class="micro">Next launch</span>
+    <span class="meta">26 sources · updated 14:32Z</span>
+  </div>
+  <section class="panel">
+    <div class="hero">
+      <div>
+        <div class="tminus">T− 01:24:36</div>
+        <div class="prog"><i></i></div>
+      </div>
+      <div class="hero-meta" style="flex:1;min-width:220px">
+        <h1>RFA One</h1>
+        <p>Rocket Factory Augsburg · SaxaVord Spaceport, Shetland · Maiden flight</p>
+        <p class="meta" style="margin-top:6px"><span class="hold">◆ GO</span> — weather 80% favourable</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="#" class="btn btn-p">Watch ▸</a>
+        <a href="#" class="btn">Alert me</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE COLUMNS: manifest / wire / markets -->
+  <div class="cols">
+
+    <!-- MANIFEST -->
+    <section class="panel">
+      <div class="panel-h"><span class="t">Manifest</span><span class="s">next 30d · LL2</span></div>
+      <div class="rowlist">
+        <a class="row" href="#"><span class="k">T-1d 1h</span><span class="m"><b>RFA One</b><span>Rocket Factory Augsburg · SaxaVord</span></span></a>
+        <a class="row" href="#"><span class="k">T-1d 1h</span><span class="m"><b>Mir</b><span>Agency for Defense Development · Naro</span></span></a>
+        <a class="row" href="#"><span class="k">T-4d</span><span class="m"><b>Starlink Group 12-4</b><span>SpaceX · Falcon 9 · SLC-40</span></span></a>
+        <a class="row" href="#"><span class="k">T-31d</span><span class="m"><b>Long March 5</b><span>CASC · Wenchang</span></span></a>
+        <a class="row" href="#"><span class="k">T-33d</span><span class="m"><b>Electron</b><span>Rocket Lab · LC-1 Mahia</span></span></a>
+        <a class="row" href="#"><span class="k">T-51d</span><span class="m"><b>New Glenn</b><span>Blue Origin · LC-36</span></span></a>
+      </div>
+      <div class="panel-f"><a href="#">12 more this month ▸</a></div>
+    </section>
+
+    <!-- THE WIRE -->
+    <section class="panel">
+      <div class="panel-h"><span class="t">The wire</span><span class="s">14:32Z</span></div>
+      <div>
+        <a class="wire" href="#" style="display:block">
+          <span class="src">14:02 · NASASPACEFLIGHT</span>
+          <div class="hl">NASA's New Space Telescope clears final thermal-vacuum testing</div>
+        </a>
+        <a class="wire" href="#" style="display:block">
+          <span class="src">11:47 · SPACENEWS</span>
+          <div class="hl">Long March 5 rolls out to Wenchang ahead of lunar sample mission</div>
+        </a>
+        <a class="wire" href="#" style="display:block">
+          <span class="src">09:15 · ARS TECHNICA</span>
+          <div class="hl">Starship completes static fire; Flight 12 window opens next week</div>
+        </a>
+      </div>
+      <div class="panel-h" style="border-top:1px solid var(--rule-hairline)">
+        <span class="t">AI insights</span><span class="s">fact-checked</span>
+      </div>
+      <div>
+        <a class="wire" href="#" style="display:block">
+          <span class="tag">Regulatory</span><span class="src">2h ago</span>
+          <div class="hl">Export-control shift puts smallsat component vendors on notice</div>
+        </a>
+        <a class="wire" href="#" style="display:block">
+          <span class="tag">Market</span><span class="src">5h ago</span>
+          <div class="hl">LandSpace's cadence problem is a supply-chain problem</div>
+        </a>
+      </div>
+      <div class="panel-f"><a href="#">All news ▸</a></div>
+    </section>
+
+    <!-- MARKETS -->
+    <section class="panel">
+      <div class="panel-h"><span class="t">Markets</span><span class="s">delayed 15m</span></div>
+      <div>
+        <div class="mk"><span class="sym">UFO</span><span class="px">28.14</span><span class="ch up">▲ +1.2%</span></div>
+        <div class="mk"><span class="sym">ARKX</span><span class="px">24.87</span><span class="ch up">▲ +0.4%</span></div>
+        <div class="mk"><span class="sym">ROKT</span><span class="px">19.02</span><span class="ch down">▼ −0.9%</span></div>
+        <div class="mk"><span class="sym">ITA</span><span class="px">142.60</span><span class="ch up">▲ +0.2%</span></div>
+        <div class="mk"><span class="sym">XAR</span><span class="px">78.31</span><span class="ch down">▼ −0.3%</span></div>
+      </div>
+      <div class="panel-h" style="border-top:1px solid var(--rule-hairline)">
+        <span class="t">Private funding</span><span class="s">trailing 90d</span>
+      </div>
+      <div>
+        <div class="mk"><span class="sym" style="width:auto">TOTAL</span><span class="px">$65.0B</span><span class="ch">&nbsp;</span></div>
+        <div class="mk"><span class="sym" style="width:auto">ROUNDS</span><span class="px">131</span><span class="ch">&nbsp;</span></div>
+        <div class="mk"><span class="sym" style="width:auto">COMPANIES</span><span class="px">253</span><span class="ch">&nbsp;</span></div>
+      </div>
+      <div class="panel-h" style="border-top:1px solid var(--rule-hairline)">
+        <span class="t">Cost to orbit</span><span class="s">$/kg LEO</span>
+      </div>
+      <div>
+        <div class="mk"><span class="sym" style="width:auto;flex:1">Falcon Heavy</span><span class="px">$1,520</span></div>
+        <div class="mk"><span class="sym" style="width:auto;flex:1">Falcon 9</span><span class="px">~$3,070</span></div>
+        <div class="mk"><span class="sym" style="width:auto;flex:1">Electron</span><span class="px">$25,000</span></div>
+        <div class="mk"><span class="sym" style="width:auto;flex:1">Starship (target)</span><span class="px hold">&lt;$100</span></div>
+      </div>
+      <div class="panel-f"><a href="#">Space stocks ▸</a></div>
+    </section>
+  </div>
+
+  <!-- CHART — reuses what /chart already does right -->
+  <section class="panel chart">
+    <div class="panel-h">
+      <span class="t">Launch cadence — orbital launches per month, trailing 12</span>
+      <span class="s">source: LL2 · 14:00Z</span>
+    </div>
+    <div class="spark" aria-label="Launch cadence bar chart, 12 months">
+      <i style="height:32%"></i><i style="height:41%"></i><i style="height:55%"></i><i style="height:74%"></i>
+      <i style="height:63%"></i><i style="height:81%"></i><i style="height:93%"></i><i style="height:78%"></i>
+      <i style="height:100%"></i><i style="height:88%"></i><i style="height:71%"></i><i class="hi" style="height:96%"></i>
+    </div>
+    <div class="panel-f" style="display:flex;gap:16px">
+      <a href="#">Data ▾</a><a href="#">PNG</a><a href="#">Permalink</a>
+    </div>
+  </section>
+
+  <!-- ROCKETS TABLE — the proof point. 23 cards become one table. -->
+  <section class="panel chart">
+    <div class="panel-h"><span class="t">Rockets — 23 operational vehicles</span><span class="s">updated daily 06:30Z</span></div>
+    <div class="scroll-x">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Vehicle</th><th>Operator</th><th class="r">$/launch</th><th class="r">LEO</th>
+            <th class="r">Reliability</th><th class="r">90d</th><th class="r">Next</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name" data-l="Vehicle">Falcon 9 Block 5</td><td data-l="Operator">SpaceX</td>
+            <td class="r" data-l="$/launch">~$67M</td><td class="r" data-l="LEO">23.0 t</td>
+            <td class="r up" data-l="Reliability">99.5%</td><td class="r" data-l="90d">39</td><td class="r hold" data-l="Next">T-4d</td>
+          </tr>
+          <tr>
+            <td class="name" data-l="Vehicle">Electron</td><td data-l="Operator">Rocket Lab</td>
+            <td class="r" data-l="$/launch">~$7.5M</td><td class="r" data-l="LEO">0.3 t</td>
+            <td class="r up" data-l="Reliability">95.1%</td><td class="r" data-l="90d">6</td><td class="r" data-l="Next">T-33d</td>
+          </tr>
+          <tr>
+            <td class="name" data-l="Vehicle">Starship / Super Heavy</td><td data-l="Operator">SpaceX</td>
+            <td class="r" data-l="$/launch">~$10M</td><td class="r" data-l="LEO">150.0 t</td>
+            <td class="r" data-l="Reliability">—</td><td class="r" data-l="90d">3</td><td class="r" data-l="Next">TBD</td>
+          </tr>
+          <tr>
+            <td class="name" data-l="Vehicle">Atlas V</td><td data-l="Operator">ULA</td>
+            <td class="r" data-l="$/launch">~$110M</td><td class="r" data-l="LEO">19.0 t</td>
+            <td class="r up" data-l="Reliability">99.0%</td><td class="r" data-l="90d">1</td><td class="r" data-l="Next">T-88d</td>
+          </tr>
+          <tr>
+            <td class="name" data-l="Vehicle">New Glenn</td><td data-l="Operator">Blue Origin</td>
+            <td class="r" data-l="$/launch">~$68M</td><td class="r" data-l="LEO">45.0 t</td>
+            <td class="r down" data-l="Reliability">67.0%</td><td class="r" data-l="90d">2</td><td class="r" data-l="Next">T-51d</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-f"><a href="#">All 23 vehicles ▸</a></div>
+  </section>
+
+  <!-- SPACE TYCOON — the live economy is the pitch -->
+  <div class="duo">
+    <section class="panel pitch">
+      <span class="micro">Space Tycoon · free · browser · no pay-to-win</span>
+      <h2 style="margin-top:6px">An economic MMO</h2>
+      <p>Most space games are about ships. Space Tycoon is about balance sheets — supply, demand, logistics and corporate warfare across eight regions.</p>
+      <div class="chips">
+        <span class="chip">39 buildings</span><span class="chip">240+ research</span>
+        <span class="chip">12 resources</span><span class="chip">8 regions</span><span class="chip">Epoch 2 · day 6</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <a href="#" class="btn btn-p">Play free ▸</a>
+        <a href="#" class="btn">What is it?</a>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-h"><span class="t">Leaderboard</span><span class="s">live · net worth</span></div>
+      <div>
+        <div class="mk"><span class="sym" style="width:16px;color:var(--text-tertiary)">1</span><span class="sym" style="width:auto;flex:1;color:var(--text-primary)">Orbital Dynamics</span><span class="px">$2.41B</span><span class="ch up">▲ +4.2%</span></div>
+        <div class="mk"><span class="sym" style="width:16px;color:var(--text-tertiary)">2</span><span class="sym" style="width:auto;flex:1;color:var(--text-primary)">Helion Freight</span><span class="px">$1.88B</span><span class="ch up">▲ +1.1%</span></div>
+        <div class="mk"><span class="sym" style="width:16px;color:var(--text-tertiary)">3</span><span class="sym" style="width:auto;flex:1;color:var(--text-primary)">Ceres Mining Co.</span><span class="px">$1.52B</span><span class="ch down">▼ −0.6%</span></div>
+        <div class="mk"><span class="sym" style="width:16px;color:var(--text-tertiary)">4</span><span class="sym" style="width:auto;flex:1;color:var(--text-primary)">Vostok Heavy Ind.</span><span class="px">$1.11B</span><span class="ch up">▲ +2.8%</span></div>
+        <div class="mk"><span class="sym" style="width:16px;color:var(--text-tertiary)">5</span><span class="sym" style="width:auto;flex:1;color:var(--text-primary)">Lagrange Logistics</span><span class="px">$0.98B</span><span class="ch up">▲ +0.3%</span></div>
+      </div>
+      <div class="panel-f"><a href="#">Full leaderboard ▸</a></div>
+    </section>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="#">M/Th Digest</a><a href="#">Index (129)</a><a href="#">Data sources</a>
+      <a href="#">Developer API</a><a href="#">Widgets</a><a href="#">Feedback</a>
+      <a href="#">About</a><a href="#">Pricing</a><a href="#">Advertise</a>
+    </nav>
+    <p class="meta" style="margin-top:12px">
+      SpaceNexus · 26 live data sources · 16,000+ tracked objects · 300+ company profiles · free for enthusiasts
+    </p>
+  </footer>
+</main>
+</body>
+</html>

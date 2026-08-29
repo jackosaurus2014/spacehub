@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpaceNexus — Mission Control homepage mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#000000; --surface:#0B0B0C; --elev:#141416; --hover:#1C1C1F;
+  --line:#26262A; --line-2:#35353B; --line-hot:#5A5A63;
+  --ink:#F5F3EF; --ink-2:#B4AFA6; --ink-3:#8B857B;
+  --ember:#FF7A18; --ember-deep:#B34A00;
+  --signal:#4FD8E8; --go:#56F000; --caution:#FFC53D; --crit:#FF4D4D; --violet:#9B7BFF;
+  --f-display:"Space Grotesk",system-ui,sans-serif;
+  --f-body:"DM Sans",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  --pad:24px; --max:1320px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{background:var(--void);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.overline{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:-.02em;line-height:1.05}
+
+/* ── skip link ── */
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:16px;top:16px;z-index:99;background:var(--ink);color:#000;padding:8px 14px;border-radius:6px}
+
+/* ── NAV: one row, six destinations, three utilities ── */
+.nav{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;gap:28px;height:60px;max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+.brand{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.pip{width:7px;height:7px;border-radius:50%;background:var(--go);box-shadow:0 0 0 3px rgba(86,240,0,.15);flex:none}
+.menu{display:flex;gap:22px;font-size:14.5px;font-weight:500;color:var(--ink-2)}
+.menu a{padding:6px 0;border-bottom:2px solid transparent}
+.menu a:hover{color:var(--ink);border-bottom-color:var(--ember)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.tycoon-pill{font-size:13px;font-weight:500;padding:6px 14px;border-radius:999px;border:1px solid rgba(155,123,255,.45);color:var(--violet)}
+.tycoon-pill:hover{background:rgba(155,123,255,.10)}
+.util{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.util:hover{color:var(--ink);border-color:var(--line-2)}
+.icon-btn{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--ink-2)}
+.burger{display:none}
+
+/* ── HERO: the next launch, full stop ── */
+.hero{position:relative;min-height:600px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line);overflow:hidden}
+.hero-art{position:absolute;inset:0;
+  background:
+    radial-gradient(90% 70% at 72% 28%, rgba(255,122,24,.20), transparent 62%),
+    radial-gradient(60% 50% at 20% 80%, rgba(79,216,232,.10), transparent 65%),
+    linear-gradient(155deg,#1a1410 0%,#0d0f14 48%,#050506 100%);}
+.hero-art::after{content:"[ region art: inner_system.webp — 2560x1440, object-fit:cover ]";
+  position:absolute;left:50%;top:34%;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px;color:rgba(245,243,239,.16);letter-spacing:.05em;white-space:nowrap}
+.scrim{position:absolute;inset:0;background:linear-gradient(to top,#000 6%,rgba(0,0,0,.86) 34%,rgba(0,0,0,.30) 72%,rgba(0,0,0,.55) 100%)}
+.hero-in{position:relative;width:100%;max-width:var(--max);margin:0 auto;padding:84px var(--pad) 0}
+.status{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(86,240,0,.35);background:rgba(86,240,0,.07);border-radius:6px;padding:5px 11px;margin-bottom:20px}
+.status b{font-family:var(--f-mono);font-size:11.5px;font-weight:700;letter-spacing:.12em;color:var(--go)}
+.status span{font-size:11.5px;color:var(--ink-2)}
+.mission{font-size:clamp(2rem,3.6vw,3.1rem);font-weight:700;max-width:17ch;margin-bottom:10px}
+.mission em{font-style:normal;color:var(--ink-2);font-weight:500;display:block;font-size:.44em;letter-spacing:-.01em;margin-bottom:6px}
+.subline{color:var(--ink-2);font-size:15px;margin-bottom:32px}
+.subline b{color:var(--ink);font-weight:500}
+.clock-row{display:flex;align-items:flex-end;gap:40px;flex-wrap:wrap;margin-bottom:28px}
+.clock{font-family:var(--f-mono);font-weight:700;font-size:clamp(3.2rem,7.4vw,5.6rem);line-height:.92;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.clock .u{color:var(--ember);font-size:.34em;margin-left:2px;letter-spacing:0}
+.tele{display:flex;gap:34px;padding-bottom:10px;flex-wrap:wrap}
+.tele div{min-width:96px}
+.tele .v{font-family:var(--f-mono);font-size:15px;color:var(--ink);margin-top:4px}
+.tele .v.sig{color:var(--signal)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;padding-bottom:34px}
+.btn{display:inline-flex;align-items:center;gap:9px;font-size:14.5px;font-weight:700;border-radius:8px;padding:13px 22px;font-family:var(--f-body)}
+.btn-ember{background:var(--ember);color:#0A0A0B}
+.btn-ember:hover{background:#FF8C39}
+.btn-line{border:1px solid var(--line-2);color:var(--ink)}
+.btn-line:hover{border-color:var(--line-hot);background:var(--hover)}
+.noacct{font-size:12.5px;color:var(--ink-3);align-self:center}
+
+/* ── next-5 rail, welded to the bottom of the hero ── */
+.rail{position:relative;border-top:1px solid var(--line);background:rgba(0,0,0,.55)}
+.rail-in{max-width:var(--max);margin:0 auto;padding:0 var(--pad);display:flex;gap:0;overflow-x:auto;scrollbar-width:thin}
+.rail a{flex:1 0 210px;padding:16px 20px 16px 0;margin-right:20px;border-right:1px solid var(--line);min-width:0}
+.rail a:last-child{border-right:0}
+.rail .t{font-family:var(--f-mono);font-size:12.5px;color:var(--ember);letter-spacing:.02em}
+.rail .n{font-size:14px;font-weight:500;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail .s{font-size:12px;color:var(--ink-3);margin-top:3px}
+.rail a:hover .n{color:var(--ember)}
+
+/* ── sections ── */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:24px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.sec-head h2{font-size:22px;font-weight:600}
+.sec-head a{font-size:13px;color:var(--ink-3)}
+.sec-head a:hover{color:var(--ember)}
+
+.grid3{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:20px}
+.console{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.console-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--elev)}
+.console-b{padding:16px}
+.live-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--crit)}
+.live-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--crit)}
+.video{aspect-ratio:16/9;background:linear-gradient(140deg,#131a20,#080a0c);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;color:rgba(245,243,239,.22);text-align:center;padding:8px}
+.vtitle{font-size:14.5px;font-weight:500;line-height:1.35;margin:12px 0 6px}
+.vmeta{font-size:12px;color:var(--ink-3)}
+.list{list-style:none}
+.list li{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.list li:last-child{border-bottom:0}
+.list .t{font-family:var(--f-mono);font-size:12.5px;color:var(--ember);flex:none;width:64px}
+.list .n{font-size:13.5px;line-height:1.4}
+.list .n span{display:block;color:var(--ink-3);font-size:12px;margin-top:2px}
+
+/* slip strip */
+.slip{display:flex;align-items:flex-end;gap:7px;height:82px;margin:6px 0 12px}
+.slip i{flex:1;background:var(--ember-deep);border-radius:2px 2px 0 0;display:block}
+.slip i.hi{background:var(--ember)}
+.slipx{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3)}
+
+/* telemetry tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.tile{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:18px;display:block}
+.tile:hover{border-color:var(--line-2);background:var(--elev)}
+.tile .v{font-family:var(--f-mono);font-size:30px;font-weight:700;letter-spacing:-.02em;margin:8px 0 3px;font-variant-numeric:tabular-nums}
+.tile .v.sig{color:var(--signal)} .tile .v.go{color:var(--go)} .tile .v.em{color:var(--ember)}
+.tile .s{font-size:12px;color:var(--ink-3)}
+.newsgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ncard{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:9px}
+.ncard:hover{border-color:var(--line-2);background:var(--elev)}
+.ncard h3{font-size:16px;font-weight:600;line-height:1.3;font-family:var(--f-body);letter-spacing:0}
+.ncard p{font-size:13px;color:var(--ink-2);line-height:1.5}
+.ncard .src{font-size:11px;color:var(--ink-3);margin-top:auto;font-family:var(--f-mono)}
+.chip{align-self:flex-start;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:4px;border:1px solid var(--line-2);color:var(--ink-2)}
+.chip.reg{color:var(--caution);border-color:rgba(255,197,61,.35)}
+.chip.mkt{color:var(--go);border-color:rgba(86,240,0,.30)}
+
+/* region band — the game */
+.band{position:relative;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}
+.band-art{position:absolute;inset:0;background:
+  radial-gradient(70% 90% at 78% 40%, rgba(155,123,255,.24), transparent 60%),
+  radial-gradient(50% 70% at 12% 70%, rgba(79,216,232,.10), transparent 62%),
+  linear-gradient(120deg,#0a0812,#07070a 60%,#000);}
+.band-art::after{content:"[ region art: asteroid_belt.webp ]";position:absolute;right:36px;bottom:20px;font-family:var(--f-mono);font-size:11px;color:rgba(245,243,239,.14)}
+.band-in{position:relative;max-width:var(--max);margin:0 auto;padding:56px var(--pad);display:flex;align-items:center;justify-content:space-between;gap:36px;flex-wrap:wrap}
+.band h2{font-size:30px;font-weight:700;margin:10px 0 8px}
+.band p{color:var(--ink-2);font-size:15px;max-width:52ch}
+.band .stats{display:flex;gap:26px;margin-top:18px;flex-wrap:wrap}
+.band .stats b{font-family:var(--f-mono);font-size:17px;display:block;color:var(--violet)}
+.band .stats span{font-size:11.5px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase}
+.btn-violet{background:var(--violet);color:#0A0A0B}
+
+/* digest */
+.digest{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:24px 26px}
+.digest h2{font-size:20px;margin-bottom:5px}
+.digest p{font-size:13.5px;color:var(--ink-3)}
+.field{display:flex;gap:10px}
+.field input{background:var(--void);border:1px solid var(--line-2);border-radius:8px;padding:12px 14px;color:var(--ink);font:inherit;font-size:14px;min-width:250px}
+.field input::placeholder{color:var(--ink-3)}
+.field input:focus{outline:2px solid var(--ember);outline-offset:1px;border-color:var(--ember)}
+
+footer{border-top:1px solid var(--line);padding:36px 0;color:var(--ink-3);font-size:13px}
+.fgrid{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.fgrid a{color:var(--ink-2)} .fgrid a:hover{color:var(--ember)}
+
+/* ── motion, opt-out first ── */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.pip,.live-tag::before{animation:blink 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .pip,.live-tag::before{opacity:1}
+}
+@media (prefers-contrast:more){
+  :root{--ink-2:#DCD8D1;--ink-3:#BCB6AC;--line:#3C3C42;--line-2:#5A5A63}
+}
+:focus-visible{outline:2px solid var(--ember);outline-offset:2px;border-radius:4px}
+
+/* ══ 390px ══ */
+@media (max-width:860px){
+  :root{--pad:16px}
+  .menu,.tycoon-pill,.util{display:none}
+  .burger{display:grid}
+  .hero{min-height:auto}
+  .hero-in{padding:32px var(--pad) 0}
+  .hero-art::after{top:auto;bottom:14px;left:auto;right:16px;transform:none;font-size:9px}
+  .mission{font-size:26px;max-width:none}
+  .clock-row{gap:18px;margin-bottom:22px}
+  .clock{font-size:3.4rem}
+  .tele{gap:22px;width:100%;padding-bottom:0}
+  .tele div{min-width:0;flex:1 0 40%}
+  .cta{flex-direction:column;align-items:stretch;padding-bottom:26px}
+  .btn{justify-content:center}
+  .noacct{align-self:flex-start}
+  .rail-in{padding-left:var(--pad)}
+  .rail a{flex:0 0 168px}
+  section{padding:40px 0}
+  .grid3,.newsgrid{grid-template-columns:1fr}
+  .tiles{grid-template-columns:1fr 1fr;gap:12px}
+  .tile .v{font-size:24px}
+  .band-in{padding:36px var(--pad)}
+  .band h2{font-size:24px}
+  .field{flex-direction:column;width:100%}
+  .field input{min-width:0;width:100%}
+  .digest{padding:20px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the next launch</a>
+
+<!-- NAV — six destinations, three utilities, one row. No trial banner, no marquee ticker, no icon rail. -->
+<nav class="nav" aria-label="Primary">
+  <div class="nav-in">
+    <a class="brand" href="/"><span class="pip" aria-hidden="true"></span>SpaceNexus<span class="overline" style="color:var(--go);font-size:10px">LIVE</span></a>
+    <div class="menu">
+      <a href="/mission-control">Launches</a>
+      <a href="/news">News</a>
+      <a href="/space-stocks">Markets</a>
+      <a href="/procurement">Business</a>
+      <a href="/learn">Learn</a>
+    </div>
+    <div class="nav-right">
+      <a class="tycoon-pill" href="/space-tycoon">Space Tycoon</a>
+      <a class="util" href="/search"><span aria-hidden="true">&#9906;</span><span>Search <span class="mono" style="color:var(--ink-3)">&#8984;K</span></span></a>
+      <a class="icon-btn" href="/alerts" aria-label="Launch alerts">&#128276;</a>
+      <a class="icon-btn burger" href="#" aria-label="Menu">&#9776;</a>
+      <a class="util" href="/login"><span>Sign in</span></a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- HERO = THE NEXT LAUNCH. Nothing else gets this space. -->
+<header class="hero">
+  <div class="hero-art" aria-hidden="true"></div>
+  <div class="scrim" aria-hidden="true"></div>
+  <div class="hero-in">
+    <p class="status"><b>GO</b><span>Weather 80% favourable &middot; window opens 04:12 UTC</span></p>
+    <h1 class="mission"><em>Falcon Heavy &middot; LC-39A</em>Nancy Grace Roman Space Telescope</h1>
+    <p class="subline">NASA&rsquo;s next great observatory. <b>Sunday 31 Aug, 00:12 EDT</b> from Kennedy Space Center, Florida.</p>
+
+    <div class="clock-row">
+      <div class="clock" aria-label="Thirteen hours, four minutes and twenty-two seconds until launch">
+        T&#8722;13<span class="u">h</span> 04<span class="u">m</span> 22<span class="u">s</span>
+      </div>
+      <div class="tele">
+        <div><p class="overline">Payload</p><p class="v">4,166 kg</p></div>
+        <div><p class="overline">Orbit</p><p class="v">Sun&ndash;Earth L2</p></div>
+        <div><p class="overline">Booster</p><p class="v sig">B1096 &middot; flight 4</p></div>
+        <div><p class="overline">Slipped</p><p class="v">2&times; since Jun</p></div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <a class="btn btn-ember" href="/launch/roman-space-telescope">Watch live <span aria-hidden="true">&rarr;</span></a>
+      <a class="btn btn-line" href="/alerts">Remind me at T&#8722;1h</a>
+      <span class="noacct">No account needed. One email at T&#8722;24h, one at T&#8722;1h, one if it scrubs.</span>
+    </div>
+  </div>
+</header>
+
+<!-- NEXT FIVE — welded to the hero so the board is always the second thing you see -->
+<div class="rail">
+  <div class="rail-in">
+    <a href="/launch/starlink-11-9"><p class="t">T&#8722;1d 08h</p><p class="n">Starlink 11-9</p><p class="s">Falcon 9 &middot; Vandenberg SLC-4E</p></a>
+    <a href="/launch/long-march-5"><p class="t">T&#8722;3d 01h</p><p class="n">Long March 5</p><p class="s">CASC &middot; Wenchang</p></a>
+    <a href="/launch/rfa-one"><p class="t">T&#8722;1d 11h</p><p class="n">RFA One &mdash; maiden flight</p><p class="s">Rocket Factory Augsburg &middot; SaxaVord</p></a>
+    <a href="/launch/mir"><p class="t">T&#8722;6d 04h</p><p class="n">Mir</p><p class="s">Agency for Defense Development</p></a>
+    <a href="/mission-control"><p class="t">100 events</p><p class="n">Every upcoming launch &rarr;</p><p class="s">21 agencies &middot; 4 in the next 48h</p></a>
+  </div>
+</div>
+
+<!-- ON THE PAD NOW -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>On the pad now</h2><a href="/live">All live streams &rarr;</a></div>
+    <div class="grid3">
+
+      <article class="console">
+        <div class="console-h"><span class="live-tag">LIVE</span><span class="overline">27 watching</span></div>
+        <div class="video" aria-hidden="true">[ live stream embed &mdash; 16:9 ]</div>
+        <div class="console-b">
+          <h3 class="vtitle">Starbase Live Rover 3 Cam &mdash; SpaceX Starbase Starship Launch Facility</h3>
+          <p class="vmeta">Avid Space &middot; Ship 40 rolled back to MB1 &middot; updated 4m ago</p>
+        </div>
+      </article>
+
+      <article class="console">
+        <div class="console-h"><span class="overline">Next 48 hours</span><span class="mono" style="font-size:12px;color:var(--ember)">4</span></div>
+        <div class="console-b">
+          <ul class="list">
+            <li><span class="t">T&#8722;13h</span><span class="n">Roman Space Telescope<span>Falcon Heavy &middot; LC-39A</span></span></li>
+            <li><span class="t">T&#8722;27h</span><span class="n">Starlink 11-9<span>Falcon 9 &middot; SLC-4E</span></span></li>
+            <li><span class="t">T&#8722;35h</span><span class="n">RFA One<span>Maiden flight &middot; SaxaVord</span></span></li>
+            <li><span class="t">T&#8722;44h</span><span class="n">Electron &ldquo;Owl Ascending&rdquo;<span>Rocket Lab &middot; M&#257;hia LC-1</span></span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="console">
+        <div class="console-h"><span class="overline">Slips per week</span><span class="overline">Our own data</span></div>
+        <div class="console-b">
+          <div class="slip" role="img" aria-label="Launch date slips per week over the last eight weeks: 4, 7, 3, 9, 6, 11, 5 and 8 slips.">
+            <i style="height:36%"></i><i style="height:64%"></i><i style="height:27%"></i>
+            <i class="hi" style="height:82%"></i><i style="height:55%"></i>
+            <i class="hi" style="height:100%"></i><i style="height:45%"></i><i style="height:73%"></i>
+          </div>
+          <div class="slipx"><span>8 wks ago</span><span>this week</span></div>
+          <p class="vmeta" style="margin-top:12px">Scheduled launches that moved by more than a minute. Nobody else records this &mdash; <a href="/chart/launch-slips-per-week" style="color:var(--ember)">see the chart &rarr;</a></p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- THE INDUSTRY TODAY — the business half, one click, never in the hero -->
+<section style="padding-top:8px">
+  <div class="wrap">
+    <div class="sec-head"><h2>The industry today</h2><a href="/tools">Everything on SpaceNexus &mdash; 129 tools &rarr;</a></div>
+    <div class="tiles">
+      <a class="tile" href="/satellites"><p class="overline">Satellites tracked</p><p class="v sig">16,412</p><p class="s">active in the catalogue &middot; CelesTrak</p></a>
+      <a class="tile" href="/company-profiles"><p class="overline">Companies profiled</p><p class="v">318</p><p class="s">$4.1T market cap tracked</p></a>
+      <a class="tile" href="/funding-tracker"><p class="overline">Private funding &middot; 12 mo</p><p class="v em">$199.2B</p><p class="s">disclosed rounds and M&amp;A</p></a>
+      <a class="tile" href="/space-environment"><p class="overline">Space weather</p><p class="v go">Quiet</p><p class="s">Kp 2 &middot; no geomagnetic storm &middot; NOAA</p></a>
+    </div>
+    <div class="newsgrid">
+      <a class="ncard" href="/news">
+        <span class="chip mkt">Markets</span>
+        <h3>Firefly Aerospace CEO cites systemic launch vehicle shortage amid expanding demand</h3>
+        <p>Small-lift capacity is booked into 2027 while three new vehicles slip their maiden flights.</p>
+        <span class="src">SatNews &middot; 2h ago</span>
+      </a>
+      <a class="ncard" href="/ai-insights">
+        <span class="chip reg">Regulatory</span>
+        <h3>The ITAR modification nobody read: what changed for smallsat exporters this month</h3>
+        <p>A quiet USML revision moves two component classes &mdash; and the compliance burden with them.</p>
+        <span class="src">SpaceNexus analysis &middot; fact-checked</span>
+      </a>
+      <a class="ncard" href="/news">
+        <span class="chip">Science</span>
+        <h3>NASA&rsquo;s new space telescope could map the entire sky with Hubble-like detail</h3>
+        <p>Roman&rsquo;s field of view is 100&times; Hubble&rsquo;s. It launches in thirteen hours.</p>
+        <span class="src">Spaceflight Now &middot; 5h ago</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- THE GAME — its own region band, its own colour, once -->
+<div class="band">
+  <div class="band-art" aria-hidden="true"></div>
+  <div class="band-in">
+    <div>
+      <p class="overline" style="color:var(--violet)">Free browser MMO &middot; Epoch 2 &middot; every deposit unclaimed</p>
+      <h2>Space Tycoon</h2>
+      <p>An economic space MMO with no combat. Build launch capacity, mine the belt, sign binding contracts with rival corporations &mdash; and out-trade them across eight regions from LEO to interstellar.</p>
+      <div class="stats">
+        <div><b>240+</b><span>Technologies</span></div>
+        <div><b>39</b><span>Buildings</span></div>
+        <div><b>8</b><span>Regions</span></div>
+        <div><b>No P2W</b><span>Ever</span></div>
+      </div>
+    </div>
+    <a class="btn btn-violet" href="/space-tycoon">Play free in your browser <span aria-hidden="true">&rarr;</span></a>
+  </div>
+</div>
+
+<!-- DIGEST -->
+<section>
+  <div class="wrap">
+    <div class="digest">
+      <div>
+        <h2>The M/Th Digest</h2>
+        <p>Mondays and Thursdays. What flew, what slipped, what got funded &mdash; plus one chart drawn from our own trackers.</p>
+      </div>
+      <form class="field" onsubmit="return false">
+        <label class="skip" for="em">Email address</label>
+        <input id="em" type="email" placeholder="you@company.com" autocomplete="email">
+        <button class="btn btn-ember" type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <p>SpaceNexus &mdash; free for enthusiasts, always.</p>
+    <p><a href="/tools">Full directory</a> &middot; <a href="/data-sources">Data sources</a> &middot; <a href="/pricing">Pro for business tools</a> &middot; <a href="/about">About</a> &middot; <a href="/feedback">Feedback</a></p>
+  </div>
+</footer>
+</body>
+</html>
