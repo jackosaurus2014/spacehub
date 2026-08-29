@@ -88,6 +88,11 @@ export const GUIDE_LIST: GuideEntry[] = [
     title: 'Blue Origin vs SpaceX: The Complete 2026 Guide',
     shortTitle: 'Blue Origin vs SpaceX',
   },
+  {
+    slug: 'space-economy-games',
+    title: 'Best Space Economy Games in 2026',
+    shortTitle: 'Space Economy Games',
+  },
 ];
 
 export function getGuideNavigation(currentSlug: string): {

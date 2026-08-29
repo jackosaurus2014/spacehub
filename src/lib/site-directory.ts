@@ -192,6 +192,8 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Alerts', href: '/alerts', description: 'Launch, regulatory and market alerts by email', icon: '🔔' },
       { name: 'Dashboard', href: '/dashboard', description: 'Your saved items and alerts', icon: '🖥️' },
       { name: 'Space Tycoon', href: '/space-tycoon', description: 'The economic strategy MMO', icon: '🎮', hot: true },
+      { name: 'What is Space Tycoon?', href: '/space-tycoon/about', description: 'A free browser space MMO built on economics — how it plays and compares', icon: '🛰️' },
+      { name: 'Space Tycoon dev log', href: '/space-tycoon/dev-log', description: 'What changed in the game, when, and why', icon: '📓' },
       { name: 'Community', href: '/community', description: 'Where the community gathers', icon: '👥' },
       { name: 'Help Center', href: '/help', description: 'Answers and how-tos', icon: '❓' },
       { name: 'Feedback', href: '/feedback', description: 'Tell us what to build', icon: '💬' },

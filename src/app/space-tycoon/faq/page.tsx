@@ -245,7 +245,7 @@ export default function SpaceTycoonFAQPage() {
             Space Tycoon FAQ
           </h1>
           <p className="text-slate-400 text-sm">
-            Everything you need to know about building your space empire.
+            Everything you need to know about building your space empire. New here? Start with <Link href="/space-tycoon/about" className="text-cyan-400 hover:text-cyan-300">what Space Tycoon is</Link>; follow changes in the <Link href="/space-tycoon/dev-log" className="text-cyan-400 hover:text-cyan-300">dev log</Link>.
           </p>
         </div>
 
