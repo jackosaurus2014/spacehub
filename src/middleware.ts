@@ -287,6 +287,7 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/space-tycoon/zones/update', '/api/space-tycoon/leagues/process-week',
         '/api/space-tycoon/alliance-cron', '/api/space-tycoon/market/restock',
         '/api/space-tycoon/market/mean-revert',
+        '/api/space-tycoon/market/npc-industry',
         // Wave E4 (Finite Demand Pools) — hourly pool aggregation, same
         // mean-revert precedent (scheduler-invoked internal POST).
         '/api/space-tycoon/demand-pools/update',

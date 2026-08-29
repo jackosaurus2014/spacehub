@@ -70,6 +70,8 @@ export async function GET(request: NextRequest) {
       volume24h: volumeResult._sum.quantity || 0,
       bids: book.bids,
       asks: book.asks,
+      npcCorpAskQty: book.npcCorpAskQty,
+      npcCorpBidQty: book.npcCorpBidQty,
     });
   } catch (error) {
     logger.error('Order book GET error', { error: String(error) });
