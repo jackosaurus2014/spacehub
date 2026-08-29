@@ -80,8 +80,10 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
   const [launchName, setLaunchName] = useState<string>('');
   const [activeSats, setActiveSats] = useState<string>(SITE_STATS.satellites);
   const [satsSub, setSatsSub] = useState<string>('tracked in database');
-  const [weatherSummary, setWeatherSummary] = useState<string>(SITE_STATS.spaceEconomyNow);
-  const [weatherSub, setWeatherSub] = useState<string>('Space Economy');
+  // Placeholder until /api/pulse answers; never a stand-in figure from another
+  // domain (the card once opened on the space-economy number).
+  const [weatherSummary, setWeatherSummary] = useState<string>('—');
+  const [weatherSub, setWeatherSub] = useState<string>('checking NOAA…');
   const [fundingValue, setFundingValue] = useState<string>('—');
   const [fundingSub, setFundingSub] = useState<string>('loading...');
   const [pulseLive, setPulseLive] = useState(false);

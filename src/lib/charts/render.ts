@@ -89,12 +89,12 @@ export function renderBarChartSvg(def: ChartDef, series: ChartSeries, opts: { as
 </defs>
 <rect width="${W}" height="${H}" fill="#050508"/>
 <text x="${PAD.left}" y="56" font-size="36" font-weight="700" fill="#ffffff" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">${esc(def.title)}</text>
+<text x="${W - PAD.right}" y="90" text-anchor="end" font-size="16" font-weight="600" fill="#22d3ee" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">spacenexus.us/chart/${esc(def.slug)}</text>
 <text x="${PAD.left}" y="90" font-size="20" fill="#94a3b8" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">${esc(def.subtitle)}</text>
 <g font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
 ${grid.join('\n')}
 ${bars.join('\n')}
 </g>
 <text x="${PAD.left}" y="${H - 28}" font-size="16" fill="#64748b" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">${esc(footer)}</text>
-<text x="${W - PAD.right}" y="${H - 28}" text-anchor="end" font-size="16" font-weight="600" fill="#22d3ee" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">spacenexus.us/chart/${esc(def.slug)}</text>
 </svg>`;
 }

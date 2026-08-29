@@ -64,6 +64,16 @@ function deriveWeatherSeverity(summary: SpaceWeatherSummary): {
 
   let severity: 'quiet' | 'minor' | 'moderate' | 'severe' = 'quiet';
   let summaryText = 'Space weather is quiet';
+  // Keyless SWPC Kp reading: names the current level even on quiet days, and
+  // stands in for severity when DONKI (keyed, DEMO_KEY-limited) has nothing.
+  const kp = typeof summary.currentKp === 'number' ? summary.currentKp : null;
+  const kpLabel = kp != null ? `Kp ${kp % 1 === 0 ? kp.toFixed(0) : kp.toFixed(1)}` : null;
+  if (kpLabel) summaryText = `${kpLabel} · quiet`;
+  if (kp != null && alertCount === 0) {
+    if (kp >= 7) { severity = 'severe'; summaryText = `${kpLabel} · strong geomagnetic storm`; }
+    else if (kp >= 5) { severity = 'moderate'; summaryText = `${kpLabel} · geomagnetic storm`; }
+    else if (kp >= 4) { severity = 'minor'; summaryText = `${kpLabel} · unsettled`; }
+  }
 
   if (recentSignificantFlares.some((f) => f.classType.startsWith('X'))) {
     severity = 'severe';

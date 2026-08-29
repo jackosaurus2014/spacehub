@@ -7,6 +7,27 @@ import { logger } from '@/lib/logger';
 import { CHART_DEFS, chartOfTheWeekSlug, getChartDef, type ChartDef } from './registry';
 import type { ChartSeries } from './render';
 
+// Provider names as Launch Library spells them, shortened for a bar label.
+const AGENCY_SHORT: Record<string, string> = {
+  'China Aerospace Science and Technology Corporation': 'CASC',
+  'China Aerospace Science and Industry Corporation': 'CASIC',
+  'Mitsubishi Heavy Industries': 'MHI',
+  'Russian Federal Space Agency (ROSCOSMOS)': 'Roscosmos',
+  'Russian Space Forces': 'Russian Space Forces',
+  'Indian Space Research Organization': 'ISRO',
+  'United Launch Alliance': 'ULA',
+  'China Rocket Co. Ltd.': 'China Rocket',
+  'Galactic Energy': 'Galactic Energy',
+  'Landspace Technology Corporation': 'LandSpace',
+  'Beijing Tianbing Technology Co., Ltd.': 'Space Pioneer',
+  'Japan Aerospace Exploration Agency': 'JAXA',
+  'National Aeronautics and Space Administration': 'NASA',
+};
+export function shortAgency(name: string): string {
+  const s = AGENCY_SHORT[name] ?? name;
+  return s.length > 16 ? s.slice(0, 15) + '…' : s;
+}
+
 const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function monthKeys(now: Date, count: number): { key: string; label: string; start: Date }[] {
@@ -27,7 +48,9 @@ function keyOf(d: Date): string {
 async function launchesPerMonth(now: Date): Promise<ChartSeries | null> {
   const months = monthKeys(now, 12);
   const rows = await prisma.spaceEvent.findMany({
-    where: { type: 'launch', status: { in: ['completed', 'failed'] }, launchDate: { gte: months[0].start, lte: now } },
+    // Every Launch Library row (externalId set) is a launch, whatever mission
+    // type it was filed under — filtering on type='launch' dropped half of them.
+    where: { externalId: { not: null }, status: { in: ['completed', 'failed'] }, launchDate: { gte: months[0].start, lte: now } },
     select: { launchDate: true },
   });
   if (rows.length === 0) return null;
@@ -44,13 +67,13 @@ async function launchesByAgency90d(now: Date): Promise<ChartSeries | null> {
   const since = new Date(now.getTime() - 90 * 86400000);
   const rows = await prisma.spaceEvent.groupBy({
     by: ['agency'],
-    where: { type: 'launch', status: { in: ['completed', 'failed'] }, launchDate: { gte: since, lte: now }, agency: { not: null } },
+    where: { externalId: { not: null }, status: { in: ['completed', 'failed'] }, launchDate: { gte: since, lte: now }, agency: { not: null } },
     _count: { _all: true },
     orderBy: { _count: { agency: 'desc' } },
     take: 8,
   });
   if (rows.length === 0) return null;
-  return { labels: rows.map((r) => r.agency ?? 'Unknown'), values: rows.map((r) => r._count._all) };
+  return { labels: rows.map((r) => shortAgency(r.agency ?? 'Unknown')), values: rows.map((r) => r._count._all) };
 }
 
 async function fundingByMonth(now: Date): Promise<ChartSeries | null> {

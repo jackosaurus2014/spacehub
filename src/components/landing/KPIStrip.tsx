@@ -31,7 +31,9 @@ function parseStat(stat: string): { value: number; prefix: string; suffix: strin
 }
 
 const KPI_METRICS: KPIMetric[] = [
-  { label: 'Active Satellites Tracked', ...parseStat(SITE_STATS.satellites), colorClass: 'text-emerald-400' },
+  // Satellites tracked lives in the hero's live dashboard; showing it twice on
+  // the landing page was the founder's call to drop (2026-08-29).
+  { label: 'Automated Data Feeds', ...parseStat(SITE_STATS.automatedFeeds), colorClass: 'text-emerald-400' },
   { label: 'Company Profiles', ...parseStat(SITE_STATS.companies), colorClass: 'text-white' },
   { label: 'Space Economy', ...parseStat(SITE_STATS.spaceEconomyNow), colorClass: 'text-emerald-400' },
   { label: 'Original Articles', ...parseStat(SITE_STATS.articles), colorClass: 'text-white' },

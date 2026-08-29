@@ -44,6 +44,33 @@ export interface SpaceWeatherSummary {
   recentStorms: GeomagneticStormData[];
   recentCMEs: CMEData[];
   lastUpdated: string;
+  /** Latest planetary Kp from NOAA SWPC (keyless); null when the feed is down. */
+  currentKp?: number | null;
+  currentKpTime?: string | null;
+}
+
+/**
+ * Latest 3-hour planetary Kp from NOAA SWPC — no API key, answers in well
+ * under a second, and is what the homepage card should say when DONKI (NASA,
+ * keyed, rate-limited on DEMO_KEY) is slow or empty.
+ */
+export async function fetchPlanetaryKp(): Promise<{ kp: number; time: string } | null> {
+  try {
+    const response = await fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json', {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!response.ok) return null;
+    const rows = (await response.json()) as Array<{ time_tag?: string; Kp?: number | string }>;
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+    const last = rows[rows.length - 1];
+    const kp = typeof last.Kp === 'string' ? parseFloat(last.Kp) : last.Kp;
+    if (kp == null || Number.isNaN(kp)) return null;
+    return { kp, time: last.time_tag ?? '' };
+  } catch (error) {
+    logger.warn('SWPC planetary Kp fetch failed', { error: error instanceof Error ? error.message : String(error) });
+    return null;
+  }
 }
 
 /**
@@ -56,7 +83,7 @@ export async function fetchRecentSolarFlares(days: number = 7): Promise<SolarFla
 
     const response = await fetch(
       `https://api.nasa.gov/DONKI/FLR?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
-      { cache: 'no-store' }
+      { cache: 'no-store', signal: AbortSignal.timeout(8000) }
     );
 
     if (!response.ok) {
@@ -78,7 +105,7 @@ export async function fetchRecentGeomagneticStorms(days: number = 30): Promise<G
 
     const response = await fetch(
       `https://api.nasa.gov/DONKI/GST?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
-      { cache: 'no-store' }
+      { cache: 'no-store', signal: AbortSignal.timeout(8000) }
     );
 
     if (!response.ok) {
@@ -100,7 +127,7 @@ export async function fetchRecentCMEs(days: number = 14): Promise<CMEData[]> {
 
     const response = await fetch(
       `https://api.nasa.gov/DONKI/CME?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
-      { cache: 'no-store' }
+      { cache: 'no-store', signal: AbortSignal.timeout(8000) }
     );
 
     if (!response.ok) {
@@ -116,11 +143,18 @@ export async function fetchRecentCMEs(days: number = 14): Promise<CMEData[]> {
  * Get a summary of all recent space weather activity
  */
 export async function getSpaceWeatherSummary(): Promise<SpaceWeatherSummary> {
-  const [recentFlares, recentStorms, recentCMEs] = await Promise.all([
+  // allSettled: one slow DONKI endpoint must not take the others (or the Kp
+  // reading) down with it — the breaker already returns [] on failure.
+  const [flares, storms, cmes, kp] = await Promise.allSettled([
     fetchRecentSolarFlares(7),
     fetchRecentGeomagneticStorms(30),
     fetchRecentCMEs(14),
+    fetchPlanetaryKp(),
   ]);
+  const recentFlares = flares.status === 'fulfilled' ? flares.value : [];
+  const recentStorms = storms.status === 'fulfilled' ? storms.value : [];
+  const recentCMEs = cmes.status === 'fulfilled' ? cmes.value : [];
+  const currentKp = kp.status === 'fulfilled' ? kp.value : null;
 
   logger.info('Space weather data fetched', {
     flares: recentFlares.length,
@@ -133,5 +167,7 @@ export async function getSpaceWeatherSummary(): Promise<SpaceWeatherSummary> {
     recentStorms,
     recentCMEs,
     lastUpdated: new Date().toISOString(),
+    currentKp: currentKp?.kp ?? null,
+    currentKpTime: currentKp?.time ?? null,
   };
 }
