@@ -17,6 +17,18 @@ const NPC_SPREAD_HALF = 0.10; // 10% each side = 20% total NPC spread
 const MAX_OPEN_ORDERS = 20; // Base max open orders per player
 const NPC_PROFILE_ID = '__NPC_MARKET_MAKER__';
 
+/** NPC industrial corporations (npc-industry.ts) trade on this book under
+ *  ids with this prefix. They have no GameProfile row: fills settle against
+ *  NpcIndustrialCorp.inventory / .treasury instead. */
+export const NPC_CORP_PREFIX = '__NPC_CORP_';
+export function isNpcCorpId(id: string): boolean {
+  return id.startsWith(NPC_CORP_PREFIX);
+}
+/** Any non-player party on the book: the market maker or an industrial corp. */
+export function isNpcParty(id: string): boolean {
+  return id === NPC_PROFILE_ID || isNpcCorpId(id);
+}
+
 // NPC daily volume caps by resource — extracted to npc-volume-caps.ts
 // (pure, client-safe) in Balance Pass 1 so the sim harness can read them
 // without importing this prisma-backed module. Same numbers, same semantics
@@ -343,8 +355,21 @@ export async function matchOrders(resourceSlug: string): Promise<{
       });
       bestSell.filledQty = newSellFilled;
 
+      // NPC industrial corp as buyer: goods into its inventory, cost (plus the
+      // fee it would have escrowed) out of its treasury. No GameProfile row.
+      if (isNpcCorpId(bestBuy.profileId)) {
+        const corp = await tx.npcIndustrialCorp.findUnique({ where: { id: bestBuy.profileId } });
+        if (corp) {
+          const inv = { ...((corp.inventory as Record<string, number>) || {}) };
+          inv[resourceSlug] = (inv[resourceSlug] || 0) + fillQty;
+          await tx.npcIndustrialCorp.update({
+            where: { id: corp.id },
+            data: { inventory: inv, treasury: { decrement: totalValue + fee } },
+          });
+        }
+      }
       // Transfer resources to buyer (unless NPC)
-      if (bestBuy.profileId !== NPC_PROFILE_ID) {
+      if (!isNpcParty(bestBuy.profileId)) {
         const buyerProfile = await tx.gameProfile.findUnique({ where: { id: bestBuy.profileId } });
         if (buyerProfile) {
           const buyerRes = (buyerProfile.resources as Record<string, number>) || {};
@@ -378,8 +403,21 @@ export async function matchOrders(resourceSlug: string): Promise<{
         }
       }
 
+      // NPC industrial corp as seller: goods leave its inventory (never
+      // escrowed — it lists only what it holds), revenue into its treasury.
+      if (isNpcCorpId(bestSell.profileId)) {
+        const corp = await tx.npcIndustrialCorp.findUnique({ where: { id: bestSell.profileId } });
+        if (corp) {
+          const inv = { ...((corp.inventory as Record<string, number>) || {}) };
+          inv[resourceSlug] = Math.max(0, (inv[resourceSlug] || 0) - fillQty);
+          await tx.npcIndustrialCorp.update({
+            where: { id: corp.id },
+            data: { inventory: inv, treasury: { increment: totalValue - fee }, unitsSold: { increment: fillQty }, revenue: { increment: totalValue - fee } },
+          });
+        }
+      }
       // Pay seller (unless NPC)
-      if (bestSell.profileId !== NPC_PROFILE_ID) {
+      if (!isNpcParty(bestSell.profileId)) {
         const sellerRevenue = totalValue - fee;
         await tx.gameProfile.update({
           where: { id: bestSell.profileId },
@@ -912,13 +950,21 @@ export async function getOrderBook(resourceSlug: string, levels: number = 10) {
   // Check which levels have NPC orders
   const npcOrders = await prisma.marketLimitOrder.findMany({
     where: {
-      profileId: NPC_PROFILE_ID,
+      OR: [{ profileId: NPC_PROFILE_ID }, { profileId: { startsWith: NPC_CORP_PREFIX } }],
       resourceSlug,
       status: { in: ['open', 'partial'] },
     },
-    select: { side: true, pricePerUnit: true },
+    select: { side: true, pricePerUnit: true, profileId: true, quantity: true, filledQty: true },
   });
   const npcPrices = new Set(npcOrders.map(o => `${o.side}:${o.pricePerUnit}`));
+  // Manufactured goods: how much of the ask side was listed by NPC industrial
+  // corps (the rest is player-built). Surfaced so the UI can say so.
+  const npcCorpAskQty = npcOrders
+    .filter(o => o.side === 'sell' && isNpcCorpId(o.profileId))
+    .reduce((s, o) => s + (o.quantity - o.filledQty), 0);
+  const npcCorpBidQty = npcOrders
+    .filter(o => o.side === 'buy' && isNpcCorpId(o.profileId))
+    .reduce((s, o) => s + (o.quantity - o.filledQty), 0);
 
   // Get last trade for this resource
   const lastResourceFill = await prisma.marketFill.findFirst({
@@ -959,6 +1005,8 @@ export async function getOrderBook(resourceSlug: string, levels: number = 10) {
     spread,
     lastTradePrice: lastResourceFill?.pricePerUnit || null,
     lastTradeAt: lastResourceFill?.createdAt || null,
+    npcCorpAskQty,
+    npcCorpBidQty,
   };
 }
 

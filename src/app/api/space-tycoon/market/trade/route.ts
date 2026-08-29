@@ -5,7 +5,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY, MARKET_BROKER_FEE_RATE, getEffectiveBrokerFeeRate } from '@/lib/game/market-engine';
 import { getGlobalMarketEventMultiplier } from '@/lib/game/market-events';
-import { MINED_ONLY_RESOURCE_IDS } from '@/lib/game/economic-sinks';
+import { MINED_ONLY_RESOURCE_IDS, MANUFACTURED_RESOURCE_IDS } from '@/lib/game/economic-sinks';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 7 "Realignment postures
 // bite"): getGoverningFactionForResource resolves which faction's economy a
@@ -195,6 +195,17 @@ export async function POST(request: NextRequest) {
     // colonies / expeditions) or traded player-to-player via the order
     // book — "MUST mine these yourself or trade with other players"
     // (economic-sinks.ts §5). Selling remains allowed.
+    if (MANUFACTURED_RESOURCE_IDS.includes(resourceSlug)) {
+      // Manufactured goods never touch the NPC curve in either direction:
+      // buy a listing on the order book or fabricate it; sell by listing it.
+      return NextResponse.json({
+        success: false,
+        manufactured: true,
+        error: isBuy
+          ? `${resourceSlug} is manufactured, not stocked. Buy a player or NPC listing on the order book, or fabricate it at a fabrication facility.`
+          : `${resourceSlug} is manufactured. List it for sale on the order book; the NPC curve does not buy hardware.`,
+      }, { status: 400 });
+    }
     if (isBuy && MINED_ONLY_RESOURCE_IDS.includes(resourceSlug)) {
       return NextResponse.json({
         error: `${resourceSlug} cannot be bought on the open market — it must be mined, produced by your colonies, or acquired from other players via the order book`,

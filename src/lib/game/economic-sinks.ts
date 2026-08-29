@@ -432,13 +432,34 @@ export function rollMonthlyDisaster(state: GameState, monthIndex: number): Disas
  */
 export const MINED_ONLY_RESOURCE_IDS: string[] = [
   'exotic_fuel', 'xenogenic_biomatter',
-  // Crafted products (production-chains.ts CRAFTED_PRODUCT_IDS)
+];
+
+/**
+ * Manufactured goods (2026-08-29, founder ruling): componentry and hardware
+ * are MADE, not mined — at a fabrication facility (Earth works, orbital lab,
+ * lunar/Mars plant, asteroid refinery, Titan chemical plant) from resources,
+ * by players and by NPC industrial corporations (npc-industry.ts). The NPC
+ * price curve neither sells nor buys them: every unit on the market was
+ * listed on the order book by someone who fabricated it, so supply and
+ * demand are real. Enforced in market/trade/route.ts (no curve buy, no curve
+ * sell) and npc-volume-caps.ts (NPC market maker rests no orders).
+ */
+export const MANUFACTURED_RESOURCE_IDS: string[] = [
   'steel_ingots', 'aluminum_alloy', 'rocket_fuel', 'refined_rare_earth',
   'structural_beams', 'electronics_package', 'solar_panel_array', 'propulsion_unit',
-  'station_module', 'satellite_bus', 'ai_compute_cluster', 'fusion_core', 'habitat_pod',
-  // New in Wave E2 — no recipe yet (E3 lands life_support_works)
   'life_support_pack',
+  'station_module', 'satellite_bus', 'ai_compute_cluster', 'fusion_core', 'habitat_pod',
 ];
+
+/** Everything the NPC-backed spot curve refuses to sell: mined-only + manufactured. */
+export const NO_NPC_CURVE_RESOURCE_IDS: string[] = [...MINED_ONLY_RESOURCE_IDS, ...MANUFACTURED_RESOURCE_IDS];
+
+export function isManufacturedResource(id: string): boolean {
+  return MANUFACTURED_RESOURCE_IDS.includes(id);
+}
+export function isMinedOnlyResource(id: string): boolean {
+  return MINED_ONLY_RESOURCE_IDS.includes(id);
+}
 
 /** Reserve requirement (§7) applies from this corporation tier up (audit C5:
  *  "reserve requirements for T5+ — efficiency penalty below 3-month runway"). */

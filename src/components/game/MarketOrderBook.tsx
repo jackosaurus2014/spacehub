@@ -23,6 +23,9 @@ interface OrderBookData {
   basePrice: number;
   change24h: number;
   lastTradePrice: number | null;
+  /** Manufactured goods: units on each side listed by NPC industrial corps. */
+  npcCorpAskQty?: number;
+  npcCorpBidQty?: number;
   lastTradeAt: string | null;
   spread: { absolute: number; percentage: number } | null;
   volume24h: number;
@@ -228,6 +231,13 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
           <div className="flex items-center gap-3 text-[10px]">
             <span className="text-slate-400">
               Last: <span className="game-number text-white">{formatMoney(book.lastTradePrice || book.currentPrice)}</span>
+            </span>
+            {((book.npcCorpAskQty || 0) > 0 || (book.npcCorpBidQty || 0) > 0) && (
+              <span className="text-purple-300/90" title="NPC industrial corporations fabricate hardware from raw inputs and list it here; they also buy what they consume. Everything else on the book is player-built.">
+                🏭 NPC industry: {book.npcCorpAskQty || 0} for sale · wants {book.npcCorpBidQty || 0}
+              </span>
+            )}
+            <span className="hidden">
             </span>
             {book.change24h !== 0 && (
               <span className={`game-number ${book.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>

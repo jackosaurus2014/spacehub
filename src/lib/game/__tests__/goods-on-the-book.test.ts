@@ -11,7 +11,7 @@
  */
 import { RESOURCE_MAP, RESOURCES } from '../resources';
 import { CRAFTED_PRODUCT_IDS, getCraftedProductValue, PRODUCTION_CHAINS } from '../production-chains';
-import { MINED_ONLY_RESOURCE_IDS } from '../economic-sinks';
+import { MINED_ONLY_RESOURCE_IDS, MANUFACTURED_RESOURCE_IDS } from '../economic-sinks';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '../save-load';
 import { SAVE_KEY } from '../constants';
 import type { GameState } from '../types';
@@ -46,9 +46,10 @@ describe('Wave E2 — crafted products promoted to RESOURCE_MAP', () => {
     }
   });
 
-  it('every crafted product + life_support_pack is MINED_ONLY (no NPC production yet)', () => {
+  it('every crafted product + life_support_pack is MANUFACTURED (no NPC curve either way)', () => {
     for (const id of [...CRAFTED_PRODUCT_IDS, 'life_support_pack']) {
-      expect(MINED_ONLY_RESOURCE_IDS).toContain(id);
+      expect(MANUFACTURED_RESOURCE_IDS).toContain(id);
+      expect(MINED_ONLY_RESOURCE_IDS).not.toContain(id);
     }
   });
 

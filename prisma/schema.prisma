@@ -7120,6 +7120,31 @@ model AlliancePledge {
 // ResourceBounty sweepExpiredBounties precedent) keyed off the deterministic
 // world-month cycle science-missions.ts already defines — never a new
 // randomness source, only who paid in and who gets paid.
+// NPC industrial corporations (2026-08-29): the manufactured-goods side of
+// the shared order book. Each corp fabricates hardware from raw inputs bought
+// on the NPC curve, lists what it made as sell orders, and buys hardware it
+// consumes — all from a finite treasury and inventory. No FK from
+// MarketLimitOrder.profileId: corps use ids prefixed "__NPC_CORP_" the way
+// the market maker uses "__NPC_MARKET_MAKER__". See src/lib/game/npc-industry.ts.
+model NpcIndustrialCorp {
+  id           String   @id
+  name         String
+  factionId    String
+  // Highest recipe tier the corp can run (1-4).
+  capacityTier Int      @default(2)
+  // Ask = unit cost x (1 + marginPct).
+  marginPct    Float    @default(0.25)
+  treasury     Float    @default(0)
+  inventory    Json     @default("{}")
+  // Rolling stats: units built, units sold, revenue.
+  unitsBuilt   Int      @default(0)
+  unitsSold    Int      @default(0)
+  revenue      Float    @default(0)
+  lastTickAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model NpcProgramStake {
   id           String      @id @default(cuid())
   npcProgramId String

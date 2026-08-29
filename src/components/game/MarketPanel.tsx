@@ -12,7 +12,7 @@ import { isMarketEventExpired, type ActiveMarketEvent, type ForecastMarketEvent 
 // honest; getResourceTotals surfaces what's sitting in remote stockpiles so
 // the player understands why it isn't sellable yet.
 import { getResourceTotals } from '@/lib/game/cargo-logistics';
-import { MINED_ONLY_RESOURCE_IDS as MINED_ONLY_RESOURCE_ID_LIST } from '@/lib/game/economic-sinks';
+import { MINED_ONLY_RESOURCE_IDS as MINED_ONLY_RESOURCE_ID_LIST, isManufacturedResource } from '@/lib/game/economic-sinks';
 // Balance Pass 2 (docs/BALANCE.md "Pass 2"): storage integrity must be
 // visible where inventory is shown — decay may never feel like silent theft.
 // These are the SAME pure functions the monthly tick charges, so the numbers
@@ -47,6 +47,9 @@ interface MarketPanelProps {
   state: GameState;
   onSellResource: (resourceId: string, quantity: number, revenue: number) => void;
   onBuyResource?: (resourceId: string, quantity: number, cost: number) => void;
+  /** Manufactured goods (2026-08-29) are traded only on the order book —
+   *  this jumps the hub to the book with the resource preselected. */
+  onOpenOrderBook?: (resourceSlug: string) => void;
 }
 
 /** Resources that only come from mining/crafting — never stocked by NPC
@@ -57,7 +60,7 @@ interface MarketPanelProps {
  *  it also picks up the 13 crafted products + life_support_pack for free. */
 const MINED_ONLY_RESOURCE_IDS = new Set(MINED_ONLY_RESOURCE_ID_LIST);
 
-export default function MarketPanel({ state, onSellResource, onBuyResource }: MarketPanelProps) {
+export default function MarketPanel({ state, onSellResource, onBuyResource, onOpenOrderBook }: MarketPanelProps) {
   const [prices, setPrices] = useState<MarketPrices>({});
   const [activeMarketEvents, setActiveMarketEvents] = useState<ActiveMarketEvent[]>([]);
   const [forecastMarketEvents, setForecastMarketEvents] = useState<ForecastMarketEvent[]>([]);
@@ -127,6 +130,11 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
         onSellResource(selectedResource, qty, revenue);
         // Refresh prices to show new dynamic price
         await fetchPrices();
+      } else if (data.manufactured) {
+        // Hardware never sells to the curve — send them to the book instead
+        // of the offline fallback (which would print money).
+        playSound('error');
+        onOpenOrderBook?.(selectedResource);
       } else {
         // Fallback to client-side price
         const price = getSellPrice(selectedResource);
@@ -142,7 +150,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
     setTrading(false);
     setSelectedResource(null);
     setSellQty(1);
-  }, [selectedResource, sellQty, state.resources, onSellResource, trading, fetchPrices]);
+  }, [selectedResource, sellQty, state.resources, onSellResource, onOpenOrderBook, trading, fetchPrices]);
 
   // Execute buy via server API
   const handleBuy = useCallback(async (resourceId: string, quantity: number) => {
@@ -547,6 +555,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
               ? Math.round(((current - r.baseMarketPrice) / r.baseMarketPrice) * 100)
               : 0;
             const mineOnly = MINED_ONLY_RESOURCE_IDS.has(r.id);
+            const manufactured = isManufacturedResource(r.id);
             const scarcity = priceData?.supplyMultiplier;
             return (
               <div key={r.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
@@ -614,13 +623,26 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                     {(state.resources[r.id] || 0) > 0 && (
                       <>
                         <button
-                          onClick={() => { setSelectedResource(r.id); setSellQty(Math.min(1, state.resources[r.id] || 0)); }}
+                          onClick={() => {
+                            if (manufactured) { onOpenOrderBook?.(r.id); return; }
+                            setSelectedResource(r.id); setSellQty(Math.min(1, state.resources[r.id] || 0));
+                          }}
                           disabled={trading}
+                          title={manufactured ? 'Manufactured goods sell only by listing on the order book' : undefined}
                           className="min-h-[44px] px-2 py-0.5 text-[10px] font-medium rounded transition-colors bg-amber-600/20 text-amber-400 border border-amber-600/30 hover:bg-amber-600/30"
-                        >Sell</button>
+                        >{manufactured ? 'List' : 'Sell'}</button>
                       </>
                     )}
                     {/* Buy buttons */}
+                    {onBuyResource && manufactured && (
+                      <button
+                        onClick={() => onOpenOrderBook?.(r.id)}
+                        title="Manufactured, not stocked: buy a player or NPC listing on the order book, or fabricate it yourself"
+                        className="min-h-[44px] flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded bg-purple-500/10 text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition-colors"
+                      >
+                        🏭 Manufactured · Order book
+                      </button>
+                    )}
                     {onBuyResource && mineOnly && (
                       <span
                         className="min-h-[44px] flex items-center px-2 py-0.5 text-[10px] font-medium rounded bg-white/[0.02] text-slate-500 border border-dashed border-white/[0.08]"
@@ -629,7 +651,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                         ⛏ Mined only — not for sale
                       </span>
                     )}
-                    {onBuyResource && !mineOnly && (
+                    {onBuyResource && !mineOnly && !manufactured && (
                       <>
                         <button
                           onClick={() => handleBuy(r.id, 1)}

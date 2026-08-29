@@ -2226,3 +2226,27 @@ live-tick tests instead.
 
 Verification: `tsc --noEmit` clean; full jest **4,620/209 green**;
 sim-tools double-run diff-identical; `next build` passes.
+
+## 2026-08-29 — Manufactured goods leave the NPC curve (see docs/MANUFACTURING_2026-08.md)
+
+Founder ruling: hardware is manufactured, not mined, and the market holds none
+of it until a player or NPC corporation lists what they built. Changes with
+balance weight:
+
+- `npc-volume-caps.ts`: every crafted good (refined, component, product) is
+  now **0** — the NPC market maker rests no orders for hardware. The earlier
+  note that component caps were "load-bearing" as a crafting outlet is
+  superseded: the outlet is now the NPC industrial corps' *buy* orders
+  (finite treasuries, 95 % of reference) plus delivery contracts.
+- `/market/trade`: manufactured goods can no longer be sold to the curve
+  (it was unbounded NPC demand) nor bought from it.
+- New Earth fabrication works ($350M, T1, no research) lets a newcomer run
+  T1-2 recipes before any off-world plant. Watch early-game money: it is a
+  cheaper first industrial building than anything on the Moon, but its
+  inputs come off the curve at spot.
+- NPC corps buy raw inputs on the curve (a few recipes per hour, scaled by
+  population). Expect a slight upward drift in iron/aluminum on a quiet server.
+
+Telemetry to watch for two weeks: `NpcIndustrialCorp.unitsSold` per corp,
+ask/bid depth on `structural_beams` and `electronics_package`, and whether any
+player ask sits below an NPC ask for more than a day (it should clear).

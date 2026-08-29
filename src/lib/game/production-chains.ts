@@ -12,8 +12,36 @@ export interface ProductDefinition {
   outputQuantity: number;
   timeSeconds: number;
   requiredResearch: string[];
+  /**
+   * Reference facility for the flavour text. Any completed building of
+   * category 'fabrication_facility' whose tier is at least
+   * facilityTierFor(recipe) can run the recipe (2026-08-29: fabrication
+   * anywhere — Earth works, orbital lab, lunar/Mars plant, asteroid refinery,
+   * Titan chemical plant).
+   */
   requiredBuilding: string;
   marketValue: number; // Price per unit if sold
+}
+
+/** Minimum fabrication-facility tier for a recipe tier: raw processing and
+ *  components run at the Earth works (T1); products need an off-world plant
+ *  (T2); top-of-chain advanced products need a T3 plant. */
+export function facilityTierFor(recipe: Pick<ProductDefinition, 'tier'>): number {
+  return recipe.tier <= 2 ? 1 : recipe.tier === 3 ? 2 : 3;
+}
+
+/** Does this building roster include a completed fabrication facility able to run the recipe? */
+export function canFabricate(
+  recipe: Pick<ProductDefinition, 'tier'>,
+  buildings: { definitionId: string; isComplete: boolean }[],
+  buildingMap: Map<string, { category: string; tier: number }>,
+): boolean {
+  const need = facilityTierFor(recipe);
+  return buildings.some((b) => {
+    if (!b.isComplete) return false;
+    const def = buildingMap.get(b.definitionId);
+    return !!def && def.category === 'fabrication_facility' && def.tier >= need;
+  });
 }
 
 // ─── TIER 1: Raw Processing (ore → refined) ────────────────────────────────
@@ -86,6 +114,14 @@ export const PRODUCTION_CHAINS: ProductDefinition[] = [
     timeSeconds: 360, requiredResearch: ['hall_thrusters'], requiredBuilding: 'fabrication_lunar',
     marketValue: 3_000_000,
   },
+  {
+    // 2026-08-29: the crafting-queue route to life support (the passive
+    // life_support_works plant on the Moon remains the bulk source).
+    id: 'make_life_support_pack', name: 'Assemble Life Support Pack', icon: '🫁', tier: 2,
+    inputs: { lunar_water: 6, ammonia: 2, electronics_package: 1, aluminum_alloy: 2 }, outputId: 'life_support_pack', outputQuantity: 2,
+    timeSeconds: 300, requiredResearch: ['life_support_recycling'], requiredBuilding: 'fabrication_orbital',
+    marketValue: 400_000,
+  },
 
   // ─── TIER 3: Products (component → product) ──────────────────────────
   // Late-game, high value
@@ -151,7 +187,7 @@ export function getCraftedProductValue(
 // All crafted product IDs (for inventory tracking)
 export const CRAFTED_PRODUCT_IDS = [
   'steel_ingots', 'aluminum_alloy', 'rocket_fuel', 'refined_rare_earth',
-  'structural_beams', 'electronics_package', 'solar_panel_array', 'propulsion_unit',
+  'structural_beams', 'electronics_package', 'solar_panel_array', 'propulsion_unit', 'life_support_pack',
   'station_module', 'satellite_bus', 'ai_compute_cluster',
   'fusion_core', 'habitat_pod',
 ] as const;

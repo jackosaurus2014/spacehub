@@ -32,12 +32,14 @@ export const NPC_VOLUME_CAPS: Record<string, number> = {
 
   // Crafted goods — no NPC production yet (E3 lands it), so caps are tight
   // by design, tapering to zero at the top of the chain. Tier 1 (refined):
-  steel_ingots: 25, aluminum_alloy: 25, rocket_fuel: 20, refined_rare_earth: 15,
+  steel_ingots: 0, aluminum_alloy: 0, rocket_fuel: 0, refined_rare_earth: 0,
   // Tier 2 (components) — "tight" per spec:
-  structural_beams: 8, electronics_package: 6, solar_panel_array: 6,
-  propulsion_unit: 4, life_support_pack: 0,
+  // 2026-08-29: manufactured goods get NO maker liquidity. Supply is what
+  // players and NPC industrial corps (npc-industry.ts) fabricate and list.
+  structural_beams: 0, electronics_package: 0, solar_panel_array: 0,
+  propulsion_unit: 0, life_support_pack: 0,
   // Tier 3 (products) — tighter still, real scarcity:
-  station_module: 2, satellite_bus: 2, ai_compute_cluster: 2,
+  station_module: 0, satellite_bus: 0, ai_compute_cluster: 0,
   // Tier 4 (top-of-chain products) — zero: player-only markets, no NPC
   // buyer/seller, per the MINED_ONLY precedent.
   fusion_core: 0, habitat_pod: 0,

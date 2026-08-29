@@ -196,6 +196,12 @@ export const BUILDINGS: BuildingDefinition[] = [
     consumesPerMonth: { rocket_fuel: 5 } },
 
   // ─── FABRICATION ──────────────────────────────────────────────────────
+  { id: 'fabrication_earth', name: 'Terrestrial Fabrication Works', category: 'fabrication_facility', tier: 1,
+    description: 'Ground-side factory: smelt, refine and assemble components from delivered ore before you have industry off-world.',
+    tooltip: 'FIRST FACTORY. Runs Tier 1-2 recipes (ingots, alloys, fuel, beams, electronics, solar arrays, propulsion, life support). Products (T3+) need an off-world plant. Unlimited Earth power; inputs still have to be bought or hauled down.',
+    baseCost: 350_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 1_500_000,
+    requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [],
+    realBuildSeconds: 480, resourceCost: { iron: 40, aluminum: 20 }, powerRequired: 0 },
   { id: 'fabrication_orbital', name: 'Orbital Fabrication Lab', category: 'fabrication_facility', tier: 2,
     description: 'Manufacture components in microgravity.',
     tooltip: 'UNLOCKS CRAFTING. Activates Orbital Manufacturing at $10M/mo vs $4M cost = $6M/mo net. More importantly, this unlocks the Crafting tab — letting you refine raw resources into higher-value products (steel ingots, electronics, solar panels). Also produces 5 titanium + 3 rare earth per month passively. Requires "Orbital Assembly" research. Build to unlock the entire production chain system.',

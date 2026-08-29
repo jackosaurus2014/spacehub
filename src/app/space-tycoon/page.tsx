@@ -1704,6 +1704,14 @@ export default function SpaceTycoonPage() {
   }, []);
 
   // Resource sell handler (must be before early return)
+  // 2026-08-29: manufactured goods list on the order book; the crafting
+  // panel hands the resource here and we open the Markets hub on it.
+  const [bookResource, setBookResource] = useState<string | null>(null);
+  const handleListForSale = useCallback((resourceId: string) => {
+    setBookResource(resourceId);
+    navigateToTab('market');
+  }, [navigateToTab]);
+
   const handleSellResource = useCallback((resourceId: string, quantity: number, revenue: number) => {
     setState(prev => {
       if (!prev) return prev;
@@ -2516,7 +2524,7 @@ export default function SpaceTycoonPage() {
               eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Crafting: ${recipe.name}`, description: `Producing ${recipe.outputQuantity}x ${recipe.outputId.replace(/_/g, ' ')}.` }, ...prev.eventLog].slice(0, 50),
             };
           });
-        }} onSellResource={handleSellResource} />}
+        }} onSellResource={handleSellResource} onListForSale={handleListForSale} />}
         {tab === 'workforce' && <WorkforcePanel state={state} onHire={(workerType) => {
           setState(prev => {
             if (!prev) return prev;
@@ -2556,6 +2564,7 @@ export default function SpaceTycoonPage() {
             onSellResource={handleSellResource}
             onBuyResource={handleBuyResource}
             onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
+            bookResource={bookResource}
           />
         )}
         {tab === 'contracts' && (

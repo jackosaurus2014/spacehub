@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { PRODUCTION_CHAINS, CRAFTED_PRODUCT_IDS, getCraftedProductValue } from '@/lib/game/production-chains';
+import { PRODUCTION_CHAINS, CRAFTED_PRODUCT_IDS, getCraftedProductValue, canFabricate } from '@/lib/game/production-chains';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formulas';
@@ -21,9 +21,13 @@ interface CraftingPanelProps {
    * state-update path, just a second surface that can call it.
    */
   onSellResource?: (resourceId: string, quantity: number, revenue: number) => void;
+  /** 2026-08-29: manufactured goods are sold by listing on the order book, never
+   *  to the NPC curve. The page routes this to the Markets hub with the
+   *  resource preselected. */
+  onListForSale?: (resourceId: string) => void;
 }
 
-export default function CraftingPanel({ state, onStartCrafting, onSellResource }: CraftingPanelProps) {
+export default function CraftingPanel({ state, onStartCrafting, onSellResource, onListForSale }: CraftingPanelProps) {
   const [, setTick] = useState(0);
   const [sellingId, setSellingId] = useState<string | null>(null);
   // Re-render every second for countdown timers
@@ -76,7 +80,6 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource }
   }, [onSellResource, sellingId, state.marketSnapshot]);
 
   const allResources = { ...(state.resources || {}), ...(state.craftedProducts || {}) };
-  const completedBuildingIds = state.buildings.filter(b => b.isComplete).map(b => b.definitionId);
 
   // Crafting speed bonus from fabrication buildings
   const craftingSpeedMult = getCraftingSpeedMultiplier(state.buildings);
@@ -139,7 +142,7 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource }
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="font-hud text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>📦</span> Finished Goods — Sell to Market
+            <span>📦</span> Finished Goods — List on the Order Book
           </h3>
           <div className="space-y-1.5">
             {craftedHeld.map(({ id, qty }) => {
@@ -163,11 +166,11 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource }
                   <div className="flex items-center gap-2">
                     <span className="game-number text-slate-400 text-[10px]">{formatMoney(unitPrice)}/u</span>
                     <button
-                      onClick={() => { if (!busy) { playSound('build_start'); handleSellCrafted(id, qty); } }}
-                      disabled={busy || !onSellResource}
+                      onClick={() => { if (!busy) { playSound('click'); if (onListForSale) onListForSale(id); else handleSellCrafted(id, qty); } }}
+                      disabled={busy || (!onSellResource && !onListForSale)}
                       className="min-h-[44px] px-2 py-1 rounded text-[10px] font-semibold text-white bg-green-600 hover:bg-green-500 disabled:opacity-50 transition-colors"
                     >
-                      {busy ? 'Selling…' : `Sell All for ${formatMoney(revenue)}`}
+                      {busy ? 'Selling…' : onListForSale ? `List ×${qty} · ~${formatMoney(revenue)} at spot` : `Sell All for ${formatMoney(revenue)}`}
                     </button>
                   </div>
                 </div>
@@ -201,9 +204,11 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource }
       {/* Recipe Tiers */}
       {tiers.map(({ tier, label, icon }) => {
         const recipes = PRODUCTION_CHAINS.filter(c => c.tier === tier);
+        // Any completed fabrication facility of sufficient tier runs the recipe
+        // (Earth works for T1-2, off-world plant for T3, T3 plant for T4).
         const availableRecipes = recipes.filter(c =>
           c.requiredResearch.every(r => state.completedResearch.includes(r)) &&
-          completedBuildingIds.includes(c.requiredBuilding)
+          canFabricate(c, state.buildings, BUILDING_MAP)
         );
 
         if (availableRecipes.length === 0 && tier > 2) return null;

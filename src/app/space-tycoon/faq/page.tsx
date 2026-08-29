@@ -9,6 +9,30 @@ export const metadata: Metadata = {
 
 const faqs = [
   {
+    // Search-facing (2026-08-29): the game client renders nothing crawlable,
+    // so this page is where "space MMO / space economy game / live-service
+    // space strategy game" have to appear in plain text. Keep it honest.
+    category: 'What kind of game is this?',
+    questions: [
+      {
+        q: 'Is Space Tycoon a space MMO?',
+        a: `Yes — a browser-based space MMO with one persistent, shared economy. Every player trades on the same live market, bids on the same contracts, competes in the same weekly league, and can build corporations with alliances, mergers and takeovers. There is no combat: rivalry is economic. It runs on a fresh-world epoch cadence, so newcomers start on a level solar system rather than into a decade-old economy.`,
+      },
+      {
+        q: 'Is it a space economy game or a space strategy game?',
+        a: `Both, and that is the point. It is a space economy game first: supply and demand set every price, logistics and delta-v cost money, hardware has to be manufactured at fabrication facilities from mined resources, and profit-and-loss is visible per building, location and corporation. The strategy layer sits on top — where to expand, which chokepoints and orbital slots to hold, which research to fund, whom to trade with and whom to squeeze.`,
+      },
+      {
+        q: 'Is Space Tycoon a live-service game? What changes week to week?',
+        a: `It is a live-service game in the plain sense: the world keeps moving whether you are logged in or not. Daily contracts and intelligence briefings refresh, weekly league standings and faction standings reset, corporate quarterlies publish every game quarter, seasonal events run on a calendar, and real space data — live launches, NOAA space weather — feeds the simulation. Balance passes and content waves ship continuously and are logged publicly in the changelog.`,
+      },
+      {
+        q: 'Is it free? Is there pay-to-win?',
+        a: `Free to play in the browser, no download, no account needed to look around. Real-money purchases are cosmetic or convenience only — never resources, money, research acceleration or exclusive gameplay content. The no-pay-to-win commitment is written into the game's public policy.`,
+      },
+    ],
+  },
+  {
     category: 'Getting Started',
     questions: [
       {
@@ -205,6 +229,10 @@ export default function SpaceTycoonFAQPage() {
   return (
     <div className="min-h-screen bg-[#050510]">
       <div className="container mx-auto px-4 py-8 pb-16">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org', '@type': 'FAQPage',
+          mainEntity: faqs.flatMap((cat) => cat.questions.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/\*\*/g, '') } }))),
+        }).replace(/</g, '\u003c') }} />
         {/* Header */}
         <div className="max-w-3xl mx-auto mb-8">
           <Link href="/space-tycoon" className="text-cyan-400 text-xs hover:text-cyan-300 mb-4 inline-flex items-center gap-1">

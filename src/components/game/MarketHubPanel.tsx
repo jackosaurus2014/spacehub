@@ -34,6 +34,8 @@ interface MarketHubPanelProps {
    *  Territory for the verbs that do not live in this hub. Optional so every
    *  existing call site keeps compiling. */
   onNavigateTab?: (tab: GameTab) => void;
+  /** Preselect a resource on the order book (crafting panel's "List" lands here). */
+  bookResource?: string | null;
 }
 
 type MarketTab = 'spot' | 'analytics' | 'economy' | 'futures';
@@ -94,13 +96,20 @@ function MarketFirstOpenIntro() {
   );
 }
 
-export default function MarketHubPanel({ state, setState, onSellResource, onBuyResource, onNavigateTab }: MarketHubPanelProps) {
+export default function MarketHubPanel({ state, setState, onSellResource, onBuyResource, onNavigateTab, bookResource }: MarketHubPanelProps) {
   const tier = state.corporationTier || 1;
   const economyUnlocked = isFoldedFeatureUnlocked(tier, 'economy');
   const analyticsUnlocked = isFoldedFeatureUnlocked(tier, 'intelligence');
   const futuresUnlocked = isFoldedFeatureUnlocked(tier, 'futures');
 
   const [tab, setTab] = useState<MarketTab>('spot');
+  const [bookSlug, setBookSlug] = useState<string | null>(bookResource ?? null);
+  useEffect(() => { if (bookResource) { setBookSlug(bookResource); setTab('spot'); } }, [bookResource]);
+  const openOrderBook = (slug: string) => {
+    setBookSlug(slug);
+    setTab('spot');
+    setTimeout(() => document.getElementById('market-order-book')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  };
 
   // PvP Discoverability pass (2026-08): honour a parked sub-view request so a
   // Situation Log row, a posture readout, or a tool-unlock briefing that says
@@ -151,9 +160,11 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
       {tab === 'spot' && (
         <div className="space-y-4">
           <MarketFirstOpenIntro />
-          <MarketPanel state={state} onSellResource={onSellResource} onBuyResource={onBuyResource} />
+          <MarketPanel state={state} onSellResource={onSellResource} onBuyResource={onBuyResource} onOpenOrderBook={openOrderBook} />
           <MarketPriceChart />
-          <MarketOrderBook state={state} />
+          <div id="market-order-book" className="scroll-mt-20">
+            <MarketOrderBook state={state} selectedResource={bookSlug ?? undefined} />
+          </div>
         </div>
       )}
       {tab === 'analytics' && (analyticsUnlocked ? (
