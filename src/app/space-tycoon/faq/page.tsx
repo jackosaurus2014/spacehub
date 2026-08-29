@@ -37,7 +37,7 @@ const faqs = [
     questions: [
       {
         q: 'How do I start making money?',
-        a: `You start with $500M. To generate ongoing revenue, you need to build infrastructure that enables **services**. The fastest path to revenue:
+        a: `You start with $100M. To generate ongoing revenue, you need to build infrastructure that enables **services**. The fastest path to revenue:
 
 1. **Build a Small Launch Pad** ($50M, 6 months) → auto-activates "Small Launch Services" earning **$5M/mo net profit**
 2. **Build a Ground Station** ($30M, 4 months) → auto-activates "Satellite Tracking Services" earning **$2.2M/mo net profit**
