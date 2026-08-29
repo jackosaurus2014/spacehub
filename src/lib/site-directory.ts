@@ -69,6 +69,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Blog', href: '/blog', description: 'Guides, analysis and market reports', icon: '✍️', nav: true, hot: true },
       { name: 'AI Insights', href: '/ai-insights', description: 'Daily analysis, fact-checked before publishing', icon: '🤖', nav: true },
       { name: 'M/Th Digest', href: '/newsletter', description: 'The briefing, Mondays and Thursdays', icon: '✉️', nav: true },
+      { name: 'Charts', href: '/chart', description: 'Launches, funding and jobs, drawn from our own trackers', icon: '📈', nav: true },
       { name: 'Podcasts', href: '/podcasts', description: 'Space podcast directory', icon: '🎙️', nav: true },
       { name: 'Space Defense', href: '/space-defense', description: 'Military space and national security', icon: '🛡️', nav: true },
       { name: 'Brief Archive', href: '/intelligence-brief', description: 'Past intelligence briefs', icon: '📑' },

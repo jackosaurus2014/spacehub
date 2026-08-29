@@ -41,8 +41,8 @@ Third: **the agents' MAU arithmetic is optimistic by ~3×** (the Opus advocate s
 ## Tier 3 — October (M/L, authority)
 
 - **Slip Index page + per-provider on-time scorecard** (publish once #7 has ~6 weeks of data). Proprietary forever.
-- **Hero illustration batch** for the top 10 guide/compare pages via the existing Gemini pipeline — the highest-traffic page on the site is white text on gray. Alt text + contrast in acceptance criteria. (Sonnet design lane's one strong finding.)
-- **Chart of the Week** as a fixed slot in the M/Th Digest with `/chart/[slug]` permalinks — not a third newsletter. Opus's Orbital-Index-seat idea is real; the advocate's correction (a slot, not a send) is right.
+- **Hero illustration batch** — **DONE 2026-08-29** (6 heroes on 7 page types via `HeroArt`, batch `c1-guide-heroes`). Was: for the top 10 guide/compare pages via the existing Gemini pipeline — the highest-traffic page on the site is white text on gray. Alt text + contrast in acceptance criteria. (Sonnet design lane's one strong finding.)
+- **Chart of the Week** — **DONE 2026-08-29**: `src/lib/charts/` (registry, SVG renderer, Prisma loaders), `/api/chart/[slug]` PNG, `/chart` + `/chart/[slug]` permalinks, fixed digest slot rotating by ISO week (first send Mon 2026-08-31). Was: a fixed slot in the M/Th Digest with `/chart/[slug]` permalinks — not a third newsletter. Opus's Orbital-Index-seat idea is real; the advocate's correction (a slot, not a send) is right.
 - **Space Hiring Index** (monthly, methodology attached) when `CompanyJobSnapshot` has ~12 weeks. Fix the movers window and `isPublic` now (Tier 1) so the numbers are right on day one.
 - **Terminal-chrome bridge** on Company Profiles / Space Stocks / Mission Control (Sonnet design) — polish, L, after content.
 - New guides in this order: Blue Origin vs SpaceX long-form (the 1.2k-impression query; guide format outperforms compare here), Wallops + Kourou viewing guides, NSSL Phase 3, Kuiper/Leo vs Starlink (consolidating two blog posts), space debris & STM on the corrected SATCAT numbers.

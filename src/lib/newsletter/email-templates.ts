@@ -203,6 +203,49 @@ ${APP_URL}`;
  * strings) when there are no items — the digest is byte-identical to a
  * pre-watch digest in that case (tested).
  */
+export interface DigestChart {
+  slug: string;
+  title: string;
+  subtitle: string;
+  source: string;
+}
+
+/**
+ * Chart of the Week — one server-rendered PNG (/api/chart/[slug]) with its
+ * permalink. Empty strings when there is no chart so the digest is
+ * byte-identical to before on weeks with no data.
+ */
+export function buildChartOfTheWeekSection(chart: DigestChart | null): { html: string; plain: string } {
+  if (!chart) return { html: '', plain: '' };
+  const pageUrl = `${APP_URL}/chart/${chart.slug}`;
+  const imgUrl = `${APP_URL}/api/chart/${chart.slug}`;
+  const html = `
+      <tr>
+        <td style="padding: 25px 30px 10px 30px; background-color: ${styles.bgCard};">
+          <span style="display: inline-block; padding: 4px 12px; background-color: #0e7490; color: ${styles.textWhite}; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 4px; margin-bottom: 12px;">
+            Chart of the Week
+          </span>
+          <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: ${styles.textWhite};">
+            <a href="${escapeHtml(pageUrl)}" style="color: ${styles.textWhite}; text-decoration: none;">${escapeHtml(chart.title)}</a>
+          </h3>
+          <p style="margin: 0 0 12px 0; font-size: 14px; color: ${styles.textLight};">${escapeHtml(chart.subtitle)}</p>
+          <a href="${escapeHtml(pageUrl)}" style="display: block;">
+            <img src="${escapeHtml(imgUrl)}" width="540" alt="${escapeHtml(chart.title)}: ${escapeHtml(chart.subtitle)}" style="display: block; width: 100%; max-width: 540px; height: auto; border-radius: 8px; border: 1px solid ${styles.borderColor};" />
+          </a>
+          <p style="margin: 10px 0 0 0; font-size: 12px; color: ${styles.textMuted};">
+            ${escapeHtml(chart.source)} &middot; <a href="${escapeHtml(pageUrl)}" style="color: ${styles.accentNebulaLight};">The numbers, and more charts</a>
+          </p>
+        </td>
+      </tr>`;
+  const plain = `
+=== CHART OF THE WEEK ===
+${chart.title}
+${chart.subtitle}
+${pageUrl}
+`;
+  return { html, plain };
+}
+
 export function buildExportControlWatchSection(
   items: DigestExportControlItem[],
   overflow: boolean
@@ -277,7 +320,8 @@ export function renderDigestEmail(
   categorizedNews: CategorizedNews,
   unsubscribeUrl: string = '{{UNSUBSCRIBE_URL}}',
   exportControlWatch: DigestExportControlItem[] = [],
-  exportControlOverflow: boolean = false
+  exportControlOverflow: boolean = false,
+  chartOfTheWeek: DigestChart | null = null
 ): DigestEmailResult {
   const formattedDate = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -293,6 +337,7 @@ export function renderDigestEmail(
   // Conditional Export Control Watch — empty strings (and therefore
   // byte-identical output) when there are no qualifying items.
   const watchSection = buildExportControlWatchSection(exportControlWatch, exportControlOverflow);
+  const chartSection = buildChartOfTheWeekSection(chartOfTheWeek);
 
   // Build feature article sections
   let featureArticlesHtml = '';
@@ -397,7 +442,7 @@ ${article.content}
           Delivered Mondays &amp; Thursdays
         </p>
       </td>
-    </tr>${watchSection.html}
+    </tr>${chartSection.html}${watchSection.html}
     ${featureArticles.length > 0 ? featureArticlesHtml.split('</tr>')[0] + '</tr>' : ''}
     ${newsHtml}
     ${featureArticles.length > 1 ? featureArticlesHtml.split('</tr>').slice(1).join('</tr>') : ''}
@@ -421,7 +466,7 @@ ${article.content}
 ${formattedDate}
 ${totalArticles} articles across ${categoryNames.length} categories
 Delivered Mondays & Thursdays
-${watchSection.plain}
+${chartSection.plain}${watchSection.plain}
 ${featureArticlesPlain}
 ${newsPlain}
 

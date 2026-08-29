@@ -8,6 +8,7 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/db';
 import { sendDailyDigest, filterSubscribersByPreferences } from '@/lib/newsletter/email-service';
 import { renderDigestEmail } from '@/lib/newsletter/email-templates';
+import { pickChartOfTheWeek } from '@/lib/charts/data';
 import { generateFeatureArticles, categorizeNews } from '@/lib/newsletter/digest-generator';
 import {
   markExportControlItemsIncluded,
@@ -129,13 +130,18 @@ export async function POST(request: NextRequest) {
     // 8. Render the email
     const digestDate = new Date();
     digestDate.setHours(0, 0, 0, 0);
+
+    // Chart of the Week — a fixed slot, rotating by ISO week; null when no
+    // chart has data, in which case the section is omitted entirely.
+    const chart = await pickChartOfTheWeek();
     const { html, plain, subject } = renderDigestEmail(
       digestDate,
       featureArticles,
       categorizedNews,
       undefined,
       watch.items,
-      watch.overflow
+      watch.overflow,
+      chart ? { slug: chart.def.slug, title: chart.def.title, subtitle: chart.def.subtitle, source: chart.def.source } : null
     );
 
     // 9. Save digest record
