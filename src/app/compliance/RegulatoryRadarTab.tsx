@@ -3,46 +3,36 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
-import { RADAR_CATEGORIES, RADAR_CATEGORY_LABELS, type RadarCategory } from '@/lib/regulatory-categorizer';
 import {
   ClosingSoonCallout,
   RadarTimelineList,
-  SOURCE_LABELS,
   type RadarTimelineEntry,
 } from '@/components/regulatory/RadarTimeline';
-import DeadlineCalendar, { type DeadlineCalendarWeek } from '@/components/regulatory/DeadlineCalendar';
 
 /**
- * Regulatory Radar tab on /compliance — unified reverse-chron timeline of
- * congressional actions + Federal Register documents + agency actions, with
- * category chips, source filters, and an "action windows closing soon"
- * callout. Data from /api/regulatory-radar (RegulatoryAction table).
+ * Regulatory Radar tab on /compliance — a teaser: the "action windows
+ * closing soon" callout plus the eight newest actions, then a hand-off to
+ * /regulatory-radar, which owns the filters and the deadline calendar.
+ * (Roadmap 2026-09: the full timeline lived in both places.)
+ * Data from /api/regulatory-radar (RegulatoryAction table).
  */
-
-const SOURCE_FILTERS = ['congress', 'federal-register'] as const;
 
 export default function RegulatoryRadarTab() {
   const [entries, setEntries] = useState<RadarTimelineEntry[]>([]);
   const [closingSoon, setClosingSoon] = useState<RadarTimelineEntry[]>([]);
-  const [deadlineWeeks, setDeadlineWeeks] = useState<DeadlineCalendarWeek[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [category, setCategory] = useState<RadarCategory | 'all'>('all');
-  const [source, setSource] = useState<string>('all');
 
-  const fetchRadar = useCallback(async (cat: RadarCategory | 'all', src: string) => {
+  const fetchRadar = useCallback(async () => {
     setLoading(true);
     setError(false);
     try {
-      const params = new URLSearchParams({ limit: '80' });
-      if (cat !== 'all') params.set('category', cat);
-      if (src !== 'all') params.set('source', src);
+      const params = new URLSearchParams({ limit: '8' });
       const res = await fetch(`/api/regulatory-radar?${params.toString()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setEntries(Array.isArray(data?.entries) ? data.entries : []);
       setClosingSoon(Array.isArray(data?.closingSoon) ? data.closingSoon : []);
-      setDeadlineWeeks(Array.isArray(data?.deadlineWeeks) ? data.deadlineWeeks : []);
     } catch (err) {
       clientLogger.error('Failed to fetch regulatory radar', {
         error: err instanceof Error ? err.message : String(err),
@@ -54,8 +44,8 @@ export default function RegulatoryRadarTab() {
   }, []);
 
   useEffect(() => {
-    fetchRadar(category, source);
-  }, [fetchRadar, category, source]);
+    fetchRadar();
+  }, [fetchRadar]);
 
   if (loading && entries.length === 0) {
     return (
@@ -75,12 +65,12 @@ export default function RegulatoryRadarTab() {
         <div>
           <h2 className="text-lg font-semibold text-white">Regulatory Radar</h2>
           <p className="text-sm text-slate-400">
-            Congressional actions, Federal Register publications, and agency actions — one timeline,
-            newest first.
+            The eight newest congressional, Federal Register and agency actions. Filters, sources and
+            the 90-day deadline calendar live on the public radar.
           </p>
         </div>
         <Link href="/regulatory-radar" className="text-xs text-violet-300 hover:text-violet-200 whitespace-nowrap">
-          Public radar page &rarr;
+          Full radar &rarr;
         </Link>
       </div>
 
@@ -88,7 +78,7 @@ export default function RegulatoryRadarTab() {
         <div className="card p-4 mb-4 border border-red-500/20 bg-red-500/5">
           <p className="text-sm text-red-400">Unable to load the regulatory radar right now.</p>
           <button
-            onClick={() => fetchRadar(category, source)}
+            onClick={() => fetchRadar()}
             className="text-xs text-red-300 hover:text-red-200 underline mt-1 min-h-[44px] inline-flex items-center"
           >
             Try again
@@ -98,55 +88,14 @@ export default function RegulatoryRadarTab() {
 
       <ClosingSoonCallout entries={closingSoon} />
 
-      {/* Category chips */}
-      <div className="relative">
-        <div
-          role="group"
-          aria-label="Filter by category"
-          className="flex gap-2 mb-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin"
-        >
-          {(['all', ...RADAR_CATEGORIES] as const).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategory(cat as RadarCategory | 'all')}
-              aria-pressed={category === cat}
-              className={`px-3 py-2 min-h-[44px] rounded-lg text-xs font-medium transition-all whitespace-nowrap touch-target ${
-                category === cat
-                  ? 'bg-white text-slate-900'
-                  : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] border border-white/[0.1]'
-              }`}
-            >
-              {cat === 'all' ? 'All Categories' : RADAR_CATEGORY_LABELS[cat as RadarCategory]}
-            </button>
-          ))}
-        </div>
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
-      </div>
-
-      {/* Source chips */}
-      <div role="group" aria-label="Filter by source" className="flex flex-wrap gap-2 mb-5">
-        {(['all', ...SOURCE_FILTERS] as const).map((src) => (
-          <button
-            key={src}
-            onClick={() => setSource(src)}
-            aria-pressed={source === src}
-            className={`px-3 py-2 min-h-[44px] rounded-lg text-xs font-medium transition-all whitespace-nowrap touch-target ${
-              source === src
-                ? 'bg-white/[0.1] text-white border border-white/[0.15]'
-                : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-slate-300'
-            }`}
-          >
-            {src === 'all' ? 'All Sources' : SOURCE_LABELS[src] || src}
-          </button>
-        ))}
-      </div>
-
       <RadarTimelineList entries={entries} />
 
-      {/* Live compliance calendar — next 90 days of tracked comment closings
-          and rule effective dates (honest empty state when nothing tracked). */}
-      <div className="mt-8">
-        <DeadlineCalendar weeks={deadlineWeeks} />
+      <div className="mt-6 card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-white">Everything else is on the public radar</div>
+          <div className="text-xs text-slate-400">Category and source filters, the full timeline, and the 90-day comment-deadline calendar.</div>
+        </div>
+        <Link href="/regulatory-radar" className="btn-primary text-sm py-2 px-4 flex-shrink-0">Open Regulatory Radar</Link>
       </div>
     </div>
   );
