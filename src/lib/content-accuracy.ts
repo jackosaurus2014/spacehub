@@ -407,6 +407,11 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     run: checkLaunchOutcomesFlowing,
   },
   {
+    id: 'sitemap-segments-populated',
+    label: 'DB-backed sitemap segments list URLs (companies, content, launches)',
+    run: checkSitemapSegments,
+  },
+  {
     id: 'stock-quotes-fresh',
     label: 'Stock-sync is writing quotes (freshest public-company lastVerified < 4 days)',
     run: checkStockQuotesFresh,
@@ -639,6 +644,29 @@ async function checkLaunchOutcomesFlowing(): Promise<AccuracyCheckOutcome> {
     return { ok: false, detail: `${flown} launches in the last 14d, none recorded as completed/failed — LL2 outcome sync is not writing (all "scrubbed"?).` };
   }
   return { ok: true, detail: `${real}/${flown} launches in the last 14d carry a real outcome.` };
+}
+
+/**
+ * The sitemap's DB-backed segments were found EMPTY in production on
+ * 2026-08-29: the build container has no database, so they prerendered with
+ * zero URLs and were cached. Now rendered per request; this check fetches the
+ * live segments and fails if the company or content segment lists nothing.
+ */
+async function checkSitemapSegments(): Promise<AccuracyCheckOutcome> {
+  const base = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+  const counts: Record<string, number> = {};
+  for (const seg of [1, 3]) {
+    try {
+      const res = await fetch(`${base}/sitemap/${seg}.xml`, { cache: 'no-store' });
+      const xml = res.ok ? await res.text() : '';
+      counts[`segment ${seg}`] = (xml.match(/<loc>/g) || []).length;
+    } catch {
+      counts[`segment ${seg}`] = -1;
+    }
+  }
+  const empty = Object.entries(counts).filter(([, n]) => n <= 0);
+  if (empty.length > 0) return { ok: false, detail: `Empty sitemap segment(s): ${empty.map(([k, n]) => `${k} (${n < 0 ? 'unreachable' : '0 URLs'})`).join(', ')} — DB-backed routes are invisible to crawlers.` };
+  return { ok: true, detail: Object.entries(counts).map(([k, n]) => `${k}: ${n} URLs`).join(', ') };
 }
 
 /**

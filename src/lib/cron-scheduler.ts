@@ -141,11 +141,14 @@ const CRON_JOBS: CronJobDef[] = [
   // Welcome drip sequence — daily at 10:30am UTC (sends next email to users within 14-day window)
   { schedule: '30 10 * * *',  path: '/api/drip/process',                         label: 'welcome-drip-sequence',      maxStaleMinutes: 1560 },
   // Mission debrief drafts — daily at 9:30am UTC (creates placeholder drafts for completed launches)
-  { schedule: '30 9 * * *',   path: '/api/cron/mission-debriefs',                label: 'mission-debriefs-drafts',    maxStaleMinutes: 1560 },
+  // Four runs a day since 2026-08-29 so every launch has a debrief within ~24h.
+  { schedule: '30 */6 * * *', path: '/api/cron/mission-debriefs',                label: 'mission-debriefs-drafts',    maxStaleMinutes: 480 },
   // Trial drip — daily at 10:45am UTC (mid-trial + final-day emails for users on a 3-day Pro trial)
   { schedule: '45 10 * * *',  path: '/api/cron/trials-expiring',                 label: 'trial-drip-emails',          maxStaleMinutes: 1560 },
   // Satellite pass alerts — every 10 minutes (fires push when ISS/etc. is about to be visible)
   { schedule: '*/10 * * * *', path: '/api/cron/satellite-pass-alerts',           label: 'satellite-pass-alerts',      maxStaleMinutes: 60 },
+  // Launch alerts without an account (2026-08-29): T-24h / T-1h / outcome emails for LaunchWatch rows.
+  { schedule: '*/20 * * * *', path: '/api/cron/launch-watch',                    label: 'launch-watch',               maxStaleMinutes: 90 },
   // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)
   { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
   // Forum digest — DISABLED 2026-08-26: forums mothballed (0 posts ever; see

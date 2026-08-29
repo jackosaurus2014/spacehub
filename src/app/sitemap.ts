@@ -1,5 +1,12 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/db';
+
+// Render per request (2026-08-29). Railway's build container has no DB, so the
+// DB-backed segments (companies, listings, insights, launches) were being
+// prerendered EMPTY at build time and cached: production served a sitemap
+// with zero company, insight or launch URLs. Regenerating hourly keeps crawl
+// cost trivial and the launch entries fresh.
+export const dynamic = 'force-dynamic';
 import { allRocketSlugs } from '@/lib/rockets';
 import { LAUNCH_SITES, monthParam, monthWindow } from '@/lib/launch-sites';
 import { COST_TO_LAUNCH } from '@/lib/cost-to-launch';

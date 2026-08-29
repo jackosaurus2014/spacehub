@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import prisma from '@/lib/db';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import { PredictionPicker, SettledPickBadge } from '@/components/predictions/PredictionPicker';
 
 // Public front door to Space Tycoon's Prediction Exchange (2026-08-28).
 // The board itself lived only inside the game UI, behind sign-in. A casual
@@ -54,9 +55,9 @@ export default async function PredictionsPage() {
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">Will it fly this window?</h1>
           <p className="text-lg text-white/70 leading-relaxed max-w-2xl">
-            Real launches, real outcomes, game stakes. Every question below is generated from the live manifest and
-            settled against what actually happened. Stake Space Tycoon credits on your call — a correct stake pays 2×.
-            No real money, ever.
+            Real launches, real outcomes. Every question below is generated from the live manifest and settled against
+            what actually happened. Make your call right here — no account needed — and, if you play Space Tycoon, back it
+            with credits for a 2× payout. No real money, ever.
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
             <Link href="/space-tycoon" className="btn-primary text-sm py-2 px-4">Play — stake your call</Link>
@@ -81,12 +82,9 @@ export default async function PredictionsPage() {
                       {n > 0 && <span className="text-slate-500">· {n} stake{n === 1 ? '' : 's'}</span>}
                     </div>
                     <h3 className="text-base font-semibold text-white mb-3">{q.question}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {opts.map((o) => (
-                        <Link key={o.id} href={`/space-tycoon?tab=predictions&q=${q.id}`} className="px-3 py-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] text-sm text-white hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-colors">
-                          {o.label}
-                        </Link>
-                      ))}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {/* Anyone can call it (no account); credits are staked in the game. */}
+                      <PredictionPicker questionId={q.id} options={opts} stakeHref={`/space-tycoon?tab=predictions&q=${q.id}`} />
                       {q.sourceHref && <Link href={q.sourceHref} className="px-3 py-1.5 text-xs text-slate-400 hover:text-white self-center">Track it →</Link>}
                     </div>
                   </div>
@@ -106,7 +104,10 @@ export default async function PredictionsPage() {
                 return (
                   <div key={q.id} className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <span className="text-sm text-slate-300">{q.question}</span>
-                    <span className="text-xs font-semibold text-emerald-300 whitespace-nowrap">{win?.label ?? '—'}{q.resolvedAt ? ` · ${fmt(q.resolvedAt)}` : ''}</span>
+                    <span className="flex items-center gap-2 text-xs font-semibold text-emerald-300 whitespace-nowrap">
+                      <SettledPickBadge questionId={q.id} winningOptionId={q.outcomeOptionId} />
+                      {win?.label ?? '—'}{q.resolvedAt ? ` · ${fmt(q.resolvedAt)}` : ''}
+                    </span>
                   </div>
                 );
               })}

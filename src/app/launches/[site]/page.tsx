@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import LaunchRow from '@/components/launches/LaunchRow';
+import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
+import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import { LAUNCH_SITES, getSite, getSiteMonth, monthLabel, monthParam, monthWindow, shiftMonth } from '@/lib/launch-sites';
 
 export const dynamic = 'force-dynamic';
@@ -44,9 +46,11 @@ export default async function SitePage({ params }: { params: { site: string } })
           <p className="text-slate-300 leading-relaxed mt-3 max-w-3xl">{site.blurb}</p>
           <div className="flex flex-wrap gap-2 mt-4">
             {site.viewingGuide && <Link href={site.viewingGuide} className="btn-primary text-sm py-2 px-4">Where to watch a launch at {site.shortName}</Link>}
-            <Link href={`/alerts?create=launch_status&site=${encodeURIComponent(site.shortName)}`} className="btn-secondary text-sm py-2 px-4">Alert me about {site.shortName} launches</Link>
           </div>
         </header>
+        <div className="mb-8">
+          <LaunchWatchForm site={site.shortName} label={`every launch from ${site.shortName}`} source="site-page" />
+        </div>
 
         {[thisMonth, nextMonth].map((d) => d && (
           <section key={`${d.year}-${d.month}`} className="mb-8">
@@ -68,6 +72,11 @@ export default async function SitePage({ params }: { params: { site: string } })
               </Link>
             ))}
           </div>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">What&apos;s next</h2>
+          <LaunchCrossLinks rocket={thisMonth?.launches.find((l) => l.launchDate && l.launchDate.getTime() > now.getTime())?.rocket ?? null} location={site.name} upcoming={(thisMonth?.upcoming ?? 0) + (nextMonth?.upcoming ?? 0) > 0} hide={['site']} />
         </section>
 
         <section className="pt-6 border-t border-white/[0.06] text-sm">

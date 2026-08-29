@@ -56,7 +56,9 @@ async function uniqueSlug(base: string): Promise<string> {
 /** How many drafts get AI enrichment per cron run. Each enrichment is one
  *  Claude call (~30-60s); the cap keeps the run inside the route deadline
  *  and the backlog drains across days rather than timing out in one. */
-const MAX_ENRICH_PER_RUN = 2;
+// 2026-08-29: universal 24-hour debriefs — every flown launch gets its record within a day.
+// 6 per run × 4 runs/day comfortably covers the world's ~5-7 launches/day.
+const MAX_ENRICH_PER_RUN = 6;
 
 export async function POST(request: NextRequest) {
   const authError = requireCronSecret(request);

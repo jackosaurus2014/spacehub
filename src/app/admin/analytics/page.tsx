@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import LandingReturnsPanel from '@/components/admin/LandingReturnsPanel';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
@@ -180,6 +181,7 @@ export default function AdminAnalyticsPage() {
               error={growthError}
               onRetry={fetchGrowthMetrics}
             />
+              <div className="mt-6"><LandingReturnsPanel /></div>
           </div>
         </ScrollReveal>
 

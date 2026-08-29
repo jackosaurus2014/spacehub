@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import LaunchRow, { formatLaunchDate, missionTitle } from '@/components/launches/LaunchRow';
+import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
+import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import { allRocketSlugs, getRocketEntry, getRocketLiveStats, getRocketSpec } from '@/lib/rockets';
 import { LAUNCH_SITES } from '@/lib/launch-sites';
 
@@ -85,12 +87,9 @@ export default async function RocketPage({ params }: { params: { slug: string } 
           <Stat label="Next launch" value={live.nextLaunch ? formatLaunchDate(live.nextLaunch.launchDate, false) : 'None scheduled'} sub={live.nextLaunch ? missionTitle(live.nextLaunch) : undefined} />
         </div>
 
-        <div className="card p-4 mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="text-sm font-semibold text-white">Never miss a {spec.name} launch</div>
-            <div className="text-xs text-slate-400">Email when it is GO, in flight, and when it lands. This rocket only.</div>
-          </div>
-          <Link href={`/alerts?create=launch_status&rocket=${encodeURIComponent(spec.name.split(' Block')[0].split(' /')[0])}`} className="btn-primary text-sm py-2 px-4 flex-shrink-0">Alert me</Link>
+        <div className="mb-10">
+          <LaunchWatchForm rocket={spec.name.split(' Block')[0].split(' /')[0]} label={`every ${spec.name.split(' Block')[0].split(' /')[0]} launch`} source="rocket-page" />
+          <p className="text-[11px] text-slate-500 mt-2">Have an account? <Link href={`/alerts?create=launch_status&rocket=${encodeURIComponent(spec.name.split(' Block')[0].split(' /')[0])}`} className="text-cyan-400 hover:text-cyan-300">Build a richer alert rule</Link> (GO / scrub / in-flight, by site too).</p>
         </div>
 
         {/* Live cadence */}
@@ -173,6 +172,11 @@ export default async function RocketPage({ params }: { params: { slug: string } 
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">What&apos;s next</h2>
+          <LaunchCrossLinks rocket={spec.name} location={live.nextLaunch?.location ?? live.sites[0]?.location ?? null} upcoming={!!live.nextLaunch} hide={['rocket']} />
         </section>
 
         {/* Related */}

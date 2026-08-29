@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import LaunchDayDashboard from '@/components/launch/LaunchDayDashboard';
 import RelatedModules from '@/components/ui/RelatedModules';
+import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
+import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface LaunchPageProps {
@@ -95,6 +97,14 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
         </nav>
       </div>
       <LaunchDayDashboard event={serializedEvent} />
+      {event.launchDate && event.launchDate.getTime() > Date.now() && (
+        <div className="max-w-[1400px] mx-auto px-4 pb-4">
+          <LaunchWatchForm eventId={event.id} label="this launch" source="launch-page" />
+        </div>
+      )}
+      <div className="max-w-[1400px] mx-auto px-4 pb-6">
+        <LaunchCrossLinks rocket={event.rocket} location={event.location} eventId={event.id} upcoming={!!event.launchDate && event.launchDate.getTime() > Date.now()} hide={['mc']} />
+      </div>
       <div className="max-w-[1400px] mx-auto px-4 pb-8">
         <RelatedModules modules={PAGE_RELATIONS['launch/[eventId]']} />
       </div>

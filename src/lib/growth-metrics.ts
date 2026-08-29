@@ -181,6 +181,56 @@ export async function fetchGA4Users(): Promise<GA4UsersResult> {
   return { mau, wau };
 }
 
+export interface LandingReturnRow {
+  landingPage: string;
+  users: number;
+  returningUsers: number;
+  returnRatePct: number;
+}
+
+/**
+ * GA4: per landing page over the last 30 days, total users and how many
+ * of them were returning users — the proxy for "came back within 30 days"
+ * the roadmap (2026-08-29, Tier 2 #16) wants so week-3 reallocation is
+ * measured, not argued. Pages under `minUsers` are dropped as noise.
+ */
+export async function fetchGA4LandingReturns(minUsers = 10, limit = 40): Promise<LandingReturnRow[]> {
+  const token = await getAccessToken();
+  const res = await fetch(
+    `https://analyticsdata.googleapis.com/v1beta/properties/${GA4_PROPERTY_ID}:runReport`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+        dimensions: [{ name: 'landingPage' }, { name: 'newVsReturning' }],
+        metrics: [{ name: 'totalUsers' }],
+        limit: 2000,
+      }),
+    }
+  );
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`GA4 runReport (landing returns) failed (HTTP ${res.status}): ${body.slice(0, 200)}`);
+  }
+  const json = (await res.json()) as { rows?: Array<{ dimensionValues?: Array<{ value?: string }>; metricValues?: Array<{ value?: string }> }> };
+  const byPage = new Map<string, { users: number; returning: number }>();
+  for (const row of json.rows ?? []) {
+    const page = (row.dimensionValues?.[0]?.value || '/').split('?')[0];
+    const kind = row.dimensionValues?.[1]?.value || '';
+    const n = Number(row.metricValues?.[0]?.value ?? 0);
+    const cur = byPage.get(page) ?? { users: 0, returning: 0 };
+    cur.users += n;
+    if (kind === 'returning') cur.returning += n;
+    byPage.set(page, cur);
+  }
+  return Array.from(byPage.entries())
+    .filter(([, v]) => v.users >= minUsers)
+    .map(([landingPage, v]) => ({ landingPage, users: v.users, returningUsers: v.returning, returnRatePct: Math.round((v.returning / v.users) * 1000) / 10 }))
+    .sort((a, b) => b.users - a.users)
+    .slice(0, limit);
+}
+
 export interface SearchClicksResult {
   clicks: number;
   impressions: number;
