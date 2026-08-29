@@ -1,0 +1,32 @@
+[
+  {
+    "prompt": "16:9 wide editorial hero illustration: a reusable orbital-class rocket first stage descending on a landing burn toward a drone ship at dusk, exhaust plume lit orange against an indigo sea and sky, a few faint constellations in the upper third, cinematic, purely pictorial — absolutely no letters, words, numbers, labels or glyphs anywhere, no people",
+    "output": "public/art/hero-launch-cost.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a calendar-like grid of launch pads along a coastline at night seen from high altitude, several rockets on pads with floodlights, one lifting off with a bright plume, orbital tracks arcing over the Atlantic, cyan and indigo accents, cinematic, no text, no people",
+    "output": "public/art/hero-launch-schedule.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: two heavy-lift rockets side by side on neighboring pads at dawn — one sleek white with black interstage, one with a wide fairing and blue-lit engines — rivalry framing, mist over the launch complex, indigo and cyan accents, cinematic, no logos, no text, no people",
+    "output": "public/art/hero-rivalry-launch.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a museum-like lineup of a dozen launch vehicles of ascending height standing in a vast dark hangar, dramatic cyan uplighting from the floor, mirror-like reflective floor, indigo haze, purely pictorial — no measurement rulers, no scales, no letters, no numbers, no labels, no logos, no people",
+    "output": "public/art/hero-rockets-index.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: Earth from orbit with glowing markers at the world's spaceports — Florida coast, California coast, Texas Gulf coast, French Guiana, Hainan, Baikonur — thin cyan launch arcs rising from each into the night side, indigo space, subtle grid, no text",
+    "output": "public/art/hero-launch-sites.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a family watching a night rocket launch from a beach far away, a bright rising streak low over the ocean horizon, long exposure feel, warm foreground silhouettes against deep indigo sky, cyan glint on the water, cinematic, no text",
+    "output": "public/art/hero-watch-from-city.webp",
+    "aspectRatio": "16:9"
+  }
+]

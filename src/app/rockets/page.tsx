@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeroArt from '@/components/ui/HeroArt';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { getRocketIndex } from '@/lib/rockets';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
@@ -44,6 +45,7 @@ export default async function RocketsIndexPage() {
         <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-6">
           <Link href="/" className="hover:text-white/80">Home</Link><span>/</span><span className="text-slate-400">Rockets</span>
         </nav>
+        <HeroArt src="/art/hero-rockets-index.webp" className="mb-8" />
         <header className="mb-10 max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Rockets</h1>
           <p className="text-lg text-white/70 leading-relaxed">

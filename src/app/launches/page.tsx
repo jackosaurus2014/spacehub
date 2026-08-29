@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeroArt from '@/components/ui/HeroArt';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { formatLaunchDate, missionTitle } from '@/components/launches/LaunchRow';
 import { getSiteSummaries } from '@/lib/launch-sites';
@@ -21,6 +22,7 @@ export default async function LaunchesIndexPage() {
         <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-6">
           <Link href="/" className="hover:text-white/80">Home</Link><span>/</span><span className="text-slate-400">Launches</span>
         </nav>
+        <HeroArt src="/art/hero-launch-sites.webp" className="mb-8" />
         <header className="mb-10 max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Launches by site</h1>
           <p className="text-lg text-white/70 leading-relaxed">Every spaceport&apos;s schedule, month by month — what is coming, what flew, and how it went. Built from the same live manifest that powers Mission Control.</p>

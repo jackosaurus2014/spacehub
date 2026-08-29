@@ -9,6 +9,7 @@ describe('registryRouteMissing', () => {
   it.each([
     '/rockets/falcon-9', '/rockets/new-glenn/', '/launches/cape-canaveral', '/launches/vandenberg/',
     '/launches/cape-canaveral/2026-08', '/launches/cape-canaveral/2025-08', '/launches/cape-canaveral/2027-02',
+    '/guide/watch-a-launch/orlando', '/guide/watch-a-launch/los-angeles/',
   ])('%s is live', (p) => {
     expect(registryRouteMissing(p, NOW)).toBe(false);
   });
@@ -16,7 +17,7 @@ describe('registryRouteMissing', () => {
   it.each([
     '/rockets/nope', '/rockets/falcon-10', '/launches/moonbase', '/launches/cape-canaveral/2031-01',
     '/launches/cape-canaveral/2025-07', '/launches/cape-canaveral/2027-03', '/launches/cape-canaveral/october-2026',
-    '/launches/nope/2026-08',
+    '/launches/nope/2026-08', '/guide/watch-a-launch/atlantis',
   ])('%s is a real 404', (p) => {
     expect(registryRouteMissing(p, NOW)).toBe(true);
   });

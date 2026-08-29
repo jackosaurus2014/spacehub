@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeroArt from '@/components/ui/HeroArt';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
@@ -157,6 +158,7 @@ export default function SpaceLaunchCostComparisonPage() {
               <span className="text-star-300/50">/</span>
               <span className="text-white">Launch Cost Comparison</span>
             </nav>
+            <HeroArt src="/art/hero-launch-cost.webp" className="mb-6" />
             <h1 className="text-display-lg md:text-display-xl font-display font-bold text-white mb-6 leading-tight">
               Space Launch Cost Comparison 2026
             </h1>

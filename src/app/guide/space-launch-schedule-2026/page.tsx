@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeroArt from '@/components/ui/HeroArt';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
@@ -119,6 +120,7 @@ export default function SpaceLaunchSchedule2026Page() {
               <ReadingTime wordCount={3000} className="flex items-center gap-1.5" />
             </div>
           </header>
+          <HeroArt src="/art/hero-launch-schedule.webp" className="mb-8" />
 
           {/* Table of Contents */}
           <nav className="card p-6 mb-10">

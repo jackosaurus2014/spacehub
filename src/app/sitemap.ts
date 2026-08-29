@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 import { allRocketSlugs } from '@/lib/rockets';
 import { LAUNCH_SITES, monthParam, monthWindow } from '@/lib/launch-sites';
 import { COST_TO_LAUNCH } from '@/lib/cost-to-launch';
+import { VIEWING_CITIES } from '@/lib/launch-viewing-cities';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
 import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
@@ -53,6 +54,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/launches`, changeFrequency: 'daily' as const, priority: 0.9 },
     { url: `${BASE_URL}/predictions`, changeFrequency: 'hourly' as const, priority: 0.7 },
     ...COST_TO_LAUNCH.map((c) => ({ url: `${BASE_URL}/guide/cost-to-launch/${c.slug}`, changeFrequency: 'monthly' as const, priority: 0.8 })),
+    ...VIEWING_CITIES.map((c) => ({ url: `${BASE_URL}/guide/watch-a-launch/${c.slug}`, changeFrequency: 'weekly' as const, priority: 0.7 })),
     ...LAUNCH_SITES.map((s) => ({ url: `${BASE_URL}/launches/${s.slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
     ...LAUNCH_SITES.flatMap((s) => monthWindow(new Date()).map((m) => ({ url: `${BASE_URL}/launches/${s.slug}/${monthParam(m.year, m.month)}`, changeFrequency: 'daily' as const, priority: 0.6 }))),
 

@@ -59,6 +59,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Watch a launch: Cape Canaveral', href: '/guide/watch-a-launch-cape-canaveral', description: 'Public viewing spots and tips', icon: '🎟️' },
       { name: 'Watch a launch: Vandenberg', href: '/guide/watch-a-launch-vandenberg', description: 'Public viewing spots and tips', icon: '🎟️' },
       { name: 'Watch a launch: Starbase', href: '/guide/watch-a-launch-starbase', description: 'Public viewing spots and road closures', icon: '🎟️' },
+      { name: 'Can you see a launch from your city?', href: '/guide/watch-a-launch/orlando', description: 'Orlando, LA, Houston, DC and more — distance, direction, what you will see', icon: '🏙️' },
     ],
   },
   {

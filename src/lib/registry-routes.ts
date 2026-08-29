@@ -6,10 +6,12 @@
 
 import { allRocketSlugs } from '@/lib/rocket-registry';
 import { getSite, isMonthInWindow, parseMonthParam } from '@/lib/launch-site-registry';
+import { getViewingCity } from '@/lib/launch-viewing-cities';
 
 const ROCKET = /^\/rockets\/([^/]+)\/?$/;
 const SITE = /^\/launches\/([^/]+)\/?$/;
 const SITE_MONTH = /^\/launches\/([^/]+)\/([^/]+)\/?$/;
+const CITY = /^\/guide\/watch-a-launch\/([^/]+)\/?$/;
 
 /** True when the pathname is a registry route with a param that does not exist. */
 export function registryRouteMissing(pathname: string, now: Date = new Date()): boolean {
@@ -25,6 +27,9 @@ export function registryRouteMissing(pathname: string, now: Date = new Date()): 
 
   m = pathname.match(SITE);
   if (m) return !getSite(safeDecode(m[1]));
+
+  m = pathname.match(CITY);
+  if (m) return !getViewingCity(safeDecode(m[1]));
 
   return false;
 }

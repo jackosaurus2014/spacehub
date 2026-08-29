@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeroArt from '@/components/ui/HeroArt';
 import { notFound } from 'next/navigation';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { COST_TO_LAUNCH, getCostToLaunch } from '@/lib/cost-to-launch';
@@ -40,6 +41,7 @@ export default function CostToLaunchPage({ params }: { params: { thing: string }
           <Link href="/guide/space-launch-cost-comparison" className="hover:text-white/80">Launch costs</Link><span>/</span>
           <span className="text-slate-400">{c.thing.replace(/^a /, '').replace(/^\w/, (ch) => ch.toUpperCase())}</span>
         </nav>
+        <HeroArt src="/art/hero-launch-cost.webp" className="mb-8" />
 
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{c.title}</h1>

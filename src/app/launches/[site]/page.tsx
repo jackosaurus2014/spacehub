@@ -6,6 +6,7 @@ import LaunchRow from '@/components/launches/LaunchRow';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import { LAUNCH_SITES, getSite, getSiteMonth, monthLabel, monthParam, monthWindow, shiftMonth } from '@/lib/launch-sites';
+import { VIEWING_CITIES } from '@/lib/launch-viewing-cities';
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = false;
@@ -62,6 +63,17 @@ export default async function SitePage({ params }: { params: { site: string } })
               : <div className="space-y-2">{d.launches.map((l) => <LaunchRow key={l.id} launch={l} showSite={false} now={now} />)}</div>}
           </section>
         ))}
+
+        {VIEWING_CITIES.some((c) => c.site === site.slug) && (
+          <section className="mb-8">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Can you see it from…</h2>
+            <div className="flex flex-wrap gap-2">
+              {VIEWING_CITIES.filter((c) => c.site === site.slug).map((c) => (
+                <Link key={c.slug} href={`/guide/watch-a-launch/${c.slug}`} className="card px-3 py-1.5 text-xs text-slate-300 hover:text-white hover:border-cyan-500/30 transition-colors">{c.name}</Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="mb-8">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Month by month</h2>

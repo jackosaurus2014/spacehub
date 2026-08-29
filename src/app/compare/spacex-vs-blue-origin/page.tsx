@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeroArt from '@/components/ui/HeroArt';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -79,6 +80,7 @@ export default async function SpaceXVsBlueOrigin() {
           <span className="mx-2">/</span>
           <span className="text-zinc-300">SpaceX vs Blue Origin</span>
         </nav>
+        <HeroArt src="/art/hero-rivalry-launch.webp" className="mb-6" />
         <h1 className="text-display text-3xl md:text-4xl mb-3">SpaceX vs Blue Origin</h1>
         <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl">
           A comprehensive side-by-side comparison of the two most prominent space launch companies, updated with the latest data from SpaceNexus.
