@@ -158,6 +158,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Guides
     { url: `${BASE_URL}/guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/space-industry`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/guide/blue-origin-vs-spacex`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/guide/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/guide/how-satellite-tracking-works`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/guide/itar-compliance-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },

@@ -83,6 +83,11 @@ export const GUIDE_LIST: GuideEntry[] = [
     title: 'Space Regulatory Compliance Guide',
     shortTitle: 'Regulatory Compliance',
   },
+  {
+    slug: 'blue-origin-vs-spacex',
+    title: 'Blue Origin vs SpaceX: The Complete 2026 Guide',
+    shortTitle: 'Blue Origin vs SpaceX',
+  },
 ];
 
 export function getGuideNavigation(currentSlug: string): {

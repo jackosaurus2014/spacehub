@@ -155,6 +155,7 @@ export default async function SpaceXVsBlueOrigin() {
         <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-tertiary)' }}>Related Comparisons</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
+            { title: 'The long-form guide: Blue Origin vs SpaceX in 2026', href: '/guide/blue-origin-vs-spacex' },
             { title: 'Rocket Lab vs Relativity Space', href: '/compare/rocket-lab-vs-relativity-space' },
             { title: 'Starlink vs OneWeb', href: '/compare/starlink-vs-oneweb' },
             { title: 'Planet Labs vs Maxar', href: '/compare/planet-labs-vs-maxar' },

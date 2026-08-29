@@ -153,6 +153,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   dataSources: { name: 'Data Sources', description: 'Data transparency', href: '/data-sources', icon: '🔍' },
 
   // ── Marketplace ──
+  alerts: { name: 'Alerts', description: 'Launch, company and market alerts by email', href: '/alerts', icon: '🔔' },
   marketplace: { name: 'Marketplace', description: 'Services & products', href: '/marketplace', icon: '🛒' },
   pricing: { name: 'Pricing', description: 'Plans & pricing', href: '/pricing', icon: '💳' },
 
@@ -179,6 +180,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'company-research': [MODULES.companyProfiles, MODULES.aiInsights, MODULES.reportCards, MODULES.spaceScore],
   'space-economy': [MODULES.marketIntel, MODULES.govBudgets, MODULES.investmentTracker, MODULES.industryTrends, MODULES.spaceCapital],
   'guide/commercial-space-economy': [MODULES.marketIntel, MODULES.spaceCapital, MODULES.industryTrends, MODULES.companyProfiles, MODULES.govBudgets],
+  'guide/blue-origin-vs-spacex': [MODULES.spaceStocks, MODULES.companyProfiles, MODULES.launchManifest, MODULES.launchVehicles],
   'space-capital': [MODULES.fundingTracker, MODULES.investors, MODULES.dealFlow, MODULES.spaceEconomy],
   'market-sizing': [MODULES.marketIntel, MODULES.industryTrends, MODULES.spaceEconomy, MODULES.marketMap],
   'funding-tracker': [MODULES.spaceCapital, MODULES.investors, MODULES.dealFlow, MODULES.fundingRounds, MODULES.startupTracker],
@@ -329,7 +331,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'reading-list': [MODULES.news, MODULES.blogs, MODULES.resources, MODULES.aiInsights],
   'my-watchlists': [MODULES.companyProfiles, MODULES.marketIntel, MODULES.alerts, MODULES.news],
   'deals': [MODULES.dealFlow, MODULES.maTracker, MODULES.contractAwards, MODULES.fundingTracker],
-  'deal-rooms': [MODULES.deals, MODULES.dealFlow, MODULES.companyResearch],
+  'deal-rooms': [MODULES.marketplace, MODULES.dealFlow, MODULES.companyResearch],
   'portfolio-tracker': [MODULES.investmentTracker, MODULES.fundingTracker, MODULES.spaceCapital, MODULES.marketIntel],
   'customer-discovery': [MODULES.marketSizing, MODULES.companyProfiles, MODULES.marketplace, MODULES.industryTrends],
 
