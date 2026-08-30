@@ -164,23 +164,33 @@ function isOpen(closeDate?: string): boolean {
 // vs. the old top-level `oppHits`.
 export async function fetchGrantsGov(): Promise<FundingOpportunityInput[]> {
   const results: FundingOpportunityInput[] = [];
+  // One narrow multi-word query surfaced ~8 space rows while keyword "space"
+  // alone has 300+ live hits (verified 2026-08-30). Search the vocabulary,
+  // dedupe by opportunity id; isSpaceRelated still gates every row.
+  const KEYWORDS = ['space', 'satellite', 'launch vehicle', 'orbital', 'spacecraft', 'lunar', 'planetary', 'space weather', 'earth observation', 'remote sensing'];
   try {
-    const response = await grantsBreaker.execute(async () => {
-      const res = await fetch('https://api.grants.gov/v1/api/search2', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          keyword: 'space satellite orbit launch',
-          oppStatuses: 'forecasted|posted',
-          rows: 50,
-          sortBy: 'openDate|desc',
-        }),
-      });
-      if (!res.ok) throw new Error(`Grants.gov HTTP ${res.status}`);
-      return res.json();
-    });
-
-    const opps = response?.data?.oppHits || response?.oppHits || [];
+    const seen = new Set<string>();
+    const opps: any[] = [];
+    for (const keyword of KEYWORDS) {
+      const response = await grantsBreaker.execute(async () => {
+        const res = await fetch('https://api.grants.gov/v1/api/search2', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword, oppStatuses: 'forecasted|posted', rows: 100, sortBy: 'openDate|desc' }),
+          signal: AbortSignal.timeout(20000),
+        });
+        if (!res.ok) throw new Error(`Grants.gov HTTP ${res.status}`);
+        return res.json();
+      }, null);
+      const hits = (response as any)?.data?.oppHits || (response as any)?.oppHits || [];
+      for (const h of hits) {
+        const id = String(h?.id ?? '');
+        if (!id || seen.has(id)) continue;
+        seen.add(id);
+        opps.push(h);
+      }
+      await new Promise((r) => setTimeout(r, 250));
+    }
     for (const opp of opps) {
       if (!isSpaceRelated(`${opp.title || ''} ${opp.synopsis || ''}`, opp.agency || opp.agencyCode)) continue;
       results.push({

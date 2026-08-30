@@ -929,8 +929,8 @@ function ProcurementContent() {
             ) : sbirSolicitations.length === 0 ? (
               <div className="card p-12 text-center">
                 <div className="text-4xl mb-3">🔬</div>
-                <h3 className="text-lg font-semibold text-white mb-2">No SBIR/STTR Solicitations Found</h3>
-                <p className="text-slate-400 text-sm">Try adjusting your filters.</p>
+                <h3 className="text-lg font-semibold text-white mb-2">No open SBIR/STTR topics right now</h3>
+                <p className="text-slate-400 text-sm max-w-md mx-auto">SBIR.gov&apos;s public API has been offline for maintenance since mid-August 2026, so new topics cannot sync; closed topics are no longer shown as open. Topics reappear here the day the feed returns — meanwhile <a href="https://www.sbir.gov/topics" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300">browse topics on SBIR.gov</a>.</p>
               </div>
             ) : (
               <StaggerContainer>

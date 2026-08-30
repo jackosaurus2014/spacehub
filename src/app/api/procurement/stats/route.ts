@@ -26,7 +26,10 @@ export async function GET() {
       recentOpportunities,
     ] = await Promise.all([
       prisma.procurementOpportunity.count(),
-      prisma.procurementOpportunity.count({ where: { isActive: true } }),
+      // "Active" spans both pipelines: SAM/procurement rows AND open funding
+      // opportunities (grants.gov et al). Counting only the keyless-blocked SAM
+      // table is what showed "1 opportunity" (audit 2026-08-30).
+      prisma.procurementOpportunity.count({ where: { isActive: true, OR: [{ responseDeadline: null }, { responseDeadline: { gte: new Date() } }] } }).then(async (n) => n + (await prisma.fundingOpportunity.count({ where: { status: 'open', OR: [{ deadline: null }, { deadline: { gte: new Date() } }] } }))),
       prisma.procurementOpportunity.groupBy({
         by: ['agency'],
         _count: { id: true },
@@ -65,15 +68,15 @@ export async function GET() {
     // Count opportunities with upcoming deadlines (next 30 days)
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-    const upcomingDeadlines = await prisma.procurementOpportunity.count({
-      where: {
-        isActive: true,
-        responseDeadline: {
-          gte: new Date(),
-          lte: thirtyDaysFromNow,
-        },
-      },
-    });
+    const [procDeadlines, fundingDeadlines] = await Promise.all([
+      prisma.procurementOpportunity.count({
+        where: { isActive: true, responseDeadline: { gte: new Date(), lte: thirtyDaysFromNow } },
+      }),
+      prisma.fundingOpportunity.count({
+        where: { status: 'open', deadline: { gte: new Date(), lte: thirtyDaysFromNow } },
+      }),
+    ]);
+    const upcomingDeadlines = procDeadlines + fundingDeadlines;
 
     const stats = {
       overview: {

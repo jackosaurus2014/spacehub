@@ -124,6 +124,15 @@ export async function POST(request: Request) {
     const authError = requireCronSecret(request);
     if (authError) return authError;
 
+    // Hygiene first, fetch second: even with no SAM key (the fetch skips),
+    // yesterday's expired rows must stop counting as active (2026-08-30).
+    const [expiredProc, expiredSbir, expiredFunding] = await Promise.all([
+      prisma.procurementOpportunity.updateMany({ where: { isActive: true, responseDeadline: { lt: new Date() } }, data: { isActive: false } }),
+      prisma.sBIRSolicitation.updateMany({ where: { isActive: true, closeDate: { lt: new Date() } }, data: { isActive: false } }),
+      prisma.fundingOpportunity.updateMany({ where: { status: { in: ['open', 'upcoming'] }, deadline: { lt: new Date() } }, data: { status: 'closed' } }),
+    ]);
+    logger.info('procurement hygiene', { expiredProc: expiredProc.count, expiredSbir: expiredSbir.count, expiredFunding: expiredFunding.count });
+
     const result = await fetchSAMOpportunities({
       limit: 100,
     });
