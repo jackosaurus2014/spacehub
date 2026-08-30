@@ -16,24 +16,21 @@ const FIXED = [
   '/', '/mission-control', '/launches', '/rockets', '/rockets/falcon-9', '/news', '/space-stocks', '/company-profiles',
   '/startups', '/funding-tracker', '/tools', '/chart', '/chart/launches-per-month', '/api/chart/launches-per-month',
   '/guide/space-launch-cost-comparison', '/guide/blue-origin-vs-spacex', '/guide/watch-a-launch/orlando', '/guide/cost-to-launch/gps-satellite',
-  '/space-tycoon', '/space-tycoon/about', '/space-tycoon/faq', '/pricing', '/sitemap.xml', '/api/pulse', '/api/space-tycoon/market/npc-industry',
+  '/space-tycoon', '/space-tycoon/about', '/space-tycoon/faq', '/pricing', '/sitemap.xml', '/sitemap/0.xml', '/api/pulse', '/api/space-tycoon/market/npc-industry',
 ];
 const SAMPLE = 20;
 
 async function sitemapUrls(): Promise<string[]> {
-  try {
-    const idx = await fetch(`${BASE}/sitemap.xml`, { cache: 'no-store', signal: AbortSignal.timeout(15000) }).then((r) => r.text());
-    const maps = Array.from(idx.matchAll(/<loc>([^<]+)<\/loc>/g)).map((m) => m[1]).filter((u) => u.includes('/sitemap/'));
-    const urls: string[] = [];
-    for (const m of maps.slice(0, 3)) {
-      const xml = await fetch(m, { cache: 'no-store', signal: AbortSignal.timeout(15000) }).then((r) => r.text());
+  const urls: string[] = [];
+  for (const part of ['/sitemap/0.xml', '/sitemap/1.xml', '/sitemap/2.xml']) {
+    try {
+      const xml = await fetch(`${BASE}${part}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) }).then((r) => r.text());
       urls.push(...Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((x) => x[1]));
+    } catch (error) {
+      logger.warn('smoke-test: sitemap part read failed', { part, error: error instanceof Error ? error.message : String(error) });
     }
-    return urls;
-  } catch (error) {
-    logger.warn('smoke-test: sitemap read failed', { error: error instanceof Error ? error.message : String(error) });
-    return [];
   }
+  return urls;
 }
 
 function pick<T>(arr: T[], n: number, seed: number): T[] {
