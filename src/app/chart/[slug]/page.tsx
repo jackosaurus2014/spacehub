@@ -5,6 +5,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { CHART_DEFS, getChartDef } from '@/lib/charts/registry';
 import { loadChartSeries } from '@/lib/charts/data';
 import { formatValue } from '@/lib/charts/render';
+import ChartFrame from '@/components/ui/ChartFrame';
 
 // Chart of the Week permalink. The image is the same SVG the digest mails as
 // PNG; the table under it is the accessible, copyable version of the numbers.
@@ -50,17 +51,17 @@ export default async function ChartPage({ params }: { params: { slug: string } }
 
         {series ? (
           <>
-            <div className="card overflow-hidden mb-6">
+            <ChartFrame title={def.title} deck={def.subtitle} slug={def.slug} source={def.source} recordCount={def.unit === 'usd' ? undefined : series.values.reduce((x, y) => x + y, 0)} asOf={new Date()} tableId="chart-data" className="mb-6">
               {/* Plain img on purpose: the endpoint is dynamic and already 1200×630. */}
               <img src={`/api/chart/${def.slug}?format=svg`} alt={`${def.title}: ${def.subtitle}`} width={1200} height={630} className="w-full h-auto block" />
-            </div>
+            </ChartFrame>
             <div className="flex flex-wrap items-center gap-3 mb-8 text-sm">
               <Link href={def.exploreHref} className="btn-primary text-sm py-2 px-4">{def.exploreLabel}</Link>
               <a href={`/api/chart/${def.slug}`} className="btn-secondary text-sm py-2 px-4">Download PNG</a>
               <span className="text-xs text-slate-500">Source: {def.source}{series.note ? ` · ${series.note}` : ''}</span>
             </div>
 
-            <section className="mb-10">
+            <section id="chart-data" className="mb-10 scroll-mt-24">
               <h2 className="text-xl font-bold text-white mb-3">The numbers</h2>
               <div className="card overflow-x-auto">
                 <table className="w-full text-sm">

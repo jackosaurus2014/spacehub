@@ -106,6 +106,9 @@ const CRON_JOBS: CronJobDef[] = [
   // "current" content (featured mission dates, countdown widgets, curated as-of
   // stamps, ATS/news/AI pipeline liveness). See src/lib/content-accuracy.ts.
   { schedule: '0 12 * * *',    path: '/api/cron/content-accuracy',          label: 'content-accuracy',           maxStaleMinutes: 1560 },
+  // Post-deploy smoke test (SYNTHESIS.md item 28): fixed load-bearing pages +
+  // a sitemap sample, every 6h; one admin alert per failing run.
+  { schedule: '40 */6 * * *', path: '/api/cron/smoke-test',                 label: 'smoke-test',                 maxStaleMinutes: 720 },
 
   // Reachout sentinel — one watchdog over every inbound channel (contact,
   // feedback, help, feature/company/provider submissions, introductions,
