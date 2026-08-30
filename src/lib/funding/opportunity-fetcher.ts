@@ -399,13 +399,62 @@ export async function fetchNASASolicitations(): Promise<FundingOpportunityInput[
   return results;
 }
 
+// ---- Challenge.gov (keyless) ----
+// Federal + private-partner prize challenges (NASA prizes, SpaceWERX,
+// xTech and similar). Unreachable from the dev network on 2026-08-30, so the
+// parsing is deliberately defensive; the nightly log line shows whether
+// production can reach it.
+const challengeBreaker = createCircuitBreaker('challenge-gov', { failureThreshold: 3, resetTimeout: 120000 });
+
+export async function fetchChallengeGov(): Promise<FundingOpportunityInput[]> {
+  const results: FundingOpportunityInput[] = [];
+  try {
+    const response = await challengeBreaker.execute(async () => {
+      const res = await fetch('https://api.challenge.gov/api/challenges?per_page=100', {
+        headers: { accept: 'application/json', 'user-agent': 'SpaceNexus research bot contact@spacenexus.us' },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!res.ok) throw new Error(`Challenge.gov HTTP ${res.status}`);
+      return res.json();
+    }, null);
+    const items: any[] = (response as any)?.challenges || (response as any)?.data || (Array.isArray(response) ? (response as any) : []);
+    for (const ch of items) {
+      const title = String(ch?.title ?? '');
+      const desc = String(ch?.brief_description ?? ch?.tagline ?? ch?.description ?? '');
+      const agency = String(ch?.agency_name ?? ch?.agency ?? 'Federal agency');
+      if (!title || !isSpaceRelated(`${title} ${desc}`, agency)) continue;
+      const end = ch?.end_date ?? ch?.submission_end ?? ch?.close_date ?? null;
+      const idPart = String(ch?.id ?? ch?.challenge_id ?? title).slice(0, 60);
+      results.push({
+        externalId: `challenge-${idPart}`,
+        title,
+        description: desc ? desc.slice(0, 1000) : undefined,
+        agency,
+        fundingType: 'prize',
+        totalBudget: typeof ch?.prize_total === 'number' ? ch.prize_total : undefined,
+        deadline: end ? new Date(end) : undefined,
+        status: end && new Date(end).getTime() < Date.now() ? 'closed' : 'open',
+        eligibility: [],
+        categories: classifyCategories(title, desc),
+        applicationUrl: String(ch?.external_url ?? (ch?.custom_url ? `https://www.challenge.gov/?challenge=${ch.custom_url}` : 'https://www.challenge.gov')),
+        sourceUrl: 'https://www.challenge.gov',
+        source: 'challenge.gov',
+      });
+    }
+  } catch (error) {
+    logger.error('Failed to fetch from Challenge.gov', { error: error instanceof Error ? error.message : String(error) });
+  }
+  return results;
+}
+
 // ---- Master aggregator ----
 export async function aggregateAllOpportunities(): Promise<FundingOpportunityInput[]> {
-  const [grants, sam, sbir, nasa] = await Promise.allSettled([
+  const [grants, sam, sbir, nasa, challenges] = await Promise.allSettled([
     fetchGrantsGov(),
     fetchSamGovOpportunities(),
     fetchSBIROpportunities(),
     fetchNASASolicitations(),
+    fetchChallengeGov(),
   ]);
 
   const all: FundingOpportunityInput[] = [];
@@ -413,12 +462,14 @@ export async function aggregateAllOpportunities(): Promise<FundingOpportunityInp
   if (sam.status === 'fulfilled') all.push(...sam.value);
   if (sbir.status === 'fulfilled') all.push(...sbir.value);
   if (nasa.status === 'fulfilled') all.push(...nasa.value);
+  if (challenges.status === 'fulfilled') all.push(...challenges.value);
 
   const counts = {
     grants: grants.status === 'fulfilled' ? grants.value.length : 0,
     sam: sam.status === 'fulfilled' ? sam.value.length : 0,
     sbir: sbir.status === 'fulfilled' ? sbir.value.length : 0,
     nasa: nasa.status === 'fulfilled' ? nasa.value.length : 0,
+    challenges: challenges.status === 'fulfilled' ? challenges.value.length : 0,
     total: all.length,
   };
 
