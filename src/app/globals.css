@@ -37,9 +37,9 @@ html {
 }
 
 :root {
-  --foreground-rgb: 237, 237, 234;
-  --background-start-rgb: 9, 9, 11;
-  --background-end-rgb: 9, 9, 11;
+  --foreground-rgb: 245, 243, 239;
+  --background-start-rgb: 11, 10, 9;
+  --background-end-rgb: 11, 10, 9;
 
   /* ═══════════════════════════════════════════════════════════════════
      V3 REDESIGN: Mission Control Color System
@@ -48,38 +48,52 @@ html {
      ═══════════════════════════════════════════════════════════════════ */
 
   /* Background scale — Pure black foundation, clean contrast */
-  --bg-void:        #000000;    /* Page background — true black */
-  --bg-surface:     #0a0a0a;    /* Section backgrounds, containers */
-  --bg-elevated:    #111111;    /* Cards, panels, popovers */
-  --bg-hover:       #1a1a1a;    /* Hover states on surfaces */
-  --bg-active:      #222222;    /* Active/pressed states */
+  --bg-void:        #0B0A09;    /* Page background — true black */
+  --bg-surface:     #131110;    /* Section backgrounds, containers */
+  --bg-elevated:    #1B1815;    /* Cards, panels, popovers */
+  --bg-hover:       #221E1A;    /* Hover states on surfaces */
+  --bg-active:      #2A2521;    /* Active/pressed states */
 
   /* Text scale — high contrast white primary */
-  --text-primary:   #ffffff;    /* Primary content — pure white */
-  --text-secondary: #a0a0a0;    /* Descriptions, secondary */
-  --text-tertiary:  #949494;    /* Disabled, hints, timestamps — AA on black (was #666, 3.66:1) */
-  --text-muted:     #6b6b6b;    /* Barely-there labels — AA-large on black (was #444, 2.16:1) */
+  --text-primary:   #F5F3EF;    /* Primary content — pure white */
+  --text-secondary: #B4AFA6;    /* Descriptions, secondary */
+  --text-tertiary:  #8B857B;    /* Disabled, hints, timestamps — AA on black (was #666, 3.66:1) */
+  --text-muted:     #8B857B;    /* Barely-there labels — AA-large on black (was #444, 2.16:1) */
 
   /* Border scale — clean white/gray edges */
-  --border-subtle:  #2a2a2a;    /* Card edges, dividers */
-  --border-default: #3a3a3a;    /* Visible borders */
-  --border-hover:   #555555;    /* Hover emphasis */
-  --border-focus:   #ffffff;    /* Focus rings — white */
+  --border-subtle:  #2E2924;    /* Card edges, dividers */
+  --border-default: #3C362F;    /* Visible borders */
+  --border-hover:   #5A544B;    /* Hover emphasis */
+  --border-focus:   #FF7A18;    /* Focus rings — white */
 
   /* Accent colors */
-  --accent-primary:        #6366f1;  /* Indigo 500 — brand, interactive */
-  --accent-primary-bright: #818cf8;  /* Indigo 400 — hover */
-  --accent-secondary:      #22d3ee;  /* Cyan 400 — data, tech energy */
+  --accent-primary:        #FF7A18;  /* Indigo 500 — brand, interactive */
+  --accent-primary-bright: #FFA35C;  /* Indigo 400 — hover */
+  --accent-secondary:      #4FD8E8;  /* Cyan 400 — data, tech energy */
 
   /* Status colors — Astro UXDS aerospace standard */
   --status-nominal:   #56F000;  /* Bright green — GO/nominal/live */
-  --status-standby:   #2DCCFF;  /* Cyan — standby/available */
-  --status-caution:   #FCE83A;  /* Yellow — watch/unstable */
+  --status-standby:   #4FD8E8;  /* Cyan — standby/available */
+  --status-caution:   #FFC53D;  /* Yellow — watch/unstable */
   --status-serious:   #FFB302;  /* Amber — error/attention */
-  --status-critical:  #FF3838;  /* Red — alert/emergency */
+  --status-critical:  #FF4D4D;  /* Red — alert/emergency */
   --status-off:       #71717a;  /* Zinc 500 — off/disabled */
 
   /* Easing */
+  /* ── Mission Control design system (2026-08-30, SYNTHESIS.md §2.1) ──
+     Warm near-black ground, ember accent, signal cyan for live values.
+     Ratios measured against --void #0B0A09:
+       --ink #F5F3EF 17.9:1 · --ink-2 #B4AFA6 9.4:1 · --ink-3 #8B857B 5.6:1 (FLOOR — nothing dimmer is text)
+       --ember #FF7A18 7.2:1 · --signal #4FD8E8 11.3:1 · --go #56F000 13.5:1 · --caution #FFC53D 12.6:1 · --crit #FF4D4D 6.1:1
+     The legacy names above are re-valued to the same colours so the Tailwind
+     utility estate keeps rendering; new surfaces read these names. */
+  --void: #0B0A09; --surface: #131110; --elev: #1B1815; --hover: #221E1A;
+  --line: #2E2924; --line-2: #3C362F; --line-hot: #5A544B;
+  --ink: #F5F3EF; --ink-2: #B4AFA6; --ink-3: #8B857B;
+  --ember: #FF7A18; --ember-deep: #B34A00; --signal: #4FD8E8;
+  --go: #56F000; --caution: #FFC53D; --crit: #FF4D4D; --violet: #9B7BFF;
+  --series-1: #7FB2E5; --series-2: #FF4D5E; --series-3: #E8A33D; --series-4: #56C4A7; --series-5: #B695DC;
+  --radius-console: 12px; --radius-control: 8px; --radius-badge: 6px;
   --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -115,39 +129,8 @@ html {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   V3 FONT FACES — Satoshi (display), DM Sans (body via Google), JetBrains Mono (data via Google)
+   FONT FACES — DM Sans (display + body via Google), JetBrains Mono (data via Google)
    ═══════════════════════════════════════════════════════════════════ */
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Black.woff2') format('woff2');
-  font-weight: 900;
-  font-display: swap;
-}
-
 /* High-contrast mode overrides */
 html.high-contrast {
   --hc-text-primary: #ffffff;      /* pure white */
@@ -287,7 +270,7 @@ body {
   position: relative;
 }
 
-/* V3: Global focus-visible — indigo outline on all interactive elements */
+/* Global focus-visible — ember outline on all interactive elements */
 *:focus-visible {
   outline: 2px solid var(--accent-primary, #6366f1);
   outline-offset: 2px;
@@ -613,7 +596,7 @@ body::after {
   flex-shrink: 0;
 }
 .section-header__title {
-  font-family: var(--font-display, 'Satoshi', sans-serif);
+  font-family: var(--font-body, 'DM Sans', sans-serif);
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -1662,16 +1645,16 @@ pre {
   border-color: var(--border-default);
 }
 
-/* V3: Typography — Satoshi for display, DM Sans for body */
+/* Typography — DM Sans 700 for display, DM Sans 400 for body (Satoshi retired 2026-08-30) */
 .text-display {
-  font-family: var(--font-display, 'Satoshi'), system-ui, sans-serif;
+  font-family: var(--font-body, 'DM Sans'), system-ui, sans-serif;
   letter-spacing: -0.025em;
   line-height: 1.1;
   font-weight: 700;
 }
 
 .text-heading {
-  font-family: var(--font-display, 'Satoshi'), system-ui, sans-serif;
+  font-family: var(--font-body, 'DM Sans'), system-ui, sans-serif;
   letter-spacing: -0.01em;
   line-height: 1.25;
   font-weight: 600;
@@ -2159,4 +2142,9 @@ pre {
 @keyframes live-pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
   50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+}
+
+/* Mission Control: high-contrast lift on the same tokens (SYNTHESIS.md §2.1). */
+@media (prefers-contrast: more) {
+  :root { --ink-2: #DCD8D1; --ink-3: #BCB6AC; --line: #3C3C42; --text-secondary: #DCD8D1; --text-tertiary: #BCB6AC; --text-muted: #BCB6AC; --border-subtle: #3C3C42; }
 }

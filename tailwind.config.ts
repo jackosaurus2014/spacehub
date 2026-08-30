@@ -55,14 +55,14 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['Satoshi', 'var(--font-body)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-body)', 'DM Sans', 'system-ui', 'sans-serif'],
         body: ['var(--font-body)', 'DM Sans', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        // V3 display scale — Satoshi
-        'display-xl': ['4.5rem', { lineHeight: '1.0', fontWeight: '900', letterSpacing: '-0.03em' }],
-        'display-lg': ['3rem', { lineHeight: '1.1', fontWeight: '800', letterSpacing: '-0.025em' }],
+        // Display scale — DM Sans 700 (Satoshi retired 2026-08-30)
+        'display-xl': ['clamp(2rem, 3.6vw, 3.1rem)', { lineHeight: '1.05', fontWeight: '700', letterSpacing: '-0.02em' }],
+        'display-lg': ['clamp(1.75rem, 2.4vw, 2.25rem)', { lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.02em' }],
         'display-md': ['2.25rem', { lineHeight: '1.15', fontWeight: '700', letterSpacing: '-0.02em' }],
         'display-sm': ['1.75rem', { lineHeight: '1.2', fontWeight: '700', letterSpacing: '-0.015em' }],
         // V3 heading scale
@@ -71,7 +71,7 @@ const config: Config = {
         // V3 label scale — uppercase
         'label-lg': ['0.8125rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.08em' }],
         'label-md': ['0.6875rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.1em' }],
-        'label-sm': ['0.5625rem', { lineHeight: '1.4', fontWeight: '600', letterSpacing: '0.12em' }],
+        'label-sm': ['0.6875rem', { lineHeight: '1.4', fontWeight: '600', letterSpacing: '0.12em' }], // 11px floor
       },
       borderRadius: {
         'sm': '4px',

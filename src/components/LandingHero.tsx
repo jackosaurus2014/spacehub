@@ -45,16 +45,16 @@ function DataCard({ label, value, sub, live, delay }: { label: string; value: st
     <Reveal delay={delay}>
       <div className="p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:border-[var(--border-default)] transition-colors">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-medium">{label}</span>
+          <span className="text-[11px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-medium">{label}</span>
           {live && (
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[#56F000] animate-pulse" />
-              <span className="text-[8px] text-[#56F000] font-semibold tracking-wider">LIVE</span>
+              <span className="text-[11px] text-[#56F000] font-semibold tracking-wider">LIVE</span>
             </span>
           )}
         </div>
         <p className="text-lg font-bold font-mono tabular-nums text-[var(--text-primary)]">{value}</p>
-        {sub && <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{sub}</p>}
+        {sub && <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">{sub}</p>}
       </div>
     </Reveal>
   );
@@ -220,7 +220,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
               </div>
             </Reveal>
 
-            {/* Headline — Satoshi Black, left-aligned, intentional line breaks */}
+            {/* Headline — DM Sans 700, left-aligned, intentional line breaks */}
             <Reveal delay={0.3} className="mb-4">
               {/* 2026-08-29: the anonymous front door now leads with launches —
                   the audience search actually sends — instead of a SaaS pitch. */}
@@ -288,9 +288,9 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                       <div className="w-2.5 h-2.5 rounded-full bg-[#FF9F0A]/40" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#30D158]/40" />
                     </div>
-                    <span className="text-[9px] font-mono text-[var(--text-muted)] tracking-wider uppercase">spacenexus:~/dashboard</span>
+                    <span className="text-[11px] font-mono text-[var(--text-muted)] tracking-wider uppercase">spacenexus:~/dashboard</span>
                   </div>
-                  <span className="live-badge text-[7px]">SPACE DATA</span>
+                  <span className="live-badge text-[11px]">SPACE DATA</span>
                 </div>
 
                 {/* Data cards grid — values fetched from /api/pulse and /api/funding-tracker/stats */}
@@ -303,8 +303,8 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
 
                 {/* Bottom strip */}
                 <div className="px-4 py-2 border-t border-[var(--border-subtle)] flex items-center justify-between">
-                  <span className="text-[9px] text-[var(--text-muted)] font-mono">{SITE_STATS.modules} modules · {SITE_STATS.articles} articles · {SITE_STATS.dataSources} sources</span>
-                  <Link href="/mission-control" className="text-[10px] text-[var(--accent-primary)] hover:text-[var(--accent-primary-bright)] font-medium transition-colors">
+                  <span className="text-[11px] text-[var(--text-muted)] font-mono">{SITE_STATS.modules} modules · {SITE_STATS.articles} articles · {SITE_STATS.dataSources} sources</span>
+                  <Link href="/mission-control" className="text-[11px] text-[var(--accent-primary)] hover:text-[var(--accent-primary-bright)] font-medium transition-colors">
                     Open Dashboard →
                   </Link>
                 </div>
@@ -327,7 +327,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                         </span>
                       </span>
                       <div className="min-w-0">
-                        <span className="text-[9px] font-semibold uppercase tracking-wider text-emerald-400">Breaking</span>
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Breaking</span>
                         <p className="text-xs text-[var(--text-primary)] font-medium line-clamp-1 mt-0.5">{trendingNews.title}</p>
                       </div>
                     </Link>
@@ -341,7 +341,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                     >
                       <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)] flex-shrink-0 mt-1.5" />
                       <div className="min-w-0">
-                        <span className="text-[9px] font-semibold uppercase tracking-wider text-[var(--accent-primary)]">Trending</span>
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--accent-primary)]">Trending</span>
                         <p className="text-xs text-[var(--text-primary)] font-medium line-clamp-1 mt-0.5">{featuredArticle.title}</p>
                       </div>
                     </Link>

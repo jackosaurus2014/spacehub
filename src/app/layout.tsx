@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { DM_Sans, JetBrains_Mono, Orbitron } from 'next/font/google';
 import Script from 'next/script';
-import localFont from 'next/font/local';
 import './globals.css';
 import Navigation from '@/components/Navigation';
 import AuthProvider from '@/components/AuthProvider';
@@ -72,17 +71,6 @@ const orbitron = Orbitron({
   weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
   variable: '--font-hud',
-});
-const satoshi = localFont({
-  src: [
-    { path: '../../public/fonts/Satoshi-Light.woff2', weight: '300', style: 'normal' },
-    { path: '../../public/fonts/Satoshi-Regular.woff2', weight: '400', style: 'normal' },
-    { path: '../../public/fonts/Satoshi-Medium.woff2', weight: '500', style: 'normal' },
-    { path: '../../public/fonts/Satoshi-Bold.woff2', weight: '700', style: 'normal' },
-    { path: '../../public/fonts/Satoshi-Black.woff2', weight: '900', style: 'normal' },
-  ],
-  variable: '--font-display',
-  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -266,11 +254,8 @@ export default function RootLayout({
           enabled={true}
         />
         {/* Preload critical fonts for LCP */}
-        <link rel="preload" href="/fonts/Satoshi-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/Satoshi-Black.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
-      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${satoshi.variable} ${dmSans.className}`}>
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.className}`}>
         {/* Google AdSense — lazyOnload prevents blocking LCP/INP */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
