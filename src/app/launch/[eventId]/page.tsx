@@ -6,6 +6,7 @@ import LaunchDayDashboard from '@/components/launch/LaunchDayDashboard';
 import RelatedModules from '@/components/ui/RelatedModules';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
+import MissionHeader from '@/components/launch/MissionHeader';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface LaunchPageProps {
@@ -77,6 +78,12 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
     redirect('/mission-control');
   }
 
+  // Slip history (our own dataset) and the debrief, if this one flew.
+  const [slips, debrief] = await Promise.all([
+    prisma.launchDateChange.findMany({ where: { eventId: event.id }, orderBy: { observedAt: 'asc' }, select: { fromDate: true, toDate: true, observedAt: true } }).catch(() => []),
+    prisma.missionDebrief.findFirst({ where: { eventId: event.id, publishedAt: { not: null } }, select: { slug: true } }).catch(() => null),
+  ]);
+
   // Serialize dates to strings for the client component
   const serializedEvent = {
     ...event,
@@ -96,14 +103,15 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
           <span className="text-slate-400 truncate">{event.name}</span>
         </nav>
       </div>
+      <MissionHeader event={{ id: event.id, name: event.name, status: event.status, launchDate: event.launchDate, rocket: event.rocket, agency: event.agency, location: event.location, isLive: !!event.isLive }} slips={slips} debriefSlug={debrief?.slug ?? null} />
       <LaunchDayDashboard event={serializedEvent} />
       {event.launchDate && event.launchDate.getTime() > Date.now() && (
-        <div className="max-w-[1400px] mx-auto px-4 pb-4">
+        <div id="alerts" className="max-w-[1400px] mx-auto px-4 pb-4 scroll-mt-24">
           <LaunchWatchForm eventId={event.id} label="this launch" source="launch-page" />
         </div>
       )}
       <div className="max-w-[1400px] mx-auto px-4 pb-6">
-        <LaunchCrossLinks rocket={event.rocket} location={event.location} eventId={event.id} upcoming={!!event.launchDate && event.launchDate.getTime() > Date.now()} hide={['mc']} />
+        <LaunchCrossLinks rocket={event.rocket} location={event.location} eventId={event.id} debriefSlug={debrief?.slug ?? null} upcoming={!!event.launchDate && event.launchDate.getTime() > Date.now()} hide={['mc']} />
       </div>
       <div className="max-w-[1400px] mx-auto px-4 pb-8">
         <RelatedModules modules={PAGE_RELATIONS['launch/[eventId]']} />

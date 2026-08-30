@@ -777,6 +777,7 @@ export default function NewsAggregatorPage() {
         {/* Article grid */}
         {filteredArticles.length === 0 ? (
           <EmptyState
+            reason="Every aggregated article is loaded; your search, category and source filters exclude all of them. Clearing the filters restores the feed."
             icon={<span className="text-4xl">🔍</span>}
             title="No articles found"
             description="Try adjusting your filters or search query."

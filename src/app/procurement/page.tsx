@@ -830,6 +830,7 @@ function ProcurementContent() {
               <div className="flex justify-center py-12"><LoadingSpinner /></div>
             ) : opportunities.length === 0 ? (
               <EmptyState
+                reason="Opportunities are synced from federal procurement feeds and expire on their own closing dates. None still open matches these filters; new solicitations appear as agencies post them."
                 icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
                 title="No opportunities found"
                 description="Try adjusting your filters or search query to find procurement opportunities."

@@ -12,6 +12,13 @@ import PricingCardV3 from '@/components/pricing/PricingCardV3';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import nextDynamic from 'next/dynamic';
+// The homepage trial funnel moved here intact (SYNTHESIS.md item 15): the
+// front door is the next launch; the sell lives where people who want it go.
+const BentoFeatures = nextDynamic(() => import('@/components/landing/BentoFeatures'), { ssr: false });
+const DemoShowcase = nextDynamic(() => import('@/components/landing/DemoShowcase'), { ssr: false });
+const HowItWorks = nextDynamic(() => import('@/components/landing/HowItWorks'), { ssr: false });
+const SocialProof = nextDynamic(() => import('@/components/landing/SocialProof'), { ssr: false });
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import ProductSchema from '@/components/seo/ProductSchema';
@@ -948,7 +955,13 @@ function PricingPageContent() {
 export default function PricingPage() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-slate-400">Loading pricing...</div></div>}>
-      <PricingPageContent />
+      <>
+        <PricingPageContent />
+        <BentoFeatures />
+        <DemoShowcase />
+        <HowItWorks />
+        <SocialProof />
+      </>
     </Suspense>
   );
 }

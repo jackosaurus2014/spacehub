@@ -646,6 +646,7 @@ export default function ExportClassificationsPage() {
           </StaggerContainer>
         ) : (
           <EmptyState
+            reason="Both the USML and ECCN tables are loaded in full; this search term matches nothing in the tab you are viewing. Clearing it, or switching tabs, restores the list."
             title="No classifications found"
             description={`No ${activeTab === 'itar' ? 'ITAR/USML' : 'EAR/ECCN'} classifications match your search. Try a different search term or switch tabs.`}
             icon={

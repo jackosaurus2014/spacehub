@@ -127,6 +127,7 @@ export default function MentorsPage() {
           <div className="flex justify-center py-24"><LoadingSpinner /></div>
         ) : error ? (
           <EmptyState
+            reason="This is a fetch failure, not an empty directory — the mentor list could not be loaded at all. Retrying usually clears it; if it persists, the API is down."
             icon="⚠️"
             title="Something went wrong"
             description={error}
@@ -138,6 +139,7 @@ export default function MentorsPage() {
           />
         ) : mentors.length === 0 ? (
           <EmptyState
+            reason="Mentors opt in from their Space Talent profile, so coverage varies by speciality. This list fills as more members opt in."
             icon="🧑‍🚀"
             title="No mentors found"
             description="Try broadening your filters — or become the first mentor in this area via your Space Talent profile."

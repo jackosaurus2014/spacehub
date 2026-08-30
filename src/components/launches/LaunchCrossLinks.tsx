@@ -5,7 +5,7 @@ import { LAUNCH_SITES, siteSlugForLocation } from '@/lib/launch-site-registry';
 // "What's next" rail for every launch surface (roadmap Tier 2 #12). Only the
 // game averaged 5+ views per user; every other page was a dead end. Server-
 // safe; renders only the links that apply.
-export default function LaunchCrossLinks({ rocket, location, eventId, upcoming, hide = [] }: { rocket?: string | null; location?: string | null; eventId?: string; upcoming?: boolean; hide?: string[] }) {
+export default function LaunchCrossLinks({ rocket, location, eventId, upcoming, hide = [], debriefSlug = null }: { debriefSlug?: string | null; rocket?: string | null; location?: string | null; eventId?: string; upcoming?: boolean; hide?: string[] }) {
   const rocketSlug = rocketSlugForName(rocket);
   const siteSlug = siteSlugForLocation(location);
   const site = siteSlug ? LAUNCH_SITES.find((s) => s.slug === siteSlug) : null;
@@ -15,7 +15,9 @@ export default function LaunchCrossLinks({ rocket, location, eventId, upcoming, 
   if (site) items.push({ key: 'site', href: `/launches/${site.slug}`, icon: '📍', label: site.shortName, hint: 'This month and next, from this pad' });
   if (site?.viewingGuide) items.push({ key: 'watch', href: site.viewingGuide, icon: '🎟️', label: 'Watch in person', hint: `Best spots at ${site.shortName}` });
   items.push({ key: 'track', href: '/satellites', icon: '🛰️', label: 'Track it after liftoff', hint: 'Live orbital map' });
-  if (eventId) items.push({ key: 'debriefs', href: '/mission-debriefs', icon: '📝', label: 'Mission debriefs', hint: 'What happened after the stream' });
+  // Deep-link a flown launch to its own debrief (SYNTHESIS.md item 42), else the index.
+  if (debriefSlug) items.push({ key: 'debriefs', href: `/mission-debriefs/${debriefSlug}`, icon: '📝', label: 'Read the mission debrief', hint: 'What happened after the stream' });
+  else if (eventId) items.push({ key: 'debriefs', href: '/mission-debriefs', icon: '📝', label: 'Mission debriefs', hint: 'What happened after the stream' });
   items.push({ key: 'mc', href: '/mission-control', icon: '🖥️', label: 'Mission Control', hint: 'Every upcoming launch' });
   const shown = items.filter((i) => !hide.includes(i.key)).slice(0, 6);
   if (shown.length === 0) return null;

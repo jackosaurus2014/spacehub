@@ -324,6 +324,7 @@ function SearchContent() {
                 </div>
               ) : (
                 <EmptyState
+                  reason="Listings are posted by members and appear the moment they publish. None that is live right now matches these filters; widening them shows what is currently offered."
                   icon={<span className="text-4xl">📦</span>}
                   illustration="/art/empty-state-no-results.png"
                   title="No listings found"
@@ -341,6 +342,7 @@ function SearchContent() {
               </div>
             ) : (
               <EmptyState
+                reason="RFQs close on their own deadlines and only open ones are shown here. New requests appear as buyers post them."
                 icon={<span className="text-4xl">📋</span>}
                 illustration="/art/empty-state-no-results.png"
                 title="No open RFQs found"

@@ -331,6 +331,7 @@ export default function ReadingListPage() {
         <ScrollReveal delay={0.1}>
         {items.length === 0 && (
           <EmptyState
+            reason="Nothing is missing — the reading list contains only what you bookmark, and it fills the first time you save an article."
             icon={<span className="text-4xl">🔖</span>}
             illustration="/art/empty-state-getting-started.png"
             title="Your reading list is empty"

@@ -375,6 +375,7 @@ function WatchlistsContent() {
               </ScrollReveal>
             ) : (
               <EmptyState
+                reason="Nothing is missing on our side — a watchlist only exists once you create one, and it starts tracking as soon as you add your first company or topic."
                 icon={<span className="text-4xl">👁️</span>}
                 illustration="/art/empty-state-getting-started.png"
                 title="No watchlists yet"

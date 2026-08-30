@@ -1204,6 +1204,7 @@ function SupplyChainContent() {
               {filteredCompanies.length === 0 && (
                 <div className="col-span-full">
                   <EmptyState
+                    reason="The supplier database is loaded; your current search and filters exclude every company in it. Clearing them restores the list."
                     icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
                     title="No suppliers found"
                     description={searchQuery ? `No companies match "${searchQuery}". Try adjusting your search.` : 'No companies match your current filters. Try adjusting your search criteria.'}

@@ -737,6 +737,7 @@ function ApiDocsPageInner() {
           {/* No results */}
           {filteredCategories.length === 0 && searchQuery && (
             <EmptyState
+              reason="The endpoint reference is loaded in full; this search string matches none of it. Clearing the search shows every documented endpoint."
               icon={<span className="text-4xl">🔌</span>}
               title="No endpoints found"
               description={`No endpoints match "${searchQuery}".`}

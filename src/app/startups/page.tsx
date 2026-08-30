@@ -246,6 +246,7 @@ export default function StartupHubPage() {
 
             {sortedWatchlist.length === 0 ? (
               <EmptyState
+                reason="The pre-IPO watchlist is curated by hand and refreshed quarterly, so it grows on that cadence rather than continuously."
                 icon={<span className="text-4xl">🚀</span>}
                 title="No private companies on the watchlist yet"
                 description="Check back soon as new pre-IPO profiles are added to the tracker."
@@ -313,6 +314,7 @@ export default function StartupHubPage() {
             </h2>
             {(data?.recentRounds?.length ?? 0) === 0 ? (
               <EmptyState
+                reason="This panel deliberately covers only the last 18 months. Older deals are not missing — they are in the full Funding Tracker."
                 icon={<span className="text-4xl">💰</span>}
                 title="No funding rounds in the last 18 months"
                 description="Check the full Funding Tracker for historical deal activity."
@@ -489,6 +491,7 @@ export default function StartupHubPage() {
             </h2>
             {(data?.hiring?.length ?? 0) === 0 ? (
               <EmptyState
+                reason="This panel lists only roles posted by companies on the private-company watchlist. The wider jobs board is unaffected and still carries every open role."
                 icon={<span className="text-4xl">👥</span>}
                 title="No active job postings from private companies right now"
                 description="Check the full jobs board for all open roles across the industry."

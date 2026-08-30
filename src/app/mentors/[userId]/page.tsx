@@ -115,6 +115,7 @@ export default function MentorDetailPage() {
     return (
       <div className="min-h-screen container mx-auto px-4 py-16">
         <EmptyState
+          reason="This profile was either never published or has been withdrawn by its owner. The mentor directory lists everyone currently accepting requests."
           icon="🧑‍🚀"
           title="Mentor not found"
           description="This mentor profile doesn't exist or has been removed."

@@ -183,7 +183,7 @@ export default function AIInsightsPage() {
       <div className="container mx-auto px-4 py-8">
         <AnimatedPageHeader
           title="AI Insights"
-          subtitle="AI-powered analysis of the latest space industry developments"
+          subtitle="Daily analysis of space industry developments, fact-checked before publishing. Archive from March 2026; publication paused March–July 2026 and resumed in August."
           icon={<span>&#x2728;</span>}
           accentColor="purple"
         />
@@ -220,6 +220,7 @@ export default function AIInsightsPage() {
         ) : insights.length === 0 ? (
           /* Empty State */
           <EmptyState
+            reason="Insights come from the 01:00 UTC editorial run. When that pass finds no story worth publishing in this category, nothing is listed until tomorrow's run."
             icon={<span className="text-4xl">&#x1F52D;</span>}
             title="No insights generated yet"
             description={

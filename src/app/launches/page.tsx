@@ -3,7 +3,8 @@ import Link from 'next/link';
 import HeroArt from '@/components/ui/HeroArt';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { formatLaunchDate, missionTitle } from '@/components/launches/LaunchRow';
-import { getSiteSummaries } from '@/lib/launch-sites';
+import { getSiteSummaries, getNextLaunches } from '@/lib/launch-sites';
+import LaunchRow from '@/components/launches/LaunchRow';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +16,8 @@ export const metadata: Metadata = {
 
 export default async function LaunchesIndexPage() {
   const now = new Date();
-  const sites = (await getSiteSummaries(now)).sort((a, b) => b.last12Months - a.last12Months);
+  const [sitesRaw, next] = await Promise.all([getSiteSummaries(now), getNextLaunches(5, now)]);
+  const sites = sitesRaw.sort((a, b) => b.last12Months - a.last12Months);
   return (
     <div className="min-h-screen pb-16">
       <div className="container mx-auto px-4 max-w-6xl">
@@ -27,6 +29,14 @@ export default async function LaunchesIndexPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Launches by site</h1>
           <p className="text-lg text-white/70 leading-relaxed">Every spaceport&apos;s schedule, month by month — what is coming, what flew, and how it went. Built from the same live manifest that powers Mission Control.</p>
         </header>
+        {next.length > 0 && (
+          <section className="mb-12" aria-labelledby="next-launches">
+            <h2 id="next-launches" className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">What is flying next</h2>
+            <div className="space-y-2">{next.map((l) => <LaunchRow key={l.id} launch={l} showSite now={now} />)}</div>
+            <p className="text-xs text-slate-500 mt-2"><Link href="/mission-control" className="text-cyan-400 hover:text-cyan-300">Every upcoming launch on Mission Control &rarr;</Link></p>
+          </section>
+        )}
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">By spaceport</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {sites.map(({ site, last12Months, upcoming, nextLaunch }) => (
             <Link key={site.slug} href={`/launches/${site.slug}`} className="card p-5 hover:border-cyan-500/30 transition-colors group flex flex-col">

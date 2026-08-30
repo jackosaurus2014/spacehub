@@ -27,6 +27,7 @@ const footerLinks = {
       { label: 'AI Insights', href: '/ai-insights' },
       { label: 'Glossary', href: '/glossary' },
       { label: 'Podcasts', href: '/podcasts' },
+      { label: 'Index — every page and tool', href: '/tools' },
       { label: 'Data Sources', href: '/data-sources' },
       { label: 'Reference Library', href: '/resources' },
       { label: 'Newsletters Directory', href: '/newsletters-directory' },

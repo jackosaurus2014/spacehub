@@ -340,6 +340,7 @@ function BlogsContent() {
         </div>
       ) : posts.length === 0 ? (
         <EmptyState
+          reason="Articles are pulled from space-industry blogs on demand rather than stored in advance. Nothing is cached for this view yet; fetching populates it."
           icon={<span className="text-4xl">📚</span>}
           title="No Articles Found"
           description={

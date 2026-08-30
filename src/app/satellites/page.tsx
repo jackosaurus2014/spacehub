@@ -533,6 +533,7 @@ export default function SatellitesPage() {
           {/* Loading state */}
           {loading && (
             <EmptyState
+              reason="TLE elements are being fetched and orbital positions propagated right now. This panel fills as soon as that finishes, usually within a few seconds."
               icon={<span className="text-4xl">🛰️</span>}
               title="Loading Satellite Data"
               description="Fetching TLE data and computing orbital positions..."

@@ -65,3 +65,16 @@ export async function getSiteSummaries(now: Date = new Date()): Promise<Array<{ 
     return { site, last12Months: past.length, upcoming: future.length, nextLaunch: future[0] ?? null };
   });
 }
+
+/**
+ * The next N launches across every site — what the page named "Launches"
+ * should answer first (SYNTHESIS.md item 21). Launch Library rows only.
+ */
+export async function getNextLaunches(n: number = 5, now: Date = new Date()) {
+  return prisma.spaceEvent.findMany({
+    where: { launchDate: { gte: now }, status: { in: ['upcoming', 'go', 'tbc', 'tbd'] }, externalId: { not: null } },
+    select: { id: true, name: true, mission: true, launchDate: true, status: true, location: true, agency: true, rocket: true, imageUrl: true },
+    orderBy: { launchDate: 'asc' },
+    take: n,
+  });
+}

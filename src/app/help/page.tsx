@@ -348,6 +348,7 @@ export default function HelpCenterPage() {
         {/* ---- Category Cards ---- */}
         {filteredCategories.length === 0 ? (
           <EmptyState
+            reason="All help articles are loaded; none of them matches this search. Clearing the search shows every category again."
             icon={<span className="text-4xl">🔍</span>}
             title="No results found"
             description="Try a different search term or browse all categories."

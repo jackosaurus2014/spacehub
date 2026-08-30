@@ -331,6 +331,7 @@ function InvestorsPageInner() {
         {/* Investor Cards Grid */}
         {filtered.length === 0 ? (
           <EmptyState
+            reason="The investor database is loaded; your current filters exclude every firm in it. Widening the filters restores results immediately."
             icon={<span className="text-4xl">💰</span>}
             title="No investors found"
             description="No investors match your current filters. Try adjusting your search criteria."

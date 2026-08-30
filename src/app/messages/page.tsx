@@ -319,6 +319,7 @@ function MessagesPageInner() {
                 /* Empty state */
                 <div className="flex-1 flex flex-col items-center justify-center px-4">
                   <EmptyState
+                    reason="Nothing is hidden by a filter here: a thread appears the moment you or another member sends the first message."
                     icon={<span className="text-4xl">{"\uD83D\uDCAC"}</span>}
                     illustration="/art/empty-state-getting-started.png"
                     title={conversations.length === 0 ? 'No messages yet' : 'Select a Conversation'}

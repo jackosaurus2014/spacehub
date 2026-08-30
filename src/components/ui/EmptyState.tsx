@@ -14,12 +14,18 @@ interface EmptyStateProps {
   illustration?: string;
   title: string;
   description: string;
+  /**
+   * REQUIRED (SYNTHESIS.md §2.5): what is missing, why, and when it changes.
+   * An empty state that does not say why is how /space-stocks looked healthy
+   * while it was broken. "No rows yet" is not a reason.
+   */
+  reason: string;
   action?: React.ReactNode;
   /** Optional quick-nav suggestions shown below the description */
   suggestions?: Suggestion[];
 }
 
-export default function EmptyState({ icon, illustration, title, description, action, suggestions }: EmptyStateProps) {
+export default function EmptyState({ icon, illustration, title, description, reason, action, suggestions }: EmptyStateProps) {
   return (
     <div className="relative overflow-hidden rounded-xl card" aria-live="polite">
       <div className="absolute inset-0 overflow-hidden">
@@ -46,6 +52,7 @@ export default function EmptyState({ icon, illustration, title, description, act
         )}
         <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>
         <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed">{description}</p>
+        <p className="mt-2 text-[var(--ink-3)] text-xs max-w-md mx-auto leading-relaxed">{reason}</p>
         {action && <div className="mt-4 md:mt-6 [&>a]:w-full [&>a]:md:w-auto [&>button]:w-full [&>button]:md:w-auto">{action}</div>}
         {suggestions && suggestions.length > 0 && (
           <div className="mt-5 pt-4 border-t border-white/[0.04]">

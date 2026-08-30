@@ -220,6 +220,7 @@ function NewsContent() {
         </div>
       ) : articles.length === 0 ? (
         <EmptyState
+          reason="The news pipeline refreshes continuously from source RSS feeds. Nothing has been published into this view yet; it repopulates on the next fetch."
           icon={<span className="text-4xl">🔭</span>}
           title="No articles found"
           description={selectedCategory

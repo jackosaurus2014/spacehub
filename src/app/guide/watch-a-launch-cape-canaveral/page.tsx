@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
@@ -158,6 +159,11 @@ export default function WatchALaunchCapeCanaveralPage() {
               <ReadingTime wordCount={1800} className="flex items-center gap-1.5" />
             </div>
           </header>
+
+          {/* Alert capture where the enthusiast journey actually is (SYNTHESIS item 17) */}
+          <div className="mb-8">
+            <LaunchWatchForm site="Cape Canaveral" label="every Cape Canaveral and Kennedy launch" source="guide-cape-canaveral" />
+          </div>
 
           {/* Table of Contents */}
           <nav className="card p-6 mb-10">

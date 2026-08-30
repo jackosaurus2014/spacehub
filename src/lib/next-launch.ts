@@ -11,6 +11,7 @@ export interface NextLaunch {
   launchDate: string; // ISO
   rocket: string | null;
   location: string | null;
+  agency: string | null;
   status: string;
 }
 
@@ -20,10 +21,10 @@ async function queryNextLaunch(): Promise<NextLaunch | null> {
     const ev = await prisma.spaceEvent.findFirst({
       where: { launchDate: { gte: now }, status: { in: ['upcoming', 'go', 'tbc', 'tbd'] }, externalId: { not: null } },
       orderBy: { launchDate: 'asc' },
-      select: { id: true, name: true, launchDate: true, rocket: true, location: true, status: true },
+      select: { id: true, name: true, launchDate: true, rocket: true, location: true, agency: true, status: true },
     });
     if (!ev || !ev.launchDate) return null;
-    return { id: ev.id, name: ev.name, launchDate: ev.launchDate.toISOString(), rocket: ev.rocket, location: ev.location, status: ev.status };
+    return { id: ev.id, name: ev.name, launchDate: ev.launchDate.toISOString(), rocket: ev.rocket, location: ev.location, agency: ev.agency, status: ev.status };
   } catch (error) {
     logger.warn('next-launch: query failed', { error: error instanceof Error ? error.message : String(error) });
     return null;

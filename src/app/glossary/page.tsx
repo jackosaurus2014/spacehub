@@ -854,6 +854,7 @@ export default function GlossaryPage() {
         {/* ---- Empty state ---- */}
         {visibleCount === 0 && (
           <EmptyState
+            reason="Every glossary term is loaded; the current search and category filter exclude all of them. Resetting the filters restores the full list."
             icon={<span className="text-4xl">🔍</span>}
             title="No terms found"
             description="Try adjusting your search query or clearing the category filter to see more results."

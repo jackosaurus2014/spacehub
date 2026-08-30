@@ -1124,6 +1124,7 @@ function AlertsPageInner() {
 
       {deliveries.length === 0 ? (
         <EmptyState
+          reason="Nothing has matched your alert rules yet. Deliveries land here within minutes of a rule firing — and with no rules defined, none can fire."
           icon={<span className="text-4xl">🔔</span>}
           illustration="/art/empty-state-astronaut.png"
           title="No notifications yet"

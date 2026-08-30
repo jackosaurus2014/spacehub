@@ -753,6 +753,7 @@ export default function NewslettersDirectoryPage() {
 
           {filteredNewsletters.length === 0 ? (
             <EmptyState
+              reason="The directory is loaded in full; your search and category filters exclude every newsletter in it. Clearing them restores the list."
               icon={<span className="text-4xl">📬</span>}
               title="No newsletters found"
               description="No newsletters match your search criteria."

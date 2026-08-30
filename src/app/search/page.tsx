@@ -576,6 +576,7 @@ function SearchContent() {
         {!loading && hasSearched && overallTotal === 0 && (
           <ScrollReveal>
             <EmptyState
+              reason="The index was searched in full and this query matches nothing in it. A shorter or more general query usually returns results."
               icon={<span className="text-4xl">🔍</span>}
               title="No results found"
               description={`No matches found for "${debouncedQuery}" across ${activeTab === 'all' ? 'any category' : `the ${activeTab} category`}.`}

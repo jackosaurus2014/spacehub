@@ -611,6 +611,7 @@ export default function CompanyProfilesPage() {
         </div>
       ) : companies.length === 0 ? (
         <EmptyState
+          reason="The directory itself is not empty: your current search and filter combination excludes every company in it. Clearing a filter restores results immediately."
           icon={<span className="text-4xl">🔍</span>}
           illustration="/art/empty-state-no-results.png"
           title="No companies found"

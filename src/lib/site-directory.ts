@@ -104,7 +104,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
     entries: [
       { name: 'Contracts & Opportunities', href: '/procurement', description: 'Contracts, grants, SBIR and budgets', icon: '📋', nav: true },
       { name: 'Regulatory Radar', href: '/regulatory-radar', description: 'Live rules, enforcement and deadlines', icon: '📡', nav: true },
-      { name: 'Compliance Hub', href: '/compliance', description: 'Licensing, space law and filings', icon: '⚖️', nav: true },
+      { name: 'Compliance Hub', href: '/compliance', description: 'Licensing, space law and filings', icon: '⚖️', nav: true, pro: true },
       { name: 'Jobs', href: '/jobs', description: 'Thousands of space jobs, synced daily', icon: '💼', nav: true, hot: true },
       { name: 'Hire Talent', href: '/hire', description: 'Get your openings in front of the industry', icon: '🤝', nav: true },
       { name: 'Service Providers', href: '/marketplace', description: 'Verified space service directory', icon: '🛒', nav: true },
@@ -132,7 +132,9 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Cost to launch a satellite', href: '/guide/cost-to-launch/satellite', description: 'By size and orbit, 2026 prices', icon: '💰', hot: true },
       { name: 'Cost to launch a CubeSat', href: '/guide/cost-to-launch/cubesat', description: '1U to 12U, rideshare and ISS', icon: '🧊' },
       { name: 'Cost to send a person to space', href: '/guide/cost-to-launch/person', description: 'Suborbital to ISS seat prices', icon: '🧑‍🚀' },
-      { name: 'Compare', href: '/compare', description: 'Side-by-side company comparisons', icon: '⚖️', nav: true },
+      // Compare lives in Markets; the freed Learn slot goes to the two proven ops calculators (SYNTHESIS.md item 20).
+      { name: 'Launch Cost Calculator', href: '/launch-cost-calculator', description: 'Compare launch costs across vehicles', icon: '💰', nav: true, hot: true },
+      { name: 'Mission Simulator', href: '/mission-simulator', description: 'Fly a mission end to end', icon: '🎮', nav: true },
       { name: 'Build Guides', href: '/build-guides', description: 'CanSat, balloon and ISS-receiver projects', icon: '🛠️', nav: true },
       { name: 'Space History', href: '/history', description: 'Searchable milestones', icon: '⏳', nav: true },
       { name: 'Glossary', href: '/glossary', description: 'Key terms defined', icon: '📖', nav: true },

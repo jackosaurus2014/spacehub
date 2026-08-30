@@ -203,15 +203,18 @@ html.high-contrast .card-elevated {
 
 /* ——— High-contrast button improvements ——— */
 html.high-contrast .btn-primary {
-  @apply bg-white text-slate-900 shadow-lg;
+  background: #FF9440;
+  color: #0A0A0B;
+  border-color: #FF9440;
 }
 
 html.high-contrast .btn-secondary {
-  @apply border-slate-400 text-slate-800;
+  border-color: var(--line-hot);
+  color: #FFFFFF;
 }
 
 html.high-contrast .btn-ghost {
-  @apply text-slate-800;
+  color: #FFFFFF;
 }
 
 /* ——— OLED True Black mode — saves battery on AMOLED screens ——— */
@@ -387,55 +390,100 @@ body::after {
 
 /* .glow-text removed — unused */
 
-/* ═══════════════════════════════════════════════════════════════════
-   V3 BUTTON HIERARCHY — 3 levels, explicit transitions
-   ═══════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════
+   BUTTON HIERARCHY — Ember / Line / Bare (SYNTHESIS.md §2.4)
+   Three levels, one radius (--radius-control), 44px minimum target,
+   ember focus-visible ring on all three. Class names are unchanged so no
+   call site has to move.
+   ════════════════════════════════════════════════════════════════ */
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: var(--radius-control);
+  font-family: var(--font-body), 'DM Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+}
+
+/* Ember — the one filled button. Label is near-black, never white. */
 .btn-primary {
-  background: var(--accent-primary);
-  color: #ffffff;
+  background: var(--ember);
+  color: #0A0A0B;
   font-weight: 600;
   padding: 10px 20px;
-  border-radius: 4px;
-  border: none;
-  font-size: 14px;
-  transition: background 0.15s var(--ease-smooth), box-shadow 0.15s var(--ease-smooth);
+  border: 1px solid var(--ember);
+  transition: background 0.12s var(--ease-smooth), border-color 0.12s var(--ease-smooth);
 }
 .btn-primary:hover {
-  background: var(--accent-primary-bright);
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+  background: #FF8F3D;
+  border-color: #FF8F3D;
 }
-.btn-primary:active { transform: scale(0.98); }
+.btn-primary:active { background: #E86A0C; }
+.btn-primary:disabled,
+.btn-primary[aria-disabled='true'] {
+  background: var(--elev);
+  border-color: var(--line-2);
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
 
+/* Line — 1px --line-2, always paired with a text label. */
 .btn-secondary {
   background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-default);
+  color: var(--ink);
+  border: 1px solid var(--line-2);
   font-weight: 500;
   padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: color 0.15s var(--ease-smooth), border-color 0.15s var(--ease-smooth), background 0.15s var(--ease-smooth);
+  transition: color 0.12s var(--ease-smooth), border-color 0.12s var(--ease-smooth), background 0.12s var(--ease-smooth);
 }
 .btn-secondary:hover {
-  color: var(--text-primary);
-  border-color: var(--border-hover);
-  background: var(--bg-hover);
+  color: var(--ink);
+  border-color: var(--line-hot);
+  background: var(--hover);
 }
-.btn-secondary:active { transform: scale(0.98); }
+.btn-secondary:disabled,
+.btn-secondary[aria-disabled='true'] {
+  color: var(--ink-3);
+  border-color: var(--line);
+  cursor: not-allowed;
+}
 
+/* Bare — text with an ember underline. No fill, no border. */
 .btn-ghost {
   background: transparent;
-  color: var(--text-tertiary);
+  color: var(--ink-2);
   border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 10px 12px;
   font-weight: 500;
-  transition: color 0.15s var(--ease-smooth), background 0.15s var(--ease-smooth);
+  text-decoration: underline;
+  text-decoration-color: var(--ember);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 0.12s var(--ease-smooth), text-decoration-thickness 0.12s var(--ease-smooth);
 }
 .btn-ghost:hover {
-  color: var(--text-primary);
-  background: var(--bg-hover);
+  color: var(--ink);
+  text-decoration-thickness: 2px;
+}
+.btn-ghost:disabled,
+.btn-ghost[aria-disabled='true'] {
+  color: var(--ink-3);
+  text-decoration-color: var(--line-2);
+  cursor: not-allowed;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

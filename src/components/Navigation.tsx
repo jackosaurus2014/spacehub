@@ -20,6 +20,8 @@ interface DropdownItem {
   label: string;
   href: string;
   description: string;
+  hot?: boolean;
+  pro?: boolean;
 }
 
 interface RecentModule {
@@ -29,7 +31,9 @@ interface RecentModule {
 
 const RECENT_MODULES_KEY = 'spacenexus-recent-modules';
 const MAX_RECENT_MODULES = 5;
-const MOBILE_INITIAL_ITEMS = 8;
+// Menus are short now (nav:true rows only); the old 'Show all' fold fired for one
+// category and revealed one row. Effectively disabled (SYNTHESIS.md item 20).
+const MOBILE_INITIAL_ITEMS = 99;
 
 type CategoryKey = 'launches' | 'news' | 'markets' | 'business' | 'learn';
 
@@ -40,7 +44,7 @@ type CategoryKey = 'launches' | 'news' | 'markets' | 'business' | 'learn';
 // views/28d) without any page going away.
 function menuItems(key: CategoryKey, label: string): DropdownItem[] {
   return [
-    ...navItemsFor(key).map((e) => ({ label: e.name, href: e.href, description: e.description })),
+    ...navItemsFor(key).map((e) => ({ label: e.name, href: e.href, description: e.description, hot: e.hot, pro: e.pro })),
     { label: `Everything in ${label} →`, href: `/tools#${key}`, description: 'The full directory' },
   ];
 }
@@ -205,7 +209,7 @@ function DropdownMenu({
                   <span className="text-white/90 text-sm font-medium group-hover:text-white transition-colors">
                     {item.label}
                   </span>
-                  {item.href === '/compliance' && !isPro && (
+                  {item.hot && <span className="text-[10px] text-[var(--ember)] mr-1" aria-label="popular">●</span>}{item.pro && !isPro && (
                     <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                       PRO
                     </span>
@@ -229,6 +233,16 @@ export default function Navigation() {
   const platformModifier = usePlatformModifier();
   const shortcutKey = platformModifier === 'meta' ? 'Cmd' : 'Ctrl';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Mobile menu is a modal: Escape closes it and the page behind is inert
+  // (same pattern OnboardingTour uses). SYNTHESIS.md item 20.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const main = document.getElementById('main-content');
+    main?.setAttribute('inert', '');
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsMenuOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => { main?.removeAttribute('inert'); document.removeEventListener('keydown', onKey); };
+  }, [isMenuOpen]);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [navHidden, setNavHidden] = useState(false);
@@ -470,10 +484,11 @@ export default function Navigation() {
               <span>🎮</span> Space Tycoon
             </Link>
             <Link
-              href="/pricing"
+              href="/tools"
               className="text-white/50 hover:text-white transition-colors text-sm"
+              title="Every page and tool on SpaceNexus"
             >
-              Pricing
+              Index
             </Link>
             {session?.user?.isAdmin && (
               <Link
@@ -611,7 +626,7 @@ export default function Navigation() {
 
         {/* Mobile Menu — portalled to body to escape nav's backdrop-blur stacking context */}
         {isMenuOpen && createPortal(
-          <div className="lg:hidden fixed inset-0 top-[72px] z-[60] animate-fade-in">
+          <div className="lg:hidden fixed inset-0 top-[72px] z-[60] animate-fade-in" role="dialog" aria-modal="true" aria-label="Site menu">
             <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} role="presentation" aria-hidden="true" />
             <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] overflow-y-auto animate-slide-in-right" style={{ background: 'var(--bg-surface)', borderLeft: '1px solid var(--border-subtle)', boxShadow: '-8px 0 32px -4px rgba(0, 0, 0, 0.5)' }}>
               <div className="p-6 space-y-4">
@@ -704,11 +719,11 @@ export default function Navigation() {
                       <span aria-hidden="true">🎮</span> Space Tycoon
                     </Link>
                     <Link
-                      href="/pricing"
+                      href="/tools"
                       className="flex items-center px-3 py-2 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium min-h-[44px]"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Pricing
+                      Index
                     </Link>
                   </div>
                 )}
@@ -771,7 +786,7 @@ export default function Navigation() {
                               >
                                 <div className="flex items-center justify-between">
                                   <span className="text-sm font-medium">{item.label}</span>
-                                  {item.href === '/compliance' && !isPro && (
+                                  {item.hot && <span className="text-[10px] text-[var(--ember)] mr-1" aria-label="popular">●</span>}{item.pro && !isPro && (
                                     <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                                       PRO
                                     </span>
