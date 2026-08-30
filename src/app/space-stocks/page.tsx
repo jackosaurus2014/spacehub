@@ -186,7 +186,15 @@ export default async function SpaceStocksPage() {
   let ipoClass: IpoRow[];
   let rosterFailed = false;
   try {
-    [roster, ipoClass] = await Promise.all([getRoster(), getIpoClass()]);
+    // One retry: a cold pool or a transient timeout must not blank the flagship
+    // markets page (seen once on 2026-08-30 right after a deploy).
+    try {
+      [roster, ipoClass] = await Promise.all([getRoster(), getIpoClass()]);
+    } catch (firstError) {
+      logger.warn('space-stocks: roster load failed once, retrying', { error: firstError instanceof Error ? firstError.message : String(firstError) });
+      await new Promise((r) => setTimeout(r, 400));
+      [roster, ipoClass] = await Promise.all([getRoster(), getIpoClass()]);
+    }
   } catch (error) {
     logger.error('space-stocks: failed to load CompanyProfile roster', {
       error: error instanceof Error ? error.message : String(error),

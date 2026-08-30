@@ -74,6 +74,8 @@ interface AnimatedPageHeaderProps {
   children?: ReactNode;
 }
 
+const SHOW_HEADER_BREADCRUMB = false as boolean;
+
 export default function AnimatedPageHeader({
   title,
   subtitle,
@@ -143,7 +145,10 @@ export default function AnimatedPageHeader({
           <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(11,10,9,.92),rgba(11,10,9,.72)_55%,rgba(11,10,9,.45))]" aria-hidden="true" />
         </>
       )}
-      {breadcrumb && (
+      {/* The layout's AutoBreadcrumb already renders the trail on every page;
+          a second one inside the header doubled it (audit 2026-08-30). Kept as
+          a prop for call-site compatibility, no longer rendered. */}
+      {SHOW_HEADER_BREADCRUMB && breadcrumb && (
         <nav
           aria-label="Breadcrumb"
           className={`text-sm text-slate-400 mb-2 tracking-wide uppercase ${

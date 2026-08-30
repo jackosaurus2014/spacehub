@@ -7,6 +7,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Console from '@/components/ui/Console';
+import Telemetry from '@/components/ui/Telemetry';
+import EmptyState from '@/components/ui/EmptyState';
+import DataTable, { type DataTableColumn } from '@/components/ui/DataTable';
 import WatchButton from '@/components/watchlist/WatchButton';
 import { clientLogger } from '@/lib/client-logger';
 import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
@@ -17,6 +21,7 @@ import SponsorBanner from '@/components/company/SponsorBanner';
 import LeadCaptureForm from '@/components/company/LeadCaptureForm';
 import SimilarCompanies from '@/components/company/SimilarCompanies';
 import HiringTrend from '@/components/company/HiringTrend';
+import RevenueTrend from '@/components/company/RevenueTrend';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
 import SocialShare from '@/components/ui/SocialShare';
@@ -459,22 +464,6 @@ type TabId = typeof TABS[number]['id'];
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
 
-function MetricCard({ label, value, icon, color = 'text-white' }: {
-  label: string; value: string; icon: string; color?: string;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4"
-    >
-      <div className="text-lg mb-1">{icon}</div>
-      <div className={`text-xl font-bold ${color}`}>{value}</div>
-      <div className="text-xs text-slate-500 mt-0.5">{label}</div>
-    </motion.div>
-  );
-}
-
 function ScoreRing({ score, label, size = 64 }: { score: number; label: string; size?: number }) {
   const radius = (size - 8) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -519,6 +508,20 @@ function SectionCard({ title, children, count }: { title: string; children: Reac
 }
 
 // ─── Tab Content Components ──────────────────────────────────────────────────
+
+const FACILITY_COLUMNS: DataTableColumn<Facility>[] = [
+  { key: 'name', header: 'Facility' },
+  {
+    key: 'type',
+    header: 'Type',
+    render: (f) => <span className="capitalize">{f.type.replace(/_/g, ' ')}</span>,
+  },
+  {
+    key: 'city',
+    header: 'Location',
+    render: (f) => [f.city, f.country].filter(Boolean).join(', ') || '—',
+  },
+];
 
 function OverviewTab({ company }: { company: CompanyDetail }) {
   return (
@@ -591,6 +594,7 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
               </div>
             )}
           </div>
+          <RevenueTrend estimates={company.revenueEstimates} />
         </SectionCard>
       </div>
 
@@ -627,29 +631,89 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
       {/* Facilities */}
       {company.facilities.length > 0 && (
         <SectionCard title="Facilities" count={company.facilities.length}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {company.facilities.map(f => (
-              <div key={f.id} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3">
-                <div className="text-xs text-slate-300 mb-1 capitalize">{f.type.replace(/_/g, ' ')}</div>
-                <div className="text-sm font-medium text-white">{f.name}</div>
-                <div className="text-xs text-slate-400">{[f.city, f.country].filter(Boolean).join(', ')}</div>
-              </div>
-            ))}
-          </div>
+          <DataTable<Facility>
+            columns={FACILITY_COLUMNS}
+            rows={company.facilities}
+            caption={`${company.name} facilities — name, type and location`}
+            filterable={company.facilities.length > 10}
+            filterPlaceholder="Filter facilities..."
+            emptyLabel="No facilities match this filter."
+          />
         </SectionCard>
       )}
     </div>
   );
 }
 
+/**
+ * Funding-history columns. Amount and post-money are `numeric`, so DataTable
+ * right-aligns them, renders them in tabular-nums and sorts them numerically
+ * off the raw row value rather than off the formatted string.
+ */
+const FUNDING_COLUMNS: DataTableColumn<FundingRound>[] = [
+  { key: 'date', header: 'Date', render: (r) => fmtDate(r.date) },
+  {
+    key: 'seriesLabel',
+    header: 'Round',
+    render: (r) => (
+      <span className="inline-flex flex-wrap items-center gap-1.5">
+        <span>{r.seriesLabel || r.roundType || 'Unknown'}</span>
+        {r.source === 'self_reported' ? (
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            Self-reported
+          </span>
+        ) : r.source ? (
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            Verified
+          </span>
+        ) : null}
+      </span>
+    ),
+  },
+  { key: 'amount', header: 'Amount', numeric: true, render: (r) => fmt(r.amount) },
+  { key: 'leadInvestor', header: 'Lead Investor', render: (r) => r.leadInvestor || '—' },
+  { key: 'postValuation', header: 'Post-Val', numeric: true, render: (r) => fmt(r.postValuation) },
+];
+
+const REVENUE_COLUMNS: DataTableColumn<RevenueEstimate>[] = [
+  { key: 'year', header: 'Period', render: (r) => `${r.year}${r.quarter ? ` Q${r.quarter}` : ''}` },
+  {
+    key: 'revenue',
+    header: 'Revenue',
+    numeric: true,
+    render: (r) => (r.revenue ? fmt(r.revenue) : r.revenueRange || '—'),
+  },
+  {
+    key: 'confidenceLevel',
+    header: 'Confidence',
+    render: (r) => (
+      <span className={`text-xs px-2 py-0.5 rounded ${
+        r.confidenceLevel === 'reported' ? 'bg-emerald-500/20 text-emerald-400' :
+        r.confidenceLevel === 'estimate' ? 'bg-amber-500/20 text-amber-400' :
+        'bg-red-500/20 text-red-400'
+      }`}>{r.confidenceLevel}</span>
+    ),
+  },
+  { key: 'source', header: 'Source', render: (r) => r.source || '—' },
+];
+
 function FinancialsTab({ company }: { company: CompanyDetail }) {
   return (
     <div className="space-y-4">
       {/* Funding Rounds */}
-      <SectionCard title="Funding History" count={company.fundingRounds.length}>
-        {company.fundingRounds.length === 0 ? (
-          <p className="text-slate-500 text-sm">No funding rounds recorded.</p>
-        ) : (
+      {company.fundingRounds.length === 0 ? (
+        <EmptyState
+          icon={<span className="text-2xl" aria-hidden="true">💰</span>}
+          title="No funding rounds on record"
+          description={`We have not recorded a priced round for ${company.name}.`}
+          reason="Rounds are added from SEC filings, verified press coverage and self-reported submissions on claimed profiles. This section fills in the next time a round is announced, or when the company claims this profile and files one."
+          suggestions={[
+            { label: 'Funding across the industry', href: '/startups' },
+            { label: 'Company directory', href: '/company-profiles' },
+          ]}
+        />
+      ) : (
+        <SectionCard title="Funding History" count={company.fundingRounds.length}>
           <div className="space-y-3">
             {/* Cumulative funding bar */}
             <div className="flex gap-1 h-8 mb-4">
@@ -675,88 +739,26 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
             </div>
 
             {/* Rounds table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
-                    <th className="pb-2 font-medium">Date</th>
-                    <th className="pb-2 font-medium">Round</th>
-                    <th className="pb-2 font-medium text-right">Amount</th>
-                    <th className="pb-2 font-medium">Lead Investor</th>
-                    <th className="pb-2 font-medium text-right">Post-Val</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {company.fundingRounds.map((r, i) => (
-                    <motion.tr
-                      key={r.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="border-b border-white/[0.04]"
-                    >
-                      <td className="py-2.5 text-slate-400">{fmtDate(r.date)}</td>
-                      <td className="py-2.5">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="bg-white/5 text-slate-300 px-2 py-0.5 rounded text-xs">
-                            {r.seriesLabel || r.roundType || 'Unknown'}
-                          </span>
-                          {r.source === 'self_reported' ? (
-                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                              Self-reported
-                            </span>
-                          ) : r.source ? (
-                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                              Verified
-                            </span>
-                          ) : null}
-                        </div>
-                      </td>
-                      <td className="py-2.5 text-right font-semibold text-emerald-400">{fmt(r.amount)}</td>
-                      <td className="py-2.5 text-slate-300">{r.leadInvestor || '—'}</td>
-                      <td className="py-2.5 text-right text-purple-400">{fmt(r.postValuation)}</td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable<FundingRound>
+              columns={FUNDING_COLUMNS}
+              rows={company.fundingRounds}
+              caption={`${company.name} funding rounds — date, round, amount, lead investor and post-money valuation`}
+              initialSort={{ key: 'date', dir: 'desc' }}
+              emptyLabel="No funding rounds match this filter."
+            />
           </div>
-        )}
-      </SectionCard>
+        </SectionCard>
+      )}
 
       {/* Revenue Estimates */}
       {company.revenueEstimates.length > 0 && (
         <SectionCard title="Revenue Estimates" count={company.revenueEstimates.length}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
-                  <th className="pb-2 font-medium">Period</th>
-                  <th className="pb-2 font-medium text-right">Revenue</th>
-                  <th className="pb-2 font-medium">Confidence</th>
-                  <th className="pb-2 font-medium">Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                {company.revenueEstimates.map(r => (
-                  <tr key={r.id} className="border-b border-white/[0.04]">
-                    <td className="py-2.5 text-slate-300">{r.year}{r.quarter ? ` Q${r.quarter}` : ''}</td>
-                    <td className="py-2.5 text-right font-semibold text-blue-400">
-                      {r.revenue ? fmt(r.revenue) : r.revenueRange || '—'}
-                    </td>
-                    <td className="py-2.5">
-                      <span className={`text-xs px-2 py-0.5 rounded ${
-                        r.confidenceLevel === 'reported' ? 'bg-emerald-500/20 text-emerald-400' :
-                        r.confidenceLevel === 'estimate' ? 'bg-amber-500/20 text-amber-400' :
-                        'bg-red-500/20 text-red-400'
-                      }`}>{r.confidenceLevel}</span>
-                    </td>
-                    <td className="py-2.5 text-xs text-slate-500">{r.source || '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable<RevenueEstimate>
+            columns={REVENUE_COLUMNS}
+            rows={company.revenueEstimates}
+            caption={`${company.name} revenue estimates — period, revenue, confidence and source`}
+            emptyLabel="No revenue estimates match this filter."
+          />
         </SectionCard>
       )}
     </div>
@@ -796,155 +798,217 @@ function formatSpecValue(key: string, val: unknown): string {
 }
 
 function ProductsTab({ company }: { company: CompanyDetail }) {
+  if (company.products.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🚀</span>}
+        title="No products or vehicles on record"
+        description={`No product, launch vehicle or service line has been catalogued for ${company.name}.`}
+        reason="Product rows are entered by our research desk from company documentation, and by claimed profiles submitting their own catalogue. This section fills in when the company is next researched or when it claims this profile."
+        suggestions={[
+          { label: 'Launch vehicle database', href: '/launch-vehicles' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
   return (
     <SectionCard title="Products & Services" count={company.products.length}>
-      {company.products.length === 0 ? (
-        <p className="text-slate-500 text-sm">No products recorded.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {company.products.map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/10 transition-colors"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold text-white text-lg">{p.name}</h4>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
-                  p.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
-                  p.status === 'development' ? 'bg-amber-500/20 text-amber-400' :
-                  'bg-slate-600/20 text-slate-400'
-                }`}>{p.status.toUpperCase()}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {company.products.map((p, i) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/10 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-semibold text-white text-lg">{p.name}</h4>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                p.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+                p.status === 'development' ? 'bg-amber-500/20 text-amber-400' :
+                'bg-slate-600/20 text-slate-400'
+              }`}>{p.status.toUpperCase()}</span>
+            </div>
+            {p.category && (
+              <div className="text-xs text-slate-300 mb-3 capitalize">{p.category.replace(/_/g, ' ')}</div>
+            )}
+            {p.description && (
+              <p className="text-sm text-slate-400 leading-relaxed mb-3">{p.description}</p>
+            )}
+            {p.specs && Object.keys(p.specs).length > 0 && (
+              <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
+                  {Object.entries(p.specs).map(([key, val]) => (
+                    <div key={key}>
+                      <div className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">{formatSpecLabel(key)}</div>
+                      <div className="text-sm font-semibold text-white">{formatSpecValue(key, val)}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              {p.category && (
-                <div className="text-xs text-slate-300 mb-3 capitalize">{p.category.replace(/_/g, ' ')}</div>
-              )}
-              {p.description && (
-                <p className="text-sm text-slate-400 leading-relaxed mb-3">{p.description}</p>
-              )}
-              {p.specs && Object.keys(p.specs).length > 0 && (
-                <div className="mt-3 pt-3 border-t border-white/[0.06]">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
-                    {Object.entries(p.specs).map(([key, val]) => (
-                      <div key={key}>
-                        <div className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">{formatSpecLabel(key)}</div>
-                        <div className="text-sm font-semibold text-white">{formatSpecValue(key, val)}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {p.category === 'launch_vehicle' && (
-                <div className="mt-3 pt-3 border-t border-white/[0.06]">
-                  <Link
-                    href="/launch-vehicles"
-                    className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
-                  >
-                    <span>View full specs in Launch Vehicles</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </Link>
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      )}
+            )}
+            {p.category === 'launch_vehicle' && (
+              <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                <Link
+                  href="/launch-vehicles"
+                  className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
+                >
+                  <span>View full specs in Launch Vehicles</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
     </SectionCard>
   );
 }
 
 function PeopleTab({ company }: { company: CompanyDetail }) {
+  if (company.keyPersonnel.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">👥</span>}
+        title="No leadership on record"
+        description={`We have not catalogued named executives for ${company.name}.`}
+        reason="Leadership rows come from our executive-moves extractor, which reads appointment announcements and company pages. This section fills in the next time an appointment for this company is published, or when the company claims this profile."
+        suggestions={[
+          { label: 'Executive moves', href: '/executive-moves' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
   return (
     <SectionCard title="Key Personnel" count={company.keyPersonnel.length}>
-      {company.keyPersonnel.length === 0 ? (
-        <p className="text-slate-500 text-sm">No personnel recorded.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {company.keyPersonnel.map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.06 }}
-              className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4"
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                  {p.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-white text-sm">{p.name}</h4>
-                  <div className="text-xs text-slate-300">{p.title}</div>
-                  {p.role && <div className="text-xs text-slate-500 capitalize mt-0.5">{p.role}</div>}
-                </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {company.keyPersonnel.map((p, i) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.06 }}
+            className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                {p.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
               </div>
-              {p.bio && (
-                <p className="text-xs text-slate-400 mt-3 line-clamp-3 leading-relaxed">{p.bio}</p>
-              )}
-              {p.previousCompanies.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {p.previousCompanies.slice(0, 3).map(c => (
-                    <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">{c}</span>
-                  ))}
-                </div>
-              )}
-              {p.linkedinUrl && (
-                <a href={p.linkedinUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300">
-                  LinkedIn →
-                </a>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      )}
+              <div className="min-w-0">
+                <h4 className="font-semibold text-white text-sm">{p.name}</h4>
+                <div className="text-xs text-slate-300">{p.title}</div>
+                {p.role && <div className="text-xs text-slate-500 capitalize mt-0.5">{p.role}</div>}
+              </div>
+            </div>
+            {p.bio && (
+              <p className="text-xs text-slate-400 mt-3 line-clamp-3 leading-relaxed">{p.bio}</p>
+            )}
+            {p.previousCompanies.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {p.previousCompanies.slice(0, 3).map(c => (
+                  <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">{c}</span>
+                ))}
+              </div>
+            )}
+            {p.linkedinUrl && (
+              <a href={p.linkedinUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300">
+                LinkedIn →
+              </a>
+            )}
+          </motion.div>
+        ))}
+      </div>
     </SectionCard>
   );
 }
 
+const CONTRACT_COLUMNS: DataTableColumn<Contract>[] = [
+  {
+    key: 'title',
+    header: 'Contract',
+    render: (c) => (
+      <span className="block max-w-[42ch]">
+        <span className="block font-medium">{c.title}</span>
+        {c.description && (
+          <span className="mt-0.5 block text-xs text-slate-400 line-clamp-2">{c.description}</span>
+        )}
+      </span>
+    ),
+  },
+  {
+    key: 'agency',
+    header: 'Agency',
+    render: (c) => (
+      <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">{c.agency}</span>
+    ),
+  },
+  { key: 'awardDate', header: 'Awarded', render: (c) => fmtDate(c.awardDate) },
+  { key: 'value', header: 'Value', numeric: true, render: (c) => fmt(c.value) },
+  { key: 'ceiling', header: 'Ceiling', numeric: true, render: (c) => fmt(c.ceiling) },
+];
+
 function ContractsTab({ company }: { company: CompanyDetail }) {
+  if (company.contracts.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📜</span>}
+        title="No government contracts on record"
+        description={`No federal award has been matched to ${company.name}.`}
+        reason="Contract rows are matched from federal award feeds by awardee name. Either this company holds no prime awards, or it works as a subcontractor, whose awards are published under the prime. The tab fills in on the next award-feed sync."
+        suggestions={[
+          { label: 'Contract awards', href: '/procurement' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
   return (
     <SectionCard title="Government Contracts" count={company.contracts.length}>
-      {company.contracts.length === 0 ? (
-        <p className="text-slate-500 text-sm">No government contracts recorded.</p>
-      ) : (
-        <div className="space-y-3">
-          {company.contracts.map((c, i) => (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4 hover:border-white/10 transition-colors"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 mr-2">
-                    {c.agency}
-                  </span>
-                  <span className="text-xs text-slate-500">{fmtDate(c.awardDate)}</span>
-                </div>
-                <div className="text-right">
-                  {c.value && <div className="font-semibold text-emerald-400">{fmt(c.value)}</div>}
-                  {c.ceiling && c.ceiling !== c.value && (
-                    <div className="text-xs text-slate-500">Ceiling: {fmt(c.ceiling)}</div>
-                  )}
-                </div>
-              </div>
-              <h4 className="font-medium text-white text-sm mt-2">{c.title}</h4>
-              {c.description && (
-                <p className="text-xs text-slate-400 mt-1 line-clamp-2">{c.description}</p>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      )}
+      <DataTable<Contract>
+        columns={CONTRACT_COLUMNS}
+        rows={company.contracts}
+        caption={`${company.name} government contracts — title, awarding agency, award date, obligated value and ceiling`}
+        initialSort={{ key: 'awardDate', dir: 'desc' }}
+        filterable={company.contracts.length > 10}
+        filterPlaceholder="Filter contracts..."
+        emptyLabel="No contracts match this filter."
+      />
     </SectionCard>
   );
 }
+
+const SATELLITE_COLUMNS: DataTableColumn<Satellite>[] = [
+  { key: 'satelliteName', header: 'Satellite' },
+  { key: 'orbitType', header: 'Orbit', render: (s) => s.orbitType || '—' },
+  {
+    key: 'missionType',
+    header: 'Mission',
+    render: (s) => (
+      <span className="capitalize">{s.missionType?.replace(/-/g, ' ') || '—'}</span>
+    ),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (s) => (
+      <span className={`text-xs px-1.5 py-0.5 rounded ${
+        s.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+        s.status === 'planned' ? 'bg-blue-500/20 text-blue-400' :
+        'bg-slate-600/20 text-slate-400'
+      }`}>{s.status}</span>
+    ),
+  },
+  { key: 'constellation', header: 'Constellation', render: (s) => s.constellation || '—' },
+  { key: 'launchDate', header: 'Launch', render: (s) => fmtDate(s.launchDate) },
+];
 
 function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
   const active = company.satelliteAssets.filter(s => s.status === 'active');
@@ -974,92 +1038,88 @@ function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
         </SectionCard>
       )}
 
-      <SectionCard title="Satellite Fleet" count={company.satelliteAssets.length}>
-        {company.satelliteAssets.length === 0 ? (
-          <p className="text-slate-500 text-sm">No satellite assets recorded.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
-                  <th className="pb-2 font-medium">Satellite</th>
-                  <th className="pb-2 font-medium">Orbit</th>
-                  <th className="pb-2 font-medium">Mission</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Constellation</th>
-                  <th className="pb-2 font-medium">Launch</th>
-                </tr>
-              </thead>
-              <tbody>
-                {company.satelliteAssets.slice(0, 50).map(s => (
-                  <tr key={s.id} className="border-b border-white/[0.04]">
-                    <td className="py-2 text-white">{s.satelliteName}</td>
-                    <td className="py-2 text-slate-300 text-xs">{s.orbitType || '—'}</td>
-                    <td className="py-2 text-slate-400 text-xs capitalize">{s.missionType?.replace(/-/g, ' ') || '—'}</td>
-                    <td className="py-2">
-                      <span className={`text-xs px-1.5 py-0.5 rounded ${
-                        s.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
-                        s.status === 'planned' ? 'bg-blue-500/20 text-blue-400' :
-                        'bg-slate-600/20 text-slate-400'
-                      }`}>{s.status}</span>
-                    </td>
-                    <td className="py-2 text-slate-400 text-xs">{s.constellation || '—'}</td>
-                    <td className="py-2 text-slate-500 text-xs">{fmtDate(s.launchDate)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {company.satelliteAssets.length > 50 && (
-              <p className="text-xs text-slate-500 mt-2">Showing 50 of {company.satelliteAssets.length} satellites</p>
-            )}
-          </div>
-        )}
-      </SectionCard>
+      {company.satelliteAssets.length === 0 ? (
+        <EmptyState
+          icon={<span className="text-2xl" aria-hidden="true">🛰️</span>}
+          title="No orbital assets on record"
+          description={`No satellites are currently attributed to ${company.name}.`}
+          reason="Fleet rows come from the public satellite catalogue and operator filings, matched to companies by operator name. Either this company operates no spacecraft, or the catalogue attributes its spacecraft to a subsidiary we have not yet linked. It fills in on the next catalogue sync."
+          suggestions={[
+            { label: 'Satellite tracker', href: '/satellites' },
+            { label: 'Company directory', href: '/company-profiles' },
+          ]}
+        />
+      ) : (
+        <SectionCard title="Satellite Fleet" count={company.satelliteAssets.length}>
+          <DataTable<Satellite>
+            columns={SATELLITE_COLUMNS}
+            rows={company.satelliteAssets.slice(0, 50)}
+            caption={`${company.name} satellite fleet — name, orbit, mission, status, constellation and launch date`}
+            filterable={company.satelliteAssets.length > 10}
+            filterPlaceholder="Filter satellites..."
+            emptyLabel="No satellites match this filter."
+          />
+          {company.satelliteAssets.length > 50 && (
+            <p className="text-xs text-slate-500 mt-2">Showing 50 of {company.satelliteAssets.length} satellites</p>
+          )}
+        </SectionCard>
+      )}
     </div>
   );
 }
 
 function TimelineTab({ company }: { company: CompanyDetail }) {
+  if (company.events.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🗓️</span>}
+        title="No timeline events on record"
+        description={`No founding, funding, contract or milestone event has been logged for ${company.name}.`}
+        reason="Timeline entries are written by the research desk from dated, sourced events. A company with no entries has not yet been through a timeline pass. It fills in on the next research pass for this sector."
+        suggestions={[
+          { label: 'Industry news', href: '/news' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
   return (
     <SectionCard title="Company Timeline" count={company.events.length}>
-      {company.events.length === 0 ? (
-        <p className="text-slate-500 text-sm">No timeline events recorded.</p>
-      ) : (
-        <div className="relative pl-6">
-          {/* Timeline line */}
-          <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-white via-purple-500 to-slate-700" />
+      <div className="relative pl-6">
+        {/* Timeline line */}
+        <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-white via-purple-500 to-slate-700" />
 
-          {company.events.map((e, i) => (
-            <motion.div
-              key={e.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="relative mb-4 last:mb-0"
-            >
-              {/* Dot */}
-              <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-black border-2 border-white/15 z-10" />
+        {company.events.map((e, i) => (
+          <motion.div
+            key={e.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="relative mb-4 last:mb-0"
+          >
+            {/* Dot */}
+            <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-black border-2 border-white/15 z-10" />
 
-              <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/10 transition-colors ml-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm">{getEventIcon(e.type)}</span>
-                  <span className="text-xs text-slate-500">{fmtDate(e.date)}</span>
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 capitalize">
-                    {e.type.replace(/_/g, ' ')}
-                  </span>
-                  {e.importance >= 8 && (
-                    <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">HIGH IMPACT</span>
-                  )}
-                </div>
-                <h4 className="font-medium text-white text-sm">{e.title}</h4>
-                {e.description && (
-                  <p className="text-xs text-slate-400 mt-1">{e.description}</p>
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/10 transition-colors ml-2">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm">{getEventIcon(e.type)}</span>
+                <span className="text-xs text-slate-500">{fmtDate(e.date)}</span>
+                <span className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 capitalize">
+                  {e.type.replace(/_/g, ' ')}
+                </span>
+                {e.importance >= 8 && (
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">HIGH IMPACT</span>
                 )}
               </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
+              <h4 className="font-medium text-white text-sm">{e.title}</h4>
+              {e.description && (
+                <p className="text-xs text-slate-400 mt-1">{e.description}</p>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </SectionCard>
   );
 }
@@ -1103,10 +1163,21 @@ function JobsTab({ companySlug, companyName }: { companySlug: string; companyNam
 
   if (jobs.length === 0) {
     return (
-      <SectionCard title="Open Positions">
-        <HiringTrend companySlug={companySlug} className="mb-4" />
-        <p className="text-slate-400 text-center py-8">No open positions listed for {companyName} right now.</p>
-      </SectionCard>
+      <div className="space-y-4">
+        <SectionCard title="Hiring Trend">
+          <HiringTrend companySlug={companySlug} />
+        </SectionCard>
+        <EmptyState
+          icon={<span className="text-2xl" aria-hidden="true">💼</span>}
+          title="No open positions right now"
+          description={`${companyName} has no live listings on our board.`}
+          reason="Our crawler re-reads 16 applicant-tracking boards every morning at 06:30 UTC. Either this company has nothing posted today, or it hires on a board we do not yet crawl. This tab refreshes with the next morning crawl."
+          suggestions={[
+            { label: 'All space jobs', href: '/space-talent?tab=jobs' },
+            { label: 'Company directory', href: '/company-profiles' },
+          ]}
+        />
+      </div>
     );
   }
 
@@ -1200,9 +1271,16 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
 
   if (articles.length === 0) {
     return (
-      <SectionCard title="Related News">
-        <p className="text-slate-400 text-center py-8">No news articles linked to {companyName} yet. Articles are automatically tagged when news is fetched.</p>
-      </SectionCard>
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📰</span>}
+        title="No linked coverage yet"
+        description={`No article in our feed has been tagged to ${companyName}.`}
+        reason="Articles are tagged to companies automatically as the news pipeline ingests each feed. This tab fills in the moment a story naming this company is picked up — the pipeline runs continuously through the day."
+        suggestions={[
+          { label: 'Space news', href: '/news' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
     );
   }
 
@@ -1290,11 +1368,16 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
 
   if (digests.length === 0) {
     return (
-      <div className="text-center py-16">
-        <div className="text-4xl mb-3">📊</div>
-        <p className="text-slate-400 text-sm">No weekly digests available for {companyName} yet.</p>
-        <p className="text-slate-500 text-xs mt-2">Digests are generated weekly for companies with recent news activity.</p>
-      </div>
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📊</span>}
+        title="No weekly digests yet"
+        description={`We have not published a digest for ${companyName}.`}
+        reason="Digests are generated once a week, and only for companies with news activity in that week. A quiet week produces no digest. This tab fills in after the next weekly run that finds coverage of this company."
+        suggestions={[
+          { label: 'M/Th Digest', href: '/newsletter' },
+          { label: 'Space news', href: '/news' },
+        ]}
+      />
     );
   }
 
@@ -1475,15 +1558,21 @@ function PitchDeckTab({ companyId, companyName }: { companyId: string; companyNa
 
   if (decks.length === 0) {
     return (
-      <SectionCard title="Pitch Deck">
-        <div className="text-center py-10 space-y-2">
-          <div className="text-4xl">📈</div>
-          <p className="text-sm text-slate-400">No pitch decks have been shared for {companyName}.</p>
-          {status === 'unauthenticated' && (
-            <p className="text-xs text-slate-500">Some decks may require sign-in. <Link href="/login" className="text-white hover:underline">Sign in →</Link></p>
-          )}
-        </div>
-      </SectionCard>
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📈</span>}
+        title="No pitch decks shared"
+        description={`${companyName} has not published a deck here.`}
+        reason={
+          status === 'unauthenticated'
+            ? 'Decks are uploaded by the company itself on a claimed profile, and some are visible only to signed-in users. Sign in to see any restricted decks, or check back after the company claims this profile.'
+            : 'Decks are uploaded by the company itself on a claimed profile. This section fills in when the company claims this profile and publishes one.'
+        }
+        action={
+          status === 'unauthenticated' ? (
+            <Link href="/login" className="text-sm text-white hover:underline">Sign in →</Link>
+          ) : undefined
+        }
+      />
     );
   }
 
@@ -1602,15 +1691,21 @@ function DataRoomTab({ companyId, companyName }: { companyId: string; companyNam
 
   if (docs.length === 0) {
     return (
-      <SectionCard title="Data Room">
-        <div className="text-center py-10 space-y-2">
-          <div className="text-4xl">🗂️</div>
-          <p className="text-sm text-slate-400">No data room documents available for {companyName}.</p>
-          {status === 'unauthenticated' && (
-            <p className="text-xs text-slate-500">Some documents may require sign-in. <Link href="/login" className="text-white hover:underline">Sign in →</Link></p>
-          )}
-        </div>
-      </SectionCard>
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🗂️</span>}
+        title="No data room documents"
+        description={`${companyName} has not published documents here.`}
+        reason={
+          status === 'unauthenticated'
+            ? 'Data room documents are uploaded by the company itself on a claimed profile, and access is often restricted to signed-in users. Sign in to see any restricted documents, or check back after the company claims this profile.'
+            : 'Data room documents are uploaded by the company itself on a claimed profile. This section fills in when the company claims this profile and publishes one.'
+        }
+        action={
+          status === 'unauthenticated' ? (
+            <Link href="/login" className="text-sm text-white hover:underline">Sign in →</Link>
+          ) : undefined
+        }
+      />
     );
   }
 
@@ -1724,20 +1819,13 @@ function MissionDebriefsTab({ companyId, companyName }: { companyId: string; com
 
   if (debriefs.length === 0) {
     return (
-      <SectionCard title="Mission Debriefs">
-        <div className="text-center py-10">
-          <div className="text-3xl mb-2">🚀</div>
-          <p className="text-sm text-slate-400">
-            No mission debriefs reference {companyName} yet.
-          </p>
-          <Link
-            href="/mission-debriefs"
-            className="text-xs text-slate-300 hover:text-white mt-3 inline-block"
-          >
-            Browse all debriefs →
-          </Link>
-        </div>
-      </SectionCard>
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🚀</span>}
+        title="No mission debriefs reference this company"
+        description={`No published debrief names ${companyName}.`}
+        reason="Debriefs are written after a flown mission and auto-published once they clear the quality gate; they name only the companies involved in that mission. This tab fills in after the next mission this company takes part in."
+        suggestions={[{ label: 'Browse all debriefs', href: '/mission-debriefs' }]}
+      />
     );
   }
 
@@ -1846,7 +1934,13 @@ function IntelligenceTab({ company }: { company: CompanyDetail }) {
 function RelationshipsTab({ company }: { company: CompanyDetail }) {
   if (company.summary.competitors.length === 0) {
     return (
-      <div className="card p-6 text-sm text-slate-400">No relationships recorded for this company yet — competitors, partners and customers are added as our research covers them. <Link href="/company-profiles" className="text-cyan-400 hover:text-cyan-300">Browse the directory</Link>.</div>
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🔗</span>}
+        title="No relationships on record"
+        description={`No competitor, partner or acquisition has been linked to ${company.name}.`}
+        reason="Competitor and partner edges are drawn by hand as our research desk covers a sector, so coverage is deepest in launch, satellite and defence. This section fills in when this company's sector next gets a research pass."
+        suggestions={[{ label: 'Browse the directory', href: '/company-profiles' }]}
+      />
     );
   }
   return (
@@ -1920,103 +2014,80 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
   );
 }
 
-// ─── Quick Stats Section ─────────────────────────────────────────────────────
+// ─── Quick Stats Section ────────────────────────────────────────────
 
+/**
+ * The profile's one telemetry console (SYNTHESIS.md §2.4, roadmap item 29).
+ *
+ * Replaces two separate rows of ad-hoc tiles — the MetricCard grid that sat in
+ * the hero and the six-up emoji/SVG tile row beneath it — with a single
+ * `Console` carrying ONE provenance line (`source · updated HH:MMZ`) plus a
+ * `StatusBadge`: `verified` when the stock quote came back live this request,
+ * `stale` otherwise (the figures are then the last verified snapshot).
+ *
+ * Every metric that either row used to show is still here.
+ */
 function QuickStatsSection({ company }: { company: CompanyDetail }) {
-  const stats: { label: string; value: string; icon: React.ReactNode }[] = [];
+  const readouts: { label: string; value: string; unit?: string; sub?: string }[] = [];
 
   if (company.foundedYear) {
-    stats.push({
-      label: 'Founded',
-      value: String(company.foundedYear),
-      icon: (
-        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      ),
-    });
+    readouts.push({ label: 'Founded', value: String(company.foundedYear) });
   }
 
   if (company.employeeRange || company.employeeCount) {
-    stats.push({
+    readouts.push({
       label: 'Employees',
       value: company.employeeRange || (company.employeeCount ? company.employeeCount.toLocaleString() : '—'),
-      icon: (
-        <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      ),
-    });
-  }
-
-  if (company.valuation || (company.isPublic && company.marketCap)) {
-    const val = company.isPublic && company.marketCap ? company.marketCap : company.valuation;
-    const label = company.isPublic && company.marketCap ? 'Market Cap' : 'Valuation';
-    stats.push({
-      label,
-      value: fmt(val),
-      icon: (
-        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-        </svg>
-      ),
     });
   }
 
   if (company.totalFunding) {
-    stats.push({
-      label: 'Total Funding',
-      value: fmt(company.totalFunding),
-      icon: (
-        <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-    });
+    readouts.push({ label: 'Total funding', value: fmt(company.totalFunding) });
+  }
+
+  if (company.isPublic && company.marketCap) {
+    readouts.push({ label: 'Market cap', value: fmt(company.marketCap) });
+  } else if (company.valuation) {
+    readouts.push({ label: 'Valuation', value: fmt(company.valuation) });
+  }
+
+  if (company.revenueEstimate) {
+    readouts.push({ label: 'Est. revenue', value: fmt(company.revenueEstimate) });
   }
 
   if (company.summary.totalSatellites > 0) {
-    stats.push({
+    readouts.push({
       label: 'Satellites',
-      value: `${company.summary.activeSatellites} active / ${company.summary.totalSatellites}`,
-      icon: (
-        <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+      value: String(company.summary.activeSatellites),
+      unit: `/ ${company.summary.totalSatellites}`,
+      sub: 'active / on record',
     });
   }
 
-  stats.push({
-    label: 'Tier',
-    value: `Tier ${company.tier}`,
-    icon: (
-      <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-    ),
-  });
+  if (company.summary.totalContractValue > 0) {
+    readouts.push({ label: 'Contract value', value: fmt(company.summary.totalContractValue) });
+  }
 
-  if (stats.length === 0) return null;
+  readouts.push({ label: 'Tier', value: String(company.tier) });
+
+  if (readouts.length === 0) return null;
+
+  const quoteIsLive = company.stockDataSource === 'live';
 
   return (
-    <div className="border-t border-b border-white/[0.06] py-5 mb-8">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + i * 0.06, duration: 0.4, ease: 'easeOut' }}
-            className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-xl p-4 text-center hover:border-white/10 transition-colors"
-          >
-            <div className="flex justify-center mb-2">{stat.icon}</div>
-            <div className="text-white text-lg font-bold leading-tight">{stat.value}</div>
-            <div className="text-slate-400 text-xs mt-1">{stat.label}</div>
-          </motion.div>
+    <Console
+      title="Key metrics"
+      source="SpaceNexus"
+      asOf={company.stockDataAsOf}
+      status={quoteIsLive ? 'verified' : 'stale'}
+      className="mb-8"
+    >
+      <div className="grid grid-cols-2 gap-x-6 gap-y-5 md:grid-cols-3 lg:grid-cols-5">
+        {readouts.map((r) => (
+          <Telemetry key={r.label} label={r.label} value={r.value} unit={r.unit} sub={r.sub} />
         ))}
       </div>
-    </div>
+    </Console>
   );
 }
 
@@ -2329,27 +2400,6 @@ export default function CompanyProfileDetailPage() {
                 </div>
               </div>
             </div>
-
-            {/* Key Metrics */}
-            <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 lg:w-80">
-              {company.totalFunding && (
-                <MetricCard label="Total Funding" value={fmt(company.totalFunding)} icon="💰" color="text-emerald-400" />
-              )}
-              {company.isPublic && company.marketCap ? (
-                <MetricCard label="Market Cap" value={fmt(company.marketCap)} icon="📈" color="text-blue-400" />
-              ) : company.valuation ? (
-                <MetricCard label="Valuation" value={fmt(company.valuation)} icon="📊" color="text-purple-400" />
-              ) : null}
-              {company.revenueEstimate && (
-                <MetricCard label="Est. Revenue" value={fmt(company.revenueEstimate)} icon="💵" color="text-slate-300" />
-              )}
-              {company.summary.activeSatellites > 0 && (
-                <MetricCard label="Active Satellites" value={company.summary.activeSatellites.toString()} icon="🛰️" color="text-amber-400" />
-              )}
-              {company.summary.totalContractValue > 0 && (
-                <MetricCard label="Contract Value" value={fmt(company.summary.totalContractValue)} icon="📜" color="text-blue-400" />
-              )}
-            </div>
           </div>
 
           {/* Data Completeness Bar */}
@@ -2508,13 +2558,13 @@ export default function CompanyProfileDetailPage() {
             </SectionCard>
           )}
           {activeTab === 'contact' && !company.sponsorTier && (
-            <div className="text-center py-16">
-              <div className="text-4xl mb-3">✉️</div>
-              <p className="text-slate-400 text-sm">Direct contact is available for verified and premium sponsors.</p>
-              <Link href="/company-profiles/sponsor" className="text-slate-300 hover:text-white text-sm mt-2 inline-block">
-                Learn about sponsorship →
-              </Link>
-            </div>
+            <EmptyState
+              icon={<span className="text-2xl" aria-hidden="true">✉️</span>}
+              title="No direct contact channel"
+              description={`${company.name} does not accept enquiries through SpaceNexus.`}
+              reason="The contact form is switched on for verified and premium sponsor profiles only, so that enquiries reach a person who has agreed to answer them. It appears here if this company takes a sponsorship."
+              suggestions={[{ label: 'Learn about sponsorship', href: '/company-profiles/sponsor' }]}
+            />
           )}
         </motion.div>
       </AnimatePresence>

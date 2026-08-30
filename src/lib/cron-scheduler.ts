@@ -98,6 +98,12 @@ const CRON_JOBS: CronJobDef[] = [
   // the regulatory-feeds refresh so the day's new documents are in the pool.
   { schedule: '45 12 * * *',   path: '/api/cron/radar-explainers',          label: 'radar-explainers',           maxStaleMinutes: 1560 },
   { schedule: '0 14 * * *',    path: '/api/refresh?type=sec-filings',       label: 'sec-filings',                maxStaleMinutes: 1560 },
+  // Three years of annual revenue for public CompanyProfile rows, pulled
+  // from SEC EDGAR 10-K XBRL companyfacts (SYNTHESIS.md item 35). Roughly
+  // quarterly — 10-Ks trickle in year-round but nothing in this dataset
+  // moves week to week — 06:40 UTC on the 2nd of every 3rd month.
+  // Idempotent: safe to re-trigger manually after a deploy or a partial run.
+  { schedule: '40 6 2 */3 *',  path: '/api/cron/sec-revenue-backfill',      label: 'sec-revenue-backfill',       maxStaleMinutes: 140000 },
   // Daily stock-price/market-cap sync for public CompanyProfile rows (fixes
   // the stock-price split-brain vs. /api/stocks). Weekdays, after US market
   // close. Generous maxStaleMinutes tolerates the Fri-close -> Mon-close gap.
@@ -177,6 +183,12 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 11 * * *',   path: '/api/refresh?type=grants-gov',               label: 'grants-gov-refresh',          maxStaleMinutes: 1560 },
   { schedule: '0 16 * * 1',   path: '/api/refresh?type=sam-awards',               label: 'sam-awards-refresh',          maxStaleMinutes: 10080 },
   { schedule: '0 17 1 * *',   path: '/api/refresh?type=sam-entities',             label: 'sam-entities-refresh',        maxStaleMinutes: 43200 },
+  // Prime-contractor backfill (SYNTHESIS.md item 34, scoped) — space PRIME
+  // awards for Lockheed/Boeing/Northrop/L3Harris from the keyless
+  // USAspending.gov API, upserted into GovernmentContract. Monthly; the
+  // huge maxStaleMinutes just avoids alert noise since /procurement isn't
+  // time-critical for this backfill.
+  { schedule: '20 6 1 * *',   path: '/api/cron/prime-contracts-backfill',         label: 'prime-contracts-backfill',    maxStaleMinutes: 50000 },
   { schedule: '30 6 * * *',   path: '/api/refresh?type=ats-jobs',                 label: 'ats-jobs-refresh',            maxStaleMinutes: 1560 },
 
   // ─── Previously-orphaned fetch endpoints (existed but were never scheduled) ──
