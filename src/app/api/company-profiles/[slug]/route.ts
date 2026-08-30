@@ -28,6 +28,7 @@ const CORE_SCALAR_SELECT = {
   website: true,
   description: true,
   longDescription: true,
+  analystNote: true,
   logoUrl: true,
   ceo: true,
   cto: true,

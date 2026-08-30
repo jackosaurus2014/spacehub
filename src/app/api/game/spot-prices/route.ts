@@ -24,8 +24,11 @@ export async function GET() {
       const row = rows.find((r) => r.slug === slug);
       const spot = snapshot.prices[slug] ?? row?.currentPrice ?? def?.baseMarketPrice ?? 0;
       const hist = Array.isArray(row?.priceHistory) ? (row!.priceHistory as number[]) : [];
+      // Compare like with like: the last two recorded effective prices, not
+      // today's derived spot against yesterday's recorded price.
+      const last = hist.length >= 2 ? hist[hist.length - 1] : null;
       const prev = hist.length >= 2 ? hist[hist.length - 2] : null;
-      return { slug, name: def?.name ?? slug, icon: def?.icon ?? '', spot: Math.round(spot), base: def?.baseMarketPrice ?? row?.basePrice ?? 0, changePct: prev && prev > 0 ? Math.round(((spot - prev) / prev) * 1000) / 10 : null, manufactured: MANUFACTURED_RESOURCE_IDS.includes(slug) };
+      return { slug, name: def?.name ?? slug, icon: def?.icon ?? '', spot: Math.round(spot), base: def?.baseMarketPrice ?? row?.basePrice ?? 0, changePct: last != null && prev != null && prev > 0 ? Math.round(((last - prev) / prev) * 1000) / 10 : null, manufactured: MANUFACTURED_RESOURCE_IDS.includes(slug) };
     });
     // How many manufactured goods are actually listed right now — the "someone built it" count.
     const listed = await prisma.marketLimitOrder.aggregate({ where: { side: 'sell', status: { in: ['open', 'partial'] }, resourceSlug: { in: MANUFACTURED_RESOURCE_IDS } }, _sum: { quantity: true, filledQty: true } });

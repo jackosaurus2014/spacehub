@@ -85,6 +85,7 @@ interface CompanyDetail {
   country: string | null; foundedYear: number | null; employeeCount: number | null;
   employeeRange: string | null; website: string | null; description: string | null;
   longDescription: string | null; logoUrl: string | null; ceo: string | null;
+  analystNote?: string | null;
   cto: string | null; linkedinUrl: string | null; twitterUrl: string | null;
   isPublic: boolean; marketCap: number | null; stockPrice: number | null;
   priceChange24h: number | null;
@@ -2270,6 +2271,7 @@ export default function CompanyProfileDetailPage() {
               <div>
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl lg:text-3xl font-bold text-white">{company.name}</h1>
+                  {company.analystNote && <p className="mt-1 text-[15px] italic text-[var(--ink-2)] max-w-[68ch]">{company.analystNote}</p>}
                   {company.ticker && (
                     <span className="font-mono text-slate-300 text-lg">{company.ticker}</span>
                   )}

@@ -3068,6 +3068,9 @@ model CompanyProfile {
   employeeCountSource String? // "LinkedIn", "SEC Filing", etc.
   website             String?
   description         String?   @db.Text
+  // One authored sentence per company (SYNTHESIS.md item 30): what it does,
+  // for whom, and what makes it distinct — grounded in the profile, never hype.
+  analystNote         String?   @db.Text
   longDescription     String?   @db.Text // Detailed company overview
   logoUrl             String?
   ceo                 String?
