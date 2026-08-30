@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface AnimatedCounterProps {
   target: number;
@@ -10,6 +11,7 @@ interface AnimatedCounterProps {
 export default function AnimatedCounter({ target, duration = 1.5 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const reducedMotion = useReducedMotion();
   const [count, setCount] = useState(0);
 
   // Native IntersectionObserver replaces framer-motion useInView
@@ -29,6 +31,10 @@ export default function AnimatedCounter({ target, duration = 1.5 }: AnimatedCoun
 
   useEffect(() => {
     if (!isInView) return;
+    if (target === 0 || reducedMotion) {
+      setCount(target);
+      return;
+    }
     if (target === 0) {
       setCount(0);
       return;
@@ -50,7 +56,7 @@ export default function AnimatedCounter({ target, duration = 1.5 }: AnimatedCoun
 
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [isInView, target, duration]);
+  }, [isInView, target, duration, reducedMotion]);
 
   return <span ref={ref}>{count}</span>;
 }

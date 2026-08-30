@@ -61,6 +61,10 @@ const SpacePhotoOfDay = nextDynamic(() => import('@/components/SpacePhotoOfDay')
 });
 
 // Force dynamic rendering - no static generation at build time
+// Stays force-dynamic: the Railway build container has no database, so an
+// ISR revalidate would prerender against nothing and fail the build. The
+// per-hit DB cost is addressed with unstable_cache on the heavy loaders
+// instead (SYNTHESIS.md item 8, amended 2026-08-30).
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {

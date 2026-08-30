@@ -163,7 +163,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
                   )}
 
                   {/* Funding */}
-                  {company.totalFunding && company.totalFunding > 0 && (
+                  {company.totalFunding != null && company.totalFunding > 0 && (
                     <div className="text-xs text-emerald-400 font-mono mt-1">
                       {formatFunding(company.totalFunding)} raised
                     </div>

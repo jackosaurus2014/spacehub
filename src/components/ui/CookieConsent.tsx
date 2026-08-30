@@ -122,7 +122,7 @@ export default function CookieConsent() {
       aria-label="Cookie consent"
     >
       <div className="bg-black border-t border-white/[0.08] shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
-        <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6">
+        <div className="max-w-6xl mx-auto px-4 py-2.5 sm:px-6">
           {/* Main banner content */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

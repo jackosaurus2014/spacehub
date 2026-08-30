@@ -536,7 +536,7 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
 
       {/* Legacy Scores */}
       {company.scores.length > 0 && (
-        <SectionCard title="Detailed Intelligence Scores">
+        <SectionCard title="Legacy scoring model (pre-2026) — superseded by the SpaceNexus Score above">
           <div className="flex flex-wrap gap-6 justify-center py-2">
             {company.scores.map(s => (
               <ScoreRing key={s.id} score={s.score} label={s.scoreType.replace('_', ' ')} />
@@ -1843,6 +1843,11 @@ function IntelligenceTab({ company }: { company: CompanyDetail }) {
 }
 
 function RelationshipsTab({ company }: { company: CompanyDetail }) {
+  if (company.summary.competitors.length === 0) {
+    return (
+      <div className="card p-6 text-sm text-slate-400">No relationships recorded for this company yet — competitors, partners and customers are added as our research covers them. <Link href="/company-profiles" className="text-cyan-400 hover:text-cyan-300">Browse the directory</Link>.</div>
+    );
+  }
   return (
     <div className="space-y-4">
       {/* Competitors */}

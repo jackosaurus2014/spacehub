@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Startup & Pre-IPO Intelligence | SpaceNexus',
+  title: 'Space Startup & Pre-IPO Intelligence',
   description:
     'Track the space industry\'s pre-IPO watchlist, recent funding rounds, IPO pipeline, and who\'s hiring — plus a founder toolkit for building a space startup.',
   keywords: [
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'space company watchlist',
   ],
   openGraph: {
-    title: 'Space Startup & Pre-IPO Intelligence | SpaceNexus',
+    title: 'Space Startup & Pre-IPO Intelligence',
     description:
       'The pre-IPO watchlist, recent funding rounds, IPO pipeline, and hiring signals across the space industry — built for investors and job seekers.',
     url: 'https://spacenexus.us/startups',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Space Startup & Pre-IPO Intelligence | SpaceNexus',
+    title: 'Space Startup & Pre-IPO Intelligence',
     description:
       'The pre-IPO watchlist, recent funding rounds, IPO pipeline, and hiring signals across the space industry.',
     // Image comes from the co-located opengraph-image.tsx file convention.

@@ -369,7 +369,7 @@ const nextConfig = {
       // ── URL consolidation — talent & careers ──
       // 2026-08-29: 'jobs' is not a TopLevelTab on /space-talent ('talent' | 'workforce' | 'gigs');
       // the nav's Jobs link was falling through to the default talent tab.
-      { source: '/jobs', destination: '/space-talent?tab=workforce', permanent: true },
+      { source: '/jobs', destination: '/space-talent?tab=jobs', permanent: true },
       { source: '/salary-benchmarks', destination: '/space-talent?tab=salaries', permanent: true },
       { source: '/workforce-analytics', destination: '/space-talent?tab=trends', permanent: true },
       { source: '/career-intelligence', destination: '/space-talent?tab=trends', permanent: true },
@@ -413,6 +413,7 @@ const nextConfig = {
       { source: '/isru', destination: '/space-mining', permanent: true },
       { source: '/resource-exchange', destination: '/marketplace', permanent: true },
       { source: '/imagery-providers', destination: '/company-profiles', permanent: true },
+      { source: '/mission-debriefs/us-eva-98-2', destination: '/mission-debriefs/us-eva-98', permanent: true },
       { source: '/news-digest', destination: '/intelligence-brief', permanent: true },
       { source: '/watchlists', destination: '/my-watchlists', permanent: true },
       { source: '/materials-db', destination: '/materials-database', permanent: true },

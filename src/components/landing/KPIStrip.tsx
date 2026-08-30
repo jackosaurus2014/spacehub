@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { formatCompact } from '@/lib/format-number';
 import { SITE_STATS } from '@/lib/site-stats';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface KPIMetric {
   label: string;
@@ -58,9 +59,11 @@ function AnimatedCounter({ metric, shouldAnimate }: { metric: KPIMetric; shouldA
   const animationRef = useRef<number | null>(null);
   const hasAnimated = useRef(false);
 
+  const reducedMotion = useReducedMotion();
   useEffect(() => {
     if (!shouldAnimate || hasAnimated.current) return;
     hasAnimated.current = true;
+    if (reducedMotion) { setDisplayValue(metric.value); return; }
 
     const duration = 2000;
     const startTime = performance.now();
@@ -79,7 +82,7 @@ function AnimatedCounter({ metric, shouldAnimate }: { metric: KPIMetric; shouldA
 
     animationRef.current = requestAnimationFrame(animate);
     return () => { if (animationRef.current !== null) cancelAnimationFrame(animationRef.current); };
-  }, [shouldAnimate, metric.value]);
+  }, [shouldAnimate, metric.value, reducedMotion]);
 
   const formatted = formatNumber(displayValue, metric.prefix, metric.suffix);
 

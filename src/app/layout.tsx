@@ -13,7 +13,6 @@ import dynamic from 'next/dynamic';
 import { SITE_STATS } from '@/lib/site-stats';
 // Starfield removed in V2 redesign — true black background needs no decoration
 const Footer = dynamic(() => import('@/components/Footer'), { ssr: false });
-const QuickAccessSidebar = dynamic(() => import('@/components/QuickAccessSidebar'), { ssr: false });
 const SearchCommandPalette = dynamic(() => import('@/components/SearchCommandPalette'), { ssr: false });
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 const CookieConsent = dynamic(() => import('@/components/ui/CookieConsent'), { ssr: false });
@@ -31,14 +30,11 @@ import OfflineIndicator from '@/components/ui/OfflineIndicator';
 const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: false });
 const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentPopup'), { ssr: false });
 const QuickStartGuide = dynamic(() => import('@/components/onboarding/QuickStartGuide'), { ssr: false });
-const AnnouncementBanner = dynamic(() => import('@/components/AnnouncementBanner'), { ssr: false });
 const LiveNowBanner = dynamic(() => import('@/components/livestreams/LiveNowBanner'), { ssr: false });
-const TrialBanner = dynamic(() => import('@/components/TrialBanner'), { ssr: false });
 const TrialCountdownBanner = dynamic(() => import('@/components/billing/TrialCountdownBanner'), {
   ssr: false,
 });
 const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
-const SwipeModuleNavigation = dynamic(() => import('@/components/mobile/SwipeModuleNavigation'), { ssr: false });
 const PushOptInBanner = dynamic(() => import('@/components/mobile/PushOptInBanner'), { ssr: false });
 const WhatsNew = dynamic(() => import('@/components/mobile/WhatsNew').then(m => ({ default: m.default })), { ssr: false });
 const ReferralPrompt = dynamic(() => import('@/components/marketing/ReferralPrompt'), { ssr: false });
@@ -51,13 +47,12 @@ const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false
 // FeedbackButton removed — replaced with /feedback page to avoid blocking left nav
 const FeedbackWidget = dynamic(() => import('@/components/FeedbackWidget'), { ssr: false });
 const FeedbackTab = dynamic(() => import('@/components/FeedbackTab'), { ssr: false });
-const IndustryTicker = dynamic(() => import('@/components/ui/IndustryTicker'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
 const ErrorReporter = dynamic(() => import('@/components/ErrorReporter'), { ssr: false });
-import ModuleNavBar from '@/components/ModuleNavBar';
 import AutoBreadcrumb from '@/components/ui/AutoBreadcrumb';
+import LiveRail from '@/components/LiveRail';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -294,14 +289,10 @@ export default function RootLayout({
           <SubscriptionProvider>
             <DataInitializer />
             <div className="relative z-10 min-h-screen flex flex-col">
-              <TrialBanner />
-              <AnnouncementBanner />
               <LiveNowBanner />
+              <LiveRail />
               <Navigation />
-              <IndustryTicker />
-              <QuickAccessSidebar />
-              <main id="main-content" className="flex-1 lg:pl-14 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
-                <ModuleNavBar />
+              <main id="main-content" className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
                 <AutoBreadcrumb />
                 <TrialCountdownBanner />
                 <PageTransitionProvider>
@@ -320,7 +311,6 @@ export default function RootLayout({
               <OnboardingTour />
               <PageTracker />
               <KeyboardShortcutsModal />
-              <SwipeModuleNavigation />
               <WebVitals />
               <InstallPrompt />
               <IOSInstallPrompt />

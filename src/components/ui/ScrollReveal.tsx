@@ -1,6 +1,7 @@
 'use client';
 
 import React, { ReactNode, useRef, useEffect, useState, Children, cloneElement, isValidElement } from 'react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ export default function ScrollReveal({
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
@@ -61,7 +63,7 @@ export default function ScrollReveal({
   return (
     <div
       ref={ref}
-      className={`${className} ${visible ? animClass : 'opacity-0'}`}
+      className={`${className} ${reducedMotion ? '' : visible ? animClass : 'opacity-0'}`}
       style={style}
     >
       {children}
@@ -81,6 +83,7 @@ export function StaggerContainer({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const el = ref.current;

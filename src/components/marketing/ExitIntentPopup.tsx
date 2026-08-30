@@ -23,14 +23,12 @@ const SESSION_KEY = 'exit-popup-shown-this-session';
 export default function ExitIntentPopup() {
   const { data: session, status: sessionStatus } = useSession();
   const [visible, setVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState<'trial' | 'newsletter'>('trial');
+  const [activeTab, setActiveTab] = useState<'trial' | 'newsletter'>('newsletter');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const triggeredRef = useRef(false);
   const pageLoadTimeRef = useRef(Date.now());
-  const maxScrollRef = useRef(0);
-  const lastScrollYRef = useRef(0);
 
   const shouldSuppress = useCallback(() => {
     // Don't show to logged-in users
@@ -49,6 +47,8 @@ export default function ExitIntentPopup() {
     // Only trigger once per session
     try {
       if (sessionStorage.getItem(SESSION_KEY)) return true;
+      // A signup module was already shown this session — do not ask a third time.
+      if (sessionStorage.getItem('sn:signup-shown')) return true;
     } catch {
       // sessionStorage unavailable
     }
@@ -96,33 +96,12 @@ export default function ExitIntentPopup() {
       }
     };
 
-    // Mobile: rapid scroll-to-top detection
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-
-      // Track max scroll position
-      if (currentY > maxScrollRef.current) {
-        maxScrollRef.current = currentY;
-      }
-
-      // Detect rapid scroll to top: user was >500px down and now near top
-      if (
-        maxScrollRef.current > SCROLL_THRESHOLD &&
-        currentY < 50 &&
-        lastScrollYRef.current > 200
-      ) {
-        showPopup();
-      }
-
-      lastScrollYRef.current = currentY;
-    };
-
+    // Mobile scroll-back heuristic removed (audit 2026-08-30): it fired on an
+    // ordinary scroll-to-top mid-guide. Desktop mouse-leave only.
     document.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('scroll', handleScroll);
     };
   }, [shouldSuppress, showPopup]);
 

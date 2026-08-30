@@ -28,6 +28,10 @@ export default function NewsletterSignup({
 
   // Check for newsletter status in URL (from verification/unsubscribe redirects)
   useEffect(() => {
+    try { sessionStorage.setItem('sn:signup-shown', '1'); } catch { /* private mode */ }
+  }, []);
+
+  useEffect(() => {
     const newsletterStatus = searchParams.get('newsletter');
     if (newsletterStatus) {
       switch (newsletterStatus) {

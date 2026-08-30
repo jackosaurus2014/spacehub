@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
+// Investor names arrive as written in each round; the leaderboard must not
+// count one firm twice (a16z was #3 and #8 at once). Canonical form wins.
+const INVESTOR_ALIASES: Record<string, string> = {
+  'a16z': 'a16z (Andreessen Horowitz)', 'andreessen horowitz': 'a16z (Andreessen Horowitz)', 'a16z (andreessen horowitz)': 'a16z (Andreessen Horowitz)',
+  'founders fund': 'Founders Fund', 'lux capital': 'Lux Capital', 'lux': 'Lux Capital', 'sequoia': 'Sequoia Capital', 'sequoia capital': 'Sequoia Capital',
+  'in-q-tel': 'In-Q-Tel', 'iqt': 'In-Q-Tel', 'space capital': 'Space Capital', 'seraphim': 'Seraphim Space', 'seraphim space': 'Seraphim Space', 'seraphim capital': 'Seraphim Space',
+};
+function canonicalInvestor(name: string): string {
+  const key = name.trim().toLowerCase();
+  return INVESTOR_ALIASES[key] ?? name.trim();
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
@@ -137,7 +149,7 @@ export async function GET() {
         ...(r.leadInvestor ? [r.leadInvestor] : []),
         ...r.investors,
       ];
-      const uniqueInvestorNames = Array.from(new Set(allInvestorNames));
+      const uniqueInvestorNames = Array.from(new Set(allInvestorNames.map(canonicalInvestor)));
       uniqueInvestorNames.forEach((inv) => {
         if (!investorDeals5yr[inv]) investorDeals5yr[inv] = { deals: 0, totalAmount: 0 };
         investorDeals5yr[inv].deals += 1;

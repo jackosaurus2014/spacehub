@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import prisma from '@/lib/db';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import IndustryTicker from '@/components/ui/IndustryTicker';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import DataAsOf from '@/components/ui/DataAsOf';
@@ -29,7 +30,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: 'Space Stocks — Live Prices for Every Public Space Company',
   description:
-    'Live stock prices for every publicly traded space company: SpaceX (SPCX), Rocket Lab (RKLB), Firefly Aerospace (FLY), Voyager Technologies (VOYG), HawkEye 360 (HAWK), York Space Systems (YSS), Lockheed Martin, Boeing, and more — organized by IPO class, pure-play, primes & defense, and satellite operators.',
+    'Live quotes and fundamentals for every public space company — pure-play launch and satellite names, primes and defense, satellite operators — plus the post-IPO watchlist.',
   keywords: [
     'space stocks',
     'SPCX stock',
@@ -182,6 +183,7 @@ async function getIpoClass(): Promise<IpoRow[]> {
 export default async function SpaceStocksPage() {
   let roster: Awaited<ReturnType<typeof getRoster>>;
   let ipoClass: IpoRow[];
+  let rosterFailed = false;
   try {
     [roster, ipoClass] = await Promise.all([getRoster(), getIpoClass()]);
   } catch (error) {
@@ -190,6 +192,12 @@ export default async function SpaceStocksPage() {
     });
     roster = { pureplay: [], primes: [], satelliteEO: [], allCount: 0 };
     ipoClass = [];
+    rosterFailed = true;
+  }
+  // Stale beats blank; blank beats invented — but never blank *silently*.
+  if (!rosterFailed && roster.allCount === 0) {
+    rosterFailed = true;
+    logger.error('space-stocks: roster query returned zero public companies', {});
   }
 
   const totalPublic = roster.allCount;
@@ -220,6 +228,9 @@ export default async function SpaceStocksPage() {
       />
 
       <div className="container mx-auto px-4 pt-6">
+        {/* The ticker left global chrome (worst reduced-motion offender on every
+            page) and lives on the markets surfaces where it earns its pixels. */}
+        <IndustryTicker />
         <AnimatedPageHeader
           title="Space Stocks"
           subtitle="Live prices for every publicly traded space company — from the newest IPOs to the legacy primes."
@@ -242,7 +253,7 @@ export default async function SpaceStocksPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-slate-300">
-                SpaceX (NASDAQ: SPCX) went public in June 2026 at a ~$2T market cap — the largest IPO in history — kicking off a wave of new space listings. This hub tracks every one of them, live.
+                SpaceX (NASDAQ: SPCX) went public in June 2026 at a market capitalization near $1.8–1.9T (see its profile for the live figure) — the largest IPO in history — kicking off a wave of new space listings. This hub tracks every one of them, live.
               </p>
             </div>
             <div className="shrink-0 flex flex-col gap-2">
@@ -252,6 +263,12 @@ export default async function SpaceStocksPage() {
           </div>
         </div>
 
+        {rosterFailed && (
+          <div role="status" className="card p-5 mb-6 border border-amber-500/30 bg-amber-500/5">
+            <div className="text-sm font-semibold text-amber-300">Company roster temporarily unavailable</div>
+            <p className="text-xs text-slate-400 mt-1">The public-company database did not answer. This is a data outage on our side, not an empty market — the tables below are blank until it recovers (usually minutes). Live quotes still work on <Link href="/company-profiles" className="text-cyan-400 hover:text-cyan-300">company profiles</Link>.</p>
+          </div>
+        )}
         <SpaceStocksTables
           ipoClass={ipoClass}
           pureplay={roster.pureplay}

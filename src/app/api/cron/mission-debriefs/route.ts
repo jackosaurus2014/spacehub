@@ -93,9 +93,23 @@ export async function POST(request: NextRequest) {
     // Find which ones already have a debrief
     const existingDebriefs = await prisma.missionDebrief.findMany({
       where: { eventId: { in: events.map((e) => e.id) } },
-      select: { eventId: true },
+      select: { id: true, eventId: true, status: true },
     });
-    const haveDebrief = new Set(existingDebriefs.map((d) => d.eventId).filter(Boolean) as string[]);
+    // Resync (audit 2026-08-30): the outcome sync can flip an event from
+    // scrubbed to completed after its debrief was written — leaving an AI
+    // narrative explaining a scrub that never happened. A debrief whose
+    // status disagrees with its event is deleted here and regenerated below.
+    const eventStatusById = new Map(events.map((e) => [e.id, e.status]));
+    const mapStatus = (st: string) => st === 'completed' ? 'success' : st === 'scrubbed' ? 'scrubbed' : (st === 'failure' || st === 'failed') ? 'failure' : 'partial';
+    const stale = existingDebriefs.filter((d) => d.eventId && eventStatusById.has(d.eventId) && mapStatus(eventStatusById.get(d.eventId) as string) !== d.status);
+    let resynced = 0;
+    if (stale.length > 0) {
+      await prisma.missionDebrief.deleteMany({ where: { id: { in: stale.map((d) => d.id) } } });
+      resynced = stale.length;
+      logger.info('mission-debriefs: deleted stale debriefs for resync', { count: resynced, eventIds: stale.map((d) => d.eventId) });
+    }
+    const staleEventIds = new Set(stale.map((d) => d.eventId));
+    const haveDebrief = new Set(existingDebriefs.map((d) => d.eventId).filter((id): id is string => !!id && !staleEventIds.has(id)));
 
     let created = 0;
     let skipped = 0;

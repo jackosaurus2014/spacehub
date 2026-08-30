@@ -583,10 +583,10 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
   if (liveMissions.length === 0) {
     return (
       <div className="mb-8">
-        <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
+        <h1 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
           <span className="text-2xl">📺</span>
           Live Now
-        </h2>
+        </h1>
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.04] via-[#0a0a0a] to-white/[0.04] border border-white/[0.06]">
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />

@@ -167,16 +167,16 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
             }
             setFundingSub(`${data.summary.last12MonthsDealCount} deals (12 mo)`);
           } else {
-            // No funding data in DB yet — show static placeholder
-            setFundingValue('$2.1B');
-            setFundingSub('VC Funding (est.)');
+            // No funding data — say so. Never an invented figure in a tile
+            // that sits beside real ones (audit 2026-08-30).
+            setFundingValue('—');
+            setFundingSub('funding data unavailable');
           }
         }
       })
       .catch(() => {
-        // Static fallback
-        setFundingValue('$2.1B');
-        setFundingSub('VC Funding Q1 (est.)');
+        setFundingValue('—');
+        setFundingSub('funding data unavailable');
       });
   }, []);
 
@@ -225,8 +225,8 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
               {/* 2026-08-29: the anonymous front door now leads with launches —
                   the audience search actually sends — instead of a SaaS pitch. */}
               <h1 className="text-display text-[clamp(2.25rem,4.5vw+1rem,3.75rem)] text-[var(--text-primary)]">
-                Every launch.<br className="hidden sm:block" />
-                Live, tracked,<br className="hidden sm:block" />
+                Every launch.{' '}<br className="hidden sm:block" />
+                Live, tracked,{' '}<br className="hidden sm:block" />
                 explained.
               </h1>
             </Reveal>
