@@ -1,3 +1,5 @@
+import { FALCON9_DEDICATED_PER_KG, FALCON9_LIST_PRICE_USD, FALCON_HEAVY_LIST_PRICE_USD, RIDESHARE_MIN_PRICE_USD, RIDESHARE_PER_KG, ELECTRON_DEDICATED_PER_KG, STARSHIP_TARGET_PER_KG, fmtUsd, fmtUsdM, fmtUsdK } from '@/lib/launch-cost-constants';
+
 // ─── "How much does it cost to launch X?" long-tail guides ──────────────────
 // The launch-cost guide is the site's largest organic asset (28.7k Search
 // Console impressions/28d) and its top queries are all variants of "how much
@@ -66,10 +68,10 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     description: 'From $350,000 for a 50 kg smallsat on a SpaceX rideshare to about $70 million for a dedicated Falcon 9 and $100 million-plus for a heavy GEO satellite. 2026 launch prices by satellite size and orbit.',
     shortAnswer: 'It depends almost entirely on mass and whether you buy a seat or the whole rocket. A 50 kg smallsat rides on a SpaceX Transporter mission for about $350,000 (roughly $7,000 per additional kilogram); a 150 kg satellite costs around $1 million to launch on rideshare. A dedicated small launcher such as Electron is about $8 million for up to ~300 kg to your exact orbit. A dedicated Falcon 9 lists at about $70 million and carries up to 22,800 kg to low Earth orbit — about $3,000 per kilogram for whoever fills it — while a heavy geostationary communications satellite launched to GTO typically pays $70–120 million.',
     rows: [
-      { option: 'Smallsat, 50 kg, rideshare to SSO', price: '~$350k', notes: 'SpaceX Transporter minimum; ~$7,000/kg above 50 kg', rocket: 'falcon-9' },
+      { option: 'Smallsat, 50 kg, rideshare to SSO', price: `~${fmtUsdK(RIDESHARE_MIN_PRICE_USD)}`, notes: `SpaceX Transporter minimum; ~${fmtUsd(RIDESHARE_PER_KG)}/kg above 50 kg`, rocket: 'falcon-9' },
       { option: 'Smallsat, 150 kg, rideshare', price: '~$1M', notes: 'Plus integration, transport and insurance — see the hidden costs', rocket: 'falcon-9' },
       { option: 'Dedicated small launch (Electron, ~300 kg)', price: '~$8M', notes: 'Your orbit, your schedule', rocket: 'electron' },
-      { option: 'Dedicated Falcon 9 (up to 22.8 t LEO)', price: '~$70M', notes: 'About $3,000/kg at full payload', rocket: 'falcon-9' },
+      { option: 'Dedicated Falcon 9 (up to 22.8 t LEO)', price: `~${fmtUsdM(FALCON9_LIST_PRICE_USD)}`, notes: `About ${fmtUsd(FALCON9_DEDICATED_PER_KG)}/kg at full payload`, rocket: 'falcon-9' },
       { option: 'GEO comsat to GTO (Falcon 9 / Ariane 6 / Vulcan)', price: '$70M–$120M', notes: 'Heavier satellites and higher-energy orbits; dual-manifest on Ariane 64 shares the bill', rocket: 'ariane-6' },
       { option: 'Falcon Heavy, dedicated', price: '~$97M', notes: 'For very heavy or direct-to-GEO missions', rocket: 'falcon-heavy' },
     ],
@@ -81,8 +83,8 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
       'Licensing (FCC/ITU, NOAA if imaging, export control if launching abroad).',
     ],
     faq: [
-      { q: 'How much does SpaceX charge to launch a satellite?', a: 'Rideshare starts at about $350,000 for 50 kg on Transporter missions, roughly $7,000 per kilogram beyond that. A dedicated Falcon 9 lists at about $70 million; Falcon Heavy about $97 million. Government missions cost more.' },
-      { q: 'How much does it cost per kilogram to launch a satellite?', a: 'Roughly $3,000 per kilogram on a full dedicated Falcon 9, about $7,000 per kilogram on rideshare, $25,000–$30,000 per kilogram on a dedicated small launcher like Electron, and a target of $100–$500 per kilogram on Starship at mature flight rates.' },
+      { q: 'How much does SpaceX charge to launch a satellite?', a: `Rideshare starts at about ${fmtUsd(RIDESHARE_MIN_PRICE_USD)} for 50 kg on Transporter missions, roughly ${fmtUsd(RIDESHARE_PER_KG)} per kilogram beyond that. A dedicated Falcon 9 lists at about ${fmtUsdM(FALCON9_LIST_PRICE_USD)}; Falcon Heavy about ${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)}. Government missions cost more.` },
+      { q: 'How much does it cost per kilogram to launch a satellite?', a: `Roughly ${fmtUsd(FALCON9_DEDICATED_PER_KG)} per kilogram on a full dedicated Falcon 9, about ${fmtUsd(RIDESHARE_PER_KG)} per kilogram on rideshare, about ${fmtUsd(ELECTRON_DEDICATED_PER_KG)} per kilogram on a dedicated small launcher like Electron, and a target of $${STARSHIP_TARGET_PER_KG.low}–$${STARSHIP_TARGET_PER_KG.high} per kilogram on Starship at mature flight rates.` },
       { q: 'Can I launch a satellite for free?', a: 'Sometimes: NASA\'s CubeSat Launch Initiative, ESA educational programmes, and sponsored rideshare competitions fly selected research payloads at no launch cost. Commercial payloads pay.' },
     ],
     related: [{ label: 'Launch cost guide: every rocket compared', href: '/guide/space-launch-cost-comparison' }, { label: 'Launch cost calculator', href: '/launch-cost-calculator' }, { label: 'Learn: getting a kilogram to orbit', href: '/learn/supply-chain/space-supply-chain-fundamentals/getting-a-kilogram-to-orbit' }],
@@ -273,7 +275,7 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     description: 'A 20-satellite smallsat constellation costs roughly $10-20 million in launch alone; Starlink-scale is billions a year. Dedicated vs rideshare, orbital planes, replenishment: the launch economics of constellations.',
     shortAnswer: 'Launch cost for a constellation is set by how many orbital planes you need, not just how many satellites. Twenty 100-kilogram satellites in one plane ride a single rideshare for roughly $10-15 million; the same twenty spread across five planes need five launches or an orbital transfer vehicle, and the bill doubles or triples. At the top of the market, SpaceX launches Starlink at marginal cost, an estimated $15-30 million per Falcon 9, and still spends $2-3 billion a year on launch. Replenishment is permanent: a five-year design life means relaunching 20% of the constellation every year, forever.',
     rows: [
-      { option: '20 x 100 kg smallsats, one plane, rideshare', price: '~$10M-$15M', notes: 'SpaceX Transporter at ~$6,000-7,000/kg plus deployers', rocket: 'falcon-9' },
+      { option: '20 x 100 kg smallsats, one plane, rideshare', price: '~$10M-$15M', notes: `SpaceX Transporter at ~${fmtUsd(RIDESHARE_PER_KG)}/kg plus deployers`, rocket: 'falcon-9' },
       { option: 'Same 20 satellites across 5 planes', price: '~$25M-$50M', notes: 'Multiple rideshares or dedicated Electron flights, or an OTV to drift planes', rocket: 'electron' },
       { option: 'Dedicated Falcon 9 for one plane (up to ~60 smallsats)', price: '~$70M', notes: 'Exact plane and altitude; the choice for operators past a few dozen satellites', rocket: 'falcon-9' },
       { option: 'Starlink-scale (100+ launches/yr, internal cost)', price: '$2B-$3B per year (est.)', notes: 'Only possible for a launch provider that owns the constellation', rocket: 'falcon-9' },

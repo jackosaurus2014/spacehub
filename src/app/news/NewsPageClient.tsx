@@ -31,7 +31,9 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { trackTimeOnPage } from '@/lib/analytics';
 import JsonLd from '@/components/seo/JsonLd';
 
-function NewsContent() {
+// initialArticles/initialTotal: the first page, server-rendered by news/page.tsx
+// (SYNTHESIS.md item 23) so crawlers and slow phones get headlines in HTML.
+function NewsContent({ initialArticles, initialTotal }: { initialArticles?: NewsArticle[]; initialTotal?: number }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -43,13 +45,15 @@ function NewsContent() {
     return trackTimeOnPage('/news');
   }, []);
 
-  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const seeded = !!initialArticles && initialArticles.length > 0 && !initialCategory;
+  const [articles, setArticles] = useState<NewsArticle[]>(seeded ? (initialArticles as NewsArticle[]) : []);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     initialCategory
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!seeded);
   const [error, setError] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState(seeded ? (initialTotal ?? 0) : 0);
+  const skipFirstFetch = useRef(seeded);
   const [offset, setOffset] = useState(0);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [newArticlesCount, setNewArticlesCount] = useState(0);
@@ -102,6 +106,8 @@ function NewsContent() {
   }, [selectedCategory, offset]);
 
   useEffect(() => {
+    // Server already rendered page one — do not refetch it on hydration.
+    if (skipFirstFetch.current) { skipFirstFetch.current = false; return; }
     fetchNews();
   }, [fetchNews]);
 
@@ -285,9 +291,11 @@ function NewsContent() {
 interface NewsPageClientProps {
   /** Top featured blog posts (metadata only), provided by the server page. */
   featuredBlogPosts: BlogPostMeta[];
+  initialArticles?: NewsArticle[];
+  initialTotal?: number;
 }
 
-export default function NewsPageClient({ featuredBlogPosts }: NewsPageClientProps) {
+export default function NewsPageClient({ featuredBlogPosts, initialArticles, initialTotal }: NewsPageClientProps) {
   return (
     <div className="min-h-screen">
       <BreadcrumbSchema items={[
@@ -362,7 +370,7 @@ export default function NewsPageClient({ featuredBlogPosts }: NewsPageClientProp
                 <LoadingSpinner size="lg" />
               </div>
             }>
-              <NewsContent />
+              <NewsContent initialArticles={initialArticles} initialTotal={initialTotal} />
             </Suspense>
           </div>
 

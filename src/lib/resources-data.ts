@@ -1,4 +1,5 @@
 import prisma from '@/lib/db';
+import { FALCON9_DEDICATED_PER_KG } from '@/lib/launch-cost-constants';
 import { safeJsonParse } from '@/lib/errors';
 
 // Conversion constants
@@ -372,7 +373,7 @@ const SPACE_RESOURCES: ResourceData[] = [
     name: 'Xenon Gas',
     description: 'Noble gas propellant for ion and Hall-effect thrusters.',
     category: 'fuel',
-    earthPricePerKg: 3000,
+    earthPricePerKg: FALCON9_DEDICATED_PER_KG,
     priceSource: 'Rare gas market',
     density: 5.894,
     applications: ['ion_propulsion', 'hall_thrusters', 'electric_propulsion'],

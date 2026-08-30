@@ -1166,6 +1166,9 @@ function MissionControlContent() {
   const pathname = usePathname();
 
   const [events, setEvents] = useState<SpaceEvent[]>([]);
+  // Timeline cap (SYNTHESIS.md item 24): 100 events at 390px measured 53,785px
+  // of scroll. Render a window, grow it on demand, jump by month.
+  const [timelineLimit, setTimelineLimit] = useState(24);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -1285,6 +1288,7 @@ function MissionControlContent() {
   const groupedEvents = useMemo(() => {
     let filtered = events;
 
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = events.filter(
@@ -1311,6 +1315,9 @@ function MissionControlContent() {
 
     return grouped;
   }, [events, searchQuery]);
+  const orderedTimelineIds = Object.keys(groupedEvents).flatMap((y) => Object.values(groupedEvents[y] as Record<string, { id: string }[]>).flatMap((arr) => arr.map((ev) => ev.id)));
+  const visibleIds = new Set(orderedTimelineIds.slice(0, timelineLimit));
+  const hiddenTimelineCount = Math.max(0, orderedTimelineIds.length - timelineLimit);
 
   const years = Object.keys(groupedEvents).sort();
 
@@ -1553,7 +1560,7 @@ function MissionControlContent() {
                         </h3>
 
                         <div className="space-y-4">
-                          {monthEvents.map((event) => (
+                          {monthEvents.filter((event) => visibleIds.has(event.id)).map((event) => (
                             <div key={event.id}>
                               <EventCard event={event} />
                               {event.isLive && event.streamUrl && (
@@ -1571,6 +1578,14 @@ function MissionControlContent() {
           </div>
         )}
 
+        {!loading && hiddenTimelineCount > 0 && (
+          <div className="flex flex-wrap items-center justify-center gap-3 -mt-2 mb-8">
+            <button type="button" onClick={() => setTimelineLimit((n) => n + 24)} className="btn-secondary text-sm py-2 px-4">
+              Show {Math.min(24, hiddenTimelineCount)} more of {hiddenTimelineCount} later launches
+            </button>
+            <button type="button" onClick={() => setTimelineLimit(orderedTimelineIds.length)} className="text-sm text-[var(--ink-3)] hover:text-[var(--ember)] min-h-[44px] px-2">Show all</button>
+          </div>
+        )}
         {/* Ad between timeline and dynamic content */}
         <div className="my-8">
           <AdSlot position="in_feed" module="mission-control" adsenseSlot="in_feed_mc" adsenseFormat="rectangle" />

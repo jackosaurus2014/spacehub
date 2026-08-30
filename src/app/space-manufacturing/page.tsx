@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useContext, Suspense } from 'react';
+import { RIDESHARE_PER_KG, STARSHIP_TARGET_PER_KG, fmtUsd } from '@/lib/launch-cost-constants';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
@@ -240,8 +241,8 @@ function OverviewTab() {
           {[
             {
               title: 'Declining Launch Costs',
-              description: 'SpaceX Falcon 9 rideshare at ~$5,500/kg to LEO, with Starship promising $200-500/kg. Lower launch costs make manufacturing economics viable for more product categories.',
-              metric: '$5,500/kg',
+              description: `SpaceX Falcon 9 rideshare at ~${fmtUsd(RIDESHARE_PER_KG)}/kg to LEO, with Starship targeting $${STARSHIP_TARGET_PER_KG.low}-${STARSHIP_TARGET_PER_KG.high}/kg. Lower launch costs make manufacturing economics viable for more product categories.`,
+              metric: `${fmtUsd(RIDESHARE_PER_KG)}/kg`,
               metricLabel: 'Current LEO cost',
             },
             {

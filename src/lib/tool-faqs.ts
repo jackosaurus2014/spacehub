@@ -1,3 +1,5 @@
+import { FALCON9_DEDICATED_PER_KG, RIDESHARE_PER_KG, fmtUsd } from '@/lib/launch-cost-constants';
+
 // ─── FAQ data for tool pages — used with FAQSchema for Google rich snippets ─
 
 export const TOOL_FAQS: Record<string, { question: string; answer: string }[]> = {
@@ -13,7 +15,7 @@ export const TOOL_FAQS: Record<string, { question: string; answer: string }[]> =
     { question: 'What frequency bands do satellites use?', answer: 'Common satellite bands: L-band (1-2 GHz) for GPS, S-band (2-4 GHz) for weather, C-band (4-8 GHz) for TV, Ku-band (12-18 GHz) for broadband, Ka-band (26-40 GHz) for high-throughput.' },
   ],
   'mission-cost': [
-    { question: 'How much does it cost to launch a satellite?', answer: 'Launch costs range from $2,700/kg on SpaceX Falcon 9 (rideshare) to $54,000/kg historically on the Space Shuttle. A small satellite mission can cost $5-15M total including the satellite, launch, and operations.' },
+    { question: 'How much does it cost to launch a satellite?', answer: `Launch costs range from about ${fmtUsd(FALCON9_DEDICATED_PER_KG)}/kg on a full dedicated SpaceX Falcon 9 (${fmtUsd(RIDESHARE_PER_KG)}/kg on rideshare) to $54,000/kg historically on the Space Shuttle. A small satellite mission can cost $5-15M total including the satellite, launch, and operations.` },
     { question: 'What factors affect mission cost?', answer: 'Key cost drivers: orbit altitude and inclination, satellite mass, launch vehicle selection, ground station requirements, mission duration, insurance, and regulatory compliance (spectrum licensing, debris mitigation).' },
     { question: 'Is the mission cost calculator accurate?', answer: 'This calculator provides rough order of magnitude estimates for mission planning. Actual costs depend on many factors including launch vehicle availability, payload integration, and market conditions. Use it for early-stage feasibility analysis.' },
   ],
