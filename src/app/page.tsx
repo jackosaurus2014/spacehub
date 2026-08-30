@@ -32,9 +32,9 @@ const CATEGORY_CHIP: Record<string, string> = {
   policy: 'text-[var(--caution)] border-[rgba(255,197,61,.35)]',
 };
 
-function rel(d: Date | null, now: Date): string {
-  if (!d) return 'TBD';
-  const h = Math.max(0, Math.round((d.getTime() - now.getTime()) / 3600000));
+function rel(iso: string | null, now: Date): string {
+  if (!iso) return 'TBD';
+  const h = Math.max(0, Math.round((new Date(iso).getTime() - now.getTime()) / 3600000));
   return h === 0 ? 'LIVE' : `T−${h}h`;
 }
 
@@ -48,7 +48,7 @@ export default async function HomePage() {
   const data = await getHomeData();
   const now = new Date();
   const asOf = new Date(data.asOf);
-  const next48 = data.upcoming.filter((r) => r.launchDate && r.launchDate.getTime() - now.getTime() < 48 * 3600000 && r.launchDate.getTime() > now.getTime() - 3600000).slice(0, 5);
+  const next48 = data.upcoming.filter((r) => { if (!r.launchDate) return false; const t = new Date(r.launchDate).getTime(); return t - now.getTime() < 48 * 3600000 && t > now.getTime() - 3600000; }).slice(0, 5);
   const chartSlug = chartOfTheWeekSlug(now);
   const chart = getChartDef(chartSlug);
   const slipMax = data.slipSeries ? Math.max(1, ...data.slipSeries.values) : 1;

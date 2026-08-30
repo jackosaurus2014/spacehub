@@ -4,9 +4,9 @@ import type { UpcomingRow } from '@/lib/home-data';
 
 // Welded to the hero: the next five, so the board is always the second thing
 // you see. Server-rendered; relative times are computed once per cache.
-function rel(d: Date | null, now: Date): string {
-  if (!d) return 'TBD';
-  const ms = d.getTime() - now.getTime();
+function rel(iso: string | null, now: Date): string {
+  if (!iso) return 'TBD';
+  const ms = new Date(iso).getTime() - now.getTime();
   if (ms <= 0) return 'LIVE';
   const h = Math.floor(ms / 3600000);
   const days = Math.floor(h / 24);
