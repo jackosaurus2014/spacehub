@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
   const errors: string[] = [];
 
   for (const company of PRIME_COMPANIES) {
+      const companyId = (await prisma.companyProfile.findFirst({ where: { name: company.name }, select: { id: true } }).catch(() => null))?.id;
     const result: CompanyResult = { fetched: 0, kept: 0, upserted: 0 };
 
     for (const agencyCode of Object.keys(PRIME_AGENCIES) as PrimeAgencyCode[]) {
@@ -123,6 +124,24 @@ export async function POST(request: NextRequest) {
               create: mapped,
               update: mapped,
             });
+            // The company profile's Contracts tab reads GovernmentContractAward
+            // (linked by companyId), not GovernmentContract — write both, keyed
+            // by the same usaspending slug as contractNumber.
+            const award = {
+              companyId: companyId ?? null,
+              companyName: company.name,
+              contractNumber: mapped.slug,
+              agency: mapped.agency === 'USSF' ? 'Space Force' : mapped.agency,
+              title: mapped.title,
+              description: mapped.description,
+              awardDate: mapped.awardDate ?? null,
+              value: mapped.valueMin ?? null,
+              ceiling: mapped.valueMax ?? null,
+              type: 'prime',
+              naicsCode: mapped.naicsCode ?? null,
+              source: 'USAspending.gov',
+            };
+            await prisma.governmentContractAward.upsert({ where: { contractNumber: mapped.slug }, create: award, update: award });
             result.upserted++;
           } catch (error) {
             const msg = error instanceof Error ? error.message : String(error);
