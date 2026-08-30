@@ -39,7 +39,6 @@ const WhatsNew = dynamic(() => import('@/components/mobile/WhatsNew').then(m => 
 const ReferralPrompt = dynamic(() => import('@/components/marketing/ReferralPrompt'), { ssr: false });
 const AppRatingPrompt = dynamic(() => import('@/components/mobile/AppRatingPrompt'), { ssr: false });
 const AndroidInstallBanner = dynamic(() => import('@/components/mobile/AndroidInstallBanner'), { ssr: false });
-const MobileSocialProofBar = dynamic(() => import('@/components/marketing/MobileSocialProofBar'), { ssr: false });
 const UsageLimitBanner = dynamic(() => import('@/components/marketing/UsageLimitBanner'), { ssr: false });
 const StreakNotification = dynamic(() => import('@/components/marketing/StreakNotification'), { ssr: false });
 const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
@@ -268,7 +267,6 @@ export default function RootLayout({
           Skip to main content
         </a>
         <NavigationProgress />
-        <MobileSocialProofBar />
         <OfflineIndicator />
         <AuthProvider>
           <SubscriptionProvider>

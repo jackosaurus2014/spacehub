@@ -418,11 +418,13 @@ export default function Navigation() {
               className="h-5 w-auto"
               priority
             />
-            <span className="text-white/90 hover:text-white text-sm font-medium transition-colors whitespace-nowrap">Home</span>
+            <span className="sr-only">SpaceNexus home</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-4">
+            {/* "Live" is a lie 23 hours a day (SYNTHESIS.md §3): the link appears only during a broadcast; the LiveRail carries the next launch otherwise. */}
+            {isLiveNow && (
             <Link
               href="/live"
               className="text-white/90 hover:text-white transition-colors text-sm font-medium flex items-center gap-1.5"
@@ -436,6 +438,7 @@ export default function Navigation() {
               Live
               {isLiveNow && <span className="sr-only">(broadcast in progress)</span>}
             </Link>
+            )}
             <DropdownMenu
               label="Launches"
               items={LAUNCHES_ITEMS}

@@ -107,6 +107,9 @@ export default function QuickStartGuide() {
 
     // Show after a short delay for entrance animation
     if (!savedDismissed && savedCompleted.length < STEPS.length) {
+      // Overlay budget: the checklist waits until the onboarding tour has been
+      // completed or skipped — never beside it, never on a first pageview.
+      if (!localStorage.getItem('spacenexus-onboarding-complete')) return;
       const timer = setTimeout(() => setVisible(true), 800);
       return () => clearTimeout(timer);
     }

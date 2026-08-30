@@ -29,7 +29,10 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
   const pollInterval = useRef<NodeJS.Timeout | null>(null);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Scroll the chat pane only — scrollIntoView scrolled the whole page to the
+    // chat on load (the homepage opened 1,173px down). Audit 2026-08-30.
+    const pane = messagesEndRef.current?.parentElement;
+    if (pane) pane.scrollTop = pane.scrollHeight;
   }, []);
 
   const fetchMessages = useCallback(async () => {

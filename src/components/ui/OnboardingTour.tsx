@@ -137,11 +137,20 @@ export default function OnboardingTour() {
     // The game has its own first-touch flow (GameStartMenu); never stack this modal on it.
     if (pathname?.startsWith('/space-tycoon')) return;
     const completed = localStorage.getItem(STORAGE_KEY);
-    if (!completed) {
-      // Small delay so the page loads first
-      const timer = setTimeout(() => setIsOpen(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    if (completed) return;
+    // Overlay budget: one (SYNTHESIS.md §3). Never on the very first pageview
+    // — the visitor came for a launch, and the cookie sheet is already up —
+    // and never while consent is still pending. Second page of the session.
+    let pageviews = 0;
+    try {
+      pageviews = parseInt(sessionStorage.getItem('sn:pv') || '0', 10) + 1;
+      sessionStorage.setItem('sn:pv', String(pageviews));
+    } catch { pageviews = 2; }
+    const consented = !!localStorage.getItem('spacenexus-cookie-consent');
+    if (pageviews < 2 || !consented) return;
+    // Small delay so the page loads first
+    const timer = setTimeout(() => setIsOpen(true), 1500);
+    return () => clearTimeout(timer);
   }, [, pathname]);
 
   const handleComplete = useCallback(() => {
