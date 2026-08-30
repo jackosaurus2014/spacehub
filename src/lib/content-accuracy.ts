@@ -52,7 +52,7 @@ export interface ContentAccuracySentinelResult {
 // ---------------------------------------------------------------------------
 
 // Event types eligible to be the Mission Control "Featured Mission" marquee
-// card — mirrors MARQUEE_EVENT_TYPES in src/app/mission-control/page.tsx.
+// card — mirrors MARQUEE_EVENT_TYPES in src/app/mission-control/MissionControlClient.tsx.
 const MARQUEE_EVENT_TYPES = ['crewed_mission', 'moon_mission', 'mars_mission'];
 
 const MS_PER_HOUR = 1000 * 60 * 60;

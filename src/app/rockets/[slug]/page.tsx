@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeroArt from '@/components/ui/HeroArt';
 import { notFound } from 'next/navigation';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import LaunchRow, { formatLaunchDate, missionTitle } from '@/components/launches/LaunchRow';
@@ -69,6 +70,8 @@ export default async function RocketPage({ params }: { params: { slug: string } 
           <Link href="/rockets" className="hover:text-white/80">Rockets</Link><span>/</span>
           <span className="text-slate-400">{spec.name}</span>
         </nav>
+        {/* One illustration per vehicle (SYNTHESIS.md item 22; scripts/art-batches/c2-rocket-heroes) */}
+        <HeroArt src={`/art/rockets/${spec.id}.webp`} alt={`${spec.name} illustration`} className="mb-8" />
 
         <header className="mb-8">
           <div className="flex flex-wrap items-center gap-3 mb-2">

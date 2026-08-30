@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { SITE_STATS } from '@/lib/site-stats';
+import LiveEconomyStrip from '@/components/game/LiveEconomyStrip';
 
 // Search-facing companion to the game client (which renders nothing a
 // crawler can read). Plain-text answers to "what is this?" for the queries
@@ -76,6 +77,8 @@ export default function SpaceTycoonAboutPage() {
         <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-white/[0.06] mb-10">
           <Image src="/game/region-inner_system.webp" alt="Space Tycoon — the inner system region banner: Earth launch pads and low-orbit stations" fill sizes="(min-width: 1024px) 896px, 100vw" className="object-cover" priority={false} />
         </div>
+
+        <div className="mb-10"><LiveEconomyStrip /></div>
 
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-white mb-3">The idea</h2>

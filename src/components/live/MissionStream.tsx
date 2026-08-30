@@ -15,7 +15,7 @@ import {
   type AlternateStream,
 } from '@/lib/mission-stream';
 
-// Re-exported for existing callers (mission-control/page.tsx imports this
+// Re-exported for existing callers (mission-control/MissionControlClient.tsx imports this
 // from here) — canonical implementation now lives in lib/mission-stream.ts
 // alongside the rest of the stream-choice derivation logic.
 export { extractYouTubeId };

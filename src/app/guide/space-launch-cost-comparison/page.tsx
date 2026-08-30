@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroArt from '@/components/ui/HeroArt';
+import { FALCON9_DEDICATED_PER_KG, FALCON9_LIST_PRICE_USD, FALCON_HEAVY_LIST_PRICE_USD, RIDESHARE_MIN_KG, RIDESHARE_MIN_PRICE_USD, RIDESHARE_PER_KG, ELECTRON_DEDICATED_PER_KG, STARSHIP_TARGET_PER_KG, LAUNCH_COST_AS_OF, LAUNCH_COST_SOURCE, fmtUsd, fmtUsdM, fmtUsdK } from '@/lib/launch-cost-constants';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
@@ -175,6 +176,17 @@ export default function SpaceLaunchCostComparisonPage() {
             <div className="w-24 h-[3px] bg-gradient-to-r from-white/50 to-white/30 rounded-full mx-auto mt-8" />
           </div>
         </header>
+
+        {/* Answer block above the fold (SYNTHESIS.md item 26) — one guide first,
+            two weeks of Search Console before the rest of the family. Figures
+            come from src/lib/launch-cost-constants.ts so they match every page. */}
+        <section aria-labelledby="short-answer" className="max-w-4xl mx-auto mb-10 rounded-[var(--radius-console)] border border-[var(--line)] bg-[var(--surface)] p-5 md:p-6">
+          <h2 id="short-answer" className="text-[11px] uppercase tracking-[0.14em] text-[var(--ink-3)] mb-2">Short answer</h2>
+          <p className="text-[17px] text-[var(--ink)] leading-relaxed">
+            A dedicated Falcon 9 lists at about <strong>{fmtUsdM(FALCON9_LIST_PRICE_USD)}</strong> — roughly <strong>{fmtUsd(FALCON9_DEDICATED_PER_KG)} per kilogram</strong> at full payload. Rideshare on SpaceX Transporter is about <strong>{fmtUsd(RIDESHARE_PER_KG)}/kg</strong> with a {RIDESHARE_MIN_KG} kg minimum ({fmtUsdK(RIDESHARE_MIN_PRICE_USD)}). A dedicated small launcher such as Electron runs about {fmtUsd(ELECTRON_DEDICATED_PER_KG)}/kg; Falcon Heavy lists near {fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)}; Starship targets ${STARSHIP_TARGET_PER_KG.low}–${STARSHIP_TARGET_PER_KG.high}/kg at mature flight rates. Everything below is the detail behind those numbers.
+          </p>
+          <p className="text-[12px] text-[var(--ink-3)] mt-3">Prices as of {LAUNCH_COST_AS_OF} · {LAUNCH_COST_SOURCE}.</p>
+        </section>
 
         {/* ── Main content area ── */}
         <div className="container mx-auto px-4 pb-20">

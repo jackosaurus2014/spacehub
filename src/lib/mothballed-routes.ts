@@ -60,6 +60,9 @@ export const MOTHBALLED_ROUTES: readonly MothballedRoute[] = [
   { prefix: '/investor-hub', redirectTo: '/investors', group: 'consolidation' },
   { prefix: '/this-day-in-space', redirectTo: '/history#today', group: 'consolidation' },
   { prefix: '/space-score', redirectTo: '/report-cards?view=score', group: 'consolidation' },
+  // 2026-08-30 (SYNTHESIS item 41): the two genuinely orphaned SaaS-marketing pages.
+  { prefix: '/use-cases', redirectTo: '/tools', group: 'consolidation' },
+  { prefix: '/vs', redirectTo: '/about', group: 'consolidation' },
 ];
 
 /**

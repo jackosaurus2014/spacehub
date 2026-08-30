@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ItemListSchema from '@/components/seo/ItemListSchema';
 import { CHART_DEFS, chartOfTheWeekSlug } from '@/lib/charts/registry';
 
 export const revalidate = 3600;
@@ -37,6 +38,7 @@ export default function ChartIndexPage() {
             </Link>
           ))}
         </div>
+        <ItemListSchema name="Space industry charts" url="/chart" description={metadata.description as string} items={CHART_DEFS.map((c) => ({ name: c.title, url: `/chart/${c.slug}`, description: c.subtitle }))} />
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Charts' }]} />
       </div>
     </div>

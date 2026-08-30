@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroArt from '@/components/ui/HeroArt';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ItemListSchema from '@/components/seo/ItemListSchema';
 import { getRocketIndex } from '@/lib/rockets';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
 
@@ -75,6 +76,7 @@ export default async function RocketsIndexPage() {
             <Link href="/launches" className="btn-secondary text-sm py-2 px-4">Launches by site</Link>
           </div>
         </div>
+        <ItemListSchema name="Rockets: cost, payload and record" url="/rockets" description={metadata.description as string} items={rockets.map((r) => ({ name: r.spec.name, url: `/rockets/${r.slug}`, description: `${r.spec.manufacturer} · ${r.spec.status}` }))} />
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Rockets' }]} />
       </div>
     </div>

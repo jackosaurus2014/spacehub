@@ -147,3 +147,41 @@ export async function getLiveQuotesBatch(
 
   return results;
 }
+
+/**
+ * ~90 trading days of daily closes for a sparkline and a 52-week-ish range
+ * (SYNTHESIS.md item 31). One Yahoo chart call per ticker, cached six hours
+ * per ticker via unstable_cache; never throws — a ticker that does not
+ * answer maps to null and the row simply shows no sparkline.
+ */
+export interface PriceHistory { closes: number[]; low: number; high: number; asOf: string }
+
+async function fetchPriceHistory(symbol: string): Promise<PriceHistory | null> {
+  try {
+    const period1 = new Date(Date.now() - 130 * 86400000);
+    const chart = await Promise.race([
+      yahooFinance.chart(symbol, { period1, interval: '1d' }),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('yahoo chart timeout')), 4000)),
+    ]);
+    const closes = ((chart as { quotes?: Array<{ close?: number | null }> }).quotes ?? [])
+      .map((q) => q.close)
+      .filter((v): v is number => typeof v === 'number' && Number.isFinite(v))
+      .slice(-90);
+    if (closes.length < 5) return null;
+    return { closes, low: Math.min(...closes), high: Math.max(...closes), asOf: new Date().toISOString() };
+  } catch (error) {
+    logger.warn(`[stock-quote] price history failed for ${symbol}`, { error: error instanceof Error ? error.message : String(error) });
+    return null;
+  }
+}
+
+export async function getPriceHistoriesCached(tickers: string[]): Promise<Record<string, PriceHistory | null>> {
+  const { unstable_cache } = await import('next/cache');
+  const out: Record<string, PriceHistory | null> = {};
+  await Promise.all(tickers.map(async (t) => {
+    const symbol = t.trim().toUpperCase();
+    const cached = unstable_cache(() => fetchPriceHistory(symbol), ['price-history-v1', symbol], { revalidate: 6 * 3600 });
+    out[symbol] = await cached();
+  }));
+  return out;
+}

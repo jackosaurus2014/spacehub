@@ -62,7 +62,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     ...LAUNCH_SITES.flatMap((s) => monthWindow(new Date()).map((m) => ({ url: `${BASE_URL}/launches/${s.slug}/${monthParam(m.year, m.month)}`, changeFrequency: 'daily' as const, priority: 0.6 }))),
 
     // Ignition Tracker — flagship program tracker
-    { url: `${BASE_URL}/ignition`, changeFrequency: 'daily' as const, priority: 1.0 },
+    { url: `${BASE_URL}/ignition`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/artemis`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/starship`, changeFrequency: 'daily' as const, priority: 0.8 },
 
@@ -299,7 +299,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/beginners`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/night-sky-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-quiz`, changeFrequency: 'monthly' as const, priority: 0.5 },
-    { url: `${BASE_URL}/vs`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/launch-alerts`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-tycoon`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/space-tycoon/faq`, changeFrequency: 'monthly' as const, priority: 0.6 },
@@ -424,7 +423,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/solutions/analysts`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/solutions/engineers`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/solutions/executives`, changeFrequency: 'monthly' as const, priority: 0.8 },
-    { url: `${BASE_URL}/use-cases`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/security`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/reports/state-of-space-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/book-demo`, changeFrequency: 'monthly' as const, priority: 0.6 },

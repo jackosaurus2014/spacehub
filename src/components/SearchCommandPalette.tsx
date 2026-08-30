@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCommandPaletteShortcut, usePlatformModifier } from '@/hooks/useKeyboardShortcut';
 import SearchSuggestions from '@/components/search/SearchSuggestions';
+import { SITE_DIRECTORY } from '@/lib/site-directory';
 
 // Search item types
 type SearchItemType = 'module' | 'page' | 'recent' | 'result';
@@ -141,7 +142,7 @@ const MagnifyingGlassIcon = () => (
 );
 
 // All searchable items
-const ALL_SEARCH_ITEMS: SearchItem[] = [
+const CURATED_SEARCH_ITEMS: SearchItem[] = [
   // Explore
   {
     id: 'mission-control',
@@ -301,6 +302,22 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
     category: 'Pages',
   },
 ];
+
+// ⌘K as real navigation (SYNTHESIS.md graft A5 / item 36): every page in the
+// site directory is a command, not just the 22 curated ones. Curated entries
+// win on id collision so their icons and categories stay.
+const DIRECTORY_SEARCH_ITEMS: SearchItem[] = SITE_DIRECTORY.flatMap((g) =>
+  g.entries.map((e) => ({
+    id: `dir:${e.href}`,
+    label: e.name,
+    description: e.description,
+    href: e.href,
+    icon: <span aria-hidden="true" className="text-base leading-none">{e.icon}</span>,
+    type: 'page' as SearchItemType,
+    category: g.label,
+  })),
+).filter((d) => !CURATED_SEARCH_ITEMS.some((c) => c.href === d.href));
+const ALL_SEARCH_ITEMS: SearchItem[] = [...CURATED_SEARCH_ITEMS, ...DIRECTORY_SEARCH_ITEMS];
 
 // Popular searches shown when the palette opens with no query
 const POPULAR_SEARCHES = [

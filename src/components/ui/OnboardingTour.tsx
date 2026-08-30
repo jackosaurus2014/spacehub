@@ -6,6 +6,8 @@ import { setPersona } from '@/lib/user-preferences';
 import type { Persona } from '@/lib/user-preferences';
 import { PERSONA_MODULE_PRESETS, saveHomeModulePreset } from '@/lib/module-presets';
 import { toast } from '@/lib/toast';
+import GameIcon from '@/components/game/GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 const STORAGE_KEY = 'spacenexus-onboarding-complete';
 const PERSONA_KEY = 'spacenexus-user-persona';
@@ -28,13 +30,13 @@ const SITE_PERSONA_MAP: Record<UserPersona, Persona> = {
 
 const PERSONAS: { id: UserPersona; icon: string; title: string; description: string }[] = [
   // First card on purpose (2026-08-29): enthusiasts are the stated priority and the audience search sends.
-  { id: 'enthusiast', icon: '\u{1F680}', title: 'Space Fan', description: 'Watch launches live, track the ISS over your house, follow every rocket, play Space Tycoon' },
-  { id: 'investor', icon: '\u{1F4B8}', title: 'Investor / VC', description: 'Evaluate deals, track funding rounds, follow market trends' },
-  { id: 'entrepreneur', icon: '\u{1F680}', title: 'Entrepreneur / Founder', description: 'Find grants, build business models, discover customers' },
-  { id: 'mission-planner', icon: '\u{1F9ED}', title: 'Mission Planner / Engineer', description: 'Compare launch vehicles, calculate costs, track orbits' },
-  { id: 'executive', icon: '\u{1F4CA}', title: 'CEO / Executive', description: 'Market intelligence, competitive landscape, industry trends' },
-  { id: 'supply-chain', icon: '\u{1F517}', title: 'Supply Chain Professional', description: 'Map suppliers, track resources, procurement intelligence' },
-  { id: 'legal', icon: '\u2696\uFE0F', title: 'Legal / Compliance', description: 'Space treaties, FCC/FAA filings, ITAR/EAR export controls' },
+  { id: 'enthusiast', icon: 'map', title: 'Space Fan', description: 'Watch launches live, track the ISS over your house, follow every rocket, play Space Tycoon' },
+  { id: 'investor', icon: 'market', title: 'Investor / VC', description: 'Evaluate deals, track funding rounds, follow market trends' },
+  { id: 'entrepreneur', icon: 'contracts', title: 'Entrepreneur / Founder', description: 'Find grants, build business models, discover customers' },
+  { id: 'mission-planner', icon: 'research', title: 'Mission Planner / Engineer', description: 'Compare launch vehicles, calculate costs, track orbits' },
+  { id: 'executive', icon: 'reports', title: 'CEO / Executive', description: 'Market intelligence, competitive landscape, industry trends' },
+  { id: 'supply-chain', icon: 'services', title: 'Supply Chain Professional', description: 'Map suppliers, track resources, procurement intelligence' },
+  { id: 'legal', icon: 'governance', title: 'Legal / Compliance', description: 'Space treaties, FCC/FAA filings, ITAR/EAR export controls' },
 ];
 
 // Map persona to a starting destination so the tour ends with a clear next step
@@ -76,19 +78,19 @@ const TOUR_STEPS: TourStep[] = [
   {
     title: 'Real-Time Space Intelligence',
     description: 'SpaceNexus aggregates data from 100+ sources including NASA, NOAA, SpaceTrack, and industry RSS feeds. All updated continuously.',
-    icon: '\u{1F4E1}',
+    icon: 'dashboard',
     highlights: ['Live satellite tracking', 'Solar weather alerts', 'Launch schedules', 'News aggregation'],
   },
   {
     title: '30+ Interactive Modules',
     description: 'From mission cost calculators to market sizing tools, everything you need is organized into easy-to-navigate modules.',
-    icon: '\u{1F6E0}\uFE0F',
+    icon: 'modules',
     highlights: ['Mission Cost Calculator', 'Market Sizing (TAM/SAM/SOM)', 'Grant Aggregator', 'Deal Flow Database'],
   },
   {
     title: 'Customize Your Experience',
     description: 'Use the Module Configurator to enable only the modules you need. Your preferences are saved automatically.',
-    icon: '\u2699\uFE0F',
+    icon: 'services',
     highlights: ['Toggle modules on/off', 'Reorder your dashboard', 'Keyboard shortcuts (? for help)', 'Quick search (Ctrl+K)'],
   },
 ];
@@ -308,7 +310,7 @@ export default function OnboardingTour() {
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl flex-shrink-0">{persona.icon}</span>
+                      <span className="flex-shrink-0 text-cyan-300"><GameIcon name={persona.icon as IconName} size={22} /></span>
                       <div>
                         <div className={`font-semibold text-sm ${selectedPersona === persona.id ? 'text-white/90' : 'text-white'}`}>
                           {persona.title}
@@ -323,7 +325,7 @@ export default function OnboardingTour() {
           ) : tourStep ? (
             <>
               <div className="text-center mb-6">
-                <span className="text-5xl">{tourStep.icon}</span>
+                <span className="text-cyan-300"><GameIcon name={tourStep.icon as IconName} size={40} /></span>
               </div>
               <p className="text-white/70 text-center mb-6">{tourStep.description}</p>
               <div className="grid grid-cols-2 gap-2">

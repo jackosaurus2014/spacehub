@@ -389,7 +389,7 @@ export default function DemoShowcase() {
         <div className="text-center mt-10">
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 bg-white text-slate-900 font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 hover:shadow-lg hover:shadow-white/[0.05] active:scale-[0.98]"
+            className="btn-primary inline-flex items-center gap-2 text-sm py-3 px-8 hover:bg-slate-100 hover:shadow-lg hover:shadow-white/[0.05] active:scale-[0.98]"
           >
             Try it free — no credit card required
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

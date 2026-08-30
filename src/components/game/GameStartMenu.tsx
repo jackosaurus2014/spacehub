@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import LiveEconomyStrip from './LiveEconomyStrip';
 import Image from 'next/image';
 import { loadGame } from '@/lib/game/save-load';
 import { BG_ASSETS } from '@/lib/game/assets';
@@ -151,6 +152,9 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
             </button>
           )}
         </div>
+
+        {/* Live economy — proof it is running before you register */}
+        <div className="mt-6"><LiveEconomyStrip compact /></div>
 
         {/* Footer */}
         <div

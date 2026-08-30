@@ -1,1328 +1,145 @@
-'use client';
-
-import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType, MissionPhase, MISSION_PHASE_INFO } from '@/types';
-import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import ExportButton from '@/components/ui/ExportButton';
-import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
-import { resolveStreamSource } from '@/lib/mission-stream';
-import type { AlternateStream as CommunityStream } from '@/lib/mission-stream';
-import PullToRefresh from '@/components/ui/PullToRefresh';
-import AdSlot from '@/components/ads/AdSlot';
-import CollapsiblePanel from '@/components/ui/CollapsiblePanel';
-import AlertNudge from '@/components/ui/AlertNudge';
-import { clientLogger } from '@/lib/client-logger';
-import { getCompanyProfileUrl } from '@/lib/company-links';
-import { rocketSlugForName } from '@/lib/rocket-registry';
-import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
-import RelatedModules from '@/components/ui/RelatedModules';
 import NewsTicker from '@/components/NewsTicker';
-import NewsletterSignup from '@/components/NewsletterSignup';
-import { BLUR_PLACEHOLDER_1_1 } from '@/lib/blur-placeholder';
+import Console from '@/components/ui/Console';
+import Countdown from '@/components/ui/Countdown';
+import Deck from '@/components/ui/Deck';
+import StatusPip, { type PipState } from '@/components/ui/StatusPip';
+import Telemetry from '@/components/ui/Telemetry';
+import { getNextLaunch } from '@/lib/next-launch';
+import { missionOf } from '@/lib/next-launch';
+import { getNextLaunches } from '@/lib/launch-sites';
+import { getMissionControlEvents } from '@/lib/space-events';
+import { logger } from '@/lib/logger';
+import type { SpaceEvent } from '@/types';
+import MissionControlClient from './MissionControlClient';
 
-const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
-  { value: 'all', label: 'All Events', icon: '🌌' },
-  { value: 'launch', label: 'Launches', icon: '🚀' },
-  { value: 'crewed_mission', label: 'Crewed', icon: '👨‍🚀' },
-  { value: 'moon_mission', label: 'Moon', icon: '🌙' },
-  { value: 'mars_mission', label: 'Mars', icon: '🔴' },
-  { value: 'space_station', label: 'Stations', icon: '🛰️' },
-  { value: 'satellite', label: 'Satellites', icon: '📡' },
-];
+// Mission Control is a server component (SYNTHESIS.md item 14). It used to be
+// 'use client' end to end, and because the interactive half calls
+// useSearchParams() the statically prerendered HTML was the Suspense
+// fallback — a spinner — for every crawler and every slow phone. The first
+// screen (h1, deck, next launch, the next two dozen launches) is now real
+// HTML; the client island below it keeps every tab, filter and stream.
+//
+// force-dynamic, never ISR: the Railway build container has no database, so a
+// revalidate would prerender against nothing. Every read is independently
+// try/caught — a missing value renders as "unavailable", never as a guess
+// (stale-data doctrine, SYNTHESIS.md graft A2).
+export const dynamic = 'force-dynamic';
 
-interface GroupedEvents {
-  [year: string]: {
-    [month: string]: SpaceEvent[];
-  };
-}
-
-// ════════════════════════════════════════
-// Dynamic Content Interfaces
-// ════════════════════════════════════════
-
-/** Rocket name → its /rockets page when catalogued (2026-08-28), plain text otherwise. */
-function RocketLink({ name }: { name: string }) {
-  const slug = rocketSlugForName(name);
-  return slug ? <Link href={`/rockets/${slug}`} className="hover:underline">{name}</Link> : <>{name}</>;
-}
-
-interface DebriefLite {
-  slug: string;
-  missionName: string;
-  missionDate: string;
-  status: string;
-  executiveSummary: string;
-}
-
-interface EpicEarthImage {
-  identifier: string;
-  caption: string;
-  date: string;
-  image_url: string;
-  centroid_coordinates: { lat: number; lon: number };
-}
-
-interface NasaImage {
-  nasa_id: string;
-  title: string;
-  description: string;
-  date_created: string;
-  media_type: string;
-  thumbnail_url: string;
-  keywords: string[];
-}
-
-interface DsnAntenna {
-  dish_name: string;
-  azimuth: number;
-  elevation: number;
-  wind_speed: number;
-  is_active: boolean;
-  target: string;
-  signal_type: string;
-  data_rate: string;
-  frequency: string;
-}
-
-// ════════════════════════════════════════
-// Mission Type Logo Mapping
-// ════════════════════════════════════════
-
-const EVENT_TYPE_LOGOS: Partial<Record<SpaceEventType, string>> = {
-  launch: '/logos/logo-event-launch.png',
-  crewed_mission: '/logos/logo-event-crewed.png',
-  moon_mission: '/logos/logo-event-moon.png',
-  mars_mission: '/logos/logo-event-mars.png',
-  satellite: '/logos/logo-event-satellite.png',
-  space_station: '/logos/logo-event-station.png',
+export const metadata: Metadata = {
+  title: 'Mission Control',
+  description: 'Track upcoming space missions, rocket launches, crewed expeditions, and satellite deployments. Explore 5 years of planned space events from agencies worldwide.',
+  keywords: [
+    'space missions',
+    'rocket launches',
+    'SpaceX launches',
+    'NASA missions',
+    'satellite deployments',
+    'crewed missions',
+    'moon missions',
+    'mars missions',
+    'space station',
+    'launch schedule',
+  ],
+  openGraph: {
+    title: 'Mission Control | SpaceNexus',
+    description: 'Track upcoming space missions, rocket launches, crewed expeditions, and satellite deployments from agencies worldwide.',
+    url: 'https://spacenexus.us/mission-control',
+    images: [
+      {
+        url: '/og-mission-control.png',
+        width: 1200,
+        height: 630,
+        alt: 'SpaceNexus Mission Control - Track Space Launches',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mission Control | SpaceNexus',
+    description: 'Track upcoming space missions, rocket launches, and satellite deployments.',
+    images: ['/og-mission-control.png'],
+  },
+  alternates: {
+    canonical: 'https://spacenexus.us/mission-control',
+  },
 };
 
-function MissionThumbnail({
-  imageUrl,
-  eventType,
-  size = 'md',
-}: {
-  imageUrl: string | null;
-  eventType: SpaceEventType;
-  size?: 'sm' | 'md' | 'lg';
-}) {
-  const [imgError, setImgError] = useState(false);
-  const typeInfo = EVENT_TYPE_INFO[eventType] || EVENT_TYPE_INFO.launch;
-  const logoPath = EVENT_TYPE_LOGOS[eventType];
-
-  const sizeClasses = {
-    sm: 'w-16 h-16 rounded-lg',
-    md: 'w-full h-32 sm:w-32 sm:h-32',
-    lg: 'w-full h-32 sm:w-36 sm:h-40',
-  };
-
-  const iconSizes = { sm: 'text-2xl', md: 'text-4xl', lg: 'text-5xl' };
-  const logoSizes = { sm: 40, md: 64, lg: 80 };
-
-  const showFallback = !imageUrl || imgError;
-
-  return (
-    <div className={`relative ${sizeClasses[size]} flex-shrink-0 bg-white/[0.06] overflow-hidden`} aria-hidden="true">
-      {!showFallback ? (
-        <Image
-          src={imageUrl}
-          alt=""
-          fill
-          sizes={size === 'lg' ? '(max-width: 640px) 100vw, 144px' : size === 'md' ? '(max-width: 640px) 100vw, 128px' : '64px'}
-          placeholder="blur"
-          blurDataURL={BLUR_PLACEHOLDER_1_1}
-          className="object-cover"
-          onError={() => setImgError(true)}
-        />
-      ) : logoPath ? (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-white/[0.08]">
-          <Image
-            src={logoPath}
-            alt=""
-            width={logoSizes[size]}
-            height={logoSizes[size]}
-            className="object-contain opacity-80"
-          />
-        </div>
-      ) : (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-white/[0.08]">
-          <span className={iconSizes[size]}>{typeInfo.icon}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ════════════════════════════════════════
-// Fallback Data (shown when DB is unseeded)
-// ════════════════════════════════════════
-
-const FALLBACK_EPIC_EARTH: EpicEarthImage[] = [
-  {
-    identifier: 'epic_1b_20260220003633',
-    caption: 'EPIC image of Earth showing the Pacific Ocean and cloud formations over Southeast Asia',
-    date: '2026-02-20T00:36:33',
-    image_url: '/images/placeholder-earth.jpg',
-    centroid_coordinates: { lat: 7.8, lon: 148.3 },
-  },
-  {
-    identifier: 'epic_1b_20260219121504',
-    caption: 'View of the Americas with Hurricane season cloud patterns visible over the Caribbean',
-    date: '2026-02-19T12:15:04',
-    image_url: '/images/placeholder-earth.jpg',
-    centroid_coordinates: { lat: 12.4, lon: -72.1 },
-  },
-  {
-    identifier: 'epic_1b_20260218234217',
-    caption: 'Earth showing Africa and the Indian Ocean with clear skies over the Sahara',
-    date: '2026-02-18T23:42:17',
-    image_url: '/images/placeholder-earth.jpg',
-    centroid_coordinates: { lat: -3.2, lon: 38.7 },
-  },
-  {
-    identifier: 'epic_1b_20260218102845',
-    caption: 'Sunlit view of Europe and North Africa with alpine snow cover visible',
-    date: '2026-02-18T10:28:45',
-    image_url: '/images/placeholder-earth.jpg',
-    centroid_coordinates: { lat: 42.1, lon: 12.5 },
-  },
-];
-
-const FALLBACK_NASA_IMAGES: NasaImage[] = [
-  {
-    nasa_id: 'PIA25969',
-    title: 'Pillars of Creation (NIRCam and MIRI Composite)',
-    description: 'NASA\'s James Webb Space Telescope captured this detailed view of the iconic Pillars of Creation, revealing new details about the structure of this star-forming region in the Eagle Nebula.',
-    date_created: '2026-01-15T00:00:00',
-    media_type: 'image',
-    thumbnail_url: '/images/placeholder-nebula.jpg',
-    keywords: ['JWST', 'Pillars of Creation', 'Eagle Nebula', 'Star Formation'],
-  },
-  {
-    nasa_id: 'PIA26102',
-    title: 'Artemis III Landing Site Reconnaissance',
-    description: 'Lunar Reconnaissance Orbiter captured this high-resolution image of the Artemis III candidate landing site near the lunar south pole, showing permanently shadowed craters that may contain water ice.',
-    date_created: '2026-02-01T00:00:00',
-    media_type: 'image',
-    thumbnail_url: '/images/placeholder-moon.jpg',
-    keywords: ['Artemis', 'Moon', 'Lunar South Pole', 'LRO'],
-  },
-  {
-    nasa_id: 'PIA26087',
-    title: 'Perseverance Rover: Jezero Crater Delta Panorama',
-    description: 'A 360-degree panorama captured by the Perseverance rover\'s Mastcam-Z instrument showing the ancient river delta in Jezero Crater, with layered sedimentary rock formations that may preserve signs of ancient microbial life.',
-    date_created: '2026-01-28T00:00:00',
-    media_type: 'image',
-    thumbnail_url: '/images/placeholder-mars.jpg',
-    keywords: ['Mars', 'Perseverance', 'Jezero Crater', 'Astrobiology'],
-  },
-  {
-    nasa_id: 'PIA26044',
-    title: 'Europa Clipper: First Close Flyby of Europa',
-    description: 'Europa Clipper\'s first detailed images of Jupiter\'s moon Europa reveal a complex network of ridges and bands across its icy surface, with potential evidence of recent geological activity.',
-    date_created: '2026-02-10T00:00:00',
-    media_type: 'image',
-    thumbnail_url: '/images/placeholder-europa.jpg',
-    keywords: ['Europa', 'Jupiter', 'Europa Clipper', 'Ocean Worlds'],
-  },
-  {
-    nasa_id: 'PIA26033',
-    title: 'International Space Station Over the Aurora Borealis',
-    description: 'The International Space Station soars above a spectacular display of the Northern Lights over Canada, captured during a period of heightened solar activity in Solar Cycle 25.',
-    date_created: '2026-02-05T00:00:00',
-    media_type: 'image',
-    thumbnail_url: '/images/placeholder-iss.jpg',
-    keywords: ['ISS', 'Aurora', 'Earth Observation', 'Solar Cycle 25'],
-  },
-  {
-    nasa_id: 'PIA26021',
-    title: 'Saturn\'s Rings in Infrared',
-    description: 'A reprocessed composite image from Cassini data using advanced algorithms reveals previously unseen structures in Saturn\'s B ring, providing new insights into ring particle dynamics.',
-    date_created: '2026-01-20T00:00:00',
-    media_type: 'image',
-    thumbnail_url: '/images/placeholder-saturn.jpg',
-    keywords: ['Saturn', 'Rings', 'Cassini', 'Infrared'],
-  },
-];
-
-const FALLBACK_DSN_ANTENNAS: DsnAntenna[] = [
-  {
-    dish_name: 'DSS-14 Goldstone',
-    azimuth: 245.7,
-    elevation: 32.4,
-    wind_speed: 8.2,
-    is_active: true,
-    target: 'Voyager 1',
-    signal_type: 'X-Band Downlink',
-    data_rate: '160 bps',
-    frequency: '8.42 GHz',
-  },
-  {
-    dish_name: 'DSS-43 Canberra',
-    azimuth: 118.3,
-    elevation: 48.1,
-    wind_speed: 5.6,
-    is_active: true,
-    target: 'Europa Clipper',
-    signal_type: 'Ka-Band Downlink',
-    data_rate: '2.0 Mbps',
-    frequency: '32.05 GHz',
-  },
-  {
-    dish_name: 'DSS-63 Madrid',
-    azimuth: 312.9,
-    elevation: 22.7,
-    wind_speed: 11.4,
-    is_active: true,
-    target: 'Mars Perseverance',
-    signal_type: 'X-Band Uplink/Downlink',
-    data_rate: '4.0 Mbps',
-    frequency: '7.17 GHz',
-  },
-  {
-    dish_name: 'DSS-36 Canberra',
-    azimuth: 89.2,
-    elevation: 55.3,
-    wind_speed: 4.1,
-    is_active: false,
-    target: 'JWST',
-    signal_type: 'S-Band Maintenance',
-    data_rate: '28.0 Mbps',
-    frequency: '2.27 GHz',
-  },
-];
-
-// Countdown timer component for imminent launches
-function CountdownCard({ event }: { event: SpaceEvent }) {
-  const [countdown, setCountdown] = useState<string>('');
-  const [isExpired, setIsExpired] = useState(false);
-  const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
-  const launchDate = useMemo(() => event.launchDate ? new Date(event.launchDate) : null, [event.launchDate]);
-
-  useEffect(() => {
-    if (!launchDate) return;
-
-    const updateCountdown = () => {
-      const now = new Date();
-      const diff = launchDate.getTime() - now.getTime();
-
-      if (diff <= 0) {
-        setIsExpired(true);
-        setCountdown('LAUNCHED');
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      if (days > 0) {
-        setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
-      } else {
-        // Under 24 hours - show HH:MM:SS format
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        setCountdown(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
-      }
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-
-    return () => clearInterval(interval);
-  }, [launchDate]);
-
-  if (!launchDate) return null;
-
-  return (
-    <div className="relative group">
-      {/* Glow effect background */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-slate-300 to-green-500 rounded-xl opacity-75 blur group-hover:opacity-100 transition duration-300 animate-pulse" />
-
-      <div className="relative card overflow-hidden bg-black border-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-white/5" />
-
-        <div className="relative flex flex-col sm:flex-row items-center sm:items-stretch">
-          {/* Mission Type Thumbnail */}
-          <MissionThumbnail imageUrl={event.imageUrl} eventType={event.type} size="lg" />
-
-          {/* Content */}
-          <div className="flex-1 p-4">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-2 py-0.5 rounded`}>
-                    {typeInfo.icon} {typeInfo.label}
-                  </span>
-                  <span className="bg-green-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75" />
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-black" />
-                    </span>
-                    LIVE
-                  </span>
-                  {event.country && (
-                    <span className="text-slate-400 text-xs">{event.country}</span>
-                  )}
-                </div>
-                <h3 className="font-bold text-white text-lg line-clamp-2">
-                  {event.name}
-                </h3>
-              </div>
-            </div>
-
-            {event.agency && (
-              <p className="text-slate-300 text-sm font-medium">
-                {getCompanyProfileUrl(event.agency) ? (
-                  <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
-                ) : event.agency}
-              </p>
-            )}
-
-            <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
-              {event.location && (
-                <span className="flex items-center gap-1">
-                  <span>📍</span> {event.location}
-                </span>
-              )}
-              {event.rocket && (
-                <span className="flex items-center gap-1 text-green-400">
-                  <span>🚀</span> <RocketLink name={event.rocket} />
-                </span>
-              )}
-            </div>
-
-            {/* Countdown Display */}
-            <div className="mt-3 pt-3 border-t border-white/[0.06]">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400 uppercase tracking-wider">T-Minus</span>
-                <span className={`font-mono text-xl font-bold ${isExpired ? 'text-yellow-400' : 'text-green-400'}`}>
-                  {countdown}
-                </span>
-              </div>
-              <div className="flex items-center justify-between mt-1">
-                <div className="text-xs text-slate-400">
-                  {launchDate.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })}{' '}
-                  at{' '}
-                  {launchDate.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    timeZoneName: 'short',
-                  })}
-                </div>
-                {watchUrlFor(event) ? (
-                  <a
-                    href={watchUrlFor(event)!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-xs font-medium"
-                  >
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    Watch Live
-                  </a>
-                ) : event.infoUrl ? (
-                  <a
-                    href={event.infoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-2 py-1 rounded bg-white/[0.08] text-slate-300 hover:bg-white/[0.08] transition-colors text-xs font-medium"
-                  >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Mission Info
-                  </a>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Helper function to check if a mission is live or within 1 hour of launch
-function isLiveOrImminent(event: SpaceEvent): boolean {
-  if (event.isLive) return true;
-
-  const now = new Date();
-  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
-  const windowStart = event.windowStart ? new Date(event.windowStart) : null;
-  const windowEnd = event.windowEnd ? new Date(event.windowEnd) : null;
-
-  if (!launchDate) return false;
-
-  const timeDiff = launchDate.getTime() - now.getTime();
-  // "About to launch" = within 24 hours of T-0 (founder decision 8/15) — the
-  // Live Now rail always shows the next day's missions with countdowns
-  // rather than sitting on "no live missions" between launches.
-  const isImminent = timeDiff > 0 && timeDiff <= 24 * 60 * 60 * 1000;
-  const isPastLaunchWithin90Min = timeDiff < 0 && Math.abs(timeDiff) <= 90 * 60 * 1000;
-
-  // Check if within launch window
-  const inWindow = windowStart !== null && windowEnd !== null && now >= windowStart && now <= windowEnd;
-
-  return isImminent || isPastLaunchWithin90Min || inWindow;
-}
-
-// Live Now Section - shows missions that are currently live or about to go live
-function LiveNowSection({ events }: { events: SpaceEvent[] }) {
-  const [selectedMission, setSelectedMission] = useState<SpaceEvent | null>(null);
-  const [countdown, setCountdown] = useState<Record<string, string>>({});
-  // Community/creator livestreams from the existing detector endpoint
-  // (NASASpaceflight, Everyday Astronaut, etc.) — offered as selectable
-  // alternate feeds in MissionStream when the official stream is dead,
-  // absent, or a viewer just prefers different coverage. See
-  // lib/mission-stream.ts (selectAlternateFeeds) for the filtering logic.
-  const [communityStreams, setCommunityStreams] = useState<CommunityStream[]>([]);
-
-  // Fetch active livestreams on mount and poll every 60s — same endpoint and
-  // cadence the homepage's LiveStreamSection uses.
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchStreams = async () => {
-      try {
-        const res = await fetch('/api/livestreams');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!cancelled) setCommunityStreams(data.streams || []);
-      } catch (error) {
-        clientLogger.error('Failed to fetch community livestreams', {
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    };
-
-    fetchStreams();
-    const interval = setInterval(fetchStreams, 60000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, []);
-
-  // Get live/imminent missions
-  const liveMissions = useMemo(() => {
-    return events
-      .filter(isLiveOrImminent)
-      .sort((a, b) => {
-        // Prioritize currently live missions
-        if (a.isLive && !b.isLive) return -1;
-        if (!a.isLive && b.isLive) return 1;
-        // Then sort by launch date
-        const aDate = a.launchDate ? new Date(a.launchDate).getTime() : 0;
-        const bDate = b.launchDate ? new Date(b.launchDate).getTime() : 0;
-        return aDate - bDate;
-      });
-  }, [events]);
-
-  // Update countdown every second
-  useEffect(() => {
-    const updateCountdowns = () => {
-      const now = new Date();
-      const newCountdowns: Record<string, string> = {};
-
-      liveMissions.forEach((mission) => {
-        if (!mission.launchDate) return;
-        const launchDate = new Date(mission.launchDate);
-        const diff = launchDate.getTime() - now.getTime();
-
-        if (diff > 0) {
-          const hours = Math.floor(diff / (1000 * 60 * 60));
-          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-          if (hours > 0) {
-            newCountdowns[mission.id] = `T-${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-          } else {
-            newCountdowns[mission.id] = `T-${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-          }
-        } else {
-          const elapsed = Math.abs(diff);
-          const hours = Math.floor(elapsed / (1000 * 60 * 60));
-          const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-
-          if (hours > 0) {
-            newCountdowns[mission.id] = `T+${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-          } else {
-            newCountdowns[mission.id] = `T+${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-          }
-        }
-      });
-
-      setCountdown(newCountdowns);
-    };
-
-    updateCountdowns();
-    const interval = setInterval(updateCountdowns, 1000);
-    return () => clearInterval(interval);
-  }, [liveMissions]);
-
-  // Auto-select first live mission
-  useEffect(() => {
-    if (liveMissions.length > 0 && !selectedMission) {
-      setSelectedMission(liveMissions[0]);
-    }
-  }, [liveMissions, selectedMission]);
-
-  if (liveMissions.length === 0) {
-    return (
-      <div className="mb-8">
-        <h1 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-          <span className="text-2xl">📺</span>
-          Live Now
-        </h1>
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.04] via-[#0a0a0a] to-white/[0.04] border border-white/[0.06]">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
-          </div>
-          <div className="relative p-8 text-center">
-            <div className="w-20 h-20 rounded-full bg-white/[0.06] flex items-center justify-center mx-auto mb-4 border border-white/[0.06]">
-              <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="text-white font-semibold text-lg mb-2">No Live Missions</h3>
-            <p className="text-slate-400 text-sm max-w-md mx-auto">
-              There are no missions currently live or about to launch. Check the upcoming launches below for scheduled events.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mb-8">
-      <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-        <span className="relative flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-        </span>
-        <span className="text-2xl">📺</span>
-        Live Now
-        <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-          {liveMissions.length} {liveMissions.length === 1 ? 'mission' : 'missions'}
-        </span>
-      </h2>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Main Stream */}
-        <div className="lg:col-span-2">
-          {selectedMission && (
-            <MissionStream
-              mission={selectedMission}
-              isLive={selectedMission.isLive || isLiveOrImminent(selectedMission)}
-              communityStreams={communityStreams}
-            />
-          )}
-        </div>
-
-        {/* Mission List */}
-        <div className="space-y-3">
-          <div className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-2">
-            Active Streams
-          </div>
-          {liveMissions.map((mission) => {
-            const typeInfo = EVENT_TYPE_INFO[mission.type] || EVENT_TYPE_INFO.launch;
-            const isSelected = selectedMission?.id === mission.id;
-            const msSinceLaunch = mission.launchDate ? Date.now() - new Date(mission.launchDate).getTime() : -1;
-            const isActuallyLive = mission.isLive || (msSinceLaunch >= 0 && msSinceLaunch <= 90 * 60 * 1000);
-            const phaseInfo = mission.missionPhase ? MISSION_PHASE_INFO[mission.missionPhase] : null;
-
-            return (
-              <button
-                key={mission.id}
-                onClick={() => setSelectedMission(mission)}
-                className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-red-500/20 to-orange-500/20 border-2 border-red-500/50 shadow-lg shadow-red-500/10'
-                    : 'bg-white/[0.04] hover:bg-white/[0.08] border-2 border-white/[0.06]'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  {/* Mission Type Thumbnail */}
-                  <MissionThumbnail imageUrl={mission.imageUrl} eventType={mission.type} size="sm" />
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-1.5 py-0.5 rounded`}>
-                        {typeInfo.label}
-                      </span>
-                      {isActuallyLive && (
-                        <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                          LIVE
-                        </span>
-                      )}
-                    </div>
-                    <h4 className="font-semibold text-white text-sm line-clamp-1">{mission.name}</h4>
-                    {mission.agency && (
-                      <p className="text-slate-400 text-xs">
-                        {getCompanyProfileUrl(mission.agency) ? (
-                          <Link href={getCompanyProfileUrl(mission.agency)!} className="hover:underline">{mission.agency}</Link>
-                        ) : mission.agency}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 mt-1">
-                      {/* Countdown or phase */}
-                      {countdown[mission.id] && (
-                        <span className={`font-mono text-xs font-bold ${
-                          countdown[mission.id].startsWith('T-') ? 'text-green-500' : 'text-orange-500'
-                        }`}>
-                          {countdown[mission.id]}
-                        </span>
-                      )}
-                      {phaseInfo && (
-                        <span className={`text-xs flex items-center gap-1 ${phaseInfo.color}`}>
-                          <span>{phaseInfo.icon}</span>
-                          <span>{phaseInfo.label}</span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-
-          {/* Watch live hint */}
-          <div className="text-center pt-2">
-            <p className="text-xs text-slate-400">
-              Click a mission to watch the stream
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Upcoming in 48 Hours Section
-function UpcomingIn48Hours({ events }: { events: SpaceEvent[] }) {
-  const upcomingEvents = useMemo(() => {
-    const now = new Date();
-    const in48Hours = new Date(Date.now() + 48 * 60 * 60 * 1000);
-
-    return events
-      .filter(e => {
-        if (!e.launchDate) return false;
-        const launchDate = new Date(e.launchDate);
-        return launchDate > now && launchDate < in48Hours;
-      })
-      .sort((a, b) => new Date(a.launchDate!).getTime() - new Date(b.launchDate!).getTime());
-  }, [events]);
-
-  if (upcomingEvents.length === 0) {
-    return (
-      <div className="mb-8">
-        <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-          <span className="text-2xl">⏰</span>
-          Upcoming in 48 Hours
-        </h2>
-        <div className="card p-8 text-center border-dashed border-2 border-white/[0.06]">
-          <span className="text-4xl block mb-3">🌙</span>
-          <p className="text-slate-400 font-medium">No launches scheduled in the next 48 hours</p>
-          <p className="text-slate-400 text-sm mt-1">Check back soon for imminent missions</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mb-8">
-      <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-        <span className="text-2xl animate-pulse">⏰</span>
-        Upcoming in 48 Hours
-        <span className="ml-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full">
-          {upcomingEvents.length} {upcomingEvents.length === 1 ? 'launch' : 'launches'}
-        </span>
-      </h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {upcomingEvents.map((event) => (
-          <CountdownCard key={event.id} event={event} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function EventCard({ event }: { event: SpaceEvent }) {
-  const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
-  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
-  const isPast = launchDate && launchDate < new Date();
-  const isWithin48Hours = launchDate &&
-    launchDate > new Date() &&
-    launchDate < new Date(Date.now() + 48 * 60 * 60 * 1000);
-  const isLiveOrImminent = event.isLive || (launchDate && isLiveOrImminentCheck(event));
-  const phaseInfo = event.missionPhase ? MISSION_PHASE_INFO[event.missionPhase] : null;
-
-  // Helper to check live status
-  function isLiveOrImminentCheck(e: SpaceEvent): boolean {
-    const now = new Date();
-    const ld = e.launchDate ? new Date(e.launchDate) : null;
-    if (!ld) return false;
-    const timeDiff = ld.getTime() - now.getTime();
-    const within2Hours = timeDiff > 0 && timeDiff <= 2 * 60 * 60 * 1000;
-    const pastWithin3Hours = timeDiff < 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000;
-    return within2Hours || pastWithin3Hours;
-  }
-
-  return (
-    <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''} ${isLiveOrImminent ? 'border-red-500/50' : ''}`}>
-      <div className="flex flex-col sm:flex-row items-center sm:items-stretch">
-        {/* Mission Type Thumbnail */}
-        <MissionThumbnail imageUrl={event.imageUrl} eventType={event.type} size="md" />
-
-        {/* Content */}
-        <div className="flex-1 p-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-2 py-0.5 rounded`}>
-                  {typeInfo.icon} {typeInfo.label}
-                </span>
-                {event.isLive && (
-                  <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
-                    </span>
-                    LIVE
-                  </span>
-                )}
-                {!event.isLive && isWithin48Hours && (
-                  <span className="bg-green-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded">
-                    SOON
-                  </span>
-                )}
-                {event.country && (
-                  <span className="text-slate-400 text-xs">{event.country}</span>
-                )}
-                {phaseInfo && (
-                  <span className={`text-xs flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.08] ${phaseInfo.color}`}>
-                    <span>{phaseInfo.icon}</span>
-                    <span>{phaseInfo.label}</span>
-                  </span>
-                )}
-              </div>
-              <h3 className={`font-semibold text-white line-clamp-2 ${isPast && !event.isLive ? 'opacity-60' : ''}`}>
-                {event.name}
-              </h3>
-            </div>
-          </div>
-
-          {event.agency && (
-            <p className="text-slate-400 text-sm mt-1">
-              {getCompanyProfileUrl(event.agency) ? (
-                <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
-              ) : event.agency}
-            </p>
-          )}
-
-          <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
-            {launchDate && (
-              <span className={`flex items-center gap-1 ${isPast && !event.isLive ? 'line-through opacity-60' : ''}`}>
-                <span>📅</span>
-                {launchDate.toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-                {' '}
-                {launchDate.toLocaleTimeString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </span>
-            )}
-            {event.location && (
-              <span className="flex items-center gap-1">
-                <span>📍</span> {event.location}
-              </span>
-            )}
-          </div>
-
-          {event.rocket && (
-            <p className="text-white/90 text-xs mt-2">
-              <span>🚀</span> <RocketLink name={event.rocket} />
-            </p>
-          )}
-
-          {event.description && (
-            <p className="text-slate-400/70 text-xs mt-2 line-clamp-2">{event.description}</p>
-          )}
-
-          <div className="flex flex-wrap gap-2 mt-2">
-            {/* Watch Live button (only for verified streams) */}
-            {watchUrlFor(event) ? (
-              <a
-                href={watchUrlFor(event)!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-xs font-medium px-3 py-2 rounded transition-colors flex items-center gap-1 ${
-                  event.isLive
-                    ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
-                    : 'bg-orange-500/10 text-orange-500 hover:bg-orange-500/20'
-                }`}
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                Watch Live
-              </a>
-            ) : event.infoUrl ? (
-              <a
-                href={event.infoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs font-medium px-3 py-2 rounded transition-colors flex items-center gap-1 bg-white/[0.08] text-slate-300 hover:bg-white/[0.08]"
-              >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Mission Info
-              </a>
-            ) : null}
-            {event.type === 'launch' && (
-              <Link
-                href="/resource-exchange"
-                className="text-xs text-white/70 hover:text-white bg-white/[0.08] px-3 py-2 rounded transition-colors"
-              >
-                Launch providers
-              </Link>
-            )}
-            {event.type === 'satellite' && (
-              <Link
-                href="/spectrum?tab=geo-slots"
-                className="text-xs text-white/90 hover:text-white bg-white/10 px-3 py-2 rounded transition-colors"
-              >
-                Orbital slots
-              </Link>
-            )}
-            {event.type === 'moon_mission' && (
-              <Link
-                href="/solar-exploration?body=moon"
-                className="text-xs text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 px-3 py-2 rounded transition-colors"
-              >
-                Moon exploration
-              </Link>
-            )}
-            {event.type === 'mars_mission' && (
-              <Link
-                href="/solar-exploration?body=mars"
-                className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 px-3 py-2 rounded transition-colors"
-              >
-                Mars exploration
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const SERVER_LIST_SIZE = 24;
 
 /**
- * The best watchable URL for an event. streamUrl has never been populated by
- * any fetcher (0 of 442 events carry one), so reading it alone meant every
- * "Watch Live" affordance on this page was dead while the real links sat in
- * videoUrl. Route through resolveStreamSource, which already understands the
- * streamUrl/videoUrl/xUrl precedence and platform quirks.
+ * Coarse T-minus for server-rendered rows. Deliberately not second-resolution:
+ * this string is baked into HTML, and only the hero clock ticks.
  */
-function watchUrlFor(event: SpaceEvent): string | null {
-  const { source, youtubeId, xUrl } = resolveStreamSource(event);
-  if (source === 'youtube' && youtubeId) return `https://www.youtube.com/watch?v=${youtubeId}`;
-  if (source === 'x' && xUrl) return xUrl;
-  // Not YouTube/X but still a link (e.g. plus.nasa.gov schedule pages).
-  return event.streamUrl || event.videoUrl || null;
+function tminus(date: Date | string | null, now: Date): string {
+  if (!date) return 'TBD';
+  const ms = new Date(date).getTime() - now.getTime();
+  if (!Number.isFinite(ms)) return 'TBD';
+  if (ms <= 0) return 'LIVE';
+  const totalMinutes = Math.floor(ms / 60000);
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  if (days > 0) return `T−${days}d ${String(hours).padStart(2, '0')}h`;
+  return `T−${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m`;
 }
 
-function LiveStreamEmbed({ event }: { event: SpaceEvent }) {
-  // Same precedence as the watch links — the embed was reading streamUrl
-  // alone and therefore never rendered.
-  const videoId = extractYouTubeId(event.streamUrl || event.videoUrl);
-  if (!videoId) return null;
-
-  return (
-    <div className="mt-2 rounded-xl overflow-hidden border border-red-500/30 bg-black shadow-lg shadow-red-500/5">
-      <div className="relative aspect-video">
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
-          title={`${event.name} - Live Stream`}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="absolute inset-0 w-full h-full"
-        />
-      </div>
-      <div className="px-3 py-2 flex items-center gap-2 bg-white/[0.04]">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-        </span>
-        <span className="text-red-400 text-xs font-bold">LIVE</span>
-        <span className="text-white text-xs font-medium truncate">{event.name}</span>
-        {event.agency && (
-          <span className="text-slate-400 text-xs ml-auto">
-            {getCompanyProfileUrl(event.agency) ? (
-              <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
-            ) : event.agency}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ════════════════════════════════════════
-// Featured Mission — Live Countdown + Marquee Selection
-// ════════════════════════════════════════
-
-// Event types eligible to be the marquee "Featured Mission" on this page.
-const MARQUEE_EVENT_TYPES: SpaceEventType[] = ['crewed_mission', 'moon_mission', 'mars_mission'];
-
-// Date-precision values from SpaceEvent.launchDatePrecision that count as
-// "firm" — anything looser (month/quarter/year, or missing) is treated as a
-// NET (No Earlier Than) estimate and gets an honest static label instead of
-// a ticking countdown, so we never imply false precision.
-const FIRM_DATE_PRECISIONS = new Set(['exact', 'hour', 'day']);
-
-// Static fallback for the next major marquee mission, used only when the
-// live events feed has no future-dated crewed/moon/mars mission yet (e.g.
-// Artemis III before NASA commits it to the database with a firm window).
-// Verified as of Aug 2026: NASA restructured Artemis III in Feb 2026 from a
-// lunar landing to an Earth-orbit demonstration of the SpaceX Starship and
-// Blue Origin Blue Moon human landing systems; crew announced Jun 9, 2026;
-// NET (no earlier than) late 2027 per NASA/Ars Technica/Space.com reporting.
-const FALLBACK_MARQUEE_MISSION = {
-  name: 'Artemis III — Earth-Orbit HLS Demonstration',
-  agency: 'NASA',
-  description:
-    'Orion will dock with commercial human landing systems from SpaceX (Starship HLS) and Blue Origin (Blue Moon) in Earth orbit, testing rendezvous and docking ahead of the first crewed lunar landing on Artemis IV.',
-  netLabel: 'NET Late 2027',
-  href: '/ignition',
-};
-
-// Live ticking countdown to a firm target timestamp.
-function LiveCountdown({ targetMs }: { targetMs: number }) {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const diff = Math.max(0, targetMs - now);
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
-
-  const units = [
-    { label: 'Days', value: days },
-    { label: 'Hrs', value: hours },
-    { label: 'Min', value: minutes },
-    { label: 'Sec', value: seconds },
-  ];
-
-  return (
-    <div className="flex gap-2 justify-center lg:justify-end">
-      {units.map((u) => (
-        <div key={u.label} className="flex flex-col items-center bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2 min-w-[52px]">
-          <span className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white tabular-nums">{String(u.value).padStart(2, '0')}</span>
-          <span className="text-[10px] uppercase tracking-widest text-slate-500 font-medium">{u.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// Picks the next upcoming marquee mission from live events (never a past
-// one — the `> now` date guard is the whole point of this function), and
-// falls back to a static, honestly-labeled NET mission when the live feed
-// doesn't have one dated yet.
-function FeaturedMissionCard({ mission }: { mission: SpaceEvent | null }) {
-  if (!mission) {
-    return (
-      <Link href={FALLBACK_MARQUEE_MISSION.href} className="block mb-8 group">
-        <div className="relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 p-6 sm:p-8 hover:border-cyan-400/40 transition-all duration-300">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-
-          <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full">Featured Mission</span>
-                <span className="text-xs font-semibold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full">NET — Date Not Firm</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white mb-2 group-hover:text-cyan-300 transition-colors">
-                {FALLBACK_MARQUEE_MISSION.name}
-              </h2>
-              <p className="text-slate-400 text-sm sm:text-base mb-4 max-w-xl">
-                {FALLBACK_MARQUEE_MISSION.description}
-              </p>
-              <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
-                <span className="flex items-center gap-1.5"><span className="text-cyan-400">Agency:</span> {FALLBACK_MARQUEE_MISSION.agency}</span>
-              </div>
-            </div>
-
-            <div className="shrink-0 text-center lg:text-right">
-              <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-medium">No Earlier Than</div>
-              <div className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">{FALLBACK_MARQUEE_MISSION.netLabel}</div>
-              <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 font-medium group-hover:gap-2.5 transition-all">
-                Track program milestones
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Link>
-    );
+/** LL2 status → the pip's word + shape. Never colour alone (SYNTHESIS.md §2.1). */
+function pipFor(status: string | null | undefined): PipState {
+  switch ((status ?? '').toLowerCase()) {
+    case 'go':
+      return 'go';
+    case 'scrubbed':
+    case 'failed':
+      return 'scrub';
+    case 'completed':
+      return 'flew';
+    case 'tbd':
+    case 'tbc':
+      return 'hold';
+    default:
+      return 'tminus';
   }
-
-  const launchDate = new Date(mission.launchDate!);
-  const isFirmDate = !mission.launchDatePrecision || FIRM_DATE_PRECISIONS.has(mission.launchDatePrecision);
-  const href = mission.infoUrl || '/mission-control';
-
-  return (
-    <Link href={href} className="block mb-8 group">
-      <div className="relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 p-6 sm:p-8 hover:border-cyan-400/40 transition-all duration-300">
-        {/* Background glow effect */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-
-        <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
-          {/* Left: Mission Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full">Featured Mission</span>
-              {!isFirmDate && (
-                <span className="text-xs font-semibold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full">NET — Date Not Firm</span>
-              )}
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white mb-2 group-hover:text-cyan-300 transition-colors">
-              {mission.name}
-            </h2>
-            {mission.description && (
-              <p className="text-slate-400 text-sm sm:text-base mb-4 max-w-xl">
-                {mission.description}
-              </p>
-            )}
-            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
-              {mission.agency && <span className="flex items-center gap-1.5"><span className="text-cyan-400">Agency:</span> {mission.agency}</span>}
-              {mission.rocket && <span className="flex items-center gap-1.5"><span className="text-cyan-400">Vehicle:</span> {mission.rocket}</span>}
-            </div>
-          </div>
-
-          {/* Right: Countdown */}
-          <div className="shrink-0 text-center lg:text-right">
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-medium">{isFirmDate ? 'Launch Target' : 'No Earlier Than'}</div>
-            {isFirmDate ? (
-              <LiveCountdown targetMs={launchDate.getTime()} />
-            ) : (
-              <div className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
-                {launchDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-              </div>
-            )}
-            <div className="text-sm text-slate-400 mt-2 font-medium">
-              {launchDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
-            </div>
-            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 font-medium group-hover:gap-2.5 transition-all">
-              Mission details
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
 }
 
-function MissionControlContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+/** "Falcon 9 · Cape Canaveral" from the row's vehicle and pad. */
+function vehicleAndSite(rocket: string | null, location: string | null): string {
+  return [rocket?.replace(/ Block 5$/, ''), location?.split(',')[0]].filter(Boolean).join(' · ');
+}
 
-  const [events, setEvents] = useState<SpaceEvent[]>([]);
-  // Timeline cap (SYNTHESIS.md item 24): 100 events at 390px measured 53,785px
-  // of scroll. Render a window, grow it on demand, jump by month.
-  const [timelineLimit, setTimelineLimit] = useState(24);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [selectedType, setSelectedType] = useState<SpaceEventType | 'all'>(
-    (searchParams.get('type') as SpaceEventType | 'all') || 'all'
-  );
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+async function safe<T>(label: string, fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    logger.warn(`mission-control: ${label} failed`, { error: error instanceof Error ? error.message : String(error) });
+    return fallback;
+  }
+}
 
-  // Dynamic content state (initialized with fallbacks so sections are never empty)
-  const [epicEarthImages, setEpicEarthImages] = useState<EpicEarthImage[]>(FALLBACK_EPIC_EARTH);
-  const [nasaImages, setNasaImages] = useState<NasaImage[]>(FALLBACK_NASA_IMAGES);
-  const [dsnAntennas, setDsnAntennas] = useState<DsnAntenna[]>(FALLBACK_DSN_ANTENNAS);
-  // Auto-published mission debriefs (src/lib/mission-debrief-generator.ts) — the
-  // post-flight half of Mission Control. Empty array = panel hidden.
-  const [debriefs, setDebriefs] = useState<DebriefLite[]>([]);
-  const [contentLoading, setContentLoading] = useState(false);
+export default async function MissionControlPage() {
+  const now = new Date();
 
-  // Sync filters to URL
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (selectedType && selectedType !== 'all') params.set('type', selectedType);
-    if (searchQuery) params.set('search', searchQuery);
-    const qs = params.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [selectedType, searchQuery, router, pathname]);
+  const [next, upcomingRows, initialEvents] = await Promise.all([
+    safe('next-launch', () => getNextLaunch(), null),
+    safe('upcoming', () => getNextLaunches(SERVER_LIST_SIZE + 1, now), [] as Awaited<ReturnType<typeof getNextLaunches>>),
+    safe('events-window', () => getMissionControlEvents(now), undefined as SpaceEvent[] | undefined),
+  ]);
 
-  const fetchEvents = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Fetch events for next 5 years
-      const startDate = new Date().toISOString();
-      const endDate = new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000).toISOString();
-
-      const params = new URLSearchParams({
-        startDate,
-        endDate,
-        limit: '500',
-      });
-
-      if (selectedType !== 'all') {
-        params.set('type', selectedType);
-      }
-
-      const res = await fetch(`/api/events?${params}`);
-      const data = await res.json();
-      setEvents(data.events || []);
-      setLastUpdated(new Date());
-    } catch (error) {
-      clientLogger.error('Failed to fetch events', { error: error instanceof Error ? error.message : String(error) });
-      setError('Failed to load data.');
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedType]);
-
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
-
-  // Auto-refresh events every 2 minutes to keep mission data current
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchEvents();
-    }, 2 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [fetchEvents]);
-
-  // Fetch dynamic content sections (falls back to built-in data when API returns insufficient results)
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const [epicRes, nasaRes, dsnRes] = await Promise.all([
-          fetch('/api/content/mission-control?section=epic-earth'),
-          fetch('/api/content/mission-control?section=nasa-images'),
-          fetch('/api/content/mission-control?section=dsn-status'),
-        ]);
-
-        const [epicData, nasaData, dsnData] = await Promise.all([
-          epicRes.json(),
-          nasaRes.json(),
-          dsnRes.json(),
-        ]);
-
-        setEpicEarthImages(epicData.data?.length > 2 ? epicData.data : FALLBACK_EPIC_EARTH);
-        setNasaImages(nasaData.data?.length > 3 ? nasaData.data : FALLBACK_NASA_IMAGES);
-        setDsnAntennas(dsnData.data?.length > 2 ? dsnData.data : FALLBACK_DSN_ANTENNAS);
-      } catch (error) {
-        clientLogger.error('Failed to fetch dynamic content', { error: error instanceof Error ? error.message : String(error) });
-        // Keep fallback data on error — no need to set error state since sections already show content
-      }
-    };
-
-    fetchContent();
-
-    fetch('/api/mission-debriefs?limit=3')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => { if (Array.isArray(j?.debriefs)) setDebriefs(j.debriefs); })
-      .catch(() => { /* panel simply stays hidden */ });
-  }, []);
-
-  const handleRefresh = useCallback(async () => {
-    await fetchEvents();
-  }, [fetchEvents]);
-
-  // Next upcoming marquee mission — date guard (`> now`) ensures a past
-  // mission (e.g. a completed Artemis II) can never be featured here.
-  const featuredMission = useMemo(() => {
-    const now = Date.now();
-    const upcoming = events
-      .filter((e) => MARQUEE_EVENT_TYPES.includes(e.type) && e.launchDate && new Date(e.launchDate).getTime() > now)
-      .sort((a, b) => new Date(a.launchDate!).getTime() - new Date(b.launchDate!).getTime());
-    return upcoming[0] || null;
-  }, [events]);
-
-  // Filter and group events
-  const groupedEvents = useMemo(() => {
-    let filtered = events;
-
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = events.filter(
-        (e) =>
-          e.name.toLowerCase().includes(query) ||
-          e.agency?.toLowerCase().includes(query) ||
-          e.location?.toLowerCase().includes(query) ||
-          e.rocket?.toLowerCase().includes(query)
-      );
-    }
-
-    const grouped: GroupedEvents = {};
-
-    filtered.forEach((event) => {
-      if (!event.launchDate) return;
-      const date = new Date(event.launchDate);
-      const year = date.getFullYear().toString();
-      const month = date.toLocaleDateString('en-US', { month: 'long' });
-
-      if (!grouped[year]) grouped[year] = {};
-      if (!grouped[year][month]) grouped[year][month] = [];
-      grouped[year][month].push(event);
-    });
-
-    return grouped;
-  }, [events, searchQuery]);
-  const orderedTimelineIds = Object.keys(groupedEvents).flatMap((y) => Object.values(groupedEvents[y] as Record<string, { id: string }[]>).flatMap((arr) => arr.map((ev) => ev.id)));
-  const visibleIds = new Set(orderedTimelineIds.slice(0, timelineLimit));
-  const hiddenTimelineCount = Math.max(0, orderedTimelineIds.length - timelineLimit);
-
-  const years = Object.keys(groupedEvents).sort();
+  // The hero already carries the next launch; the board starts at the one after.
+  const board = upcomingRows.filter((r) => r.id !== next?.id).slice(0, SERVER_LIST_SIZE);
+  const next48 = upcomingRows.filter(
+    (r) => r.launchDate && r.launchDate.getTime() - now.getTime() < 48 * 3600000,
+  ).length;
+  const liftoffUtc = next?.launchDate
+    ? `${new Date(next.launchDate).toISOString().slice(11, 16)}Z`
+    : null;
+  const netDate = next?.launchDate
+    ? new Date(next.launchDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', timeZone: 'UTC' })
+    : null;
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
     <div className="min-h-screen">
       {/* Live News Ticker */}
       <NewsTicker />
@@ -1339,491 +156,114 @@ function MissionControlContent() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
         </div>
-        <div className="container mx-auto px-4 pt-6">
-          <AnimatedPageHeader title="Mission Control" subtitle="Every launch, live stream and mission — before, during, and after — plus how to watch from the ground" accentColor="cyan" />
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 pt-6 pb-8">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--ink)]">
+            Mission Control
+          </h1>
+          <div className="mt-2 h-0.5 w-16 rounded-full bg-gradient-to-r from-[var(--ember)] to-transparent" aria-hidden="true" />
+          <Deck className="mt-3">
+            Every launch, live stream and mission &mdash; before, during, and after &mdash; plus how to
+            watch from the ground.
+          </Deck>
 
-        <AlertNudge moduleName="Mission Control" alertType="launch" ctaHref="/alerts" className="mb-4" />
-
-        <div className="mb-4">
-          <DataFreshnessBadge
-            lastUpdated={lastUpdated}
-            source="Space Events"
-            refreshInterval="every 2 min"
-            onRefresh={handleRefresh}
-          />
-        </div>
-
-        {error && (
-          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-            <div className="text-red-400 text-sm font-medium">{error}</div>
-          </div>
-        )}
-
-        {/* Filters */}
-        <ScrollReveal>
-        <div className="card p-4 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  🔍
-                </span>
-                <input
-                  type="search"
-                  placeholder="Search missions, agencies, rockets..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input pl-10"
-                />
-              </div>
-            </div>
-
-            {/* Type Filter */}
-            <div className="flex flex-wrap gap-2">
-              {EVENT_TYPES.map((type) => (
-                <button
-                  key={type.value}
-                  onClick={() => setSelectedType(type.value)}
-                  className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 text-sm ${
-                    selectedType === type.value
-                      ? 'bg-white/10 text-slate-900 border-white/15'
-                      : 'bg-transparent text-slate-300 border border-white/[0.06] hover:border-white/[0.1]'
-                  }`}
-                >
-                  <span>{type.icon}</span>
-                  <span className="hidden sm:inline">{type.label}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center">
-              <ExportButton
-                data={events}
-                filename="space-events"
-                columns={[
-                  { key: 'name', label: 'Name' },
-                  { key: 'type', label: 'Type' },
-                  { key: 'launchDate', label: 'Date' },
-                  { key: 'location', label: 'Location' },
-                  { key: 'description', label: 'Description' },
-                  { key: 'agency', label: 'Agency' },
-                ]}
-              />
-            </div>
-          </div>
-        </div>
-
-        </ScrollReveal>
-
-        {/* Stats */}
-        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StaggerItem><div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-slate-300">{events.length}</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Events</div>
-          </div></StaggerItem>
-          <StaggerItem><div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-green-400">
-              {events.filter(e => {
-                const d = e.launchDate ? new Date(e.launchDate) : null;
-                return d && d > new Date() && d < new Date(Date.now() + 48 * 60 * 60 * 1000);
-              }).length}
-            </div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Next 48 Hours</div>
-          </div></StaggerItem>
-          <StaggerItem><div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-white/90">
-              {events.filter(e => e.type === 'crewed_mission').length}
-            </div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Crewed Missions</div>
-          </div></StaggerItem>
-          <StaggerItem><div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-white/70">
-              {new Set(events.map(e => e.agency).filter(Boolean)).size}
-            </div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Agencies</div>
-          </div></StaggerItem>
-        </StaggerContainer>
-
-        {/* Live Now Section */}
-        {!loading && <ScrollReveal delay={0.1}><LiveNowSection events={events} /></ScrollReveal>}
-
-        {/* ═══════ Featured Mission Card (below Live Now, above Upcoming — founder layout 8/15) ═══════ */}
-        <ScrollReveal>
-          <FeaturedMissionCard mission={featuredMission} />
-        </ScrollReveal>
-
-        <div className="flex flex-wrap justify-end gap-x-4 gap-y-1 -mt-4 mb-6">
-          <Link
-            href="/artemis"
-            className="text-xs text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center gap-1.5 transition-colors"
-          >
-            Full Artemis tracker
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </Link>
-          <Link
-            href="/starship"
-            className="text-xs text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center gap-1.5 transition-colors"
-          >
-            Full Starship tracker
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </Link>
-        </div>
-
-        {/* ═══════ Enthusiast toolkit — the ground-side of Mission Control (2026-08-26) ═══════ */}
-        <ScrollReveal delay={0.15}>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-8" aria-label="Sky-watching tools">
-            {[
-              { href: '/whats-overhead', icon: '🛰️', label: "What's Overhead", hint: 'ISS passes over you' },
-              { href: '/predictions', icon: '🎯', label: 'Predictions', hint: 'Will it fly? Stake your call' },
-              { href: '/aurora-forecast', icon: '🌌', label: 'Aurora Forecast', hint: 'Northern lights tonight?' },
-              { href: '/satellites', icon: '📡', label: 'Satellite Tracker', hint: 'Live orbital map' },
-              { href: '/guide/watch-a-launch-cape-canaveral', icon: '🎟️', label: 'Watch in Person', hint: 'Cape, Vandenberg, Starbase' },
-              { href: '/learn/kids', icon: '🚀', label: 'Space for Kids', hint: 'Rockets, orbits, astronauts' },
-            ].map((t) => (
-              <Link
-                key={t.href}
-                href={t.href}
-                className="card p-3 flex items-center gap-2.5 hover:border-cyan-500/30 transition-colors group"
-              >
-                <span className="text-xl flex-shrink-0" aria-hidden="true">{t.icon}</span>
-                <span className="min-w-0">
-                  <span className="block text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors truncate">{t.label}</span>
-                  <span className="block text-[10px] text-slate-500 truncate">{t.hint}</span>
-                </span>
-              </Link>
-            ))}
-          </div>
-        </ScrollReveal>
-
-        {/* Upcoming in 48 Hours Section */}
-        {!loading && <ScrollReveal delay={0.2}><UpcomingIn48Hours events={events} /></ScrollReveal>}
-
-        {/* Timeline */}
-        {loading ? (
-          <div className="flex flex-col items-center py-20 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-              </span>
-              <span className="text-sm text-slate-400">Loading live data...</span>
-            </div>
-            <LoadingSpinner size="lg" />
-          </div>
-        ) : years.length === 0 ? (
-          <div className="text-center py-20">
-            <span className="text-6xl block mb-4">🔭</span>
-            <h2 className="text-2xl font-semibold text-white mb-2">No Events Found</h2>
-            <p className="text-slate-400">
-              {searchQuery
-                ? 'Try adjusting your search terms'
-                : 'No upcoming events available. Try fetching fresh data.'}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-12">
-            {years.map((year) => (
-              <div key={year}>
-                <h2 className="text-2xl font-display font-bold text-white mb-6 flex items-center gap-3 sticky top-16 bg-black/95 backdrop-blur-sm py-3 z-10">
-                  <span className="text-white/90">📅</span>
-                  {year}
-                  <span className="text-slate-400 text-sm font-normal">
-                    ({Object.values(groupedEvents[year]).flat().length} events)
-                  </span>
-                </h2>
-
-                <div className="space-y-8 pl-4 border-l-2 border-white/10">
-                  {Object.entries(groupedEvents[year]).map(([month, monthEvents]) => (
-                    <div key={`${year}-${month}`} className="relative">
-                      {/* Month marker */}
-                      <div className="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <span className="text-slate-900 text-xs font-bold">
-                          {month.substring(0, 3)}
-                        </span>
-                      </div>
-
-                      <div className="ml-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">
-                          {month}
-                          <span className="text-slate-400 text-sm font-normal ml-2">
-                            ({monthEvents.length} events)
-                          </span>
-                        </h3>
-
-                        <div className="space-y-4">
-                          {monthEvents.filter((event) => visibleIds.has(event.id)).map((event) => (
-                            <div key={event.id}>
-                              <EventCard event={event} />
-                              {event.isLive && event.streamUrl && (
-                                <LiveStreamEmbed event={event} />
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {!loading && hiddenTimelineCount > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-3 -mt-2 mb-8">
-            <button type="button" onClick={() => setTimelineLimit((n) => n + 24)} className="btn-secondary text-sm py-2 px-4">
-              Show {Math.min(24, hiddenTimelineCount)} more of {hiddenTimelineCount} later launches
-            </button>
-            <button type="button" onClick={() => setTimelineLimit(orderedTimelineIds.length)} className="text-sm text-[var(--ink-3)] hover:text-[var(--ember)] min-h-[44px] px-2">Show all</button>
-          </div>
-        )}
-        {/* Ad between timeline and dynamic content */}
-        <div className="my-8">
-          <AdSlot position="in_feed" module="mission-control" adsenseSlot="in_feed_mc" adsenseFormat="rectangle" />
-        </div>
-
-        {/* ════════════════════════════════════════ */}
-        {/* Dynamic Content Sections */}
-        {/* ════════════════════════════════════════ */}
-
-        {contentLoading ? (
-          <div className="flex justify-center py-12">
-            <LoadingSpinner size="lg" />
-          </div>
-        ) : (
-          <>
-            {/* Mission Debriefs — what happened after the stream ended */}
-            {debriefs.length > 0 && (
-              <CollapsiblePanel panelId="mc-debriefs" title="📝 Mission Debriefs — after the flight" count={debriefs.length} className="mb-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {debriefs.map((d) => {
-                    const tone =
-                      d.status === 'success' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10'
-                      : d.status === 'failure' ? 'text-red-400 border-red-500/30 bg-red-500/10'
-                      : 'text-amber-400 border-amber-500/30 bg-amber-500/10';
-                    return (
-                      <Link key={d.slug} href={`/mission-debriefs/${d.slug}`} className="card p-4 hover:border-cyan-500/30 transition-colors group">
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border ${tone}`}>{d.status}</span>
-                          <span className="text-[11px] text-slate-500">{new Date(d.missionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                        </div>
-                        <h3 className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors mb-1.5 line-clamp-2">{d.missionName}</h3>
-                        <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">{d.executiveSummary}</p>
-                      </Link>
-                    );
-                  })}
-                </div>
-                <div className="mt-3 text-right">
-                  <Link href="/mission-debriefs" className="text-xs text-cyan-400 hover:text-cyan-300 font-medium">All mission debriefs →</Link>
-                </div>
-              </CollapsiblePanel>
-            )}
-
-            {/* Earth from Space - EPIC Earth Images */}
-            {epicEarthImages.length > 0 && (
-              <CollapsiblePanel panelId="mc-epic-earth" title="🌍 Earth from Space — NASA EPIC" count={epicEarthImages.length} className="mb-4">
-                <div className="overflow-x-auto pb-2">
-                  <div className="flex gap-4 min-w-max">
-                    {epicEarthImages.map((img) => (
-                      <div key={img.identifier} className="card overflow-hidden w-72 flex-shrink-0">
-                        <div className="relative h-48 bg-white/[0.06]">
-                          <Image
-                            src={img.image_url}
-                            alt={img.caption || 'Earth from EPIC camera'}
-                            className="w-full h-full object-cover"
-                            fill
-                            unoptimized
-                          />
-                        </div>
-                        <div className="p-3">
-                          <div className="text-xs text-slate-400 mb-1">
-                            {new Date(img.date).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </div>
-                          {img.caption && (
-                            <p className="text-white/90 text-sm line-clamp-2">{img.caption}</p>
-                          )}
-                          {img.centroid_coordinates && (
-                            <p className="text-slate-400 text-xs mt-1">
-                              {img.centroid_coordinates.lat.toFixed(1)}&deg;, {img.centroid_coordinates.lon.toFixed(1)}&deg;
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+          {/* Next launch, compact. Server-rendered so the promise of the page
+              is in the HTML; only the clock is hydrated. */}
+          {next ? (
+            <section
+              aria-label="Next launch"
+              className="mt-6 rounded-[var(--radius-console)] border border-[var(--line)] bg-[var(--surface)] p-4 md:p-5"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-5">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <StatusPip state={pipFor(next.status)} />
+                    <span className="font-body text-[0.6875rem] font-medium uppercase leading-[1.4] tracking-[0.14em] text-[var(--ink-3)]">
+                      Next launch
+                    </span>
                   </div>
+                  <h2 className="mt-2 text-[1.375rem] font-bold leading-[1.15] text-[var(--ink)]">
+                    <Link
+                      href={`/launch/${next.id}`}
+                      className="inline-flex min-h-[44px] items-center hover:text-[var(--ember)]"
+                    >
+                      {missionOf(next.name)}
+                    </Link>
+                  </h2>
+                  <p className="font-body text-[0.875rem] leading-[1.55] text-[var(--ink-2)]">
+                    {vehicleAndSite(next.rocket, next.location) || 'Vehicle and pad to be confirmed'}
+                    {next.agency ? ` · ${next.agency}` : ''}
+                  </p>
                 </div>
-              </CollapsiblePanel>
-            )}
 
-            {/* NASA Image Gallery */}
-            {nasaImages.length > 0 && (
-              <CollapsiblePanel panelId="mc-nasa-images" title="📸 NASA Image Gallery" count={nasaImages.length} className="mb-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-grid">
-                  {nasaImages.map((img) => (
-                    <div key={img.nasa_id} className="card overflow-hidden">
-                      <div className="relative h-40 bg-white/[0.06]">
-                        <Image
-                          src={img.thumbnail_url}
-                          alt={img.title}
-                          className="w-full h-full object-cover"
-                          fill
-                          unoptimized
-                        />
-                        {img.media_type && img.media_type !== 'image' && (
-                          <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded capitalize">
-                            {img.media_type}
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <h3 className="text-white text-sm font-semibold line-clamp-2">{img.title}</h3>
-                        <div className="text-xs text-slate-400 mt-1">
-                          {new Date(img.date_created).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                        </div>
-                        {img.description && (
-                          <p className="text-slate-400 text-xs mt-2 line-clamp-3">{img.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex flex-wrap items-end gap-x-8 gap-y-5">
+                  <Countdown to={next.launchDate} size="lg" />
+                  {liftoffUtc && <Telemetry label="Liftoff" value={liftoffUtc} sub="scheduled, UTC" />}
+                  {netDate && <Telemetry label="NET" value={netDate} tone="ink" sub="no earlier than" />}
+                  <Telemetry
+                    label="Next 48 h"
+                    value={next48}
+                    tone="ember"
+                    sub={next48 === 1 ? 'launch on the board' : 'launches on the board'}
+                  />
                 </div>
-              </CollapsiblePanel>
-            )}
-
-            {/* Deep Space Network Status */}
-            {dsnAntennas.length > 0 && (
-              <CollapsiblePanel panelId="mc-dsn" title="📡 Deep Space Network Status" count={dsnAntennas.filter(a => a.is_active).length} className="mb-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {dsnAntennas.map((antenna) => (
-                    <div key={antenna.dish_name} className="card p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-white font-bold text-lg">{antenna.dish_name}</h3>
-                        <span className={`w-3 h-3 rounded-full ${antenna.is_active ? 'bg-green-500 animate-pulse' : 'bg-white/[0.1]'}`} />
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Target</span>
-                          <span className="text-white/90 font-medium">{antenna.target || 'Idle'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Signal</span>
-                          <span className="text-white/90 font-medium">{antenna.signal_type || '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Data Rate</span>
-                          <span className="text-white/90 font-medium">{antenna.data_rate || '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Frequency</span>
-                          <span className="text-white/90 font-medium">{antenna.frequency || '-'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CollapsiblePanel>
-            )}
-          </>
-        )}
-
-        {/* Footer Ad */}
-        <div className="mt-8">
-          <AdSlot position="footer" module="mission-control" adsenseSlot="footer_mc" adsenseFormat="horizontal" />
+              </div>
+            </section>
+          ) : (
+            <p className="mt-6 font-body text-[0.875rem] leading-[1.55] text-[var(--ink-3)]">
+              The next-launch feed did not answer this request, so nothing is shown here rather than a
+              guess. The{' '}
+              <Link href="/launch" className="text-[var(--ember)] underline underline-offset-2">
+                full launch schedule
+              </Link>{' '}
+              is still available.
+            </p>
+          )}
         </div>
-
-        {/* Related Intelligence */}
-        {!loading && events.length > 0 && (
-          <div className="card p-6 mt-8">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <span>🔗</span> Related Intelligence
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
-                <div className="text-sm font-medium text-white/90 group-hover:text-white">☀️ Solar Flares</div>
-                <p className="text-xs text-slate-400 mt-1">Solar weather can delay launches</p>
-              </Link>
-              <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
-                <div className="text-sm font-medium text-white/90 group-hover:text-white">🛰️ Debris Monitor</div>
-                <p className="text-xs text-slate-400 mt-1">Track orbital debris near missions</p>
-              </Link>
-              <Link href="/spectrum?tab=geo-slots" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
-                <div className="text-sm font-medium text-white/90 group-hover:text-white">📡 Orbital Slots</div>
-                <p className="text-xs text-slate-400 mt-1">Satellite registry and congestion</p>
-              </Link>
-              <Link href="/space-insurance" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
-                <div className="text-sm font-medium text-white/90 group-hover:text-white">🛡️ Space Insurance</div>
-                <p className="text-xs text-slate-400 mt-1">Mission risk and coverage data</p>
-              </Link>
-              <Link href="/space-calendar" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
-                <div className="text-sm font-medium text-white/90 group-hover:text-white">📅 Space Calendar</div>
-                <p className="text-xs text-slate-400 mt-1">Full industry calendar: conferences, policy, business events</p>
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* Launch-week email opt-in */}
-        <div className="mt-8">
-          <NewsletterSignup
-            variant="cta"
-            source="launch-week-mission-control"
-            title="Get the week's launches every Monday"
-            description="Every Monday morning, get a rundown of the week's scheduled launches — vehicle, provider, site, and a direct link back to Mission Control to watch. Part of the SpaceNexus newsletter; unsubscribe anytime."
-          />
-        </div>
-
-            <ScrollReveal>
-              <RelatedModules
-                modules={[
-              { name: 'Mission Planning', description: 'Cost estimation and mission design tools', href: '/mission-cost', icon: '📊' },
-              { name: 'Satellite Tracker', description: 'Real-time orbital tracking for active missions', href: '/satellites', icon: '🛰️' },
-              { name: 'Launch Vehicles', description: 'Compare launch providers and capabilities', href: '/launch-vehicles', icon: '🚀' },
-              { name: 'Space Environment', description: 'Weather and debris monitoring for ops', href: '/space-environment', icon: '🌍' },
-                ]}
-              />
-            </ScrollReveal>
-
       </div>
-    </div>
-    </PullToRefresh>
-  );
-}
 
-export default function MissionControlPage() {
-  return (
-    <>
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Mission Control', href: '/mission-control' },
-      ]} />
-      <Suspense
-        fallback={
-          <div className="min-h-screen flex items-center justify-center py-20">
-            <LoadingSpinner size="lg" />
-          </div>
-        }
-      >
-        <MissionControlContent />
-      </Suspense>
-    </>
+      {/* The crawlable board. The client island below re-renders the same
+          events as an interactive, filterable timeline. */}
+      <div className="container mx-auto px-4 pb-8">
+        <Console
+          title={`Next ${SERVER_LIST_SIZE} launches`}
+          source="Launch Library 2"
+          asOf={now}
+          status={board.length > 0 ? 'live' : 'delayed'}
+          padded={false}
+        >
+          {board.length === 0 ? (
+            <p className="p-4 font-body text-[0.875rem] leading-[1.55] text-[var(--ink-3)]">
+              The launch board is empty because the schedule feed did not answer, not because nothing is
+              flying. It refreshes every few minutes &mdash; the interactive timeline below will fill in as
+              soon as it does.
+            </p>
+          ) : (
+            <ul>
+              {board.map((row) => (
+                <li key={row.id} className="border-b border-[var(--line)] last:border-0">
+                  <Link
+                    href={`/launch/${row.id}`}
+                    className="flex min-h-[44px] flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-[var(--hover)] focus-visible:bg-[var(--hover)]"
+                  >
+                    <span className="w-[92px] flex-shrink-0 font-mono text-[12.5px] tabular-nums text-[var(--ember)]">
+                      {tminus(row.launchDate, now)}
+                    </span>
+                    <span className="min-w-[180px] flex-1 font-body text-[0.875rem] leading-[1.55] text-[var(--ink)]">
+                      {missionOf(row.name)}
+                    </span>
+                    <span className="font-body text-[0.8125rem] leading-[1.55] text-[var(--ink-3)]">
+                      {vehicleAndSite(row.rocket, row.location) || 'Vehicle TBA'}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Console>
+      </div>
+
+      <MissionControlClient initialEvents={initialEvents} />
+    </div>
   );
 }

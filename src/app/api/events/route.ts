@@ -1,63 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import type { MissionPhase } from '@/types';
 import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
-import { PROVIDER_YOUTUBE_URLS, PROVIDER_X_URLS } from '@/lib/launch-providers';
+// enrichEvent lives in a lib module so the /mission-control server component
+// renders exactly what this route returns (SYNTHESIS.md item 14).
+import { enrichEvent, EVENT_SELECT } from '@/lib/space-events';
 
 export const dynamic = 'force-dynamic';
-
-// Enrich a DB event with computed live/stream fields
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function enrichEvent(event: any) {
-  const now = new Date();
-  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
-
-  // Resolve stream URL: prefer videoUrl from Launch Library, fall back to provider channel
-  const rawStreamUrl = event.videoUrl
-    || (event.agency && PROVIDER_YOUTUBE_URLS[event.agency])
-    || null;
-
-  // X.com URL from provider map
-  const xUrl = event.agency ? PROVIDER_X_URLS[event.agency] || null : null;
-
-  // Determine if stream should be considered live/verified
-  let isLive = false;
-  if (launchDate) {
-    const timeDiff = launchDate.getTime() - now.getTime();
-    const isWithin30Min = timeDiff > 0 && timeDiff <= 30 * 60 * 1000;
-    const isPastWithin90Min = timeDiff < 0 && Math.abs(timeDiff) <= 90 * 60 * 1000;
-    isLive = (event.webcastLive || isWithin30Min || isPastWithin90Min) && !!rawStreamUrl;
-  }
-
-  // Compute mission phase from time proximity
-  let missionPhase: MissionPhase | null = null;
-  if (launchDate) {
-    const timeDiff = launchDate.getTime() - now.getTime();
-    if (timeDiff <= 30 * 60 * 1000 && timeDiff > 0) {
-      missionPhase = 'countdown';
-    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 5 * 60 * 1000) {
-      missionPhase = 'liftoff';
-    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 15 * 60 * 1000) {
-      missionPhase = 'ascent';
-    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 90 * 60 * 1000) {
-      missionPhase = 'nominal_orbit';
-    } else if (timeDiff > 30 * 60 * 1000 && timeDiff <= 2 * 60 * 60 * 1000) {
-      missionPhase = 'pre_launch';
-    }
-  }
-
-  // Only expose streamUrl when the stream is verified (live or imminent)
-  const streamUrl = isLive ? rawStreamUrl : null;
-
-  return {
-    ...event,
-    isLive,
-    streamUrl,
-    xUrl,
-    missionPhase,
-  };
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -76,27 +25,7 @@ export async function GET(req: NextRequest) {
     let events;
     let total;
 
-    const eventSelect = {
-      id: true,
-      name: true,
-      type: true,
-      status: true,
-      launchDate: true,
-      agency: true,
-      location: true,
-      mission: true,
-      description: true,
-      imageUrl: true,
-      videoUrl: true,
-      webcastLive: true,
-      infoUrl: true,
-      country: true,
-      rocket: true,
-      externalId: true,
-      windowStart: true,
-      windowEnd: true,
-      launchDatePrecision: true,
-    };
+    const eventSelect = EVENT_SELECT;
 
     if (startDate && endDate) {
       events = await prisma.spaceEvent.findMany({
@@ -172,7 +101,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Enrich DB events with computed live/stream fields
-    const enrichedEvents = events.map(enrichEvent);
+    // Explicit arrow: enrichEvent takes an optional `now`, and Array.map would
+    // otherwise hand it the element index.
+    const enrichedEvents = events.map((e) => enrichEvent(e, now));
 
     return NextResponse.json({ events: enrichedEvents, total });
   } catch (error) {

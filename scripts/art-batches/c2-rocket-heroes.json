@@ -1,0 +1,122 @@
+[
+  {
+    "prompt": "16:9 wide editorial hero illustration: a slender white two-stage rocket with a black interstage and landing legs, lifting off from a Florida pad at dawn, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/falcon-9.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a triple-core heavy rocket with three white boosters lifting off, twin side boosters, from a coastal pad at sunset, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/falcon-heavy.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a gigantic stainless-steel two-stage rocket on a tall launch tower with catch arms, Texas coastal flats, pre-dawn, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/starship.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a small black carbon-fibre rocket on a clifftop pad above the ocean, New Zealand coast, morning light, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/electron.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a medium reusable rocket with a wide tapered white body and hungry-hippo fairing, Virginia coastal pad, dusk, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/neutron.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a tall white-and-copper rocket with strap-on solid boosters lifting off from Florida, midday, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/vulcan-centaur.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a bronze-coloured first-stage rocket with a white fairing on a Florida pad, clear sky, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/atlas-v.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a very tall white heavy rocket with a seven-metre fairing and a blue-lit engine section, Florida pad at night, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/new-glenn.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a white European heavy rocket with two solid boosters in a jungle-fringed launch site, tropical sky, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/ariane-6.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a compact white four-stage rocket on a jungle launch pad, French Guiana, morning haze, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/vega-c.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a white and orange-accented Japanese rocket with two solid boosters on a seaside pad, blue sky, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/h3.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a tall slim white rocket with six strap-on boosters on a coastal Indian launch pad, warm light, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/pslv.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a stout white rocket with two large solid boosters and a bulbous fairing on a coastal pad, monsoon sky, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/lvm3.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a large white heavy rocket with four strap-on boosters on a tropical island launch pad, blue sky, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/long-march-5.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a slender white rocket lifting off from a desert launch site, dust and orange plume, arid mountains, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/long-march-2d.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a white rocket with four strap-on boosters lifting off from a mountain valley launch site, evening, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/long-march-3b.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a small solid-fuel rocket lifting off from a desert pad, compact plume, dry mountains, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/ceres-1.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a grey-green rocket with four conical strap-on boosters on the steppe, tilting service towers, cold morning, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/soyuz-2.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a broad grey rocket with six strap-on tanks lifting off from the steppe, dusty plume, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/proton-m.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a modular rocket of five clustered white boosters lifting off from a northern forest launch site, snow light, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/angara-a5.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a small black-and-white rocket lifting off from a California coastal pad, fog over the Pacific, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/firefly-alpha.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a medium reusable rocket with a dark composite body and wide fairing on a Florida pad, twilight, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/terran-r.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a compact white solid-fuel rocket on a hillside launch site by the sea, Japanese coast, clear morning, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/epsilon-s.webp",
+    "aspectRatio": "16:9"
+  },
+  {
+    "prompt": "16:9 wide editorial hero illustration: a slim white rocket with four solid boosters lifting off from a coastal pad, sea in the background, cinematic, indigo and cyan accents, purely pictorial — absolutely no letters, words, numbers, flags, logos or insignia anywhere, no people",
+    "output": "public/art/rockets/long-march-6a.webp",
+    "aspectRatio": "16:9"
+  }
+]

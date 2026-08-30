@@ -13,6 +13,8 @@ export interface StockRow {
   exchange: string | null;
   dbMarketCap: number | null; // raw USD, from CompanyProfile.marketCap
   sector: string | null;
+  /** ~90 daily closes for the sparkline (server-cached); absent when Yahoo did not answer. */
+  history?: number[] | null;
 }
 
 export interface IpoRow extends StockRow {
@@ -129,6 +131,7 @@ function StockTable({
                 )}
                 <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Price</th>
                 <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Change</th>
+                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">90 days</th>
                 <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Market Cap</th>
                 <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Profile</th>
               </tr>
@@ -155,6 +158,7 @@ function StockTable({
                     )}
                     <td className="py-3 px-4 text-right"><PriceCell quote={quote} loading={loading} /></td>
                     <td className="py-3 px-4 text-right"><ChangeCell quote={quote} loading={loading} /></td>
+                    <td className="py-3 px-4 text-right"><Sparkline closes={row.history ?? null} /></td>
                     <td className="py-3 px-4 text-right"><MarketCapCell row={row} quote={quote} /></td>
                     <td className="py-3 px-4">
                       <Link href={`/company-profiles/${row.slug}`} className="text-xs text-cyan-400 hover:text-cyan-300">
@@ -203,6 +207,23 @@ function StockTable({
         })}
       </div>
     </>
+  );
+}
+
+
+// 90-day sparkline: pure SVG, colour by direction, word + shape via the title
+// so the state never rides on colour alone. Null history → an honest dash.
+function Sparkline({ closes }: { closes: number[] | null }) {
+  if (!closes || closes.length < 5) return <span className="text-slate-600 text-xs" title="No price history from the quote provider">—</span>;
+  const w = 88, h = 26, lo = Math.min(...closes), hi = Math.max(...closes), span = hi - lo || 1;
+  const pts = closes.map((v, i) => `${((i / (closes.length - 1)) * (w - 2) + 1).toFixed(1)},${(h - 1 - ((v - lo) / span) * (h - 2)).toFixed(1)}`).join(' ');
+  const up = closes[closes.length - 1] >= closes[0];
+  const pct = Math.round(((closes[closes.length - 1] - closes[0]) / closes[0]) * 1000) / 10;
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="inline-block align-middle" role="img" aria-label={`${up ? 'Up' : 'Down'} ${Math.abs(pct)}% over 90 days; range ${lo.toFixed(2)} to ${hi.toFixed(2)}`}>
+      <title>{`${up ? '▲' : '▼'} ${Math.abs(pct)}% over 90 days · low ${lo.toFixed(2)} · high ${hi.toFixed(2)}`}</title>
+      <polyline points={pts} fill="none" stroke={up ? 'var(--go)' : 'var(--crit)'} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
   );
 }
 

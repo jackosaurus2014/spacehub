@@ -2,6 +2,9 @@
 
 import { ReactNode, useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { REGION_ART, regionForRoute } from '@/lib/region-art';
 
 /** Map breadcrumb labels to their routes */
 const BREADCRUMB_ROUTES: Record<string, string> = {
@@ -82,6 +85,12 @@ export default function AnimatedPageHeader({
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const accent = ACCENT_STYLES[accentColor] ?? ACCENT_STYLES.cyan;
+  // Region art as the shared visual language (SYNTHESIS.md item 33): the
+  // painting that fits the route sits behind the header, scrimmed so the
+  // 5.5:1 ink floor holds. Pages with their own hero art are not mapped.
+  const pathname = usePathname();
+  const region = regionForRoute(pathname);
+  const art = region ? REGION_ART[region] : null;
 
   useEffect(() => {
     const el = containerRef.current;
@@ -127,7 +136,13 @@ export default function AnimatedPageHeader({
     idx === 0 ? '' : idx === 1 ? 'reveal-delay-1' : idx === 2 ? 'reveal-delay-2' : 'reveal-delay-3';
 
   return (
-    <div ref={containerRef} className="mb-10">
+    <div ref={containerRef} className={`mb-10 ${art ? 'relative rounded-[var(--radius-console)] overflow-hidden border border-[var(--line)] px-5 py-6 md:px-8 md:py-8' : ''}`}>
+      {art && (
+        <>
+          <Image src={art.src} alt="" fill sizes="(min-width: 1280px) 1280px, 100vw" className="object-cover opacity-40 -z-10" aria-hidden="true" />
+          <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(11,10,9,.92),rgba(11,10,9,.72)_55%,rgba(11,10,9,.45))]" aria-hidden="true" />
+        </>
+      )}
       {breadcrumb && (
         <nav
           aria-label="Breadcrumb"

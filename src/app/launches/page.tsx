@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroArt from '@/components/ui/HeroArt';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ItemListSchema from '@/components/seo/ItemListSchema';
 import { formatLaunchDate, missionTitle } from '@/components/launches/LaunchRow';
 import { getSiteSummaries, getNextLaunches } from '@/lib/launch-sites';
 import LaunchRow from '@/components/launches/LaunchRow';
@@ -53,6 +54,7 @@ export default async function LaunchesIndexPage() {
             </Link>
           ))}
         </div>
+        <ItemListSchema name="Launches by site" url="/launches" description={metadata.description as string} items={sites.map(({ site }) => ({ name: site.name, url: `/launches/${site.slug}`, description: `${site.region}, ${site.country}` }))} />
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Launches' }]} />
       </div>
     </div>

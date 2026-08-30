@@ -3,6 +3,7 @@ import Link from 'next/link';
 import prisma from '@/lib/db';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import IndustryTicker from '@/components/ui/IndustryTicker';
+import { getPriceHistoriesCached } from '@/lib/stock-quote';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import DataAsOf from '@/components/ui/DataAsOf';
@@ -198,6 +199,16 @@ export default async function SpaceStocksPage() {
   if (!rosterFailed && roster.allCount === 0) {
     rosterFailed = true;
     logger.error('space-stocks: roster query returned zero public companies', {});
+  }
+
+  // 90-day sparklines (SYNTHESIS.md item 31): one cached chart call per ticker.
+  try {
+    const tickers = Array.from(new Set([...roster.pureplay, ...roster.primes, ...roster.satelliteEO, ...ipoClass].map((r) => r.ticker.toUpperCase())));
+    const histories = await getPriceHistoriesCached(tickers);
+    const attach = <T extends { ticker: string; history?: number[] | null }>(rows: T[]) => rows.forEach((r) => { r.history = histories[r.ticker.toUpperCase()]?.closes ?? null; });
+    attach(roster.pureplay); attach(roster.primes); attach(roster.satelliteEO); attach(ipoClass);
+  } catch (error) {
+    logger.warn('space-stocks: price histories unavailable', { error: error instanceof Error ? error.message : String(error) });
   }
 
   const totalPublic = roster.allCount;
