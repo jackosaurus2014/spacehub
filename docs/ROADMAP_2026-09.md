@@ -73,3 +73,7 @@ Third: **the agents' MAU arithmetic is optimistic by ~3×** (the Opus advocate s
 - The Sonnet design lane screenshotted with a fresh browser every time, so first-visit modals looked like permanent bugs; three findings were rejected for it. Grep mount/persistence logic before scoring.
 - Two lanes proposed reviving surfaces that shipped 8/28 (referral card, rocket cross-links). Check `site-directory.ts` and the memory file first.
 - Nobody pulled per-URL Search Console data for the consolidation candidates. I'll do that before any merge that touches a ranking URL.
+
+## 2026-08-30 — Status
+
+The Mission Control redesign (docs/research-2026-08-30/SYNTHESIS.md) shipped end to end on 2026-08-30: all ten do-now items, the September list (11–28) and the October list (29–42). Open follow-ups are telemetry, not build: two weeks of Search Console on the cost-guide answer block before the rest of the family; the USSF leg of the prime-contract backfill (verify `fetched > 0` on the first scheduled run); 37 thin company profiles without an analyst sentence; the 13 tickers with no EDGAR CIK match.
