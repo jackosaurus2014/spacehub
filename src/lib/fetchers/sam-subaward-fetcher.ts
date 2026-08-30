@@ -37,7 +37,7 @@ async function matchCompanyByName(name: string): Promise<string | null> {
  * Runs monthly via cron scheduler.
  */
 export async function fetchSpaceSubawards(): Promise<number> {
-  const apiKey = process.env.SAM_GOV_API_KEY;
+  const apiKey = process.env.SAM_GOV_API_KEY || process.env.SAM_API_KEY;
   if (!apiKey) {
     logger.debug('SAM_GOV_API_KEY not set — skipping subaward fetch');
     return 0;

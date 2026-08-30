@@ -94,7 +94,7 @@ export const EXTERNAL_APIS = {
   },
   SAM_GOV: {
     baseUrl: 'https://api.sam.gov/prod/opportunities/v2',
-    apiKey: process.env.SAM_GOV_API_KEY || '',
+    apiKey: process.env.SAM_GOV_API_KEY || process.env.SAM_API_KEY || '',
     rateLimit: { requests: 1000, period: 86400 }, // Free tier: 1000/day
   },
   FCC_ECFS: {

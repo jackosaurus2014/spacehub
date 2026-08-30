@@ -198,9 +198,9 @@ function mapSAMNotice(notice: SAMNotice): MappedOpportunity {
 export async function fetchSAMOpportunities(
   params: SAMSearchParams
 ): Promise<SAMResponse> {
-  const apiKey = process.env.SAM_GOV_API_KEY;
+  const apiKey = process.env.SAM_GOV_API_KEY || process.env.SAM_API_KEY;
   if (!apiKey) {
-    logger.warn('SAM_GOV_API_KEY not configured, returning empty results');
+    logger.warn('SAM API key not configured (set SAM_API_KEY or SAM_GOV_API_KEY), returning empty results');
     return { totalRecords: 0, opportunities: [] };
   }
 

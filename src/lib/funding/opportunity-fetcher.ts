@@ -227,9 +227,9 @@ export async function fetchGrantsGov(): Promise<FundingOpportunityInput[]> {
 // ---- SAM.gov opportunities API ----
 export async function fetchSamGovOpportunities(): Promise<FundingOpportunityInput[]> {
   const results: FundingOpportunityInput[] = [];
-  const apiKey = process.env.SAM_API_KEY;
+  const apiKey = process.env.SAM_API_KEY || process.env.SAM_GOV_API_KEY;
   if (!apiKey) {
-    logger.warn('SAM_API_KEY not set, skipping SAM.gov opportunity fetch');
+    logger.warn('SAM API key not configured (set SAM_API_KEY or SAM_GOV_API_KEY), skipping SAM.gov opportunity fetch');
     return results;
   }
   try {

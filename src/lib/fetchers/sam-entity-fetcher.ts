@@ -40,7 +40,7 @@ const SPACE_COMPANY_NAMES = [
  * Runs monthly to enrich company profiles.
  */
 export async function fetchSpaceEntityData(): Promise<number> {
-  const apiKey = process.env.SAM_GOV_API_KEY;
+  const apiKey = process.env.SAM_GOV_API_KEY || process.env.SAM_API_KEY;
   if (!apiKey) {
     logger.debug('SAM_GOV_API_KEY not set — skipping entity fetch');
     return 0;

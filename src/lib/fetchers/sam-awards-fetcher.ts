@@ -114,7 +114,7 @@ async function matchCompanyProfile(vendorName: string, vendorUei?: string): Prom
  * Runs weekly via cron scheduler.
  */
 export async function fetchSpaceContractAwards(): Promise<number> {
-  const apiKey = process.env.SAM_GOV_API_KEY;
+  const apiKey = process.env.SAM_GOV_API_KEY || process.env.SAM_API_KEY;
   if (!apiKey) {
     logger.debug('SAM_GOV_API_KEY not set — skipping contract awards fetch');
     return 0;
