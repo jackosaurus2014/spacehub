@@ -79,7 +79,7 @@ export default function LiveChatPanel({ eventId, eventName }: LiveChatPanelProps
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    { const pane = messagesEndRef.current?.parentElement; if (pane) pane.scrollTop = pane.scrollHeight; } // pane only: scrollIntoView scrolled the whole page (audit 2026-08-30)
   }, [messages.length]);
 
   const fetchMessages = useCallback(

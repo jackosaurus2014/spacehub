@@ -99,7 +99,7 @@ export default function CompanyResearchPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    { const pane = messagesEndRef.current?.parentElement; if (pane) pane.scrollTop = pane.scrollHeight; } // pane only: scrollIntoView scrolled the whole page (audit 2026-08-30)
   }, [messages]);
 
   const sendQuestion = async (questionText?: string) => {

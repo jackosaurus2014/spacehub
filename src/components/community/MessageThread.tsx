@@ -54,7 +54,7 @@ export default function MessageThread({ messages, currentUserId, onSend }: Messa
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    { const pane = messagesEndRef.current?.parentElement; if (pane) pane.scrollTop = pane.scrollHeight; } // pane only: scrollIntoView scrolled the whole page (audit 2026-08-30)
   }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {

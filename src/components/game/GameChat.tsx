@@ -32,7 +32,7 @@ export default function GameChat({ companyName }: GameChatProps) {
 
   // Scroll to bottom when new messages arrive or panel opens
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    { const pane = messagesEndRef.current?.parentElement; if (pane) pane.scrollTop = pane.scrollHeight; } // pane only: scrollIntoView scrolled the whole page (audit 2026-08-30)
   }, []);
 
   // Fetch messages from API
