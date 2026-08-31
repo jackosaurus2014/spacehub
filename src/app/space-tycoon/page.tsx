@@ -2000,7 +2000,7 @@ export default function SpaceTycoonPage() {
     { id: 'fleet', label: 'Fleet', icon: 'fleet' },
     { id: 'reports', label: 'Reports', icon: 'reports' },
     { id: 'contracts', label: 'Contracts', icon: 'contracts' },
-    { id: 'crafting', label: 'Craft', icon: 'crafting' },
+    { id: 'crafting', label: 'Manufacture', icon: 'crafting' },
     { id: 'market', label: 'Markets', icon: 'market' },
     { id: 'workforce', label: 'Crew', icon: 'workforce' },
     { id: 'alliance', label: 'Corporation', icon: 'alliance' },
@@ -2039,7 +2039,11 @@ export default function SpaceTycoonPage() {
 
   // V3: Split tabs into primary (always visible) and secondary (overflow dropdown)
   // Market is hot-path (players use it every few minutes); keep it in the primary row next to Contracts.
-  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map', 'services', 'contracts', 'market', 'fleet'];
+  // Early-fab wave follow-up (2026-08-31, Jay): Manufacture is a core loop —
+  // it belongs in the primary row next to Build, not buried in More ▾. It
+  // only renders once unlocked (fab facility complete or corp tier 3), so
+  // the row stays 8 wide for brand-new players.
+  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'crafting', 'research', 'map', 'services', 'contracts', 'market', 'fleet'];
   const primaryTabs = allTabs.filter(t => PRIMARY_TAB_IDS.includes(t.id));
   const secondaryTabs = allTabs.filter(t => !PRIMARY_TAB_IDS.includes(t.id));
   // Check if active tab is in secondary — if so, show its label in the More button

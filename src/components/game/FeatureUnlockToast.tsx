@@ -30,9 +30,9 @@ const FEATURE_UNLOCKS: Record<string, UnlockInfo> = {
   },
   crafting: {
     id: 'crafting',
-    name: 'Crafting',
+    name: 'Manufacturing',
     icon: 'crafting',
-    description: 'Refine raw resources into high-value products for advanced construction.',
+    description: 'Your fabrication facility is online — refine raw resources into fuel, satellite buses and high-value products in the Manufacture tab.',
     tab: 'crafting',
   },
   workforce: {
