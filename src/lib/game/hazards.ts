@@ -584,6 +584,28 @@ export function calculateRushRepairCost(damagePct: number | undefined, baseCost:
   return Math.round(damagePct * baseCost * REPAIR_COST_RATE);
 }
 
+/** Damage-visibility wave (2026-08-31): materials bill for SHIP-BASED repair
+ *  (the Orbital Servicer). A stationed maintenance ship fixes structures with
+ *  parts, not cash — priced off the building's own construction recipe
+ *  (repair `damagePct` of a building ≈ re-fabricating that fraction of it,
+ *  ×0.5 because you're patching, not rebuilding). Buildings authored without
+ *  a resourceCost fall back to generic structural stock. */
+export function calculateResourceRepairCost(
+  damagePct: number | undefined,
+  def: { resourceCost?: Record<string, number>; baseCost: number },
+): Record<string, number> {
+  if (!damagePct || damagePct <= 0) return {};
+  const out: Record<string, number> = {};
+  const base = def.resourceCost && Object.keys(def.resourceCost).length > 0
+    ? def.resourceCost
+    : { iron: Math.max(10, Math.round(def.baseCost / 20_000_000)), aluminum: Math.max(5, Math.round(def.baseCost / 40_000_000)) };
+  for (const [resId, qty] of Object.entries(base)) {
+    const need = Math.ceil(qty * damagePct * 0.5);
+    if (need > 0) out[resId] = need;
+  }
+  return out;
+}
+
 // ─── Wave E5 hazard coupling (§2.4): location inventory destruction ─────────
 // "belt pirate raids and solar storms now destroy location inventory
 // (bounded %, insurance-coverable) and post a supply-shock flow to the

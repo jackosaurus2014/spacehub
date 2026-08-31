@@ -475,7 +475,7 @@ export default function Navigation() {
               isPro={isPro}
             />
             <Link
-              href="/space-talent?tab=jobs"
+              href="/jobs"
               className="text-white/90 hover:text-white transition-colors text-sm font-medium"
             >
               Jobs
@@ -708,7 +708,7 @@ export default function Navigation() {
                       Live
                     </Link>
                     <Link
-                      href="/space-talent?tab=jobs"
+                      href="/jobs"
                       className="flex items-center px-3 py-2 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium min-h-[44px]"
                       onClick={() => setIsMenuOpen(false)}
                     >

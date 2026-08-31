@@ -583,6 +583,15 @@ export interface GameState {
 
   // Refining / Production
   activeRefining?: { recipeId: string; startedAtMs: number; durationSeconds: number } | null;
+  /** Crafting queue (2026-08-31, Jay): orders waiting behind activeRefining.
+   *  The engine auto-starts the head entry when the active craft completes,
+   *  deducting inputs AT START (same rule as manual starts — no reservation).
+   *  If the head's inputs aren't affordable yet the queue WAITS (visible in
+   *  CraftingPanel) rather than skipping — predictable over clever. Absent =
+   *  empty; no save migration needed. Free cap: 5 entries (convenience-only
+   *  per the no-pay-to-win policy — a paid raise beyond this must stay
+   *  convenience, never competitive). */
+  craftQueue?: { recipeId: string }[] | null;
   /**
    * @deprecated Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2,
    * save-load.ts V31): crafted-product stock now lives in `resources` — every

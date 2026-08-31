@@ -1198,8 +1198,12 @@ function SpaceTalentHubContent() {
   const { status: sessionStatus } = useSession();
 
   // Read top-level tab from URL (?tab=talent or ?tab=workforce)
-  const initialTopTab = (searchParams.get('tab') as TopLevelTab) || 'talent';
-  const validTopTab: TopLevelTab = initialTopTab === 'workforce' ? 'workforce' : initialTopTab === 'gigs' ? 'gigs' : 'talent';
+  const initialTopTab = searchParams.get('tab') || 'talent';
+  // 2026-08-31 (Jay): /jobs 308-redirects here as ?tab=jobs, but 'jobs' is a
+  // WORKFORCE sub-tab, not a top tab — it used to fall through to the default
+  // consultant/talent view. Anyone arriving "for jobs" lands on the actual
+  // job board (workforce top tab + its 'jobs' sub-tab, the wfTab default).
+  const validTopTab: TopLevelTab = (initialTopTab === 'workforce' || initialTopTab === 'jobs') ? 'workforce' : initialTopTab === 'gigs' ? 'gigs' : 'talent';
   const [topTab, setTopTab] = useState<TopLevelTab>(validTopTab);
 
   // ── URL sync helper ──

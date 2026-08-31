@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { PRODUCTION_CHAINS, CRAFTED_PRODUCT_IDS, getCraftedProductValue, canFabricate } from '@/lib/game/production-chains';
+import { RESEARCH_MAP } from '@/lib/game/research-tree';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formulas';
@@ -13,6 +14,8 @@ import Image from 'next/image';
 interface CraftingPanelProps {
   state: GameState;
   onStartCrafting: (recipeId: string) => void;
+  /** Crafting queue (2026-08-31): remove a queued order by index. */
+  onCancelQueued?: (index: number) => void;
   /**
    * Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2): the sell
    * affordance. Crafted products are now first-class RESOURCE_MAP entries
@@ -27,7 +30,7 @@ interface CraftingPanelProps {
   onListForSale?: (resourceId: string) => void;
 }
 
-export default function CraftingPanel({ state, onStartCrafting, onSellResource, onListForSale }: CraftingPanelProps) {
+export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, onSellResource, onListForSale }: CraftingPanelProps) {
   const [, setTick] = useState(0);
   const [sellingId, setSellingId] = useState<string | null>(null);
   // Re-render every second for countdown timers
@@ -201,6 +204,37 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource, 
         </div>
       )}
 
+      {/* Crafting queue (2026-08-31, Jay): orders waiting behind the active
+          craft — auto-start in order; head waits (never skips) if its inputs
+          aren't affordable yet. */}
+      {(state.craftQueue?.length || 0) > 0 && (
+        <div className="hud-frame relative rounded-xl border border-purple-500/15 bg-purple-500/[0.03] p-3">
+          <p className="font-hud text-[10px] text-purple-300 uppercase tracking-wider font-medium mb-2">Queue — {state.craftQueue!.length}/5</p>
+          <ol className="space-y-1">
+            {state.craftQueue!.map((q, i) => {
+              const r = PRODUCTION_CHAINS.find(c => c.id === q.recipeId);
+              if (!r) return null;
+              const affordableNow = Object.entries(r.inputs).every(([resId, qty]) => (allResources[resId] || 0) >= qty);
+              return (
+                <li key={`${q.recipeId}-${i}`} className="flex items-center justify-between gap-2 text-xs">
+                  <span className="text-slate-300">
+                    {i + 1}. {r.icon} {r.name}
+                    {i === 0 && !affordableNow && <span className="text-amber-400 text-[10px] ml-1.5">waiting for inputs</span>}
+                  </span>
+                  {onCancelQueued && (
+                    <button
+                      onClick={() => onCancelQueued(i)}
+                      aria-label={`Remove ${r.name} from queue`}
+                      className="min-h-[32px] px-2 text-[10px] text-slate-500 hover:text-red-400 transition-colors"
+                    >✕</button>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      )}
+
       {/* Recipe Tiers */}
       {tiers.map(({ tier, label, icon }) => {
         const recipes = PRODUCTION_CHAINS.filter(c => c.tier === tier);
@@ -210,8 +244,16 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource, 
           c.requiredResearch.every(r => state.completedResearch.includes(r)) &&
           canFabricate(c, state.buildings, BUILDING_MAP)
         );
+        // Discoverability (2026-08-31, Jay): recipes your FACILITY could run
+        // but research still locks are shown greyed with the exact unlock —
+        // "satellite buses need Electric Propulsion for Satellites" must be
+        // obvious from day one, not hidden until after you research it.
+        const researchLockedRecipes = recipes.filter(c =>
+          !c.requiredResearch.every(r => state.completedResearch.includes(r)) &&
+          canFabricate(c, state.buildings, BUILDING_MAP)
+        );
 
-        if (availableRecipes.length === 0 && tier > 2) return null;
+        if (availableRecipes.length === 0 && researchLockedRecipes.length === 0 && tier > 2) return null;
 
         return (
           <div key={tier}>
@@ -226,7 +268,12 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource, 
                   const hasInputs = Object.entries(recipe.inputs).every(
                     ([resId, qty]) => (allResources[resId] || 0) >= qty
                   );
-                  const canCraft = hasInputs && !activeCraft;
+                  // Crafting queue (2026-08-31): while a craft runs, the
+                  // button QUEUES (cap 5) instead of being dead — inputs are
+                  // checked when the queued order starts, so you can queue
+                  // ahead of a market buy.
+                  const queueFull = (state.craftQueue?.length || 0) >= 5;
+                  const canCraft = activeCraft ? !queueFull : hasInputs;
 
                   return (
                     <div key={recipe.id} className="hud-frame game-card relative p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
@@ -269,9 +316,32 @@ export default function CraftingPanel({ state, onStartCrafting, onSellResource, 
                               : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
                           }`}
                         >
-                          {activeCraft ? 'Busy' : 'Craft'}
+                          {activeCraft ? `Queue${(state.craftQueue?.length || 0) > 0 ? ` (${state.craftQueue!.length}/5)` : ''}` : 'Craft'}
                         </button>
                       </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {/* Discoverability (2026-08-31, Jay): research-locked recipes the
+                player's facilities could already run — greyed, with the exact
+                research named so the unlock path is obvious from day one. */}
+            {researchLockedRecipes.length > 0 && (
+              <div className="grid md:grid-cols-2 gap-2 mb-4">
+                {researchLockedRecipes.map(recipe => {
+                  const missing = recipe.requiredResearch.filter(r => !state.completedResearch.includes(r));
+                  return (
+                    <div key={recipe.id} className="relative p-3 rounded-lg bg-white/[0.01] border border-dashed border-white/[0.08] opacity-70">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-slate-400 text-xs">{recipe.icon} {recipe.name}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">🔒 research</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1">
+                        Makes {recipe.outputQuantity}× {recipe.outputId.replace(/_/g, ' ')}. Unlocks with{' '}
+                        <span className="text-purple-300">{missing.map(r => RESEARCH_MAP.get(r)?.name || r.replace(/_/g, ' ')).join(' + ')}</span>
+                        {' '}— Research tab.
+                      </p>
                     </div>
                   );
                 })}

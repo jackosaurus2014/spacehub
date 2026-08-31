@@ -279,6 +279,28 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
             </button>
           )}
 
+          {/* Maintenance servicer status (damage-visibility wave 2026-08-31):
+              a stationed servicer works passively — this block just tells the
+              player it's working and what it will fix next month. */}
+          {selectedShipInstance.status === 'idle' && selectedShipDef.role === 'maintenance' && (() => {
+            const here = selectedShipInstance.currentLocation;
+            const damagedHere = state.buildings.filter(b => b.isComplete && b.locationId === here && (b.damagePct || 0) > 0);
+            return (
+              <div className="mb-3 p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                <p className="text-cyan-300 text-xs font-semibold mb-1">On-Orbit Servicing — active while stationed</p>
+                {damagedHere.length > 0 ? (
+                  <p className="text-cyan-300/70 text-[10px]">
+                    {damagedHere.length} damaged structure{damagedHere.length !== 1 ? 's' : ''} at {LOCATION_MAP.get(here)?.name || here}. Each month this servicer repairs the most damaged one 2.5× faster than ground crews, paying in materials (a share of its construction resources) instead of cash.
+                  </p>
+                ) : (
+                  <p className="text-cyan-300/70 text-[10px]">
+                    No damaged structures at {LOCATION_MAP.get(here)?.name || here} right now. Station it where your satellites live — when hazards hit, it repairs them automatically each month using materials instead of cash.
+                  </p>
+                )}
+              </div>
+            );
+          })()}
+
           {/* Survey action (for idle survey probes) */}
           {selectedShipInstance.status === 'idle' && selectedShipDef.role === 'survey' && onLaunchSurvey && (
             <div className="mb-3 p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
@@ -473,6 +495,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                         ship.role === 'mining' ? 'bg-amber-500/10 text-amber-400' :
                         ship.role === 'transport' ? 'bg-green-500/10 text-green-400' :
                         ship.role === 'tanker' ? 'bg-blue-500/10 text-blue-400' :
+                        ship.role === 'maintenance' ? 'bg-cyan-500/10 text-cyan-400' :
                         'bg-purple-500/10 text-purple-400'
                       }`}>{ship.role}</span>
                     </div>

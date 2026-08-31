@@ -3,7 +3,7 @@
 // Balance pass: adjusted mining rates for ROI, added survey expedition system,
 // added fleet maintenance costs, buffed deep space miner.
 
-export type ShipRole = 'transport' | 'mining' | 'survey' | 'tanker';
+export type ShipRole = 'transport' | 'mining' | 'survey' | 'tanker' | 'maintenance';
 
 export type ShipHardpointType = 'engine' | 'shield' | 'cargo' | 'sensor' | 'drone' | 'utility';
 
@@ -148,6 +148,16 @@ export const SURVEY_DURATION: Record<string, number> = {
 // ─── SHIP DEFINITIONS (Balance Pass) ────────────────────────────────────────
 
 export const SHIPS: ShipDefinition[] = [
+  // MAINTENANCE (2026-08-31 damage-visibility wave)
+  {
+    id: 'servicer_tug', name: 'Orbital Servicer', icon: '🛠️', role: 'maintenance',
+    description: 'On-orbit servicing tug: robotic arms, spare-parts bay, and a repair crew.',
+    tooltip: 'WHY BUILD: Hazards leave persistent structural damage that taxes a building\'s service revenue (up to −64%) while it still pays full maintenance. Station this ship at a damaged location and each month it repairs the most damaged structure there 2.5× faster than ground crews — paying in MATERIALS (a fraction of the building\'s own construction resources) instead of the 30%-of-build-cost cash rate. Finally gives your On-Orbit Servicing research something to do. Park it in LEO/GEO where your satellites live.',
+    cargoCapacity: 20, baseCost: 150_000_000,
+    resourceCost: { titanium: 40, iron: 60, rare_earth: 10 },
+    requiredResearch: ['on_orbit_servicing'], buildTimeSeconds: 480, tier: 2,
+    maintenancePerMonth: 600_000,
+  },
   // TRANSPORT
   {
     id: 'cargo_shuttle', name: 'Cargo Shuttle', icon: '🚀', role: 'transport',
@@ -314,6 +324,31 @@ const ROLE_PROFILE: Record<ShipRole, (tier: number) => ShipDerivedStats> = {
     insuredValue: 0,
     moduleSlots: 2 + tier,
     hardpointTypes: ['cargo', 'engine', 'utility'],
+  }),
+  // Damage-visibility wave (2026-08-31): the repair trade. Sturdy, slow,
+  // carries spares instead of bulk cargo — its value is what it does while
+  // STATIONED (game-engine D-3: repairs damaged structures at its location
+  // with materials instead of cash), mirroring the idle-freighter precedent.
+  maintenance: (tier) => ({
+    sublightSpeed: 1_600 + tier * 300,
+    warpFactor: 0.7 + tier * 0.15,
+    fuelCapacity: 500 + tier * 250,
+    fuelBurnRate: 4 + tier * 0.7,
+    deltaVBudget: 9_000 + tier * 2_000,
+    crewRequired: 3 + tier,
+    crewCapacity: 6 + tier,
+    lifeSupportDays: 90 + tier * 30,
+    hullIntegrity: 500 + tier * 220,
+    shieldingRating: 0.20 + tier * 0.05,
+    pointDefenseRating: 0.12 + tier * 0.03,
+    surveyRange: 0,
+    surveyAccuracy: 0,
+    stealthSignature: 1.3 - tier * 0.05,
+    mtbfHours: 1_600 + tier * 700, // it maintains itself too
+    insurancePremium: 0,
+    insuredValue: 0,
+    moduleSlots: 2 + tier,
+    hardpointTypes: ['utility', 'drone', 'engine'],
   }),
   tanker: (tier) => ({
     sublightSpeed: 1_500 + tier * 300,

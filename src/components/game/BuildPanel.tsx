@@ -568,13 +568,30 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                           </HoloTip>
                         )}
                         {hasDamage && (
-                          <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold ${
-                            isSevere
-                              ? 'bg-red-500/10 text-red-400 border-red-500/30'
-                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                          }`}>
-                            <GameIcon name="warning" size={10} /> {Math.round((bld.damagePct || 0) * 100)}% dmg
-                          </span>
+                          <HoloTip
+                            underline={false}
+                            content={{
+                              title: 'Structural Damage',
+                              icon: 'warning',
+                              body: (
+                                <p>
+                                  <Concept id="hazard-damage">Hazard damage</Concept> is cutting this building&apos;s
+                                  service revenue by ~{Math.round(Math.min(0.75, 0.75 * (bld.damagePct || 0)) * 100)}%
+                                  while it still pays full maintenance. Crews auto-repair 10 pts/month at cost;
+                                  Rush Repair (below) clears it instantly, or station an Orbital Servicer here to
+                                  fix it faster with materials instead of cash.
+                                </p>
+                              ),
+                            }}
+                          >
+                            <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold cursor-help ${
+                              isSevere
+                                ? 'bg-red-500/10 text-red-400 border-red-500/30'
+                                : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                            }`}>
+                              <GameIcon name="warning" size={10} /> {Math.round((bld.damagePct || 0) * 100)}% dmg · revenue −{Math.round(Math.min(0.75, 0.75 * (bld.damagePct || 0)) * 100)}%
+                            </span>
+                          </HoloTip>
                         )}
                         {/* Wave M2: operating-status badge — mothballed / spinning up / tearing down */}
                         {!operational && (

@@ -54,7 +54,7 @@ import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-co
 import { getCurrentRealignmentEpoch, getNpcFactionBiasMultiplier, assembleEpochAddress } from './realignment';
 import { NPC_SEEDS } from './npc-companies';
 import { shouldAutoGraduate, graduateFrontier, isInFrontier, computeBookNetWorth, getGraduationGlideFraction } from './frontier';
-import { rollMonthlyHazards, applyHazards, forecastSevereHazards } from './hazards';
+import { rollMonthlyHazards, applyHazards, forecastSevereHazards, calculateResourceRepairCost } from './hazards';
 // Audit Wave D+E (Change #4 hazards/insurance, Change #5 markets, Change #9
 // sinks — see docs/GAME_SYSTEMS_AUDIT_2026-08.md A4/A5/C5) imports:
 import {
@@ -446,7 +446,13 @@ export function processTick(state: GameState): GameState {
     const saturationPosition = saturationCounts.get(bucketKey) || 0;
     saturationCounts.set(bucketKey, saturationPosition + 1);
     const saturationMult = serviceSaturationMultiplier(saturationPosition);
-    const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
+    // Damage-visibility wave (2026-08-31): prefer THIS instance's own linked
+    // building (ownerBld, resolved from svc.linkedBuildingIds above). The old
+    // bare find() always picked the FIRST matching building at the location,
+    // so with N copies only copy #1's damage was ever priced in — and it was
+    // priced into every linked service instance. Legacy services with no
+    // linkedBuildingIds keep the find() fallback.
+    const linkedBld = ownerBld ?? state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
     // Wave E4: finite demand pool multiplier for this service's
     // (location, category) market — server snapshot when fresh, else the
@@ -1153,16 +1159,52 @@ export function processTick(state: GameState): GameState {
     // pay-to-rush repair button on the same fields.
     let repairSpend = 0;
     let stillDamaged = 0;
+    let servicerRepairs = 0;
+    // Damage-visibility wave (2026-08-31): an idle Orbital Servicer
+    // (role 'maintenance') stationed at a location repairs the single most
+    // damaged structure there each month — a 0.25 step (2.5× ground crews)
+    // paid in MATERIALS (calculateResourceRepairCost) instead of cash.
+    // One building per servicer per month; ground crews still handle the
+    // rest at the money rate below.
+    const servicersAt = new Map<string, number>();
+    for (const sh of state.ships || []) {
+      if (!sh.isBuilt || sh.status !== 'idle') continue;
+      const sDef = SHIP_MAP.get(sh.definitionId);
+      if (sDef?.role === 'maintenance') servicersAt.set(sh.currentLocation, (servicersAt.get(sh.currentLocation) || 0) + 1);
+    }
     buildingsFinal = buildingsFinal.map(b => {
       if (!b.isComplete || !b.damagePct || b.damagePct <= 0) return b;
       const def = BUILDING_MAP.get(b.definitionId);
       if (!def) return b;
-      const step = Math.min(b.damagePct, 0.10);
-      repairSpend += Math.round(step * def.baseCost * 0.30);
+      let step = Math.min(b.damagePct, 0.10);
+      let paidWithMaterials = false;
+      const servicers = servicersAt.get(b.locationId) || 0;
+      if (servicers > 0) {
+        const bigStep = Math.min(b.damagePct, 0.25);
+        const bill = calculateResourceRepairCost(bigStep, def);
+        // `resources` is the tick's working copy (decay above mutates it the
+        // same way) — deduct the materials bill directly.
+        const affordable = Object.entries(bill).every(([resId, qty]) => (resources[resId] || 0) >= qty);
+        if (affordable) {
+          for (const [resId, qty] of Object.entries(bill)) resources[resId] = (resources[resId] || 0) - qty;
+          servicersAt.set(b.locationId, servicers - 1); // one building per servicer per month
+          step = bigStep;
+          paidWithMaterials = true;
+          servicerRepairs++;
+        }
+      }
+      if (!paidWithMaterials) repairSpend += Math.round(step * def.baseCost * 0.30);
       const remaining = Math.round((b.damagePct - step) * 1000) / 1000;
       if (remaining > 0.001) stillDamaged++;
       return { ...b, damagePct: remaining > 0.001 ? remaining : undefined };
     });
+    if (servicerRepairs > 0) {
+      events.push({
+        id: generateId(), date: newDate, type: 'random_event',
+        title: '🛠️ Orbital Servicer repairs',
+        description: `Your servicer fleet repaired ${servicerRepairs} structure(s) this month using onboard materials — no cash repair bill for those.`,
+      });
+    }
     if (repairSpend > 0) {
       money -= repairSpend;
       totalSpent += repairSpend;
@@ -1878,6 +1920,31 @@ export function processFullTick(state: GameState): GameState {
           resources[recipe.outputId] = (resources[recipe.outputId] || 0) + recipe.outputQuantity;
         }
         newState = { ...newState, activeRefining: null, resources };
+        // Crafting queue (2026-08-31, Jay): auto-start the next queued order.
+        // Inputs are deducted AT START, same as a manual start; if the head
+        // isn't affordable yet the queue waits (never skips) so the order
+        // sequence stays predictable.
+        const queue = [...(newState.craftQueue || [])];
+        if (queue.length > 0) {
+          const next = CHAIN_MAP.get(queue[0].recipeId);
+          if (!next) {
+            queue.shift(); // recipe removed from the game — drop the order
+            newState = { ...newState, craftQueue: queue };
+          } else {
+            const affordable = Object.entries(next.inputs as Record<string, number>).every(([resId, qty]) => (resources[resId] || 0) >= qty);
+            if (affordable) {
+              const nextRes = { ...resources };
+              for (const [resId, qty] of Object.entries(next.inputs as Record<string, number>)) nextRes[resId] = (nextRes[resId] || 0) - qty;
+              queue.shift();
+              newState = {
+                ...newState,
+                resources: nextRes,
+                craftQueue: queue,
+                activeRefining: { recipeId: next.id, startedAtMs: Date.now(), durationSeconds: next.timeSeconds },
+              };
+            }
+          }
+        }
       }
     }
   } catch (err) {

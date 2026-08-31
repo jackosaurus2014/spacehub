@@ -99,6 +99,9 @@ interface MapCommandCenterProps {
   /** Wave M2 (docs/MEANINGFUL_2026-08.md §M2): mothball (pause) / reactivate
    *  a completed building from the map's Build sub-panel. */
   onMothballBuilding?: (instanceId: string) => void;
+  /** Damage-visibility wave (2026-08-31): rush-repair from the map's context
+   *  panel — the natural place to click a damaged satellite. */
+  onRushRepairBuilding?: (instanceId: string) => void;
   onReactivateBuilding?: (instanceId: string) => void;
   /** W14 (cargo logistics): optional manifest — dispatch debits it at the
    *  origin and the tick engine credits the destination on arrival. */
@@ -123,7 +126,7 @@ interface MapCommandCenterProps {
 }
 
 export default function MapCommandCenter({
-  state, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
+  state, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onRushRepairBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
@@ -670,6 +673,7 @@ export default function MapCommandCenter({
           onSellBuilding={onSellBuilding}
           onMothballBuilding={onMothballBuilding}
           onReactivateBuilding={onReactivateBuilding}
+          onRushRepairBuilding={onRushRepairBuilding}
           onDispatchShip={onDispatchShip}
           onLaunchExpedition={onLaunchExpedition}
           onNavigateTab={onNavigateTab}

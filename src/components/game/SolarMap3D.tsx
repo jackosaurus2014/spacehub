@@ -610,9 +610,14 @@ function PipMesh({ pip, posRef, unlocked, badges, standing, mode, tierRef, alway
         <octahedronGeometry args={[0.16, 0]} />
         <meshBasicMaterial color={unlocked ? pip.color : '#475569'} />
       </mesh>
-      {/* generous invisible hit target for touch/pointer */}
+      {/* Generous invisible hit target for touch/pointer. Radius 0.3, NOT
+          bigger: the tightest pip pair (LEO at 1.5× and GEO at 2.0× Earth's
+          0.66 visual radius) can close to ~0.33 scene units, so any radius
+          below that guarantees one pip's sphere never swallows its
+          neighbour's centre — the old 0.5 sphere could steal clicks aimed
+          dead-centre at the adjacent pip. */}
       <mesh onClick={handleClick} visible={false}>
-        <sphereGeometry args={[0.5, 8, 8]} />
+        <sphereGeometry args={[0.3, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
       <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={pip.locationId} alwaysLabels={alwaysLabels} yOffset={-0.5} />
@@ -1652,6 +1657,33 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     controlsRef.current?.reset();
   }, []);
 
+  // Keyboard zoom — CLAUDE.md keyboard-only invariant, matching the 2D
+  // canvas's bindings exactly (`+` / `=` in, `-` / `_` out, `0` reset) with
+  // the same input-field guards the shell's M/C shortcuts use. Gated on
+  // `active` so keys never fire under a covering panel overlay. zoomBy and
+  // reset are instant camera moves (OrbitControls.update clamps distance),
+  // so there is no animated transition to gate on reduced motion.
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        zoomBy(0.8);
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        zoomBy(1.25);
+      } else if (e.key === '0') {
+        e.preventDefault();
+        resetView();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [active, zoomBy, resetView]);
+
   return (
     <div
       ref={rootRef}
@@ -1737,14 +1769,23 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             <SolarMapBloom />
           </Suspense>
         )}
+        {/* Zoom pass: zoomToCursor makes the wheel dolly toward the pointer
+            (three-stdlib ≥2.24), so "zoom into the Earth cluster" is one
+            scroll instead of scroll + re-aim — the founder-flagged fix for
+            telling leo / geo / lunar_orbit / lunar_surface apart. Pinch-zoom
+            on touch is native to OrbitControls. minDistance lowered 4 → 2.5
+            so the camera can get inside the cluster's angular spread (LEO and
+            GEO sit only ~0.33 scene units apart). Damping is an inertial
+            glide — decorative easing — so it's off under reduced motion. */}
         <OrbitControls
           ref={controlsRef}
           enablePan
-          enableDamping
+          enableDamping={!reduced}
           dampingFactor={0.08}
           rotateSpeed={0.5}
           zoomSpeed={0.6}
-          minDistance={4}
+          zoomToCursor
+          minDistance={2.5}
           maxDistance={160}
           maxPolarAngle={Math.PI * 0.49}
         />
@@ -1753,9 +1794,9 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
 
       {/* Zoom controls — same placement as the 2D embedded layout */}
       <div className="absolute top-2 right-2 flex flex-col gap-1 z-20">
-        <button onClick={() => zoomBy(0.8)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
-        <button onClick={() => zoomBy(1.25)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
-        <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+        <button onClick={() => zoomBy(0.8)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
+        <button onClick={() => zoomBy(1.25)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
+        <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="0">⟲</button>
       </div>
 
       {/* Layer toggles — bottom-right, same as 2D embedded */}
@@ -1893,11 +1934,13 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
 
       <p id="solar-map-3d-hint" className="sr-only">
         Click a planet, moon, or orbital marker to open its radial command menu — build, dispatch, demand,
-        standing orders and full detail, right at the body. Drag to orbit the camera, scroll to zoom.
+        standing orders and full detail, right at the body. Drag to orbit the camera; scroll, pinch with two
+        fingers, or press plus and minus to zoom (0 resets the view). The wheel zooms toward the cursor, so
+        pointing at Earth and scrolling spreads the close-packed orbital markers apart for easy picking.
         Camera distance controls how much per-location detail is drawn; the Location List always shows
         everything, and the Labels toggle forces full labels at every zoom.
-        This 3D view is mouse/touch-only — use the Location List overlay (bottom-left) to browse and select every
-        location by keyboard and press C on a row for its command menu, or switch to the 2D map with the 2D/3D toggle.
+        Use the Location List overlay (bottom-left) to browse and select every location by keyboard and press
+        C on a row for its command menu, or switch to the 2D map with the 2D/3D toggle.
         Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}.
       </p>
     </div>

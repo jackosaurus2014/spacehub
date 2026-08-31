@@ -240,9 +240,9 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   }),
   'hazard-damage': c({
     id: 'hazard-damage', name: 'Hazard Damage', icon: 'hazard-generic',
-    short: 'Partial or total loss from a random hazard event',
-    body: 'A hazard either damages an asset by a percentage (recoverable, no payout) or destroys it outright (insurance payout if covered). Hazards are NPC/environmental, never inflicted by other players — direct PvP combat does not exist in Space Tycoon.',
-    related: ['insurance'],
+    short: 'Damage taxes service revenue until repaired (up to −64%)',
+    body: 'A hazard either damages an asset by a percentage (recoverable, no payout) or destroys it outright (insurance payout if covered). Structural damage is a running tax: the building pays FULL maintenance while its service revenue is cut by 0.75× its damage share — 40% damage ≈ −30% revenue, the 85% cap ≈ −64%. Crews auto-repair 10 points/month billed at 30% of build cost; Rush Repair clears the rest instantly at the same rate, and a stationed Orbital Servicer repairs 2.5× faster using materials instead of cash. Hazards are NPC/environmental, never inflicted by other players — direct PvP combat does not exist in Space Tycoon.',
+    related: ['insurance', 'supply-efficiency'],
   }),
 
   // ── Research ──────────────────────────────────────────────────────────────

@@ -31,12 +31,12 @@ describe('research facilities', () => {
 
   it('the family stacks and clamps at the raised 0.20 cap', () => {
     expect(CAPABILITY_CAPS.researchSpeed).toBe(0.2);
-    const all = FAMILY.map(id => ({ definitionId: id, isComplete: true }));
-    const some = FAMILY.slice(0, 2).map(id => ({ definitionId: id, isComplete: true }));
+    const all = FAMILY.map(id => ({ definitionId: id, isComplete: true })) as never;
+    const some = FAMILY.slice(0, 2).map(id => ({ definitionId: id, isComplete: true })) as never;
     expect(getGlobalCapabilityBonus({ buildings: some }, 'researchSpeed')).toBeCloseTo(0.10);
     // full family = 0.23 raw → clamped to the 0.20 cap
     expect(getGlobalCapabilityBonus({ buildings: all }, 'researchSpeed')).toBeCloseTo(0.20);
     // incomplete buildings contribute nothing
-    expect(getGlobalCapabilityBonus({ buildings: FAMILY.map(id => ({ definitionId: id, isComplete: false })) }, 'researchSpeed')).toBe(0);
+    expect(getGlobalCapabilityBonus({ buildings: FAMILY.map(id => ({ definitionId: id, isComplete: false })) as never }, 'researchSpeed')).toBe(0);
   });
 });

@@ -25,6 +25,24 @@ import {
   type MapZoomTier,
 } from '@/lib/game/map-zoom';
 import { getAtmosphere, computeSlotRing, getBodyPalette, SLOT_SEGMENT_STYLE, type SlotRingModel, type BodyKind } from '@/lib/game/map-bodies';
+// Zoom & close-cluster pass — pure camera math (cursor-centred wheel zoom,
+// pinch, nearest-hit picking with touch-target floors) shared with the unit
+// tests. See map-camera.ts for why: the near-Earth cluster (leo / geo /
+// lunar_orbit / lunar_surface) was effectively unclickable, worst on phones.
+import {
+  DEFAULT_MAP_CAMERA,
+  BUTTON_ZOOM_FACTOR,
+  DRAG_CLICK_SLOP_PX,
+  KEY_PAN_STEP_PX,
+  zoomAboutPoint,
+  wheelZoom,
+  pinchCamera,
+  hitRadius,
+  pickNearest,
+  type MapCamera,
+  type PinchState,
+  type HitCandidate,
+} from '@/lib/game/map-camera';
 import GameIcon from './GameIcon';
 import { ConsolePanel, DataChip } from './chrome';
 
@@ -252,10 +270,28 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLocationId]);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  // Camera = zoom + pan offset. React state drives the draw loop; camRef
+  // mirrors it synchronously so native/pointer handlers (which can fire
+  // several times between renders — wheel, pinch) always compose against the
+  // latest camera instead of a stale closure. ALL camera mutations go through
+  // applyCamera so the two can never diverge.
+  const [offset, setOffset] = useState({ x: DEFAULT_MAP_CAMERA.x, y: DEFAULT_MAP_CAMERA.y });
+  const [zoom, setZoom] = useState(DEFAULT_MAP_CAMERA.zoom);
+  const camRef = useRef<MapCamera>(DEFAULT_MAP_CAMERA);
+  const applyCamera = useCallback((next: MapCamera) => {
+    camRef.current = next;
+    setZoom(next.zoom);
+    setOffset({ x: next.x, y: next.y });
+  }, []);
   const [dragging, setDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
+  // Pointer-gesture state (refs — no re-render per move). Pointer events
+  // unify mouse and touch: the previous mouse-only handlers left phones —
+  // which are FORCED onto this renderer by the 3D gating — with no way to
+  // pan or zoom at all.
+  const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchRef = useRef<PinchState | null>(null);
+  const dragRef = useRef<{ startX: number; startY: number; camX: number; camY: number } | null>(null);
+  const movedRef = useRef(0); // px travelled since pointerdown — click-vs-drag guard
   const [showLanes, setShowLanes] = useState(true);
   const [showShips, setShowShips] = useState(true);
   const [showWorld, setShowWorld] = useState(true);
@@ -434,8 +470,11 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       ctx.fill();
     }
 
+    // Zoom pass: BOTH axes scale with zoom. The original transform scaled x
+    // only, so zooming never spread the near-Earth cluster vertically — the
+    // root cause of leo/geo/lunar_orbit/lunar_surface being unclickable.
     const sunX = 0.04 * w * zoom + offset.x;
-    const sunY = 0.5 * h + offset.y;
+    const sunY = 0.5 * h * zoom + offset.y;
 
     // ─── Shipping lane overlays (with animated traffic pulses) ───
     if (showLanes) {
@@ -446,9 +485,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         if (!fromLayout || !toLayout) continue;
         const unlockedBoth = state.unlockedLocations.includes(lane.from) && state.unlockedLocations.includes(lane.to);
         const fx = fromLayout.x * w * zoom + offset.x;
-        const fy = fromLayout.y * h + offset.y;
+        const fy = fromLayout.y * h * zoom + offset.y;
         const tx = toLayout.x * w * zoom + offset.x;
-        const ty = toLayout.y * h + offset.y;
+        const ty = toLayout.y * h * zoom + offset.y;
         ctx.strokeStyle = unlockedBoth ? 'rgba(34,211,238,0.12)' : 'rgba(100,116,139,0.05)';
         ctx.setLineDash(unlockedBoth ? [] : [4, 4]);
         ctx.beginPath();
@@ -508,7 +547,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       const layout = layoutOf(loc.id);
       if (!layout) continue;
       const lx = layout.x * w * zoom + offset.x;
-      const ly = layout.y * h + offset.y;
+      const ly = layout.y * h * zoom + offset.y;
       const dist = Math.round(Math.sqrt(Math.pow(lx - sunX, 2) + Math.pow(ly - sunY, 2)));
       if (drawnOrbits.has(dist)) continue;
       drawnOrbits.add(dist);
@@ -523,7 +562,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       const layout = layoutOf(loc.id);
       if (!layout) continue;
       const lx = layout.x * w * zoom + offset.x;
-      const ly = layout.y * h + offset.y;
+      const ly = layout.y * h * zoom + offset.y;
       const r = layout.radius * zoom;
       locationPx[loc.id] = { x: lx, y: ly };
 
@@ -906,9 +945,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         const t = Math.max(0, Math.min(1, (nowMs - depAt) / total));
 
         const fx = fromLayout.x * w * zoom + offset.x;
-        const fy = fromLayout.y * h + offset.y;
+        const fy = fromLayout.y * h * zoom + offset.y;
         const tx = toLayout.x * w * zoom + offset.x;
-        const ty = toLayout.y * h + offset.y;
+        const ty = toLayout.y * h * zoom + offset.y;
         // Slight curved trajectory — midpoint lifted perpendicular to the chord
         const midX = (fx + tx) / 2;
         const midY = (fy + ty) / 2;
@@ -1107,11 +1146,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     const layout = LOCATION_LAYOUT[locId];
     if (!canvas || !layout) return;
     const rect = canvas.getBoundingClientRect();
-    setOffset({
-      x: rect.width / 2 - layout.x * rect.width * zoom,
-      y: rect.height / 2 - layout.y * rect.height,
+    const z = camRef.current.zoom;
+    // Instant snap, not an animated glide — reduced-motion-safe by default.
+    applyCamera({
+      zoom: z,
+      x: rect.width / 2 - layout.x * rect.width * z,
+      y: rect.height / 2 - layout.y * rect.height * z,
     });
-  }, [zoom]);
+  }, [applyCamera]);
 
   /**
    * @param anchor  Screen point to hang the radial command menu on.
@@ -1149,8 +1191,15 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
   // Click detection. Wave A2: a hit passes the click point up as an anchor so
   // the shell opens the radial command menu AT the body (Sins-style); a miss
-  // deselects exactly as before.
+  // deselects exactly as before. Zoom pass: nearest-hit with zoom-scaled,
+  // touch-target-floored radii (map-camera.ts) — inside the near-Earth
+  // cluster the floored targets overlap by design, and nearest-centre picking
+  // is what lets leo / geo / lunar_orbit / lunar_surface resolve individually
+  // once the player zooms them apart.
   const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    // A drag that happens to end over a body must not read as a click —
+    // parity with the 3D renderer's `e.delta > 6` guard.
+    if (movedRef.current > DRAG_CLICK_SLOP_PX) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
@@ -1159,37 +1208,161 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     const w = rect.width;
     const h = rect.height;
 
+    const candidates: HitCandidate[] = [];
     for (const loc of LOCATIONS) {
       const layout = LOCATION_LAYOUT[loc.id];
       if (!layout) continue;
-      const lx = layout.x * w * zoom + offset.x;
-      const ly = layout.y * h + offset.y;
-      const r = layout.radius * zoom + 10;
-      const dist = Math.sqrt(Math.pow(mx - lx, 2) + Math.pow(my - ly, 2));
-      if (dist < r) {
-        // The radial menu only exists in the map-command shell; the legacy
-        // stacked layout keeps its original click-to-toggle behavior.
-        selectLocation(loc.id, embedded ? { x: mx, y: my } : undefined);
-        return;
-      }
+      candidates.push({
+        id: loc.id,
+        x: layout.x * w * zoom + offset.x,
+        y: layout.y * h * zoom + offset.y,
+        r: hitRadius(layout.radius, zoom),
+      });
+    }
+    const hit = pickNearest(mx, my, candidates);
+    if (hit) {
+      // The radial menu only exists in the map-command shell; the legacy
+      // stacked layout keeps its original click-to-toggle behavior.
+      selectLocation(hit, embedded ? { x: mx, y: my } : undefined);
+      return;
     }
     setSelectedLoc(null);
     onSelectLocation?.(null);
   }, [zoom, offset, onSelectLocation, selectLocation, embedded]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // ── Pan / pinch via pointer events (mouse + touch unified) ────────────────
+  /** Canvas-relative point from client coords (camera offsets are canvas-space). */
+  const canvasPoint = useCallback((clientX: number, clientY: number) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    return { x: clientX - (rect?.left ?? 0), y: clientY - (rect?.top ?? 0) };
+  }, []);
+
+  /** Centre of the visible canvas — the anchor for button/keyboard zoom, so
+   *  zooming never yanks the view toward the top-left origin. */
+  const viewCentre = useCallback(() => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    return { x: (rect?.width ?? 0) / 2, y: (rect?.height ?? 0) / 2 };
+  }, []);
+
+  /** Current pinch sample from the first two active pointers. */
+  const pinchSample = useCallback((): PinchState | null => {
+    const pts = Array.from(pointersRef.current.values());
+    if (pts.length < 2) return null;
+    const mid = canvasPoint((pts[0].x + pts[1].x) / 2, (pts[0].y + pts[1].y) / 2);
+    return { dist: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y), x: mid.x, y: mid.y };
+  }, [canvasPoint]);
+
+  const beginDrag = useCallback((clientX: number, clientY: number) => {
+    dragRef.current = { startX: clientX, startY: clientY, camX: camRef.current.x, camY: camRef.current.y };
     setDragging(true);
-    setDragStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
-  };
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!dragging) return;
-    setOffset({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-  };
-  const handleMouseUp = () => setDragging(false);
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    setZoom(prev => Math.max(0.5, Math.min(3, prev - e.deltaY * 0.001)));
-  };
+  }, []);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    movedRef.current = 0;
+    if (pointersRef.current.size >= 2) {
+      // Second finger down → the gesture becomes a pinch; the drag ends.
+      dragRef.current = null;
+      setDragging(false);
+      pinchRef.current = pinchSample();
+    } else {
+      beginDrag(e.clientX, e.clientY);
+    }
+  }, [beginDrag, pinchSample]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    const prev = pointersRef.current.get(e.pointerId);
+    if (!prev) return; // hover — no button/finger down
+    movedRef.current += Math.hypot(e.clientX - prev.x, e.clientY - prev.y);
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinchRef.current && pointersRef.current.size >= 2) {
+      const next = pinchSample();
+      if (next) {
+        // One gesture handles both: zoom by the distance ratio, pan by the
+        // midpoint drift (map-camera.pinchCamera keeps the pinched world
+        // point under the fingers).
+        applyCamera(pinchCamera(camRef.current, pinchRef.current, next));
+        pinchRef.current = next;
+      }
+    } else if (dragRef.current) {
+      const d = dragRef.current;
+      applyCamera({ zoom: camRef.current.zoom, x: d.camX + (e.clientX - d.startX), y: d.camY + (e.clientY - d.startY) });
+    }
+  }, [applyCamera, pinchSample]);
+
+  const handlePointerEnd = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    pointersRef.current.delete(e.pointerId);
+    if (pointersRef.current.size < 2) pinchRef.current = null;
+    if (pointersRef.current.size === 1) {
+      // Pinch → single finger: continue as a pan from the surviving pointer.
+      const rest = Array.from(pointersRef.current.values())[0];
+      beginDrag(rest.x, rest.y);
+    } else if (pointersRef.current.size === 0) {
+      dragRef.current = null;
+      setDragging(false);
+    }
+  }, [beginDrag]);
+
+  // Wheel zoom, centred on the cursor. Attached natively with passive:false —
+  // React 17+ registers onWheel as a passive root-level listener, so a
+  // synthetic handler's preventDefault() cannot stop the page from scrolling
+  // (the old onWheel's preventDefault was silently ignored). ctrl+wheel is
+  // the trackpad pinch gesture and gets the hotter coefficient.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      applyCamera(wheelZoom(camRef.current, e.deltaY, { x: e.clientX - rect.left, y: e.clientY - rect.top }, e.ctrlKey));
+    };
+    canvas.addEventListener('wheel', onWheel, { passive: false });
+    return () => canvas.removeEventListener('wheel', onWheel);
+  }, [applyCamera]);
+
+  // Keyboard zoom/pan — CLAUDE.md keyboard-only invariant. `+` / `=` / `-` /
+  // `0` work map-wide with the same input-field guards the shell's M/C
+  // shortcuts use; arrow-key panning only applies while the canvas itself has
+  // focus so list and radiogroup arrow navigation is never hijacked. Every
+  // branch is an instant state change — no animated transition, so there is
+  // nothing to gate on prefers-reduced-motion.
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const cam = camRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const centre = { x: rect.width / 2, y: rect.height / 2 };
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        applyCamera(zoomAboutPoint(cam, cam.zoom * BUTTON_ZOOM_FACTOR, centre));
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        applyCamera(zoomAboutPoint(cam, cam.zoom / BUTTON_ZOOM_FACTOR, centre));
+      } else if (e.key === '0') {
+        e.preventDefault();
+        applyCamera(DEFAULT_MAP_CAMERA);
+      } else if (
+        document.activeElement === canvas
+        && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')
+      ) {
+        e.preventDefault();
+        // Panning moves the VIEW in the arrow's direction (world slides the
+        // other way), matching scroll conventions.
+        const dx = e.key === 'ArrowLeft' ? KEY_PAN_STEP_PX : e.key === 'ArrowRight' ? -KEY_PAN_STEP_PX : 0;
+        const dy = e.key === 'ArrowUp' ? KEY_PAN_STEP_PX : e.key === 'ArrowDown' ? -KEY_PAN_STEP_PX : 0;
+        applyCamera({ zoom: cam.zoom, x: cam.x + dx, y: cam.y + dy });
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [active, applyCamera]);
 
   // Selected location details
   const selectedLocData = selectedLoc ? LOCATIONS.find(l => l.id === selectedLoc) : null;
@@ -1290,18 +1463,23 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   if (embedded) {
     return (
       <div ref={rootRef} className="relative w-full h-full">
+        {/* touchAction:none hands every touch gesture to the pointer
+            handlers (one finger pans, two pinch-zoom) — without it the
+            browser consumes them as page scroll and the map never sees them.
+            tabIndex + role=application: the canvas is now keyboard-operable
+            (+ − 0 zoom, arrows pan while focused). */}
         <canvas
           ref={canvasRef}
           onClick={handleClick}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onWheel={handleWheel}
-          className="absolute inset-0 w-full h-full"
-          style={{ cursor: dragging ? 'grabbing' : 'grab' }}
-          role="img"
-          aria-label="Interactive solar system map showing your unlocked locations, buildings, NPC presence, and ships in transit"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerEnd}
+          onPointerCancel={handlePointerEnd}
+          className="absolute inset-0 w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+          style={{ cursor: dragging ? 'grabbing' : 'grab', touchAction: 'none' }}
+          tabIndex={0}
+          role="application"
+          aria-label="Interactive solar system map showing your unlocked locations, buildings, NPC presence, and ships in transit. Press plus or minus to zoom, 0 to reset, arrow keys to pan."
           aria-describedby="solar-system-canvas-hint"
         />
         <div ref={containerRef} className="absolute inset-0 pointer-events-none" />
@@ -1310,9 +1488,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 right-2 z-20">
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
-          <button onClick={() => setZoom(z => Math.min(3, z + 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
-          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
-          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+          <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
+          <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom / BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
+          <button onClick={() => applyCamera(DEFAULT_MAP_CAMERA)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="0">⟲</button>
         </div>
 
         {/* Layer toggles — moved to bottom-right in map-command mode so the
@@ -1370,9 +1548,11 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
         <p id="solar-system-canvas-hint" className="sr-only">
           Click a location to open its radial command menu — build, dispatch, demand, standing orders and full detail, at the body.
-          Drag to pan, scroll to zoom. Zoom controls how much per-location detail is drawn; the Location List always shows everything,
-          and the Labels toggle forces full labels at every zoom. This canvas is mouse/touch-only — use the Location List overlay
-          (bottom-left) to browse and select every location by keyboard, and press C on a row for its command menu.
+          Drag or use one finger to pan; scroll, pinch with two fingers, or press plus and minus to zoom (0 resets the view) —
+          zooming in spreads the close-packed Earth-orbit locations apart so each is easy to pick.
+          Zoom controls how much per-location detail is drawn; the Location List always shows everything,
+          and the Labels toggle forces full labels at every zoom. Focus the map and use the arrow keys to pan by keyboard,
+          or use the Location List overlay (bottom-left) to browse and select every location, and press C on a row for its command menu.
           Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}.
         </p>
       </div>
@@ -1387,17 +1567,20 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         className="relative rounded-xl border border-white/[0.06] overflow-hidden bg-[#050510]"
         style={{ height: '460px', cursor: dragging ? 'grabbing' : 'grab' }}
       >
+        {/* Same pointer/keyboard contract as the embedded canvas above —
+            touchAction:none is what makes one-finger pan + pinch-zoom work. */}
         <canvas
           ref={canvasRef}
           onClick={handleClick}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onWheel={handleWheel}
-          className="w-full h-full"
-          role="img"
-          aria-label="Interactive solar system map showing your unlocked locations, buildings, NPC presence, and ships in transit"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerEnd}
+          onPointerCancel={handlePointerEnd}
+          className="w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+          style={{ touchAction: 'none' }}
+          tabIndex={0}
+          role="application"
+          aria-label="Interactive solar system map showing your unlocked locations, buildings, NPC presence, and ships in transit. Press plus or minus to zoom, 0 to reset, arrow keys to pan."
           aria-describedby="solar-system-canvas-hint"
         />
 
@@ -1405,9 +1588,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 right-2">
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
-          <button onClick={() => setZoom(z => Math.min(3, z + 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in">+</button>
-          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out">−</button>
-          <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view">⟲</button>
+          <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
+          <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom / BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
+          <button onClick={() => applyCamera(DEFAULT_MAP_CAMERA)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="0">⟲</button>
         </div>
 
         {/* Layer toggles */}
@@ -1532,7 +1715,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         </ConsolePanel>
       )}
 
-      <p id="solar-system-canvas-hint" className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag to pan, scroll to zoom. Toggle lanes and ships with the top-left buttons. This canvas is mouse/touch-only — use the Location List below to browse and select every location by keyboard.</p>
+      <p id="solar-system-canvas-hint" className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag (or one finger) to pan; scroll, pinch, or press + / − to zoom, 0 to reset. Toggle lanes and ships with the top-left buttons. Focus the map for arrow-key panning, or use the Location List below to browse and select every location by keyboard.</p>
     </div>
   );
 }

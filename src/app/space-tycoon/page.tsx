@@ -1071,6 +1071,29 @@ export default function SpaceTycoonPage() {
 
   // Speed is locked at 1x for all players (fairness)
 
+  // Damage-visibility wave (2026-08-31): named so BOTH repair surfaces (the
+  // Build tab and the map's context panel) share one handler.
+  const handleRushRepairBuilding = useCallback((instanceId: string) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const bld = prev.buildings.find(b => b.instanceId === instanceId);
+      if (!bld || !bld.damagePct) return prev;
+      const def = BUILDING_MAP.get(bld.definitionId);
+      if (!def) return prev;
+      const cost = calculateRushRepairCost(bld.damagePct, def.baseCost);
+      if (prev.money < cost) { playSound('error'); return prev; }
+      playSound('click');
+      const buildings = prev.buildings.map(b => b.instanceId === instanceId ? { ...b, damagePct: undefined } : b);
+      return {
+        ...prev,
+        money: prev.money - cost,
+        totalSpent: prev.totalSpent + cost,
+        buildings,
+        eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Rush repair: ${def.name}`, description: `Paid ${formatMoney(cost)} to instantly repair structural damage.` }, ...prev.eventLog].slice(0, 50),
+      };
+    });
+  }, []);
+
   const handleBuild = useCallback((buildingId: string, locationId: string) => {
     playSound('build_start');
     setState(prev => {
@@ -2306,6 +2329,7 @@ export default function SpaceTycoonPage() {
             onSellBuilding={handleSellBuilding}
             onMothballBuilding={handleMothballBuilding}
             onReactivateBuilding={handleReactivateBuilding}
+            onRushRepairBuilding={handleRushRepairBuilding}
             onDispatchShip={handleDispatchShip}
             onLaunchExpedition={handleLaunchExpedition}
             onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
@@ -2354,26 +2378,7 @@ export default function SpaceTycoonPage() {
             setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
           }}
         />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={(instanceId) => {
-          setState(prev => {
-            if (!prev) return prev;
-            const bld = prev.buildings.find(b => b.instanceId === instanceId);
-            if (!bld || !bld.damagePct) return prev;
-            const def = BUILDING_MAP.get(bld.definitionId);
-            if (!def) return prev;
-            const cost = calculateRushRepairCost(bld.damagePct, def.baseCost);
-            if (prev.money < cost) { playSound('error'); return prev; }
-            playSound('click');
-            const buildings = prev.buildings.map(b => b.instanceId === instanceId ? { ...b, damagePct: undefined } : b);
-            return {
-              ...prev,
-              money: prev.money - cost,
-              totalSpent: prev.totalSpent + cost,
-              buildings,
-              eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Rush repair: ${def.name}`, description: `Paid ${formatMoney(cost)} to instantly repair structural damage.` }, ...prev.eventLog].slice(0, 50),
-            };
-          });
-        }} />}
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel
@@ -2500,12 +2505,25 @@ export default function SpaceTycoonPage() {
             <StandingOrdersPanel state={state} onUpdateState={fn => setState(prev => prev ? fn(prev) : prev)} />
           </div>
         )}
-        {tab === 'crafting' && <CraftingPanel state={state} onStartCrafting={(recipeId) => {
+        {tab === 'crafting' && <CraftingPanel state={state} onCancelQueued={(index) => {
+          setState(prev => {
+            if (!prev || !prev.craftQueue) return prev;
+            return { ...prev, craftQueue: prev.craftQueue.filter((_, i) => i !== index) };
+          });
+        }} onStartCrafting={(recipeId) => {
           const recipe = CHAIN_MAP.get(recipeId);
           if (!recipe) return;
           playSound('build_start');
           setState(prev => {
-            if (!prev || prev.activeRefining) return prev;
+            if (!prev) return prev;
+            // Crafting queue (2026-08-31, Jay): a click while busy QUEUES the
+            // order (cap 5) instead of being refused — inputs are checked and
+            // deducted when the order actually starts (engine auto-start).
+            if (prev.activeRefining) {
+              const queue = prev.craftQueue || [];
+              if (queue.length >= 5) { playSound('error'); return prev; }
+              return { ...prev, craftQueue: [...queue, { recipeId }] };
+            }
             const allRes = { ...(prev.resources || {}), ...(prev.craftedProducts || {}) };
             for (const [resId, qty] of Object.entries(recipe.inputs)) {
               if ((allRes[resId] || 0) < qty) { playSound('error'); return prev; }

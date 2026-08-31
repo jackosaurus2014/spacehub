@@ -33,7 +33,12 @@ describe('deriveAttentionItems', () => {
     expect(byId['att-bld-dmg-b1'].severity).toBe('critical');
     expect(byId['att-bld-dmg-b2'].severity).toBe('warning');
     expect(byId['att-bld-dmg-b3']).toBeUndefined();
-    expect(byId['att-bld-dmg-b1'].tab).toBe('build');
+    // Damage-visibility wave (2026-08-31): deep-links to the MAP focused on
+    // the damaged building's location (tab:'build' used to land on the
+    // wrong location), and names the revenue tax in the detail.
+    expect(byId['att-bld-dmg-b1'].tab).toBe('map');
+    expect(byId['att-bld-dmg-b1'].target).toEqual({ kind: 'location', id: 'earth_surface' });
+    expect(byId['att-bld-dmg-b1'].detail).toMatch(/revenue/);
   });
 
   it('flags damaged ships and aggregates idle ships into a single row', () => {

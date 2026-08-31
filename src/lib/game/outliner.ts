@@ -53,9 +53,15 @@ export function deriveAttentionItems(state: GameState, nowMs: number = Date.now(
       category: 'building_damage',
       icon: 'warning',
       label: `${def?.name || 'Building'} damaged`,
-      detail: `${Math.round(b.damagePct * 100)}% structural damage at ${loc?.name || b.locationId}.`,
+      // Damage-visibility wave (2026-08-31): name the CONSEQUENCE (the
+      // revenue tax from game-engine's hazardDamageFactor, 1 − 0.75·dmg,
+      // floor 0.25) and deep-link to the map FOCUSED on the right location —
+      // the old tab:'build' link landed on earth_surface while the damaged
+      // satellite sat in LEO.
+      detail: `${Math.round(b.damagePct * 100)}% structural damage at ${loc?.name || b.locationId} — cutting its service revenue ~${Math.round(Math.min(0.75, 0.75 * b.damagePct) * 100)}%. Rush-repair it from the map or Build panel.`,
       severity: b.damagePct >= 0.5 ? 'critical' : 'warning',
-      tab: 'build',
+      tab: 'map',
+      target: { kind: 'location', id: b.locationId },
     });
   }
 

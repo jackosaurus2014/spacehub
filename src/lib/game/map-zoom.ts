@@ -38,15 +38,17 @@ export const MAP_ZOOM_TIER_LABEL: Record<MapZoomTier, string> = {
 };
 
 // ── 3D thresholds (camera distance from the origin, scene units) ─────────────
-// OrbitControls is clamped to minDistance 4 / maxDistance 160 and the map
+// OrbitControls is clamped to minDistance 2.5 / maxDistance 160 and the map
 // opens at ~53 units, i.e. the 'location' tier. These are the V4 LOD band
 // numbers (LOD_FAR_DIST / LOD_NEAR_DIST), promoted from renderer-private
 // constants to shared, tested ones — the bands are NOT retuned by this wave.
 export const ZOOM_3D_SYSTEM_MIN_DIST = 95;
 export const ZOOM_3D_DETAIL_MAX_DIST = 38;
 
-// ── 2D thresholds (SolarSystemCanvas zoom multiplier, clamped 0.5…3) ────────
-// The 2D map defaults to zoom 1 → 'location', matching the 3D default tier.
+// ── 2D thresholds (SolarSystemCanvas zoom multiplier) ───────────────────────
+// The canvas zoom is clamped to MAP_MIN_ZOOM…MAP_MAX_ZOOM (map-camera.ts,
+// currently 0.5…4). The 2D map defaults to zoom 1 → 'location', matching the
+// 3D default tier.
 export const ZOOM_2D_SYSTEM_MAX = 0.8;
 export const ZOOM_2D_DETAIL_MIN = 1.6;
 
