@@ -134,6 +134,42 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1200, resourceCost: { rare_earth: 25, titanium: 20 }, powerRequired: 14,
     consumesPerMonth: { electronics_package: 2, satellite_bus: 0.1 },
     capabilities: { researchSpeed: 0.03 } },
+  // ─── RESEARCH FACILITIES (2026-08-31, Jay) ────────────────────────────
+  // Pure capability buildings: no revenue service, they buy research SPEED
+  // (researchSpeed sums across the family, capped 0.20 in
+  // building-capabilities.ts). Earth institute capped at 1/corporation like
+  // the Earth fab; the off-world ladder is where committed research corps
+  // stack the rest.
+  { id: 'research_institute_earth', name: 'Terrestrial Research Institute', category: 'datacenter', tier: 1,
+    description: 'A ground-side R&D campus: cheap lab space, deep talent pool, no launch costs for your scientists.',
+    tooltip: 'FIRST RESEARCH BOOST. +5% research speed, corporation-wide. No research required and no orbit to reach — but capped at ONE per corporation (Earth real estate and regulator patience are finite). The off-world labs stack on top of it.',
+    baseCost: 250_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 1_200_000,
+    requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [],
+    realBuildSeconds: 420, resourceCost: { iron: 30, aluminum: 15 }, powerRequired: 0,
+    maxPerPlayer: 1,
+    capabilities: { researchSpeed: 0.05 } },
+  { id: 'research_lab_orbital', name: 'Orbital Research Laboratory', category: 'datacenter', tier: 2,
+    description: 'Microgravity materials science and protein crystallography in low-Earth orbit.',
+    tooltip: 'MICROGRAVITY SCIENCE. +5% research speed, stacking with the Terrestrial Research Institute. Occupies a LEO slot — congestion raises its upkeep as the shells fill. Requires "Orbital Assembly".',
+    baseCost: 550_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_500_000,
+    requiredResearch: ['orbital_assembly'], requiredLocation: 'leo', enabledServices: [],
+    realBuildSeconds: 900, resourceCost: { aluminum: 40, titanium: 15, rare_earth: 8 }, powerRequired: 6,
+    capabilities: { researchSpeed: 0.05 } },
+  { id: 'research_station_lunar', name: 'Lunar Research Station', category: 'datacenter', tier: 3,
+    description: 'Far-side radio quiet, vacuum labs, and one-sixth gravity for long-duration experiments.',
+    tooltip: 'FAR-SIDE SCIENCE. +6% research speed. The Moon offers radio quiet and stable vacuum no orbit can match. Requires "Regolith Processing".',
+    baseCost: 1_800_000_000, buildTimeMonths: 20, maintenanceCostPerMonth: 3_500_000,
+    requiredResearch: ['regolith_processing'], requiredLocation: 'lunar_surface', enabledServices: [],
+    realBuildSeconds: 2400, resourceCost: { iron: 120, aluminum: 80, rare_earth: 15 }, powerRequired: 8,
+    capabilities: { researchSpeed: 0.06 } },
+  { id: 'research_station_mars', name: 'Mars Research Complex', category: 'datacenter', tier: 3,
+    description: 'Planetary science headquarters: geology, ISRU pilot plants, and a permanent scientific staff on Mars.',
+    tooltip: 'PLANETARY SCIENCE HQ. +7% research speed — the largest single lab in the family. A serious late-mid-game commitment on the Martian surface. Requires "Edge AI" for its autonomous lab systems.',
+    baseCost: 3_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 4_500_000,
+    requiredResearch: ['edge_ai'], requiredLocation: 'mars_surface', enabledServices: [],
+    realBuildSeconds: 3600, resourceCost: { iron: 250, titanium: 100, rare_earth: 30 }, powerRequired: 10,
+    capabilities: { researchSpeed: 0.07 } },
+
   { id: 'datacenter_mars_orbit', name: 'Mars Data Relay', category: 'datacenter', tier: 3,
     description: 'Data processing and relay facility at Mars.',
     tooltip: 'DEEP-SPACE COMPUTE. Activates Mars Data Processing at $25M/mo vs $8M cost = $17M/mo net. Required for Mars operations communication and data relay. Requires "Edge AI" research. A long-horizon investment, but essential infrastructure if you\'re building a Mars presence. Also enables Propellant Brokerage when combined with other Mars infrastructure.',

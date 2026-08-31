@@ -42,7 +42,7 @@ export const CAPABILITY_CAPS: Record<Exclude<CapabilityKey, 'crewQuarters' | 'sh
   awayAutomation: 0.08,      // AWAY_EFFICIENCY_INVESTMENT_CAP still binds above
   expeditionSupport: 0.15,   // transit hazards stay lethal when unshielded
   diplomacy: 0.25,           // envoys/contracts still do the heavy lifting
-  researchSpeed: 0.10,       // one small term in a 2.0-capped multiplier stack
+  researchSpeed: 0.20,       // raised 0.10→0.20 for the dedicated research-facility family (2026-08-31, Jay) — still one modest term in a 2.0-capped multiplier stack
 };
 
 type MinimalBuilding = { definitionId: string; isComplete: boolean; locationId?: string; status?: string };
