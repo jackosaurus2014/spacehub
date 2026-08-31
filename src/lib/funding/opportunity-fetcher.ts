@@ -145,10 +145,16 @@ function mapSamType(type: string): string {
   return 'contract';
 }
 
+// SAM.gov v2 requires MM/dd/yyyy (their documented format) — the previous
+// yyyy/MM/dd was never exercised because the request also lacked postedTo
+// and 400'd first ("PostedFrom and PostedTo are mandatory", verified live
+// 2026-08-31 the day the API key finally landed).
 function getDateDaysAgo(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() - days);
-  return d.toISOString().split('T')[0].replace(/-/g, '/');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${mm}/${dd}/${d.getFullYear()}`;
 }
 
 function isOpen(closeDate?: string): boolean {
@@ -235,7 +241,7 @@ export async function fetchSamGovOpportunities(): Promise<FundingOpportunityInpu
   try {
     const keywords = ['space', 'satellite', 'launch vehicle', 'spacecraft'];
     for (const keyword of keywords) {
-      const url = `https://api.sam.gov/opportunities/v2/search?api_key=${apiKey}&keyword=${encodeURIComponent(keyword)}&postedFrom=${getDateDaysAgo(30)}&limit=25&offset=0`;
+      const url = `https://api.sam.gov/opportunities/v2/search?api_key=${apiKey}&q=${encodeURIComponent(keyword)}&postedFrom=${encodeURIComponent(getDateDaysAgo(30))}&postedTo=${encodeURIComponent(getDateDaysAgo(0))}&limit=25&offset=0`;
       const res = await fetch(url);
       if (!res.ok) continue;
       const data = await res.json();

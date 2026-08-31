@@ -229,12 +229,13 @@ export async function fetchSAMOpportunities(
   if (params.agency) {
     queryParams.set('deptname', params.agency);
   }
-  if (params.postedFrom) {
-    queryParams.set('postedFrom', params.postedFrom);
-  }
-  if (params.postedTo) {
-    queryParams.set('postedTo', params.postedTo);
-  }
+  // SAM.gov v2 makes BOTH dates mandatory (verified live 2026-08-31:
+  // omitting either → 400 "PostedFrom and PostedTo are mandatory"). Default
+  // to the trailing 30 days in their MM/dd/yyyy format when not supplied.
+  const fmtSamDate = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+  const monthAgo = new Date(Date.now() - 30 * 86400_000);
+  queryParams.set('postedFrom', params.postedFrom || fmtSamDate(monthAgo));
+  queryParams.set('postedTo', params.postedTo || fmtSamDate(new Date()));
   if (params.type) {
     queryParams.set('ptype', params.type);
   }
