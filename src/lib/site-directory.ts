@@ -106,6 +106,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Regulatory Radar', href: '/regulatory-radar', description: 'Live rules, enforcement and deadlines', icon: '📡', nav: true },
       { name: 'Compliance Hub', href: '/compliance', description: 'Licensing, space law and filings', icon: '⚖️', nav: true, pro: true },
       { name: 'Jobs', href: '/jobs', description: 'Thousands of space jobs, synced daily', icon: '💼', nav: true, hot: true },
+      { name: 'Hiring Trends', href: '/hiring-trends', description: 'Who is hiring — weekly velocity from daily snapshots', icon: '📈', nav: true },
       { name: 'Hire Talent', href: '/hire', description: 'Get your openings in front of the industry', icon: '🤝', nav: true },
       { name: 'Service Providers', href: '/marketplace', description: 'Verified space service directory', icon: '🛒', nav: true },
       { name: 'Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain intelligence', icon: '🔗' },

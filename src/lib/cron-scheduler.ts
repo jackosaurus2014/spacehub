@@ -158,6 +158,8 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '*/10 * * * *', path: '/api/cron/satellite-pass-alerts',           label: 'satellite-pass-alerts',      maxStaleMinutes: 60 },
   // Launch alerts without an account (2026-08-29): T-24h / T-1h / outcome emails for LaunchWatch rows.
   { schedule: '*/20 * * * *', path: '/api/cron/launch-watch',                    label: 'launch-watch',               maxStaleMinutes: 90 },
+  // Weekly company briefs without an account (2026-08-31): Monday owned-data digest per verified CompanyWatch, idempotent per ISO week.
+  { schedule: '0 9 * * 1',    path: '/api/cron/company-brief',                   label: 'company-brief',              maxStaleMinutes: 11520 },
   // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)
   { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
   // Forum digest — DISABLED 2026-08-26: forums mothballed (0 posts ever; see

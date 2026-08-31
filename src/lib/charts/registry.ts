@@ -55,8 +55,8 @@ export const CHART_DEFS: readonly ChartDef[] = [
     subtitle: 'Active postings across tracked companies, weekly snapshots',
     source: 'SpaceNexus jobs machine (16 ATS boards, daily sync)',
     unit: 'jobs',
-    exploreHref: '/space-talent?tab=workforce',
-    exploreLabel: 'Who is hiring',
+    exploreHref: '/hiring-trends',
+    exploreLabel: 'Hiring trends dashboard',
   },
   {
     slug: 'launch-slips-by-week',

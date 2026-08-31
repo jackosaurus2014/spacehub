@@ -11,6 +11,7 @@ import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import EmptyState from '@/components/ui/EmptyState';
 import DataTable, { type DataTableColumn } from '@/components/ui/DataTable';
+import CompanyWatchForm from '@/components/company/CompanyWatchForm';
 import WatchButton from '@/components/watchlist/WatchButton';
 import { clientLogger } from '@/lib/client-logger';
 import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
@@ -119,6 +120,10 @@ interface CompanyDetail {
   satelliteAssets: Satellite[]; facilities: Facility[];
   scores: Score[];
   jobPostingsCount: number;
+  /** Terminal wave (2026-08-31): API has always sent these (RELATION_SELECT
+   *  take 10) — the client type just never declared them. Optional because
+   *  the API's fallback query path can omit relations. */
+  secFilings?: { filingType: string; filingDate: string | null; edgarUrl: string | null }[];
   summary: {
     totalContractValue: number; activeSatellites: number;
     totalSatellites: number; totalFundingRounds: number;
@@ -597,6 +602,42 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
           <RevenueTrend estimates={company.revenueEstimates} />
         </SectionCard>
       </div>
+
+      {/* Terminal wave (2026-08-31): the "what's happening NOW" strip — the
+          latest signal from each live feed, on Overview where a first-time
+          visitor lands, deep-linking into the full tabs via ?tab=. */}
+      {(company.jobPostingsCount > 0 || company.contracts.length > 0 || (company.secFilings?.length ?? 0) > 0 || company.fundingRounds.length > 0) && (
+        <SectionCard title="Live Signals">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            {company.jobPostingsCount > 0 && (
+              <Link href={`/company-profiles/${company.slug}?tab=jobs`} className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 hover:border-cyan-500/30 transition-colors">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Hiring</p>
+                <p className="text-white"><span className="font-mono text-cyan-300">{company.jobPostingsCount}</span> open roles right now →</p>
+              </Link>
+            )}
+            {company.contracts.length > 0 && (
+              <Link href={`/company-profiles/${company.slug}?tab=contracts`} className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 hover:border-cyan-500/30 transition-colors">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Latest government contract</p>
+                <p className="text-white line-clamp-1">{company.contracts[0].title}</p>
+                <p className="text-slate-500 text-xs mt-0.5">{company.contracts[0].agency} · {fmt(company.contracts[0].value)} · {fmtDate(company.contracts[0].awardDate)}</p>
+              </Link>
+            )}
+            {company.fundingRounds.length > 0 && (
+              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Latest funding round</p>
+                <p className="text-white">{company.fundingRounds[0].seriesLabel || company.fundingRounds[0].roundType || 'Round'} · {fmt(company.fundingRounds[0].amount)}</p>
+                <p className="text-slate-500 text-xs mt-0.5">{fmtDate(company.fundingRounds[0].date)}{company.fundingRounds[0].leadInvestor ? ` · led by ${company.fundingRounds[0].leadInvestor}` : ''}</p>
+              </div>
+            )}
+            {(company.secFilings?.length ?? 0) > 0 && (
+              <a href={company.secFilings![0].edgarUrl || '#'} target="_blank" rel="noopener noreferrer" className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 hover:border-cyan-500/30 transition-colors">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Latest SEC filing</p>
+                <p className="text-white">{company.secFilings![0].filingType} <span className="text-slate-500 text-xs">· {fmtDate(company.secFilings![0].filingDate)} · EDGAR ↗</span></p>
+              </a>
+            )}
+          </div>
+        </SectionCard>
+      )}
 
       {/* Products Preview */}
       {company.products.length > 0 && (
@@ -2494,6 +2535,11 @@ export default function CompanyProfileDetailPage() {
 
           {/* Marketplace Actions */}
           <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} verificationLevel={(company as any).verificationLevel} contactEmail={(company as any).contactEmail} claimedByUserId={(company as any).claimedByUserId} jobPostingsCount={company.jobPostingsCount} />
+          {/* Terminal wave (2026-08-31): follow this company — weekly email
+              brief (news + jobs + contracts + filings), no account needed. */}
+          <div className="mt-3">
+            <CompanyWatchForm companyProfileId={company.id} companyName={company.name} compact />
+          </div>
         </div>
       </motion.div>
 

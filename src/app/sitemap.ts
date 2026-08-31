@@ -80,6 +80,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/export-compliance-qa`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/solar-exploration`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/space-talent`, changeFrequency: 'daily' as const, priority: 0.8 },
+    { url: `${BASE_URL}/hiring-trends`, changeFrequency: 'daily' as const, priority: 0.7 },
 
     // Job landing pages (programmatic SEO) — category/remote/location slices of
     // the jobs board, defined in src/lib/job-landing-pages.ts. Listed here

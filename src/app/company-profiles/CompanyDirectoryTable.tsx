@@ -23,7 +23,12 @@ export interface CompanyDirectoryTableProps {
   emptyLabel?: string;
 }
 
-const columns: DataTableColumn<CompanyCard>[] = [
+// Terminal wave (2026-08-31): screener columns. DataTable sorts by the flat
+// row property named in `key`, so nested _count values are lifted onto the
+// row in the component body below.
+type ScreenerRow = CompanyCard & { openJobs: number; contractsCount: number };
+
+const columns: DataTableColumn<ScreenerRow>[] = [
   {
     key: 'name',
     header: 'Company',
@@ -56,6 +61,24 @@ const columns: DataTableColumn<CompanyCard>[] = [
     numeric: true,
     render: (c) => (c.isPublic ? formatMoney(c.marketCap) : '—'),
   },
+  {
+    key: 'revenueEstimate',
+    header: 'Revenue (est.)',
+    numeric: true,
+    render: (c) => formatMoney(c.revenueEstimate),
+  },
+  {
+    key: 'openJobs',
+    header: 'Open roles',
+    numeric: true,
+    render: (c) => (c.openJobs > 0 ? c.openJobs : '—'),
+  },
+  {
+    key: 'contractsCount',
+    header: 'Contracts',
+    numeric: true,
+    render: (c) => (c.contractsCount > 0 ? c.contractsCount : '—'),
+  },
 ];
 
 export default function CompanyDirectoryTable({
@@ -64,11 +87,16 @@ export default function CompanyDirectoryTable({
   filterable = false,
   emptyLabel = 'No companies match this filter.',
 }: CompanyDirectoryTableProps) {
+  const screenerRows: ScreenerRow[] = rows.map((r) => ({
+    ...r,
+    openJobs: r._count?.jobPostings ?? 0,
+    contractsCount: r._count?.contracts ?? 0,
+  }));
   return (
     <>
-      <DataTable<CompanyCard>
+      <DataTable<ScreenerRow>
         columns={columns}
-        rows={rows}
+        rows={screenerRows}
         rowHref={(c) => `/company-profiles/${c.slug}`}
         caption={caption}
         filterable={filterable}

@@ -3144,6 +3144,7 @@ model CompanyProfile {
   reviews                 ProviderReview[]
   teamingOpps             TeamingOpportunity[]
   watchedBy               CompanyWatchlistItem[]
+  emailWatches            CompanyWatch[]
   digests                 CompanyDigest[]
   jobPostings             SpaceJobPosting[]
   jobSnapshots            CompanyJobSnapshot[]
@@ -6925,6 +6926,43 @@ model LaunchWatchDelivery {
 
   @@unique([watchId, eventId, kind])
   @@index([eventId])
+}
+
+// Weekly company briefs WITHOUT an account (2026-08-31). CompanyFollow
+// requires a signed-in user; company-profile visitors arriving from search
+// could never be reached twice. A CompanyWatch is an email plus a company —
+// double-opt-in, one owned-data brief per ISO week. Deliveries are recorded
+// per (watch, periodKey) so a re-run never repeats, and quiet weeks record
+// the period without sending (no empty emails). Clone of LaunchWatch above.
+model CompanyWatch {
+  id                String         @id @default(cuid())
+  email             String
+  companyProfileId  String
+  companyProfile    CompanyProfile @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+  verified          Boolean        @default(false)
+  verificationToken String         @unique
+  unsubscribeToken  String         @unique
+  source            String         @default("company-page")
+  createdAt         DateTime       @default(now())
+  verifiedAt        DateTime?
+  unsubscribedAt    DateTime?
+
+  deliveries CompanyBriefDelivery[]
+
+  @@unique([email, companyProfileId])
+  @@index([companyProfileId])
+  @@index([email])
+  @@index([verified, unsubscribedAt])
+}
+
+model CompanyBriefDelivery {
+  id        String       @id @default(cuid())
+  watchId   String
+  watch     CompanyWatch @relation(fields: [watchId], references: [id], onDelete: Cascade)
+  periodKey String // ISO week the brief covered, e.g. '2026-W36'
+  sentAt    DateTime     @default(now())
+
+  @@unique([watchId, periodKey])
 }
 
 // Lesson completion for signed-in learners (2026-08-28). Anonymous progress
