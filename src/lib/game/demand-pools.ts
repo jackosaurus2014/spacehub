@@ -140,7 +140,9 @@ export const CATEGORY_LABELS: Record<ServiceCategory, string> = {
 export const NPC_DEMAND_FLOOR: Record<string, Partial<Record<ServiceCategory, number>>> = {
   earth_surface: { launch: 150_000_000, sensor: 18_000_000, telecom: 10_000_000, insurance: 20_000_000, logistics: 12_000_000 },
   leo:           { telecom: 30_000_000, sensor: 12_000_000, tourism: 40_000_000, compute: 40_000_000, power: 10_000_000, fabrication: 30_000_000, logistics: 15_000_000, insurance: 10_000_000, launch: 20_000_000 },
-  geo:           { telecom: 28_000_000, sensor: 24_000_000, power: 8_000_000, logistics: 40_000_000, insurance: 6_000_000 },
+  // Early-fab wave (2026-08-31): compute floor authored for datacenter_geo
+  // (svc_ai_datacenter_geo $22M capacity × ~2.7, inside the 2.5-3.5x rule).
+  geo:           { telecom: 28_000_000, sensor: 24_000_000, power: 8_000_000, logistics: 40_000_000, insurance: 6_000_000, compute: 60_000_000 },
   lunar_orbit:   { tourism: 80_000_000, telecom: 10_000_000, logistics: 36_000_000, fabrication: 12_000_000, sensor: 10_000_000, launch: 12_000_000, insurance: 24_000_000 },
   lunar_surface: { tourism: 95_000_000, fabrication: 45_000_000, power: 16_000_000, logistics: 20_000_000, telecom: 8_000_000, compute: 10_000_000, sensor: 8_000_000 },
   mars_orbit:    { sensor: 140_000_000, compute: 80_000_000, telecom: 15_000_000, logistics: 100_000_000, launch: 15_000_000, insurance: 8_000_000 },

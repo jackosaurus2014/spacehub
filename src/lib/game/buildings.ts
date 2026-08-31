@@ -126,6 +126,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 420, resourceCost: { rare_earth: 15, titanium: 10 }, powerRequired: 10,
     consumesPerMonth: { electronics_package: 2 },
     capabilities: { researchSpeed: 0.03 } }, // E3: compute spares, 2 × $1.5M = 25% of $12M gross
+  { id: 'datacenter_geo', name: 'GEO Data Center', category: 'datacenter', tier: 3,
+    description: 'Heavy AI compute anchored in a premium geostationary slot. Constant sun, fixed ground footprint, zero handover latency.',
+    tooltip: 'PRIME-ORBIT COMPUTE. Activates GEO AI Compute at $22M/mo vs $7M cost = $15M/mo net — but it sits in the contested GEO belt, so congestion raises upkeep as the belt fills, and it consumes a satellite bus every 10 months for station-keeping hardware. Requires "Rad-Hardened Processors" + "Edge AI". The step up from the LEO Orbital Data Center for corporations ready to fight for premium slots.',
+    baseCost: 900_000_000, buildTimeMonths: 16, maintenanceCostPerMonth: 4_000_000,
+    requiredResearch: ['rad_hard_processors', 'edge_ai'], requiredLocation: 'geo', enabledServices: ['svc_ai_datacenter_geo'],
+    realBuildSeconds: 1200, resourceCost: { rare_earth: 25, titanium: 20 }, powerRequired: 14,
+    consumesPerMonth: { electronics_package: 2, satellite_bus: 0.1 },
+    capabilities: { researchSpeed: 0.03 } },
   { id: 'datacenter_mars_orbit', name: 'Mars Data Relay', category: 'datacenter', tier: 3,
     description: 'Data processing and relay facility at Mars.',
     tooltip: 'DEEP-SPACE COMPUTE. Activates Mars Data Processing at $25M/mo vs $8M cost = $17M/mo net. Required for Mars operations communication and data relay. Requires "Edge AI" research. A long-horizon investment, but essential infrastructure if you\'re building a Mars presence. Also enables Propellant Brokerage when combined with other Mars infrastructure.',
@@ -201,7 +209,8 @@ export const BUILDINGS: BuildingDefinition[] = [
     tooltip: 'FIRST FACTORY. Runs Tier 1-2 recipes (ingots, alloys, fuel, beams, electronics, solar arrays, propulsion, life support). Products (T3+) need an off-world plant. Unlimited Earth power; inputs still have to be bought or hauled down.',
     baseCost: 350_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [],
-    realBuildSeconds: 480, resourceCost: { iron: 40, aluminum: 20 }, powerRequired: 0 },
+    realBuildSeconds: 480, resourceCost: { iron: 40, aluminum: 20 }, powerRequired: 0,
+    maxPerPlayer: 1 }, // Early-fab wave: one per corporation — Earth launch/environmental permits cap ground industry; scaling up means orbit.
   { id: 'fabrication_orbital', name: 'Orbital Fabrication Lab', category: 'fabrication_facility', tier: 2,
     description: 'Manufacture components in microgravity.',
     tooltip: 'UNLOCKS CRAFTING. Activates Orbital Manufacturing at $10M/mo vs $4M cost = $6M/mo net. More importantly, this unlocks the Crafting tab — letting you refine raw resources into higher-value products (steel ingots, electronics, solar panels). Also produces 5 titanium + 3 rare earth per month passively. Requires "Orbital Assembly" research. Build to unlock the entire production chain system.',
@@ -980,4 +989,26 @@ export function getPowerByLocation(
     withRatio[loc] = { ...data, ratio };
   }
   return withRatio;
+}
+
+/** Early-fab wave (2026-08-31): per-corporation building cap. Counts the
+ *  player's instances of `def` across ALL locations, under-construction
+ *  included (mirroring the Frontier-exemption reasoning in
+ *  spatial-strategy.ts — a queued copy already claims the cap). Absent
+ *  maxPerPlayer = uncapped. Enforced at all three build entrances:
+ *  handleBuild (page.tsx), attemptBuildStart (command-queue.ts), and the
+ *  BuildPanel card. */
+export function checkBuildingCap(
+  buildings: Array<{ definitionId: string }>,
+  def: BuildingDefinition,
+): { allowed: boolean; reason?: string } {
+  if (!def.maxPerPlayer) return { allowed: true };
+  const owned = buildings.filter(b => b.definitionId === def.id).length;
+  if (owned < def.maxPerPlayer) return { allowed: true };
+  return {
+    allowed: false,
+    reason: def.maxPerPlayer === 1
+      ? `Limited to one ${def.name} per corporation`
+      : `Limited to ${def.maxPerPlayer} per corporation`,
+  };
 }

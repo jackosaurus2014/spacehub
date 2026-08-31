@@ -89,7 +89,8 @@ describe('deriveRadialActions: composition', () => {
     expect(ORBITAL_SLOT_MAP.has('geo')).toBe(true);
     expect(ids(makeState(), 'geo')).toContain('slots');
     expect(ids(makeState(), 'earth_surface')).not.toContain('slots');
-    expect(ids(makeState(), 'leo')).not.toContain('slots');
+    // Early-fab wave (2026-08-31): LEO joined ORBITAL_SLOT_POOLS.
+    expect(ids(makeState(), 'leo')).toContain('slots');
   });
 
   it('is order-stable across state changes so the ring never reshuffles', () => {

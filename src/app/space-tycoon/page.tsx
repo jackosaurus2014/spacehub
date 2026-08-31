@@ -6,7 +6,7 @@ import { processFullTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
-import { BUILDINGS, BUILDING_MAP, scaledBuildTime } from '@/lib/game/buildings';
+import { BUILDINGS, BUILDING_MAP, scaledBuildTime, checkBuildingCap } from '@/lib/game/buildings';
 import {
   RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect, getResearchBonuses,
   isRareTechVisible, getResearchDisplayState, type ResearchDisplayState,
@@ -1093,6 +1093,10 @@ export default function SpaceTycoonPage() {
       // this is defense in depth for any other entrance.
       const slotGate = checkOrbitalSlotGate(prev, locationId);
       if (!slotGate.allowed) { playSound('error'); return prev; }
+
+      // Early-fab wave: per-corporation cap (fabrication_earth max 1).
+      // BuildPanel disables the card with the reason; defense in depth here.
+      if (!checkBuildingCap(prev.buildings, def).allowed) { playSound('error'); return prev; }
 
       // Check resource costs
       if (def.resourceCost) {

@@ -127,8 +127,12 @@ export function populationScale(activeProfiles: number): number {
 }
 
 export function recipeTierOf(outputId: string): number | null {
-  const r = PRODUCTION_CHAINS.find((p) => p.outputId === outputId);
-  return r ? r.tier : null;
+  // Early-fab wave: a product can now have multiple recipes at different
+  // tiers (e.g. the T2 terrestrial satellite-bus route beside the T3
+  // component chain). List caps key off the PRODUCT class, so take the
+  // highest recipe tier — order-independent, and preserves pre-wave caps.
+  const tiers = PRODUCTION_CHAINS.filter((p) => p.outputId === outputId).map((p) => p.tier);
+  return tiers.length ? Math.max(...tiers) : null;
 }
 
 /**

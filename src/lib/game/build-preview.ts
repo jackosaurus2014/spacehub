@@ -42,6 +42,7 @@
 
 import type { GameState, BuildingDefinition } from './types';
 import { getPowerByLocation } from './buildings';
+import { getCongestionMaintenanceMultiplier } from './spatial-strategy';
 import { SERVICE_MAP } from './services';
 import { RESOURCE_MAP, type ResourceId } from './resources';
 import { serviceSaturationMultiplier, corporateOverheadMonthly, scaledBuildingCost } from './formulas';
@@ -108,7 +109,9 @@ export function computeBuildPreview(
     }
   }
 
-  const maintenance = def.maintenanceCostPerMonth;
+  // Early-fab wave: mirror the tick's congestion pricing so the card's
+  // projection is honest at crowded slot-pool locations.
+  const maintenance = def.maintenanceCostPerMonth * getCongestionMaintenanceMultiplier(state, locationId);
   const completedCount = (state.buildings || []).filter(b => b.isComplete).length;
   const overheadDelta = corporateOverheadMonthly(completedCount + 1) - corporateOverheadMonthly(completedCount);
 

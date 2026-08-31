@@ -215,9 +215,12 @@ describe('Pass 4 — isSlotOccupant / mothball frees the slot', () => {
 
 describe('Pass 4 — checkOrbitalSlotGate', () => {
   it('non-pool locations are never gated', () => {
-    const s = baseState({ orbitalSlotOccupancy: { leo: { occupiedCount: 999, bucket: 'saturated' } } });
-    expect(checkOrbitalSlotGate(s, 'leo', NOW).allowed).toBe(true);
+    // Early-fab wave (2026-08-31): leo is a pool now — lunar_surface carries
+    // the non-pool case, and a saturated LEO gates like any other pool.
+    const s = baseState({ orbitalSlotOccupancy: { lunar_surface: { occupiedCount: 999, bucket: 'saturated' }, leo: { occupiedCount: 999, bucket: 'saturated' } } });
+    expect(checkOrbitalSlotGate(s, 'lunar_surface', NOW).allowed).toBe(true);
     expect(checkOrbitalSlotGate(s, 'earth_surface', NOW).allowed).toBe(true);
+    expect(checkOrbitalSlotGate(s, 'leo', NOW).allowed).toBe(false);
   });
 
   it('no occupancy snapshot (never synced): gate stays OPEN — pre-Pass-4 behavior', () => {

@@ -134,7 +134,8 @@ describe('slotRingSegments', () => {
 describe('computeSlotRing', () => {
   it('returns null for locations with no finite slot pool', () => {
     expect(computeSlotRing(makeState(), 'earth_surface', fixedNow)).toBeNull();
-    expect(computeSlotRing(makeState(), 'leo', fixedNow)).toBeNull();
+    // Early-fab wave (2026-08-31): LEO joined ORBITAL_SLOT_POOLS — it now has a ring.
+    expect(computeSlotRing(makeState(), 'leo', fixedNow)).not.toBeNull();
     expect(computeSlotRing(makeState(), 'asteroid_belt', fixedNow)).toBeNull();
   });
 

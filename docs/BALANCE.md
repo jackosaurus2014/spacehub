@@ -2250,3 +2250,33 @@ balance weight:
 Telemetry to watch for two weeks: `NpcIndustrialCorp.unitsSold` per corp,
 ask/bid depth on `structural_beams` and `electronics_package`, and whether any
 player ask sits below an NPC ask for more than a day (it should clear).
+
+## Early-fab wave (2026-08-31)
+
+Jay's ruling: players need satellite buses and rocket fuel EARLY (tier-1
+satellites consume buses from day one), via fabrication on Earth (capped) or
+LEO/GEO (congested). Shipped:
+
+- **`fabrication_earth` capped at 1 per corporation** (`maxPerPlayer`, new
+  `BuildingDefinition` field + `checkBuildingCap`, enforced at handleBuild /
+  attemptBuildStart / BuildPanel). Lore: Earth launch + environmental permits.
+- **Shallow-but-expensive Earth recipes**, deep chain stays efficient:
+  - `synthesize_rp1` T1, no research: methane 25 → 8 rocket_fuel (~$375k in →
+    $960k out; water cracking 15 lunar_water → 10 stays the better route).
+  - `assemble_satellite_bus_terrestrial` T2 behind `electric_propulsion_sat`
+    (T1): raw metals ~$8.1M in → one $12M bus, 720s craft. The T3 component
+    chain (~$5M in, 480s) remains the mid-game upgrade — no dominant strategy.
+- **LEO joins ORBITAL_SLOT_POOLS** (240 slots, `BASE_SLOT_VALUE` $10M ×1.5
+  chokepoint premium). Activates the occupancy cron, 85% lease gate,
+  auctions and map rings for LEO with no other code.
+- **Continuous congestion pricing** (`getCongestionMaintenanceMultiplier`):
+  maintenance ×1.0/1.1/1.25/1.5 at low/medium/high/saturated server-wide
+  occupancy, applied in the tick and mirrored in computeBuildPreview. The
+  push-industry-outward pressure now starts BEFORE saturation.
+- **`datacenter_geo` (GEO Data Center, T3)**: $900M, svc $22M/$7M, consumes
+  0.1 satellite_bus + 2 electronics_package/mo, behind rad_hard_processors +
+  edge_ai, in the contested GEO pool. Sits above `datacenter_orbital` (LEO,
+  T2, $8M/mo net) as the premium-slot step up.
+
+Watch on live telemetry: LEO bucket progression (240 slots vs early-sat spam),
+NPC industrial corps now also use the cheaper T2 bus recipe for cost pricing.

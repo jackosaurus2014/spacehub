@@ -37,7 +37,7 @@
 
 import type { GameState, CommandQueueOrder, CommandQueueOrderKind, AwayLedgerQueueEntry, ActiveResearch } from './types';
 import { RESEARCH_MAP, getResearchDisplayState, getResearchBonuses } from './research-tree';
-import { BUILDING_MAP, scaledBuildTime } from './buildings';
+import { BUILDING_MAP, scaledBuildTime, checkBuildingCap } from './buildings';
 import { generateId, formatDuration, advanceDate, scaledBuildingCost, scaledResearchTime } from './formulas';
 import { getConstructionSlots, getActiveConstructions } from './construction-slots';
 // Balance Pass 4: saturated orbital-slot pools block new builds (slot gate).
@@ -190,6 +190,10 @@ export function attemptBuildStart(
   // exemption required at a saturated pool). The order stays queued and
   // retries next tick, like any other transient failure.
   if (!checkOrbitalSlotGate(state, order.locationId, startedAtMs).allowed) return { ok: false, reason: 'slot_pool_saturated' };
+  // Early-fab wave: per-corporation cap (e.g. fabrication_earth max 1). A
+  // queued duplicate FAILS permanently rather than retrying — the cap will
+  // not clear on its own while the first copy stands.
+  if (!checkBuildingCap(state.buildings, def).allowed) return { ok: false, reason: 'building_cap_reached' };
 
   const count = state.buildings.filter(b => b.definitionId === order.buildingId && b.locationId === order.locationId).length;
   const { buildCostReduction } = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);

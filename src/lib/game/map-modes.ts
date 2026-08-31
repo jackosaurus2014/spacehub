@@ -244,9 +244,12 @@ function logisticsVisuals(state: GameState): Record<string, ModeVisual> {
     const laneHub = out[pool.locationId];
     out[pool.locationId] = {
       tint: MODE_TINT.slots,
-      intensity: Math.max(0.5, Math.min(1, occupied / pool.totalSlots + 0.5)),
+      // Early-fab wave: LEO is BOTH the busiest chokepoint and a slot pool —
+      // the merge must never dim the stronger signal (critical hub stays
+      // intensity 1), and the lane badge survives alongside the slot count.
+      intensity: Math.max(laneHub?.intensity ?? 0, Math.max(0.5, Math.min(1, occupied / pool.totalSlots + 0.5))),
       glyph: laneHub ? `◍ ${laneHub.glyph}` : '◍',
-      badge: `${occupied}/${pool.totalSlots} slots`,
+      badge: laneHub ? `${occupied}/${pool.totalSlots} slots · ${laneHub.badge}` : `${occupied}/${pool.totalSlots} slots`,
       srText: `${occupied} of ${pool.totalSlots} orbital slots occupied${laneHub ? `, ${laneHub.srText}` : ''}`,
     };
   }

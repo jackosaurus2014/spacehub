@@ -1198,6 +1198,9 @@ export function marginalCurve(
 // (tier-ladder-first-copy-roi.test.ts) so the two never drift apart.
 export const LOCATION_POWER_PLAN: Partial<Record<string, { powerPlanDefId: string; powerPlanEvery: number }>> = {
   leo: { powerPlanDefId: 'solar_farm_orbital', powerPlanEvery: 1 },
+  // Early-fab wave (2026-08-31): datacenter_geo is the first power-hungry
+  // GEO building — pair it with the existing GEO solar farm.
+  geo: { powerPlanDefId: 'solar_farm_geo', powerPlanEvery: 1 },
   lunar_surface: { powerPlanDefId: 'solar_farm_lunar', powerPlanEvery: 1 },
   mars_surface: { powerPlanDefId: 'solar_farm_mars', powerPlanEvery: 1 },
   mars_orbit: { powerPlanDefId: 'nuclear_reactor_mars_orbit', powerPlanEvery: 1 },

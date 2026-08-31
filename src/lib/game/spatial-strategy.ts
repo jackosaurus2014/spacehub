@@ -101,6 +101,16 @@ export interface OrbitalSlotPool {
 
 export const ORBITAL_SLOT_POOLS: OrbitalSlotPool[] = [
   {
+    // Early-fab wave (2026-08-31): LEO joins the slot system. More slots
+    // than GEO (many usable shells) but it is where EVERY corporation's
+    // early satellites, fab labs and datacenters go — congestion is the
+    // designed early-game pressure that pushes industry outward.
+    locationId: 'leo',
+    totalSlots: 240,
+    label: 'LEO Shells',
+    description: 'Debris-managed low-Earth shells hold ~240 coordinated slots. Cheap to reach and everyone starts here — the first orbit to congest.',
+  },
+  {
     locationId: 'geo',
     totalSlots: 180,
     label: 'GEO Slots',
@@ -221,6 +231,22 @@ export function occupancyBucket(occupiedCount: number, totalSlots: number): Orbi
   if (pct >= 60) return 'high';
   if (pct >= 25) return 'medium';
   return 'low';
+}
+
+/** Early-fab wave (2026-08-31): CONTINUOUS congestion pricing on top of the
+ *  binary 85% lease gate. A crowded orbit costs more to operate in every
+ *  month — collision-avoidance burns, conjunction screening, debris
+ *  insurance — long before it saturates. Driven by the server-aggregated
+ *  occupancy bucket (all players + NPCs, same snapshot the slot gate uses);
+ *  never-synced saves fall back to 1.0, identical to pre-wave behavior.
+ *  Applied to building maintenance at slot-pool locations only. */
+export function getCongestionMaintenanceMultiplier(state: GameState, locationId: string): number {
+  if (!ORBITAL_SLOT_MAP.has(locationId)) return 1;
+  const bucket = state.orbitalSlotOccupancy?.[locationId]?.bucket;
+  if (bucket === 'saturated') return 1.5;
+  if (bucket === 'high') return 1.25;
+  if (bucket === 'medium') return 1.1;
+  return 1;
 }
 
 /** Orbital-slot occupancy snapshot for all pools. `serverOccupancy` (from the

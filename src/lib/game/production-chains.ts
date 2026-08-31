@@ -80,6 +80,17 @@ export const PRODUCTION_CHAINS: ProductDefinition[] = [
     timeSeconds: 100, requiredResearch: ['sabatier_process'], requiredBuilding: 'fabrication_mars',
     marketValue: 120_000,
   },
+  // Early-fab wave (2026-08-31): the day-one fuel route. No research, runs at
+  // the Terrestrial Fabrication Works from market-bought methane — worse
+  // yield than water cracking (8/craft vs 10, pricier feedstock per unit), so
+  // lunar water cracking stays the efficient mid-game route. Exists so a new
+  // corporation can fuel its first ships without touching the research tree.
+  {
+    id: 'synthesize_rp1', name: 'Synthesize RP-1 (Terrestrial)', icon: '⛽', tier: 1,
+    inputs: { methane: 25 }, outputId: 'rocket_fuel', outputQuantity: 8,
+    timeSeconds: 120, requiredResearch: [], requiredBuilding: 'fabrication_earth',
+    marketValue: 120_000,
+  },
   // Refined rare earth
   {
     id: 'refine_rare_earth', name: 'Refine Rare Earth Oxides', icon: '🔬', tier: 1,
@@ -121,6 +132,21 @@ export const PRODUCTION_CHAINS: ProductDefinition[] = [
     inputs: { lunar_water: 6, ammonia: 2, electronics_package: 1, aluminum_alloy: 2 }, outputId: 'life_support_pack', outputQuantity: 2,
     timeSeconds: 300, requiredResearch: ['life_support_recycling'], requiredBuilding: 'fabrication_orbital',
     marketValue: 400_000,
+  },
+
+  // Early-fab wave (2026-08-31): the expensive shallow route to satellite
+  // buses. Tier-1 satellites consume buses from day one, but the efficient
+  // chain (make_satellite_bus, T3) needs a T2 off-world plant plus four
+  // research lines. This recipe runs at the Terrestrial Fabrication Works
+  // behind ONE tier-1 research — from raw metals at ~8M input cost per 12M
+  // bus vs ~5M via the component chain, and slower per craft. Early
+  // capability, not a dominant strategy: off-world industry stays the
+  // efficient end-state (CLAUDE.md "meaningful decisions").
+  {
+    id: 'assemble_satellite_bus_terrestrial', name: 'Assemble Satellite Bus (Terrestrial)', icon: '🛰️', tier: 2,
+    inputs: { titanium: 60, rare_earth: 20, gold: 6, aluminum: 80 }, outputId: 'satellite_bus', outputQuantity: 1,
+    timeSeconds: 720, requiredResearch: ['electric_propulsion_sat'], requiredBuilding: 'fabrication_earth',
+    marketValue: 12_000_000,
   },
 
   // ─── TIER 3: Products (component → product) ──────────────────────────

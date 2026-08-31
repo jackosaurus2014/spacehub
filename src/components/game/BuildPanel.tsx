@@ -12,7 +12,7 @@
 import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatDuration, scaledBuildingCost } from '@/lib/game/formulas';
-import { BUILDINGS, BUILDING_MAP, scaledBuildTime, getBuildingDerivedStats } from '@/lib/game/buildings';
+import { BUILDINGS, BUILDING_MAP, scaledBuildTime, getBuildingDerivedStats, checkBuildingCap } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
@@ -294,7 +294,9 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
             const hasResources = !bld.resourceCost || Object.entries(bld.resourceCost).every(
               ([resId, qty]) => (state.resources[resId] || 0) >= qty
             );
-            const canAfford = canAffordMoney && hasResources && slotsAvailable && slotGate.allowed;
+            // Early-fab wave: per-corporation cap (fabrication_earth max 1).
+            const capCheck = checkBuildingCap(state.buildings, bld);
+            const canAfford = canAffordMoney && hasResources && slotsAvailable && slotGate.allowed && capCheck.allowed;
 
             return (
               <div key={bld.id} className={`rounded-xl border overflow-hidden transition-all game-card ${
@@ -359,6 +361,11 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     </div>
                   );
                 })()}
+                {!capCheck.allowed && (
+                  <p className="mb-2 text-[10px] text-amber-400/90 bg-amber-500/5 border border-amber-500/15 rounded px-2 py-1">
+                    ⛔ {capCheck.reason} — expand off-world instead.
+                  </p>
+                )}
                 <PurposeChips definitionId={bld.id} />
                 {/* Strategy tooltip — flavor/context only; economics claims in
                     the prose above (if any) predate E3/E4 and are NOT

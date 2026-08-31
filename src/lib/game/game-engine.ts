@@ -4,6 +4,7 @@
 
 import type { GameState, GameEvent, GameReport } from './types';
 import { BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier } from './buildings';
+import { getCongestionMaintenanceMultiplier } from './spatial-strategy';
 import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
 import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
@@ -634,7 +635,10 @@ export function processTick(state: GameState): GameState {
     // Wave M2: mothballed/reactivating/decommissioning buildings pay 25%
     // maintenance instead of the full rate — "paused", not "free".
     const mothballMaintMult = getMothballMaintenanceMultiplier(bld);
-    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
+    // Early-fab wave: crowded orbits (LEO/GEO/… slot pools) cost more to
+    // operate in — continuous congestion pricing, see spatial-strategy.ts.
+    const congestionMult = getCongestionMaintenanceMultiplier(state, bld.locationId);
+    const maint = Math.round(def.maintenanceCostPerMonth * congestionMult * fraction * multipliers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;

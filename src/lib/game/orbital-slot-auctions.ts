@@ -25,6 +25,7 @@ export const AUCTION_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
  *  scaled by pool prestige (GEO > lunar > Mars > Jovian, matching totalSlots
  *  scarcity ordering... inverted: fewer slots = scarcer = pricier per slot). */
 const BASE_SLOT_VALUE: Record<string, number> = {
+  leo: 10_000_000, // many slots, cheap to reach — but ×1.5 chokepoint premium (7 lanes) applies on top
   geo: 25_000_000,
   lunar_orbit: 60_000_000,
   mars_orbit: 15_000_000,
