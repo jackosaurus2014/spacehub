@@ -20,7 +20,7 @@ import { advanceStoryChapters } from './chapters';
 import { advanceSystemicCrisis } from './systemic-crises';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
-import { SHIP_MAP } from './ships';
+import { SHIP_MAP, getTravelTime } from './ships';
 import { getWorkforceBonuses } from './workforce';
 import { getActiveBoostMultiplier, cleanupExpiredBoosts } from './speed-boosts';
 import type { ActiveBoost } from './speed-boosts';
@@ -2110,6 +2110,42 @@ export function processFullTick(state: GameState): GameState {
               shipMinedFlows[resId] = (shipMinedFlows[resId] || 0) + mined;
               const shipLoc = shipMinedFlowsByLocation[shipMiningLocationId] || (shipMinedFlowsByLocation[shipMiningLocationId] = {});
               shipLoc[resId] = (shipLoc[resId] || 0) + mined;
+            }
+          }
+        }
+
+        // Auto-rove (2026-08-31, Jay): an idle Fleet Tender with nothing to
+        // repair HERE flies itself to the location with the most structural
+        // damage — "build spacecraft that fly to different orbits to provide
+        // repairs" instead of stationing one servicer per orbit. No cargo,
+        // no per-trip fuel bill (priced into its higher maintenance); D-3's
+        // stationed-repair logic picks it up on arrival like any servicer.
+        if (ship.isBuilt && ship.status === 'idle') {
+          const roveDef = SHIP_MAP.get(ship.definitionId);
+          if (roveDef?.role === 'maintenance' && roveDef.autoRove) {
+            const damagedHere = (newState.buildings || []).some(b => b.isComplete && b.locationId === ship.currentLocation && (b.damagePct || 0) > 0);
+            if (!damagedHere) {
+              const damageByLoc = new Map<string, number>();
+              for (const b of newState.buildings || []) {
+                if (b.isComplete && (b.damagePct || 0) > 0) damageByLoc.set(b.locationId, (damageByLoc.get(b.locationId) || 0) + (b.damagePct || 0));
+              }
+              let best: string | null = null;
+              damageByLoc.forEach((dmg, locId) => {
+                if (locId === ship.currentLocation) return;
+                if (!best || dmg > (damageByLoc.get(best) || 0)) best = locId;
+              });
+              if (best) {
+                shipEvents.push({
+                  id: generateId(), date: newState.gameDate, type: 'random_event',
+                  title: `🚑 ${ship.name} en route`,
+                  description: `Fleet Tender rerouting to ${LOCATION_MAP.get(best)?.name || best} — damaged structures detected.`,
+                });
+                return {
+                  ...ship,
+                  status: 'in_transit' as const,
+                  route: { from: ship.currentLocation, to: best, departedAtMs: now, arrivalAtMs: now + getTravelTime(ship.currentLocation, best) * 1000, cargo: {} },
+                };
+              }
             }
           }
         }

@@ -59,6 +59,12 @@ export interface ShipDefinition {
   buildTimeSeconds: number;
   tier: number;
   maintenancePerMonth: number; // Monthly upkeep cost (prevents infinite fleet spam)
+  /** Maintenance ships only (2026-08-31, Jay): when idle with nothing to
+   *  repair at its location, the ship autonomously flies to the location
+   *  with the most structural damage (engine ship loop). The roving fuel
+   *  burn is priced into a higher maintenancePerMonth rather than billed
+   *  per trip — it carries no cargo, so there is nothing to arbitrage. */
+  autoRove?: boolean;
   /** Phase I: optional per-ship overrides for any of the derived stats.
    *  Values not specified here are filled in by role+tier defaults. */
   stats?: Partial<ShipDerivedStats>;
@@ -157,6 +163,15 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: { titanium: 40, iron: 60, rare_earth: 10 },
     requiredResearch: ['on_orbit_servicing'], buildTimeSeconds: 480, tier: 2,
     maintenancePerMonth: 600_000,
+  },
+  {
+    id: 'fleet_tender', name: 'Fleet Tender', icon: '🚑', role: 'maintenance', autoRove: true,
+    description: 'Autonomous deep-space repair tender: self-healing hull plant, drone bays, and a standing repair crew that goes where the damage is.',
+    tooltip: 'WHY BUILD: One Orbital Servicer per orbit does not scale — the Tender patrols your whole empire instead. When idle with nothing to repair at its location, it AUTOMATICALLY flies to wherever your structures are most damaged and gets to work: same materials-not-cash repairs as the Servicer, 2.5× crew speed. Its roving fuel burn is priced into the higher upkeep. The mid-game answer to hazard season across LEO, GEO, the Moon and Mars. Requires "On-Orbit Servicing" + "Self-Healing Materials".',
+    cargoCapacity: 40, baseCost: 700_000_000,
+    resourceCost: { titanium: 120, iron: 150, rare_earth: 30 },
+    requiredResearch: ['on_orbit_servicing', 'self_healing_materials'], buildTimeSeconds: 1500, tier: 3,
+    maintenancePerMonth: 1_800_000,
   },
   // TRANSPORT
   {

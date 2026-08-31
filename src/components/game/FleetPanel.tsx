@@ -292,9 +292,13 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                   <p className="text-cyan-300/70 text-[10px]">
                     {damagedHere.length} damaged structure{damagedHere.length !== 1 ? 's' : ''} at {LOCATION_MAP.get(here)?.name || here}. Each month this servicer repairs the most damaged one 2.5× faster than ground crews, paying in materials (a share of its construction resources) instead of cash.
                   </p>
+                ) : selectedShipDef.autoRove ? (
+                  <p className="text-cyan-300/70 text-[10px]">
+                    Nothing to repair at {LOCATION_MAP.get(here)?.name || here}. This tender patrols autonomously — the moment any of your structures takes damage anywhere, it flies there and starts repairs (materials, not cash).
+                  </p>
                 ) : (
                   <p className="text-cyan-300/70 text-[10px]">
-                    No damaged structures at {LOCATION_MAP.get(here)?.name || here} right now. Station it where your satellites live — when hazards hit, it repairs them automatically each month using materials instead of cash.
+                    No damaged structures at {LOCATION_MAP.get(here)?.name || here} right now. Station it where your satellites live — when hazards hit, it repairs them automatically each month using materials instead of cash. (You can also dispatch it to any orbit from the map, or research Self-Healing Materials for the auto-roving Fleet Tender.)
                   </p>
                 )}
               </div>

@@ -2280,3 +2280,12 @@ LEO/GEO (congested). Shipped:
 
 Watch on live telemetry: LEO bucket progression (240 slots vs early-sat spam),
 NPC industrial corps now also use the cheaper T2 bus recipe for cost pricing.
+
+### Maintenance fleet addendum (2026-08-31)
+Jay: "servicers in every orbit" doesn't scale → two-tier design. `servicer_tug`
+(T2, stationed, on_orbit_servicing) is the early tool; `fleet_tender` (T3,
+autoRove, + self_healing_materials — both formerly-inert research nodes now
+load-bearing) patrols autonomously: idle + nothing damaged locally → flies to
+the location with the most total damagePct (engine ship loop, getTravelTime;
+no per-trip fuel — priced into 1.8M/mo upkeep, 3× the servicer). Repairs
+themselves stay in D-3: 0.25/mo, materials via calculateResourceRepairCost.
