@@ -102,6 +102,11 @@ export const newsletterSubscribeSchema = z.object({
     .max(100, 'Name is too long')
     .optional()
     .transform((val) => val?.trim() || undefined),
+  // Opt-in to the ~07:00 UTC Daily Brief. Separate flag — the M/Th digest
+  // subscription never implies it.
+  dailyBrief: z.boolean().optional(),
+  // Honeypot: real users never fill this hidden field.
+  website: z.string().max(0, 'Invalid submission').optional(),
 });
 
 // Registration schema

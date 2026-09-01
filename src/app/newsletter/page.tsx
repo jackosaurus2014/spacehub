@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DailyBriefSignup from '@/components/DailyBriefSignup';
 
 export default function NewsletterPage() {
   const [email, setEmail] = useState('');
@@ -120,6 +121,16 @@ export default function NewsletterPage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Daily Brief — separate opt-in from the M/Th digest */}
+      <section className="container mx-auto px-4 pb-12">
+        <div className="max-w-xl mx-auto">
+          <div className="flex items-center gap-2 mb-3 justify-center">
+            <span className="text-amber-300 text-xs font-semibold uppercase tracking-wider">Prefer a morning cadence?</span>
+          </div>
+          <DailyBriefSignup source="newsletter-page" title="The Daily Brief — every morning, 7am UTC" />
         </div>
       </section>
 

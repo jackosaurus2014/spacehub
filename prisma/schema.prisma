@@ -1812,12 +1812,30 @@ model NewsletterSubscriber {
   unsubscribeToken  String    @unique
   unsubscribedAt    DateTime?
   source            String    @default("website")
+  // Opt-in flag for the ~07:00 UTC auto-compiled Daily Brief (G7). Separate
+  // from the M/Th editorial digest -- subscribing to M/Th never sets this.
+  dailyBrief        Boolean   @default(false)
   userId            String?   @unique
   user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   @@index([verified])
+}
+
+// One row per Daily Brief send day (G7). The @unique date is the idempotency
+// ledger: the 07:04 UTC cron claims the day by creating the row before
+// sending, so a rerun/retry can never double-send. `skipped` marks days where
+// every section was empty and no email went out.
+model DailyBriefSend {
+  id          String   @id @default(cuid())
+  date        String   @unique // YYYY-MM-DD (UTC send day)
+  subject     String?
+  sentCount   Int      @default(0)
+  failedCount Int      @default(0)
+  skipped     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model DailyDigest {

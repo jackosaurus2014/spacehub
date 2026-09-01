@@ -87,6 +87,10 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '30 5 * * *',    path: '/api/refresh?type=regulation-explainers',   label: 'regulation-explainers',   maxStaleMinutes: 1560 },
   { schedule: '0 6 * * *',     path: '/api/refresh?type=space-defense',     label: 'space-defense-refresh',      maxStaleMinutes: 1560 },
   { schedule: '0 7 * * *',     path: '/api/ai-insights/generate',           label: 'ai-insights-retry',          maxStaleMinutes: 1560 },
+  // Opt-in Daily Brief (G7) — composed once from owned data, batch-sent to
+  // NewsletterSubscriber rows with dailyBrief=true. Idempotent per UTC day
+  // (DailyBriefSend ledger), so a stale-catch-up rerun never double-sends.
+  { schedule: '4 7 * * *',     path: '/api/cron/daily-brief',               label: 'daily-brief',                maxStaleMinutes: 1560 },
   { schedule: '15 7 * * *',    path: '/api/cron/job-alerts',                label: 'job-alerts',                 maxStaleMinutes: 1560 },
   { schedule: '45 7 * * *',    path: '/api/cron/hiring-snapshot',           label: 'hiring-snapshot',            maxStaleMinutes: 1560 },
   { schedule: '0 13 * * 3',    path: '/api/cron/whos-hiring-post',          label: 'whos-hiring-post',           maxStaleMinutes: 11520 },

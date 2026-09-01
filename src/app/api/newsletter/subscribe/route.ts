@@ -23,7 +23,11 @@ export async function POST(request: Request) {
       const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
       return validationError(firstError, validation.errors);
     }
-    const { email, name } = validation.data;
+    const { email, name, dailyBrief } = validation.data;
+    // Daily Brief is a separate, explicit opt-in flag. It is only ever SET
+    // when the caller asked for it — never cleared here, so subscribing to
+    // the M/Th digest from another form leaves an existing opt-in intact.
+    const wantsDailyBrief = dailyBrief === true;
 
     // Check if subscriber already exists
     const existing = await prisma.newsletterSubscriber.findUnique({
@@ -32,6 +36,19 @@ export async function POST(request: Request) {
 
     if (existing) {
       if (existing.verified && !existing.unsubscribedAt) {
+        // Already a verified subscriber. If they're asking to add the Daily
+        // Brief, flip the flag — no re-verification needed for a verified
+        // address. Otherwise keep the historical 409.
+        if (wantsDailyBrief && !existing.dailyBrief) {
+          await prisma.newsletterSubscriber.update({
+            where: { id: existing.id },
+            data: { dailyBrief: true },
+          });
+          return NextResponse.json({
+            success: true,
+            message: 'Daily Brief added to your subscription. First one arrives at 7am UTC.',
+          });
+        }
         return NextResponse.json(
           { error: 'Email already subscribed', code: 'ALREADY_SUBSCRIBED' },
           { status: 409 }
@@ -51,6 +68,7 @@ export async function POST(request: Request) {
             verifiedAt: null,
             unsubscribedAt: null,
             source,
+            ...(wantsDailyBrief ? { dailyBrief: true } : {}),
           },
         });
 
@@ -75,6 +93,7 @@ export async function POST(request: Request) {
           data: {
             verificationToken,
             name: name || existing.name,
+            ...(wantsDailyBrief ? { dailyBrief: true } : {}),
           },
         });
 
@@ -101,6 +120,7 @@ export async function POST(request: Request) {
         verificationToken,
         unsubscribeToken,
         source,
+        dailyBrief: wantsDailyBrief,
       },
     });
 

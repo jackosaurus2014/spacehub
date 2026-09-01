@@ -9,6 +9,9 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
+    // scope=daily: targeted opt-out from the Daily Brief only — the M/Th
+    // digest subscription stays intact.
+    const scope = searchParams.get('scope');
 
     if (!token) {
       return NextResponse.redirect(
@@ -27,6 +30,18 @@ export async function GET(request: Request) {
       );
     }
 
+    if (scope === 'daily') {
+      if (subscriber.dailyBrief) {
+        await prisma.newsletterSubscriber.update({
+          where: { id: subscriber.id },
+          data: { dailyBrief: false },
+        });
+      }
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/?newsletter=daily_unsubscribed`
+      );
+    }
+
     if (subscriber.unsubscribedAt) {
       // Already unsubscribed
       return NextResponse.redirect(
@@ -40,6 +55,9 @@ export async function GET(request: Request) {
       data: {
         unsubscribedAt: new Date(),
         verified: false,
+        // A full unsubscribe clears the Daily Brief opt-in too, so a later
+        // re-subscription to the M/Th digest never silently revives it.
+        dailyBrief: false,
       },
     });
 
@@ -107,6 +125,7 @@ export async function POST(request: Request) {
       data: {
         unsubscribedAt: new Date(),
         verified: false,
+        dailyBrief: false,
       },
     });
 

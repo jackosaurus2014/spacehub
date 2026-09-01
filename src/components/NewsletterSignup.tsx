@@ -49,6 +49,9 @@ export default function NewsletterSignup({
         case 'already_unsubscribed':
           setMessage('You\'re already unsubscribed.');
           break;
+        case 'daily_unsubscribed':
+          setMessage('You\'ve been removed from the Daily Brief. Your other subscriptions are unchanged.');
+          break;
         case 'error':
           setStatus('error');
           const reason = searchParams.get('reason');
