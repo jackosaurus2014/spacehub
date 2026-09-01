@@ -44,6 +44,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Rockets', href: '/rockets', description: 'Every rocket: cost, payload, record, next launch', icon: '🛸', nav: true, hot: true },
       { name: 'Launches by Site', href: '/launches', description: 'Cape, Vandenberg, Starbase… month by month', icon: '📍', nav: true },
       { name: 'Launch Cadence Index', href: '/launch-cadence', description: 'Live YoY launch pace by provider and country — citable', icon: '📊', nav: true },
+      { name: 'Slip Explorer', href: '/launch-slips', description: 'Announced vs actual launch dates — a ledger nobody can backfill', icon: '⏳' },
       { name: 'Starship Tracker', href: '/starship', description: 'Flight history, program roles and news', icon: '🔥', nav: true, hot: true },
       { name: 'Artemis Tracker', href: '/artemis', description: 'Moon program milestones and hardware', icon: '🌙', nav: true },
       { name: 'Satellite Tracker', href: '/satellites', description: 'Live orbital map — ISS, Starlink and more', icon: '🛰️', nav: true, hot: true },

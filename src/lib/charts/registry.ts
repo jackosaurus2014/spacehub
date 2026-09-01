@@ -64,8 +64,8 @@ export const CHART_DEFS: readonly ChartDef[] = [
     subtitle: 'Scheduled launches that moved by more than a minute, last 8 weeks',
     source: 'SpaceNexus slip history (every manifest change is recorded)',
     unit: 'count',
-    exploreHref: '/mission-control',
-    exploreLabel: 'Mission Control',
+    exploreHref: '/launch-slips',
+    exploreLabel: 'Slip Explorer',
   },
 ];
 
