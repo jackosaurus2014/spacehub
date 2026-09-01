@@ -44,6 +44,45 @@ export default async function PredictionsPage() {
   ]);
   const stakes = new Map(stakeCounts.map((s) => [s.questionId, s._count._all]));
 
+  // G12: leaderboard over SETTLED stakes only. Threshold-gated (10 settled
+  // from 3+ corporations) so it never renders as an empty scoreboard.
+  const leaderboard = await (async () => {
+    try {
+      const settledStakes = await prisma.predictionStake.findMany({
+        where: { payout: { not: null } },
+        select: { profileId: true, stake: true, payout: true },
+      });
+      const byProfile = new Map<string, { calls: number; wins: number; net: number }>();
+      for (const s of settledStakes) {
+        const e = byProfile.get(s.profileId) || { calls: 0, wins: 0, net: 0 };
+        e.calls++;
+        if ((s.payout ?? 0) > 0) e.wins++;
+        e.net += (s.payout ?? 0) - s.stake;
+        byProfile.set(s.profileId, e);
+      }
+      const unlocked = settledStakes.length >= 10 && byProfile.size >= 3;
+      let rows: { profileId: string; name: string; calls: number; hitRate: number; net: number }[] = [];
+      if (unlocked) {
+        const ids = Array.from(byProfile.keys());
+        const profiles = await prisma.gameProfile.findMany({ where: { id: { in: ids } }, select: { id: true, companyName: true } });
+        const nameOf = new Map(profiles.map((p) => [p.id, p.companyName]));
+        rows = Array.from(byProfile.entries())
+          .map(([profileId, e]) => ({
+            profileId,
+            name: nameOf.get(profileId) || 'Unknown corporation',
+            calls: e.calls,
+            hitRate: Math.round((e.wins / e.calls) * 100),
+            net: e.net,
+          }))
+          .sort((a, b) => b.net - a.net)
+          .slice(0, 15);
+      }
+      return { unlocked, settled: settledStakes.length, rows };
+    } catch {
+      return { unlocked: false, settled: 0, rows: [] as { profileId: string; name: string; calls: number; hitRate: number; net: number }[] };
+    }
+  })();
+
   return (
     <div className="min-h-screen pb-16">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -114,6 +153,51 @@ export default async function PredictionsPage() {
             </div>
           </section>
         )}
+
+        {/* G12 (2026-09-01): the leaderboard scaffold. Unlocks at a stated
+            participation threshold instead of rendering an empty table —
+            the empty state IS the invitation (same honesty pattern as
+            /launch-slips and /hiring-trends). */}
+        <section className="mb-12">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Predictor leaderboard</h2>
+          {leaderboard.unlocked ? (
+            <div className="card p-4 overflow-x-auto">
+              <table className="w-full text-sm">
+                <caption className="sr-only">Top predictors by settled winnings</caption>
+                <thead>
+                  <tr className="text-left text-[11px] uppercase tracking-wider text-slate-500 border-b border-white/[0.06]">
+                    <th className="py-2 pr-3">#</th>
+                    <th className="py-2 pr-3">Corporation</th>
+                    <th className="py-2 pr-3 text-right">Calls</th>
+                    <th className="py-2 pr-3 text-right">Hit rate</th>
+                    <th className="py-2 text-right">Net credits</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboard.rows.map((r, i) => (
+                    <tr key={r.profileId} className="border-b border-white/[0.04]">
+                      <td className="py-2 pr-3 font-mono text-slate-500">{i + 1}</td>
+                      <td className="py-2 pr-3 text-white/90">{r.name}</td>
+                      <td className="py-2 pr-3 text-right font-mono tabular-nums text-slate-300">{r.calls}</td>
+                      <td className="py-2 pr-3 text-right font-mono tabular-nums text-slate-300">{r.hitRate}%</td>
+                      <td className={`py-2 text-right font-mono tabular-nums ${r.net >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{r.net >= 0 ? `+${r.net.toLocaleString()}` : r.net.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="card p-5 text-sm text-slate-400">
+              <p>
+                The leaderboard lights up once <span className="font-mono text-white">10</span> stakes from{' '}
+                <span className="font-mono text-white">3+</span> corporations have settled —{' '}
+                <span className="font-mono text-cyan-300">{leaderboard.settled}</span> settled so far. Every question
+                above resolves against real launches; the first corporations to call them right will own this table.{' '}
+                <Link href="/space-tycoon" className="text-cyan-300 hover:underline">Stake your first call →</Link>
+              </p>
+            </div>
+          )}
+        </section>
 
         <section className="card p-6">
           <h2 className="text-lg font-semibold text-white mb-2">How it works</h2>
