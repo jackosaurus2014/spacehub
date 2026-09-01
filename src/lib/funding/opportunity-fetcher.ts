@@ -239,7 +239,11 @@ export async function fetchSamGovOpportunities(): Promise<FundingOpportunityInpu
     return results;
   }
   try {
-    const keywords = ['space', 'satellite', 'launch vehicle', 'spacecraft'];
+    // Quota discipline (2026-09-01): the SAM key allows ~5 calls/day until
+    // the account is entity-verified. Two keywords here + two NAICS calls on
+    // the procurement side = 4/day, inside budget. isSpaceRelated still
+    // filters, so broad keywords are safe.
+    const keywords = ['space', 'satellite'];
     for (const keyword of keywords) {
       const url = `https://api.sam.gov/opportunities/v2/search?api_key=${apiKey}&q=${encodeURIComponent(keyword)}&postedFrom=${encodeURIComponent(getDateDaysAgo(30))}&postedTo=${encodeURIComponent(getDateDaysAgo(0))}&limit=25&offset=0`;
       const res = await fetch(url);

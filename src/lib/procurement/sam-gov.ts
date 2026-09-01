@@ -217,11 +217,20 @@ export async function fetchSAMOpportunities(
   queryParams.set('limit', String(params.limit || 25));
   queryParams.set('offset', String(params.offset || 0));
 
-  // Use space-related NAICS codes by default
+  // Use space-related NAICS codes by default. Verified live 2026-09-01:
+  // a comma-joined ncode list returns total:0 (matches nothing) while a
+  // single code returns rows — and the key's real quota is ~5 calls/day
+  // until the account is entity-verified. So: ONE code per request, and
+  // when the caller didn't pin codes, rotate two of the six per UTC day
+  // (full coverage every 3 days within quota). fetchSAMOpportunities
+  // iterates this list one request per code.
   const naicsCodes = params.naicsCodes?.length
-    ? params.naicsCodes
-    : [...SPACE_NAICS_CODES];
-  queryParams.set('ncode', naicsCodes.join(','));
+    ? params.naicsCodes.slice(0, 2)
+    : (() => {
+        const day = Math.floor(Date.now() / 86400_000);
+        const i = (day * 2) % SPACE_NAICS_CODES.length;
+        return [SPACE_NAICS_CODES[i], SPACE_NAICS_CODES[(i + 1) % SPACE_NAICS_CODES.length]];
+      })();
 
   if (params.keywords) {
     queryParams.set('q', params.keywords);
@@ -243,40 +252,45 @@ export async function fetchSAMOpportunities(
     queryParams.set('typeOfSetAside', params.setAside);
   }
 
-  const url = `${SAM_API_URL}?${queryParams.toString()}`;
+  // One request PER code (comma lists match nothing — see note above),
+  // merged and deduped by notice id. Throttle bodies (code 900804) arrive
+  // as HTTP 200, so they're detected explicitly and thrown — otherwise a
+  // quota-exhausted day would cache an empty result as if it were real.
+  const merged = new Map<string, ReturnType<typeof mapSAMNotice>>();
+  let totalRecords = 0;
+  for (const code of naicsCodes) {
+    queryParams.set('ncode', code);
+    const url = `${SAM_API_URL}?${queryParams.toString()}`;
+    const page = await samBreaker.execute(
+      async () => {
+        const response = await fetch(url, {
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(15000),
+        });
+        if (!response.ok) {
+          throw new Error(`SAM.gov API error: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+        if (data.code === '900804' || /throttled/i.test(String(data.message || ''))) {
+          throw new Error(`SAM.gov quota exhausted (resets ${data.nextAccessTime || 'midnight UTC'})`);
+        }
+        const rawNotices: SAMNotice[] = data.opportunitiesData || data.opportunities || [];
+        return { totalRecords: data.totalRecords || 0, opportunities: rawNotices.map(mapSAMNotice) } as SAMResponse;
+      },
+      { totalRecords: 0, opportunities: [] }
+    );
+    totalRecords += page.totalRecords;
+    for (const o of page.opportunities) merged.set(o.samNoticeId || `${o.title}-${code}`, o);
+    await new Promise(r => setTimeout(r, 300));
+  }
 
-  return samBreaker.execute(
-    async () => {
-      const response = await fetch(url, {
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(15000),
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `SAM.gov API error: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-      const totalRecords = data.totalRecords || 0;
-      const rawNotices: SAMNotice[] =
-        data.opportunitiesData || data.opportunities || [];
-
-      const opportunities = rawNotices.map(mapSAMNotice);
-
-      const result: SAMResponse = { totalRecords, opportunities };
-
-      // Cache for 10 minutes
-      apiCache.set(cacheKey, result, CacheTTL.STOCKS);
-
-      logger.info('SAM.gov fetch successful', {
-        total: totalRecords,
-        returned: opportunities.length,
-      });
-
-      return result;
-    },
-    { totalRecords: 0, opportunities: [] }
-  );
+  const result: SAMResponse = { totalRecords, opportunities: Array.from(merged.values()) };
+  // Cache for 10 minutes — only real (non-thrown) fetches reach here.
+  apiCache.set(cacheKey, result, CacheTTL.STOCKS);
+  logger.info('SAM.gov fetch successful', {
+    codes: naicsCodes.join('+'),
+    total: totalRecords,
+    returned: result.opportunities.length,
+  });
+  return result;
 }
