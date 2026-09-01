@@ -23,9 +23,12 @@ export const revalidate = 900;
 //     though — as of Aug 11, 2026, SpaceX/Musk reported the floating ship
 //     stage was proving difficult to recover from the Indian Ocean and
 //     could still be lost.
-//   - Flight 14 is targeted for as early as late August 2026 and aims for
-//     the program's first tower-catch attempt of the Starship upper stage,
-//     alongside a continued Super Heavy booster catch.
+//   - Flight 14 is NET Sep 15, 2026 (per NSF/COMPASS reporting; some
+//     aggregators list Sep 30) — verified 2026-08-31. On the Aug 4 earnings
+//     call Musk said Flight 14 will carry Starlink V3 satellites to an
+//     operational orbit; on Aug 20 he walked back the first upper-stage
+//     tower-catch to "probably ... in a few months", so whether Flight 14
+//     attempts the ship catch is no longer firm (FAA sign-off also pending).
 //   - A ship-to-ship propellant transfer demonstration remains targeted
 //     for late 2026 — not yet flown as of this writing.
 //   - Starship carries the Artemis III Human Landing System (HLS) role;
@@ -73,11 +76,11 @@ const FLIGHT_HISTORY: FlightEntry[] = [
   {
     id: 'flight-14',
     label: 'Flight 14',
-    title: 'First upper-stage tower catch attempt (planned)',
-    date: 'NET Late Aug 2026',
+    title: 'Starlink V3 to operational orbit — ship catch under review',
+    date: 'NET Sep 15, 2026',
     status: 'upcoming',
     description:
-      'SpaceX is targeting Flight 14 for the program’s first attempt at catching the Starship upper stage with the launch tower’s "chopstick" arms, alongside a continued Super Heavy booster catch — the next step toward full, rapid reusability of both stages.',
+      'SpaceX is targeting Flight 14 — NET Sep 15, 2026 per launch-schedule reporting — to carry Starlink V3 satellites to an operational orbit. The program’s first attempt at catching the Starship upper stage with the launch tower’s "chopstick" arms was originally planned for this flight, but on Aug 20 Musk said the ship catch would "probably" come a few months later, and it still needs FAA sign-off.',
   },
 ];
 
@@ -193,16 +196,17 @@ export default async function StarshipTrackerPage() {
                   </span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white mb-2">
-                  Flight 14 — First Upper-Stage Tower Catch Attempt
+                  Flight 14 — Starlink V3 to Operational Orbit
                 </h2>
                 <p className="text-slate-400 text-sm sm:text-base max-w-xl">
-                  SpaceX targets catching the Starship upper stage with the launch tower&apos;s chopstick arms for
-                  the first time, alongside a continued Super Heavy booster catch.
+                  The first flight carrying Starlink V3 satellites to an operational orbit. A first-ever
+                  upper-stage tower catch was planned for this flight, but Musk now says the ship catch will
+                  &quot;probably&quot; come a few months later — it is no longer confirmed for Flight 14.
                 </p>
               </div>
               <div className="shrink-0 text-center lg:text-right">
                 <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-medium">No Earlier Than</div>
-                <div className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">NET Late Aug 2026</div>
+                <div className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">NET Sep 15, 2026</div>
                 <a
                   href="#roles"
                   className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-medium transition-colors"

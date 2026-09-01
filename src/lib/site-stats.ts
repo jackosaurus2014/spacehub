@@ -27,12 +27,12 @@ export const SITE_STATS = {
   jobListings: '6,500+',
   /** RSS/news feeds ingested (actual: 63 in news-fetcher RSS_FEEDS after Aug 2026 dead-feed prune) */
   newsFeeds: '60+',
-  /** Global space economy, current (single canonical figure — do not fork) */
-  spaceEconomyNow: '$630B',
+  /** Global space economy, current (single canonical figure — do not fork; Space Foundation 2025, corrected from $630B in the 2026-09-01 audit) */
+  spaceEconomyNow: '$626B',
   /** Global space economy, projected — always cite with the year */
   spaceEconomyProjection: '$1.8T by 2035',
-  /** Artemis Accords signatory nations (actual: 70, asOf mid-2026) */
-  accordsNations: '70',
+  /** Artemis Accords signatory nations (actual: 71 — Türkiye signed Aug 31, 2026, per NASA; verified 2026-09-01) */
+  accordsNations: '71',
   /**
    * Orbital launch ATTEMPTS worldwide in 2025 (the record-setting year), per the
    * space-launch-schedule-2026 guide's sourcing. This is an attempts count, not a

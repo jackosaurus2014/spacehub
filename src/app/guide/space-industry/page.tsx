@@ -12,7 +12,7 @@ export const revalidate = 3600; // ISR: revalidate every hour
 export const metadata: Metadata = {
   title: 'Complete Guide to the Space Industry 2026 | Markets, Tech & Opportunities',
   description:
-    'Comprehensive guide to the $630B+ space industry. Learn about market size, key companies, government programs, emerging trends, careers, and investment opportunities in space.',
+    'Comprehensive guide to the $626B+ space industry. Learn about market size, key companies, government programs, emerging trends, careers, and investment opportunities in space.',
   keywords: [
     'space industry',
     'space economy',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'The Complete Guide to the Space Industry in 2026',
     description:
-      'Everything you need to know about the $630B+ space economy: markets, companies, trends, careers, and opportunities.',
+      'Everything you need to know about the $626B+ space economy: markets, companies, trends, careers, and opportunities.',
     type: 'article',
     publishedTime: '2026-02-08T00:00:00Z',
     authors: ['SpaceNexus'],
@@ -109,7 +109,7 @@ function buildStructuredData() {
     headline:
       'The Complete Guide to the Space Industry in 2026: Markets, Technologies & Opportunities',
     description:
-      'Comprehensive guide to the $630B+ space industry covering market size, key companies, government programs, emerging trends, careers, and investment opportunities.',
+      'Comprehensive guide to the $626B+ space industry covering market size, key companies, government programs, emerging trends, careers, and investment opportunities.',
     author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
@@ -186,7 +186,7 @@ export default function SpaceIndustryGuidePage() {
               <ShareButton
                 title="The Complete Guide to the Space Industry in 2026"
                 url="https://spacenexus.us/guide/space-industry"
-                description="Comprehensive guide to the $630B+ space industry covering markets, companies, trends, careers, and opportunities."
+                description="Comprehensive guide to the $626B+ space industry covering markets, companies, trends, careers, and opportunities."
               />
             </div>
             <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
@@ -278,7 +278,7 @@ export default function SpaceIndustryGuidePage() {
                   <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-300">$630B+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">$626B+</div>
                         <div className="text-star-300 text-sm mt-1">Global Space Economy (2026 est.)</div>
                       </div>
                       <div>

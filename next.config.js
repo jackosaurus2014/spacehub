@@ -395,6 +395,7 @@ const nextConfig = {
 
       // ── URL consolidation — space environment ──
       { source: '/space-weather', destination: '/space-environment?tab=weather', permanent: true },
+      { source: '/debris', destination: '/space-environment?tab=debris', permanent: true },
       { source: '/debris-tracker', destination: '/space-environment?tab=debris', permanent: true },
       { source: '/debris-catalog', destination: '/space-environment?tab=debris', permanent: true },
       { source: '/debris-remediation', destination: '/space-environment?tab=debris', permanent: true },

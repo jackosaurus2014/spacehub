@@ -5,6 +5,11 @@
 
 export type VehicleStatus = 'Operational' | 'In Development' | 'Retired';
 
+/** Date the hand-maintained career records below were last audited against
+ *  public flight logs. Per-vehicle `asOf` overrides this where a vehicle's
+ *  count was verified on a different date. (2026-09-01 fact-check audit.) */
+export const VEHICLE_RECORDS_AS_OF = '2026-09-01';
+
 export interface LaunchVehicle {
   id: string;
   name: string;
@@ -26,6 +31,8 @@ export interface LaunchVehicle {
   partialFailures: number;
   successRate: number;
   consecutiveSuccesses: number;
+  /** When this vehicle's career record was last verified (defaults to VEHICLE_RECORDS_AS_OF). */
+  asOf?: string;
   reusable: boolean;
   stages: number;
   engines: string;
@@ -55,14 +62,18 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     payloadGtoKg: 8300,
     payloadSsoKg: 15600,
     payloadTliKg: null,
-    costMillions: 67,
-    costPerKgLeo: 2940,
-    totalLaunches: 615,
-    successes: 612,
+    // 2026-09-01 audit: list price $74M (SatBase, Feb 2026); ~680 flights = ~578
+    // through 2025 + ~100 in 2026 by Aug 22; streak counted since the Jul 2024
+    // Starlink 9-3 upper-stage failure.
+    costMillions: 74,
+    costPerKgLeo: 3246,
+    totalLaunches: 680,
+    successes: 677,
     failures: 2,
     partialFailures: 1,
-    successRate: 99.5,
-    consecutiveSuccesses: 400,
+    successRate: 99.6,
+    consecutiveSuccesses: 330,
+    asOf: '2026-08-22',
     reusable: true,
     stages: 2,
     engines: '9x Merlin 1D + 1x Merlin Vacuum',
@@ -85,14 +96,16 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     payloadGtoKg: 26700,
     payloadSsoKg: null,
     payloadTliKg: 16800,
+    // 2026-09-01 audit: 13 flights — #13 launched the Roman Space Telescope (late Aug 2026).
     costMillions: 97,
     costPerKgLeo: 1520,
-    totalLaunches: 11,
-    successes: 11,
+    totalLaunches: 13,
+    successes: 13,
     failures: 0,
     partialFailures: 0,
     successRate: 100,
-    consecutiveSuccesses: 11,
+    consecutiveSuccesses: 13,
+    asOf: '2026-09-01',
     reusable: true,
     stages: 2,
     engines: '27x Merlin 1D + 1x Merlin Vacuum',
@@ -115,6 +128,8 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     payloadGtoKg: 21000,
     payloadSsoKg: null,
     payloadTliKg: 50000,
+    // 2026-09-01 audit: these cost figures are SpaceX's aspirational internal
+    // target at mature flight rates, NOT an offered price — see description.
     costMillions: 10,
     costPerKgLeo: 67,
     totalLaunches: 0,
@@ -130,7 +145,10 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     fairingDiameterM: 8,
     firstFlight: '2023-04-20',
     lastFlight: null,
-    description: 'The largest and most powerful rocket ever flown, designed for full and rapid reusability. Reached operational status in 2026, flying Starlink V3 deployment missions since July 2026 with both stages (Super Heavy booster and Starship) recovered. Intended to also enable Mars colonization, point-to-point Earth transport, and dramatically reduce cost per kg to orbit. See live launch data for current flight-rate and reliability figures rather than a fixed count here.',
+    // 2026-09-01 audit: Flight 13 (Jul 24, 2026) deployed 20 Starlink V3 — ship
+    // splashed down in the Indian Ocean (expended by design), booster destroyed
+    // on its landing burn; first ship-catch attempt is planned for Flight 14.
+    description: 'The largest and most powerful rocket ever flown, designed for full and rapid reusability. Reached operational status in 2026: Flight 13 (July 24, 2026) deployed the first 20 Starlink V3 satellites, with the ship splashing down in the Indian Ocean (expended by design) and the booster lost during its landing burn; the first tower-catch attempt of the ship is planned for Flight 14. The cost figures shown are SpaceX\'s aspirational internal target at mature flight rates — a target, not an offered price. Intended to also enable Mars colonization, point-to-point Earth transport, and dramatically reduce cost per kg to orbit. See live launch data for current flight-rate and reliability figures rather than a fixed count here.',
   },
   {
     id: 'electron',
@@ -147,12 +165,15 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     payloadTliKg: null,
     costMillions: 7.5,
     costPerKgLeo: 25000,
-    totalLaunches: 81,
-    successes: 77,
+    // 2026-09-01 audit: 93 launches / ~89 successes as of Aug 20, 2026; every
+    // flight since the Sep 2023 failure has succeeded (streak = 40 + 12 new).
+    totalLaunches: 93,
+    successes: 89,
     failures: 4,
     partialFailures: 0,
-    successRate: 95.1,
-    consecutiveSuccesses: 40,
+    successRate: 95.7,
+    consecutiveSuccesses: 52,
+    asOf: '2026-08-20',
     reusable: false,
     stages: 2,
     engines: '9x Rutherford + 1x Rutherford Vacuum',
@@ -160,7 +181,7 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     fairingDiameterM: 1.2,
     firstFlight: '2017-05-25',
     lastFlight: null,
-    description: 'The leading dedicated small-satellite launcher. Uses electric turbopump-fed engines and carbon composite structure. Rocket Lab achieved a record 21 Electron launches in 2025 with 100% mission success, cementing its position as the second most frequently launched US rocket.',
+    description: 'The leading dedicated small-satellite launcher, with 93 launches as of August 2026. Uses electric turbopump-fed engines and carbon composite structure. Rocket Lab achieved a record 21 Electron launches in 2025 with 100% mission success, cementing its position as the second most frequently launched US rocket.',
   },
   {
     id: 'neutron',
@@ -207,12 +228,16 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     payloadTliKg: 8900,
     costMillions: 110,
     costPerKgLeo: 4044,
-    totalLaunches: 3,
-    successes: 3,
+    // 2026-09-01 audit: 4th flight was USSF-87 (Feb 12, 2026) — a second GEM
+    // 63XL SRB anomaly; orbit was achieved (counted a success, matching the
+    // Cert-2 treatment below) but the Space Force paused NSSL Vulcan launches.
+    totalLaunches: 4,
+    successes: 4,
     failures: 0,
     partialFailures: 0,
     successRate: 100,
-    consecutiveSuccesses: 3,
+    consecutiveSuccesses: 4,
+    asOf: '2026-09-01',
     reusable: false,
     stages: 2,
     engines: '2x BE-4 + 1-2x RL-10C',
@@ -220,7 +245,7 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     fairingDiameterM: 5.4,
     firstFlight: '2024-01-08',
     lastFlight: null,
-    description: 'ULA\'s next-generation launch vehicle replacing both Atlas V and Delta IV Heavy. Uses Blue Origin BE-4 methalox engines on the first stage and the proven Centaur V upper stage with RL-10C engines. One flight (the Cert-2 mission, October 2024) experienced a booster SRB nozzle anomaly but still achieved its intended orbit and was certified as a success by ULA and the U.S. Space Force. Designed for national security missions.',
+    description: 'ULA\'s next-generation launch vehicle replacing both Atlas V and Delta IV Heavy. Uses Blue Origin BE-4 methalox engines on the first stage and the proven Centaur V upper stage with RL-10C engines. Two flights have experienced GEM 63XL SRB anomalies while still reaching their intended orbits: the Cert-2 mission (October 2024, certified a success by ULA and the U.S. Space Force) and USSF-87 (February 12, 2026), after which the Space Force paused Vulcan national-security launches pending the SRB investigation. Designed for national security missions.',
   },
   {
     id: 'atlas-v',
@@ -237,12 +262,16 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     payloadTliKg: null,
     costMillions: 110,
     costPerKgLeo: 5836,
-    totalLaunches: 101,
-    successes: 100,
+    // 2026-09-01 audit: ~103 flights as of Aug 2026 (2025-26 Kuiper missions);
+    // consecutive successes counted since the June 2007 NROL-30 partial
+    // failure — the earlier "101 consecutive" contradicted the 1 partial.
+    totalLaunches: 103,
+    successes: 102,
     failures: 0,
     partialFailures: 1,
     successRate: 99.0,
-    consecutiveSuccesses: 101,
+    consecutiveSuccesses: 93,
+    asOf: '2026-08',
     reusable: false,
     stages: 2,
     engines: '1x RD-180 + 1-5x AJ-60A SRBs + 1-2x RL-10A',
@@ -250,7 +279,7 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     fairingDiameterM: 5.4,
     firstFlight: '2002-08-21',
     lastFlight: null,
-    description: 'One of the most reliable launch vehicles ever built, with a near-perfect flight record over two decades. Used Russian RD-180 engines. No new orders; flying out its remaining launches (primarily Amazon Kuiper) before retirement, succeeded by Vulcan Centaur.',
+    description: 'One of the most reliable launch vehicles ever built: roughly 103 flights as of August 2026 with a single partial failure (NROL-30, June 2007) and an unbroken success streak since. Used Russian RD-180 engines. No new orders; flying out its remaining launches (primarily Amazon Kuiper) before retirement, succeeded by Vulcan Centaur.',
   },
   {
     id: 'new-glenn',
@@ -267,12 +296,16 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     payloadTliKg: null,
     costMillions: 68,
     costPerKgLeo: 1511,
+    // 2026-09-01 audit: NG-3 (Apr 19, 2026) lost AST BlueBird 7 to a
+    // second-stage failure; a May 28, 2026 pad explosion then destroyed a
+    // vehicle (not counted — never launched) and damaged LC-36.
     totalLaunches: 3,
     successes: 2,
     failures: 1,
     partialFailures: 0,
     successRate: 67,
     consecutiveSuccesses: 0,
+    asOf: '2026-09-01',
     reusable: true,
     stages: 2,
     engines: '7x BE-4 + 2x BE-3U',
@@ -280,7 +313,7 @@ export const LAUNCH_VEHICLES: LaunchVehicle[] = [
     fairingDiameterM: 7,
     firstFlight: '2025-01-16',
     lastFlight: null,
-    description: 'Blue Origin\'s orbital heavy-lift launch vehicle with a reusable first stage. Features the largest payload fairing in production at 7 meters diameter. Named after astronaut John Glenn. Successfully landed its first stage booster on the second flight in November 2025.',
+    description: 'Blue Origin\'s orbital heavy-lift launch vehicle with a reusable first stage. Features the largest payload fairing in production at 7 meters diameter. Named after astronaut John Glenn. Successfully landed its first stage booster on the second flight in November 2025, but the third flight (NG-3, April 19, 2026) suffered a second-stage failure that lost AST SpaceMobile\'s BlueBird 7, and a pad explosion on May 28, 2026 destroyed another vehicle and damaged Launch Complex 36 — as of August 2026 the fleet is effectively grounded pending an engine fix.',
   },
   {
     id: 'ariane-6',

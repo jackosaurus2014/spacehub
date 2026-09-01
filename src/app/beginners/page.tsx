@@ -54,7 +54,7 @@ const topics = [
   },
   {
     title: 'Understand the Industry',
-    description: 'Learn about the $630B space economy, who the major players are, and where it\'s going.',
+    description: 'Learn about the $626B space economy, who the major players are, and where it\'s going.',
     href: '/space-economy',
     icon: '📊',
     articles: [

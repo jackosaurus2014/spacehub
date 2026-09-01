@@ -19,7 +19,15 @@ export default function DirectoryBrowser({ groups }: { groups: readonly Director
       .filter((g) => g.entries.length > 0);
   }, [groups, query]);
 
-  const hot = useMemo(() => groups.flatMap((g) => g.entries.filter((e) => e.hot)), [groups]);
+  // A page can be listed (and flagged hot) under more than one group — e.g. the
+  // Launch Cost Calculator lives in both Learn and Engineering & Operations.
+  // Dedupe by href so "Most used" shows each page once.
+  const hot = useMemo(() => {
+    const seen = new Set<string>();
+    return groups
+      .flatMap((g) => g.entries.filter((e) => e.hot))
+      .filter((e) => (seen.has(e.href) ? false : (seen.add(e.href), true)));
+  }, [groups]);
   const total = groups.reduce((n, g) => n + g.entries.length, 0);
   const shown = filtered.reduce((n, g) => n + g.entries.length, 0);
 

@@ -150,7 +150,7 @@ export default function SpaceTycoonAboutPage() {
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-white mb-3">Built inside a space-industry site</h2>
           <p className="text-slate-400 leading-relaxed">
-            Space Tycoon lives on SpaceNexus, which tracks every launch, {SITE_STATS.companies} companies, funding rounds and the space economy for enthusiasts and the industry. That is why the simulation can use real launch schedules and NOAA space weather, and why the lore (docs/LORE) is written against a real 21st-century starting point. <Link href="/mission-control" className="text-cyan-400 hover:text-cyan-300">Mission Control</Link> is next door.
+            Space Tycoon lives on SpaceNexus, which tracks every launch, {SITE_STATS.companies} companies, funding rounds and the space economy for enthusiasts and the industry. That is why the simulation can use real launch schedules and NOAA space weather, and why the game&apos;s canonical lore is written against a real 21st-century starting point. <Link href="/mission-control" className="text-cyan-400 hover:text-cyan-300">Mission Control</Link> is next door.
           </p>
         </section>
 

@@ -99,6 +99,16 @@ function formatUSD(n: number | null | undefined): string | null {
   return `$${n.toFixed(0)}`;
 }
 
+// "Raised" display strings arrive pre-formatted (e.g. '$75B') from curated
+// data. Guarantee exactly one leading '$' no matter how the source string was
+// entered, so a doubled prefix can never render (the audited '$$75B' sighting
+// was the RSC flight payload's own '$'-escaping, but this keeps the DOM safe
+// against genuinely mis-entered data too).
+function normalizeMoneyDisplay(v: string | null): string | null {
+  if (!v) return v;
+  return v.startsWith('$') ? '$' + v.replace(/^[$]+/, '') : v;
+}
+
 async function getRoster() {
   // Companies with a ticker are treated as the tradeable roster. Note: several
   // CompanyProfile rows for well-known primes (Lockheed Martin/LMT, Boeing/BA,
@@ -174,7 +184,7 @@ async function getIpoClass(): Promise<IpoRow[]> {
       dbMarketCap: r.marketCap,
       sector: r.sector,
       ipoDate: curated?.ipoDate ?? r.lastFundingDate?.toISOString() ?? null,
-      raised: curated?.raised ?? formatUSD(r.totalFunding),
+      raised: normalizeMoneyDisplay(curated?.raised ?? formatUSD(r.totalFunding)),
       notes: curated?.notes ?? null,
       sourceUrl: curated?.sourceUrl ?? null,
     };

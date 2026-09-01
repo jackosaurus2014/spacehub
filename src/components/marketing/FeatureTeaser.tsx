@@ -61,7 +61,7 @@ export default function FeatureTeaser({
         <div className="relative z-20 rounded-xl border border-cyan-500/20 bg-gradient-to-b from-cyan-500/5 to-transparent p-5 text-center">
           {freePreviewCount && totalCount && (
             <p className="text-slate-400 text-xs mb-2">
-              Showing {freePreviewCount} of {totalCount}+ {featureName.toLowerCase()}
+              Showing {freePreviewCount} of {totalCount.toLocaleString()} {featureName.toLowerCase()}
             </p>
           )}
           <h4 className="text-white font-semibold text-sm mb-1">

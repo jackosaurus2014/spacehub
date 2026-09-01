@@ -24,7 +24,7 @@ const COMPARISON_DATA = [
   { metric: 'Primary Launch Vehicles', a: 'Falcon 9, Falcon Heavy, Starship', b: 'Vulcan Centaur, Atlas V (phasing out), Delta IV Heavy (retired)' },
   { metric: 'Launches Per Year (2024)', a: '130+', b: '~5–10' },
   { metric: 'Total Career Orbital Launches', a: '350+', b: '155+ (Atlas V: 100+; Delta IV: 45+; Vulcan: 2+)' },
-  { metric: 'Launch Price (approx.)', a: '~$67M (Falcon 9); ~$150M (Falcon Heavy)', b: '~$100–150M (Vulcan Centaur est.); ~$80–160M (Atlas V, varied)' },
+  { metric: 'Launch Price (approx.)', a: '~$74M (Falcon 9, 2026 list); ~$150M (Falcon Heavy)', b: '~$100–150M (Vulcan Centaur est.); ~$80–160M (Atlas V, varied)' },
   { metric: 'Reusability', a: 'Yes — Falcon 9 first stage (200+ booster landings)', b: 'No — Vulcan Centaur is expendable; BE-4 engine partial recovery planned' },
   { metric: 'LEO Payload Capacity', a: '22,800 kg (F9); 63,800 kg (FH)', b: '27,200 kg (Vulcan Centaur VC6); ~8,900 kg (Atlas V 401)' },
   { metric: 'GTO Payload Capacity', a: '8,300 kg (F9); 26,700 kg (FH expendable)', b: '7,000–8,900 kg (Vulcan; varies by config)' },

@@ -46,7 +46,16 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '*/5 * * * *',   path: '/api/livestreams',                    label: 'livestream-check',           maxStaleMinutes: 20 },
 
   // SpaceX / EONET / Podcasts
-  { schedule: '*/30 * * * *',  path: '/api/spacex',                         label: 'spacex-data-refresh',        maxStaleMinutes: 90 },
+  // 2026-09-01 freshness audit: spacex-data-refresh REMOVED. It hit the
+  // long-archived api.spacexdata.com/v4 (failing 3/3 retries every run) and
+  // a repo-wide grep found ZERO consumers of /api/spacex — live SpaceX
+  // launches come from the LL2 pipeline into SpaceEvent. The route itself
+  // stays (harmless, cached GET) in case an external embed still calls it.
+  // Interplanetary transfer windows (LaunchWindow model — a DIFFERENT thing
+  // from launch events): the seed computes windows relative to run time, so
+  // an un-refreshed seed drifts WRONG, not just stale (it sat on its
+  // 2026-02-04 dates for 7 months). Re-seed monthly.
+  { schedule: '20 6 3 * *',    path: '/api/launch-windows/init',            label: 'launch-windows-reseed',      maxStaleMinutes: 56160 },
   { schedule: '0 */2 * * *',   path: '/api/eonet',                          label: 'eonet-events-refresh',       maxStaleMinutes: 300 },
   // Was pointed at GET /api/podcasts (a read-only directory listing — no-op,
   // synced nothing). Now hits the real sync route, which upserts episodes
@@ -306,6 +315,29 @@ let schedulerStartTime: number | null = null;
 // triggerEndpoint — with retry + backoff
 // ---------------------------------------------------------------------------
 
+// 2026-09-01 freshness audit: seedTrackerFromRefreshLog matches
+// DataRefreshLog.module === cron label, but almost no handler logs under its
+// cron label — so cross-deploy staleness memory worked for exactly ONE of
+// ~90 jobs (daily-refresh) and every deploy reset the watchdog's history
+// (the precise starvation mode it was built to catch). Fix: the scheduler
+// itself persists a success row per label — throttled to once/hour and only
+// for watchdog-relevant jobs (maxStaleMinutes >= 60) so */5 jobs don't
+// flood the table.
+const lastPersistAt = new Map<string, number>();
+
+async function persistCronSuccess(label: string): Promise<void> {
+  const job = CRON_JOBS.find(j => j.label === label);
+  if (!job?.maxStaleMinutes || job.maxStaleMinutes < 60) return;
+  const now = Date.now();
+  const last = lastPersistAt.get(label) || 0;
+  if (now - last < 60 * 60_000) return;
+  lastPersistAt.set(label, now);
+  const { default: prisma } = await import('@/lib/db');
+  await prisma.dataRefreshLog.create({
+    data: { module: label, refreshType: 'cron-run', status: 'success' },
+  });
+}
+
 async function triggerEndpoint(path: string, label: string, retries: number = 3): Promise<boolean> {
   const cronSecret = process.env.CRON_SECRET;
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -334,6 +366,9 @@ async function triggerEndpoint(path: string, label: string, retries: number = 3)
           tracker.consecutiveFailures = 0;
           tracker.lastError = null;
         }
+        // Persist under the CRON LABEL so seedTrackerFromRefreshLog can
+        // actually recover this job's history after the next deploy.
+        persistCronSuccess(label).catch(() => { /* best-effort */ });
         // Resolve any outstanding freshness alert for this job
         resolveFreshnessAlert(label).catch(() => {
           // Best-effort — don't block the cron job result

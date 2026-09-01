@@ -14,7 +14,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: 'Space Business Opportunities in 2026: Complete Industry Guide | SpaceNexus',
   description:
-    'Discover the most lucrative space business opportunities in 2026. Covers government contracting, SBIR programs, satellite services, supply chain, space tourism, and how to break into the $630B+ space industry.',
+    'Discover the most lucrative space business opportunities in 2026. Covers government contracting, SBIR programs, satellite services, supply chain, space tourism, and how to break into the $626B+ space industry.',
   keywords: [
     'space business opportunities',
     'commercial space industry',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Space Business Opportunities in 2026: Complete Industry Guide',
     description:
-      'Comprehensive guide to the fastest-growing space business segments, government contracts, and how to enter the $630B+ commercial space market.',
+      'Comprehensive guide to the fastest-growing space business segments, government contracts, and how to enter the $626B+ commercial space market.',
     type: 'article',
     publishedTime: '2026-02-14T00:00:00Z',
     authors: ['SpaceNexus'],

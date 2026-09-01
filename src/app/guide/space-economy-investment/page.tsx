@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Investing in the Space Economy: Complete 2026 Guide',
     description:
-      'Everything investors need to know about the $630B space economy: public stocks, ETFs, VC landscape, evaluation frameworks, and emerging themes.',
+      'Everything investors need to know about the $626B space economy: public stocks, ETFs, VC landscape, evaluation frameworks, and emerging themes.',
     type: 'article',
     publishedTime: '2026-02-14T00:00:00Z',
     authors: ['SpaceNexus'],
@@ -118,7 +118,7 @@ const FAQ_ITEMS = [
   {
     question: 'Is the space industry a good investment in 2026?',
     answer:
-      'The space industry offers significant long-term growth potential, with the market projected to grow from $630B to $1.8T by 2035. However, like any emerging sector, it carries above-average risk. Many pure-play space companies are pre-revenue or early-revenue, and the path to profitability is uncertain for some business models. Diversified exposure through ETFs or established defense primes with space divisions may offer a better risk-adjusted return for most investors.',
+      'The space industry offers significant long-term growth potential, with the market projected to grow from $626B to $1.8T by 2035. However, like any emerging sector, it carries above-average risk. Many pure-play space companies are pre-revenue or early-revenue, and the path to profitability is uncertain for some business models. Diversified exposure through ETFs or established defense primes with space divisions may offer a better risk-adjusted return for most investors.',
   },
   {
     question: 'What are the best space stocks to buy?',

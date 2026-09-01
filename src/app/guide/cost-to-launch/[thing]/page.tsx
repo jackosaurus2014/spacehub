@@ -4,6 +4,7 @@ import HeroArt from '@/components/ui/HeroArt';
 import { notFound } from 'next/navigation';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { COST_TO_LAUNCH, getCostToLaunch } from '@/lib/cost-to-launch';
+import { LAUNCH_COST_AS_OF } from '@/lib/launch-cost-constants';
 
 // Static registry (src/lib/cost-to-launch.ts): every slug is enumerated and
 // dynamicParams=false makes the router 404 anything else at the routing
@@ -46,7 +47,7 @@ export default function CostToLaunchPage({ params }: { params: { thing: string }
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{c.title}</h1>
           <p className="text-lg text-white/80 leading-relaxed"><strong className="text-white">Short answer:</strong> {c.shortAnswer}</p>
-          <p className="text-xs text-slate-500 mt-3">2026 list and rideshare prices. Figures track the <Link href="/guide/space-launch-cost-comparison" className="text-cyan-400 hover:text-cyan-300">launch cost guide</Link>; contract prices vary.</p>
+          <p className="text-xs text-slate-500 mt-3">List and rideshare prices as of {LAUNCH_COST_AS_OF}. Figures track the <Link href="/guide/space-launch-cost-comparison" className="text-cyan-400 hover:text-cyan-300">launch cost guide</Link>; contract prices vary.</p>
         </header>
 
         <section className="mb-10">

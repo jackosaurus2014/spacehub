@@ -277,7 +277,7 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/ai-insights/generate', '/api/refresh/cleanup',
         '/api/admin/seed-all', '/api/admin/freshness-check',
         '/api/funding-opportunities',
-        '/api/spacex', '/api/eonet', '/api/podcasts',
+        '/api/spacex', '/api/eonet', '/api/podcasts', '/api/launch-windows/init',
         '/api/livestreams',
         // Scheduler-invoked paths (see CRON_JOBS in src/lib/cron-scheduler.ts —
         // keep this list in sync or internal POSTs get 403'd by CSRF)

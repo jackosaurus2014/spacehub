@@ -14,7 +14,7 @@ export const revalidate = 3600; // ISR: revalidate every hour
 export const metadata: Metadata = {
   title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
   description:
-    'A Falcon 9 lists at ~$70M (about $3,070/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
+    'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
   keywords: [
     'space launch cost',
     'how much does it cost to launch a satellite',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
     description:
-      'Falcon 9 ~$70M (about $3,070/kg), rideshare from $350k for 50 kg, Electron ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
+      'Falcon 9 ~$74M (about $3,246/kg), rideshare from $350k for 50 kg, Electron ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
     type: 'article',
     publishedTime: '2026-02-08T00:00:00Z',
     authors: ['SpaceNexus'],
@@ -66,19 +66,19 @@ const TOC = [
 const FAQ_ITEMS = [
   {
     q: 'How much does it cost to launch a satellite?',
-    a: 'It depends almost entirely on mass and on whether you buy a whole rocket or a seat on one. A small satellite of 50 kg rides on a SpaceX Transporter rideshare mission for about $350,000 (roughly $7,000 per additional kilogram). A 150 kg satellite costs around $1 million to launch on rideshare, more once integration, transport and insurance are added. A dedicated small launcher such as Rocket Lab\'s Electron is about $8 million for up to ~300 kg to your exact orbit. A dedicated Falcon 9 lists at about $70 million and carries up to 22,800 kg to low Earth orbit, which is why large operators pay roughly $3,000 per kilogram while a lone smallsat pays more than double that. Add 5-10% of the satellite\'s insured value for launch insurance if you buy it.',
+    a: 'It depends almost entirely on mass and on whether you buy a whole rocket or a seat on one. A small satellite of 50 kg rides on a SpaceX Transporter rideshare mission for about $350,000 (roughly $7,000 per additional kilogram). A 150 kg satellite costs around $1 million to launch on rideshare, more once integration, transport and insurance are added. A dedicated small launcher such as Rocket Lab\'s Electron is about $8 million for up to ~300 kg to your exact orbit. A dedicated Falcon 9 lists at about $74 million and carries up to 22,800 kg to low Earth orbit, which is why large operators pay roughly $3,250 per kilogram while a lone smallsat pays more than double that. Add 5-10% of the satellite\'s insured value for launch insurance if you buy it.',
   },
   {
     q: 'What is the cheapest rocket to launch to orbit?',
-    a: 'On a cost-per-kilogram basis, SpaceX\'s Falcon 9 is currently the cheapest operational orbital launch vehicle, with published rideshare pricing of approximately $7,000 per kilogram to sun-synchronous orbit as of 2026. For dedicated missions, the Falcon 9 list price of approximately $70 million translates to roughly $3,000-$3,100 per kilogram for a full 22,800 kg payload to LEO. SpaceX\'s Starship, which began deploying operational payloads in 2026, is expected to reduce costs further, potentially to $100-$500 per kilogram at mature flight rates.',
+    a: 'On a cost-per-kilogram basis, SpaceX\'s Falcon 9 is currently the cheapest operational orbital launch vehicle, with published rideshare pricing of approximately $7,000 per kilogram to sun-synchronous orbit as of 2026. For dedicated missions, the Falcon 9 list price of approximately $74 million translates to roughly $3,250 per kilogram for a full 22,800 kg payload to LEO. SpaceX\'s Starship, which began deploying operational payloads in 2026, is expected to reduce costs further, potentially to $100-$500 per kilogram at mature flight rates.',
   },
   {
     q: 'How much does a Falcon 9 launch cost?',
-    a: 'SpaceX lists the Falcon 9 commercial launch price at approximately $70 million for a dedicated mission as of 2026. However, actual prices vary based on orbit, payload integration requirements, and contract terms. Rideshare missions on the Transporter series start at $350,000 for the first 50 kg, with additional mass priced at approximately $7,000 per kilogram. Government missions (e.g., for the U.S. Space Force) are priced higher, with National Security Space Launch (NSSL) contracts valued at $100 million or more per mission.',
+    a: 'SpaceX lists the Falcon 9 commercial launch price at approximately $74 million for a dedicated mission as of 2026. However, actual prices vary based on orbit, payload integration requirements, and contract terms. Rideshare missions on the Transporter series start at $350,000 for the first 50 kg, with additional mass priced at approximately $7,000 per kilogram. Government missions (e.g., for the U.S. Space Force) are priced higher, with National Security Space Launch (NSSL) contracts valued at $100 million or more per mission.',
   },
   {
     q: 'How much does it cost to launch per kilogram?',
-    a: 'Cost per kilogram varies dramatically by vehicle: Falcon 9 achieves roughly $3,000-$3,100/kg to LEO for a full payload, Electron costs approximately $25,000-$30,000/kg (small-sat premium), Ariane 6 is estimated at $8,000-$10,000/kg, and the Space Shuttle historically cost approximately $54,000/kg. Starship targets $100-$500/kg once operational at full cadence.',
+    a: 'Cost per kilogram varies dramatically by vehicle: Falcon 9 achieves roughly $3,250/kg to LEO for a full payload, Electron costs approximately $25,000-$30,000/kg (small-sat premium), Ariane 6 is estimated at $8,000-$10,000/kg, and the Space Shuttle historically cost approximately $54,000/kg. Starship targets $100-$500/kg once operational at full cadence.',
   },
   {
     q: 'Why do small rockets cost more per kilogram?',
@@ -167,7 +167,7 @@ export default function SpaceLaunchCostComparisonPage() {
               Prices, Payload Capacity &amp; Cost Per Kilogram for Every Major Vehicle
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
-              <time dateTime="2026-08-12">Last updated: August 2026</time>
+              <time dateTime="2026-09-01">Last updated: September 2026</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
               <ReadingTime wordCount={3600} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
@@ -240,14 +240,14 @@ export default function SpaceLaunchCostComparisonPage() {
                     primarily by SpaceX&apos;s development of the reusable Falcon 9 rocket. Where
                     the Space Shuttle cost approximately $54,000 per kilogram to low Earth orbit
                     (LEO) and expendable vehicles of the 2000s cost $10,000-$20,000/kg, SpaceX has
-                    brought the effective cost down to roughly $3,000/kg and is targeting sub-$500/kg
+                    brought the effective cost down to roughly $3,250/kg and is targeting sub-$500/kg
                     with Starship.
                   </p>
                   <p>
                     <strong>The short answer to &ldquo;how much does it cost to launch a satellite?&rdquo;:</strong>{' '}
                     about $350,000 for a 50 kg smallsat on a SpaceX rideshare, roughly $8 million
-                    for a dedicated Electron, and about $70 million for a dedicated Falcon 9 that
-                    can carry 22,800 kg &mdash; which works out to roughly $3,000 per kilogram for
+                    for a dedicated Electron, and about $74 million for a dedicated Falcon 9 that
+                    can carry 22,800 kg &mdash; which works out to roughly $3,250 per kilogram for
                     whoever fills it. Everything below explains where those numbers come from and
                     what they leave out.
                   </p>
@@ -312,7 +312,7 @@ export default function SpaceLaunchCostComparisonPage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-star-300">Falcon 9 (reusable, 2026)</span>
-                        <span className="text-slate-300 font-semibold">~$3,070/kg</span>
+                        <span className="text-slate-300 font-semibold">~$3,246/kg</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">
@@ -326,7 +326,7 @@ export default function SpaceLaunchCostComparisonPage() {
                     flying more than 25 times), dramatically reducing the marginal cost of each
                     launch. Estimates from financial analysts and industry observers suggest the
                     marginal cost of a Falcon 9 launch (with a reused booster) is approximately
-                    $15-20 million, significantly below the roughly $70 million list price. This
+                    $15-20 million, significantly below the roughly $74 million list price. This
                     margin funds development programs including Starship and Starlink.
                   </p>
                   <p>
@@ -362,9 +362,10 @@ export default function SpaceLaunchCostComparisonPage() {
                     The Falcon 9 is the world&apos;s most-flown orbital rocket, with over 600
                     cumulative launches — including 165 missions in 2025 alone and roughly 80 more
                     by mid-2026. Listed commercial price: <strong className="text-white">approximately
-                    $70 million</strong> for a dedicated LEO mission. Payload to LEO: approximately
+                    $74 million</strong> for a dedicated LEO mission (SpaceX raised the published
+                    list price from $67M in early 2026). Payload to LEO: approximately
                     22,800 kg (with reusable first stage). Payload to GTO: approximately 8,300 kg.
-                    The cost per kilogram for a full LEO payload is roughly $3,070/kg -- the lowest
+                    The cost per kilogram for a full LEO payload is roughly $3,246/kg -- the lowest
                     of any currently operational vehicle. SpaceX conducts the majority of its
                     launches for internal Starlink deployment, with commercial and government
                     missions filling the remaining manifest.
@@ -387,9 +388,12 @@ export default function SpaceLaunchCostComparisonPage() {
                     SpaceX Starship
                   </h3>
                   <p>
-                    Starship is the super heavy-lift, fully reusable launch system that reached a
-                    major milestone in July 2026, deploying its first operational payloads — 20
-                    Starlink V3 satellites — while recovering both stages. With a target LEO payload
+                    Starship is the super heavy-lift launch system designed for full reusability
+                    that reached a major milestone on Flight 13 (July 24, 2026), deploying its
+                    first operational payloads — 20 Starlink V3 satellites. The ship splashed down
+                    in the Indian Ocean (expended by design) and the booster was destroyed during
+                    its landing burn; the first tower-catch attempt of the ship itself is planned
+                    for Flight 14. With a target LEO payload
                     of approximately 150,000 kg (150 tons) in its fully reusable configuration,
                     Starship aims to achieve per-kilogram costs that are an order of magnitude below
                     Falcon 9. SpaceX CEO Elon Musk has stated a long-term target of{' '}
@@ -503,8 +507,8 @@ export default function SpaceLaunchCostComparisonPage() {
                         <tr className="border-b border-white/10">
                           <td className="py-2 pr-3 text-white">Falcon 9</td>
                           <td className="py-2 pr-3 text-right">22,800 kg</td>
-                          <td className="py-2 pr-3 text-right">~$70M</td>
-                          <td className="py-2 text-right text-slate-300 font-semibold">~$3,070</td>
+                          <td className="py-2 pr-3 text-right">~$74M</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">~$3,246</td>
                         </tr>
                         <tr className="border-b border-white/10">
                           <td className="py-2 pr-3 text-white">Neutron (est.)</td>
@@ -578,7 +582,7 @@ export default function SpaceLaunchCostComparisonPage() {
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
                   <p>
                     The rise of rideshare services has transformed the economics of small satellite
-                    launches. Rather than purchasing an entire dedicated launch (which may cost $7-67
+                    launches. Rather than purchasing an entire dedicated launch (which may cost $7-74
                     million depending on the vehicle), smallsat operators can purchase a slot on a
                     shared mission at a fraction of the cost.
                   </p>

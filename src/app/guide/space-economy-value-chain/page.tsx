@@ -134,7 +134,7 @@ const FAQ_ITEMS = [
   {
     question: 'Why is launch such a small share of the space economy?',
     answer:
-      'Because a launch is a one-time cost that enables years of revenue. A $70 million Falcon 9 mission can deploy satellites that earn hundreds of millions over their lives. Falling launch prices have made the share smaller still even as the number of launches has grown — the value migrates downstream to whoever uses the capacity.',
+      'Because a launch is a one-time cost that enables years of revenue. A $74 million Falcon 9 mission can deploy satellites that earn hundreds of millions over their lives. Falling launch prices have made the share smaller still even as the number of launches has grown — the value migrates downstream to whoever uses the capacity.',
   },
   {
     question: 'Where should a new space company position itself?',

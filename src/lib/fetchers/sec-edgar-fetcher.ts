@@ -161,6 +161,45 @@ export async function fetchAndStoreSECFilings(): Promise<number> {
       { sourceType: 'api', sourceUrl: 'https://efts.sec.gov/LATEST/search-index' }
     );
 
+    // 2026-09-01 freshness audit: this fetcher only ever wrote DynamicContent,
+    // while company-brief.ts (weekly follow emails) and the company-profile
+    // Live Signals strip read the SECFiling MODEL — which stayed empty
+    // forever. Dual-write the relational rows, matched to CompanyProfile by
+    // ticker, upserted on accessionNumber so re-runs are idempotent.
+    try {
+      const { default: prisma } = await import('@/lib/db');
+      const tickers = Array.from(new Set(filings.map(f => f.ticker).filter(Boolean)));
+      const profiles = await prisma.companyProfile.findMany({
+        where: { ticker: { in: tickers } },
+        select: { id: true, ticker: true },
+      });
+      const idByTicker = new Map(profiles.map(p => [p.ticker!, p.id]));
+      let relRows = 0;
+      for (const f of filings) {
+        const companyId = idByTicker.get(f.ticker);
+        if (!companyId || !f.accessionNumber || !f.filingDate) continue;
+        const filingDate = new Date(f.filingDate);
+        if (isNaN(filingDate.getTime())) continue;
+        await prisma.sECFiling.upsert({
+          where: { accessionNumber: f.accessionNumber },
+          update: { filingType: f.formType || 'Filing', filingDate, edgarUrl: f.url },
+          create: {
+            companyId,
+            filingType: f.formType || 'Filing',
+            filingDate,
+            edgarUrl: f.url,
+            accessionNumber: f.accessionNumber,
+          },
+        });
+        relRows++;
+      }
+      logger.info('Stored SEC filings (relational)', { rows: relRows });
+    } catch (relErr) {
+      logger.warn('SECFiling relational dual-write failed (DynamicContent write succeeded)', {
+        error: relErr instanceof Error ? relErr.message : String(relErr),
+      });
+    }
+
     logger.info('Stored SEC filings', { count: filings.length });
     return filings.length;
   } catch (error) {

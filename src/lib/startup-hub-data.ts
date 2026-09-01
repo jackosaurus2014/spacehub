@@ -52,7 +52,8 @@ export const RECENT_IPOS: RecentIPO[] = [
     raised: '$416M',
     notes: 'Priced $26/share; jumped 30.8% on debut to a ~$3.15B valuation',
     profileSlug: 'hawkeye-360',
-    sourceUrl: 'https://payloadspace.com/hawkeye-360-closes-150m-financing-round-acquires-innovative-signal-analysis/',
+    // 2026-09-01 audit: previous link was an unrelated Payload private-round story
+    sourceUrl: 'https://finance.yahoo.com/markets/stocks/articles/hawkeye-360-ipo-raises-416-121551733.html',
   },
   {
     company: 'SpaceX',
@@ -103,6 +104,7 @@ export const IPO_PIPELINE: IPOPipelineEntry[] = [
       "Grouped with Sierra Space in The Information's June 2026 report; no S-1 filed; closed an oversubscribed $525M round June 2026",
     confidence: 'reported',
     profileSlug: 'axiom-space',
+    // UNVERIFIED (2026-09-01 audit): only $350M Series D drawdowns corroborated; keep pending founder review
     sourceUrl: 'https://www.axiomspace.com/release/axiom-space-closes-oversubscribed-financing-at-525m',
   },
   {
@@ -139,8 +141,9 @@ export const IPO_PIPELINE: IPOPipelineEntry[] = [
       'CEO Rafal Modrzewski: "no immediate needs for funding"; raised €1B+ Series F at >€10B instead (June 2026)',
     confidence: 'company-stated',
     profileSlug: 'iceye',
+    // 2026-09-01 audit: previous link headlined the stale "$3B valuation"
     sourceUrl:
-      'https://www.spaceintelreport.com/iceye-no-ipo-for-now-300m-rev-in-2025-a-3b-valuation-with-expanding-production-co-asks-eu-commission-to-move-faster/',
+      'https://www.satellitetoday.com/finance/2026/06/09/iceyes-valuation-soars-to-10-billion-euro-with-new-raise/',
   },
 ];
 

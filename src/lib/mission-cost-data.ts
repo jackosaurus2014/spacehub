@@ -69,22 +69,24 @@ export const LAUNCH_COST_DATA: LaunchCostData[] = [
     payloadGTO: 8300,
     payloadGEO: 3500,
     payloadTLI: null,
-    dedicatedLaunchPrice: { min: 62000000, max: 75000000, typical: 67000000 },
-    ridesharePrice: { perKg: 6000, minMass: 50 },
-    costPerKgLEO: { min: 2720, max: 3300, typical: 2940 },
+    // 2026-09-01 audit: list price $74M (SatBase, Feb 2026); rideshare $7,000/kg,
+    // $350k minimum (Payload, Transporter-16 onward); $74M / 22,800 kg ≈ $3,246/kg
+    dedicatedLaunchPrice: { min: 62000000, max: 80000000, typical: 74000000 },
+    ridesharePrice: { perKg: 7000, minMass: 50 },
+    costPerKgLEO: { min: 2720, max: 3510, typical: 3246 },
     costPerKgSSO: { min: 4000, max: 5500, typical: 4500 },
     costPerKgGTO: { min: 7500, max: 9000, typical: 8070 },
     costPerKgGEO: { min: 17700, max: 21400, typical: 19140 },
     costPerKgTLI: null,
     notes: [
-      'Base price $67M as of 2024 (increased from $62M)',
-      'SpaceX Rideshare Program: $6,000/kg to SSO (increasing $500/year)',
-      'Minimum rideshare booking: $300,000 for 50kg',
+      'Base price $74M as of Feb 2026 (SatBase; up from $67M in 2024)',
+      'SpaceX Rideshare Program: $7,000/kg to SSO (increasing ~$500/year)',
+      'Minimum rideshare booking: $350,000 for 50kg (Transporter-16 onward)',
       'Only 6% of 2024 flights used new boosters',
       'Some boosters reused 24+ times',
       'Internal cost estimated at ~$30M per flight with reuse'
     ],
-    lastUpdated: '2025-01',
+    lastUpdated: '2026-09',
   },
   {
     slug: 'spacex-falcon-heavy',
@@ -1349,13 +1351,14 @@ export const RIDESHARE_PRICING: RidesharePricing[] = [
   {
     provider: 'SpaceX',
     program: 'Transporter (SSO)',
-    pricePerKg: 6000,
+    // 2026-09-01 audit: $7,000/kg, $350k minimum (Payload, Transporter-16 onward)
+    pricePerKg: 7000,
     minMass: 50,
     maxMass: 200,
     orbit: 'SSO (500-600km)',
     frequency: '3 per year',
     notes: [
-      'Minimum booking: $300,000 for 50kg',
+      'Minimum booking: $350,000 for 50kg (Transporter-16 onward)',
       'Price increasing $500/kg per year',
       '1,000+ satellites deployed through program',
       'ESPA-class payloads'
@@ -1364,7 +1367,8 @@ export const RIDESHARE_PRICING: RidesharePricing[] = [
   {
     provider: 'SpaceX',
     program: 'Bandwagon (Mid-Inclination)',
-    pricePerKg: 6500,
+    // 2026-09-01 audit: kept in step with Transporter ("similar pricing")
+    pricePerKg: 7000,
     minMass: 50,
     maxMass: 200,
     orbit: 'Mid-inclination (~45 deg)',

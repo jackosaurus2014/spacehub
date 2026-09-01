@@ -34,7 +34,7 @@ export const BUSINESS_MODELS: BusinessModelTemplate[] = [
       { category: 'SG&A', percentage: 12, description: 'Sales, regulatory, admin, facilities' },
     ],
     unitEconomics: [
-      { metric: 'Revenue per launch (dedicated)', value: '$60M-$70M', notes: 'Falcon 9 list price ~$67M' },
+      { metric: 'Revenue per launch (dedicated)', value: '$65M-$75M', notes: 'Falcon 9 list price ~$74M (SatBase, Feb 2026)' },
       { metric: 'COGS per launch (reusable)', value: '$15M-$28M', notes: 'Significant reduction with reuse' },
       { metric: 'Gross margin (reusable)', value: '50-70%', notes: 'First flights have lower margin due to new hardware' },
       { metric: 'Break-even cadence', value: '4-6 launches/year', notes: 'With fully reusable first stage' },

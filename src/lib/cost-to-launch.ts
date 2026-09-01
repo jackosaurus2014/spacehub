@@ -65,8 +65,8 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     thing: 'a satellite',
     title: 'How Much Does It Cost to Launch a Satellite?',
     metaTitle: 'How Much Does It Cost to Launch a Satellite? (2026, by Size)',
-    description: 'From $350,000 for a 50 kg smallsat on a SpaceX rideshare to about $70 million for a dedicated Falcon 9 and $100 million-plus for a heavy GEO satellite. 2026 launch prices by satellite size and orbit.',
-    shortAnswer: 'It depends almost entirely on mass and whether you buy a seat or the whole rocket. A 50 kg smallsat rides on a SpaceX Transporter mission for about $350,000 (roughly $7,000 per additional kilogram); a 150 kg satellite costs around $1 million to launch on rideshare. A dedicated small launcher such as Electron is about $8 million for up to ~300 kg to your exact orbit. A dedicated Falcon 9 lists at about $70 million and carries up to 22,800 kg to low Earth orbit — about $3,000 per kilogram for whoever fills it — while a heavy geostationary communications satellite launched to GTO typically pays $70–120 million.',
+    description: 'From $350,000 for a 50 kg smallsat on a SpaceX rideshare to about $74 million for a dedicated Falcon 9 and $100 million-plus for a heavy GEO satellite. 2026 launch prices by satellite size and orbit.',
+    shortAnswer: 'It depends almost entirely on mass and whether you buy a seat or the whole rocket. A 50 kg smallsat rides on a SpaceX Transporter mission for about $350,000 (roughly $7,000 per additional kilogram); a 150 kg satellite costs around $1 million to launch on rideshare. A dedicated small launcher such as Electron is about $8 million for up to ~300 kg to your exact orbit. A dedicated Falcon 9 lists at about $74 million and carries up to 22,800 kg to low Earth orbit — roughly $3,250 per kilogram for whoever fills it — while a heavy geostationary communications satellite launched to GTO typically pays $70–120 million.',
     rows: [
       { option: 'Smallsat, 50 kg, rideshare to SSO', price: `~${fmtUsdK(RIDESHARE_MIN_PRICE_USD)}`, notes: `SpaceX Transporter minimum; ~${fmtUsd(RIDESHARE_PER_KG)}/kg above 50 kg`, rocket: 'falcon-9' },
       { option: 'Smallsat, 150 kg, rideshare', price: '~$1M', notes: 'Plus integration, transport and insurance — see the hidden costs', rocket: 'falcon-9' },
@@ -122,10 +122,10 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     thing: 'a Starlink batch',
     title: 'How Much Does It Cost to Launch a Starlink Batch?',
     metaTitle: 'How Much Does a Starlink Launch Cost SpaceX? (2026 Estimate)',
-    description: 'A Falcon 9 lists at ~$70 million, but SpaceX\'s internal cost for a Starlink launch with a reused booster is estimated at $15–30 million — plus roughly $500,000 per satellite. What a batch of 20–28 Starlinks really costs.',
-    shortAnswer: 'A customer pays about $70 million for a Falcon 9, but SpaceX launching its own Starlink satellites pays only the marginal cost: a reused booster, a new upper stage, recovered fairings, propellant and range operations, estimated at $15–30 million per flight. Add the satellites themselves — SpaceX has cited under $1 million each and analysts estimate $500,000 or less for current V2 Minis — and a batch of 24–28 satellites costs on the order of $30–45 million to put in orbit, or roughly $1.2–1.8 million per satellite delivered. Starship is intended to cut that per-satellite figure several-fold.',
+    description: 'A Falcon 9 lists at ~$74 million, but SpaceX\'s internal cost for a Starlink launch with a reused booster is estimated at $15–30 million — plus roughly $500,000 per satellite. What a batch of 20–28 Starlinks really costs.',
+    shortAnswer: 'A customer pays about $74 million for a Falcon 9, but SpaceX launching its own Starlink satellites pays only the marginal cost: a reused booster, a new upper stage, recovered fairings, propellant and range operations, estimated at $15–30 million per flight. Add the satellites themselves — SpaceX has cited under $1 million each and analysts estimate $500,000 or less for current V2 Minis — and a batch of 24–28 satellites costs on the order of $30–45 million to put in orbit, or roughly $1.2–1.8 million per satellite delivered. Starship is intended to cut that per-satellite figure several-fold.',
     rows: [
-      { option: 'Falcon 9 list price (external customer)', price: '~$70M', notes: 'What Starlink would pay if it were a customer', rocket: 'falcon-9' },
+      { option: 'Falcon 9 list price (external customer)', price: `~${fmtUsdM(FALCON9_LIST_PRICE_USD)}`, notes: 'What Starlink would pay if it were a customer', rocket: 'falcon-9' },
       { option: 'Falcon 9 internal marginal cost (reused booster)', price: '$15M–$30M (est.)', notes: 'Upper stage is the largest expendable item', rocket: 'falcon-9' },
       { option: 'Starlink V2 Mini satellite, each', price: '~$0.5M (est.)', notes: 'SpaceX has said "well under $1M"' },
       { option: 'Batch of 24–28 satellites, all-in', price: '$30M–$45M (est.)', notes: 'Launch + satellites, ~$1.2–1.8M per satellite in orbit' },
@@ -149,7 +149,7 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     title: 'How Much Does It Cost to Launch a GPS Satellite?',
     metaTitle: 'How Much Does It Cost to Launch a GPS Satellite? (GPS III, 2026)',
     description: 'A GPS III satellite launch on Falcon 9 runs roughly $70-100 million under Space Force contracts, on top of a ~$500 million satellite. What the US pays to keep navigation running, and why.',
-    shortAnswer: 'The launch alone runs roughly $70-100 million: GPS III satellites have flown on Falcon 9 under National Security Space Launch contracts priced above the ~$70 million commercial list because of mission-assurance requirements, direct-to-medium-Earth-orbit insertion and government oversight. The satellite is the bigger number: Lockheed Martin builds GPS III for roughly $500 million each, so a delivered GPS satellite is a $600 million-plus program per bird, replaced on a 15-year cycle.',
+    shortAnswer: 'The launch alone runs roughly $70-100 million: GPS III satellites have flown on Falcon 9 under National Security Space Launch contracts priced above the ~$74 million commercial list because of mission-assurance requirements, direct-to-medium-Earth-orbit insertion and government oversight. The satellite is the bigger number: Lockheed Martin builds GPS III for roughly $500 million each, so a delivered GPS satellite is a $600 million-plus program per bird, replaced on a 15-year cycle.',
     rows: [
       { option: 'Launch, Falcon 9 (NSSL mission assurance)', price: '$70M-$100M', notes: 'MEO insertion at ~20,200 km; expendable or recovered booster depending on mass margin', rocket: 'falcon-9' },
       { option: 'Launch, Vulcan Centaur (NSSL Phase 2/3)', price: '$100M-$150M', notes: 'ULA share of NSSL missions; price per mission varies by orbit', rocket: 'vulcan-centaur' },
@@ -179,7 +179,7 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     hiddenCosts: ['Late-load cargo, cold-stowage science and time-critical biology drive the schedule and the price.', 'Return capability (Dragon) is worth a premium to researchers; disposal-only vehicles carry trash down.', 'ISS retirement (~2030) is why commercial stations are courting the same cargo providers now.'],
     faq: [
       { q: 'How much cargo does one mission carry?', a: 'Cargo Dragon carries up to ~3,300 kg of pressurized and unpressurized cargo; Cygnus around 3,500-3,750 kg pressurized. Crew supplies, spare parts and science experiments compete for the manifest.' },
-      { q: 'Why is it so much more than $3,000 per kilogram?', a: 'The launch is only part of the bill. A pressurized, docking, life-support-compatible spacecraft that NASA certifies for proximity operations at a crewed station costs far more than the rocket under it.' },
+      { q: 'Why is it so much more than $3,250 per kilogram?', a: 'The launch is only part of the bill. A pressurized, docking, life-support-compatible spacecraft that NASA certifies for proximity operations at a crewed station costs far more than the rocket under it.' },
     ],
     related: [{ label: 'Space stations: ISS and what comes after', href: '/space-stations' }, { label: 'Compare: Axiom vs Vast', href: '/compare/axiom-vs-vast' }, { label: 'Mission Control: upcoming cargo flights', href: '/mission-control' }],
   },
@@ -277,7 +277,7 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     rows: [
       { option: '20 x 100 kg smallsats, one plane, rideshare', price: '~$10M-$15M', notes: `SpaceX Transporter at ~${fmtUsd(RIDESHARE_PER_KG)}/kg plus deployers`, rocket: 'falcon-9' },
       { option: 'Same 20 satellites across 5 planes', price: '~$25M-$50M', notes: 'Multiple rideshares or dedicated Electron flights, or an OTV to drift planes', rocket: 'electron' },
-      { option: 'Dedicated Falcon 9 for one plane (up to ~60 smallsats)', price: '~$70M', notes: 'Exact plane and altitude; the choice for operators past a few dozen satellites', rocket: 'falcon-9' },
+      { option: 'Dedicated Falcon 9 for one plane (up to ~60 smallsats)', price: `~${fmtUsdM(FALCON9_LIST_PRICE_USD)}`, notes: 'Exact plane and altitude; the choice for operators past a few dozen satellites', rocket: 'falcon-9' },
       { option: 'Starlink-scale (100+ launches/yr, internal cost)', price: '$2B-$3B per year (est.)', notes: 'Only possible for a launch provider that owns the constellation', rocket: 'falcon-9' },
       { option: 'Amazon Leo (Kuiper) launch procurement', price: '$10B+ across 80+ launches', notes: 'Atlas V, Vulcan, Ariane 6, New Glenn and Falcon 9 contracts', rocket: 'vulcan-centaur' },
     ],

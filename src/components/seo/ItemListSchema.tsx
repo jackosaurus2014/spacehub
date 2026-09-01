@@ -12,9 +12,11 @@ interface ItemListSchemaProps {
   description: string;
   url: string;
   items: ListItem[];
+  /** True size of the full collection when only the first page is itemized. */
+  totalItems?: number;
 }
 
-export default function ItemListSchema({ name, description, url, items }: ItemListSchemaProps) {
+export default function ItemListSchema({ name, description, url, items, totalItems }: ItemListSchemaProps) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -23,7 +25,7 @@ export default function ItemListSchema({ name, description, url, items }: ItemLi
     url: url.startsWith('http') ? url : `https://spacenexus.us${url}`,
     mainEntity: {
       '@type': 'ItemList',
-      numberOfItems: items.length,
+      numberOfItems: totalItems ?? items.length,
       itemListElement: items.slice(0, 50).map((item, index) => ({
         '@type': 'ListItem',
         position: index + 1,

@@ -32,7 +32,7 @@ const COMPARISON_DATA = [
   { metric: 'Constellation Ownership', a: 'None (but builds components used by constellation operators)', b: 'Starlink (6,000+ sats, $6.6B+ revenue)' },
   // Rows below were merged from the retired /compare/spacex-vs-rocket-lab page (2026-08-26).
   { metric: 'Launch Success Rate', a: '~93% (Electron)', b: '~99% (Falcon 9)' },
-  { metric: 'Launch Price (approx.)', a: '~$8M (Electron dedicated)', b: '~$70M (Falcon 9 commercial list)' },
+  { metric: 'Launch Price (approx.)', a: '~$8M (Electron dedicated)', b: '~$74M (Falcon 9 commercial list, 2026)' },
   { metric: 'Cost per kg to LEO', a: '~$26,000/kg (Electron); ~$600/kg Neutron target', b: '~$3,000/kg (Falcon 9, full payload); ~$1,500/kg (Falcon Heavy)' },
   { metric: 'Launch Sites', a: 'Mahia, NZ (LC-1); Wallops, VA (LC-2)', b: 'Cape Canaveral (SLC-40), KSC (LC-39A), Vandenberg (SLC-4E), Starbase (Boca Chica)' },
   { metric: 'NASA Contracts', a: 'CAPSTONE (lunar), ESCAPADE (Mars), Venus Life Finder', b: 'Crew Dragon, CRS cargo, HLS lunar lander, CLPS' },

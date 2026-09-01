@@ -6,6 +6,7 @@ import { chartOfTheWeekSlug, getChartDef } from '@/lib/charts/registry';
 import NextLaunchHero from '@/components/home/NextLaunchHero';
 import NextFiveRail from '@/components/home/NextFiveRail';
 import TycoonBand from '@/components/home/TycoonBand';
+import ModuleSpotlight from '@/components/home/ModuleSpotlight';
 import Console from '@/components/ui/Console';
 
 // Mission Control homepage (docs/research-2026-08-30/SYNTHESIS.md, item 15).
@@ -66,6 +67,8 @@ export default async function HomePage() {
             <Link href="/live" className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ember)]">All live streams &rarr;</Link>
           </div>
           <LiveStreamSection />
+          {/* Founder pick (2026-09-01): rotating module spotlight, startups first. */}
+          <div className="mt-6"><ModuleSpotlight /></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
             <Console title="Next 48 hours" source="Launch Library 2" asOf={asOf} status="live">
               {next48.length === 0 ? (

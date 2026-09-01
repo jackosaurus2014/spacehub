@@ -289,7 +289,7 @@ export default function CompanyProfilesClient({
       description={`Unlock full access to ${SITE_STATS.companies} company profiles with funding data, executive teams, SpaceNexus Score ratings, and competitive analysis.`}
       requiredTier="pro"
       freePreviewCount={FREE_PREVIEW_LIMIT}
-      totalCount={companies.length}
+      totalCount={total}
     >
       <div />
     </FeatureTeaser>
@@ -619,7 +619,7 @@ export default function CompanyProfilesClient({
             description={`Unlock full access to ${SITE_STATS.companies} company profiles with funding data, executive teams, SpaceNexus Score ratings, and competitive analysis.`}
             requiredTier="pro"
             freePreviewCount={FREE_PREVIEW_LIMIT}
-            totalCount={companies.length}
+            totalCount={total}
           >
             <div />
           </FeatureTeaser>

@@ -7,6 +7,7 @@ import LaunchRow, { formatLaunchDate, missionTitle } from '@/components/launches
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import { allRocketSlugs, getRocketEntry, getRocketLiveStats, getRocketSpec } from '@/lib/rockets';
+import { VEHICLE_RECORDS_AS_OF } from '@/lib/launch-vehicles-data';
 import { LAUNCH_SITES } from '@/lib/launch-sites';
 
 // Registry-backed route: every valid slug is enumerated below, so an unknown
@@ -58,7 +59,7 @@ export default async function RocketPage({ params }: { params: { slug: string } 
   const faq = [
     { q: `How much does a ${spec.name} launch cost?`, a: spec.costMillions ? `A dedicated ${spec.name} launch lists at roughly $${spec.costMillions} million${spec.costPerKgLeo ? `, about $${spec.costPerKgLeo.toLocaleString()} per kilogram to low Earth orbit at full payload` : ''}. Actual contract prices vary with orbit, integration and government requirements.` : `${spec.manufacturer} has not published a list price for ${spec.name}.` },
     { q: `When is the next ${spec.name} launch?`, a: live.nextLaunch ? `The next tracked ${spec.name} launch is ${missionTitle(live.nextLaunch)} on ${formatLaunchDate(live.nextLaunch.launchDate)}${live.nextLaunch.location ? ` from ${live.nextLaunch.location}` : ''}. Dates move; Mission Control carries the live countdown.` : `No ${spec.name} launch is currently on the tracked manifest.` },
-    { q: `How reliable is ${spec.name}?`, a: `${spec.name} has flown ${spec.totalLaunches} times with ${spec.successes} successes, ${spec.failures} failures and ${spec.partialFailures} partial failures — a ${spec.successRate}% success rate${spec.consecutiveSuccesses ? `, with ${spec.consecutiveSuccesses} consecutive successes at last count` : ''}.` },
+    { q: `How reliable is ${spec.name}?`, a: `${spec.name} has flown ${spec.totalLaunches} times as of ${spec.asOf ?? VEHICLE_RECORDS_AS_OF}, with ${spec.successes} successes, ${spec.failures} failures and ${spec.partialFailures} partial failures — a ${spec.successRate}% success rate${spec.consecutiveSuccesses ? `, with ${spec.consecutiveSuccesses} consecutive successes at last count` : ''}.` },
     { q: `How much can ${spec.name} carry?`, a: `${spec.payloadLeoKg.toLocaleString()} kg to low Earth orbit${spec.payloadGtoKg ? `, ${spec.payloadGtoKg.toLocaleString()} kg to geostationary transfer orbit` : ''}${spec.payloadSsoKg ? `, ${spec.payloadSsoKg.toLocaleString()} kg to sun-synchronous orbit` : ''}${spec.payloadTliKg ? `, ${spec.payloadTliKg.toLocaleString()} kg to trans-lunar injection` : ''}.` },
   ];
 
@@ -86,7 +87,7 @@ export default async function RocketPage({ params }: { params: { slug: string } 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
           <Stat label="Launch price" value={spec.costMillions ? `~$${spec.costMillions}M` : 'Not published'} sub={spec.costPerKgLeo ? `~$${spec.costPerKgLeo.toLocaleString()}/kg to LEO` : undefined} />
           <Stat label="Payload to LEO" value={`${spec.payloadLeoKg.toLocaleString()} kg`} sub={spec.payloadGtoKg ? `${spec.payloadGtoKg.toLocaleString()} kg to GTO` : undefined} />
-          <Stat label="Career record" value={`${spec.successRate}%`} sub={`${spec.successes}/${spec.totalLaunches} successful`} />
+          <Stat label="Career record" value={`${spec.successRate}%`} sub={`${spec.successes}/${spec.totalLaunches} successful · as of ${spec.asOf ?? VEHICLE_RECORDS_AS_OF}`} />
           <Stat label="Next launch" value={live.nextLaunch ? formatLaunchDate(live.nextLaunch.launchDate, false) : 'None scheduled'} sub={live.nextLaunch ? missionTitle(live.nextLaunch) : undefined} />
         </div>
 

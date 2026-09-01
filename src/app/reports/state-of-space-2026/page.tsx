@@ -7,16 +7,16 @@ import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'State of the Space Industry 2026 | Free Report | SpaceNexus',
-  description: 'Read our comprehensive analysis of the $630B+ space economy, projected to reach $1.8 trillion by 2035. Market sizing, funding trends, launch data, satellite deployments, and forecasts across every segment.',
+  description: 'Read our comprehensive analysis of the $626B+ space economy, projected to reach $1.8 trillion by 2035. Market sizing, funding trends, launch data, satellite deployments, and forecasts across every segment.',
   openGraph: {
     title: 'State of the Space Industry 2026 | Free Report',
-    description: 'Comprehensive analysis of the $630B+ space economy (projected to reach $1.8T by 2035) with market sizing, funding trends, and segment forecasts.',
+    description: 'Comprehensive analysis of the $626B+ space economy (projected to reach $1.8T by 2035) with market sizing, funding trends, and segment forecasts.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'State of the Space Industry 2026 | Free Report',
-    description: 'Comprehensive analysis of the $630B+ space economy (projected to reach $1.8T by 2035) with market sizing, funding trends, and segment forecasts.',
+    description: 'Comprehensive analysis of the $626B+ space economy (projected to reach $1.8T by 2035) with market sizing, funding trends, and segment forecasts.',
   },
 };
 
@@ -32,7 +32,7 @@ const TABLE_OF_CONTENTS = [
 ];
 
 const KEY_STATS = [
-  { value: '$630B+', label: 'Global Space Economy (Current)', trend: '+9% YoY' },
+  { value: '$626B+', label: 'Global Space Economy (Current)', trend: '+9% YoY' },
   { value: SITE_STATS.launches2025, label: 'Orbital Launch Attempts (2025)', trend: '+25% YoY (record)' },
   { value: '$14.2B', label: 'Venture Funding (2024-2025)', trend: 'Across 340+ deals' },
   { value: SITE_STATS.satellites, label: 'Active Satellites in Orbit', trend: '3x since 2020' },
@@ -69,7 +69,7 @@ export default function StateOfSpace2026Page() {
               </h1>
 
               <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-                A comprehensive, data-driven analysis of today&rsquo;s $630B+ space economy &mdash;
+                A comprehensive, data-driven analysis of today&rsquo;s $626B+ space economy &mdash;
                 projected to reach $1.8 trillion by 2035. Market sizing, funding trends, launch
                 data, and strategic forecasts across every major segment.
               </p>

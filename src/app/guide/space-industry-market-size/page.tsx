@@ -12,7 +12,7 @@ export const revalidate = 3600; // ISR: revalidate every hour
 export const metadata: Metadata = {
   title: 'Space Industry Market Size 2026: Data, Trends & Forecasts | SpaceNexus Guide',
   description:
-    'The global space economy exceeded $630B in 2025. Explore detailed market size data, growth forecasts, and sector breakdowns for the space industry.',
+    'The global space economy exceeded $626B in 2025. Explore detailed market size data, growth forecasts, and sector breakdowns for the space industry.',
   keywords: [
     'space industry market size',
     'space economy 2026',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Space Industry Market Size 2026: Data, Trends & Forecasts',
     description:
-      'The global space economy exceeded $630B in 2025. Explore detailed market size data, growth forecasts, and sector breakdowns.',
+      'The global space economy exceeded $626B in 2025. Explore detailed market size data, growth forecasts, and sector breakdowns.',
     type: 'article',
     publishedTime: '2026-02-08T00:00:00Z',
     authors: ['SpaceNexus'],
@@ -259,7 +259,7 @@ export default function SpaceIndustryMarketSizePage() {
                   <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-300">$630B+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">$626B+</div>
                         <div className="text-star-300 text-sm mt-1">Total Space Economy (2026 est.)</div>
                       </div>
                       <div>
@@ -497,7 +497,7 @@ export default function SpaceIndustryMarketSizePage() {
                     the reusable Falcon 9 first stage, which has now flown individual boosters more
                     than 25 times. SpaceX&apos;s internal launch costs are estimated at $15 million
                     to $20 million per Falcon 9 mission, a fraction of the listed commercial price
-                    of approximately $70 million.
+                    of approximately $74 million.
                   </p>
                   <p>
                     Other significant launch providers include Rocket Lab (Electron, with 50+ cumulative
@@ -986,7 +986,7 @@ export default function SpaceIndustryMarketSizePage() {
                           { year: '2020', size: '$371B', label: 'Pre-Starlink scaling' },
                           { year: '2022', size: '$424B', label: 'Post-COVID recovery' },
                           { year: '2024', size: '$613B', label: 'Record year (Space Foundation)' },
-                          { year: '2026', size: '$630B+', label: 'Current baseline; SpaceX IPO' },
+                          { year: '2026', size: '$626B+', label: 'Current baseline; SpaceX IPO' },
                           { year: '2028', size: '$740B (proj.)', label: 'Kuiper constellation online' },
                           { year: '2030', size: '$950B (proj.)', label: 'Commercial space stations operational' },
                           { year: '2035', size: '$1.8T (proj.)', label: 'Lunar economy emerging' },
@@ -1025,7 +1025,7 @@ export default function SpaceIndustryMarketSizePage() {
                     definition, including all commercial space revenue (satellite services, launch,
                     manufacturing, ground equipment), government budgets, and downstream applications
                     that depend on space infrastructure. This produces the largest figure ($613B
-                    reported for 2024; above $630B on current estimates).
+                    reported for 2024; above $626B on current estimates).
                   </p>
                   <p>
                     <strong className="text-white">The Satellite Industry Association (SIA)</strong>{' '}

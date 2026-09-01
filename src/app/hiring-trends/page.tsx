@@ -99,13 +99,22 @@ export default async function HiringTrendsPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Telemetry label="Open roles" value={data.latestTotal ?? '—'} sub="across tracked boards" />
-              <Telemetry label="30-day change" value={data.changeVs30d == null ? '—' : `${data.changeVs30d >= 0 ? '+' : ''}${data.changeVs30d}`} tone={data.changeVs30d != null && data.changeVs30d < 0 ? 'ember' : 'signal'} sub="open roles vs ~30d ago" />
+              <Telemetry label="30-day change" value={data.changeVs30d == null ? '—' : `${data.changeVs30d >= 0 ? '+' : ''}${data.changeVs30d}`} tone={data.changeVs30d != null && data.changeVs30d < 0 ? 'ember' : 'signal'} sub={data.changeVs30d == null ? 'unlocks ~Sep 12 (history since Aug 13)' : 'open roles vs ~30d ago'} />
               <Telemetry label="New this week" value={data.newThisWeek} sub="postings in the last 7 days" />
               <Telemetry label="Companies hiring" value={data.companiesHiring} sub="with at least one open role" />
             </div>
 
             <Console title="Hiring velocity — top movers, 30 days" source="SpaceNexus daily snapshots" asOf={data.asOf}>
-              <div className="overflow-x-auto">
+              {/* 2026-09-01 audit: snapshots began 2026-08-13, so 30-day
+                  deltas are impossible until ~Sep 12 — an empty table with
+                  headers read as "broken". Say what's actually happening. */}
+              {data.gainers.length === 0 && (
+                <p className="text-slate-400 text-sm">
+                  Collecting history — daily snapshots began Aug 13, 2026, so 30-day movers unlock around Sep 12.
+                  The tiles above and the weekly chart below are live now.
+                </p>
+              )}
+              <div className={data.gainers.length === 0 ? 'hidden' : 'overflow-x-auto'}>
                 <table className="w-full text-sm">
                   <caption className="sr-only">Companies with the largest change in open roles over the trailing 30 days</caption>
                   <thead>

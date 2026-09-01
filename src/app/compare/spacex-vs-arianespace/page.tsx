@@ -14,7 +14,7 @@ const COMPARISON_DATA = [
   { metric: 'LEO Payload (Primary)', a: '22,800 kg (Falcon 9)', b: '~10,300 kg (A62) / ~21,650 kg (A64)' },
   { metric: 'GTO Payload', a: '8,300 kg (F9 RTLS) / 26,700 kg (FH)', b: '~4,500 kg (A62) / ~11,500 kg (A64)' },
   { metric: 'Reusability', a: 'Booster landing & reuse (200+ landings)', b: 'None (expendable); studying reusable demonstrators' },
-  { metric: 'Launch Price (est.)', a: '~$67M (Falcon 9) / ~$97M (Falcon Heavy)', b: '~$77M (A62 est.) / ~$115M (A64 est.)' },
+  { metric: 'Launch Price (est.)', a: '~$74M (Falcon 9, 2026 list) / ~$97M (Falcon Heavy)', b: '~$77M (A62 est.) / ~$115M (A64 est.)' },
   { metric: 'Launch Site(s)', a: 'Cape Canaveral, Vandenberg, KSC LC-39A', b: 'Guiana Space Centre (Kourou), French Guiana' },
   { metric: 'Career Orbital Launches', a: '300+ (through early 2026)', b: '130+ (Ariane 5 era); Ariane 6 first flight July 2024' },
   { metric: '2024 Launches', a: '~134 (Falcon family)', b: '3 (Ariane 6 maiden + Vega + Vega-C; transition year)' },

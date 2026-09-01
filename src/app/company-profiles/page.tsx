@@ -158,6 +158,7 @@ export default async function CompanyProfilesPage() {
         name="Space Company Directory"
         description="Comprehensive directory of space industry companies with financial data, satellite assets, facility locations, and competitive analysis."
         url="/company-profiles"
+        totalItems={first?.total}
         items={(first?.companies ?? []).slice(0, 30).map((c) => ({
           name: c.name,
           url: `/company-profiles/${c.slug}`,

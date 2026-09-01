@@ -84,7 +84,12 @@ export async function getLiveQuoteSafe(ticker: string, timeoutMs = 2500): Promis
       const timeout = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('yahoo quote timeout')), timeoutMs);
       });
-      const quote = await Promise.race([yahooFinance.quote(symbol), timeout]);
+      // 2026-09-01 freshness audit: ~10 non-US tickers (MOG.A, YAHSAT,
+      // SPACE42, Tokyo/Seoul listings…) fail yahoo-finance2's result-schema
+      // validation every cycle, silently freezing their quotes. The data is
+      // fine — the validator is stricter than Yahoo's actual payloads — so
+      // skip validation and let mapQuoteToProfileFields guard the fields.
+      const quote = await Promise.race([yahooFinance.quote(symbol, {}, { validateResult: false }), timeout]);
       return mapQuoteToProfileFields(quote as RawQuoteLike);
     }, null);
     return result ?? null;

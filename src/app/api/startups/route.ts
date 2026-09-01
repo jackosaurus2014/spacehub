@@ -52,7 +52,10 @@ export async function GET() {
     let watchlist: unknown[] = [];
     try {
       watchlist = await db.companyProfile.findMany({
-        where: { isPublic: false, status: 'active' },
+        // 2026-09-01 (founder ruling): joint ventures are NOT pre-IPO
+        // companies — ULA (Boeing/Lockheed JV) was ranking in the watchlist.
+        // A JV's exit is a sale between parents, never its own listing.
+        where: { isPublic: false, status: 'active', NOT: { ownershipType: 'joint-venture' } },
         orderBy: [
           { valuation: { sort: 'desc', nulls: 'last' } },
           { totalFunding: 'desc' },

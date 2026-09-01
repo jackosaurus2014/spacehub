@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'AI Intelligence Briefs',
   description: 'AI-generated analysis of space industry trends, company developments, market movements, and regulatory changes.',
+  alternates: { canonical: 'https://spacenexus.us/ai-insights' },
   openGraph: {
+    url: 'https://spacenexus.us/ai-insights',
     title: 'AI Insights | SpaceNexus',
     description: 'AI-generated analysis of space industry trends, company developments, market movements, and regulatory changes.',
     images: [{ url: '/api/og?title=AI+Insights&type=data', width: 1200, height: 630, alt: 'AI Insights' }],
