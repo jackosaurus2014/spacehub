@@ -159,7 +159,8 @@ export default async function SpaceTalentHubPage({ searchParams }: { searchParam
   const sp = searchParams ?? {};
   const tab = str(sp.tab);
   // Mirrors the client's mapping, including the 2026-08-31 tab=jobs → workforce
-  // aliasing (/jobs 308-redirects here as ?tab=jobs). Keep the two in sync.
+  // aliasing (old inbound links still arrive as ?tab=jobs; /jobs itself is a
+  // server-rendered hub since 2026-09-01). Keep the two in sync.
   const landing: 'talent' | 'workforce' | 'gigs' =
     tab === 'workforce' || tab === 'jobs' ? 'workforce' : tab === 'gigs' ? 'gigs' : 'talent';
   // Any job filter in the URL and the default query no longer matches — let

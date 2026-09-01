@@ -173,6 +173,8 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '*/20 * * * *', path: '/api/cron/launch-watch',                    label: 'launch-watch',               maxStaleMinutes: 90 },
   // Weekly company briefs without an account (2026-08-31): Monday owned-data digest per verified CompanyWatch, idempotent per ISO week.
   { schedule: '0 9 * * 1',    path: '/api/cron/company-brief',                   label: 'company-brief',              maxStaleMinutes: 11520 },
+  // Space Tycoon weekly corporation report (2026-09-01): Monday per-player email for GameProfile.weeklyReportEmail opt-ins, idempotent per ISO week (TycoonWeeklySend).
+  { schedule: '30 9 * * 1',   path: '/api/cron/tycoon-weekly-report',            label: 'tycoon-weekly-report',       maxStaleMinutes: 11520 },
   // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)
   { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
   // Forum digest — DISABLED 2026-08-26: forums mothballed (0 posts ever; see
@@ -308,6 +310,19 @@ const CRON_JOBS: CronJobDef[] = [
   // the equity settler (:30) nor the Chair certifier (:50). Registered in
   // middleware.ts cronPaths (the CSRF-for-new-cron gotcha).
   { schedule: '20 */2 * * *', path: '/api/space-tycoon/crisis/resolve',             label: 'tycoon-crisis-resolve',        maxStaleMinutes: 1440 },
+
+  // Opt-in email programs (2026-09-01) on the shared EmailProgramSend ledger
+  // (program + periodKey unique → a catch-up rerun never double-sends). One
+  // route, three independently scheduled programs — see
+  // src/app/api/cron/email-programs/route.ts. Same recipient/claim/send
+  // discipline as daily-brief above.
+  // Space Markets Daily — weekdays five minutes after stock-sync (21:30),
+  // i.e. after the US close; Friday→Monday gap allows 72h staleness.
+  { schedule: '50 21 * * 1-5', path: '/api/cron/email-programs?program=markets-daily', label: 'markets-daily-email',        maxStaleMinutes: 4320 },
+  // Monthly reports — the 3rd of each month: Hiring Index (latest completed
+  // edition) at 14:00 UTC, Launch Slip Report an hour later.
+  { schedule: '0 14 3 * *',   path: '/api/cron/email-programs?program=hiring-index',  label: 'hiring-index-email',         maxStaleMinutes: 46080 },
+  { schedule: '0 15 3 * *',   path: '/api/cron/email-programs?program=slip-report',   label: 'slip-report-email',          maxStaleMinutes: 46080 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

@@ -32,8 +32,18 @@ import {
   CINEMATIC_CHAPTER_ACT_TITLES, CHAPTER_FINALE_RESOLUTION_TITLES, pickChapterArt,
   isCinematicChapterActStage, type PendingChapterChoiceUI,
 } from './chapters';
+// Monthly-loop moment (2026-09-01): the quarter-close card. Built from the
+// stored QuarterlyReport (a superset of PublishableQuarterlyReport) so the
+// three numbers on the card are exactly the filing's numbers.
+import type { PublishableQuarterlyReport } from './corp-report-registry';
+import { formatMoney } from './formulas';
 
-export type CinematicMomentKind = 'narrative' | 'discovery' | 'expedition' | 'victory' | 'megastructure' | 'chapter';
+export type CinematicMomentKind = 'narrative' | 'discovery' | 'expedition' | 'victory' | 'megastructure' | 'chapter' | 'quarter';
+
+/** Optional call-to-action rendered as the primary button of a moment. The
+ *  page resolves `tab` through navigateToTab and forwards `subView` to
+ *  requestSubView (sub-view.ts) — the overlay itself never navigates. */
+export interface CinematicMomentCta { label: string; tab: string; subView?: string }
 
 export interface CinematicMoment {
   /** Stable dedupe key — see each builder for its scheme. */
@@ -55,6 +65,12 @@ export interface CinematicMoment {
    *  Undefined falls back to a plain radial-glow backdrop, same as
    *  MilestoneVignette. */
   art?: string;
+  /** Up to three headline numbers (quarter-close card). */
+  stats?: { label: string; value: string }[];
+  /** Primary action; when present the secondary button reads `dismissLabel`
+   *  (default "Dismiss") instead of "Continue". */
+  cta?: CinematicMomentCta;
+  dismissLabel?: string;
 }
 
 /** Cap on queued-but-unshown moments — a burst (e.g. catch-up processing
@@ -132,8 +148,19 @@ function pickNarrativeArt(chainId: string): string | undefined {
 const VICTORY_TITLE_PREFIX = '🥇 Victory: ';
 const EXPEDITION_ARRIVAL_PREFIX = '🌌 Arrival: ';
 const MEGASTRUCTURE_COMPLETE_SUFFIX = ' Complete!';
+/** recordQuarterlyReport (quarterly-reports.ts) logs `📊 Quarterly Report: Q<n>`
+ *  — there is no dedicated GameEventType for it, so the quarter-close moment
+ *  is detected from that milestone title and hydrated from the stored report. */
+export const QUARTERLY_REPORT_TITLE_PREFIX = '📊 Quarterly Report: Q';
 
-export function detectCinematicMomentsFromEvents(events: GameEvent[]): CinematicMoment[] {
+export interface CinematicDetectionContext {
+  /** state.quarterlyReports — needed to hydrate a quarter-close card with the
+   *  filing's numbers. Without it the quarterly milestone is ignored (no
+   *  numbers, no card). */
+  quarterlyReports?: PublishableQuarterlyReport[];
+}
+
+export function detectCinematicMomentsFromEvents(events: GameEvent[], ctx: CinematicDetectionContext = {}): CinematicMoment[] {
   const moments: CinematicMoment[] = [];
 
   for (const ev of events) {
@@ -186,6 +213,13 @@ export function detectCinematicMomentsFromEvents(events: GameEvent[]): Cinematic
     }
 
     if (ev.type !== 'milestone') continue;
+
+    if (ev.title.startsWith(QUARTERLY_REPORT_TITLE_PREFIX)) {
+      const n = Number.parseInt(ev.title.slice(QUARTERLY_REPORT_TITLE_PREFIX.length), 10);
+      const report = Number.isFinite(n) ? (ctx.quarterlyReports || []).find(r => r.quarterNumber === n) : undefined;
+      if (report) moments.push(buildQuarterCloseCinematicMoment(report));
+      continue;
+    }
 
     if (ev.title.startsWith(VICTORY_TITLE_PREFIX)) {
       moments.push({
@@ -287,5 +321,32 @@ export function buildDiscoveryCinematicMoment(milestoneId: string, programName: 
     icon: '🔬',
     accent: '#34d399',
     art,
+  };
+}
+
+// ─── Builder: quarter close (monthly loop, 2026-09-01) ─────────────────────
+// Short on purpose: quarter label, three numbers, "Publish report", "Dismiss".
+// The CTA lands on Reports → Quarterly (sub-view.ts token), where the
+// PublishToRegistry button lives — the moment itself publishes nothing.
+
+export function buildQuarterCloseCinematicMoment(report: PublishableQuarterlyReport): CinematicMoment {
+  const growth = report.growthRatePct === null
+    ? 'First filing on record'
+    : `Net worth ${report.growthRatePct >= 0 ? '+' : '−'}${Math.abs(report.growthRatePct).toFixed(1)}% vs. last quarter`;
+  return {
+    id: `quarter:${report.quarterIndex}`,
+    kind: 'quarter',
+    title: `Q${report.quarterOfYear} ${report.gameYear} CLOSED`,
+    subtitle: growth,
+    icon: '📊',
+    accent: '#fbbf24',
+    art: BG_ASSETS.starfield,
+    stats: [
+      { label: 'Revenue', value: formatMoney(report.revenue) },
+      { label: 'Profit', value: `${report.profit < 0 ? '−' : ''}${formatMoney(Math.abs(report.profit))}` },
+      { label: 'Net worth', value: formatMoney(report.netWorth) },
+    ],
+    cta: { label: 'Publish report', tab: 'reports', subView: 'reports:quarterly' },
+    dismissLabel: 'Dismiss',
   };
 }

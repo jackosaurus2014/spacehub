@@ -223,17 +223,84 @@ function PublishToRegistry({ report }: { report: QuarterlyReport }) {
   );
 }
 
+// ─── Weekly report email opt-in (2026-09-01) ────────────────────────────────
+// The game's first email: a Monday per-corporation digest built from
+// server-owned rows (src/lib/game/weekly-report-email.ts). Default OFF;
+// persisted via the same route that owns the other per-profile opt-in
+// (mentorOptIn — /api/space-tycoon/mentorship, action 'set_weekly_report').
+// A signed-out or profile-less player simply sees nothing here.
+function WeeklyReportOptIn() {
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/space-tycoon/mentorship', { credentials: 'same-origin' })
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => {
+        if (!cancelled && data && typeof data.weeklyReportEmail === 'boolean') setEnabled(data.weeklyReportEmail);
+      })
+      .catch(() => { /* non-critical — the toggle just stays hidden */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (enabled === null) return null;
+
+  const toggle = async (next: boolean) => {
+    setSaving(true);
+    const prev = enabled;
+    setEnabled(next);
+    try {
+      const res = await fetch('/api/space-tycoon/mentorship', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'set_weekly_report', enabled: next }),
+      });
+      if (!res.ok) throw new Error('save failed');
+      toast.success(next ? 'A corporate report lands in your inbox every Monday.' : 'Weekly report emails are off.', next ? 'Weekly report on' : 'Weekly report off');
+    } catch {
+      setEnabled(prev);
+      toast.error('Could not save that preference. Try again.', 'Not saved');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <label className="flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 cursor-pointer min-h-[44px]">
+      <input
+        type="checkbox"
+        className="mt-0.5 h-4 w-4 accent-cyan-400"
+        checked={enabled}
+        disabled={saving}
+        onChange={e => toggle(e.target.checked)}
+        aria-describedby="weekly-report-optin-help"
+      />
+      <span className="text-[11px] leading-snug">
+        <span className="text-white font-medium">Email me a weekly corporation report</span>
+        <span id="weekly-report-optin-help" className="block text-slate-500">
+          Mondays: net worth and rank, a 7-day cash-flow table by reason, market volume, notable events and your latest published quarterly. Built from the server ledger only. Off by default; one-click unsubscribe in every email.
+        </span>
+      </span>
+    </label>
+  );
+}
+
 function QuarterlyReportsView({ state }: { state: GameState }) {
   const reports = state.quarterlyReports || [];
   const [expandedId, setExpandedId] = useState<string | null>(reports.length > 0 ? reports[reports.length - 1].id : null);
 
   if (reports.length === 0) {
     return (
-      <ConsolePanel
-        title="No Quarterly Reports Yet"
-        icon="market"
-        subtitle="Your first automatic corporate quarterly generates once a full in-game quarter (3 game-months) has elapsed since founding — revenue, profit, net worth, and growth rate, all summarized here."
-      />
+      <div className="space-y-4">
+        <ConsolePanel
+          title="No Quarterly Reports Yet"
+          icon="market"
+          subtitle="Your first automatic corporate quarterly generates once a full in-game quarter (3 game-months) has elapsed since founding — revenue, profit, net worth, and growth rate, all summarized here."
+        />
+        <WeeklyReportOptIn />
+      </div>
     );
   }
 
@@ -400,6 +467,7 @@ function QuarterlyReportsView({ state }: { state: GameState }) {
           );
         })}
       </div>
+      <WeeklyReportOptIn />
     </div>
   );
 }
@@ -435,8 +503,12 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
   // Log / Outliner so a crisis row lands on the Emergency view rather than
   // on the hub's default. Same one-shot consume pattern MarketHubPanel and
   // WorkforcePanel already use.
+  // 2026-09-01: the Situation Log's `quarter_closed` row and the quarter-close
+  // cinematic's "Publish report" CTA both deep-link to `reports:quarterly`.
   useEffect(() => {
-    if (consumeSubViewRequest('reports') === 'emergency') setTopTab('emergency');
+    const view = consumeSubViewRequest('reports');
+    if (view === 'emergency') setTopTab('emergency');
+    else if (view === 'quarterly') setTopTab('quarterly');
   }, []);
   const crisisLive = crisisStatus.eligibility.eligible
     || (crisisStatus.situation != null && !crisisStatus.situation.outcome);

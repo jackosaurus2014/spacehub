@@ -43,10 +43,16 @@ const GUIDE_DESCRIPTIONS: Record<string, string> = {
   'watch-a-launch-cape-canaveral': 'The best public viewing spots for a rocket launch at Cape Canaveral.',
   'watch-a-launch-vandenberg': 'The best public viewing spots for a rocket launch at Vandenberg Space Force Base.',
   'watch-a-launch-starbase': 'The best public viewing spots for a Starship launch at Starbase, Texas.',
+  'watch-a-launch-wallops': 'The best public viewing spots for an Antares or Electron launch at Wallops Island, Virginia.',
+  'watch-a-launch-kourou': 'How to watch an Ariane 6 or Vega-C launch at the Guiana Space Centre, and how to get there.',
   'satellite-tracking-guide': 'TLE data, SGP4 propagation, orbit types, and how to track any object in orbit.',
   'how-satellite-tracking-works': 'The technical fundamentals behind real-time satellite position tracking.',
   'itar-compliance-guide': 'What space companies need to know about U.S. export control (ITAR) compliance.',
   'space-regulatory-compliance': 'Licensing, spectrum management, and the regulatory landscape for space operators.',
+  'nssl-phase-3': 'How the Space Force buys national security launches — the two lanes, on-ramps, certified providers, and who is winning.',
+  'kuiper-vs-starlink': 'Starlink and Amazon Leo (formerly Project Kuiper) on satellites in orbit, orbits, speed, price, launch supply, and service availability.',
+  'space-debris-and-traffic-management': 'Live catalogue counts, the Kessler syndrome, conjunction assessment, the FCC 5-year rule, and who is building debris removal.',
+  'space-weather-risk-for-operators': 'Kp, Bz, flare classes, storm-driven drag, single-event upsets, the February 2022 Starlink loss, and an operational playbook.',
 };
 
 export default function GuideIndexPage() {

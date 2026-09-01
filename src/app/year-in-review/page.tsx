@@ -139,7 +139,7 @@ const GROWTH_STATS: GrowthStat[] = [
   },
   {
     label: 'ATS-Synced Jobs',
-    value: '6,300+',
+    value: SITE_STATS.jobListings,
     subtext: 'Live listings from 16 company boards',
     color: 'border-emerald-500/30 bg-emerald-500/5',
   },
@@ -221,8 +221,20 @@ export default function YearInReviewPage() {
           <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             From a blank repository in February to a comprehensive space intelligence platform
             by August: {SITE_STATS.articles} original articles, {SITE_STATS.pagesAndTools} pages
-            and tools, a live satellite tracker, a real jobs board with 6,300+ listings, and a
+            and tools, a live satellite tracker, a real jobs board with {SITE_STATS.jobListings} listings, and a
             weekly data brief — built in public, one wave at a time.
+          </p>
+          <p className="mt-6 text-sm text-slate-500">
+            This page is about the platform, not the industry. For the space industry&apos;s year, the
+            live 2026 launch count is on{' '}
+            <Link href="/launch-cadence" className="text-indigo-300 hover:text-white underline underline-offset-2">
+              Launch Cadence
+            </Link>{' '}
+            and the 2025 reference figures are on{' '}
+            <Link href="/space-stats" className="text-indigo-300 hover:text-white underline underline-offset-2">
+              Industry Stats
+            </Link>
+            .
           </p>
         </div>
       </section>

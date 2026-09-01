@@ -42,6 +42,32 @@ export async function GET(request: Request) {
       );
     }
 
+    // scope=markets: Space Markets Daily only; scope=monthly: the monthly
+    // reports (Hiring Index + Launch Slip Report) only. Everything else stays.
+    if (scope === 'markets') {
+      if (subscriber.marketsDaily) {
+        await prisma.newsletterSubscriber.update({
+          where: { id: subscriber.id },
+          data: { marketsDaily: false },
+        });
+      }
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/?newsletter=markets_unsubscribed`
+      );
+    }
+
+    if (scope === 'monthly') {
+      if (subscriber.monthlyReports) {
+        await prisma.newsletterSubscriber.update({
+          where: { id: subscriber.id },
+          data: { monthlyReports: false },
+        });
+      }
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/?newsletter=monthly_unsubscribed`
+      );
+    }
+
     if (subscriber.unsubscribedAt) {
       // Already unsubscribed
       return NextResponse.redirect(
@@ -55,9 +81,11 @@ export async function GET(request: Request) {
       data: {
         unsubscribedAt: new Date(),
         verified: false,
-        // A full unsubscribe clears the Daily Brief opt-in too, so a later
-        // re-subscription to the M/Th digest never silently revives it.
+        // A full unsubscribe clears every program opt-in too, so a later
+        // re-subscription to the M/Th digest never silently revives them.
         dailyBrief: false,
+        marketsDaily: false,
+        monthlyReports: false,
       },
     });
 
@@ -126,6 +154,8 @@ export async function POST(request: Request) {
         unsubscribedAt: new Date(),
         verified: false,
         dailyBrief: false,
+        marketsDaily: false,
+        monthlyReports: false,
       },
     });
 

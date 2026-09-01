@@ -56,7 +56,46 @@ interface CorporationRow {
   rank: number;
 }
 
-type IntelTab = 'market' | 'corporations' | 'flows' | 'share' | 'demand' | 'offense';
+type IntelTab = 'market' | 'corporations' | 'flows' | 'share' | 'demand' | 'npc' | 'offense';
+
+interface MarketIntelligencePanelProps {
+  /** Lever-discoverability pass (2026-09): the order book's selected resource,
+   *  mirrored by the Markets hub so the NPC demand console filters to it. */
+  selectedResource?: string | null;
+  /** Jump to Spot & Orders with a resource preselected. */
+  onOpenOrderBook?: (slug: string) => void;
+  /** Open the order book's price-campaign console for a resource (the hub is
+   *  the home of the declare form; Analytics keeps this thin link). */
+  onDeclareCampaign?: (slug: string) => void;
+}
+
+// GET /api/space-tycoon/npc-forecast row shape (npc-forecast.ts NpcForecastItem).
+interface NpcForecastItemView {
+  npcId: string;
+  npcName: string;
+  factionId?: string;
+  resourceSlug: string;
+  side: 'buy' | 'sell';
+  quantity: number;
+  priceCap?: number;
+  windowStartIso: string;
+  windowEndIso: string;
+  confidence: 'scheduled' | 'projected';
+  source: 'industry' | 'drive' | 'pool';
+  unit: 'units' | 'usd';
+  locationId?: string;
+  category?: string;
+  note?: string;
+}
+
+interface NpcForecastView {
+  generatedAt: string;
+  horizonHours: number;
+  scale: number;
+  active30d: number;
+  items: NpcForecastItemView[];
+  byResource: Record<string, { buy: number; sell: number }>;
+}
 
 // Wave E4 (Finite Demand Pools — docs/ECONOMY_PVP_2026-08.md §E4): the
 // demand map's row shape, as served by GET /api/space-tycoon/demand-pools.
@@ -74,7 +113,7 @@ interface DemandPoolRowView {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function MarketIntelligencePanel() {
+export default function MarketIntelligencePanel({ selectedResource, onOpenOrderBook, onDeclareCampaign }: MarketIntelligencePanelProps = {}) {
   const [tab, setTab] = useState<IntelTab>('market');
 
   return (
@@ -101,6 +140,9 @@ export default function MarketIntelligencePanel() {
           <TabButton active={tab === 'demand'} onClick={() => setTab('demand')} icon="services">
             Demand
           </TabButton>
+          <TabButton active={tab === 'npc'} onClick={() => setTab('npc')} icon="npc">
+            NPC Demand
+          </TabButton>
           <TabButton active={tab === 'offense'} onClick={() => setTab('offense')} icon="trending-down">
             Econ Warfare
           </TabButton>
@@ -112,7 +154,8 @@ export default function MarketIntelligencePanel() {
       {tab === 'flows' && <SupplyFlowsTab />}
       {tab === 'share' && <MarketShareTab />}
       {tab === 'demand' && <DemandMapTab />}
-      {tab === 'offense' && <EconWarfareTab />}
+      {tab === 'npc' && <NpcForecastTab selectedResource={selectedResource} onOpenOrderBook={onOpenOrderBook} />}
+      {tab === 'offense' && <EconWarfareTab onDeclareCampaign={onDeclareCampaign} />}
     </div>
   );
 }
@@ -1034,6 +1077,228 @@ function DemandMapTab() {
   );
 }
 
+// ─── NPC Demand Tab (published NPC forecast, 2026-09) ────────────────────────
+// CLAUDE.md "NPC economic backdrop": "NPC demand is visible and forecastable.
+// Major NPC contracts, faction procurement drives, and scheduled
+// infrastructure projects publish ahead of time — players can plan around
+// them." GET /api/space-tycoon/npc-forecast publishes exactly what the hourly
+// NPC industry tick will do (same helpers, parity-tested), every open faction
+// procurement drive with its price cap, and the next-24h service demand
+// floor per market. Confidence is a TEXT pill, never colour alone.
+
+const NPC_FORECAST_ALL = '__all__';
+
+function formatWindow(startIso: string, endIso: string): string {
+  const s = new Date(startIso);
+  const e = new Date(endIso);
+  const fmt = (d: Date) => d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return `${fmt(s)} → ${fmt(e)}`;
+}
+
+function NpcForecastTab({ selectedResource, onOpenOrderBook }: { selectedResource?: string | null; onOpenOrderBook?: (slug: string) => void }) {
+  const [forecast, setForecast] = useState<NpcForecastView | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<string>(selectedResource || NPC_FORECAST_ALL);
+  const [showPools, setShowPools] = useState(false);
+
+  // Stay in step with the order book's selection while it changes.
+  useEffect(() => { if (selectedResource) setFilter(selectedResource); }, [selectedResource]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/space-tycoon/npc-forecast')
+      .then(r => (r.ok ? r.json() : null))
+      .then((d: NpcForecastView | null) => { if (!cancelled && d && Array.isArray(d.items)) setForecast(d); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const resourcesPresent = useMemo(() => {
+    const set = new Set<string>();
+    for (const it of forecast?.items || []) if (it.unit === 'units') set.add(it.resourceSlug);
+    return RESOURCES.filter(r => set.has(r.id));
+  }, [forecast]);
+
+  const unitItems = useMemo(() => {
+    const rows = (forecast?.items || []).filter(it => it.unit === 'units');
+    const filtered = filter === NPC_FORECAST_ALL ? rows : rows.filter(it => it.resourceSlug === filter);
+    return [...filtered].sort((a, b) => {
+      if (a.source !== b.source) return a.source === 'drive' ? -1 : 1;
+      if (a.windowEndIso !== b.windowEndIso) return a.windowEndIso < b.windowEndIso ? -1 : 1;
+      return b.quantity - a.quantity;
+    });
+  }, [forecast, filter]);
+
+  const poolRows = useMemo(() => (forecast?.items || []).filter(it => it.unit === 'usd'), [forecast]);
+  const totals = filter !== NPC_FORECAST_ALL ? forecast?.byResource[filter] : null;
+
+  if (loading) return <div className="card p-8 text-center text-slate-500 text-sm">Loading the NPC demand schedule…</div>;
+  if (!forecast) {
+    return <div className="card p-8 text-center text-slate-500 text-sm">The NPC demand schedule is unavailable right now — try again in a minute.</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="card p-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+          <div className="text-white text-sm font-bold flex items-center gap-1.5">
+            <GameIcon name="npc" size={14} /> Scheduled NPC demand — next {forecast.horizonHours}h
+          </div>
+          <span className="text-[10px] text-slate-500">
+            Published {new Date(forecast.generatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · NPC scale {Math.round(forecast.scale * 100)}%
+          </span>
+        </div>
+        <p className="text-slate-500 text-[11px]">
+          What the five NPC industrial corporations will bid for and list, and every open faction procurement drive
+          with its price cap — published ahead of time so you can plan production around it. These are the same
+          numbers the hourly tick executes, not estimates of them; &ldquo;projected&rdquo; rows still depend on the
+          corporation&apos;s stock, treasury and player demand.
+        </p>
+        <div className="flex flex-wrap items-center gap-2 mt-2">
+          <label className="text-[10px] text-slate-400 uppercase tracking-wider" htmlFor="npc-forecast-filter">Resource</label>
+          <select
+            id="npc-forecast-filter"
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            className="min-h-[44px] bg-slate-900 border border-white/[0.1] rounded-md px-2 text-xs text-slate-200"
+          >
+            <option value={NPC_FORECAST_ALL}>All resources</option>
+            {resourcesPresent.map(r => (
+              <option key={r.id} value={r.id}>{r.name}</option>
+            ))}
+            {filter !== NPC_FORECAST_ALL && !resourcesPresent.some(r => r.id === filter) && (
+              <option value={filter}>{RESOURCE_MAP.get(filter as ResourceId)?.name || filter}</option>
+            )}
+          </select>
+          {filter !== NPC_FORECAST_ALL && (
+            <span className="text-[11px] text-purple-300/90">
+              NPC demand next {forecast.horizonHours}h: buy {(totals?.buy || 0).toLocaleString()} / sell {(totals?.sell || 0).toLocaleString()}
+            </span>
+          )}
+          {filter !== NPC_FORECAST_ALL && onOpenOrderBook && (
+            <button
+              type="button"
+              onClick={() => onOpenOrderBook(filter)}
+              className="min-h-[44px] px-2.5 rounded-md text-[10px] font-bold border border-white/15 text-slate-200 hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            >
+              Open order book →
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="card p-3">
+        {unitItems.length === 0 ? (
+          <p className="text-xs text-slate-500 py-3">
+            {filter === NPC_FORECAST_ALL
+              ? 'No NPC purchases or listings are scheduled in this window.'
+              : `No NPC purchases or listings are scheduled for ${RESOURCE_MAP.get(filter as ResourceId)?.name || filter} in this window.`}
+          </p>
+        ) : (
+          <div className="overflow-x-auto -mx-1">
+            <table className="w-full text-[11px]" role="table" aria-label="Scheduled NPC demand">
+              <thead>
+                <tr className="text-slate-500 text-left">
+                  <th scope="col" className="px-1 py-1 font-medium">Window</th>
+                  <th scope="col" className="px-1 py-1 font-medium">NPC</th>
+                  <th scope="col" className="px-1 py-1 font-medium">Resource</th>
+                  <th scope="col" className="px-1 py-1 font-medium">Side</th>
+                  <th scope="col" className="px-1 py-1 font-medium text-right">Qty</th>
+                  <th scope="col" className="px-1 py-1 font-medium text-right">Price cap</th>
+                  <th scope="col" className="px-1 py-1 font-medium">Confidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {unitItems.map((it, i) => {
+                  const def = RESOURCE_MAP.get(it.resourceSlug as ResourceId);
+                  return (
+                    <tr key={`${it.npcId}:${it.resourceSlug}:${it.side}:${i}`} className="border-t border-white/[0.05]" title={it.note}>
+                      <td className="px-1 py-1.5 text-slate-400 whitespace-nowrap">{formatWindow(it.windowStartIso, it.windowEndIso)}</td>
+                      <td className="px-1 py-1.5 text-white whitespace-nowrap">
+                        {it.npcName}
+                        {it.source === 'drive' && <span className="ml-1 text-[9px] uppercase tracking-wider text-slate-500">drive</span>}
+                      </td>
+                      <td className="px-1 py-1.5 text-slate-200 whitespace-nowrap">
+                        {onOpenOrderBook ? (
+                          <button
+                            type="button"
+                            onClick={() => onOpenOrderBook(it.resourceSlug)}
+                            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+                            aria-label={`Open the order book for ${def?.name || it.resourceSlug}`}
+                          >
+                            {def?.name || it.resourceSlug}
+                          </button>
+                        ) : (def?.name || it.resourceSlug)}
+                      </td>
+                      <td className="px-1 py-1.5 whitespace-nowrap">
+                        {/* Side as a literal word — never colour alone. */}
+                        <span className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${it.side === 'buy' ? 'border-emerald-500/40 text-emerald-300' : 'border-red-500/40 text-red-300'}`}>
+                          {it.side === 'buy' ? 'Buys' : 'Sells'}
+                        </span>
+                      </td>
+                      <td className="px-1 py-1.5 text-right font-mono text-slate-200">{it.quantity.toLocaleString()}</td>
+                      <td className="px-1 py-1.5 text-right font-mono text-slate-300">{it.priceCap ? formatMoney(it.priceCap) : '—'}</td>
+                      <td className="px-1 py-1.5 whitespace-nowrap">
+                        <span className="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-white/15 text-slate-300">
+                          {it.confidence === 'scheduled' ? 'Scheduled' : 'Projected'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {poolRows.length > 0 && (
+        <div className="card p-3">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="text-white text-xs font-bold flex items-center gap-1.5">
+              <GameIcon name="services" size={13} /> Service demand floor — next 24h
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowPools(v => !v)}
+              aria-expanded={showPools}
+              aria-controls="npc-pool-floor-table"
+              className="min-h-[44px] px-2 text-[10px] uppercase tracking-wider text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+            >
+              {showPools ? 'Hide' : `Show ${poolRows.length} markets`}
+            </button>
+          </div>
+          <p className="text-slate-500 text-[11px] mt-1">
+            Dollars of NPC-backdrop demand each service market will pay out over the next day (authored floor ×
+            population scale × season bias). It recedes as the server fills up — a floor, never a ceiling.
+          </p>
+          <div id="npc-pool-floor-table" hidden={!showPools} className="overflow-x-auto -mx-1 mt-2">
+            <table className="w-full text-[11px]" role="table" aria-label="NPC service demand floor, next 24 hours">
+              <thead>
+                <tr className="text-slate-500 text-left">
+                  <th scope="col" className="px-1 py-1 font-medium">Location</th>
+                  <th scope="col" className="px-1 py-1 font-medium">Market</th>
+                  <th scope="col" className="px-1 py-1 font-medium text-right">Demand /24h</th>
+                </tr>
+              </thead>
+              <tbody>
+                {poolRows.map(it => (
+                  <tr key={it.npcId} className="border-t border-white/[0.05]">
+                    <td className="px-1 py-1.5 text-white">{LOCATION_MAP.get(it.locationId || '')?.name || it.locationId}</td>
+                    <td className="px-1 py-1.5 text-slate-300">{(CATEGORY_LABELS as Record<string, string>)[it.category || ''] || it.category}</td>
+                    <td className="px-1 py-1.5 text-right font-mono text-slate-200">{formatMoney(it.quantity)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Econ Warfare Tab (Wave M5 — docs/MEANINGFUL_2026-08.md §3.2 O2/O3) ─────
 // The offense toolkit's market surface: every active price campaign on the
 // server (fully public — reputation is legible), a declare form (burned
@@ -1064,7 +1329,7 @@ interface CampaignQuoteView {
   minInventory: number;
 }
 
-function EconWarfareTab() {
+function EconWarfareTab({ onDeclareCampaign }: { onDeclareCampaign?: (slug: string) => void }) {
   const [campaigns, setCampaigns] = useState<CampaignView[]>([]);
   const [declareSlug, setDeclareSlug] = useState<string>('iron');
   const [busy, setBusy] = useState(false);
@@ -1158,6 +1423,36 @@ function EconWarfareTab() {
           <p className="text-[11px] text-slate-400 mb-2">
             Declare your own campaign: burned fee = 15% of the market&apos;s weekly turnover ($25M-$5B), requires holding real inventory of the resource, one campaign at a time, 14-day per-market cooldown. Frontier corporations cannot declare or be starved.
           </p>
+          {onDeclareCampaign ? (
+            // Lever-discoverability pass (2026-09): the declare form lives on
+            // Spot & Orders now (the order book header knows the selected
+            // resource and your inventory). This is the thin link.
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={declareSlug}
+                onChange={e => setDeclareSlug(e.target.value)}
+                className="min-h-[44px] bg-slate-900 border border-white/[0.1] rounded-md px-2 py-1.5 text-xs text-slate-200"
+                aria-label="Resource to campaign against"
+              >
+                {RESOURCES.map(r => (
+                  <option key={r.id} value={r.id}>{r.name}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => onDeclareCampaign(declareSlug)}
+                aria-label={`Open the price-campaign console for ${RESOURCE_MAP.get(declareSlug as ResourceId)?.name || declareSlug} on the order book`}
+                className="min-h-[44px] px-3 py-1.5 rounded-md text-xs font-bold bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              >
+                Declare from the order book →
+              </button>
+              {quote && quote.resourceSlug === declareSlug && (
+                <span className="text-[11px] text-amber-300/90">
+                  Quote: fee {formatMoney(quote.fee)} (burned) · {quote.minInventory} units held required.
+                </span>
+              )}
+            </div>
+          ) : (<>
           {quote && quote.resourceSlug === declareSlug && (
             <p className="text-[11px] text-amber-300/90 mb-2">
               Current quote for {RESOURCE_MAP.get(declareSlug as ResourceId)?.name || declareSlug}: fee {formatMoney(quote.fee)} (burned) · ammunition required: {quote.minInventory} units held.
@@ -1183,6 +1478,7 @@ function EconWarfareTab() {
             </button>
           </div>
           {message && <p className="text-[11px] text-slate-300 mt-2">{message}</p>}
+          </>)}
         </div>
       </ConsolePanel>
 

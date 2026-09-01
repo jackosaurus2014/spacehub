@@ -4,6 +4,7 @@
 const mockFindMany = jest.fn();
 const mockDeliveryFindUnique = jest.fn();
 const mockDeliveryCreate = jest.fn();
+const mockDebriefFindMany = jest.fn();
 
 jest.mock('@/lib/db', () => ({
   __esModule: true,
@@ -11,12 +12,13 @@ jest.mock('@/lib/db', () => ({
     launchWatch: { findMany: (...a: unknown[]) => mockFindMany(...a) },
     spaceEvent: { findMany: (...a: unknown[]) => mockFindMany(...a) },
     launchWatchDelivery: { findUnique: (...a: unknown[]) => mockDeliveryFindUnique(...a), create: (...a: unknown[]) => mockDeliveryCreate(...a) },
+    missionDebrief: { findMany: (...a: unknown[]) => mockDebriefFindMany(...a) },
   },
 }));
 jest.mock('@/lib/logger', () => ({ logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn() } }));
 jest.mock('@/lib/newsletter/email-service', () => ({ sendVerificationEmail: jest.fn(async () => ({ success: true })) }));
 
-import { alertEmail, dueKinds, runLaunchWatchDeliveries, scopeLabel, watchMatchesEvent, T24_MS, T1_MS } from '@/lib/launch-watch';
+import { alertEmail, debriefEmail, dueKinds, runLaunchWatchDeliveries, scopeLabel, watchMatchesEvent, T24_MS, T1_MS, DEBRIEF_WINDOW_MS } from '@/lib/launch-watch';
 
 const NOW = new Date('2026-08-29T12:00:00Z');
 const ev = (over: Partial<Parameters<typeof dueKinds>[0]> = {}) => ({
@@ -48,6 +50,34 @@ describe('dueKinds', () => {
     expect(dueKinds(ev({ launchDate: new Date(NOW.getTime() - 3600_000), status: 'scrubbed' }), NOW)).toEqual([]); // no outcome recorded
     expect(dueKinds(ev({ launchDate: null }), NOW)).toEqual([]);
   });
+
+  it("'debrief' is due only for a flown launch inside the 7-day window when the caller says a debrief is published", () => {
+    const flownRecently = ev({ launchDate: new Date(NOW.getTime() - 3600_000), status: 'completed' });
+    expect(dueKinds(flownRecently, NOW, { debriefAvailable: true })).toEqual(['outcome', 'debrief']);
+    expect(dueKinds(flownRecently, NOW, { debriefAvailable: false })).toEqual(['outcome']);
+    expect(dueKinds(flownRecently, NOW)).toEqual(['outcome']); // stays pure: default is no debrief
+    // outcome window closed, debrief window open
+    expect(dueKinds(ev({ launchDate: new Date(NOW.getTime() - 3 * 24 * 3600_000), status: 'failed' }), NOW, { debriefAvailable: true })).toEqual(['debrief']);
+    expect(dueKinds(ev({ launchDate: new Date(NOW.getTime() - DEBRIEF_WINDOW_MS - 1000), status: 'completed' }), NOW, { debriefAvailable: true })).toEqual([]);
+    // not flown → never a debrief, even if one is (wrongly) published
+    expect(dueKinds(ev({ launchDate: new Date(NOW.getTime() - 3600_000), status: 'scrubbed' }), NOW, { debriefAvailable: true })).toEqual([]);
+    expect(dueKinds(ev({ launchDate: new Date(NOW.getTime() + 30 * 60_000) }), NOW, { debriefAvailable: true })).toEqual(['t1']);
+  });
+});
+
+describe('debriefEmail', () => {
+  it('uses the debrief subject, summary, three takeaways, the debrief link and the unsubscribe link', () => {
+    const d = { slug: 'starlink-15-30', missionName: 'Starlink Group 15-30', executiveSummary: 'Nominal ascent; booster landed on OCISLY.', keyTakeaways: ['One', 'Two', 'Three', 'Four'] };
+    const m = debriefEmail(ev({ status: 'completed' }), d, 'tok');
+    expect(m.subject).toBe('Debrief: Starlink Group 15-30 — what happened and why');
+    expect(m.text).toContain('Nominal ascent; booster landed on OCISLY.');
+    expect(m.text).toContain('- Three');
+    expect(m.text).not.toContain('- Four');
+    expect(m.text).toContain('/mission-debriefs/starlink-15-30');
+    expect(m.text).toContain('/api/launch-watch/unsubscribe?token=tok');
+    expect(m.html).toContain('<li>One</li>');
+    expect(debriefEmail(ev(), { ...d, executiveSummary: '<b>x</b>' }, 'tok').html).not.toContain('<b>x</b>');
+  });
 });
 
 describe('alertEmail', () => {
@@ -72,7 +102,7 @@ describe('scopeLabel', () => {
 });
 
 describe('runLaunchWatchDeliveries', () => {
-  beforeEach(() => { mockFindMany.mockReset(); mockDeliveryFindUnique.mockReset(); mockDeliveryCreate.mockReset(); mockDeliveryCreate.mockResolvedValue({}); });
+  beforeEach(() => { mockFindMany.mockReset(); mockDeliveryFindUnique.mockReset(); mockDeliveryCreate.mockReset(); mockDeliveryCreate.mockResolvedValue({}); mockDebriefFindMany.mockReset(); mockDebriefFindMany.mockResolvedValue([]); });
 
   it('sends each due kind once per (watch, event) and records it', async () => {
     mockFindMany
@@ -103,5 +133,32 @@ describe('runLaunchWatchDeliveries', () => {
     const r = await runLaunchWatchDeliveries(NOW, async () => false);
     expect(r).toMatchObject({ sent: 0, skipped: 1 });
     expect(mockDeliveryCreate).not.toHaveBeenCalled();
+  });
+
+  it("sends the 'debrief' follow-up once a published debrief exists for a flown launch, and never twice", async () => {
+    const flown = ev({ launchDate: new Date(NOW.getTime() - 2 * 24 * 3600_000), status: 'completed' });
+    mockFindMany
+      .mockResolvedValueOnce([{ id: 'w1', email: 'a@b.c', eventId: 'e1', rocket: null, site: null, unsubscribeToken: 't1' }])
+      .mockResolvedValueOnce([flown]);
+    mockDebriefFindMany.mockResolvedValue([{ eventId: 'e1', slug: 'starlink-15-30', missionName: 'Starlink Group 15-30', executiveSummary: 'Nominal.', keyTakeaways: ['A'] }]);
+    // outcome already delivered, debrief not yet
+    mockDeliveryFindUnique.mockImplementation(async (args: { where: { watchId_eventId_kind: { kind: string } } }) =>
+      args.where.watchId_eventId_kind.kind === 'debrief' ? null : { id: 'already' });
+    const sent: string[] = [];
+    const r = await runLaunchWatchDeliveries(NOW, async (to, subject) => { sent.push(`${to}:${subject}`); return true; });
+    expect(mockDebriefFindMany).toHaveBeenCalledWith(expect.objectContaining({ where: { eventId: { in: ['e1'] }, publishedAt: { not: null } } }));
+    expect(sent).toEqual(['a@b.c:Debrief: Starlink Group 15-30 — what happened and why']);
+    expect(mockDeliveryCreate).toHaveBeenCalledWith({ data: { watchId: 'w1', eventId: 'e1', kind: 'debrief' } });
+    expect(r.sent).toBe(1);
+  });
+
+  it('sends no debrief when the debrief is unpublished or the launch has not flown', async () => {
+    mockFindMany
+      .mockResolvedValueOnce([{ id: 'w1', email: 'a@b.c', eventId: 'e1', rocket: null, site: null, unsubscribeToken: 't1' }])
+      .mockResolvedValueOnce([ev({ launchDate: new Date(NOW.getTime() - 2 * 24 * 3600_000), status: 'completed' })]);
+    mockDebriefFindMany.mockResolvedValue([]); // the query itself filters publishedAt != null
+    mockDeliveryFindUnique.mockResolvedValue(null);
+    const r = await runLaunchWatchDeliveries(NOW, async () => true);
+    expect(r.sent).toBe(0);
   });
 });

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
@@ -30,12 +31,22 @@ export const dynamic = 'force-dynamic';
  * GET  → { isMentor, activeAsMentor: [...], pendingAsMentor: [...],
  *          asMentee: {...}|null, availableMentors: [...] }
  * POST → { action: 'opt_in'|'opt_out'|'request'|'accept'|'decline'|'end', ... }
+ *
+ * Also the home of the game's other per-profile opt-in (2026-09-01): the
+ * Space Tycoon weekly report email (GameProfile.weeklyReportEmail, default
+ * OFF). GET exposes `weeklyReportEmail`; POST { action: 'set_weekly_report',
+ * enabled } persists it. Sends live in src/lib/game/weekly-report-email.ts.
  */
+
+const weeklyReportPrefSchema = z.object({
+  action: z.literal('set_weekly_report'),
+  enabled: z.boolean(),
+});
 
 async function getOwnProfile(userId: string) {
   return prisma.gameProfile.findUnique({
     where: { userId },
-    select: { id: true, companyName: true, netWorth: true, totalEarned: true, createdAt: true, mentorOptIn: true },
+    select: { id: true, companyName: true, netWorth: true, totalEarned: true, createdAt: true, mentorOptIn: true, weeklyReportEmail: true },
   });
 }
 
@@ -110,6 +121,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       isMentor: me.mentorOptIn,
+      weeklyReportEmail: me.weeklyReportEmail,
       activeAsMentor,
       pendingAsMentor,
       asMentee,
@@ -136,6 +148,13 @@ export async function POST(request: Request) {
     if (action === 'opt_in') {
       await prisma.gameProfile.update({ where: { id: me.id }, data: { mentorOptIn: true } });
       return NextResponse.json({ success: true });
+    }
+
+    if (action === 'set_weekly_report') {
+      const parsed = weeklyReportPrefSchema.safeParse(body);
+      if (!parsed.success) return NextResponse.json({ error: 'enabled must be a boolean' }, { status: 400 });
+      await prisma.gameProfile.update({ where: { id: me.id }, data: { weeklyReportEmail: parsed.data.enabled } });
+      return NextResponse.json({ success: true, weeklyReportEmail: parsed.data.enabled });
     }
 
     if (action === 'opt_out') {

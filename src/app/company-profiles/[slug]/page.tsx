@@ -1240,7 +1240,7 @@ function JobsTab({ companySlug, companyName }: { companySlug: string; companyNam
           description={`${companyName} has no live listings on our board.`}
           reason="Our crawler re-reads 16 applicant-tracking boards every morning at 06:30 UTC. Either this company has nothing posted today, or it hires on a board we do not yet crawl. This tab refreshes with the next morning crawl."
           suggestions={[
-            { label: 'All space jobs', href: '/space-talent?tab=jobs' },
+            { label: 'All space jobs', href: '/jobs' },
             { label: 'Company directory', href: '/company-profiles' },
           ]}
         />

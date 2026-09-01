@@ -5,8 +5,20 @@ import AdSlot from '@/components/ads/AdSlot';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { ADJACENT_TECH_SHOW_NAMES } from '@/lib/podcast-roster';
+import { formatDurationSec, formatEpisodeDate, podcastCategoryClass, stripToText } from '@/lib/podcast-format';
 
 export const dynamic = 'force-dynamic';
+
+const LATEST_EPISODES_LIMIT = 10;
+
+interface LatestEpisodeItem {
+  id: string;
+  slug: string;
+  title: string;
+  durationSec: number | null;
+  publishedAt: Date | null;
+  podcast: { slug: string; name: string; artworkUrl: string | null };
+}
 
 interface PodcastListItem {
   id: string;
@@ -22,20 +34,6 @@ interface PodcastListItem {
   latestEpisodeAt: Date | null;
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  industry: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
-  science: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
-  exploration: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-  business: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-  engineering: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
-  policy: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
-  education: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
-  interviews: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30',
-  news: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
-  general: 'bg-white/10 text-slate-300 border-white/20',
-  ai: 'bg-lime-500/15 text-lime-300 border-lime-500/30',
-};
-
 function formatLatestEpisode(d: Date | null): string {
   if (!d) return 'No episodes yet';
   const date = new Date(d);
@@ -49,8 +47,58 @@ function formatLatestEpisode(d: Date | null): string {
   return `Latest episode: ${formatted}`;
 }
 
+function LatestEpisodesStrip({ episodes }: { episodes: LatestEpisodeItem[] }) {
+  if (episodes.length === 0) return null;
+  return (
+    <section className="mb-8" aria-labelledby="latest-episodes-heading">
+      <div className="flex items-baseline justify-between gap-4 mb-3">
+        <h2 id="latest-episodes-heading" className="text-xl font-bold text-white">
+          Latest episodes across all shows
+        </h2>
+        <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--ink-3)]">
+          {episodes.length} newest
+        </span>
+      </div>
+      <ol className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:mx-0 sm:px-0 sm:snap-none lg:grid-cols-5">
+        {episodes.map((ep) => {
+          const meta = [formatEpisodeDate(ep.publishedAt), formatDurationSec(ep.durationSec)].filter(Boolean).join(' · ');
+          return (
+            <li key={ep.id} className="w-64 flex-shrink-0 snap-start sm:w-auto">
+              <Link
+                href={`/podcasts/${ep.podcast.slug}/${ep.slug}`}
+                className="card p-3 h-full hover:border-white/20 transition-colors group flex flex-col"
+              >
+                <span className="flex items-center gap-2 mb-2 min-w-0">
+                  {ep.podcast.artworkUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={ep.podcast.artworkUrl}
+                      alt=""
+                      width={28}
+                      height={28}
+                      className="w-7 h-7 rounded-md object-cover border border-white/10 flex-shrink-0"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  <span className="text-xs text-slate-400 truncate">{ep.podcast.name}</span>
+                </span>
+                <span className="text-sm font-medium text-white leading-snug line-clamp-3 group-hover:text-[var(--ember)] transition-colors">
+                  {ep.title}
+                </span>
+                {meta && (
+                  <span className="font-mono text-[11px] text-[var(--ink-3)] mt-auto pt-2">{meta}</span>
+                )}
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
 function PodcastCard({ p }: { p: PodcastListItem }) {
-  const categoryClass = CATEGORY_COLORS[p.category || 'general'] || CATEGORY_COLORS.general;
+  const categoryClass = podcastCategoryClass(p.category);
   return (
     <Link
       href={`/podcasts/${p.slug}`}
@@ -93,7 +141,7 @@ function PodcastCard({ p }: { p: PodcastListItem }) {
       </div>
       {p.description && (
         <p className="text-slate-400 text-sm mt-3 line-clamp-2">
-          {p.description}
+          {stripToText(p.description, 300)}
         </p>
       )}
       <p className="text-xs text-slate-500 mt-3">
@@ -163,6 +211,31 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
     logger.error('[Podcasts Page] Failed to load directory', { error });
   }
 
+  // Newest episodes across every synced show — only on the unfiltered view,
+  // where the strip is a front door rather than noise next to a search.
+  let latestEpisodes: LatestEpisodeItem[] = [];
+  if (!q && !category) {
+    try {
+      latestEpisodes = await prisma.podcastEpisode.findMany({
+        where: { publishedAt: { not: null, lte: new Date(Date.now() + 86_400_000) } },
+        orderBy: { publishedAt: 'desc' },
+        take: LATEST_EPISODES_LIMIT,
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          durationSec: true,
+          publishedAt: true,
+          podcast: { select: { slug: true, name: true, artworkUrl: true } },
+        },
+      });
+    } catch (e) {
+      logger.warn('[Podcasts Page] Failed to load latest episodes', {
+        error: e instanceof Error ? e.message : String(e),
+      });
+    }
+  }
+
   // Build distinct category list (from current results + standard list)
   const categoryCounts: Record<string, number> = {};
   for (const p of podcasts) {
@@ -194,7 +267,7 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
           </p>
           <div className="flex flex-wrap items-center gap-3 mt-4">
             <Link
-              href="/podcasts/submit"
+              href="/contact?topic=podcast"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 text-white text-sm font-medium transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,6 +350,8 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
           </div>
         </div>
 
+        <LatestEpisodesStrip episodes={latestEpisodes} />
+
         {/* Podcast grid */}
         {podcasts.length === 0 && !error ? (
           <div className="text-center py-20">
@@ -289,7 +364,7 @@ export default async function PodcastsDirectoryPage({ searchParams }: PageProps)
               podcast you&apos;d like to see here.
             </p>
             <Link
-              href="/podcasts/submit"
+              href="/contact?topic=podcast"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 text-white text-sm font-medium transition-colors"
             >
               Submit a Podcast

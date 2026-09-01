@@ -8,6 +8,7 @@ import ItemListSchema from '@/components/seo/ItemListSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
+import DataAsOf from '@/components/ui/DataAsOf';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -545,11 +546,11 @@ export default function EcosystemMapPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-white/70">{SITE_STATS.spaceEconomyNow}</div>
-                <div className="text-slate-400 text-xs mt-1">Global Space Economy</div>
+                <div className="text-slate-400 text-xs mt-1">Global Space Economy (2025)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-400">73%</div>
-                <div className="text-slate-400 text-xs mt-1">Downstream Revenue</div>
+                <div className="text-slate-400 text-xs mt-1">Downstream Revenue Share</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-400">$14.5B</div>
@@ -557,9 +558,14 @@ export default function EcosystemMapPage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">{SITE_STATS.satellites}</div>
-                <div className="text-slate-400 text-xs mt-1">Active Satellites</div>
+                <div className="text-slate-400 text-xs mt-1">Active Satellites (2026)</div>
               </div>
             </div>
+            <DataAsOf
+              className="mt-4"
+              date="2024–2026"
+              note="Sources: Space Foundation (space economy, 2025; downstream share, undated in the curated source), Space Capital (VC investment, 2024), CelesTrak via SpaceNexus (active satellites, 2026)"
+            />
           </div>
         </ScrollReveal>
 

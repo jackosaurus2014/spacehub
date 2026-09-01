@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import DatasetSchema from '@/components/seo/DatasetSchema';
 import CiteEmbed from '@/components/CiteEmbed';
 import { getSlipData, PROVIDER_STATS_THRESHOLD, RECORDING_SINCE } from '@/lib/launch-slips';
 
@@ -139,6 +140,16 @@ export default async function LaunchSlipsPage() {
           </div>
         )}
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Launch Slips' }]} />
+        <DatasetSchema
+          name="SpaceNexus Launch Slip Ledger"
+          description={`Every launch date change observed on the global launch manifest since ${RECORDING_SINCE}: mission, vehicle, provider, old and new dates and the size of the move in days. Recorded live — no upstream revision history exists, so the ledger cannot be backfilled.`}
+          url="https://spacenexus.us/launch-slips"
+          distributionUrl="https://spacenexus.us/api/datasets/launch-slips/csv"
+          encodingFormat="text/csv"
+          temporalCoverage={`${RECORDING_SINCE}/..`}
+          dateModified={data?.asOf}
+          keywords={['launch slips', 'launch delays', 'launch schedule', 'manifest changes']}
+        />
       </div>
     </div>
   );

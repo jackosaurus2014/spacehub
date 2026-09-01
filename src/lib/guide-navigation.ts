@@ -64,6 +64,16 @@ export const GUIDE_LIST: GuideEntry[] = [
     shortTitle: 'Watch a Launch: Starbase',
   },
   {
+    slug: 'watch-a-launch-wallops',
+    title: 'Where to Watch a Rocket Launch at Wallops',
+    shortTitle: 'Watch a Launch: Wallops',
+  },
+  {
+    slug: 'watch-a-launch-kourou',
+    title: 'Where to Watch a Rocket Launch at Kourou',
+    shortTitle: 'Watch a Launch: Kourou',
+  },
+  {
     slug: 'satellite-tracking-guide',
     title: 'The Complete Satellite Tracking Guide',
     shortTitle: 'Satellite Tracking',
@@ -92,6 +102,26 @@ export const GUIDE_LIST: GuideEntry[] = [
     slug: 'space-economy-games',
     title: 'Best Space Economy Games in 2026',
     shortTitle: 'Space Economy Games',
+  },
+  {
+    slug: 'nssl-phase-3',
+    title: 'NSSL Phase 3 Explained: Lane 1, Lane 2, and Who Wins National Security Launches',
+    shortTitle: 'NSSL Phase 3',
+  },
+  {
+    slug: 'kuiper-vs-starlink',
+    title: 'Amazon Leo vs Starlink: Constellation Size, Speed, Price and Coverage Compared',
+    shortTitle: 'Amazon Leo vs Starlink',
+  },
+  {
+    slug: 'space-debris-and-traffic-management',
+    title: 'Space Debris and Space Traffic Management: The 2026 Guide',
+    shortTitle: 'Space Debris & Traffic Management',
+  },
+  {
+    slug: 'space-weather-risk-for-operators',
+    title: 'Space Weather Risk for Satellite Operators: Kp, Flares, CMEs and What to Do',
+    shortTitle: 'Space Weather Risk',
   },
 ];
 

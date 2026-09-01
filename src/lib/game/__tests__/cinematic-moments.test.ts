@@ -21,6 +21,8 @@ import {
   detectCinematicMomentsFromEvents,
   buildNarrativeChoiceCinematicMoment,
   buildDiscoveryCinematicMoment,
+  buildQuarterCloseCinematicMoment,
+  QUARTERLY_REPORT_TITLE_PREFIX,
   enqueueCinematicMoments,
   dequeueCinematicMoment,
   MAX_CINEMATIC_QUEUE,
@@ -219,5 +221,41 @@ describe('narrative-events: isCinematicChainStage / CINEMATIC_INFO_STAGE_TITLES 
 
   it('returns false for an unknown chain id', () => {
     expect(isCinematicChainStage('not_a_real_chain', 0)).toBe(false);
+  });
+});
+
+// ─── quarter close (monthly loop, 2026-09-01) ───────────────────────────────
+describe('quarter-close cinematic moment', () => {
+  const report = {
+    quarterIndex: 4, quarterNumber: 5, gameYear: 2027, quarterOfYear: 1,
+    revenue: 120_000_000, costs: 90_000_000, profit: 30_000_000, netWorth: 2_500_000_000,
+    fleetCount: 3, buildingCount: 9, corporationTier: 2, notableEvents: [], growthRatePct: 12.34,
+  };
+
+  it('builds a short card: quarter label, three numbers, Publish CTA to Reports → Quarterly, Dismiss', () => {
+    const m = buildQuarterCloseCinematicMoment(report);
+    expect(m.id).toBe('quarter:4');
+    expect(m.kind).toBe('quarter');
+    expect(m.title).toBe('Q1 2027 CLOSED');
+    expect(m.subtitle).toBe('Net worth +12.3% vs. last quarter');
+    expect(m.stats).toEqual([
+      { label: 'Revenue', value: '$120.0M' },
+      { label: 'Profit', value: '$30.0M' },
+      { label: 'Net worth', value: '$2.5B' },
+    ]);
+    expect(m.cta).toEqual({ label: 'Publish report', tab: 'reports', subView: 'reports:quarterly' });
+    expect(m.dismissLabel).toBe('Dismiss');
+    expect(buildQuarterCloseCinematicMoment({ ...report, growthRatePct: null, profit: -5_000_000 }).subtitle).toBe('First filing on record');
+    expect(buildQuarterCloseCinematicMoment({ ...report, profit: -5_000_000 }).stats![1].value).toBe('−$5.0M');
+  });
+
+  it('is detected from the quarterly milestone title and hydrated from the stored report', () => {
+    const events = [ev({ id: 'q1', title: `${QUARTERLY_REPORT_TITLE_PREFIX}5` })];
+    expect(detectCinematicMomentsFromEvents(events, { quarterlyReports: [report] }).map(m => m.id)).toEqual(['quarter:4']);
+    // no report to hydrate from → no card (never a card with no numbers)
+    expect(detectCinematicMomentsFromEvents(events)).toEqual([]);
+    expect(detectCinematicMomentsFromEvents(events, { quarterlyReports: [{ ...report, quarterNumber: 6 }] })).toEqual([]);
+    // wrong event type is ignored
+    expect(detectCinematicMomentsFromEvents([ev({ id: 'q2', type: 'random_event', title: `${QUARTERLY_REPORT_TITLE_PREFIX}5` })], { quarterlyReports: [report] })).toEqual([]);
   });
 });

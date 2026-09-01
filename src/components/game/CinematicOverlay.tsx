@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type { CinematicMoment } from '@/lib/game/cinematic-moments';
+import type { CinematicMoment, CinematicMomentCta } from '@/lib/game/cinematic-moments';
 import { playSound } from '@/lib/game/sound-engine';
 import { useModalA11y } from './useModalA11y';
 
@@ -26,11 +26,14 @@ import { useModalA11y } from './useModalA11y';
 interface CinematicOverlayProps {
   moment: CinematicMoment | null;
   onDismiss: () => void;
+  /** Fired for a moment's primary CTA (quarter-close "Publish report"); the
+   *  page navigates. The overlay dismisses itself either way. */
+  onAction?: (cta: CinematicMomentCta) => void;
 }
 
 const AUTO_DISMISS_MS = 8000;
 
-export default function CinematicOverlay({ moment, onDismiss }: CinematicOverlayProps) {
+export default function CinematicOverlay({ moment, onDismiss, onAction }: CinematicOverlayProps) {
   const modalRef = useModalA11y<HTMLDivElement>(onDismiss, moment !== null);
   const lastPlayedIdRef = useRef<string | null>(null);
 
@@ -115,14 +118,37 @@ export default function CinematicOverlay({ moment, onDismiss }: CinematicOverlay
           </p>
         )}
 
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onDismiss(); }}
-          className="cinematic-continue px-6 py-2 rounded-lg border text-xs uppercase tracking-widest font-hud font-semibold hover:bg-white/10 transition-colors"
-          style={{ borderColor: `${moment.accent}80`, color: moment.accent }}
-        >
-          Continue
-        </button>
+        {moment.stats && moment.stats.length > 0 && (
+          <dl className="cinematic-subtitle grid grid-cols-3 gap-3 mb-8 mx-auto max-w-md">
+            {moment.stats.slice(0, 3).map(s => (
+              <div key={s.label} className="rounded-lg border border-white/10 bg-black/40 px-2 py-2">
+                <dt className="text-[10px] uppercase tracking-widest text-slate-400">{s.label}</dt>
+                <dd className="font-hud text-base sm:text-lg font-bold text-white tabular-nums">{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {moment.cta && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onAction?.(moment.cta!); onDismiss(); }}
+              className="cinematic-continue min-h-[44px] px-6 py-2 rounded-lg text-xs uppercase tracking-widest font-hud font-semibold text-black hover:brightness-110 transition-[filter]"
+              style={{ background: moment.accent }}
+            >
+              {moment.cta.label}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onDismiss(); }}
+            className="cinematic-continue min-h-[44px] px-6 py-2 rounded-lg border text-xs uppercase tracking-widest font-hud font-semibold hover:bg-white/10 transition-colors"
+            style={{ borderColor: `${moment.accent}80`, color: moment.accent }}
+          >
+            {moment.cta ? (moment.dismissLabel ?? 'Dismiss') : 'Continue'}
+          </button>
+        </div>
 
         {/* Auto-dismiss progress bar — purely decorative, hidden under reduced motion via the same CSS rule that disables the animation. */}
         <div className="absolute left-6 right-6 bottom-3 h-[2px] rounded-full bg-white/10 overflow-hidden" aria-hidden="true">

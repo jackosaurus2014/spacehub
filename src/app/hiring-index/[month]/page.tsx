@@ -346,7 +346,7 @@ export default async function HiringIndexMonthPage({ params }: PageProps) {
             <p className="text-sm text-slate-500">
               Explore further:{' '}
               <Link href="/hiring-trends" className="text-cyan-300 hover:underline">live hiring trends</Link>{' · '}
-              <Link href="/space-talent?tab=jobs" className="text-cyan-300 hover:underline">browse all open roles</Link>{' · '}
+              <Link href="/jobs" className="text-cyan-300 hover:underline">browse all open roles</Link>{' · '}
               <Link href="/company-profiles" className="text-cyan-300 hover:underline">company profiles &amp; screener</Link>
             </p>
           </div>

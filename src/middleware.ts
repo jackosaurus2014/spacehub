@@ -476,6 +476,16 @@ export const SLUG_EXISTENCE_CHECKS: Array<{
     existsApiPath: (slug) => `/api/hiring-index/${encodeURIComponent(slug)}/exists`,
   },
   {
+    // Podcast show pages (2026-09-01): DB-backed slugs from the roster sync.
+    match: /^\/podcasts\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/podcasts/${encodeURIComponent(slug)}/exists`,
+  },
+  {
+    // Episode slugs are unique only per show, so the probe carries both segments.
+    match: /^\/podcasts\/([^/]+\/[^/]+)\/?$/,
+    existsApiPath: (pair) => `/api/podcasts/${pair.split('/').map(encodeURIComponent).join('/')}/exists`,
+  },
+  {
     // /build-guides/new is a real static page, not a guide slug.
     match: /^\/build-guides\/([^/]+)\/?$/,
     excludedSlugs: new Set(['new']),
@@ -850,7 +860,7 @@ export async function middleware(req: NextRequest) {
 
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
 
   // Space Tycoon invite links: /space-tycoon?ref=<profileId>. Remember the
   // referrer for 30 days so the attribution survives sign-up; the game's
@@ -868,6 +878,21 @@ export async function middleware(req: NextRequest) {
         secure: process.env.NODE_ENV === 'production',
       });
     }
+  }
+
+  // Anonymous visitor id (2026-09-01): lets logged-out visitors react and
+  // vote on launch-day pages with one-vote-per-visitor semantics. httpOnly —
+  // page scripts never see it; API routes read it via cookies().get('sn_vid').
+  // Set once, only on page navigations (API and static paths are excluded
+  // by the branches above / the matcher).
+  if (!req.cookies.get('sn_vid')?.value) {
+    response.cookies.set('sn_vid', crypto.randomUUID(), {
+      maxAge: 365 * 24 * 3600,
+      path: '/',
+      sameSite: 'lax',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    });
   }
   return response;
 }

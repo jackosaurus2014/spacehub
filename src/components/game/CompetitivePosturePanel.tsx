@@ -160,11 +160,37 @@ export default function CompetitivePosturePanel({ state, onNavigate, compact }: 
               </button>
             ))}
           </div>
+          {/* Lever-discoverability pass (2026-09): the two offense verbs are
+              buttons that open the actual flows (order-book campaign console;
+              Crew-tab poach launcher), not glossary links. Telemetry showed
+              zero campaigns and zero poach offers all-time — the levers were
+              documented, not reachable. */}
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            <button
+              type="button"
+              onClick={() => { playSound('click'); requestSubView('market:campaign'); onNavigate('market'); }}
+              aria-label="Declare a price campaign — opens the order book campaign console"
+              className="min-h-[44px] px-2.5 rounded-md text-[10px] font-bold border border-red-500/30 bg-red-500/10 text-red-200 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors flex items-center gap-1.5"
+            >
+              <GameIcon name="trending-down" size={12} />
+              Declare a price campaign
+            </button>
+            <button
+              type="button"
+              onClick={() => { playSound('click'); requestSubView('workforce:poach'); onNavigate('workforce'); }}
+              aria-label="Poach talent — opens the Crew tab poach launcher"
+              className="min-h-[44px] px-2.5 rounded-md text-[10px] font-bold border border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors flex items-center gap-1.5"
+            >
+              <GameIcon name="workforce" size={12} />
+              Poach talent
+            </button>
+          </div>
           <p className="text-[9px] text-slate-600 mt-1.5">
-            Using none of these is a valid strategy — solo growth stays fully viable. See{' '}
+            Using none of these is a valid strategy — solo growth stays fully viable. Mechanics:{' '}
             <Concept id="price-campaign">price campaigns</Concept>,{' '}
-            <Concept id="talent-poaching">talent poaching</Concept> and{' '}
-            <Concept id="orbital-slot">orbital slots</Concept> for the full mechanics.
+            <Concept id="talent-poaching">talent poaching</Concept>,{' '}
+            <Concept id="orbital-slot">orbital slots</Concept>. Both offense levers are refused by the
+            server inside the Protected Frontier or below $200M net worth.
           </p>
         </div>
       )}

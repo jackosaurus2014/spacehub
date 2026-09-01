@@ -52,6 +52,12 @@ export default function NewsletterSignup({
         case 'daily_unsubscribed':
           setMessage('You\'ve been removed from the Daily Brief. Your other subscriptions are unchanged.');
           break;
+        case 'markets_unsubscribed':
+          setMessage('You\'ve been removed from Space Markets Daily. Your other subscriptions are unchanged.');
+          break;
+        case 'monthly_unsubscribed':
+          setMessage('You\'ve been removed from the monthly reports. Your other subscriptions are unchanged.');
+          break;
         case 'error':
           setStatus('error');
           const reason = searchParams.get('reason');

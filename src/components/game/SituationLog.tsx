@@ -51,6 +51,7 @@ const CATEGORY_LABEL: Record<SituationCategory, string> = {
   competitive_signal: 'Competitive',
   // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md)
   systemic_crisis: 'Accord Emergency',
+  quarter_closed: 'Quarter Closed',
 };
 
 const CATEGORY_FRAME: Record<SituationCategory, string> = {
@@ -92,6 +93,7 @@ const CATEGORY_FRAME: Record<SituationCategory, string> = {
   // carries the urgency; the frame is category identity only, never the
   // sole carrier of state.
   systemic_crisis: 'border-amber-500/25 bg-amber-500/[0.03]',
+  quarter_closed: 'border-cyan-500/25 bg-cyan-500/[0.03]',
 };
 
 const SEVERITY_TONE: Record<SituationSeverity, 'bad' | 'warn' | 'info'> = {

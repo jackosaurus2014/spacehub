@@ -4,6 +4,7 @@ import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
+import DatasetSchema from '@/components/seo/DatasetSchema';
 import CiteEmbed from '@/components/CiteEmbed';
 import { getSatelliteTotals, CONSTELLATION_COUNTS, CONSTELLATION_COUNTS_AS_OF } from '@/lib/satellite-counts';
 
@@ -110,6 +111,14 @@ export default async function HowManySatellitesPage() {
         )}
         {faq.length > 0 && <FAQSchema items={faq} />}
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'How Many Satellites' }]} />
+        <DatasetSchema
+          name="SpaceNexus Satellites in Orbit — daily catalog count"
+          description="Daily count of tracked objects in Earth orbit from the public satellite catalog (SATCAT): payloads, rocket bodies and debris, split by LEO, MEO and GEO, plus curated constellation counts for Starlink, OneWeb and Amazon Leo with explicit count dates."
+          url="https://spacenexus.us/how-many-satellites"
+          temporalCoverage={t ? `${t.asOf.slice(0, 10)}/${t.asOf.slice(0, 10)}` : undefined}
+          dateModified={t?.asOf}
+          keywords={['satellites in orbit', 'satellite count', 'space debris', 'SATCAT', 'Starlink']}
+        />
       </div>
     </div>
   );

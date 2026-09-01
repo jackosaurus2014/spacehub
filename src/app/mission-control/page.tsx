@@ -7,6 +7,8 @@ import Countdown from '@/components/ui/Countdown';
 import Deck from '@/components/ui/Deck';
 import StatusPip, { type PipState } from '@/components/ui/StatusPip';
 import Telemetry from '@/components/ui/Telemetry';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import JsonLd from '@/components/seo/JsonLd';
 import { getNextLaunch } from '@/lib/next-launch';
 import { missionOf } from '@/lib/next-launch';
 import { getNextLaunches } from '@/lib/launch-sites';
@@ -285,6 +287,22 @@ export default async function MissionControlPage() {
       </div>
 
       <MissionControlClient initialEvents={initialEvents} />
+
+      {/* Structured data — server-rendered so crawlers see it without hydration. */}
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Mission Control' }]} />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Mission Control',
+          description: 'Track upcoming space missions, rocket launches, crewed expeditions, and satellite deployments — live countdowns, streams and every upcoming mission.',
+          url: 'https://spacenexus.us/mission-control',
+          isPartOf: { '@type': 'WebSite', name: 'SpaceNexus', url: 'https://spacenexus.us' },
+          about: { '@type': 'Thing', name: 'Rocket launches and space missions' },
+          dateModified: now.toISOString(),
+          publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
+        }}
+      />
     </div>
   );
 }

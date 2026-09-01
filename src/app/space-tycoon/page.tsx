@@ -14,6 +14,7 @@ import {
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
+import { requestSubView } from '@/lib/game/sub-view';
 import { updateMusicMood } from '@/lib/game/music-engine';
 import { getBuildingAsset } from '@/lib/game/assets';
 import Link from 'next/link';
@@ -1546,7 +1547,10 @@ export default function SpaceTycoonPage() {
     const newEntries = (state.eventLog || []).filter(e => !seen.has(e.id));
     if (newEntries.length === 0) return;
     for (const e of newEntries) seen.add(e.id);
-    const moments = detectCinematicMomentsFromEvents(newEntries);
+    // quarterlyReports hydrates the quarter-close card (2026-09-01): the
+    // milestone recordQuarterlyReport logs carries only a title, the numbers
+    // live on the stored report appended in the same state hop.
+    const moments = detectCinematicMomentsFromEvents(newEntries, { quarterlyReports: state.quarterlyReports });
     if (moments.length > 0) setCinematicQueue(q => enqueueCinematicMoments(q, moments));
   }, [state?.eventLog]);
 
@@ -2117,6 +2121,11 @@ export default function SpaceTycoonPage() {
       <CinematicOverlay
         moment={isOnboardingActive(state) ? null : (cinematicQueue[0] ?? null)}
         onDismiss={() => setCinematicQueue(q => dequeueCinematicMoment(q))}
+        onAction={(cta) => {
+          playSound('click');
+          navigateToTab(cta.tab);
+          if (cta.subView) requestSubView(cta.subView);
+        }}
       />
       {/* Wave A2.3 — portrait-framed leader moments (appointment, retirement,
           faction standing).

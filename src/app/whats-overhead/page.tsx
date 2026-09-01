@@ -390,6 +390,8 @@ export default function WhatsOverheadPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
             <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Full Satellite Tracker</Link>
             <span className="hidden sm:inline text-white/10">|</span>
+            <Link href="/tonight" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">ISS Passes Tonight by City</Link>
+            <span className="hidden sm:inline text-white/10">|</span>
             <a href="#spotting-guide" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Spotting Guide</a>
             <span className="hidden sm:inline text-white/10">|</span>
             <Link href="/night-sky-guide" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Night Sky Guide</Link>

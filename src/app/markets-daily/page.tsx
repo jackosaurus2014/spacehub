@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import DatasetSchema from '@/components/seo/DatasetSchema';
 import CiteEmbed from '@/components/CiteEmbed';
 import { getMarketsDaily } from '@/lib/markets-daily';
 
@@ -122,6 +123,15 @@ export default async function MarketsDailyPage() {
           </div>
         )}
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Markets Daily' }]} />
+        <DatasetSchema
+          name="SpaceNexus Pure-Play Index — daily space-sector market summary"
+          description="Daily equal-weighted move across publicly traded pure-play space companies, with the day's top and bottom movers, funding rounds and contract awards. Underlying company records are in the SpaceNexus Space Company Database."
+          url="https://spacenexus.us/markets-daily"
+          distributionUrl="https://spacenexus.us/api/datasets/space-companies/csv"
+          encodingFormat="text/csv"
+          dateModified={d?.asOf}
+          keywords={['space stocks', 'space sector index', 'pure-play space companies', 'market summary']}
+        />
       </div>
     </div>
   );

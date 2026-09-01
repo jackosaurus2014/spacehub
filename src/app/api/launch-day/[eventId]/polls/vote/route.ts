@@ -1,25 +1,25 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 import { validateBody, launchPollVoteSchema } from '@/lib/validations';
 import { validationError } from '@/lib/errors';
+import { COOKIES_REQUIRED_MESSAGE, resolveLaunchDayActor } from '@/lib/launch-day-identity';
 
 export const dynamic = 'force-dynamic';
 
-// POST — vote on a poll
+// POST — vote on a poll. One vote per actor (signed-in user id or anonymous
+// sn_vid cookie); voting again from the same actor updates the existing row
+// via the (pollId, voterKey) unique key rather than creating a second one.
 export async function POST(
   request: Request,
   { params }: { params: { eventId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Sign in to vote' }, { status: 401 });
+    const actor = await resolveLaunchDayActor(request);
+    if (!actor) {
+      return NextResponse.json({ error: COOKIES_REQUIRED_MESSAGE }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
     const body = await request.json();
     const validation = validateBody(launchPollVoteSchema, body);
     if (!validation.success) {
@@ -45,35 +45,44 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid option index' }, { status: 400 });
     }
 
-    // Create vote (unique constraint prevents double voting)
-    try {
-      await prisma.launchPollVote.create({
-        data: {
-          pollId,
-          userId,
-          option,
-        },
-      });
-    } catch (err: any) {
-      if (err?.code === 'P2002') {
-        return NextResponse.json({ error: 'You already voted on this poll' }, { status: 409 });
-      }
-      throw err;
-    }
+    await prisma.launchPollVote.upsert({
+      where: { pollId_voterKey: { pollId, voterKey: actor.voterKey } },
+      create: {
+        pollId,
+        voterKey: actor.voterKey,
+        userId: actor.userId,
+        option,
+      },
+      update: {
+        option,
+        userId: actor.userId,
+      },
+    });
 
-    // Update vote tally
-    const currentVotes = (poll.votes || {}) as Record<string, number>;
-    const optionKey = String(option);
-    currentVotes[optionKey] = (currentVotes[optionKey] || 0) + 1;
+    // Recompute the tally from the vote rows so a changed vote moves rather
+    // than double-counts.
+    const grouped = await prisma.launchPollVote.groupBy({
+      by: ['option'],
+      where: { pollId },
+      _count: { option: true },
+    });
+    const votes: Record<string, number> = {};
+    for (const row of grouped) {
+      votes[String(row.option)] = row._count.option;
+    }
+    // Keep zero entries for options that were tallied before but lost all votes.
+    for (const key of Object.keys((poll.votes || {}) as Record<string, number>)) {
+      if (!(key in votes)) votes[key] = 0;
+    }
 
     await prisma.launchPoll.update({
       where: { id: pollId },
-      data: { votes: currentVotes as any },
+      data: { votes: votes as any },
     });
 
     return NextResponse.json({
       success: true,
-      data: { votes: currentVotes },
+      data: { votes, option, anonymous: actor.anonymous },
     });
   } catch (error) {
     logger.error('Error voting on poll', { error: error instanceof Error ? error.message : String(error) });

@@ -66,6 +66,12 @@ import { deriveCompetitiveSignals } from './competitive-posture';
 // panel renders, so the Log and the panel can never describe one crisis two
 // different ways.
 import { getCrisisStatus, CRISIS_APPROACH_MAP } from './systemic-crises';
+// Monthly-loop moment (2026-09-01): the quarter just closed — surface the
+// filing's headline numbers and the one decision it asks for (publish to the
+// public Corporate Registry, or not). Pure read of state.quarterlyReports +
+// the player's own game clock, via quarterly-reports.ts's own trigger check.
+import { shouldGenerateQuarterlyReport, generateQuarterlyReport, getCompletedQuarterIndex, type QuarterlyReport } from './quarterly-reports';
+import { formatMoney } from './formulas';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -121,7 +127,11 @@ export type SituationCategory =
   // is forecast, an exposure bar is running against this corporation, or the
   // Stabilization Assessment is still short of its target. Pure lens over
   // state.systemicCrisis + state.crisisSituation.
-  | 'systemic_crisis';
+  | 'systemic_crisis'
+  // Monthly loop (2026-09-01): a game-quarter closed — revenue, profit, net
+  // worth delta, and the "publish to the registry?" decision. Emitted while
+  // the report for the most recently completed quarter is due or on file.
+  | 'quarter_closed';
 
 export interface SituationItem {
   id: string;
@@ -731,6 +741,42 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
       tab: sig.tab,
       subView: sig.subView,
     });
+  }
+
+  // ── Quarter closed (monthly loop — quarterly-reports.ts) ────────────────
+  // Two ways in: the trigger check says a quarter has elapsed with no report
+  // yet (the page's effect records it on the next render — we preview the
+  // same pure generation so the numbers are never a frame behind), or the
+  // last stored report IS the most recently completed quarter (recorded this
+  // quarter, publish decision still open). Always 'info': a filing is a
+  // decision, not an emergency.
+  {
+    const completedIdx = getCompletedQuarterIndex(state.gameDate);
+    let report: QuarterlyReport | null = null;
+    if (completedIdx >= 0) {
+      if (shouldGenerateQuarterlyReport(state)) {
+        report = generateQuarterlyReport(state, nowMs);
+      } else {
+        const last = (state.quarterlyReports || [])[(state.quarterlyReports || []).length - 1];
+        if (last && last.quarterIndex === completedIdx) report = last;
+      }
+    }
+    if (report) {
+      const growth = report.growthRatePct === null
+        ? 'first filing'
+        : `net worth ${report.growthRatePct >= 0 ? '+' : '−'}${Math.abs(report.growthRatePct).toFixed(1)}%`;
+      items.push({
+        id: `sit-quarter-closed-${report.quarterIndex}`,
+        category: 'quarter_closed',
+        icon: 'cal-corporate-era',
+        label: `Q${report.quarterOfYear} ${report.gameYear} closed: revenue ${formatMoney(report.revenue)}, profit ${formatMoney(report.profit)}, ${growth} — publish to the registry?`,
+        detail: 'Your automatic quarterly is on file. Publishing it to the public Corporate Registry is optional — fuel for rivalry, and the record other corporations scout.',
+        severity: 'info',
+        atMs: report.generatedAtMs,
+        tab: 'reports',
+        subView: 'reports:quarterly',
+      });
+    }
   }
 
   // ── Queue idle warning (wasted automation capacity) ─────────────────────

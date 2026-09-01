@@ -979,6 +979,9 @@ function ProcurementContent() {
                   {budgetItems.length} budget line items
                 </div>
               </div>
+              <p className="mt-3 text-xs text-slate-500">
+                Want the whole table on one citable page? <Link href="/space-budget" className="text-cyan-300 hover:underline">US Space Budget Tracker →</Link>
+              </p>
             </div>
 
             {budgetLoading ? (
@@ -1037,6 +1040,9 @@ function ProcurementContent() {
               </div>
             </div>
 
+            <p className="mb-4 text-xs text-slate-500">
+              The full calendar alongside the budget tables: <Link href="/space-budget" className="text-cyan-300 hover:underline">US Space Budget Tracker →</Link>
+            </p>
             {congressionalLoading ? (
               <div className="flex justify-center py-12"><LoadingSpinner /></div>
             ) : congressional.length === 0 ? (

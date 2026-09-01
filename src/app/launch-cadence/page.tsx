@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import DatasetSchema from '@/components/seo/DatasetSchema';
 import CiteEmbed from '@/components/CiteEmbed';
 import { getLaunchCadence } from '@/lib/launch-cadence';
 
@@ -111,6 +112,16 @@ export default async function LaunchCadencePage() {
           </div>
         )}
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Launch Cadence Index' }]} />
+        <DatasetSchema
+          name="SpaceNexus Launch Cadence Index"
+          description="Live year-over-year orbital launch pace: attempts to date versus the same UTC day last year, by provider and country, with success rates and a full-year projection. Computed from the SpaceNexus orbital launch log (Launch Library 2 plus SpaceNexus tracking)."
+          url="https://spacenexus.us/launch-cadence"
+          distributionUrl="https://spacenexus.us/api/datasets/launch-log/csv"
+          encodingFormat="text/csv"
+          temporalCoverage={data ? `${data.year - 1}-01-01/${data.year}-12-31` : undefined}
+          dateModified={data?.asOf}
+          keywords={['orbital launches', 'launch cadence', 'launch rate', 'rockets']}
+        />
       </div>
     </div>
   );

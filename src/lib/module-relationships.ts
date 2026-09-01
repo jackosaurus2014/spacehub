@@ -91,7 +91,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
 
   // ── Talent & Workforce ──
   spaceTalent: { name: 'Space Talent Hub', description: 'Jobs & workforce', href: '/space-talent', icon: '👥' },
-  jobs: { name: 'Space Jobs', description: 'Job listings', href: '/space-talent?tab=jobs', icon: '💼' },
+  jobs: { name: 'Space Jobs', description: 'Job listings', href: '/jobs', icon: '💼' },
   salaryBenchmarks: { name: 'Salary Benchmarks', description: 'Compensation data', href: '/space-talent?tab=salaries', icon: '💵' },
   careerGuide: { name: 'Career Guide', description: 'Career paths', href: '/space-talent?tab=insights', icon: '🎓' },
   workforceAnalytics: { name: 'Workforce Analytics', description: 'Talent trends', href: '/space-talent?tab=trends', icon: '📊' },
@@ -434,6 +434,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'compare/spcx-vs-rklb-stock': [MODULES.spaceStocks, MODULES.marketIntel, MODULES.companyProfiles, MODULES.startupTracker],
   'compare/starship-vs-new-glenn': [MODULES.spaceStocks, MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics],
   'compare/spacex-vs-ula': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceDefense],
+  'compare/vulcan-centaur-vs-falcon-9': [MODULES.launchVehicles, MODULES.launchEconomics, MODULES.launchManifest, MODULES.companyProfiles, MODULES.spaceDefense],
   'compare/starlink-vs-ast-spacemobile': [MODULES.constellations, MODULES.companyProfiles, MODULES.spaceComms, MODULES.spectrum],
   'compare/starlink-vs-kuiper': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
   'compare/starlink-vs-oneweb': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
@@ -489,6 +490,12 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'guide/watch-a-launch-cape-canaveral': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
   'guide/watch-a-launch-vandenberg': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
   'guide/watch-a-launch-starbase': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
+  'guide/watch-a-launch-wallops': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
+  'guide/watch-a-launch-kourou': [MODULES.launchManifest, MODULES.launchSites, MODULES.spaceWeather, MODULES.launchVehicles, MODULES.spaceCalendar],
+  'guide/nssl-phase-3': [MODULES.procurement, MODULES.contractAwards, MODULES.launchVehicles, MODULES.spaceDefense, MODULES.regulatoryCalendar],
+  'guide/kuiper-vs-starlink': [MODULES.constellations, MODULES.satellites, MODULES.launchVehicles, MODULES.spaceStocks, MODULES.companyProfiles],
+  'guide/space-debris-and-traffic-management': [MODULES.debrisTracker, MODULES.satellites, MODULES.spaceEnvironment, MODULES.compliance, MODULES.sustainability],
+  'guide/space-weather-risk-for-operators': [MODULES.spaceWeather, MODULES.spaceEnvironment, MODULES.auroraForecast, MODULES.alerts, MODULES.satellites],
 
   // ── Launch pages ──
   'launches': [MODULES.launchManifest, MODULES.launchVehicles, MODULES.launchWindows, MODULES.launchSites, MODULES.missionPipeline],
@@ -531,6 +538,9 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── What's Overhead ──
   'whats-overhead': [MODULES.satellites, MODULES.auroraForecast, MODULES.spaceWeather, MODULES.orbitGuide, MODULES.constellations],
+
+  // ── Tonight over your town ──
+  'tonight': [MODULES.satelliteSpotting, MODULES.satellites, MODULES.auroraForecast, MODULES.spaceWeather, MODULES.orbitGuide],
 
   // ── Year in Review ──
   'year-in-review': [MODULES.spaceEconomy, MODULES.industryTrends, MODULES.missionStats, MODULES.fundingTracker, MODULES.govBudgets],

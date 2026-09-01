@@ -18,6 +18,10 @@ export default function DailyBriefSignup({
 }: DailyBriefSignupProps) {
   const [email, setEmail] = useState('');
   const [dailyBrief, setDailyBrief] = useState(true);
+  // Sibling opt-in programs (2026-09-01): off by default — each is its own
+  // explicit choice, sent through the same subscribe API as dailyBrief.
+  const [marketsDaily, setMarketsDaily] = useState(false);
+  const [monthlyReports, setMonthlyReports] = useState(false);
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
@@ -35,7 +39,7 @@ export default function DailyBriefSignup({
       const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source, dailyBrief, website: honeypot }),
+        body: JSON.stringify({ email, source, dailyBrief, marketsDaily, monthlyReports, website: honeypot }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -46,7 +50,7 @@ export default function DailyBriefSignup({
         setState('error');
         setMessage(
           data.code === 'ALREADY_SUBSCRIBED'
-            ? 'This email is already subscribed (the Daily Brief is already on for it).'
+            ? 'This email is already subscribed, and everything you ticked is already on for it.'
             : data.error || 'Something went wrong. Please try again.'
         );
       }
@@ -102,8 +106,26 @@ export default function DailyBriefSignup({
         />
         Daily Brief (7am UTC)
       </label>
+      <label className="flex items-center gap-2 mt-2 text-xs text-slate-300 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={marketsDaily}
+          onChange={(e) => setMarketsDaily(e.target.checked)}
+          className="rounded border-white/[0.2] bg-white/[0.06] text-cyan-500 focus:ring-cyan-500/40"
+        />
+        Space Markets Daily — the sector&apos;s market close, weekdays 5:35pm ET
+      </label>
+      <label className="flex items-center gap-2 mt-2 text-xs text-slate-300 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={monthlyReports}
+          onChange={(e) => setMonthlyReports(e.target.checked)}
+          className="rounded border-white/[0.2] bg-white/[0.06] text-cyan-500 focus:ring-cyan-500/40"
+        />
+        Monthly reports — Hiring Index and Launch Slip report, 3rd of the month
+      </label>
       <p className="text-[11px] text-slate-500 mt-2">
-        Double opt-in. Unsubscribe any time — the Daily Brief has its own one-click opt-out.
+        Double opt-in. Unsubscribe any time — each program has its own one-click opt-out.
       </p>
       {state === 'error' && (
         <p className="text-xs text-red-300 mt-2" role="alert">{message}</p>

@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import DatasetSchema from '@/components/seo/DatasetSchema';
 import CiteEmbed from '@/components/CiteEmbed';
 import { getHiringSeries, getHiringMovers, TOTAL_SENTINEL, type HiringMoverEntry } from '@/lib/hiring-snapshots';
 import { coverageChangesInWindow } from '@/lib/hiring-coverage';
@@ -91,7 +92,7 @@ export default async function HiringTrendsPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">Space industry hiring trends</h1>
           <p className="text-lg text-white/70 max-w-3xl">
             Hiring is a leading indicator. These numbers come from our own daily snapshots of live postings
-            across tracked company boards — the same data behind the <Link href="/space-talent?tab=jobs" className="text-cyan-300 hover:underline">jobs board</Link>.
+            across tracked company boards — the same data behind the <Link href="/jobs" className="text-cyan-300 hover:underline">jobs board</Link>.
           </p>
         </header>
 
@@ -203,13 +204,23 @@ export default async function HiringTrendsPage() {
             />
 
             <p className="text-sm text-slate-500">
-              Explore further: <Link href="/space-talent?tab=jobs" className="text-cyan-300 hover:underline">browse all {data.latestTotal ?? ''} open roles</Link>{' · '}
+              Explore further: <Link href="/jobs" className="text-cyan-300 hover:underline">browse all {data.latestTotal ?? ''} open roles</Link>{' · '}
               <Link href="/company-profiles" className="text-cyan-300 hover:underline">company profiles &amp; screener</Link>{' · '}
               <Link href="/space-talent?tab=workforce&wfTab=salaries" className="text-cyan-300 hover:underline">salary benchmarks</Link>
             </p>
           </div>
         )}
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Hiring Trends' }]} />
+        <DatasetSchema
+          name="SpaceNexus Hiring Index"
+          description="Daily open-role counts per tracked space company, captured from live ATS job boards since 2026-08-13, plus site-wide daily totals. The series behind the SpaceNexus Hiring Trends dashboard: hiring velocity, top movers and category breakdowns."
+          url="https://spacenexus.us/hiring-trends"
+          distributionUrl="https://spacenexus.us/api/datasets/hiring-index/csv"
+          encodingFormat="text/csv"
+          temporalCoverage="2026-08-13/.."
+          dateModified={data?.asOf ?? undefined}
+          keywords={['space industry hiring', 'space jobs', 'job postings', 'hiring trends', 'labor market']}
+        />
       </div>
     </div>
   );

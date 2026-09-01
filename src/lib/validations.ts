@@ -107,6 +107,11 @@ export const newsletterSubscribeSchema = z.object({
   // Opt-in to the ~07:00 UTC Daily Brief. Separate flag — the M/Th digest
   // subscription never implies it.
   dailyBrief: z.boolean().optional(),
+  // Opt-in to Space Markets Daily (weekdays after the US close) and the
+  // monthly reports (Hiring Index + Launch Slip Report, 3rd of the month).
+  // Same rule as dailyBrief: separate flags, only ever SET by the caller.
+  marketsDaily: z.boolean().optional(),
+  monthlyReports: z.boolean().optional(),
   // Honeypot: real users never fill this hidden field.
   website: z.string().max(0, 'Invalid submission').optional(),
 });
@@ -845,13 +850,15 @@ export const adImpressionSchema = z.object({
 // Launch Day Dashboard Schemas
 // ============================================================
 
-// Chat message schema
+// Chat message schema (launch-day live chat; anonymous visitors may post, so
+// HTML is stripped server-side and the post-strip result must be non-empty).
 export const chatMessageSchema = z.object({
   message: z
     .string()
     .min(1, 'Message is required')
     .max(500, 'Message is too long')
-    .transform((val) => val.trim()),
+    .transform((val) => stripHtml(val).trim())
+    .refine((val) => val.length > 0, 'Message is required'),
 });
 
 // Live mission chat — create message

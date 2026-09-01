@@ -67,7 +67,7 @@ export default function StandingsHubPanel({ state }: StandingsHubPanelProps) {
       </ConsolePanel>
       {tab === 'leagues' && (leaguesUnlocked ? <LeaguePanel /> : <LockedSubtabNotice icon="🏅" label="Leagues" tier={FOLDED_FEATURE_TIERS.leagues} />)}
       {tab === 'ranks' && <LeaderboardPanel state={state} />}
-      {tab === 'rivals' && (rivalsUnlocked ? <RivalsPanel /> : <LockedSubtabNotice icon="⚔️" label="Rivals" tier={FOLDED_FEATURE_TIERS.rivals} />)}
+      {tab === 'rivals' && (rivalsUnlocked ? <RivalsPanel state={state} /> : <LockedSubtabNotice icon="⚔️" label="Rivals" tier={FOLDED_FEATURE_TIERS.rivals} />)}
       {tab === 'heritage' && <HeritageRegistryPanel />}
     </div>
   );

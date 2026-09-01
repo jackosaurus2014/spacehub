@@ -2289,3 +2289,26 @@ load-bearing) patrols autonomously: idle + nothing damaged locally → flies to
 the location with the most total damagePct (engine ship loop, getTravelTime;
 no per-trip fuel — priced into 1.8M/mo upkeep, 3× the servicer). Repairs
 themselves stay in D-3: 0.25/mo, materials via calculateResourceRepairCost.
+
+## NPC forecast — publication only (2026-09-01)
+
+`/api/space-tycoon/npc-forecast` and the Markets → Analytics → NPC Demand
+console publish what the NPC industrial tick, the open procurement drives and
+the demand-pool floors already do. **No number changed.** The forecast calls
+the tick's own per-tick helpers (now exported from `npc-industry.ts`; the tick
+was refactored to call the same functions with identical arguments, guarded by
+`npc-forecast.test.ts`), so it cannot drift from reality and cannot be tuned
+independently of it. Balance levers remain where they were: `TARGET_CAP`,
+`BATCHES_PER_TICK`, `LIST_CAP`, `BUY_DISCOUNT`, corp `consumes` rates and
+`populationScale` in `npc-industry.ts`; `NPC_DEMAND_FLOOR` and
+`npcPopulationScaler` in `demand-pools.ts`; `NPC_DRIVE_PRICE_CAP_MULTIPLIER`
+in `npc-procurement-drives.ts`. Design intent (CLAUDE.md): NPC demand is a
+forecastable floor players plan around — visibility is the feature, not a
+new sink or source.
+
+Same pass, lever discoverability (telemetry: zero poach offers and zero price
+campaigns all-time): the price-campaign declare form moved to the order-book
+header (server quote inline), the poach launcher became a shared component
+opened from Rivals cards and the posture strip, and a one-time post-Frontier
+"levers you haven't pulled" card was added. UI only — every fee, gate and
+cooldown is still computed and enforced by the existing routes.

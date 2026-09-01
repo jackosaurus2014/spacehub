@@ -7,6 +7,8 @@ import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import type { GameState } from '@/lib/game/types';
 import Image from 'next/image';
 import HoloTip, { Concept } from '@/components/game/HoloTip';
+import { PRICE_CAMPAIGN_DURATION_MS, PRICE_CAMPAIGN_COOLDOWN_MS } from '@/lib/game/price-campaigns';
+import { playSound } from '@/lib/game/sound-engine';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -51,12 +53,50 @@ interface MarketOrderBookProps {
   state: GameState;
   selectedResource?: string;
   onOrderPlaced?: () => void;
+  /** Lever-discoverability pass (2026-09): the hub mirrors the selection so
+   *  the Analytics NPC-demand console filters to the same resource. */
+  onResourceChange?: (slug: string) => void;
+  /** Increment to open the price-campaign console (a `market:campaign`
+   *  sub-view request lands here). */
+  campaignOpenSignal?: number;
+}
+
+/** Published NPC demand totals for one resource (GET /api/space-tycoon/npc-forecast). */
+interface NpcForecastLine {
+  horizonHours: number;
+  buy: number;
+  sell: number;
+}
+
+interface CampaignQuote {
+  resourceSlug: string;
+  fee: number;
+  minInventory: number;
+  windowTurnover: number;
+}
+
+interface ActiveCampaign {
+  id: string;
+  resourceSlug: string;
+  byCompanyName: string;
+  endsAt: string;
+  feePaid: number;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function MarketOrderBook({ state, selectedResource, onOrderPlaced }: MarketOrderBookProps) {
+export default function MarketOrderBook({ state, selectedResource, onOrderPlaced, onResourceChange, campaignOpenSignal }: MarketOrderBookProps) {
   const [resource, setResource] = useState(selectedResource || 'iron');
+  const [forecast, setForecast] = useState<NpcForecastLine | null>(null);
+  // Price-campaign console (lever-discoverability pass, 2026-09). The
+  // Markets hub — not Analytics — is now the home of the declare form; the
+  // quote shown is the SERVER's (Balance Pass 9: market-keyed fee), never a
+  // client guess, and every refusal string is the route's own.
+  const [campaignOpen, setCampaignOpen] = useState(false);
+  const [campaignQuote, setCampaignQuote] = useState<CampaignQuote | null>(null);
+  const [campaignsHere, setCampaignsHere] = useState<ActiveCampaign[]>([]);
+  const [campaignBusy, setCampaignBusy] = useState(false);
+  const [campaignMessage, setCampaignMessage] = useState<string | null>(null);
   const [book, setBook] = useState<OrderBookData | null>(null);
   const [myOrders, setMyOrders] = useState<MyOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,6 +150,70 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
   useEffect(() => {
     if (selectedResource) setResource(selectedResource);
   }, [selectedResource]);
+
+  // Published NPC demand for the selected resource (cached 10 min server-side).
+  useEffect(() => {
+    let cancelled = false;
+    setForecast(null);
+    fetch(`/api/space-tycoon/npc-forecast?resource=${encodeURIComponent(resource)}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then((d: { horizonHours?: number; byResource?: Record<string, { buy: number; sell: number }> } | null) => {
+        if (cancelled || !d) return;
+        const row = d.byResource?.[resource];
+        setForecast({ horizonHours: d.horizonHours || 72, buy: row?.buy || 0, sell: row?.sell || 0 });
+      })
+      .catch(() => { /* the line simply stays hidden */ });
+    return () => { cancelled = true; };
+  }, [resource]);
+
+  // A `market:campaign` sub-view request (posture strip, Rivals hint card)
+  // opens the console directly.
+  useEffect(() => {
+    if (campaignOpenSignal && campaignOpenSignal > 0) setCampaignOpen(true);
+  }, [campaignOpenSignal]);
+
+  const loadCampaignQuote = useCallback(async (slug: string) => {
+    try {
+      const res = await fetch(`/api/space-tycoon/market/campaign?quote=${encodeURIComponent(slug)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setCampaignQuote(data.quote && data.quote.resourceSlug === slug ? (data.quote as CampaignQuote) : null);
+      const all: ActiveCampaign[] = Array.isArray(data.campaigns) ? data.campaigns : [];
+      setCampaignsHere(all.filter(c => c.resourceSlug === slug));
+    } catch { /* best-effort — the console says the quote is computed at declare time */ }
+  }, []);
+
+  useEffect(() => {
+    if (!campaignOpen) return;
+    setCampaignQuote(null);
+    setCampaignMessage(null);
+    loadCampaignQuote(resource);
+  }, [campaignOpen, resource, loadCampaignQuote]);
+
+  const declareCampaign = async () => {
+    if (campaignBusy) return;
+    setCampaignBusy(true);
+    setCampaignMessage(null);
+    try {
+      const res = await fetch('/api/space-tycoon/market/campaign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'declare', resourceSlug: resource }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        playSound('notification');
+        setCampaignMessage(`Campaign declared — fee ${formatMoney(data.feePaid)} burned. Now sell real volume below spot; the crash sticks until ${new Date(data.endsAt).toLocaleString()}.`);
+        loadCampaignQuote(resource);
+      } else {
+        setCampaignMessage(data.error || 'Declaration failed.');
+      }
+    } catch {
+      setCampaignMessage('Network error — try again.');
+    } finally {
+      setCampaignBusy(false);
+    }
+  };
 
   // Pre-fill price from best bid/ask
   useEffect(() => {
@@ -219,7 +323,8 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
         </div>
         <select
           value={resource}
-          onChange={e => { setResource(e.target.value); setPrice(''); }}
+          onChange={e => { setResource(e.target.value); setPrice(''); onResourceChange?.(e.target.value); }}
+          aria-label="Order book resource"
           className="px-2 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500/30"
         >
           {RESOURCES.map(r => (
@@ -262,6 +367,102 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
           </div>
         )}
       </div>
+
+      {/* Published NPC demand + the price-campaign lever, for the selected resource. */}
+      <div className="flex items-center gap-3 flex-wrap text-[10px]">
+        {forecast && (
+          <HoloTip
+            underline={false}
+            content={{
+              title: 'Scheduled NPC demand',
+              icon: 'npc',
+              body: 'What the NPC industrial corporations and faction procurement drives will bid for (buy) and list (sell) in this market over the next few days, published ahead of time so you can plan around it. Same numbers the hourly tick executes — full table under Markets → Analytics → NPC Demand.',
+            }}
+          >
+            <span className="text-purple-300/90" aria-live="polite">
+              NPC demand next {forecast.horizonHours}h: buy {forecast.buy.toLocaleString()} / sell {forecast.sell.toLocaleString()}
+            </span>
+          </HoloTip>
+        )}
+        <button
+          type="button"
+          onClick={() => { playSound('click'); setCampaignOpen(v => !v); }}
+          aria-expanded={campaignOpen}
+          aria-controls="price-campaign-console"
+          aria-label={`Declare a price campaign on ${resourceDef?.name || resource}`}
+          className="min-h-[44px] px-2.5 rounded-md font-bold border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
+        >
+          {campaignOpen ? 'Close campaign console' : 'Declare price campaign'}
+        </button>
+      </div>
+
+      {campaignOpen && (
+        <section
+          id="price-campaign-console"
+          aria-labelledby="price-campaign-heading"
+          className="hud-frame relative rounded-xl border border-red-500/25 bg-red-500/[0.04] p-3 space-y-2"
+        >
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <h3 id="price-campaign-heading" className="text-[11px] font-bold uppercase tracking-wider text-red-200 flex items-center gap-1.5">
+            <Concept id="price-campaign">Price campaign</Concept>
+            <span className="normal-case tracking-normal text-slate-300">· {resourceDef?.name || resource}</span>
+            <span className="text-[9px] px-1 py-0.5 rounded border border-white/15 text-slate-400">Offense</span>
+          </h3>
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            Declare a public dumping campaign on this market: the fee is burned, you must hold real inventory as
+            ammunition, mean-reversion pauses and the NPC maker halves its bids for {Math.round(PRICE_CAMPAIGN_DURATION_MS / 86_400_000)} days.
+            One campaign at a time; {Math.round(PRICE_CAMPAIGN_COOLDOWN_MS / 86_400_000)}-day cooldown per market. Every corporation sees it.
+          </p>
+          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+            <div className="rounded-lg bg-white/[0.03] p-2">
+              <dt className="game-label">Fee (burned)</dt>
+              <dd className="font-mono text-amber-300">{campaignQuote ? formatMoney(campaignQuote.fee) : 'computed at declare'}</dd>
+            </div>
+            <div className="rounded-lg bg-white/[0.03] p-2">
+              <dt className="game-label">Ammunition required</dt>
+              <dd className="font-mono text-slate-200">{campaignQuote ? `${campaignQuote.minInventory.toLocaleString()} units` : '—'}</dd>
+            </div>
+            <div className="rounded-lg bg-white/[0.03] p-2">
+              <dt className="game-label">You hold</dt>
+              <dd className="font-mono text-slate-200">{(state.resources[resource] || 0).toLocaleString()} units</dd>
+            </div>
+            <div className="rounded-lg bg-white/[0.03] p-2">
+              <dt className="game-label">Window</dt>
+              <dd className="font-mono text-slate-200">{Math.round(PRICE_CAMPAIGN_DURATION_MS / 86_400_000)} days</dd>
+            </div>
+          </dl>
+          {campaignQuote && (state.resources[resource] || 0) < campaignQuote.minInventory && (
+            <p className="text-[11px] text-slate-400">
+              You hold less than the ammunition floor — the server will refuse the declaration until you do.
+            </p>
+          )}
+          {campaignsHere.length > 0 && (
+            <p className="text-[11px] text-red-300/90">
+              Already under campaign: {campaignsHere.map(c => `${c.byCompanyName} (until ${new Date(c.endsAt).toLocaleDateString()})`).join(', ')}.
+            </p>
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={declareCampaign}
+              disabled={campaignBusy}
+              aria-label={`Confirm price campaign on ${resourceDef?.name || resource}${campaignQuote ? `, fee ${formatMoney(campaignQuote.fee)} burned` : ''}`}
+              className="min-h-[44px] px-3 rounded-lg text-[11px] font-bold bg-red-500/15 border border-red-500/30 text-red-200 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
+            >
+              {campaignBusy ? 'Declaring…' : `Confirm — burn ${campaignQuote ? formatMoney(campaignQuote.fee) : 'the fee'}`}
+            </button>
+            <button
+              type="button"
+              onClick={() => setCampaignOpen(false)}
+              className="min-h-[44px] px-3 rounded-lg text-[11px] font-semibold border border-white/10 text-slate-300 hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+          {campaignMessage && <p className="text-[11px] text-slate-200 leading-relaxed" role="status">{campaignMessage}</p>}
+        </section>
+      )}
 
       {/* Tab Switcher */}
       <div className="flex gap-1" role="tablist" aria-label="Market order book views">

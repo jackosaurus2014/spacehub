@@ -23,11 +23,19 @@ export async function POST(request: Request) {
       const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
       return validationError(firstError, validation.errors);
     }
-    const { email, name, dailyBrief } = validation.data;
-    // Daily Brief is a separate, explicit opt-in flag. It is only ever SET
-    // when the caller asked for it — never cleared here, so subscribing to
-    // the M/Th digest from another form leaves an existing opt-in intact.
+    const { email, name, dailyBrief, marketsDaily, monthlyReports } = validation.data;
+    // Daily Brief / Space Markets Daily / monthly reports are separate,
+    // explicit opt-in flags. Each is only ever SET when the caller asked for
+    // it — never cleared here, so subscribing to the M/Th digest from another
+    // form leaves an existing opt-in intact.
     const wantsDailyBrief = dailyBrief === true;
+    const wantsMarkets = marketsDaily === true;
+    const wantsMonthly = monthlyReports === true;
+    const requestedFlags = {
+      ...(wantsDailyBrief ? { dailyBrief: true } : {}),
+      ...(wantsMarkets ? { marketsDaily: true } : {}),
+      ...(wantsMonthly ? { monthlyReports: true } : {}),
+    };
 
     // Check if subscriber already exists
     const existing = await prisma.newsletterSubscriber.findUnique({
@@ -36,17 +44,27 @@ export async function POST(request: Request) {
 
     if (existing) {
       if (existing.verified && !existing.unsubscribedAt) {
-        // Already a verified subscriber. If they're asking to add the Daily
-        // Brief, flip the flag — no re-verification needed for a verified
-        // address. Otherwise keep the historical 409.
-        if (wantsDailyBrief && !existing.dailyBrief) {
+        // Already a verified subscriber. If they're asking to add a program
+        // they don't have yet, flip those flags — no re-verification needed
+        // for a verified address. Otherwise keep the historical 409.
+        const additions = {
+          ...(wantsDailyBrief && !existing.dailyBrief ? { dailyBrief: true } : {}),
+          ...(wantsMarkets && !existing.marketsDaily ? { marketsDaily: true } : {}),
+          ...(wantsMonthly && !existing.monthlyReports ? { monthlyReports: true } : {}),
+        };
+        if (Object.keys(additions).length > 0) {
           await prisma.newsletterSubscriber.update({
             where: { id: existing.id },
-            data: { dailyBrief: true },
+            data: additions,
           });
+          const added = [
+            'dailyBrief' in additions ? 'Daily Brief (7am UTC)' : null,
+            'marketsDaily' in additions ? 'Space Markets Daily (weekdays after the close)' : null,
+            'monthlyReports' in additions ? 'monthly reports (3rd of the month)' : null,
+          ].filter(Boolean);
           return NextResponse.json({
             success: true,
-            message: 'Daily Brief added to your subscription. First one arrives at 7am UTC.',
+            message: `Added to your subscription: ${added.join(', ')}.`,
           });
         }
         return NextResponse.json(
@@ -68,7 +86,7 @@ export async function POST(request: Request) {
             verifiedAt: null,
             unsubscribedAt: null,
             source,
-            ...(wantsDailyBrief ? { dailyBrief: true } : {}),
+            ...requestedFlags,
           },
         });
 
@@ -93,7 +111,7 @@ export async function POST(request: Request) {
           data: {
             verificationToken,
             name: name || existing.name,
-            ...(wantsDailyBrief ? { dailyBrief: true } : {}),
+            ...requestedFlags,
           },
         });
 
@@ -121,6 +139,8 @@ export async function POST(request: Request) {
         unsubscribeToken,
         source,
         dailyBrief: wantsDailyBrief,
+        marketsDaily: wantsMarkets,
+        monthlyReports: wantsMonthly,
       },
     });
 

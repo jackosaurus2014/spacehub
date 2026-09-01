@@ -13,6 +13,18 @@ export interface DevLogEntry {
 
 export const GAME_DEVLOG: DevLogEntry[] = [
   {
+    date: '2026-09-01', tag: 'economy',
+    title: 'NPC demand is published ahead of time',
+    summary: 'The NPC industrial corporations, faction procurement drives and service demand floors now publish what they will buy and sell over the next three days — the same numbers the hourly tick executes, so you can plan production around them.',
+    changes: [
+      'Markets → Analytics → NPC Demand: window, corporation, resource, side, quantity, price cap and confidence for every scheduled NPC purchase and listing; filter follows the order book.',
+      'Order-book header shows "NPC demand next 72h: buy X / sell Y" for the selected resource.',
+      'Price campaigns are declared from the order book, with the server quote (fee, ammunition, window) shown before you confirm; Analytics links there.',
+      'Rivals cards gained "Poach talent" and "View their market share"; the Competitive Posture strip opens both offense flows directly.',
+      'No economic number changed — this is visibility, not a rebalance.',
+    ],
+  },
+  {
     date: '2026-08-29', tag: 'economy',
     title: 'Hardware is manufactured, and only what someone built is for sale',
     summary: 'Components and hardware left the NPC price curve entirely. They are made at fabrication facilities from resources and reach the market only when a player or an NPC industrial corporation lists them.',

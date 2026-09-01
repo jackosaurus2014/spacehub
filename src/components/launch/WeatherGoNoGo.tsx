@@ -66,7 +66,12 @@ function StatusIcon({ status }: { status: 'go' | 'caution' | 'no_go' }) {
 export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [criteria, setCriteria] = useState<GoNoGoCriterion[]>([]);
-  const [rangeStatus, setRangeStatus] = useState<'green' | 'yellow' | 'red'>('green');
+  const [rangeStatus, setRangeStatus] = useState<'green' | 'yellow' | 'red' | null>(null);
+  const [oddsPct, setOddsPct] = useState<number | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  // Honest no-data state: the API never returns simulated weather. Either we
+  // have an NWS forecast or we say why we don't.
+  const [unavailable, setUnavailable] = useState<{ message: string } | null>(null);
   const [spaceWeather, setSpaceWeather] = useState<SpaceWeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
@@ -77,9 +82,20 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
       if (!res.ok) return;
       const data = await res.json();
       if (data.success) {
-        setWeather(data.data.weather);
-        setCriteria(data.data.criteria);
-        setRangeStatus(data.data.rangeStatus);
+        if (data.data.unavailable) {
+          setUnavailable({ message: data.data.message || 'Forecast unavailable' });
+          setWeather(null);
+          setCriteria([]);
+          setRangeStatus(null);
+          setOddsPct(null);
+        } else {
+          setUnavailable(null);
+          setWeather(data.data.weather);
+          setCriteria(data.data.criteria);
+          setRangeStatus(data.data.rangeStatus);
+          setOddsPct(typeof data.data.oddsPct === 'number' ? data.data.oddsPct : null);
+          setLastUpdated(data.data.lastUpdated ?? null);
+        }
         if (data.data.spaceWeather) {
           setSpaceWeather(data.data.spaceWeather);
         }
@@ -133,16 +149,31 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
           </svg>
           Weather & Range Status
         </h3>
-        <motion.span
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          className={`text-xs px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${rangeColors[rangeStatus]}`}
-        >
-          {rangeLabels[rangeStatus]}
-        </motion.span>
+        {rangeStatus ? (
+          <motion.span
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            className={`text-xs px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${rangeColors[rangeStatus]}`}
+          >
+            {oddsPct !== null ? `${oddsPct}% ` : ''}{rangeLabels[rangeStatus]}
+          </motion.span>
+        ) : (
+          <span className="text-xs px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider bg-white/[0.04] text-slate-400 border-white/[0.1]">
+            Forecast unavailable
+          </span>
+        )}
       </div>
 
       <div className="p-3 space-y-3">
+        {/* Honest no-forecast state (non-US range, unknown pad, or NWS down) */}
+        {unavailable && (
+          <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 py-2.5 text-xs text-slate-400">
+            <div className="text-slate-300 font-medium mb-0.5">Forecast unavailable</div>
+            <div>{unavailable.message}</div>
+            <div className="text-slate-500 mt-1">We never show simulated weather on a launch page.</div>
+          </div>
+        )}
+
         {/* Weather Conditions Grid */}
         {weather && (
           <div className="grid grid-cols-4 gap-2">
@@ -170,8 +201,12 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
         )}
 
         {/* Go/No-Go Checklist */}
+        {criteria.length > 0 && (
         <div className="space-y-1.5">
-          <div className="text-slate-400 text-xs uppercase tracking-wider px-1 font-medium">Go/No-Go Criteria</div>
+          <div className="text-slate-400 text-xs uppercase tracking-wider px-1 font-medium flex items-center justify-between">
+            <span>Weather constraints</span>
+            {lastUpdated && <span className="normal-case tracking-normal text-slate-500 font-normal">NWS · {new Date(lastUpdated).toISOString().slice(11, 16)}Z</span>}
+          </div>
           {criteria.map((criterion, i) => (
             <motion.div
               key={criterion.name}
@@ -194,6 +229,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
             </motion.div>
           ))}
         </div>
+        )}
 
         {/* Space Weather Section */}
         {spaceWeather && (

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus 2026: Year in Review — Platform Milestones & Growth',
   description:
-    'A look back at everything SpaceNexus built in 2026: 250+ original articles, 400+ pages and tools, Artemis II live coverage, a live satellite tracker, a real jobs board with 6,300+ ATS-synced listings, and a weekly space economy data brief.',
+    `A look back at everything SpaceNexus built in 2026: ${SITE_STATS.articles} original articles, ${SITE_STATS.pagesAndTools} pages and tools, Artemis II live coverage, a live satellite tracker, a real jobs board with ${SITE_STATS.jobListings} ATS-synced listings, and a weekly space economy data brief.`,
   keywords: [
     'spacenexus year in review',
     'space platform milestones',

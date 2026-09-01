@@ -7,6 +7,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import MissionHeader from '@/components/launch/MissionHeader';
+import LaunchWeatherOdds from '@/components/launch/LaunchWeatherOdds';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface LaunchPageProps {
@@ -71,6 +72,8 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
       streamUrl: true,
       missionPhase: true,
       isLive: true,
+      padLatitude: true,
+      padLongitude: true,
     },
   });
 
@@ -104,6 +107,7 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
         </nav>
       </div>
       <MissionHeader event={{ id: event.id, name: event.name, status: event.status, launchDate: event.launchDate, rocket: event.rocket, agency: event.agency, location: event.location, isLive: !!event.isLive }} slips={slips} debriefSlug={debrief?.slug ?? null} />
+      <LaunchWeatherOdds event={{ id: event.id, status: event.status, launchDate: event.launchDate, location: event.location, padLatitude: event.padLatitude, padLongitude: event.padLongitude }} />
       <LaunchDayDashboard event={serializedEvent} />
       {event.launchDate && event.launchDate.getTime() > Date.now() && (
         <div id="alerts" className="max-w-[1400px] mx-auto px-4 pb-4 scroll-mt-24">

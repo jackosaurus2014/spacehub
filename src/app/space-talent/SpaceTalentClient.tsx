@@ -1188,7 +1188,8 @@ function SpaceTalentHubContent({ initialTalent, initialWorkforce }: SpaceTalentC
 
   // Read top-level tab from URL (?tab=talent or ?tab=workforce)
   const initialTopTab = searchParams.get('tab') || 'talent';
-  // 2026-08-31 (Jay): /jobs 308-redirects here as ?tab=jobs, but 'jobs' is a
+  // 2026-08-31 (Jay): old links arrive here as ?tab=jobs (the /jobs hub links
+  // here the same way since 2026-09-01), but 'jobs' is a
   // WORKFORCE sub-tab, not a top tab — it used to fall through to the default
   // consultant/talent view. Anyone arriving "for jobs" lands on the actual
   // job board (workforce top tab + its 'jobs' sub-tab, the wfTab default).

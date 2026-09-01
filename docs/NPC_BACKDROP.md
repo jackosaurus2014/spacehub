@@ -94,3 +94,41 @@ When touching NPC behavior, verify:
 - [ ] Does this change the NPC economic share-of-market by more than ±10%?
 - [ ] Is the change predictable and forecastable to players, or invisible?
 - [ ] Does it scale gracefully across 1-player and 10,000-player shards?
+
+## NPC forecast (published, 2026-09-01)
+
+The "recommended (future)" item above is built. `GET /api/space-tycoon/npc-forecast`
+(`src/lib/game/npc-forecast.ts`, cached 10 minutes, free intel tier — the same
+public gate as `/api/space-tycoon/demand-pools`) publishes, 72 hours ahead by
+default (`?horizon=24..168`, `?resource=<slug>` to filter):
+
+- **industry** — for each of the five NPC industrial corporations
+  (`npc-industry.ts`): raw inputs it will buy off the curve to run recipes,
+  the manufactured goods it will bid for (standing consumption = *scheduled*;
+  recipe-input shortfalls = *projected*), and the units it will have listed,
+  each with the bid or ask price it will use.
+- **drive** — every open NPC procurement drive (`BiddingContract` rows with
+  `issuerNpcId`) with its quantity, per-unit price cap (`maxBid / quantity`,
+  never above spot × `NPC_DRIVE_PRICE_CAP_MULTIPLIER`), issuer, faction and
+  bidding window. Always *scheduled*.
+- **pool** — the next-24h NPC floor demand per authored (location, service
+  category) market in dollars: `getNpcFloorDemand × getDemandPoolSeasonModifier
+  × 24/730`. Always *scheduled*; excluded from `byResource` (dollars, not units).
+
+**Formula-parity guarantee.** The forecast does not estimate the tick; it runs
+the tick's own arithmetic. Every per-tick quantity and price decision in
+`runNpcIndustryTick` was factored into exported pure helpers
+(`npcConsumptionWantPerTick`, `npcProductionTarget`, `npcBatchesPerTick`,
+`npcListCap`, `npcShortfallWant`, `npcBuyOrderQty`, `npcBuyPrice`,
+`npcListPrice`) that BOTH the tick and `simulateNpcCorp` call, and the
+population scale comes from the same 14-day `gameProfile` count. What the
+forecast cannot know — whether the treasury cushion holds, whether the curve
+can fill a raw buy, whether players buy the stock — is what the *projected*
+label means. `src/lib/__tests__/npc-forecast.test.ts` runs the real tick
+against an in-memory Prisma and asserts the forecast's quantities and prices
+equal the orders the tick actually rests.
+
+Surfaces: Markets → Analytics → **NPC Demand** (table with window, NPC,
+resource, side, quantity, price cap, confidence-as-text; resource filter
+follows the order book's selection) and the order-book header line
+"NPC demand next 72h: buy X / sell Y" for the selected resource.

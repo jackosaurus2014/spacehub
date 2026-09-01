@@ -39,7 +39,7 @@ export default function CostToLaunchPage({ params }: { params: { thing: string }
         <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-6 flex-wrap">
           <Link href="/" className="hover:text-white/80">Home</Link><span>/</span>
           <Link href="/guide" className="hover:text-white/80">Guides</Link><span>/</span>
-          <Link href="/guide/space-launch-cost-comparison" className="hover:text-white/80">Launch costs</Link><span>/</span>
+          <Link href="/guide/cost-to-launch" className="hover:text-white/80">Cost to launch</Link><span>/</span>
           <span className="text-slate-400">{c.thing.replace(/^a /, '').replace(/^\w/, (ch) => ch.toUpperCase())}</span>
         </nav>
         <HeroArt src="/art/hero-launch-cost.webp" className="mb-8" />
@@ -119,7 +119,7 @@ export default function CostToLaunchPage({ params }: { params: { thing: string }
           author: { '@type': 'Organization', name: 'SpaceNexus' }, publisher: { '@type': 'Organization', name: 'SpaceNexus', logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' } },
           datePublished: '2026-08-28T00:00:00Z', dateModified: new Date().toISOString(), mainEntityOfPage: { '@type': 'WebPage', '@id': `https://spacenexus.us/guide/cost-to-launch/${c.slug}` },
         }).replace(/</g, '\\u003c') }} />
-        <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide' }, { name: 'Launch costs', href: '/guide/space-launch-cost-comparison' }, { name: c.title }]} />
+        <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide' }, { name: 'Cost to launch', href: '/guide/cost-to-launch' }, { name: c.title }]} />
       </div>
     </div>
   );

@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import {
   notFoundError,
@@ -11,14 +9,29 @@ import {
 } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { chatMessageSchema, validateBody } from '@/lib/validations';
+import {
+  BoundedRateLimiter,
+  COOKIES_REQUIRED_MESSAGE,
+  resolveLaunchDayActor,
+} from '@/lib/launch-day-identity';
 
 export const dynamic = 'force-dynamic';
 
-// In-memory rate limit for chat: userId -> lastMessageTimestamp
-const chatRateLimits = new Map<string, number>();
+// Chat rate limit, keyed by voterKey (signed-in user id or anonymous sn_vid
+// cookie): 1 message / 5s AND at most 30 messages / 10 min. Bounded in-memory
+// Map (5,000 keys, LRU eviction) — PER INSTANCE, so on a multi-instance deploy
+// the ceiling is N× this. Fine for chat; not a security boundary.
+const CHAT_MIN_GAP_MS = 5_000;
+const CHAT_BURST_MAX = 30;
+const CHAT_BURST_WINDOW_MS = 10 * 60_000;
+const chatLimiter = new BoundedRateLimiter({
+  minGapMs: CHAT_MIN_GAP_MS,
+  max: CHAT_BURST_MAX,
+  windowMs: CHAT_BURST_WINDOW_MS,
+});
 
-// Cleanup old entries periodically
-const RATE_LIMIT_WINDOW_MS = 5000; // 1 message per 5 seconds
+// Anonymous actors may not post links (cheapest spam vector); signed-in users may.
+const LINK_RE = /https?:\/\//i;
 
 export async function GET(
   req: NextRequest,
@@ -84,18 +97,14 @@ export async function POST(
   try {
     const { eventId } = params;
 
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return unauthorizedError('Sign in to send chat messages');
+    // Anonymous visitors may chat; identity comes from the sn_vid cookie.
+    const actor = await resolveLaunchDayActor(req);
+    if (!actor) {
+      return unauthorizedError(COOKIES_REQUIRED_MESSAGE);
     }
 
-    const userId = session.user.id;
-
-    // Rate limiting: 1 message per 5 seconds per user
-    const lastMessage = chatRateLimits.get(userId);
-    const now = Date.now();
-    if (lastMessage && now - lastMessage < RATE_LIMIT_WINDOW_MS) {
-      const retryAfter = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - lastMessage)) / 1000);
+    const retryAfter = chatLimiter.hit(actor.voterKey);
+    if (retryAfter !== null) {
       return rateLimitedError(retryAfter);
     }
 
@@ -109,6 +118,7 @@ export async function POST(
     }
 
     const body = await req.json();
+    // chatMessageSchema enforces 1-500 chars and strips HTML tags.
     const validation = validateBody(chatMessageSchema, body);
     if (!validation.success) {
       const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
@@ -117,11 +127,17 @@ export async function POST(
 
     const { message } = validation.data;
 
+    if (actor.anonymous && LINK_RE.test(message)) {
+      return validationError('Sign in to share links in chat', {
+        message: ['Links are not allowed from anonymous visitors'],
+      });
+    }
+
     const chatMessage = await prisma.launchChatMessage.create({
       data: {
         eventId,
-        userId,
-        userName: session.user.name || session.user.email?.split('@')[0] || 'Anonymous',
+        userId: actor.userId,
+        userName: actor.displayName || 'Anonymous',
         message,
         type: 'chat',
       },
@@ -135,24 +151,10 @@ export async function POST(
       },
     });
 
-    // Update rate limit
-    chatRateLimits.set(userId, now);
-
-    // Periodic cleanup of old rate limit entries
-    if (Math.random() < 0.1) {
-      const cutoff = now - RATE_LIMIT_WINDOW_MS * 2;
-      for (const key of Array.from(chatRateLimits.keys())) {
-        const val = chatRateLimits.get(key);
-        if (val && val < cutoff) {
-          chatRateLimits.delete(key);
-        }
-      }
-    }
-
     return NextResponse.json(
       {
         success: true,
-        data: chatMessage,
+        data: { ...chatMessage, anonymous: actor.anonymous },
       },
       { status: 201 }
     );

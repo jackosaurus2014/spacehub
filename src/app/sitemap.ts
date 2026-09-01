@@ -11,6 +11,7 @@ import { allRocketSlugs } from '@/lib/rockets';
 import { LAUNCH_SITES, monthParam, monthWindow } from '@/lib/launch-sites';
 import { COST_TO_LAUNCH } from '@/lib/cost-to-launch';
 import { VIEWING_CITIES } from '@/lib/launch-viewing-cities';
+import { TONIGHT_CITIES } from '@/lib/tonight-cities';
 import { CHART_DEFS } from '@/lib/charts/registry';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
@@ -54,8 +55,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     ...allRocketSlugs().map((slug) => ({ url: `${BASE_URL}/rockets/${slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
     { url: `${BASE_URL}/launches`, changeFrequency: 'daily' as const, priority: 0.9 },
     { url: `${BASE_URL}/predictions`, changeFrequency: 'hourly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/guide/cost-to-launch`, changeFrequency: 'monthly' as const, priority: 0.8 },
     ...COST_TO_LAUNCH.map((c) => ({ url: `${BASE_URL}/guide/cost-to-launch/${c.slug}`, changeFrequency: 'monthly' as const, priority: 0.8 })),
     ...VIEWING_CITIES.map((c) => ({ url: `${BASE_URL}/guide/watch-a-launch/${c.slug}`, changeFrequency: 'weekly' as const, priority: 0.7 })),
+    // Tonight over your town (2026-09-01): registry-driven, no DB.
+    { url: `${BASE_URL}/tonight`, changeFrequency: 'daily' as const, priority: 0.7 },
+    ...TONIGHT_CITIES.map((c) => ({ url: `${BASE_URL}/tonight/${c.slug}`, changeFrequency: 'daily' as const, priority: 0.6 })),
     { url: `${BASE_URL}/chart`, changeFrequency: 'weekly' as const, priority: 0.6 },
     ...CHART_DEFS.map((c) => ({ url: `${BASE_URL}/chart/${c.slug}`, changeFrequency: 'weekly' as const, priority: 0.6 })),
     ...LAUNCH_SITES.map((s) => ({ url: `${BASE_URL}/launches/${s.slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
@@ -79,6 +84,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/regulatory-radar`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/export-compliance-qa`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/solar-exploration`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/jobs`, changeFrequency: 'daily' as const, priority: 0.9 },
     { url: `${BASE_URL}/space-talent`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/hiring-trends`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/launch-cadence`, changeFrequency: 'daily' as const, priority: 0.7 },
@@ -101,6 +107,8 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     })),
     { url: `${BASE_URL}/hire`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-environment`, changeFrequency: 'hourly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/space-weather`, changeFrequency: 'hourly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/conjunctions`, changeFrequency: 'hourly' as const, priority: 0.7 },
 
     // Sub-module pages
     { url: `${BASE_URL}/launch-vehicles`, changeFrequency: 'weekly' as const, priority: 0.7 },
@@ -122,6 +130,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/space-insurance`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/orbital-costs`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/procurement`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/space-budget`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-tourism`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
     // Investor & Entrepreneur tools
@@ -179,10 +188,16 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/guide/space-economy-investment`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/space-mining-guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/space-companies-directory`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/guide/nssl-phase-3`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/guide/kuiper-vs-starlink`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/guide/space-debris-and-traffic-management`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/guide/space-weather-risk-for-operators`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/guide/satellite-companies`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/watch-a-launch-cape-canaveral`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/watch-a-launch-vandenberg`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/watch-a-launch-starbase`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/guide/watch-a-launch-wallops`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/guide/watch-a-launch-kourou`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
     // Learning Center
     { url: `${BASE_URL}/learn`, changeFrequency: 'monthly' as const, priority: 0.7 },
@@ -209,6 +224,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compare/northrop-grumman-vs-l3harris-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/iridium-vs-globalstar`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/spacex-vs-ula`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/vulcan-centaur-vs-falcon-9`, changeFrequency: 'monthly' as const, priority: 0.8 },
 
     // Sector directory pages (programmatic SEO)
     { url: `${BASE_URL}/sectors`, changeFrequency: 'weekly' as const, priority: 0.8 },
@@ -617,5 +633,44 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
     // getSignificantEntryIds already fails soft; this guards the import.
   }
 
-  return [...blogRoutes, ...launchRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes];
+  // Podcast shows + their latest 20 episodes each (2026-09-01): the show and
+  // episode pages are the directory's search-shaped URLs. Only synced shows
+  // are listed — a never-fetched row renders an empty episode list.
+  let podcastRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const shows = await prisma.podcast.findMany({
+      where: { OR: [{ lastFetchedAt: { not: null } }, { episodeCount: { gt: 0 } }] },
+      select: {
+        slug: true,
+        updatedAt: true,
+        lastFetchedAt: true,
+        episodes: {
+          where: { publishedAt: { not: null } },
+          orderBy: { publishedAt: 'desc' },
+          take: 20,
+          select: { slug: true, publishedAt: true, updatedAt: true },
+        },
+      },
+    });
+    podcastRoutes = shows.flatMap((show) => [
+      {
+        url: `${BASE_URL}/podcasts/${show.slug}`,
+        lastModified: show.episodes[0]?.publishedAt ?? show.lastFetchedAt ?? show.updatedAt,
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      },
+      ...show.episodes.map((ep) => ({
+        url: `${BASE_URL}/podcasts/${show.slug}/${ep.slug}`,
+        lastModified: ep.updatedAt,
+        changeFrequency: 'monthly' as const,
+        priority: 0.4,
+      })),
+    ]);
+  } catch (error) {
+    logger.error('Sitemap segment 3: Failed to fetch podcast routes', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  return [...blogRoutes, ...launchRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes, ...podcastRoutes];
 }

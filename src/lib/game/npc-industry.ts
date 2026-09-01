@@ -108,11 +108,71 @@ const AGE_DISCOUNT_PER_DAY = 0.05;
 const MIN_MARKUP_OVER_COST = 1.05;
 const BUY_DISCOUNT = 0.95;
 const TICK_HOURS = 1;
+/** Standing-buy backlog cap for a manufactured input a recipe is short of. */
+const WANTED_CAP = 24;
+/** Largest single buy order a corp rests per good per tick. */
+const MAX_BUY_ORDER_QTY = 6;
+
+// ─── Per-tick quantity helpers (shared with npc-forecast.ts) ────────────────
+// The published NPC demand forecast (CLAUDE.md: "NPC demand is visible and
+// forecastable") must equal what this tick actually does, so every quantity
+// and price decision below is a pure exported helper that BOTH the tick and
+// buildNpcForecast call. There is deliberately no second formula anywhere;
+// npc-forecast.test.ts holds the parity guard.
+
+export const NPC_TICK_HOURS = TICK_HOURS;
+export const NPC_WANTED_CAP = WANTED_CAP;
+export const NPC_MAX_BUY_ORDER_QTY = MAX_BUY_ORDER_QTY;
+export const NPC_BUY_DISCOUNT = BUY_DISCOUNT;
+
+/** Units of a consumable a corp adds to its standing want each tick. */
+export function npcConsumptionWantPerTick(perWeek: number, scale: number): number {
+  return (perWeek / 168) * TICK_HOURS * scale;
+}
+
+/** Inventory target for a recipe output this tick (demand = demandSignal). */
+export function npcProductionTarget(tier: number, demand: number, scale: number): number {
+  return Math.max(1, Math.min(TARGET_CAP[tier] ?? 1, Math.round((2 + demand) * scale)));
+}
+
+export function npcBatchesPerTick(tier: number): number {
+  return BATCHES_PER_TICK[tier] ?? 1;
+}
+
+export function npcListCap(tier: number): number {
+  return LIST_CAP[tier] ?? 1;
+}
+
+/** Want after a recipe comes up short of a manufactured input. */
+export function npcShortfallWant(currentWant: number, inputQty: number): number {
+  return Math.min(WANTED_CAP, currentWant + inputQty);
+}
+
+/** Buy-order size rested for a still-wanted quantity. */
+export function npcBuyOrderQty(stillWanted: number): number {
+  return Math.min(stillWanted, MAX_BUY_ORDER_QTY);
+}
+
+/** Bid price for a manufactured good at a reference price. */
+export function npcBuyPrice(slug: string, referencePrice: number): number {
+  return clampToBand(slug, referencePrice * BUY_DISCOUNT);
+}
+
+/** Ask price for a listed good: cost-plus, aged toward cost, floored. */
+export function npcListPrice(marginPct: number, slug: string, unitCost: number, ageDays: number): number {
+  const markup = Math.max(MIN_MARKUP_OVER_COST, (1 + marginPct) * Math.pow(1 - AGE_DISCOUNT_PER_DAY, ageDays));
+  // Cost-plus, but not a fire sale: NPC corps are not charities, and spot
+  // (which pays contracts) follows the last fill. Floor at 75% of base,
+  // aging no lower than 60%.
+  const base = RESOURCE_MAP.get(slug as never)?.baseMarketPrice ?? unitCost;
+  const floor = base * Math.max(0.6, 0.75 * Math.pow(1 - AGE_DISCOUNT_PER_DAY, ageDays));
+  return clampToBand(slug, Math.max(unitCost * markup, floor));
+}
 
 type Inv = Record<string, number>;
-interface CorpMeta { unitCost: Record<string, number>; wanted: Record<string, number>; listedAt: Record<string, string> }
+export interface CorpMeta { unitCost: Record<string, number>; wanted: Record<string, number>; listedAt: Record<string, string> }
 
-function readMeta(inv: Inv & { __meta?: unknown }): CorpMeta {
+export function readMeta(inv: Inv & { __meta?: unknown }): CorpMeta {
   const m = (inv.__meta as Partial<CorpMeta> | undefined) || {};
   return { unitCost: { ...(m.unitCost || {}) }, wanted: { ...(m.wanted || {}) }, listedAt: { ...(m.listedAt || {}) } };
 }
@@ -160,7 +220,7 @@ export async function curveBuy(resourceSlug: string, quantity: number): Promise<
 }
 
 /** Reference price in whole dollars for a manufactured good: last fill, else curve current, else base. */
-async function referencePrice(slug: string): Promise<number> {
+export async function referencePrice(slug: string): Promise<number> {
   const fill = await prisma.marketFill.findFirst({ where: { resourceSlug: slug }, orderBy: { createdAt: 'desc' }, select: { pricePerUnit: true } });
   if (fill?.pricePerUnit) return fill.pricePerUnit;
   const row = await prisma.marketResource.findUnique({ where: { slug }, select: { currentPrice: true } });
@@ -169,7 +229,7 @@ async function referencePrice(slug: string): Promise<number> {
 }
 
 /** Player demand signal for a good: open non-NPC bids plus a 3-day run-rate of recent player buys. */
-async function demandSignal(slug: string): Promise<number> {
+export async function demandSignal(slug: string): Promise<number> {
   const since = new Date(Date.now() - 7 * 86400000);
   const [bids, fills] = await Promise.all([
     prisma.marketLimitOrder.aggregate({
@@ -186,7 +246,7 @@ async function demandSignal(slug: string): Promise<number> {
   return Math.max(0, openBids + runRate);
 }
 
-async function openAskQty(corpId: string, slug: string): Promise<number> {
+export async function openAskQty(corpId: string, slug: string): Promise<number> {
   const a = await prisma.marketLimitOrder.aggregate({
     where: { profileId: corpId, resourceSlug: slug, side: 'sell', status: { in: ['open', 'partial'] } },
     _sum: { quantity: true, filledQty: true },
@@ -194,7 +254,7 @@ async function openAskQty(corpId: string, slug: string): Promise<number> {
   return (a._sum.quantity || 0) - (a._sum.filledQty || 0);
 }
 
-function clampToBand(slug: string, price: number): number {
+export function clampToBand(slug: string, price: number): number {
   // Same band the order route enforces (price-band.ts): [0.3x, 3x] of base,
   // inside the resource's absolute min/max.
   const def = RESOURCE_MAP.get(slug as never);
@@ -236,16 +296,16 @@ async function produce(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury
     const out = r.outputId;
     const demand = await demandSignal(out);
     const have = (inv[out] || 0) + (await openAskQty(seed.id, out));
-    const target = Math.max(1, Math.min(TARGET_CAP[r.tier] ?? 1, Math.round((2 + demand) * scale)));
+    const target = npcProductionTarget(r.tier, demand, scale);
     let batches = 0;
-    while (have + (built[out] || 0) < target && batches < (BATCHES_PER_TICK[r.tier] ?? 1)) {
+    while (have + (built[out] || 0) < target && batches < npcBatchesPerTick(r.tier)) {
       const outcome = await runRecipe(r, inv, meta, treasury);
       if (!outcome.ok) {
         skipped.push(`${seed.name}: ${r.id} — ${outcome.reason}`);
         // A manufactured input we are short of becomes a standing buy order —
         // real cross-corp/player demand (Nova bids for electronics; a player
         // who fabricates them can fill it).
-        if (outcome.shortOf) meta.wanted[outcome.shortOf] = Math.min(24, (meta.wanted[outcome.shortOf] || 0) + (r.inputs[outcome.shortOf] || 1));
+        if (outcome.shortOf) meta.wanted[outcome.shortOf] = npcShortfallWant(meta.wanted[outcome.shortOf] || 0, r.inputs[outcome.shortOf] || 1);
         break;
       }
       treasury = outcome.treasury;
@@ -303,18 +363,12 @@ async function relist(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, scale: nu
     const qty = Math.floor(inv[slug] || 0);
     if (qty <= 0) { delete meta.listedAt[slug]; continue; }
     const tier = recipeTierOf(slug) ?? 2;
-    const listQty = Math.min(qty, LIST_CAP[tier] ?? 1);
+    const listQty = Math.min(qty, npcListCap(tier));
     const unitCost = meta.unitCost[slug] || RESOURCE_MAP.get(slug as never)?.baseMarketPrice || 1;
     const firstListed = meta.listedAt[slug] ? new Date(meta.listedAt[slug]).getTime() : now;
     if (!meta.listedAt[slug]) meta.listedAt[slug] = new Date(now).toISOString();
     const ageDays = Math.max(0, (now - firstListed) / 86400000);
-    const markup = Math.max(MIN_MARKUP_OVER_COST, (1 + seed.marginPct) * Math.pow(1 - AGE_DISCOUNT_PER_DAY, ageDays));
-    // Cost-plus, but not a fire sale: NPC corps are not charities, and spot
-    // (which pays contracts) follows the last fill. Floor at 75% of base,
-    // aging no lower than 60%.
-    const base = RESOURCE_MAP.get(slug as never)?.baseMarketPrice ?? unitCost;
-    const floor = base * Math.max(0.6, 0.75 * Math.pow(1 - AGE_DISCOUNT_PER_DAY, ageDays));
-    const price = clampToBand(slug, Math.max(unitCost * markup, floor));
+    const price = npcListPrice(seed.marginPct, slug, unitCost, ageDays);
     await prisma.marketLimitOrder.create({
       data: { profileId: seed.id, resourceSlug: slug, side: 'sell', quantity: listQty, pricePerUnit: price, escrowAmount: 0, status: 'open', source: 'npc-industry', expiresAt: new Date(now + 26 * 3600000) },
     });
@@ -335,7 +389,7 @@ async function procure(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury
   const consumed: Record<string, number> = {};
   let exposure = 0;
   for (const [slug, perWeek] of Object.entries(seed.consumes)) {
-    meta.wanted[slug] = (meta.wanted[slug] || 0) + (perWeek / 168) * TICK_HOURS * scale;
+    meta.wanted[slug] = (meta.wanted[slug] || 0) + npcConsumptionWantPerTick(perWeek, scale);
   }
   for (const slug of Object.keys(meta.wanted)) {
     if (!MANUFACTURED_RESOURCE_IDS.includes(slug)) { delete meta.wanted[slug]; continue; }
@@ -350,8 +404,8 @@ async function procure(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury
     const still = Math.floor(meta.wanted[slug]);
     if (still < 1) continue;
     const ref = await referencePrice(slug);
-    const price = clampToBand(slug, ref * BUY_DISCOUNT);
-    const qty = Math.min(still, 6);
+    const price = npcBuyPrice(slug, ref);
+    const qty = npcBuyOrderQty(still);
     const cost = price * qty * 1.02;
     if (treasury - exposure < cost * 3) continue; // keep a cushion; demand is real but not reckless
     exposure += cost;

@@ -62,7 +62,10 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Watch a launch: Cape Canaveral', href: '/guide/watch-a-launch-cape-canaveral', description: 'Public viewing spots and tips', icon: '🎟️' },
       { name: 'Watch a launch: Vandenberg', href: '/guide/watch-a-launch-vandenberg', description: 'Public viewing spots and tips', icon: '🎟️' },
       { name: 'Watch a launch: Starbase', href: '/guide/watch-a-launch-starbase', description: 'Public viewing spots and road closures', icon: '🎟️' },
+      { name: 'Watch a launch: Wallops', href: '/guide/watch-a-launch-wallops', description: 'Chincoteague, Assateague and the Delmarva coast', icon: '🎟️' },
+      { name: 'Watch a launch: Kourou', href: '/guide/watch-a-launch-kourou', description: 'Carapa, the seafront and getting to French Guiana', icon: '🎟️' },
       { name: 'Can you see a launch from your city?', href: '/guide/watch-a-launch/orlando', description: 'Orlando, LA, Houston, DC and more — distance, direction, what you will see', icon: '🏙️' },
+      { name: 'ISS Passes Tonight', href: '/tonight', description: "Tonight's visible ISS, Tiangong and Hubble passes, city by city", icon: '🌃' },
     ],
   },
   {
@@ -108,6 +111,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
     key: 'business', label: 'Business', blurb: 'Contracts, compliance and the supply chain.', menu: true,
     entries: [
       { name: 'Contracts & Opportunities', href: '/procurement', description: 'Contracts, grants, SBIR and budgets', icon: '📋', nav: true },
+      { name: 'US Space Budget Tracker', href: '/space-budget', description: 'NASA, Space Force, NOAA, DARPA — request vs enacted, by program, plus the congressional calendar', icon: '💰' },
       { name: 'Regulatory Radar', href: '/regulatory-radar', description: 'Live rules, enforcement and deadlines', icon: '📡', nav: true },
       { name: 'Compliance Hub', href: '/compliance', description: 'Licensing, space law and filings', icon: '⚖️', nav: true, pro: true },
       { name: 'Jobs', href: '/jobs', description: 'Thousands of space jobs, synced daily', icon: '💼', nav: true, hot: true },
@@ -138,6 +142,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Cost to launch a satellite', href: '/guide/cost-to-launch/satellite', description: 'By size and orbit, 2026 prices', icon: '💰', hot: true },
       { name: 'Cost to launch a CubeSat', href: '/guide/cost-to-launch/cubesat', description: '1U to 12U, rideshare and ISS', icon: '🧊' },
       { name: 'Cost to send a person to space', href: '/guide/cost-to-launch/person', description: 'Suborbital to ISS seat prices', icon: '🧑‍🚀' },
+      { name: 'Cost to launch: every payload', href: '/guide/cost-to-launch', description: 'CubeSat to lunar lander, one answer each', icon: '🧮' },
       // Compare lives in Markets; the freed Learn slot goes to the two proven ops calculators (SYNTHESIS.md item 20).
       { name: 'Launch Cost Calculator', href: '/launch-cost-calculator', description: 'Compare launch costs across vehicles', icon: '💰', nav: true, hot: true },
       { name: 'Mission Simulator', href: '/mission-simulator', description: 'Fly a mission end to end', icon: '🎮', nav: true },
@@ -152,7 +157,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Reading List', href: '/reading-list', description: 'Books worth your time', icon: '📕' },
       { name: 'Space Agencies', href: '/space-agencies', description: 'Every national agency', icon: '🏛️' },
       { name: 'Solar System', href: '/solar-exploration', description: '3D planetary visualization', icon: '☀️' },
-      { name: 'Videos', href: '/videos', description: 'Curated video library', icon: '🎬' },
+      { name: 'Videos', href: '/videos', description: 'Launch webcast replays + explainers', icon: '🎬' },
     ],
   },
   {
@@ -170,6 +175,8 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Launch Economics', href: '/launch-economics', description: 'Cost analysis across providers', icon: '📊' },
       { name: 'Orbital Costs', href: '/orbital-costs', description: 'What it costs to be in each orbit', icon: '💲' },
       { name: 'Space Environment', href: '/space-environment', description: 'Space weather, debris and operations', icon: '🌍' },
+      { name: 'Space Weather Now', href: '/space-weather', description: 'Kp, solar wind, Bz, 3-day flare outlook and the flare log', icon: '☀️' },
+      { name: 'Satellite Conjunctions', href: '/conjunctions', description: 'Close approaches from Space-Track public CDMs', icon: '🛰️' },
       { name: 'Asteroid Watch', href: '/asteroid-watch', description: 'Near-Earth objects and planetary defense', icon: '☄️' },
       { name: 'Ground Stations', href: '/ground-stations', description: 'Networks and coverage', icon: '📡' },
       { name: 'Space Stations', href: '/space-stations', description: 'ISS, Tiangong and the commercial stations', icon: '🏠' },

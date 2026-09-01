@@ -502,7 +502,7 @@ export default function StartupHubPage() {
                 icon={<span className="text-4xl">👥</span>}
                 title="No active job postings from private companies right now"
                 description="Check the full jobs board for all open roles across the industry."
-                suggestions={[{ label: 'Open Jobs Board', href: '/space-talent?tab=jobs' }]}
+                suggestions={[{ label: 'Open Jobs Board', href: '/jobs' }]}
               />
             ) : (
               <div className="card p-4 sm:p-6">

@@ -78,6 +78,12 @@ const INDUSTRY_MATCHUPS = [
     category: 'Launch Vehicles',
   },
   {
+    title: 'Vulcan Centaur vs Falcon 9',
+    description: 'ULA\'s expendable Vulcan against SpaceX\'s reusable Falcon 9: list price and cost per kilogram, LEO/GTO/TLI payload, career record, live cadence, and which missions fly on which.',
+    href: '/compare/vulcan-centaur-vs-falcon-9',
+    category: 'Launch Vehicles',
+  },
+  {
     title: 'SpaceX vs Blue Origin vs Rocket Lab',
     description: 'The three leading commercial launch providers compared: vehicles, pricing, track records, and future roadmaps.',
     href: '/blog/spacex-blue-origin-rocket-lab-comparison-2026',

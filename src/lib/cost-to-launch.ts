@@ -1,4 +1,19 @@
-import { FALCON9_DEDICATED_PER_KG, FALCON9_LIST_PRICE_USD, FALCON_HEAVY_LIST_PRICE_USD, RIDESHARE_MIN_PRICE_USD, RIDESHARE_PER_KG, ELECTRON_DEDICATED_PER_KG, STARSHIP_TARGET_PER_KG, fmtUsd, fmtUsdM, fmtUsdK } from '@/lib/launch-cost-constants';
+import { FALCON9_DEDICATED_PER_KG, FALCON9_LIST_PRICE_USD, FALCON_HEAVY_LIST_PRICE_USD, RIDESHARE_MIN_PRICE_USD, RIDESHARE_MIN_KG, RIDESHARE_PER_KG, ELECTRON_LIST_PRICE_USD, ELECTRON_LEO_KG, ELECTRON_DEDICATED_PER_KG, STARSHIP_TARGET_PER_KG, fmtUsd, fmtUsdM, fmtUsdK, fmtPerKg } from '@/lib/launch-cost-constants';
+import { LAUNCH_VEHICLES } from '@/lib/launch-vehicles-data';
+
+// Catalogue lookups for the entries that do arithmetic on vehicle payload
+// figures (GTO / TLI). Never retype a catalogue number here — read it.
+const vehicle = (id: string) => LAUNCH_VEHICLES.find((v) => v.id === id)!;
+const F9 = vehicle('falcon-9');
+const FH = vehicle('falcon-heavy');
+const VULCAN = vehicle('vulcan-centaur');
+const ARIANE6 = vehicle('ariane-6');
+const ELECTRON = vehicle('electron');
+/** "$7.5M" — fmtUsdM rounds to whole millions, which misstates sub-$10M prices. */
+const fmtUsdM1 = (n: number): string => `$${(n / 1_000_000).toFixed(1)}M`;
+/** CubeSat Design Specification mass allowance per U (classic 1.33 kg; newer revisions allow 2 kg). */
+const CUBESAT_KG_PER_U = 1.33;
+const CUBESAT_MAX_KG_PER_U = 2;
 
 // ─── "How much does it cost to launch X?" long-tail guides ──────────────────
 // The launch-cost guide is the site's largest organic asset (28.7k Search
@@ -307,6 +322,177 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
       { q: 'Is a hosted payload faster than a dedicated satellite?', a: 'Usually. You join a satellite already being built, so 18-24 months from contract to orbit is common versus 3-5 years for a new spacecraft.' },
     ],
     related: [{ label: 'Company profiles: satellite operators', href: '/company-profiles' }, { label: 'Learn: Space Supply Chain Fundamentals', href: '/learn/supply-chain' }, { label: 'Cost to launch a satellite', href: '/guide/cost-to-launch/satellite' }],
+  },
+
+  // ── 2026-09-01 batch: six long-tail entries. Every figure below is
+  // arithmetic on launch-cost-constants or the vehicle catalogue; where a
+  // real-world price is not in the repo the row says "quoted" and gives none.
+  {
+    slug: '1u-cubesat',
+    thing: 'a 1U CubeSat',
+    title: 'How Much Does It Cost to Launch a 1U CubeSat?',
+    metaTitle: 'How Much Does It Cost to Launch a 1U CubeSat? (Per-U Math, 2026)',
+    description: `A 1U CubeSat weighs about ${CUBESAT_KG_PER_U} kg, which is only ${fmtUsd(Math.round(CUBESAT_KG_PER_U * RIDESHARE_PER_KG))} of launch mass at SpaceX's ${fmtUsd(RIDESHARE_PER_KG)}/kg rideshare rate — but nobody sells a single kilogram. The per-U arithmetic, the ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)} minimum purchase, and where the gap goes.`,
+    shortAnswer: `Do the raw arithmetic and a 1U CubeSat is almost free to launch: the CubeSat standard allows about ${CUBESAT_KG_PER_U} kg per unit, and at the ${fmtUsd(RIDESHARE_PER_KG)} per kilogram SpaceX rideshare rate that is roughly ${fmtUsd(Math.round(CUBESAT_KG_PER_U * RIDESHARE_PER_KG))} of launch mass (about ${fmtUsd(CUBESAT_MAX_KG_PER_U * RIDESHARE_PER_KG)} for the heaviest ${CUBESAT_MAX_KG_PER_U} kg unit newer revisions permit). But SpaceX sells a ${RIDESHARE_MIN_KG} kg minimum for ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)}, not single kilograms, so a 1U flies as one slot in a deployer that a broker has bought and subdivided. What you actually pay is a deployer-slot price — our CubeSat guide puts a 1U slot at roughly $40k–$80k — and the difference between that and the raw-mass figure is the deployer, the integration campaign and the broker's margin.`,
+    rows: [
+      { option: `Launch mass only: ${CUBESAT_KG_PER_U} kg at the rideshare rate`, price: fmtUsd(Math.round(CUBESAT_KG_PER_U * RIDESHARE_PER_KG)), notes: 'Arithmetic, not a product: SpaceX sells a 50 kg minimum, not single kilograms', rocket: 'falcon-9' },
+      { option: `Heaviest allowed 1U (${CUBESAT_MAX_KG_PER_U} kg), same rate`, price: fmtUsd(CUBESAT_MAX_KG_PER_U * RIDESHARE_PER_KG), notes: 'Newer CubeSat specification revisions allow up to 2 kg per U', rocket: 'falcon-9' },
+      { option: `Rideshare minimum purchase (${RIDESHARE_MIN_KG} kg)`, price: fmtUsdK(RIDESHARE_MIN_PRICE_USD), notes: 'What a broker buys from SpaceX and subdivides across many CubeSats', rocket: 'falcon-9' },
+      { option: '1U deployer slot via a broker', price: '$40k–$80k', notes: 'The range in our CubeSat guide; deployer, integration and margin explain the gap from the raw-mass figure' },
+      { option: 'Dedicated Electron (the whole rocket)', price: fmtUsdM1(ELECTRON_LIST_PRICE_USD), notes: 'Your orbit and your date; absurd for one 1U unless you are flying dozens', rocket: 'electron' },
+    ],
+    hiddenCosts: [
+      'The deployer and integration fee: a CubeSat is not bolted to the rocket, it is loaded into a spring-loaded dispenser that someone has to qualify, test and install.',
+      'Licensing: a radio licence for the downlink (FCC in the US, plus ITU coordination) and a remote-sensing licence if the unit carries a camera.',
+      'Environmental testing: vibration and thermal-vacuum campaigns plus a deployer fit check, usually at a third-party test house.',
+      'Ground station time for the mission lifetime, or a ground-station-as-a-service contract.',
+      'The satellite itself: a 1U bus, payload and software often cost more than the ride.',
+    ],
+    faq: [
+      { q: `Why can't I just pay ${fmtUsd(Math.round(CUBESAT_KG_PER_U * RIDESHARE_PER_KG))} for my 1U?`, a: `Because ${fmtUsd(RIDESHARE_PER_KG)} per kilogram is a rate, not a menu item. SpaceX's rideshare minimum is ${RIDESHARE_MIN_KG} kg for ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)}; below that you buy a slot in a deployer from a broker who has aggregated many small payloads, and the slot price includes the hardware and paperwork that make a 1U flyable.` },
+      { q: 'Does a 1U CubeSat ever get its own launch?', a: 'Effectively never. Even the smallest dedicated launcher carries hundreds of kilograms, so a single 1U would be paying for a rocket it uses a fraction of a percent of. Rideshare deployers exist precisely so that 1U-class payloads can share.' },
+      { q: 'How is a 1U slot priced?', a: 'By unit size, target orbit, deployment options and how late you book — not by kilogram. Brokers quote per slot, and university or research missions can sometimes fly free through agency CubeSat programmes.' },
+    ],
+    related: [{ label: 'Cost to launch a CubeSat (1U to 12U)', href: '/guide/cost-to-launch/cubesat' }, { label: 'Launch cost guide: every rocket compared', href: '/guide/space-launch-cost-comparison' }, { label: 'Build guide: CanSat', href: '/build-guides/build-a-cansat' }],
+  },
+  {
+    slug: 'smallsat-100kg',
+    thing: 'a 100 kg smallsat',
+    title: 'How Much Does It Cost to Launch a 100 kg Smallsat?',
+    metaTitle: 'How Much Does It Cost to Launch a 100 kg Satellite? (2026 Prices)',
+    description: `A 100 kg smallsat rides to orbit for about ${fmtUsdK(100 * RIDESHARE_PER_KG)} on a SpaceX rideshare at ${fmtUsd(RIDESHARE_PER_KG)}/kg; a dedicated Electron costs ${fmtUsdM1(ELECTRON_LIST_PRICE_USD)} for your own orbit. The rideshare-versus-dedicated math for the most common smallsat class.`,
+    shortAnswer: `About ${fmtUsdK(100 * RIDESHARE_PER_KG)} on a rideshare: 100 kg is twice SpaceX's ${RIDESHARE_MIN_KG} kg minimum, so you pay the ${fmtUsd(RIDESHARE_PER_KG)} per kilogram rate straight through and get dropped in the mission's orbit, typically sun-synchronous. If you need your own orbit or your own date, a dedicated Electron lists at ${fmtUsdM1(ELECTRON_LIST_PRICE_USD)}, which works out to ${fmtPerKg(ELECTRON_LIST_PRICE_USD / 100)} when a 100 kg satellite is the only thing on a ${ELECTRON_LEO_KG} kg rocket — roughly ten times the rideshare price for the control. A dedicated Falcon 9 at ${fmtUsdM(FALCON9_LIST_PRICE_USD)} only makes sense if you are launching a whole plane of them.`,
+    rows: [
+      { option: 'SpaceX rideshare (Transporter / Bandwagon), 100 kg', price: `~${fmtUsdK(100 * RIDESHARE_PER_KG)}`, notes: `${fmtUsd(RIDESHARE_PER_KG)}/kg; the mission's orbit, the mission's date`, rocket: 'falcon-9' },
+      { option: 'Dedicated Electron, 100 kg as the only payload', price: fmtUsdM1(ELECTRON_LIST_PRICE_USD), notes: `${fmtPerKg(ELECTRON_LIST_PRICE_USD / 100)} effective; ${fmtPerKg(ELECTRON_DEDICATED_PER_KG)} if you fill all ${ELECTRON_LEO_KG} kg`, rocket: 'electron' },
+      { option: 'Dedicated Falcon 9', price: `~${fmtUsdM(FALCON9_LIST_PRICE_USD)}`, notes: `The whole vehicle (${F9.payloadLeoKg.toLocaleString()} kg to LEO); only sensible for a constellation plane`, rocket: 'falcon-9' },
+      { option: 'Starship at mature flight rates (target, not for sale)', price: `${fmtUsd(100 * STARSHIP_TARGET_PER_KG.low)}–${fmtUsd(100 * STARSHIP_TARGET_PER_KG.high)}`, notes: `SpaceX's stated $${STARSHIP_TARGET_PER_KG.low}–$${STARSHIP_TARGET_PER_KG.high}/kg aspiration applied to 100 kg`, rocket: 'starship' },
+    ],
+    hiddenCosts: [
+      'Separation system and integration: the adapter, the fit checks and the campaign team at the launch site are billed on top of the per-kilogram rate.',
+      'Orbit adjustment: if the rideshare drop-off orbit is not the one you need, onboard propulsion or an orbital transfer vehicle is your bill.',
+      'Transport in a conditioned container, cleanroom time at the site and a chaperone team for weeks.',
+      'Launch insurance, if you buy it; many smallsat operators self-insure.',
+      'Licensing: spectrum (FCC/ITU), remote sensing if you image, and export control if you launch abroad.',
+    ],
+    faq: [
+      { q: 'Is rideshare or a dedicated launch cheaper for a 100 kg satellite?', a: `Rideshare, by roughly an order of magnitude: about ${fmtUsdK(100 * RIDESHARE_PER_KG)} against ${fmtUsdM1(ELECTRON_LIST_PRICE_USD)} for a dedicated Electron. You pay the dedicated premium for orbit, schedule and primary-payload status, not for the kilograms.` },
+      { q: 'What orbit does a rideshare put a 100 kg satellite in?', a: 'Whatever the mission is flying — most commonly a sun-synchronous orbit around 500 km. Operators who need a different plane or altitude budget for propulsion or a transfer vehicle.' },
+      { q: 'How long before launch do I need to book?', a: 'Rideshare manifests fill many months ahead; book once mass and volume are frozen, well before the satellite is finished.' },
+    ],
+    related: [{ label: 'Cost to launch a satellite (by size)', href: '/guide/cost-to-launch/satellite' }, { label: 'Launch cost calculator', href: '/launch-cost-calculator' }, { label: 'Rocket page: Electron', href: '/rockets/electron' }],
+  },
+  {
+    slug: 'geo-comsat',
+    thing: 'a GEO communications satellite',
+    title: 'How Much Does It Cost to Launch a GEO Communications Satellite?',
+    metaTitle: 'How Much Does It Cost to Launch a GEO Comsat? (Falcon 9 vs Falcon Heavy vs Ariane 6)',
+    description: `Launching a geostationary communications satellite to GTO lists at about ${fmtUsdM(FALCON9_LIST_PRICE_USD)} on Falcon 9 (${F9.payloadGtoKg?.toLocaleString()} kg to GTO), ${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)} on Falcon Heavy, and a catalogue figure of ~$${ARIANE6.costMillions}M on Ariane 6, where a dual launch splits the bill. The vehicle-by-vehicle math.`,
+    shortAnswer: `For the launch alone, the list price of a Falcon 9 is about ${fmtUsdM(FALCON9_LIST_PRICE_USD)}, and its catalogue capacity of ${F9.payloadGtoKg?.toLocaleString()} kg to geostationary transfer orbit works out to roughly ${fmtPerKg(FALCON9_LIST_PRICE_USD / (F9.payloadGtoKg ?? 1))} for a satellite that fills it. A Falcon Heavy lists at about ${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)} and carries far more (${FH.payloadGtoKg?.toLocaleString()} kg to GTO in the catalogue), which is the choice for the heaviest buses or a direct-to-GEO insertion that saves the satellite months of orbit raising. Europe's Ariane 6 carries a catalogue figure of about $${ARIANE6.costMillions}M and ${ARIANE6.payloadGtoKg?.toLocaleString()} kg to GTO; because the Ariane 64 can fly two satellites at once, operators are quoted a share of the mission rather than the whole vehicle. The satellite itself is quoted separately and, for a large GEO bus, is usually the bigger number.`,
+    rows: [
+      { option: 'Falcon 9 to GTO, dedicated', price: `~${fmtUsdM(FALCON9_LIST_PRICE_USD)}`, notes: `${F9.payloadGtoKg?.toLocaleString()} kg to GTO on the catalogue — about ${fmtPerKg(FALCON9_LIST_PRICE_USD / (F9.payloadGtoKg ?? 1))} at full load`, rocket: 'falcon-9' },
+      { option: 'Falcon Heavy to GTO or direct to GEO', price: `~${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)}`, notes: `${FH.payloadGtoKg?.toLocaleString()} kg to GTO on the catalogue (${fmtPerKg(FALCON_HEAVY_LIST_PRICE_USD / (FH.payloadGtoKg ?? 1))} at full load); the direct-to-GEO option trades payload for months of orbit raising`, rocket: 'falcon-heavy' },
+      { option: 'Ariane 6 (Ariane 64 dual launch)', price: `~$${ARIANE6.costMillions}M (catalogue, whole vehicle)`, notes: `${ARIANE6.payloadGtoKg?.toLocaleString()} kg to GTO; Arianespace quotes each co-passenger a share of the mission`, rocket: 'ariane-6' },
+      { option: 'Vulcan Centaur to GTO', price: `~$${VULCAN.costMillions}M (catalogue)`, notes: `${VULCAN.payloadGtoKg?.toLocaleString()} kg to GTO on the catalogue; priced per mission`, rocket: 'vulcan-centaur' },
+      { option: 'The satellite itself', price: 'Quoted per program', notes: 'Manufacturers quote the bus, payload and ground segment as a package; for a large GEO bus it is typically the larger line' },
+    ],
+    hiddenCosts: [
+      'Orbit raising: a GTO drop-off leaves the satellite to climb the rest of the way on its own propellant — days with a chemical apogee engine, months with electric propulsion, and either way it is mass and revenue time you pay for.',
+      'Launch and in-orbit insurance for a satellite that is expected to earn for fifteen years; insurers quote per program.',
+      'The orbital slot and spectrum: ITU filings and national licensing take years and are a prerequisite for any GEO mission.',
+      'The ground segment: gateways, a control centre and the teleport contracts, which dwarf launch over the satellite\'s life.',
+      'Launch delays cost a GEO operator revenue every month the satellite sits on the ground.',
+    ],
+    faq: [
+      { q: 'Which rocket launches GEO communications satellites?', a: 'Falcon 9 for most commercial GEO satellites, Falcon Heavy for the heaviest or for direct-to-GEO insertion, Ariane 6 for European operators and dual-launch shares, and Vulcan Centaur for missions where its catalogue GTO capacity fits. The choice comes down to the satellite\'s mass and how much of the climb to GEO the operator wants the rocket to do.' },
+      { q: 'Why do rockets go to GTO rather than straight to GEO?', a: 'Because GTO is far cheaper in rocket performance. Delivering the satellite to a transfer orbit and letting it circularise itself lets the rocket carry a much heavier satellite; direct-to-GEO is bought when the operator wants the satellite earning sooner than electric propulsion allows.' },
+      { q: 'Does electric propulsion lower the launch bill?', a: 'Yes, indirectly. An all-electric satellite is lighter, so it can fly on a smaller rocket or share an Ariane 64 dual launch, at the cost of months of orbit raising before it earns.' },
+    ],
+    related: [{ label: 'Rocket page: Falcon 9', href: '/rockets/falcon-9' }, { label: 'Rocket page: Ariane 6', href: '/rockets/ariane-6' }, { label: 'Compare: Vulcan Centaur vs Falcon 9', href: '/compare/vulcan-centaur-vs-falcon-9' }],
+  },
+  {
+    slug: 'lunar-lander',
+    thing: 'a lunar lander',
+    title: 'How Much Does It Cost to Launch a Lunar Lander?',
+    metaTitle: 'How Much Does It Cost to Launch a Lunar Lander? (Falcon Heavy, Vulcan TLI Math)',
+    description: `Sending a lander to the Moon means buying trans-lunar injection, not low Earth orbit: a Falcon Heavy lists at about ${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)} for ${FH.payloadTliKg?.toLocaleString()} kg to TLI (${fmtPerKg(FALCON_HEAVY_LIST_PRICE_USD / (FH.payloadTliKg ?? 1))}), against ${fmtPerKg(FH.costPerKgLeo ?? 0)} for the same rocket to LEO. The catalogue math for lunar launch.`,
+    shortAnswer: `The launch is priced by how much mass the rocket can throw toward the Moon, which is a fraction of what it lifts to low Earth orbit. A Falcon Heavy lists at about ${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)} and the catalogue gives it ${FH.payloadTliKg?.toLocaleString()} kg to trans-lunar injection — roughly ${fmtPerKg(FALCON_HEAVY_LIST_PRICE_USD / (FH.payloadTliKg ?? 1))}, against about ${fmtPerKg(FH.costPerKgLeo ?? 0)} for the same vehicle to LEO. ULA's Vulcan Centaur carries a catalogue TLI figure of ${VULCAN.payloadTliKg?.toLocaleString()} kg at about $${VULCAN.costMillions}M, and Falcon 9 has carried the commercial robotic landers of NASA's CLPS program at its ${fmtUsdM(FALCON9_LIST_PRICE_USD)} list price, though the catalogue lists no TLI figure for it. Crewed landers are a different order of magnitude and are priced as government programs.`,
+    rows: [
+      { option: 'Falcon Heavy to trans-lunar injection', price: `~${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)}`, notes: `${FH.payloadTliKg?.toLocaleString()} kg to TLI on the catalogue — ${fmtPerKg(FALCON_HEAVY_LIST_PRICE_USD / (FH.payloadTliKg ?? 1))} at full load`, rocket: 'falcon-heavy' },
+      { option: 'Vulcan Centaur to trans-lunar injection', price: `~$${VULCAN.costMillions}M (catalogue)`, notes: `${VULCAN.payloadTliKg?.toLocaleString()} kg to TLI on the catalogue — about ${fmtPerKg((VULCAN.costMillions ?? 0) * 1_000_000 / (VULCAN.payloadTliKg ?? 1))}; Centaur's hydrogen upper stage is built for high-energy orbits`, rocket: 'vulcan-centaur' },
+      { option: 'Falcon 9, commercial robotic lander (CLPS class)', price: `~${fmtUsdM(FALCON9_LIST_PRICE_USD)} list`, notes: 'The catalogue carries no TLI figure for Falcon 9; capacity to the Moon is a fraction of its LEO number and depends on booster recovery', rocket: 'falcon-9' },
+      { option: 'For comparison: the same Falcon Heavy to LEO', price: fmtPerKg(FH.costPerKgLeo ?? 0), notes: `${FH.payloadLeoKg.toLocaleString()} kg to LEO; the Moon costs several times more per kilogram because most of the rocket's energy goes into the climb out of Earth's gravity well`, rocket: 'falcon-heavy' },
+      { option: 'Crewed lander (Artemis Human Landing System)', price: 'Government program', notes: 'Priced as multi-billion-dollar development contracts, not launches; see the crew-to-the-Moon guide', rocket: 'starship' },
+    ],
+    hiddenCosts: [
+      'The lander is the cost: cruise stage, descent propulsion, guidance and the landing legs are a spacecraft program, not a launch line item.',
+      'Deep Space Network or commercial deep-space communications time, booked months ahead.',
+      'Launch windows: lunar trajectories open on a monthly cadence tied to landing-site lighting, so a slip can cost a month.',
+      'Planetary-protection and radio-frequency coordination for a spacecraft that leaves Earth orbit.',
+      'Landing insurance is rarely written; the mission is its own risk budget.',
+    ],
+    faq: [
+      { q: 'How much can one rocket send to the Moon?', a: `On the catalogue figures, ${FH.payloadTliKg?.toLocaleString()} kg for Falcon Heavy and ${VULCAN.payloadTliKg?.toLocaleString()} kg for Vulcan Centaur to trans-lunar injection. The lander's own propellant for braking and descent comes out of that mass, so the payload that reaches the surface is much smaller.` },
+      { q: 'Why is a kilogram to the Moon so much more expensive than a kilogram to LEO?', a: `Because trans-lunar injection needs far more energy per kilogram, so the same rocket carries a fraction of its LEO payload: Falcon Heavy's catalogue TLI figure is ${FH.payloadTliKg?.toLocaleString()} kg against ${FH.payloadLeoKg.toLocaleString()} kg to LEO, and the price per kilogram scales accordingly.` },
+      { q: 'Can a small lunar payload rideshare?', a: 'Yes, qualitatively: small spacecraft have hitched rides to geostationary transfer orbit and used their own propulsion to reach the Moon, and commercial landers sell hosted payload space on the lander itself. Providers quote per kilogram delivered to the surface; no rideshare rate for that is in our figures.' },
+    ],
+    related: [{ label: 'Cost to send a crew to the Moon', href: '/guide/cost-to-launch/crew-to-the-moon' }, { label: 'Rocket page: Falcon Heavy', href: '/rockets/falcon-heavy' }, { label: 'Cislunar economy', href: '/cislunar' }],
+  },
+  {
+    slug: 'dedicated-electron-mission',
+    thing: 'a dedicated Electron mission',
+    title: 'How Much Does a Dedicated Electron Launch Cost?',
+    metaTitle: 'How Much Does a Dedicated Rocket Lab Electron Launch Cost? (2026)',
+    description: `A dedicated Rocket Lab Electron lists at ${fmtUsdM1(ELECTRON_LIST_PRICE_USD)} for up to ${ELECTRON_LEO_KG} kg to low Earth orbit — ${fmtPerKg(ELECTRON_DEDICATED_PER_KG)} — versus about ${fmtUsdM1(ELECTRON_LEO_KG * RIDESHARE_PER_KG)} for the same mass on a SpaceX rideshare. What the dedicated premium buys.`,
+    shortAnswer: `About ${fmtUsdM1(ELECTRON_LIST_PRICE_USD)} at list for the whole rocket, which carries up to ${ELECTRON_LEO_KG} kg to low Earth orbit (${ELECTRON.payloadSsoKg} kg to sun-synchronous orbit on the catalogue). That is ${fmtPerKg(ELECTRON_DEDICATED_PER_KG)} if you fill it, against ${fmtUsd(RIDESHARE_PER_KG)}/kg — about ${fmtUsdM1(ELECTRON_LEO_KG * RIDESHARE_PER_KG)} for ${ELECTRON_LEO_KG} kg — on a SpaceX rideshare. The roughly ${fmtUsdM1(ELECTRON_LIST_PRICE_USD - ELECTRON_LEO_KG * RIDESHARE_PER_KG)} difference is the price of choosing your own orbit, inclination and launch date, being the primary payload, and flying from Mahia in New Zealand or Wallops in Virginia on your schedule rather than a Transporter's.`,
+    rows: [
+      { option: 'Dedicated Electron, list', price: fmtUsdM1(ELECTRON_LIST_PRICE_USD), notes: `Up to ${ELECTRON_LEO_KG} kg to LEO, ${ELECTRON.payloadSsoKg} kg to SSO; Rocket Lab quotes per mission and options such as a kick stage are extra`, rocket: 'electron' },
+      { option: `Per kilogram at a full ${ELECTRON_LEO_KG} kg`, price: fmtPerKg(ELECTRON_DEDICATED_PER_KG), notes: 'The best case; a lighter payload pays the same total', rocket: 'electron' },
+      { option: `Per kilogram at the ${ELECTRON.payloadSsoKg} kg SSO capacity`, price: fmtPerKg(ELECTRON_LIST_PRICE_USD / (ELECTRON.payloadSsoKg ?? 1)), notes: 'Sun-synchronous orbit costs performance, so the effective rate rises', rocket: 'electron' },
+      { option: `Same ${ELECTRON_LEO_KG} kg on a SpaceX rideshare`, price: `~${fmtUsdM1(ELECTRON_LEO_KG * RIDESHARE_PER_KG)}`, notes: `${fmtUsd(RIDESHARE_PER_KG)}/kg, the mission's orbit and date`, rocket: 'falcon-9' },
+      { option: 'The dedicated premium', price: `~${fmtUsdM1(ELECTRON_LIST_PRICE_USD - ELECTRON_LEO_KG * RIDESHARE_PER_KG)}`, notes: 'What you pay for your orbit, your date and primary-payload status' },
+    ],
+    hiddenCosts: [
+      'Range and licensing: a launch from Mahia falls under New Zealand and US rules, a launch from Wallops under the FAA; export-control paperwork for a US-built satellite flying abroad takes months.',
+      'Transporting the satellite and its team to a remote launch site and keeping them there through slips.',
+      'Kick-stage or precision-insertion options, which Rocket Lab prices as extras.',
+      'Schedule risk: a dedicated mission waits for you, but you also wait for the rocket — weather holds and range conflicts land on your calendar.',
+      'Insurance, if bought, is quoted per mission.',
+    ],
+    faq: [
+      { q: 'Is Electron cheaper than a SpaceX rideshare?', a: `No — per kilogram it is several times more (${fmtPerKg(ELECTRON_DEDICATED_PER_KG)} versus ${fmtUsd(RIDESHARE_PER_KG)}/kg). It is cheaper than any other dedicated ride to your own orbit, which is the product.` },
+      { q: 'When is a dedicated Electron worth it?', a: 'When the orbit matters more than the money: a specific inclination or altitude no rideshare is visiting, a fixed date, a technology demonstration that needs to be the primary payload, or a customer who cannot share a manifest.' },
+      { q: 'Where does Electron launch from?', a: 'Rocket Lab Launch Complex 1 on the Mahia Peninsula in New Zealand and Launch Complex 2 at Wallops Island, Virginia. Our launches-by-site pages track both.' },
+    ],
+    related: [{ label: 'Rocket page: Electron', href: '/rockets/electron' }, { label: 'Launches by site: Wallops', href: '/launches/wallops' }, { label: 'Compare: Rocket Lab vs SpaceX', href: '/compare/rocket-lab-vs-spacex' }],
+  },
+  {
+    slug: 'space-burial-or-memorial',
+    thing: 'a space burial or memorial',
+    title: 'How Much Does a Space Burial Cost?',
+    metaTitle: 'How Much Does a Space Burial or Memorial Flight Cost? (Per-Gram Math)',
+    description: `At SpaceX's ${fmtUsd(RIDESHARE_PER_KG)}/kg rideshare rate a gram of cremated remains costs ${fmtUsd(RIDESHARE_PER_KG / 1000)} to launch. Memorial providers quote far more because the capsule, the host spacecraft and the ceremony are the product. The arithmetic, and what is actually being sold.`,
+    shortAnswer: `The launch mass is almost nothing: cremated remains fly as symbolic samples of a few grams, and at the ${fmtUsd(RIDESHARE_PER_KG)} per kilogram SpaceX rideshare rate a gram costs ${fmtUsd(RIDESHARE_PER_KG / 1000)} to launch, ten grams ${fmtUsd(RIDESHARE_PER_KG / 100)}. Memorial operators quote far more than that per participant, and the difference is not the rocket. They buy or share a rideshare slot — SpaceX's minimum is ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)} for ${RIDESHARE_MIN_KG} kg — then build or lease a host spacecraft, machine and seal the individual capsules, run the integration campaign and stage a launch-day ceremony for families. Price also tracks the destination: an Earth-orbit flight that re-enters after years, a suborbital flight that returns the capsule, or a deep-space flight that never comes back.`,
+    rows: [
+      { option: 'One gram of remains at the rideshare rate', price: fmtUsd(RIDESHARE_PER_KG / 1000), notes: 'Pure arithmetic on the per-kilogram rate; no one sells a gram', rocket: 'falcon-9' },
+      { option: 'Ten grams at the rideshare rate', price: fmtUsd(RIDESHARE_PER_KG / 100), notes: 'Symbolic samples are gram-scale; the container weighs more than the contents', rocket: 'falcon-9' },
+      { option: `A 1U-sized shared memorial capsule (${CUBESAT_KG_PER_U} kg)`, price: `~${fmtUsd(Math.round(CUBESAT_KG_PER_U * RIDESHARE_PER_KG))}`, notes: 'The launch mass of a small host container carrying many participants' },
+      { option: `Rideshare minimum an operator must buy or share (${RIDESHARE_MIN_KG} kg)`, price: fmtUsdK(RIDESHARE_MIN_PRICE_USD), notes: 'Usually shared with other payloads through a broker', rocket: 'falcon-9' },
+      { option: 'What memorial providers quote per participant', price: 'Quoted per package', notes: 'Operators quote by destination (Earth orbit, suborbital return, deep space); the capsule, host spacecraft, integration and ceremony are the product' },
+    ],
+    hiddenCosts: [
+      'The host spacecraft: the remains ride inside a satellite or a canister on someone else\'s spacecraft, and that hardware is the bulk of the bill.',
+      'Individual capsules and the paperwork: engraving, sealing, chain of custody and the launch site\'s handling rules.',
+      'The ceremony and travel: families gather at the launch site, and scrubs can push that by days.',
+      'Destination: an Earth-orbit memorial re-enters after a few years; deep-space flights need more rocket and are priced accordingly.',
+      'Launch risk: if the rocket fails, most providers offer a re-flight, which is built into the price.',
+    ],
+    faq: [
+      { q: 'How much of a person\'s ashes go to space?', a: 'A symbolic sample of a gram or a few grams in a small sealed capsule, not the full remains. The mass is trivial; the capsule and its host spacecraft are what fly.' },
+      { q: 'Do the remains come back?', a: 'It depends on the flight. Suborbital memorial flights return the capsule to the family; Earth-orbit flights re-enter and burn up after some years in orbit; deep-space and lunar flights do not return.' },
+      { q: `Why does it cost so much more than ${fmtUsd(RIDESHARE_PER_KG / 1000)} a gram?`, a: `Because the per-kilogram rate is a wholesale price for a ${RIDESHARE_MIN_KG} kg minimum, and a memorial flight is a spacecraft, a capsule, an integration campaign and a ceremony wrapped around a few grams. Operators quote the package, not the mass.` },
+    ],
+    related: [{ label: 'Cost to launch a 1U CubeSat', href: '/guide/cost-to-launch/1u-cubesat' }, { label: 'Space tourism: who is selling seats', href: '/space-tourism' }, { label: 'Launch cost guide: every rocket compared', href: '/guide/space-launch-cost-comparison' }],
   },
 ];
 

@@ -10,6 +10,8 @@ import { getNewGameState } from '../save-load';
 import type { GameState } from '../types';
 import { deriveSituationLog } from '../situation-log';
 import { SERVER_EPOCH_MS, REAL_SECONDS_PER_GAME_MONTH } from '../server-time';
+import { STARTING_YEAR } from '../constants';
+import { recordQuarterlyReport } from '../quarterly-reports';
 
 const NOW = Date.UTC(2026, 7, 14, 12, 0, 0);
 
@@ -154,5 +156,42 @@ describe('deriveSituationLog', () => {
     const a = deriveSituationLog(state, { nowMs: NOW });
     const b = deriveSituationLog(state, { nowMs: NOW });
     expect(a).toEqual(b);
+  });
+});
+
+// ─── quarter_closed (monthly loop, 2026-09-01) ──────────────────────────────
+describe('deriveSituationLog — quarter_closed', () => {
+  it('emits nothing inside the very first quarter', () => {
+    const items = deriveSituationLog(baseState(), { nowMs: NOW });
+    expect(items.some(i => i.category === 'quarter_closed')).toBe(false);
+  });
+
+  it('previews the due filing when a quarter has elapsed with no report yet, deep-linking to Reports → Quarterly', () => {
+    const state = baseState({ gameDate: { year: STARTING_YEAR, month: 4 }, quarterlyReports: [] });
+    const items = deriveSituationLog(state, { nowMs: NOW });
+    const item = items.find(i => i.category === 'quarter_closed');
+    expect(item).toBeDefined();
+    expect(item!.id).toBe('sit-quarter-closed-0');
+    expect(item!.label).toMatch(/^Q1 \d{4} closed: revenue \$[\d.]+[KMBT]?, profit -?\$[\d.]+[KMBT]?, first filing — publish to the registry\?$/);
+    expect(item!.severity).toBe('info');
+    expect(item!.tab).toBe('reports');
+    expect(item!.subView).toBe('reports:quarterly');
+  });
+
+  it('uses the stored report once recorded this quarter, and drops it once the next quarter closes unreported', () => {
+    const due = baseState({ gameDate: { year: STARTING_YEAR, month: 4 }, quarterlyReports: [] });
+    const recorded = recordQuarterlyReport(due, NOW);
+    expect(recorded.quarterlyReports).toHaveLength(1);
+    const items = deriveSituationLog(recorded, { nowMs: NOW });
+    const item = items.find(i => i.category === 'quarter_closed');
+    expect(item).toBeDefined();
+    expect(item!.atMs).toBe(recorded.quarterlyReports![0].generatedAtMs);
+    expect(item!.label).toContain('Q1');
+    // Two quarters later with the Q1 report still the newest: the trigger
+    // check fires for the NEW quarter, so the item describes that one.
+    const later = { ...recorded, gameDate: { year: STARTING_YEAR, month: 10 } };
+    const laterItem = deriveSituationLog(later, { nowMs: NOW }).find(i => i.category === 'quarter_closed');
+    expect(laterItem!.id).toBe('sit-quarter-closed-2');
+    expect(laterItem!.label).toContain('Q3');
   });
 });

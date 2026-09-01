@@ -104,21 +104,38 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
 
   const [tab, setTab] = useState<MarketTab>('spot');
   const [bookSlug, setBookSlug] = useState<string | null>(bookResource ?? null);
+  // Lever-discoverability pass (2026-09): a counter the order book watches to
+  // open its price-campaign console (a `market:campaign` sub-view request or
+  // the Analytics tab's thin "declare from the order book" link).
+  const [campaignSignal, setCampaignSignal] = useState(0);
   useEffect(() => { if (bookResource) { setBookSlug(bookResource); setTab('spot'); } }, [bookResource]);
   const openOrderBook = (slug: string) => {
     setBookSlug(slug);
     setTab('spot');
     setTimeout(() => document.getElementById('market-order-book')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   };
+  const openCampaignConsole = (slug: string) => {
+    openOrderBook(slug);
+    setCampaignSignal(n => n + 1);
+  };
 
-  // PvP Discoverability pass (2026-08): honour a parked sub-view request so a
-  // Situation Log row, a posture readout, or a tool-unlock briefing that says
-  // "the price-campaign form is here" actually lands on Analytics instead of
-  // on Spot & Orders. A request for a tier-locked view is ignored (the lock
-  // notice would be a dead end); everything else behaves as before.
+  // PvP Discoverability pass (2026-08) + lever-discoverability pass (2026-09):
+  // honour a parked sub-view request. `market:campaign` opens the
+  // price-campaign console on Spot & Orders — the hub is the home of the
+  // declare form now (the order book knows the selected resource and the
+  // player's inventory; Analytics keeps a thin link). `market:analytics`
+  // still lands on Analytics for the demand map, campaign register and the
+  // NPC demand console. A request for a tier-locked view is ignored (the
+  // lock notice would be a dead end); everything else behaves as before.
   useEffect(() => {
     const requested = consumeSubViewRequest('market');
     if (!requested) return;
+    if (requested === 'campaign') {
+      setTab('spot');
+      setCampaignSignal(n => n + 1);
+      setTimeout(() => document.getElementById('market-order-book')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+      return;
+    }
     if (requested === 'analytics' && !analyticsUnlocked) return;
     if (requested === 'economy' && !economyUnlocked) return;
     if (requested === 'futures' && !futuresUnlocked) return;
@@ -163,18 +180,29 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
           <MarketPanel state={state} onSellResource={onSellResource} onBuyResource={onBuyResource} onOpenOrderBook={openOrderBook} />
           <MarketPriceChart />
           <div id="market-order-book" className="scroll-mt-20">
-            <MarketOrderBook state={state} selectedResource={bookSlug ?? undefined} />
+            <MarketOrderBook
+              state={state}
+              selectedResource={bookSlug ?? undefined}
+              onResourceChange={setBookSlug}
+              campaignOpenSignal={campaignSignal}
+            />
           </div>
         </div>
       )}
       {tab === 'analytics' && (analyticsUnlocked ? (
         <div className="space-y-3">
-          {/* PvP Discoverability pass: Analytics is where the offense verbs
-              live (price-campaign declare form, the campaign register,
-              the demand map). The posture readout tells the player WHICH of
-              them, if any, today's real state makes worth opening. */}
+          {/* PvP Discoverability pass: Analytics holds the intelligence
+              surfaces (campaign register, demand map, NPC demand schedule)
+              and the posture readout tells the player WHICH lever, if any,
+              today's real state makes worth pulling. The price-campaign
+              declare form itself lives on Spot & Orders (order book header)
+              since the lever-discoverability pass — Analytics links there. */}
           {onNavigateTab && <CompetitivePosturePanel state={state} onNavigate={onNavigateTab} />}
-          <MarketIntelligencePanel />
+          <MarketIntelligencePanel
+            selectedResource={bookSlug}
+            onOpenOrderBook={openOrderBook}
+            onDeclareCampaign={openCampaignConsole}
+          />
         </div>
       ) : <LockedSubtabNotice icon="📊" label="Analytics" tier={FOLDED_FEATURE_TIERS.intelligence} />)}
       {tab === 'economy' && (economyUnlocked ? <EconomyPanel state={state} /> : <LockedSubtabNotice icon="🌐" label="Economy" tier={FOLDED_FEATURE_TIERS.economy} />)}

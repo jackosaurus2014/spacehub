@@ -70,7 +70,7 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-XSS-Protection', value: '1; mode=block' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self)' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           { key: 'Link', value: '</sw.js>; rel="serviceworker"' },
@@ -367,9 +367,10 @@ const nextConfig = {
       { source: '/contract-awards', destination: '/procurement', permanent: true },
 
       // ── URL consolidation — talent & careers ──
-      // 2026-08-29: 'jobs' is not a TopLevelTab on /space-talent ('talent' | 'workforce' | 'gigs');
-      // the nav's Jobs link was falling through to the default talent tab.
-      { source: '/jobs', destination: '/space-talent?tab=jobs', permanent: true },
+      // 2026-09-01: /jobs is a real server-rendered hub again (src/app/jobs) —
+      // the 2026-08-29 '/jobs' → '/space-talent?tab=jobs' 301 was removed so the
+      // masthead's hottest business entry has a crawlable page. /space-talent
+      // still accepts ?tab=jobs (aliased to the workforce board) for old links.
       { source: '/salary-benchmarks', destination: '/space-talent?tab=salaries', permanent: true },
       { source: '/workforce-analytics', destination: '/space-talent?tab=trends', permanent: true },
       { source: '/career-intelligence', destination: '/space-talent?tab=trends', permanent: true },
@@ -394,7 +395,8 @@ const nextConfig = {
       { source: '/constellation-tracker', destination: '/constellations', permanent: true },
 
       // ── URL consolidation — space environment ──
-      { source: '/space-weather', destination: '/space-environment?tab=weather', permanent: true },
+      // '/space-weather' redirect removed 2026-09-01: it is a real page again
+      // (src/app/space-weather) — a public, indexable NOAA/DONKI read.
       { source: '/debris', destination: '/space-environment?tab=debris', permanent: true },
       { source: '/debris-tracker', destination: '/space-environment?tab=debris', permanent: true },
       { source: '/debris-catalog', destination: '/space-environment?tab=debris', permanent: true },

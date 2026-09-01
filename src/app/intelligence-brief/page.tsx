@@ -65,13 +65,25 @@ export default function IntelligenceBriefPage() {
     setLoading(true);
     setError(false);
     try {
-      const qs = type === 'all' ? '' : `?type=${type}`;
+      // Deep link from /reports: ?brief=<slug> selects that edition on first
+      // load. The index lists the 100 newest, so ask for the same window
+      // (the API caps at 100) whenever a deep link is present.
+      const wantedSlug =
+        typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('brief') : null;
+      const params = new URLSearchParams();
+      if (type !== 'all') params.set('type', type);
+      if (wantedSlug) params.set('limit', '100');
+      const qs = params.toString() ? `?${params.toString()}` : '';
       const res = await fetch(`/api/published-briefs${qs}`);
       if (!res.ok) throw new Error(`Failed to fetch briefs (${res.status})`);
       const data = await res.json();
       const list: PublishedBrief[] = data.briefs || [];
       setBriefs(list);
-      setSelectedId((prev) => (list.some((b) => b.id === prev) ? prev : list[0]?.id ?? null));
+      setSelectedId((prev) => {
+        if (list.some((b) => b.id === prev)) return prev;
+        const hit = wantedSlug ? list.find((b) => b.slug === wantedSlug) : undefined;
+        return hit?.id ?? list[0]?.id ?? null;
+      });
     } catch (err) {
       clientLogger.error('Failed to fetch published briefs', { error: err instanceof Error ? err.message : String(err) });
       setError(true);
@@ -114,7 +126,7 @@ export default function IntelligenceBriefPage() {
               <h3 className="text-sm font-bold text-white">Want this week's live numbers instead?</h3>
               <p className="text-xs text-slate-400 mt-0.5">
                 This hub is the published archive. For a real-time 7-day data digest (launches, news, funding), see the current{' '}
-                <Link href="/briefs" className="text-cyan-400 hover:underline">Space Industry Brief</Link>.
+                <Link href="/intelligence-brief" className="text-cyan-400 hover:underline">Space Industry Brief</Link>.
               </p>
             </div>
             <Link href="/newsletter" className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">

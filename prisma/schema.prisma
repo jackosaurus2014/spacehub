@@ -255,6 +255,9 @@ model GameProfile {
   // accepted mentor<->mentee pairs (see below). CLAUDE.md "mentorship
   // rewards" onramp commitment, additive column.
   mentorOptIn         Boolean          @default(false)
+  // Weekly corp report email opt-in (2026-09-01). Ledger: TycoonWeeklySend.
+  weeklyReportEmail   Boolean          @default(false)
+  weeklySends         TycoonWeeklySend[]
   // Referral attribution (2026-08-28): the corporation whose invite link this
   // player joined through. The invite auto-creates a GameMentorship, so the
   // referrer's reward is the existing mentor revenue bonus tied to the
@@ -1819,6 +1822,10 @@ model NewsletterSubscriber {
   // Opt-in flag for the ~07:00 UTC auto-compiled Daily Brief (G7). Separate
   // from the M/Th editorial digest -- subscribing to M/Th never sets this.
   dailyBrief        Boolean   @default(false)
+  // Opt-in email programs (2026-09-01): Space Markets Daily after US close,
+  // and the monthly Hiring Index + Launch Slip reports. Ledger: EmailProgramSend.
+  marketsDaily      Boolean   @default(false)
+  monthlyReports    Boolean   @default(false)
   userId            String?   @unique
   user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt         DateTime  @default(now())
@@ -1840,6 +1847,37 @@ model DailyBriefSend {
   skipped     Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+/// One row per (program, period) — the claim-before-send ledger shared by the
+/// 2026-09 email programs: 'markets-daily' (periodKey YYYY-MM-DD),
+/// 'hiring-index' and 'slip-report' (periodKey YYYY-MM). Same idempotency
+/// story as DailyBriefSend, generalised.
+model EmailProgramSend {
+  id          String   @id @default(cuid())
+  program     String
+  periodKey   String
+  subject     String?
+  sentCount   Int      @default(0)
+  failedCount Int      @default(0)
+  skipped     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([program, periodKey])
+}
+
+/// Per-player delivery ledger for the Space Tycoon weekly report email
+/// (opt-in via GameProfile.weeklyReportEmail). periodKey = ISO week.
+model TycoonWeeklySend {
+  id        String      @id @default(cuid())
+  profileId String
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  periodKey String
+  sentAt    DateTime    @default(now())
+
+  @@unique([profileId, periodKey])
+  @@index([profileId])
 }
 
 model DailyDigest {
@@ -4090,12 +4128,15 @@ model LaunchPollVote {
   id        String     @id @default(cuid())
   pollId    String
   poll      LaunchPoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // 2026-09-01: polls opened to logged-out visitors. voterKey is the user id
+  // when signed in, otherwise the sn_vid visitor cookie id — one vote per key.
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voterKey  String
   option    Int // Index of chosen option
   createdAt DateTime   @default(now())
 
-  @@unique([pollId, userId])
+  @@unique([pollId, voterKey])
   @@index([pollId])
 }
 

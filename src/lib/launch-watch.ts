@@ -1,6 +1,8 @@
 // ─── Launch alerts without an account ────────────────────────────────────────
 // A LaunchWatch is an email + a scope (one launch, a rocket, or a site).
-// Double opt-in. Three messages per matching launch: T-24h, T-1h, outcome.
+// Double opt-in. Three messages per matching launch: T-24h, T-1h, outcome —
+// plus a fourth, 'debrief', once a MissionDebrief for the flown launch is
+// published (2026-09-01: "your launch flew — here is what happened and why").
 // Delivery is recorded per (watch, event, kind) so nothing repeats.
 //
 // Why (2026-08-29 roadmap, Tier 2 #9): AlertRule requires a signed-in user,
@@ -17,9 +19,11 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 export const T24_MS = 24 * 3600_000;
 export const T1_MS = 3600_000;
 export const OUTCOME_WINDOW_MS = 12 * 3600_000;
+/** A published debrief for a launch flown within this window is mailed to its watchers. */
+export const DEBRIEF_WINDOW_MS = 7 * 24 * 3600_000;
 export const MAX_WATCHES_PER_EMAIL = 25;
 
-export type WatchKind = 't24' | 't1' | 'outcome';
+export type WatchKind = 't24' | 't1' | 'outcome' | 'debrief';
 
 export interface WatchScope {
   eventId?: string | null;
@@ -114,17 +118,23 @@ export function watchMatchesEvent(w: WatchLike, e: EventLike): boolean {
   return false;
 }
 
-/** Which messages are due for an event right now, given its date and status. */
-export function dueKinds(e: EventLike, now: Date): WatchKind[] {
+/** Which messages are due for an event right now, given its date and status.
+ *  Pure: whether a published debrief exists is looked up by the caller and
+ *  passed in as `debriefAvailable` (a flown launch within DEBRIEF_WINDOW_MS
+ *  with a published debrief is due a 'debrief' message). */
+export function dueKinds(e: EventLike, now: Date, opts: { debriefAvailable?: boolean } = {}): WatchKind[] {
   const out: WatchKind[] = [];
   if (!e.launchDate) return out;
   const dt = e.launchDate.getTime() - now.getTime();
   const flown = e.status === 'completed' || e.status === 'failed';
   if (flown && dt > -OUTCOME_WINDOW_MS) out.push('outcome');
+  if (flown && dt <= 0 && dt > -DEBRIEF_WINDOW_MS && opts.debriefAvailable) out.push('debrief');
   if (!flown && dt > 0 && dt <= T1_MS) out.push('t1');
   if (!flown && dt > T1_MS && dt <= T24_MS) out.push('t24');
   return out;
 }
+
+export interface DebriefLike { slug: string; missionName: string; executiveSummary: string; keyTakeaways: string[] }
 
 // ── Sending ────────────────────────────────────────────────────────────────
 
@@ -150,6 +160,19 @@ export function alertEmail(kind: WatchKind, e: EventLike, unsubscribeToken: stri
   return { subject, html, text };
 }
 
+/** The 'debrief' message: the published MissionDebrief's executive summary
+ *  and up to three key takeaways, linking to /mission-debriefs/<slug>. */
+export function debriefEmail(e: EventLike, d: DebriefLike, unsubscribeToken: string): { subject: string; html: string; text: string } {
+  const mission = d.missionName || (e.name.includes(' | ') ? e.name.split(' | ').slice(1).join(' | ') : e.name);
+  const url = `${APP_URL}/mission-debriefs/${encodeURIComponent(d.slug)}`;
+  const unsub = `${APP_URL}/api/launch-watch/unsubscribe?token=${unsubscribeToken}`;
+  const takeaways = (d.keyTakeaways || []).filter(Boolean).slice(0, 3);
+  const subject = `Debrief: ${mission} — what happened and why`;
+  const text = `${d.executiveSummary.trim()}\n\n${takeaways.length ? 'Key takeaways:\n' + takeaways.map(t => `- ${t}`).join('\n') + '\n\n' : ''}Full debrief: ${url}\n\nStop these alerts: ${unsub}\n`;
+  const html = `<!doctype html><html><body style="margin:0;background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif"><div style="max-width:560px;margin:0 auto;padding:28px 20px"><p style="color:#22d3ee;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px">SpaceNexus mission debrief</p><h1 style="font-size:22px;margin:0 0 12px;color:#fff">${escapeHtml(mission)}</h1><p style="font-size:15px;line-height:1.5;margin:0 0 16px">${escapeHtml(d.executiveSummary.trim())}</p>${takeaways.length ? `<p style="color:#94a3b8;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px">Key takeaways</p><ul style="margin:0 0 20px;padding-left:18px;font-size:14px;line-height:1.55">${takeaways.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}<a href="${url}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 18px;border-radius:6px;font-weight:600">Read the full debrief</a><p style="color:#6b6b6b;font-size:12px;margin:28px 0 0">You asked for launch alerts on spacenexus.us. <a href="${unsub}" style="color:#94a3b8">Stop these alerts</a>.</p></div></body></html>`;
+  return { subject, html, text };
+}
+
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -169,13 +192,26 @@ export async function runLaunchWatchDeliveries(now: Date = new Date(), sendImpl?
   const send = sendImpl ?? (async (to, subject, html, text) => (await sendVerificationEmail(to, html, text, subject)).success);
   const watches = await prisma.launchWatch.findMany({ where: { verified: true, unsubscribedAt: null }, select: { id: true, email: true, eventId: true, rocket: true, site: true, unsubscribeToken: true } });
   if (watches.length === 0) return { watches: 0, events: 0, sent: 0, skipped: 0 };
+  // Window widened to DEBRIEF_WINDOW_MS behind us: a flown launch stays in
+  // scope for a week so its published debrief can follow the outcome mail.
   const events = await prisma.spaceEvent.findMany({
-    where: { rocket: { not: null }, launchDate: { gte: new Date(now.getTime() - OUTCOME_WINDOW_MS), lte: new Date(now.getTime() + T24_MS) } },
+    where: { rocket: { not: null }, launchDate: { gte: new Date(now.getTime() - DEBRIEF_WINDOW_MS), lte: new Date(now.getTime() + T24_MS) } },
     select: { id: true, name: true, rocket: true, location: true, agency: true, launchDate: true, status: true, mission: true },
   });
+  // Published debriefs for the flown events in scope, keyed by eventId.
+  const flownIds = events.filter(e => e.status === 'completed' || e.status === 'failed').map(e => e.id);
+  const debriefs = new Map<string, DebriefLike>();
+  if (flownIds.length > 0) {
+    const rows = (await prisma.missionDebrief.findMany({
+      where: { eventId: { in: flownIds }, publishedAt: { not: null } },
+      select: { eventId: true, slug: true, missionName: true, executiveSummary: true, keyTakeaways: true },
+    })) ?? [];
+    for (const d of rows) if (d.eventId && !debriefs.has(d.eventId)) debriefs.set(d.eventId, d);
+  }
   let sent = 0; let skipped = 0;
   for (const e of events) {
-    const kinds = dueKinds(e, now);
+    const debrief = debriefs.get(e.id);
+    const kinds = dueKinds(e, now, { debriefAvailable: !!debrief });
     if (kinds.length === 0) continue;
     for (const w of watches) {
       if (!watchMatchesEvent(w, e)) continue;
@@ -183,7 +219,7 @@ export async function runLaunchWatchDeliveries(now: Date = new Date(), sendImpl?
         if (sent >= maxSends) { skipped++; continue; }
         const already = await prisma.launchWatchDelivery.findUnique({ where: { watchId_eventId_kind: { watchId: w.id, eventId: e.id, kind } }, select: { id: true } });
         if (already) continue;
-        const mail = alertEmail(kind, e, w.unsubscribeToken);
+        const mail = kind === 'debrief' && debrief ? debriefEmail(e, debrief, w.unsubscribeToken) : alertEmail(kind, e, w.unsubscribeToken);
         const ok = await send(w.email, mail.subject, mail.html, mail.text);
         if (ok) {
           await prisma.launchWatchDelivery.create({ data: { watchId: w.id, eventId: e.id, kind } }).catch(() => {});
