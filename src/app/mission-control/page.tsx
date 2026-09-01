@@ -225,6 +225,27 @@ export default async function MissionControlPage() {
       {/* The crawlable board. The client island below re-renders the same
           events as an interactive, filterable timeline. */}
       <div className="container mx-auto px-4 pb-8">
+        {/* The board is global by design; the per-site schedule pages are the
+            answer for "just show me Cape Canaveral" (a real reader request). */}
+        <p className="mb-3 font-body text-[0.8125rem] leading-[1.55] text-[var(--ink-3)]">
+          Watching one spaceport? Month-by-month schedules for{' '}
+          <Link href="/launches/cape-canaveral" className="text-[var(--ember)] underline underline-offset-2 hover:text-[var(--ink)]">
+            Cape Canaveral &amp; KSC
+          </Link>
+          ,{' '}
+          <Link href="/launches/vandenberg" className="text-[var(--ember)] underline underline-offset-2 hover:text-[var(--ink)]">
+            Vandenberg
+          </Link>
+          ,{' '}
+          <Link href="/launches/starbase" className="text-[var(--ember)] underline underline-offset-2 hover:text-[var(--ink)]">
+            Starbase
+          </Link>{' '}
+          and{' '}
+          <Link href="/launches" className="text-[var(--ember)] underline underline-offset-2 hover:text-[var(--ink)]">
+            every other launch site
+          </Link>
+          .
+        </p>
         <Console
           title={`Next ${SERVER_LIST_SIZE} launches`}
           source="Launch Library 2"
