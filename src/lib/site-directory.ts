@@ -87,6 +87,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
     key: 'markets', label: 'Markets', blurb: 'Companies, capital and who is winning.', menu: true,
     entries: [
       { name: 'Space Stocks', href: '/space-stocks', description: 'Live quotes, ETFs and industry benchmarks', icon: '📈', nav: true, hot: true },
+      { name: 'Markets Daily', href: '/markets-daily', description: 'The Pure-Play Index and the sector day, free', icon: '🔔', nav: true },
       { name: 'Company Profiles', href: '/company-profiles', description: 'The space industry directory', icon: '🏢', nav: true, hot: true },
       { name: 'Funding Rounds & M&A', href: '/funding-tracker', description: 'Live rounds, deals and acquisitions', icon: '💸', nav: true },
       { name: 'Startups & Pre-IPO', href: '/startups', description: 'Private companies, rounds and IPO watch', icon: '🚀', nav: true, hot: true },

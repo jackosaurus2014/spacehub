@@ -73,23 +73,9 @@ export const metadata: Metadata = {
 // right bucket automatically.
 // ─────────────────────────────────────────────────────────────────────────
 
-const EO_SECTORS = new Set(['earth-observation', 'satellite-operator', 'ground-segment', 'data-analytics']);
-const EO_TAGS = new Set([
-  'earth-observation', 'satellite-operator', 'geospatial', 'geoint', 'rf-geolocation',
-  'remote-sensing', 'multispectral', 'hyperspectral', 'sar', 'vsat', 'broadband',
-  'satcom', 'satellite-communications', 'mobile-satellite-services', 'iot',
-]);
-
-type Bucket = 'primes' | 'eo' | 'pureplay';
-
-function classifySection(sector: string | null, tags: string[]): Bucket {
-  const s = (sector || '').toLowerCase();
-  if (s.startsWith('defense')) return 'primes';
-  if (EO_SECTORS.has(s)) return 'eo';
-  const lowerTags = tags.map((t) => t.toLowerCase());
-  if (lowerTags.some((t) => EO_TAGS.has(t))) return 'eo';
-  return 'pureplay';
-}
+// Extracted to src/lib/space-stock-buckets.ts (G13, 2026-09-01) so the
+// Pure-Play Index buckets identically to this page — one classifier, no fork.
+import { classifySection } from '@/lib/space-stock-buckets';
 
 function formatUSD(n: number | null | undefined): string | null {
   if (n === null || n === undefined || !isFinite(n) || n <= 0) return null;
