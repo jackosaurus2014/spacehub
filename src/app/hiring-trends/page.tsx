@@ -7,6 +7,7 @@ import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import CiteEmbed from '@/components/CiteEmbed';
 import { getHiringSeries, getHiringMovers, TOTAL_SENTINEL, type HiringMoverEntry } from '@/lib/hiring-snapshots';
+import { coverageChangesInWindow } from '@/lib/hiring-coverage';
 
 // Terminal wave (2026-08-31, Jay "go"): hiring as market intelligence. Daily
 // CompanyJobSnapshot history (live since 2026-08-13) + the ATS jobs machine,
@@ -98,6 +99,13 @@ export default async function HiringTrendsPage() {
           <div className="card p-6"><p className="text-slate-400 text-sm">Hiring data is temporarily unavailable — the daily snapshot service will restore this shortly.</p></div>
         ) : (
           <div className="space-y-6">
+            {/* Coverage honesty (2026-09-01): when a board joins the tracker,
+                the totals jump is OUR coverage, not market hiring — say so. */}
+            {coverageChangesInWindow(new Date(Date.now() - 30 * 86400_000)).map(c => (
+              <p key={c.date} className="text-[12px] text-amber-300/80 bg-amber-500/5 border border-amber-500/15 rounded px-3 py-2">
+                Coverage note ({c.date}): {c.note}
+              </p>
+            ))}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Telemetry label="Open roles" value={data.latestTotal ?? '—'} sub="across tracked boards" />
               <Telemetry label="30-day change" value={data.changeVs30d == null ? '—' : `${data.changeVs30d >= 0 ? '+' : ''}${data.changeVs30d}`} tone={data.changeVs30d != null && data.changeVs30d < 0 ? 'ember' : 'signal'} sub={data.changeVs30d == null ? 'unlocks ~Sep 12 (history since Aug 13)' : 'open roles vs ~30d ago'} />

@@ -33,7 +33,7 @@ const SPOTLIGHT_ITEMS: SpotlightItem[] = [
     href: '/hiring-trends',
     kicker: 'Market signal',
     title: 'Hiring Trends',
-    tagline: 'Who is actually growing: 6,700+ live postings snapshotted daily, week-over-week velocity by company.',
+    tagline: 'Who is actually growing: 8,000+ live postings snapshotted daily, week-over-week velocity by company.',
     cta: 'See who is hiring',
     icon: '📈',
   },

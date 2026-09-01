@@ -5,6 +5,7 @@ import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import CiteEmbed from '@/components/CiteEmbed';
+import { coverageChangesInWindow } from '@/lib/hiring-coverage';
 import {
   getHiringIndex,
   parseMonthParam,
@@ -302,6 +303,15 @@ export default async function HiringIndexMonthPage({ params }: PageProps) {
 
             <Console title="Methodology">
               <div className="space-y-3 text-sm text-white/70 leading-relaxed">
+                {/* Coverage honesty (2026-09-01): board additions must be
+                    disclosed — a totals jump from expanded tracking is not
+                    market hiring, and this index gets cited. */}
+                {coverageChangesInWindow(new Date(Date.UTC(resolved.year, resolved.month - 1, 1)), new Date(Date.UTC(resolved.year, resolved.month, 1))).map(c => (
+                  <p key={c.date} className="text-[13px] text-amber-300/90 bg-amber-500/5 border border-amber-500/15 rounded px-3 py-2">
+                    Coverage change ({c.date}): {c.note} Month-over-month comparisons spanning this date are
+                    affected accordingly.
+                  </p>
+                ))}
                 <p>
                   The SpaceNexus Monthly Hiring Index is built from our jobs tracker, which syncs live postings
                   daily from 16+ applicant-tracking-system (ATS) boards at space and space-adjacent companies,
