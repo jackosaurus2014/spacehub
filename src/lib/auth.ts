@@ -126,6 +126,13 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.isAdmin = user.isAdmin ?? false;
+        // G6 (2026-09-01): lastLoginAt existed in the schema but nothing ever
+        // wrote it (winback had to fall back to updatedAt). Keyed by email —
+        // unique, and correct even when OAuth hands us a provider subject id.
+        if (user.email) {
+          prisma.user.update({ where: { email: user.email }, data: { lastLoginAt: new Date() } })
+            .catch(() => { /* best-effort telemetry — never block sign-in */ });
+        }
       }
 
       // For OAuth sign-ins, `user.id` is the provider's subject id, not our

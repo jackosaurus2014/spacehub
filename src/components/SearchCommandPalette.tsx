@@ -274,6 +274,15 @@ const CURATED_SEARCH_ITEMS: SearchItem[] = [
     category: 'Tools',
   },
   {
+    id: 'desk',
+    label: 'My Desk',
+    description: 'Your companies, launches and alerts in one screen',
+    href: '/desk',
+    icon: <Squares2x2Icon />,
+    type: 'page',
+    category: 'Pages',
+  },
+  {
     id: 'dashboard',
     label: 'Dashboard',
     description: 'Your personalized hub',

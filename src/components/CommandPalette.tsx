@@ -46,6 +46,7 @@ interface CompanyHit {
 // Hardcoded quick actions. `/newsletter` is the M/Th Digest signup per the
 // site directory (News → "M/Th Digest").
 const ACTIONS: PaletteItem[] = [
+  { id: 'action-my-desk', label: 'My Desk', href: '/desk', hint: 'your companies, launches and alerts in one screen', icon: '🗄️', group: 'Actions' },
   { id: 'action-next-launch', label: 'Next launch', href: '/launches', hint: 'launch schedule, site by site', icon: '🚀', group: 'Actions' },
   { id: 'action-space-tycoon', label: 'Open Space Tycoon', href: '/space-tycoon', hint: 'the economic strategy MMO', icon: '🎮', group: 'Actions' },
   { id: 'action-digest-signup', label: 'M/Th Digest signup', href: '/newsletter', hint: 'the briefing, Mondays and Thursdays', icon: '✉️', group: 'Actions' },

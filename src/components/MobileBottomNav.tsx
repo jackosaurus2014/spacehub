@@ -37,11 +37,11 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
     href: '/mission-control',
   },
   {
-    id: 'dashboard',
-    name: 'Dashboard',
-    fullName: 'Dashboard Hub',
+    id: 'desk',
+    name: 'Desk',
+    fullName: 'My Desk',
     icon: 'grid',
-    href: '/dashboard',
+    href: '/desk',
   },
 ];
 

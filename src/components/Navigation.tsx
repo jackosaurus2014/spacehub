@@ -568,6 +568,12 @@ export default function Navigation() {
               <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             ) : session ? (
               <div className="flex items-center gap-3">
+                <Link
+                  href="/desk"
+                  className="text-white/70 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors"
+                >
+                  My Desk
+                </Link>
                 {isPro && (
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white/10 text-white/60 border border-white/10 uppercase tracking-wider">
                     Pro
@@ -978,6 +984,14 @@ export default function Navigation() {
                     </Link>
                   )}
                   {session ? (
+                    <>
+                    <Link
+                      href="/desk"
+                      className="block text-sm py-3 px-4 text-center rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Desk
+                    </Link>
                     <button
                       onClick={() => {
                         signOut();
@@ -987,6 +1001,7 @@ export default function Navigation() {
                     >
                       Sign Out
                     </button>
+                    </>
                   ) : (
                     <>
                       <Link

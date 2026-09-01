@@ -122,6 +122,11 @@ model User {
 
   // Login tracking (for winback emails)
   lastLoginAt DateTime?
+  // My Desk (G6, 2026-09-01): read-then-write watermark — read the old value
+  // when composing the desk, write now() after, so a refresh never eats its
+  // own "since your last visit" delta.
+  lastDeskVisitAt DateTime?
+  deskVisitCount  Int       @default(0)
 
   // Space Tycoon game profile
   gameProfile GameProfile?

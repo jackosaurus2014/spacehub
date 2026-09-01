@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import nextDynamic from 'next/dynamic';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { getHomeData } from '@/lib/home-data';
 import { missionOf } from '@/lib/next-launch';
 import { chartOfTheWeekSlug, getChartDef } from '@/lib/charts/registry';
@@ -46,7 +48,7 @@ function fmtUsd(v: number): string {
 }
 
 export default async function HomePage() {
-  const data = await getHomeData();
+  const [data, session] = await Promise.all([getHomeData(), getServerSession(authOptions)]);
   const now = new Date();
   const asOf = new Date(data.asOf);
   const next48 = data.upcoming.filter((r) => { if (!r.launchDate) return false; const t = new Date(r.launchDate).getTime(); return t - now.getTime() < 48 * 3600000 && t > now.getTime() - 3600000; }).slice(0, 5);
@@ -56,6 +58,20 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--void)]">
+      {/* Signed-in shortcut to the unified desk (growth plan G6) — one slim row, not a banner. */}
+      {session?.user && (
+        <div className="border-b border-[var(--line)] bg-[var(--surface)]">
+          <Link
+            href="/desk"
+            className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 font-mono text-[12px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)]"
+          >
+            <span>
+              <span className="text-[var(--signal)]">My Desk</span> — your companies, launches and alerts in one screen
+            </span>
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      )}
       <NextLaunchHero next={data.next} slips={data.nextSlips} />
       <NextFiveRail rows={data.upcoming} excludeId={data.next?.id} now={asOf} />
 
