@@ -116,11 +116,14 @@ export function alertEmail(kind: WatchKind, e: EventLike, unsubscribeToken: stri
   const meta = [e.rocket, e.agency, e.location].filter(Boolean).join(' · ');
   let subject: string; let lead: string;
   if (kind === 't24') { subject = `Tomorrow: ${title} (${fmtUtc(e.launchDate)})`; lead = `Launches in about a day — ${fmtUtc(e.launchDate)}.`; }
-  else if (kind === 't1') { subject = `T-1 hour: ${title}`; lead = `Liftoff is scheduled for ${fmtUtc(e.launchDate)}. Streams are usually live 20-30 minutes before.`; }
+  // G14 (2026-09-01): the T-1h alert is the moment an alert-clicker becomes
+  // a community member — the launch page's live chat is one tap away.
+  else if (kind === 't1') { subject = `T-1 hour: ${title}`; lead = `Liftoff is scheduled for ${fmtUtc(e.launchDate)}. Streams are usually live 20-30 minutes before — and the live chat on the launch page is already going.`; }
   else if (e.status === 'completed') { subject = `Launched: ${title}`; lead = `${title} launched successfully at ${fmtUtc(e.launchDate)}.`; }
   else { subject = `Launch failure: ${title}`; lead = `${title} failed during its launch attempt at ${fmtUtc(e.launchDate)}. Details as they come in.`; }
-  const text = `${lead}\n\n${meta}\n\nWatch / details: ${url}\n\nStop these alerts: ${unsub}\n`;
-  const html = `<!doctype html><html><body style="margin:0;background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif"><div style="max-width:560px;margin:0 auto;padding:28px 20px"><p style="color:#22d3ee;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px">SpaceNexus launch alert</p><h1 style="font-size:22px;margin:0 0 12px;color:#fff">${escapeHtml(title)}</h1><p style="font-size:15px;line-height:1.5;margin:0 0 8px">${escapeHtml(lead)}</p><p style="color:#94a3b8;font-size:13px;margin:0 0 20px">${escapeHtml(meta)}</p><a href="${url}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 18px;border-radius:6px;font-weight:600">Watch &amp; details</a><p style="color:#6b6b6b;font-size:12px;margin:28px 0 0">You asked for these on spacenexus.us. <a href="${unsub}" style="color:#94a3b8">Stop these alerts</a>.</p></div></body></html>`;
+  const chatLine = kind === 't1' ? `Join the live chat: ${url}#chat\n\n` : '';
+  const text = `${lead}\n\n${meta}\n\nWatch / details: ${url}\n${chatLine ? '\n' + chatLine : '\n'}Stop these alerts: ${unsub}\n`;
+  const html = `<!doctype html><html><body style="margin:0;background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif"><div style="max-width:560px;margin:0 auto;padding:28px 20px"><p style="color:#22d3ee;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px">SpaceNexus launch alert</p><h1 style="font-size:22px;margin:0 0 12px;color:#fff">${escapeHtml(title)}</h1><p style="font-size:15px;line-height:1.5;margin:0 0 8px">${escapeHtml(lead)}</p><p style="color:#94a3b8;font-size:13px;margin:0 0 20px">${escapeHtml(meta)}</p><a href="${url}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 18px;border-radius:6px;font-weight:600">Watch &amp; details</a>${kind === 't1' ? `<p style="font-size:13px;margin:14px 0 0"><a href="${url}#chat" style="color:#22d3ee;text-decoration:none">💬 Join the live launch chat →</a></p>` : ''}<p style="color:#6b6b6b;font-size:12px;margin:28px 0 0">You asked for these on spacenexus.us. <a href="${unsub}" style="color:#94a3b8">Stop these alerts</a>.</p></div></body></html>`;
   return { subject, html, text };
 }
 

@@ -325,7 +325,10 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <LaunchLiveChat eventId={event.id} />
+              {/* G14: #chat anchor — the T-1h alert email deep-links here. */}
+              <div id="chat" className="scroll-mt-24">
+                <LaunchLiveChat eventId={event.id} />
+              </div>
             </motion.div>
           </div>
         </div>
