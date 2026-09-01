@@ -52,10 +52,14 @@ export async function GET() {
     let watchlist: unknown[] = [];
     try {
       watchlist = await db.companyProfile.findMany({
-        // 2026-09-01 (founder ruling): joint ventures are NOT pre-IPO
-        // companies — ULA (Boeing/Lockheed JV) was ranking in the watchlist.
-        // A JV's exit is a sale between parents, never its own listing.
-        where: { isPublic: false, status: 'active', NOT: { ownershipType: 'joint-venture' } },
+        // 2026-09-01 (founder ruling + coverage sweep): joint ventures,
+        // subsidiaries and state entities are NOT pre-IPO companies — ULA
+        // (Boeing/Lockheed JV) and Terran Orbital (wholly Lockheed-owned)
+        // were ranking in the watchlist. Their exits are sales between
+        // parents or never happen; only independent privates belong here.
+        // ('state-backed' commercial operators — SpaceSail — stay: state
+        // INVESTORS don't preclude an IPO; state-OWNED agencies do.)
+        where: { isPublic: false, status: 'active', NOT: { ownershipType: { in: ['joint-venture', 'subsidiary', 'state-owned', 'government'] } } },
         orderBy: [
           { valuation: { sort: 'desc', nulls: 'last' } },
           { totalFunding: 'desc' },
