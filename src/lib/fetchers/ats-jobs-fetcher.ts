@@ -329,6 +329,7 @@ async function fetchWorkdayJobs(token: string): Promise<NormalizedJob[]> {
   // used small limits). ~1,600 BO jobs = ~80 pages ≈ 30-40s with the pause.
   const pageSize = 20;
   const cap = 2000;
+  let grandTotal = 0; // from the first page — see pagination note below
   const out: NormalizedJob[] = [];
   for (let offset = 0; offset < cap; offset += pageSize) {
     const res = await fetch(api, {
@@ -367,8 +368,12 @@ async function fetchWorkdayJobs(token: string): Promise<NormalizedJob[]> {
         sourceUrl: `${base}/en-US/${site}${j.externalPath}`,
       });
     }
-    const total = Number(data?.total || 0);
-    if (offset + pageSize >= total || postings.length === 0) break;
+    // Workday only reports `total` on the FIRST page (later pages say 0 —
+    // verified in prod 2026-09-01; trusting it broke pagination at 40 jobs).
+    // Capture it once; afterwards an empty/short page is the stop signal.
+    if (offset === 0) grandTotal = Number(data?.total || 0);
+    if (postings.length < pageSize) break;
+    if (grandTotal > 0 && offset + pageSize >= grandTotal) break;
     await new Promise((r) => setTimeout(r, 150));
   }
   return out;
