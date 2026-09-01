@@ -6,6 +6,7 @@ import { CHART_DEFS, getChartDef } from '@/lib/charts/registry';
 import { loadChartSeries } from '@/lib/charts/data';
 import { formatValue } from '@/lib/charts/render';
 import ChartFrame from '@/components/ui/ChartFrame';
+import CiteEmbed from '@/components/CiteEmbed';
 
 // Chart of the Week permalink. The image is the same SVG the digest mails as
 // PNG; the table under it is the accessible, copyable version of the numbers.
@@ -58,7 +59,19 @@ export default async function ChartPage({ params }: { params: { slug: string } }
             <div className="flex flex-wrap items-center gap-3 mb-8 text-sm">
               <Link href={def.exploreHref} className="btn-primary text-sm py-2 px-4">{def.exploreLabel}</Link>
               <a href={`/api/chart/${def.slug}`} className="btn-secondary text-sm py-2 px-4">Download PNG</a>
-              <span className="text-xs text-slate-500">Source: {def.source}{series.note ? ` · ${series.note}` : ''}</span>
+              {/* G3: CSV behind a FREE account (lead-gen, never a paywall) —
+                  unauthenticated hits get redirected to /login by the route. */}
+              <a href={`/api/chart/${def.slug}/csv`} className="btn-secondary text-sm py-2 px-4">Download CSV</a>
+              <span className="text-xs text-slate-500">Source: {def.source}{series.note ? ` · ${series.note}` : ''} · CSV needs a free account</span>
+            </div>
+
+            <div className="mb-6">
+              <CiteEmbed
+                title={def.title}
+                pageUrl={`https://spacenexus.us/chart/${def.slug}`}
+                embedUrl={`https://spacenexus.us/embed/chart/${def.slug}`}
+                sourceLine={`SpaceNexus — ${def.title} (${def.source})`}
+              />
             </div>
 
             <section id="chart-data" className="mb-10 scroll-mt-24">

@@ -412,6 +412,13 @@ export const SLUG_EXISTENCE_CHECKS: Array<{
     existsApiPath: (slug) => `/api/marketplace/listings/${encodeURIComponent(slug)}/exists`,
   },
   {
+    // Hiring Index editions (G2, 2026-09-01): month validity is date math,
+    // not DB, but editions roll forward monthly without a deploy — so the
+    // existence check keeps unknown months a genuine 404.
+    match: /^\/hiring-index\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/hiring-index/${encodeURIComponent(slug)}/exists`,
+  },
+  {
     // /build-guides/new is a real static page, not a guide slug.
     match: /^\/build-guides\/([^/]+)\/?$/,
     excludedSlugs: new Set(['new']),

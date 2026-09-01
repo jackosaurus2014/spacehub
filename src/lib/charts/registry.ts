@@ -28,8 +28,8 @@ export const CHART_DEFS: readonly ChartDef[] = [
     subtitle: 'Completed and failed launch attempts worldwide, last 12 months',
     source: 'SpaceNexus launch tracker (Launch Library 2, outcomes verified)',
     unit: 'count',
-    exploreHref: '/launches',
-    exploreLabel: 'Launches by site',
+    exploreHref: '/launch-cadence',
+    exploreLabel: 'Launch Cadence Index',
   },
   {
     slug: 'launches-by-agency-90d',

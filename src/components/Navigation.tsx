@@ -15,6 +15,7 @@ import { usePlatformModifier } from '@/hooks/useKeyboardShortcut';
 import { trackGA4Event } from '@/lib/analytics';
 import { SITE_STATS } from '@/lib/site-stats';
 import { navItemsFor } from '@/lib/site-directory';
+import CommandPalette from './CommandPalette';
 
 interface DropdownItem {
   label: string;
@@ -406,6 +407,8 @@ export default function Navigation() {
         borderBottom: '1px solid var(--border-subtle, #27272a)',
       }}
     >
+      {/* Global Cmd+K / Ctrl+K terminal palette (renders via portal when open) */}
+      <CommandPalette />
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           {/* Logo + Home */}
@@ -540,6 +543,20 @@ export default function Navigation() {
               <kbd className="hidden md:inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 bg-white/[0.03] border border-white/[0.08] rounded text-[10px] font-mono text-slate-500">
                 {shortcutKey}+K
               </kbd>
+            </button>
+            {/* Command palette trigger (terminal-style quick nav) */}
+            <button
+              onClick={() => {
+                const opener = (window as unknown as Record<string, unknown>).__openCommandPalette;
+                if (typeof opener === 'function') {
+                  (opener as () => void)();
+                }
+              }}
+              className="hidden xl:inline-flex items-center px-2 py-1.5 min-h-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors ease-smooth border border-white/[0.08] hover:border-white/[0.12] font-mono text-[11px]"
+              aria-label={`Open command palette (${shortcutKey}+K)`}
+              title={`Command palette (${shortcutKey}+K)`}
+            >
+              {platformModifier === 'meta' ? '⌘K' : 'Ctrl K'}
             </button>
             {/* Keyboard Shortcuts — hidden for cleaner toolbar */}
             {/* Utility buttons moved to profile/settings for cleaner toolbar */}

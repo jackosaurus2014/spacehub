@@ -143,9 +143,10 @@ function determineEventType(launch: LaunchLibraryLaunch): SpaceEventType {
   if (name.includes('station') || name.includes('iss') || name.includes('tiangong')) {
     return 'space_station';
   }
-  if (name.includes('starlink') || missionType.includes('communication')) {
-    return 'satellite';
-  }
+  // 2026-09-01 cadence audit: Starlink/communication LAUNCHES were being
+  // typed 'satellite', silently removing 289 flown missions from every
+  // type='launch' query (a third of two years of history). An LL2 launch
+  // object is a launch — payload class never overrides that.
   if (missionName.includes('probe') || name.includes('probe')) {
     return 'probe';
   }

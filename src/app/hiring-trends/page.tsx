@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import CiteEmbed from '@/components/CiteEmbed';
 import { getHiringSeries, getHiringMovers, TOTAL_SENTINEL, type HiringMoverEntry } from '@/lib/hiring-snapshots';
 
 // Terminal wave (2026-08-31, Jay "go"): hiring as market intelligence. Daily
@@ -186,6 +187,12 @@ export default async function HiringTrendsPage() {
               {/* Server-rendered SVG from the chart pipeline — same image the M/Th Digest embeds. */}
               <img src="/api/chart/open-space-jobs?format=svg" alt="Open space-industry jobs, weekly trend" width={1200} height={630} className="w-full h-auto rounded" loading="lazy" />
             </Console>
+
+            <CiteEmbed
+              title="Space Industry Hiring Trends"
+              pageUrl="https://spacenexus.us/hiring-trends"
+              sourceLine="SpaceNexus Hiring Trends (data: SpaceNexus jobs tracker, daily snapshots)"
+            />
 
             <p className="text-sm text-slate-500">
               Explore further: <Link href="/space-talent?tab=jobs" className="text-cyan-300 hover:underline">browse all {data.latestTotal ?? ''} open roles</Link>{' · '}
