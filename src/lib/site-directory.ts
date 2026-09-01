@@ -48,6 +48,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Starship Tracker', href: '/starship', description: 'Flight history, program roles and news', icon: '🔥', nav: true, hot: true },
       { name: 'Artemis Tracker', href: '/artemis', description: 'Moon program milestones and hardware', icon: '🌙', nav: true },
       { name: 'Satellite Tracker', href: '/satellites', description: 'Live orbital map — ISS, Starlink and more', icon: '🛰️', nav: true, hot: true },
+      { name: 'How Many Satellites?', href: '/how-many-satellites', description: 'Live orbital census — payloads, debris, constellations', icon: '🔢' },
       { name: "What's Overhead", href: '/whats-overhead', description: 'When the ISS passes over your house', icon: '🔭', nav: true },
       { name: 'Launch Predictions', href: '/predictions', description: 'Will it fly this window? Stake your call', icon: '🎯', nav: true },
       { name: 'Launch Countdown', href: '/countdown', description: 'Next liftoff, live', icon: '⏱️' },
