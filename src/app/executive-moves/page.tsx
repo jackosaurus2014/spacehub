@@ -12,6 +12,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
+import CiteEmbed from '@/components/CiteEmbed';
 
 interface ExecutiveMove {
   id: string;
@@ -666,6 +667,15 @@ function ExecutiveMovesContent() {
             </motion.div>
           )}
 
+          {/* G9: citable + honest vintage — extraction has run daily since
+              Aug 24, 2026; the ledger grows from there (no backfill source). */}
+          <div className="mt-6">
+            <CiteEmbed
+              title="Space Industry Executive Moves"
+              pageUrl="https://spacenexus.us/executive-moves"
+              sourceLine="SpaceNexus Executive Moves tracker (recorded from primary sources since Aug 24, 2026)"
+            />
+          </div>
           <RelatedModules modules={PAGE_RELATIONS['executive-moves']} />
         </>
       )}

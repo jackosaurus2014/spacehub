@@ -291,8 +291,28 @@ export async function GET(
       });
     }
 
+    // G9 (2026-09-01): leadership moves. ExecutiveMove carries a companySlug
+    // string (no relation) plus free-text company names — match either. Low
+    // volume by nature (extractor live since 8/24); try/catch so the profile
+    // never 500s over a side table.
+    let executiveMoves: unknown[] = [];
+    try {
+      executiveMoves = await prisma.executiveMove.findMany({
+        where: {
+          OR: [
+            { companySlug: slug },
+            { toCompany: { equals: company.name, mode: 'insensitive' } },
+            { fromCompany: { equals: company.name, mode: 'insensitive' } },
+          ],
+        },
+        orderBy: { date: 'desc' },
+        take: 10,
+      });
+    } catch { /* section stays empty */ }
+
     return NextResponse.json({
       ...company,
+      executiveMoves,
       stockDataSource,
       stockDataAsOf,
       jobPostingsCount: company._count?.jobPostings ?? 0,

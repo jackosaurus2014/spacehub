@@ -124,6 +124,8 @@ interface CompanyDetail {
    *  take 10) — the client type just never declared them. Optional because
    *  the API's fallback query path can omit relations. */
   secFilings?: { filingType: string; filingDate: string | null; edgarUrl: string | null }[];
+  /** G9 (2026-09-01): leadership moves matched by companySlug or name. */
+  executiveMoves?: { id: string; personName: string; fromCompany: string | null; fromTitle: string | null; toCompany: string | null; toTitle: string | null; moveType: string; date: string }[];
   summary: {
     totalContractValue: number; activeSatellites: number;
     totalSatellites: number; totalFundingRounds: number;
@@ -636,6 +638,30 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
               </a>
             )}
           </div>
+        </SectionCard>
+      )}
+
+      {/* G9: Leadership moves — renders only when this company has rows
+          (ExecutiveMove volume is naturally low; extractor live since 8/24). */}
+      {(company.executiveMoves?.length ?? 0) > 0 && (
+        <SectionCard title="Leadership Moves" count={company.executiveMoves!.length}>
+          <ul className="space-y-2 text-sm">
+            {company.executiveMoves!.map(m => (
+              <li key={m.id} className="flex items-start justify-between gap-3 bg-white/[0.02] border border-white/[0.05] rounded-lg p-3">
+                <div>
+                  <span className="text-white font-medium">{m.personName}</span>
+                  <span className="text-slate-400"> — {m.moveType.replace(/_/g, ' ')}</span>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {m.fromTitle && m.fromCompany ? `${m.fromTitle}, ${m.fromCompany}` : m.fromCompany || ''}
+                    {(m.fromCompany || m.fromTitle) && (m.toCompany || m.toTitle) ? ' → ' : ''}
+                    {m.toTitle && m.toCompany ? `${m.toTitle}, ${m.toCompany}` : m.toCompany || ''}
+                  </p>
+                </div>
+                <span className="text-xs text-slate-500 whitespace-nowrap">{fmtDate(m.date)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[11px] text-slate-600 mt-2">From <Link href="/executive-moves" className="text-cyan-400 hover:underline">Executive Moves</Link> — recorded since Aug 2026.</p>
         </SectionCard>
       )}
 
