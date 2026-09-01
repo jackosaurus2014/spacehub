@@ -4,6 +4,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import Provenance from '@/components/ui/Provenance';
 import { SITE_STATS } from '@/lib/site-stats';
 
 const whatWeDoCards = [
@@ -132,6 +133,10 @@ export default function AboutPage() {
             </StaggerItem>
           ))}
         </StaggerContainer>
+        <Provenance
+          source="SpaceNexus internal tracking · satellites per CelesTrak live TLE catalog"
+          className="mt-3 text-center"
+        />
 
         {/* Our Story Section */}
         <ScrollReveal className="mt-16">

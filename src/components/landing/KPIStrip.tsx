@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { formatCompact } from '@/lib/format-number';
 import { SITE_STATS } from '@/lib/site-stats';
+import Provenance from '@/components/ui/Provenance';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface KPIMetric {
@@ -158,6 +159,10 @@ export default function KPIStrip() {
               ))}
             </div>
           </div>
+          <Provenance
+            source="SpaceNexus internal tracking · space economy per Space Foundation, 2025"
+            className="px-4 pb-2 text-center"
+          />
         </div>
       </div>
     </section>

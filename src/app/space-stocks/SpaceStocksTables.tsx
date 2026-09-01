@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
+import Provenance, { formatProvenanceDate } from '@/components/ui/Provenance';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { clientLogger } from '@/lib/client-logger';
 
 export interface StockRow {
@@ -104,15 +106,23 @@ function StockTable({
   quotes,
   loading,
   variant = 'standard',
+  asOf,
 }: {
   rows: StockRow[] | IpoRow[];
   quotes: Record<string, QuoteData>;
   loading: boolean;
   variant?: 'standard' | 'ipo';
+  /** When quotes were last fetched (client-side); null until the first fetch resolves. */
+  asOf?: Date | null;
 }) {
   if (rows.length === 0) {
     return <p className="text-slate-500 text-sm py-6 text-center">No companies matched this category yet.</p>;
   }
+
+  const provenanceSource =
+    variant === 'ipo'
+      ? `Yahoo Finance (delayed quotes) · IPO details SpaceNexus curated + verified filings (${formatProvenanceDate(STARTUP_HUB_ASOF)})`
+      : 'Yahoo Finance (delayed quotes) · SpaceNexus company database';
 
   return (
     <>
@@ -206,6 +216,8 @@ function StockTable({
           );
         })}
       </div>
+
+      <Provenance source={provenanceSource} asOf={asOf ?? null} className="mt-2" />
     </>
   );
 }
@@ -293,7 +305,7 @@ export default function SpaceStocksTables({
             <p className="text-slate-400 text-sm mb-4">
               Newly public space companies &mdash; the freshest tickers in the sector.
             </p>
-            <StockTable rows={ipoClass} quotes={quotes} loading={loading} variant="ipo" />
+            <StockTable rows={ipoClass} quotes={quotes} loading={loading} variant="ipo" asOf={lastUpdated} />
           </section>
         )}
 
@@ -304,7 +316,7 @@ export default function SpaceStocksTables({
           <p className="text-slate-400 text-sm mb-4">
             Launch providers, satellite manufacturers, in-space infrastructure, and stations &mdash; companies whose core business is space.
           </p>
-          <StockTable rows={pureplay} quotes={quotes} loading={loading} />
+          <StockTable rows={pureplay} quotes={quotes} loading={loading} asOf={lastUpdated} />
         </section>
 
         <section className="mb-10" aria-labelledby="primes-heading">
@@ -314,7 +326,7 @@ export default function SpaceStocksTables({
           <p className="text-slate-400 text-sm mb-4">
             Legacy aerospace and defense primes with major national-security and civil space business lines.
           </p>
-          <StockTable rows={primes} quotes={quotes} loading={loading} />
+          <StockTable rows={primes} quotes={quotes} loading={loading} asOf={lastUpdated} />
         </section>
 
         <section className="mb-10" aria-labelledby="eo-heading">
@@ -324,7 +336,7 @@ export default function SpaceStocksTables({
           <p className="text-slate-400 text-sm mb-4">
             Satellite operators, geospatial intelligence, and Earth-observation constellations.
           </p>
-          <StockTable rows={satelliteEO} quotes={quotes} loading={loading} />
+          <StockTable rows={satelliteEO} quotes={quotes} loading={loading} asOf={lastUpdated} />
         </section>
 
         <section className="mb-10" aria-labelledby="etf-heading">
@@ -399,6 +411,7 @@ export default function SpaceStocksTables({
               );
             })}
           </div>
+          <Provenance source="Yahoo Finance (delayed quotes) · fund roster SpaceNexus curated" asOf={lastUpdated} className="mt-3" />
         </section>
       </div>
     </PullToRefresh>

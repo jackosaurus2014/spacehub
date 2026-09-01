@@ -29,6 +29,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { useABTest } from '@/hooks/useABTest';
 import { PRICING_CTA_TEST } from '@/lib/ab-testing';
 import { SITE_STATS } from '@/lib/site-stats';
+import Provenance from '@/components/ui/Provenance';
 
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: `SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and ${SITE_STATS.companies} company profiles across ${SITE_STATS.modules} modules.` },
@@ -712,6 +713,7 @@ function PricingPageContent() {
                 </div>
               ))}
             </div>
+            <Provenance source="SpaceNexus internal tracking" className="mt-2 text-center" />
           </div>
         </ScrollReveal>
 

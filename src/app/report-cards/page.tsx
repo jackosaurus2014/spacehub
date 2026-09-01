@@ -8,6 +8,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
+import Provenance from '@/components/ui/Provenance';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -810,6 +811,11 @@ function ReportCardsContent() {
               {filteredAndSorted.length} of {REPORT_CARDS.length} companies
             </span>
           </div>
+          <Provenance
+            source="SpaceNexus editorial assessment of public filings, earnings, and mission records"
+            asOf={REPORT_CARDS_QUARTER_ASSESSED}
+            className="mt-2 mb-2"
+          />
         </ScrollReveal>
 
         {/* ── Report Cards Grid ────────────────────────────────────────── */}

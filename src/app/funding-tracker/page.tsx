@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import { clientLogger } from '@/lib/client-logger';
 import CompanyFundingComparison from '@/components/funding/CompanyFundingComparison';
+import Provenance from '@/components/ui/Provenance';
 import RelatedModules from '@/components/ui/RelatedModules';
 
 // ────────────────────────────────────────
@@ -283,6 +284,8 @@ function FundingTrackerPageInner() {
                 </div>
               </StaggerItem>
             </StaggerContainer>
+            {/* No fetch timestamp exists for the curated rounds DB — honest static form. */}
+            <Provenance source="SpaceNexus curated + verified filings" className="-mt-4 mb-8" />
           </ScrollReveal>
         )}
 
@@ -620,12 +623,13 @@ function FundingTrackerPageInner() {
 
         {/* ── Deal Feed ── */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-white mb-4">
+          <h3 className="text-lg font-semibold text-white mb-1">
             Recent Deals
             {roundsLoading && (
               <span className="text-sm text-slate-500 ml-2">Loading...</span>
             )}
           </h3>
+          <Provenance source="SpaceNexus curated + verified filings" className="mb-4" />
 
           {rounds.length === 0 && !roundsLoading ? (
             <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-8 text-center">

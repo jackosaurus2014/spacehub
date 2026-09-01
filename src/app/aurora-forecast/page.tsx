@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import Provenance from '@/components/ui/Provenance';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -412,6 +413,8 @@ export default function AuroraForecastPage() {
                 {conditions.bz == null && conditions.solarWind == null && <>Solar wind and IMF readings are awaiting live data.</>}
               </p>
             </div>
+            {/* Bloomberg-style stamp — asOf only renders once the SWPC feed has actually answered. */}
+            <Provenance source="NOAA SWPC" asOf={isLive ? conditions.lastUpdate : null} className="mt-3" />
           </section>
         </ScrollReveal>
 

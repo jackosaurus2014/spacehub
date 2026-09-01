@@ -3,6 +3,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
+import Provenance from '@/components/ui/Provenance';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
@@ -384,6 +385,10 @@ export default function WhySpaceNexusPage() {
                 </tbody>
               </table>
             </div>
+            <Provenance
+              source="SpaceNexus internal tracking (platform counts) · satellites per CelesTrak · competitor pricing from public rate cards"
+              className="mt-2"
+            />
           </section>
         </ScrollReveal>
 

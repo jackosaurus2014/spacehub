@@ -7,6 +7,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import EmptyState from '@/components/ui/EmptyState';
+import Provenance from '@/components/ui/Provenance';
 import RelatedModules from '@/components/ui/RelatedModules';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { clientLogger } from '@/lib/client-logger';
@@ -243,6 +244,11 @@ export default function StartupHubPage() {
                 </select>
               </label>
             </div>
+            <Provenance
+              source="SpaceNexus curated + verified filings"
+              asOf={STARTUP_HUB_ASOF}
+              className="-mt-2 mb-4"
+            />
 
             {sortedWatchlist.length === 0 ? (
               <EmptyState
@@ -309,9 +315,10 @@ export default function StartupHubPage() {
 
           {/* ── Recent Funding Rounds ── */}
           <section className="mb-12" aria-labelledby="rounds-heading">
-            <h2 id="rounds-heading" className="text-lg font-semibold text-white mb-4">
+            <h2 id="rounds-heading" className="text-lg font-semibold text-white mb-1">
               Recent Funding Rounds
             </h2>
+            <Provenance source="SpaceNexus curated + verified filings" className="mb-4" />
             {(data?.recentRounds?.length ?? 0) === 0 ? (
               <EmptyState
                 reason="This panel deliberately covers only the last 18 months. Older deals are not missing — they are in the full Funding Tracker."

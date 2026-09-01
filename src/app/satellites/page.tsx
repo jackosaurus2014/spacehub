@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
+import Provenance from '@/components/ui/Provenance';
 import RelatedModules from '@/components/ui/RelatedModules';
 import AdSlot from '@/components/ads/AdSlot';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -267,6 +268,8 @@ export default function SatellitesPage() {
   const [orbitFilter, setOrbitFilter] = useState<OrbitClass | ''>('');
   const [categoryFilter, setCategoryFilter] = useState<SatCategory>('all');
   const [lastRefresh, setLastRefresh] = useState<string>('');
+  /** Machine-readable twin of lastRefresh for the provenance stamp. */
+  const [tleFetchedAt, setTleFetchedAt] = useState<Date | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -283,7 +286,9 @@ export default function SatellitesPage() {
 
       if (json.success && json.data) {
         setSatellites(json.data);
-        setLastRefresh(new Date().toLocaleTimeString());
+        const now = new Date();
+        setLastRefresh(now.toLocaleTimeString());
+        setTleFetchedAt(now);
       } else {
         throw new Error(json.error?.message || 'Unknown error');
       }
@@ -515,6 +520,11 @@ export default function SatellitesPage() {
                 </div>
               )}
             </div>
+            <Provenance
+              source="CelesTrak NORAD TLE catalog · positions propagated live"
+              asOf={tleFetchedAt}
+              className="-mt-3 mb-6"
+            />
           </ScrollReveal>
 
           {/* Error state */}

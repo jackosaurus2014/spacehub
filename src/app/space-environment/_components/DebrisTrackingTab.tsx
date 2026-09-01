@@ -13,6 +13,7 @@ import {
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Provenance from '@/components/ui/Provenance';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -485,6 +486,8 @@ export default function DebrisTrackingTab() {
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">25-Yr Compliance</div>
         </div>
       </div>
+      {/* snapshotDate is the stats row's computation date, not this page load. */}
+      <Provenance source="public SATCAT (CelesTrak)" asOf={stats?.snapshotDate ?? null} className="mt-2" />
       </ScrollReveal>
 
       {/* Sub-Tab Navigation */}

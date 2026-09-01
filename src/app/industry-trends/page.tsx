@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
+import Provenance from '@/components/ui/Provenance';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -493,6 +494,11 @@ export default function IndustryTrendsPage() {
               <p className="text-sm text-slate-400 mt-1">Emerging</p>
             </div>
           </div>
+          {/* Curated editorial dataset — no fetch timestamp exists, so honest static form. */}
+          <Provenance
+            source="Euroconsult, Bryce Tech, Space Capital reports + public filings · SpaceNexus editorial analysis, reviewed periodically"
+            className="-mt-6 mb-8"
+          />
         </ScrollReveal>
 
         {/* Filters */}

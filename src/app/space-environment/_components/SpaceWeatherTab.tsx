@@ -13,6 +13,7 @@ import {
 } from '@/types';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import Provenance from '@/components/ui/Provenance';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -195,6 +196,8 @@ function getEventCategoryColor(categoryTitle: string): string {
 
 export default function SpaceWeatherTab() {
   const [data, setData] = useState<SolarFlareData | null>(null);
+  /** Underlying data timestamp from the API's _meta (not the page-load time). */
+  const [dataRefreshedAt, setDataRefreshedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSubTab, setSelectedSubTab] = useState<'overview' | 'forecast' | 'history'>('overview');
   const [error, setError] = useState<string | null>(null);
@@ -216,6 +219,7 @@ export default function SpaceWeatherTab() {
       const res = await fetch('/api/solar-flares');
       const result = await res.json();
       setData(result);
+      setDataRefreshedAt(typeof result?._meta?.refreshedAt === 'string' ? result._meta.refreshedAt : null);
     } catch (err) {
       clientLogger.error('Failed to fetch solar flare data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data.');
@@ -396,6 +400,8 @@ export default function SpaceWeatherTab() {
           )}
         </div>
       </div>
+
+      <Provenance source="NASA DONKI + NOAA SWPC" asOf={dataRefreshedAt} />
 
       {/* Sub-Tabs */}
       <div className="flex gap-2">
