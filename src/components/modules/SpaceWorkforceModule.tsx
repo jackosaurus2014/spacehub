@@ -195,6 +195,9 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
 export default function SpaceWorkforceModule() {
   const [jobs, setJobs] = useState<SpaceJobPosting[]>([]);
   const [trends, setTrends] = useState<WorkforceTrend[]>([]);
+  // Vintage of the curated quarterly trend series (e.g. '2025-Q4') — the
+  // series is not recomputed from live postings, so label it honestly.
+  const [trendsVintage, setTrendsVintage] = useState<string | null>(null);
   const [stats, setStats] = useState<WorkforceStats | null>(null);
   const [salaryBenchmarks, setSalaryBenchmarks] = useState<SalaryBenchmark[]>([]);
   const [loading, setLoading] = useState(true);
@@ -212,6 +215,7 @@ export default function SpaceWorkforceModule() {
 
       if (data.jobs) setJobs(data.jobs);
       if (data.trends) setTrends(data.trends);
+      if (data.trendsMeta?.latestPeriod) setTrendsVintage(data.trendsMeta.latestPeriod);
       if (data.stats) setStats(data.stats);
       if (data.salaryBenchmarks?.byCategory) setSalaryBenchmarks(data.salaryBenchmarks.byCategory);
     } catch (error) {
@@ -354,13 +358,20 @@ export default function SpaceWorkforceModule() {
       )}
 
       {activeTab === 'trends' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {trends.slice(0, 4).map((trend) => (
-            <TrendCard key={trend.id} trend={trend} />
-          ))}
-          {trends.length === 0 && (
-            <p className="text-slate-400 text-sm text-center py-4 col-span-2">No trend data available.</p>
+        <div>
+          {trendsVintage && (
+            <p className="text-slate-500 text-xs mb-3">
+              Curated quarterly series through {trendsVintage} — job listings and salary benchmarks elsewhere on this page are live.
+            </p>
           )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {trends.slice(0, 4).map((trend) => (
+              <TrendCard key={trend.id} trend={trend} />
+            ))}
+            {trends.length === 0 && (
+              <p className="text-slate-400 text-sm text-center py-4 col-span-2">No trend data available.</p>
+            )}
+          </div>
         </div>
       )}
 

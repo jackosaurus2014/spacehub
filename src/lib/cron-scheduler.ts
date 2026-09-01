@@ -213,6 +213,19 @@ const CRON_JOBS: CronJobDef[] = [
   // SAM.gov procurement opportunities — fetcher existed for months but was
   // never scheduled (freshness-audit finding).
   { schedule: '30 13 * * *',  path: '/api/procurement/opportunities',             label: 'procurement-sam-refresh',     maxStaleMinutes: 1560 },
+  // SBIR/STTR solicitations (2026-08-31 freshness audit, item 4): the fetcher
+  // in src/lib/procurement/sbir-fetcher.ts was never scheduled. sbir.gov's API
+  // has been 403 since ~Aug 2026 — the route fails gracefully (fetched=0,
+  // upstreamDown=true) and the 3-day maxStaleMinutes keeps the watchdog quiet
+  // until upstream recovers, at which point topics flow with no code change.
+  { schedule: '35 5 * * *',   path: '/api/cron/sbir-refresh',                     label: 'sbir-refresh',                maxStaleMinutes: 4320 },
+  // Federal Register -> ProposedRegulation (2026-08-31 freshness audit, item 2):
+  // POST /api/compliance/fetch was the ONLY writer of the ProposedRegulation
+  // table (which feeds the Pro compliance module's Proposed Regulations tab)
+  // and was never scheduled — the table sat at 4 seed rows from 2024 while the
+  // public Regulatory Radar stayed fresh. Registered in middleware.ts
+  // cronPaths (the CSRF-for-new-cron gotcha).
+  { schedule: '25 4 * * *',   path: '/api/compliance/fetch',                      label: 'proposed-regulations-fetch',  maxStaleMinutes: 1560 },
 
   // ─── Space Tycoon: Competitive Multiplayer Cron Jobs ─────────────────
   // Note: These are non-critical game jobs. Generous staleness thresholds to avoid alert spam.

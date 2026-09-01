@@ -5,6 +5,7 @@ import {
   COMPLETENESS_SCALAR_SELECT,
   COMPLETENESS_COUNT_SELECT,
 } from '@/lib/company-completeness';
+import { satelliteAssetSignalAvailable } from '@/lib/satellite-signal';
 import { requireCronSecret, internalError, createSuccessResponse } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
@@ -254,7 +255,9 @@ async function enrichCompany(data: EnrichmentData): Promise<boolean> {
     },
   });
   if (enriched) {
-    const completeness = calculateCompleteness(enriched);
+    const completeness = calculateCompleteness(enriched, {
+      satelliteSignalAvailable: await satelliteAssetSignalAvailable(),
+    });
     await db.companyProfile.update({ where: { id: profile.id }, data: { dataCompleteness: completeness } });
   }
 

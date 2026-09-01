@@ -417,6 +417,11 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     run: checkStockQuotesFresh,
   },
   {
+    id: 'ticker-implies-public',
+    label: 'Every ticker-bearing company is marked public (foreign-IPO sentinel)',
+    run: checkTickerImpliesPublic,
+  },
+  {
     id: 'mission-control-featured-future',
     label: 'Mission Control featured mission is upcoming, not past',
     run: checkMissionControlFeaturedFuture,
@@ -678,6 +683,24 @@ async function checkSitemapSegments(): Promise<AccuracyCheckOutcome> {
  * /space-stocks and every /compare page's market cap go stale silently.
  * Four days covers a weekend plus one missed run.
  */
+/** Foreign-IPO sentinel (#20, 2026-09-01). Every isPublic miss found in the
+ *  coverage sweep (Astroscale/Synspective/Innospace — all non-US listings —
+ *  plus seven ticker-bearing primes) had a ticker while isPublic stayed
+ *  false, which put public companies on the PRE-IPO watchlist. A ticker on
+ *  the row means somebody verified a listing; the flag must agree. */
+async function checkTickerImpliesPublic(): Promise<AccuracyCheckOutcome> {
+  const rows = await prisma.companyProfile.findMany({
+    where: { ticker: { not: null }, isPublic: false, NOT: { status: 'defunct' } },
+    select: { slug: true, ticker: true },
+    take: 10,
+  });
+  if (rows.length === 0) return { ok: true, detail: 'All ticker-bearing companies are marked public.' };
+  return {
+    ok: false,
+    detail: `${rows.length} ticker-bearing rows still isPublic=false (they may be polluting the pre-IPO watchlist): ${rows.map(r => `${r.slug} (${r.ticker})`).join(', ')}`,
+  };
+}
+
 async function checkStockQuotesFresh(): Promise<AccuracyCheckOutcome> {
   const newest = await prisma.companyProfile.findFirst({
     // NOT null: Postgres sorts NULLs first on DESC, which read as "never".

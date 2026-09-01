@@ -180,7 +180,20 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-export function calculateSpaceScore(company: CompanyInput): SpaceScoreResult {
+/**
+ * satelliteSignalAvailable (2026-08-31 freshness audit, item 6): pass false
+ * while the SatelliteAsset table is globally empty (zero writers in prod) —
+ * the satellite term is then skipped and Operational Capacity rescaled, so
+ * companies aren't silently scored as owning zero satellites. Derive from
+ * satelliteAssetSignalAvailable() in src/lib/satellite-signal.ts. Note the
+ * shipped leaderboard (ALL_COMPANY_SCORES) is a pre-calculated static table
+ * and does not run this function.
+ */
+export interface SpaceScoreOptions {
+  satelliteSignalAvailable?: boolean;
+}
+
+export function calculateSpaceScore(company: CompanyInput, opts?: SpaceScoreOptions): SpaceScoreResult {
   const empCount = company.employeeCount || estimateEmployeeCount(company.employeeRange || null);
   const counts = company._count || {};
   const tags = company.tags || [];
@@ -241,7 +254,13 @@ export function calculateSpaceScore(company: CompanyInput): SpaceScoreResult {
   );
 
   // ── 4. Operational Capacity (200 points) ────────────────────────────────
-  const satelliteScore = (counts.satelliteAssets || 0) >= 1000 ? 55 :
+  // Satellite term skipped when the caller reports the SatelliteAsset table
+  // is globally empty (2026-08-31 freshness audit, item 6 — zero writers in
+  // prod, so a zero count is a missing dataset, not a company fact); the
+  // remaining subtotal is rescaled below to preserve the attainable max.
+  const satelliteSignal = opts?.satelliteSignalAvailable ?? true;
+  const satelliteScore = !satelliteSignal ? 0 :
+    (counts.satelliteAssets || 0) >= 1000 ? 55 :
     (counts.satelliteAssets || 0) >= 100 ? 45 : (counts.satelliteAssets || 0) >= 10 ? 35 :
     (counts.satelliteAssets || 0) >= 1 ? 20 : 0;
 
@@ -255,8 +274,11 @@ export function calculateSpaceScore(company: CompanyInput): SpaceScoreResult {
     (company.tier === 1 ? 40 : company.tier === 2 ? 25 : 15) :
     (counts.products || 0) >= 3 ? 20 : 10;
 
+  // Attainable max with the satellite term is 190 (55+45+50+40); without it,
+  // 135 — rescale so the no-signal path can still reach the same ceiling.
+  const rawOperational = satelliteScore + facilityScore + employeeScore + launchCadence;
   const operationalCapacityScore = clamp(
-    satelliteScore + facilityScore + employeeScore + launchCadence,
+    satelliteSignal ? rawOperational : Math.round((rawOperational * 190) / 135),
     0, 200
   );
 

@@ -54,7 +54,7 @@ interface SupplyChainStats {
   countriesWithHighRisk: string[];
   usCompanies: number;
   europeanCompanies: number;
-  _meta?: { source: 'database' | 'fallback'; refreshedAt: string; oldestRefreshedAt: string | null; ttl: number };
+  _meta?: { source: 'merged' | 'database' | 'fallback'; refreshedAt: string; oldestRefreshedAt: string | null; ttl: number };
 }
 
 // ============================================================

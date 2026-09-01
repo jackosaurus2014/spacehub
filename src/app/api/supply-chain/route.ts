@@ -10,10 +10,35 @@ import {
   SupplyRelationship,
   SupplyShortage,
 } from '@/types';
-import { getModuleContent } from '@/lib/dynamic-content';
+import { getModuleContent, mergeCuratedWithDynamic } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
+
+// ---------------------------------------------------------------------------
+// Curated + dynamic merge (2026-08-31 freshness-audit fix)
+//
+// The nightly AI refresher (ai-data-research cron -> src/lib/ai-data-refresher.ts)
+// stores whole-section blobs in DynamicContent. On 2026-08-29 it replaced the
+// 63-company curated catalog with a 6-company blob, so this Pro-gated page
+// showed "0 suppliers" in every non-prime tier. The curated dataset in
+// src/lib/supply-chain-data.ts is now the FLOOR: dynamic rows update or add on
+// top of it (dynamic wins collisions — the refreshed-catalog rule from the
+// 2026-08-24 mergeCuratedWithDynamic precedent) and can never shrink the page.
+// ---------------------------------------------------------------------------
+
+/** Normalize AI-produced tier spellings ('1', 'Tier 1', 'prime contractor', …). */
+function normalizeTier(raw: unknown): SupplyChainTier | null {
+  const t = String(raw ?? '').toLowerCase().replace(/[\s_-]/g, '');
+  if (t === 'prime' || t === 'primecontractor' || t === 'tier0' || t === '0') return 'prime';
+  if (t === 'tier1' || t === '1') return 'tier1';
+  if (t === 'tier2' || t === '2') return 'tier2';
+  if (t === 'tier3' || t === '3') return 'tier3';
+  return null;
+}
+
+const RISK_LEVELS = new Set(['high', 'medium', 'low', 'none']);
+const SHORTAGE_SEVERITIES = new Set(['critical', 'high', 'medium', 'low']);
 
 // Helper functions that operate on dynamic data arrays
 function computeStats(
@@ -28,8 +53,12 @@ function computeStats(
     tier2Suppliers: companies.filter((c) => c.tier === 'tier2').length,
     tier3Suppliers: companies.filter((c) => c.tier === 'tier3').length,
     totalRelationships: relationships.length,
+    // NOTE (2026-08-31 freshness audit): highRisk and critical are OVERLAPPING
+    // flags on the same relationship (a link can be both geopolitically high-risk
+    // AND critical), so these two counts legitimately do not partition
+    // totalRelationships and must never be summed against it in the UI.
     highRiskRelationships: relationships.filter((r) => r.geopoliticalRisk === 'high').length,
-    criticalRelationships: relationships.filter((r) => r.isCritical).length,
+    criticalRelationships: relationships.filter((r) => r.isCritical === true).length,
     totalShortages: shortages.length,
     criticalShortages: shortages.filter((s) => s.severity === 'critical').length,
     highSeverityShortages: shortages.filter((s) => s.severity === 'high').length,
@@ -45,7 +74,8 @@ export async function GET(request: Request) {
     let allCompanies: SupplyChainCompany[] = FALLBACK_COMPANIES;
     let allRelationships: SupplyRelationship[] = FALLBACK_RELATIONSHIPS;
     let allShortages: SupplyShortage[] = FALLBACK_SHORTAGES;
-    let dataSource: 'database' | 'fallback' = 'fallback';
+    // 'merged' = curated floor + dynamic (AI-refreshed) rows on top.
+    let dataSource: 'merged' | 'fallback' = 'fallback';
     let refreshedAt: string = new Date().toISOString();
     // Oldest of the three sections — refreshedAt above is module-wide-newest
     // and can mask a stale section behind a fresher one (the stale-content
@@ -75,13 +105,40 @@ export async function GET(request: Request) {
 
       if (dynamicCompanies.length > 0) {
         const parsed = unwrap<SupplyChainCompany>(dynamicCompanies[0].data, 'companies', 'name');
-        if (parsed) { allCompanies = parsed; hasDbData = true; }
+        if (parsed) {
+          // Normalize tiers first so '1'/'Tier 1' style values survive the
+          // validity gate instead of being dropped (or worse, mis-counting
+          // every tier as 0 on the stats tiles).
+          const normalized = parsed.map((c) => ({ ...c, tier: (normalizeTier(c.tier) ?? c.tier) as SupplyChainTier }));
+          const { merged } = mergeCuratedWithDynamic(
+            FALLBACK_COMPANIES,
+            normalized,
+            (c) => c.name?.trim().toLowerCase() || undefined,
+            (c) => typeof c.name === 'string' && c.name.trim().length > 0 && normalizeTier(c.tier) !== null,
+          );
+          allCompanies = merged;
+          hasDbData = true;
+        }
         latestRefresh = dynamicCompanies[0].refreshedAt;
         earliestRefresh = dynamicCompanies[0].refreshedAt;
       }
       if (dynamicRelationships.length > 0) {
         const parsed = unwrap<SupplyRelationship>(dynamicRelationships[0].data, 'relationships', 'supplierId');
-        if (parsed) { allRelationships = parsed; hasDbData = true; }
+        if (parsed) {
+          const normalized = parsed.map((r) => ({
+            ...r,
+            geopoliticalRisk: String(r.geopoliticalRisk ?? '').toLowerCase() as SupplyRelationship['geopoliticalRisk'],
+            isCritical: r.isCritical === true,
+          }));
+          const { merged } = mergeCuratedWithDynamic(
+            FALLBACK_RELATIONSHIPS,
+            normalized,
+            (r) => (r.supplierId && r.customerId ? `${String(r.supplierId).toLowerCase()}->${String(r.customerId).toLowerCase()}` : undefined),
+            (r) => !!r.supplierId && !!r.customerId && RISK_LEVELS.has(String(r.geopoliticalRisk)),
+          );
+          allRelationships = merged;
+          hasDbData = true;
+        }
         if (!latestRefresh || dynamicRelationships[0].refreshedAt > latestRefresh) {
           latestRefresh = dynamicRelationships[0].refreshedAt;
         }
@@ -91,7 +148,20 @@ export async function GET(request: Request) {
       }
       if (dynamicShortages.length > 0) {
         const parsed = unwrap<SupplyShortage>(dynamicShortages[0].data, 'shortages', 'material');
-        if (parsed) { allShortages = parsed; hasDbData = true; }
+        if (parsed) {
+          const normalized = parsed.map((s) => ({
+            ...s,
+            severity: String(s.severity ?? '').toLowerCase() as SupplyShortage['severity'],
+          }));
+          const { merged } = mergeCuratedWithDynamic(
+            FALLBACK_SHORTAGES,
+            normalized,
+            (s) => s.material?.trim().toLowerCase() || undefined,
+            (s) => typeof s.material === 'string' && s.material.trim().length > 0 && SHORTAGE_SEVERITIES.has(String(s.severity)),
+          );
+          allShortages = merged;
+          hasDbData = true;
+        }
         if (!latestRefresh || dynamicShortages[0].refreshedAt > latestRefresh) {
           latestRefresh = dynamicShortages[0].refreshedAt;
         }
@@ -100,7 +170,7 @@ export async function GET(request: Request) {
         }
       }
       if (hasDbData && latestRefresh) {
-        dataSource = 'database';
+        dataSource = 'merged';
         refreshedAt = latestRefresh.toISOString();
       }
     } catch {

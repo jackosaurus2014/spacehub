@@ -295,6 +295,10 @@ function checkCsrf(req: NextRequest): boolean {
         // same scheduler-invoked-internal-POST precedent.
         '/api/space-tycoon/labor/update',
         '/api/procurement/opportunities',
+        // Federal Register -> ProposedRegulation daily sync (2026-08-31
+        // freshness audit): scheduler-invoked internal POST, same
+        // mean-revert precedent. Sole writer of the ProposedRegulation table.
+        '/api/compliance/fetch',
         // 4X Wave W3 (seasonal-event generation cron) — same mean-revert
         // precedent: a scheduler-invoked internal POST, not a browser mutation.
         '/api/space-tycoon/seasons/cron',

@@ -163,6 +163,18 @@ export async function GET() {
       clearancePremium,
       skillsDemand,
       workforceTrends: workforceTrends.reverse(), // chronological order
+      // Honest vintage label (2026-08-31 freshness audit, item 5): the
+      // WorkforceTrend table is a hand-curated quarterly series that currently
+      // ends at 2025-Q4 — it is NOT recomputed from live job postings (the
+      // 2026 series is an open follow-up awaiting real posting history).
+      // Everything else in this response IS live SpaceJobPosting aggregation.
+      workforceTrendsMeta: {
+        latestPeriod: latestTrend?.period ?? null,
+        source: 'curated-quarterly-series',
+        note: latestTrend
+          ? `Quarterly series through ${latestTrend.period}; salary/skill/category figures above are live job-posting aggregates.`
+          : 'No workforce trend series available.',
+      },
       topHiringCompanies,
       categoryDistribution: categoryDistribution.map((c: (typeof categoryDistribution)[number]) => ({
         category: c.category,

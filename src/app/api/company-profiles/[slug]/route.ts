@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger';
 import { notFoundError, internalError } from '@/lib/errors';
 import { calculateCompletenessBreakdown } from '@/lib/company-completeness';
 import type { CompanyForScoring } from '@/lib/company-completeness';
+import { satelliteAssetSignalAvailable } from '@/lib/satellite-signal';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
@@ -283,7 +284,9 @@ export async function GET(
           newsArticles: (company.newsArticles || []).length,
         },
       };
-      completenessBreakdown = calculateCompletenessBreakdown(companyForScoring);
+      completenessBreakdown = calculateCompletenessBreakdown(companyForScoring, {
+        satelliteSignalAvailable: await satelliteAssetSignalAvailable(),
+      });
     } catch (scoringErr) {
       logger.warn('Failed to compute completeness breakdown', {
         error: scoringErr instanceof Error ? scoringErr.message : String(scoringErr),

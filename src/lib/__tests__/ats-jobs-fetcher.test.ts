@@ -152,14 +152,20 @@ describe('ATS_BOARDS config', () => {
 
   it('only uses supported providers', () => {
     for (const board of ATS_BOARDS) {
-      expect(['greenhouse', 'lever', 'ashby']).toContain(board.provider);
+      // 'workday' added 2026-09-01 (#19: Blue Origin, ~1,500 openings).
+      expect(['greenhouse', 'lever', 'ashby', 'workday']).toContain(board.provider);
     }
   });
 
-  it('includes the expected 16 boards', () => {
-    expect(ATS_BOARDS).toHaveLength(16);
+  it('includes the expected 17 boards', () => {
+    expect(ATS_BOARDS).toHaveLength(17);
     expect(ATS_BOARDS.filter((b) => b.provider === 'greenhouse')).toHaveLength(14);
     expect(ATS_BOARDS.filter((b) => b.provider === 'lever')).toHaveLength(1);
     expect(ATS_BOARDS.filter((b) => b.provider === 'ashby')).toHaveLength(1);
+    expect(ATS_BOARDS.filter((b) => b.provider === 'workday')).toHaveLength(1);
+    // Workday tokens are "{hostPrefix}/{tenant}/{site}" triples.
+    for (const b of ATS_BOARDS.filter((x) => x.provider === 'workday')) {
+      expect(b.token.split('/')).toHaveLength(3);
+    }
   });
 });

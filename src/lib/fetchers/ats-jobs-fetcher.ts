@@ -10,7 +10,7 @@
 import prisma from '../db';
 import { logger } from '../logger';
 
-export type ATSProvider = 'greenhouse' | 'lever' | 'ashby';
+export type ATSProvider = 'greenhouse' | 'lever' | 'ashby' | 'workday';
 
 export interface ATSBoard {
   provider: ATSProvider;
@@ -21,6 +21,10 @@ export interface ATSBoard {
 }
 
 export const ATS_BOARDS: ATSBoard[] = [
+  // Workday (token = "{hostPrefix}/{tenant}/{site}" → the wday/cxs JSON API).
+  // 2026-09-01 (#19): Blue Origin was the biggest hirer missing from the
+  // board list — ~1,500 openings live on their Workday tenant, verified.
+  { provider: 'workday', token: 'blueorigin.wd5/blueorigin/BlueOrigin', company: 'Blue Origin', companyProfileSlug: 'blue-origin' },
   // Greenhouse
   { provider: 'greenhouse', token: 'spacex', company: 'SpaceX', companyProfileSlug: 'spacex' },
   { provider: 'greenhouse', token: 'andurilindustries', company: 'Anduril', companyProfileSlug: 'anduril-industries' },
@@ -113,6 +117,9 @@ export function parseRemote(
       return (input.workplaceType || '').toLowerCase() === 'remote';
     case 'ashby':
       return input.isRemote === true;
+    case 'workday':
+      // Workday's list payload only carries locationsText.
+      return (input.location || '').toLowerCase().includes('remote');
     default:
       return false;
   }
@@ -306,6 +313,65 @@ async function fetchAshbyJobs(token: string): Promise<NormalizedJob[]> {
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/** Workday CXS jobs API (#19, 2026-09-01). Token "{hostPrefix}/{tenant}/{site}"
+ *  → POST https://{hostPrefix}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs
+ *  with {limit, offset}. Paginated to a sane cap; postedOn is relative text
+ *  ("Posted Today" / "Posted 3 Days Ago") so postedDate is derived, not
+ *  trusted to the minute. */
+async function fetchWorkdayJobs(token: string): Promise<NormalizedJob[]> {
+  const [hostPrefix, tenant, site] = token.split('/');
+  if (!hostPrefix || !tenant || !site) throw new Error(`Workday token malformed: ${token}`);
+  const base = `https://${hostPrefix}.myworkdayjobs.com`;
+  const api = `${base}/wday/cxs/${tenant}/${site}/jobs`;
+  const pageSize = 50;
+  const cap = 2000;
+  const out: NormalizedJob[] = [];
+  for (let offset = 0; offset < cap; offset += pageSize) {
+    const res = await fetch(api, {
+      method: 'POST',
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ appliedFacets: {}, limit: pageSize, offset, searchText: '' }),
+    });
+    if (!res.ok) throw new Error(`Workday ${token} HTTP ${res.status}`);
+    const data = await res.json();
+    const postings: any[] = Array.isArray(data?.jobPostings) ? data.jobPostings : [];
+    for (const j of postings) {
+      if (!j?.title || !j?.externalPath) continue;
+      const location = String(j.locationsText || 'Not specified');
+      const title = String(j.title);
+      // Relative "Posted N Days Ago" → an honest date at day precision.
+      const rel = String(j.postedOn || '').toLowerCase();
+      let postedDate = new Date();
+      const m = rel.match(/(\d+)\+?\s*days?\s*ago/);
+      if (m) postedDate = new Date(Date.now() - parseInt(m[1], 10) * 86400_000);
+      else if (rel.includes('yesterday')) postedDate = new Date(Date.now() - 86400_000);
+      const reqId = Array.isArray(j.bulletFields) && j.bulletFields[0] ? String(j.bulletFields[0]) : String(j.externalPath);
+      out.push({
+        externalId: reqId,
+        title,
+        location,
+        remoteOk: parseRemote('workday', { location }),
+        description: null,
+        employmentType: null,
+        category: classifyCategory(null, title),
+        seniorityLevel: deriveSeniority(title),
+        salaryMin: null,
+        salaryMax: null,
+        clearanceRequired: detectClearance(title),
+        postedDate,
+        sourceUrl: `${base}/en-US/${site}${j.externalPath}`,
+      });
+    }
+    const total = Number(data?.total || 0);
+    if (offset + pageSize >= total || postings.length === 0) break;
+    await new Promise((r) => setTimeout(r, 300));
+  }
+  return out;
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 async function fetchBoardJobs(board: ATSBoard): Promise<NormalizedJob[]> {
   switch (board.provider) {
     case 'greenhouse':
@@ -314,6 +380,8 @@ async function fetchBoardJobs(board: ATSBoard): Promise<NormalizedJob[]> {
       return fetchLeverJobs(board.token);
     case 'ashby':
       return fetchAshbyJobs(board.token);
+    case 'workday':
+      return fetchWorkdayJobs(board.token);
   }
 }
 

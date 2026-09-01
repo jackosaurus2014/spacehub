@@ -85,13 +85,31 @@ function cnt(counts: CompanyForScoring['_count'], key: string): number {
 }
 
 /**
+ * Options shared by the completeness calculators.
+ *
+ * satelliteSignalAvailable (2026-08-31 freshness audit, item 6): the
+ * SatelliteAsset table currently has ZERO writers and is globally empty in
+ * prod, so "0 satellites" is a missing SIGNAL, not a fact about the company.
+ * When false, the satellite term is skipped and the Products & Operations
+ * category is rescaled so no company is silently docked for a dataset the
+ * platform doesn't populate yet. Callers should derive this from
+ * satelliteAssetSignalAvailable() in src/lib/satellite-signal.ts. Defaults to
+ * true (legacy behavior) so existing callers/tests are unchanged until wired.
+ * Remove this option once SatelliteAsset population ships (separate project).
+ */
+export interface CompletenessOptions {
+  satelliteSignalAvailable?: boolean;
+}
+
+/**
  * Calculate a 0-100 completeness score for a company profile.
  *
  * @param company  A company object with scalar fields and `_count` for relations.
+ * @param opts     See CompletenessOptions.
  * @returns        Integer score clamped to [0, 100].
  */
-export function calculateCompleteness(company: CompanyForScoring): number {
-  return calculateCompletenessBreakdown(company).total;
+export function calculateCompleteness(company: CompanyForScoring, opts?: CompletenessOptions): number {
+  return calculateCompletenessBreakdown(company, opts).total;
 }
 
 /**
@@ -106,8 +124,9 @@ export function calculateCompleteness(company: CompanyForScoring): number {
  *                             ---
  *   Total ................... 100
  */
-export function calculateCompletenessBreakdown(company: CompanyForScoring): CompletenessBreakdown {
+export function calculateCompletenessBreakdown(company: CompanyForScoring, opts?: CompletenessOptions): CompletenessBreakdown {
   const counts = company._count;
+  const satelliteSignal = opts?.satelliteSignalAvailable ?? true;
 
   // ── Basic Info (30 pts max) ────────────────────────────────────────────
   let basicInfo = 5; // name + slug always exist for stored profiles
@@ -144,9 +163,16 @@ export function calculateCompletenessBreakdown(company: CompanyForScoring): Comp
   if (cnt(counts, 'keyPersonnel') >= 1) productsOperations += 4;
   if (cnt(counts, 'keyPersonnel') >= 3) productsOperations += 3; // bonus
   if (cnt(counts, 'facilities') >= 1) productsOperations += 3;
-  if (cnt(counts, 'satelliteAssets') >= 1) productsOperations += 2; // for relevant sectors
-
-  productsOperations = Math.min(productsOperations, 20);
+  if (satelliteSignal) {
+    if (cnt(counts, 'satelliteAssets') >= 1) productsOperations += 2; // for relevant sectors
+    productsOperations = Math.min(productsOperations, 20);
+  } else {
+    // No-signal reweight (2026-08-31, see CompletenessOptions): the satellite
+    // term's 2 points are unreachable while the table is globally empty, so
+    // rescale the remaining 18-point subtotal back onto the 20-point category
+    // instead of docking every company equally.
+    productsOperations = Math.min(Math.round((Math.min(productsOperations, 18) * 20) / 18), 20);
+  }
 
   // ── Business Intelligence (15 pts max) ─────────────────────────────────
   let businessIntelligence = 0;

@@ -36,10 +36,26 @@ export async function GET(request: Request) {
       getSalaryBenchmarks(),
     ]);
 
+    // Honest vintage label (2026-08-31 freshness audit, item 5): trends is a
+    // hand-curated quarterly series (currently ending 2025-Q4) seeded by
+    // initializeWorkforceData(), NOT recomputed from live postings. jobs/
+    // stats/salaryBenchmarks are live SpaceJobPosting data.
+    const latestPeriod = trends.reduce<string | null>(
+      (latest, t) => (!latest || t.period > latest ? t.period : latest),
+      null
+    );
+
     return NextResponse.json({
       jobs: jobsResult.jobs,
       totalJobs: jobsResult.total,
       trends,
+      trendsMeta: {
+        latestPeriod,
+        source: 'curated-quarterly-series',
+        note: latestPeriod
+          ? `Quarterly trend series through ${latestPeriod}; job listings and salary benchmarks are live.`
+          : 'No workforce trend series available.',
+      },
       stats,
       salaryBenchmarks,
     });

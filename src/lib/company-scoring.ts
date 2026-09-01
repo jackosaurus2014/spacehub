@@ -26,6 +26,16 @@ interface CompanyDataForScoring {
   foundedYear?: number | null;
 }
 
+/**
+ * satelliteSignalAvailable (2026-08-31 freshness audit, item 6): pass false
+ * while the SatelliteAsset table is globally empty (zero writers in prod) so
+ * "0 satellites" is treated as a missing dataset, not a company fact.
+ * Derive from satelliteAssetSignalAvailable() in src/lib/satellite-signal.ts.
+ */
+export interface CompanyScoringOptions {
+  satelliteSignalAvailable?: boolean;
+}
+
 export interface ScoreBreakdown {
   technology: number;
   team: number;
@@ -40,7 +50,7 @@ export interface ScoreBreakdown {
  * Calculate technology score based on products and assets.
  * More products + operational satellites = higher tech readiness.
  */
-function calculateTechnologyScore(data: CompanyDataForScoring): number {
+function calculateTechnologyScore(data: CompanyDataForScoring, opts?: CompanyScoringOptions): number {
   let score = 0;
 
   // Products (0-40 points)
@@ -49,11 +59,19 @@ function calculateTechnologyScore(data: CompanyDataForScoring): number {
   else if (products >= 3) score += 30;
   else if (products >= 1) score += 20;
 
-  // Satellite assets (0-30 points)
-  const satellites = data._count.satelliteAssets;
-  if (satellites >= 50) score += 30;
-  else if (satellites >= 10) score += 25;
-  else if (satellites >= 1) score += 15;
+  // Satellite assets (0-30 points).
+  // 2026-08-31 freshness audit, item 6: the SatelliteAsset table is globally
+  // empty in prod (zero writers), so when the caller reports no signal the
+  // term is skipped and the remaining 70-point subtotal is rescaled to the
+  // 100-point dimension below, instead of treating every company as having
+  // zero satellites. Remove once SatelliteAsset population ships.
+  const satelliteSignal = opts?.satelliteSignalAvailable ?? true;
+  if (satelliteSignal) {
+    const satellites = data._count.satelliteAssets;
+    if (satellites >= 50) score += 30;
+    else if (satellites >= 10) score += 25;
+    else if (satellites >= 1) score += 15;
+  }
 
   // Partnerships indicate tech validation (0-20 points)
   const partnerships = data._count.partnerships;
@@ -64,6 +82,11 @@ function calculateTechnologyScore(data: CompanyDataForScoring): number {
   // Tier bonus (0-10 points)
   if (data.tier === 1) score += 10;
   else if (data.tier === 2) score += 5;
+
+  if (!satelliteSignal) {
+    // Rescale the 70-point no-satellite subtotal onto the 100-point dimension.
+    score = Math.round((score * 100) / 70);
+  }
 
   return Math.min(score, 100);
 }
@@ -245,8 +268,8 @@ function calculateMomentumScore(data: CompanyDataForScoring): number {
 /**
  * Calculate all scores for a company.
  */
-export function calculateCompanyScores(data: CompanyDataForScoring): ScoreBreakdown {
-  const technology = calculateTechnologyScore(data);
+export function calculateCompanyScores(data: CompanyDataForScoring, opts?: CompanyScoringOptions): ScoreBreakdown {
+  const technology = calculateTechnologyScore(data, opts);
   const team = calculateTeamScore(data);
   const funding = calculateFundingScore(data);
   const marketPosition = calculateMarketPositionScore(data);

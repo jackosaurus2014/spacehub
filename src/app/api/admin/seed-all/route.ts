@@ -141,6 +141,9 @@ export async function POST(request: NextRequest) {
     '/api/funding-opportunities/init',
     '/api/funding-tracker/init',
     '/api/procurement/init',
+    // Curated Export Compliance Q&A starter FAQ (2026-08-31) — idempotent,
+    // never overwrites founder-edited answers.
+    '/api/compliance/questions/init',
   ];
 
   const batchDResults = await Promise.all(

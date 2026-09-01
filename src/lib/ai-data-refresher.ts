@@ -321,8 +321,9 @@ For each offering: provider, vehicle/destination, type (suborbital/orbital/stati
 
 COMPANIES (section: companies):
 - Major component suppliers across all tiers: prime contractors, subsystem providers, component manufacturers
-- For each: name, tier (1/2/3), components, customers, country, production capacity, lead times, recent developments
+- For each: name, tier (EXACTLY one of: "prime", "tier1", "tier2", "tier3" — never bare numbers), products, customers, country, countryCode (ISO-3), production capacity, lead times, recent developments
 - Update any M&A activity, new facilities, or capacity expansions
+- NOTE: your output is merged onto a curated 60+-company catalog (dynamic wins name collisions), so returning only the handful of companies with news is fine — but every company you DO return must carry the full field set above
 
 RELATIONSHIPS (section: relationships):
 - Key supplier-customer relationships with estimated annual values

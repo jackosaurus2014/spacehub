@@ -8,6 +8,7 @@ import {
   COMPLETENESS_COUNT_SELECT,
   COMPLETENESS_SCALAR_SELECT,
 } from '@/lib/company-completeness';
+import { satelliteAssetSignalAvailable } from '@/lib/satellite-signal';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,7 +46,8 @@ export async function GET(request: NextRequest) {
     }
 
     const oldScore = company.dataCompleteness ?? 0;
-    const breakdown = calculateCompletenessBreakdown(company);
+    const satelliteSignalAvailable = await satelliteAssetSignalAvailable();
+    const breakdown = calculateCompletenessBreakdown(company, { satelliteSignalAvailable });
 
     await db.update({
       where: { slug },
@@ -100,6 +102,10 @@ export async function POST(request: NextRequest) {
       return createSuccessResponse({ updated: 0, avgBefore: 0, avgAfter: 0 });
     }
 
+    // One probe for the whole batch — globally-empty SatelliteAsset table
+    // means "no signal", not "every company owns zero satellites".
+    const batchSatelliteSignal = await satelliteAssetSignalAvailable();
+
     let totalBefore = 0;
     let totalAfter = 0;
     let updated = 0;
@@ -110,7 +116,7 @@ export async function POST(request: NextRequest) {
       const batch = companies.slice(i, i + BATCH_SIZE);
       const updates = batch.map((company: any) => {
         const oldScore = company.dataCompleteness ?? 0;
-        const newScore = calculateCompleteness(company);
+        const newScore = calculateCompleteness(company, { satelliteSignalAvailable: batchSatelliteSignal });
         totalBefore += oldScore;
         totalAfter += newScore;
         updated++;
