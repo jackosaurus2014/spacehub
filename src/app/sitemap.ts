@@ -83,6 +83,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/hiring-trends`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/launch-cadence`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/launch-slips`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/datasets`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/hiring-index`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Job landing pages (programmatic SEO) — category/remote/location slices of

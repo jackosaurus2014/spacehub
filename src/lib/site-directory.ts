@@ -93,6 +93,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Investors', href: '/investors', description: 'Investor directory and deal flow', icon: '🏦', nav: true },
       { name: 'Report Cards', href: '/report-cards', description: 'Quarterly company grades', icon: '📝' },
       { name: 'Industry Stats', href: '/space-stats', description: 'Key statistics, sourced', icon: '📊' },
+      { name: 'Free Datasets', href: '/datasets', description: 'Companies, rounds, launch log — CSV, free with attribution', icon: '📦', nav: true },
       { name: 'Constellations', href: '/constellations', description: 'Mega-constellation operator intel', icon: '⭐' },
       { name: 'Ecosystem Map', href: '/ecosystem-map', description: 'How the industry connects', icon: '🌐' },
       { name: 'Industry Trends', href: '/industry-trends', description: 'Where the sector is moving', icon: '📉' },
