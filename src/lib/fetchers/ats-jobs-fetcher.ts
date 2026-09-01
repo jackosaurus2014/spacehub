@@ -324,7 +324,10 @@ async function fetchWorkdayJobs(token: string): Promise<NormalizedJob[]> {
   if (!hostPrefix || !tenant || !site) throw new Error(`Workday token malformed: ${token}`);
   const base = `https://${hostPrefix}.myworkdayjobs.com`;
   const api = `${base}/wday/cxs/${tenant}/${site}/jobs`;
-  const pageSize = 50;
+  // Workday CXS hard-caps limit at 20 — limit=50 gets HTTP 400 (verified from
+  // inside the prod container, 2026-09-01; dev tests passed only because they
+  // used small limits). ~1,600 BO jobs = ~80 pages ≈ 30-40s with the pause.
+  const pageSize = 20;
   const cap = 2000;
   const out: NormalizedJob[] = [];
   for (let offset = 0; offset < cap; offset += pageSize) {
@@ -366,7 +369,7 @@ async function fetchWorkdayJobs(token: string): Promise<NormalizedJob[]> {
     }
     const total = Number(data?.total || 0);
     if (offset + pageSize >= total || postings.length === 0) break;
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 150));
   }
   return out;
 }
