@@ -23,10 +23,17 @@ import { isLedgerAvailable, recordLedger } from '@/lib/game/server-ledger';
  * Check if the player has completed the milestone during an active speed run.
  * Called during sync with the current game state.
  *
- * Body: { gameState: { money, buildings, completedResearch, activeServices, unlockedLocations } }
+ * Body: { gameState?: ... } — ACCEPTED AND IGNORED since the 2026-09-01
+ * hardening (docs/SECURITY_AUDIT_2026-08.md P4). The milestone is checked
+ * against the player's server-synced GameProfile (money, buildingsData,
+ * completedResearchList, activeServicesData, unlockedLocationsList), never
+ * against a client-supplied state — a client could previously post
+ * `{ gameState: { money: 1e12 } }` and collect the cash reward.
  *
- * Server-side validation: checks milestone condition against provided state,
- * records completedAtMs, calculates durationSeconds, updates rank.
+ * Because the profile is refreshed by /sync, completion is detected on the
+ * first check after the qualifying sync (bounded by the sync cadence).
+ *
+ * Records completedAtMs, calculates durationSeconds, updates rank.
  */
 export async function POST(request: Request) {
   try {
@@ -35,17 +42,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { gameState } = body;
-
-    if (!gameState || typeof gameState !== 'object') {
-      return NextResponse.json({ error: 'gameState is required' }, { status: 400 });
+    // The body is read only so a malformed payload yields a clean 400 instead
+    // of an unhandled parse error; its contents are not used.
+    const body = await request.json().catch(() => null);
+    if (body !== null && typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
-    // Get player profile
+    // Get player profile — the ONLY source of state for the milestone check.
     const profile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
-      select: { id: true, companyName: true },
+      select: {
+        id: true,
+        companyName: true,
+        money: true,
+        totalEarned: true,
+        totalSpent: true,
+        gameYear: true,
+        resources: true,
+        buildingsData: true,
+        completedResearchList: true,
+        activeServicesData: true,
+        unlockedLocationsList: true,
+      },
     });
 
     if (!profile) {
@@ -73,24 +92,30 @@ export async function POST(request: Request) {
       });
     }
 
-    // Construct a minimal GameState for milestone checking
+    // Construct a minimal GameState for milestone checking from the
+    // server-side profile (the same fields /sync persists). Every milestone
+    // predicate in speed-runs.ts reads only money / buildings /
+    // completedResearch / activeServices / unlockedLocations.
+    const asArray = <T,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
     const state: GameState = {
       version: 1,
       createdAt: Date.now(),
       lastTickAt: Date.now(),
-      money: gameState.money ?? 0,
-      totalEarned: gameState.totalEarned ?? 0,
-      totalSpent: gameState.totalSpent ?? 0,
-      gameDate: gameState.gameDate ?? { year: 2026, month: 1 },
+      money: Number.isFinite(profile.money) ? profile.money : 0,
+      totalEarned: Number.isFinite(profile.totalEarned) ? profile.totalEarned : 0,
+      totalSpent: Number.isFinite(profile.totalSpent) ? profile.totalSpent : 0,
+      gameDate: { year: profile.gameYear || 2026, month: 1 },
       tickSpeed: 1,
-      buildings: Array.isArray(gameState.buildings) ? gameState.buildings : [],
-      completedResearch: Array.isArray(gameState.completedResearch) ? gameState.completedResearch : [],
+      buildings: asArray<GameState['buildings'][number]>(profile.buildingsData),
+      completedResearch: Array.isArray(profile.completedResearchList) ? profile.completedResearchList : [],
       activeResearch: null,
-      activeServices: Array.isArray(gameState.activeServices) ? gameState.activeServices : [],
-      unlockedLocations: Array.isArray(gameState.unlockedLocations) ? gameState.unlockedLocations : [],
-      resources: gameState.resources ?? {},
+      activeServices: asArray<GameState['activeServices'][number]>(profile.activeServicesData),
+      unlockedLocations: Array.isArray(profile.unlockedLocationsList) ? profile.unlockedLocationsList : [],
+      resources: profile.resources && typeof profile.resources === 'object'
+        ? (profile.resources as Record<string, number>)
+        : {},
       eventLog: [],
-      stats: gameState.stats ?? {
+      stats: {
         rocketsLaunched: 0,
         satellitesDeployed: 0,
         stationsBuilt: 0,

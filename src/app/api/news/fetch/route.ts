@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireCronSecretOrAdmin } from '@/lib/api-auth';
 import { fetchSpaceflightNews, tagRecentArticlesWithCompanies } from '@/lib/news-fetcher';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
@@ -7,7 +8,15 @@ export const dynamic = 'force-dynamic';
 
 const CACHE_KEY = 'news:fetch-result';
 
-export async function POST() {
+/**
+ * POST /api/news/fetch — ingest Spaceflight News into the DB.
+ * Auth: Bearer CRON_SECRET (scheduler) OR an admin session (manual refresh).
+ * The middleware cronPaths list only exempts CSRF; it does not authenticate.
+ */
+export async function POST(request: NextRequest) {
+  const auth = await requireCronSecretOrAdmin(request);
+  if (auth) return auth;
+
   try {
     const count = await fetchSpaceflightNews();
 

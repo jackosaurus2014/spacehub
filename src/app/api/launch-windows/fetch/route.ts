@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireCronSecret } from '@/lib/errors';
 import {
   fetchLaunchLibraryUpcoming,
   fetchSpaceXUpcoming,
@@ -12,7 +13,16 @@ export const dynamic = 'force-dynamic';
 
 const CACHE_KEY = 'launch-windows:fetch-result';
 
-export async function POST() {
+/**
+ * POST /api/launch-windows/fetch — ingest LL2 + SpaceX upcoming launches.
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
+ */
+export async function POST(request: NextRequest) {
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
+
   try {
     const results = {
       launchLibrary: { fetched: 0, error: null as string | null },

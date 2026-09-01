@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { BlogPost, BLOG_TOPICS, AUTHOR_TYPES, BlogTopic, BlogAuthorType } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -122,6 +123,10 @@ function BlogsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  // POST /api/blogs/fetch is CRON_SECRET/admin-gated; only admins get the
+  // manual-refresh affordance. Everyone else is served by the scheduler.
+  const { data: session } = useSession();
+  const isAdmin = Boolean(session?.user?.isAdmin);
 
   // Read initial values from URL
   const initialTopic = (searchParams.get('topic') as BlogTopic | null) || null;
@@ -345,17 +350,21 @@ function BlogsContent() {
           title="No Articles Found"
           description={
             selectedTopic || selectedAuthorType
-              ? 'Try adjusting your filters or fetch new articles.'
-              : 'Click "Fetch New Articles" to load content from space industry blogs.'
+              ? 'Try adjusting your filters.'
+              : isAdmin
+                ? 'Click "Fetch New Articles" to load content from space industry blogs.'
+                : 'Articles are refreshed automatically throughout the day. Check back soon.'
           }
           action={
-            <button
-              onClick={handleFetchNewPosts}
-              disabled={fetching}
-              className="btn-primary"
-            >
-              {fetching ? 'Fetching...' : 'Fetch Articles'}
-            </button>
+            isAdmin ? (
+              <button
+                onClick={handleFetchNewPosts}
+                disabled={fetching}
+                className="btn-primary"
+              >
+                {fetching ? 'Fetching...' : 'Fetch Articles'}
+              </button>
+            ) : undefined
           }
         />
       ) : (
@@ -423,6 +432,10 @@ function BlogsContent() {
 
 export default function IndustryVoicesPage() {
   const [fetching, setFetching] = useState(false);
+  // Manual ingestion trigger is admin-only (the endpoint rejects everyone
+  // else with 401); ordinary visitors rely on the scheduled refresh.
+  const { data: session } = useSession();
+  const isAdmin = Boolean(session?.user?.isAdmin);
 
   const handleFetchNewPosts = async () => {
     setFetching(true);
@@ -440,22 +453,24 @@ export default function IndustryVoicesPage() {
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Industry Voices" subtitle="Curated third-party expert blogs from consultants, lawyers, and space industry professionals" icon="✍️" accentColor="purple">
-          <button
-            onClick={handleFetchNewPosts}
-            disabled={fetching}
-            className="btn-primary flex items-center gap-2"
-          >
-            {fetching ? (
-              <>
-                <LoadingSpinner size="sm" />
-                <span>Fetching...</span>
-              </>
-            ) : (
-              <>
-                <span>Fetch New Articles</span>
-              </>
-            )}
-          </button>
+          {isAdmin && (
+            <button
+              onClick={handleFetchNewPosts}
+              disabled={fetching}
+              className="btn-primary flex items-center gap-2"
+            >
+              {fetching ? (
+                <>
+                  <LoadingSpinner size="sm" />
+                  <span>Fetching...</span>
+                </>
+              ) : (
+                <>
+                  <span>Fetch New Articles</span>
+                </>
+              )}
+            </button>
+          )}
         </AnimatedPageHeader>
 
         <Suspense

@@ -169,6 +169,10 @@ beforeEach(() => {
   jest.clearAllMocks();
   // Default: authenticated session
   mockSession();
+  // Default: the requester is the owner member (membership is checked before
+  // the room query since the 2026-09 P7 fix) and the room has no documents.
+  (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(makeMember());
+  (mockPrisma.dealRoomDocument.findMany as jest.Mock).mockResolvedValue([]);
 });
 
 // =============================================================================
@@ -345,6 +349,7 @@ describe('GET /api/deal-rooms/[id]', () => {
 
   it('returns 403 when user is not a member', async () => {
     mockSession('stranger@example.com', 'user-2');
+    (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
     const room = makeDealRoom({
       members: [makeMember()],
     });

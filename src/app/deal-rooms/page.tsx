@@ -58,7 +58,7 @@ interface DealRoom {
   companySlug: string | null;
   status: string;
   createdBy: string;
-  accessCode: string | null;
+  accessCode?: string | null; // only sent to owners/admins; absent for viewers
   ndaRequired: boolean;
   ndaText: string | null;
   createdAt: string;
@@ -173,6 +173,7 @@ function DealRoomsPageInner() {
   const [roomDetail, setRoomDetail] = useState<{
     room: DealRoom;
     myRole: string;
+    ndaRequired?: boolean;
     ndaAccepted: boolean;
   } | null>(null);
 

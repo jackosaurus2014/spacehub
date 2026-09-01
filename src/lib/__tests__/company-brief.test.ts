@@ -20,12 +20,14 @@ jest.mock('@/lib/newsletter/email-service', () => ({ sendVerificationEmail: jest
 
 import { briefEmail, briefIsEmpty, createCompanyWatch, isoWeekKey, runCompanyBriefDeliveries, unsubscribeCompanyWatch, MAX_WATCHES_PER_EMAIL } from '@/lib/company-brief';
 import type { CompanyBriefData } from '@/lib/company-brief';
+import { _resetConfirmationCooldown } from '@/lib/launch-watch';
 
 const NOW = new Date('2026-08-31T09:00:00Z'); // a Monday
 
 const emptyData: CompanyBriefData = { jobs: { count: 0, titles: [] }, contracts: [], funding: [], filings: [], news: [] };
 
 function resetAll() {
+  _resetConfirmationCooldown();
   for (const model of Object.values(mockDb)) for (const fn of Object.values(model)) (fn as jest.Mock).mockReset();
   mockDb.companyBriefDelivery.create.mockResolvedValue({});
 }

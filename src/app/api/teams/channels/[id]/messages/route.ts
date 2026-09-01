@@ -12,6 +12,7 @@ import {
 } from '@/lib/errors';
 import { postMessageSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
+import { PUBLIC_USER_SELECT } from '@/lib/public-user-select';
 import { parseMentions } from '@/lib/mentions';
 import { createNotification } from '@/lib/notifications/create';
 
@@ -63,7 +64,7 @@ export async function GET(
     const userIds = Array.from(new Set(messages.map((m) => m.authorId)));
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
-      select: { id: true, name: true, email: true, verifiedBadge: true },
+      select: PUBLIC_USER_SELECT,
     });
     const userMap = new Map(users.map((u) => [u.id, u]));
 
@@ -186,7 +187,7 @@ export async function POST(
 
     const author = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, name: true, email: true, verifiedBadge: true },
+      select: PUBLIC_USER_SELECT,
     });
 
     return NextResponse.json(

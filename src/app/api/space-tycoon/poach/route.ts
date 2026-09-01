@@ -13,6 +13,8 @@ import {
 import { getServerFeeIndexFactor } from '@/lib/game/fee-index-server';
 import { resolveExpiredPoachOffers, freeRetentionUsed } from '@/lib/game/offense-server';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { validateBody, poachBodySchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -90,7 +92,13 @@ export async function POST(request: NextRequest) {
     const profile = await prisma.gameProfile.findUnique({ where: { userId: session.user.id } });
     if (!profile) return NextResponse.json({ error: 'No game profile' }, { status: 404 });
 
-    const body = await request.json();
+    // L5 (2026-09-01 hardening): zod-validated body instead of String()/Number().
+    const parsed = validateBody(poachBodySchema, await request.json().catch(() => null));
+    if (!parsed.success) {
+      const first = Object.values(parsed.errors)[0]?.[0] || 'Invalid request body';
+      return validationError(first, parsed.errors);
+    }
+    const body = parsed.data;
     const ledgerOn = await isLedgerAvailable();
 
     // Lazy-resolve expired offers on every touch (no cron dependency).
@@ -98,9 +106,9 @@ export async function POST(request: NextRequest) {
 
     // ── Make an offer ──────────────────────────────────────────────────────
     if (body.action === 'offer') {
-      const targetId = String(body.targetProfileId || '');
-      const crewType = String(body.crewType || '') as WorkerType;
-      const count = Math.floor(Number(body.count) || 0);
+      const targetId = body.targetProfileId;
+      const crewType = body.crewType as WorkerType;
+      const count = body.count;
 
       if (!WORKER_MAP.has(crewType)) {
         return NextResponse.json({ error: 'Unknown crew type' }, { status: 400 });
@@ -253,7 +261,7 @@ export async function POST(request: NextRequest) {
     // ── Respond (target) ───────────────────────────────────────────────────
     if (body.action === 'respond') {
       const offer = await prisma.poachOffer.findUnique({
-        where: { id: String(body.offerId || '') },
+        where: { id: body.offerId },
         include: { attacker: { select: { id: true, companyName: true } } },
       });
       if (!offer || offer.targetId !== profile.id) {
@@ -262,7 +270,7 @@ export async function POST(request: NextRequest) {
       if (offer.status !== 'pending' || offer.respondBy < new Date()) {
         return NextResponse.json({ error: 'This offer is no longer open.' }, { status: 400 });
       }
-      const response = String(body.response || '');
+      const response = body.response;
 
       if (response === 'retain' || response === 'free_retain') {
         if (response === 'free_retain') {
@@ -340,7 +348,7 @@ export async function POST(request: NextRequest) {
 
     // ── Withdraw (attacker) ────────────────────────────────────────────────
     if (body.action === 'withdraw') {
-      const offer = await prisma.poachOffer.findUnique({ where: { id: String(body.offerId || '') } });
+      const offer = await prisma.poachOffer.findUnique({ where: { id: body.offerId } });
       if (!offer || offer.attackerId !== profile.id) {
         return NextResponse.json({ error: 'No such offer of yours' }, { status: 404 });
       }
@@ -368,7 +376,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, status: 'withdrawn' });
     }
 
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    return validationError('Invalid action');
   } catch (error) {
     logger.error('Poach POST error', { error: String(error) });
     return NextResponse.json({ error: 'Poach action failed' }, { status: 500 });

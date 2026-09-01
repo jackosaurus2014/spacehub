@@ -332,14 +332,27 @@ export async function POST(request: Request) {
 
     // Referral (2026-08-28): remember whether this sync is creating the
     // profile so an invite cookie can be attributed exactly once.
-    const existedBefore = await prisma.gameProfile.findUnique({ where: { userId: session.user.id }, select: { id: true } });
+    const existedBefore = await prisma.gameProfile.findUnique({ where: { userId: session.user.id }, select: { id: true, companyName: true } });
+
+    // P10 (docs/SECURITY_AUDIT_2026-08.md, 2026-09-01 hardening): this upsert
+    // is the ONE legitimate writer of a profile's own companyName (there is
+    // no separate rename route — the in-game settings panel renames by
+    // syncing). Every public-feed write elsewhere (chat, colonies,
+    // milestones, competitive-contracts) now reads profile.companyName
+    // instead of trusting its own body, so this is the only place a name
+    // enters the system. Sanitize it here: strip tags, trim, cap, and never
+    // let an empty/garbage value blank out an existing name.
+    const rawCompanyName = typeof companyName === 'string'
+      ? companyName.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 50)
+      : '';
+    const safeCompanyName = rawCompanyName || existedBefore?.companyName || 'Untitled Aerospace';
 
     // Upsert game profile with full state
     const profile = await prisma.gameProfile.upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,
-        companyName: String(companyName).slice(0, 50),
+        companyName: safeCompanyName,
         money: reconciledMoney, totalEarned, totalSpent, netWorth,
         buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
         resources: reconciledResources as object,
@@ -352,7 +365,7 @@ export async function POST(request: Request) {
         lastSyncAt: new Date(),
       },
       update: {
-        companyName: String(companyName).slice(0, 50),
+        companyName: safeCompanyName,
         money: reconciledMoney, totalEarned, totalSpent, netWorth,
         buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
         resources: reconciledResources as object,

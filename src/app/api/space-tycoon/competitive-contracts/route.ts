@@ -86,10 +86,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { contractId, companyName } = body;
+    // P10 (docs/SECURITY_AUDIT_2026-08.md, 2026-09-01 hardening): body.companyName
+    // is accepted for backward compatibility and IGNORED — the activity row
+    // is written under the session profile's own name (see below).
+    const { contractId } = body;
 
-    if (!contractId || !companyName) {
-      return NextResponse.json({ error: 'Missing contractId or companyName' }, { status: 400 });
+    if (!contractId || typeof contractId !== 'string') {
+      return NextResponse.json({ error: 'Missing contractId' }, { status: 400 });
     }
 
     // Find the contract definition
@@ -108,6 +111,7 @@ export async function POST(request: NextRequest) {
     if (!profile) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
     }
+    const companyName = profile.companyName;
 
     // Check if this player already claimed this contract
     const existingClaim = await prisma.playerActivity.findFirst({
@@ -211,7 +215,7 @@ export async function POST(request: NextRequest) {
       await tx.playerActivity.create({
         data: {
           profileId: profile.id,
-          companyName: String(companyName).slice(0, 50),
+          companyName: companyName.slice(0, 50),
           type: 'competitive_contract_claimed',
           title: `${companyName} completed "${contract.title}"`,
           description: `Slot ${currentClaims + 1}/${contract.maxWinners} — Reward: $${(contract.reward.money / 1e6).toFixed(0)}M`,

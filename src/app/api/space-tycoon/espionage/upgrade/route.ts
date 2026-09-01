@@ -7,6 +7,8 @@ import {
   getSecurityUpgradeCost,
 } from '@/lib/game/espionage-system';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { validateBody, espionageUpgradeSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 /**
  * POST /api/space-tycoon/espionage/upgrade
@@ -27,15 +29,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { targetLevel } = body as { targetLevel: number };
-
-    // ── Validate target level ──
-    if (typeof targetLevel !== 'number' || targetLevel < 1 || targetLevel > 10 || !Number.isInteger(targetLevel)) {
-      return NextResponse.json({
-        error: 'Target level must be an integer between 1 and 10.',
-      }, { status: 400 });
+    // L5 (2026-09-01 hardening): zod-validated body (integer 1-10) instead of
+    // a bare cast + hand-rolled range check.
+    const parsed = validateBody(espionageUpgradeSchema, await request.json().catch(() => null));
+    if (!parsed.success) {
+      return validationError('Target level must be an integer between 1 and 10.', parsed.errors);
     }
+    const { targetLevel } = parsed.data;
 
     // ── Fetch player profile ──
     const profile = await prisma.gameProfile.findUnique({

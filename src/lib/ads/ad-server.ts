@@ -3,9 +3,11 @@ import { logger } from '@/lib/logger';
 import { canAccessFeature, normalizeTier } from '@/lib/subscription';
 
 /**
- * Ad placement data returned to clients
+ * Ad selected by `selectAd` — everything the client needs to render it.
+ * Does not yet carry the impression token; the serve route mints that
+ * because it needs the request (client ip) to do so.
  */
-export interface ServedAd {
+export interface SelectedAd {
   placementId: string;
   campaignId: string;
   position: string;
@@ -18,6 +20,25 @@ export interface ServedAd {
   advertiserName: string;
   advertiserLogo: string | null;
 }
+
+/**
+ * Ad placement data returned to clients. `token` is the signed proof-of-serve
+ * that `POST /api/ads/impression` requires before it will charge the campaign
+ * (see `src/lib/ads/impression-token.ts`).
+ */
+export interface ServedAd extends SelectedAd {
+  token: string;
+}
+
+/**
+ * Windows inside which a repeat event from the same ip for the same
+ * campaign/placement is recorded for analytics but not charged.
+ */
+const DEDUP_WINDOW_MS: Record<'impression' | 'click' | 'conversion', number> = {
+  impression: 10 * 60 * 1000, // 10 minutes
+  click: 24 * 60 * 60 * 1000, // 24 hours
+  conversion: 0, // never charged, never deduped
+};
 
 /**
  * Select the best ad for a given context.
@@ -34,7 +55,7 @@ export async function selectAd(options: {
   userId?: string;
   sessionId?: string;
   userTier?: string;
-}): Promise<ServedAd | null> {
+}): Promise<SelectedAd | null> {
   const { position, module, userId, userTier } = options;
 
   try {
@@ -168,10 +189,20 @@ export async function selectAd(options: {
 /**
  * Record an ad impression, click, or conversion.
  *
- * 1. Create AdImpression record
- * 2. If type is 'impression', calculate revenue (campaignCpmRate / 1000)
- * 3. If type is 'click' and cpcRate set, add cpc revenue
- * 4. Update campaign spent amount
+ * 1. Dedup: a repeat event from the same ip for the same campaign/placement
+ *    inside the window (click 24h, impression 10min) is recorded with
+ *    revenue 0 and does not touch the campaign's spend
+ * 2. Create AdImpression record
+ * 3. If type is 'impression', calculate revenue (campaignCpmRate / 1000)
+ * 4. If type is 'click' and cpcRate set, add cpc revenue
+ * 5. Update campaign spent amount
+ *
+ * Callers are responsible for authenticating the event (the impression route
+ * verifies a signed proof-of-serve token first) — this function trusts its
+ * inputs and only guards against *volume* abuse via the ip window.
+ *
+ * Returns whether the campaign was charged (false for dedup hits, inactive
+ * campaigns, and errors) so callers/tests can observe the decision.
  */
 export async function recordImpression(options: {
   campaignId: string;
@@ -182,7 +213,7 @@ export async function recordImpression(options: {
   module?: string;
   ipAddress?: string;
   userAgent?: string;
-}): Promise<void> {
+}): Promise<{ recorded: boolean; charged: boolean; revenue: number }> {
   const { campaignId, placementId, userId, sessionId, type, module, ipAddress, userAgent } = options;
 
   try {
@@ -200,12 +231,33 @@ export async function recordImpression(options: {
     });
 
     if (!campaign || campaign.status !== 'active') {
-      return;
+      return { recorded: false, charged: false, revenue: 0 };
+    }
+
+    // Dedup: same ip + campaign + placement + type inside the window is
+    // analytics-only. Without an ip we cannot key the window, so we fall
+    // through to a normal charge (behind Railway the header is always set).
+    const dedupWindowMs = DEDUP_WINDOW_MS[type];
+    let duplicate = false;
+    if (dedupWindowMs > 0 && ipAddress) {
+      const prior = await prisma.adImpression.findFirst({
+        where: {
+          campaignId,
+          placementId,
+          type,
+          ipAddress,
+          createdAt: { gte: new Date(Date.now() - dedupWindowMs) },
+        },
+        select: { id: true },
+      });
+      duplicate = Boolean(prior);
     }
 
     // Calculate revenue for this event
     let revenue = 0;
-    if (type === 'impression') {
+    if (duplicate) {
+      revenue = 0;
+    } else if (type === 'impression') {
       // CPM = cost per 1000 impressions, so per impression = cpmRate / 1000
       revenue = campaign.cpmRate / 1000;
     } else if (type === 'click' && campaign.cpcRate) {
@@ -217,6 +269,31 @@ export async function recordImpression(options: {
     if (newSpent > campaign.budget) {
       // Cap revenue at remaining budget
       revenue = Math.max(0, campaign.budget - campaign.spent);
+    }
+
+    if (duplicate) {
+      // Analytics row only — no spend mutation, no budget-exhaustion check.
+      await prisma.adImpression.create({
+        data: {
+          campaignId,
+          placementId,
+          userId: userId || null,
+          sessionId: sessionId || null,
+          type,
+          module: module || null,
+          ipAddress: ipAddress || null,
+          userAgent: userAgent || null,
+          revenue: 0,
+        },
+      });
+
+      logger.debug('Ad impression deduplicated (not charged)', {
+        campaignId,
+        placementId,
+        type,
+        module,
+      });
+      return { recorded: true, charged: false, revenue: 0 };
     }
 
     // Create impression record and update campaign spent in a transaction
@@ -251,6 +328,7 @@ export async function recordImpression(options: {
       revenue,
       module,
     });
+    return { recorded: true, charged: revenue > 0, revenue };
   } catch (error) {
     logger.error('Error recording ad impression', {
       error: error instanceof Error ? error.message : String(error),
@@ -258,6 +336,7 @@ export async function recordImpression(options: {
       placementId,
       type,
     });
+    return { recorded: false, charged: false, revenue: 0 };
   }
 }
 

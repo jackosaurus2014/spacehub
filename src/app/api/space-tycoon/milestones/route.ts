@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { MILESTONES } from '@/lib/game/milestones';
+
+const MILESTONE_MAP = new Map(MILESTONES.map(m => [m.id, m]));
 
 /**
  * GET /api/space-tycoon/milestones
@@ -28,7 +31,14 @@ export async function GET() {
 /**
  * POST /api/space-tycoon/milestones
  * Attempt to claim a milestone. First player to claim wins.
- * Body: { milestoneId: string, companyName: string, reward: number }
+ * Body: { milestoneId: string, companyName?: string, reward?: number }
+ *
+ * 2026-09-01 hardening (docs/SECURITY_AUDIT_2026-08.md P10): `companyName`
+ * and `reward` in the body are accepted for backward compatibility and
+ * IGNORED. The row is written under the session profile's own name, and the
+ * publicly rendered reward is derived from the milestone definition in
+ * milestones.ts (full reward inside the target window, 25% after — the same
+ * rule checkMilestones() applies client-side). No money is credited here.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -37,11 +47,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Must be logged in' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { milestoneId, companyName, reward } = body;
+    const body = await request.json().catch(() => null);
+    const milestoneId = body && typeof body === 'object' ? (body as { milestoneId?: unknown }).milestoneId : undefined;
 
-    if (!milestoneId || !companyName) {
-      return NextResponse.json({ error: 'Missing milestoneId or companyName' }, { status: 400 });
+    if (!milestoneId || typeof milestoneId !== 'string') {
+      return NextResponse.json({ error: 'Missing milestoneId' }, { status: 400 });
+    }
+
+    const definition = MILESTONE_MAP.get(milestoneId);
+    if (!definition) {
+      return NextResponse.json({ error: 'Unknown milestone' }, { status: 404 });
     }
 
     // Check if already claimed by anyone
@@ -61,11 +76,19 @@ export async function POST(request: NextRequest) {
     // Get player's game profile
     const profile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
+      select: { id: true, companyName: true, createdAt: true },
     });
 
     if (!profile) {
       return NextResponse.json({ error: 'No game profile found' }, { status: 404 });
     }
+
+    const companyName = profile.companyName.slice(0, 50);
+
+    // Reward derived server-side from the definition (see header).
+    const accountAgeDays = (Date.now() - new Date(profile.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    const withinDeadline = accountAgeDays <= definition.targetDays;
+    const reward = withinDeadline ? definition.reward : Math.round(definition.reward * 0.25);
 
     // Claim the milestone (race condition safe — unique constraint on milestoneId)
     try {
@@ -73,8 +96,8 @@ export async function POST(request: NextRequest) {
         data: {
           milestoneId,
           claimedById: profile.id,
-          companyName: String(companyName).slice(0, 50),
-          reward: reward || 0,
+          companyName,
+          reward,
         },
       });
 
@@ -82,9 +105,9 @@ export async function POST(request: NextRequest) {
       await prisma.playerActivity.create({
         data: {
           profileId: profile.id,
-          companyName: String(companyName).slice(0, 50),
+          companyName,
           type: 'milestone_claimed',
-          title: `${companyName} achieved "${milestoneId.replace(/_/g, ' ')}"!`,
+          title: `${companyName} achieved "${definition.name}"!`,
           description: reward > 0 ? `Earned $${(reward / 1_000_000).toFixed(0)}M reward` : undefined,
           metadata: { milestoneId, reward },
         },
@@ -97,6 +120,7 @@ export async function POST(request: NextRequest) {
         milestone: {
           milestoneId: milestone.milestoneId,
           companyName: milestone.companyName,
+          reward: milestone.reward,
           claimedAt: milestone.claimedAt,
         },
       });

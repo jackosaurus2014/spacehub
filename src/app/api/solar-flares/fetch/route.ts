@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { requireCronSecret } from '@/lib/errors';
 import {
   fetchNasaDonkiSolarFlares,
   fetchNoaaXrayFlares,
@@ -15,7 +16,16 @@ export const dynamic = 'force-dynamic';
 
 const CACHE_KEY = 'solar-flares:fetch-result';
 
-export async function POST() {
+/**
+ * POST /api/solar-flares/fetch — ingest NASA DONKI + NOAA SWPC flare data.
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
+ */
+export async function POST(request: NextRequest) {
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
+
   try {
     // Fetch data from both sources in parallel
     // These individual functions already return [] on failure

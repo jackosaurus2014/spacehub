@@ -7,7 +7,6 @@ import { logger } from '@/lib/logger';
 import { serverRegisterSchema, validateBody } from '@/lib/validations';
 import { generateVerificationEmail } from '@/lib/newsletter/email-templates';
 import { TRIAL_DRIP_SEQUENCE } from '@/lib/newsletter/trial-drip-templates';
-import { recomputeVerificationBadge } from '@/lib/verification/auto-badge';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +19,11 @@ export async function POST(req: NextRequest) {
       return validationError(firstError, validation.errors);
     }
     const { email, password, name } = validation.data;
+
+    // Hash BEFORE the existence check (2026-09-01, M3): the ~250 ms bcrypt
+    // cost used to be paid only for new emails, which made the "identical"
+    // anti-enumeration response distinguishable by timing.
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Anti-enumeration: return the same success response shape whether the
     // email is new or already registered, so attackers can't probe for valid accounts
@@ -34,8 +38,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-
     // Auto-start 3-day Pro trial for every new user — lets them experience
     // the full platform immediately, driving conversions
     const trialEnd = new Date();
@@ -46,7 +48,11 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         name: name || null,
-        emailVerified: true, // Auto-verify — don't block login on email delivery
+        // Unverified until the emailed link is clicked (2026-09-01, M2).
+        // Login is NOT blocked on this (see authorize() in src/lib/auth.ts);
+        // it only gates the public "email"/"domain" verified badges, which
+        // used to be claimable by registering any address you didn't own.
+        emailVerified: false,
         trialTier: 'pro',
         trialStartDate: new Date(),
         trialEndDate: trialEnd,
@@ -106,15 +112,8 @@ export async function POST(req: NextRequest) {
       logger.error('Failed to send trial welcome email', { userId: user.id, error: dripError instanceof Error ? dripError.message : String(dripError) });
     }
 
-    // Auto-recompute the verifiedBadge (email is auto-verified on registration).
-    try {
-      await recomputeVerificationBadge(user.id);
-    } catch (badgeErr) {
-      logger.error('recomputeVerificationBadge failed after registration', {
-        userId: user.id,
-        error: badgeErr instanceof Error ? badgeErr.message : String(badgeErr),
-      });
-    }
+    // Badge recompute happens in /api/auth/verify-email once ownership is
+    // proven; a fresh account is 'unverified' by construction.
 
     return NextResponse.json({
       message: 'Registration successful. You can now sign in.',

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { requireCronSecret } from '@/lib/errors';
 import {
   assignPlayerToLeague,
   assignBrackets,
@@ -28,17 +29,17 @@ export const dynamic = 'force-dynamic';
  * process promotions/demotions, distribute rewards.
  * Should be called by cron every Monday at 00:05 UTC.
  *
- * Body: { secret: string }
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
+ * (The old body.secret / LEAGUE_CRON_SECRET scheme is gone — the scheduler
+ * sends an empty JSON body and the Bearer header.)
  */
 export async function POST(request: NextRequest) {
-  try {
-    // Verify cron secret
-    const body = await request.json().catch(() => ({}));
-    const cronSecret = process.env.LEAGUE_CRON_SECRET || process.env.CRON_SECRET;
-    if (cronSecret && body.secret !== cronSecret) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
+  try {
     const currentWeekId = getCurrentWeekId();
     const metric = getWeeklyMetric(currentWeekId);
 

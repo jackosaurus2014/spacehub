@@ -13,6 +13,7 @@ import { randomBytes } from 'crypto';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { sendVerificationEmail } from '@/lib/newsletter/email-service';
+import { confirmationCooldownRemaining, markConfirmationSent } from '@/lib/launch-watch';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 export const MAX_WATCHES_PER_EMAIL = 25;
@@ -33,7 +34,7 @@ export function isoWeekKey(d: Date): string {
 }
 
 /** Create (or re-send verification for) a watch. Never reveals whether an email exists elsewhere. */
-export async function createCompanyWatch(email: string, ref: { companyProfileId?: string | null; slug?: string | null }, source: string): Promise<{ ok: boolean; status: 'sent' | 'already-verified' | 'limit' | 'not-found' | 'error' }> {
+export async function createCompanyWatch(email: string, ref: { companyProfileId?: string | null; slug?: string | null }, source: string): Promise<{ ok: boolean; status: 'sent' | 'already-verified' | 'limit' | 'not-found' | 'cooldown' | 'error' }> {
   const normalized = email.trim().toLowerCase();
   try {
     const company = await prisma.companyProfile.findUnique({
@@ -43,6 +44,8 @@ export async function createCompanyWatch(email: string, ref: { companyProfileId?
     if (!company) return { ok: false, status: 'not-found' };
     const existing = await prisma.companyWatch.findUnique({ where: { email_companyProfileId: { email: normalized, companyProfileId: company.id } }, select: { id: true, verified: true, verificationToken: true, unsubscribedAt: true } });
     if (existing?.verified && !existing.unsubscribedAt) return { ok: true, status: 'already-verified' };
+    // Shared cooldown with launch alerts (M4): one confirmation per address per 10 min.
+    if (confirmationCooldownRemaining(normalized) > 0) return { ok: true, status: 'cooldown' };
     const count = await prisma.companyWatch.count({ where: { email: normalized, unsubscribedAt: null } });
     if (!existing && count >= MAX_WATCHES_PER_EMAIL) return { ok: false, status: 'limit' };
     const watch = existing
@@ -54,6 +57,7 @@ export async function createCompanyWatch(email: string, ref: { companyProfileId?
     const verifyUrl = `${APP_URL}/api/company-brief/verify?token=${watch.verificationToken}`;
     const { html, text } = verificationEmail(company.name, verifyUrl);
     const sent = await sendVerificationEmail(normalized, html, text, `Confirm your weekly ${company.name} brief`);
+    if (sent.success) markConfirmationSent(normalized);
     return { ok: sent.success, status: sent.success ? 'sent' : 'error' };
   } catch (err) {
     logger.error('createCompanyWatch failed', { error: err instanceof Error ? err.message : String(err) });

@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { validateBody, createPodcastSchema } from '@/lib/validations';
-import { validationError, internalError, alreadyExistsError } from '@/lib/errors';
+import {
+  validationError,
+  internalError,
+  alreadyExistsError,
+  unauthorizedError,
+  requireCronSecret,
+} from '@/lib/errors';
 import { generateSlug } from '@/lib/marketplace-types';
 
 export const dynamic = 'force-dynamic';
@@ -88,12 +96,31 @@ export async function GET(req: NextRequest) {
 /**
  * POST /api/podcasts
  *
- * Open submission endpoint for adding a new podcast to the directory.
- * Submissions are created in pending state (lastFetchedAt = null) and
- * surface only after an admin syncs the feed.
+ * Adds a new podcast to the directory. **Admin or cron only** — the caller
+ * must present either an admin session or `Authorization: Bearer CRON_SECRET`.
+ *
+ * This used to be an open submission endpoint. It was closed because the
+ * stored `feedUrl` is later fetched server-side by /api/cron/podcasts-sync
+ * (see src/lib/podcast-sync.ts), which made anonymous submissions a stored
+ * SSRF vector (feedUrl = http://169.254.169.254/..., http://127.0.0.1:3000/api/...).
+ * The fetch itself is now also routed through src/lib/security/safe-url.ts,
+ * but a URL that untrusted users can plant in the DB should not exist at all.
+ * Public "suggest a podcast" requests go through /contact.
+ *
+ * New rows are created in pending state (lastFetchedAt = null) and surface
+ * only after the feed is synced.
  */
 export async function POST(req: NextRequest) {
   try {
+    // Auth: admin session OR cron secret. Either is sufficient.
+    const cronAuthFailure = requireCronSecret(req);
+    if (cronAuthFailure) {
+      const session = await getServerSession(authOptions);
+      if (!session?.user?.isAdmin) {
+        return unauthorizedError('Admin session or cron secret required');
+      }
+    }
+
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== 'object') {
       return validationError('Invalid JSON body', { body: 'Expected JSON object' });

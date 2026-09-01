@@ -45,6 +45,11 @@ export interface EventGameState {
   lastTickAt: number;
   totalPlayTimeMs: number;
   challengeProgress: Record<string, number>;
+  /** 2026-09-01 hardening (SECURITY_AUDIT P4): server-observed value of a
+   *  delta-type challenge metric at the moment the challenge was first
+   *  touched, keyed by challenge id. Progress = current server value minus
+   *  this baseline; the client no longer reports progress at all. */
+  challengeBaselines?: Record<string, number>;
 }
 
 export interface EventBuilding {

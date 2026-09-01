@@ -1,23 +1,20 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { requireCronSecret } from '@/lib/errors';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import { calculateNPCRestock } from '@/lib/game/market-engine';
 
 /**
  * POST /api/space-tycoon/market/restock
  * NPC market restocking — gradually replenishes supply toward baseline.
- * Called by cron every hour. Protected by CRON_SECRET.
+ * Called by cron every hour.
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
 export async function POST(request: Request) {
-  // Verify cron secret
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    const isDev = process.env.NODE_ENV === 'development';
-    if (!isDev) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-  }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
   try {
     const resources = await prisma.marketResource.findMany();

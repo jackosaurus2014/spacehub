@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { requireCronSecret } from '@/lib/errors';
 import { RESOURCES } from '@/lib/game/resources';
 import { logger } from '@/lib/logger';
 
@@ -7,8 +8,14 @@ import { logger } from '@/lib/logger';
  * POST /api/space-tycoon/market/init
  * Seeds the MarketResource table from resource definitions.
  * Safe to call multiple times (upserts by slug).
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
+
   try {
     let created = 0;
     let updated = 0;

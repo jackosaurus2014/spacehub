@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
     await prisma.$transaction([
       prisma.user.update({
         where: { id: resetToken.userId },
-        data: { password: hashedPassword },
+        // passwordChangedAt revokes every JWT minted before now (src/lib/auth.ts).
+        data: { password: hashedPassword, passwordChangedAt: new Date() },
       }),
       prisma.passwordResetToken.update({
         where: { id: resetToken.id },

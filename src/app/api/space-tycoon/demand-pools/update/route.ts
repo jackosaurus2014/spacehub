@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import {
   computePoolAggregates,
   emaBlend,
@@ -35,18 +36,14 @@ import {
  * The season super-cycle modifier is NOT stored — sync applies it at read
  * time so a new season shifts pools immediately and deterministically.
  *
- * Protected by CRON_SECRET (matches sibling market/mean-revert route).
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  * Registered as 'tycoon-demand-pools' in src/lib/cron-scheduler.ts.
  */
 export async function POST(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    const isDev = process.env.NODE_ENV === 'development';
-    if (!isDev) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-  }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
   try {
     const now = Date.now();

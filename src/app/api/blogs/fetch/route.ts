@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireCronSecretOrAdmin } from '@/lib/api-auth';
 import { initializeBlogSources, fetchBlogPosts } from '@/lib/blogs-fetcher';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
@@ -7,7 +8,16 @@ export const dynamic = 'force-dynamic';
 
 const CACHE_KEY = 'blogs:fetch-result';
 
-export async function POST() {
+/**
+ * POST /api/blogs/fetch — ingest Industry Voices blog feeds into the DB.
+ * Auth: Bearer CRON_SECRET (scheduler) OR an admin session (the admin-only
+ * "Fetch New Posts" button on /industry-voices).
+ * The middleware cronPaths list only exempts CSRF; it does not authenticate.
+ */
+export async function POST(request: NextRequest) {
+  const auth = await requireCronSecretOrAdmin(request);
+  if (auth) return auth;
+
   try {
     // First ensure blog sources are initialized
     const sourcesCount = await initializeBlogSources();

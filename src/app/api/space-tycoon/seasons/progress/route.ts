@@ -7,18 +7,34 @@ import {
   isPlayablePhase,
   getTierFromSP,
   SP_PER_TIER,
-  SEASON_PASS_TIERS,
   getDailyChallenges,
-  SEASON_DEFINITIONS,
   type SeasonType,
   type BracketTier,
   type EventGameState,
 } from '@/lib/game/seasonal-events';
+import {
+  deriveSeasonMetric,
+  metricNeedsMarketFills,
+  type SeasonMarketStats,
+} from '@/lib/game/season-metrics-server';
+import { RESOURCES } from '@/lib/game/resources';
+import { validateBody, seasonProgressSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
+
+const ENERGY_RESOURCE_SLUGS = RESOURCES.filter(r => r.category === 'energy').map(r => r.id);
 
 /**
  * POST /api/space-tycoon/seasons/progress
  * Update seasonal event progress.
- * Body: { challengeId: string, progress: number }
+ * Body: { challengeId: string, progress?: number }
+ *
+ * 2026-09-01 hardening (docs/SECURITY_AUDIT_2026-08.md P4): `progress` is no
+ * longer trusted. The challenge's metric is derived SERVER-SIDE from the
+ * player's GameProfile / MarketFill rows (see season-metrics-server.ts);
+ * `progress` is accepted for backward compatibility and only consulted for
+ * the handful of metrics the server cannot observe, where it is clamped to
+ * be non-decreasing and <= a server-derived ceiling.
+ *
  * Checks challenge completion, awards SP, advances tier.
  */
 export async function POST(request: NextRequest) {
@@ -28,20 +44,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { challengeId, progress } = body;
-
-    if (!challengeId || typeof progress !== 'number') {
-      return NextResponse.json(
-        { error: 'Missing required fields: challengeId (string), progress (number)' },
-        { status: 400 }
-      );
+    const parsed = validateBody(seasonProgressSchema, await request.json().catch(() => null));
+    if (!parsed.success) {
+      const first = Object.values(parsed.errors)[0]?.[0] || 'Missing required field: challengeId (string)';
+      return validationError(first, parsed.errors);
     }
+    const { challengeId } = parsed.data;
+    const clientProgress = typeof parsed.data.progress === 'number' ? parsed.data.progress : 0;
 
-    // Find the player's profile
+    // Find the player's profile — the source of truth for every metric.
     const profile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
-      select: { id: true, eventTokens: true, netWorth: true },
+      select: {
+        id: true,
+        eventTokens: true,
+        netWorth: true,
+        totalEarned: true,
+        totalBidsWon: true,
+        buildingsData: true,
+        activeServicesData: true,
+        unlockedLocationsList: true,
+        completedResearchList: true,
+        shipsData: true,
+        workforceData: true,
+        resources: true,
+      },
     });
 
     if (!profile) {
@@ -91,6 +118,7 @@ export async function POST(request: NextRequest) {
     // Parse event state
     const eventState = participation.eventState as unknown as EventGameState;
     const challengeProgress = eventState.challengeProgress || {};
+    const challengeBaselines = eventState.challengeBaselines || {};
 
     // Get current daily challenges to validate the challengeId
     const seasonType = currentEvent.seasonType as SeasonType;
@@ -118,9 +146,57 @@ export async function POST(request: NextRequest) {
     const challengeTarget = dailyMatch ? dailyMatch.target : (dbChallenge?.target || 0);
     const challengeSPReward = dailyMatch ? dailyMatch.spReward : (dbChallenge?.spReward || 0);
 
-    // Update progress
+    // ── Server-side metric derivation (P4) ──────────────────────────────
+    const metricsToResolve = new Set<string>([challengeMetric, ...dailyChallenges.map(c => c.metric)]);
+    let marketStats: SeasonMarketStats | null = null;
+    if (Array.from(metricsToResolve).some(metricNeedsMarketFills)) {
+      marketStats = await loadMarketStats(profile.id, new Date(currentEvent.startsAt));
+    }
+
+    const metricProfile = {
+      totalEarned: profile.totalEarned,
+      totalBidsWon: profile.totalBidsWon,
+      buildingsData: profile.buildingsData,
+      activeServicesData: profile.activeServicesData,
+      unlockedLocationsList: profile.unlockedLocationsList,
+      completedResearchList: profile.completedResearchList,
+      shipsData: profile.shipsData,
+      workforceData: profile.workforceData,
+      resources: profile.resources,
+    };
+
+    // Prime baselines for every delta-type challenge visible today on ANY
+    // touch, so one check-in at the start of the day anchors all three
+    // daily challenges (a challenge first touched after the work is done
+    // would otherwise report 0).
+    const targets = [
+      { id: challengeId, metric: challengeMetric },
+      ...dailyChallenges.map(c => ({ id: c.id, metric: c.metric })),
+    ];
+    for (const t of targets) {
+      if (challengeBaselines[t.id] !== undefined) continue;
+      const d = deriveSeasonMetric(t.metric, metricProfile, marketStats);
+      if (d.kind === 'delta') challengeBaselines[t.id] = d.value;
+    }
+
+    const derivation = deriveSeasonMetric(challengeMetric, metricProfile, marketStats);
     const previousProgress = challengeProgress[challengeMetric] || 0;
-    const newProgress = Math.max(previousProgress, progress);
+    let serverProgress: number;
+    let progressSource: 'server' | 'client_capped';
+    if (derivation.kind === 'delta') {
+      const baseline = challengeBaselines[challengeId] ?? derivation.value;
+      serverProgress = Math.max(0, derivation.value - baseline);
+      progressSource = 'server';
+    } else if (derivation.kind === 'absolute') {
+      serverProgress = Math.max(0, derivation.value);
+      progressSource = 'server';
+    } else {
+      // Not observable server-side: accept the client's figure, but never
+      // above what the server can vouch for.
+      serverProgress = Math.min(Math.max(0, clientProgress), derivation.ceiling);
+      progressSource = 'client_capped';
+    }
+    const newProgress = Math.max(previousProgress, serverProgress);
     challengeProgress[challengeMetric] = newProgress;
 
     // Check if challenge was just completed
@@ -163,6 +239,7 @@ export async function POST(request: NextRequest) {
       const updatedEventState: EventGameState = {
         ...eventState,
         challengeProgress,
+        challengeBaselines,
         eventScore: eventState.eventScore + spAwarded,
       };
 
@@ -198,6 +275,7 @@ export async function POST(request: NextRequest) {
         nextTierAt: (newTier + 1) * SP_PER_TIER,
         progress: newProgress,
         target: challengeTarget,
+        progressSource,
       });
     }
 
@@ -205,6 +283,7 @@ export async function POST(request: NextRequest) {
     const updatedEventState: EventGameState = {
       ...eventState,
       challengeProgress,
+      challengeBaselines,
     };
 
     await prisma.seasonParticipation.update({
@@ -225,9 +304,49 @@ export async function POST(request: NextRequest) {
       nextTierAt: (participation.currentTier + 1) * SP_PER_TIER,
       progress: newProgress,
       target: challengeTarget,
+      progressSource,
     });
   } catch (error) {
     console.error('Season progress error:', error);
     return NextResponse.json({ error: 'Failed to update seasonal progress' }, { status: 500 });
+  }
+}
+
+/**
+ * MarketFill aggregates for the profile since the event began. MarketFill is
+ * the only server-authoritative trade record (MarketOrder rows are the legacy
+ * spot-trade log and carry no counterparty).
+ */
+async function loadMarketStats(profileId: string, since: Date): Promise<SeasonMarketStats> {
+  const empty: SeasonMarketStats = { tradeVolume: 0, he3SoldQty: 0, he3SoldValue: 0, energySoldFills: 0 };
+  try {
+    const [asBuyer, asSeller, he3Sold, energySold] = await Promise.all([
+      prisma.marketFill.aggregate({
+        where: { buyerProfileId: profileId, createdAt: { gte: since } },
+        _sum: { totalValue: true },
+      }),
+      prisma.marketFill.aggregate({
+        where: { sellerProfileId: profileId, createdAt: { gte: since } },
+        _sum: { totalValue: true },
+      }),
+      prisma.marketFill.aggregate({
+        where: { sellerProfileId: profileId, resourceSlug: 'helium3', createdAt: { gte: since } },
+        _sum: { quantity: true, totalValue: true },
+      }),
+      ENERGY_RESOURCE_SLUGS.length > 0
+        ? prisma.marketFill.count({
+            where: { sellerProfileId: profileId, resourceSlug: { in: ENERGY_RESOURCE_SLUGS }, createdAt: { gte: since } },
+          })
+        : Promise.resolve(0),
+    ]);
+    return {
+      tradeVolume: (asBuyer._sum.totalValue || 0) + (asSeller._sum.totalValue || 0),
+      he3SoldQty: he3Sold._sum.quantity || 0,
+      he3SoldValue: he3Sold._sum.totalValue || 0,
+      energySoldFills: energySold,
+    };
+  } catch {
+    // MarketFill table missing in a fresh environment — fail closed (0).
+    return empty;
   }
 }

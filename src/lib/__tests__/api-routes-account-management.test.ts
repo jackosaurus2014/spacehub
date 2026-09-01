@@ -179,7 +179,7 @@ describe('POST /api/account/change-password', () => {
     expect(body.data.message).toBe('Password changed successfully.');
     expect(mockPrisma.user.update).toHaveBeenCalledWith({
       where: { id: 'user-1' },
-      data: { password: 'newhash' },
+      data: { password: 'newhash', passwordChangedAt: expect.any(Date) },
     });
   });
 

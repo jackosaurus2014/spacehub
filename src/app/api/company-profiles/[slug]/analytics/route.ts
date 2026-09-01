@@ -6,6 +6,54 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
+// ── View/click dedup ────────────────────────────────────────────────────────
+// Sponsor counters are anonymous POSTs, so without this a loop could inflate a
+// sponsor's numbers arbitrarily (docs/SECURITY_AUDIT_2026-08.md P9). One
+// counted event per (client IP, slug, event) per hour.
+//
+// This is PER-INSTANCE, in-memory state: it resets on deploy/restart and, if
+// the app is ever scaled to N replicas, each replica keeps its own window (so
+// the cap becomes N per hour). That is fine for a vanity metric; it is not a
+// security boundary. The map is bounded so a header-spoofing flood cannot grow
+// it without limit.
+const DEDUP_TTL_MS = 60 * 60 * 1000;
+const DEDUP_MAX_ENTRIES = 50_000;
+const recentEvents = new Map<string, number>();
+
+function clientIp(request: NextRequest): string {
+  const xff = request.headers.get('x-forwarded-for');
+  if (xff) {
+    // The RIGHTMOST entry is the one our own edge proxy appended; anything to
+    // its left was supplied by the client and is trivially forgeable.
+    const parts = xff.split(',').map((s) => s.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
+  return request.headers.get('x-real-ip') || request.ip || 'unknown';
+}
+
+function pruneRecentEvents(now: number): void {
+  // Deleting during Map.forEach is safe per spec (ES5 target: no for..of on iterators).
+  recentEvents.forEach((seenAt, key) => {
+    if (now - seenAt >= DEDUP_TTL_MS) recentEvents.delete(key);
+  });
+  // Still full after expiring stale keys (flood of unique keys inside one
+  // hour): drop the oldest half. Map iteration is insertion-ordered.
+  if (recentEvents.size >= DEDUP_MAX_ENTRIES) {
+    Array.from(recentEvents.keys())
+      .slice(0, Math.floor(recentEvents.size / 2))
+      .forEach((key) => recentEvents.delete(key));
+  }
+}
+
+/** Returns true if this key was already counted inside the TTL window. */
+function isDuplicateEvent(key: string, now = Date.now()): boolean {
+  const seenAt = recentEvents.get(key);
+  if (seenAt !== undefined && now - seenAt < DEDUP_TTL_MS) return true;
+  if (recentEvents.size >= DEDUP_MAX_ENTRIES) pruneRecentEvents(now);
+  recentEvents.set(key, now);
+  return false;
+}
+
 // GET: Get sponsor analytics for a company profile
 export async function GET(
   request: NextRequest,
@@ -102,6 +150,11 @@ export async function POST(
 
     if (!['view', 'click'].includes(eventType)) {
       return NextResponse.json({ error: 'Invalid event type' }, { status: 400 });
+    }
+
+    // Repeat from the same client inside the window: acknowledge, don't count.
+    if (isDuplicateEvent(`${clientIp(request)}:${slug}:${eventType}`)) {
+      return new NextResponse(null, { status: 204 });
     }
 
     const company = await (prisma.companyProfile as any).findUnique({

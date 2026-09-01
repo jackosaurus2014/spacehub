@@ -15,11 +15,19 @@ const TYPE_COLORS: Record<string, { bg: string; border: string; text: string }> 
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const title = searchParams.get('title') || 'Space Industry Intelligence';
-  const subtitle = searchParams.get('subtitle') || 'Real-time data, market analytics, and business tools for the space economy';
-  const type = searchParams.get('type') || '';
+  // Clamp every parameter (2026-09-01, M7): this route rasterises an image
+  // per distinct query string, so unbounded inputs were free CPU and
+  // cache-key amplification for anyone.
+  const clamp = (v: string | null, max: number, fallback: string) => {
+    const s = (v ?? '').replace(/[\u0000-\u001f\u007f]/g, '').trim();
+    return s ? s.slice(0, max) : fallback;
+  };
+  const title = clamp(searchParams.get('title'), 120, 'Space Industry Intelligence');
+  const subtitle = clamp(searchParams.get('subtitle'), 200, 'Real-time data, market analytics, and business tools for the space economy');
+  const typeParam = searchParams.get('type') || '';
+  const type = Object.prototype.hasOwnProperty.call(TYPE_COLORS, typeParam) ? typeParam : '';
 
-  const typeStyle = TYPE_COLORS[type] || null;
+  const typeStyle = type ? TYPE_COLORS[type] : null;
 
   return new ImageResponse(
     (

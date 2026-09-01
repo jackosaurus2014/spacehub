@@ -18,11 +18,25 @@ export async function GET(request: NextRequest) {
   const userEmail = session.user.email;
 
   try {
+    // Explicit select — never `include` — so `accessCode` (the master invite)
+    // stays out of the list payload. Owners/admins get it from the [id] GET
+    // that the detail view uses (docs/SECURITY_AUDIT_2026-08.md P7).
     const memberships = await prisma.dealRoomMember.findMany({
       where: { email: userEmail },
       include: {
         dealRoom: {
-          include: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            companySlug: true,
+            status: true,
+            createdBy: true,
+            createdByUserId: true,
+            ndaRequired: true,
+            ndaText: true,
+            createdAt: true,
+            updatedAt: true,
             members: { select: { email: true, role: true, ndaAcceptedAt: true } },
             documents: { select: { id: true, name: true, category: true } },
             _count: { select: { documents: true, members: true, activities: true } },
@@ -31,11 +45,17 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const rooms = memberships.map((m: any) => ({
-      ...m.dealRoom,
-      myRole: m.role,
-      ndaAccepted: !!m.ndaAcceptedAt,
-    }));
+    const rooms = memberships.map((m) => {
+      const ndaAccepted = !!m.ndaAcceptedAt;
+      // Same NDA gate as the [id] GET and documents/route.ts.
+      const documents = m.dealRoom.ndaRequired && !ndaAccepted ? [] : m.dealRoom.documents;
+      return {
+        ...m.dealRoom,
+        documents,
+        myRole: m.role,
+        ndaAccepted,
+      };
+    });
 
     return NextResponse.json({ rooms });
   } catch (error) {

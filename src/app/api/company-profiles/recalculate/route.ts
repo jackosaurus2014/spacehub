@@ -15,10 +15,16 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/company-profiles/recalculate?slug=xxx
  *
- * Recalculate completeness for a single company (no auth required).
+ * Recalculate completeness for a single company and persist it.
+ * Requires the CRON_SECRET Bearer token, same as the bulk POST below: this is
+ * a write, and an unauthenticated write on GET is CSRF-reachable
+ * (docs/SECURITY_AUDIT_2026-08.md P9). No in-app caller uses this GET.
  * Returns the updated score and per-category breakdown.
  */
 export async function GET(request: NextRequest) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');

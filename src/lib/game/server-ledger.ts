@@ -124,7 +124,11 @@ export type LedgerReason =
   // withdrawing. A pledge buys a share of a public good and a bounded
   // mitigation on the pledger's own situation; it buys no resources, no
   // multiplier, and no advantage over another corporation.
-  | 'crisis_assessment_burn';
+  | 'crisis_assessment_burn'
+  // 2026-09-01 hardening (docs/SECURITY_AUDIT_2026-08.md, colonies POST): the
+  // one-time colony claim fee. BURNED — no matching credit anywhere
+  // (BALANCE.md money sink); scaled per location in colonies.ts claimCost.
+  | 'colony_claim_burn';
 
 export interface LedgerWrite {
   profileId: string;

@@ -31,6 +31,26 @@ function token(): string {
   return randomBytes(24).toString('hex');
 }
 
+// Confirmation-email cooldown per address (2026-09-01, M4): an unverified
+// row used to re-send on every POST, which made the endpoint an email bomb.
+// In-memory, per instance — the IP bucket in middleware is the other half.
+export const RESEND_COOLDOWN_MS = 10 * 60 * 1000;
+const lastConfirmationAt = new Map<string, number>();
+export function confirmationCooldownRemaining(email: string, now = Date.now()): number {
+  const t = lastConfirmationAt.get(email) ?? 0;
+  return Math.max(0, t + RESEND_COOLDOWN_MS - now);
+}
+/** Test hook. */
+export function _resetConfirmationCooldown(): void {
+  lastConfirmationAt.clear();
+}
+export function markConfirmationSent(email: string, now = Date.now()): void {
+  if (lastConfirmationAt.size > 5000) {
+    lastConfirmationAt.forEach((t, k) => { if (t + RESEND_COOLDOWN_MS < now) lastConfirmationAt.delete(k); });
+  }
+  lastConfirmationAt.set(email, now);
+}
+
 export function scopeLabel(w: WatchScope & { eventName?: string | null }): string {
   if (w.eventId) return w.eventName ? `the ${w.eventName} launch` : 'this launch';
   if (w.rocket) return `every ${w.rocket} launch`;
@@ -39,12 +59,14 @@ export function scopeLabel(w: WatchScope & { eventName?: string | null }): strin
 }
 
 /** Create (or re-send verification for) a watch. Never reveals whether an email exists elsewhere. */
-export async function createLaunchWatch(email: string, scope: WatchScope, source: string): Promise<{ ok: boolean; status: 'sent' | 'already-verified' | 'limit' | 'error' }> {
+export async function createLaunchWatch(email: string, scope: WatchScope, source: string): Promise<{ ok: boolean; status: 'sent' | 'already-verified' | 'limit' | 'cooldown' | 'error' }> {
   const normalized = email.trim().toLowerCase();
   const where = { email: normalized, eventId: scope.eventId ?? null, rocket: scope.rocket ?? null, site: scope.site ?? null, unsubscribedAt: null };
   try {
     const existing = await prisma.launchWatch.findFirst({ where, select: { id: true, verified: true, verificationToken: true } });
     if (existing?.verified) return { ok: true, status: 'already-verified' };
+    // Reported as success to the caller (enumeration-safe), but no email goes out.
+    if (confirmationCooldownRemaining(normalized) > 0) return { ok: true, status: 'cooldown' };
     const count = await prisma.launchWatch.count({ where: { email: normalized, unsubscribedAt: null } });
     if (!existing && count >= MAX_WATCHES_PER_EMAIL) return { ok: false, status: 'limit' };
     const watch = existing
@@ -55,6 +77,7 @@ export async function createLaunchWatch(email: string, scope: WatchScope, source
     const verifyUrl = `${APP_URL}/api/launch-watch/verify?token=${watch.verificationToken}`;
     const { html, text } = verificationEmail(label, verifyUrl);
     const sent = await sendVerificationEmail(normalized, html, text, `Confirm launch alerts for ${label}`);
+    if (sent.success) markConfirmationSent(normalized);
     return { ok: sent.success, status: sent.success ? 'sent' : 'error' };
   } catch (err) {
     logger.error('createLaunchWatch failed', { error: err instanceof Error ? err.message : String(err) });

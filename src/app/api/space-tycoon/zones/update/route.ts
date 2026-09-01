@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { requireCronSecret } from '@/lib/errors';
 import {
   calculateInfluenceFromActivity,
   applyDiminishingReturns,
@@ -25,19 +26,16 @@ import type { BuildingInstance, ServiceInstance } from '@/lib/game/types';
  * 6. Compute influence shares
  * 7. Resolve expired challenges
  * 8. Update governor assignments
+ *
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
 export async function POST(request: Request) {
-  try {
-    // Optional: verify cron secret to prevent unauthorized calls
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      // Allow calls without secret in development
-      if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-    }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
+  try {
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 

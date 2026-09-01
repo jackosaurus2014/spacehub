@@ -39,7 +39,10 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { password: hashedPassword },
+      // passwordChangedAt revokes other devices' sessions (src/lib/auth.ts);
+      // this device's token is older than `now` too, so the user signs in
+      // again — the honest behaviour after a password change.
+      data: { password: hashedPassword, passwordChangedAt: new Date() },
     });
 
     logger.info('Password changed by user', { userId: session.user.id });

@@ -77,10 +77,13 @@ function makeDocument(overrides: Partial<FederalRegisterDocument> = {}): Federal
 }
 
 /** Create a NextRequest with JSON body */
+process.env.CRON_SECRET = 'test-cron-secret';
+
+/** Create a NextRequest with JSON body (Bearer-authenticated: the route requires CRON_SECRET since 2026-09-01) */
 function makeRequest(body: Record<string, unknown> = {}): NextRequest {
   return new NextRequest('http://localhost:3000/api/compliance/fetch', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-cron-secret' },
     body: JSON.stringify(body),
   });
 }

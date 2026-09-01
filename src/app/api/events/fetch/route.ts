@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireCronSecret } from '@/lib/errors';
 import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
@@ -7,7 +8,16 @@ export const dynamic = 'force-dynamic';
 
 const CACHE_KEY = 'events:fetch-result';
 
-export async function POST() {
+/**
+ * POST /api/events/fetch — ingest Launch Library events into the DB.
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
+ */
+export async function POST(request: NextRequest) {
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
+
   try {
     const count = await fetchLaunchLibraryEvents();
 

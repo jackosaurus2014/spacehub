@@ -298,18 +298,29 @@ export function timingSafeEqual(a: string, b: string): boolean {
 /**
  * Verify that a request carries a valid CRON_SECRET Bearer token.
  * Returns null if authorized, or a 401 NextResponse if not.
- * When CRON_SECRET is not configured, allows requests from localhost
- * (internal cron scheduler calls) but rejects external requests.
+ *
+ * Fail-closed. When CRON_SECRET is not configured:
+ *   - in production, EVERY request is rejected (a missing secret must never
+ *     turn into an open endpoint — the Host header is attacker-controlled);
+ *   - outside production (local dev / test), requests whose Host is
+ *     localhost/127.0.0.1 are allowed so the in-process scheduler still works.
  * Uses timing-safe comparison to prevent timing attacks.
+ *
+ * The middleware cronPaths list only exempts a route from the CSRF Origin
+ * check; it does not authenticate. Every scheduler-invoked handler must call
+ * this itself.
  */
 export function requireCronSecret(request: Request): NextResponse<ApiErrorResponse> | null {
   const cronSecret = process.env.CRON_SECRET;
 
-  // If no secret configured, allow internal (localhost) requests only
   if (!cronSecret) {
-    const host = request.headers.get('host') || '';
-    if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
-      return null;
+    // No secret configured. Only a non-production process may accept
+    // loopback callers; production always refuses.
+    if (process.env.NODE_ENV !== 'production') {
+      const host = request.headers.get('host') || '';
+      if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
+        return null;
+      }
     }
     return createErrorResponse(ErrorCodes.UNAUTHORIZED, 'Unauthorized', 401);
   }

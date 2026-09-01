@@ -19,6 +19,8 @@ import {
 } from '@/lib/game/espionage-system';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { getRecentTradesForEspionage } from '@/lib/game/market-share';
+import { validateBody, espionageExecuteSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 /**
  * POST /api/space-tycoon/espionage/execute
@@ -37,8 +39,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { targetId, actionType } = body as { targetId: string; actionType: string };
+    // L5 (2026-09-01 hardening): zod-validated body instead of a bare cast.
+    const parsed = validateBody(espionageExecuteSchema, await request.json().catch(() => null));
+    if (!parsed.success) {
+      const first = Object.values(parsed.errors)[0]?.[0] || 'Invalid request body';
+      return validationError(first, parsed.errors);
+    }
+    const { targetId, actionType } = parsed.data;
 
     // ── Validate action type ──
     if (!actionType || !(actionType in ESPIONAGE_ACTIONS)) {

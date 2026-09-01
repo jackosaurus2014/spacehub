@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { RADAR_CATEGORIES } from '@/lib/regulatory-categorizer';
+// Pure (no Node imports) — this file is bundled into client components.
+import { isPublicHttpUrlSync } from '@/lib/security/safe-url-core';
 
 /**
  * Common validation schemas for SpaceNexus API
@@ -830,6 +832,8 @@ export const adImpressionSchema = z.object({
   type: z.enum(['impression', 'click', 'conversion'], {
     message: 'Type must be "impression", "click", or "conversion"',
   }),
+  // Signed proof-of-serve issued by /api/ads/serve (src/lib/ads/impression-token.ts)
+  token: z.string().min(20, 'Ad token is required').max(2000, 'Ad token is too long'),
   module: z
     .string()
     .max(100)
@@ -2912,6 +2916,26 @@ export const PODCAST_CATEGORIES = [
 ] as const;
 export type PodcastCategory = (typeof PODCAST_CATEGORIES)[number];
 
+/**
+ * Podcast URLs are fetched server-side later (feedUrl by the podcasts-sync
+ * cron; artwork/website are re-served to users), so beyond "looks like http(s)"
+ * they must not point at localhost, *.local/*.internal, or a private/loopback/
+ * link-local IP literal. This is the synchronous half of the SSRF guard; DNS
+ * resolution happens at fetch time in src/lib/security/safe-url.ts.
+ */
+const optionalPublicHttpUrl = z
+  .string()
+  .trim()
+  .max(500, 'URL must be 500 characters or fewer')
+  .optional()
+  .transform((v) => (v && v.length > 0 ? v : undefined))
+  .refine((v) => !v || /^https?:\/\/.+/i.test(v), {
+    message: 'Must be a valid http(s) URL',
+  })
+  .refine((v) => !v || isPublicHttpUrlSync(v), {
+    message: 'URL must point to a public host (no localhost, private IPs, credentials, or non-standard ports)',
+  });
+
 export const createPodcastSchema = z.object({
   name: z
     .string()
@@ -2925,17 +2949,9 @@ export const createPodcastSchema = z.object({
     .max(5000, 'Description must be 5000 characters or fewer')
     .optional()
     .transform((v) => (v && v.length > 0 ? stripHtml(v) : undefined)),
-  feedUrl: z
-    .string()
-    .trim()
-    .max(500, 'Feed URL must be 500 characters or fewer')
-    .optional()
-    .transform((v) => (v && v.length > 0 ? v : undefined))
-    .refine((v) => !v || /^https?:\/\/.+/i.test(v), {
-      message: 'Feed URL must be a valid http(s) URL',
-    }),
-  websiteUrl: optionalHttpUrl,
-  artworkUrl: optionalHttpUrl,
+  feedUrl: optionalPublicHttpUrl,
+  websiteUrl: optionalPublicHttpUrl,
+  artworkUrl: optionalPublicHttpUrl,
   author: z
     .string()
     .trim()
@@ -4187,3 +4203,76 @@ export const regulatoryAlertPreferencesSchema = z.object({
 });
 
 export type RegulatoryAlertPreferencesInput = z.infer<typeof regulatoryAlertPreferencesSchema>;
+
+// ─── Space Tycoon route bodies (2026-09-01 hardening) ───────────────────────
+// docs/SECURITY_AUDIT_2026-08.md item L5: poach, espionage and alliance-
+// treasury parsed request bodies with hand-rolled String()/Number(). These
+// schemas replace that; routes use validateBody() + validationError() exactly
+// like src/app/api/contact/route.ts. Domain checks (does the crew type exist,
+// is the perk affordable, is the action unlocked) stay in the routes — the
+// schemas only pin shape and bounds.
+
+export const poachBodySchema = z.discriminatedUnion('action', [
+  z.object({
+    action: z.literal('offer'),
+    targetProfileId: z.string().min(1).max(64),
+    crewType: z.string().min(1).max(32),
+    count: z.number().int().min(1).max(10_000),
+  }),
+  z.object({
+    action: z.literal('respond'),
+    offerId: z.string().min(1).max(64),
+    response: z.enum(['retain', 'free_retain', 'concede']),
+  }),
+  z.object({
+    action: z.literal('withdraw'),
+    offerId: z.string().min(1).max(64),
+  }),
+]);
+
+export type PoachBodyInput = z.infer<typeof poachBodySchema>;
+
+export const espionageExecuteSchema = z.object({
+  targetId: z.string().min(1).max(64),
+  actionType: z.string().min(1).max(64),
+});
+
+export type EspionageExecuteInput = z.infer<typeof espionageExecuteSchema>;
+
+export const espionageUpgradeSchema = z.object({
+  targetLevel: z.number().int().min(1).max(10),
+});
+
+export type EspionageUpgradeInput = z.infer<typeof espionageUpgradeSchema>;
+
+export const allianceTreasuryBodySchema = z.discriminatedUnion('action', [
+  z.object({
+    action: z.literal('deposit'),
+    amount: z.number().finite().positive().max(1e15),
+  }),
+  z.object({
+    action: z.literal('activate_perk'),
+    perkId: z.string().min(1).max(64),
+  }),
+]);
+
+export type AllianceTreasuryBodyInput = z.infer<typeof allianceTreasuryBodySchema>;
+
+// P10 / colonies POST: companyName is accepted for backward compatibility and
+// IGNORED — the claim is written under the session profile's own name.
+export const colonyClaimSchema = z.object({
+  locationId: z.string().min(1).max(64),
+  companyName: z.string().max(200).optional(),
+});
+
+export type ColonyClaimInput = z.infer<typeof colonyClaimSchema>;
+
+// P4 / seasons/progress POST: `progress` is accepted for backward
+// compatibility. It is only consulted for the handful of metrics the server
+// cannot observe, and even then it is clamped to a server-derived ceiling.
+export const seasonProgressSchema = z.object({
+  challengeId: z.string().min(1).max(160),
+  progress: z.number().finite().min(0).max(1e15).optional(),
+});
+
+export type SeasonProgressInput = z.infer<typeof seasonProgressSchema>;

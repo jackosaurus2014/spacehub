@@ -11,6 +11,8 @@ import {
   getPerkBonuses,
 } from '@/lib/game/alliance-treasury';
 import { awardAllianceXP } from '@/lib/game/alliance-xp';
+import { validateBody, allianceTreasuryBodySchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,13 +125,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Not in an alliance' }, { status: 400 });
     }
 
-    const body = await request.json();
+    // L5 (2026-09-01 hardening): zod-validated body instead of String()/Number().
+    const parsed = validateBody(allianceTreasuryBodySchema, await request.json().catch(() => null));
+    if (!parsed.success) {
+      const first = Object.values(parsed.errors)[0]?.[0] || 'Invalid request body';
+      return validationError(first, parsed.errors);
+    }
+    const body = parsed.data;
 
     if (body.action === 'deposit') {
-      const amount = Number(body.amount);
-      if (!amount || amount <= 0) {
-        return NextResponse.json({ error: 'Invalid deposit amount' }, { status: 400 });
-      }
+      const amount = body.amount;
 
       const result = await depositToTreasury(prisma, membership.allianceId, profile.id, amount);
       if (!result.success) {
@@ -149,10 +154,17 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.action === 'activate_perk') {
-      const { perkId } = body;
-      if (!perkId || typeof perkId !== 'string') {
-        return NextResponse.json({ error: 'Missing perkId' }, { status: 400 });
+      // P6 (docs/SECURITY_AUDIT_2026-08.md): spending the shared treasury is a
+      // leader/officer action — same gate as alliance-research and
+      // alliance-projects. Any member (including a recruit) could previously
+      // drain it.
+      if (!['leader', 'officer'].includes(membership.role)) {
+        return NextResponse.json(
+          { error: 'Only leaders and officers can activate treasury perks' },
+          { status: 403 },
+        );
       }
+      const { perkId } = body;
 
       const result = await activatePerk(prisma, membership.allianceId, perkId, profile.id);
       if (!result.success) {
@@ -170,7 +182,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ error: 'Invalid action. Use "deposit" or "activate_perk".' }, { status: 400 });
+    return validationError('Invalid action. Use "deposit" or "activate_perk".');
   } catch (error) {
     logger.error('Alliance treasury POST error', { error: String(error) });
     return NextResponse.json({ error: 'Treasury operation failed' }, { status: 500 });

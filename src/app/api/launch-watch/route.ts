@@ -9,11 +9,18 @@ import { validationError } from '@/lib/errors';
 // double opt-in email.
 export const dynamic = 'force-dynamic';
 
+// Rocket/site names are echoed into emails and the verify page (escaped
+// there too); restrict them to the characters real names use so a payload
+// never even reaches storage (2026-09-01, H3).
+const NAME_RE = /^[\p{L}\p{N} .,'&()\/-]+$/u;
+const scopeName = (max: number) =>
+  z.string().trim().min(2).max(max).regex(NAME_RE, 'Only letters, numbers, spaces and basic punctuation');
+
 const schema = z.object({
   email: z.string().email().max(254),
-  eventId: z.string().min(10).max(40).optional(),
-  rocket: z.string().min(2).max(60).optional(),
-  site: z.string().min(2).max(80).optional(),
+  eventId: z.string().min(10).max(40).regex(/^[A-Za-z0-9_-]+$/).optional(),
+  rocket: scopeName(60).optional(),
+  site: scopeName(80).optional(),
   source: z.string().max(60).optional(),
   // honeypot
   website: z.string().max(0).optional(),

@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { message, companyName } = body;
+    const { message } = body;
 
     // Validate message
     if (!message || typeof message !== 'string' || !message.trim()) {
@@ -133,8 +133,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Message is empty after sanitization' }, { status: 400 });
     }
 
-    const cleanCompany = typeof companyName === 'string' && companyName.trim()
-      ? companyName.trim().replace(/<[^>]*>/g, '').slice(0, 50)
+    // P10 (docs/SECURITY_AUDIT_2026-08.md, 2026-09-01 hardening): the display
+    // name comes from the session's own GameProfile, never from the body —
+    // a player could previously post under any rival's company name.
+    // body.companyName is still accepted (older clients send it) and ignored.
+    const profile = await prisma.gameProfile.findUnique({
+      where: { userId },
+      select: { companyName: true },
+    });
+    const cleanCompany = profile?.companyName?.trim()
+      ? profile.companyName.trim().replace(/<[^>]*>/g, '').slice(0, 50)
       : 'Anonymous';
 
     let chatMessage: ChatMessageShape;

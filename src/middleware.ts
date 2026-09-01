@@ -23,7 +23,39 @@ interface RateLimitConfig {
   windowMs: number;
 }
 
-function getRateLimitConfig(pathname: string): RateLimitConfig {
+function getRateLimitConfig(pathname: string, method: string): RateLimitConfig {
+  // Security hardening 2026-09-01 (docs/SECURITY_AUDIT_2026-09.md H2): the
+  // credentials sign-in callback previously fell into the generic 200/min
+  // bucket — 200 password guesses a minute per IP. 10 per 15 minutes here,
+  // plus a per-email lockout inside authorize() in src/lib/auth.ts.
+  if (pathname.startsWith('/api/auth/callback/credentials')) {
+    return { maxRequests: 10, windowMs: 15 * 60 * 1000 };
+  }
+  // No-account double-opt-in subscriptions (M4): each POST re-sends a
+  // confirmation email to an arbitrary address. Same budget as newsletter.
+  if (
+    method === 'POST' &&
+    (pathname === '/api/launch-watch' || pathname === '/api/company-brief')
+  ) {
+    return { maxRequests: 8, windowMs: 60 * 60 * 1000 };
+  }
+  // Ad impression/click beacons (C1): signed single-use tokens gate the
+  // charge; this bucket bounds the row-write rate.
+  if (pathname.startsWith('/api/ads/impression')) {
+    return { maxRequests: 30, windowMs: 60 * 1000 };
+  }
+  // Stripe session creation — Stripe-side cost and rate-limit exposure.
+  if (
+    pathname.startsWith('/api/stripe/checkout') ||
+    pathname.startsWith('/api/ads/checkout') ||
+    pathname.startsWith('/api/subscription')
+  ) {
+    return { maxRequests: 10, windowMs: 60 * 1000 };
+  }
+  // Public compliance Q&A submissions store an optional asker email.
+  if (method === 'POST' && pathname.startsWith('/api/compliance/questions')) {
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 };
+  }
   if (pathname.startsWith('/api/auth/register')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 req/hour
   }
@@ -139,16 +171,31 @@ function cleanupExpiredEntries(): void {
  */
 function checkRateLimit(
   ip: string,
-  pathname: string
+  pathname: string,
+  method: string
 ): { allowed: boolean; remaining: number; retryAfterSeconds: number } {
-  const config = getRateLimitConfig(pathname);
+  const config = getRateLimitConfig(pathname, method);
   const now = Date.now();
   const windowStart = now - config.windowMs;
 
   // Group routes into buckets so sub-paths share a single counter
   // (e.g., /api/auth/register and /api/auth/register/resend share one limit)
   let routeKey: string;
-  if (pathname.startsWith('/api/auth/resend-verification')) {
+  if (pathname.startsWith('/api/auth/callback/credentials')) {
+    routeKey = 'auth-login';
+  } else if (method === 'POST' && (pathname === '/api/launch-watch' || pathname === '/api/company-brief')) {
+    routeKey = 'no-account-subscribe';
+  } else if (pathname.startsWith('/api/ads/impression')) {
+    routeKey = 'ads-impression';
+  } else if (
+    pathname.startsWith('/api/stripe/checkout') ||
+    pathname.startsWith('/api/ads/checkout') ||
+    pathname.startsWith('/api/subscription')
+  ) {
+    routeKey = 'checkout';
+  } else if (method === 'POST' && pathname.startsWith('/api/compliance/questions')) {
+    routeKey = 'compliance-questions';
+  } else if (pathname.startsWith('/api/auth/resend-verification')) {
     routeKey = 'auth-resend-verification';
   } else if (pathname.startsWith('/api/auth/register')) {
     routeKey = 'auth-register';
@@ -308,6 +355,12 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/launch-windows/fetch',
         '/api/debris-monitor/fetch',
         '/api/solar-flares/fetch',
+        // 2026-09-01 hardening (H1): the remaining ingestion routes now
+        // require the Bearer secret (or an admin session) too.
+        '/api/news/fetch',
+        '/api/blogs/fetch',
+        '/api/events/fetch',
+        '/api/space-tycoon/market/share/rollup',
         // Wave E7 (Chokepoints, Tariffs & NPC Drives) — orbital-slot
         // occupancy/auction resolution cron, same scheduler-invoked-
         // internal-POST precedent (this middleware.ts entry is the exact
@@ -730,7 +783,7 @@ export async function middleware(req: NextRequest) {
 
     // Rate limiting
     const clientIp = getClientIp(req);
-    const { allowed, remaining, retryAfterSeconds } = checkRateLimit(clientIp, pathname);
+    const { allowed, remaining, retryAfterSeconds } = checkRateLimit(clientIp, pathname, req.method);
 
     if (!allowed) {
       console.warn(`[RATE_LIMIT] ${req.method} ${pathname} from ${clientIp} — retry after ${retryAfterSeconds}s`);
@@ -805,7 +858,15 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith('/space-tycoon')) {
     const ref = req.nextUrl.searchParams.get('ref');
     if (ref && /^[a-z0-9]{10,40}$/i.test(ref)) {
-      response.cookies.set('sn_ref', ref, { maxAge: 30 * 24 * 3600, path: '/', sameSite: 'lax' });
+      // httpOnly + secure (2026-09-01 L1): the cookie is read server-side
+      // only (src/lib/game/referrals.ts); page scripts never need it.
+      response.cookies.set('sn_ref', ref, {
+        maxAge: 30 * 24 * 3600,
+        path: '/',
+        sameSite: 'lax',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      });
     }
   }
   return response;

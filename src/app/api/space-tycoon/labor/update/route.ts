@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import {
   computeLaborAggregates,
   workforceDataToHeadcount,
@@ -28,18 +29,14 @@ import {
  *
  * Deliberately a WEEKLY cadence (SESSION_DESIGN.md: "wage index... = weekly
  * loop", not the oversubscribed daily loop) — registered as
- * 'tycoon-labor-market' in src/lib/cron-scheduler.ts. Protected by
- * CRON_SECRET (matches sibling demand-pools/update route).
+ * 'tycoon-labor-market' in src/lib/cron-scheduler.ts.
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
 export async function POST(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    const isDev = process.env.NODE_ENV === 'development';
-    if (!isDev) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-  }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
   try {
     const now = Date.now();

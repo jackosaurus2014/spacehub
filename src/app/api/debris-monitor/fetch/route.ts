@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireCronSecret } from '@/lib/errors';
 import {
   fetchCelesTrakGPData,
   parseSatelliteCounts,
@@ -25,7 +26,16 @@ type CelesTrakGroup = keyof typeof CELESTRAK_GROUPS;
 
 const CACHE_KEY = 'debris-monitor:fetch-result';
 
-export async function POST() {
+/**
+ * POST /api/debris-monitor/fetch — ingest CelesTrak GP groups + full SATCAT.
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
+ */
+export async function POST(request: NextRequest) {
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
+
   try {
     const results: Record<string, {
       count: number;

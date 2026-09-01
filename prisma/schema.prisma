@@ -30,6 +30,10 @@ model User {
   trialEndDate    DateTime?
   trialEmailsSent Int       @default(0) // 0=none, 1=welcome, 2=mid-trial, 3=final-day
 
+  // Session revocation epoch: JWTs issued before this instant are refused
+  // (src/lib/auth.ts). Set by reset-password and change-password.
+  passwordChangedAt DateTime?
+
   // Admin
   isAdmin   Boolean @default(false)
   adminRole String? // 'super_admin', 'moderator', 'data_analyst' â€” null means basic admin

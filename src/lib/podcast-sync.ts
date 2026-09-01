@@ -19,13 +19,27 @@ import sanitizeHtml from 'sanitize-html';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { generateSlug } from '@/lib/marketplace-types';
+import { safeFetchText } from '@/lib/security/safe-url';
 
+/**
+ * Per-feed network budget. Previously the rss-parser `timeout` option; now
+ * enforced by safeFetchText's AbortController across every redirect hop and
+ * the body read, so the semantics are unchanged (one 25s deadline per feed).
+ */
+const FEED_FETCH_TIMEOUT_MS = 25_000;
+/** RSS feeds are rarely more than a few MB; anything larger is not a podcast feed. */
+const FEED_MAX_BYTES = 10_000_000;
+
+const FEED_REQUEST_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (compatible; SpaceNexus/2.0; +https://spacenexus.us)',
+  Accept: 'application/rss+xml, application/xml, text/xml, */*',
+};
+
+// The network fetch is done by safeFetchText (SSRF-guarded); rss-parser is
+// only used to parse the already-downloaded XML string. Never call
+// parser.parseURL() here — feedUrl is user-submitted and parseURL follows
+// redirects into whatever the URL resolves to (loopback, cloud metadata...).
 const parser = new RSSParser({
-  timeout: 25_000,
-  headers: {
-    'User-Agent': 'Mozilla/5.0 (compatible; SpaceNexus/2.0; +https://spacenexus.us)',
-    Accept: 'application/rss+xml, application/xml, text/xml, */*',
-  },
   customFields: {
     item: [
       ['itunes:duration', 'itunesDuration'],
@@ -97,7 +111,15 @@ export async function syncPodcastFeed(podcast: PodcastSyncTarget): Promise<Podca
 
   let parsed: RSSParser.Output<RSSParser.Item>;
   try {
-    parsed = await parser.parseURL(podcast.feedUrl);
+    // safeFetchText validates the URL (scheme, port, host, DNS answers) and
+    // every redirect Location before connecting, caps the body size, and
+    // applies the per-feed deadline. parseString is pure XML parsing.
+    const { text } = await safeFetchText(podcast.feedUrl, {
+      timeoutMs: FEED_FETCH_TIMEOUT_MS,
+      maxBytes: FEED_MAX_BYTES,
+      headers: FEED_REQUEST_HEADERS,
+    });
+    parsed = await parser.parseString(text);
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err);
     logger.warn('[podcast-sync] RSS fetch failed', {

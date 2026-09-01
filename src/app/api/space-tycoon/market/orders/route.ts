@@ -9,6 +9,12 @@ import {
   getOrderBook,
 } from '@/lib/game/market-orderbook';
 
+/** M6 (docs/SECURITY_AUDIT_2026-08.md): mirrors market/trade/route.ts's per-call cap. */
+const MAX_ORDER_QUANTITY = 100_000;
+/** M6: limit-price band around MarketResource.currentPrice. */
+const PRICE_BAND_MIN_MULT = 0.1;
+const PRICE_BAND_MAX_MULT = 10;
+
 /**
  * GET /api/space-tycoon/market/orders
  * Returns the aggregated order book for a resource.
@@ -109,6 +115,43 @@ export async function POST(request: NextRequest) {
 
     if (!Number.isInteger(quantity) || quantity < 1) {
       return NextResponse.json({ error: 'quantity must be a positive integer' }, { status: 400 });
+    }
+
+    // M6 (2026-09-01 hardening): same per-call volume cap as market/trade —
+    // one authed request cannot dump an absurd quantity onto the shared book.
+    if (quantity > MAX_ORDER_QUANTITY) {
+      return NextResponse.json(
+        { error: `Quantity exceeds per-order limit (${MAX_ORDER_QUANTITY.toLocaleString()})` },
+        { status: 400 },
+      );
+    }
+
+    // M6: the limit price must sit within [0.1x, 10x] of the live spot price.
+    // placeLimitOrder already enforces the STATIC min/max band from the
+    // resource definition; this is the dynamic band around the CURRENT price
+    // so a stale or absurd limit cannot sit on the book as a trap.
+    const marketResource = await prisma.marketResource.findUnique({
+      where: { slug: resourceSlug },
+      select: { currentPrice: true },
+    });
+    if (!marketResource) {
+      return NextResponse.json({ error: `Resource "${resourceSlug}" not found` }, { status: 404 });
+    }
+    const priceFloor = Math.max(1, Math.floor(marketResource.currentPrice * PRICE_BAND_MIN_MULT));
+    const priceCeil = Math.max(priceFloor, Math.ceil(marketResource.currentPrice * PRICE_BAND_MAX_MULT));
+    if (price < priceFloor || price > priceCeil) {
+      return NextResponse.json(
+        {
+          error:
+            `Limit price $${price.toLocaleString()} is outside the allowed band for ${resourceSlug}: ` +
+            `$${priceFloor.toLocaleString()} to $${priceCeil.toLocaleString()} ` +
+            `(0.1x-10x the current price of $${Math.round(marketResource.currentPrice).toLocaleString()})`,
+          priceFloor,
+          priceCeil,
+          currentPrice: marketResource.currentPrice,
+        },
+        { status: 400 },
+      );
     }
 
     // Look up the player's GameProfile

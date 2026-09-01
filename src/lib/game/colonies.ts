@@ -75,6 +75,12 @@ export interface ColonyLocation {
   deltaVFromLEO: number;
   travelTimeMonths: number;
   unlockCost: number;
+  /** Server-side one-time claim fee (2026-09-01 hardening, BALANCE.md section "The
+   *  five money sinks" — a BURNED sink with no matching credit, like
+   *  slot_auction_burn). Charged by POST /api/space-tycoon/colonies before a
+   *  ColonyClaim row is written; scaled by distance/tier so the Pluto claim
+   *  that unlocks cc_pluto_expedition ($50B) is never free. */
+  claimCost: number;
   requiredResearch: string[];
   availableBuildings: string[];
   tier: number;
@@ -101,6 +107,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 13000,
     travelTimeMonths: 6,
     unlockCost: 25_000_000_000,
+    claimCost: 250_000_000,
     requiredResearch: ['super_heavy_lift', 'radiation_hardening', 'extreme_thermal'],
     availableBuildings: ['colony_mercury', 'mining_mercury', 'solar_mega_array'],
     tier: 3,
@@ -123,6 +130,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 7500,
     travelTimeMonths: 5,
     unlockCost: 15_000_000_000,
+    claimCost: 300_000_000,
     // E3.4: was 'aerostat_tech', a research id that exists NOWHERE in
     // research-tree.ts (the tree has 'aerostat_technology'; the 4X baseline
     // wave renamed astraeus_tech -> aerostat_technology and this file kept a
@@ -153,6 +161,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 9500,
     travelTimeMonths: 15,
     unlockCost: 8_000_000_000,
+    claimCost: 400_000_000,
     requiredResearch: ['asteroid_capture', 'autonomous_docking', 'resource_prospecting'],
     availableBuildings: ['colony_ceres', 'mining_ceres', 'trade_hub_ceres'],
     tier: 3,
@@ -177,6 +186,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 14500,
     travelTimeMonths: 28,
     unlockCost: 30_000_000_000,
+    claimCost: 1_000_000_000,
     requiredResearch: ['nuclear_thermal', 'radiation_hardening', 'extreme_thermal'],
     availableBuildings: ['colony_io', 'mining_io', 'geothermal_plant'],
     tier: 4,
@@ -199,6 +209,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 14200,
     travelTimeMonths: 30,
     unlockCost: 45_000_000_000,
+    claimCost: 1_200_000_000,
     requiredResearch: ['nuclear_thermal', 'deep_drilling', 'cryogenic_systems'],
     availableBuildings: ['colony_europa', 'mining_europa_deep', 'ocean_lab'],
     tier: 4,
@@ -221,6 +232,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 14800,
     travelTimeMonths: 32,
     unlockCost: 90_000_000_000,
+    claimCost: 1_000_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers', 'rotating_habitats'],
     availableBuildings: ['colony_ganymede', 'mining_ganymede', 'research_campus'],
     tier: 4,
@@ -243,6 +255,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 15000,
     travelTimeMonths: 33,
     unlockCost: 70_000_000_000,
+    claimCost: 800_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers'],
     availableBuildings: ['colony_callisto', 'mining_callisto', 'fuel_depot_callisto'],
     tier: 4,
@@ -267,6 +280,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 18500,
     travelTimeMonths: 55,
     unlockCost: 150_000_000_000,
+    claimCost: 2_000_000_000,
     requiredResearch: ['nuclear_thermal', 'deep_drilling', 'atmospheric_processing'],
     availableBuildings: ['colony_titan', 'mining_titan_deep', 'methane_refinery'],
     tier: 5,
@@ -289,6 +303,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 18200,
     travelTimeMonths: 58,
     unlockCost: 180_000_000_000,
+    claimCost: 2_500_000_000,
     requiredResearch: ['nuclear_thermal', 'deep_drilling', 'cryogenic_systems'],
     availableBuildings: ['colony_enceladus', 'geyser_collector', 'bio_lab_enceladus'],
     tier: 5,
@@ -313,6 +328,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 22000,
     travelTimeMonths: 84,
     unlockCost: 300_000_000_000,
+    claimCost: 3_000_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships', 'cryogenic_systems'],
     availableBuildings: ['colony_titania', 'mining_titania', 'cryo_lab'],
     tier: 5,
@@ -337,6 +353,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 26000,
     travelTimeMonths: 120,
     unlockCost: 400_000_000_000,
+    claimCost: 4_000_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships', 'antimatter_propulsion'],
     availableBuildings: ['colony_triton', 'mining_triton', 'nitrogen_plant'],
     tier: 6,
@@ -361,6 +378,7 @@ export const EXPANDED_LOCATIONS: ColonyLocation[] = [
     deltaVFromLEO: 30000,
     travelTimeMonths: 180,
     unlockCost: 750_000_000_000,
+    claimCost: 5_000_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships', 'antimatter_propulsion', 'mega_structures'],
     availableBuildings: ['colony_pluto', 'mining_pluto', 'interstellar_beacon'],
     tier: 6,
@@ -656,3 +674,46 @@ export const SUPPLY_CHAIN_DEPENDENCIES: Record<string, { needs: string[]; produc
   triton_surface: { needs: ['deuterium', 'exotic_materials', 'titanium'], produces: ['antimatter_precursors'] },
   pluto_surface: { needs: ['deuterium', 'antimatter_precursors', 'exotic_materials'], produces: ['antimatter_precursors', 'deuterium'] },
 };
+
+// ─── Colony claim fees (2026-09-01 hardening) ───────────────────────────────
+// POST /api/space-tycoon/colonies used to create a ColonyClaim row for FREE
+// with no prerequisite, and contract-bidding.ts's `colony_established` check
+// reads those rows — so cc_pluto_expedition's $50B payout was one curl away.
+// Every claim now burns a one-time fee (BALANCE.md "The five money sinks":
+// a sink with no matching credit, same shape as slot_auction_burn) scaled by
+// distance/tier. Base solar-system locations (unlimited slots) are cheap;
+// the expanded colony bodies carry their own `claimCost` above.
+//
+// NOTE: colonies.ts must not import solar-system.ts (it imports us), so the
+// base-location table lives here as a literal keyed by solar-system.ts ids.
+
+export const BASE_LOCATION_CLAIM_COSTS: Record<string, number> = {
+  leo: 100_000_000,
+  geo: 150_000_000,
+  lunar_orbit: 150_000_000,
+  lunar_surface: 250_000_000,
+  mars_orbit: 300_000_000,
+  mars_surface: 500_000_000,
+  asteroid_belt: 400_000_000,
+  jupiter_system: 1_000_000_000,
+  saturn_system: 2_000_000_000,
+  outer_system: 3_000_000_000,
+};
+
+const EXPANDED_LOCATION_MAP = new Map(EXPANDED_LOCATIONS.map(l => [l.id, l]));
+
+/**
+ * One-time server-side fee to claim a colony slot at `locationId`, or null
+ * when the id is not a claimable location (unknown ids and earth_surface).
+ */
+export function getColonyClaimCost(locationId: string): number | null {
+  const expanded = EXPANDED_LOCATION_MAP.get(locationId);
+  if (expanded) return expanded.claimCost;
+  const base = BASE_LOCATION_CLAIM_COSTS[locationId];
+  return typeof base === 'number' ? base : null;
+}
+
+/** Slot cap per location — expanded bodies are finite, base locations are not. */
+export function getColonyMaxSlots(locationId: string): number {
+  return EXPANDED_LOCATION_MAP.get(locationId)?.maxColonySlots ?? 999;
+}

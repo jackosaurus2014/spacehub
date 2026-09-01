@@ -5,6 +5,12 @@ import AzureADProvider from 'next-auth/providers/azure-ad';
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import prisma from './db';
+import { lockedFor, recordFailure, recordSuccess } from './login-throttle';
+
+// How often a live JWT re-checks the database for a password change
+// (2026-09-01 hardening, L2). Sessions are stateless JWTs with a 30-day
+// default lifetime, so without this a stolen session survived a reset.
+const PASSWORD_EPOCH_RECHECK_MS = 5 * 60 * 1000;
 
 // OAuth providers are only registered when their credentials are configured,
 // so the app works unchanged until the env vars are set.
@@ -27,11 +33,20 @@ const providers: NextAuthOptions['providers'] = [
         throw new Error('Invalid credentials');
       }
 
+      // Per-account lockout (H2). Checked before the DB read so a locked
+      // account costs nothing to reject.
+      const lockSeconds = lockedFor(credentials.email);
+      if (lockSeconds > 0) {
+        throw new Error(`Too many sign-in attempts. Try again in ${Math.ceil(lockSeconds / 60)} minutes.`);
+      }
+
       const user = await prisma.user.findUnique({
         where: { email: credentials.email },
       });
 
       if (!user) {
+        // Count unknown-email guesses too, so the response cost is uniform.
+        recordFailure(credentials.email);
         throw new Error('Invalid credentials');
       }
 
@@ -41,8 +56,10 @@ const providers: NextAuthOptions['providers'] = [
       );
 
       if (!isPasswordValid) {
+        recordFailure(credentials.email);
         throw new Error('Invalid credentials');
       }
+      recordSuccess(credentials.email);
 
       // Email verification is encouraged but not required for login.
       // Users who haven't verified will see a reminder banner instead of being blocked.
@@ -152,9 +169,36 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      // Password-change epoch (L2): every few minutes, compare the token's
+      // issue time against User.passwordChangedAt. A reset or change after
+      // this token was minted invalidates it; the user signs in again.
+      const now = Date.now();
+      const lastCheck = (token.pwCheckedAt as number | undefined) ?? 0;
+      if (token.id && !user && now - lastCheck > PASSWORD_EPOCH_RECHECK_MS) {
+        token.pwCheckedAt = now;
+        try {
+          const row = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { passwordChangedAt: true },
+          });
+          const iatMs = typeof token.iat === 'number' ? token.iat * 1000 : 0;
+          if (row?.passwordChangedAt && row.passwordChangedAt.getTime() > iatMs) {
+            token.revoked = true;
+          }
+        } catch {
+          // DB hiccup: keep the token; the next recheck will catch up.
+        }
+      }
+      if (user) token.pwCheckedAt = now;
+
       return token;
     },
     async session({ session, token }) {
+      if (token.revoked) {
+        // Sessions are JWTs: we cannot delete them, but we can refuse to
+        // hydrate one. Every `session?.user?.id` gate then fails closed.
+        return { ...session, user: undefined as unknown as typeof session.user, expires: new Date(0).toISOString() };
+      }
       if (session.user) {
         session.user.id = token.id as string;
         session.user.isAdmin = (token.isAdmin ?? false) as boolean;

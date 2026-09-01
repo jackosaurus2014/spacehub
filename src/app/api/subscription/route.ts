@@ -166,6 +166,7 @@ export async function POST(request: Request) {
         select: {
           subscriptionTier: true,
           trialTier: true,
+          trialStartDate: true,
           trialEndDate: true,
         },
       });
@@ -182,6 +183,12 @@ export async function POST(request: Request) {
       // Don't allow trial if user has an active trial
       if (user.trialTier && user.trialEndDate && isTrialActive(user.trialEndDate)) {
         return validationError('You already have an active trial.');
+      }
+
+      // One trial per account (2026-09-01, Aug audit P5): an expired trial
+      // used to be restartable indefinitely — free Pro forever.
+      if (user.trialStartDate) {
+        return validationError('This account has already used its free trial.');
       }
 
       // Start the 14-day trial

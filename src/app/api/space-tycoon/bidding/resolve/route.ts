@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import {
   evaluateBids,
   generateBiddingContracts,
@@ -31,17 +32,15 @@ export const dynamic = 'force-dynamic';
  * 4. Generate new contracts if below minimum
  *
  * This should be called every 5 minutes by a cron job.
- * Security: In production, protect with a cron secret header.
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
 export async function POST(request: NextRequest) {
-  try {
-    // Optional: verify cron secret for production
-    const cronSecret = request.headers.get('x-cron-secret');
-    const expectedSecret = process.env.CRON_SECRET;
-    if (expectedSecret && cronSecret !== expectedSecret) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
+  try {
     const now = new Date();
     let contractsResolved = 0;
     let contractsGenerated = 0;

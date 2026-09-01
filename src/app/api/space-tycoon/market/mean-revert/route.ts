@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { requireCronSecret } from '@/lib/errors';
 import { calculateIdleDecay } from '@/lib/game/market-engine';
 import { getCurrentSeasonNumber } from '@/lib/game/seasonal-events';
 import { getSeasonalMeanRevertTarget } from '@/lib/game/economic-seasons';
@@ -35,17 +36,13 @@ import { getSeasonalMeanRevertTarget } from '@/lib/game/economic-seasons';
  * caps a single reversion step at ~30 idle minutes — still within the
  * intended ≤10% per call).
  *
- * Protected by CRON_SECRET (matches sibling restock route).
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
 export async function POST(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    const isDev = process.env.NODE_ENV === 'development';
-    if (!isDev) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-  }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
   try {
     const resources = await prisma.marketResource.findMany();

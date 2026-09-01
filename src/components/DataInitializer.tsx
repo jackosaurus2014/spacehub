@@ -34,18 +34,10 @@ export default function DataInitializer() {
         return;
       }
 
-      // Data exists - check if it's stale
-      const refreshRes = await fetch('/api/refresh');
-      const refreshData = await refreshRes.json();
-
-      if (refreshData.newsStale) {
-        clientLogger.info('News data is stale, refreshing in background...');
-        fetch('/api/news/fetch', { method: 'POST' })
-          .then(r => r.json())
-          .then(data => clientLogger.info('News refresh complete', { data }))
-          .catch(err => clientLogger.error('News refresh failed', { error: err instanceof Error ? err.message : String(err) }));
-      }
-
+      // Data exists. Freshness is the scheduler's job: cron-scheduler.ts
+      // runs 'news-fetch' (/api/refresh?type=news) every 5 minutes, so the
+      // browser no longer triggers ingestion — /api/news/fetch is now
+      // CRON_SECRET/admin-gated and an anonymous visitor could never call it.
       setStatus('done');
     } catch (error) {
       clientLogger.error('Data check error', { error: error instanceof Error ? error.message : String(error) });

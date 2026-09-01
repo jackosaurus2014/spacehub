@@ -3,6 +3,12 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { getColonyClaimCost, getColonyMaxSlots } from '@/lib/game/colonies';
+import { isLedgerAvailable, recordLedger } from '@/lib/game/server-ledger';
+import { validateBody, colonyClaimSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
+import type { BuildingInstance } from '@/lib/game/types';
+import type { ShipInstance } from '@/lib/game/ships';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,10 +66,26 @@ export async function GET(request: NextRequest) {
   }
 }
 
+class InsufficientFundsError extends Error {}
+
 /**
  * POST /api/space-tycoon/colonies
  * Claim a colony slot at a location. Limited slots per location.
- * Body: { locationId: string, companyName: string }
+ * Body: { locationId: string, companyName?: string }
+ *
+ * 2026-09-01 hardening (docs/SECURITY_AUDIT_2026-08.md):
+ *  - A claim is no longer free. Each location carries a one-time claim fee
+ *    (colonies.ts `claimCost` / BASE_LOCATION_CLAIM_COSTS — $100M in LEO up to
+ *    $5B at Pluto) debited through the server ledger and BURNED
+ *    (BALANCE.md "The five money sinks": no matching credit). Rejected with
+ *    400 on insufficient funds. Previously a free ColonyClaim row at
+ *    pluto_surface satisfied cc_pluto_expedition's `colony_established`
+ *    check for a $50B payout.
+ *  - The player must already have a completed building or a built ship at
+ *    the location (server-synced buildingsData / shipsData) — you cannot
+ *    "establish presence" somewhere you have never been.
+ *  - P10: `companyName` in the body is accepted and IGNORED; the claim and
+ *    the activity-feed row are written under the session profile's name.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -72,16 +94,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Must be logged in' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { locationId, companyName } = body;
-    if (!locationId || !companyName) {
-      return NextResponse.json({ error: 'Missing locationId or companyName' }, { status: 400 });
+    const parsed = validateBody(colonyClaimSchema, await request.json().catch(() => null));
+    if (!parsed.success) {
+      const first = Object.values(parsed.errors)[0]?.[0] || 'Missing locationId';
+      return validationError(first, parsed.errors);
     }
+    const { locationId } = parsed.data;
 
-    const profile = await prisma.gameProfile.findUnique({ where: { userId: session.user.id } });
+    const profile = await prisma.gameProfile.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true, companyName: true, money: true, buildingsData: true, shipsData: true },
+    });
     if (!profile) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
     }
+    const companyName = profile.companyName.slice(0, 50);
 
     // Check if player already claimed this location
     const existing = await prisma.colonyClaim.findUnique({
@@ -91,15 +118,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, alreadyClaimed: true });
     }
 
-    // Check slot limits (from colonies.ts EXPANDED_LOCATIONS)
-    const MAX_SLOTS: Record<string, number> = {
-      mercury_surface: 50, venus_orbit: 30, ceres_surface: 100,
-      io_surface: 20, europa_surface: 25, ganymede_surface: 60, callisto_surface: 40,
-      titan_surface: 40, enceladus_surface: 15, titania_surface: 20,
-      triton_surface: 10, pluto_surface: 5,
-      // Base locations have unlimited slots
-    };
-    const maxSlots = MAX_SLOTS[locationId] || 999;
+    // Known, claimable location?
+    const claimCost = getColonyClaimCost(locationId);
+    if (claimCost === null) {
+      return NextResponse.json({ error: `Unknown or non-claimable location "${locationId}"` }, { status: 400 });
+    }
+
+    // Presence prerequisite: a completed building or a built ship there.
+    const buildings = Array.isArray(profile.buildingsData) ? (profile.buildingsData as unknown as BuildingInstance[]) : [];
+    const ships = Array.isArray(profile.shipsData) ? (profile.shipsData as unknown as ShipInstance[]) : [];
+    const hasPresence =
+      buildings.some(b => b && b.isComplete && b.locationId === locationId) ||
+      ships.some(s => s && s.isBuilt && s.currentLocation === locationId);
+    if (!hasPresence) {
+      return NextResponse.json({
+        error: `You need a completed building or a stationed ship at ${locationId.replace(/_/g, ' ')} before claiming a colony there.`,
+      }, { status: 400 });
+    }
+
+    // Check slot limits (colonies.ts EXPANDED_LOCATIONS maxColonySlots; base
+    // locations have unlimited slots).
+    const maxSlots = getColonyMaxSlots(locationId);
     const currentCount = await prisma.colonyClaim.count({ where: { locationId } });
 
     if (currentCount >= maxSlots) {
@@ -111,31 +150,76 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Claim the slot
-    const claim = await prisma.colonyClaim.create({
-      data: {
-        locationId,
-        profileId: profile.id,
-        companyName: String(companyName).slice(0, 50),
-      },
-    });
+    // Affordability (fast-path; the transaction re-checks atomically).
+    if (!Number.isFinite(profile.money) || profile.money < claimCost) {
+      return NextResponse.json({
+        error: `Insufficient funds: claiming ${locationId.replace(/_/g, ' ')} costs $${(claimCost / 1_000_000).toFixed(0)}M (you have $${(Math.max(0, profile.money) / 1_000_000).toFixed(0)}M).`,
+        claimCost,
+      }, { status: 400 });
+    }
 
-    // Log activity
+    // One Wallet (audit A1): probe ledger availability OUTSIDE the transaction.
+    const ledgerOn = await isLedgerAvailable();
+
+    let claim: { claimedAt: Date };
+    try {
+      claim = await prisma.$transaction(async (tx) => {
+        // Atomic debit — only succeeds if the balance still covers the fee.
+        const debited = await tx.gameProfile.updateMany({
+          where: { id: profile.id, money: { gte: claimCost } },
+          data: { money: { decrement: claimCost }, totalSpent: { increment: claimCost } },
+        });
+        if (debited.count !== 1) {
+          throw new InsufficientFundsError('insufficient funds');
+        }
+        const created = await tx.colonyClaim.create({
+          data: {
+            locationId,
+            profileId: profile.id,
+            companyName,
+          },
+        });
+        if (ledgerOn) {
+          await recordLedger(tx, {
+            profileId: profile.id,
+            moneyDelta: -claimCost,
+            reason: 'colony_claim_burn',
+            refId: created.id,
+          });
+        }
+        return created;
+      });
+    } catch (err: unknown) {
+      if (err instanceof InsufficientFundsError) {
+        return NextResponse.json({
+          error: `Insufficient funds: claiming ${locationId.replace(/_/g, ' ')} costs $${(claimCost / 1_000_000).toFixed(0)}M.`,
+          claimCost,
+        }, { status: 400 });
+      }
+      // Unique-constraint race with a concurrent claim by the same profile.
+      if ((err as { code?: string })?.code === 'P2002') {
+        return NextResponse.json({ success: true, alreadyClaimed: true });
+      }
+      throw err;
+    }
+
+    // Log activity (P10: under the profile's own name)
     await prisma.playerActivity.create({
       data: {
         profileId: profile.id,
-        companyName: String(companyName).slice(0, 50),
+        companyName,
         type: 'colony_claimed',
         title: `${companyName} established presence at ${locationId.replace(/_/g, ' ')}`,
-        metadata: { locationId, slotNumber: currentCount + 1, maxSlots },
+        metadata: { locationId, slotNumber: currentCount + 1, maxSlots, claimCost },
       },
-    });
+    }).catch(() => { /* non-critical */ });
 
-    logger.info('Colony claimed', { locationId, companyName, slot: currentCount + 1, maxSlots });
+    logger.info('Colony claimed', { locationId, companyName, slot: currentCount + 1, maxSlots, claimCost });
 
     return NextResponse.json({
       success: true,
       claim: { locationId, companyName, claimedAt: claim.claimedAt },
+      claimCost,
       slotsUsed: currentCount + 1,
       maxSlots,
     });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import { ORBITAL_SLOT_POOLS, occupancyBucket, isSlotOccupant } from '@/lib/game/spatial-strategy';
 import {
   computeMinBid,
@@ -22,15 +23,15 @@ export const dynamic = 'force-dynamic';
  * for newly-saturated pools, resolve closed auctions (burn winning bid minus
  * governor cut, mint lease, refund losers), expire spent leases.
  * Should be called every 5-15 minutes by a cron job (mirrors bidding/resolve).
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
 export async function POST(request: NextRequest) {
-  try {
-    const cronSecret = request.headers.get('x-cron-secret');
-    const expectedSecret = process.env.CRON_SECRET;
-    if (expectedSecret && cronSecret !== expectedSecret) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
 
+  try {
     const now = new Date();
     const ledgerOn = await isLedgerAvailable();
 

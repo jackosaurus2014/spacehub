@@ -17,6 +17,8 @@ interface ServedAd {
   ctaText: string | null;
   advertiserName: string;
   advertiserLogo: string | null;
+  /** Signed proof-of-serve; required by /api/ads/impression. Absent only if the server has no signing secret. */
+  token?: string;
 }
 
 interface AdSlotProps {
@@ -106,6 +108,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
                 placementId: ad.placementId,
                 campaignId: ad.campaignId,
                 type: 'impression',
+                token: ad.token,
                 module,
               }),
             }).catch(() => {
@@ -135,6 +138,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
         placementId: ad.placementId,
         campaignId: ad.campaignId,
         type: 'click',
+        token: ad.token,
         module,
       }),
     }).catch(() => {

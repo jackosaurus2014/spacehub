@@ -3,6 +3,7 @@ import { fetchFederalRegisterUpdates, type FederalRegisterDocument } from '@/lib
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/db';
+import { requireCronSecret, type ApiErrorResponse } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,8 +53,17 @@ interface FetchResponse {
  * - perPage: Number of results per page (default 25, max 100)
  * - startDate: Start date for filtering (YYYY-MM-DD format)
  * - endDate: End date for filtering (YYYY-MM-DD format)
+ *
+ * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
+ * middleware cronPaths list only exempts these routes from the CSRF check —
+ * it does NOT authenticate them; this handler does.
  */
-export async function POST(request: NextRequest): Promise<NextResponse<FetchResponse>> {
+export async function POST(
+  request: NextRequest
+): Promise<NextResponse<FetchResponse | ApiErrorResponse>> {
+  const auth = requireCronSecret(request);
+  if (auth) return auth;
+
   try {
     // Parse request body
     let body: FetchRequestBody = {};

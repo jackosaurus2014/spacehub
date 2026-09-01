@@ -11,6 +11,7 @@ import {
 } from '@/lib/errors';
 import { updateChannelSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
+import { PUBLIC_USER_SELECT } from '@/lib/public-user-select';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,7 +61,8 @@ export async function GET(
       }),
     ]);
 
-    // Hydrate authors / member users
+    // Hydrate authors / member users. Public channels are readable by
+    // non-members, so only public-safe fields — never email (P8).
     const userIds = Array.from(
       new Set([
         ...messages.map((m) => m.authorId),
@@ -69,7 +71,7 @@ export async function GET(
     );
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
-      select: { id: true, name: true, email: true, verifiedBadge: true },
+      select: PUBLIC_USER_SELECT,
     });
     const userMap = new Map(users.map((u) => [u.id, u]));
 
