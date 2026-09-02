@@ -15,6 +15,7 @@ import { NextRequest } from 'next/server';
 const mockGameProfile = {
   findUnique: jest.fn(),
   upsert: jest.fn(),
+  create: jest.fn(),
   update: jest.fn(),
   count: jest.fn(),
   findMany: jest.fn(),
@@ -68,6 +69,8 @@ jest.mock('@/lib/game/referrals', () => ({
 import { getServerSession } from 'next-auth';
 import { logger } from '@/lib/logger';
 import { RESOURCE_BASELINE_KEY, RESOURCE_CEILINGS_KEY, FLAT_FLOOR_MIN } from '@/lib/game/resource-plausibility';
+import { __resetRouteThrottle } from '@/lib/game/route-throttle';
+import { STARTING_MONEY } from '@/lib/game/constants';
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
 
@@ -126,6 +129,9 @@ const ORIGINAL_MODE = process.env.RESOURCE_CLAMP_MODE;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // C-2b: the per-profile sync cadence is in-memory; every test is its own
+  // "first sync in 10 s".
+  __resetRouteThrottle();
   mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as never);
 });
 
@@ -251,20 +257,28 @@ describe('POST /api/space-tycoon/sync — resource plausibility clamp', () => {
     expect(json.resourceClamp).toBeNull();
   });
 
-  it('a brand-new profile (no existing row) is never clamped and gets no marker', async () => {
+  it('C-1: a brand-new profile (no existing row) is CREATED from the server kit, never from the body', async () => {
     process.env.RESOURCE_CLAMP_MODE = 'enforce';
     setup(null);
-    mockGameProfile.upsert.mockImplementation(async ({ create }: { create: Record<string, unknown> }) => ({
-      id: 'profile-new', companyName: 'Test Aerospace', peakNetWorth: 0, ...create,
+    mockGameProfile.create.mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({
+      id: 'profile-new', companyName: 'Test Aerospace', peakNetWorth: 0, ...data,
     }));
 
     const { res, json } = await postSync({ resources: { iron: 1_000_000 } });
 
     expect(res.status).toBe(200);
-    const call = mockGameProfile.upsert.mock.calls[0][0] as { create: Record<string, unknown> };
-    expect((call.create.resources as Record<string, number>).iron).toBe(1_000_000);
-    expect(json.resourceClamp).toBeNull();
-    expect(mockMarketAuditLog.create).not.toHaveBeenCalled();
+    expect(mockGameProfile.upsert).not.toHaveBeenCalled();
+    const data = (mockGameProfile.create.mock.calls[0][0] as { data: Record<string, unknown> }).data;
+    expect(data.resources).toEqual({});
+    expect(data.money).toBe(STARTING_MONEY);
+    expect(data.serverResources).toEqual({});
+    const wd = data.workforceData as Record<string, unknown>;
+    expect(typeof wd[RESOURCE_BASELINE_KEY]).toBe('string');
+    expect(json.firstSync).toBe(true);
+    expect(json.resourceClamp).toEqual({ mode: 'enforce', baselined: true, rejected: [], enforced: false });
+    // The discarded body figure is audited (info) when it differs by > 1 %.
+    expect(mockMarketAuditLog.create).toHaveBeenCalledTimes(1);
+    expect(mockMarketAuditLog.create.mock.calls[0][0].data.eventType).toBe('first_sync_body_ignored');
   });
 
   it('the money plausibility path is untouched by the resource clamp', async () => {

@@ -108,7 +108,8 @@ import {
   FLAT_FLOOR_MIN,
   MEGASTRUCTURE_PASSIVE_CEILING,
 } from '@/lib/game/resource-plausibility';
-import { CLIENT_ATTESTED_LEDGER_REASONS, SERVER_RESOURCE_CORRECTION_REASON } from '@/lib/game/ledger-reconcile';
+import { CLIENT_ATTESTED_LEDGER_REASONS, PENDING_EXCLUDED_LEDGER_REASONS, SERVER_RESOURCE_CORRECTION_REASON } from '@/lib/game/ledger-reconcile';
+import { __resetRouteThrottle } from '@/lib/game/route-throttle';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
 import { CHAIN_MAP } from '@/lib/game/production-chains';
 import { RESOURCE_MAP } from '@/lib/game/resources';
@@ -124,6 +125,8 @@ const R = 'antimatter_precursors';
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // C-2b: the per-profile sync cadence is in-memory; reset between tests.
+  __resetRouteThrottle();
   mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as never);
 });
 afterAll(() => {
@@ -392,6 +395,7 @@ describe('POST /api/space-tycoon/sync — phase 2 server-owned inventory', () =>
     setupSync(existingRow({ serverResources: null, workforceData: null }));
     await postSync({ resources: { iron: 1100 } });
     expect(persisted().serverResources).toBeUndefined();
+    __resetRouteThrottle(); // C-2b cadence: the second sync is a separate window
     expect((await postSync({ resources: { iron: 1100 } })).json.serverInventory).toBeNull();
   });
 
@@ -500,7 +504,9 @@ describe('POST /api/space-tycoon/sync — phase 2 server-owned inventory', () =>
     // The attestation must never come back to the client as a pending delta.
     expect(json.ledger.resourceDeltas).toEqual({});
     const pendingQuery = mockGameLedgerEntry.findMany.mock.calls.find(c => c[0].where?.seq)![0].where;
-    expect(pendingQuery.reason).toEqual({ notIn: [...CLIENT_ATTESTED_LEDGER_REASONS] });
+    // H-5 (2026-09-02): the client-applied market/trade rows are excluded too.
+    expect(pendingQuery.reason).toEqual({ notIn: [...PENDING_EXCLUDED_LEDGER_REASONS] });
+    expect(PENDING_EXCLUDED_LEDGER_REASONS).toEqual(expect.arrayContaining([...CLIENT_ATTESTED_LEDGER_REASONS]));
   });
 
   it('build attestation: capped by definition costs x 25, ledgered as client_build_spend', async () => {

@@ -62,8 +62,10 @@ export const FLAT_FLOOR_FRACTION = 0.25;
  *  engine constants (30 ticks × 2 000 ms = 60 000 ms), never hardcoded. */
 export const GAME_MONTH_WALL_MS = TICKS_PER_GAME_MONTH * TICK_INTERVALS[1];
 
-/** Elapsed-time clamp, shared with the money clamp: 5 s floor (rapid
- *  re-syncs) and 30-day cap (a dormant profile does not accrue a month of
+/** Elapsed-time clamp, shared with the money clamp. Game exploit batch
+ *  2026-09-02 (C-2): MIN is no longer a floor — below it the window counts
+ *  as ZERO elapsed (no growth headroom at all); above it the window is
+ *  linear up to the 30-day cap (a dormant profile does not accrue a month of
  *  headroom per month away — offline progress is itself capped client-side). */
 export const MIN_ELAPSED_MS = MIN_PLAUSIBILITY_ELAPSED_MS;
 export const MAX_ELAPSED_MS = MAX_PLAUSIBILITY_ELAPSED_MS;
@@ -224,10 +226,12 @@ export interface ResourceCeilingReport {
   elapsedMonths: number;
 }
 
-/** Bound and convert wall-clock elapsed ms into game months at 1×. */
+/** Bound and convert wall-clock elapsed ms into game months at 1×. Below
+ *  MIN_ELAPSED_MS the answer is 0 (no headroom for a rapid re-sync). */
 export function elapsedGameMonths(elapsedMs: number): number {
-  const raw = Number.isFinite(elapsedMs) ? elapsedMs : MIN_ELAPSED_MS;
-  const safe = Math.min(MAX_ELAPSED_MS, Math.max(MIN_ELAPSED_MS, raw));
+  const raw = Number.isFinite(elapsedMs) ? elapsedMs : 0;
+  const safe = Math.min(MAX_ELAPSED_MS, Math.max(0, raw));
+  if (safe < MIN_ELAPSED_MS) return 0;
   return safe / GAME_MONTH_WALL_MS;
 }
 
@@ -314,10 +318,20 @@ export function computeMaxProductionPerMonth(state: GameState, monthIndex?: numb
   return out;
 }
 
-/** The flat per-sync allowance for one resource. */
-export function flatFloor(prev: number): number {
+/** Time-proportional scale on the flat allowance: a full allowance per game
+ *  month of wall clock (60 s at 1×), linearly less for a shorter window,
+ *  never more than 1× per sync. Game exploit batch 2026-09-02 (C-2c): the
+ *  old per-sync floor compounded per request (+25 % of stock every sync). */
+export function flatFloorScale(elapsedMonths: number): number {
+  const m = Number.isFinite(elapsedMonths) && elapsedMonths > 0 ? elapsedMonths : 0;
+  return Math.min(1, m);
+}
+
+/** The flat allowance for one resource over `elapsedMonths` of wall clock
+ *  (default: one full month, i.e. the un-scaled allowance). */
+export function flatFloor(prev: number, elapsedMonths: number = 1): number {
   const safePrev = Number.isFinite(prev) && prev > 0 ? prev : 0;
-  return Math.max(FLAT_FLOOR_MIN, FLAT_FLOOR_FRACTION * safePrev);
+  return Math.max(FLAT_FLOOR_MIN, FLAT_FLOOR_FRACTION * safePrev) * flatFloorScale(elapsedMonths);
 }
 
 /**
@@ -364,7 +378,7 @@ export function ceilingFor(
   const safePrev = typeof prev === 'number' && Number.isFinite(prev) && prev > 0 ? prev : 0;
   const safeDelta = typeof ledgerDelta === 'number' && Number.isFinite(ledgerDelta) ? Math.max(0, ledgerDelta) : 0;
   const safeProd = typeof prodPerMonth === 'number' && Number.isFinite(prodPerMonth) && prodPerMonth > 0 ? prodPerMonth : 0;
-  return safePrev + safeDelta + RESOURCE_SLACK * safeProd * elapsedMonths + flatFloor(safePrev);
+  return safePrev + safeDelta + RESOURCE_SLACK * safeProd * elapsedMonths + flatFloor(safePrev, elapsedMonths);
 }
 
 export interface ResourceRejection {
@@ -389,6 +403,8 @@ export interface ClampResourcesResult {
 export function clampResources(
   client: Record<string, number> | null | undefined,
   ceilings: Record<string, number>,
+  /** Window for the unknown-slug floor (default: one full allowance). */
+  elapsedMonths: number = 1,
 ): ClampResourcesResult {
   const clamped: Record<string, number> = {};
   const rejected: ResourceRejection[] = [];
@@ -397,7 +413,7 @@ export function clampResources(
     const value = typeof raw === 'number' && Number.isFinite(raw) && raw > 0 ? raw : 0;
     const ceiling = typeof ceilings[resource] === 'number' && Number.isFinite(ceilings[resource])
       ? ceilings[resource]
-      : ceilingFor(0, 0, 0, 0);
+      : ceilingFor(0, 0, 0, elapsedMonths);
     if (value > ceiling) {
       rejected.push({ resource, client: value, ceiling });
       clamped[resource] = Math.floor(ceiling);

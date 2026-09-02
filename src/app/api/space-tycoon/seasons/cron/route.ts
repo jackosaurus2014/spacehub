@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireCronSecret } from '@/lib/errors';
 import type { Prisma } from '@prisma/client';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
@@ -102,13 +103,10 @@ async function sealSeasonChronicle(seasonNumber: number, seasonType: string, now
  */
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
-    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
-      // Authorized
-    } else if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // M-6 (docs/SECURITY_AUDIT_2026-09.md, game exploit batch 2026-09-02):
+    // fail-closed, timing-safe CRON_SECRET check.
+    const unauthorized = requireCronSecret(request);
+    if (unauthorized) return unauthorized;
 
     const now = new Date();
     const currentN = getCurrentSeasonNumber(now);

@@ -121,6 +121,15 @@ function getRateLimitConfig(pathname: string, method: string): RateLimitConfig {
   if (pathname.includes('/meeting-requests') || pathname.includes('/leads')) {
     return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
   }
+  // Space Tycoon economic mutations (docs/SECURITY_AUDIT_2026-09.md game
+  // exploit batch 2026-09-02, M-7): a per-IP bucket on top of the
+  // per-profile limiter in src/lib/game/route-throttle.ts.
+  if (
+    method !== 'GET' &&
+    /^\/api\/space-tycoon\/(market\/orders|market\/trade|bounties|predictions\/stake|equity|colonies|milestones|zones\/challenge|orbital-slots)$/.test(pathname)
+  ) {
+    return { maxRequests: 60, windowMs: 60 * 1000 };
+  }
   // All other /api/* routes
   return { maxRequests: 200, windowMs: 60 * 1000 }; // 200 req/minute
 }
@@ -234,6 +243,11 @@ function checkRateLimit(
     pathname.startsWith('/api/opportunities/analyze')
   ) {
     routeKey = 'ai-endpoints';
+  } else if (
+    method !== 'GET' &&
+    /^\/api\/space-tycoon\/(market\/orders|market\/trade|bounties|predictions\/stake|equity|colonies|milestones|zones\/challenge|orbital-slots)$/.test(pathname)
+  ) {
+    routeKey = 'tycoon-economy';
   } else {
     routeKey = 'api-general';
   }

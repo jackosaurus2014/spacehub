@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 import {
   placeLimitOrder,
   cancelOrder,
@@ -161,6 +162,13 @@ export async function POST(request: NextRequest) {
 
     if (!profile) {
       return NextResponse.json({ error: 'No game profile found. Start the game first.' }, { status: 404 });
+    }
+
+    // M-7 (docs/SECURITY_AUDIT_2026-09.md, game exploit batch 2026-09-02):
+    // per-profile budget on this economic route.
+    const throttle = throttleAllow(profile.id, 'market-orders', 30, 60_000);
+    if (!throttle.allowed) {
+      return NextResponse.json(throttledBody('market-orders', throttle), { status: 429 });
     }
 
     // Parse expiration

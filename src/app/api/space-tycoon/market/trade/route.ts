@@ -21,6 +21,12 @@ import { getFactionStandingBrokerModifier, getFactionLicenseBonuses, applyFractu
 // AAA Round 1 wave E1: fracture status is server-owned (AccordFracture), and
 // the same pure modifier runs on both sides of the wire.
 import { isProfileFractured } from '@/lib/game/server-chair';
+// Game exploit batch 2026-09-02 (H-5, docs/SECURITY_AUDIT_2026-09.md): the
+// trade is now a ledgered, server-gated movement of money and goods, not a
+// price nudge the client settles by itself.
+import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { resolveSellableQuantity, auditServerInventoryGate } from '@/lib/game/server-inventory';
+import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 
 /**
  * Audit Wave B (Change #2): per-player sell-side broker-fee reductions.
@@ -131,6 +137,25 @@ async function computeSellerFeeRate(profileId: string, resourceSlug: string): Pr
  * Execute a buy or sell trade on the global market.
  * Updates the shared price for all players.
  *
+ * Game exploit batch 2026-09-02 (H-5): this route used to move the WORLD
+ * price and record a "completed" MarketOrder with no funds or holdings
+ * check at all — the client applied the money / goods movement to itself
+ * after the 2xx. It now:
+ *   - buy:  requires profile.money >= totalCost; debits money, credits the
+ *           goods on the client view (`resources`) and ledgers both legs;
+ *   - sell: requires the AUTHORITATIVE inventory (server truth + unfolded
+ *           ledger tail, server-inventory.ts) to hold the quantity — a
+ *           phantom client map cannot be sold into the NPC curve; debits
+ *           the client view, credits money, ledgers both legs;
+ *   - the price / supply update, the wallet moves, the ledger rows and the
+ *           MarketOrder record commit in ONE transaction.
+ * The client still applies the trade locally on the 2xx (MarketPanel /
+ * CraftingPanel), so the ledger rows carry reasons in
+ * CLIENT_APPLIED_LEDGER_REASONS and are never handed back as pending
+ * deltas; the goods leg still folds into serverResources. Chosen over an
+ * order-book IOC wrapper because it keeps the existing client contract and
+ * the NPC price curve's own liquidity semantics (no daily maker cap).
+ *
  * Supply-demand pricing:
  * - Buying removes from market supply → price goes up
  * - Selling adds to market supply → price goes down
@@ -156,15 +181,29 @@ export async function POST(request: NextRequest) {
     const { type, resourceSlug, quantity } = body;
 
     // Never trust a client-supplied profileId — attribute trades to the
-    // session's own profile.
+    // session's own profile. H-5: the profile is REQUIRED now (the trade
+    // debits / credits it), and the inventory columns the sell gate reads
+    // are loaded here.
     const sessionProfile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
-      select: { id: true },
+      select: { id: true, money: true, resources: true, serverResources: true, workforceData: true },
     });
-    const profileId = sessionProfile?.id;
+    if (!sessionProfile) {
+      return NextResponse.json({ error: 'No game profile found. Start the game first.' }, { status: 404 });
+    }
+    const profileId = sessionProfile.id;
 
-    if (!type || !resourceSlug || !quantity || quantity <= 0) {
+    // M-7: per-profile budget.
+    const throttle = throttleAllow(profileId, 'market-trade', 30, 60_000);
+    if (!throttle.allowed) {
+      return NextResponse.json(throttledBody('market-trade', throttle), { status: 429 });
+    }
+
+    if (!type || typeof resourceSlug !== 'string' || typeof quantity !== 'number' || !Number.isFinite(quantity) || quantity <= 0) {
       return NextResponse.json({ error: 'Invalid trade parameters' }, { status: 400 });
+    }
+    if (!Number.isInteger(quantity)) {
+      return NextResponse.json({ error: 'Quantity must be a whole number' }, { status: 400 });
     }
     if (type !== 'buy' && type !== 'sell') {
       return NextResponse.json({ error: 'Type must be "buy" or "sell"' }, { status: 400 });
@@ -185,7 +224,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Resource "${resourceSlug}" not found` }, { status: 404 });
     }
 
-    const resDef = RESOURCE_MAP.get(resourceSlug);
+    const resDef = RESOURCE_MAP.get(resourceSlug as never);
     const baselineSupply = resDef?.startingSupply || 1000;
     const isBuy = type === 'buy';
 
@@ -230,7 +269,7 @@ export async function POST(request: NextRequest) {
     // Audit Wave B: the effective rate now honors Magnate commanders (§1c),
     // espionage trade_route_intel discounts (A8), and alliance diplomacy
     // trade agreements (A2) — see computeSellerFeeRate above.
-    const effectiveFeeRate = isBuy || !profileId
+    const effectiveFeeRate = isBuy
       ? MARKET_BROKER_FEE_RATE
       : await computeSellerFeeRate(profileId, resourceSlug);
     const brokerFee = isBuy ? 0 : Math.round(grossTotal * effectiveFeeRate);
@@ -260,6 +299,30 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ── H-5: funds / holdings gate against SERVER facts ────────────────────
+    if (!Number.isFinite(totalCost) || totalCost < 0) {
+      return NextResponse.json({ error: 'Trade cannot be priced' }, { status: 400 });
+    }
+    if (isBuy) {
+      if (!(sessionProfile.money >= totalCost)) {
+        return NextResponse.json({ error: 'Insufficient funds for this purchase' }, { status: 400 });
+      }
+    } else {
+      const sellable = await resolveSellableQuantity(sessionProfile, resourceSlug);
+      if (sellable.held < quantity) {
+        if (sellable.source === 'server' && sellable.raw >= quantity) {
+          logger.warn('NPC-curve sell gated by server-owned inventory', {
+            profileId, resourceSlug, quantity, raw: sellable.raw, serverHeld: sellable.held,
+          });
+          await auditServerInventoryGate(prisma, {
+            profileId, resourceSlug, path: 'market_trade', quantity, raw: sellable.raw, held: sellable.held,
+          });
+        }
+        return NextResponse.json({ error: 'Insufficient holdings for this sale' }, { status: 400 });
+      }
+    }
+    const ledgerOn = await isLedgerAvailable();
+
     // Calculate new price after trade (trade impact on base price)
     const newBasePrice = calculatePriceAfterTrade(
       resource.currentPrice,
@@ -287,21 +350,39 @@ export async function POST(request: NextRequest) {
     const history = Array.isArray(resource.priceHistory) ? resource.priceHistory as number[] : [];
     const updatedHistory = [...history, newEffectivePrice].slice(-50);
 
-    // Update resource state atomically
-    await prisma.marketResource.update({
-      where: { id: resource.id },
-      data: {
-        currentPrice: newBasePrice, // Store base price (supply mult applied at read time)
-        totalSupply: newSupply,
-        totalDemand: newDemand,
-        priceHistory: updatedHistory,
-      },
-    });
+    // ── H-5: price update + wallet / goods movement + ledger + record, in
+    // ONE transaction. The goods leg debits/credits the CLIENT VIEW
+    // (`resources`) and ledgers the delta so server truth follows via the
+    // fold (server-inventory.ts header); the money leg is ledgered too. Both
+    // reasons are in CLIENT_APPLIED_LEDGER_REASONS because the client applies
+    // the trade to itself on the 2xx.
+    const currentResources = (sessionProfile.resources && typeof sessionProfile.resources === 'object')
+      ? { ...(sessionProfile.resources as Record<string, number>) }
+      : {};
+    const held = typeof currentResources[resourceSlug] === 'number' && Number.isFinite(currentResources[resourceSlug])
+      ? currentResources[resourceSlug]
+      : 0;
+    currentResources[resourceSlug] = isBuy ? held + quantity : Math.max(0, held - quantity);
 
-    // Record the order (if profileId provided)
-    if (profileId) {
+    await prisma.$transaction(async (tx) => {
+      await tx.marketResource.update({
+        where: { id: resource.id },
+        data: {
+          currentPrice: newBasePrice, // Store base price (supply mult applied at read time)
+          totalSupply: newSupply,
+          totalDemand: newDemand,
+          priceHistory: updatedHistory,
+        },
+      });
+      await tx.gameProfile.update({
+        where: { id: profileId },
+        data: isBuy
+          ? { money: { decrement: totalCost }, totalSpent: { increment: totalCost }, resources: currentResources }
+          : { money: { increment: totalCost }, totalEarned: { increment: totalCost }, resources: currentResources },
+      });
+      let refId = `trade:${resource.id}`;
       try {
-        await prisma.marketOrder.create({
+        const order = await tx.marketOrder.create({
           data: {
             profileId,
             resourceId: resource.id,
@@ -312,10 +393,20 @@ export async function POST(request: NextRequest) {
             status: 'completed',
           },
         });
+        refId = order.id;
       } catch {
-        // Order logging is non-critical
+        // The MarketOrder record is non-critical; the ledger rows below are.
       }
-    }
+      if (ledgerOn) {
+        if (isBuy) {
+          await recordLedger(tx, { profileId, moneyDelta: -totalCost, reason: 'market_trade_buy_payment', refId });
+          await recordLedger(tx, { profileId, resourceSlug, resourceDelta: quantity, reason: 'market_trade_buy_goods', refId });
+        } else {
+          await recordLedger(tx, { profileId, resourceSlug, resourceDelta: -quantity, reason: 'market_trade_sell_goods', refId });
+          await recordLedger(tx, { profileId, moneyDelta: totalCost, reason: 'market_trade_sell_proceeds', refId });
+        }
+      }
+    });
 
     const change = Math.round(((newEffectivePrice / resource.basePrice) - 1) * 100);
 

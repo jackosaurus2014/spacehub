@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import {
   TOTAL_SHARES,
@@ -215,6 +216,13 @@ export async function POST(request: NextRequest) {
     if (!session?.user?.id) return err('Must be logged in', 401);
     const profile = await getProfile(session.user.id);
     if (!profile) return err('No game profile', 404);
+
+    // M-7 (docs/SECURITY_AUDIT_2026-09.md, game exploit batch 2026-09-02):
+    // per-profile budget on this economic route.
+    const throttle = throttleAllow(profile.id, 'equity', 10, 60_000);
+    if (!throttle.allowed) {
+      return NextResponse.json(throttledBody('equity', throttle), { status: 429 });
+    }
 
     if (!(await isEquitySchemaAvailable())) {
       return err('Share registry is not yet provisioned on this server', 503);

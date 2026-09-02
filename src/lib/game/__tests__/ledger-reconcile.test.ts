@@ -9,6 +9,7 @@ import {
   consumeServerReconciliation,
   __clearReconciliationQueue,
   clampPlausibleMoney,
+  plausibleIncomeHeadroom,
   MAX_PLAUSIBLE_INCOME_PER_MS,
   MIN_PLAUSIBILITY_ELAPSED_MS,
   MAX_PLAUSIBILITY_ELAPSED_MS,
@@ -217,13 +218,22 @@ describe('clampPlausibleMoney — E1 exploit #5 regression', () => {
     expect(result.clampedMoney).toBe(100);
   });
 
-  it('floors elapsed time so a rapid double-sync cannot be used to shrink the ceiling to ~0', () => {
+  it('C-2 regression: a rapid re-sync (< 5 s) gets ZERO headroom — there is no per-request floor to ratchet', () => {
+    // The old 5 s FLOOR granted >= $10M of headroom to every request, and
+    // every sync re-stamped lastSyncAt, so a tight loop minted ~$2B/min.
     const prevMoney = 1_000_000;
-    // elapsedMs = 0 would produce ceiling === prevMoney with no floor;
-    // MIN_PLAUSIBILITY_ELAPSED_MS guarantees some headroom.
-    const result = clampPlausibleMoney(prevMoney + 1, prevMoney, 0);
-    expect(result.ceiling).toBe(prevMoney + MIN_PLAUSIBILITY_ELAPSED_MS * MAX_PLAUSIBLE_INCOME_PER_MS);
-    expect(result.wasClamped).toBe(false);
+    const r0 = clampPlausibleMoney(prevMoney + 1, prevMoney, 0);
+    expect(r0.ceiling).toBe(prevMoney);
+    expect(r0.wasClamped).toBe(true);
+    expect(r0.clampedMoney).toBe(prevMoney);
+    const r4 = clampPlausibleMoney(prevMoney + 10_000_000, prevMoney, MIN_PLAUSIBILITY_ELAPSED_MS - 1);
+    expect(r4.ceiling).toBe(prevMoney);
+    expect(r4.clampedMoney).toBe(prevMoney);
+    // Above the threshold the headroom is linear in elapsed time.
+    const r5 = clampPlausibleMoney(prevMoney, prevMoney, MIN_PLAUSIBILITY_ELAPSED_MS);
+    expect(r5.ceiling).toBe(prevMoney + MIN_PLAUSIBILITY_ELAPSED_MS * MAX_PLAUSIBLE_INCOME_PER_MS);
+    expect(plausibleIncomeHeadroom(30_000)).toBe(30_000 * MAX_PLAUSIBLE_INCOME_PER_MS);
+    expect(plausibleIncomeHeadroom(-1)).toBe(0);
   });
 
   it('caps elapsed time so a long-dormant lastSyncAt cannot produce an unbounded ceiling', () => {

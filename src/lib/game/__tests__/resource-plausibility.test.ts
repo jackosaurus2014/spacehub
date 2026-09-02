@@ -93,10 +93,12 @@ describe('constants', () => {
 });
 
 describe('elapsedGameMonths', () => {
-  it('clamps to the 5 s floor and 30 d cap', () => {
-    expect(elapsedGameMonths(0)).toBeCloseTo(MIN_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
-    expect(elapsedGameMonths(-5)).toBeCloseTo(MIN_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
-    expect(elapsedGameMonths(Number.NaN)).toBeCloseTo(MIN_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
+  it('C-2: below the 5 s threshold the window is ZERO (no floor); capped at 30 d', () => {
+    expect(elapsedGameMonths(0)).toBe(0);
+    expect(elapsedGameMonths(-5)).toBe(0);
+    expect(elapsedGameMonths(Number.NaN)).toBe(0);
+    expect(elapsedGameMonths(MIN_ELAPSED_MS - 1)).toBe(0);
+    expect(elapsedGameMonths(MIN_ELAPSED_MS)).toBeCloseTo(MIN_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
     expect(elapsedGameMonths(365 * 24 * 3600_000)).toBeCloseTo(MAX_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
     expect(elapsedGameMonths(60_000)).toBe(1);
     expect(elapsedGameMonths(600_000)).toBe(10);
@@ -183,11 +185,21 @@ describe('ceiling math', () => {
     expect(b.ceilings.iron - 100).toBeCloseTo((a.ceilings.iron - 100) * 10, 6);
   });
 
-  it('elapsed clamp: 0 ms and 1 year give the floor/cap month counts', () => {
-    const lo = computeResourceCeilings({ prevResources: { iron: 0 }, ...FIXTURE, ledgerDeltas: {}, elapsedMs: 0 });
+  it('elapsed clamp: 0 ms gives a zero window (and a zero flat floor), 1 year gives the cap', () => {
+    const lo = computeResourceCeilings({ prevResources: { iron: 1000 }, ...FIXTURE, ledgerDeltas: {}, elapsedMs: 0 });
     const hi = computeResourceCeilings({ prevResources: { iron: 0 }, ...FIXTURE, ledgerDeltas: {}, elapsedMs: 365 * 24 * 3600_000 });
-    expect(lo.elapsedMonths).toBeCloseTo(MIN_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
+    expect(lo.elapsedMonths).toBe(0);
+    // C-2c: the flat allowance is time-proportional — a zero window adds nothing.
+    expect(lo.ceilings.iron).toBe(1000);
     expect(hi.elapsedMonths).toBeCloseTo(MAX_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
+  });
+
+  it('C-2c: the flat floor scales with the window and never exceeds one allowance per sync', () => {
+    expect(flatFloor(1000, 1)).toBe(250);
+    expect(flatFloor(1000, 0.5)).toBe(125);
+    expect(flatFloor(1000, 10)).toBe(250);
+    expect(flatFloor(1000, 0)).toBe(0);
+    expect(ceilingFor(1000, 0, 0, 0.25)).toBe(1000 + 62.5);
   });
 });
 

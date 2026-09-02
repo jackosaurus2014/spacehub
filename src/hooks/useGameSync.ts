@@ -150,6 +150,10 @@ export function useGameSync(
         gameYear: state.gameDate.year,
         gameMonth: state.gameDate.month,
         companyName: state.companyName || 'Untitled Aerospace',
+        // Game exploit batch 2026-09-02 (C-1): the server seeds a brand-new
+        // profile from the archetype DEFINITION (validated against the
+        // registry), never from the body's money / resources / buildings.
+        startingArchetype: state.startingArchetype || null,
         // Full state for multiplayer visibility
         buildings: state.buildings.map(b => ({
           definitionId: b.definitionId,
@@ -368,6 +372,10 @@ export function useGameSync(
         }
       } else if (res.status === 401) {
         // Not logged in — silently skip, don't retry
+        setStatus(prev => ({ ...prev, syncing: false, error: null }));
+      } else if (res.status === 429) {
+        // Server-enforced sync cadence (C-2b, 10 s per profile) — another
+        // tab just synced. Not an error; the next interval will succeed.
         setStatus(prev => ({ ...prev, syncing: false, error: null }));
       } else {
         throw new Error(`Sync failed: ${res.status}`);

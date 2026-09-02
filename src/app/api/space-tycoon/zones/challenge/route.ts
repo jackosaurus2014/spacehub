@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
@@ -39,6 +40,13 @@ export async function POST(request: Request) {
 
     if (!profile) {
       return NextResponse.json({ error: 'No game profile found' }, { status: 404 });
+    }
+
+    // M-7 (docs/SECURITY_AUDIT_2026-09.md, game exploit batch 2026-09-02):
+    // per-profile budget on this economic route.
+    const throttle = throttleAllow(profile.id, 'zones-challenge', 5, 60_000);
+    if (!throttle.allowed) {
+      return NextResponse.json(throttledBody('zones-challenge', throttle), { status: 429 });
     }
 
     // Find the zone in DB

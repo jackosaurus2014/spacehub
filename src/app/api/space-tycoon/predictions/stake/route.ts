@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { validateStakeAmount, type PredictionOption } from '@/lib/game/prediction-exchange';
 import { apiCache } from '@/lib/api-cache';
@@ -37,6 +38,13 @@ export async function POST(request: NextRequest) {
     const profile = await prisma.gameProfile.findUnique({ where: { userId: session.user.id } });
     if (!profile) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
+    }
+
+    // M-7 (docs/SECURITY_AUDIT_2026-09.md, game exploit batch 2026-09-02):
+    // per-profile budget on this economic route.
+    const throttle = throttleAllow(profile.id, 'predictions', 10, 60_000);
+    if (!throttle.allowed) {
+      return NextResponse.json(throttledBody('predictions', throttle), { status: 429 });
     }
 
     const parsed = stakeBodySchema.safeParse(await request.json());

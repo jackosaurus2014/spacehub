@@ -429,3 +429,213 @@ and rows).
 - `LessonInteractive` calculator formulas now go through `src/components/learn/safe-expression.ts` (tokenizer + recursive-descent parser) instead of `new Function` — the only `'unsafe-eval'` need in the app is gone. Every seed formula in `scripts/seed-learning*.ts` is regression-tested against the old evaluator.
 
 **Rollout.** `CSP_MODE` (Railway env) — unset/`report-only` (default) sends the nonce policy as Report-Only on eligible routes; `enforce-nonce` makes it the enforced header there. Flip `CSP_MODE=enforce-nonce` after 7-14 days of clean `csp_violation` logs (watch for `script-src` reports whose blocked origin is `inline` or `self` — those mean an inline script or a parser-inserted tag we missed). Then prune the server-only `connect-src` hosts in `LEGACY_CONNECT_HOSTS` (spaceflightnewsapi, thespacedevs, swpc.noaa, celestrak, ssd-api/epic/eonet/images-api NASA, helioviewer, eyes.jpl, wheretheiss, sbir.gov, exoplanetarchive, asterank, spacexdata, googleapis) — they are fetched server-side only as far as recon shows and are kept for now so nothing regresses. Tests: `csp`, `csp-report-route`, `safe-expression`.
+
+## Game exploit batch 2026-09-02
+
+An adversarial audit of the Space Tycoon economy routes on the evening of
+2026-09-02 produced nine verified exploits. Every one is closed below;
+`src/lib/__tests__/game-exploit-regressions.test.ts` reproduces each recipe
+and asserts it now fails. Companion changes to existing suites:
+`ledger-reconcile.test.ts`, `resource-plausibility.test.ts`,
+`sync-resource-clamp.test.ts`, `inventory-phase2.test.ts`,
+`game-authz-regressions.test.ts`.
+
+### C-1 — First sync of a new profile was unclamped (fixed)
+
+**Was.** `sync/route.ts` gated `clampPlausibleMoney` on `if (existingProfile)`
+and the upsert's `create` branch wrote money / totalEarned / totalSpent /
+netWorth / resources / buildings / research / gameYear verbatim from the body.
+Register + one POST with `money: 9e14` and a forged map = rank #1, and phase-2
+adoption later copied the forged map into `serverResources`.
+
+**Now.** A profile with no row is CREATED (never upserted — a transient read
+failure can no longer overwrite a real row with the kit; the route throws if
+the referral lookup sees a row the economic read did not) from the server-
+derived **first-sync kit** (`src/lib/game/sync-validation.ts`
+`buildFirstSyncKit`): `STARTING_MONEY` (or the archetype's `startingMoney`
+when the body carries a `startingArchetype` id that exists in
+`ARCHETYPE_MAP`), the archetype's `startingResources` / `startingBuildings` /
+`startingServices` with server-generated instance ids (mirrors
+`applyArchetype`), `unlockedLocations` = `['earth_surface','leo']` (+ the
+kit's building locations), no research, no ships, `gameYear = STARTING_YEAR`.
+`useGameSync.ts` now sends `startingArchetype`. In the same request the
+phase-1 marker `_resourceBaselineAt` and `_resourceCeilings` are set from
+the kit and `serverResources` is adopted from the kit, so the NEXT sync is
+already clamped against server defaults and the phase-2 "adopt the client
+view" path never runs for new profiles. A body money figure that differs
+from the server starting money by > 1 % writes MarketAuditLog
+`first_sync_body_ignored` (info). The response carries `firstSync: true`.
+
+Trade-off: a player who played anonymously for hours and then registers
+starts server-side at the kit; the money figure catches up at the
+time-proportional ceiling ($120M per 60 s sync), resources through the
+phase-1 growth allowance. That is the intended trust model.
+
+### C-2 — $10M-per-request money ratchet (fixed)
+
+**Was.** `clampPlausibleMoney` used `max(elapsedMs, 5000) × $2M/s`, every
+sync wrote `lastSyncAt = now`, so a tight loop earned >= $10M per request
+(~$2B/min). The phase-1 flat floor `max(100, 0.25 × prev)` compounded per
+request the same way.
+
+**Now** (`ledger-reconcile.ts`, `resource-plausibility.ts`, `sync/route.ts`):
+
+- `plausibleIncomeHeadroom(elapsedMs)` = 0 below
+  `MIN_PLAUSIBILITY_ELAPSED_MS` (5 s), linear `elapsedMs × $2M/s` up to the
+  30-day cap. No floor: money may only stay <= prevMoney + ledger deltas on
+  a rapid re-sync. `MIN_PLAUSIBILITY_ELAPSED_MS` is kept as the threshold
+  (it also windows the craft-attestation caps).
+- `elapsedGameMonths` returns 0 below the threshold; the flat floor is
+  time-proportional: `flatFloor(prev, months) = max(100, 0.25 × prev) ×
+  min(1, months)` (`flatFloorScale`), so one full allowance per game month
+  (60 s at 1×), never more per sync. `ceilingFor` and
+  `advanceServerResources` inherit it; `clampResources` takes the window
+  for the unknown-slug floor.
+- **Server-enforced cadence.** A sync arriving < `SYNC_MIN_INTERVAL_MS`
+  (10 s) after the row's `lastSyncAt` is a 429
+  `{ error: 'sync_too_frequent', retryAfterMs }`; an in-memory per-profile
+  window (`route-throttle.ts`, `allow(profileId,'sync',1,10_000)`) closes
+  the concurrent-request race two tabs could win. `useGameSync.ts` treats a
+  429 as "another tab synced", not an error. The client interval is 60 s
+  (30 s floor), so honest clients never see it.
+
+### C-3 — Orbital-slot lease transfer debited a non-consenting buyer (fixed)
+
+**Was.** `action:'transfer'` let the seller supply `toCompanyName` (non-
+unique) and `price`, debited that buyer on the spot, and its "Buyer has
+insufficient funds" 400 was a balance oracle.
+
+**Now** (`orbital-slots/route.ts`, `src/lib/game/slot-transfer-listings.ts`):
+two-phase. `action:'list'` — the holder posts an asking price within
+`[0.5×, 3×]` of the lease's reference price (its last `leaseAmount`, else
+`computeMinBid(locationId)`), optionally pinned to a buyer **profileId**
+(existence checked, balance never read); `action:'unlist'` withdraws it;
+`action:'accept'` — the BUYER's own session pays: `updateMany` on
+`{ id, holderId: seller, status: 'active' }` (atomic against a concurrent
+accept / expiry), buyer debit + seller credit + both ledger rows in one
+transaction. Every failure a third party could probe is a generic 400
+"Transfer not available"; only the buyer's OWN insufficient balance is named.
+`action:'transfer'` returns 410. GET now returns `transferListings` and each
+of `myLeases[].listing`.
+
+**Storage decision.** `OrbitalSlotLease` has no Json column and schema
+changes were out of scope, so listings live in a bounded in-memory registry
+(24 h TTL, per instance; a redeploy drops open listings — the seller
+relists). **A schema column is needed for a durable version:**
+`OrbitalSlotLease.askingPrice Float?`, `listedAt DateTime?`,
+`listedForProfileId String?` — then `putListing/getListing` become row
+updates and the registry goes away.
+
+### C-5 / M-8 — Non-finite and unvalidated numerics (fixed)
+
+**Was.** `netWorth` was computed from the raw client resources map
+(`{"iron":1e308}` → Infinity; NaN sorts first in Postgres → rank #1).
+
+**Now.** `validateSyncEconomics` (`sync-validation.ts`) runs before anything
+else: money / totalEarned / totalSpent finite and <= 1e15 (|money|);
+gameYear within [2000, 2400] (STARTING_YEAR is 2026, so the floor is 2000
+rather than the requested 2050); counts finite >= 0; every resource finite,
+>= 0, <= 1e12, slug-shaped key, <= 400 keys; buildings (<= 200) need a
+`definitionId` in `BUILDING_MAP` and a `locationId` in `LOCATION_MAP`, ships
+(<= 50) a `definitionId` in `SHIP_MAP` and a slug-shaped `currentLocation`
+(interstellar ships sit at `transit_<system>` / star-system ids that are
+not in `LOCATION_MAP`, so ships are not location-checked against it),
+services (<= 100) a `definitionId` in `SERVICE_MAP` and a location in
+`LOCATION_MAP`; booleans / numbers coerced and clamped, unknown keys
+dropped, duplicate `instanceId`s deduped. The first problem is a 400
+`{ error, field }`; money is never coerced. Net worth is valued over the
+**authoritative** inventory (the server map advanced this sync, else
+`loadAuthoritativeInventory`, else the clamped client view) with
+`Number.isFinite` guards on every quantity, price and the sum.
+
+Note: an honest client whose save references a definition that has since
+been removed from the registry will now get a 400 on every sync. The save
+loader migrates retired ids as far as recon shows; if a `field:
+'buildings[i].definitionId'` 400 ever appears in logs for a real player,
+soften that one check to drop-and-log.
+
+### H-3 — Global milestones claimable without achieving them (fixed)
+
+`milestones/route.ts` now runs `verifyMilestone`
+(`src/lib/game/milestone-verification.ts`) before writing the row.
+
+| Milestone | Condition | Verification |
+|---|---|---|
+| `milestone_first_billion` | money >= $1B | **server** (clamped `GameProfile.money`) |
+| `milestone_trillion` | money >= $1T | **server** |
+| `milestone_moon` / `_mars` / `_jupiter` / `_outer_system` | presence at lunar_surface / mars_orbit / jupiter_system / outer_system | **server** when a `ColonyClaim` row exists for the location (claim fee burned + presence required), else **snapshot-aged** (completed building at the location) |
+| `milestone_first_orbit` | completed building in leo | **snapshot-aged** |
+| `milestone_asteroid_mine` | completed `mining_asteroid` | **snapshot-aged** |
+| `milestone_ten_research` | >= 10 completed research | **snapshot-aged** |
+| `milestone_ten_services` | >= 10 active services | **snapshot-aged** |
+
+Snapshot-aged = the fact must be in the profile NOW and in an
+`EconomicSnapshot` with `takenAt` >= 24 h old (`MILESTONE_SNAPSHOT_AGE_MS`;
+the daily cron). Condition absent now → 400 "Milestone condition not met";
+no aged snapshot, or none carrying the fact → 409 `verification pending`.
+The 25 %-late rule is measured at the qualifying time (the first aged
+snapshot carrying the fact, or now for server facts), so the 24 h wait never
+pushes an honest player past the target window. `PlayerActivity.metadata`
+and the response carry `verifiedBy`.
+
+### H-5 — market/trade moved the world price with no holdings / funds check (fixed)
+
+**Decision: ledgered escrow path inside the route** (not an order-book IOC
+wrapper). The client applies the trade locally on the 2xx (MarketPanel and
+CraftingPanel call `onSellResource/onBuyResource` with `trade.totalCost`),
+so an IOC wrapper would have double-applied through the pending-delta
+channel and forced a client rewrite, and the NPC curve's liquidity
+semantics differ from the maker's daily volume caps. Smaller correct change:
+
+- profile required (404 otherwise); `market-trade` 30/min per profile;
+- buy: `profile.money >= totalCost`; sell: `resolveSellableQuantity`
+  (server truth + unfolded ledger tail) >= quantity, with
+  `sell_gated_by_server_inventory` audit when the client map alone would
+  have allowed it;
+- price/supply update, wallet move (`money` ± totalCost, `totalEarned` /
+  `totalSpent`), client-view goods move (`resources`), `MarketOrder` record
+  and ledger rows (`market_trade_buy_payment` / `market_trade_buy_goods` /
+  `market_trade_sell_goods` / `market_trade_sell_proceeds`) in ONE
+  transaction;
+- the new reasons are `CLIENT_APPLIED_LEDGER_REASONS`
+  (`ledger-reconcile.ts`) — excluded from the client's pending-delta query
+  (`PENDING_EXCLUDED_LEDGER_REASONS`) because the client already applied
+  them, but NOT stamped folded, so the goods leg folds into
+  `serverResources` like any other server-side move.
+
+### M-2 — Client-writable stash keys (fixed)
+
+`stripStashKeys` drops every `_`-prefixed key from the inbound `workforce`
+object before the merge, so `_resourceBaselineAt`, `_resourceCeilings`,
+`_resourceDivergenceLoggedAt` can only ever be written by the server.
+`_commanders` (`sanitizeCommanderIds`: ids in `COMMANDER_MAP`, deduped,
+<= 30) and `_factionLicenses` (`sanitizeFactionLicenses`: ids in
+`FACTION_LICENSE_MAP`, <= 12) are validated against the registries;
+`_factionRep` keeps its ±100 clamp. Client workforce JSON is capped at
+32 KB.
+
+### M-6 — Three fail-open crons (fixed)
+
+`alliance-cron`, `seasons/cron`, `rivals/snapshot` now call
+`requireCronSecret` (fail-closed, timing-safe) — the hand-rolled checks
+waived auth whenever `CRON_SECRET` was unset or `NODE_ENV !== 'production'`.
+
+### M-7 — Per-profile rate limits on economic routes (added)
+
+`src/lib/game/route-throttle.ts`: bounded in-memory sliding window,
+`allow(profileId, routeKey, max, windowMs)` → `{ allowed, remaining,
+retryAfterMs }` (denied hits are not recorded). Applied: market/orders
+30/min, market/trade 30/min, bounties 10/min, predictions/stake 10/min,
+equity 10/min, colonies 5/min, milestones 5/min, zones/challenge 5/min,
+orbital-slots 10/min, sync 1 per 10 s (C-2). 429 body:
+`{ error: 'rate_limited', routeKey, retryAfterMs }`. `src/middleware.ts`
+adds a per-IP `tycoon-economy` bucket (60/min) over the same POST paths.
+
+### Follow-ups
+
+- Durable slot-transfer listings need the schema columns named under C-3.
+- Phase 1.5 still owes the tighter growth allowance (research / workforce /
+  commanders evaluated for real); the megastructure passive allowance alone
+  lets iron grow ~9 000 units per 60 s window.
+- The `buildings[i].definitionId` 400 (C-5) is the one validation that can
+  hit an honest player with a retired definition — watch logs after deploy.

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { requireCronSecret } from '@/lib/errors';
 import {
   updateRivalryScore,
   checkRivalEvents,
@@ -12,23 +13,14 @@ export const dynamic = 'force-dynamic';
  * Capture snapshots for all active rival pairs.
  * Intended to be called by a cron job every 4 hours.
  *
- * Authentication: expects `Authorization: Bearer <CRON_SECRET>` header
- * OR a valid user session (for manual triggering during development).
+ * Authentication: `Authorization: Bearer <CRON_SECRET>` (requireCronSecret,
+ * fail-closed — M-6, docs/SECURITY_AUDIT_2026-09.md game exploit batch
+ * 2026-09-02). The old check waived auth outside production.
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify cron secret or session
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
-      // Authorized via cron secret
-    } else {
-      // Fallback: allow if running in development
-      if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-    }
+    const unauthorized = requireCronSecret(request);
+    if (unauthorized) return unauthorized;
 
     // Fetch all active rival assignments
     const assignments = await prisma.rivalAssignment.findMany({

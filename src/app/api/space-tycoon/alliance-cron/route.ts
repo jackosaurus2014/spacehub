@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import {
   calculateAlliancePowerScore,
   getAllianceTier,
@@ -46,14 +47,11 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(request: NextRequest) {
   try {
-    // Auth: cron secret or dev mode
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
-    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
-      // Authorized
-    } else if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // M-6 (docs/SECURITY_AUDIT_2026-09.md, game exploit batch 2026-09-02):
+    // fail-closed, timing-safe CRON_SECRET check — the hand-rolled version
+    // waived auth whenever CRON_SECRET was unset or NODE_ENV != production.
+    const unauthorized = requireCronSecret(request);
+    if (unauthorized) return unauthorized;
 
     const stats = {
       membersProcessed: 0,

@@ -29,7 +29,7 @@ const mockSeasonChallenge = { findFirst: jest.fn() };
 const mockMarketFill = { aggregate: jest.fn(), count: jest.fn() };
 const mockAllianceMember = { findUnique: jest.fn() };
 const mockGameChatMessage = { count: jest.fn(), findFirst: jest.fn(), create: jest.fn(), deleteMany: jest.fn() };
-const mockColonyClaim = { findUnique: jest.fn(), count: jest.fn(), create: jest.fn() };
+const mockColonyClaim = { findUnique: jest.fn(), count: jest.fn(), create: jest.fn(), findMany: jest.fn() };
 const mockPlayerActivity = { create: jest.fn() };
 const mockMarketResource = { findUnique: jest.fn() };
 const mockSpeedRunAttempt = { findFirst: jest.fn(), update: jest.fn(), count: jest.fn() };
@@ -430,7 +430,14 @@ describe('POST /api/space-tycoon/milestones (P10)', () => {
   it('SECURITY: stores profile.companyName and the definition reward, ignoring body values', async () => {
     const { POST } = await import('@/app/api/space-tycoon/milestones/route');
     mockGlobalMilestone.findUnique.mockResolvedValue(null);
-    mockGameProfile.findUnique.mockResolvedValue({ id: 'profile-1', companyName: 'Honest Aerospace', createdAt: new Date() });
+    // H-3 (2026-09-02): the condition is verified server-side now — use a
+    // SERVER-VERIFIED milestone (money after the clamp) so the claim goes
+    // through without an aged EconomicSnapshot.
+    mockGameProfile.findUnique.mockResolvedValue({
+      id: 'profile-1', companyName: 'Honest Aerospace', createdAt: new Date(), money: 2_000_000_000,
+      buildingsData: [], activeServicesData: [], completedResearchList: [], unlockedLocationsList: [],
+    });
+    mockColonyClaim.findMany.mockResolvedValue([]);
     mockGlobalMilestone.create.mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({
       claimedAt: new Date(),
       ...data,
@@ -438,7 +445,7 @@ describe('POST /api/space-tycoon/milestones (P10)', () => {
     mockPlayerActivity.create.mockResolvedValue({});
 
     const res = await POST(post('/api/space-tycoon/milestones', {
-      milestoneId: 'milestone_first_orbit',
+      milestoneId: 'milestone_first_billion',
       companyName: 'Rival Dynamics',
       reward: 999_999_999_999,
     }));
@@ -447,7 +454,7 @@ describe('POST /api/space-tycoon/milestones (P10)', () => {
     expect(res.status).toBe(200);
     expect(mockGlobalMilestone.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ companyName: 'Honest Aerospace', reward: 50_000_000 }),
+        data: expect.objectContaining({ companyName: 'Honest Aerospace', reward: 200_000_000 }),
       }),
     );
     expect(JSON.stringify(body)).not.toContain('Rival Dynamics');

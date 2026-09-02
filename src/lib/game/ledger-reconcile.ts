@@ -63,6 +63,23 @@ export const SYNC_AUTHORED_LEDGER_REASONS = [
   ...CLIENT_ATTESTED_LEDGER_REASONS,
   SERVER_RESOURCE_CORRECTION_REASON,
 ] as const;
+/** Game exploit batch 2026-09-02 (H-5): market/trade now debits/credits the
+ *  server columns and ledgers both legs, but the CLIENT applies the trade
+ *  locally on the 2xx (MarketPanel / CraftingPanel contract), so these rows
+ *  must never come back as pending deltas (they would double-apply). They
+ *  are NOT stamped folded: the resource leg folds into serverResources like
+ *  any other server-side move. */
+export const CLIENT_APPLIED_LEDGER_REASONS = [
+  'market_trade_buy_payment',
+  'market_trade_buy_goods',
+  'market_trade_sell_goods',
+  'market_trade_sell_proceeds',
+] as const;
+/** Every reason the client's pending-delta query must exclude. */
+export const PENDING_EXCLUDED_LEDGER_REASONS = [
+  ...CLIENT_ATTESTED_LEDGER_REASONS,
+  ...CLIENT_APPLIED_LEDGER_REASONS,
+] as const;
 
 // ─── Pure math ───────────────────────────────────────────────────────────────
 
@@ -132,8 +149,29 @@ export function reconcileBalance(
 // NOT subject to this ceiling — it is added on top via `moneyDelta`, which
 // is independently server-verified.
 export const MAX_PLAUSIBLE_INCOME_PER_MS = 2_000; // $2M/sec ceiling
-export const MIN_PLAUSIBILITY_ELAPSED_MS = 5_000; // 5s floor (rapid re-syncs)
+/** Below this much wall-clock since the last persisted sync the client gets
+ *  ZERO growth headroom (money may only stay <= prevMoney + ledger deltas).
+ *  Game exploit batch 2026-09-02 (C-2): this used to be a FLOOR — every
+ *  request was granted at least 5 s x $2M/s = $10M of headroom, and since
+ *  every sync also wrote lastSyncAt = now, a tight loop minted ~$2B/min. The
+ *  sync route additionally rejects any sync < SYNC_MIN_INTERVAL_MS apart. */
+export const MIN_PLAUSIBILITY_ELAPSED_MS = 5_000;
 export const MAX_PLAUSIBILITY_ELAPSED_MS = 30 * 24 * 3600_000; // 30d cap
+
+/** Server-enforced per-profile sync cadence (sync/route.ts). The client
+ *  interval is 60 s with a 30 s floor (useGameSync.ts), so 10 s never clips
+ *  an honest client. */
+export const SYNC_MIN_INTERVAL_MS = 10_000;
+
+/** Growth headroom the plausibility ceiling grants for `elapsedMs` of wall
+ *  clock: 0 below MIN_PLAUSIBILITY_ELAPSED_MS, linear up to the 30-day cap.
+ *  Time-proportional, never floored — see C-2 above. */
+export function plausibleIncomeHeadroom(elapsedMs: number): number {
+  const raw = Number.isFinite(elapsedMs) ? elapsedMs : 0;
+  const safe = Math.min(MAX_PLAUSIBILITY_ELAPSED_MS, Math.max(0, raw));
+  if (safe < MIN_PLAUSIBILITY_ELAPSED_MS) return 0;
+  return safe * MAX_PLAUSIBLE_INCOME_PER_MS;
+}
 
 export interface PlausibilityClampResult {
   /** The client-claimed money figure, clamped to the plausible ceiling. */
@@ -149,7 +187,8 @@ export interface PlausibilityClampResult {
  * have grown (via client-simulated tick income only — ledger deltas are
  * handled separately) since `prevMoney` was last persisted, `elapsedMs` ago.
  * Never restricts downward movement (spending, losses, hazards are
- * unrestricted) — only clamps implausible upward jumps.
+ * unrestricted) — only clamps implausible upward jumps. Headroom is strictly
+ * time-proportional: a re-sync inside MIN_PLAUSIBILITY_ELAPSED_MS gets none.
  */
 export function clampPlausibleMoney(
   clientMoney: number,
@@ -158,9 +197,7 @@ export function clampPlausibleMoney(
 ): PlausibilityClampResult {
   const safeClient = Number.isFinite(clientMoney) ? clientMoney : 0;
   const safePrev = Number.isFinite(prevMoney) ? prevMoney : 0;
-  const rawElapsed = Number.isFinite(elapsedMs) ? elapsedMs : MIN_PLAUSIBILITY_ELAPSED_MS;
-  const safeElapsed = Math.min(MAX_PLAUSIBILITY_ELAPSED_MS, Math.max(MIN_PLAUSIBILITY_ELAPSED_MS, rawElapsed));
-  const ceiling = safePrev + safeElapsed * MAX_PLAUSIBLE_INCOME_PER_MS;
+  const ceiling = safePrev + plausibleIncomeHeadroom(elapsedMs);
 
   if (safeClient > ceiling) {
     return { clampedMoney: ceiling, wasClamped: true, rejectedExcess: safeClient - ceiling, ceiling };

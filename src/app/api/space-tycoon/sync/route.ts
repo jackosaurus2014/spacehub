@@ -22,10 +22,26 @@ import {
   reconcileBalance,
   applyResourceDeltas,
   clampPlausibleMoney,
-  CLIENT_ATTESTED_LEDGER_REASONS,
+  PENDING_EXCLUDED_LEDGER_REASONS,
   SERVER_RESOURCE_CORRECTION_REASON,
+  SYNC_MIN_INTERVAL_MS,
   type LedgerEntryLite,
 } from '@/lib/game/ledger-reconcile';
+// Game exploit batch 2026-09-02 (docs/SECURITY_AUDIT_2026-09.md): payload
+// validation (C-5 / M-8), stash-key hygiene (M-2), the server-derived
+// first-sync kit (C-1), the per-profile cadence gate (C-2b) and the
+// authoritative-inventory valuation (M-8).
+import {
+  validateSyncEconomics,
+  stripStashKeys,
+  sanitizeCommanderIds,
+  sanitizeFactionLicenses,
+  buildFirstSyncKit,
+  type FirstSyncKit,
+  type ValidatedSyncEconomics,
+} from '@/lib/game/sync-validation';
+import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
+import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
 import { buildMarketSnapshot } from '@/lib/game/spot-price';
 import { isLedgerAvailable, recordSyncAuthoredLedger } from '@/lib/game/server-ledger';
 import { resolveMetricCurrentValue } from '@/lib/game/market-share';
@@ -84,17 +100,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Invalid sync payload', field: 'body' }, { status: 400 });
+    }
+    // C-5 / M-8: every economic number must be finite and capped, every asset
+    // must reference a real definition / location. A bad payload is a 400
+    // with the first problem — money is never silently coerced.
+    const validated = validateSyncEconomics(body as Record<string, unknown>);
+    if (!validated.ok) {
+      return NextResponse.json({ error: validated.error, field: validated.field }, { status: 400 });
+    }
+    // `economics` is what the rest of the route reads. For a brand-new
+    // profile it is REPLACED by the server-derived first-sync kit below.
+    let economics: ValidatedSyncEconomics = validated.data;
     const {
-      money = 0,
-      totalEarned = 0,
-      totalSpent = 0,
-      buildingCount = 0,
-      researchCount = 0,
-      serviceCount = 0,
-      locationsUnlocked = 0,
-      resources = {},
-      gameYear = 2026,
       companyName = 'Untitled Aerospace',
       minedThisTick = {},
       npcMarketFlows = {},
@@ -122,15 +142,15 @@ export async function POST(request: Request) {
       // the growth the server map accepts this sync.
       craftedThisTick = {},
       builtThisTick = {},
-      // Full state for multiplayer visibility
-      buildings = [],
-      activeServices = [],
-      unlockedLocations = [],
-      completedResearch = [],
-      ships = [],
+      // Full state for multiplayer visibility (buildings / activeServices /
+      // unlockedLocations / completedResearch / ships) now arrives through
+      // `economics` above, validated.
       workforce = null,
       commanderIds = [],
       ledgerAck = 0,
+      // C-1: the client's chosen starting archetype, validated against the
+      // registry server-side and only ever read on the FIRST sync.
+      startingArchetype = null,
       // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 7): faction
       // standing isn't persisted server-side anywhere (client-only
       // GameState.factionReputation) — market/trade needs it to finally
@@ -149,9 +169,8 @@ export async function POST(request: Request) {
     // the Magnate broker-fee reduction server-side from definitions. JSON
     // column — no schema change. Same client-claimed trust level as the
     // rest of the sync payload; the fee reduction is clamped at read time.
-    const safeCommanderIds = Array.isArray(commanderIds)
-      ? commanderIds.filter((c: unknown) => typeof c === 'string').slice(0, 30)
-      : [];
+    // M-2: commander ids must exist in the registry (roster-capped).
+    const safeCommanderIds = sanitizeCommanderIds(commanderIds);
     // E7: sanitize to a flat string->finite-number map, capped at 6 entries
     // (one per faction) — defense in depth against a hostile payload.
     const safeFactionRep: Record<string, number> = {};
@@ -162,23 +181,26 @@ export async function POST(request: Request) {
         }
       }
     }
-    // E3.6: at most six licences exist; cap and type-filter defensively.
-    const safeFactionLicenses = Array.isArray(factionLicenses)
-      ? (factionLicenses as unknown[]).filter((x): x is string => typeof x === 'string').slice(0, 12)
-      : [];
+    // E3.6 / M-2: licence ids must exist in the registry (capped).
+    const safeFactionLicenses = sanitizeFactionLicenses(factionLicenses);
     const extras: Record<string, unknown> = { _commanders: safeCommanderIds };
     if (Object.keys(safeFactionRep).length > 0) extras._factionRep = safeFactionRep;
     if (safeFactionLicenses.length > 0) extras._factionLicenses = safeFactionLicenses;
-    const workforceData = workforce && typeof workforce === 'object'
-      ? { ...(workforce as Record<string, unknown>), ...extras }
-      : (safeCommanderIds.length > 0 || Object.keys(safeFactionRep).length > 0 || safeFactionLicenses.length > 0 ? extras : workforce);
+    // M-2: the client's own workforce object may NEVER carry a `_`-prefixed
+    // key — those are server stash (`_resourceBaselineAt`, `_resourceCeilings`,
+    // `_resourceDivergenceLoggedAt`) or server-validated claims (above). Strip
+    // them before the merge so a forged `_resourceBaselineAt` cannot reset
+    // the phase-1 ratchet or hand the profile forged ceilings.
+    const clientWorkforce = stripStashKeys(workforce);
+    const workforceData: Record<string, unknown> | null = clientWorkforce
+      ? { ...clientWorkforce, ...extras }
+      : (safeCommanderIds.length > 0 || Object.keys(safeFactionRep).length > 0 || safeFactionLicenses.length > 0 ? extras : null);
 
     // ── One Wallet: reconcile client money against the server delta ledger ──
     // (see route header). Falls back to the raw client figure when the ledger
     // table is unavailable or the profile doesn't exist yet.
-    const clientMoney = typeof money === 'number' && Number.isFinite(money) ? money : 0;
-    const clientResources: Record<string, number> =
-      typeof resources === 'object' && resources !== null ? (resources as Record<string, number>) : {};
+    const clientMoney = economics.money;
+    const clientResources: Record<string, number> = economics.resources;
     let reconciledMoney = clientMoney;
     let reconciledResources: Record<string, number> = clientResources;
     let ledgerInfo: {
@@ -264,7 +286,7 @@ export async function POST(request: Request) {
           where: {
             profileId: existingProfile.id,
             seq: { gt: safeAck },
-            reason: { notIn: [...CLIENT_ATTESTED_LEDGER_REASONS] },
+            reason: { notIn: [...PENDING_EXCLUDED_LEDGER_REASONS] },
           },
           orderBy: { seq: 'asc' },
           take: 1000,
@@ -293,6 +315,83 @@ export async function POST(request: Request) {
       reconciledMoney = clientMoney;
       reconciledResources = clientResources;
       ledgerInfo = null;
+    }
+
+    // ── C-2(b): server-enforced per-profile sync cadence ───────────────────
+    // The plausibility ceilings are time-proportional now (no per-request
+    // floor), but a tight loop would still spend DB writes and re-stamp
+    // lastSyncAt. Truth = the row's lastSyncAt; fast path = an in-memory
+    // per-profile window that also closes the concurrent-request race two
+    // tabs could otherwise win. The client syncs every 60 s (30 s floor).
+    if (existingProfile) {
+      if (elapsedSinceLastSyncMs < SYNC_MIN_INTERVAL_MS) {
+        return NextResponse.json(
+          { error: 'sync_too_frequent', retryAfterMs: Math.max(1, SYNC_MIN_INTERVAL_MS - elapsedSinceLastSyncMs) },
+          { status: 429 },
+        );
+      }
+      const cadence = throttleAllow(existingProfile.id, 'sync', 1, SYNC_MIN_INTERVAL_MS);
+      if (!cadence.allowed) {
+        return NextResponse.json({ error: 'sync_too_frequent', retryAfterMs: cadence.retryAfterMs }, { status: 429 });
+      }
+    }
+
+    // ── C-1: a brand-new profile ignores the body's economics ──────────────
+    // The create path used to persist money / totalEarned / resources /
+    // buildings / research verbatim from the first POST (rank #1 in one
+    // request; phase-2 adoption later copied the forged map into
+    // serverResources). The first row is now the server-derived kit:
+    // STARTING_MONEY (or the validated archetype's startingMoney), the
+    // archetype's starting resources / buildings / services, nothing else.
+    // The phase-1 marker and ceilings are set from the kit in this same
+    // request, and serverResources is adopted from the kit — so the NEXT
+    // sync is already clamped against server defaults, never against the
+    // client's first claim.
+    let firstSyncKit: FirstSyncKit | null = null;
+    if (!existingProfile) {
+      firstSyncKit = buildFirstSyncKit(startingArchetype);
+      economics = {
+        ...economics,
+        money: firstSyncKit.money,
+        totalEarned: 0,
+        totalSpent: 0,
+        gameYear: firstSyncKit.gameYear,
+        resources: { ...firstSyncKit.resources },
+        buildings: firstSyncKit.buildings,
+        ships: firstSyncKit.ships,
+        activeServices: firstSyncKit.activeServices,
+        unlockedLocations: firstSyncKit.unlockedLocations,
+        completedResearch: firstSyncKit.completedResearch,
+        buildingCount: firstSyncKit.buildings.filter(b => b.isComplete).length,
+        researchCount: 0,
+        serviceCount: firstSyncKit.activeServices.length,
+        locationsUnlocked: firstSyncKit.unlockedLocations.length,
+      };
+      reconciledMoney = firstSyncKit.money;
+      reconciledResources = { ...firstSyncKit.resources };
+      ledgerInfo = null;
+      if (Math.abs(clientMoney - firstSyncKit.money) > 0.01 * firstSyncKit.money) {
+        logger.info('First sync: client economics ignored', {
+          userId: session.user.id, clientMoney, serverStartingMoney: firstSyncKit.money,
+          archetype: firstSyncKit.archetypeId,
+        });
+        try {
+          await prisma.marketAuditLog.create({
+            data: {
+              eventType: 'first_sync_body_ignored',
+              details: {
+                userId: session.user.id,
+                clientMoney,
+                serverStartingMoney: firstSyncKit.money,
+                archetype: firstSyncKit.archetypeId,
+                clientResourceKeys: Object.keys(clientResources).length,
+                clientBuildings: validated.data.buildings.length,
+              },
+              severity: 'info',
+            },
+          });
+        } catch { /* audit log is best-effort */ }
+      }
     }
 
     // ── Server-authoritative inventory, phase 1: per-resource plausibility ──
@@ -347,7 +446,7 @@ export async function POST(request: Request) {
         resourceExtras[RESOURCE_CEILINGS_KEY] = selectCeilingsToStash(ceilings, reconciledResources);
 
         if (baselinePredatesThisSync) {
-          const { clamped, rejected } = clampResources(reconciledResources, ceilings);
+          const { clamped, rejected } = clampResources(reconciledResources, ceilings, ceilingReport.elapsedMonths);
           const enforce = resourceClampMode === 'enforce';
           resourceClampInfo = { mode: resourceClampMode, baselined: true, rejected, enforced: enforce && rejected.length > 0 };
           if (rejected.length > 0) {
@@ -387,6 +486,27 @@ export async function POST(request: Request) {
       } catch (clampError) {
         // Plausibility is best-effort; never block the sync.
         logger.error('Resource plausibility clamp failed', { error: String(clampError) });
+      }
+    } else if (resourceClampMode !== 'off' && firstSyncKit) {
+      // C-1: baseline the brand-new row on the SERVER kit right now, so the
+      // next sync is clamped against it (no "first sync after deploy" free
+      // adoption for a new profile).
+      try {
+        resourceExtras[RESOURCE_BASELINE_KEY] = new Date().toISOString();
+        ceilingReport = computeResourceCeilings({
+          prevResources: firstSyncKit.resources,
+          prevBuildingsData: firstSyncKit.buildings,
+          prevShipsData: firstSyncKit.ships,
+          prevActiveServices: firstSyncKit.activeServices,
+          prevResearch: firstSyncKit.completedResearch,
+          prevWorkforce: null,
+          ledgerDeltas: null,
+          elapsedMs: 0,
+        });
+        resourceExtras[RESOURCE_CEILINGS_KEY] = selectCeilingsToStash(ceilingReport.ceilings, firstSyncKit.resources);
+        resourceClampInfo = { mode: resourceClampMode, baselined: true, rejected: [], enforced: false };
+      } catch (kitError) {
+        logger.error('First-sync baseline failed', { error: String(kitError) });
       }
     }
 
@@ -558,6 +678,19 @@ export async function POST(request: Request) {
         buildAccepted = {};
         serverInventoryInfo = null;
       }
+    } else if (resourceClampMode !== 'off' && firstSyncKit) {
+      // C-1: server truth for a new profile IS the kit. Adopting here means
+      // the phase-2 "adopt the client view once the marker predates the
+      // sync" path never runs for this profile.
+      const adopted: Record<string, number> = {};
+      for (const [k, v] of Object.entries(firstSyncKit.resources)) {
+        if (typeof v === 'number' && Number.isFinite(v) && v > 0) adopted[k] = v;
+      }
+      serverResourcesToPersist = adopted;
+      serverInventoryInfo = {
+        mode: resourceClampMode, adopted: true, capped: [], divergence: [], corrections: {}, corrected: false,
+        craft: { accepted: {}, rejected: [] }, build: { accepted: {}, rejected: [] },
+      };
     }
 
     // Calculate net worth using live market prices (over reconciled holdings).
@@ -566,6 +699,20 @@ export async function POST(request: Request) {
     // below — the spot price that now values delivery contracts, NPC
     // settlement, and mega-project contributions is the same live price shown
     // here in net worth.
+    // M-8: value the AUTHORITATIVE inventory, never the raw client map — the
+    // server map advanced this sync when phase 2 ran, else the stored server
+    // map + unfolded ledger tail (loadAuthoritativeInventory), else (no
+    // server map yet) the reconciled + clamped client view. Every term is
+    // finite-guarded so no payload can push NaN / Infinity into netWorth.
+    let valuationResources: Record<string, number> = reconciledResources;
+    if (serverResourcesToPersist) {
+      valuationResources = serverResourcesToPersist;
+    } else if (existingProfile && resourceClampMode !== 'off') {
+      try {
+        const inv = await loadAuthoritativeInventory(existingProfile);
+        if (inv.source === 'server') valuationResources = inv.resources;
+      } catch { /* fall back to the clamped client view */ }
+    }
     let resourceValue = 0;
     let marketSnapshot: { prices: Record<string, number>; base?: Record<string, number>; asOf: number } | null = null;
     try {
@@ -573,10 +720,11 @@ export async function POST(request: Request) {
         select: { slug: true, currentPrice: true, basePrice: true, minPrice: true, maxPrice: true },
       });
       const priceMap = new Map(marketResources.map(r => [r.slug, r.currentPrice]));
-      for (const [id, qty] of Object.entries(reconciledResources)) {
-        if (typeof qty === 'number') {
-          resourceValue += qty * (priceMap.get(id) || 50_000);
-        }
+      for (const [id, qty] of Object.entries(valuationResources)) {
+        if (typeof qty !== 'number' || !Number.isFinite(qty) || qty <= 0) continue;
+        const price = priceMap.get(id);
+        const safePrice = typeof price === 'number' && Number.isFinite(price) && price > 0 ? price : 50_000;
+        resourceValue += qty * safePrice;
       }
       marketSnapshot = buildMarketSnapshot(
         marketResources.map(r => ({
@@ -590,8 +738,8 @@ export async function POST(request: Request) {
       );
     } catch {
       // Fallback to flat $50K/unit
-      for (const qty of Object.values(reconciledResources)) {
-        if (typeof qty === 'number') resourceValue += qty * 50_000;
+      for (const qty of Object.values(valuationResources)) {
+        if (typeof qty === 'number' && Number.isFinite(qty) && qty > 0) resourceValue += qty * 50_000;
       }
     }
     // M1/F4: book value of completed capital assets (buildings + ships),
@@ -603,21 +751,19 @@ export async function POST(request: Request) {
     // are client-reported (same trust level as buildingCount/serviceCount
     // elsewhere in this route) and capped defensively before iterating.
     let assetBookValue = 0;
-    if (Array.isArray(buildings)) {
-      for (const b of buildings.slice(0, 200)) {
-        if (!b || !b.isComplete) continue;
-        const def = BUILDING_MAP.get(b.definitionId);
-        if (def) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
-      }
+    for (const b of economics.buildings) {
+      if (!b.isComplete) continue;
+      const def = BUILDING_MAP.get(b.definitionId);
+      if (def && Number.isFinite(def.baseCost)) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
     }
-    if (Array.isArray(ships)) {
-      for (const s of ships.slice(0, 50)) {
-        if (!s || !s.isBuilt) continue;
-        const def = SHIP_MAP.get(s.definitionId);
-        if (def) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
-      }
+    for (const sh of economics.ships) {
+      if (!sh.isBuilt) continue;
+      const def = SHIP_MAP.get(sh.definitionId);
+      if (def && Number.isFinite(def.baseCost)) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
     }
-    const netWorth = Math.round(reconciledMoney + resourceValue + assetBookValue);
+    const netWorthRaw = reconciledMoney + resourceValue + assetBookValue;
+    const netWorth = Number.isFinite(netWorthRaw) ? Math.round(netWorthRaw) : Math.round(reconciledMoney);
+    const { totalEarned, totalSpent, buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear } = economics;
 
     // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 5): server-
     // aggregated orbital-slot occupancy (finishes the computeOrbitalSlotReport
@@ -653,12 +799,12 @@ export async function POST(request: Request) {
       // MegaProject table/rows may not exist yet — no bonus, matches pre-E7.
     }
 
-    // Sanitize arrays for storage
-    const safeBuildings = Array.isArray(buildings) ? buildings.slice(0, 200) : [];
-    const safeServices = Array.isArray(activeServices) ? activeServices.slice(0, 100) : [];
-    const safeLocations = Array.isArray(unlockedLocations) ? unlockedLocations.filter((l: unknown) => typeof l === 'string').slice(0, 30) : [];
-    const safeResearch = Array.isArray(completedResearch) ? completedResearch.filter((r: unknown) => typeof r === 'string').slice(0, 500) : [];
-    const safeShips = Array.isArray(ships) ? ships.slice(0, 50) : [];
+    // Validated (C-5) arrays for storage — or the first-sync kit (C-1).
+    const safeBuildings = economics.buildings;
+    const safeServices = economics.activeServices;
+    const safeLocations = economics.unlockedLocations;
+    const safeResearch = economics.completedResearch;
+    const safeShips = economics.ships;
 
     // Referral (2026-08-28): remember whether this sync is creating the
     // profile so an invite cookie can be attributed exactly once.
@@ -684,39 +830,46 @@ export async function POST(request: Request) {
       ? { ...((workforceData && typeof workforceData === 'object') ? (workforceData as Record<string, unknown>) : {}), ...resourceExtras }
       : workforceData;
 
-    // Upsert game profile with full state
-    const profile = await prisma.gameProfile.upsert({
-      where: { userId: session.user.id },
-      create: {
-        userId: session.user.id,
-        companyName: safeCompanyName,
-        money: reconciledMoney, totalEarned, totalSpent, netWorth,
-        buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
-        resources: reconciledResources as object,
-        buildingsData: safeBuildings,
-        activeServicesData: safeServices,
-        unlockedLocationsList: safeLocations,
-        completedResearchList: safeResearch,
-        shipsData: safeShips,
-        workforceData: workforceDataToPersist as object,
-        lastSyncAt: new Date(),
-      },
-      update: {
-        companyName: safeCompanyName,
-        money: reconciledMoney, totalEarned, totalSpent, netWorth,
-        buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
-        resources: reconciledResources as object,
-        buildingsData: safeBuildings,
-        activeServicesData: safeServices,
-        unlockedLocationsList: safeLocations,
-        completedResearchList: safeResearch,
-        shipsData: safeShips,
-        workforceData: workforceDataToPersist as object,
-        // Phase 2: undefined = leave the server-owned map untouched.
-        serverResources: serverResourcesToPersist as object | undefined,
-        lastSyncAt: new Date(),
-      },
-    });
+    // C-1: a read that found no row must not race a row that exists (a
+    // transient read failure would otherwise overwrite a real profile with
+    // the starter kit). New profiles are CREATED, never upserted.
+    if (!existingProfile && existedBefore) {
+      throw new Error('Profile read inconsistency: row exists but was not loaded');
+    }
+
+    const profileColumns = {
+      companyName: safeCompanyName,
+      money: reconciledMoney, totalEarned, totalSpent, netWorth,
+      buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
+      resources: reconciledResources as object,
+      buildingsData: safeBuildings as unknown as object,
+      activeServicesData: safeServices as unknown as object,
+      unlockedLocationsList: safeLocations,
+      completedResearchList: safeResearch,
+      shipsData: safeShips as unknown as object,
+      workforceData: workforceDataToPersist as object,
+      lastSyncAt: new Date(),
+    };
+
+    const profile = existingProfile
+      ? await prisma.gameProfile.upsert({
+          where: { userId: session.user.id },
+          create: { userId: session.user.id, ...profileColumns },
+          update: {
+            ...profileColumns,
+            // Phase 2: undefined = leave the server-owned map untouched.
+            serverResources: serverResourcesToPersist as object | undefined,
+          },
+        })
+      : await prisma.gameProfile.create({
+          data: {
+            userId: session.user.id,
+            ...profileColumns,
+            // C-1: server truth for a new profile is the kit (or {}); it is
+            // never adopted from the client view.
+            serverResources: (serverResourcesToPersist ?? {}) as object,
+          },
+        });
 
     // Phase 2 follow-through (best-effort, after the row is written): stamp
     // the folded ledger rows, then write the sync-authored rows — corrections
@@ -1623,6 +1776,11 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       profileId: profile.id,
+      // C-1: the first sync of a profile persists the server kit, not the
+      // body — the client is told so it can reconcile against the server
+      // figures if it wants to.
+      firstSync: !!firstSyncKit,
+      startingArchetype: firstSyncKit ? firstSyncKit.archetypeId : undefined,
       netWorth,
       // One Wallet: reconciled balance + pending deltas for client adoption.
       reconciledMoney,

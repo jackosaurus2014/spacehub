@@ -6,6 +6,10 @@ import { logger } from '@/lib/logger';
 import { ORBITAL_SLOT_POOLS, SATURATED_OCCUPANCY_PCT } from '@/lib/game/spatial-strategy';
 import { computeMinBid, isSlotPoolLocation, AUCTION_WINDOW_MS, applySoftClose } from '@/lib/game/orbital-slot-auctions';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
+import {
+  putListing, getListing, removeListing, listOpenListings, listingPriceBand,
+} from '@/lib/game/slot-transfer-listings';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,9 +25,22 @@ export const dynamic = 'force-dynamic';
  * POST — { action: 'bid', auctionId, amount } place/revise a sealed bid.
  *        { action: 'open', locationId } manually request an auction once
  *          saturated (the resolve cron also auto-opens these).
- *        { action: 'transfer', leaseId, toCompanyName, price } P2P sale of
- *          an existing lease at a mutually agreed price ("ownership
- *          transfers at market-clearing prices" — canon).
+ *        { action: 'list', leaseId, askingPrice, toProfileId? } the HOLDER
+ *          posts a lease for sale (asking price banded around the lease's
+ *          reference price; optional pinned buyer).
+ *        { action: 'unlist', leaseId } the holder withdraws the listing.
+ *        { action: 'accept', leaseId } the BUYER's own session pays the
+ *          asking price; debit/credit ledgered in one transaction.
+ *
+ * Game exploit batch 2026-09-02 (C-3): the old `transfer` action let the
+ * seller name a buyer by (non-unique) companyName and a price, and debited
+ * that buyer on the spot — and its "Buyer has insufficient funds" 400 was a
+ * balance oracle. Counterparties are now resolved by profileId only, the
+ * buyer consents by calling `accept` from their own session, and no
+ * response ever reveals whether a third party can afford anything
+ * (generic 400 "Transfer not available"). Listings live in
+ * slot-transfer-listings.ts (in-memory; see its header for the schema
+ * column a durable version needs).
  */
 export async function GET() {
   try {
@@ -36,6 +53,7 @@ export async function GET() {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
     }
 
+    const listings = listOpenListings(profile.id);
     const [occupancyRows, openAuctions, myLeases] = await Promise.all([
       prisma.orbitalSlotOccupancy.findMany(),
       prisma.orbitalSlotAuction.findMany({
@@ -87,11 +105,25 @@ export async function GET() {
         leaseAmount: l.leaseAmount,
         startedAt: l.startedAt.toISOString(),
         expiresAt: l.expiresAt.toISOString(),
+        listing: (() => {
+          const lst = getListing(l.id);
+          return lst ? { askingPrice: lst.askingPrice, toProfileId: lst.toProfileId, expiresAt: new Date(lst.expiresAtMs).toISOString() } : null;
+        })(),
       })),
+      // C-3: leases other holders have listed that this profile may accept.
+      transferListings: listings
+        .filter(l => l.sellerProfileId !== profile.id)
+        .map(l => ({
+          leaseId: l.leaseId,
+          locationId: l.locationId,
+          askingPrice: l.askingPrice,
+          pinnedToMe: l.toProfileId === profile.id,
+          expiresAt: new Date(l.expiresAtMs).toISOString(),
+        })),
     });
   } catch (error) {
     logger.error('Orbital slots fetch error', { error: String(error) });
-    return NextResponse.json({ pools: [], openAuctions: [], myLeases: [] });
+    return NextResponse.json({ pools: [], openAuctions: [], myLeases: [], transferListings: [] });
   }
 }
 
@@ -106,7 +138,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+    // M-7 (docs/SECURITY_AUDIT_2026-09.md, game exploit batch 2026-09-02):
+    // per-profile budget on this economic route.
+    const throttle = throttleAllow(profile.id, 'orbital-slots', 10, 60_000);
+    if (!throttle.allowed) {
+      return NextResponse.json(throttledBody('orbital-slots', throttle), { status: 429 });
+    }
+
     const ledgerOn = await isLedgerAvailable();
 
     if (body.action === 'open') {
@@ -197,38 +239,107 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.action === 'transfer') {
-      const { leaseId, toCompanyName, price } = body;
-      if (!leaseId || !toCompanyName || !price || price <= 0) {
-        return NextResponse.json({ error: 'Invalid transfer parameters' }, { status: 400 });
+      // C-3: the one-shot seller-initiated debit is gone for good.
+      return NextResponse.json(
+        { error: 'Direct transfers are disabled. List the lease (action "list") and let the buyer accept it from their own session.' },
+        { status: 410 },
+      );
+    }
+
+    if (body.action === 'list') {
+      const { leaseId, askingPrice, toProfileId } = body;
+      if (typeof leaseId !== 'string' || !leaseId || typeof askingPrice !== 'number' || !Number.isFinite(askingPrice) || askingPrice <= 0) {
+        return NextResponse.json({ error: 'Invalid listing parameters' }, { status: 400 });
       }
       const lease = await prisma.orbitalSlotLease.findUnique({ where: { id: leaseId } });
-      if (!lease || lease.status !== 'active' || lease.holderId !== profile.id) {
+      if (!lease || lease.status !== 'active' || lease.holderId !== profile.id || lease.expiresAt <= new Date()) {
         return NextResponse.json({ error: 'You do not hold this lease' }, { status: 400 });
       }
-      const buyer = await prisma.gameProfile.findFirst({ where: { companyName: toCompanyName } });
-      if (!buyer || buyer.id === profile.id) {
-        return NextResponse.json({ error: 'Buyer not found' }, { status: 404 });
+      const band = listingPriceBand(lease.locationId, lease.leaseAmount);
+      const price = Math.round(askingPrice);
+      if (price < band.min || price > band.max) {
+        return NextResponse.json(
+          { error: `Asking price must be between $${band.min.toLocaleString()} and $${band.max.toLocaleString()}`, min: band.min, max: band.max },
+          { status: 400 },
+        );
       }
-      const transferAmount = Math.round(price);
-      if (ledgerOn && buyer.money < transferAmount) {
-        return NextResponse.json({ error: 'Buyer has insufficient funds' }, { status: 400 });
-      }
-
-      await prisma.$transaction(async (tx) => {
-        await tx.orbitalSlotLease.update({
-          where: { id: leaseId },
-          data: { holderId: buyer.id, leaseAmount: transferAmount, transferredFromId: profile.id },
-        });
-        if (ledgerOn) {
-          await tx.gameProfile.update({ where: { id: buyer.id }, data: { money: { decrement: transferAmount } } });
-          await tx.gameProfile.update({ where: { id: profile.id }, data: { money: { increment: transferAmount } } });
-          await recordLedger(tx, { profileId: buyer.id, moneyDelta: -transferAmount, reason: 'slot_lease_transfer_payment', refId: leaseId });
-          await recordLedger(tx, { profileId: profile.id, moneyDelta: transferAmount, reason: 'slot_lease_transfer_receipt', refId: leaseId });
+      // Counterparties by profileId only. A pinned buyer must exist and not
+      // be the seller; nothing about their balance is ever read here.
+      let pinned: string | null = null;
+      if (toProfileId !== undefined && toProfileId !== null) {
+        if (typeof toProfileId !== 'string' || !toProfileId || toProfileId === profile.id) {
+          return NextResponse.json({ error: 'Invalid buyer' }, { status: 400 });
         }
+        const exists = await prisma.gameProfile.findUnique({ where: { id: toProfileId }, select: { id: true } });
+        if (!exists) {
+          return NextResponse.json({ error: 'Invalid buyer' }, { status: 400 });
+        }
+        pinned = exists.id;
+      }
+      const listing = putListing({ leaseId, sellerProfileId: profile.id, locationId: lease.locationId, askingPrice: price, toProfileId: pinned });
+      logger.info('Orbital slot lease listed', { leaseId, seller: profile.id, askingPrice: price, pinned: !!pinned });
+      return NextResponse.json({
+        success: true,
+        listing: { leaseId, askingPrice: listing.askingPrice, toProfileId: listing.toProfileId, expiresAt: new Date(listing.expiresAtMs).toISOString() },
       });
+    }
 
-      logger.info('Orbital slot lease transferred', { leaseId, from: profile.id, to: buyer.id, transferAmount });
+    if (body.action === 'unlist') {
+      const { leaseId } = body;
+      if (typeof leaseId !== 'string' || !leaseId) {
+        return NextResponse.json({ error: 'Invalid listing parameters' }, { status: 400 });
+      }
+      const listing = getListing(leaseId);
+      if (!listing || listing.sellerProfileId !== profile.id) {
+        return NextResponse.json({ error: 'No such listing' }, { status: 400 });
+      }
+      removeListing(leaseId);
       return NextResponse.json({ success: true });
+    }
+
+    if (body.action === 'accept') {
+      const { leaseId } = body;
+      if (typeof leaseId !== 'string' || !leaseId) {
+        return NextResponse.json({ error: 'Invalid transfer parameters' }, { status: 400 });
+      }
+      const unavailable = () => NextResponse.json({ error: 'Transfer not available' }, { status: 400 });
+      const listing = getListing(leaseId);
+      if (!listing) return unavailable();
+      if (listing.sellerProfileId === profile.id) return unavailable();
+      if (listing.toProfileId && listing.toProfileId !== profile.id) return unavailable();
+      const lease = await prisma.orbitalSlotLease.findUnique({ where: { id: leaseId } });
+      if (!lease || lease.status !== 'active' || lease.holderId !== listing.sellerProfileId || lease.expiresAt <= new Date()) {
+        removeListing(leaseId);
+        return unavailable();
+      }
+      const transferAmount = listing.askingPrice;
+      // The BUYER is the session: telling them about their OWN balance is fine.
+      if (ledgerOn && profile.money < transferAmount) {
+        return NextResponse.json({ error: 'Insufficient funds to accept this listing' }, { status: 400 });
+      }
+
+      const sellerId = listing.sellerProfileId;
+      const moved = await prisma.$transaction(async (tx) => {
+        // Atomic against a concurrent accept / expiry: the lease must still
+        // be the seller's and active at write time.
+        const updated = await tx.orbitalSlotLease.updateMany({
+          where: { id: leaseId, holderId: sellerId, status: 'active' },
+          data: { holderId: profile.id, leaseAmount: transferAmount, transferredFromId: sellerId },
+        });
+        if (updated.count !== 1) return false;
+        if (ledgerOn) {
+          await tx.gameProfile.update({ where: { id: profile.id }, data: { money: { decrement: transferAmount }, totalSpent: { increment: transferAmount } } });
+          await tx.gameProfile.update({ where: { id: sellerId }, data: { money: { increment: transferAmount }, totalEarned: { increment: transferAmount } } });
+          await recordLedger(tx, { profileId: profile.id, moneyDelta: -transferAmount, reason: 'slot_lease_transfer_payment', refId: leaseId });
+          await recordLedger(tx, { profileId: sellerId, moneyDelta: transferAmount, reason: 'slot_lease_transfer_receipt', refId: leaseId });
+        }
+        return true;
+      });
+      removeListing(leaseId);
+      if (!moved) return unavailable();
+
+      logger.info('Orbital slot lease transferred', { leaseId, from: sellerId, to: profile.id, transferAmount });
+      return NextResponse.json({ success: true, leaseId, paid: ledgerOn ? transferAmount : 0 });
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });

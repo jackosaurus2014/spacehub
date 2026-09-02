@@ -138,7 +138,17 @@ export type LedgerReason =
   // downward delta that walks a drifted client map back to server truth.
   | 'client_craft_output'
   | 'client_build_spend'
-  | 'server_resource_correction';
+  | 'server_resource_correction'
+  // Game exploit batch 2026-09-02 (H-5): market/trade (the NPC price curve)
+  // is ledgered on both legs — money and goods — for buys and sells. The
+  // client applies the trade locally on the 2xx, so these are excluded from
+  // the client's pending-delta query (ledger-reconcile.ts
+  // CLIENT_APPLIED_LEDGER_REASONS) but the goods leg still folds into
+  // serverResources like any other server-side move.
+  | 'market_trade_buy_payment'
+  | 'market_trade_buy_goods'
+  | 'market_trade_sell_goods'
+  | 'market_trade_sell_proceeds';
 
 export interface LedgerWrite {
   profileId: string;
