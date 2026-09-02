@@ -8,6 +8,14 @@
 // `initialLocationId` (pre-target a location) and `lockLocation` (hide the
 // location switcher when embedded in the map context panel, where the
 // location is already implied by what the player selected on the map).
+//
+// Design-system migration (GAME_DESIGN_REVIEW_2026-09 §3): chrome moved to
+// the shared kit — Console for every card, DataTable for the spec table,
+// Telemetry for the live P&L preview, StatusPip wherever a colour carried
+// state (queue/slot gate, cap, supply efficiency, damage, operating status),
+// the five tokens instead of cyan/amber/red/emerald utilities and hex, the
+// site's btn-* CTA classes, motion-safe: on every transition, and no raw
+// emoji. Every handler, check and number is unchanged.
 
 import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
@@ -64,11 +72,18 @@ import { getEffectiveMaintenancePerMonth } from '@/lib/game/flagship-economics';
 import { getCapabilityChipsForDefinition, summarizeCapabilities } from '@/lib/game/building-capabilities';
 import { resourceCategoryIcon, type IconName } from '@/lib/game/icons';
 import Image from 'next/image';
-import { ConsolePanel } from './chrome';
+import Console from '@/components/ui/Console';
+import DataTable, { type DataTableColumn } from '@/components/ui/DataTable';
+import StatusPip from '@/components/ui/StatusPip';
+import Telemetry from '@/components/ui/Telemetry';
 import GameIcon from './GameIcon';
 import HoloTip, { Concept } from './HoloTip';
 
-/** Compact "consumes → produces" chip row for a building recipe. */
+const OVERLINE = 'font-body text-[0.6875rem] font-medium uppercase leading-[1.4] tracking-[0.14em] text-[var(--ink-3)]';
+const CHIP = 'inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-[var(--radius-badge)] border border-[var(--line)] bg-[var(--elev)]';
+
+/** Compact "consumes → produces" chip row for a building recipe. Direction is
+ *  carried by the word (in/out) and the arrow, never by colour alone. */
 function RecipeChips({ consumes, produces }: { consumes?: Record<string, number>; produces?: Record<string, number> }) {
   if (!consumes && !produces) return null;
   const chip = (resourceId: string, perMonth: number, kind: 'in' | 'out') => {
@@ -77,14 +92,12 @@ function RecipeChips({ consumes, produces }: { consumes?: Record<string, number>
     return (
       <span
         key={`${kind}-${resourceId}`}
-        className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border ${
-          kind === 'in'
-            ? 'text-amber-300/90 border-amber-500/20 bg-amber-500/5'
-            : 'text-emerald-300/90 border-emerald-500/20 bg-emerald-500/5'
-        }`}
+        className={CHIP}
+        style={{ color: kind === 'in' ? 'var(--caution)' : 'var(--go)' }}
         title={`${def?.name || resourceId}: ${qty}/mo ${kind === 'in' ? 'consumed' : 'produced'}`}
       >
         <GameIcon name={resourceCategoryIcon(def?.category || 'generic')} size={10} />
+        <span className="sr-only">{kind === 'in' ? 'consumes' : 'produces'} </span>
         {qty} {def?.name || resourceId.replace(/_/g, ' ')}
       </span>
     );
@@ -104,10 +117,10 @@ function RecipeChips({ consumes, produces }: { consumes?: Record<string, number>
           ),
         }}
       >
-        <span className="text-[10px] uppercase tracking-wider text-slate-500">Recipe/mo</span>
+        <span className={OVERLINE}>Recipe/mo</span>
       </HoloTip>
       {describeRecipeLine(consumes).map(r => chip(r.resourceId, r.perMonth, 'in'))}
-      {produces && Object.keys(produces).length > 0 && <span className="text-slate-600 text-[10px]">→</span>}
+      {produces && Object.keys(produces).length > 0 && <span className="text-[var(--ink-3)] text-[10px]" aria-hidden="true">→</span>}
       {describeRecipeLine(produces).map(r => chip(r.resourceId, r.perMonth, 'out'))}
     </div>
   );
@@ -120,7 +133,7 @@ function PurposeChips({ definitionId }: { definitionId: string }) {
   if (chips.length === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-1 mb-2">
-      <span className="text-[10px] uppercase tracking-wider text-slate-500">Purpose</span>
+      <span className={OVERLINE}>Purpose</span>
       {chips.map(chip => (
         <HoloTip
           key={chip.key}
@@ -132,7 +145,7 @@ function PurposeChips({ definitionId }: { definitionId: string }) {
             source: chip.source,
           }}
         >
-          <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border text-violet-300/90 border-violet-500/20 bg-violet-500/5 cursor-help">
+          <span className={`${CHIP} cursor-help`} style={{ color: 'var(--violet)' }}>
             <GameIcon name={chip.icon as IconName} size={10} />
             {chip.key === 'crewQuarters' || chip.key === 'shipyardSlots'
               ? `${chip.label} +${Math.round(chip.value)}`
@@ -141,6 +154,31 @@ function PurposeChips({ definitionId }: { definitionId: string }) {
         </HoloTip>
       ))}
     </div>
+  );
+}
+
+interface SpecRow { id: string; stat: string; value: string }
+const SPEC_COLUMNS: DataTableColumn<SpecRow>[] = [
+  { key: 'stat', header: 'Stat', sortable: false },
+  { key: 'value', header: 'Value', align: 'right', sortable: false, render: r => <span className="font-mono tabular-nums text-[var(--ink)]">{r.value}</span> },
+];
+
+/** Resource-acquisition hint for a missing build input (unchanged copy). */
+function ResourceHint({ resId }: { resId: string }) {
+  const name = resId.replace(/_/g, ' ');
+  return (
+    <span className="invisible group-hover:visible group-focus-within:visible absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-52 p-2.5 rounded-[var(--radius-control)] border border-[var(--line-2)] bg-[var(--elev)] shadow-lg shadow-black/50 text-[10px] leading-relaxed text-left pointer-events-none">
+      <span className="block text-[var(--signal)] font-semibold mb-1">How to get {name}:</span>
+      {(resId === 'iron' || resId === 'aluminum' || resId === 'titanium') ? (
+        <span className="block text-[var(--ink-2)]">Build a <span className="text-[var(--caution)]">Mining Outpost</span> on the Lunar Surface and activate the <span className="text-[var(--caution)]">Lunar Mining</span> service. Resources will accumulate over time. Once you have resources, the <span className="text-[var(--signal)]">Market tab</span> will unlock for buying &amp; selling.</span>
+      ) : (resId === 'lunar_water' || resId === 'mars_water') ? (
+        <span className="block text-[var(--ink-2)]">Water is mined from the <span className="text-[var(--caution)]">Lunar Surface</span> or <span className="text-[var(--caution)]">Mars Surface</span>. Build mining infrastructure and activate mining services at those locations.</span>
+      ) : (resId === 'rare_earth' || resId === 'platinum_group' || resId === 'gold') ? (
+        <span className="block text-[var(--ink-2)]">Rare materials require <span className="text-[var(--caution)]">Asteroid Belt</span> mining operations. Unlock the Asteroid Belt location, build mining facilities, and activate the asteroid mining service.</span>
+      ) : (
+        <span className="block text-[var(--ink-2)]">This resource is produced by <span className="text-[var(--caution)]">mining services</span>. Build mining facilities at the appropriate location, then activate the mining service. Check the <span className="text-[var(--signal)]">Map tab</span> to see which locations yield this resource.</span>
+      )}
+    </span>
   );
 }
 
@@ -195,59 +233,56 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
 
   return (
     <div className="space-y-4">
-      <ConsolePanel
+      <Console
         title="Construction"
-        icon="build"
-        subtitle="Queue new buildings, monitor active construction slots and pick a location."
-        right={
+        actions={
           <div className="flex items-center gap-2">
             <div className="flex gap-1" aria-hidden="true">
               {Array.from({ length: totalSlots }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-5 h-2 rounded-sm transition-colors"
-                  style={{ background: i < activeBuilds ? 'var(--accent-primary)' : 'var(--border-subtle)' }}
+                  className="w-5 h-2 rounded-sm motion-safe:transition-colors"
+                  style={{ background: i < activeBuilds ? 'var(--signal)' : 'var(--line-2)' }}
                   title={i < activeBuilds ? 'Active build' : 'Open slot'}
                 />
               ))}
             </div>
-            <span className="game-number text-[11px]" style={{ color: activeBuilds >= totalSlots ? '#FFB302' : 'var(--text-tertiary)' }}>
+            <span className="font-mono text-[11px] tabular-nums text-[var(--ink-2)]">
               {activeBuilds}/{totalSlots} slots
             </span>
+            <StatusPip state={slotsAvailable ? 'go' : 'hold'} label={slotsAvailable ? 'SLOTS OPEN' : 'QUEUE FULL'} />
           </div>
         }
       >
-        {!slotsAvailable && (
-          <span className="inline-block text-[10px] font-medium px-2 py-0.5 rounded" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}>
-            QUEUE FULL — wait for a build to finish
-          </span>
-        )}
-        {totalSlots < 5 && slotsAvailable && (
-          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-            Research to unlock more slots
-          </span>
-        )}
+        <p className="font-body text-[0.8125rem] leading-[1.55] text-[var(--ink-2)]">
+          Queue new buildings, monitor active construction slots and pick a location.
+          {!slotsAvailable && ' Queue full — wait for a build to finish.'}
+          {totalSlots < 5 && slotsAvailable && ' Research to unlock more slots.'}
+        </p>
 
         {/* Location Selector — shows building count per location. Hidden when
             lockLocation is set (the map context panel already told us where). */}
         {!lockLocation && (
           <div className="mt-3">
-            <p className="text-slate-500 text-[10px] mb-1.5">Select a location to see available buildings:</p>
-            <div className="flex flex-wrap gap-2">
+            <p className={`${OVERLINE} mb-1.5`}>Select a location to see available buildings</p>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Build location">
               {state.unlockedLocations.map(locId => {
                 const loc = LOCATION_MAP.get(locId);
                 const buildableCount = BUILDINGS.filter(b =>
                   b.requiredLocation === locId &&
                   b.requiredResearch.every(r => state.completedResearch.includes(r))
                 ).length;
+                const selected = selectedLocation === locId;
                 return (
                   <button
                     key={locId}
+                    type="button"
                     onClick={() => setSelectedLocation(locId)}
-                    className={`relative px-3 py-1.5 rounded-lg text-xs font-medium transition-colors overflow-hidden ${
-                      selectedLocation === locId
-                        ? 'bg-cyan-500 text-white'
-                        : 'bg-white/[0.06] text-slate-400 hover:text-white'
+                    aria-pressed={selected}
+                    className={`relative min-h-[44px] px-3 py-1.5 rounded-[var(--radius-control)] text-xs font-medium motion-safe:transition-colors overflow-hidden border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ember)] ${
+                      selected
+                        ? 'border-[var(--ember)] bg-[var(--hover)] text-[var(--ink)]'
+                        : 'border-[var(--line)] bg-[var(--elev)] text-[var(--ink-2)] hover:text-[var(--ink)] hover:border-[var(--line-hot)]'
                     }`}
                   >
                     {LOCATION_ASSETS[locId] && (
@@ -255,44 +290,45 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     )}
                     <span className="relative">{loc?.name || locId}</span>
                     {buildableCount > 0 && (
-                      <span className={`relative ml-1.5 px-1 py-0.5 rounded text-[10px] ${
-                        selectedLocation === locId ? 'bg-white/20' : 'bg-cyan-500/20 text-cyan-400'
-                      }`}>{buildableCount}</span>
+                      <span className="relative ml-1.5 px-1 py-0.5 rounded-[var(--radius-badge)] text-[10px] font-mono tabular-nums bg-[var(--surface)] text-[var(--signal)]">{buildableCount}</span>
                     )}
+                    {selected && <span className="sr-only"> (selected)</span>}
                   </button>
                 );
               })}
             </div>
           </div>
         )}
-      </ConsolePanel>
+      </Console>
 
       {/* Balance Pass 4: slot-gate notice — the whole location is
           lease-gated, so say it once above the cards (each card's button
           also carries the reason). */}
       {!slotGate.allowed && availableBuildings.length > 0 && (
-        <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] p-2.5 text-[11px] text-amber-300 leading-relaxed">
-          <span className="font-bold uppercase tracking-wide">Slots saturated</span>
-          <span className="text-amber-200/80"> — {slotGate.reason}</span>
+        <div className="flex items-start gap-2 rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--surface)] p-2.5 text-[11px] leading-relaxed text-[var(--ink-2)]" role="status">
+          <StatusPip state="hold" label="SLOTS SATURATED" />
+          <span>{slotGate.reason}</span>
         </div>
       )}
       {slotGate.allowed && slotGate.viaLease && (
-        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.05] p-2 text-[10px] text-emerald-300">
-          Slot lease active at this location — new builds permitted while it holds.
+        <div className="flex items-start gap-2 rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--surface)] p-2 text-[10px] text-[var(--ink-2)]" role="status">
+          <StatusPip state="go" label="LEASE ACTIVE" />
+          <span>Slot lease active at this location — new builds permitted while it holds.</span>
         </div>
       )}
       {slotGate.allowed && slotGate.viaFrontierExemption && (
-        <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/[0.05] p-2 text-[10px] text-cyan-300">
-          Frontier exemption: this pool is saturated, but your FIRST building here is guaranteed a slot. Further builds will need a lease auction.
+        <div className="flex items-start gap-2 rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--surface)] p-2 text-[10px] text-[var(--ink-2)]" role="status">
+          <StatusPip state="tminus" label="FRONTIER EXEMPTION" />
+          <span>This pool is saturated, but your FIRST building here is guaranteed a slot. Further builds will need a lease auction.</span>
         </div>
       )}
 
       {/* Building Cards */}
       {availableBuildings.length === 0 ? (
-        <div className="card p-6 text-center">
-          <p className="text-slate-500 text-sm">No buildings available at this location yet.</p>
-          <p className="text-slate-600 text-xs mt-1">Research new technologies or try a different location above.</p>
-        </div>
+        <Console>
+          <p className="text-[var(--ink-2)] text-sm text-center">No buildings available at this location yet.</p>
+          <p className="text-[var(--ink-3)] text-xs mt-1 text-center">Research new technologies or try a different location above.</p>
+        </Console>
       ) : (
         <div className="grid md:grid-cols-2 gap-3">
           {availableBuildings.map(bld => {
@@ -305,13 +341,27 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
             // Early-fab wave: per-corporation cap (fabrication_earth max 1).
             const capCheck = checkBuildingCap(state.buildings, bld);
             const canAfford = canAffordMoney && hasResources && slotsAvailable && slotGate.allowed && capCheck.allowed;
+            const preview = computeBuildPreview(state, bld, selectedLocation);
+            const positive = preview.projectedNetMonthly > 0;
+            const capSummary = summarizeCapabilities(bld.id);
+            const derived = getBuildingDerivedStats(bld);
+            const specRows: SpecRow[] = [];
+            if (derived.customerCapacity > 0)          specRows.push({ id: 'cap', stat: 'Customer cap', value: derived.customerCapacity.toLocaleString() });
+            if (derived.uplinkBandwidth > 0)           specRows.push({ id: 'uplink', stat: 'Uplink', value: `${derived.uplinkBandwidth.toLocaleString()} Gbps` });
+            if (derived.manufacturingThroughput > 0)   specRows.push({ id: 'mfg', stat: 'Mfg tput', value: `${derived.manufacturingThroughput}/mo` });
+            if (derived.refiningThroughput > 0)        specRows.push({ id: 'refine', stat: 'Refining', value: `${derived.refiningThroughput}/mo` });
+            if (derived.storageCapacity > 0)           specRows.push({ id: 'storage', stat: 'Storage', value: `${derived.storageCapacity.toLocaleString()} m³` });
+            if (derived.dockingCapacity > 0)           specRows.push({ id: 'dock', stat: 'Docking', value: `${derived.dockingCapacity} ships` });
+            if (derived.crewQuarters > 0)              specRows.push({ id: 'crew', stat: 'Crew qtrs', value: derived.crewQuarters.toString() });
+            specRows.push({ id: 'structure', stat: 'Structure', value: derived.structuralIntegrity.toLocaleString() });
+            if (derived.shieldingRating > 0)           specRows.push({ id: 'shield', stat: 'Shield', value: `${Math.round(derived.shieldingRating * 100)}%` });
+            specRows.push({ id: 'maxup', stat: 'Max upgrade', value: `L${derived.maxUpgradeLevel}` });
+            if (derived.synergyTags.length > 0)        specRows.push({ id: 'synergy', stat: 'Synergy', value: `${derived.synergyTags.join(', ')} (${derived.synergyRange})` });
 
             return (
-              <div key={bld.id} className={`rounded-xl border overflow-hidden transition-all game-card ${
-                canAfford ? 'border-cyan-500/20 hover:border-cyan-500/40' : 'border-white/[0.06]'
-              }`}>
-                {/* Building art — brighter, with hologram scanline for AAA feel */}
-                <div className="relative h-24 sm:h-28 bg-gradient-to-br from-white/[0.03] to-transparent overflow-hidden holo-sprite">
+              <Console key={bld.id} padded={false} className={canAfford ? 'border-[var(--line-2)]' : ''}>
+                {/* Building art — with hologram scanline for AAA feel */}
+                <div className="relative h-24 sm:h-28 overflow-hidden holo-sprite bg-[var(--void)]">
                   <Image
                     src={getBuildingAsset(bld.id, bld.category, bld.tier)}
                     alt={bld.name}
@@ -322,56 +372,54 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
                   <div className="absolute bottom-2 left-3 right-3">
                     <div className="flex justify-between items-end gap-2">
-                      <h4 className="text-white text-sm font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{bld.name}</h4>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold backdrop-blur-sm shrink-0 game-badge-t${Math.min(5, Math.max(1, bld.tier))}`}>T{bld.tier}</span>
+                      <h3 className="text-[var(--ink)] text-sm font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{bld.name}</h3>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold backdrop-blur-sm shrink-0 game-badge-t${Math.min(5, Math.max(1, bld.tier))}`}>Tier {bld.tier}</span>
                     </div>
                   </div>
                 </div>
                 <div className="p-3">
-                <p className="text-slate-400 text-[11px] mb-1 leading-relaxed">{bld.description}</p>
+                <p className="text-[var(--ink-2)] text-[11px] mb-2 leading-relaxed">{bld.description}</p>
                 {/* M1/F9: live P&L preview — computed from the same
                     formulas the tick uses (pool multiplier, saturation,
                     power, recipe cost, marginal overhead), NOT the static
                     authored tooltip prose below. Always visible (not
                     collapsed) since this is the number that matters. */}
-                {(() => {
-                  const preview = computeBuildPreview(state, bld, selectedLocation);
-                  const positive = preview.projectedNetMonthly > 0;
-                  return (
-                    <div className={`mb-2 p-2 rounded-md border text-[10px] leading-relaxed ${
-                      positive ? 'bg-emerald-500/5 border-emerald-500/15' : 'bg-red-500/5 border-red-500/15'
-                    }`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={`font-semibold ${positive ? 'text-emerald-300' : 'text-red-300'}`}>
-                          Projected {formatMoney(preview.projectedNetMonthly)}/mo net
-                        </span>
-                        <span className="text-slate-400">
-                          {preview.paybackMonths === null ? 'payback: never' : `payback: ~${preview.paybackMonths}mo`}
-                        </span>
-                      </div>
-                      <div className="mt-0.5 text-slate-500">
-                        {preview.poolMultiplier !== null && (
-                          <>pool {preview.poolMultiplier < 1 ? 'saturated' : preview.poolMultiplier > 1 ? 'undersupplied' : 'balanced'} ({preview.poolMultiplier.toFixed(2)}x) · </>
-                        )}
-                        at current pools, before research/commander bonuses — recomputed live, not a fixed promise.
-                      </div>
-                      {/* Construction Purposes wave: the projection is P&L-only —
-                          name the non-revenue value qualitatively so a thin
-                          payback doesn't read as "worthless building". */}
-                      {(() => {
-                        const capSummary = summarizeCapabilities(bld.id);
-                        return capSummary ? (
-                          <div className="mt-0.5 text-violet-300/70">
-                            beyond P&amp;L: {capSummary}
-                          </div>
-                        ) : null;
-                      })()}
+                <div className="mb-2 p-2 rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--elev)]">
+                  <div className="flex items-start justify-between gap-2">
+                    <Telemetry
+                      label="Projected net"
+                      value={formatMoney(preview.projectedNetMonthly)}
+                      unit="/mo"
+                      tone={positive ? 'signal' : 'ink'}
+                      sub={
+                        <>
+                          {preview.poolMultiplier !== null && (
+                            <>pool {preview.poolMultiplier < 1 ? 'saturated' : preview.poolMultiplier > 1 ? 'undersupplied' : 'balanced'} ({preview.poolMultiplier.toFixed(2)}x) · </>
+                          )}
+                          at current pools, before research/commander bonuses — recomputed live, not a fixed promise.
+                        </>
+                      }
+                    />
+                    <div className="flex flex-col items-end gap-1 shrink-0 text-right">
+                      <StatusPip state={positive ? 'go' : 'scrub'} label={positive ? 'PROFITABLE' : 'LOSS-MAKING'} />
+                      <span className="font-mono text-[10px] tabular-nums text-[var(--ink-2)]">
+                        {preview.paybackMonths === null ? 'payback: never' : `payback: ~${preview.paybackMonths}mo`}
+                      </span>
                     </div>
-                  );
-                })()}
+                  </div>
+                  {/* Construction Purposes wave: the projection is P&L-only —
+                      name the non-revenue value qualitatively so a thin
+                      payback doesn't read as "worthless building". */}
+                  {capSummary && (
+                    <div className="mt-1 text-[10px]" style={{ color: 'var(--violet)' }}>
+                      beyond P&amp;L: {capSummary}
+                    </div>
+                  )}
+                </div>
                 {!capCheck.allowed && (
-                  <p className="mb-2 text-[10px] text-amber-400/90 bg-amber-500/5 border border-amber-500/15 rounded px-2 py-1">
-                    ⛔ {capCheck.reason} — expand off-world instead.
+                  <p className="mb-2 flex items-start gap-2 text-[10px] text-[var(--ink-2)] rounded-[var(--radius-badge)] border border-[var(--line)] bg-[var(--elev)] px-2 py-1" role="status">
+                    <StatusPip state="scrub" label="CAPPED" />
+                    <span>{capCheck.reason} — expand off-world instead.</span>
                   </p>
                 )}
                 <PurposeChips definitionId={bld.id} />
@@ -380,63 +428,46 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     authoritative. The live preview above is the honest number. */}
                 {bld.tooltip && (
                   <details className="mb-2 group/tip">
-                    <summary className="text-[10px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">
-                      Why build this? ▾
+                    <summary className="min-h-[44px] flex items-center text-[10px] text-[var(--ember)] cursor-pointer hover:underline motion-safe:transition-colors select-none">
+                      Why build this? <GameIcon name="chevron-down" size={11} className="ml-1" />
                     </summary>
-                    <div className="mt-1 p-2 rounded-md bg-cyan-500/5 border border-cyan-500/10 text-[10px] text-slate-300 leading-relaxed">
+                    <div className="mt-1 p-2 rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--elev)] text-[10px] text-[var(--ink-2)] leading-relaxed">
                       {bld.tooltip}
                     </div>
                   </details>
                 )}
 
                 {/* Deep stats — Phase I derived stats */}
-                {(() => {
-                  const s = getBuildingDerivedStats(bld);
-                  const rows: Array<[string, string]> = [];
-                  if (s.customerCapacity > 0)          rows.push(['Customer cap', s.customerCapacity.toLocaleString()]);
-                  if (s.uplinkBandwidth > 0)           rows.push(['Uplink', `${s.uplinkBandwidth.toLocaleString()} Gbps`]);
-                  if (s.manufacturingThroughput > 0)   rows.push(['Mfg tput', `${s.manufacturingThroughput}/mo`]);
-                  if (s.refiningThroughput > 0)        rows.push(['Refining', `${s.refiningThroughput}/mo`]);
-                  if (s.storageCapacity > 0)           rows.push(['Storage', `${s.storageCapacity.toLocaleString()} m³`]);
-                  if (s.dockingCapacity > 0)           rows.push(['Docking', `${s.dockingCapacity} ships`]);
-                  if (s.crewQuarters > 0)              rows.push(['Crew qtrs', s.crewQuarters.toString()]);
-                  rows.push(['Structure', s.structuralIntegrity.toLocaleString()]);
-                  if (s.shieldingRating > 0)           rows.push(['Shield', `${Math.round(s.shieldingRating * 100)}%`]);
-                  rows.push(['Max upgrade', `L${s.maxUpgradeLevel}`]);
-                  if (s.synergyTags.length > 0)        rows.push(['Synergy', `${s.synergyTags.join(', ')} (${s.synergyRange})`]);
-                  return (
-                    <details className="mb-2 group/deep">
-                      <summary className="text-[10px] text-slate-500 cursor-pointer hover:text-slate-300 transition-colors select-none">
-                        Detailed specs ▾
-                      </summary>
-                      <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-slate-400">
-                        {rows.map(([k, v]) => <span key={k}>{k}: <span className="text-slate-300">{v}</span></span>)}
-                      </div>
-                    </details>
-                  );
-                })()}
+                <details className="mb-2 group/deep">
+                  <summary className="min-h-[44px] flex items-center text-[10px] text-[var(--ink-3)] cursor-pointer hover:text-[var(--ink)] motion-safe:transition-colors select-none">
+                    Detailed specs <GameIcon name="chevron-down" size={11} className="ml-1" />
+                  </summary>
+                  <div className="mt-1 rounded-[var(--radius-control)] border border-[var(--line)] overflow-hidden">
+                    <DataTable<SpecRow> caption={`${bld.name} specifications`} columns={SPEC_COLUMNS} rows={specRows} />
+                  </div>
+                </details>
                 {/* Revenue preview */}
                 {bld.enabledServices.length > 0 && (() => {
                   const svc = SERVICE_MAP.get(bld.enabledServices[0]);
                   if (!svc) return null;
                   const net = svc.revenuePerMonth - svc.operatingCostPerMonth - getEffectiveMaintenancePerMonth(bld); // D5 flagship floor
                   return (
-                    <div className="flex items-center gap-1 mb-2 text-[10px]">
-                      <span className="text-green-400/70">Earns {formatMoney(svc.revenuePerMonth)}/mo</span>
-                      <span className="text-slate-600">→</span>
-                      <span className={net >= 0 ? 'text-green-400' : 'text-red-400'}>
-                        Net {formatMoney(net)}/mo
+                    <div className="flex items-center gap-1 mb-2 text-[10px] font-mono tabular-nums">
+                      <span className="text-[var(--ink-2)]">Earns {formatMoney(svc.revenuePerMonth)}/mo</span>
+                      <span className="text-[var(--ink-3)]" aria-hidden="true">→</span>
+                      <span style={{ color: net >= 0 ? 'var(--go)' : 'var(--crit)' }}>
+                        <span aria-hidden="true">{net >= 0 ? '▲' : '▼'}</span> Net {formatMoney(net)}/mo
                       </span>
                     </div>
                   );
                 })()}
                 {bld.enabledServices.length === 0 && !bld.producesPerMonth && (
-                  <p className="text-slate-600 text-[10px] mb-2">Support building — no direct revenue</p>
+                  <p className="text-[var(--ink-3)] text-[10px] mb-2">Support building — no direct revenue</p>
                 )}
                 {/* Wave E3: recipe (consumes → produces) chips */}
                 <RecipeChips consumes={bld.consumesPerMonth} produces={bld.producesPerMonth} />
                 {bld.producesPerMonth && bld.enabledServices.length === 0 && (
-                  <p className="text-emerald-400/70 text-[10px] mb-2">Producer building — passive monthly output, no service revenue</p>
+                  <p className="text-[10px] mb-2" style={{ color: 'var(--go)' }}>Producer building — passive monthly output, no service revenue</p>
                 )}
                 {/* Resource costs */}
                 {bld.resourceCost && Object.keys(bld.resourceCost).length > 0 && (
@@ -445,67 +476,48 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       const have = state.resources[resId] || 0;
                       const enough = have >= qty;
                       return (
-                        <span key={resId} className={`group relative text-[10px] px-1.5 py-0.5 rounded border cursor-help ${
-                          enough ? 'text-slate-400 border-white/[0.06] bg-white/[0.02]' : 'text-red-400 border-red-500/20 bg-red-500/5'
-                        }`}>
-                          {resId.replace(/_/g, ' ')} {have}/{qty}
+                        <span
+                          key={resId}
+                          tabIndex={enough ? undefined : 0}
+                          className={`group relative ${CHIP} cursor-help ${enough ? 'text-[var(--ink-2)]' : 'text-[var(--crit)]'}`}
+                        >
+                          {resId.replace(/_/g, ' ')} <span className="font-mono tabular-nums">{have}/{qty}</span>
+                          {!enough && <StatusPip state="scrub" label="SHORT" />}
                           {/* Resource acquisition tooltip */}
-                          {!enough && (
-                            <span className="invisible group-hover:visible absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-52 p-2.5 rounded-lg bg-[#0a0a14]/95 border border-cyan-500/20 shadow-lg shadow-black/50 text-[10px] leading-relaxed text-left pointer-events-none">
-                              <span className="block text-cyan-400 font-semibold mb-1">How to get {resId.replace(/_/g, ' ')}:</span>
-                              {(resId === 'iron' || resId === 'aluminum' || resId === 'titanium') ? (
-                                <span className="block text-slate-300">Build a <span className="text-amber-300">Mining Outpost</span> on the Lunar Surface and activate the <span className="text-amber-300">Lunar Mining</span> service. Resources will accumulate over time. Once you have resources, the <span className="text-cyan-300">Market tab</span> will unlock for buying &amp; selling.</span>
-                              ) : (resId === 'lunar_water' || resId === 'mars_water') ? (
-                                <span className="block text-slate-300">Water is mined from the <span className="text-amber-300">Lunar Surface</span> or <span className="text-amber-300">Mars Surface</span>. Build mining infrastructure and activate mining services at those locations.</span>
-                              ) : (resId === 'rare_earth' || resId === 'platinum_group' || resId === 'gold') ? (
-                                <span className="block text-slate-300">Rare materials require <span className="text-amber-300">Asteroid Belt</span> mining operations. Unlock the Asteroid Belt location, build mining facilities, and activate the asteroid mining service.</span>
-                              ) : (
-                                <span className="block text-slate-300">This resource is produced by <span className="text-amber-300">mining services</span>. Build mining facilities at the appropriate location, then activate the mining service. Check the <span className="text-cyan-300">Map tab</span> to see which locations yield this resource.</span>
-                              )}
-                              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0a0a14]/95 border-b border-r border-cyan-500/20 rotate-45"></span>
-                            </span>
-                          )}
+                          {!enough && <ResourceHint resId={resId} />}
                         </span>
                       );
                     })}
                   </div>
                 )}
-                <div className="flex items-center justify-between">
-                  <div className="text-xs">
-                    <span className={canAffordMoney ? 'text-green-400' : 'text-red-400'}>{formatMoney(cost)}</span>
-                    <span className="text-slate-500 ml-2">{formatDuration(scaledBuildTime(bld.realBuildSeconds, count))}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-xs font-mono tabular-nums">
+                    <span style={{ color: canAffordMoney ? 'var(--go)' : 'var(--crit)' }}>{formatMoney(cost)}</span>
+                    {!canAffordMoney && <span className="sr-only"> (cannot afford)</span>}
+                    <span className="text-[var(--ink-3)] ml-2">{formatDuration(scaledBuildTime(bld.realBuildSeconds, count))}</span>
                   </div>
                   {!slotGate.allowed ? (
                     /* Balance Pass 4: saturated pool — the Build button is
                        replaced by the gate reason (win a lease auction). */
-                    <span
-                      className="px-3 py-1 rounded text-[10px] font-medium"
-                      style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}
-                      title={slotGate.reason}
-                    >
-                      Slots Saturated — Lease Required
+                    <span title={slotGate.reason}>
+                      <StatusPip state="hold" label="LEASE REQUIRED" />
                     </span>
                   ) : !slotsAvailable && canAffordMoney && hasResources ? (
-                    <span className="px-3 py-1 rounded text-[10px] font-medium" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}>
-                      Queue Full
-                    </span>
+                    <StatusPip state="hold" label="QUEUE FULL" />
                   ) : (
                     <button
+                      type="button"
                       onClick={() => onBuild(bld.id, selectedLocation)}
                       disabled={!canAfford}
-                      className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                        canAfford
-                          ? 'bg-cyan-600 text-white hover:bg-cyan-500 active:scale-95'
-                          : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
-                      }`}
+                      className="btn-primary !min-h-[40px] !py-1.5 !px-4 text-[13px] motion-safe:active:scale-95"
                     >
                       Build
                     </button>
                   )}
                 </div>
-                {count > 0 && <p className="text-slate-500 text-[10px] mt-1">Built: {count}</p>}
-                </div>{/* close relative wrapper */}
-              </div>
+                {count > 0 && <p className="text-[var(--ink-3)] text-[10px] mt-1">Built: {count}</p>}
+                </div>
+              </Console>
             );
           })}
         </div>
@@ -516,8 +528,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
         const builtHere = state.buildings.filter(b => b.isComplete && b.locationId === selectedLocation);
         if (builtHere.length === 0) return null;
         return (
-          <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Built at {LOCATION_MAP.get(selectedLocation)?.name || selectedLocation}</h4>
+          <Console title={`Built at ${LOCATION_MAP.get(selectedLocation)?.name || selectedLocation}`} className="mt-4">
             <div className="space-y-1">
               {builtHere.map(bld => {
                 const def = BUILDING_MAP.get(bld.definitionId);
@@ -544,17 +555,17 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 const isTeardown = def.tier >= DECOMMISSION_TEARDOWN_MIN_TIER;
                 const reactivationFee = Math.round(def.baseCost * REACTIVATION_FEE_FRACTION);
                 return (
-                  <div key={bld.instanceId} className="py-1 px-2 rounded hover:bg-white/[0.02]">
-                    <div className="flex items-center justify-between">
-                      <span className="text-white text-xs">
+                  <div key={bld.instanceId} className="py-1.5 px-2 rounded-[var(--radius-control)] hover:bg-[var(--hover)] motion-safe:transition-colors">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-[var(--ink)] text-xs inline-flex items-center gap-1.5">
                         {def.name}
                         {getMarkLevel(bld) > 1 && (
-                          <span className="ml-1.5 text-[9px] font-bold tracking-wider text-cyan-300 border border-cyan-500/30 rounded px-1 py-px align-middle" aria-label={MARK_NAMES[getMarkLevel(bld)]}>
+                          <span className="text-[9px] font-bold tracking-wider font-mono text-[var(--signal)] border border-[var(--line-2)] rounded-[var(--radius-badge)] px-1 py-px align-middle" aria-label={MARK_NAMES[getMarkLevel(bld)]}>
                             MK {getMarkLevel(bld) === 3 ? 'III' : 'II'}
                           </span>
                         )}
                       </span>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-2 flex-wrap">
                         {recipeActive && operational && (
                           <HoloTip
                             underline={false}
@@ -573,12 +584,12 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                               ),
                             }}
                           >
-                            <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold cursor-help ${
-                              isShort
-                                ? (supplyEff <= 0.55 ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30')
-                                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                            }`}>
-                              <GameIcon name="package" size={10} /> {Math.round(supplyEff * 100)}%{isShort ? ' SHORT' : ''}
+                            <span className="inline-flex items-center gap-1 cursor-help">
+                              <GameIcon name="package" size={10} />
+                              <StatusPip
+                                state={isShort ? (supplyEff <= 0.55 ? 'scrub' : 'hold') : 'go'}
+                                label={`${Math.round(supplyEff * 100)}%${isShort ? ' SHORT' : ' SUPPLY'}`}
+                              />
                             </span>
                           </HoloTip>
                         )}
@@ -599,12 +610,12 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                               ),
                             }}
                           >
-                            <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold cursor-help ${
-                              isSevere
-                                ? 'bg-red-500/10 text-red-400 border-red-500/30'
-                                : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                            }`}>
-                              <GameIcon name="warning" size={10} /> {Math.round((bld.damagePct || 0) * 100)}% dmg · revenue −{Math.round(Math.min(0.75, 0.75 * (bld.damagePct || 0)) * 100)}%
+                            <span className="inline-flex items-center gap-1 cursor-help">
+                              <GameIcon name="warning" size={10} />
+                              <StatusPip
+                                state={isSevere ? 'scrub' : 'hold'}
+                                label={`${Math.round((bld.damagePct || 0) * 100)}% DMG · REV −${Math.round(Math.min(0.75, 0.75 * (bld.damagePct || 0)) * 100)}%`}
+                              />
                             </span>
                           </HoloTip>
                         )}
@@ -630,27 +641,25 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                               ),
                             }}
                           >
-                            <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold cursor-help ${
-                              mothballed
-                                ? 'bg-slate-500/10 text-slate-300 border-slate-500/30'
-                                : reactivating
-                                  ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30'
-                                  : 'bg-orange-500/10 text-orange-300 border-orange-500/30'
-                            }`}>
+                            <span className="inline-flex items-center gap-1 cursor-help">
                               <GameIcon name={mothballed || reactivating ? 'idle' : 'wrench'} size={10} />
-                              {mothballed ? 'MOTHBALLED' : reactivating ? 'REACTIVATING' : 'DECOMMISSIONING'}
+                              <StatusPip
+                                state={mothballed ? 'hold' : reactivating ? 'tminus' : 'scrub'}
+                                label={mothballed ? 'MOTHBALLED' : reactivating ? 'REACTIVATING' : 'DECOMMISSIONING'}
+                              />
                             </span>
                           </HoloTip>
                         )}
                         {onSellBuilding && !decommissioning && (
                           <button
+                            type="button"
                             onClick={() => {
                               const confirmMsg = isTeardown
                                 ? `Decommission ${def.name}? Teardown takes ${DECOMMISSION_TEARDOWN_MONTHS} game month, paused meanwhile. Recovers ${formatMoney(recovery.money)} (${Math.round(DECOMMISSION_MONEY_RECOVERY_FRACTION * 100)}% of build cost) + ${resourceRecoveryText} (${Math.round(DECOMMISSION_RESOURCE_RECOVERY_FRACTION * 100)}% of materials) on completion.`
                                 : `Scrap ${def.name}? Recovers ${formatMoney(recovery.money)} (${Math.round(DECOMMISSION_MONEY_RECOVERY_FRACTION * 100)}% of build cost) + ${resourceRecoveryText} (${Math.round(DECOMMISSION_RESOURCE_RECOVERY_FRACTION * 100)}% of materials) instantly.`;
                               if (confirm(confirmMsg)) onSellBuilding(bld.instanceId);
                             }}
-                            className="text-[10px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                            className="btn-ghost !min-h-[36px] !py-1 !px-2 text-[11px] !text-[var(--crit)]"
                           >
                             {isTeardown ? 'Decommission' : 'Scrap'} ({formatMoney(recovery.money)})
                           </button>
@@ -676,13 +685,10 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                             }}
                           >
                             <button
+                              type="button"
                               onClick={() => onReactivateBuilding(bld.instanceId)}
                               disabled={state.money < reactivationFee}
-                              className={`w-full min-h-[28px] text-[10px] px-2 py-1 rounded border transition-colors flex items-center justify-center gap-1 ${
-                                state.money < reactivationFee
-                                  ? 'bg-white/[0.02] text-slate-600 border-white/[0.06] cursor-not-allowed'
-                                  : 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20 hover:bg-cyan-500/20'
-                              }`}
+                              className="btn-secondary w-full !min-h-[40px] !py-1 text-[11px]"
                             >
                               <GameIcon name="idle" size={11} /> Reactivate — {formatMoney(reactivationFee)} + {REACTIVATION_SPINUP_MONTHS}mo spin-up
                             </button>
@@ -704,8 +710,9 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                             }}
                           >
                             <button
+                              type="button"
                               onClick={() => onMothballBuilding(bld.instanceId)}
-                              className="w-full min-h-[28px] text-[10px] px-2 py-1 rounded bg-slate-500/10 text-slate-300 border border-slate-500/20 hover:bg-slate-500/20 transition-colors flex items-center justify-center gap-1"
+                              className="btn-secondary w-full !min-h-[40px] !py-1 text-[11px]"
                             >
                               <GameIcon name="idle" size={11} /> Mothball — {Math.round(MOTHBALL_MAINTENANCE_FRACTION * 100)}% maintenance, zero revenue
                             </button>
@@ -723,8 +730,9 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       if (isMarkUpgradeInProgress(bld)) {
                         const remaining = Math.max(0, (bld.markUpgradeDurationSeconds || 0) - (Date.now() - (bld.markUpgradeStartedAtMs || 0)) / 1000);
                         return (
-                          <div className="mt-1 text-[10px] text-cyan-300/80 flex items-center gap-1" role="status">
-                            <GameIcon name="wrench" size={10} /> Refitting to {MARK_NAMES[(bld.markUpgradeTarget === 3 ? 3 : 2)]} — {formatDuration(Math.round(remaining))} remaining
+                          <div className="mt-1 text-[10px] text-[var(--ink-2)] flex items-center gap-1.5" role="status">
+                            <StatusPip state="tminus" label="REFITTING" />
+                            <GameIcon name="wrench" size={10} /> to {MARK_NAMES[(bld.markUpgradeTarget === 3 ? 3 : 2)]} — {formatDuration(Math.round(remaining))} remaining
                           </div>
                         );
                       }
@@ -735,8 +743,9 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                         if (mk.check.reason && (mk.check.missingResearch || (bld.damagePct || 0) > 0)) {
                           const gateName = mk.check.missingResearch ? RESEARCH_MAP.get(mk.check.missingResearch)?.name || mk.check.missingResearch : null;
                           return (
-                            <div className="mt-1 text-[10px] text-slate-500">
-                              {MARK_NAMES[mk.target]} refit locked — {gateName ? <>research <span className="text-slate-300">{gateName}</span></> : mk.check.reason}
+                            <div className="mt-1 text-[10px] text-[var(--ink-3)] inline-flex items-center gap-1.5">
+                              <GameIcon name="lock" size={10} />
+                              {MARK_NAMES[mk.target]} refit locked — {gateName ? <>research <span className="text-[var(--ink-2)]">{gateName}</span></> : mk.check.reason}
                             </div>
                           );
                         }
@@ -770,37 +779,35 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                             }}
                           >
                             <button
+                              type="button"
                               onClick={() => onMarkUpgradeBuilding(bld.instanceId)}
                               disabled={cantAfford}
                               aria-label={`Refit ${def.name} to ${MARK_NAMES[mk.target]} for ${formatMoney(mk.cost)}`}
-                              className={`w-full min-h-[28px] text-[10px] px-2 py-1 rounded border transition-colors flex items-center justify-center gap-1 ${
-                                cantAfford
-                                  ? 'bg-white/[0.02] text-slate-600 border-white/[0.06] cursor-not-allowed'
-                                  : mk.deltaNetMonthly > 0
-                                    ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20 hover:bg-cyan-500/20'
-                                    : 'bg-amber-500/10 text-amber-300 border-amber-500/20 hover:bg-amber-500/20'
-                              }`}
+                              className="btn-secondary w-full !min-h-[40px] !py-1 text-[11px]"
                             >
-                              <GameIcon name="wrench" size={11} /> Refit → {MARK_NAMES[mk.target]} — {formatMoney(mk.cost)} · {mk.deltaNetMonthly >= 0 ? '+' : ''}{formatMoney(mk.deltaNetMonthly)}/mo · {mk.paybackMonths ? `${mk.paybackMonths} mo payback` : 'never pays back'}
+                              <GameIcon name="wrench" size={11} /> Refit → {MARK_NAMES[mk.target]} — {formatMoney(mk.cost)}
+                              <StatusPip state={mk.deltaNetMonthly > 0 ? 'go' : 'hold'} label={`${mk.deltaNetMonthly >= 0 ? '+' : ''}${formatMoney(mk.deltaNetMonthly)}/mo`} />
+                              <span className="text-[var(--ink-3)]">{mk.paybackMonths ? `${mk.paybackMonths} mo payback` : 'never pays back'}</span>
                             </button>
                           </HoloTip>
                           {short.length > 0 && (
-                            <div className="text-[10px] text-slate-500 mt-0.5">Short on: {short.map(([r]) => (RESOURCE_MAP.get(r as ResourceId)?.name || r.replace(/_/g, ' '))).join(', ')}</div>
+                            <div className="text-[10px] text-[var(--ink-3)] mt-0.5">Short on: {short.map(([r]) => (RESOURCE_MAP.get(r as ResourceId)?.name || r.replace(/_/g, ' '))).join(', ')}</div>
                           )}
                         </div>
                       );
                     })()}
                     {hasDamage && onRushRepairBuilding && (
                       <button
+                        type="button"
                         onClick={() => onRushRepairBuilding(bld.instanceId)}
-                        className="mt-1 w-full min-h-[28px] text-[10px] px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors flex items-center justify-center gap-1"
+                        className="btn-secondary mt-1 w-full !min-h-[40px] !py-1 text-[11px] !text-[var(--crit)]"
                       >
                         <GameIcon name="wrench" size={11} /> Rush Repair — {formatMoney(repairCost)}
                       </button>
                     )}
                     {/* Wave E3: sourcing policy — the vertical-integration-vs-market choice */}
                     {recipeActive && operational && onSetSupplyPolicy && (
-                      <div className="mt-1 flex items-center gap-1.5">
+                      <div className="mt-1 flex items-center gap-1.5 flex-wrap">
                         <HoloTip
                           content={{
                             title: 'Input Sourcing',
@@ -815,23 +822,25 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                             ),
                           }}
                         >
-                          <span className="text-[10px] text-slate-500">Sourcing</span>
+                          <span className={OVERLINE}>Sourcing</span>
                         </HoloTip>
-                        <div className="flex rounded overflow-hidden border border-white/[0.08]" role="group" aria-label={`${def.name} input sourcing`}>
+                        <div className="flex rounded-[var(--radius-control)] overflow-hidden border border-[var(--line-2)]" role="group" aria-label={`${def.name} input sourcing`}>
                           <button
+                            type="button"
                             onClick={() => policy !== 'local' && onSetSupplyPolicy(bld.instanceId, 'local')}
                             aria-pressed={policy === 'local'}
-                            className={`min-h-[28px] px-2 py-0.5 text-[10px] transition-colors ${
-                              policy === 'local' ? 'bg-cyan-600 text-white' : 'bg-white/[0.03] text-slate-400 hover:text-white'
+                            className={`min-h-[36px] px-2 py-0.5 text-[10px] motion-safe:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--ember)] ${
+                              policy === 'local' ? 'bg-[var(--ember)] text-[#0A0A0B] font-semibold' : 'bg-[var(--elev)] text-[var(--ink-2)] hover:text-[var(--ink)]'
                             }`}
                           >
                             Supply locally
                           </button>
                           <button
+                            type="button"
                             onClick={() => policy !== 'market' && onSetSupplyPolicy(bld.instanceId, 'market')}
                             aria-pressed={policy === 'market'}
-                            className={`min-h-[28px] px-2 py-0.5 text-[10px] transition-colors ${
-                              policy === 'market' ? 'bg-amber-600 text-white' : 'bg-white/[0.03] text-slate-400 hover:text-white'
+                            className={`min-h-[36px] px-2 py-0.5 text-[10px] motion-safe:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--ember)] ${
+                              policy === 'market' ? 'bg-[var(--ember)] text-[#0A0A0B] font-semibold' : 'bg-[var(--elev)] text-[var(--ink-2)] hover:text-[var(--ink)]'
                             }`}
                           >
                             Standing market order
@@ -843,7 +852,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 );
               })}
             </div>
-          </div>
+          </Console>
         );
       })()}
     </div>

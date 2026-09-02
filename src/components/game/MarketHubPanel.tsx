@@ -6,11 +6,15 @@
 // alongside the Market tab's own Spot & Orders view. One place answers
 // "what should I trade?" All functionality preserved; subtabs keep their
 // original corp-tier gate (FOLDED_FEATURE_TIERS).
+//
+// Six-hub consolidation + design-system migration (2026-09, GAME_DESIGN_REVIEW
+// §3): the shell's Markets row drives the view (`embedded`) through the
+// sub-view bus, and the hub's own chrome moved to the shared kit (Console,
+// StatusPip, tokens) — the first game surface on the site's design system.
 
 import { useEffect, useState } from 'react';
 import type { GameState, GameTab } from '@/lib/game/types';
 import { isFoldedFeatureUnlocked, FOLDED_FEATURE_TIERS } from '@/lib/game/corporation-tiers';
-import { consumeSubViewRequest } from '@/lib/game/sub-view';
 import CompetitivePosturePanel from './CompetitivePosturePanel';
 import { playSound } from '@/lib/game/sound-engine';
 import { Concept } from './HoloTip';
@@ -21,9 +25,10 @@ import MarketIntelligencePanel from './MarketIntelligencePanel';
 import EconomyPanel from './EconomyPanel';
 import FuturesPanel from './FuturesPanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
-import { ConsolePanel } from './chrome';
+import Console from '@/components/ui/Console';
 import GameIcon from './GameIcon';
 import type { IconName } from '@/lib/game/icons';
+import { useHubSubView } from './useHubSubView';
 
 interface MarketHubPanelProps {
   state: GameState;
@@ -36,6 +41,9 @@ interface MarketHubPanelProps {
   onNavigateTab?: (tab: GameTab) => void;
   /** Preselect a resource on the order book (crafting panel's "List" lands here). */
   bookResource?: string | null;
+  /** Six-hub shell: the Markets row owns the view switcher, so the hub's own
+   *  strip is hidden. Defaults to false — standalone behaviour unchanged. */
+  embedded?: boolean;
 }
 
 type MarketTab = 'spot' | 'analytics' | 'economy' | 'futures';
@@ -60,89 +68,82 @@ function MarketFirstOpenIntro() {
     setVisible(false);
   };
   return (
-    <div className="rounded-xl border border-cyan-500/25 bg-cyan-500/[0.04] p-4">
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="text-white text-sm font-bold flex items-center gap-2">
-          <GameIcon name="market" size={16} glow="cyan" /> First time on the Market?
-        </h3>
-        <button
-          onClick={dismiss}
-          className="min-h-[36px] px-2 text-[10px] uppercase tracking-wider text-slate-500 hover:text-white transition-colors"
-        >
+    <Console
+      title={<span className="inline-flex items-center gap-2"><GameIcon name="market" size={14} /> First time on the Market?</span>}
+      actions={
+        <button type="button" onClick={dismiss} className="btn-ghost !min-h-[36px] !py-1 text-[12px]">
           Got it
         </button>
-      </div>
-      <ol className="space-y-1.5 text-xs text-slate-300 list-none">
+      }
+    >
+      <ol className="space-y-1.5 font-body text-[0.8125rem] leading-[1.55] text-[var(--ink-2)] list-none">
         <li>
-          <span className="text-cyan-400 font-mono mr-1.5">1.</span>
-          <strong>Prices are live and shared.</strong> Every player trades on the same book — heavy
+          <span className="mr-1.5 font-mono text-[var(--signal)]">1.</span>
+          <strong className="text-[var(--ink)]">Prices are live and shared.</strong> Every player trades on the same book — heavy
           selling pushes a price down, shortages push it up, and idle prices drift back toward base
           (<Concept id="mean-reversion">mean reversion</Concept>).
         </li>
         <li>
-          <span className="text-cyan-400 font-mono mr-1.5">2.</span>
-          <strong>Trades cost a 2% broker fee.</strong> Limit orders on the{' '}
+          <span className="mr-1.5 font-mono text-[var(--signal)]">2.</span>
+          <strong className="text-[var(--ink)]">Trades cost a 2% broker fee.</strong> Limit orders on the{' '}
           <Concept id="order-book-depth">order book</Concept> hold your cash or goods in{' '}
           <Concept id="escrow">escrow</Concept> until they fill or you cancel — refunds are automatic.
         </li>
         <li>
-          <span className="text-cyan-400 font-mono mr-1.5">3.</span>
-          <strong>Why it matters:</strong> construction and (after your Protected Frontier)
+          <span className="mr-1.5 font-mono text-[var(--signal)]">3.</span>
+          <strong className="text-[var(--ink)]">Why it matters:</strong> construction and (after your Protected Frontier)
           building upkeep consume real resources you can buy here — and everything your mines
           produce can be sold here. Buy cheap during crashes; sell into shortages.
         </li>
       </ol>
-    </div>
+    </Console>
   );
 }
 
-export default function MarketHubPanel({ state, setState, onSellResource, onBuyResource, onNavigateTab, bookResource }: MarketHubPanelProps) {
+export default function MarketHubPanel({ state, setState, onSellResource, onBuyResource, onNavigateTab, bookResource, embedded = false }: MarketHubPanelProps) {
   const tier = state.corporationTier || 1;
   const economyUnlocked = isFoldedFeatureUnlocked(tier, 'economy');
   const analyticsUnlocked = isFoldedFeatureUnlocked(tier, 'intelligence');
   const futuresUnlocked = isFoldedFeatureUnlocked(tier, 'futures');
 
-  const [tab, setTab] = useState<MarketTab>('spot');
   const [bookSlug, setBookSlug] = useState<string | null>(bookResource ?? null);
   // Lever-discoverability pass (2026-09): a counter the order book watches to
   // open its price-campaign console (a `market:campaign` sub-view request or
   // the Analytics tab's thin "declare from the order book" link).
   const [campaignSignal, setCampaignSignal] = useState(0);
-  useEffect(() => { if (bookResource) { setBookSlug(bookResource); setTab('spot'); } }, [bookResource]);
+  const scrollToBook = () => setTimeout(() => document.getElementById('market-order-book')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+
+  // PvP Discoverability pass (2026-08) + lever-discoverability pass (2026-09)
+  // + six-hub consolidation: the view is a two-way binding with the shell's
+  // Markets row. `market:campaign` opens the price-campaign console on Spot &
+  // Orders — the hub is the home of the declare form now (the order book
+  // knows the selected resource and the player's inventory; Analytics keeps
+  // a thin link). `market:analytics` still lands on Analytics for the demand
+  // map, campaign register and the NPC demand console. A request for a
+  // tier-locked view is ignored here (the shell shows the lock notice).
+  const [tab, setTab] = useHubSubView<MarketTab>('market', 'spot', requested => {
+    if (requested === 'campaign') {
+      setCampaignSignal(n => n + 1);
+      scrollToBook();
+      return 'spot';
+    }
+    if (requested === 'analytics' && !analyticsUnlocked) return null;
+    if (requested === 'economy' && !economyUnlocked) return null;
+    if (requested === 'futures' && !futuresUnlocked) return null;
+    if (requested === 'spot' || requested === 'analytics' || requested === 'economy' || requested === 'futures') return requested;
+    return null;
+  });
+
+  useEffect(() => { if (bookResource) { setBookSlug(bookResource); setTab('spot'); } }, [bookResource, setTab]);
   const openOrderBook = (slug: string) => {
     setBookSlug(slug);
     setTab('spot');
-    setTimeout(() => document.getElementById('market-order-book')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    scrollToBook();
   };
   const openCampaignConsole = (slug: string) => {
     openOrderBook(slug);
     setCampaignSignal(n => n + 1);
   };
-
-  // PvP Discoverability pass (2026-08) + lever-discoverability pass (2026-09):
-  // honour a parked sub-view request. `market:campaign` opens the
-  // price-campaign console on Spot & Orders — the hub is the home of the
-  // declare form now (the order book knows the selected resource and the
-  // player's inventory; Analytics keeps a thin link). `market:analytics`
-  // still lands on Analytics for the demand map, campaign register and the
-  // NPC demand console. A request for a tier-locked view is ignored (the
-  // lock notice would be a dead end); everything else behaves as before.
-  useEffect(() => {
-    const requested = consumeSubViewRequest('market');
-    if (!requested) return;
-    if (requested === 'campaign') {
-      setTab('spot');
-      setCampaignSignal(n => n + 1);
-      setTimeout(() => document.getElementById('market-order-book')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-      return;
-    }
-    if (requested === 'analytics' && !analyticsUnlocked) return;
-    if (requested === 'economy' && !economyUnlocked) return;
-    if (requested === 'futures' && !futuresUnlocked) return;
-    if (requested === 'spot' || requested === 'analytics' || requested === 'economy' || requested === 'futures') {
-      setTab(requested);
-    }
-  }, [analyticsUnlocked, economyUnlocked, futuresUnlocked]);
 
   const tabs: { id: MarketTab; label: string; icon: IconName; locked: boolean }[] = [
     { id: 'spot', label: 'Spot & Orders', icon: 'market', locked: false },
@@ -153,26 +154,28 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
 
   return (
     <div className="space-y-3">
-      <ConsolePanel title="Markets" icon="market" subtitle="Spot prices, order books, macro intelligence and futures — one place to answer &ldquo;what should I trade?&rdquo;">
-        <div className="game-tab-bar flex gap-1 overflow-x-auto" role="tablist" aria-label="Markets view">
-          {tabs.map(t => (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={tab === t.id}
-              onClick={() => setTab(t.id)}
-              className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                tab === t.id ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
-              }`}
-            >
-              <GameIcon name={t.icon} size={13} />
-              {t.label}
-              {t.locked && <GameIcon name="lock" size={11} label="Locked" />}
-            </button>
-          ))}
-        </div>
-      </ConsolePanel>
+      {!embedded && (
+        <Console title="Markets" padded={false}>
+          <div className="flex items-center gap-1 overflow-x-auto px-2 py-1 game-tab-bar" role="tablist" aria-label="Markets view">
+            {tabs.map(t => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={tab === t.id}
+                onClick={() => setTab(t.id)}
+                className={`min-h-[44px] px-3 py-1.5 rounded-[var(--radius-control)] text-[11px] font-medium motion-safe:transition-colors flex items-center gap-1.5 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ember)] ${
+                  tab === t.id ? 'game-tab-active text-[var(--ink)]' : 'text-[var(--ink-3)] hover:text-[var(--ink)] hover:bg-[var(--hover)]'
+                }`}
+              >
+                <GameIcon name={t.icon} size={13} />
+                {t.label}
+                {t.locked && <GameIcon name="lock" size={11} label="Locked" />}
+              </button>
+            ))}
+          </div>
+        </Console>
+      )}
 
       {tab === 'spot' && (
         <div className="space-y-4">
@@ -205,9 +208,9 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
             onNavigateTab={onNavigateTab}
           />
         </div>
-      ) : <LockedSubtabNotice icon="📊" label="Analytics" tier={FOLDED_FEATURE_TIERS.intelligence} />)}
-      {tab === 'economy' && (economyUnlocked ? <EconomyPanel state={state} /> : <LockedSubtabNotice icon="🌐" label="Economy" tier={FOLDED_FEATURE_TIERS.economy} />)}
-      {tab === 'futures' && (futuresUnlocked ? <FuturesPanel state={state} setState={setState} /> : <LockedSubtabNotice icon="🔮" label="Futures" tier={FOLDED_FEATURE_TIERS.futures} />)}
+      ) : <LockedSubtabNotice iconName="activity" label="Analytics" tier={FOLDED_FEATURE_TIERS.intelligence} />)}
+      {tab === 'economy' && (economyUnlocked ? <EconomyPanel state={state} /> : <LockedSubtabNotice iconName="globe" label="Economy" tier={FOLDED_FEATURE_TIERS.economy} />)}
+      {tab === 'futures' && (futuresUnlocked ? <FuturesPanel state={state} setState={setState} /> : <LockedSubtabNotice iconName="predictions" label="Futures" tier={FOLDED_FEATURE_TIERS.futures} />)}
     </div>
   );
 }

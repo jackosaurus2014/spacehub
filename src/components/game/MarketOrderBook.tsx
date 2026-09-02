@@ -1,6 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+// ─── Market order book (Markets hub · Spot & Orders) ────────────────────────
+// Design-system migration (GAME_DESIGN_REVIEW_2026-09 §3): the order book's
+// chrome moved onto the shared kit — Console for the three views and the
+// price-campaign console, Telemetry for the header readouts and campaign
+// quote, DataTable for "My Orders", StatusPip/StatusBadge for side, order
+// status, book liveness and posture (words + glyphs, never colour alone),
+// the five tokens instead of green/red/cyan/amber utilities and rgba
+// literals, the site's btn-* CTA classes, motion-safe: transitions, and no
+// raw emoji (resource glyphs are GameIcon). Every fetch, handler and number
+// is unchanged.
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { RESOURCE_MAP, RESOURCES } from '@/lib/game/resources';
 import { formatMoney } from '@/lib/game/formulas';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
@@ -9,6 +20,12 @@ import Image from 'next/image';
 import HoloTip, { Concept } from '@/components/game/HoloTip';
 import { PRICE_CAMPAIGN_DURATION_MS, PRICE_CAMPAIGN_COOLDOWN_MS } from '@/lib/game/price-campaigns';
 import { playSound } from '@/lib/game/sound-engine';
+import Console from '@/components/ui/Console';
+import DataTable, { type DataTableColumn } from '@/components/ui/DataTable';
+import StatusPip, { type PipState } from '@/components/ui/StatusPip';
+import Telemetry from '@/components/ui/Telemetry';
+import GameIcon from '@/components/game/GameIcon';
+import { resourceCategoryIcon } from '@/lib/game/icons';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -83,6 +100,20 @@ interface ActiveCampaign {
   feePaid: number;
 }
 
+/** Order status → pip (word + shape). */
+function orderStatusPip(status: string): { state: PipState; label: string } {
+  switch (status) {
+    case 'filled': return { state: 'flew', label: 'FILLED' };
+    case 'partial': return { state: 'tminus', label: 'PARTIAL' };
+    case 'cancelled': return { state: 'scrub', label: 'CANCELLED' };
+    case 'expired': return { state: 'hold', label: 'EXPIRED' };
+    default: return { state: 'live', label: 'OPEN' };
+  }
+}
+
+const OVERLINE = 'font-body text-[0.6875rem] font-medium uppercase leading-[1.4] tracking-[0.14em] text-[var(--ink-3)]';
+const INPUT = 'w-full min-h-[44px] rounded-[var(--radius-control)] border border-[var(--line-2)] bg-[var(--surface)] px-3 font-mono text-[0.875rem] text-[var(--ink)] placeholder:text-[var(--ink-3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ember)]';
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function MarketOrderBook({ state, selectedResource, onOrderPlaced, onResourceChange, campaignOpenSignal }: MarketOrderBookProps) {
@@ -98,6 +129,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
   const [campaignBusy, setCampaignBusy] = useState(false);
   const [campaignMessage, setCampaignMessage] = useState<string | null>(null);
   const [book, setBook] = useState<OrderBookData | null>(null);
+  const [bookFetchedAt, setBookFetchedAt] = useState<number | null>(null);
   const [myOrders, setMyOrders] = useState<MyOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -118,6 +150,7 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
       if (res.ok) {
         const data = await res.json();
         setBook(data);
+        setBookFetchedAt(Date.now());
       }
     } catch {
       // silently fail, will retry
@@ -308,68 +341,136 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
   const myOrdersForResource = myOrders.filter(o => o.resourceSlug === resource && ['open', 'partial'].includes(o.status));
 
+  // My Orders as DataTable rows (whole list, all resources — unchanged scope).
+  type OrderRow = MyOrder & { resourceName: string; fillPct: number; isActive: boolean; timeLeft: string };
+  const orderRows: OrderRow[] = useMemo(() => myOrders.map(order => {
+    const rDef = RESOURCE_MAP.get(order.resourceSlug as never);
+    const fillPct = order.quantity > 0 ? Math.round((order.filledQty / order.quantity) * 100) : 0;
+    const isActive = ['open', 'partial'].includes(order.status);
+    const expiresAt = order.expiresAt ? new Date(order.expiresAt) : null;
+    const timeLeftMs = expiresAt ? Math.max(0, expiresAt.getTime() - Date.now()) : 0;
+    const hoursLeft = Math.floor(timeLeftMs / (1000 * 60 * 60));
+    const minsLeft = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
+    const timeLeft = isActive && expiresAt ? (hoursLeft > 0 ? `${hoursLeft}h ${minsLeft}m left` : `${minsLeft}m left`) : '';
+    return { ...order, resourceName: rDef?.name || order.resourceSlug, fillPct, isActive, timeLeft };
+  }), [myOrders]);
+
+  const orderColumns: DataTableColumn<OrderRow>[] = [
+    {
+      key: 'side', header: 'Side',
+      render: r => <StatusPip state={r.side === 'buy' ? 'go' : 'scrub'} label={r.side === 'buy' ? 'BUY' : 'SELL'} />,
+    },
+    {
+      key: 'resourceName', header: 'Resource',
+      render: r => {
+        const rDef = RESOURCE_MAP.get(r.resourceSlug as never);
+        return (
+          <span className={`inline-flex items-center gap-1.5 ${r.isActive ? 'text-[var(--ink)]' : 'text-[var(--ink-3)]'}`}>
+            <GameIcon name={resourceCategoryIcon(rDef?.category || 'generic')} size={12} /> {r.resourceName}
+          </span>
+        );
+      },
+    },
+    { key: 'price', header: 'Price', numeric: true, render: r => formatMoney(r.price) },
+    {
+      key: 'fillPct', header: 'Filled', numeric: true,
+      render: r => (
+        <span className="inline-flex flex-col items-end gap-1 min-w-[72px]">
+          <span className="font-mono tabular-nums">{r.filledQty}/{r.quantity}</span>
+          <span className="h-1 w-full rounded-full overflow-hidden bg-[var(--line)]" role="progressbar" aria-valuenow={r.fillPct} aria-valuemin={0} aria-valuemax={100} aria-label="Fill progress">
+            <span className="block h-full rounded-full motion-safe:transition-all" style={{ width: `${r.fillPct}%`, background: r.side === 'buy' ? 'var(--go)' : 'var(--crit)' }} />
+          </span>
+        </span>
+      ),
+    },
+    {
+      key: 'status', header: 'Status',
+      render: r => { const pip = orderStatusPip(r.status); return <StatusPip state={pip.state} label={pip.label} />; },
+    },
+    { key: 'timeLeft', header: 'Expires', sortable: false, render: r => <span className="text-[var(--ink-3)]">{r.timeLeft || '—'}</span> },
+    {
+      key: 'actions', header: '', sortable: false, align: 'right',
+      render: r => r.isActive ? (
+        <button
+          type="button"
+          onClick={() => handleCancelOrder(r.id)}
+          aria-label={`Cancel ${r.side} order for ${r.resourceName}`}
+          className="btn-ghost !min-h-[36px] !py-1 !px-2 text-[12px] !text-[var(--crit)]"
+        >
+          Cancel
+        </button>
+      ) : null,
+    },
+  ];
+
   // ─── Render ───────────────────────────────────────────────────────────
 
   return (
     <div className="space-y-3">
-      {/* Resource Selector */}
+      {/* Resource Selector + header readouts */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="sprite-frame w-8 h-8 flex-shrink-0 flex items-center justify-center">
           {RESOURCE_ASSETS[resource] ? (
             <Image src={RESOURCE_ASSETS[resource]} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover" />
           ) : (
-            <span className="text-sm">{resourceDef?.icon}</span>
+            <GameIcon name={resourceCategoryIcon(resourceDef?.category || 'generic')} size={18} />
           )}
         </div>
         <select
           value={resource}
           onChange={e => { setResource(e.target.value); setPrice(''); onResourceChange?.(e.target.value); }}
           aria-label="Order book resource"
-          className="px-2 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500/30"
+          className="min-h-[44px] px-3 rounded-[var(--radius-control)] border border-[var(--line-2)] bg-[var(--surface)] text-[var(--ink)] text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ember)]"
         >
           {RESOURCES.map(r => (
-            <option key={r.id} value={r.id} className="bg-slate-900">{r.icon} {r.name}</option>
+            <option key={r.id} value={r.id} className="bg-[var(--surface)]">{r.name}</option>
           ))}
         </select>
-
-        {book && (
-          <div className="flex items-center gap-3 text-[10px]">
-            <span className="text-slate-400">
-              Last: <span className="game-number text-white">{formatMoney(book.lastTradePrice || book.currentPrice)}</span>
-            </span>
-            {((book.npcCorpAskQty || 0) > 0 || (book.npcCorpBidQty || 0) > 0) && (
-              <span className="text-purple-300/90" title="NPC industrial corporations fabricate hardware from raw inputs and list it here; they also buy what they consume. Everything else on the book is player-built.">
-                🏭 NPC industry: {book.npcCorpAskQty || 0} for sale · wants {book.npcCorpBidQty || 0}
-              </span>
-            )}
-            <span className="hidden">
-            </span>
-            {book.change24h !== 0 && (
-              <span className={`game-number ${book.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {book.change24h > 0 ? '▲+' : '▼'}{Math.abs(book.change24h)}%
-              </span>
-            )}
-            {book.spread && (
-              <HoloTip
-                underline={false}
-                content={{
-                  title: 'Bid-Ask Spread',
-                  icon: 'market',
-                  body: 'The gap between the best (highest) buy order and the best (lowest) sell order. A tighter spread means the market is more liquid — you can trade near the last price without moving it much.',
-                }}
-              >
-                <span className="text-slate-500">
-                  Spread: {formatMoney(book.spread.absolute)} ({book.spread.percentage}%)
-                </span>
-              </HoloTip>
-            )}
-            <span className="text-slate-500">Vol 24h: {book.volume24h}</span>
-          </div>
-        )}
       </div>
 
+      {book && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-[var(--radius-console)] border border-[var(--line)] bg-[var(--surface)] p-3">
+          <Telemetry
+            label="Last"
+            value={formatMoney(book.lastTradePrice || book.currentPrice)}
+            tone="signal"
+            delta={book.change24h !== 0 ? { value: book.change24h, suffix: '% 24h' } : undefined}
+          />
+          <div>
+            <HoloTip
+              underline={false}
+              content={{
+                title: 'Bid-Ask Spread',
+                icon: 'market',
+                body: 'The gap between the best (highest) buy order and the best (lowest) sell order. A tighter spread means the market is more liquid — you can trade near the last price without moving it much.',
+              }}
+            >
+              <span className={OVERLINE}>Spread</span>
+            </HoloTip>
+            <div className="mt-1 font-mono text-[1.25rem] font-bold leading-[1.1] tabular-nums text-[var(--ink)]">
+              {book.spread ? formatMoney(book.spread.absolute) : '—'}
+            </div>
+            {book.spread && <div className="mt-1 font-mono text-[0.8125rem] text-[var(--ink-3)]">{book.spread.percentage}%</div>}
+          </div>
+          <Telemetry label="Vol 24h" value={book.volume24h.toLocaleString()} unit="units" tone="ink" />
+          <div>
+            <span className={OVERLINE}>NPC industry</span>
+            {((book.npcCorpAskQty || 0) > 0 || (book.npcCorpBidQty || 0) > 0) ? (
+              <p
+                className="mt-1 font-mono text-[0.8125rem] tabular-nums text-[var(--ink-2)] inline-flex items-center gap-1.5"
+                title="NPC industrial corporations fabricate hardware from raw inputs and list it here; they also buy what they consume. Everything else on the book is player-built."
+              >
+                <GameIcon name="npc" size={12} /> {book.npcCorpAskQty || 0} for sale · wants {book.npcCorpBidQty || 0}
+              </p>
+            ) : (
+              <p className="mt-1 font-mono text-[0.8125rem] text-[var(--ink-3)]">— none listed</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Published NPC demand + the price-campaign lever, for the selected resource. */}
-      <div className="flex items-center gap-3 flex-wrap text-[10px]">
+      <div className="flex items-center gap-3 flex-wrap text-[11px]">
         {forecast && (
           <HoloTip
             underline={false}
@@ -379,8 +480,9 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
               body: 'What the NPC industrial corporations and faction procurement drives will bid for (buy) and list (sell) in this market over the next few days, published ahead of time so you can plan around it. Same numbers the hourly tick executes — full table under Markets → Analytics → NPC Demand.',
             }}
           >
-            <span className="text-purple-300/90" aria-live="polite">
-              NPC demand next {forecast.horizonHours}h: buy {forecast.buy.toLocaleString()} / sell {forecast.sell.toLocaleString()}
+            <span className="inline-flex items-center gap-1.5 text-[var(--ink-2)]" aria-live="polite">
+              <GameIcon name="npc" size={12} />
+              NPC demand next {forecast.horizonHours}h: <span className="font-mono tabular-nums text-[var(--ink)]">buy {forecast.buy.toLocaleString()} / sell {forecast.sell.toLocaleString()}</span>
             </span>
           </HoloTip>
         )}
@@ -390,92 +492,82 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
           aria-expanded={campaignOpen}
           aria-controls="price-campaign-console"
           aria-label={`Declare a price campaign on ${resourceDef?.name || resource}`}
-          className="min-h-[44px] px-2.5 rounded-md font-bold border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
+          className="btn-secondary !min-h-[40px] !py-1 !px-3 text-[12px] !text-[var(--crit)]"
         >
-          {campaignOpen ? 'Close campaign console' : 'Declare price campaign'}
+          <GameIcon name="swords" size={12} /> {campaignOpen ? 'Close campaign console' : 'Declare price campaign'}
         </button>
       </div>
 
       {campaignOpen && (
-        <section
-          id="price-campaign-console"
-          aria-labelledby="price-campaign-heading"
-          className="hud-frame relative rounded-xl border border-red-500/25 bg-red-500/[0.04] p-3 space-y-2"
+        <Console
+          title={
+            <span id="price-campaign-heading" className="inline-flex items-center gap-1.5 normal-case tracking-normal">
+              <Concept id="price-campaign">Price campaign</Concept>
+              <span className="text-[var(--ink-3)]">· {resourceDef?.name || resource}</span>
+            </span>
+          }
+          actions={<StatusPip state="scrub" label="OFFENSE" />}
         >
-          <span className="hud-corner-bl" aria-hidden="true" />
-          <span className="hud-corner-br" aria-hidden="true" />
-          <h3 id="price-campaign-heading" className="text-[11px] font-bold uppercase tracking-wider text-red-200 flex items-center gap-1.5">
-            <Concept id="price-campaign">Price campaign</Concept>
-            <span className="normal-case tracking-normal text-slate-300">· {resourceDef?.name || resource}</span>
-            <span className="text-[9px] px-1 py-0.5 rounded border border-white/15 text-slate-400">Offense</span>
-          </h3>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
-            Declare a public dumping campaign on this market: the fee is burned, you must hold real inventory as
-            ammunition, mean-reversion pauses and the NPC maker halves its bids for {Math.round(PRICE_CAMPAIGN_DURATION_MS / 86_400_000)} days.
-            One campaign at a time; {Math.round(PRICE_CAMPAIGN_COOLDOWN_MS / 86_400_000)}-day cooldown per market. Every corporation sees it.
-          </p>
-          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-            <div className="rounded-lg bg-white/[0.03] p-2">
-              <dt className="game-label">Fee (burned)</dt>
-              <dd className="font-mono text-amber-300">{campaignQuote ? formatMoney(campaignQuote.fee) : 'computed at declare'}</dd>
-            </div>
-            <div className="rounded-lg bg-white/[0.03] p-2">
-              <dt className="game-label">Ammunition required</dt>
-              <dd className="font-mono text-slate-200">{campaignQuote ? `${campaignQuote.minInventory.toLocaleString()} units` : '—'}</dd>
-            </div>
-            <div className="rounded-lg bg-white/[0.03] p-2">
-              <dt className="game-label">You hold</dt>
-              <dd className="font-mono text-slate-200">{(state.resources[resource] || 0).toLocaleString()} units</dd>
-            </div>
-            <div className="rounded-lg bg-white/[0.03] p-2">
-              <dt className="game-label">Window</dt>
-              <dd className="font-mono text-slate-200">{Math.round(PRICE_CAMPAIGN_DURATION_MS / 86_400_000)} days</dd>
-            </div>
-          </dl>
-          {campaignQuote && (state.resources[resource] || 0) < campaignQuote.minInventory && (
-            <p className="text-[11px] text-slate-400">
-              You hold less than the ammunition floor — the server will refuse the declaration until you do.
+          <div id="price-campaign-console" aria-labelledby="price-campaign-heading" className="space-y-3">
+            <p className="font-body text-[0.8125rem] leading-[1.55] text-[var(--ink-2)]">
+              Declare a public dumping campaign on this market: the fee is burned, you must hold real inventory as
+              ammunition, mean-reversion pauses and the NPC maker halves its bids for {Math.round(PRICE_CAMPAIGN_DURATION_MS / 86_400_000)} days.
+              One campaign at a time; {Math.round(PRICE_CAMPAIGN_COOLDOWN_MS / 86_400_000)}-day cooldown per market. Every corporation sees it.
             </p>
-          )}
-          {campaignsHere.length > 0 && (
-            <p className="text-[11px] text-red-300/90">
-              Already under campaign: {campaignsHere.map(c => `${c.byCompanyName} (until ${new Date(c.endsAt).toLocaleDateString()})`).join(', ')}.
-            </p>
-          )}
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={declareCampaign}
-              disabled={campaignBusy}
-              aria-label={`Confirm price campaign on ${resourceDef?.name || resource}${campaignQuote ? `, fee ${formatMoney(campaignQuote.fee)} burned` : ''}`}
-              className="min-h-[44px] px-3 rounded-lg text-[11px] font-bold bg-red-500/15 border border-red-500/30 text-red-200 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
-            >
-              {campaignBusy ? 'Declaring…' : `Confirm — burn ${campaignQuote ? formatMoney(campaignQuote.fee) : 'the fee'}`}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCampaignOpen(false)}
-              className="min-h-[44px] px-3 rounded-lg text-[11px] font-semibold border border-white/10 text-slate-300 hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
-            >
-              Cancel
-            </button>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <Telemetry label="Fee (burned)" value={campaignQuote ? formatMoney(campaignQuote.fee) : '—'} tone="ember" sub={campaignQuote ? undefined : 'computed at declare'} />
+              <Telemetry label="Ammunition required" value={campaignQuote ? campaignQuote.minInventory.toLocaleString() : '—'} unit={campaignQuote ? 'units' : undefined} tone="ink" />
+              <Telemetry label="You hold" value={(state.resources[resource] || 0).toLocaleString()} unit="units" tone="ink" />
+              <Telemetry label="Window" value={Math.round(PRICE_CAMPAIGN_DURATION_MS / 86_400_000)} unit="days" tone="ink" />
+            </div>
+            {campaignQuote && (state.resources[resource] || 0) < campaignQuote.minInventory && (
+              <p className="flex items-center gap-2 text-[11px] text-[var(--ink-2)]">
+                <StatusPip state="hold" label="BELOW FLOOR" />
+                You hold less than the ammunition floor — the server will refuse the declaration until you do.
+              </p>
+            )}
+            {campaignsHere.length > 0 && (
+              <p className="flex items-center gap-2 text-[11px] text-[var(--ink-2)]">
+                <StatusPip state="live" label="UNDER CAMPAIGN" />
+                {campaignsHere.map(c => `${c.byCompanyName} (until ${new Date(c.endsAt).toLocaleDateString()})`).join(', ')}.
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={declareCampaign}
+                disabled={campaignBusy}
+                aria-label={`Confirm price campaign on ${resourceDef?.name || resource}${campaignQuote ? `, fee ${formatMoney(campaignQuote.fee)} burned` : ''}`}
+                className="btn-primary text-[13px]"
+              >
+                {campaignBusy ? 'Declaring…' : `Confirm — burn ${campaignQuote ? formatMoney(campaignQuote.fee) : 'the fee'}`}
+              </button>
+              <button
+                type="button"
+                onClick={() => setCampaignOpen(false)}
+                className="btn-secondary text-[13px]"
+              >
+                Cancel
+              </button>
+            </div>
+            {campaignMessage && <p className="text-[11px] text-[var(--ink)] leading-relaxed" role="status">{campaignMessage}</p>}
           </div>
-          {campaignMessage && <p className="text-[11px] text-slate-200 leading-relaxed" role="status">{campaignMessage}</p>}
-        </section>
+        </Console>
       )}
 
       {/* Tab Switcher */}
-      <div className="flex gap-1" role="tablist" aria-label="Market order book views">
+      <div className="flex gap-1 overflow-x-auto game-tab-bar" role="tablist" aria-label="Market order book views">
         {(['book', 'place', 'orders'] as const).map(t => (
           <button
             key={t}
+            type="button"
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`min-h-[44px] px-3 py-1 text-[10px] font-medium rounded-md transition-colors ${
+            className={`min-h-[44px] px-3 py-1 text-[11px] font-medium rounded-[var(--radius-control)] border motion-safe:transition-colors whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ember)] ${
               tab === t
-                ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30'
-                : 'text-slate-400 hover:text-white border border-transparent'
+                ? 'border-[var(--ember)] bg-[var(--hover)] text-[var(--ink)]'
+                : 'border-transparent text-[var(--ink-2)] hover:text-[var(--ink)]'
             }`}
           >
             {t === 'book' ? 'Order Book' : t === 'place' ? 'Place Order' : `My Orders (${myOrdersForResource.length})`}
@@ -485,41 +577,43 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
       {/* Order Book Tab */}
       {tab === 'book' && (
-        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-          <span className="hud-corner-bl" aria-hidden="true" />
-          <span className="hud-corner-br" aria-hidden="true" />
+        <Console
+          title="Order book"
+          source="shared book"
+          asOf={bookFetchedAt}
+          status={loading ? 'delayed' : book ? 'live' : 'off'}
+        >
           {loading ? (
-            <div className="text-center text-slate-500 text-xs py-8">Loading order book...</div>
+            <div className="text-center text-[var(--ink-3)] text-xs py-8">Loading order book...</div>
           ) : !book ? (
-            <div className="text-center text-slate-500 text-xs py-8">No data available</div>
+            <div className="text-center text-[var(--ink-3)] text-xs py-8">No data available</div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
               {/* Bids (Buy Orders) */}
               <div role="table" aria-label="Buy orders (bids)">
-                <div className="font-hud text-[10px] text-green-400 font-bold uppercase tracking-wider mb-2">
-                  <Concept id="order-book-depth">▲ Bids (Buy)</Concept>
+                <div className={`${OVERLINE} mb-2`} style={{ color: 'var(--go)' }}>
+                  <Concept id="order-book-depth"><span aria-hidden="true">▲</span> Bids (Buy)</Concept>
                 </div>
                 <div className="space-y-0.5">
                   {book.bids.length === 0 ? (
-                    <div className="text-slate-600 text-[10px] py-2">No buy orders</div>
+                    <div className="text-[var(--ink-3)] text-[10px] py-2">No buy orders</div>
                   ) : (
                     book.bids.map((bid, i) => (
-                      <div key={i} role="row" className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
-                        {/* Depth bar — holo gradient, grows from the price column outward */}
+                      <div key={i} role="row" className="relative flex items-center justify-between py-0.5 px-1.5 rounded-[var(--radius-badge)] text-[11px]">
+                        {/* Depth bar — grows from the price column outward */}
                         <div
-                          className="absolute inset-y-0 left-0 rounded"
+                          className="absolute inset-y-0 left-0 rounded-[var(--radius-badge)]"
                           style={{
                             width: `${(bid.totalQty / maxQty) * 100}%`,
-                            background: 'linear-gradient(to right, rgba(34,197,94,0.22), rgba(34,197,94,0.04))',
-                            boxShadow: 'inset 0 0 6px rgba(34,197,94,0.15)',
+                            background: 'linear-gradient(to right, color-mix(in srgb, var(--go) 22%, transparent), color-mix(in srgb, var(--go) 4%, transparent))',
                           }}
                           role="presentation"
                           aria-label={`${bid.totalQty} units at ${formatMoney(bid.price)}`}
                         />
-                        <span className="game-number relative z-10 text-green-400" role="cell">{formatMoney(bid.price)}</span>
-                        <span className="game-number relative z-10 text-slate-300" role="cell">
+                        <span className="relative z-10 font-mono tabular-nums" style={{ color: 'var(--go)' }} role="cell">{formatMoney(bid.price)}</span>
+                        <span className="relative z-10 font-mono tabular-nums text-[var(--ink-2)]" role="cell">
                           {bid.totalQty}
-                          {bid.isNpc && <span className="text-slate-600 ml-1">NPC</span>}
+                          {bid.isNpc && <span className="text-[var(--ink-3)] ml-1">NPC</span>}
                         </span>
                       </div>
                     ))
@@ -529,29 +623,28 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
               {/* Asks (Sell Orders) */}
               <div role="table" aria-label="Sell orders (asks)">
-                <div className="font-hud text-[10px] text-red-400 font-bold uppercase tracking-wider mb-2">
-                  ▼ Asks (Sell)
+                <div className={`${OVERLINE} mb-2`} style={{ color: 'var(--crit)' }}>
+                  <span aria-hidden="true">▼</span> Asks (Sell)
                 </div>
                 <div className="space-y-0.5">
                   {book.asks.length === 0 ? (
-                    <div className="text-slate-600 text-[10px] py-2">No sell orders</div>
+                    <div className="text-[var(--ink-3)] text-[10px] py-2">No sell orders</div>
                   ) : (
                     book.asks.map((ask, i) => (
-                      <div key={i} role="row" className="relative flex items-center justify-between py-0.5 px-1.5 rounded text-[10px]">
+                      <div key={i} role="row" className="relative flex items-center justify-between py-0.5 px-1.5 rounded-[var(--radius-badge)] text-[11px]">
                         <div
-                          className="absolute inset-y-0 right-0 rounded"
+                          className="absolute inset-y-0 right-0 rounded-[var(--radius-badge)]"
                           style={{
                             width: `${(ask.totalQty / maxQty) * 100}%`,
-                            background: 'linear-gradient(to left, rgba(239,68,68,0.22), rgba(239,68,68,0.04))',
-                            boxShadow: 'inset 0 0 6px rgba(239,68,68,0.15)',
+                            background: 'linear-gradient(to left, color-mix(in srgb, var(--crit) 22%, transparent), color-mix(in srgb, var(--crit) 4%, transparent))',
                           }}
                           role="presentation"
                           aria-label={`${ask.totalQty} units at ${formatMoney(ask.price)}`}
                         />
-                        <span className="game-number relative z-10 text-red-400" role="cell">{formatMoney(ask.price)}</span>
-                        <span className="game-number relative z-10 text-slate-300" role="cell">
+                        <span className="relative z-10 font-mono tabular-nums" style={{ color: 'var(--crit)' }} role="cell">{formatMoney(ask.price)}</span>
+                        <span className="relative z-10 font-mono tabular-nums text-[var(--ink-2)]" role="cell">
                           {ask.totalQty}
-                          {ask.isNpc && <span className="text-slate-600 ml-1">NPC</span>}
+                          {ask.isNpc && <span className="text-[var(--ink-3)] ml-1">NPC</span>}
                         </span>
                       </div>
                     ))
@@ -560,78 +653,77 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
               </div>
             </div>
           )}
-        </div>
+        </Console>
       )}
 
       {/* Place Order Tab */}
       {tab === 'place' && (
-        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
-          <span className="hud-corner-bl" aria-hidden="true" />
-          <span className="hud-corner-br" aria-hidden="true" />
+        <Console title="Place order" actions={<StatusPip state={side === 'buy' ? 'go' : 'scrub'} label={side === 'buy' ? 'BUY' : 'SELL'} />}>
+          <div className="space-y-3">
           {/* Buy/Sell Toggle */}
-          <div className="flex rounded-lg overflow-hidden border border-white/[0.08]">
+          <div className="flex rounded-[var(--radius-control)] overflow-hidden border border-[var(--line-2)]" role="group" aria-label="Order side">
             <button
+              type="button"
               onClick={() => setSide('buy')}
               aria-pressed={side === 'buy'}
-              className={`flex-1 min-h-[44px] py-2 text-xs font-semibold transition-colors ${
-                side === 'buy'
-                  ? 'bg-green-600/20 text-green-400 border-r border-white/[0.08]'
-                  : 'text-slate-400 hover:text-white border-r border-white/[0.08]'
+              className={`flex-1 min-h-[44px] py-2 text-xs font-semibold motion-safe:transition-colors border-r border-[var(--line-2)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--ember)] ${
+                side === 'buy' ? 'bg-[var(--hover)] text-[var(--ink)]' : 'text-[var(--ink-2)] hover:text-[var(--ink)]'
               }`}
             >
-              Buy
+              <span aria-hidden="true" style={{ color: 'var(--go)' }}>▲</span> Buy
             </button>
             <button
+              type="button"
               onClick={() => setSide('sell')}
               aria-pressed={side === 'sell'}
-              className={`flex-1 min-h-[44px] py-2 text-xs font-semibold transition-colors ${
-                side === 'sell'
-                  ? 'bg-red-600/20 text-red-400'
-                  : 'text-slate-400 hover:text-white'
+              className={`flex-1 min-h-[44px] py-2 text-xs font-semibold motion-safe:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--ember)] ${
+                side === 'sell' ? 'bg-[var(--hover)] text-[var(--ink)]' : 'text-[var(--ink-2)] hover:text-[var(--ink)]'
               }`}
             >
-              Sell
+              <span aria-hidden="true" style={{ color: 'var(--crit)' }}>▼</span> Sell
             </button>
           </div>
 
           {/* Price Input */}
           <div>
-            <label className="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">
+            <label htmlFor="order-price" className={`${OVERLINE} block mb-1`}>
               Price per unit
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-slate-500 text-xs">$</span>
+              <span className="text-[var(--ink-3)] text-xs">$</span>
               <input
+                id="order-price"
                 type="number"
                 min={1}
                 value={price}
                 onChange={e => setPrice(e.target.value)}
                 placeholder={book ? String(Math.round(book.currentPrice)) : '0'}
-                className="flex-1 h-8 rounded-lg bg-white/[0.06] text-white text-xs font-mono px-2 border border-white/[0.06] focus:outline-none focus:border-cyan-500/30"
+                className={INPUT}
               />
             </div>
           </div>
 
           {/* Quantity Input */}
           <div>
-            <label className="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">
+            <label htmlFor="order-qty" className={`${OVERLINE} block mb-1`}>
               Quantity
             </label>
             <input
+              id="order-qty"
               type="number"
               min={1}
               value={quantity}
               onChange={e => setQuantity(e.target.value)}
               placeholder="1"
-              className="w-full h-8 rounded-lg bg-white/[0.06] text-white text-xs font-mono px-2 border border-white/[0.06] focus:outline-none focus:border-cyan-500/30"
+              className={INPUT}
             />
             {side === 'sell' && resourceDef && (
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-[10px] text-[var(--ink-3)] mt-1">
                 Available: {(state.resources[resource] || 0).toLocaleString()} {resourceDef.name}
               </p>
             )}
             {side === 'buy' && (
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-[10px] text-[var(--ink-3)] mt-1">
                 Balance: {formatMoney(state.money)}
               </p>
             )}
@@ -639,44 +731,45 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
           {/* Expiration */}
           <div>
-            <label className="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">
+            <label htmlFor="order-expiry" className={`${OVERLINE} block mb-1`}>
               Expires in
             </label>
             <select
+              id="order-expiry"
               value={expiresIn}
               onChange={e => setExpiresIn(e.target.value)}
-              className="w-full h-8 rounded-lg bg-white/[0.06] text-white text-xs px-2 border border-white/[0.06] focus:outline-none focus:border-cyan-500/30"
+              className={INPUT}
             >
-              <option value="1h" className="bg-slate-900">1 hour</option>
-              <option value="6h" className="bg-slate-900">6 hours</option>
-              <option value="24h" className="bg-slate-900">24 hours</option>
-              <option value="72h" className="bg-slate-900">3 days</option>
-              <option value="1w" className="bg-slate-900">1 week</option>
+              <option value="1h" className="bg-[var(--surface)]">1 hour</option>
+              <option value="6h" className="bg-[var(--surface)]">6 hours</option>
+              <option value="24h" className="bg-[var(--surface)]">24 hours</option>
+              <option value="72h" className="bg-[var(--surface)]">3 days</option>
+              <option value="1w" className="bg-[var(--surface)]">1 week</option>
             </select>
           </div>
 
           {/* Order Summary */}
           {priceInt > 0 && qtyInt > 0 && (
-            <div className="bg-white/[0.03] rounded-lg p-3 space-y-1">
-              <div className="flex justify-between text-[10px]">
-                <span className="text-slate-400">Subtotal</span>
-                <span className="text-white font-mono">{formatMoney(totalCost)}</span>
+            <div className="rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--elev)] p-3 space-y-1">
+              <div className="flex justify-between text-[11px]">
+                <span className="text-[var(--ink-2)]">Subtotal</span>
+                <span className="text-[var(--ink)] font-mono tabular-nums">{formatMoney(totalCost)}</span>
               </div>
-              <div className="flex justify-between text-[10px]">
+              <div className="flex justify-between text-[11px]">
                 <HoloTip
                   underline={false}
                   content={{ title: 'Order Escrow', icon: 'lock', body: <Concept id="escrow" /> }}
                 >
-                  <span className="text-slate-400">Fee (2%)</span>
+                  <span className="text-[var(--ink-2)]">Fee (2%)</span>
                 </HoloTip>
-                <span className="text-amber-400 font-mono">{formatMoney(feeAmount)}</span>
+                <span className="font-mono tabular-nums" style={{ color: 'var(--caution)' }}>{formatMoney(feeAmount)}</span>
               </div>
-              <div className="flex justify-between text-xs border-t border-white/[0.06] pt-1">
-                <span className="text-slate-300 font-medium">
+              <div className="flex justify-between text-xs border-t border-[var(--line)] pt-1">
+                <span className="text-[var(--ink)] font-medium">
                   {side === 'buy' ? 'Total Cost' : 'You Receive'}
                 </span>
-                <span className={`font-mono font-bold ${side === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
-                  {formatMoney(totalWithFee)}
+                <span className="font-mono font-bold tabular-nums" style={{ color: side === 'buy' ? 'var(--crit)' : 'var(--go)' }}>
+                  <span aria-hidden="true">{side === 'buy' ? '−' : '+'}</span>{formatMoney(totalWithFee)}
                 </span>
               </div>
             </div>
@@ -684,118 +777,44 @@ export default function MarketOrderBook({ state, selectedResource, onOrderPlaced
 
           {/* Error */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 text-red-400 text-[10px]" role="alert" aria-live="polite">
-              {error}
+            <div className="flex items-center gap-2 rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--elev)] p-2 text-[11px] text-[var(--ink)]" role="alert" aria-live="polite">
+              <StatusPip state="scrub" label="ERROR" /> {error}
             </div>
           )}
 
           {/* Submit */}
           <button
+            type="button"
             onClick={handlePlaceOrder}
             disabled={submitting || !priceInt || !qtyInt}
-            className={`w-full min-h-[44px] py-2.5 text-xs font-semibold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-              side === 'buy'
-                ? 'bg-green-600 hover:bg-green-500 text-white'
-                : 'bg-red-600 hover:bg-red-500 text-white'
-            }`}
+            className="btn-primary w-full text-[13px]"
           >
             {submitting
               ? 'Placing...'
               : `${side === 'buy' ? 'Buy' : 'Sell'} ${qtyInt || 0} ${resourceDef?.name || resource} @ ${formatMoney(priceInt)}`}
           </button>
-        </div>
+          </div>
+        </Console>
       )}
 
       {/* My Orders Tab */}
       {tab === 'orders' && (
-        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-          <span className="hud-corner-bl" aria-hidden="true" />
-          <span className="hud-corner-br" aria-hidden="true" />
+        <Console title="My orders" padded={myOrders.length === 0}>
           {myOrders.length === 0 ? (
-            <div className="text-center text-slate-500 text-xs py-6">
+            <div className="text-center text-[var(--ink-3)] text-xs py-6">
               No orders yet. Place your first limit order!
             </div>
           ) : (
-            <div className="space-y-2" role="table" aria-label="My open orders" aria-live="polite">
-              {myOrders.map(order => {
-                const rDef = RESOURCE_MAP.get(order.resourceSlug as never);
-                const fillPct = order.quantity > 0 ? Math.round((order.filledQty / order.quantity) * 100) : 0;
-                const isActive = ['open', 'partial'].includes(order.status);
-                const expiresAt = order.expiresAt ? new Date(order.expiresAt) : null;
-                const timeLeft = expiresAt ? Math.max(0, expiresAt.getTime() - Date.now()) : 0;
-                const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
-                const minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-
-                return (
-                  <div
-                    key={order.id}
-                    role="row"
-                    className={`p-2.5 rounded-lg border transition-colors ${
-                      isActive
-                        ? 'border-white/[0.08] bg-white/[0.02]'
-                        : 'border-white/[0.04] bg-white/[0.01] opacity-60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                          order.side === 'buy'
-                            ? 'bg-green-500/10 text-green-400'
-                            : 'bg-red-500/10 text-red-400'
-                        }`}>
-                          {order.side}
-                        </span>
-                        <span className="text-white text-xs">
-                          {rDef?.icon} {rDef?.name || order.resourceSlug}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                          order.status === 'filled' ? 'bg-green-500/10 text-green-400' :
-                          order.status === 'partial' ? 'bg-amber-500/10 text-amber-400' :
-                          order.status === 'cancelled' ? 'bg-slate-500/10 text-slate-400' :
-                          'bg-cyan-500/10 text-cyan-400'
-                        }`}>
-                          {order.status}
-                        </span>
-                        {isActive && (
-                          <button
-                            onClick={() => handleCancelOrder(order.id)}
-                            aria-label={`Cancel ${order.side} order for ${rDef?.name || order.resourceSlug}`}
-                            className="min-h-[44px] inline-flex items-center justify-center text-[10px] text-red-400 hover:text-red-300 px-2.5 py-0.5 rounded border border-red-500/20 hover:border-red-500/40 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-[10px]">
-                      <span className="game-number text-slate-400">
-                        {order.filledQty}/{order.quantity} @ {formatMoney(order.price)}
-                      </span>
-                      {isActive && expiresAt && (
-                        <span className="text-slate-500">
-                          {hoursLeft > 0 ? `${hoursLeft}h ${minsLeft}m left` : `${minsLeft}m left`}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Fill progress bar */}
-                    <div className="mt-1.5 h-1 rounded-full bg-white/[0.06] overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all ${
-                          order.side === 'buy' ? 'bg-green-500/40' : 'bg-red-500/40'
-                        }`}
-                        style={{ width: `${fillPct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+            <div aria-live="polite">
+              <DataTable<OrderRow>
+                caption="My open orders"
+                columns={orderColumns}
+                rows={orderRows}
+                initialSort={{ key: 'createdAt', dir: 'desc' }}
+              />
             </div>
           )}
-        </div>
+        </Console>
       )}
     </div>
   );

@@ -14,7 +14,7 @@ import {
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
-import { requestSubView } from '@/lib/game/sub-view';
+import { requestSubView, onSubViewAnnounce } from '@/lib/game/sub-view';
 import { updateMusicMood } from '@/lib/game/music-engine';
 import { getBuildingAsset } from '@/lib/game/assets';
 import Link from 'next/link';
@@ -36,7 +36,7 @@ import { setBuildingSupplyPolicy } from '@/lib/game/consumption';
 // recovery) — the pure state mutators live in mothball.ts, same house style
 // as setBuildingSupplyPolicy above.
 import { mothballBuilding, reactivateBuilding, decommissionBuilding } from '@/lib/game/mothball';
-import DailyBonusModal from '@/components/game/DailyBonusModal';
+import DailyBonusModal, { useDailyBonusProbe } from '@/components/game/DailyBonusModal';
 import AlliancePanel from '@/components/game/AlliancePanel';
 import AllianceHubPanel from '@/components/game/AllianceHubPanel';
 import BountyPanel from '@/components/game/BountyPanel';
@@ -92,7 +92,15 @@ import MegaProjectPanel from '@/components/game/MegaProjectPanel';
 import MegastructurePanel from '@/components/game/MegastructurePanel';
 import { startMegastructure, advanceMegastructurePhase } from '@/lib/game/personal-megastructures';
 import ReportsPanel from '@/components/game/ReportsPanel';
-import { getUnlockedTabIds, resolveTabNavigation } from '@/lib/game/tab-access';
+import { getUnlockedTabIds, resolveHubNavigation, isSubViewUnlocked } from '@/lib/game/tab-access';
+// Six-hub consolidation (GAME_DESIGN_REVIEW_2026-09 §3 item 3b): hub model,
+// hub chrome (top row, sub-view row, phone bottom nav) and the lock notice
+// the shell renders in place of a tier-locked sub-view.
+import { defaultEntryFor, hubToken, parseHubAddress, type GameHub } from '@/lib/game/hubs';
+import { HubBar, HubSubViewRow, GameBottomNav } from '@/components/game/GameHubNav';
+import LockedSubtabNotice from '@/components/game/LockedSubtabNotice';
+// Overlay arbitration — at most one of the ten overlay surfaces mounts.
+import OverlayManager, { type OverlaySlot } from '@/components/game/OverlayManager';
 import { setCrisisApproach } from '@/lib/game/systemic-crises';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import { SHIP_MAP, generateShipName } from '@/lib/game/ships';
@@ -119,7 +127,7 @@ import {
   advanceOnboarding, skipOnboarding, restartOnboarding,
   isOnboardingActive, isOnboardingComplete, isEarlyOnboarding,
 } from '@/lib/game/onboarding';
-import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
+import FeatureUnlockToast, { useFeatureUnlockQueue } from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
 import GameChat from '@/components/game/GameChat';
@@ -857,21 +865,48 @@ export default function SpaceTycoonPage() {
   // `navigateToTab(...)` gets a compile error instead of a render hole — see
   // src/lib/game/tab-access.ts for the whole rationale.
   const [tab, setTabUnsafe] = useState<GameTab>('dashboard');
+  // Six-hub consolidation (2026-09): the panel-level sub-view token the shell
+  // last saw for `tab` ('leaderboard:rivals', 'reports:quarterly', …). Set on
+  // navigation, overwritten by hub panels' own announcements (useHubSubView),
+  // so the hub row lights the entry the player is actually looking at.
+  const [activeSubView, setActiveSubView] = useState<string | null>(null);
+  useEffect(() => onSubViewAnnounce(token => setActiveSubView(token)), []);
+  // Where the player last was inside each hub — tapping a hub returns there
+  // rather than to its first entry.
+  const lastHubTokenRef = useRef<Partial<Record<GameHub, string>>>({});
+  const [showAchievements, setShowAchievements] = useState(false);
   // Recomputed whenever the corporation's tier or building roster changes —
-  // the two inputs getUnlockedTabIds actually reads. Shared by the tab bar
-  // (allTabs), by every deep-link guard, and by navigateToTab, so the bar and
-  // the navigator can never disagree about what is unlocked.
+  // the two inputs getUnlockedTabIds actually reads. Shared by the hub rows,
+  // by every deep-link guard, and by navigateToTab, so the rows and the
+  // navigator can never disagree about what is unlocked.
   const unlockedTabIds = useMemo(
     () => getUnlockedTabIds(state),
     [state?.corporationTier, state?.buildings],
   );
-  /** The ONLY navigation entry point. Resolves legacy tab aliases, refuses a
-   *  locked tab (no-op — the player stays where they are), and is safe to
-   *  call before the save has loaded (the unlock set is empty then, which
-   *  tab-access.ts reads as "no gating information yet"). */
+  /** The ONLY navigation entry point. Accepts a GameTab id, a Wave-F legacy
+   *  id ('rivals'), a panel token ('market:analytics'), a hub token
+   *  ('records:rivals') or a hub address ('hub:records' — the hub chrome's
+   *  own form, prefixed so it can never collide with a same-named panel such
+   *  as 'build'), and resolves all of them through lib/game/hubs.ts. A tier-LOCKED target still navigates —
+   *  the render switch below shows LockedSubtabNotice in its place, which is
+   *  a lit hub + lit row entry, so the old "render hole" cannot recur. Safe
+   *  to call before the save has loaded (empty unlock set = no gating). */
   const navigateToTab = useCallback((requested: string) => {
-    const next = resolveTabNavigation(state, requested, unlockedTabIds);
-    if (next) setTabUnsafe(next);
+    const isUnlocked = (entry: Parameters<typeof isSubViewUnlocked>[1]) => isSubViewUnlocked(state, entry, unlockedTabIds);
+    const hubId = parseHubAddress(requested);
+    let target = hubId ? null : resolveHubNavigation(state, requested, unlockedTabIds);
+    if (hubId) {
+      const remembered = lastHubTokenRef.current[hubId];
+      target = (remembered ? resolveHubNavigation(state, remembered, unlockedTabIds) : null)
+        ?? resolveHubNavigation(state, hubToken(hubId, defaultEntryFor(hubId, isUnlocked)), unlockedTabIds);
+    }
+    if (!target) return;
+    if (target.entry.action === 'achievements') { setShowAchievements(true); return; }
+    if (target.entry.href) return; // the row renders a real <Link> for these
+    lastHubTokenRef.current[target.hub] = hubToken(target.hub, target.entry);
+    setTabUnsafe(target.tab);
+    setActiveSubView(target.subView);
+    if (target.subView) requestSubView(target.subView);
   }, [state, unlockedTabIds]);
   // Region focus drives the shell's background tint + planet texture overlay.
   // Set when the user clicks a location on the map, null = neutral palette.
@@ -931,15 +966,20 @@ export default function SpaceTycoonPage() {
   const [density, setDensityState] = useState<GameDensity>('comfortable');
   useEffect(() => { setDensityState(getGameDensity()); }, []);
   const [showMenu, setShowMenu] = useState(false);
-  const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   // Live-Service Wave LS2: replaces the old AwayLedger-only offlineEarnings
   // state with the fully-assembled OperationsDebrief (debrief.ts) — see the
   // load effect below, which now also starts a Returning Commander track on
   // a >=14-day lapse before assembling the debrief.
   const [operationsDebrief, setOperationsDebrief] = useState<OperationsDebrief | null>(null);
-  const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [showFrontierGraduation, setShowFrontierGraduation] = useState(false);
+  // Overlay arbitration (2026-09): the two self-deciding surfaces (daily
+  // bonus probe, feature-unlock detection) now run as SHELL hooks so their
+  // components can be mounted only while they hold the overlay slot.
+  const dailyBonusProbe = useDailyBonusProbe(!!state && !isEarlyOnboarding(state), state?.corporationTier || 1);
+  const [dailyBonusDone, setDailyBonusDone] = useState(false);
+  const availableTabIds = useMemo(() => Array.from(unlockedTabIds), [unlockedTabIds]);
+  const { unlock: featureUnlock, dismiss: dismissFeatureUnlock } = useFeatureUnlockQueue(availableTabIds.join(','), availableTabIds);
   // 4X Wave W5 — cinematic presentation queue (client-side only; see
   // src/lib/game/cinematic-moments.ts). cinematicSeenEventIdsRef baselines
   // eventLog on mount so a loaded save doesn't replay its whole history as a
@@ -2095,29 +2135,26 @@ export default function SpaceTycoonPage() {
     { id: 'governance', label: 'Governance', icon: 'governance' },
   ];
 
-  // Corporation tier-based tab unlocking. `unlockedTabIds` is the memo
-  // declared at the top of the component (shared with navigateToTab), so the
-  // tab bar and the navigation guard read the identical set.
-  const corpTier = state.corporationTier || 1;
-  const allTabs = TAB_CATALOG.filter(t => unlockedTabIds.has(t.id));
-
-  // Stable key for FeatureUnlockToast (avoids infinite re-render from array reference)
-  const tabIdsKey = allTabs.map(t => t.id).join(',');
-
   // Unread reports count for badge display
   const unreadReports = (state.reports || []).filter(r => !r.read).length;
 
-  // V3: Split tabs into primary (always visible) and secondary (overflow dropdown)
-  // Market is hot-path (players use it every few minutes); keep it in the primary row next to Contracts.
-  // Early-fab wave follow-up (2026-08-31, Jay): Manufacture is a core loop —
-  // it belongs in the primary row next to Build, not buried in More ▾. It
-  // only renders once unlocked (fab facility complete or corp tier 3), so
-  // the row stays 8 wide for brand-new players.
-  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'crafting', 'research', 'map', 'services', 'contracts', 'market', 'fleet'];
-  const primaryTabs = allTabs.filter(t => PRIMARY_TAB_IDS.includes(t.id));
-  const secondaryTabs = allTabs.filter(t => !PRIMARY_TAB_IDS.includes(t.id));
-  // Check if active tab is in secondary — if so, show its label in the More button
-  const activeInSecondary = secondaryTabs.find(t => t.id === tab);
+  // Six-hub consolidation (2026-09): the six hubs are ALWAYS visible; tier
+  // gating lives on the sub-view rows. `activeNav` is the entry lit for the
+  // current (tab, sub-view) pair and decides panel-vs-LockedSubtabNotice.
+  const tutorialTargetTab = getTutorialTargetTab(state.tutorialStep);
+  const subViewForTab = activeSubView && activeSubView.startsWith(`${tab}:`) ? activeSubView : null;
+  const activeNav = resolveHubNavigation(state, subViewForTab ?? tab, unlockedTabIds) ?? resolveHubNavigation(state, tab, unlockedTabIds);
+  const activeLocked = !!activeNav?.locked;
+  const hubBadges: Partial<Record<GameHub, number>> = unreadReports > 0 ? { command: unreadReports } : {};
+  const hubNavProps = {
+    state, unlockedTabIds, activeTab: tab, activeSubView: subViewForTab,
+    tutorialTargetTab, badges: hubBadges, onNavigate: navigateToTab,
+  };
+  const onboardingActive = isOnboardingActive(state);
+  const cinematicHead = onboardingActive ? null : (cinematicQueue[0] ?? null);
+  const leaderHead = onboardingActive ? null : (leaderQueue[0] ?? null);
+  const competitiveHead = onboardingActive || state.pendingChoice ? null : (competitiveQueue[0] ?? null);
+  const dailyBonusWants = !!dailyBonusProbe?.claimable && !dailyBonusDone && !isEarlyOnboarding(state);
 
   return (
     <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines bezel-shell" data-density={density}>
@@ -2161,34 +2198,10 @@ export default function SpaceTycoonPage() {
           on restart day when EVERY player is in onboarding at once. The
           queues are untouched, so anything raised during the chain plays as
           soon as the player graduates. */}
-      <CinematicOverlay
-        moment={isOnboardingActive(state) ? null : (cinematicQueue[0] ?? null)}
-        onDismiss={() => setCinematicQueue(q => dequeueCinematicMoment(q))}
-        onAction={(cta) => {
-          playSound('click');
-          navigateToTab(cta.tab);
-          if (cta.subView) requestSubView(cta.subView);
-        }}
-      />
-      {/* Wave A2.3 — portrait-framed leader moments (appointment, retirement,
-          faction standing).
-
-          Presentation order is cinematic (z-95) → leader (z-80) → choice
-          (z-70), and each layer is GATED on the one above it being empty
-          rather than merely stacked. Stacking alone is not enough: every one
-          of these surfaces installs its own focus trap via useModalA11y, and
-          sibling effects run in document order, so the LOWER surface would
-          mount last and pull focus into itself underneath the visible one —
-          a keyboard or screen-reader user would be tabbing through a dialog
-          they cannot see. Gating means exactly one trap is ever installed. */}
-      <LeaderMomentOverlay
-        moment={
-          isOnboardingActive(state) || cinematicQueue.length > 0
-            ? null
-            : (leaderQueue[0] ?? null)
-        }
-        onDismiss={() => setLeaderQueue(q => dequeueLeaderMoment(q))}
-      />
+      {/* CinematicOverlay and LeaderMomentOverlay now mount through the
+          OverlayManager at the bottom of this tree (overlay arbitration,
+          2026-09) — the "gate each layer on the one above being empty"
+          discipline described here became the manager's priority order. */}
       {/* Hero art background */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
@@ -2229,81 +2242,16 @@ export default function SpaceTycoonPage() {
         }}
       />
 
-      {/* Tab Navigation — V3: primary tabs + overflow dropdown.
+      {/* Hub Navigation — six-hub consolidation (2026-09): the six hubs are
+          always visible at >=44px (GameHubNav.HubBar) on md+; on phones the
+          row keeps only the console switches and GameBottomNav takes over.
           Wave A2.1: `bezel-selector` mills this row into a recessed channel
           in the console face and `bezel-key` seats each tab in it as a key
           (raised when idle, pressed when active). Purely a paint change —
           no padding, height or spacing was altered, so the row occupies
           exactly the pixels it did before. */}
       <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 game-tab-bar bezel-selector">
-        {/* Scrollable primary tabs region */}
-        <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {primaryTabs.map(t => {
-            const isTutorialTarget = getTutorialTargetTab(state.tutorialStep) === t.id && tab !== t.id;
-            return (
-            <button
-              key={t.id}
-              onClick={() => { navigateToTab(t.id); setShowMoreTabs(false); }}
-              className={`bezel-key px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] shrink-0 ${
-                tab === t.id
-                  ? 'bg-white/[0.08] text-white game-tab-active'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-              } ${isTutorialTarget ? 'game-tutorial-pulse' : ''}`}
-            >
-              <span className="mr-0.5 sm:mr-1"><GameIcon name={t.icon} size={14} /></span><span className="hidden sm:inline">{t.label}</span>
-            </button>
-            );
-          })}
-        </div>
-
-        {/* More dropdown — contains secondary tabs (outside overflow container so dropdown isn't clipped) */}
-        {secondaryTabs.length > 0 && (
-          <div className="relative shrink-0">
-            <button
-              onClick={() => setShowMoreTabs(!showMoreTabs)}
-              className={`bezel-key px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
-                activeInSecondary
-                  ? 'bg-white/[0.08] text-white game-tab-active'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-              }`}
-            >
-              {activeInSecondary ? (
-                <><span className="mr-0.5 sm:mr-1"><GameIcon name={activeInSecondary.icon} size={14} /></span><span className="hidden sm:inline">{activeInSecondary.label}</span></>
-              ) : (
-                <>
-                  <span className="mr-0.5">•••</span><span className="hidden sm:inline">More</span>
-                  {unreadReports > 0 && (
-                    <span className="ml-1 w-2 h-2 rounded-full bg-cyan-400 inline-block" style={{ boxShadow: '0 0 6px #22d3ee' }} />
-                  )}
-                </>
-              )}
-              <svg className={`inline-block w-3 h-3 ml-1 transition-transform ${showMoreTabs ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {showMoreTabs && (
-              <div className="absolute top-full left-0 sm:left-0 right-auto mt-1 py-1 rounded-lg shadow-xl z-50 min-w-[180px] max-h-[60vh] overflow-y-auto" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
-                {secondaryTabs.map(t => (
-                  <button
-                    key={t.id}
-                    onClick={() => { navigateToTab(t.id); setShowMoreTabs(false); }}
-                    className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 transition-colors ${
-                      tab === t.id ? 'text-white bg-white/[0.06]' : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <GameIcon name={t.icon} size={14} />
-                    <span>{t.label}</span>
-                    {t.id === 'reports' && unreadReports > 0 && (
-                      <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                        {unreadReports}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+        <HubBar {...hubNavProps} />
 
         <div className="flex-1" />
         {/* Wave A2.1 — the trailing controls are console switches, not
@@ -2355,6 +2303,11 @@ export default function SpaceTycoonPage() {
         </button>
         </div>
       </div>
+
+      {/* Six-hub consolidation: the active hub's sub-view row. Locked
+          entries stay visible (lock glyph + tier text) and navigate to the
+          LockedSubtabNotice below, so a deep link always lands somewhere lit. */}
+      <HubSubViewRow {...hubNavProps} />
 
       {/* Wave V3 — the map-or-tabs column and the persistent Outliner rail
           are now siblings in a row, so the rail can dock real layout width
@@ -2420,6 +2373,9 @@ export default function SpaceTycoonPage() {
             stageLayout.overlayOpen ? 'relative flex-1 min-h-0 outline-none' : 'flex-1'
           }`}
         >
+        {activeLocked && activeNav ? (
+          <LockedSubtabNotice iconName={activeNav.entry.icon} label={activeNav.entry.label} tier={activeNav.unlockTier} />
+        ) : (<>
         {tab === 'dashboard' && <SupplyStatusStrip state={state} />}
         {tab === 'dashboard' && <DashboardPanel
           state={state}
@@ -2643,6 +2599,7 @@ export default function SpaceTycoonPage() {
         )}
         {tab === 'market' && (
           <MarketHubPanel
+            embedded
             state={state}
             setState={setState}
             onSellResource={handleSellResource}
@@ -2653,6 +2610,7 @@ export default function SpaceTycoonPage() {
         )}
         {tab === 'contracts' && (
           <ContractsHubPanel
+            embedded
             state={state}
             onAcceptContract={(contractId) => {
               playSound('click');
@@ -2681,7 +2639,7 @@ export default function SpaceTycoonPage() {
         {tab === 'alliance' && <AllianceHubPanel state={state} />}
         {tab === 'bounties' && <BountyPanel state={state} />}
         {tab === 'predictions' && <PredictionExchangePanel state={state} />}
-        {tab === 'leaderboard' && <StandingsHubPanel state={state} />}
+        {tab === 'leaderboard' && <StandingsHubPanel state={state} embedded />}
 
         {/* Competitive Multiplayer Panels */}
         {tab === 'seasons' && <SeasonPanel state={state} />}
@@ -2834,6 +2792,7 @@ export default function SpaceTycoonPage() {
         {tab === 'victory' && <VictoryPanel state={state} />}
         {tab === 'reports' && (
           <ReportsPanel
+            embedded
             state={state}
             onMarkRead={(reportId) => {
               setState(prev => {
@@ -2871,9 +2830,12 @@ export default function SpaceTycoonPage() {
             }}
           />
         )}
+        </>)}
         </div>
       </div>
       )}
+      {/* Phone: keep the last panel row clear of the fixed game bottom nav. */}
+      <div className="h-16 md:hidden shrink-0" aria-hidden="true" />
       </div>
       {/* Wave V3 — persistent Corporate Outliner, mounted OUTSIDE the
           tab/map branch above so it survives every tab switch. */}
@@ -2889,164 +2851,212 @@ export default function SpaceTycoonPage() {
       />
       </div>
 
-      {/* Daily Login Bonus — held back during the first onboarding minutes
-          (orientation → first income) so a brand-new player's opening
-          seconds aren't an unexplained reward modal; it appears on the next
-          mount once the early steps are done (claims are day-keyed, so
-          nothing is lost within the same day). */}
-      {!isEarlyOnboarding(state) && <DailyBonusModal
-        corporationTier={state.corporationTier || 1}
-        onClaim={(amount) => {
-          setState(prev => prev ? {
-            ...prev,
-            money: prev.money + amount,
-            totalEarned: prev.totalEarned + amount,
-            eventLog: [{
-              id: generateId(),
-              date: prev.gameDate,
-              type: 'milestone' as const,
-              title: `Daily Bonus: +${formatMoney(amount)}`,
-              description: 'Come back tomorrow for an even bigger reward!',
-            }, ...prev.eventLog].slice(0, 50),
-          } : prev);
-        }}
-      />}
-
-      {/* Achievements Modal */}
-      {showAchievements && (
-        <AchievementsModal
-          state={state}
-          unlockedIds={unlockedAchievements}
-          onClose={() => setShowAchievements(false)}
-        />
-      )}
-
-      {/* Protected Frontier graduation — one-time celebratory modal */}
-      {showFrontierGraduation && (
-        <FrontierGraduationModal
-          state={state}
-          onClose={() => setShowFrontierGraduation(false)}
-          onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }}
-        />
-      )}
-
-      {/* First-Hour Guide (FTUE v2 objective chain, persisted in GameState) */}
-      {isOnboardingActive(state) && (
-        <TutorialOverlay
-          state={state}
-          currentTab={tab}
-          onAdvance={handleTutorialAdvance}
-          onSkip={handleTutorialSkip}
-          onSetTab={(t) => navigateToTab(t)}
-        />
-      )}
-      {/* Advanced-systems handbook — shown only AFTER the guided chain is
-          done (the two used to render simultaneously on a fresh save, two
-          competing tutorials with conflicting first instructions). */}
-      {!isOnboardingActive(state) && (
-        <GameTutorial
-          key={state.createdAt}
-          // The deck tours systems the player may not have unlocked yet; its
-          // copy names the unlock tier instead. navigateToTab refuses a
-          // locked tab structurally, so the ad-hoc guard that used to live
-          // here is gone rather than duplicated.
-          onSetTab={navigateToTab}
-        />
-      )}
-      <FeatureUnlockToast
-        availableTabsKey={tabIdsKey}
-        availableTabs={allTabs.map(t => t.id)}
-        onNavigateToTab={(t) => navigateToTab(t)}
-      />
-      {/* PvP Discoverability pass — "these tools exist". Non-blocking and
-          non-modal on purpose (it never steals focus), one at a time, once
-          per tool ever. Held behind the full-screen queues for the same
-          reason FeatureUnlockToast is: a briefing under a cinematic is a
-          briefing nobody reads. */}
-      <CompetitiveUnlockToast
-        tool={
-          isOnboardingActive(state) || cinematicQueue.length > 0 || leaderQueue.length > 0 || state.pendingChoice
-            ? null
-            : (competitiveQueue[0] ?? null)
-        }
-        onDismiss={() => setCompetitiveQueue(q => q.slice(1))}
-        onNavigate={(t) => navigateToTab(t)}
-      />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
-      {/* Operations Debrief (LS2) — state (including any Returning Commander
-          stipend) is already applied on load; this is a display-only
-          dismiss. Tiered toast/compact/full presentation — see debrief.ts. */}
-      {operationsDebrief && (
-        <OperationsDebriefModal
-          debrief={operationsDebrief}
-          onDismiss={() => setOperationsDebrief(null)}
-          onNavigate={(t) => navigateToTab(t)}
-        />
-      )}
-
-      {/* Random Event / Narrative Chain Choice Modal.
-          Wave A2.3: held until the leader queue drains — see the focus-trap
-          note on LeaderMomentOverlay above. pendingChoice lives in GameState,
-          so nothing is lost by deferring it a click; the decision is still
-          mandatory and still waiting. */}
-      {state.pendingChoice && leaderQueue.length === 0 && (
-        <EventChoiceModal
-          eventName={state.pendingChoice.eventName}
-          eventIcon={state.pendingChoice.eventIcon}
-          eventDescription={state.pendingChoice.eventDescription}
-          choices={state.pendingChoice.choices}
-          chainName={state.pendingChoice.chainName || state.pendingChoice.chapterName}
-          stageIndex={state.pendingChoice.stageIndex}
-          totalStages={state.pendingChoice.totalStages}
-          // Wave A2.3 — null whenever the content doesn't identify a
-          // counterparty, in which case the modal keeps its original
-          // presentation. See resolveChoiceSpeaker for the derivation rules.
-          speaker={resolveChoiceSpeaker(state.pendingChoice)}
-          onChoose={(choiceIndex) => {
-            playSound('click');
-            setState(prev => {
-              if (!prev?.pendingChoice) return prev;
-              // 4X Wave W4: chain-sourced choices carry chainId; route to
-              // narrative-events.ts's resolver instead of RANDOM_EVENTS.
-              if (prev.pendingChoice.chainId) {
-                const monthIndex = getGlobalGameDate().totalMonths;
-                const newState = resolveChainChoice(prev, prev.pendingChoice.chainId, choiceIndex, monthIndex);
-                return { ...newState, pendingChoice: null };
-              }
-              // Live-Service Wave LS8: calendar-dated Story Chapter act/
-              // finale choices carry chapterId; route to chapters.ts's
-              // resolver. If this WAS the finale's "answer the call" choice
-              // (index 0), also record the server-side participation tally
-              // — fire-and-forget, never blocks state application (the
-              // personal cost already applied above via
-              // resolveChapterChoice's own applyChainConsequence call).
-              if (prev.pendingChoice.chapterId) {
-                const chapterId = prev.pendingChoice.chapterId;
-                const newState = resolveChapterChoice(prev, chapterId, choiceIndex);
-                const justParticipated = newState.storyChapters?.current?.flags?.finaleParticipated === true
-                  && prev.storyChapters?.current?.flags?.finaleParticipated !== true;
-                if (justParticipated) {
-                  const cycleIndex = newState.storyChapters?.current?.cycleIndex;
-                  if (typeof cycleIndex === 'number') {
-                    fetch('/api/space-tycoon/chapters', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ cycleIndex, chapterId }),
-                    }).catch(() => { /* best-effort — resolveChapterEpilogue falls back to a zero-ish count on failure */ });
+      {/* Overlay arbitration (GAME_DESIGN_REVIEW_2026-09 §3 "Overlay
+          stacking"): the ten overlay surfaces are declared as slots and
+          OverlayManager mounts AT MOST ONE, by the priority in
+          lib/game/overlay-manager.ts (cinematic > leader > event choice >
+          frontier graduation > operations debrief > daily bonus >
+          achievements > unlock toasts > tutorial hints). Every `wants` is
+          backed by state that persists, so a surface that loses simply
+          shows when the winner clears — nothing is dropped. The onboarding
+          gates (cinematic/leader/competitive held mid-FTUE; daily bonus held
+          in the first minutes) are unchanged. Each overlay keeps its own
+          useModalA11y trap; exactly one can now exist at a time. */}
+      <OverlayManager slots={([
+        {
+          id: 'cinematic',
+          wants: cinematicHead !== null,
+          render: () => (
+            <CinematicOverlay
+              moment={cinematicHead}
+              onDismiss={() => setCinematicQueue(q => dequeueCinematicMoment(q))}
+              onAction={(cta) => {
+                playSound('click');
+                navigateToTab(cta.tab);
+                if (cta.subView) requestSubView(cta.subView);
+              }}
+            />
+          ),
+        },
+        {
+          id: 'leader',
+          wants: leaderHead !== null,
+          render: () => (
+            <LeaderMomentOverlay
+              moment={leaderHead}
+              onDismiss={() => setLeaderQueue(q => dequeueLeaderMoment(q))}
+            />
+          ),
+        },
+        {
+          id: 'eventChoice',
+          wants: !!state.pendingChoice,
+          render: () => (
+            <EventChoiceModal
+              eventName={state.pendingChoice!.eventName}
+              eventIcon={state.pendingChoice!.eventIcon}
+              eventDescription={state.pendingChoice!.eventDescription}
+              choices={state.pendingChoice!.choices}
+              chainName={state.pendingChoice!.chainName || state.pendingChoice!.chapterName}
+              stageIndex={state.pendingChoice!.stageIndex}
+              totalStages={state.pendingChoice!.totalStages}
+              // Wave A2.3 — null whenever the content doesn't identify a
+              // counterparty, in which case the modal keeps its original
+              // presentation. See resolveChoiceSpeaker for the derivation rules.
+              speaker={resolveChoiceSpeaker(state.pendingChoice)}
+              onChoose={(choiceIndex) => {
+                playSound('click');
+                setState(prev => {
+                  if (!prev?.pendingChoice) return prev;
+                  // 4X Wave W4: chain-sourced choices carry chainId; route to
+                  // narrative-events.ts's resolver instead of RANDOM_EVENTS.
+                  if (prev.pendingChoice.chainId) {
+                    const monthIndex = getGlobalGameDate().totalMonths;
+                    const newState = resolveChainChoice(prev, prev.pendingChoice.chainId, choiceIndex, monthIndex);
+                    return { ...newState, pendingChoice: null };
                   }
-                }
-                return { ...newState, pendingChoice: null };
-              }
-              const eventDef = RANDOM_EVENTS.find(e => e.id === prev.pendingChoice!.eventId);
-              const choice = eventDef?.choices?.[choiceIndex];
-              if (!choice) return { ...prev, pendingChoice: null };
-              const newState = applyEventEffect(prev, choice.effect, eventDef!.name);
-              return { ...newState, pendingChoice: null };
-            });
-          }}
-        />
-      )}
+                  // Live-Service Wave LS8: calendar-dated Story Chapter act/
+                  // finale choices carry chapterId; route to chapters.ts's
+                  // resolver. If this WAS the finale's "answer the call" choice
+                  // (index 0), also record the server-side participation tally
+                  // — fire-and-forget, never blocks state application (the
+                  // personal cost already applied above via
+                  // resolveChapterChoice's own applyChainConsequence call).
+                  if (prev.pendingChoice.chapterId) {
+                    const chapterId = prev.pendingChoice.chapterId;
+                    const newState = resolveChapterChoice(prev, chapterId, choiceIndex);
+                    const justParticipated = newState.storyChapters?.current?.flags?.finaleParticipated === true
+                      && prev.storyChapters?.current?.flags?.finaleParticipated !== true;
+                    if (justParticipated) {
+                      const cycleIndex = newState.storyChapters?.current?.cycleIndex;
+                      if (typeof cycleIndex === 'number') {
+                        fetch('/api/space-tycoon/chapters', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ cycleIndex, chapterId }),
+                        }).catch(() => { /* best-effort — resolveChapterEpilogue falls back to a zero-ish count on failure */ });
+                      }
+                    }
+                    return { ...newState, pendingChoice: null };
+                  }
+                  const eventDef = RANDOM_EVENTS.find(e => e.id === prev.pendingChoice!.eventId);
+                  const choice = eventDef?.choices?.[choiceIndex];
+                  if (!choice) return { ...prev, pendingChoice: null };
+                  const newState = applyEventEffect(prev, choice.effect, eventDef!.name);
+                  return { ...newState, pendingChoice: null };
+                });
+              }}
+            />
+          ),
+        },
+        {
+          id: 'frontierGraduation',
+          wants: showFrontierGraduation,
+          render: () => (
+            <FrontierGraduationModal
+              state={state}
+              onClose={() => setShowFrontierGraduation(false)}
+              onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }}
+            />
+          ),
+        },
+        {
+          id: 'operationsDebrief',
+          wants: operationsDebrief !== null,
+          render: () => (
+            <OperationsDebriefModal
+              debrief={operationsDebrief!}
+              onDismiss={() => setOperationsDebrief(null)}
+              onNavigate={(t) => navigateToTab(t)}
+            />
+          ),
+        },
+        {
+          id: 'dailyBonus',
+          wants: dailyBonusWants,
+          render: () => (
+            <DailyBonusModal
+              probe={dailyBonusProbe!}
+              corporationTier={state.corporationTier || 1}
+              onClose={() => setDailyBonusDone(true)}
+              onClaim={(amount) => {
+                setState(prev => prev ? {
+                  ...prev,
+                  money: prev.money + amount,
+                  totalEarned: prev.totalEarned + amount,
+                  eventLog: [{
+                    id: generateId(),
+                    date: prev.gameDate,
+                    type: 'milestone' as const,
+                    title: `Daily Bonus: +${formatMoney(amount)}`,
+                    description: 'Come back tomorrow for an even bigger reward!',
+                  }, ...prev.eventLog].slice(0, 50),
+                } : prev);
+              }}
+            />
+          ),
+        },
+        {
+          id: 'achievements',
+          wants: showAchievements,
+          render: () => (
+            <AchievementsModal
+              state={state}
+              unlockedIds={unlockedAchievements}
+              onClose={() => setShowAchievements(false)}
+            />
+          ),
+        },
+        {
+          id: 'featureUnlock',
+          wants: featureUnlock !== null,
+          render: () => (
+            <FeatureUnlockToast
+              unlock={featureUnlock}
+              onDismiss={dismissFeatureUnlock}
+              onNavigateToTab={(t) => navigateToTab(t)}
+            />
+          ),
+        },
+        {
+          id: 'competitiveUnlock',
+          wants: competitiveHead !== null,
+          render: () => (
+            <CompetitiveUnlockToast
+              tool={competitiveHead}
+              onDismiss={() => setCompetitiveQueue(q => q.slice(1))}
+              onNavigate={(t) => navigateToTab(t)}
+            />
+          ),
+        },
+        {
+          // First-Hour Guide (FTUE v2 objective chain, persisted in GameState)
+          // while onboarding is active; the advanced-systems handbook deck
+          // afterwards (the two used to render simultaneously on a fresh
+          // save). The deck decides its own visibility from localStorage and
+          // tours systems the player may not have unlocked; navigateToTab
+          // lands a locked target on its lock notice.
+          id: 'tutorial',
+          wants: true,
+          render: () => onboardingActive ? (
+            <TutorialOverlay
+              state={state}
+              currentTab={tab}
+              onAdvance={handleTutorialAdvance}
+              onSkip={handleTutorialSkip}
+              onSetTab={(t) => navigateToTab(t)}
+            />
+          ) : (
+            <GameTutorial key={state.createdAt} onSetTab={navigateToTab} />
+          ),
+        },
+      ] as OverlaySlot[])} />
+
+      {/* Six-hub consolidation: five-slot phone bottom nav (Command · Build ·
+          Markets · Contracts · More → Corporation, Records). */}
+      <GameBottomNav {...hubNavProps} />
 
       {/* Global Chat */}
       <GameChat companyName={state.companyName || 'Anonymous'} />

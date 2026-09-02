@@ -85,9 +85,40 @@ export function consumeSubViewRequest(tab: string, nowMs: number = Date.now()): 
   return view || null;
 }
 
+// ─── Announcements (six-hub consolidation, 2026-09) ─────────────────────────
+// The request bus above flows shell → panel. The shell's hub sub-view row
+// also needs the reverse: when a hub panel changes its own sub-tab (the
+// player clicked inside the panel, or the panel consumed a request), the row
+// must light the matching entry. Same fire-and-forget posture; the shell is
+// the only listener and a panel that never announces simply leaves the row
+// on its tab-level default.
+
+const announceListeners = new Set<SubViewListener>();
+let current: SubViewToken | null = null;
+
+/** A hub panel reports the sub-view it is showing, e.g. 'market:analytics'. */
+export function announceSubView(token: SubViewToken): void {
+  current = token;
+  announceListeners.forEach(l => {
+    try { l(token); } catch { /* never let a listener break a panel render */ }
+  });
+}
+
+export function onSubViewAnnounce(listener: SubViewListener): () => void {
+  announceListeners.add(listener);
+  return () => { announceListeners.delete(listener); };
+}
+
+/** The most recently announced token (null before any panel has spoken). */
+export function currentSubView(): SubViewToken | null {
+  return current;
+}
+
 /** Test helper / hard reset (e.g. loading a different save). */
 export function __clearSubViewRequests(): void {
   pending = null;
   pendingAtMs = 0;
   listeners.clear();
+  announceListeners.clear();
+  current = null;
 }

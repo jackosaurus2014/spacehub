@@ -25,10 +25,22 @@
 //   3. Legacy-alias resolution moves in here too, so a caller cannot resolve
 //      an alias and then skip the lock check (the exact order-of-operations
 //      that made the ad-hoc guard easy to get wrong).
+//
+// SIX-HUB CONSOLIDATION (2026-09, GAME_DESIGN_REVIEW_2026-09 §3 item 3b).
+// Tier gating moved from the tab bar to the hub sub-view rows: every hub is
+// always visible, and a LOCKED entry renders LockedSubtabNotice in place of
+// its panel. `navigateToTab` therefore no longer REFUSES a locked target —
+// it lands on the lock notice, which is a lit hub + lit row entry, so the
+// original "render hole" (a panel with no lit tab) cannot occur by
+// construction. `resolveTabNavigation` below keeps its refuse-on-locked
+// contract for callers that want a yes/no; page.tsx now uses
+// `resolveHubNavigation`, which returns the hub, the entry, and whether the
+// shell must show the lock notice instead of the panel.
 
 import type { GameState, GameTab } from './types';
-import { getTierUnlockedTabs } from './corporation-tiers';
+import { getTierUnlockedTabs, isFoldedFeatureUnlocked } from './corporation-tiers';
 import { BUILDING_MAP } from './buildings';
+import { getSubViewUnlockTier, resolveHubTarget, type GameHub, type HubSubView } from './hubs';
 
 /** Audit Wave F (§B2-B5): eight tabs were merged into hub tabs. Child panels,
  *  tutorial steps, feature-unlock toasts and nav callbacks all hand back tab
@@ -109,4 +121,65 @@ export function resolveTabNavigation(
   // before the first render that computes the set).
   if (set.size === 0) return resolved;
   return set.has(resolved) ? resolved : null;
+}
+
+// ─── Hub navigation (six-hub consolidation) ─────────────────────────────────
+
+export interface HubNavigation {
+  hub: GameHub;
+  entry: HubSubView;
+  /** The GameTab whose render branch page.tsx mounts. */
+  tab: GameTab;
+  /** Panel-level sub-view request to fire after switching tabs, if any. */
+  subView: string | null;
+  /** True when the shell must render LockedSubtabNotice instead of the
+   *  panel. Always false before the save has loaded (empty unlock set). */
+  locked: boolean;
+  /** Corporation tier the LockedSubtabNotice names. */
+  unlockTier: number;
+}
+
+/**
+ * Is this hub entry usable for this save? Two gates, both must pass: the
+ * entry's GameTab is in the unlock set (tier or fab-lab override), and its
+ * folded feature (if any) has reached its Wave-F tier. Link and action
+ * entries are never locked. An empty unlock set means "not loaded yet" and
+ * reads as unlocked, exactly like resolveTabNavigation.
+ */
+export function isSubViewUnlocked(
+  state: GameState | null | undefined,
+  entry: HubSubView,
+  unlocked?: Set<GameTab>,
+): boolean {
+  if (entry.href || entry.action) return true;
+  const set = unlocked ?? getUnlockedTabIds(state);
+  if (set.size === 0) return true;
+  if (!set.has(entry.tab)) return false;
+  if (entry.feature && !isFoldedFeatureUnlocked(state?.corporationTier || 1, entry.feature)) return false;
+  return true;
+}
+
+/**
+ * The navigation decision for the hub shell. Never refuses a known id: a
+ * locked target still navigates (to its lock notice) so deep links from the
+ * Situation Log, toasts, the tutorial deck and the Legacy Hall all land
+ * somewhere legible instead of silently doing nothing. Returns null only for
+ * an id nothing owns.
+ */
+export function resolveHubNavigation(
+  state: GameState | null | undefined,
+  requested: string,
+  unlocked?: Set<GameTab>,
+): HubNavigation | null {
+  const target = resolveHubTarget(requested);
+  if (!target) return null;
+  const { hub, entry } = target;
+  return {
+    hub,
+    entry,
+    tab: entry.tab,
+    subView: entry.subView ?? null,
+    locked: !isSubViewUnlocked(state, entry, unlocked),
+    unlockTier: getSubViewUnlockTier(entry),
+  };
 }

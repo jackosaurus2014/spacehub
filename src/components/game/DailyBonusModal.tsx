@@ -1,90 +1,124 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { canClaimBonus, claimDailyBonus, getCurrentStreak, getBonusSchedule } from '@/lib/game/daily-bonus';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { useModalA11y } from './useModalA11y';
 
-interface DailyBonusModalProps {
-  onClaim: (amount: number) => void;
-  /** Local save's corporation tier — used ONLY by the anonymous
-   *  localStorage flow. Signed-in claims are priced by the server from the
-   *  persisted profile (row 9); the schedule shown then comes from GET. */
-  corporationTier?: number;
+/** What the probe learned. `null` from useDailyBonusProbe means "still
+ *  resolving" (or disabled) — the shell treats that as "does not want the
+ *  overlay slot", so lower-priority surfaces are never blocked by a fetch. */
+export interface DailyBonusProbe {
+  claimable: boolean;
+  streak: number;
+  schedule: { day: number; amount: number }[];
+  tier: number;
+  /** Whether claims go through the server-authoritative route. */
+  useServer: boolean;
 }
 
 /**
- * Daily login bonus modal for Space Tycoon.
- * Shows automatically when a player opens the game and has an unclaimed bonus.
- * Displays 7-day reward schedule with escalating amounts.
+ * Detection half (overlay-manager split, 2026-09). Runs the same 1.5s-delayed
+ * probe the modal used to run on mount, but in the SHELL, so the modal itself
+ * can be mounted only while it holds the arbitrated overlay slot.
  *
- * Wave-A leftover wiring (audit hotlist #2): signed-in players now claim
- * through POST /api/space-tycoon/daily-bonus, the authoritative server
- * tracker (one claim per UTC day, tracked on GameProfile) — the old
- * localStorage-only flow was trivially resettable into a perpetual
- * $200M/week faucet. localStorage remains the ONLY path for anonymous
- * players (no GameProfile to track a server-side claim against), so the
- * game still works without an account.
+ * Wave-A leftover wiring (audit hotlist #2): signed-in players claim through
+ * POST /api/space-tycoon/daily-bonus, the authoritative server tracker (one
+ * claim per UTC day, tracked on GameProfile) — the old localStorage-only flow
+ * was trivially resettable into a perpetual $200M/week faucet. localStorage
+ * remains the ONLY path for anonymous players (no GameProfile to track a
+ * server-side claim against), so the game still works without an account.
  */
-export default function DailyBonusModal({ onClaim, corporationTier = 1 }: DailyBonusModalProps) {
-  const [visible, setVisible] = useState(false);
-  const [claimed, setClaimed] = useState(false);
-  const [claimedAmount, setClaimedAmount] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [claiming, setClaiming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  // Whether this session should use the server-authoritative flow. Resolved
-  // once on mount from the GET probe below; null while unresolved.
-  const useServerRef = useRef<boolean | null>(null);
-
-  // Server-priced schedule (signed in) wins; anonymous players see the
-  // local save's tier schedule.
-  const [serverSchedule, setServerSchedule] = useState<{ day: number; amount: number }[] | null>(null);
-  const [tier, setTier] = useState<number>(corporationTier);
-  const schedule = serverSchedule ?? getBonusSchedule(corporationTier);
+export function useDailyBonusProbe(enabled: boolean, corporationTier: number = 1): DailyBonusProbe | null {
+  const [probe, setProbe] = useState<DailyBonusProbe | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
     // Check if bonus available after a short delay (let game load first)
     const timer = setTimeout(async () => {
+      let useServer = false;
       try {
         const res = await fetch('/api/space-tycoon/daily-bonus');
         if (res.status === 401) {
           // Anonymous — no GameProfile to track against. Fall back to the
           // localStorage-only flow entirely.
-          useServerRef.current = false;
+          useServer = false;
         } else if (res.ok) {
           const data = await res.json();
-          useServerRef.current = true;
-          if (Array.isArray(data.schedule) && data.schedule.length === 7) setServerSchedule(data.schedule);
-          if (typeof data.tier === 'number') setTier(data.tier);
-          if (data.claimable) {
-            setStreak(data.streak || 0);
-            setVisible(true);
-          }
+          if (cancelled) return;
+          const schedule = Array.isArray(data.schedule) && data.schedule.length === 7
+            ? data.schedule
+            : getBonusSchedule(typeof data.tier === 'number' ? data.tier : corporationTier);
+          setProbe({
+            claimable: !!data.claimable,
+            streak: data.streak || 0,
+            schedule,
+            tier: typeof data.tier === 'number' ? data.tier : corporationTier,
+            useServer: true,
+          });
           return;
         } else {
           // Server hiccup — degrade to localStorage rather than block the
           // reward entirely.
-          useServerRef.current = false;
+          useServer = false;
         }
       } catch {
-        useServerRef.current = false;
+        useServer = false;
       }
+      if (cancelled) return;
       // localStorage fallback path (anonymous or server unavailable)
-      if (canClaimBonus()) {
-        setStreak(getCurrentStreak());
-        setVisible(true);
-      }
+      setProbe({
+        claimable: canClaimBonus(),
+        streak: getCurrentStreak(),
+        schedule: getBonusSchedule(corporationTier),
+        tier: corporationTier,
+        useServer,
+      });
     }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+    return () => { cancelled = true; clearTimeout(timer); };
+    // corporationTier only seeds the anonymous schedule; re-probing on every
+    // tier change would re-open a modal the player already dismissed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled]);
+
+  return probe;
+}
+
+interface DailyBonusModalProps {
+  /** Result of useDailyBonusProbe — the modal is only mounted when it says
+   *  the bonus is claimable. */
+  probe: DailyBonusProbe;
+  onClaim: (amount: number) => void;
+  /** Dismissed or auto-closed after a claim. The shell drops the overlay. */
+  onClose: () => void;
+  /** Local save's corporation tier — used ONLY by the anonymous
+   *  localStorage flow. Signed-in claims are priced by the server from the
+   *  persisted profile (row 9); the schedule shown then comes from the probe. */
+  corporationTier?: number;
+}
+
+/**
+ * Daily login bonus modal for Space Tycoon.
+ * Shows when a player opens the game and has an unclaimed bonus (the probe
+ * decides; the OverlayManager mounts it when nothing higher-priority is up).
+ * Displays 7-day reward schedule with escalating amounts.
+ */
+export default function DailyBonusModal({ probe, onClaim, onClose, corporationTier = 1 }: DailyBonusModalProps) {
+  const [claimed, setClaimed] = useState(false);
+  const [claimedAmount, setClaimedAmount] = useState(0);
+  const [streak, setStreak] = useState(probe.streak);
+  const [claiming, setClaiming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const schedule = probe.schedule;
+  const tier = probe.tier;
 
   const handleClaim = async () => {
     if (claiming) return;
     setError(null);
 
-    if (useServerRef.current) {
+    if (probe.useServer) {
       setClaiming(true);
       try {
         const res = await fetch('/api/space-tycoon/daily-bonus', { method: 'POST' });
@@ -96,13 +130,13 @@ export default function DailyBonusModal({ onClaim, corporationTier = 1 }: DailyB
             setStreak(data.newStreak);
             setClaimed(true);
             onClaim(data.amount);
-            setTimeout(() => setVisible(false), 3000);
+            setTimeout(onClose, 3000);
           }
         } else if (res.status === 409) {
           // Already claimed today (e.g. another tab/device beat this one) —
           // reconcile honestly instead of granting a duplicate reward.
           setError('Already claimed today from another session.');
-          setTimeout(() => setVisible(false), 2000);
+          setTimeout(onClose, 2000);
         } else {
           setError('Could not reach the server. Try again shortly.');
         }
@@ -124,23 +158,18 @@ export default function DailyBonusModal({ onClaim, corporationTier = 1 }: DailyB
       onClaim(amount);
 
       // Auto-close after showing reward
-      setTimeout(() => setVisible(false), 3000);
+      setTimeout(onClose, 3000);
     }
   };
 
-  const handleDismiss = () => {
-    setVisible(false);
-  };
-
-  const modalRef = useModalA11y<HTMLDivElement>(handleDismiss, visible);
-  if (!visible) return null;
+  const modalRef = useModalA11y<HTMLDivElement>(onClose);
 
   const currentDay = (streak % 7) + 1;
 
   return (
     <div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="daily-bonus-title">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm game-modal-backdrop" onClick={handleDismiss} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm game-modal-backdrop" onClick={onClose} aria-hidden="true" />
 
       {/* Modal */}
       <div className="relative w-full max-w-sm rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #0f0f2e 0%, #0a0a1a 100%)' }}>

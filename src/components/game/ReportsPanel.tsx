@@ -31,7 +31,7 @@ import LegacyHallPanel from './LegacyHallPanel';
 // its postures, and the Stabilization Assessment. No 29th tab.
 import SystemicCrisisPanel from './SystemicCrisisPanel';
 import { getCrisisStatus, type CrisisApproachId } from '@/lib/game/systemic-crises';
-import { consumeSubViewRequest } from '@/lib/game/sub-view';
+import { useHubSubView } from './useHubSubView';
 import type { OrderQueueTarget } from '@/lib/game/order-queue';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -488,14 +488,28 @@ interface ReportsPanelProps {
    *  change. page.tsx owns the GameState hop; SystemicCrisisPanel is a pure
    *  lens like every other sub-view here. */
   onSetCrisisApproach: (approachId: CrisisApproachId) => { ok: boolean; reason?: string };
+  /** Six-hub consolidation (2026-09): the Command row (Situation Log, P&L,
+   *  Mail, Emergency) and the Records row (Chronicle) drive this panel's view
+   *  through the sub-view bus, so the panel's own strip is hidden. Defaults
+   *  to false — standalone behaviour unchanged. */
+  embedded?: boolean;
 }
 
-export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavigateTab, onFocusMap, onSetCrisisApproach }: ReportsPanelProps) {
+type ReportsView = 'log' | 'mail' | 'quarterly' | 'legacy' | 'emergency';
+
+export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavigateTab, onFocusMap, onSetCrisisApproach, embedded = false }: ReportsPanelProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   // 'log' (Situation Log) is the promoted default — it's the surface the
   // Outliner's Attention section deep-links into.
-  const [topTab, setTopTab] = useState<'log' | 'mail' | 'quarterly' | 'legacy' | 'emergency'>('log');
+  // Six-hub consolidation: the view is a two-way binding with the shell's
+  // hub row (useHubSubView) — a parked or live `reports:*` request lands
+  // here, and every change is announced back so the row lights the entry.
+  const [topTab, setTopTab] = useHubSubView<ReportsView>(
+    'reports',
+    'log',
+    requested => (requested === 'log' || requested === 'mail' || requested === 'quarterly' || requested === 'legacy' || requested === 'emergency') ? requested : null,
+  );
   // AAA Round 2: derived once so the tab strip can badge a live emergency —
   // a crisis a player has to go looking for is a crisis they will miss.
   const crisisStatus = getCrisisStatus(state);
@@ -505,11 +519,6 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
   // WorkforcePanel already use.
   // 2026-09-01: the Situation Log's `quarter_closed` row and the quarter-close
   // cinematic's "Publish report" CTA both deep-link to `reports:quarterly`.
-  useEffect(() => {
-    const view = consumeSubViewRequest('reports');
-    if (view === 'emergency') setTopTab('emergency');
-    else if (view === 'quarterly') setTopTab('quarterly');
-  }, []);
   const crisisLive = crisisStatus.eligibility.eligible
     || (crisisStatus.situation != null && !crisisStatus.situation.outcome);
 
@@ -594,12 +603,14 @@ export default function ReportsPanel({ state, onMarkRead, onMarkAllRead, onNavig
 
   return (
     <div className="space-y-3">
-      <ConsolePanel
-        title="Reports & Mail"
-        icon="reports"
-        subtitle="The Situation Log surfaces everything that needs a decision; Mail holds discovery reports and dispatches; Quarterly holds automated corporate filings; the Legacy Hall holds the permanent record; Emergency holds the Accord’s active crisis register."
-        right={TopTabs}
-      />
+      {!embedded && (
+        <ConsolePanel
+          title="Reports & Mail"
+          icon="reports"
+          subtitle="The Situation Log surfaces everything that needs a decision; Mail holds discovery reports and dispatches; Quarterly holds automated corporate filings; the Legacy Hall holds the permanent record; Emergency holds the Accord’s active crisis register."
+          right={TopTabs}
+        />
+      )}
 
       {topTab === 'log' ? (
         <div className="space-y-3">

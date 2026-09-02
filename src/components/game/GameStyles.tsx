@@ -302,6 +302,16 @@ export default function GameStyles() {
       .game-tab-bar::-webkit-scrollbar {
         display: none; /* Chrome/Safari */
       }
+      /* Six-hub consolidation (2026-09): the game shell carries its own
+         five-slot bottom nav on phones (GameHubNav.tsx), so the site-wide
+         MobileTabBar is hidden while the shell is mounted — two fixed bars
+         stacked at the bottom of a 60Hz phone is exactly the failure the
+         review's "Touch targets and mobile" finding describes. The chat
+         launcher and the content column step up above the game bar. */
+      nav[aria-label="Mobile navigation"] { display: none !important; }
+      @media (max-width: 767px) {
+        .game-chat-dock { bottom: calc(4rem + 0.75rem + env(safe-area-inset-bottom, 0px)) !important; }
+      }
 
       /* ═══════════════════════════════════════════════════════════════════
          TYPOGRAPHY — game display text

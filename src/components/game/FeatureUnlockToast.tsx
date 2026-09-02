@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { playSound } from '@/lib/game/sound-engine';
 import GameIcon from './GameIcon';
 import type { IconName } from '@/lib/game/icons';
 
-interface UnlockInfo {
+export interface UnlockInfo {
   id: string;
   name: string;
   icon: IconName;
@@ -73,25 +73,32 @@ const FEATURE_UNLOCKS: Record<string, UnlockInfo> = {
 };
 
 const STORAGE_KEY = 'spacetycoon_unlocked_features';
-
-interface FeatureUnlockToastProps {
-  /** Pass a stable, sorted, joined string of tab IDs to avoid re-render loops */
-  availableTabsKey: string;
-  availableTabs: string[];
-  onNavigateToTab?: (tab: string) => void;
-}
+const AUTO_DISMISS_MS = 6000;
 
 /**
- * Shows a toast notification when a new game feature/tab unlocks.
- * Only shows each unlock once (tracked in localStorage).
+ * Detection half of the feature-unlock toast (overlay-manager split,
+ * 2026-09). Lives in the SHELL so the toast component can be mounted only
+ * while it is the arbitrated overlay — an unmounted component cannot watch
+ * `availableTabs` change, so the watching moved up here.
  *
- * IMPORTANT: availableTabsKey must be a stable string (e.g., allTabs.map(t=>t.id).join(','))
- * to avoid the React hooks infinite re-render issue (#310).
+ * Shows each unlock once (tracked in localStorage), auto-dismisses after 6s.
+ *
+ * IMPORTANT: availableTabsKey must be a stable string (e.g.
+ * allTabs.map(t=>t.id).join(',')) to avoid the React hooks infinite
+ * re-render issue (#310).
  */
-export default function FeatureUnlockToast({ availableTabsKey, availableTabs, onNavigateToTab }: FeatureUnlockToastProps) {
-  const [currentUnlock, setCurrentUnlock] = useState<UnlockInfo | null>(null);
-  const [visible, setVisible] = useState(false);
+export function useFeatureUnlockQueue(availableTabsKey: string, availableTabs: string[]): {
+  unlock: UnlockInfo | null;
+  dismiss: () => void;
+} {
+  const [unlock, setUnlock] = useState<UnlockInfo | null>(null);
   const previousTabsRef = useRef<Set<string>>(new Set());
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const dismiss = useCallback(() => {
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+    setUnlock(null);
+  }, []);
 
   useEffect(() => {
     // Load previously seen unlocks
@@ -108,27 +115,45 @@ export default function FeatureUnlockToast({ availableTabsKey, availableTabs, on
     if (prevTabs.size > 0) {
       for (const tab of availableTabs) {
         if (!prevTabs.has(tab) && !seen.includes(tab) && FEATURE_UNLOCKS[tab]) {
-          const unlock = FEATURE_UNLOCKS[tab];
-          setCurrentUnlock(unlock);
-          setVisible(true);
+          const next = FEATURE_UNLOCKS[tab];
+          setUnlock(next);
           playSound('milestone');
 
           seen.push(tab);
           try { localStorage.setItem(STORAGE_KEY, JSON.stringify(seen)); } catch {}
 
-          setTimeout(() => setVisible(false), 6000);
+          if (timerRef.current) clearTimeout(timerRef.current);
+          timerRef.current = setTimeout(() => setUnlock(null), AUTO_DISMISS_MS);
           break;
         }
       }
     }
 
     previousTabsRef.current = currentTabs;
-  }, [availableTabsKey]); // Depend on stable string key, not array reference
+    // Depend on the stable string key, not the array reference (#310).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableTabsKey]);
 
-  if (!visible || !currentUnlock) return null;
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
+  return { unlock, dismiss };
+}
+
+interface FeatureUnlockToastProps {
+  unlock: UnlockInfo | null;
+  onDismiss: () => void;
+  onNavigateToTab?: (tab: string) => void;
+}
+
+/**
+ * Presentational half: the toast card for one unlock. Mounted by the shell's
+ * OverlayManager only while it holds the overlay slot.
+ */
+export default function FeatureUnlockToast({ unlock, onDismiss, onNavigateToTab }: FeatureUnlockToastProps) {
+  if (!unlock) return null;
 
   return (
-    <div className="fixed top-20 right-4 z-50 animate-reveal-up md:w-80" role="status" aria-live="polite">
+    <div className="fixed top-20 right-4 z-50 motion-safe:animate-reveal-up md:w-80" role="status" aria-live="polite">
       <div className="rounded-lg overflow-hidden shadow-xl" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--accent-primary)', boxShadow: '0 0 20px rgba(99, 102, 241, 0.15)' }}>
         {/* Header */}
         <div className="px-4 py-2 flex items-center justify-between" style={{ background: 'rgba(99, 102, 241, 0.1)', borderBottom: '1px solid rgba(99, 102, 241, 0.15)' }}>
@@ -136,7 +161,7 @@ export default function FeatureUnlockToast({ availableTabsKey, availableTabs, on
             <GameIcon name="sparkle" size={12} glow="purple" />New Feature Unlocked
           </span>
           <button
-            onClick={() => setVisible(false)}
+            onClick={onDismiss}
             aria-label="Dismiss notification"
             className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs"
             style={{ color: 'var(--text-muted)' }}
@@ -148,19 +173,19 @@ export default function FeatureUnlockToast({ availableTabsKey, availableTabs, on
         {/* Content */}
         <div className="px-4 py-3">
           <div className="flex items-center gap-2 mb-1.5">
-            <GameIcon name={currentUnlock.icon} size={22} glow="cyan" />
-            <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{currentUnlock.name}</span>
+            <GameIcon name={unlock.icon} size={22} glow="cyan" />
+            <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{unlock.name}</span>
           </div>
           <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--text-secondary)' }}>
-            {currentUnlock.description}
+            {unlock.description}
           </p>
           {onNavigateToTab && (
             <button
-              onClick={() => { onNavigateToTab(currentUnlock.tab); setVisible(false); }}
+              onClick={() => { onNavigateToTab(unlock.tab); onDismiss(); }}
               className="w-full min-h-[44px] py-1.5 text-xs font-semibold text-white rounded transition-colors"
               style={{ background: 'var(--accent-primary)' }}
             >
-              Open {currentUnlock.name} →
+              Open {unlock.name} →
             </button>
           )}
         </div>

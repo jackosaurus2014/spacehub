@@ -324,6 +324,24 @@ export function getTierUnlockedTabs(tier: number): GameTab[] {
 }
 
 /**
+ * The corporation tier at which a tab first appears in `unlockedTabs`.
+ * 'leaderboard' is always available (see getTierUnlockedTabs) → 1. A tab
+ * listed nowhere (should not happen — every GameTab is placed) → 1, so an
+ * unknown id never reads as "locked forever".
+ *
+ * Six-hub consolidation (2026-09): tier gating moved from the tab bar to the
+ * hub sub-view rows, which need the NUMBER (for the LockedSubtabNotice copy)
+ * rather than just the boolean.
+ */
+export function getTabUnlockTier(tab: GameTab): number {
+  if (tab === 'leaderboard') return 1;
+  for (const tierDef of CORPORATION_TIERS) {
+    if (tierDef.unlockedTabs.includes(tab)) return tierDef.tier;
+  }
+  return 1;
+}
+
+/**
  * Get the next tier the player hasn't reached yet (for progress display).
  * Returns null if player is at max tier.
  */

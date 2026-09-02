@@ -8,8 +8,13 @@
 // Pattern follows ReportsPanel's Mail/Quarterly tab strip. Subtabs preserve
 // their original corp-tier gate (FOLDED_FEATURE_TIERS) even though the hub
 // tab itself is unlocked at tier 1.
+//
+// Six-hub consolidation (2026-09): the shell's Contracts & Diplomacy row now
+// drives the view (`embedded`), through the sub-view bus — 'standard',
+// 'deliveries', 'races', 'pvp' (alias 'bidding'). The internal strips remain
+// for the non-embedded case so the panel is unchanged wherever else it is
+// mounted.
 
-import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { isFoldedFeatureUnlocked, FOLDED_FEATURE_TIERS } from '@/lib/game/corporation-tiers';
 import ContractsPanel from './ContractsPanel';
@@ -19,24 +24,38 @@ import CompetitiveRacesPanel from './CompetitiveRacesPanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
+import { useHubSubView } from './useHubSubView';
 
 interface ContractsHubPanelProps {
   state: GameState;
   onAcceptContract: (contractId: string) => void;
   onAcceptDelivery: (contractId: string) => void;
   onDeliverContract: (contractId: string) => void;
+  /** Six-hub shell: the hub row owns the view switcher, so hide the panel's
+   *  own strips. Defaults to false (standalone behaviour unchanged). */
+  embedded?: boolean;
 }
 
-type HubTab = 'pve' | 'pvp';
-type PveSection = 'deliveries' | 'standard';
+type ContractsView = 'standard' | 'deliveries' | 'races' | 'pvp';
 
-export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDelivery, onDeliverContract }: ContractsHubPanelProps) {
+export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDelivery, onDeliverContract, embedded = false }: ContractsHubPanelProps) {
   const tier = state.corporationTier || 1;
   const deliveriesUnlocked = isFoldedFeatureUnlocked(tier, 'diplomacy');
   const biddingUnlocked = isFoldedFeatureUnlocked(tier, 'bidding');
 
-  const [hubTab, setHubTab] = useState<HubTab>('pve');
-  const [pveSection, setPveSection] = useState<PveSection>(deliveriesUnlocked ? 'deliveries' : 'standard');
+  const [view, setView] = useHubSubView<ContractsView>(
+    'contracts',
+    deliveriesUnlocked ? 'deliveries' : 'standard',
+    requested => {
+      if (requested === 'standard' || requested === 'races' || requested === 'pvp') return requested;
+      if (requested === 'bidding' || requested === 'pvp') return 'pvp';
+      if (requested === 'pve') return deliveriesUnlocked ? 'deliveries' : 'standard';
+      if (requested === 'deliveries') return 'deliveries';
+      return null;
+    },
+  );
+  const hubTab: 'pve' | 'pvp' = view === 'pvp' || view === 'races' ? 'pvp' : 'pve';
+  const pveSection: 'deliveries' | 'standard' = view === 'deliveries' ? 'deliveries' : 'standard';
 
   const TopTabs = (
     <div className="game-tab-bar flex gap-1 overflow-x-auto" role="tablist" aria-label="Contracts view">
@@ -44,7 +63,7 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
         type="button"
         role="tab"
         aria-selected={hubTab === 'pve'}
-        onClick={() => setHubTab('pve')}
+        onClick={() => setView(deliveriesUnlocked ? 'deliveries' : 'standard')}
         className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
           hubTab === 'pve' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
         }`}
@@ -55,7 +74,7 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
         type="button"
         role="tab"
         aria-selected={hubTab === 'pvp'}
-        onClick={() => setHubTab('pvp')}
+        onClick={() => setView('pvp')}
         className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
           hubTab === 'pvp' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
         }`}
@@ -68,14 +87,16 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
   if (hubTab === 'pvp') {
     return (
       <div className="space-y-3">
-        <ConsolePanel title="Contracts" icon="contracts" subtitle="PVE delivery work and PVP competitive bidding.">{TopTabs}</ConsolePanel>
+        {!embedded && (
+          <ConsolePanel title="Contracts" icon="contracts" subtitle="PVE delivery work and PVP competitive bidding.">{TopTabs}</ConsolePanel>
+        )}
         {/* GAME_DESIGN_REVIEW_2026-09 row 15: competitive RACES (first-N-to-
             complete, server-verified) are gated by game month, not tier, so
             they render for everyone; the sealed-bid board keeps its T5 gate. */}
         <CompetitiveRacesPanel state={state} />
         {biddingUnlocked
           ? <BiddingPanel state={state} />
-          : <LockedSubtabNotice icon="🎯" label="PVP Bidding" tier={FOLDED_FEATURE_TIERS.bidding} />}
+          : <LockedSubtabNotice iconName="swords" label="PVP Bidding" tier={FOLDED_FEATURE_TIERS.bidding} />}
       </div>
     );
   }
@@ -90,7 +111,7 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
         type="button"
         role="tab"
         aria-selected={pveSection === 'deliveries'}
-        onClick={() => setPveSection('deliveries')}
+        onClick={() => setView('deliveries')}
         className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors flex items-center gap-1 ${
           pveSection === 'deliveries' ? 'bg-white/[0.06] text-white' : 'text-slate-500 hover:text-white'
         }`}
@@ -101,7 +122,7 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
         type="button"
         role="tab"
         aria-selected={pveSection === 'standard'}
-        onClick={() => setPveSection('standard')}
+        onClick={() => setView('standard')}
         className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors flex items-center gap-1 ${
           pveSection === 'standard' ? 'bg-white/[0.06] text-white' : 'text-slate-500 hover:text-white'
         }`}
@@ -113,16 +134,18 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
 
   return (
     <div className="space-y-3">
-      <ConsolePanel title="Contracts" icon="contracts" subtitle="PVE delivery work and PVP competitive bidding.">
-        <div className="space-y-2">
-          {TopTabs}
-          {SubSections}
-        </div>
-      </ConsolePanel>
+      {!embedded && (
+        <ConsolePanel title="Contracts" icon="contracts" subtitle="PVE delivery work and PVP competitive bidding.">
+          <div className="space-y-2">
+            {TopTabs}
+            {SubSections}
+          </div>
+        </ConsolePanel>
+      )}
       {pveSection === 'deliveries' ? (
         deliveriesUnlocked
           ? <DiplomacyPanel state={state} onAccept={onAcceptDelivery} onDeliver={onDeliverContract} />
-          : <LockedSubtabNotice icon="⚐" label="Faction Deliveries" tier={FOLDED_FEATURE_TIERS.diplomacy} />
+          : <LockedSubtabNotice iconName="handshake" label="Faction Deliveries" tier={FOLDED_FEATURE_TIERS.diplomacy} />
       ) : (
         <ContractsPanel state={state} onAcceptContract={onAcceptContract} />
       )}
