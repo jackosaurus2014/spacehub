@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import v8 from 'v8';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,12 +44,16 @@ export async function GET(request: Request) {
     checks.database = { status: 'error', latencyMs: Date.now() - dbStart, error: err instanceof Error ? err.message : 'Unknown' };
   }
 
-  // 2. Memory usage
+  // 2. Memory usage — measured against V8's heap LIMIT, not heapTotal.
+  // heapTotal is the lazily-grown committed heap, so used/total sits near
+  // 100% during normal operation; on Next 15 that tripped this check at
+  // startup, the endpoint answered 503 "degraded", and Railway's health
+  // check failed the whole deploy (2026-09-02, d09a3bb0).
   const mem = process.memoryUsage();
   const heapUsedMB = Math.round(mem.heapUsed / 1024 / 1024);
-  const heapTotalMB = Math.round(mem.heapTotal / 1024 / 1024);
+  const heapLimitMB = Math.round(v8.getHeapStatistics().heap_size_limit / 1024 / 1024);
   checks.memory = {
-    status: heapUsedMB < heapTotalMB * 0.9 ? 'ok' : 'error',
+    status: heapLimitMB > 0 && heapUsedMB >= heapLimitMB * 0.9 ? 'error' : 'ok',
     latencyMs: heapUsedMB,
   };
 
