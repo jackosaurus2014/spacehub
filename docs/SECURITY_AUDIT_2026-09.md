@@ -74,7 +74,7 @@ The rocket/site strings from `POST /api/launch-watch` were interpolated raw into
 
 ## Still open — structural
 
-- **August P1 — game inventory remains client-authoritative** for buildings, ships and research (`sync/route.ts`); money is clamped and reconciled, and **resources now have an upward-only plausibility ceiling** (phase 1, below — shipped in shadow mode 2026-09-01). The contract/order-book payout class is bounded, not closed, until phase 2 lands. Tracked as the top game-engineering item.
+- **August P1 — game inventory remains client-authoritative** for buildings, ships and research (`sync/route.ts`); money is clamped and reconciled, **resources have an upward-only plausibility ceiling** (phase 1, shadow since 2026-09-01) and, since phase 2 (2026-09-02, below), **the escrow-backed paths verify a server-owned inventory** (`GameProfile.serverResources`) — the contract/order-book payout class is closed for phantom stock; mining/consumption growth is still ceiling-bounded, not measured. Tracked as the top game-engineering item.
 - **Next.js 14 is out of support.** `npm audit` lists nine advisories (request smuggling in rewrites, RSC cache poisoning, several DoS) with no fix inside 14.x. Upgrade planned as its own project.
 - `sanitize-html`, `nodemailer` (via resend), `postcss` bumps ride with that upgrade.
 
@@ -238,6 +238,183 @@ new profile, money path untouched), `economic-snapshot-cron.test.ts`
   floor + slack. Any of these that legitimately exceeds it will show up in
   the shadow week.
 - No RollbackAction / dual-control / public-notice workflow (S3 phase 2).
+
+## Server-authoritative inventory — phase 2 (2026-09-02)
+
+Phase 1 bounded what the client may CLAIM; the escrow-backed paths still
+verified `GameProfile.resources`, a client-authored figure capped at a
+ceiling. Phase 2 gives the server its own inventory and makes the paths
+backed by real money verify against THAT, so phantom client stock can no
+longer be sold into real buy orders or delivered against real bounties, bids
+and project contributions.
+
+### What is authoritative now
+
+**`GameProfile.serverResources Json?`** (null = not yet baselined) is the
+server-owned per-resource stock. `GameProfile.resources` keeps exactly its
+phase-1 meaning — the client view: claim + pending ledger rows, clamped in
+enforce. Every rule below is in `src/lib/game/resource-plausibility.ts`
+(pure, "Phase 2" section) with the DB layer in
+`src/lib/game/server-inventory.ts`.
+
+**Adoption (one-time).** On the first sync where the profile's phase-1
+`_resourceBaselineAt` marker predates the request and `serverResources` is
+null, `serverResources` = the client view written that sync (reconciled;
+clamped in enforce), and every ledger row with `seq <= max(ack, maxSeq)` is
+stamped `foldedAt` (the view already contains them). Requires the ledger
+(`ledgerInfo`); without it nothing is adopted.
+
+**Advance (every later sync), per resource r:**
+
+```
+truth_r      = max(0, min(clientView_r,  prevServer_r + folded_r + accepted_r))
+folded_r     = Σ resourceDelta of the profile's GameLedgerEntry rows with
+               foldedAt IS NULL (every server-side move: escrow, fill, refund,
+               delivery, contribution). Stamped foldedAt after the row is
+               written.
+clientΔ_r    = clientView_r − prevClientRow_r − folded_r
+               (the client's OWN movement since the last sync)
+accepted_r   = clientΔ_r                                   if clientΔ_r <= 0
+             = min(clientΔ_r, growthCap_r + craft_r)       if clientΔ_r >  0
+growthCap_r  = RESOURCE_SLACK(3) x prodMax_r x elapsedMonths
+             + max(100, 0.25 x prevServer_r)
+               (the phase-1 ceiling's growth terms — ceilingFor(prevServer,
+               0, prodMax, months) − prevServer — evaluated on the SERVER
+               stock, with the same 5 s / 30 d elapsed clamp)
+craft_r      = the client's craftedThisTick attestation, capped (below)
+```
+
+A decrease is accepted as-is (spending your own stock is never an exploit;
+an unexplained drop — crafting inputs, building spend, consumption, hazards
+— simply lowers server truth). An increase is accepted only up to what the
+engine math allows for this profile. Ledger credits are NOT re-added as
+growth headroom (phase 1 did that; here they are in `folded_r` already).
+`truth_r <= clientView_r` always: the server never believes it holds more
+than the client says, so a hostile client can only ever make server truth
+LOWER than honest truth.
+
+**Gates read `stored + Σ unfolded rows`.** `resolveSellableQuantity` /
+`loadAuthoritativeInventory` (server-inventory.ts) add the unfolded ledger
+tail (`foldedAt IS NULL`, one indexed query) to the stored map, which is
+exactly the figure the next sync will store. An escrow written a millisecond
+ago is a ledger row already, so it is debited from what the next gate sees
+without the gate and the sync ever writing the same JSON column (the ledger
+row is the single atomic record; the stored map is a fold cursor over it).
+This is why the escrow paths debit the CLIENT VIEW (`resources`) directly,
+as before, and let the ledger row carry the debit to server truth — debiting
+`serverResources` directly as well would double-count at the next fold and
+would re-introduce the upsert-vs-escrow clobber race `resources` has.
+
+Wired: `market-orderbook.ts` sell gating (`placeLimitOrder`, escrow debit now
+floored at 0), `bounties/route.ts` filler check + delivery,
+`bidding/fulfill/route.ts` (`checkContractFulfillment` gets the
+authoritative map), `mega-projects/contribute` and
+`alliance-projects/contribute` availability checks. Every gate that refuses
+on server truth while the client view would have allowed it writes
+MarketAuditLog `sell_gated_by_server_inventory` (warning; `path`,
+`quantity`, `raw`, `serverHeld`). Fallback: a profile without
+`serverResources` uses the phase-1 rule (client figure capped at the stashed
+ceiling); `RESOURCE_CLAMP_MODE=off` returns the raw client figure and the
+server map stops advancing (so it must not gate).
+
+**Divergence telemetry.** Client view vs server truth differing by > 5 % of
+the server figure (`SERVER_RESOURCE_DIVERGENCE_TOLERANCE`) writes
+MarketAuditLog `client_server_resource_divergence` (warning) with the
+per-resource pairs, the capped growth, and the corrections that enforce
+would send — throttled to one row per profile per hour via the
+`_resourceDivergenceLoggedAt` stash key in `workforceData`.
+
+**Reconciliation to the client (enforce only).** For every resource where
+client − server > 5 %, the sync writes a `server_resource_correction`
+GameLedgerEntry (negative `resourceDelta`), applies it to the persisted
+client view, and appends it to the response `ledger` (entries,
+resourceDeltas, maxSeq) — the ordinary One-Wallet channel
+(`applyReconciliationToState`), so the client converges without a hard
+reset and retries stay idempotent (the row has a real seq). Never upward.
+Shadow computes and logs the same corrections and sends nothing.
+
+**Attested sub-payloads.** The client now sends `craftedThisTick` (recipe
+outputs credited by the engine's refining completion) and `builtThisTick`
+(building / ship / research `resourceCost` spend from the page handlers),
+accumulated in `GameState.pendingInventoryAttestations`
+(`inventory-attestations.ts`, client caps 10 000/resource) and drained after
+each 200 like `minedThisTick`. Server caps:
+
+| Payload | Cap (per resource per sync) | Source |
+|---|---|---|
+| `craftedThisTick[out]` | max over recipes producing `out` that this profile can run (completed fabrication facility of `facilityTierFor(recipe)` in `buildingsData` AND every `requiredResearch` in `completedResearchList`) of `outputQuantity x (floor(window_s x speedMult / timeSeconds) + 1)`; window = elapsed clamped 5 s..30 d; `speedMult = getCraftingSpeedMultiplier(buildingsData)` (1 + 0.15 per extra fab, evaluated for real — the roster is server-known); one recipe runs at a time (`activeRefining` is a single slot), the +1 is the in-flight completion | production-chains.ts `PRODUCTION_CHAINS` / `canFabricate`; buildings.ts `getCraftingSpeedMultiplier` |
+| `builtThisTick[r]` | `MAX_DEFINITION_RESOURCE_COST[r] x 25` — the largest `resourceCost[r]` of any building, ship or research definition times `BUILD_ATTEST_MAX_ORDERS_PER_SYNC` | buildings.ts / ships.ts / research-tree.ts definitions, derived at load |
+
+Accepted amounts are ledgered one row per resource per sync as
+`client_craft_output` (+) / `client_build_spend` (−). These rows are
+stamped `foldedAt` AND `appliedAt` at birth (`recordSyncAuthoredLedger`) and
+are excluded by reason from the client's pending query
+(`CLIENT_ATTESTED_LEDGER_REASONS`, ledger-reconcile.ts): the client's map
+already holds these movements, so they must never come back as deltas, and
+the sync applied them when it wrote the row, so they must never be folded.
+Craft output feeds server truth as `craft_r` in the advance rule; build
+spend is already captured by the accepted-decrease rule (the row is the
+audit trail — a client cannot lower server truth twice with it).
+
+### What still is not authoritative
+
+- **Mining and consumption** still flow through the phase-1 ceilings:
+  `growthCap_r` accepts up to 3x the engine's theoretical-max production for
+  the window plus the flat floor. The flat floor's 25 %-of-stock term
+  compounds per sync (~30 s), so a client that walks its claim up 25 % every
+  sync is still accepted — the phase-1.5 tightening target, now visible as
+  a long-lived `client_server_resource_divergence` stream for that profile.
+- **Inflows the flow lens does not model** (contract deliveries, survey
+  discoveries, freight arrivals — resource-flow.ts OMITTED_CONTRIBUTIONS)
+  ride only on the flat floor. Under the delta rule a one-off inflow larger
+  than the floor is PERMANENTLY under-counted in server truth (the client's
+  later movement is 0, so nothing catches up). This is the phase-2 false
+  positive to watch for; remedy = attest it (a `discoveredThisTick` /
+  `deliveredThisTick` sub-payload on the same channel) or, per profile,
+  `UPDATE "GameProfile" SET "serverResources" = NULL WHERE id = …` →
+  re-adopted from the client view on the next sync.
+- **Buildings, ships, research, services** remain client-reported (phase 3:
+  server-side construction / research ledger). `builtThisTick` attests the
+  resource side of a build, not the asset.
+- **Un-baselined profiles** (no `serverResources`) keep the phase-1 rule on
+  every gate until their next sync after the marker exists.
+- Two concurrent escrows for the same profile can both pass a gate on the
+  same truth (TOCTOU, pre-existing on `resources`); the second one then
+  over-sells. Fold marking runs after the profile upsert; a lambda crash in
+  that window double-folds once (debits: conservative; credits: a one-off
+  free credit). Both are rare and reversible with `restoreEconomicSnapshot`,
+  which now re-adopts `serverResources` from the restored stock and stamps
+  every row folded.
+- Ledger unavailable (`isLedgerAvailable() === false`, deploy lag): no rows,
+  nothing folds, gates read the stale stored map. Same posture as One Wallet.
+
+### Flip plan
+
+Everything runs under the phase-1 `RESOURCE_CLAMP_MODE` (default `shadow`):
+
+1. Deploy with the DDL applied (`serverResources`, `foldedAt` + index). Every
+   baselined profile adopts its server map on its next sync; gates switch to
+   server truth from that moment — in shadow too, exactly as phase 1's
+   ceiling gating already did.
+2. Daily, alongside the phase-1 checks: `SELECT "profileId", details FROM
+   "MarketAuditLog" WHERE "eventType" IN ('client_server_resource_divergence',
+   'sell_gated_by_server_inventory')`. A divergence on an honest profile
+   whose `details.capped[]` names a resource with a legitimate unmodeled
+   inflow is a false positive: model it (attestation or flow lens), then
+   null that profile's `serverResources` to re-adopt. `details.corrections`
+   is exactly what enforce would have sent.
+3. After >= 7 days with zero false positives, `RESOURCE_CLAMP_MODE=enforce`:
+   corrections start flowing to clients (`server_resource_correction` rows,
+   `details.corrected = true`). Every enforced phase-1 clamp still takes a
+   `'pre-clamp'` snapshot; a restore re-adopts the server map.
+4. Phase 1.5 / 3 tighten the growth allowance (evaluate research, workforce,
+   commanders for real; replace the compounding flat floor with a
+   time-based one) and move construction / research server-side.
+
+Tests: `inventory-phase2.test.ts` (adoption, fold + capped growth, unexplained
+decrease, phantom sell rejected on server truth, escrow debits the client
+view + ledgers, shadow vs enforce corrections, craft / build attestation caps
+and rows).
 
 ## CSP: report-only nonce rollout (2026-09-01)
 

@@ -209,6 +209,8 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/embed/launch-cadence',
   '/embed/space-weather',
   '/export-compliance-qa',
+  '/gallery',
+  '/gallery/[eventId]',
   '/gig-work',
   '/gig-work/[id]',
   '/gig-work/my-gigs',

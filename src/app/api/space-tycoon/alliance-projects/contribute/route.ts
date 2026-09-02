@@ -10,6 +10,7 @@ import {
   calculateFundingProgress,
 } from '@/lib/game/alliance-projects';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { loadAuthoritativeInventory, auditServerInventoryGate } from '@/lib/game/server-inventory';
 
 /**
  * POST /api/space-tycoon/alliance-projects/contribute
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     const profile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
-      select: { id: true, money: true, resources: true },
+      select: { id: true, money: true, resources: true, serverResources: true, workforceData: true },
     });
     if (!profile) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
@@ -97,12 +98,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate player has enough resources
+    // Validate player has enough resources. Server-authoritative inventory
+    // phase 2 (docs/SECURITY_AUDIT_2026-09.md): verified against SERVER
+    // TRUTH when the profile has a serverResources map; the client view
+    // (`playerResources`) is what gets debited below — server truth is
+    // debited by the ledger rows.
     const playerResources = (profile.resources ?? {}) as Record<string, number>;
+    const inventory = await loadAuthoritativeInventory(profile);
     for (const [resourceId, qty] of Object.entries(proposedResources)) {
       if (typeof qty !== 'number' || qty <= 0) continue;
-      const playerQty = playerResources[resourceId] ?? 0;
+      const playerQty = inventory.resources[resourceId] ?? 0;
       if (playerQty < qty) {
+        if (inventory.source === 'server' && (playerResources[resourceId] ?? 0) >= qty) {
+          await auditServerInventoryGate(prisma, {
+            profileId: profile.id, resourceSlug: resourceId, path: 'alliance_project_contribute',
+            quantity: qty, raw: playerResources[resourceId] ?? 0, held: playerQty, refId: projectId,
+          });
+        }
         return NextResponse.json(
           { error: `Not enough ${resourceId}. You have ${playerQty}, need ${qty}.` },
           { status: 400 },

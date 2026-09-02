@@ -13,6 +13,8 @@ import { getNextLaunch } from '@/lib/next-launch';
 import { missionOf } from '@/lib/next-launch';
 import { getNextLaunches } from '@/lib/launch-sites';
 import { getMissionControlEvents } from '@/lib/space-events';
+import { getLatestGalleryItems, type GalleryItem } from '@/lib/gallery';
+import GalleryImage from '@/components/gallery/GalleryImage';
 import { logger } from '@/lib/logger';
 import type { SpaceEvent } from '@/types';
 import MissionControlClient from './MissionControlClient';
@@ -123,10 +125,11 @@ async function safe<T>(label: string, fn: () => Promise<T>, fallback: T): Promis
 export default async function MissionControlPage() {
   const now = new Date();
 
-  const [next, upcomingRows, initialEvents] = await Promise.all([
+  const [next, upcomingRows, initialEvents, galleryStrip] = await Promise.all([
     safe('next-launch', () => getNextLaunch(), null),
     safe('upcoming', () => getNextLaunches(SERVER_LIST_SIZE + 1, now), [] as Awaited<ReturnType<typeof getNextLaunches>>),
     safe('events-window', () => getMissionControlEvents(now), undefined as SpaceEvent[] | undefined),
+    safe('gallery-strip', () => getLatestGalleryItems(6), [] as GalleryItem[]),
   ]);
 
   // The hero already carries the next launch; the board starts at the one after.
@@ -284,6 +287,35 @@ export default async function MissionControlPage() {
             </ul>
           )}
         </Console>
+
+        {/* Launch imagery strip (2026-09-02): the six newest launch images
+            from the LL2 manifest, server-rendered. Absent, not a guess, when
+            the gallery read fails. */}
+        {galleryStrip.length > 0 && (
+          <section aria-labelledby="mc-gallery-heading" className="mt-6">
+            <div className="flex items-baseline justify-between gap-4 mb-2">
+              <h2 id="mc-gallery-heading" className="font-body text-[0.6875rem] font-medium uppercase leading-[1.4] tracking-[0.14em] text-[var(--ink-3)]">
+                Launch imagery
+              </h2>
+              <Link href="/gallery" className="inline-flex min-h-[44px] items-center font-body text-[0.8125rem] text-[var(--ember)] underline underline-offset-2 hover:text-[var(--ink)]">
+                Full gallery &rarr;
+              </Link>
+            </div>
+            <ul className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {galleryStrip.map((item) => (
+                <li key={item.id}>
+                  <Link
+                    href={item.detailHref ?? '/gallery'}
+                    className="block relative aspect-[4/3] rounded-lg overflow-hidden border border-[var(--line)] bg-[var(--surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ember)]"
+                    aria-label={item.alt}
+                  >
+                    <GalleryImage src={item.imageUrl} alt="" fill sizes="(min-width: 640px) 16vw, 33vw" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
 
       <MissionControlClient initialEvents={initialEvents} />

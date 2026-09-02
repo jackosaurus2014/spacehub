@@ -18,9 +18,16 @@ import {
   getLeagueDefinition,
 } from '@/lib/game/league-system';
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
-import { reconcileBalance, applyResourceDeltas, clampPlausibleMoney, type LedgerEntryLite } from '@/lib/game/ledger-reconcile';
+import {
+  reconcileBalance,
+  applyResourceDeltas,
+  clampPlausibleMoney,
+  CLIENT_ATTESTED_LEDGER_REASONS,
+  SERVER_RESOURCE_CORRECTION_REASON,
+  type LedgerEntryLite,
+} from '@/lib/game/ledger-reconcile';
 import { buildMarketSnapshot } from '@/lib/game/spot-price';
-import { isLedgerAvailable } from '@/lib/game/server-ledger';
+import { isLedgerAvailable, recordSyncAuthoredLedger } from '@/lib/game/server-ledger';
 import { resolveMetricCurrentValue } from '@/lib/game/market-share';
 import { getMegaProjectBonuses } from '@/lib/game/mega-projects';
 import { BOOK_VALUE_DEPRECIATION_FACTOR } from '@/lib/game/frontier';
@@ -35,6 +42,20 @@ import {
   RESOURCE_BASELINE_KEY,
   RESOURCE_CEILINGS_KEY,
   type ResourceRejection,
+  type ResourceCeilingReport,
+  // Phase 2 (server-owned inventory) — see the block after the clamp.
+  readServerResources,
+  advanceServerResources,
+  computeResourceDivergence,
+  computeClientCorrections,
+  computeCraftAttestationCaps,
+  capCraftAttestation,
+  capBuildAttestation,
+  DIVERGENCE_AUDIT_THROTTLE_MS,
+  RESOURCE_DIVERGENCE_LOGGED_KEY,
+  type CappedGrowth,
+  type ResourceDivergence,
+  type AttestationRejection,
 } from '@/lib/game/resource-plausibility';
 import { takeEconomicSnapshotFromRow } from '@/lib/game/economic-snapshot';
 
@@ -92,6 +113,15 @@ export async function POST(request: Request) {
       // client-side at dispatch, settled to zone governors here (ledgered,
       // capped).
       tollPaymentsThisTick = {},
+      // Server-authoritative inventory phase 2 (docs/SECURITY_AUDIT_2026-09.md
+      // "Phase 2"): the client's attestations of its own crafting outputs
+      // (resources IN) and building / ship / research resource spend
+      // (resources OUT) since the last sync. Capped server-side against the
+      // engine's own recipe throughput / definition costs and ledgered as
+      // client_craft_output / client_build_spend; craft outputs also widen
+      // the growth the server map accepts this sync.
+      craftedThisTick = {},
+      builtThisTick = {},
       // Full state for multiplayer visibility
       buildings = [],
       activeServices = [],
@@ -166,6 +196,7 @@ export async function POST(request: Request) {
       id: string; money: number; netWorth: number; lastSyncAt: Date;
       resources: unknown; buildingsData: unknown; shipsData: unknown;
       activeServicesData: unknown; completedResearchList: string[]; workforceData: unknown;
+      serverResources: unknown;
     } | null = null;
     let elapsedSinceLastSyncMs = 0;
 
@@ -176,6 +207,7 @@ export async function POST(request: Request) {
           id: true, money: true, netWorth: true, lastSyncAt: true,
           resources: true, buildingsData: true, shipsData: true,
           activeServicesData: true, completedResearchList: true, workforceData: true,
+          serverResources: true,
         },
       });
 
@@ -225,8 +257,15 @@ export async function POST(request: Request) {
           data: { appliedAt: new Date() },
         });
 
+        // Phase 2: the sync's own client_craft_output / client_build_spend
+        // rows are the client's OWN movements (already in its map) — never
+        // hand them back as pending deltas (ledger-reconcile.ts header).
         const pendingRows = await prisma.gameLedgerEntry.findMany({
-          where: { profileId: existingProfile.id, seq: { gt: safeAck } },
+          where: {
+            profileId: existingProfile.id,
+            seq: { gt: safeAck },
+            reason: { notIn: [...CLIENT_ATTESTED_LEDGER_REASONS] },
+          },
           orderBy: { seq: 'asc' },
           take: 1000,
           select: { seq: true, moneyDelta: true, resourceSlug: true, resourceDelta: true, reason: true, refId: true },
@@ -280,18 +319,21 @@ export async function POST(request: Request) {
       rejected: ResourceRejection[];
       enforced: boolean;
     } | null = null;
+    // Shared with the phase-2 block below.
+    let ceilingReport: ResourceCeilingReport | null = null;
+    let baselinePredatesThisSync = false;
     if (resourceClampMode !== 'off' && existingProfile) {
       try {
         const stash = readResourceStash(existingProfile.workforceData);
         const nowIso = new Date().toISOString();
         const baselineAt = stash.baselineAt;
-        const baselinePredatesThisSync = !!baselineAt && Date.parse(baselineAt) < Date.now();
+        baselinePredatesThisSync = !!baselineAt && Date.parse(baselineAt) < Date.now();
         resourceExtras[RESOURCE_BASELINE_KEY] = baselineAt ?? nowIso;
 
         const prevResources = existingProfile.resources && typeof existingProfile.resources === 'object'
           ? (existingProfile.resources as Record<string, number>)
           : {};
-        const { ceilings } = computeResourceCeilings({
+        ceilingReport = computeResourceCeilings({
           prevResources,
           prevBuildingsData: existingProfile.buildingsData,
           prevShipsData: existingProfile.shipsData,
@@ -301,6 +343,7 @@ export async function POST(request: Request) {
           ledgerDeltas: ledgerInfo?.resourceDeltas ?? null,
           elapsedMs: elapsedSinceLastSyncMs,
         });
+        const { ceilings } = ceilingReport;
         resourceExtras[RESOURCE_CEILINGS_KEY] = selectCeilingsToStash(ceilings, reconciledResources);
 
         if (baselinePredatesThisSync) {
@@ -344,6 +387,176 @@ export async function POST(request: Request) {
       } catch (clampError) {
         // Plausibility is best-effort; never block the sync.
         logger.error('Resource plausibility clamp failed', { error: String(clampError) });
+      }
+    }
+
+    // ── Server-authoritative inventory, phase 2: the server-owned map ──────
+    // docs/SECURITY_AUDIT_2026-09.md "Phase 2". `GameProfile.serverResources`
+    // is what the escrow-backed paths verify against (server-inventory.ts).
+    // Rules (formula in resource-plausibility.ts's phase-2 header):
+    //   - ADOPTION: null map + the phase-1 baseline marker predates this
+    //     sync → serverResources = the client view written this sync (one
+    //     time), and every ledger row up to the reconciled seq is stamped
+    //     folded (the view already contains them).
+    //   - ADVANCE: prev + Σ unfolded ledger rows + the client's own movement,
+    //     where a decrease is accepted as-is and an increase only up to the
+    //     phase-1 growth allowance for the SERVER stock plus the capped craft
+    //     attestation. Never above the client view; never below zero.
+    //   - DIVERGENCE: client view vs server truth > 5 % → MarketAuditLog
+    //     `client_server_resource_divergence` (warning), 1/hour/profile.
+    //   - CORRECTION (enforce only): a `server_resource_correction` ledger
+    //     row per drifted resource (client − server > 5 %), applied to the
+    //     persisted client view and returned to the client as a normal
+    //     pending delta so it converges without a hard reset. Shadow only
+    //     computes and logs. Never upward.
+    //   - ATTESTATIONS: craftedThisTick / builtThisTick, capped
+    //     (computeCraftAttestationCaps / capBuildAttestation), ledgered as
+    //     client_craft_output / client_build_spend (audit trail; stamped
+    //     folded + applied at birth).
+    // Requires the ledger (ledgerInfo) — without it there is nothing to fold
+    // and the map is left untouched. Best-effort: never blocks the sync.
+    let serverResourcesToPersist: Record<string, number> | undefined;
+    let foldRowIds: string[] = [];
+    let foldAllUpToSeq: number | null = null;
+    let correctionDeltas: Record<string, number> = {};
+    let craftAccepted: Record<string, number> = {};
+    let buildAccepted: Record<string, number> = {};
+    let serverInventoryInfo: {
+      mode: 'shadow' | 'enforce';
+      adopted: boolean;
+      capped: CappedGrowth[];
+      divergence: ResourceDivergence[];
+      corrections: Record<string, number>;
+      corrected: boolean;
+      craft: { accepted: Record<string, number>; rejected: AttestationRejection[] };
+      build: { accepted: Record<string, number>; rejected: AttestationRejection[] };
+    } | null = null;
+    if (resourceClampMode !== 'off' && existingProfile && ledgerInfo && ceilingReport) {
+      try {
+        const enforce = resourceClampMode === 'enforce';
+        const prevServer = readServerResources(existingProfile.serverResources);
+        const wd = (existingProfile.workforceData && typeof existingProfile.workforceData === 'object')
+          ? (existingProfile.workforceData as Record<string, unknown>)
+          : {};
+        // Carry the throttle marker forward (the client never echoes stash keys).
+        const lastDivergenceLoggedAt = typeof wd[RESOURCE_DIVERGENCE_LOGGED_KEY] === 'string'
+          ? (wd[RESOURCE_DIVERGENCE_LOGGED_KEY] as string)
+          : null;
+        if (lastDivergenceLoggedAt) resourceExtras[RESOURCE_DIVERGENCE_LOGGED_KEY] = lastDivergenceLoggedAt;
+
+        if (!prevServer) {
+          if (baselinePredatesThisSync) {
+            const adopted: Record<string, number> = {};
+            for (const [k, v] of Object.entries(reconciledResources)) {
+              if (typeof v === 'number' && Number.isFinite(v) && v > 0) adopted[k] = v;
+            }
+            serverResourcesToPersist = adopted;
+            foldAllUpToSeq = Math.max(ledgerInfo.maxSeq, ledgerInfo.ackSeq);
+            serverInventoryInfo = {
+              mode: resourceClampMode, adopted: true, capped: [], divergence: [], corrections: {}, corrected: false,
+              craft: { accepted: {}, rejected: [] }, build: { accepted: {}, rejected: [] },
+            };
+          }
+        } else {
+          const unfoldedRows = await prisma.gameLedgerEntry.findMany({
+            where: { profileId: existingProfile.id, foldedAt: null },
+            select: { id: true, resourceSlug: true, resourceDelta: true },
+            orderBy: { seq: 'asc' },
+            take: 1000,
+          });
+          const folded: Record<string, number> = {};
+          for (const r of unfoldedRows) {
+            foldRowIds.push(r.id);
+            if (!r.resourceSlug || typeof r.resourceDelta !== 'number' || !Number.isFinite(r.resourceDelta) || r.resourceDelta === 0) continue;
+            folded[r.resourceSlug] = (folded[r.resourceSlug] || 0) + r.resourceDelta;
+          }
+
+          const craftCaps = computeCraftAttestationCaps({
+            prevBuildingsData: existingProfile.buildingsData,
+            prevResearch: existingProfile.completedResearchList,
+            elapsedMs: elapsedSinceLastSyncMs,
+          });
+          const craft = capCraftAttestation(craftedThisTick, craftCaps);
+          const build = capBuildAttestation(builtThisTick);
+          craftAccepted = craft.accepted;
+          buildAccepted = build.accepted;
+
+          const adv = advanceServerResources({
+            prevServer,
+            prevClientRow: existingProfile.resources as Record<string, number> | null,
+            clientView: reconciledResources,
+            folded,
+            prodPerMonth: ceilingReport.prodPerMonth,
+            elapsedMonths: ceilingReport.elapsedMonths,
+            craftAccepted: craft.accepted,
+          });
+          serverResourcesToPersist = adv.next;
+
+          const divergence = computeResourceDivergence(reconciledResources, adv.next);
+          const corrections = computeClientCorrections(reconciledResources, adv.next);
+          const hasCorrections = Object.keys(corrections).length > 0;
+
+          if (divergence.length > 0) {
+            const nowMs = Date.now();
+            const lastMs = lastDivergenceLoggedAt ? Date.parse(lastDivergenceLoggedAt) : NaN;
+            const throttled = Number.isFinite(lastMs) && nowMs - lastMs < DIVERGENCE_AUDIT_THROTTLE_MS;
+            if (!throttled) {
+              const auditDetails = {
+                mode: resourceClampMode,
+                elapsedMs: elapsedSinceLastSyncMs,
+                divergence: divergence.slice(0, 35),
+                divergenceCount: divergence.length,
+                capped: adv.capped.slice(0, 35),
+                corrections,
+                corrected: enforce && hasCorrections,
+                craftRejected: craft.rejected.slice(0, 20),
+                buildRejected: build.rejected.slice(0, 20),
+              };
+              logger.warn('Client resource view diverges from server-owned inventory', {
+                userId: session.user.id, profileId: existingProfile.id, ...auditDetails,
+              });
+              try {
+                await prisma.marketAuditLog.create({
+                  data: {
+                    eventType: 'client_server_resource_divergence',
+                    profileId: existingProfile.id,
+                    details: JSON.parse(JSON.stringify(auditDetails)),
+                    severity: 'warning',
+                  },
+                });
+                resourceExtras[RESOURCE_DIVERGENCE_LOGGED_KEY] = new Date(nowMs).toISOString();
+              } catch { /* audit log is best-effort */ }
+            }
+          }
+
+          if (enforce && hasCorrections) {
+            // Persisted client view converges now; the ledger rows written
+            // after the upsert carry the same deltas to the client.
+            reconciledResources = applyResourceDeltas(reconciledResources, corrections);
+            correctionDeltas = corrections;
+          }
+
+          serverInventoryInfo = {
+            mode: resourceClampMode,
+            adopted: false,
+            capped: adv.capped.slice(0, 35),
+            divergence: divergence.slice(0, 35),
+            corrections,
+            corrected: enforce && hasCorrections,
+            craft: { accepted: craft.accepted, rejected: craft.rejected.slice(0, 20) },
+            build: { accepted: build.accepted, rejected: build.rejected.slice(0, 20) },
+          };
+        }
+      } catch (serverInvError) {
+        // Best-effort; never block the sync. The map is left untouched.
+        logger.error('Server-owned inventory advance failed', { error: String(serverInvError) });
+        serverResourcesToPersist = undefined;
+        foldRowIds = [];
+        foldAllUpToSeq = null;
+        correctionDeltas = {};
+        craftAccepted = {};
+        buildAccepted = {};
+        serverInventoryInfo = null;
       }
     }
 
@@ -499,9 +712,68 @@ export async function POST(request: Request) {
         completedResearchList: safeResearch,
         shipsData: safeShips,
         workforceData: workforceDataToPersist as object,
+        // Phase 2: undefined = leave the server-owned map untouched.
+        serverResources: serverResourcesToPersist as object | undefined,
         lastSyncAt: new Date(),
       },
     });
+
+    // Phase 2 follow-through (best-effort, after the row is written): stamp
+    // the folded ledger rows, then write the sync-authored rows — corrections
+    // (returned to the client as pending deltas) and the capped craft / build
+    // attestations (audit trail only; stamped folded + applied at birth).
+    if (serverInventoryInfo && existingProfile) {
+      try {
+        const foldedAt = new Date();
+        if (foldAllUpToSeq !== null) {
+          await prisma.gameLedgerEntry.updateMany({
+            where: { profileId: existingProfile.id, foldedAt: null, seq: { lte: foldAllUpToSeq } },
+            data: { foldedAt },
+          });
+        }
+        if (foldRowIds.length > 0) {
+          await prisma.gameLedgerEntry.updateMany({
+            where: { id: { in: foldRowIds } },
+            data: { foldedAt },
+          });
+        }
+        for (const [slug, delta] of Object.entries(correctionDeltas)) {
+          if (!(delta < 0)) continue; // never upward
+          const row = await recordSyncAuthoredLedger(prisma, {
+            profileId: existingProfile.id, resourceSlug: slug, resourceDelta: delta,
+            reason: SERVER_RESOURCE_CORRECTION_REASON, refId: 'sync',
+          });
+          if (row && ledgerInfo) {
+            const entry: LedgerEntryLite = {
+              seq: row.seq, moneyDelta: 0, resourceSlug: slug, resourceDelta: delta,
+              reason: SERVER_RESOURCE_CORRECTION_REASON, refId: 'sync',
+            };
+            ledgerInfo.entries = [...ledgerInfo.entries, entry].slice(-25);
+            ledgerInfo.resourceDeltas = {
+              ...ledgerInfo.resourceDeltas,
+              [slug]: (ledgerInfo.resourceDeltas[slug] || 0) + delta,
+            };
+            ledgerInfo.maxSeq = Math.max(ledgerInfo.maxSeq, row.seq);
+          }
+        }
+        for (const [slug, qty] of Object.entries(craftAccepted)) {
+          if (!(qty > 0)) continue;
+          await recordSyncAuthoredLedger(prisma, {
+            profileId: existingProfile.id, resourceSlug: slug, resourceDelta: qty,
+            reason: 'client_craft_output', refId: 'sync',
+          });
+        }
+        for (const [slug, qty] of Object.entries(buildAccepted)) {
+          if (!(qty > 0)) continue;
+          await recordSyncAuthoredLedger(prisma, {
+            profileId: existingProfile.id, resourceSlug: slug, resourceDelta: -qty,
+            reason: 'client_build_spend', refId: 'sync',
+          });
+        }
+      } catch (foldError) {
+        logger.error('Server-owned inventory ledger follow-through failed', { error: String(foldError) });
+      }
+    }
 
     if (!existedBefore) {
       const cookieHeader = request.headers.get('cookie') || '';
@@ -1356,6 +1628,9 @@ export async function POST(request: Request) {
       reconciledMoney,
       ledger: ledgerInfo,
       resourceClamp: resourceClampInfo,
+      // Phase 2: server-owned inventory telemetry (adoption, capped growth,
+      // divergence, corrections, attestation caps). Additive field.
+      serverInventory: serverInventoryInfo,
       rank,
       totalPlayers,
       allianceBonus,

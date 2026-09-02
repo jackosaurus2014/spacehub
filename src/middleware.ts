@@ -496,6 +496,11 @@ export const SLUG_EXISTENCE_CHECKS: Array<{
     existsApiPath: (slug) => `/api/podcasts/${encodeURIComponent(slug)}/exists`,
   },
   {
+    // Launch imagery gallery (2026-09-02): DB-backed SpaceEvent ids.
+    match: /^\/gallery\/([^/]+)\/?$/,
+    existsApiPath: (id) => `/api/gallery/${encodeURIComponent(id)}/exists`,
+  },
+  {
     // Episode slugs are unique only per show, so the probe carries both segments.
     match: /^\/podcasts\/([^/]+\/[^/]+)\/?$/,
     existsApiPath: (pair) => `/api/podcasts/${pair.split('/').map(encodeURIComponent).join('/')}/exists`,

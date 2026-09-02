@@ -119,6 +119,7 @@ import { consumeLaneUsageFlush, subtractTransmittedLaneUsage } from './trade-lan
 // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O6): freight-toll settlement
 // hand-off queue (offense.ts) — same single-slot pattern as lane usage.
 import { consumeTollFlush, subtractTransmittedTolls } from './offense';
+import { accumulateCraftedOutput, consumeAttestationFlush, applyAttestationFlush } from './inventory-attestations';
 import type { ServiceType } from './types';
 // 4X Wave W13 (Corporate Doctrine & Board Politics, docs/4X_BASELINE_2026-08.md
 // §1.7): doctrineBonuses is consumed at the SAME sites resBonuses/
@@ -1732,6 +1733,18 @@ export function processFullTick(state: GameState): GameState {
     console.error('Toll flush error (non-fatal):', err);
   }
 
+  // 0c4. Server-authoritative inventory phase 2: drain the craft / build
+  // attestations a successful sync just transmitted
+  // (inventory-attestations.ts's own single-slot queue).
+  try {
+    const attestFlush = consumeAttestationFlush();
+    if (attestFlush) {
+      workingState = applyAttestationFlush(workingState, attestFlush);
+    }
+  } catch (err) {
+    console.error('Attestation flush error (non-fatal):', err);
+  }
+
   // 0d. Wave E3: drain the consumption sync flush (demand telemetry +
   // procurement requests a successful sync just transmitted) — same
   // single-slot hand-off pattern as the market flows above.
@@ -1920,6 +1933,17 @@ export function processFullTick(state: GameState): GameState {
           resources[recipe.outputId] = (resources[recipe.outputId] || 0) + recipe.outputQuantity;
         }
         newState = { ...newState, activeRefining: null, resources };
+        // Phase 2 (inventory-attestations.ts): attest the output so the
+        // server-owned map accepts this craft on the next sync.
+        if (recipe) {
+          newState = {
+            ...newState,
+            pendingInventoryAttestations: accumulateCraftedOutput(
+              newState.pendingInventoryAttestations,
+              { [recipe.outputId]: recipe.outputQuantity },
+            ),
+          };
+        }
         // Crafting queue (2026-08-31, Jay): auto-start the next queued order.
         // Inputs are deducted AT START, same as a manual start; if the head
         // isn't affordable yet the queue waits (never skips) so the order

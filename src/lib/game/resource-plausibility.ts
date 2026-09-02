@@ -39,6 +39,9 @@ import { MIN_PLAUSIBILITY_ELAPSED_MS, MAX_PLAUSIBILITY_ELAPSED_MS } from './ledg
 import { MEGASTRUCTURES } from './personal-megastructures';
 import { SHIP_MAP, getShipDerivedStats } from './ships';
 import { MINING_LASER_RATE_BONUS } from './modules';
+import { BUILDING_MAP, getCraftingSpeedMultiplier } from './buildings';
+import { RESEARCH } from './research-tree';
+import { PRODUCTION_CHAINS, canFabricate } from './production-chains';
 
 // ─── Tunables ────────────────────────────────────────────────────────────────
 
@@ -468,39 +471,365 @@ export function readResourceStash(workforceData: unknown): {
   return { baselineAt, ceilings };
 }
 
+// ─── Phase 2: the server-owned inventory (GameProfile.serverResources) ──────
+// docs/SECURITY_AUDIT_2026-09.md "Server-authoritative inventory — phase 2".
+//
+// `GameProfile.resources` stays the CLIENT VIEW (client claim + pending
+// ledger rows, clamped in enforce). `GameProfile.serverResources` is the
+// SERVER TRUTH: null until adopted, then advanced by the sync ONLY through
+//
+//   truth_r = prevServer_r + folded_r + accepted_r
+//
+//   folded_r    = Σ resourceDelta of GameLedgerEntry rows for the profile
+//                 with foldedAt IS NULL (every server-side move — escrow,
+//                 fill, refund, delivery, contribution — is a ledger row; the
+//                 sync stamps them folded as it absorbs them)
+//   clientΔ_r   = clientView_r − prevClientRow_r − folded_r
+//                 (the client's OWN movement since the last sync: what it
+//                 says it produced or spent, with server-side moves removed)
+//   accepted_r  = clientΔ_r                            when clientΔ_r ≤ 0
+//                 min(clientΔ_r, growthCap_r + craft_r) when clientΔ_r > 0
+//   growthCap_r = RESOURCE_SLACK × prodMax_r × elapsedMonths
+//               + max(FLAT_FLOOR_MIN, FLAT_FLOOR_FRACTION × prevServer_r)
+//                 (the phase-1 ceiling formula's growth terms, evaluated
+//                 against the SERVER stock — ceilingFor(prevServer, 0, …) −
+//                 prevServer)
+//   craft_r     = the client's craftedThisTick attestation, capped by
+//                 computeCraftAttestationCaps
+//
+// and finally truth_r ≤ clientView_r (the server never believes it holds
+// more than the client does) and truth_r ≥ 0. A decrease is accepted as-is
+// because spending your own stock is never an exploit; an increase is
+// accepted only up to what the engine math allows for this profile.
+//
+// Between syncs the escrow-backed gates read `stored + Σ unfolded rows`
+// (server-inventory.ts), which is exactly the truth the next sync will
+// store — so an escrow written one millisecond ago is already debited from
+// what the next gate sees, without the gate and the sync ever racing on the
+// JSON column (the ledger row is the single atomic record; the stored map is
+// a fold cursor over it).
+
+/** Client-vs-server divergence above this fraction of the server figure is
+ *  audited (and, in enforce, corrected downward). */
+export const SERVER_RESOURCE_DIVERGENCE_TOLERANCE = 0.05;
+/** One `client_server_resource_divergence` audit row per profile per hour. */
+export const DIVERGENCE_AUDIT_THROTTLE_MS = 3600_000;
+/** Stash key (workforceData): ISO time of the last divergence audit row. */
+export const RESOURCE_DIVERGENCE_LOGGED_KEY = '_resourceDivergenceLoggedAt';
+
+/** Sanitize a persisted `serverResources` column. null = not baselined. */
+export function readServerResources(raw: unknown): Record<string, number> | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const out: Record<string, number> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v === 'number' && Number.isFinite(v) && v > 0) out[k] = v;
+  }
+  return out;
+}
+
+const finiteNonNeg = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : 0);
+
+/** `stored + Σ unfolded` for one slug, floored at zero. */
+export function serverHeldQuantity(
+  server: Record<string, number>,
+  unfolded: Record<string, number> | null | undefined,
+  slug: string,
+): number {
+  const base = finiteNonNeg(server[slug]);
+  const pending = unfolded && typeof unfolded[slug] === 'number' && Number.isFinite(unfolded[slug]) ? unfolded[slug] : 0;
+  return Math.max(0, Math.floor(base + pending));
+}
+
+/** The whole map, `stored + Σ unfolded`, floored at zero, zero entries dropped. */
+export function applyUnfoldedDeltas(
+  server: Record<string, number>,
+  unfolded: Record<string, number> | null | undefined,
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  const ids = new Set<string>([...Object.keys(server), ...Object.keys(unfolded || {})]);
+  for (const id of Array.from(ids)) {
+    const q = serverHeldQuantity(server, unfolded, id);
+    if (q > 0) out[id] = q;
+  }
+  return out;
+}
+
+export interface AdvanceServerResourcesInputs {
+  /** `GameProfile.serverResources` as stored at the last sync. */
+  prevServer: Record<string, number>;
+  /** `GameProfile.resources` as written by the last sync (client view then). */
+  prevClientRow: Record<string, number> | null | undefined;
+  /** The client view this sync will write (claim + pending rows, clamped). */
+  clientView: Record<string, number>;
+  /** Net resourceDelta of the ledger rows being folded this sync. */
+  folded: Record<string, number> | null | undefined;
+  /** Theoretical-max production per game month (computeResourceCeilings). */
+  prodPerMonth: Record<string, number>;
+  elapsedMonths: number;
+  /** Capped craft attestation (computeCraftAttestationCaps applied). */
+  craftAccepted?: Record<string, number> | null;
+}
+
+export interface CappedGrowth {
+  resource: string;
+  /** What the client's own movement claimed (after removing server moves). */
+  claimed: number;
+  /** What the engine math allowed for the window. */
+  allowed: number;
+}
+
+export interface AdvanceServerResourcesResult {
+  next: Record<string, number>;
+  /** Client-movement growth accepted per resource (> 0 only). */
+  acceptedGrowth: Record<string, number>;
+  /** Client-movement decreases accepted per resource (magnitude > 0 only). */
+  acceptedDecrease: Record<string, number>;
+  /** Resources whose claimed growth exceeded the allowance. */
+  capped: CappedGrowth[];
+}
+
+/** Advance the server-owned map by one sync (pure; formula in the header). */
+export function advanceServerResources(inputs: AdvanceServerResourcesInputs): AdvanceServerResourcesResult {
+  const prevServer = inputs.prevServer || {};
+  const prevRow = inputs.prevClientRow && typeof inputs.prevClientRow === 'object' ? inputs.prevClientRow : {};
+  const client = inputs.clientView || {};
+  const folded = inputs.folded && typeof inputs.folded === 'object' ? inputs.folded : {};
+  const craft = inputs.craftAccepted && typeof inputs.craftAccepted === 'object' ? inputs.craftAccepted : {};
+  const prod = inputs.prodPerMonth || {};
+  const months = Number.isFinite(inputs.elapsedMonths) && inputs.elapsedMonths > 0 ? inputs.elapsedMonths : 0;
+
+  const ids = new Set<string>([
+    ...Object.keys(prevServer), ...Object.keys(client), ...Object.keys(folded), ...Object.keys(craft),
+  ]);
+  const next: Record<string, number> = {};
+  const acceptedGrowth: Record<string, number> = {};
+  const acceptedDecrease: Record<string, number> = {};
+  const capped: CappedGrowth[] = [];
+  for (const id of Array.from(ids)) {
+    const prevS = finiteNonNeg(prevServer[id]);
+    const prevC = finiteNonNeg(prevRow[id]);
+    const c = finiteNonNeg(client[id]);
+    const f = typeof folded[id] === 'number' && Number.isFinite(folded[id]) ? folded[id] : 0;
+    const clientDelta = c - prevC - f;
+    let accepted: number;
+    if (clientDelta > 0) {
+      const growthCap = ceilingFor(prevS, 0, prod[id], months) - prevS;
+      const allowed = growthCap + finiteNonNeg(craft[id]);
+      accepted = Math.min(clientDelta, allowed);
+      if (clientDelta > allowed) capped.push({ resource: id, claimed: clientDelta, allowed });
+      if (accepted > 0) acceptedGrowth[id] = accepted;
+    } else {
+      accepted = clientDelta;
+      if (accepted < 0) acceptedDecrease[id] = -accepted;
+    }
+    let value = prevS + f + accepted;
+    // The server never believes it holds more than the client says it does.
+    value = Math.min(value, c);
+    value = Math.max(0, Math.floor(value));
+    if (value > 0) next[id] = value;
+  }
+  return { next, acceptedGrowth, acceptedDecrease, capped };
+}
+
+export interface ResourceDivergence {
+  resource: string;
+  client: number;
+  server: number;
+  /** |client − server| / max(server, 1). */
+  ratio: number;
+}
+
+/** Resources where the client view differs from server truth by more than
+ *  `tolerance` of the server figure (and by at least one unit). */
+export function computeResourceDivergence(
+  clientView: Record<string, number>,
+  server: Record<string, number>,
+  tolerance: number = SERVER_RESOURCE_DIVERGENCE_TOLERANCE,
+): ResourceDivergence[] {
+  const out: ResourceDivergence[] = [];
+  const ids = new Set<string>([...Object.keys(clientView || {}), ...Object.keys(server || {})]);
+  for (const id of Array.from(ids)) {
+    const c = finiteNonNeg(clientView[id]);
+    const s = finiteNonNeg(server[id]);
+    const diff = Math.abs(c - s);
+    if (diff < 1) continue;
+    const ratio = diff / Math.max(s, 1);
+    if (ratio > tolerance) out.push({ resource: id, client: c, server: s, ratio });
+  }
+  return out.sort((a, b) => b.ratio - a.ratio);
+}
+
+/** The DOWNWARD deltas that walk a drifted client map back to server truth
+ *  (client − server > tolerance). Never positive: the server never hands
+ *  out resources the client does not already claim. */
+export function computeClientCorrections(
+  clientView: Record<string, number>,
+  server: Record<string, number>,
+  tolerance: number = SERVER_RESOURCE_DIVERGENCE_TOLERANCE,
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const d of computeResourceDivergence(clientView, server, tolerance)) {
+    if (d.client > d.server) out[d.resource] = -Math.round(d.client - d.server);
+  }
+  return out;
+}
+
+// ─── Phase 2 attestation caps (craftedThisTick / builtThisTick) ─────────────
+
+/** Craft attestations are windowed like the phase-1 ceiling: a 5 s floor and
+ *  the 30-day elapsed cap (crafting is tick-driven; only one recipe runs at a
+ *  time — activeRefining is a single slot — so the +1 below covers the one
+ *  in-flight completion). */
+export function clampAttestationWindowMs(elapsedMs: number): number {
+  const raw = Number.isFinite(elapsedMs) ? elapsedMs : MIN_ELAPSED_MS;
+  return Math.min(MAX_ELAPSED_MS, Math.max(MIN_ELAPSED_MS, raw));
+}
+
 /**
- * Phase B slice for the escrow-backed sell paths (market-orderbook.ts sell
- * gating, bounties/route.ts filler check). Returns the quantity of `slug`
- * the server is willing to treat as HELD for an outbound transfer.
+ * Per-output-resource cap on `craftedThisTick` for one sync. For every
+ * recipe this profile can run (a completed fabrication facility of the
+ * required tier in the persisted buildings AND all requiredResearch in the
+ * persisted research list):
  *
- * LIMITATION (documented on purpose): `GameProfile.resources` is still the
- * client's figure as of the last sync (raw in 'shadow' mode, clamped in
- * 'enforce'). Until the profile has a `_resourceBaselineAt` marker there is
- * no server-side opinion at all, so the raw figure is returned — identical
- * to the pre-phase-1 behaviour. Once the marker exists the sellable quantity
- * is capped at the last sync's ceiling for that slug, which bounds what a
- * forged inventory can push into real buy orders / bounties even while the
- * sync itself is only shadowing. The ceiling map is capped at 35 keys; a
- * slug outside it falls back to the raw figure. Ceilings are as of the last
- * sync (≈30 s old), so production since then is not sellable until the next
- * sync — a delay the client already lives with for server-side holdings.
- * `mode === 'off'` returns the raw figure unconditionally.
+ *   crafts_max = floor(window_s × speedMult / timeSeconds) + 1
+ *   cap[outputId] = max(cap[outputId], crafts_max × outputQuantity)
+ *
+ * speedMult is `getCraftingSpeedMultiplier` over the persisted buildings —
+ * the engine's own fabrication-throughput term, evaluated for real (not
+ * capped) because the building roster is server-known. A recipe the profile
+ * cannot run contributes nothing, so a "found" product with no path to it
+ * is capped at 0 here (and rides only on the flat floor).
+ */
+export function computeCraftAttestationCaps(inputs: {
+  prevBuildingsData: unknown;
+  prevResearch: string[] | null | undefined;
+  elapsedMs: number;
+}): Record<string, number> {
+  const buildings = asArray<{ definitionId: string; isComplete: boolean }>(inputs.prevBuildingsData)
+    .filter(b => b && typeof b.definitionId === 'string');
+  const research = new Set(Array.isArray(inputs.prevResearch) ? inputs.prevResearch : []);
+  const windowSec = clampAttestationWindowMs(inputs.elapsedMs) / 1000;
+  let speedMult = 1;
+  try { speedMult = getCraftingSpeedMultiplier(buildings); } catch { speedMult = 1; }
+  const caps: Record<string, number> = {};
+  for (const recipe of PRODUCTION_CHAINS) {
+    if (!recipe.timeSeconds || recipe.timeSeconds <= 0 || !recipe.outputQuantity) continue;
+    if (!canFabricate(recipe, buildings, BUILDING_MAP)) continue;
+    if ((recipe.requiredResearch || []).some(r => !research.has(r))) continue;
+    const craftsMax = Math.floor((windowSec * speedMult) / recipe.timeSeconds) + 1;
+    const cap = craftsMax * recipe.outputQuantity;
+    if (cap > (caps[recipe.outputId] || 0)) caps[recipe.outputId] = cap;
+  }
+  return caps;
+}
+
+export interface AttestationRejection { resource: string; claimed: number; cap: number }
+
+/** Apply craft caps to a client attestation map (non-finite / negative → 0,
+ *  unknown outputs → 0). Returns the accepted map and the rejected excess. */
+export function capCraftAttestation(
+  crafted: unknown,
+  caps: Record<string, number>,
+): { accepted: Record<string, number>; rejected: AttestationRejection[] } {
+  const accepted: Record<string, number> = {};
+  const rejected: AttestationRejection[] = [];
+  if (!crafted || typeof crafted !== 'object') return { accepted, rejected };
+  for (const [slug, raw] of Object.entries(crafted as Record<string, unknown>).slice(0, 50)) {
+    const claimed = Math.floor(finiteNonNeg(raw));
+    if (claimed <= 0) continue;
+    const cap = Math.floor(finiteNonNeg(caps[slug]));
+    const take = Math.min(claimed, cap);
+    if (take > 0) accepted[slug] = take;
+    if (claimed > cap) rejected.push({ resource: slug, claimed, cap });
+  }
+  return { accepted, rejected };
+}
+
+/** How many build/ship/research orders one sync may attest spend for. The
+ *  client caps its own accumulator too; this is the server-side bound. */
+export const BUILD_ATTEST_MAX_ORDERS_PER_SYNC = 25;
+
+/** Largest single-definition resource cost per resource across buildings,
+ *  ships and research — derived from the definitions at load. */
+export const MAX_DEFINITION_RESOURCE_COST: Record<string, number> = (() => {
+  const out: Record<string, number> = {};
+  const take = (cost?: Partial<Record<string, number>> | null) => {
+    for (const [res, qty] of Object.entries(cost || {})) {
+      if (typeof qty === 'number' && Number.isFinite(qty) && qty > (out[res] || 0)) out[res] = qty;
+    }
+  };
+  for (const def of Array.from(BUILDING_MAP.values())) take((def as { resourceCost?: Partial<Record<string, number>> }).resourceCost);
+  for (const def of Array.from(SHIP_MAP.values())) take((def as { resourceCost?: Partial<Record<string, number>> }).resourceCost);
+  for (const def of RESEARCH) take((def as { resourceCost?: Partial<Record<string, number>> }).resourceCost);
+  return out;
+})();
+
+/** Per-resource cap on `builtThisTick` for one sync: the largest definition
+ *  cost × BUILD_ATTEST_MAX_ORDERS_PER_SYNC. A resource no definition costs
+ *  is capped at 0 (nothing to build with it). */
+export function buildSpendCap(slug: string): number {
+  return Math.floor(finiteNonNeg(MAX_DEFINITION_RESOURCE_COST[slug]) * BUILD_ATTEST_MAX_ORDERS_PER_SYNC);
+}
+
+/** Apply build-spend caps to a client attestation map. */
+export function capBuildAttestation(
+  built: unknown,
+): { accepted: Record<string, number>; rejected: AttestationRejection[] } {
+  const accepted: Record<string, number> = {};
+  const rejected: AttestationRejection[] = [];
+  if (!built || typeof built !== 'object') return { accepted, rejected };
+  for (const [slug, raw] of Object.entries(built as Record<string, unknown>).slice(0, 50)) {
+    const claimed = Math.floor(finiteNonNeg(raw));
+    if (claimed <= 0) continue;
+    const cap = buildSpendCap(slug);
+    const take = Math.min(claimed, cap);
+    if (take > 0) accepted[slug] = take;
+    if (claimed > cap) rejected.push({ resource: slug, claimed, cap });
+  }
+  return { accepted, rejected };
+}
+
+export type SellableSource = 'raw' | 'ceiling' | 'server';
+
+/**
+ * The quantity of `slug` the server is willing to treat as HELD for an
+ * outbound transfer (order-book sell escrow, bounty fill, bid delivery,
+ * project contribution).
+ *
+ * Phase 2: once the profile carries `serverResources`, the answer is server
+ * truth — `serverResources[slug] + Σ unfolded ledger rows for slug` (pass the
+ * unfolded map from server-inventory.ts's readUnfoldedResourceDeltas; the
+ * async wrapper `resolveSellableQuantity` does both) — and the client view is
+ * ignored entirely. `raw` is still reported for the audit trail.
+ *
+ * Phase 1 fallback (un-baselined profile, or `serverResources` null): the
+ * raw client figure capped at the last sync's stashed ceiling once the
+ * profile has a `_resourceBaselineAt` marker — identical to the phase-1
+ * behaviour documented in the audit. `mode === 'off'` returns the raw figure
+ * unconditionally (the kill switch restores pre-phase-1 behaviour, and the
+ * server map stops advancing in 'off', so it must not gate).
  */
 export function serverSellableQuantity(
-  profile: { resources: unknown; workforceData?: unknown },
+  profile: { resources: unknown; workforceData?: unknown; serverResources?: unknown },
   slug: string,
   mode: ResourceClampMode = getResourceClampMode(),
-): { held: number; raw: number; cappedByCeiling: boolean; ceiling: number | null } {
+  unfolded?: Record<string, number> | null,
+): { held: number; raw: number; cappedByCeiling: boolean; ceiling: number | null; source: SellableSource } {
   const resources = (profile.resources && typeof profile.resources === 'object')
     ? (profile.resources as Record<string, number>)
     : {};
   const rawVal = resources[slug];
   const raw = typeof rawVal === 'number' && Number.isFinite(rawVal) && rawVal > 0 ? rawVal : 0;
-  if (mode === 'off') return { held: raw, raw, cappedByCeiling: false, ceiling: null };
+  if (mode === 'off') return { held: raw, raw, cappedByCeiling: false, ceiling: null, source: 'raw' };
+  const server = readServerResources(profile.serverResources);
+  if (server) {
+    const held = serverHeldQuantity(server, unfolded, slug);
+    return { held, raw, cappedByCeiling: false, ceiling: null, source: 'server' };
+  }
   const { baselineAt, ceilings } = readResourceStash(profile.workforceData);
-  if (!baselineAt || !ceilings) return { held: raw, raw, cappedByCeiling: false, ceiling: null };
+  if (!baselineAt || !ceilings) return { held: raw, raw, cappedByCeiling: false, ceiling: null, source: 'raw' };
   const ceiling = ceilings[slug];
-  if (typeof ceiling !== 'number') return { held: raw, raw, cappedByCeiling: false, ceiling: null };
+  if (typeof ceiling !== 'number') return { held: raw, raw, cappedByCeiling: false, ceiling: null, source: 'raw' };
   const held = Math.min(raw, Math.max(0, Math.floor(ceiling)));
-  return { held, raw, cappedByCeiling: held < raw, ceiling };
+  return { held, raw, cappedByCeiling: held < raw, ceiling, source: 'ceiling' };
 }

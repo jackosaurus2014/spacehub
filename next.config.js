@@ -24,6 +24,13 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
       },
       {
+        // Launch Library 2 imagery (2026-09-02): mission/rocket/patch images
+        // live on DigitalOcean Spaces, not under *.thespacedevs.com. Without
+        // this, Mission Control thumbnails silently fell back to type logos.
+        protocol: 'https',
+        hostname: '*.nyc3.digitaloceanspaces.com',
+      },
+      {
         protocol: 'https',
         hostname: 'spaceflightnewsapi.net',
       },

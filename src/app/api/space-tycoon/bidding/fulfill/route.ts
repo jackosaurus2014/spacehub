@@ -13,6 +13,7 @@ import {
   type FulfillmentOutcome,
 } from '@/lib/game/contract-bidding';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { loadAuthoritativeInventory, auditServerInventoryGate } from '@/lib/game/server-inventory';
 
 export const dynamic = 'force-dynamic';
 
@@ -185,16 +186,32 @@ export async function POST(request: NextRequest) {
 
     // ── Handle Claim ──────────────────────────────────────────────────
 
-    // Check fulfillment
+    // Check fulfillment. Server-authoritative inventory phase 2
+    // (docs/SECURITY_AUDIT_2026-09.md): a resources_delivered contract is
+    // verified against SERVER TRUTH (serverResources + unfolded ledger tail)
+    // when the profile has a server map; the client view otherwise.
+    const inventory = await loadAuthoritativeInventory(profile);
     const fulfillment = checkContractFulfillment(requirements, {
       buildingsData: profile.buildingsData,
-      resources: profile.resources,
+      resources: inventory.resources,
       completedResearchList: profile.completedResearchList,
       shipsData: profile.shipsData,
       unlockedLocationsList: profile.unlockedLocationsList,
     });
 
     if (!fulfillment.isFulfilled) {
+      if (
+        inventory.source === 'server' && requirements.type === 'resources_delivered' && requirements.resourceId
+        && ((profile.resources as Record<string, number> | null)?.[requirements.resourceId] || 0) >= requirements.target
+      ) {
+        await auditServerInventoryGate(prisma, {
+          profileId: profile.id, resourceSlug: requirements.resourceId, path: 'bid_delivery',
+          quantity: requirements.target,
+          raw: (profile.resources as Record<string, number>)[requirements.resourceId] || 0,
+          held: inventory.resources[requirements.resourceId] || 0,
+          refId: contract.id,
+        });
+      }
       // Not yet fulfilled -- return progress report
       const deadline = contract.deliveryDeadline;
       const timeRemaining = deadline

@@ -43,6 +43,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Mission Control', href: '/mission-control', description: 'Live countdowns, streams and every upcoming mission', icon: '🚀', nav: true, hot: true },
       { name: 'Rockets', href: '/rockets', description: 'Every rocket: cost, payload, record, next launch', icon: '🛸', nav: true, hot: true },
       { name: 'Launches by Site', href: '/launches', description: 'Cape, Vandenberg, Starbase… month by month', icon: '📍', nav: true },
+      { name: 'Launch Imagery', href: '/gallery', description: 'Mission photos and infographics, by provider, rocket and year', icon: '📷' },
       { name: 'Launch Cadence Index', href: '/launch-cadence', description: 'Live YoY launch pace by provider and country — citable', icon: '📊', nav: true },
       { name: 'Slip Explorer', href: '/launch-slips', description: 'Announced vs actual launch dates — a ledger nobody can backfill', icon: '⏳' },
       { name: 'Starship Tracker', href: '/starship', description: 'Flight history, program roles and news', icon: '🔥', nav: true, hot: true },

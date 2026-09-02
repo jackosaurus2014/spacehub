@@ -177,6 +177,13 @@ model GameProfile {
 
   resources    Json     @default("{}")
   achievements String[] @default([])
+  // Server-authoritative inventory, phase 2 (docs/SECURITY_AUDIT_2026-09.md
+  // "Phase 2"): the SERVER-OWNED per-resource stock. `resources` above stays
+  // the client's reconciled view; this map is what the escrow-backed paths
+  // (order-book sells, bounty fills, bid deliveries, project contributions)
+  // verify against. null = not yet baselined (adopted from `resources` on the
+  // first sync after the phase-1 `_resourceBaselineAt` marker exists).
+  serverResources Json?
 
   lastSyncAt DateTime @default(now())
   createdAt  DateTime @default(now())
@@ -321,9 +328,15 @@ model GameLedgerEntry {
   // Set once the client has acked at/past this seq (cleanup marker only -
   // reconciliation itself keys off the seq cursor, not this field).
   appliedAt DateTime?
+  // Server-authoritative inventory phase 2: set once this row's resourceDelta
+  // has been folded into GameProfile.serverResources by the sync (or was
+  // authored by the sync itself and never needs folding). Rows with NULL are
+  // the "unfolded" tail every escrow gate adds on top of the stored map.
+  foldedAt  DateTime?
 
   @@index([profileId, seq])
   @@index([profileId, appliedAt])
+  @@index([profileId, foldedAt])
 }
 
 // Server-authoritative inventory, phase 1 (docs/SECURITY_AUDIT_2026-09.md

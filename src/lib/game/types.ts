@@ -1047,6 +1047,17 @@ export interface GameState {
     shock?: Record<string, number>;
   };
 
+  /** Server-authoritative inventory phase 2 (docs/SECURITY_AUDIT_2026-09.md,
+   *  inventory-attestations.ts): crafting outputs credited and building /
+   *  ship / research resource spend since the last successful sync — sent
+   *  as `craftedThisTick` / `builtThisTick`, capped and ledgered
+   *  server-side. Drained after each successful sync. Optional so older
+   *  saves round-trip unchanged. */
+  pendingInventoryAttestations?: {
+    crafted: Record<string, number>;
+    built: Record<string, number>;
+  };
+
   /** Wave E (C5 §7): cash-reserve requirement status for T5+ corporations.
    *  Below a 3-month expense runway, services run at reduced efficiency.
    *  Computed at month-end; multiplier applied to service revenue. */

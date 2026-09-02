@@ -2346,3 +2346,12 @@ Balance interactions to keep in mind:
 - In `enforce` mode a clamp is reversible (`'pre-clamp'` EconomicSnapshot +
   `restoreEconomicSnapshot`); if a legitimate player is clipped, restore
   first, then widen the ceiling — never the other way round.
+- **Phase 2 (2026-09-02, `GameProfile.serverResources`)**: the escrow-backed
+  paths (order-book sells, bounty fills, bid deliveries, project
+  contributions) now verify a server-owned stock that accepts client growth
+  only up to the same `3 x prodMax x months + floor` allowance (plus capped
+  crafting attestations) — still an anti-forgery bound, not a balance lever;
+  no production, cost or price number changed. A new inflow that is not in
+  `computeResourceFlows` and exceeds the floor is now permanently
+  under-counted server-side (not just clipped once), so model it or attest
+  it before shipping it.

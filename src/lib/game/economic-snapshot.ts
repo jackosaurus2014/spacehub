@@ -261,12 +261,16 @@ export async function restoreEconomicSnapshot(
     [RESOURCE_CEILINGS_KEY]: selectCeilingsToStash(restoredResources, restoredResources),
   };
 
+  // Phase 2: a restore re-adopts the server-owned map from the restored
+  // stock and stamps every ledger row folded (the restored figure is the
+  // new truth; nothing before it may be re-applied on top).
   await db.gameProfile.update({
     where: { id: profile.id },
     data: {
       money: snap.money,
       netWorth: snap.netWorth,
       resources: restoredResources as object,
+      serverResources: restoredResources as object,
       buildingsData: (snap.buildingsData ?? []) as object,
       shipsData: (snap.shipsData ?? []) as object,
       completedResearchList: snap.completedResearchList,
@@ -275,6 +279,12 @@ export async function restoreEconomicSnapshot(
       lastSyncAt: new Date(),
     },
   });
+  try {
+    await db.gameLedgerEntry.updateMany({
+      where: { profileId: profile.id, foldedAt: null },
+      data: { foldedAt: new Date() },
+    });
+  } catch { /* ledger table / column may lag deploy */ }
 
   const result: RestoreResult = {
     profileId: profile.id,

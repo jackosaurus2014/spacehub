@@ -29,6 +29,11 @@ export default async function LaunchesIndexPage() {
         <header className="mb-10 max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Launches by site</h1>
           <p className="text-lg text-white/70 leading-relaxed">Every spaceport&apos;s schedule, month by month — what is coming, what flew, and how it went. Built from the same live manifest that powers Mission Control.</p>
+          <p className="text-sm mt-3">
+            <Link href="/gallery" className="inline-flex items-center min-h-[44px] text-cyan-400 hover:text-cyan-300">
+              <span aria-hidden="true" className="mr-1.5">📷</span>Launch imagery — mission photos by provider, rocket and year &rarr;
+            </Link>
+          </p>
         </header>
         {next.length > 0 && (
           <section className="mb-12" aria-labelledby="next-launches">

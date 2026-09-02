@@ -9,7 +9,7 @@ import { validatePriceBand } from './price-band';
 import { computeNpcMakerQuote } from './market-engine';
 import { recordLedger, isLedgerAvailable } from './server-ledger';
 import { isMarketEventActiveForResource } from './market-events';
-import { serverSellableQuantity } from './resource-plausibility';
+import { resolveSellableQuantity, auditServerInventoryGate } from './server-inventory';
 import { logger } from '@/lib/logger';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -134,17 +134,24 @@ export async function placeLimitOrder(
       return { success: false, error: 'Insufficient funds for this order (including 2% fee escrow)' };
     }
   } else {
-    // Server-authoritative inventory phase 1 / Phase B slice
-    // (docs/SECURITY_AUDIT_2026-09.md): `profile.resources` is still the
-    // client's last-synced figure, so this gate used to verify a
-    // client-authored number. Once the profile has been baselined by the
-    // sync's resource clamp, the sellable quantity is capped at the last
-    // sync's plausibility ceiling for this slug (even while the sync is only
-    // shadowing). Limitations are documented on serverSellableQuantity.
-    const sellable = serverSellableQuantity(profile, resourceSlug);
+    // Server-authoritative inventory (docs/SECURITY_AUDIT_2026-09.md).
+    // Phase 2: once the profile carries `serverResources`, the sellable
+    // quantity is SERVER TRUTH — the stored map plus the unfolded ledger
+    // tail (server-inventory.ts) — and the client view is ignored. Phase-1
+    // fallback for un-baselined profiles: the client figure capped at the
+    // last sync's plausibility ceiling. Limitations are documented on
+    // serverSellableQuantity.
+    const sellable = await resolveSellableQuantity(profile, resourceSlug);
     const held = sellable.held;
     if (held < quantity) {
-      if (sellable.cappedByCeiling && sellable.raw >= quantity) {
+      if (sellable.source === 'server' && sellable.raw >= quantity) {
+        logger.warn('Sell order gated by server-owned inventory', {
+          profileId, resourceSlug, quantity, raw: sellable.raw, serverHeld: held,
+        });
+        await auditServerInventoryGate(prisma, {
+          profileId, resourceSlug, path: 'order_book', quantity, raw: sellable.raw, held,
+        });
+      } else if (sellable.cappedByCeiling && sellable.raw >= quantity) {
         logger.warn('Sell order gated by resource plausibility ceiling', {
           profileId, resourceSlug, quantity, raw: sellable.raw, ceiling: sellable.ceiling,
         });
@@ -198,9 +205,12 @@ export async function placeLimitOrder(
         });
       }
     } else {
+      // Phase 2: the client VIEW is debited here; server truth is debited
+      // by the ledger row below (every gate reads stored + unfolded rows,
+      // and the next sync folds it into serverResources).
       const currentResources = (profile.resources as Record<string, number>) || {};
       const updatedResources = { ...currentResources };
-      updatedResources[resourceSlug] = (updatedResources[resourceSlug] || 0) - quantity;
+      updatedResources[resourceSlug] = Math.max(0, (updatedResources[resourceSlug] || 0) - quantity);
       await tx.gameProfile.update({
         where: { id: profileId },
         data: { resources: updatedResources },

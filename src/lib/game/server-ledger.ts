@@ -128,7 +128,17 @@ export type LedgerReason =
   // 2026-09-01 hardening (docs/SECURITY_AUDIT_2026-08.md, colonies POST): the
   // one-time colony claim fee. BURNED — no matching credit anywhere
   // (BALANCE.md money sink); scaled per location in colonies.ts claimCost.
-  | 'colony_claim_burn';
+  | 'colony_claim_burn'
+  // Server-authoritative inventory phase 2 (docs/SECURITY_AUDIT_2026-09.md
+  // "Phase 2"). Written by the sync route only — see ledger-reconcile.ts
+  // SYNC_AUTHORED_LEDGER_REASONS for why the One-Wallet flow treats them
+  // specially. client_craft_output (+) / client_build_spend (-) are the
+  // client's capped attestations of its own crafting outputs and building /
+  // ship / research resource spend; server_resource_correction (-) is the
+  // downward delta that walks a drifted client map back to server truth.
+  | 'client_craft_output'
+  | 'client_build_spend'
+  | 'server_resource_correction';
 
 export interface LedgerWrite {
   profileId: string;
@@ -202,6 +212,38 @@ export async function recordLedger(tx: LedgerTxClient, entry: LedgerWrite): Prom
       refId: entry.refId ?? null,
     },
   });
+}
+
+/**
+ * Server-authoritative inventory phase 2: write a SYNC-AUTHORED row. It is
+ * stamped `foldedAt` at birth (the sync applied the movement to
+ * serverResources itself — folding it again would double-count) and, for
+ * client attestations, `appliedAt` too (the client's own map already holds
+ * the movement; it must never come back as a pending delta). Returns the
+ * row's seq so a correction can be appended to the sync response.
+ */
+export async function recordSyncAuthoredLedger(
+  tx: LedgerTxClient,
+  entry: LedgerWrite & { reason: 'client_craft_output' | 'client_build_spend' | 'server_resource_correction' },
+): Promise<{ seq: number } | null> {
+  if (entry.profileId === NPC_PROFILE_ID) return null;
+  if (isNoopWrite(entry)) return null;
+  const now = new Date();
+  const clientAttested = entry.reason !== 'server_resource_correction';
+  const row = await tx.gameLedgerEntry.create({
+    data: {
+      profileId: entry.profileId,
+      moneyDelta: Math.round(entry.moneyDelta ?? 0),
+      resourceSlug: entry.resourceSlug ?? null,
+      resourceDelta: entry.resourceDelta ?? 0,
+      reason: entry.reason,
+      refId: entry.refId ?? null,
+      foldedAt: now,
+      appliedAt: clientAttested ? now : null,
+    },
+    select: { seq: true },
+  });
+  return { seq: row.seq };
 }
 
 /**

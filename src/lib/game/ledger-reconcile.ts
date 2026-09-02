@@ -42,6 +42,28 @@ export interface LedgerReconciliation {
   entries?: LedgerEntryLite[];
 }
 
+// ─── Server-authoritative inventory, phase 2 — sync-authored ledger rows ─────
+// docs/SECURITY_AUDIT_2026-09.md "Phase 2". The sync route itself writes
+// three kinds of GameLedgerEntry that the ordinary One-Wallet flow must
+// treat specially:
+//
+//   client_craft_output / client_build_spend — ATTESTATIONS the client sent
+//     (craftedThisTick / builtThisTick, capped server-side). The client's own
+//     map already contains these movements, so they are NEVER returned as
+//     pending deltas (a client applying them would double-count its own
+//     crafting) and never folded into serverResources (the sync applied them
+//     when it wrote the row). Audit trail only.
+//   server_resource_correction — a DOWNWARD delta the server sends so a client
+//     whose map drifted above server truth converges. It IS returned to the
+//     client (normal pending row) but is never folded (it came out of the
+//     server map, it does not go back in).
+export const CLIENT_ATTESTED_LEDGER_REASONS = ['client_craft_output', 'client_build_spend'] as const;
+export const SERVER_RESOURCE_CORRECTION_REASON = 'server_resource_correction' as const;
+export const SYNC_AUTHORED_LEDGER_REASONS = [
+  ...CLIENT_ATTESTED_LEDGER_REASONS,
+  SERVER_RESOURCE_CORRECTION_REASON,
+] as const;
+
 // ─── Pure math ───────────────────────────────────────────────────────────────
 
 /** Sum a batch of ledger entries into net money + per-resource deltas. */

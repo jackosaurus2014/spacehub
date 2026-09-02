@@ -264,16 +264,16 @@ describe('serverSellableQuantity (Phase B slice)', () => {
 
   it('returns the raw figure when the profile was never baselined (pre-phase-1 behaviour)', () => {
     const r = serverSellableQuantity({ resources: { iron: 1_000_000 }, workforceData: null }, 'iron', 'shadow');
-    expect(r).toEqual({ held: 1_000_000, raw: 1_000_000, cappedByCeiling: false, ceiling: null });
+    expect(r).toEqual({ held: 1_000_000, raw: 1_000_000, cappedByCeiling: false, ceiling: null, source: 'raw' });
   });
 
   it('caps at the last ceiling once baselined — in shadow AND enforce mode', () => {
-    expect(serverSellableQuantity(baselined, 'iron', 'shadow')).toEqual({ held: 10_250, raw: 1_000_000, cappedByCeiling: true, ceiling: 10_250 });
+    expect(serverSellableQuantity(baselined, 'iron', 'shadow')).toEqual({ held: 10_250, raw: 1_000_000, cappedByCeiling: true, ceiling: 10_250, source: 'ceiling' });
     expect(serverSellableQuantity(baselined, 'iron', 'enforce').held).toBe(10_250);
   });
 
   it('falls back to raw for a slug outside the stashed ceiling map', () => {
-    expect(serverSellableQuantity(baselined, 'helium3', 'shadow')).toEqual({ held: 40, raw: 40, cappedByCeiling: false, ceiling: null });
+    expect(serverSellableQuantity(baselined, 'helium3', 'shadow')).toEqual({ held: 40, raw: 40, cappedByCeiling: false, ceiling: null, source: 'raw' });
   });
 
   it('mode off bypasses the cap entirely', () => {
@@ -282,6 +282,6 @@ describe('serverSellableQuantity (Phase B slice)', () => {
 
   it('a raw figure already under the ceiling is untouched', () => {
     const r = serverSellableQuantity({ ...baselined, resources: { iron: 500 } }, 'iron', 'enforce');
-    expect(r).toEqual({ held: 500, raw: 500, cappedByCeiling: false, ceiling: 10_250 });
+    expect(r).toEqual({ held: 500, raw: 500, cappedByCeiling: false, ceiling: 10_250, source: 'ceiling' });
   });
 });

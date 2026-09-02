@@ -26,6 +26,7 @@ import { queueLaneUsageFlush } from '@/lib/game/trade-lanes';
 // campaigns / poach offers / tolls / cornering alerts — rides back down
 // through the server-effects hop.
 import { queueTollFlush, type OffenseSnapshot } from '@/lib/game/offense';
+import { queueAttestationFlush } from '@/lib/game/inventory-attestations';
 // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity snapshot type for the
 // server-effects hand-off (share registry / tenders / holdings).
 import type { EquitySnapshot } from '@/lib/game/share-registry';
@@ -124,6 +125,10 @@ export function useGameSync(
       const laneDispatches = { ...(state.pendingLaneUsage || {}) };
       // Wave M5 (O6): freight-toll settlements owed to zone governors.
       const tollPayments = { ...(state.pendingTollPayments || {}) };
+      // Phase 2 (inventory-attestations.ts): craft outputs / build spend
+      // attestations since the last sync.
+      const craftedAttest = { ...(state.pendingInventoryAttestations?.crafted || {}) };
+      const builtAttest = { ...(state.pendingInventoryAttestations?.built || {}) };
       // Wave E3: snapshot the consumption accumulators the same way.
       const demandFlows = { ...(state.consumptionState?.pendingDemandFlows || {}) };
       const procurement: Record<string, number> = {};
@@ -209,6 +214,11 @@ export function useGameSync(
         // Wave M5 (O6): freight tolls debited at dispatch, settled to the
         // zone governor via the One-Wallet ledger (capped server-side).
         tollPaymentsThisTick: tollPayments,
+        // Server-authoritative inventory phase 2: crafting outputs and
+        // build / ship / research resource spend since the last sync, capped
+        // and ledgered server-side (client_craft_output / client_build_spend).
+        craftedThisTick: craftedAttest,
+        builtThisTick: builtAttest,
       };
 
       const res = await fetch('/api/space-tycoon/sync', {
@@ -238,6 +248,10 @@ export function useGameSync(
         // Wave M5 (O6): the toll payments were delivered — queue their flush.
         if (Object.keys(tollPayments).length > 0) {
           queueTollFlush(tollPayments);
+        }
+        // Phase 2: the attestations were delivered — queue their flush.
+        if (Object.keys(craftedAttest).length > 0 || Object.keys(builtAttest).length > 0) {
+          queueAttestationFlush({ crafted: craftedAttest, built: builtAttest });
         }
         // Wave E3: the consumption payload was delivered — queue its flush so
         // the engine subtracts exactly what was sent on the next tick.

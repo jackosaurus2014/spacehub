@@ -7,7 +7,7 @@ import { RESOURCE_MAP } from '@/lib/game/resources';
 import type { ResourceId } from '@/lib/game/resources';
 import { validatePriceBand } from '@/lib/game/price-band';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
-import { serverSellableQuantity } from '@/lib/game/resource-plausibility';
+import { resolveSellableQuantity, auditServerInventoryGate } from '@/lib/game/server-inventory';
 
 /**
  * Resource bounty board.
@@ -234,16 +234,24 @@ export async function POST(request: NextRequest) {
       const escrowed = ledgerOn && (await hasEscrow(bounty.id));
 
       // The filler must actually hold the resources server-side.
-      // Server-authoritative inventory phase 1 / Phase B slice
-      // (docs/SECURITY_AUDIT_2026-09.md): `profile.resources` is the client's
-      // last-synced figure; once the profile is baselined, the deliverable
-      // quantity is capped at the last sync's plausibility ceiling for this
-      // slug. Limitations are documented on serverSellableQuantity.
+      // Server-authoritative inventory (docs/SECURITY_AUDIT_2026-09.md).
+      // Phase 2: with a `serverResources` map the deliverable quantity is
+      // server truth (stored + unfolded ledger tail); phase-1 fallback for
+      // un-baselined profiles caps the client figure at the last sync's
+      // ceiling. Limitations are documented on serverSellableQuantity.
       const fillerResources = (profile.resources as Record<string, number>) || {};
-      const sellable = serverSellableQuantity(profile, bounty.resourceSlug);
+      const sellable = await resolveSellableQuantity(profile, bounty.resourceSlug);
       const held = sellable.held;
       if (escrowed && held < fillQty) {
-        if (sellable.cappedByCeiling && sellable.raw >= fillQty) {
+        if (sellable.source === 'server' && sellable.raw >= fillQty) {
+          logger.warn('Bounty fill gated by server-owned inventory', {
+            profileId: profile.id, resourceSlug: bounty.resourceSlug, fillQty, raw: sellable.raw, serverHeld: held,
+          });
+          await auditServerInventoryGate(prisma, {
+            profileId: profile.id, resourceSlug: bounty.resourceSlug, path: 'bounty_fill',
+            quantity: fillQty, raw: sellable.raw, held, refId: bountyId,
+          });
+        } else if (sellable.cappedByCeiling && sellable.raw >= fillQty) {
           logger.warn('Bounty fill gated by resource plausibility ceiling', {
             profileId: profile.id, resourceSlug: bounty.resourceSlug, fillQty, raw: sellable.raw, ceiling: sellable.ceiling,
           });
@@ -282,9 +290,10 @@ export async function POST(request: NextRequest) {
         }
 
         if (escrowed) {
-          // Debit resources from the filler
+          // Debit the filler's client VIEW (server truth is debited by the
+          // ledger row below — phase 2 folds it into serverResources).
           const nextFillerResources = { ...fillerResources };
-          nextFillerResources[bounty.resourceSlug] = Math.max(0, held - fillQty);
+          nextFillerResources[bounty.resourceSlug] = Math.max(0, (fillerResources[bounty.resourceSlug] || 0) - fillQty);
           await tx.gameProfile.update({
             where: { id: profile.id },
             data: {

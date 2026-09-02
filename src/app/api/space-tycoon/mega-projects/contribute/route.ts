@@ -19,6 +19,7 @@ import {
 } from '@/lib/game/mega-projects';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { computeSpotPrice } from '@/lib/game/spot-price';
+import { loadAuthoritativeInventory, auditServerInventoryGate } from '@/lib/game/server-inventory';
 
 /**
  * POST /api/space-tycoon/mega-projects/contribute
@@ -153,12 +154,23 @@ export async function POST(request: Request) {
       }
     }
 
-    // Validate player has sufficient resources
+    // Validate player has sufficient resources. Server-authoritative
+    // inventory phase 2 (docs/SECURITY_AUDIT_2026-09.md): verified against
+    // SERVER TRUTH when the profile has a serverResources map; the client
+    // view (`playerResources`) is what gets debited below — server truth is
+    // debited by the ledger rows.
     const playerResources = (profile.resources || {}) as Record<string, number>;
+    const inventory = await loadAuthoritativeInventory(profile);
     for (const [id, qty] of Object.entries(resourceContributions)) {
       if (!qty) continue;
-      const available = playerResources[id] || 0;
+      const available = inventory.resources[id] || 0;
       if (available < qty) {
+        if (inventory.source === 'server' && (playerResources[id] || 0) >= qty) {
+          await auditServerInventoryGate(prisma, {
+            profileId: profile.id, resourceSlug: id, path: 'mega_project_contribute',
+            quantity: qty, raw: playerResources[id] || 0, held: available, refId: project.id,
+          });
+        }
         const resourceDef = RESOURCE_MAP.get(id as ResourceId);
         return NextResponse.json(
           { error: `Insufficient ${resourceDef?.name || id}: have ${available}, need ${qty}` },

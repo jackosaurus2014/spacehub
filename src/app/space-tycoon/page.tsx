@@ -106,6 +106,7 @@ import { getHireCostWithWageIndex } from '@/lib/game/labor-market';
 // Balance Pass 4: saturated orbital-slot pools now BLOCK new builds without
 // a lease (E7 requiresLeaseAuction, finally enforced).
 import { checkOrbitalSlotGate } from '@/lib/game/spatial-strategy';
+import { accumulateBuiltSpend } from '@/lib/game/inventory-attestations';
 import type { WorkforceState } from '@/lib/game/workforce';
 import GameTutorial from '@/components/game/GameTutorial';
 import TutorialOverlay, { getTutorialTargetTab } from '@/components/game/TutorialOverlay';
@@ -1146,6 +1147,10 @@ export default function SpaceTycoonPage() {
         money: prev.money - cost,
         totalSpent: prev.totalSpent + cost,
         resources: newResources,
+        // Phase 2 (inventory-attestations.ts): attest the resource spend.
+        pendingInventoryAttestations: def.resourceCost
+          ? accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>)
+          : prev.pendingInventoryAttestations,
         buildings: [...prev.buildings, {
           instanceId: generateId(),
           definitionId: buildingId,
@@ -1201,6 +1206,10 @@ export default function SpaceTycoonPage() {
           newResources[resId] = (newResources[resId] || 0) - qty;
         }
       }
+      // Phase 2 (inventory-attestations.ts): attest the resource spend.
+      const researchAttestations = def.resourceCost
+        ? accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>)
+        : prev.pendingInventoryAttestations;
 
       // W3: doctrine-locked techs and repeatable next-levels both use
       // disp's effective cost/duration (2x+6mo override, or the escalated
@@ -1223,6 +1232,7 @@ export default function SpaceTycoonPage() {
         money: prev.money - disp.effectiveMoneyCost,
         totalSpent: prev.totalSpent + disp.effectiveMoneyCost,
         resources: newResources,
+        pendingInventoryAttestations: researchAttestations,
         activeResearch: queue1Free ? researchEntry : prev.activeResearch,
         activeResearch2: queue1Free ? prev.activeResearch2 : researchEntry,
         eventLog: [{
@@ -2411,6 +2421,8 @@ export default function SpaceTycoonPage() {
               for (const [resId, qty] of Object.entries(def.resourceCost)) {
                 newResources[resId] = (newResources[resId] || 0) - qty;
               }
+              // Phase 2 (inventory-attestations.ts): attest the resource spend.
+              const shipAttestations = accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>);
               const newShip = {
                 instanceId: generateId(),
                 definitionId: shipDefId,
@@ -2427,6 +2439,7 @@ export default function SpaceTycoonPage() {
                 totalSpent: prev.totalSpent + hullCost,
                 resources: newResources,
                 ships: [...(prev.ships || []), newShip],
+                pendingInventoryAttestations: shipAttestations,
                 eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Ship ordered: ${newShip.name}`, description: `${def.name} — ready in ${formatDuration(def.buildTimeSeconds)}.` }, ...prev.eventLog].slice(0, 50),
               };
             });

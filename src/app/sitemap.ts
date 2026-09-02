@@ -54,6 +54,8 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/rockets`, changeFrequency: 'daily' as const, priority: 0.9 },
     ...allRocketSlugs().map((slug) => ({ url: `${BASE_URL}/rockets/${slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
     { url: `${BASE_URL}/launches`, changeFrequency: 'daily' as const, priority: 0.9 },
+    // Launch imagery gallery (2026-09-02); item pages are in segment 3.
+    { url: `${BASE_URL}/gallery`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/predictions`, changeFrequency: 'hourly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/cost-to-launch`, changeFrequency: 'monthly' as const, priority: 0.8 },
     ...COST_TO_LAUNCH.map((c) => ({ url: `${BASE_URL}/guide/cost-to-launch/${c.slug}`, changeFrequency: 'monthly' as const, priority: 0.8 })),
@@ -577,6 +579,21 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
   } catch (error) {
     logger.error('Sitemap segment 3: Failed to fetch launch routes', { error: error instanceof Error ? error.message : String(error) });
   }
+  // Launch imagery item pages (2026-09-02): the latest 200 flown launches
+  // that carry an LL2 image. /gallery itself is in segment 0.
+  let galleryRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const { getGallerySitemapIds } = await import('@/lib/gallery');
+    const galleryIds = await getGallerySitemapIds(200);
+    galleryRoutes = galleryIds.map((g) => ({
+      url: `${BASE_URL}/gallery/${g.id}`,
+      lastModified: g.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    }));
+  } catch (error) {
+    logger.error('Sitemap segment 3: Failed to fetch gallery routes', { error: error instanceof Error ? error.message : String(error) });
+  }
   // AI insights from database
   let insightRoutes: MetadataRoute.Sitemap = [];
   let explainerRoutes: MetadataRoute.Sitemap = [];
@@ -672,5 +689,5 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  return [...blogRoutes, ...launchRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes, ...podcastRoutes];
+  return [...blogRoutes, ...launchRoutes, ...galleryRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes, ...podcastRoutes];
 }
