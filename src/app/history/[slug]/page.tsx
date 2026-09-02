@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -89,7 +89,8 @@ async function fetchEvent(slug: string) {
   }
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const data = await fetchEvent(params.slug);
   if (!data) {
     return {
@@ -110,7 +111,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function HistoryEventPage({ params }: PageProps) {
+export default async function HistoryEventPage(props: PageProps) {
+  const params = await props.params;
   const data = await fetchEvent(params.slug);
   if (!data) notFound();
 

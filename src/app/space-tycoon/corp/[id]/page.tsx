@@ -42,7 +42,8 @@ function formatFoundedDate(date: Date): string {
   return new Date(date).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const corp = await getPublicCorp(params.id);
   if (!corp) return { title: 'Corporation not found | SpaceNexus' };
 
@@ -59,7 +60,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function PublicCorpPage({ params }: { params: { id: string } }) {
+export default async function PublicCorpPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const [corp, chronicle, referrals] = await Promise.all([
     getPublicCorp(params.id),
     getCorpChronicle(params.id),

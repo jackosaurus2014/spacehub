@@ -19,10 +19,8 @@ export const dynamic = 'force-dynamic';
  * POST /api/office-hours/slots/[id]/book
  * Attendees book a slot.
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {
@@ -122,10 +120,8 @@ export async function POST(
  * DELETE /api/office-hours/slots/[id]/book
  * Cancel a booking. Attendee who booked, or the mentor.
  */
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {

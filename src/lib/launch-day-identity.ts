@@ -68,7 +68,7 @@ function readCookieHeader(request: Request | undefined, name: string): string | 
   return undefined;
 }
 
-function readVisitorId(request?: Request): string | undefined {
+async function readVisitorId(request?: Request): Promise<string | undefined> {
   // Prefer the raw request (works for both Request and NextRequest handlers),
   // fall back to next/headers for callers that don't have the request in hand.
   const fromRequest =
@@ -76,7 +76,8 @@ function readVisitorId(request?: Request): string | undefined {
       ?.cookies?.get?.(VISITOR_COOKIE)?.value ?? readCookieHeader(request, VISITOR_COOKIE);
   if (fromRequest) return fromRequest;
   try {
-    return cookies().get(VISITOR_COOKIE)?.value;
+    // Next 15: cookies() is async.
+    return (await cookies()).get(VISITOR_COOKIE)?.value;
   } catch {
     return undefined;
   }
@@ -97,7 +98,7 @@ export async function resolveLaunchDayActor(request?: Request): Promise<LaunchDa
     };
   }
 
-  const visitorId = readVisitorId(request);
+  const visitorId = await readVisitorId(request);
   if (!isVisitorId(visitorId)) return null;
 
   const uuid = visitorId.toLowerCase();

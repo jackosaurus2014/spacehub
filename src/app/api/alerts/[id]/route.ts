@@ -19,10 +19,8 @@ export const dynamic = 'force-dynamic';
 const PAID_ONLY_CHANNELS = ['webhook'];
 
 // GET /api/alerts/[id] - Get rule details with recent deliveries
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -62,10 +60,8 @@ export async function GET(
 }
 
 // PUT /api/alerts/[id] - Update rule
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -161,10 +157,8 @@ export async function PUT(
 }
 
 // DELETE /api/alerts/[id] - Delete rule and all deliveries
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

@@ -15,10 +15,8 @@ export const dynamic = 'force-dynamic';
 // GameProfile.id is touched here — no public-safe field is even selected,
 // so nothing about the corporation is disclosed beyond "this id resolves",
 // which the page itself already tells any visitor.
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const profile = await prisma.gameProfile.findUnique({
       where: { id: params.id },

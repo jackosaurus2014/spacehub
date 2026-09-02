@@ -16,14 +16,15 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
  * GET /api/dashboard/layouts/[id]
  * Get a single dashboard layout with all widgets
  */
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export async function GET(req: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     const { id } = params;
@@ -60,7 +61,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
  * PUT /api/dashboard/layouts/[id]
  * Update a dashboard layout (name, widgets, settings)
  */
-export async function PUT(req: NextRequest, { params }: RouteParams) {
+export async function PUT(req: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -163,7 +165,8 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
  * DELETE /api/dashboard/layouts/[id]
  * Delete a dashboard layout
  */
-export async function DELETE(req: NextRequest, { params }: RouteParams) {
+export async function DELETE(req: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 

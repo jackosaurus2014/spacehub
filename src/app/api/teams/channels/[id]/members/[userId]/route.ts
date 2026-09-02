@@ -16,8 +16,9 @@ export const dynamic = 'force-dynamic';
 /** DELETE /api/teams/channels/[id]/members/[userId] — owner/admin only */
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string; userId: string } }
+  props: { params: Promise<{ id: string; userId: string }> }
 ) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

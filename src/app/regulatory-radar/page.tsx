@@ -48,11 +48,12 @@ function serialize(entry: RadarEntry): RadarTimelineEntry {
  * Category filtering is link-based (?category=...) so it works without
  * JavaScript and every filtered view is crawlable.
  */
-export default async function RegulatoryRadarPage({
-  searchParams,
-}: {
-  searchParams: { category?: string };
-}) {
+export default async function RegulatoryRadarPage(
+  props: {
+    searchParams: Promise<{ category?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const categoryParam = (RADAR_CATEGORIES as readonly string[]).includes(searchParams.category || '')
     ? (searchParams.category as RadarCategory)
     : undefined;

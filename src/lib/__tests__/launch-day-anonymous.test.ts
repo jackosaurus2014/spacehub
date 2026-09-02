@@ -39,7 +39,8 @@ jest.mock('@/lib/logger', () => ({
 
 const mockCookieGet = jest.fn();
 jest.mock('next/headers', () => ({
-  cookies: () => ({ get: mockCookieGet }),
+  // Next 15: cookies() returns a Promise.
+  cookies: () => Promise.resolve({ get: mockCookieGet }),
 }));
 
 import { getServerSession } from 'next-auth';
@@ -63,7 +64,7 @@ const mockPrisma = prisma as unknown as {
 };
 
 const EVENT_ID = 'evt-1';
-const ctx = { params: { eventId: EVENT_ID } };
+const ctx = { params: Promise.resolve({ eventId: EVENT_ID }) };
 
 function post(path: string, body: unknown) {
   return new NextRequest(`http://localhost:3000/api/launch-day/${EVENT_ID}/${path}`, {

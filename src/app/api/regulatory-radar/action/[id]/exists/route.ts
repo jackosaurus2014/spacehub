@@ -13,10 +13,8 @@ export const dynamic = 'force-dynamic';
 // The id-shape guard mirrors getRadarEntryById() in
 // src/lib/regulatory-radar.ts, which returns null (→ the page's notFound())
 // for anything that isn't a plausible cuid before it ever queries.
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const { id } = params;
     if (!id || id.length > 64 || !/^[a-z0-9]+$/i.test(id)) {

@@ -33,10 +33,8 @@ const chatLimiter = new BoundedRateLimiter({
 // Anonymous actors may not post links (cheapest spam vector); signed-in users may.
 const LINK_RE = /https?:\/\//i;
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const { eventId } = params;
 
@@ -90,10 +88,8 @@ export async function GET(
   }
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { eventId: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const { eventId } = params;
 

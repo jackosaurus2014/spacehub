@@ -5,10 +5,8 @@ import { internalError, notFoundError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { slug: string } },
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const { slug } = params;
     if (!slug) return notFoundError('History event');

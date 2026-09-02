@@ -401,7 +401,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     });
 
     const res = await campaignPUT(putRequest({ status: 'pending_review' }), {
-      params: { id: 'camp-1' },
+      params: Promise.resolve({ id: 'camp-1' }),
     });
     expect(res.status).toBe(400);
     const json = await res.json();
@@ -412,7 +412,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     setupUsers({ isAdmin: false });
     (mockPrisma.adCampaign.findUnique as jest.Mock).mockResolvedValue(pendingCampaign);
 
-    const res = await campaignPUT(putRequest({ status: 'active' }), { params: { id: 'camp-1' } });
+    const res = await campaignPUT(putRequest({ status: 'active' }), { params: Promise.resolve({ id: 'camp-1' }) });
     expect(res.status).toBe(403);
   });
 
@@ -425,7 +425,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     });
     (mockPrisma.adCampaign.update as jest.Mock).mockResolvedValue({ id: 'camp-1' });
 
-    const res = await campaignPUT(putRequest({ status: 'active' }), { params: { id: 'camp-1' } });
+    const res = await campaignPUT(putRequest({ status: 'active' }), { params: Promise.resolve({ id: 'camp-1' }) });
     expect(res.status).toBe(200);
   });
 
@@ -443,7 +443,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     mockRefundsCreate.mockResolvedValue({ id: 're_1' });
 
     const res = await campaignPUT(putRequest({ status: 'rejected' }), {
-      params: { id: 'camp-1' },
+      params: Promise.resolve({ id: 'camp-1' }),
     });
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -467,7 +467,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     mockPaymentIntentsSearch.mockRejectedValue(new Error('stripe down'));
 
     const res = await campaignPUT(putRequest({ status: 'rejected' }), {
-      params: { id: 'camp-1' },
+      params: Promise.resolve({ id: 'camp-1' }),
     });
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -479,7 +479,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     (mockPrisma.adCampaign.findUnique as jest.Mock).mockResolvedValue(pendingCampaign);
 
     const res = await campaignPUT(putRequest({ status: 'rejected' }), {
-      params: { id: 'camp-1' },
+      params: Promise.resolve({ id: 'camp-1' }),
     });
     expect(res.status).toBe(403);
     expect(mockRefundsCreate).not.toHaveBeenCalled();
@@ -496,7 +496,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     (mockPrisma.adCampaign.findUnique as jest.Mock).mockResolvedValue(pendingCampaign);
 
     const res = await campaignPUT(putRequest({ budget: 1000000 }), {
-      params: { id: 'camp-1' },
+      params: Promise.resolve({ id: 'camp-1' }),
     });
 
     expect(res.status).toBe(403);
@@ -511,7 +511,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     });
 
     const res = await campaignPUT(putRequest({ budget: 250000 }), {
-      params: { id: 'camp-1' },
+      params: Promise.resolve({ id: 'camp-1' }),
     });
 
     expect(res.status).toBe(403);
@@ -526,7 +526,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     });
     (mockPrisma.adCampaign.update as jest.Mock).mockResolvedValue({ id: 'camp-1' });
 
-    const res = await campaignPUT(putRequest({ budget: 750 }), { params: { id: 'camp-1' } });
+    const res = await campaignPUT(putRequest({ budget: 750 }), { params: Promise.resolve({ id: 'camp-1' }) });
 
     expect(res.status).toBe(200);
     expect(mockPrisma.adCampaign.update).toHaveBeenCalled();
@@ -540,7 +540,7 @@ describe('PUT /api/ads/campaigns/[id] — billing rules', () => {
     });
     (mockPrisma.adCampaign.update as jest.Mock).mockResolvedValue({ id: 'camp-1' });
 
-    const res = await campaignPUT(putRequest({ budget: 20000 }), { params: { id: 'camp-1' } });
+    const res = await campaignPUT(putRequest({ budget: 20000 }), { params: Promise.resolve({ id: 'camp-1' }) });
 
     expect(res.status).toBe(200);
     expect(mockPrisma.adCampaign.update).toHaveBeenCalled();

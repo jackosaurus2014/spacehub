@@ -139,11 +139,12 @@ async function fetchGigs(params: SearchParams) {
   }
 }
 
-export default async function GigWorkListPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default async function GigWorkListPage(
+  props: {
+    searchParams: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const { gigs, total, page, limit } = await fetchGigs(searchParams);
   const pageCount = Math.max(1, Math.ceil(total / limit));
 

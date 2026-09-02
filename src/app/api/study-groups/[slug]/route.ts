@@ -18,10 +18,8 @@ export const dynamic = 'force-dynamic';
  * GET /api/study-groups/[slug]
  * Group detail with host, member summary, meetings, reading list.
  */
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const { slug } = params;
     const group = await prisma.studyGroup.findUnique({
@@ -116,10 +114,8 @@ export async function GET(
  * PATCH /api/study-groups/[slug]
  * Update group (host only).
  */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -180,10 +176,8 @@ export async function PATCH(
  * DELETE /api/study-groups/[slug]
  * Delete group (host only).
  */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

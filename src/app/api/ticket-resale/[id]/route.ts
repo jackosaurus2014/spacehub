@@ -20,10 +20,8 @@ export const dynamic = 'force-dynamic';
  * GET /api/ticket-resale/[id]
  * Public: fetch a single listing with seller + rsvp info for display.
  */
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const { id } = params;
     if (!id) return validationError('Listing id is required');
@@ -46,10 +44,8 @@ export async function GET(
  * PATCH /api/ticket-resale/[id]
  * Seller-only: update askingPrice, notes, currency, or cancel.
  */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();
@@ -110,10 +106,8 @@ export async function PATCH(
  * DELETE /api/ticket-resale/[id]
  * Seller-only: remove a listing, but only if still in status "listed".
  */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();

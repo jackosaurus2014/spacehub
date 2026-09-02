@@ -11,8 +11,9 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ userId: string }> | { userId: string } }
+  props: { params: Promise<Promise<{ userId: string }> | { userId: string }> }
 ) {
+  const params = await props.params;
   try {
     const resolved = await Promise.resolve(params);
     const { userId } = resolved;

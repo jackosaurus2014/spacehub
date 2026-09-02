@@ -24,10 +24,8 @@ export const dynamic = 'force-dynamic';
  * are visible only to the original submitter or an admin. Contact info is
  * hidden from anonymous users.
  */
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     const opportunity = await prisma.speakingOpportunity.findUnique({
@@ -74,10 +72,8 @@ export async function GET(
  * status / featured. Non-admin edits always reset the row to pending so
  * it goes through moderation again.
  */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -166,10 +162,8 @@ export async function PATCH(
  *
  * Admin can always delete. Submitter can delete only while status=pending.
  */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

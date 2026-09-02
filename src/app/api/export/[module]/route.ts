@@ -34,10 +34,8 @@ function toCSV(data: Record<string, unknown>[]): string {
   return [headers.join(','), ...rows].join('\n');
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { module: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ module: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

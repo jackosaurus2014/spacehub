@@ -193,7 +193,7 @@ describe('GET /api/compliance/questions', () => {
 // ---------------------------------------------------------------------------
 
 describe('PATCH /api/admin/compliance-qa/[id]', () => {
-  const params = { params: { id: 'q1' } };
+  const params = { params: Promise.resolve({ id: 'q1' }) };
   const existingRow = {
     id: 'q1',
     question: VALID_QUESTION,

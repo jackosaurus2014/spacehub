@@ -555,7 +555,7 @@ describe('POST /api/developer/keys', () => {
 // =============================================================================
 
 describe('PUT /api/developer/keys/[id]', () => {
-  const routeParams = { params: { id: 'key-1' } };
+  const routeParams = { params: Promise.resolve({ id: 'key-1' }) };
 
   it('requires authentication', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -571,7 +571,7 @@ describe('PUT /api/developer/keys/[id]', () => {
     (mockPrisma.apiKey.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = makePutRequest('http://localhost/api/developer/keys/key-999', { name: 'Stolen Key' });
-    const res = await keyPUT(req, { params: { id: 'key-999' } });
+    const res = await keyPUT(req, { params: Promise.resolve({ id: 'key-999' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -658,7 +658,7 @@ describe('PUT /api/developer/keys/[id]', () => {
 // =============================================================================
 
 describe('DELETE /api/developer/keys/[id]', () => {
-  const routeParams = { params: { id: 'key-1' } };
+  const routeParams = { params: Promise.resolve({ id: 'key-1' }) };
 
   it('requires authentication', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -720,7 +720,7 @@ describe('DELETE /api/developer/keys/[id]', () => {
     (mockPrisma.apiKey.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = makeDeleteRequest('http://localhost/api/developer/keys/does-not-exist');
-    const res = await keyDELETE(req, { params: { id: 'does-not-exist' } });
+    const res = await keyDELETE(req, { params: Promise.resolve({ id: 'does-not-exist' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -749,7 +749,7 @@ describe('DELETE /api/developer/keys/[id]', () => {
 // =============================================================================
 
 describe('POST /api/developer/keys/[id]/rotate', () => {
-  const routeParams = { params: { id: 'key-1' } };
+  const routeParams = { params: Promise.resolve({ id: 'key-1' }) };
 
   it('requires authentication', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -765,7 +765,7 @@ describe('POST /api/developer/keys/[id]/rotate', () => {
     (mockPrisma.apiKey.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = makePostRequest('http://localhost/api/developer/keys/key-999/rotate');
-    const res = await rotateKeyPOST(req, { params: { id: 'key-999' } });
+    const res = await rotateKeyPOST(req, { params: Promise.resolve({ id: 'key-999' }) });
 
     expect(res.status).toBe(404);
   });

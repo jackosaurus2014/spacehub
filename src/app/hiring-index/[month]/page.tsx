@@ -27,7 +27,7 @@ export const dynamic = 'force-dynamic';
 const BASE_URL = 'https://spacenexus.us';
 
 interface PageProps {
-  params: { month: string };
+  params: Promise<{ month: string }>;
 }
 
 /** Validate the route param; null when malformed or outside the served range. */
@@ -39,7 +39,8 @@ function resolveMonth(param: string): { year: number; month: number; key: string
   return { ...parsed, key };
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const resolved = resolveMonth(params.month);
   if (!resolved) return { title: 'Space Industry Hiring Index' };
   const label = monthLabelOf(resolved.year, resolved.month);
@@ -130,7 +131,8 @@ function MoverRow({ m, positive }: { m: HiringIndexMover; positive: boolean }) {
   );
 }
 
-export default async function HiringIndexMonthPage({ params }: PageProps) {
+export default async function HiringIndexMonthPage(props: PageProps) {
+  const params = await props.params;
   const resolved = resolveMonth(params.month);
   if (!resolved) notFound();
 

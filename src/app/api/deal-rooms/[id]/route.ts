@@ -29,10 +29,8 @@ const DEAL_ROOM_MEMBER_SELECT = {
 } as const;
 
 // GET — get deal room details with members, documents, recent activities
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -105,10 +103,8 @@ export async function GET(
 }
 
 // PUT — update room settings
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -172,10 +168,8 @@ export async function PUT(
 }
 
 // DELETE — archive the room (soft delete)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {

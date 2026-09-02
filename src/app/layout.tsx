@@ -8,48 +8,47 @@ import SubscriptionProvider from '@/components/SubscriptionProvider';
 import DataInitializer from '@/components/DataInitializer';
 import MobileTabBar from '@/components/mobile/MobileTabBar';
 import StructuredData from '@/components/StructuredData';
-import dynamic from 'next/dynamic';
+import {
+  Footer,
+  SearchCommandPalette,
+  CookieConsent,
+  PWAInstallPrompt,
+  InstallPrompt,
+  IOSInstallPrompt,
+  KeyboardShortcutsModal,
+  PageTracker,
+  NpsSurvey,
+  ExitIntentPopup,
+  QuickStartGuide,
+  LiveNowBanner,
+  TrialCountdownBanner,
+  OnboardingTour,
+  PushOptInBanner,
+  WhatsNew,
+  ReferralPrompt,
+  AppRatingPrompt,
+  AndroidInstallBanner,
+  UsageLimitBanner,
+  StreakNotification,
+  HelpButton,
+  FeedbackWidget,
+  FeedbackTab,
+  BackToTop,
+  ScrollProgress,
+  WebVitals,
+  ErrorReporter,
+} from '@/components/layout/ClientOnly';
 import { SITE_STATS } from '@/lib/site-stats';
 import { INLINE_SCRIPTS } from '@/lib/csp';
 // Starfield removed in V2 redesign — true black background needs no decoration
-const Footer = dynamic(() => import('@/components/Footer'), { ssr: false });
-const SearchCommandPalette = dynamic(() => import('@/components/SearchCommandPalette'), { ssr: false });
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
-const CookieConsent = dynamic(() => import('@/components/ui/CookieConsent'), { ssr: false });
-const PWAInstallPrompt = dynamic(() => import('@/components/PWAInstallPrompt'), { ssr: false });
-const InstallPrompt = dynamic(() => import('@/components/InstallPrompt'), { ssr: false });
-const IOSInstallPrompt = dynamic(() => import('@/components/mobile/IOSInstallPrompt'), { ssr: false });
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
-const KeyboardShortcutsModal = dynamic(() => import('@/components/ui/KeyboardShortcutsModal'), { ssr: false });
-const PageTracker = dynamic(() => import('@/components/PageTracker'), { ssr: false });
 import PageTransitionProvider from '@/components/mobile/PageTransitionProvider';
 import OfflineIndicator from '@/components/ui/OfflineIndicator';
 // Changelog modal removed — no longer shown on visit
-const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: false });
-const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentPopup'), { ssr: false });
-const QuickStartGuide = dynamic(() => import('@/components/onboarding/QuickStartGuide'), { ssr: false });
-const LiveNowBanner = dynamic(() => import('@/components/livestreams/LiveNowBanner'), { ssr: false });
-const TrialCountdownBanner = dynamic(() => import('@/components/billing/TrialCountdownBanner'), {
-  ssr: false,
-});
-const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
-const PushOptInBanner = dynamic(() => import('@/components/mobile/PushOptInBanner'), { ssr: false });
-const WhatsNew = dynamic(() => import('@/components/mobile/WhatsNew').then(m => ({ default: m.default })), { ssr: false });
-const ReferralPrompt = dynamic(() => import('@/components/marketing/ReferralPrompt'), { ssr: false });
-const AppRatingPrompt = dynamic(() => import('@/components/mobile/AppRatingPrompt'), { ssr: false });
-const AndroidInstallBanner = dynamic(() => import('@/components/mobile/AndroidInstallBanner'), { ssr: false });
-const UsageLimitBanner = dynamic(() => import('@/components/marketing/UsageLimitBanner'), { ssr: false });
-const StreakNotification = dynamic(() => import('@/components/marketing/StreakNotification'), { ssr: false });
-const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
 // FeedbackButton removed — replaced with /feedback page to avoid blocking left nav
-const FeedbackWidget = dynamic(() => import('@/components/FeedbackWidget'), { ssr: false });
-const FeedbackTab = dynamic(() => import('@/components/FeedbackTab'), { ssr: false });
-const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
-const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
-const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
-const ErrorReporter = dynamic(() => import('@/components/ErrorReporter'), { ssr: false });
 import AutoBreadcrumb from '@/components/ui/AutoBreadcrumb';
 import LiveRail from '@/components/LiveRail';
 

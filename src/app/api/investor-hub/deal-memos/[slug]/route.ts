@@ -14,7 +14,7 @@ import { validateBody, updateDealMemoSchema } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
-type Params = { params: { slug: string } };
+type Params = { params: Promise<{ slug: string }> };
 
 function memoIsVisible(
   memo: { visibility: string; authorUserId: string; publishedAt: Date | null },
@@ -29,7 +29,8 @@ function memoIsVisible(
   return false;
 }
 
-export async function GET(_request: Request, { params }: Params) {
+export async function GET(_request: Request, props: Params) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id ?? null;
@@ -63,7 +64,8 @@ export async function GET(_request: Request, { params }: Params) {
   }
 }
 
-export async function PATCH(request: Request, { params }: Params) {
+export async function PATCH(request: Request, props: Params) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -123,7 +125,8 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 }
 
-export async function DELETE(_request: Request, { params }: Params) {
+export async function DELETE(_request: Request, props: Params) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

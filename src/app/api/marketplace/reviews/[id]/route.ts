@@ -9,7 +9,8 @@ import { authOptions } from '@/lib/auth';
 export const dynamic = 'force-dynamic';
 
 // GET: Single review detail
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const review = await prisma.providerReview.findUnique({
       where: { id: params.id },
@@ -30,7 +31,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT: Provider response to a review
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -80,7 +82,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE: Admin-only review removal (flag as hidden)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

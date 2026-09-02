@@ -23,10 +23,8 @@ export const dynamic = 'force-dynamic';
  * On webhook completion the listing becomes "sold", the RSVP transfers to the
  * buyer, and a ResaleTransaction is recorded with a 10% platform fee.
  */
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

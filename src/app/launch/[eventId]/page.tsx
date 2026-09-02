@@ -11,10 +11,11 @@ import LaunchWeatherOdds from '@/components/launch/LaunchWeatherOdds';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface LaunchPageProps {
-  params: { eventId: string };
+  params: Promise<{ eventId: string }>;
 }
 
-export async function generateMetadata({ params }: LaunchPageProps): Promise<Metadata> {
+export async function generateMetadata(props: LaunchPageProps): Promise<Metadata> {
+  const params = await props.params;
   const { eventId } = params;
 
   const event = await prisma.spaceEvent.findUnique({
@@ -47,7 +48,8 @@ export async function generateMetadata({ params }: LaunchPageProps): Promise<Met
   };
 }
 
-export default async function LaunchPage({ params }: LaunchPageProps) {
+export default async function LaunchPage(props: LaunchPageProps) {
+  const params = await props.params;
   const { eventId } = params;
 
   const event = await prisma.spaceEvent.findUnique({

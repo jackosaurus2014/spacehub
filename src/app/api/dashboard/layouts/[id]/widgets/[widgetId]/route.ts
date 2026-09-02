@@ -16,14 +16,15 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 interface RouteParams {
-  params: { id: string; widgetId: string };
+  params: Promise<{ id: string; widgetId: string }>;
 }
 
 /**
  * PUT /api/dashboard/layouts/[id]/widgets/[widgetId]
  * Update a widget's position, size, type, or config
  */
-export async function PUT(req: NextRequest, { params }: RouteParams) {
+export async function PUT(req: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -105,7 +106,8 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
  * DELETE /api/dashboard/layouts/[id]/widgets/[widgetId]
  * Remove a widget from a layout
  */
-export async function DELETE(req: NextRequest, { params }: RouteParams) {
+export async function DELETE(req: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 

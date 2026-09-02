@@ -16,10 +16,8 @@ export const dynamic = 'force-dynamic';
  * DELETE /api/study-groups/[slug]/leave
  * Leave a study group. Host cannot leave (must delete or transfer).
  */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

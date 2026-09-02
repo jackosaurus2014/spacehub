@@ -20,10 +20,8 @@ export const dynamic = 'force-dynamic';
  * Public — returns the published debrief by slug. Drafts are returned only to
  * authenticated admins.
  */
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const slug = params.slug;
     const debrief = await prisma.missionDebrief.findUnique({
@@ -99,10 +97,8 @@ export async function GET(
  *
  * Admin only. Update fields on an existing debrief.
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) return unauthorizedError();
@@ -164,10 +160,8 @@ export async function PATCH(
  *
  * Admin only. Permanently deletes a debrief.
  */
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function DELETE(_request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) return unauthorizedError();

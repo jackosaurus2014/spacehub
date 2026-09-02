@@ -9,10 +9,8 @@ export const dynamic = 'force-dynamic';
  * GET /api/podcasts/[slug]
  * Returns a single podcast with its 5 most recent episodes.
  */
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { slug: string } },
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const slug = params.slug;
     const podcast = await prisma.podcast.findUnique({

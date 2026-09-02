@@ -29,10 +29,8 @@ const VALID_REASONS = new Set([
  * Flags a chat message for moderator review.
  * Creates a ContentReport with contentType='message'.
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

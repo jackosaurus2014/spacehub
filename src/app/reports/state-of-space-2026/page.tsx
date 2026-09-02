@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Metadata } from 'next';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ReportGateForm from '@/components/marketing/ReportGateForm';
@@ -248,13 +249,13 @@ export default function StateOfSpace2026Page() {
               Published by the SpaceNexus Intelligence Team using data from NASA, NOAA, SEC, CelesTrak, SAM.gov, and 50+ additional sources.
             </p>
             <div className="flex items-center justify-center gap-4 text-xs text-slate-600">
-              <a href="/blog" className="hover:text-white transition-colors">
+              <Link href="/blog" className="hover:text-white transition-colors">
                 Read our blog
-              </a>
+              </Link>
               <span>|</span>
-              <a href="/company-profiles" className="hover:text-white transition-colors">
+              <Link href="/company-profiles" className="hover:text-white transition-colors">
                 Company Profiles
-              </a>
+              </Link>
               <span>|</span>
               <a href="/market-intel" className="hover:text-white transition-colors">
                 Market Intelligence

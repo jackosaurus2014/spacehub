@@ -9,10 +9,11 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-  params: { track: string; moduleSlug: string };
+  params: Promise<{ track: string; moduleSlug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   try {
     const mod = await prisma.courseModule.findUnique({
       where: { slug: params.moduleSlug },
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function ModulePage({ params }: PageProps) {
+export default async function ModulePage(props: PageProps) {
+  const params = await props.params;
   const { track, moduleSlug } = params;
   if (!(LEARNING_TRACKS as readonly string[]).includes(track)) {
     notFound();

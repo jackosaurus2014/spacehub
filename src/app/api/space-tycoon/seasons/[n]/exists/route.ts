@@ -24,10 +24,8 @@ export const dynamic = 'force-dynamic';
 // column that getSealedSeasonChronicle() selects and parses.
 const SEALED_FILTER = { not: Prisma.DbNull } as const;
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { n: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ n: string }> }) {
+  const params = await props.params;
   try {
     const { n } = params;
     // Reject anything that isn't a plain positive integer before querying:

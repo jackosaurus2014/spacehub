@@ -9,10 +9,8 @@ import { validationError } from '@/lib/errors';
 export const dynamic = 'force-dynamic';
 
 // POST — invite a member by email
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -76,10 +74,8 @@ export async function POST(
 }
 
 // DELETE — remove a member
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {

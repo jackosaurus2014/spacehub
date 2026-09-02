@@ -24,11 +24,12 @@ import { REPORT_CARDS, REPORT_CARDS_QUARTER_ASSESSED, computeSummaryStats } from
 
 export const dynamic = 'force-dynamic';
 
-export default function ReportCardsPage({
-  searchParams,
-}: {
-  searchParams?: { view?: string };
-}) {
+export default async function ReportCardsPage(
+  props: {
+    searchParams?: Promise<{ view?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   // The Space Score leaderboard shares this URL (?view=score). The panel is a
   // client component that still reads searchParams itself for its tab state,
   // so it keeps a Suspense boundary.

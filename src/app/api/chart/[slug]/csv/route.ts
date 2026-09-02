@@ -15,7 +15,8 @@ function csvEscape(v: string): string {
   return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const def = getChartDef(params.slug);
   if (!def) return NextResponse.json({ error: 'Unknown chart' }, { status: 404 });
 

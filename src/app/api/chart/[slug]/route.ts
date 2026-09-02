@@ -9,7 +9,8 @@ import { renderBarChartSvg } from '@/lib/charts/render';
 // 404s /chart/[slug] pages; this is the image endpoint's own check).
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const def = getChartDef(params.slug);
   if (!def) return new NextResponse('Not found', { status: 404 });
 

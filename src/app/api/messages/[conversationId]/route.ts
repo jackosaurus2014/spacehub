@@ -17,10 +17,8 @@ export const dynamic = 'force-dynamic';
  * GET /api/messages/[conversationId]
  * Get messages in a conversation (paginated), auto-marks as read
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { conversationId: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ conversationId: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -107,10 +105,8 @@ export async function GET(
  * POST /api/messages/[conversationId]
  * Mark conversation as read (update lastReadAt)
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { conversationId: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ conversationId: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

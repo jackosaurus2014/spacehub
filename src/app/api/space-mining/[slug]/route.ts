@@ -4,10 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getMiningBodyBySlug } from '@/lib/space-mining-data';
 import { logger } from '@/lib/logger';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const { slug } = params;
     const body = await getMiningBodyBySlug(slug);

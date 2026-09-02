@@ -8,10 +8,8 @@ export const dynamic = 'force-dynamic';
 // unknown mission debrief ids get a real HTTP 404 instead of a soft 200.
 // See SLUG_EXISTENCE_CHECKS in middleware.ts for the mechanism.
 // Unpublished drafts 404 publicly, same as the detail API.
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const row = await prisma.missionDebrief.findFirst({
       where: { slug: params.slug, NOT: { publishedAt: null } },

@@ -8,10 +8,8 @@ import { getCurrentPhase, STANDARD_PHASES, formatMissionTime } from '@/lib/launc
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const { eventId } = params;
 
@@ -66,10 +64,8 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { eventId: string } }
-) {
+export async function PUT(req: NextRequest, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const { eventId } = params;
 

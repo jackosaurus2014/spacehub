@@ -12,10 +12,8 @@ export const dynamic = 'force-dynamic';
  * plus the company profile summary. `companyId` can be a CompanyProfile
  * ID or slug — we try both.
  */
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { companyId: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ companyId: string }> }) {
+  const params = await props.params;
   try {
     const { companyId } = params;
 

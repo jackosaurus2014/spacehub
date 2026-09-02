@@ -29,7 +29,7 @@ export const dynamic = 'force-dynamic';
 const BASE_URL = 'https://spacenexus.us';
 
 interface PageProps {
-  params: { slug: string; episodeSlug: string };
+  params: Promise<{ slug: string; episodeSlug: string }>;
 }
 
 async function getEpisode(slug: string, episodeSlug: string) {
@@ -90,7 +90,8 @@ async function getNeighbours(podcastId: string, publishedAt: Date | null) {
   return { prev, next };
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const data = await getEpisode(params.slug, params.episodeSlug);
   if (!data) return { title: 'Episode Not Found | SpaceNexus' };
   const { show, episode } = data;
@@ -121,7 +122,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function PodcastEpisodePage({ params }: PageProps) {
+export default async function PodcastEpisodePage(props: PageProps) {
+  const params = await props.params;
   const data = await getEpisode(params.slug, params.episodeSlug);
   if (!data) notFound();
   const { show, episode } = data;

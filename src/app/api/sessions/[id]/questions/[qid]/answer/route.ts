@@ -21,8 +21,9 @@ export const dynamic = 'force-dynamic';
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; qid: string } }
+  props: { params: Promise<{ id: string; qid: string }> }
 ) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {

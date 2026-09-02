@@ -7,10 +7,8 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 // POST — accept NDA for a deal room
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {

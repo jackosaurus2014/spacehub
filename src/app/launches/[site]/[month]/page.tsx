@@ -17,7 +17,8 @@ export function generateStaticParams() {
   return LAUNCH_SITES.flatMap((s) => months.map((m) => ({ site: s.slug, month: monthParam(m.year, m.month) })));
 }
 
-export async function generateMetadata({ params }: { params: { site: string; month: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ site: string; month: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const site = getSite(params.site);
   const m = parseMonthParam(params.month);
   if (!site || !m) return {};
@@ -27,7 +28,8 @@ export async function generateMetadata({ params }: { params: { site: string; mon
   return { title, description, alternates: { canonical: `https://spacenexus.us/launches/${site.slug}/${params.month}` }, openGraph: { title, description, type: 'website' } };
 }
 
-export default async function SiteMonthPage({ params }: { params: { site: string; month: string } }) {
+export default async function SiteMonthPage(props: { params: Promise<{ site: string; month: string }> }) {
+  const params = await props.params;
   const m = parseMonthParam(params.month);
   if (!m) notFound();
   const now = new Date();

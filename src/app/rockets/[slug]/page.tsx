@@ -21,7 +21,8 @@ export function generateStaticParams() {
   return allRocketSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const spec = getRocketSpec(params.slug);
   if (!spec) return {};
   const price = spec.costMillions ? `~$${spec.costMillions}M per launch` : 'launch price';
@@ -46,7 +47,8 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
   );
 }
 
-export default async function RocketPage({ params }: { params: { slug: string } }) {
+export default async function RocketPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const spec = getRocketSpec(params.slug);
   const entry = getRocketEntry(params.slug);
   if (!spec || !entry) notFound();

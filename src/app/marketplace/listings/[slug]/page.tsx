@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -17,7 +17,8 @@ import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { getCategoryIcon, getCategoryLabel, getSubcategoryLabel } from '@/lib/marketplace-types';
 import ServiceSchema from '@/components/seo/ServiceSchema';
 
-export default function ListingDetailPage({ params }: { params: { slug: string } }) {
+export default function ListingDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = use(props.params);
   const { slug } = params;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);

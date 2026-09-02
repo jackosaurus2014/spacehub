@@ -39,10 +39,8 @@ function readSearchMeta(filters: unknown): {
   return { type, notifyVia, lastResultIds };
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

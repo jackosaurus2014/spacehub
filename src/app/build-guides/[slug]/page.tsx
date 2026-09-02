@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 interface Material {
@@ -33,7 +33,8 @@ const TRACK_LABELS: Record<string, string> = {
   'amateur-radio': 'Amateur Radio',
 };
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   try {
     const guide = await prisma.buildGuide.findUnique({
       where: { slug: params.slug },
@@ -50,7 +51,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function BuildGuidePage({ params }: PageProps) {
+export default async function BuildGuidePage(props: PageProps) {
+  const params = await props.params;
   let guide: {
     id: string;
     slug: string;

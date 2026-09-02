@@ -326,7 +326,7 @@ describe('GET /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoomMember.update as jest.Mock).mockResolvedValue({});
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
-    const res = await detailGET(req, { params: { id: 'room-1' } });
+    const res = await detailGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -340,7 +340,7 @@ describe('GET /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(null);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/nonexistent');
-    const res = await detailGET(req, { params: { id: 'nonexistent' } });
+    const res = await detailGET(req, { params: Promise.resolve({ id: 'nonexistent' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -356,7 +356,7 @@ describe('GET /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(room);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
-    const res = await detailGET(req, { params: { id: 'room-1' } });
+    const res = await detailGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -366,7 +366,7 @@ describe('GET /api/deal-rooms/[id]', () => {
   it('returns 401 when not authenticated', async () => {
     mockNoSession();
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
-    const res = await detailGET(req, { params: { id: 'room-1' } });
+    const res = await detailGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -380,7 +380,7 @@ describe('GET /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoomMember.update as jest.Mock).mockResolvedValue({});
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
-    await detailGET(req, { params: { id: 'room-1' } });
+    await detailGET(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(mockPrisma.dealRoomMember.update).toHaveBeenCalledWith({
       where: { id: 'member-1' },
@@ -392,7 +392,7 @@ describe('GET /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
-    const res = await detailGET(req, { params: { id: 'room-1' } });
+    const res = await detailGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -414,7 +414,7 @@ describe('PUT /api/deal-rooms/[id]', () => {
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated Name',
     });
-    const res = await updatePUT(req, { params: { id: 'room-1' } });
+    const res = await updatePUT(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -433,7 +433,7 @@ describe('PUT /api/deal-rooms/[id]', () => {
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       description: 'New description',
     });
-    const res = await updatePUT(req, { params: { id: 'room-1' } });
+    const res = await updatePUT(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(res.status).toBe(200);
   });
@@ -443,7 +443,7 @@ describe('PUT /api/deal-rooms/[id]', () => {
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated Name',
     });
-    const res = await updatePUT(req, { params: { id: 'room-1' } });
+    const res = await updatePUT(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -456,7 +456,7 @@ describe('PUT /api/deal-rooms/[id]', () => {
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated Name',
     });
-    const res = await updatePUT(req, { params: { id: 'room-1' } });
+    const res = await updatePUT(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -471,7 +471,7 @@ describe('PUT /api/deal-rooms/[id]', () => {
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       status: 'archived',
     });
-    await updatePUT(req, { params: { id: 'room-1' } });
+    await updatePUT(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(mockPrisma.dealRoom.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -487,7 +487,7 @@ describe('PUT /api/deal-rooms/[id]', () => {
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated',
     });
-    const res = await updatePUT(req, { params: { id: 'room-1' } });
+    const res = await updatePUT(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -508,7 +508,7 @@ describe('DELETE /api/deal-rooms/[id]', () => {
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
-    const res = await archiveDELETE(req, { params: { id: 'room-1' } });
+    const res = await archiveDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -521,7 +521,7 @@ describe('DELETE /api/deal-rooms/[id]', () => {
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
-    const res = await archiveDELETE(req, { params: { id: 'room-1' } });
+    const res = await archiveDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -534,7 +534,7 @@ describe('DELETE /api/deal-rooms/[id]', () => {
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
-    const res = await archiveDELETE(req, { params: { id: 'room-1' } });
+    const res = await archiveDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -548,7 +548,7 @@ describe('DELETE /api/deal-rooms/[id]', () => {
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
-    const res = await archiveDELETE(req, { params: { id: 'room-1' } });
+    const res = await archiveDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -568,7 +568,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     (mockPrisma.dealRoomDocument.findMany as jest.Mock).mockResolvedValue(docs);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
-    const res = await docsGET(req, { params: { id: 'room-1' } });
+    const res = await docsGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -581,7 +581,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     (mockPrisma.dealRoomDocument.findMany as jest.Mock).mockResolvedValue([makeDocument()]);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents?category=pitch_deck');
-    await docsGET(req, { params: { id: 'room-1' } });
+    await docsGET(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(mockPrisma.dealRoomDocument.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -594,7 +594,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
-    const res = await docsGET(req, { params: { id: 'room-1' } });
+    const res = await docsGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -608,7 +608,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue({ ndaRequired: true });
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
-    const res = await docsGET(req, { params: { id: 'room-1' } });
+    const res = await docsGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -619,7 +619,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
-    const res = await docsGET(req, { params: { id: 'room-1' } });
+    const res = await docsGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -646,7 +646,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'pdf',
       fileSize: 5242880,
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(201);
@@ -658,7 +658,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/documents', {
       name: 'Test',
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -671,7 +671,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'pdf',
       fileSize: 1024,
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -684,7 +684,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'exe',
       fileSize: 1024,
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -697,7 +697,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'pdf',
       fileSize: -1,
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -710,7 +710,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'pdf',
       fileSize: 60 * 1024 * 1024,
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -725,7 +725,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'pdf',
       fileSize: 1024,
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -744,7 +744,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'pdf',
       fileSize: 1024,
     });
-    await docsPOST(req, { params: { id: 'room-1' } });
+    await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(mockPrisma.dealRoomDocument.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -764,7 +764,7 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       fileType: 'pdf',
       fileSize: 1024,
     });
-    const res = await docsPOST(req, { params: { id: 'room-1' } });
+    const res = await docsPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -787,7 +787,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomActivity.count as jest.Mock).mockResolvedValue(2);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity');
-    const res = await activityGET(req, { params: { id: 'room-1' } });
+    const res = await activityGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -801,7 +801,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomActivity.count as jest.Mock).mockResolvedValue(0);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?limit=10');
-    await activityGET(req, { params: { id: 'room-1' } });
+    await activityGET(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(mockPrisma.dealRoomActivity.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ take: 10 })
@@ -814,7 +814,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomActivity.count as jest.Mock).mockResolvedValue(0);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?limit=500');
-    await activityGET(req, { params: { id: 'room-1' } });
+    await activityGET(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(mockPrisma.dealRoomActivity.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ take: 200 })
@@ -825,7 +825,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity');
-    const res = await activityGET(req, { params: { id: 'room-1' } });
+    const res = await activityGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -836,7 +836,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity');
-    const res = await activityGET(req, { params: { id: 'room-1' } });
+    const res = await activityGET(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -863,7 +863,7 @@ describe('POST /api/deal-rooms/[id]/members', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'invitee@example.com',
     });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
+    const res = await membersPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(201);
@@ -886,7 +886,7 @@ describe('POST /api/deal-rooms/[id]/members', () => {
       inviteeEmail: 'admin-invitee@example.com',
       role: 'admin',
     });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
+    const res = await membersPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(res.status).toBe(201);
     expect(mockPrisma.dealRoomMember.create).toHaveBeenCalledWith(
@@ -900,7 +900,7 @@ describe('POST /api/deal-rooms/[id]/members', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'not-an-email',
     });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
+    const res = await membersPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
 
     expect(res.status).toBe(400);
   });
@@ -910,7 +910,7 @@ describe('POST /api/deal-rooms/[id]/members', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'invitee@example.com',
     });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
+    const res = await membersPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -923,7 +923,7 @@ describe('POST /api/deal-rooms/[id]/members', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'new@example.com',
     });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
+    const res = await membersPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -939,7 +939,7 @@ describe('POST /api/deal-rooms/[id]/members', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'existing@example.com',
     });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
+    const res = await membersPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(409);
@@ -954,7 +954,7 @@ describe('POST /api/deal-rooms/[id]/members', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'new@example.com',
     });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
+    const res = await membersPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -978,7 +978,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -998,7 +998,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -1010,7 +1010,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -1024,7 +1024,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members?memberEmail=someone@example.com',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -1040,7 +1040,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members?memberEmail=other@example.com',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -1056,7 +1056,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members?memberEmail=ghost@example.com',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -1073,7 +1073,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members?memberEmail=owner@example.com',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -1087,7 +1087,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com',
       { method: 'DELETE' }
     );
-    const res = await membersDELETE(req, { params: { id: 'room-1' } });
+    const res = await membersDELETE(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -1108,7 +1108,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
     (mockPrisma.dealRoomActivity.create as jest.Mock).mockResolvedValue({});
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
-    const res = await ndaPOST(req, { params: { id: 'room-1' } });
+    const res = await ndaPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -1122,7 +1122,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
     );
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
-    const res = await ndaPOST(req, { params: { id: 'room-1' } });
+    const res = await ndaPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -1135,7 +1135,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
   it('returns 401 when not authenticated', async () => {
     mockNoSession();
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
-    const res = await ndaPOST(req, { params: { id: 'room-1' } });
+    const res = await ndaPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -1146,7 +1146,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
-    const res = await ndaPOST(req, { params: { id: 'room-1' } });
+    const res = await ndaPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -1157,7 +1157,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
-    const res = await ndaPOST(req, { params: { id: 'room-1' } });
+    const res = await ndaPOST(req, { params: Promise.resolve({ id: 'room-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);

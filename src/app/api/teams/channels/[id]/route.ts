@@ -22,10 +22,8 @@ async function getMembership(channelId: string, userId: string) {
 }
 
 /** GET /api/teams/channels/[id] — channel detail + last 50 messages */
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -103,10 +101,8 @@ export async function GET(
 }
 
 /** PATCH /api/teams/channels/[id] — owner/admin only */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -150,10 +146,8 @@ export async function PATCH(
 }
 
 /** DELETE /api/teams/channels/[id] — owner only */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

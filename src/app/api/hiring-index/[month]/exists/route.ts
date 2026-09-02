@@ -9,7 +9,8 @@ import { parseMonthParam, latestEditionMonthKey } from '@/lib/hiring-index';
 // page renders and applies its own notFound()).
 export const dynamic = 'force-dynamic';
 
-export async function GET(_req: Request, { params }: { params: { month: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ month: string }> }) {
+  const params = await props.params;
   try {
     const parsed = parseMonthParam(params.month);
     const exists = !!parsed && params.month >= '2026-08' && params.month <= latestEditionMonthKey();

@@ -18,7 +18,8 @@ export function generateStaticParams() {
   return VIEWING_CITIES.map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadata({ params }: { params: { city: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ city: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const city = getViewingCity(params.city);
   if (!city) return {};
   const g = cityGeometry(city);
@@ -27,12 +28,13 @@ export function generateMetadata({ params }: { params: { city: string } }): Meta
   return { title, description, alternates: { canonical: `https://spacenexus.us/guide/watch-a-launch/${city.slug}` }, openGraph: { title, description, type: 'article' } };
 }
 
-export default async function WatchFromCityPage({ params }: { params: { city: string } }) {
+export default async function WatchFromCityPage(props: { params: Promise<{ city: string }> }) {
+  const params = await props.params;
   const city = getViewingCity(params.city);
   if (!city) notFound();
   const g = cityGeometry(city);
   const now = new Date();
-  const y = now.getUTCFullYear(); const m = now.getUTCMonth() + 1; const nxt = shiftMonth(y, m, 1);
+  const y = now.getUTCFullYear();const m = now.getUTCMonth() + 1;const nxt = shiftMonth(y, m, 1);
   const [thisMonth, nextMonth] = await Promise.all([getSiteMonth(city.site, y, m, now), getSiteMonth(city.site, nxt.year, nxt.month, now)]);
   const upcoming = [...(thisMonth?.launches ?? []), ...(nextMonth?.launches ?? [])].filter((l) => l.launchDate && l.launchDate.getTime() > now.getTime()).slice(0, 6);
   const siteName = g.site?.shortName ?? g.pad.name;

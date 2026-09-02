@@ -26,7 +26,8 @@ export function generateStaticParams() {
   return TONIGHT_CITIES.map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadata({ params }: { params: { city: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ city: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const city = getTonightCity(params.city);
   if (!city) return {};
   const title = tonightTitle(city.name);
@@ -72,7 +73,8 @@ function PassCard({ pass, tz, sat }: { pass: TonightPass; tz: string; sat: Tonig
   );
 }
 
-export default async function TonightCityPage({ params }: { params: { city: string } }) {
+export default async function TonightCityPage(props: { params: Promise<{ city: string }> }) {
+  const params = await props.params;
   const city = getTonightCity(params.city);
   if (!city) notFound();
   const r = await getTonightPasses(city.slug);

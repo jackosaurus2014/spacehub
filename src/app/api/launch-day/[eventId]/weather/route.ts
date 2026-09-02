@@ -42,10 +42,8 @@ async function loadSpaceWeather() {
   }
 }
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(_request: Request, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   const { eventId } = params;
 
   let event: { location: string | null; launchDate: Date | null; padLatitude: number | null; padLongitude: number | null } | null = null;

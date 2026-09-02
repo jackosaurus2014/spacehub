@@ -155,7 +155,8 @@ async function getWorkforceFirstScreen(): Promise<WorkforceFirstScreen | null> {
   }
 }
 
-export default async function SpaceTalentHubPage({ searchParams }: { searchParams?: SearchParams }) {
+export default async function SpaceTalentHubPage(props: { searchParams?: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const sp = searchParams ?? {};
   const tab = str(sp.tab);
   // Mirrors the client's mapping, including the 2026-08-31 tab=jobs → workforce

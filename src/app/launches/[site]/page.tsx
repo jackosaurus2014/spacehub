@@ -15,7 +15,8 @@ export function generateStaticParams() {
   return LAUNCH_SITES.map((s) => ({ site: s.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ site: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const site = getSite(params.site);
   if (!site) return {};
   const title = `${site.shortName} Launch Schedule 2026: Upcoming & Recent Rocket Launches`;
@@ -23,7 +24,8 @@ export async function generateMetadata({ params }: { params: { site: string } })
   return { title, description, alternates: { canonical: `https://spacenexus.us/launches/${site.slug}` }, openGraph: { title, description, type: 'website' } };
 }
 
-export default async function SitePage({ params }: { params: { site: string } }) {
+export default async function SitePage(props: { params: Promise<{ site: string }> }) {
+  const params = await props.params;
   const site = getSite(params.site);
   if (!site) notFound();
   const now = new Date();

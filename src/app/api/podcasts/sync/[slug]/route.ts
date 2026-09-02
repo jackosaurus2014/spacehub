@@ -25,10 +25,8 @@ export const maxDuration = 60;
  * Sync logic lives in src/lib/podcast-sync.ts (shared with the
  * /api/cron/podcasts-sync scheduled job and scripts/seed-podcasts.ts).
  */
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { slug: string } },
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   // Auth: admin only
   const session = await getServerSession(authOptions);
   if (!session?.user) return unauthorizedError();

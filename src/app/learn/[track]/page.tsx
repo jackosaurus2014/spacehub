@@ -40,10 +40,11 @@ const TRACK_NAMES: Record<string, { title: string; description: string }> = {
 };
 
 interface PageProps {
-  params: { track: string };
+  params: Promise<{ track: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const meta = TRACK_NAMES[params.track];
   if (!meta) return { title: 'Track Not Found' };
   return {
@@ -53,7 +54,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function TrackPage({ params }: PageProps) {
+export default async function TrackPage(props: PageProps) {
+  const params = await props.params;
   const { track } = params;
   if (!(LEARNING_TRACKS as readonly string[]).includes(track)) {
     notFound();

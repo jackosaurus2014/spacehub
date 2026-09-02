@@ -12,10 +12,8 @@ const MAX_LIMIT = 100;
  * GET /api/podcasts/[slug]/episodes?limit=&offset=
  * Paginated list of episodes for a podcast, newest first.
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { slug: string } },
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const slug = params.slug;
     const { searchParams } = new URL(req.url);

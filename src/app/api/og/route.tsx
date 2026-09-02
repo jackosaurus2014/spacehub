@@ -1,7 +1,9 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
-export const runtime = 'edge';
+// Node runtime to match the other OG image routes (Next 15 upgrade).
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 const TYPE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
   guide: { bg: 'rgba(99, 102, 241, 0.2)', border: 'rgba(99, 102, 241, 0.4)', text: '#a5b4fc' },
