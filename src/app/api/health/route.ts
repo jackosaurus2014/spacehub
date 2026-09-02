@@ -13,9 +13,11 @@ async function ensureCronStarted() {
   if (cronInitAttempted) return;
   cronInitAttempted = true;
   try {
-    const { getCronJobStatus, startCronJobs } = await import('@/lib/cron-scheduler');
+    const { getCronJobStatus, startCronJobs, isCronSchedulerStartedAnywhere } = await import('@/lib/cron-scheduler');
     const status = getCronJobStatus();
-    if (!status.schedulerUpSince) {
+    // Check the process-wide flag, not this bundle's module state — see the
+    // note above startCronJobs() (double-scheduler bug, 2026-09-02).
+    if (!status.schedulerUpSince && !isCronSchedulerStartedAnywhere()) {
       logger.info('Cron scheduler not running — starting via health endpoint fallback');
       startCronJobs();
     }

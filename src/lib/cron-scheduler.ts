@@ -605,8 +605,32 @@ async function seedTrackerFromRefreshLog(): Promise<void> {
   if (seeded > 0) logger.info(`Cron scheduler: seeded ${seeded} job trackers from DataRefreshLog`);
 }
 
+// Process-wide guard (2026-09-02). Next bundles instrumentation.ts and route
+// handlers separately, so this module's state is NOT shared between them:
+// register() started one scheduler and the /api/health fallback saw
+// `schedulerUpSince === null` in its own copy and started a second. Every
+// cron then ran twice (DataRefreshLog showed paired rows ms apart), which
+// doubled outbound API usage and exhausted SAM.gov's 10-call daily quota
+// before the 13:30Z procurement run. A globalThis flag is visible to every
+// bundle in the process.
+const CRON_GLOBAL_KEY = '__spacenexusCronSchedulerStartedAt';
+type CronGlobal = typeof globalThis & { [CRON_GLOBAL_KEY]?: number };
+
+export function isCronSchedulerStartedAnywhere(): boolean {
+  return typeof (globalThis as CronGlobal)[CRON_GLOBAL_KEY] === 'number';
+}
+
 export function startCronJobs() {
-  schedulerStartTime = Date.now();
+  const g = globalThis as CronGlobal;
+  if (typeof g[CRON_GLOBAL_KEY] === 'number') {
+    logger.info('Cron scheduler already running in this process — second start ignored', {
+      startedAt: new Date(g[CRON_GLOBAL_KEY] as number).toISOString(),
+    });
+    schedulerStartTime = schedulerStartTime ?? (g[CRON_GLOBAL_KEY] as number);
+    return;
+  }
+  g[CRON_GLOBAL_KEY] = Date.now();
+  schedulerStartTime = g[CRON_GLOBAL_KEY] as number;
 
   for (const job of CRON_JOBS) {
     // Register in tracker
