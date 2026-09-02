@@ -135,6 +135,11 @@ const CRON_JOBS: CronJobDef[] = [
   // Emails only when something has sat unanswered past its threshold.
   { schedule: '0 15 * * *',    path: '/api/cron/reachout-sentinel',         label: 'reachout-sentinel',          maxStaleMinutes: 1560 },
 
+  // Space Tycoon economic snapshots — daily copy of every active profile's
+  // economic columns (rollback prerequisite, SIMULATION_INTEGRITY_TOOLING §S3)
+  // + retention prune. Off the :00/:15/:30 game-job minutes on purpose.
+  { schedule: '20 3 * * *',    path: '/api/cron/economic-snapshot',         label: 'economic-snapshot',          maxStaleMinutes: 1560 },
+
   // Weekly / twice-weekly
   { schedule: '0 9 * * 5',     path: '/api/newsletter/send-weekly-digest',                 label: 'weekly-digest-email',        maxStaleMinutes: 11520 },
   { schedule: '0 10 * * 5',    path: '/api/newsletter/intelligence-brief?action=generate', label: 'weekly-intelligence-brief', maxStaleMinutes: 11520 },

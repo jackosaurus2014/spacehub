@@ -16,6 +16,12 @@ interface GoogleAnalyticsProps {
    * @default false - Analytics is disabled by default until configured
    */
   enabled?: boolean;
+  /**
+   * CSP nonce to stamp on both script tags. Optional: in the App Router
+   * next/script already picks the request nonce up from context, so the
+   * root layout does not pass one (see the CSP note in src/app/layout.tsx).
+   */
+  nonce?: string;
 }
 
 /**
@@ -61,7 +67,8 @@ function PageViewTracker({ measurementId }: { measurementId: string }) {
  */
 export default function GoogleAnalytics({
   measurementId = 'GA_MEASUREMENT_ID',
-  enabled = false
+  enabled = false,
+  nonce,
 }: GoogleAnalyticsProps) {
   // Don't render anything if not enabled or using placeholder ID
   if (!enabled || measurementId === 'GA_MEASUREMENT_ID' || !measurementId) {
@@ -74,6 +81,7 @@ export default function GoogleAnalytics({
       <Script
         id="ga-init"
         strategy="afterInteractive"
+        nonce={nonce}
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
@@ -105,6 +113,7 @@ export default function GoogleAnalytics({
       <Script
         id="ga-script"
         strategy="afterInteractive"
+        nonce={nonce}
         src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
       />
 

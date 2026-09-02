@@ -2312,3 +2312,37 @@ header (server quote inline), the poach launcher became a shared component
 opened from Rivals cards and the posture strip, and a one-time post-Frontier
 "levers you haven't pulled" card was added. UI only — every fee, gate and
 cooldown is still computed and enforced by the existing routes.
+
+## Resource plausibility ceiling — not a balance lever (2026-09-01)
+
+Server-authoritative inventory phase 1 (docs/SECURITY_AUDIT_2026-09.md,
+`src/lib/game/resource-plausibility.ts`) puts an upward-only ceiling on the
+per-resource figures the client syncs: `prev + server ledger grants +
+3 x (engine max production/month) x elapsed months + max(100, 25% of prev)`.
+**No production, cost or price number changed**, and the ceiling must never
+be tuned to shape the economy — it is an anti-forgery bound, sized so that an
+honest `prev + production` claim passes every time (client-only multipliers
+are taken at their documented maxima; consumption, decay and boil-off are
+not subtracted; decreases are never questioned).
+
+Balance interactions to keep in mind:
+
+- **Changing a production formula, a multiplier cap, or adding a new inflow**
+  (a new building output, a contract that delivers goods, a refining job, a
+  freight arrival) must be checked against the ceiling: if the engine can now
+  legitimately add more than `3 x prodMax x months + floor` of a resource
+  between two syncs (~30 s at 1x, up to the 30-day elapsed cap), either model
+  it in `computeResourceFlows` (the ceiling picks it up automatically) or
+  raise `RESOURCE_SLACK` / `FLAT_FLOOR_*`. Watch
+  `client_resources_implausible_shadow` after any such change.
+- **Offline progress** is bounded client-side (`MAX_OFFLINE_HOURS`) and the
+  ceiling's elapsed term is capped at 30 days — a dormant profile never
+  accrues unbounded headroom, and a returning player's offline haul is well
+  inside the slack.
+- The escrow-backed sell paths (order book, bounties) cap sellable quantity
+  at the last sync's ceiling, so a burst of production is sellable one sync
+  (~30 s) later — not a design change, just the existing server-holding lag
+  applied to client-held stock.
+- In `enforce` mode a clamp is reversible (`'pre-clamp'` EconomicSnapshot +
+  `restoreEconomicSnapshot`); if a legitimate player is clipped, restore
+  first, then widen the ceiling — never the other way round.

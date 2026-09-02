@@ -7,6 +7,7 @@ import { RESOURCE_MAP } from '@/lib/game/resources';
 import type { ResourceId } from '@/lib/game/resources';
 import { validatePriceBand } from '@/lib/game/price-band';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { serverSellableQuantity } from '@/lib/game/resource-plausibility';
 
 /**
  * Resource bounty board.
@@ -232,10 +233,30 @@ export async function POST(request: NextRequest) {
       // Only escrowed bounties transfer real money/resources (legacy guard)
       const escrowed = ledgerOn && (await hasEscrow(bounty.id));
 
-      // The filler must actually hold the resources server-side
+      // The filler must actually hold the resources server-side.
+      // Server-authoritative inventory phase 1 / Phase B slice
+      // (docs/SECURITY_AUDIT_2026-09.md): `profile.resources` is the client's
+      // last-synced figure; once the profile is baselined, the deliverable
+      // quantity is capped at the last sync's plausibility ceiling for this
+      // slug. Limitations are documented on serverSellableQuantity.
       const fillerResources = (profile.resources as Record<string, number>) || {};
-      const held = fillerResources[bounty.resourceSlug] || 0;
+      const sellable = serverSellableQuantity(profile, bounty.resourceSlug);
+      const held = sellable.held;
       if (escrowed && held < fillQty) {
+        if (sellable.cappedByCeiling && sellable.raw >= fillQty) {
+          logger.warn('Bounty fill gated by resource plausibility ceiling', {
+            profileId: profile.id, resourceSlug: bounty.resourceSlug, fillQty, raw: sellable.raw, ceiling: sellable.ceiling,
+          });
+          try {
+            await prisma.marketAuditLog.create({
+              data: {
+                eventType: 'sell_gated_by_resource_ceiling',
+                profileId: profile.id, resourceSlug: bounty.resourceSlug, severity: 'warning',
+                details: { path: 'bounty_fill', bountyId, fillQty, raw: sellable.raw, ceiling: sellable.ceiling },
+              },
+            });
+          } catch { /* audit log is best-effort */ }
+        }
         return NextResponse.json({
           error: `Insufficient ${bounty.resourceSlug.replace(/_/g, ' ')}: you have ${held}, need ${fillQty}`,
         }, { status: 400 });

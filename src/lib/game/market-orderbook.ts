@@ -9,6 +9,8 @@ import { validatePriceBand } from './price-band';
 import { computeNpcMakerQuote } from './market-engine';
 import { recordLedger, isLedgerAvailable } from './server-ledger';
 import { isMarketEventActiveForResource } from './market-events';
+import { serverSellableQuantity } from './resource-plausibility';
+import { logger } from '@/lib/logger';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -132,9 +134,30 @@ export async function placeLimitOrder(
       return { success: false, error: 'Insufficient funds for this order (including 2% fee escrow)' };
     }
   } else {
-    const resources = (profile.resources as Record<string, number>) || {};
-    const held = resources[resourceSlug] || 0;
+    // Server-authoritative inventory phase 1 / Phase B slice
+    // (docs/SECURITY_AUDIT_2026-09.md): `profile.resources` is still the
+    // client's last-synced figure, so this gate used to verify a
+    // client-authored number. Once the profile has been baselined by the
+    // sync's resource clamp, the sellable quantity is capped at the last
+    // sync's plausibility ceiling for this slug (even while the sync is only
+    // shadowing). Limitations are documented on serverSellableQuantity.
+    const sellable = serverSellableQuantity(profile, resourceSlug);
+    const held = sellable.held;
     if (held < quantity) {
+      if (sellable.cappedByCeiling && sellable.raw >= quantity) {
+        logger.warn('Sell order gated by resource plausibility ceiling', {
+          profileId, resourceSlug, quantity, raw: sellable.raw, ceiling: sellable.ceiling,
+        });
+        try {
+          await prisma.marketAuditLog.create({
+            data: {
+              eventType: 'sell_gated_by_resource_ceiling',
+              profileId, resourceSlug, severity: 'warning',
+              details: { path: 'order_book', quantity, raw: sellable.raw, ceiling: sellable.ceiling },
+            },
+          });
+        } catch { /* audit log is best-effort */ }
+      }
       return { success: false, error: `Insufficient ${resourceDef.name}. You have ${held}, need ${quantity}` };
     }
   }

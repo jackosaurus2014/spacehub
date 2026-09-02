@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { evaluateExpression } from './safe-expression';
 
 interface CalculatorField {
   key: string;
@@ -51,50 +52,12 @@ interface Props {
 }
 
 /**
- * Evaluate a whitelisted arithmetic expression against a variable environment.
- * Supports +, -, *, /, parentheses, ^, sqrt(), sin(), cos(), tan(), log(), abs().
- * Not eval. Manual safe parse-ish via Function constructor restricted to math identifiers.
+ * Formula evaluation is a hand-written arithmetic parser (safe-expression.ts)
+ * — no Function/eval, so the CSP needs no 'unsafe-eval' and a hostile
+ * formula string can do nothing but arithmetic.
  */
 function safeEvaluate(expr: string, env: Record<string, number>): number {
-  // Replace ^ with ** for JS power operator
-  const expression = expr.replace(/\^/g, '**');
-  // Whitelist: variables, digits, operators, function names
-  if (!/^[\sA-Za-z0-9_+\-*/().,]+$/.test(expression)) {
-    throw new Error('Expression contains invalid characters');
-  }
-  // Wrap Math functions
-  const ctx: Record<string, number | ((...a: number[]) => number)> = {
-    PI: Math.PI,
-    E: Math.E,
-    sqrt: Math.sqrt,
-    sin: Math.sin,
-    cos: Math.cos,
-    tan: Math.tan,
-    log: Math.log,
-    log10: Math.log10,
-    abs: Math.abs,
-    pow: Math.pow,
-    min: Math.min,
-    max: Math.max,
-    ...env,
-  };
-  const names = Object.keys(ctx);
-  const values = Object.values(ctx);
-  // Tokenize identifiers and reject anything not in whitelist
-  const idRegex = /[A-Za-z_][A-Za-z0-9_]*/g;
-  const identifiers = expression.match(idRegex) || [];
-  for (const id of identifiers) {
-    if (!names.includes(id)) {
-      throw new Error(`Unknown identifier: ${id}`);
-    }
-  }
-  // eslint-disable-next-line no-new-func
-  const fn = new Function(...names, `return (${expression});`);
-  const result = fn(...values);
-  if (typeof result !== 'number' || !Number.isFinite(result)) {
-    throw new Error('Result not finite');
-  }
-  return result;
+  return evaluateExpression(expr, env);
 }
 
 function Calculator({ config }: { config: CalculatorConfig }) {

@@ -26,6 +26,17 @@ import { getMegaProjectBonuses } from '@/lib/game/mega-projects';
 import { BOOK_VALUE_DEPRECIATION_FACTOR } from '@/lib/game/frontier';
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SHIP_MAP } from '@/lib/game/ships';
+import {
+  computeResourceCeilings,
+  clampResources,
+  getResourceClampMode,
+  readResourceStash,
+  selectCeilingsToStash,
+  RESOURCE_BASELINE_KEY,
+  RESOURCE_CEILINGS_KEY,
+  type ResourceRejection,
+} from '@/lib/game/resource-plausibility';
+import { takeEconomicSnapshotFromRow } from '@/lib/game/economic-snapshot';
 
 /**
  * POST /api/space-tycoon/sync
@@ -148,10 +159,24 @@ export async function POST(request: Request) {
       entries: LedgerEntryLite[];
     } | null = null;
 
+    // Server-authoritative inventory phase 1: the previous row's economic
+    // columns feed the per-resource plausibility ceilings below (and the
+    // 'pre-clamp' EconomicSnapshot in enforce mode), so select them once here.
+    let existingProfile: {
+      id: string; money: number; netWorth: number; lastSyncAt: Date;
+      resources: unknown; buildingsData: unknown; shipsData: unknown;
+      activeServicesData: unknown; completedResearchList: string[]; workforceData: unknown;
+    } | null = null;
+    let elapsedSinceLastSyncMs = 0;
+
     try {
-      const existingProfile = await prisma.gameProfile.findUnique({
+      existingProfile = await prisma.gameProfile.findUnique({
         where: { userId: session.user.id },
-        select: { id: true, money: true, lastSyncAt: true },
+        select: {
+          id: true, money: true, netWorth: true, lastSyncAt: true,
+          resources: true, buildingsData: true, shipsData: true,
+          activeServicesData: true, completedResearchList: true, workforceData: true,
+        },
       });
 
       // Wave E1 (§E1 exploit #5): clamp the client-claimed money figure
@@ -163,6 +188,7 @@ export async function POST(request: Request) {
       let plausibilityClampedMoney = clientMoney;
       if (existingProfile) {
         const elapsedMs = Date.now() - existingProfile.lastSyncAt.getTime();
+        elapsedSinceLastSyncMs = elapsedMs;
         const clamp = clampPlausibleMoney(clientMoney, existingProfile.money, elapsedMs);
         plausibilityClampedMoney = clamp.clampedMoney;
         if (clamp.wasClamped) {
@@ -228,6 +254,97 @@ export async function POST(request: Request) {
       reconciledMoney = clientMoney;
       reconciledResources = clientResources;
       ledgerInfo = null;
+    }
+
+    // ── Server-authoritative inventory, phase 1: per-resource plausibility ──
+    // docs/SECURITY_AUDIT_2026-09.md "Server-authoritative inventory — phase
+    // 1". Bounds each resource in the RECONCILED map against what this
+    // profile could plausibly have accumulated since its last sync
+    // (resource-plausibility.ts). RESOURCE_CLAMP_MODE:
+    //   off     — nothing computed, nothing stashed (pre-phase-1 behaviour);
+    //   shadow  — (default) compute, audit would-be rejections as
+    //             `client_resources_implausible_shadow` (warning), persist
+    //             the client values unchanged;
+    //   enforce — persist the clamped map, audit as
+    //             `client_resources_implausible_rejected` (critical), and
+    //             take a 'pre-clamp' EconomicSnapshot first so it is
+    //             reversible.
+    // First-sync ratchet: the first sync that runs this block only stashes
+    // `_resourceBaselineAt` and never clamps, so a save that predates the
+    // feature is adopted as the baseline, then enforced from the next sync.
+    const resourceClampMode = getResourceClampMode();
+    const resourceExtras: Record<string, unknown> = {};
+    let resourceClampInfo: {
+      mode: 'shadow' | 'enforce';
+      baselined: boolean;
+      rejected: ResourceRejection[];
+      enforced: boolean;
+    } | null = null;
+    if (resourceClampMode !== 'off' && existingProfile) {
+      try {
+        const stash = readResourceStash(existingProfile.workforceData);
+        const nowIso = new Date().toISOString();
+        const baselineAt = stash.baselineAt;
+        const baselinePredatesThisSync = !!baselineAt && Date.parse(baselineAt) < Date.now();
+        resourceExtras[RESOURCE_BASELINE_KEY] = baselineAt ?? nowIso;
+
+        const prevResources = existingProfile.resources && typeof existingProfile.resources === 'object'
+          ? (existingProfile.resources as Record<string, number>)
+          : {};
+        const { ceilings } = computeResourceCeilings({
+          prevResources,
+          prevBuildingsData: existingProfile.buildingsData,
+          prevShipsData: existingProfile.shipsData,
+          prevActiveServices: existingProfile.activeServicesData,
+          prevResearch: existingProfile.completedResearchList,
+          prevWorkforce: existingProfile.workforceData,
+          ledgerDeltas: ledgerInfo?.resourceDeltas ?? null,
+          elapsedMs: elapsedSinceLastSyncMs,
+        });
+        resourceExtras[RESOURCE_CEILINGS_KEY] = selectCeilingsToStash(ceilings, reconciledResources);
+
+        if (baselinePredatesThisSync) {
+          const { clamped, rejected } = clampResources(reconciledResources, ceilings);
+          const enforce = resourceClampMode === 'enforce';
+          resourceClampInfo = { mode: resourceClampMode, baselined: true, rejected, enforced: enforce && rejected.length > 0 };
+          if (rejected.length > 0) {
+            const auditDetails = {
+              mode: resourceClampMode,
+              elapsedMs: elapsedSinceLastSyncMs,
+              baselineAt,
+              rejected: rejected.slice(0, 35),
+              rejectedCount: rejected.length,
+            };
+            logger.warn(
+              enforce
+                ? 'Client resource claims exceeded plausibility ceilings — clamped'
+                : 'Client resource claims exceeded plausibility ceilings — shadow (not clamped)',
+              { userId: session.user.id, profileId: existingProfile.id, ...auditDetails },
+            );
+            if (enforce) {
+              // Reversibility first: snapshot the row as it stands BEFORE the
+              // clamped map is persisted. Best-effort (table may lag deploy).
+              await takeEconomicSnapshotFromRow(existingProfile, 'pre-clamp');
+              reconciledResources = clamped;
+            }
+            try {
+              await prisma.marketAuditLog.create({
+                data: {
+                  eventType: enforce ? 'client_resources_implausible_rejected' : 'client_resources_implausible_shadow',
+                  profileId: existingProfile.id,
+                  details: JSON.parse(JSON.stringify(auditDetails)),
+                  severity: enforce ? 'critical' : 'warning',
+                },
+              });
+            } catch { /* audit log is best-effort */ }
+          }
+        } else {
+          resourceClampInfo = { mode: resourceClampMode, baselined: false, rejected: [], enforced: false };
+        }
+      } catch (clampError) {
+        // Plausibility is best-effort; never block the sync.
+        logger.error('Resource plausibility clamp failed', { error: String(clampError) });
+      }
     }
 
     // Calculate net worth using live market prices (over reconciled holdings).
@@ -347,6 +464,13 @@ export async function POST(request: Request) {
       : '';
     const safeCompanyName = rawCompanyName || existedBefore?.companyName || 'Untitled Aerospace';
 
+    // Carry the resource-plausibility stash (`_resourceBaselineAt`,
+    // `_resourceCeilings`) forward on every sync — the client never echoes
+    // these keys back, it only sends its own workforce object.
+    const workforceDataToPersist = Object.keys(resourceExtras).length > 0
+      ? { ...((workforceData && typeof workforceData === 'object') ? (workforceData as Record<string, unknown>) : {}), ...resourceExtras }
+      : workforceData;
+
     // Upsert game profile with full state
     const profile = await prisma.gameProfile.upsert({
       where: { userId: session.user.id },
@@ -361,7 +485,7 @@ export async function POST(request: Request) {
         unlockedLocationsList: safeLocations,
         completedResearchList: safeResearch,
         shipsData: safeShips,
-        workforceData: workforceData as object,
+        workforceData: workforceDataToPersist as object,
         lastSyncAt: new Date(),
       },
       update: {
@@ -374,7 +498,7 @@ export async function POST(request: Request) {
         unlockedLocationsList: safeLocations,
         completedResearchList: safeResearch,
         shipsData: safeShips,
-        workforceData: workforceData as object,
+        workforceData: workforceDataToPersist as object,
         lastSyncAt: new Date(),
       },
     });
@@ -1231,6 +1355,7 @@ export async function POST(request: Request) {
       // One Wallet: reconciled balance + pending deltas for client adoption.
       reconciledMoney,
       ledger: ledgerInfo,
+      resourceClamp: resourceClampInfo,
       rank,
       totalPlayers,
       allianceBonus,

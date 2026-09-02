@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveMothball } from '@/lib/mothballed-routes';
 import { registryRouteMissing } from '@/lib/registry-routes';
+import { CSP_REPORT_PATH, REPORTING_ENDPOINTS_HEADER, documentCspHeaders } from '@/lib/csp';
 
 /**
  * Edge Runtime compatible rate limiter and CSRF protection middleware
@@ -38,6 +39,11 @@ function getRateLimitConfig(pathname: string, method: string): RateLimitConfig {
     (pathname === '/api/launch-watch' || pathname === '/api/company-brief')
   ) {
     return { maxRequests: 8, windowMs: 60 * 60 * 1000 };
+  }
+  // Browser CSP violation reports: unauthenticated by nature, so a tight
+  // per-IP budget bounds log volume (the route also dedupes in-process).
+  if (pathname === CSP_REPORT_PATH) {
+    return { maxRequests: 20, windowMs: 60 * 1000 };
   }
   // Ad impression/click beacons (C1): signed single-use tokens gate the
   // charge; this bucket bounds the row-write rate.
@@ -187,6 +193,8 @@ function checkRateLimit(
     routeKey = 'no-account-subscribe';
   } else if (pathname.startsWith('/api/ads/impression')) {
     routeKey = 'ads-impression';
+  } else if (pathname === CSP_REPORT_PATH) {
+    routeKey = 'csp-report';
   } else if (
     pathname.startsWith('/api/stripe/checkout') ||
     pathname.startsWith('/api/ads/checkout') ||
@@ -291,6 +299,13 @@ function checkCsrf(req: NextRequest): boolean {
 
   // Skip CSRF check for Stripe webhooks (verified via signature, not cookie-based)
   if (pathname.startsWith('/api/stripe/webhooks')) {
+    return true;
+  }
+
+  // Skip CSRF check for browser CSP violation reports: the browser POSTs
+  // them without a usable Origin/Referer, they carry no credentials, and
+  // the handler only logs (never mutates state). Rate-limited above.
+  if (pathname === CSP_REPORT_PATH) {
     return true;
   }
 
@@ -706,10 +721,37 @@ async function checkKnownSlugMissing(req: NextRequest, pathname: string): Promis
  */
 function notFoundResponse(): NextResponse {
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Not Found | SpaceNexus</title><meta name="robots" content="noindex"><style>body{background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}main{text-align:center;padding:2rem}h1{font-size:1.5rem;margin:0 0 .5rem}p{color:#94a3b8;margin:0 0 1.5rem}a{color:#22d3ee;text-decoration:none}a:hover{text-decoration:underline}</style></head><body><main><h1>Page not found</h1><p>The page you're looking for doesn't exist or has been removed.</p><a href="/">Return to SpaceNexus</a></main></body></html>`;
-  return new NextResponse(html, {
+  const response = new NextResponse(html, {
     status: 404,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex' },
   });
+  // No inline script on this page; its <style> is covered by style-src
+  // 'unsafe-inline'. Nonce-free policy on purpose — nothing here to nonce.
+  applyDocumentSecurityHeaders(response, {
+    enforced: documentCspHeaders({ pathname: '/404' }).enforced,
+    xFrameOptions: 'DENY',
+  });
+  return response;
+}
+
+/**
+ * Security headers every HTML document gets (src/lib/csp.ts builds the
+ * policies). X-Frame-Options is only set when frame-ancestors is 'none' —
+ * XFO has no ALLOWALL value, and a DENY alongside `frame-ancestors *` is
+ * exactly the intersection that broke /embed/* before 2026-09-01.
+ */
+function applyDocumentSecurityHeaders(
+  response: NextResponse,
+  csp: { enforced: string; reportOnly?: string; xFrameOptions?: 'DENY' },
+): void {
+  response.headers.set('Content-Security-Policy', csp.enforced);
+  if (csp.reportOnly) response.headers.set('Content-Security-Policy-Report-Only', csp.reportOnly);
+  response.headers.set('Reporting-Endpoints', REPORTING_ENDPOINTS_HEADER);
+  if (csp.xFrameOptions) response.headers.set('X-Frame-Options', csp.xFrameOptions);
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-DNS-Prefetch-Control', 'on');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
 }
 
 export async function middleware(req: NextRequest) {
@@ -821,6 +863,9 @@ export async function middleware(req: NextRequest) {
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (pathname === CSP_REPORT_PATH) {
+      response.headers.set('Cache-Control', 'no-store');
+    }
 
     // Default Cache-Control for GET API requests (routes can override)
     if (req.method === 'GET') {
@@ -843,24 +888,35 @@ export async function middleware(req: NextRequest) {
     return response;
   }
 
-  // Add security headers to all non-API responses
-  const response = NextResponse.next();
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-
-  // Embed and widget routes must be iframe-embeddable on third-party sites.
-  // For /embed/* and /widgets/* we allow any origin to frame the page and
-  // relax CSP accordingly. All other routes stay DENY to prevent clickjacking.
-  if (pathname.startsWith('/embed/') || pathname.startsWith('/widgets/')) {
-    response.headers.set('Content-Security-Policy', "frame-ancestors *");
-    // X-Frame-Options has no ALLOWALL value across browsers; omit it so
-    // the CSP frame-ancestors directive (which supersedes XFO) takes effect.
+  // ── Document responses: CSP + the other security headers ────────────────
+  // Policies come from src/lib/csp.ts (single source of truth; next.config.js
+  // no longer sets CSP or X-Frame-Options, so there is exactly one CSP header
+  // per response). /embed/* and /widgets/* get `frame-ancestors *` and no XFO;
+  // everything else gets 'none' + DENY.
+  //
+  // Nonce rollout (CSP_MODE, default report-only): on routes Next renders per
+  // request the nonce policy also goes out — as Report-Only until the reports
+  // run clean, then enforced. Next 14 reads the nonce from the request's
+  // Content-Security-Policy[-Report-Only] header and stamps it on its own
+  // bootstrap + next/script tags, so the header carrying the nonce is
+  // forwarded on the request (never the nonce-free one — Next would read
+  // that first and find no nonce). x-nonce is forwarded for server components.
+  const csp = documentCspHeaders({ pathname });
+  let response: NextResponse;
+  if (csp.nonce) {
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set('x-nonce', csp.nonce);
+    if (csp.reportOnly) {
+      requestHeaders.delete('content-security-policy');
+      requestHeaders.set('content-security-policy-report-only', csp.reportOnly);
+    } else {
+      requestHeaders.set('content-security-policy', csp.enforced);
+    }
+    response = NextResponse.next({ request: { headers: requestHeaders } });
   } else {
-    response.headers.set('X-Frame-Options', 'DENY');
+    response = NextResponse.next();
   }
-
-  response.headers.set('X-DNS-Prefetch-Control', 'on');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+  applyDocumentSecurityHeaders(response, csp);
 
   // Space Tycoon invite links: /space-tycoon?ref=<profileId>. Remember the
   // referrer for 30 days so the attribution survives sign-up; the game's

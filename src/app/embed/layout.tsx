@@ -5,7 +5,13 @@
  * MobileTabBar, TrialBanner and related chrome. Because we cannot modify
  * that file, we inject CSS here to hide those shells so the embed pages
  * render bare inside iframes.
+ *
+ * The inline <script> below is allow-listed by SHA-256 hash in the CSP
+ * (src/lib/csp.ts INLINE_SCRIPT_HASHES) — render it from INLINE_SCRIPTS
+ * byte-for-byte or the hash stops matching under the nonce policy.
  */
+import { INLINE_SCRIPTS } from '@/lib/csp';
+
 export default function EmbedLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
@@ -42,9 +48,7 @@ export default function EmbedLayout({ children }: { children: React.ReactNode })
       <script
         // Mark the body so the CSS selectors above activate without a
         // client component. Safe — runs once per embed route navigation.
-        dangerouslySetInnerHTML={{
-          __html: `document.body.setAttribute('data-embed','true');`,
-        }}
+        dangerouslySetInnerHTML={{ __html: INLINE_SCRIPTS.embedMark }}
       />
       {children}
     </>

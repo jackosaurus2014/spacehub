@@ -189,6 +189,7 @@ model GameProfile {
   allianceMembership AllianceMember?
   activityLogs       PlayerActivity[]
   colonyClaims       ColonyClaim[]
+  economicSnapshots  EconomicSnapshot[]
 
   // Full game state for multiplayer visibility
   buildingsData         Json     @default("[]")
@@ -323,6 +324,36 @@ model GameLedgerEntry {
 
   @@index([profileId, seq])
   @@index([profileId, appliedAt])
+}
+
+// Server-authoritative inventory, phase 1 (docs/SECURITY_AUDIT_2026-09.md
+// "Server-authoritative inventory — phase 1"; spec shape in
+// docs/SIMULATION_INTEGRITY_TOOLING.md §S3). Point-in-time copy of the
+// economic columns of one GameProfile so an admin can reverse a clamp, an
+// exploit, or a bad deploy. Written by the daily economic-snapshot cron
+// ('daily'), by the sync route immediately before an enforced resource
+// clamp ('pre-clamp'), and by hand ('manual'). Retention is enforced by the
+// cron: daily rows 14 days (the Monday row 90 days), pre-clamp 90 days,
+// manual 1 year. Restore helper: src/lib/game/economic-snapshot.ts.
+model EconomicSnapshot {
+  id        String      @id @default(cuid())
+  profileId String
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  takenAt   DateTime    @default(now())
+  reason    String // 'daily' | 'pre-clamp' | 'manual'
+
+  money    Float
+  netWorth Float
+
+  resources             Json
+  buildingsData         Json
+  shipsData             Json
+  completedResearchList String[] @default([])
+  activeServicesData    Json?
+  workforceData         Json?
+
+  @@index([profileId, takenAt])
+  @@index([takenAt])
 }
 
 // Live-Service Wave LS2 (docs/LIVE_SERVICE_2026-08.md §LS2 mechanic 3):

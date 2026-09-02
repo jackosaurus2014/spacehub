@@ -10,6 +10,7 @@ import MobileTabBar from '@/components/mobile/MobileTabBar';
 import StructuredData from '@/components/StructuredData';
 import dynamic from 'next/dynamic';
 import { SITE_STATS } from '@/lib/site-stats';
+import { INLINE_SCRIPTS } from '@/lib/csp';
 // Starfield removed in V2 redesign — true black background needs no decoration
 const Footer = dynamic(() => import('@/components/Footer'), { ssr: false });
 const SearchCommandPalette = dynamic(() => import('@/components/SearchCommandPalette'), { ssr: false });
@@ -226,11 +227,17 @@ export default function RootLayout({
         <StructuredData />
         {/* Inline service worker registration for PWA crawlers (PWABuilder, Lighthouse) */}
         {/* The full SW lifecycle management is in ServiceWorkerRegistration component */}
-        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem('spacenexus-oled')==='true')document.documentElement.classList.add('oled')}catch(e){}` }} />
+        {/*
+          CSP (src/lib/csp.ts): these two inline scripts are allow-listed by
+          SHA-256 hash, and the strings MUST be rendered byte-for-byte from
+          INLINE_SCRIPTS or the hash no longer matches. They are deliberately
+          not nonced: reading headers() here would opt every prerendered and
+          ISR route (600+) out of static rendering. Next stamps the request
+          nonce on its own scripts and on next/script tags by itself.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: INLINE_SCRIPTS.oledTheme }} />
         {process.env.NODE_ENV === 'production' && (
-          <script dangerouslySetInnerHTML={{ __html: `
-            if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js',{scope:'/'})}
-          `}} />
+          <script dangerouslySetInnerHTML={{ __html: INLINE_SCRIPTS.swRegister }} />
         )}
         {/* Smart App Banners — uncomment when native apps are published */}
         {/* PWA Meta Tags for iOS */}

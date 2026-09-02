@@ -51,22 +51,16 @@ const nextConfig = {
     ],
   },
   async headers() {
-    // Next.js dev mode needs 'unsafe-eval' for React Fast Refresh and allows
-    // HMR websockets + blob: script sources. Loosen CSP in dev only.
-    const isDev = process.env.NODE_ENV !== 'production';
-    const scriptSrc = isDev
-      ? "'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googletagservices.com https://tpc.googlesyndication.com"
-      : "'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googletagservices.com https://tpc.googlesyndication.com";
-    const connectSrc = isDev
-      ? "'self' ws: wss: https://api.spaceflightnewsapi.net https://ll.thespacedevs.com https://api.nasa.gov https://services.swpc.noaa.gov https://celestrak.org https://www.google-analytics.com https://ssd-api.jpl.nasa.gov https://epic.gsfc.nasa.gov https://eonet.gsfc.nasa.gov https://api.helioviewer.org https://eyes.jpl.nasa.gov https://api.wheretheiss.at https://www.sbir.gov https://images-api.nasa.gov https://exoplanetarchive.ipac.caltech.edu https://www.asterank.com https://pagead2.googlesyndication.com https://adservice.google.com https://api.spacexdata.com https://www.googleapis.com https://www.youtube-nocookie.com"
-      : "'self' https://api.spaceflightnewsapi.net https://ll.thespacedevs.com https://api.nasa.gov https://services.swpc.noaa.gov https://celestrak.org https://www.google-analytics.com https://ssd-api.jpl.nasa.gov https://epic.gsfc.nasa.gov https://eonet.gsfc.nasa.gov https://api.helioviewer.org https://eyes.jpl.nasa.gov https://api.wheretheiss.at https://www.sbir.gov https://images-api.nasa.gov https://exoplanetarchive.ipac.caltech.edu https://www.asterank.com https://pagead2.googlesyndication.com https://adservice.google.com https://api.spacexdata.com https://www.googleapis.com https://www.youtube-nocookie.com";
-    const csp = `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src ${connectSrc}; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://platform.twitter.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';`;
-
+    // Content-Security-Policy and X-Frame-Options are set per request in
+    // src/middleware.ts (built by src/lib/csp.ts): frame-ancestors differs
+    // for /embed/* and /widgets/*, and nonce-eligible routes get a per-request
+    // nonce. Setting either here as well would send two CSP headers that the
+    // browser intersects (which is exactly how the embeds broke). Keep only
+    // the request-independent headers below.
     return [
       {
         source: '/:path*',
         headers: [
-          { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-XSS-Protection', value: '1; mode=block' },
@@ -74,7 +68,6 @@ const nextConfig = {
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           { key: 'Link', value: '</sw.js>; rel="serviceworker"' },
-          { key: 'Content-Security-Policy', value: csp },
         ],
       },
       // Static asset caching — immutable content-hashed files (1 year)
