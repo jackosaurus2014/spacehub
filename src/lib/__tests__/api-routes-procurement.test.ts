@@ -1153,7 +1153,7 @@ describe('PUT /api/procurement/saved-searches/[id]', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ name: 'Updated Name' }),
     });
-    const res = await savedSearchPUT(req, { params: { id: 'search-1' } });
+    const res = await savedSearchPUT(req, { params: Promise.resolve({ id: 'search-1' }) });
 
     expect(res.status).toBe(401);
   });
@@ -1167,7 +1167,7 @@ describe('PUT /api/procurement/saved-searches/[id]', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ name: 'Updated Name' }),
     });
-    const res = await savedSearchPUT(req, { params: { id: 'nonexistent' } });
+    const res = await savedSearchPUT(req, { params: Promise.resolve({ id: 'nonexistent' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -1185,7 +1185,7 @@ describe('PUT /api/procurement/saved-searches/[id]', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ name: 'Updated Name' }),
     });
-    const res = await savedSearchPUT(req, { params: { id: 'search-1' } });
+    const res = await savedSearchPUT(req, { params: Promise.resolve({ id: 'search-1' }) });
 
     expect(res.status).toBe(401);
   });
@@ -1207,7 +1207,7 @@ describe('PUT /api/procurement/saved-searches/[id]', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ name: 'Updated Name', alertEnabled: false }),
     });
-    const res = await savedSearchPUT(req, { params: { id: 'search-1' } });
+    const res = await savedSearchPUT(req, { params: Promise.resolve({ id: 'search-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -1227,7 +1227,7 @@ describe('DELETE /api/procurement/saved-searches/[id]', () => {
     const req = new NextRequest('http://localhost/api/procurement/saved-searches/search-1', {
       method: 'DELETE',
     });
-    const res = await savedSearchDELETE(req, { params: { id: 'search-1' } });
+    const res = await savedSearchDELETE(req, { params: Promise.resolve({ id: 'search-1' }) });
 
     expect(res.status).toBe(401);
   });
@@ -1239,7 +1239,7 @@ describe('DELETE /api/procurement/saved-searches/[id]', () => {
     const req = new NextRequest('http://localhost/api/procurement/saved-searches/nonexistent', {
       method: 'DELETE',
     });
-    const res = await savedSearchDELETE(req, { params: { id: 'nonexistent' } });
+    const res = await savedSearchDELETE(req, { params: Promise.resolve({ id: 'nonexistent' }) });
 
     expect(res.status).toBe(404);
   });
@@ -1253,7 +1253,7 @@ describe('DELETE /api/procurement/saved-searches/[id]', () => {
     const req = new NextRequest('http://localhost/api/procurement/saved-searches/search-1', {
       method: 'DELETE',
     });
-    const res = await savedSearchDELETE(req, { params: { id: 'search-1' } });
+    const res = await savedSearchDELETE(req, { params: Promise.resolve({ id: 'search-1' }) });
 
     expect(res.status).toBe(401);
   });
@@ -1268,7 +1268,7 @@ describe('DELETE /api/procurement/saved-searches/[id]', () => {
     const req = new NextRequest('http://localhost/api/procurement/saved-searches/search-1', {
       method: 'DELETE',
     });
-    const res = await savedSearchDELETE(req, { params: { id: 'search-1' } });
+    const res = await savedSearchDELETE(req, { params: Promise.resolve({ id: 'search-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -1286,7 +1286,7 @@ describe('DELETE /api/procurement/saved-searches/[id]', () => {
     const req = new NextRequest('http://localhost/api/procurement/saved-searches/search-1', {
       method: 'DELETE',
     });
-    const res = await savedSearchDELETE(req, { params: { id: 'search-1' } });
+    const res = await savedSearchDELETE(req, { params: Promise.resolve({ id: 'search-1' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);

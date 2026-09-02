@@ -9,11 +9,12 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function EmbedCountdownPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function EmbedCountdownPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const countdown = await prisma.countdownWidget.findUnique({
     where: { slug: params.slug },
   });

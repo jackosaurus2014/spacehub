@@ -613,7 +613,7 @@ describe('POST /api/messages', () => {
 
 describe('GET /api/messages/[conversationId]', () => {
   const conversationId = 'conv-1';
-  const routeParams = { params: { conversationId } };
+  const routeParams = { params: Promise.resolve({ conversationId }) };
 
   it('returns 401 when not authenticated', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -813,7 +813,7 @@ describe('GET /api/messages/[conversationId]', () => {
 
 describe('POST /api/messages/[conversationId]', () => {
   const conversationId = 'conv-1';
-  const routeParams = { params: { conversationId } };
+  const routeParams = { params: Promise.resolve({ conversationId }) };
 
   it('returns 401 when not authenticated', async () => {
     mockGetServerSession.mockResolvedValue(null);

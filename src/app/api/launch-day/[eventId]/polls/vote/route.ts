@@ -10,10 +10,8 @@ export const dynamic = 'force-dynamic';
 // POST — vote on a poll. One vote per actor (signed-in user id or anonymous
 // sn_vid cookie); voting again from the same actor updates the existing row
 // via the (pollId, voterKey) unique key rather than creating a second one.
-export async function POST(
-  request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const actor = await resolveLaunchDayActor(request);
     if (!actor) {

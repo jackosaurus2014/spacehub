@@ -15,8 +15,9 @@ export const dynamic = 'force-dynamic';
 // slugs are only unique per show (PodcastEpisode @@unique([podcastId, slug])).
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { slug: string; episodeSlug: string } },
+  props: { params: Promise<{ slug: string; episodeSlug: string }> }
 ) {
+  const params = await props.params;
   try {
     const podcast = await prisma.podcast.findUnique({
       where: { slug: params.slug },

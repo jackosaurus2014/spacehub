@@ -9,10 +9,8 @@ import { validationError } from '@/lib/errors';
 export const dynamic = 'force-dynamic';
 
 // GET — list active polls for an event
-export async function GET(
-  _request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(_request: Request, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const polls = await prisma.launchPoll.findMany({
       where: {
@@ -31,10 +29,8 @@ export async function GET(
 }
 
 // POST — create a new poll (admin only)
-export async function POST(
-  request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {

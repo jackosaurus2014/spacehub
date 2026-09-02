@@ -13,10 +13,8 @@ const yahooBreaker = createCircuitBreaker('yahoo-finance-detail', {
   resetTimeout: 120_000,
 });
 
-export async function GET(
-  request: Request,
-  { params }: { params: { ticker: string } }
-) {
+export async function GET(request: Request, props: { params: Promise<{ ticker: string }> }) {
+  const params = await props.params;
   const ticker = params.ticker.toUpperCase();
   const cacheKey = `stock-detail:${ticker}`;
 

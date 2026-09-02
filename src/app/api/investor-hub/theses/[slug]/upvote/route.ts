@@ -11,7 +11,7 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-type Params = { params: { slug: string } };
+type Params = { params: Promise<{ slug: string }> };
 
 // In-memory dedupe per session lifetime. This is not persistent — a dedicated
 // join table would be needed for hard dedupe. The client also stores an
@@ -37,7 +37,8 @@ function sweepRecentUpvotes() {
  * persist across server restarts; the client should also hide the upvote
  * button after a successful vote.
  */
-export async function POST(_request: Request, { params }: Params) {
+export async function POST(_request: Request, props: Params) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

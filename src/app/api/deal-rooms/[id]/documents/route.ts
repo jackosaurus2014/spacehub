@@ -11,10 +11,8 @@ const VALID_FILE_TYPES = ['pdf', 'pptx', 'xlsx', 'docx', 'png', 'jpg', 'csv', 't
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB limit for metadata tracking
 
 // GET — list documents in a room
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -62,10 +60,8 @@ export async function GET(
 }
 
 // POST — upload a document (metadata only for MVP)
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {

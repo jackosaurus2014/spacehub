@@ -19,10 +19,8 @@ export const dynamic = 'force-dynamic';
  * Admin only. Sets publishedAt = now and notifies followers of any companies
  * referenced in companyIds. Idempotent: re-publishing refreshes publishedAt.
  */
-export async function POST(
-  _request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function POST(_request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) return unauthorizedError();

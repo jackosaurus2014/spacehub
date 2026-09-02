@@ -7,10 +7,8 @@ import { getCurrentPhase, formatMissionTime } from '@/lib/launch/mission-phases'
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const { eventId } = params;
 

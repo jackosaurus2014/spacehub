@@ -30,10 +30,8 @@ async function assertHost(slug: string, userId: string) {
  * PATCH /api/study-groups/[slug]/meetings/[id]
  * Update a meeting (host only).
  */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { slug: string; id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ slug: string; id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();
@@ -94,8 +92,9 @@ export async function PATCH(
  */
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { slug: string; id: string } }
+  props: { params: Promise<{ slug: string; id: string }> }
 ) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();

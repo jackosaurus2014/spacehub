@@ -28,7 +28,7 @@ const BASE_URL = 'https://spacenexus.us';
 const EPISODE_LIST_LIMIT = 50;
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 const SHOW_SELECT = {
@@ -50,7 +50,8 @@ async function getShow(slug: string) {
   return prisma.podcast.findUnique({ where: { slug }, select: SHOW_SELECT });
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const show = await getShow(params.slug);
   if (!show) return { title: 'Podcast Not Found | SpaceNexus' };
 
@@ -78,7 +79,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function PodcastShowPage({ params }: PageProps) {
+export default async function PodcastShowPage(props: PageProps) {
+  const params = await props.params;
   const show = await getShow(params.slug);
   if (!show) notFound();
 

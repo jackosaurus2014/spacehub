@@ -13,10 +13,8 @@ export const dynamic = 'force-dynamic';
  * Rotate an API key: revoke the old one and create a new one with the same settings.
  * Returns the new full key (only time it is shown).
  */
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

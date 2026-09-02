@@ -19,10 +19,8 @@ import { createNotification } from '@/lib/notifications/create';
 export const dynamic = 'force-dynamic';
 
 /** GET /api/teams/channels/[id]/messages?before=ISO&limit=50 — paginated */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -89,10 +87,8 @@ export async function GET(
 }
 
 /** POST /api/teams/channels/[id]/messages — post (membership required) */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

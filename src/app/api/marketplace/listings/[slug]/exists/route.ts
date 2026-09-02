@@ -12,10 +12,8 @@ export const dynamic = 'force-dynamic';
 // Deliberately NOT the full [slug]/route.ts GET handler: that route
 // increments the listing's viewCount as a side effect, so hitting it from
 // middleware on every request would double-count views.
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const listing = await prisma.serviceListing.findUnique({
       where: { slug: params.slug },

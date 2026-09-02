@@ -12,10 +12,8 @@ export const dynamic = 'force-dynamic';
 // Deliberately NOT the page's own loader: that fans out to three further
 // queries (same-day events, same-category events, related companies) which
 // an existence check has no use for.
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const event = await prisma.spaceHistoryEvent.findUnique({
       where: { slug: params.slug },

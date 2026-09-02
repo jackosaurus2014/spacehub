@@ -20,6 +20,8 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           Try again
         </button>
         <br /><br />
+        {/* Hard navigation on purpose: global-error renders outside the app router after a root-level crash. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a href="/" style={{ color: '#3b82f6' }}>Go to homepage</a>
       </body>
     </html>

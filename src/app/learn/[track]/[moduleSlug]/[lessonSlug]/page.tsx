@@ -12,10 +12,11 @@ import LessonCompleteButton from '@/components/learn/LessonCompleteButton';
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-  params: { track: string; moduleSlug: string; lessonSlug: string };
+  params: Promise<{ track: string; moduleSlug: string; lessonSlug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   try {
     const lesson = await prisma.lesson.findFirst({
       where: { slug: params.lessonSlug, module: { slug: params.moduleSlug } },
@@ -40,7 +41,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function LessonPage({ params }: PageProps) {
+export default async function LessonPage(props: PageProps) {
+  const params = await props.params;
   const { track, moduleSlug, lessonSlug } = params;
   if (!(LEARNING_TRACKS as readonly string[]).includes(track)) {
     notFound();

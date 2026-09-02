@@ -14,10 +14,11 @@ import {
 export const dynamic = 'force-dynamic';
 
 interface RouteCtx {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-export async function GET(_req: NextRequest, { params }: RouteCtx) {
+export async function GET(_req: NextRequest, props: RouteCtx) {
+  const params = await props.params;
   try {
     const mod = await prisma.courseModule.findUnique({
       where: { slug: params.slug },
@@ -51,7 +52,8 @@ export async function GET(_req: NextRequest, { params }: RouteCtx) {
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: RouteCtx) {
+export async function PATCH(req: NextRequest, props: RouteCtx) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.isAdmin) return forbiddenError('Admin access required');
@@ -88,7 +90,8 @@ export async function PATCH(req: NextRequest, { params }: RouteCtx) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: RouteCtx) {
+export async function DELETE(_req: NextRequest, props: RouteCtx) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.isAdmin) return forbiddenError('Admin access required');

@@ -6,8 +6,11 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
   compress: true,
   staticPageGenerationTimeout: 300,
+  // Pin the tracing root to this checkout so a nested worktree (or a parent
+  // directory with its own lockfile) is never inferred as the workspace root.
+  outputFileTracingRoot: __dirname,
+  // Next 15: instrumentation.ts is stable, `experimental.instrumentationHook` removed.
   experimental: {
-    instrumentationHook: true,
     workerThreads: false, // Reduce memory usage during static generation
   },
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],

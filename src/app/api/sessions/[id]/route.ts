@@ -17,10 +17,8 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/sessions/[id]
  */
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const sessionRecord = await prisma.expertSession.findUnique({
       where: { id: params.id },
@@ -93,10 +91,8 @@ export async function GET(
 /**
  * PATCH /api/sessions/[id] — host only
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {
@@ -164,10 +160,8 @@ export async function PATCH(
 /**
  * DELETE /api/sessions/[id] — host only
  */
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {

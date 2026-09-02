@@ -15,10 +15,8 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 // PATCH /api/satellite-alerts/[id] — update an alert
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();
@@ -71,10 +69,8 @@ export async function PATCH(
 }
 
 // DELETE /api/satellite-alerts/[id]
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();

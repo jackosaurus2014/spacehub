@@ -16,10 +16,8 @@ export const dynamic = 'force-dynamic';
 /**
  * POST /api/sessions/[id]/rsvp — attendee RSVP
  */
-export async function POST(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {
@@ -119,10 +117,8 @@ export async function POST(
 /**
  * DELETE /api/sessions/[id]/rsvp — cancel RSVP
  */
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {

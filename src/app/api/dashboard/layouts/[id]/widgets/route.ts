@@ -16,7 +16,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const MAX_WIDGETS_PER_LAYOUT = 20;
@@ -25,7 +25,8 @@ const MAX_WIDGETS_PER_LAYOUT = 20;
  * POST /api/dashboard/layouts/[id]/widgets
  * Add a widget to a layout
  */
-export async function POST(req: NextRequest, { params }: RouteParams) {
+export async function POST(req: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 

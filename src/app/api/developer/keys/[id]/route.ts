@@ -12,10 +12,8 @@ export const dynamic = 'force-dynamic';
  * PUT /api/developer/keys/[id]
  * Update key name or toggle active status.
  */
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -87,10 +85,8 @@ export async function PUT(
  * DELETE /api/developer/keys/[id]
  * Revoke (soft delete) an API key.
  */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

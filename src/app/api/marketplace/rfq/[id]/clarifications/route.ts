@@ -9,7 +9,8 @@ import { authOptions } from '@/lib/auth';
 export const dynamic = 'force-dynamic';
 
 // GET: List clarifications for an RFQ
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     const rfq = await prisma.rFQ.findFirst({
@@ -58,7 +59,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // POST: Submit a question (provider) or answer (buyer)
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

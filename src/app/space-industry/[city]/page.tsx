@@ -10,7 +10,7 @@ import { SITE_STATS } from '@/lib/site-stats';
 export const revalidate = 86400;
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 // SPACE_CITIES (src/lib/city-data.ts) is a static, build-time-known array, so
@@ -27,7 +27,8 @@ export async function generateStaticParams() {
   return SPACE_CITIES.map((city) => ({ city: city.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCity(params.city);
   if (!city) return { title: 'City Not Found' };
 
@@ -54,7 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function CityPage({ params }: Props) {
+export default async function CityPage(props: Props) {
+  const params = await props.params;
   const city = getCity(params.city);
   if (!city) notFound();
 

@@ -25,7 +25,8 @@ const PRICING_LABELS: Record<string, string> = {
   rfq_only: 'Request Quote',
 };
 
-export default async function Image({ params }: { params: { slug: string } }) {
+export default async function Image(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   let name = 'Service Listing';
   let category = '';
   let pricingType = '';

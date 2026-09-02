@@ -18,10 +18,8 @@ export const dynamic = 'force-dynamic';
  * Admin-only. Marks a pending credential as verified, records the verifier
  * + timestamp, and notifies the user.
  */
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

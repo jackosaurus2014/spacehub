@@ -17,7 +17,8 @@ export function generateStaticParams() {
   return COST_TO_LAUNCH.map((c) => ({ thing: c.slug }));
 }
 
-export function generateMetadata({ params }: { params: { thing: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ thing: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const c = getCostToLaunch(params.thing);
   if (!c) return {};
   return {
@@ -28,7 +29,8 @@ export function generateMetadata({ params }: { params: { thing: string } }): Met
   };
 }
 
-export default function CostToLaunchPage({ params }: { params: { thing: string } }) {
+export default async function CostToLaunchPage(props: { params: Promise<{ thing: string }> }) {
+  const params = await props.params;
   const c = getCostToLaunch(params.thing);
   if (!c) notFound();
   const others = COST_TO_LAUNCH.filter((o) => o.slug !== c.slug);

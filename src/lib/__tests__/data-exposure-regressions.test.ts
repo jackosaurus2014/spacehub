@@ -124,7 +124,7 @@ describe('P7: deal-room [id] GET', () => {
     const { GET } = await import('@/app/api/deal-rooms/[id]/route');
     const res = await GET(
       new Request('http://localhost:3000/api/deal-rooms/room_1') as never,
-      { params: { id: 'room_1' } }
+      { params: Promise.resolve({ id: 'room_1' }) }
     );
     return { status: res.status, body: await res.json() };
   }
@@ -207,7 +207,7 @@ describe('P8: teams channel [id] GET', () => {
     const { GET } = await import('@/app/api/teams/channels/[id]/route');
     const res = await GET(
       new Request('http://localhost:3000/api/teams/channels/ch_1') as never,
-      { params: { id: 'ch_1' } }
+      { params: Promise.resolve({ id: 'ch_1' }) }
     );
     const body = await res.json();
 
@@ -226,7 +226,7 @@ describe('P8: study-group members GET', () => {
     const { GET } = await import('@/app/api/study-groups/[slug]/members/route');
     return GET(
       new Request('http://localhost:3000/api/study-groups/orbital-mechanics/members') as never,
-      { params: { slug: 'orbital-mechanics' } }
+      { params: Promise.resolve({ slug: 'orbital-mechanics' }) }
     );
   }
 
@@ -339,7 +339,7 @@ describe('P9c: session question upvote', () => {
 
     const { POST } = await import('@/app/api/sessions/[id]/questions/[qid]/upvote/route');
     const req = () => new Request('http://localhost:3000/x', { method: 'POST' }) as never;
-    const params = { params: { id: 's_1', qid: 'q_1' } };
+    const params = { params: Promise.resolve({ id: 's_1', qid: 'q_1' }) };
 
     const first = await POST(req(), params);
     expect(first.status).toBe(200);

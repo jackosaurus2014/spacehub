@@ -17,7 +17,8 @@ export function generateStaticParams() {
   return CHART_DEFS.map((c) => ({ slug: c.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const def = getChartDef(params.slug);
   if (!def) return {};
   const title = `${def.title} — Chart`;
@@ -30,7 +31,8 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default async function ChartPage({ params }: { params: { slug: string } }) {
+export default async function ChartPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const def = getChartDef(params.slug);
   if (!def) notFound();
   const series = await loadChartSeries(def.slug);

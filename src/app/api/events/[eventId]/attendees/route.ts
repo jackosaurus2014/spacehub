@@ -24,10 +24,10 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   req: NextRequest,
-  context: { params: { eventId: string } }
+  context: { params: Promise<{ eventId: string }> }
 ) {
   try {
-    const eventId = context.params?.eventId;
+    const eventId = (await context.params)?.eventId;
     if (!eventId) {
       return validationError('eventId path parameter is required');
     }

@@ -19,7 +19,8 @@ const SOURCE_LABELS: Record<string, string> = {
  * fail-soft (falls through to a generic Radar card) — same pattern as
  * src/app/marketplace/listings/[slug]/opengraph-image.tsx.
  */
-export default async function Image({ params }: { params: { id: string } }) {
+export default async function Image(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   let title = 'Regulatory Radar';
   let category = '';
   let agency = '';

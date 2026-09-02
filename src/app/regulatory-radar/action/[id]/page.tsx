@@ -25,7 +25,8 @@ function categoryLabel(category: string): string {
   return RADAR_CATEGORY_LABELS[category as RadarCategory] || category;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const entry = await getRadarEntryById(params.id);
   if (!entry) return { title: 'Regulatory action not found | SpaceNexus' };
 
@@ -58,7 +59,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
  * entries have a canonical URL with a share-ready OG card (the Radar
  * timeline itself is one long page).
  */
-export default async function RegulatoryActionDetailPage({ params }: { params: { id: string } }) {
+export default async function RegulatoryActionDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const entry: RadarEntry | null = await getRadarEntryById(params.id);
   if (!entry) notFound();
 

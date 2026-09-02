@@ -31,10 +31,8 @@ const SIGNIFICANT_FIELDS = [
  * PATCH /api/account/credentials/[id]
  * Owner-only edit. Significant field changes reset status back to 'self_reported'.
  */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -130,10 +128,8 @@ export async function PATCH(
  * DELETE /api/account/credentials/[id]
  * Owner-only delete.
  */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

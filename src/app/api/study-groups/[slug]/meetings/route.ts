@@ -18,10 +18,8 @@ export const dynamic = 'force-dynamic';
  * GET /api/study-groups/[slug]/meetings
  * List meetings (upcoming first, then past).
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const { slug } = params;
     const { searchParams } = new URL(req.url);
@@ -74,10 +72,8 @@ export async function GET(
  * POST /api/study-groups/[slug]/meetings
  * Schedule a meeting (host only).
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();

@@ -23,10 +23,8 @@ export const dynamic = 'force-dynamic';
  * Admin-only. Rejects a pending credential and stores the optional reason.
  * Notifies the credential owner.
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

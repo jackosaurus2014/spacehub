@@ -20,10 +20,8 @@ const REACTION_MIN_GAP_MS = 2000;
 const reactionLimiter = new BoundedRateLimiter({ minGapMs: REACTION_MIN_GAP_MS });
 
 // GET — aggregate reaction counts for last 30 seconds
-export async function GET(
-  _request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(_request: Request, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const thirtySecondsAgo = new Date(Date.now() - 30000);
 
@@ -71,10 +69,8 @@ export async function GET(
 
 // POST — send a reaction (rate limited: 1 per 2 seconds per actor).
 // Anonymous visitors may react; identity comes from the sn_vid cookie.
-export async function POST(
-  request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ eventId: string }> }) {
+  const params = await props.params;
   try {
     const actor = await resolveLaunchDayActor(request);
     if (!actor) {

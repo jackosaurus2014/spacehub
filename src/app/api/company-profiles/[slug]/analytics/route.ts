@@ -28,7 +28,8 @@ function clientIp(request: NextRequest): string {
     const parts = xff.split(',').map((s) => s.trim()).filter(Boolean);
     if (parts.length > 0) return parts[parts.length - 1];
   }
-  return request.headers.get('x-real-ip') || request.ip || 'unknown';
+  // Next 15 removed `NextRequest.ip`; the proxy-supplied headers are the only source.
+  return request.headers.get('x-real-ip') || 'unknown';
 }
 
 function pruneRecentEvents(now: number): void {

@@ -16,10 +16,8 @@ export const dynamic = 'force-dynamic';
  * DELETE /api/live-chat/[id]
  * Deletes a chat message. Allowed for the message author or any admin.
  */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

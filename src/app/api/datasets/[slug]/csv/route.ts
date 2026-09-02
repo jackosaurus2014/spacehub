@@ -182,7 +182,8 @@ const DATASETS: Record<string, { title: string; notes?: string[]; build: () => P
   },
 };
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const def = DATASETS[params.slug];
   if (!def) return NextResponse.json({ error: 'Unknown dataset' }, { status: 404 });
 

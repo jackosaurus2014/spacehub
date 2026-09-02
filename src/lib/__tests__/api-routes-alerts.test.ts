@@ -529,7 +529,7 @@ describe('POST /api/alerts', () => {
 // =============================================================================
 
 describe('GET /api/alerts/[id]', () => {
-  const params = { id: 'rule-1' };
+  const params = Promise.resolve({ id: 'rule-1' });
 
   it('returns 401 when not authenticated', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -545,7 +545,7 @@ describe('GET /api/alerts/[id]', () => {
     mockPrisma.alertRule.findUnique.mockResolvedValue(null);
 
     const req = makeGetRequest('http://localhost/api/alerts/rule-999');
-    const res = await alertIdGET(req, { params: { id: 'rule-999' } });
+    const res = await alertIdGET(req, { params: Promise.resolve({ id: 'rule-999' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -601,7 +601,7 @@ describe('GET /api/alerts/[id]', () => {
 // =============================================================================
 
 describe('PUT /api/alerts/[id]', () => {
-  const params = { id: 'rule-1' };
+  const params = Promise.resolve({ id: 'rule-1' });
 
   it('returns 401 when not authenticated', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -753,7 +753,7 @@ describe('PUT /api/alerts/[id]', () => {
 // =============================================================================
 
 describe('DELETE /api/alerts/[id]', () => {
-  const params = { id: 'rule-1' };
+  const params = Promise.resolve({ id: 'rule-1' });
 
   it('returns 401 when not authenticated', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -1436,7 +1436,7 @@ describe('GET /api/watchlist/companies/check', () => {
 // =============================================================================
 
 describe('PUT /api/watchlist/companies/[id]', () => {
-  const params = { id: 'wl-1' };
+  const params = Promise.resolve({ id: 'wl-1' });
 
   it('returns 401 when not authenticated', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -1460,7 +1460,7 @@ describe('PUT /api/watchlist/companies/[id]', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ priority: 'high' }),
     });
-    const res = await watchlistItemPUT(req, { params: { id: 'wl-999' } });
+    const res = await watchlistItemPUT(req, { params: Promise.resolve({ id: 'wl-999' }) });
 
     expect(res.status).toBe(404);
   });
@@ -1557,7 +1557,7 @@ describe('PUT /api/watchlist/companies/[id]', () => {
 // =============================================================================
 
 describe('DELETE /api/watchlist/companies/[id]', () => {
-  const params = { id: 'wl-1' };
+  const params = Promise.resolve({ id: 'wl-1' });
 
   it('returns 401 when not authenticated', async () => {
     mockGetServerSession.mockResolvedValue(null);
@@ -1577,7 +1577,7 @@ describe('DELETE /api/watchlist/companies/[id]', () => {
     const req = new Request('http://localhost/api/watchlist/companies/wl-999', {
       method: 'DELETE',
     });
-    const res = await watchlistItemDELETE(req, { params: { id: 'wl-999' } });
+    const res = await watchlistItemDELETE(req, { params: Promise.resolve({ id: 'wl-999' }) });
 
     expect(res.status).toBe(404);
   });

@@ -152,10 +152,11 @@ function PodcastCard({ p }: { p: PodcastListItem }) {
 }
 
 interface PageProps {
-  searchParams?: { q?: string; category?: string };
+  searchParams?: Promise<{ q?: string; category?: string }>;
 }
 
-export default async function PodcastsDirectoryPage({ searchParams }: PageProps) {
+export default async function PodcastsDirectoryPage(props: PageProps) {
+  const searchParams = await props.searchParams;
   const q = (searchParams?.q || '').trim();
   const category = (searchParams?.category || '').trim();
 

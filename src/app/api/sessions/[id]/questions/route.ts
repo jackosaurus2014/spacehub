@@ -17,10 +17,8 @@ export const dynamic = 'force-dynamic';
  * GET /api/sessions/[id]/questions
  * Anyone can list questions; sorted by upvotes desc.
  */
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await prisma.expertSession.findUnique({
       where: { id: params.id },
@@ -67,10 +65,8 @@ export async function GET(
  * POST /api/sessions/[id]/questions
  * Attendees submit a question.
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {

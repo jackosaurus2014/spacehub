@@ -18,16 +18,16 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 interface HistoryPageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     decade?: string;
     category?: string;
     company?: string;
     q?: string;
     sort?: string;
-  };
+  }>;
 }
 
-async function loadEvents(params: HistoryPageProps['searchParams']) {
+async function loadEvents(params: Awaited<HistoryPageProps['searchParams']>) {
   const decade = params?.decade ? parseInt(params.decade, 10) : null;
   const category = params?.category || '';
   const companyId = params?.company || '';
@@ -99,7 +99,8 @@ async function loadEvents(params: HistoryPageProps['searchParams']) {
   }
 }
 
-export default async function HistoryPage({ searchParams }: HistoryPageProps) {
+export default async function HistoryPage(props: HistoryPageProps) {
+  const searchParams = await props.searchParams;
   const [{ events, decades, categories, totalAll }, today] = await Promise.all([loadEvents(searchParams), loadTodayInSpace()]);
 
   return (

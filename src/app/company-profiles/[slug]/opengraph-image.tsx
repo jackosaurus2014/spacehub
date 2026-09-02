@@ -21,7 +21,8 @@ const TIER_LABELS: Record<number, string> = {
   3: 'Emerging',
 };
 
-export default async function Image({ params }: { params: { slug: string } }) {
+export default async function Image(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   let name = 'Company Profile';
   let sector = '';
   let headquarters = '';

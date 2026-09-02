@@ -101,11 +101,12 @@ export async function generateStaticParams() {
   return JOB_LANDING_PAGES.map((entry) => ({ slug: entry.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const entry = getJobLandingPage(params.slug);
   if (!entry) {
     return { title: 'Jobs not found | SpaceNexus' };
@@ -138,7 +139,8 @@ export async function generateMetadata({
 // Page
 // ────────────────────────────────────────
 
-export default async function JobLandingPage({ params }: { params: { slug: string } }) {
+export default async function JobLandingPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const entry = getJobLandingPage(params.slug);
   if (!entry) notFound();
 

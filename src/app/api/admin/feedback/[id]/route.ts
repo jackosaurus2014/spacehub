@@ -18,10 +18,8 @@ import { isFeedbackStatus } from '@/lib/feedback';
  * PATCH /api/admin/feedback/[id] — update a FeedbackSubmission's triage
  * status (new | reviewed | actioned). Admin-only.
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

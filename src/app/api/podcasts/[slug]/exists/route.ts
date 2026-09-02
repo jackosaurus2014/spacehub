@@ -11,10 +11,8 @@ export const dynamic = 'force-dynamic';
 //
 // Mirrors the page's own gate exactly: src/app/podcasts/[slug]/page.tsx
 // calls notFound() only when no Podcast row carries the slug.
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { slug: string } },
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const podcast = await prisma.podcast.findUnique({
       where: { slug: params.slug },

@@ -12,10 +12,8 @@ export const dynamic = 'force-dynamic';
 // Mirrors src/app/gig-work/[id]/page.tsx's gate, which calls notFound()
 // purely on "row missing" — status/visibility filtering happens in the page
 // body, not the 404 decision, so this must not filter either.
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const gig = await prisma.gigOpportunity.findUnique({
       where: { id: params.id },

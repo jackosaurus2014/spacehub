@@ -16,7 +16,8 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function EmbedChartPage({ params }: { params: { slug: string } }) {
+export default async function EmbedChartPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const def = getChartDef(params.slug);
   if (!def) notFound();
   return (

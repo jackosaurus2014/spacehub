@@ -12,10 +12,8 @@ export const dynamic = 'force-dynamic';
 // Mirrors the page's own gate exactly: src/app/build-guides/[slug]/page.tsx
 // calls notFound() when the guide is missing OR unpublished, so an
 // unpublished guide must report "does not exist" here too.
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const guide = await prisma.buildGuide.findUnique({
       where: { slug: params.slug },

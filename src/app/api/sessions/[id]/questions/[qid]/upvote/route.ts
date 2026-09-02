@@ -42,8 +42,9 @@ function recordVote(key: string): boolean {
  */
 export async function POST(
   _request: NextRequest,
-  { params }: { params: { id: string; qid: string } }
+  props: { params: Promise<{ id: string; qid: string }> }
 ) {
+  const params = await props.params;
   try {
     const auth = await getServerSession(authOptions);
     if (!auth?.user?.id) {

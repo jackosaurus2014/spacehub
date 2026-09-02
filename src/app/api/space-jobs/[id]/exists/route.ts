@@ -16,10 +16,8 @@ export const dynamic = 'force-dynamic';
 // Mirrors the page's gate: src/app/space-talent/job/[id]/page.tsx calls
 // notFound() when the posting is missing OR !isActive, so a deactivated
 // posting must report "does not exist" here too.
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const job = await prisma.spaceJobPosting.findUnique({
       where: { id: params.id },

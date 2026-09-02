@@ -3,10 +3,8 @@ import { getModuleContent, getModuleFreshness } from '@/lib/dynamic-content';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { module: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ module: string }> }) {
+  const params = await props.params;
   const { module } = params;
   const { searchParams } = new URL(request.url);
   const section = searchParams.get('section');

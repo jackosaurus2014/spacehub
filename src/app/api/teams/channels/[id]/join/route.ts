@@ -13,10 +13,8 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 /** POST /api/teams/channels/[id]/join — add self for public channels */
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

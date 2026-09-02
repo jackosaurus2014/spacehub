@@ -56,29 +56,29 @@ beforeEach(() => jest.clearAllMocks());
 describe('build-guides exists', () => {
   it('404s an unknown slug', async () => {
     db.buildGuide.findUnique.mockResolvedValue(null);
-    expect((await buildGuideExists(req(), { params: { slug: 'nope' } })).status).toBe(404);
+    expect((await buildGuideExists(req(), { params: Promise.resolve({ slug: 'nope' }) })).status).toBe(404);
   });
 
   it('404s an unpublished guide — matching the page\'s own notFound() gate', async () => {
     db.buildGuide.findUnique.mockResolvedValue({ id: 'a', published: false });
-    expect((await buildGuideExists(req(), { params: { slug: 'draft' } })).status).toBe(404);
+    expect((await buildGuideExists(req(), { params: Promise.resolve({ slug: 'draft' }) })).status).toBe(404);
   });
 
   it('200s a published guide', async () => {
     db.buildGuide.findUnique.mockResolvedValue({ id: 'a', published: true });
-    expect((await buildGuideExists(req(), { params: { slug: 'cansat' } })).status).toBe(200);
+    expect((await buildGuideExists(req(), { params: Promise.resolve({ slug: 'cansat' }) })).status).toBe(200);
   });
 
   it('fails OPEN when the query throws', async () => {
     db.buildGuide.findUnique.mockRejectedValue(new Error('connection reset'));
-    const res = await buildGuideExists(req(), { params: { slug: 'cansat' } });
+    const res = await buildGuideExists(req(), { params: Promise.resolve({ slug: 'cansat' }) });
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toMatchObject({ exists: true, error: true });
   });
 
   it('reads only the columns the decision needs', async () => {
     db.buildGuide.findUnique.mockResolvedValue({ id: 'a', published: true });
-    await buildGuideExists(req(), { params: { slug: 'cansat' } });
+    await buildGuideExists(req(), { params: Promise.resolve({ slug: 'cansat' }) });
     expect(db.buildGuide.findUnique).toHaveBeenCalledWith({
       where: { slug: 'cansat' },
       select: { id: true, published: true },
@@ -89,67 +89,67 @@ describe('build-guides exists', () => {
 describe('space-talent job exists', () => {
   it('404s an inactive posting — the page notFound()s on !isActive', async () => {
     db.spaceJobPosting.findUnique.mockResolvedValue({ id: 'j1', isActive: false });
-    expect((await jobExists(req(), { params: { id: 'j1' } })).status).toBe(404);
+    expect((await jobExists(req(), { params: Promise.resolve({ id: 'j1' }) })).status).toBe(404);
   });
 
   it('200s an active posting', async () => {
     db.spaceJobPosting.findUnique.mockResolvedValue({ id: 'j1', isActive: true });
-    expect((await jobExists(req(), { params: { id: 'j1' } })).status).toBe(200);
+    expect((await jobExists(req(), { params: Promise.resolve({ id: 'j1' }) })).status).toBe(200);
   });
 
   it('fails OPEN when the query throws', async () => {
     db.spaceJobPosting.findUnique.mockRejectedValue(new Error('timeout'));
-    expect((await jobExists(req(), { params: { id: 'j1' } })).status).toBe(200);
+    expect((await jobExists(req(), { params: Promise.resolve({ id: 'j1' }) })).status).toBe(200);
   });
 });
 
 describe('history exists', () => {
   it('404s unknown, 200s known', async () => {
     db.spaceHistoryEvent.findUnique.mockResolvedValue(null);
-    expect((await historyExists(req(), { params: { slug: 'x' } })).status).toBe(404);
+    expect((await historyExists(req(), { params: Promise.resolve({ slug: 'x' }) })).status).toBe(404);
     db.spaceHistoryEvent.findUnique.mockResolvedValue({ id: 'h1' });
-    expect((await historyExists(req(), { params: { slug: 'apollo-11' } })).status).toBe(200);
+    expect((await historyExists(req(), { params: Promise.resolve({ slug: 'apollo-11' }) })).status).toBe(200);
   });
 });
 
 describe('regulatory-radar action exists', () => {
   it('404s a malformed id without touching the database', async () => {
-    const res = await radarExists(req(), { params: { id: 'not a cuid!' } });
+    const res = await radarExists(req(), { params: Promise.resolve({ id: 'not a cuid!' }) });
     expect(res.status).toBe(404);
     expect(db.regulatoryAction.findUnique).not.toHaveBeenCalled();
   });
 
   it('404s an id that is well-formed but absent', async () => {
     db.regulatoryAction.findUnique.mockResolvedValue(null);
-    expect((await radarExists(req(), { params: { id: 'clx123abc' } })).status).toBe(404);
+    expect((await radarExists(req(), { params: Promise.resolve({ id: 'clx123abc' }) })).status).toBe(404);
   });
 
   it('200s a real action', async () => {
     db.regulatoryAction.findUnique.mockResolvedValue({ id: 'clx123abc' });
-    expect((await radarExists(req(), { params: { id: 'clx123abc' } })).status).toBe(200);
+    expect((await radarExists(req(), { params: Promise.resolve({ id: 'clx123abc' }) })).status).toBe(200);
   });
 });
 
 describe('season chronicle exists', () => {
   it.each(['abc', '', '-1', '3.5', '12abc'])('404s non-integer season %p without querying', async (n) => {
-    const res = await seasonExists(req(), { params: { n } });
+    const res = await seasonExists(req(), { params: Promise.resolve({ n }) });
     expect(res.status).toBe(404);
     expect(db.seasonalEvent.findFirst).not.toHaveBeenCalled();
   });
 
   it('404s a numeric season with no sealed chronicle (the thin-page case)', async () => {
     db.seasonalEvent.findFirst.mockResolvedValue(null);
-    expect((await seasonExists(req(), { params: { n: '9999' } })).status).toBe(404);
+    expect((await seasonExists(req(), { params: Promise.resolve({ n: '9999' }) })).status).toBe(404);
   });
 
   it('200s a sealed season', async () => {
     db.seasonalEvent.findFirst.mockResolvedValue({ id: 's1' });
-    expect((await seasonExists(req(), { params: { n: '3' } })).status).toBe(200);
+    expect((await seasonExists(req(), { params: Promise.resolve({ n: '3' }) })).status).toBe(200);
   });
 
   it('fails OPEN when the query throws', async () => {
     db.seasonalEvent.findFirst.mockRejectedValue(new Error('db down'));
-    expect((await seasonExists(req(), { params: { n: '3' } })).status).toBe(200);
+    expect((await seasonExists(req(), { params: Promise.resolve({ n: '3' }) })).status).toBe(200);
   });
 });
 

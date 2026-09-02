@@ -21,10 +21,8 @@ export const dynamic = 'force-dynamic';
  * The credential must already include enough evidence (verificationUrl or
  * supportingDocUrl) for an admin to make a decision.
  */
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
