@@ -9,6 +9,11 @@
  */
 import type { GameState } from '../types';
 import { processTick, processFullTick } from '../game-engine';
+import { TICKS_PER_GAME_MONTH } from '../constants';
+
+/** Clock unification: whole units + the sub-unit carry — the exact production. */
+const minedTotal = (s: { resources: Record<string, number>; fractionalCarry?: Record<string, number> }) =>
+  Object.values(s.resources).reduce((a, b) => a + b, 0) + Object.values(s.fractionalCarry || {}).reduce((a, b) => a + b, 0);
 import { getGlobalGameDate } from '../server-time';
 import { getSpecializationBonuses } from '../specializations';
 import { getVictoryBonuses } from '../victory-conditions';
@@ -111,9 +116,7 @@ describe('specializations wiring — bonuses apply in the tick', () => {
       activeServices: [miningService],
       specialization: { primary: { path: 'mining_baron', tier: 3 }, secondary: null, respecCount: 0 },
     }));
-    const totalPlain = Object.values(plain.resources).reduce((a, b) => a + b, 0);
-    const totalSpec = Object.values(specced.resources).reduce((a, b) => a + b, 0);
-    expect(totalSpec).toBeGreaterThan(totalPlain);
+    expect(minedTotal(specced)).toBeGreaterThan(minedTotal(plain));
   });
 
   it('maintenance_reduction lowers building maintenance', () => {
@@ -160,9 +163,10 @@ describe('subsidiary income wiring', () => {
     });
     const deltaPlain = tickMoneyDelta(plain);
     const deltaSub = tickMoneyDelta(withSub);
-    // sub_mining base $20M × ops mult 3.5 = $70M gross − overhead ($5M+1.5M) = $63.5M/mo
+    // sub_mining base $20M × ops mult 3.5 = $70M gross − overhead ($5M+1.5M) = $63.5M/mo,
+    // credited per tick at monthly / TICKS_PER_GAME_MONTH (10,800 since the clock unification).
     expect(deltaSub).toBeGreaterThan(deltaPlain);
-    expect(deltaSub - deltaPlain).toBeCloseTo(Math.round(63_500_000 / 30), -3);
+    expect(Math.abs((deltaSub - deltaPlain) - Math.round(63_500_000 / TICKS_PER_GAME_MONTH))).toBeLessThanOrEqual(10);
   });
 
   it('subsidiary synergy bonus raises matching service revenue', () => {
@@ -224,8 +228,8 @@ describe('territory wiring — governor benefits + stakeholder bonus', () => {
     });
     const deltaPlain = tickMoneyDelta(plain);
     const deltaGov = tickMoneyDelta(governor);
-    // tax = min(zone_leo cap $10M, 2% × $2B = $40M) = $10M/mo → /30 per tick
-    expect(deltaGov - deltaPlain).toBeCloseTo(Math.round(10_000_000 / 30), -2);
+    // tax = min(zone_leo cap $10M, 2% × $2B = $40M) = $10M/mo → / TICKS_PER_GAME_MONTH per tick
+    expect(Math.abs((deltaGov - deltaPlain) - Math.round(10_000_000 / TICKS_PER_GAME_MONTH))).toBeLessThanOrEqual(5);
   });
 
   it('multi-zone governance penalty reduces per-zone tax', () => {
@@ -241,7 +245,7 @@ describe('territory wiring — governor benefits + stakeholder bonus', () => {
     const one = tickMoneyDelta(oneZone);
     const two = tickMoneyDelta(twoZones);
     // Two capped zones at 0.9 penalty: 2 × $10M × 0.9 = $18M/mo vs $10M/mo
-    expect(two - one).toBeCloseTo(Math.round(8_000_000 / 30), -2);
+    expect(Math.abs((two - one) - Math.round(8_000_000 / TICKS_PER_GAME_MONTH))).toBeLessThanOrEqual(5);
   });
 
   it('stakeholder standing raises revenue of services in the zone', () => {
@@ -511,8 +515,7 @@ describe('mini-activity bonus applier', () => {
       { type: 'mining_boost', value: 1.5, durationMs: 600_000, label: '+50% mining (10m)' },
       now,
     ));
-    const sum = (s: GameState) => Object.values(s.resources).reduce((a, b) => a + b, 0);
-    expect(sum(boostOut)).toBeGreaterThan(sum(plainOut));
+    expect(minedTotal(boostOut)).toBeGreaterThan(minedTotal(plainOut));
   });
 
   it('research_speed creates a research boost', () => {

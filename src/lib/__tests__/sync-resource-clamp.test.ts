@@ -58,6 +58,7 @@ jest.mock('@/lib/game/server-ledger', () => ({
   recordLedger: jest.fn(),
 }));
 jest.mock('@/lib/game/server-time', () => ({
+  ...jest.requireActual('@/lib/game/server-time'), // clock constants stay real
   getGlobalGameDate: jest.fn(() => ({ totalMonths: 100, year: 2135, month: 4 })),
   formatServerDate: jest.fn(() => 'April 2135'),
 }));
@@ -68,7 +69,8 @@ jest.mock('@/lib/game/referrals', () => ({
 
 import { getServerSession } from 'next-auth';
 import { logger } from '@/lib/logger';
-import { RESOURCE_BASELINE_KEY, RESOURCE_CEILINGS_KEY, FLAT_FLOOR_MIN } from '@/lib/game/resource-plausibility';
+import { RESOURCE_BASELINE_KEY, RESOURCE_CEILINGS_KEY, FLAT_FLOOR_MIN, buildServerFlowState, computeServerMonthlyGross } from '@/lib/game/resource-plausibility';
+import { plausibleIncomeHeadroom } from '@/lib/game/ledger-reconcile';
 import { __resetRouteThrottle } from '@/lib/game/route-throttle';
 import { STARTING_MONEY } from '@/lib/game/constants';
 
@@ -288,11 +290,16 @@ describe('POST /api/space-tycoon/sync — resource plausibility clamp', () => {
     await postSync({ money: 999_999_999_999_999, resources: { iron: 1000 } });
 
     const data = persisted();
-    // $2M/s × ~60 s on top of $1M prev — the E1 money ceiling, unchanged.
-    // (elapsed is measured at request time, so allow a few seconds of test
-    // wall-clock on top of the fixture's 60 s.)
-    expect(data.money as number).toBeLessThanOrEqual(1_000_000 + 2_000 * 65_000);
-    expect(data.money as number).toBeGreaterThanOrEqual(1_000_000 + 2_000 * 60_000);
+    // Clock unification (2026-09-02): the E1 money ceiling is now derived
+    // from the row's own monthly gross (an empty row carries only the tier-1
+    // subsidiary allowance) over the ~60 s window. (elapsed is measured at
+    // request time, so allow a few seconds of test wall-clock on top.)
+    const gross = computeServerMonthlyGross(buildServerFlowState({
+      prevResources: {}, prevBuildingsData: [], prevShipsData: [], prevActiveServices: [], prevResearch: [],
+    }));
+    expect(data.money as number).toBeLessThanOrEqual(1_000_000 + plausibleIncomeHeadroom(65_000, gross));
+    expect(data.money as number).toBeGreaterThanOrEqual(1_000_000 + plausibleIncomeHeadroom(60_000, gross));
+    expect(data.money as number).toBeLessThan(1_000_000 + 2_000 * 60_000); // far below the old flat $2M/s
     expect(mockMarketAuditLog.create).toHaveBeenCalledTimes(1);
     expect(mockMarketAuditLog.create.mock.calls[0][0].data.eventType).toBe('client_money_implausible_rejected');
   });

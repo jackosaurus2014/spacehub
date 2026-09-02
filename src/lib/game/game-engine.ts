@@ -193,7 +193,11 @@ export function processTick(state: GameState): GameState {
   const isMonthEnd = globalDate.totalMonths > prevTotalMonths;
   const newDate = { year: globalDate.year, month: globalDate.month };
   const tickCount = isMonthEnd ? 0 : (state.tickCount || 0) + 1;
-  const fraction = 1 / TICKS_PER_GAME_MONTH; // Fraction of monthly revenue/cost per tick
+  // Fraction of monthly revenue/cost per tick. Clock unification (2026-09-02):
+  // TICKS_PER_GAME_MONTH is derived from the world calendar (10,800 ticks of
+  // 2 s = 6 real hours), so one game-month of P&L accrues over exactly one
+  // calendar month — the same clock isMonthEnd above fires on.
+  const fraction = 1 / TICKS_PER_GAME_MONTH;
 
   const events: GameEvent[] = [];
   let money = state.money;
@@ -839,6 +843,21 @@ export function processTick(state: GameState): GameState {
     const loc = minedFlowsByLocationThisTick[locationId] || (minedFlowsByLocationThisTick[locationId] = {});
     loc[resource] = (loc[resource] || 0) + added;
   };
+  // Clock unification (2026-09-02): at 10,800 ticks per game-month almost
+  // every producer yields well under one unit per tick. The old code rounded
+  // the per-tick amount (dropping it) and lumped a whole month at the
+  // boundary — which lost every unit for a session that ended before the
+  // boundary. Sub-unit output is now CARRIED between ticks (state.
+  // fractionalCarry) and credited as whole units complete, so production is
+  // exact over any window and identical to the away-operations integral.
+  const fractionalCarry: Record<string, number> = { ...(state.fractionalCarry || {}) };
+  const creditCarry = (key: string, amount: number): number => {
+    if (!(amount > 0) || !Number.isFinite(amount)) return 0;
+    const total = (fractionalCarry[key] || 0) + amount;
+    const whole = Math.floor(total);
+    fractionalCarry[key] = total - whole;
+    return whole;
+  };
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
@@ -870,14 +889,8 @@ export function processTick(state: GameState): GameState {
       // the last server snapshot; neutral 1.0 (no penalty) when absent/stale.
       const extractionPressure = getExtractionPressureMultiplier(state.extractionPressure, svc.locationId, resource);
       const fractionalAmount = amountPerMonth * fraction * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
-      if (fractionalAmount >= 1) {
-        const added = Math.round(fractionalAmount);
-        routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
-        minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
-        addLocationMined(svc.locationId, resource, added);
-      } else if (isMonthEnd) {
-        // On month boundary, add at least the monthly total
-        const added = Math.round(amountPerMonth * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff);
+      const added = creditCarry(`${svc.locationId}:${resource}`, fractionalAmount);
+      if (added >= 1) {
         routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
         minedFlowsThisTick[resource] = (minedFlowsThisTick[resource] || 0) + added;
         addLocationMined(svc.locationId, resource, added);
@@ -898,12 +911,8 @@ export function processTick(state: GameState): GameState {
   if (megaBonuses.passiveResources) {
     for (const [resId, amt] of Object.entries(megaBonuses.passiveResources)) {
       if (!amt || amt <= 0) continue;
-      const fractionalAmt = amt * fraction;
-      if (fractionalAmt >= 1) {
-        resources[resId] = (resources[resId] || 0) + Math.round(fractionalAmt);
-      } else if (isMonthEnd) {
-        resources[resId] = (resources[resId] || 0) + Math.round(amt);
-      }
+      const added = creditCarry(`mega:${resId}`, amt * fraction);
+      if (added >= 1) resources[resId] = (resources[resId] || 0) + added;
     }
   }
 
@@ -922,12 +931,8 @@ export function processTick(state: GameState): GameState {
   {
     const licenseB = getFactionLicenseBonuses(state);
     if (licenseB.biomaterialPerMonth > 0) {
-      const fractionalAmt = licenseB.biomaterialPerMonth * fraction;
-      if (fractionalAmt >= 1) {
-        resources.xenogenic_biomatter = (resources.xenogenic_biomatter || 0) + Math.round(fractionalAmt);
-      } else if (isMonthEnd) {
-        resources.xenogenic_biomatter = (resources.xenogenic_biomatter || 0) + Math.round(licenseB.biomaterialPerMonth);
-      }
+      const added = creditCarry('license:xenogenic_biomatter', licenseB.biomaterialPerMonth * fraction);
+      if (added >= 1) resources.xenogenic_biomatter = (resources.xenogenic_biomatter || 0) + added;
     }
   }
 
@@ -1261,9 +1266,15 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 10. Track income history (last 24 months) ────────────────────
+  // ─── 10. Track income history (last 24 samples) ───────────────────
+  // Clock unification (2026-09-02): the dashboard chart is labelled per
+  // month, so store the monthly RUN-RATE this tick implies (per-tick net x
+  // ticks per month). Month-end ticks are skipped — their one-off lumps
+  // (insurance, disasters, training) would spike the series 10,800x.
   const netIncome = Math.round(monthlyRevenue - monthlyCosts - payroll);
-  const incomeHistory = [...(state.incomeHistory || []), netIncome].slice(-24);
+  const incomeHistory = isMonthEnd
+    ? (state.incomeHistory || [])
+    : [...(state.incomeHistory || []), netIncome * TICKS_PER_GAME_MONTH].slice(-24);
 
   // ─── 11. Bankruptcy protection ────────────────────────────────────
   // Don't let money go below -$50M (prevents death spiral)
@@ -1291,9 +1302,12 @@ export function processTick(state: GameState): GameState {
   if (completedResearch.length > state.completedResearch.length) {
     dm.research_completed += (completedResearch.length - state.completedResearch.length);
   }
-  // Track revenue earned this tick
+  // Track revenue earned this tick. `monthlyRevenue` is the sum of this
+  // tick's already-fractional credits (misnamed; each term carried
+  // `fraction`), so it is added as-is — the old `* fraction` divided the
+  // figure by the tick count a second time (clock unification, 2026-09-02).
   if (monthlyRevenue > 0) {
-    dm.revenue_earned += Math.round(monthlyRevenue * fraction);
+    dm.revenue_earned += Math.round(monthlyRevenue);
   }
   // Track mining output
   for (const [resId, qty] of Object.entries(resources)) {
@@ -1326,6 +1340,7 @@ export function processTick(state: GameState): GameState {
     ...state,
     gameDate: newDate,
     tickCount: isMonthEnd ? 0 : tickCount,
+    fractionalCarry,
     money,
     totalEarned,
     totalSpent,
@@ -2006,6 +2021,9 @@ export function processFullTick(state: GameState): GameState {
     if (newState.ships && newState.ships.length > 0) {
       const now = Date.now();
       const shipFraction = 1 / TICKS_PER_GAME_MONTH; // Same fractional rate as revenue
+      // Clock unification: sub-unit ship mining carried between ticks (same
+      // mechanism as processTick's creditCarry — see the §6 comment there).
+      const shipCarry: Record<string, number> = { ...(newState.fractionalCarry || {}) };
       const resources = { ...(newState.resources || {}) };
       // W14 (cargo-logistics): per-location stockpiles for ship-mining
       // accrual + freight arrival credits. Same copy-on-write pattern as
@@ -2120,7 +2138,11 @@ export function processFullTick(state: GameState): GameState {
             // building-based mining uses.
             const shipMiningLocationId = ship.miningOperation.locationId || ship.currentLocation;
             const shipExtractionPressure = getExtractionPressureMultiplier(newState.extractionPressure, shipMiningLocationId, resId);
-            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * hullDamageFactor * shipExtractionPressure * shipFraction);
+            const minedExact = shipDef.miningRate * 0.5 * shipMiningMult * moduleMiningMult * locationMult * hullDamageFactor * shipExtractionPressure * shipFraction;
+            const shipCarryKey = `ship:${ship.instanceId}:${resId}`;
+            const shipCarryTotal = (shipCarry[shipCarryKey] || 0) + (Number.isFinite(minedExact) && minedExact > 0 ? minedExact : 0);
+            const mined = Math.floor(shipCarryTotal);
+            shipCarry[shipCarryKey] = shipCarryTotal - mined;
             if (mined >= 1) {
               // W14: ship-mined output accrues at the MINING location's
               // stockpile once logistics is unlocked (Ceres ore fills Ceres
@@ -2320,6 +2342,7 @@ export function processFullTick(state: GameState): GameState {
         ...newState,
         ships: finalShips,
         resources,
+        fractionalCarry: shipCarry,
         locationInventories: shipLocationInventories,  // W14
         // W14: freight deliveries feed the existing cargo_delivered daily
         // metric (defined since the metrics system shipped, fed by nothing

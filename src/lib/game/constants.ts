@@ -1,5 +1,11 @@
 // ─── Space Tycoon: Game Constants ───────────────────────────────────────────
 
+// Clock unification (2026-09-02, docs/GAME_DESIGN_REVIEW_2026-09.md D1): the
+// world calendar (server-time.ts) is the ONE game clock. Everything below that
+// converts between ticks and game-months derives from it — never retype 30,
+// 60 s, or 12 min anywhere in the engine.
+import { REAL_SECONDS_PER_GAME_MONTH } from './server-time';
+
 /** Starting cash — sim-validated at $100M for balanced early progression.
  *  Players can afford 2-3 tier 1 buildings, then must earn more.
  *  All players start with the same amount regardless of subscription — see docs/POLICY.md. */
@@ -31,21 +37,26 @@ export const MAX_EVENT_LOG = 50;
 export const AUTO_SAVE_INTERVAL_MS = 30_000;
 
 /** Tick interval in ms by speed setting.
- *  Each tick processes revenue/costs but the calendar advances based on
- *  TICKS_PER_GAME_MONTH. At 1x speed with 30 ticks/month:
- *  1 game month = 60 seconds, 1 game year = 12 minutes, 10 years = 2 hours.
- *  A casual player logging in daily for 30 min progresses ~2.5 years/month.
+ *  Each tick processes one TICKS_PER_GAME_MONTH-th of monthly revenue/costs/
+ *  production; the calendar itself comes from server-time.ts's wall-clock
+ *  formula (getGlobalGameDate), not from counting ticks. At 1x speed one
+ *  game-month = REAL_SECONDS_PER_GAME_MONTH = 6 real hours, one game-year =
+ *  3 real days, ten game-years = 30 real days — the same clock leagues,
+ *  quarters, seasons, expeditions and every BALANCE.md playtest run on.
  *  Construction/research timers use real wall-clock time (unaffected). */
 export const TICK_INTERVALS: Record<number, number> = {
   0: 0,      // Paused
   1: 2000,   // 1x = 2s per tick
 };
 
-/** How many ticks equal one game month.
- *  Higher = slower calendar progression.
- *  30 ticks × 2s = 60 seconds per game month = 12 min/year.
- *  Revenue and costs are divided by this number per tick. */
-export const TICKS_PER_GAME_MONTH = 30;
+/** How many ticks make up one game month — DERIVED from the world calendar:
+ *  21,600 s per game-month ÷ 2 s per tick = 10,800 ticks per game-month.
+ *  Revenue, costs, payroll and production are divided by this number per
+ *  tick, so a corporation's monthly P&L accrues over exactly one calendar
+ *  month. Before 2026-09-02 this was a typed literal (30) while the calendar
+ *  ran at 6 h/month — income accrued 360x faster than the world it was
+ *  denominated in (see the dev log / docs/BALANCE.md "Clock unification"). */
+export const TICKS_PER_GAME_MONTH = REAL_SECONDS_PER_GAME_MONTH / (TICK_INTERVALS[1] / 1000);
 
 /** Game save version for migration support.
  *  NOTE (docs/LIVE_SERVICE_2026-08.md appendix defect #9): this literal has

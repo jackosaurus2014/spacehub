@@ -26,7 +26,7 @@ import {
 import { RESEARCH_MAP } from '@/lib/game/research-tree';
 import { getMissionPatchAsset } from '@/lib/game/assets';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
-import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '@/lib/game/constants';
+import { REAL_SECONDS_PER_GAME_MONTH } from '@/lib/game/server-time';
 import { useModalA11y } from './useModalA11y';
 import { playSound } from '@/lib/game/sound-engine';
 import { ConsolePanel, DataChip } from './chrome';
@@ -57,8 +57,6 @@ function ProgramBadge({ programId, iconGlyph, size = 20, glow = 'none' }: {
   }
   return <GameIcon name={resolveIcon(iconGlyph, 'science')} size={size} glow={glow} />;
 }
-
-const REAL_SECONDS_PER_GAME_MONTH = TICKS_PER_GAME_MONTH * (TICK_INTERVALS[1] / 1000);
 
 interface Props {
   state: GameState;

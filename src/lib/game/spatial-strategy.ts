@@ -220,9 +220,17 @@ export interface OrbitalSlotOccupancySnapshot {
   bucket: string;
 }
 
-/** Occupancy % at/above which a pool requires a slot-lease auction to build
- *  further (canon: "orbital slots are finite… ownership transfers at
- *  market-clearing prices", §5 item 5: "when a pool crosses 85%"). */
+/** Occupancy % at/above which a pool is ABSOLUTELY saturated (canon:
+ *  "orbital slots are finite… ownership transfers at market-clearing
+ *  prices", §5 item 5: "when a pool crosses 85%"). Since D6 (docs/BALANCE.md
+ *  "D6 population gates (2026-09-02)") this is no longer the only auction
+ *  trigger: orbital-slot-auctions.computeSlotAuctionEligibility also
+ *  contests the most-occupied pool on RELATIVE grounds (≥8 occupied and
+ *  ≥ max(40%, P80 across pools)). The resolve cron writes bucket
+ *  'saturated' for either case, so the build gate below and every UI
+ *  consumer key off the stored bucket, not this constant. This constant
+ *  still drives the physical congestion buckets (occupancyBucket) and the
+ *  maintenance multiplier, which are about crowding, not contestedness. */
 export const SATURATED_OCCUPANCY_PCT = 85;
 
 export function occupancyBucket(occupiedCount: number, totalSlots: number): OrbitalSlotOccupancySnapshot['bucket'] {
@@ -237,12 +245,27 @@ export function occupancyBucket(occupiedCount: number, totalSlots: number): Orbi
  *  binary 85% lease gate. A crowded orbit costs more to operate in every
  *  month — collision-avoidance burns, conjunction screening, debris
  *  insurance — long before it saturates. Driven by the server-aggregated
- *  occupancy bucket (all players + NPCs, same snapshot the slot gate uses);
- *  never-synced saves fall back to 1.0, identical to pre-wave behavior.
- *  Applied to building maintenance at slot-pool locations only. */
+ *  occupancy COUNT (all players + NPCs, same snapshot the slot gate uses),
+ *  re-bucketed here by physical occupancy %; never-synced saves fall back
+ *  to 1.0, identical to pre-wave behavior. Applied to building maintenance
+ *  at slot-pool locations only.
+ *
+ *  D6 (docs/BALANCE.md "D6 population gates"): the stored bucket now also
+ *  reads 'saturated' for a pool contested on RELATIVE grounds (≥40% of a
+ *  pool at small population), so this multiplier deliberately re-derives
+ *  the physical bucket from the count instead of trusting the stored
+ *  label — a lease-gated 40%-full pool pays 'medium' congestion (1.1×),
+ *  not the 85% crowding rate (1.5×). No maintenance number changed for any
+ *  occupancy level. Falls back to the stored bucket only when the count is
+ *  missing (a pre-D6 snapshot shape). */
 export function getCongestionMaintenanceMultiplier(state: GameState, locationId: string): number {
-  if (!ORBITAL_SLOT_MAP.has(locationId)) return 1;
-  const bucket = state.orbitalSlotOccupancy?.[locationId]?.bucket;
+  const pool = ORBITAL_SLOT_MAP.get(locationId);
+  if (!pool) return 1;
+  const row = state.orbitalSlotOccupancy?.[locationId];
+  if (!row) return 1;
+  const bucket = typeof row.occupiedCount === 'number' && Number.isFinite(row.occupiedCount)
+    ? occupancyBucket(row.occupiedCount, pool.totalSlots)
+    : row.bucket;
   if (bucket === 'saturated') return 1.5;
   if (bucket === 'high') return 1.25;
   if (bucket === 'medium') return 1.1;
@@ -315,11 +338,13 @@ export function hasActiveSlotLease(state: GameState, locationId: string, now: nu
 /**
  * May this player start a NEW building at `locationId` right now?
  * - Non-pool locations (surfaces, LEO, belt…): always allowed.
- * - Pool below saturation (or no occupancy snapshot yet): allowed.
- * - Saturated pool: allowed only with an active slot lease there — EXCEPT a
- *   Protected-Frontier player's FIRST building at the location, which is
- *   always allowed (Pass 3 requirement: without this, the newcomer wall
- *   returns at 85%-saturated GEO).
+ * - Pool not contested (or no occupancy snapshot yet): allowed.
+ * - Contested pool (stored bucket 'saturated' — absolute 85% saturation OR
+ *   the D6 relative rule, decided by the resolve cron via
+ *   orbital-slot-auctions.computeSlotAuctionEligibility): allowed only with
+ *   an active slot lease there — EXCEPT a Protected-Frontier player's FIRST
+ *   building at the location, which is always allowed (Pass 3 requirement:
+ *   without this, the newcomer wall returns at a contested GEO).
  * Existing buildings are never retro-blocked — this guards build STARTS only.
  */
 export function checkOrbitalSlotGate(
@@ -344,7 +369,7 @@ export function checkOrbitalSlotGate(
 
   return {
     allowed: false,
-    reason: `${pool.label} saturated (${server.occupiedCount}/${pool.totalSlots}) — win a slot-lease auction to build here (Map → Spatial Strategy → Orbital Slots).`,
+    reason: `${pool.label} contested (${server.occupiedCount}/${pool.totalSlots} slots) — win a slot-lease auction to build here (Map → Spatial Strategy → Orbital Slots).`,
   };
 }
 

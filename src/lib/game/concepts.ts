@@ -227,7 +227,7 @@ export const CONCEPTS: Record<string, ConceptEntry> = {
   'orbital-slot': c({
     id: 'orbital-slot', name: 'Orbital Slot', icon: 'territory',
     short: 'Finite premium anchorage (GEO, Lagrange, lunar polar…)',
-    body: 'High-value anchorages — geostationary orbit, stable Lagrange points, lunar polar slots — are finite inventory. Once a pool passes 85% occupancy, new construction there is blocked until you win a sealed-bid slot-lease auction (proceeds burned) — with one exception: a Protected-Frontier corporation\'s first building at the location is always guaranteed a slot. Mothballing or decommissioning a building frees its slot, and existing buildings are never evicted.',
+    body: 'High-value anchorages — geostationary orbit, stable Lagrange points, lunar polar slots — are finite inventory. Once a pool is contested — the most crowded orbit server-wide past 40% occupancy with at least 8 slots taken, or any pool past 85% — new construction there is blocked until you win a sealed-bid slot-lease auction (proceeds burned) — with one exception: a Protected-Frontier corporation\'s first building at the location is always guaranteed a slot. Mothballing or decommissioning a building frees its slot, and existing buildings are never evicted.',
     related: ['slot-idle-fee'],
   }),
 

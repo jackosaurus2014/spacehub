@@ -61,10 +61,11 @@ import { applyLaunchCostReduction } from './mega-projects';
  * — consistent with LORE.md's "crewed interstellar missions expected within a
  * decade" of the 2147 Breakthrough (Proxima at 4.24 ly ≈ 10.6 game-years
  * one-way... with drive spool + sublight approach, jumps are fuel-bound, not
- * time-free; see interstellar.ts). In real time (60s/game-month per
- * constants.ts): Proxima ≈ 2.1h one-way, ~4.5h round trip; Sirius ≈ 8.8h
- * round trip — sitting between tier-4 research (4h) and the colony-ark build
- * (24h), i.e. the longest player-initiated timers in the game. The calendar
+ * time-free; see interstellar.ts). In real time (6 real hours per game-month,
+ * server-time.ts REAL_SECONDS_PER_GAME_MONTH — the one game clock since the
+ * 2026-09-02 clock unification): Proxima ≈ 32 real days one-way, ~64 days
+ * round trip; Sirius ≈ 130 days round trip — the multi-month campaign loop
+ * docs/SESSION_DESIGN.md reserves for interstellar returns. The calendar
  * advances on the global server clock, so expeditions progress while offline.
  */
 export const GAME_MONTHS_PER_LY = 30;

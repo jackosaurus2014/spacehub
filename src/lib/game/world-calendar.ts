@@ -25,10 +25,11 @@
 // (server-time.ts REAL_SECONDS_PER_GAME_MONTH, 6 real hours/game-month) —
 // the steady-state rate LS1's away-catchup re-anchors a regularly-returning
 // player's local clock toward (docs/LIVE_SERVICE_2026-08.md §LS1 item 4).
-// Actively-ticking play (state.gameDate's live-tick pace, 60s/game-month at
-// 1x) completes these sooner than the calendar shows — a pleasant surprise,
-// never a broken promise. This is a documented estimate, not a claim of
-// per-second precision; see the NPC/expedition section comments below.
+// Since the 2026-09-02 clock unification the live tick accrues on the SAME
+// 6 h/game-month calendar (constants.ts TICKS_PER_GAME_MONTH is derived from
+// it), so the estimate and the experience agree. This is still a documented
+// estimate, not a claim of per-second precision; see the NPC/expedition
+// section comments below.
 
 import type { GameState, ExpeditionState } from './types';
 import { getGlobalGameDate, SERVER_EPOCH_MS, REAL_SECONDS_PER_GAME_MONTH } from './server-time';

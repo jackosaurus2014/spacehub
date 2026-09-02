@@ -59,10 +59,24 @@ export const WAGE_INDEX_NEUTRAL = 1.0;
  *  the intended cooperative loop. REQUIRED PAIRING (shipped together): the
  *  Frontier payroll shield below (getPayrollWageIndex) — with ÷4 a
  *  relaunch-week hiring boom genuinely reaches 1.3-1.6, and Frontier corps
- *  must not pay it. */
+ *  must not pay it.
+ *
+ *  D6 population gates (docs/BALANCE.md "D6 population gates (2026-09-02)",
+ *  docs/GAME_DESIGN_REVIEW_2026-09.md D6, founder-approved): the ÷4 was
+ *  keyed to a 15-30-corp relaunch that did not materialise; Pass 8's own
+ *  sweep table puts ÷5 of the ORIGINAL base (engineer 600→120) at "leaves
+ *  the 0.80 floor at 12 corps, crosses neutral at 15, pins 1.60 at 23" —
+ *  the band the review asked for ("leaves its floor at ~15 corps"). Shipped
+ *  values are original ÷5 = shipped-Pass-9 ÷1.25:
+ *  engineer 150→120, scientist 125→100, miner 175→140, operator 138→110,
+ *  pilot 100→80, negotiator 75→60, security 100→80, medic 88→70.
+ *  LABOR_SUPPLY_PER_QUARTERS still NOT divided (housing counterplay is now
+ *  relatively 5× stronger). The Frontier payroll + hire shields
+ *  (getPayrollWageIndex / getHireWageIndex) are unchanged and still cap a
+ *  Frontier corp at 1.0, which matters more now that 1.6 pins at ~23 corps. */
 export const LABOR_SUPPLY_BASE: Record<WorkerType, number> = {
-  engineer: 150, scientist: 125, miner: 175, operator: 138,
-  pilot: 100, negotiator: 75, security: 100, medic: 88,
+  engineer: 120, scientist: 100, miner: 140, operator: 110,
+  pilot: 80, negotiator: 60, security: 80, medic: 70,
 };
 
 /** Additional labor-supply slots per crewQuarters unit built server-wide

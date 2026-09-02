@@ -18,6 +18,7 @@ import {
   DIVIDEND_MAX_PAYOUT_PCT,
   TENDER_MIN_SHARES,
   DISTRESS_MONTHS_REQUIRED,
+  TAKEOVER_MIN_ACTIVE_CORPS,
   type EquitySnapshot,
 } from '@/lib/game/share-registry';
 
@@ -149,7 +150,7 @@ export default function ShareRegistryPanel({ state }: { state: GameState }) {
   // ── Population gate: honest dormant state ───────────────────────────────
   if (!snap || !snap.enabled) {
     const active = snap?.activeCorps ?? 0;
-    const required = snap?.requiredCorps ?? 25;
+    const required = snap?.requiredCorps ?? TAKEOVER_MIN_ACTIVE_CORPS;
     return (
       <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
         <span className="hud-corner-bl" aria-hidden="true" />

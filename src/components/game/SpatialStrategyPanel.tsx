@@ -254,7 +254,7 @@ const BUCKET_LABEL: Record<string, string> = {
   low: 'LOW OCCUPANCY',
   medium: 'MODERATE OCCUPANCY',
   high: 'HIGH OCCUPANCY',
-  saturated: 'SATURATED — LEASE REQUIRED',
+  saturated: 'CONTESTED — LEASE REQUIRED',
 };
 
 function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotReport> }) {
@@ -271,7 +271,9 @@ function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotRepo
   };
 
   useEffect(() => {
-    if (anySaturated && !loadedOnce) refetch();
+    // D6: fetch once regardless — the "auction opens at N slots" line for
+    // not-yet-contested pools comes from the same response.
+    if (!loadedOnce) refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anySaturated, loadedOnce]);
 
@@ -281,8 +283,9 @@ function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotRepo
         <div className="text-xs text-slate-400 leading-relaxed">
           <p>
             <span className="text-white font-bold">Finite orbital slots</span> are one of the genuinely scarce resources
-            in the solar-system economy. Once a pool crosses 85% server-wide occupancy, new construction there requires
-            winning a sealed-bid lease auction — proceeds are burned (a real money sink), and the zone governor earns a
+            in the solar-system economy. A pool becomes contested when it is the most crowded orbit server-wide and past
+            40% occupancy (with at least 8 slots taken), or once any pool crosses 85% — then new construction there requires
+            winning a sealed-bid lease auction. Proceeds are burned (a real money sink), and the zone governor earns a
             revenue share. Leases run 90 days and are transferable at market-clearing prices.
           </p>
         </div>
@@ -291,6 +294,7 @@ function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotRepo
       <div className="grid grid-cols-1 gap-3">
         {report.map(r => {
           const auction = auctionData?.openAuctions.find(a => a.locationId === r.pool.locationId);
+          const elig = auctionData?.pools?.find(p => p.locationId === r.pool.locationId)?.auctionEligibility ?? null;
           return (
             <div key={r.pool.locationId} className="hud-frame relative card p-3">
               <span className="hud-corner-bl" aria-hidden="true" />
@@ -327,6 +331,11 @@ function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotRepo
               <div className={`mt-2 text-[10px] font-bold tracking-wide ${r.requiresLeaseAuction ? 'text-amber-300' : 'text-slate-500'}`}>
                 {BUCKET_LABEL[r.overallOccupancyBucket] || 'OCCUPANCY UNKNOWN'}
               </div>
+              {elig && !elig.eligible && (
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  Server-wide {elig.occupied} / {r.pool.totalSlots} slots taken · auction opens at {elig.threshold} slots
+                </div>
+              )}
 
               {r.requiresLeaseAuction && (
                 <AuctionWidget
@@ -344,6 +353,12 @@ function SlotsTab({ report }: { report: ReturnType<typeof computeOrbitalSlotRepo
 }
 
 interface OrbitalSlotAuctionApiResponse {
+  /** D6 auction-eligibility line per pool (route GET). */
+  pools?: {
+    locationId: string;
+    occupiedCount: number;
+    auctionEligibility: { occupied: number; threshold: number; thresholdPct: number; eligible: boolean; reason: string } | null;
+  }[];
   openAuctions: {
     id: string;
     locationId: string;

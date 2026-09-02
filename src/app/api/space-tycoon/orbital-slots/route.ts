@@ -3,8 +3,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { ORBITAL_SLOT_POOLS, SATURATED_OCCUPANCY_PCT } from '@/lib/game/spatial-strategy';
-import { computeMinBid, isSlotPoolLocation, AUCTION_WINDOW_MS, applySoftClose } from '@/lib/game/orbital-slot-auctions';
+import { ORBITAL_SLOT_POOLS } from '@/lib/game/spatial-strategy';
+import {
+  computeMinBid, computeSlotAuctionEligibility, isSlotPoolLocation, AUCTION_WINDOW_MS, applySoftClose,
+} from '@/lib/game/orbital-slot-auctions';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 import {
@@ -17,14 +19,17 @@ export const dynamic = 'force-dynamic';
  * Orbital-slot lease auctions (Wave E7, docs/ECONOMY_PVP_2026-08.md §E7 /
  * §5 item 5): finite ORBITAL_SLOT_POOLS (GEO/lunar-polar/Mars/Jupiter),
  * server-aggregated occupancy (OrbitalSlotOccupancy cache, populated by
- * orbital-slots/resolve's cron), sealed-bid auctions once a pool crosses
- * SATURATED_OCCUPANCY_PCT. Escrow/refund/burn follow the exact
- * ResourceBounty pattern (bounties/route.ts) — ledgered via server-ledger.ts.
+ * orbital-slots/resolve's cron), sealed-bid auctions once a pool is
+ * CONTESTED — absolute SATURATED_OCCUPANCY_PCT or the D6 relative rule
+ * (computeSlotAuctionEligibility; docs/BALANCE.md "D6 population gates").
+ * Escrow/refund/burn follow the exact ResourceBounty pattern
+ * (bounties/route.ts) — ledgered via server-ledger.ts.
  *
- * GET  — pool status (occupancy, saturation, open auctions, my bids/leases).
+ * GET  — pool status (occupancy, contested flag, the D6 auction-eligibility
+ *        line {occupied, threshold, eligible}, open auctions, my bids/leases).
  * POST — { action: 'bid', auctionId, amount } place/revise a sealed bid.
  *        { action: 'open', locationId } manually request an auction once
- *          saturated (the resolve cron also auto-opens these).
+ *          contested (the resolve cron also auto-opens these).
  *        { action: 'list', leaseId, askingPrice, toProfileId? } the HOLDER
  *          posts a lease for sale (asking price banded around the lease's
  *          reference price; optional pinned buyer).
@@ -72,19 +77,43 @@ export async function GET() {
 
     const occupancyByLocation = new Map(occupancyRows.map(r => [r.locationId, r]));
 
+    // D6: the same relative-eligibility pass the resolve cron runs, so the
+    // panel can say "auction opens at N leases" from the same rule that
+    // will actually open it.
+    const eligibility = computeSlotAuctionEligibility(
+      ORBITAL_SLOT_POOLS.map(p => ({
+        locationId: p.locationId,
+        occupiedCount: occupancyByLocation.get(p.locationId)?.occupiedCount ?? 0,
+        totalSlots: p.totalSlots,
+      })),
+    );
+
     const pools = ORBITAL_SLOT_POOLS.map(pool => {
       const occ = occupancyByLocation.get(pool.locationId);
       const occupiedCount = occ?.occupiedCount ?? 0;
       const occupancyPct = pool.totalSlots > 0 ? Math.round((occupiedCount / pool.totalSlots) * 1000) / 10 : 0;
+      const bucket = occ?.bucket ?? 'low';
+      const elig = eligibility.get(pool.locationId);
       return {
         locationId: pool.locationId,
         label: pool.label,
         totalSlots: pool.totalSlots,
         occupiedCount,
         occupancyPct,
-        bucket: occ?.bucket ?? 'low',
-        saturated: occupancyPct >= SATURATED_OCCUPANCY_PCT,
+        bucket,
+        // The stored bucket is what the build gate enforces; it lags the
+        // live eligibility by at most one resolve-cron cycle.
+        saturated: bucket === 'saturated',
         minBid: computeMinBid(pool.locationId),
+        auctionEligibility: elig
+          ? {
+              occupied: elig.occupiedCount,
+              threshold: Number.isFinite(elig.thresholdOccupied) ? elig.thresholdOccupied : pool.totalSlots,
+              thresholdPct: elig.thresholdPct,
+              eligible: elig.eligible,
+              reason: elig.reason,
+            }
+          : null,
       };
     });
 
@@ -158,7 +187,7 @@ export async function POST(request: NextRequest) {
       }
       const occ = await prisma.orbitalSlotOccupancy.findUnique({ where: { locationId } });
       if (!occ || occ.bucket !== 'saturated') {
-        return NextResponse.json({ error: 'This pool is not yet saturated — no lease auction required' }, { status: 400 });
+        return NextResponse.json({ error: 'This pool is not yet contested — no lease auction required' }, { status: 400 });
       }
       const existing = await prisma.orbitalSlotAuction.findFirst({ where: { locationId, status: 'open' } });
       if (existing) {

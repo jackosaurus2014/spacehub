@@ -12,13 +12,13 @@ import { LOCATION_MAP } from './solar-system';
 import { getExpeditionProgress } from './expeditions';
 import { getActiveScienceMissions, getScienceMissionProgress, SCIENCE_PROGRAM_MAP } from './science-missions';
 import { SHIP_MAP } from './ships';
-import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from './constants';
+import { REAL_SECONDS_PER_GAME_MONTH } from './server-time';
 import type { GameState } from './types';
 import { resolveIcon, type IconName } from './icons';
 
-/** Real seconds per game-month at 1x speed (30 ticks × 2s/tick) — same
- *  convention documented in constants.ts and expeditions.ts. */
-export const REAL_SECONDS_PER_GAME_MONTH = TICKS_PER_GAME_MONTH * (TICK_INTERVALS[1] / 1000);
+// Clock unification (2026-09-02): ETAs are quoted on the world calendar
+// (server-time.ts, 6 real hours per game-month) — the shadow "30 ticks x 2 s"
+// constant this file used to recompute is gone.
 
 export type OrderQueueTarget = { kind: 'location'; id: string } | { kind: 'system'; id: string };
 

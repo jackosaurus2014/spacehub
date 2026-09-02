@@ -37,7 +37,7 @@ import { BUILDING_MAP } from './buildings';
 import { MINING_PRODUCTION } from './resources';
 import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
-import { formatMoney } from './formulas';
+import { formatMoney, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
 import { getWorkforceBonuses } from './workforce';
 // Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.4/§2.6/§E5): away-time parity —
 // the same wage-index payroll and deposit extraction-pressure brake the
@@ -47,7 +47,7 @@ import { getWorkforceBonuses } from './workforce';
 import { getMonthlyPayrollForState } from './labor-market';
 import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
-import { isInFrontier, getGraduationGlideFraction } from './frontier';
+import { isInFrontier, getGraduationGlideFraction, computeBookNetWorth } from './frontier';
 import { getResearchBonuses } from './research-tree';
 import {
   TICKS_PER_GAME_MONTH, TICK_INTERVALS, MAX_EVENT_LOG,
@@ -94,6 +94,11 @@ import { processLeaderRetirements } from './commanders';
 // (awayAutomation — see getAwayEfficiencyInvestmentBonus).
 import { getGlobalCapabilityBonus } from './building-capabilities';
 
+// Clock unification (2026-09-02): per-tick shares below divide by
+// TICKS_PER_GAME_MONTH, which is now derived from the world calendar (10,800
+// ticks of 2 s = 6 real hours). Twelve hours away therefore integrates to
+// exactly two game-months of the live tick's revenue — not the 360 months the
+// old typed constant produced.
 const TICK_INTERVAL_MS = TICK_INTERVALS[1]; // 2000ms — 1x speed (same as offline-income.ts)
 const MIN_AWAY_MS = 30_000; // same "don't bother" threshold offline-income.ts used
 /** Safety valve on the per-game-month directive/hazard catch-up loop —
@@ -322,9 +327,29 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   // above already performs).
   const payrollPerTick = Math.round(getMonthlyPayrollForState(workforce, working, now) * fraction);
   costsPerTick += payrollPerTick;
+  // Clock unification (2026-09-02): corporate overhead (game-engine.ts §1b)
+  // and executive compensation (§1c) were missing from the away path, so a
+  // long absence was strictly cheaper than a live session for any large
+  // corporation — offline must never be more profitable than online. Same
+  // simplified multiplier set as this module's maintenance line above; the
+  // live tick's tier/megastructure/reputation reductions only make live
+  // cheaper, which is the correct direction for the invariant.
+  {
+    const completedBuildings = working.buildings.filter(b => b.isComplete).length;
+    costsPerTick += Math.round(
+      corporateOverheadMonthly(completedBuildings) * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier,
+    );
+    costsPerTick += Math.round(
+      executiveCompensationMonthly(computeBookNetWorth(working)) * fraction * multipliers.costMultiplier,
+    );
+  }
 
-  const weightedTicks = getWeightedTicks(timeAwayMs, investmentBonus);
-  const totalTicks = Math.floor(timeAwayMs / TICK_INTERVAL_MS);
+  // Bound the revenue/cost integral by the same MAX_CATCHUP_MONTHS safety
+  // valve the §2 directive/hazard loop uses (20,000 game-months ≈ 13.7 real
+  // years — unreachable in practice, but a corrupt lastTickAt must not mint).
+  const boundedAwayMs = Math.min(timeAwayMs, MAX_CATCHUP_MONTHS * TICKS_PER_GAME_MONTH * TICK_INTERVAL_MS);
+  const weightedTicks = getWeightedTicks(boundedAwayMs, investmentBonus);
+  const totalTicks = Math.floor(boundedAwayMs / TICK_INTERVAL_MS);
   const grossEarned = Math.round(revenuePerTick * weightedTicks);
   const grossSpent = Math.round(costsPerTick * totalTicks);
 

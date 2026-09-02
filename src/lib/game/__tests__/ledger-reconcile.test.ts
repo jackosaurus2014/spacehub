@@ -10,12 +10,20 @@ import {
   __clearReconciliationQueue,
   clampPlausibleMoney,
   plausibleIncomeHeadroom,
-  MAX_PLAUSIBLE_INCOME_PER_MS,
+  MONEY_HEADROOM_MULT,
+  MAX_ABSOLUTE_INCOME_PER_MS,
   MIN_PLAUSIBILITY_ELAPSED_MS,
   MAX_PLAUSIBILITY_ELAPSED_MS,
   type LedgerEntryLite,
 } from '../ledger-reconcile';
+import { REAL_MS_PER_GAME_MONTH } from '../server-time';
 import type { GameState } from '../types';
+
+/** A mid-game corporation's server-derived monthly gross for the clamp tests. */
+const GROSS = 273_000_000;
+/** State-derived headroom for `ms` of wall clock at GROSS (below the backstop). */
+const headroomFor = (ms: number, gross: number = GROSS) =>
+  Math.round(Math.min(gross * MONEY_HEADROOM_MULT * (ms / REAL_MS_PER_GAME_MONTH), ms * MAX_ABSOLUTE_INCOME_PER_MS));
 
 function entry(seq: number, moneyDelta: number, resourceSlug?: string, resourceDelta?: number): LedgerEntryLite {
   return { seq, moneyDelta, resourceSlug: resourceSlug ?? null, resourceDelta: resourceDelta ?? 0 };
@@ -183,7 +191,7 @@ describe('applyReconciliationToState', () => {
 
 // ─── Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1, exploit #5): "client money is
 // the reconciliation base" plausibility clamp ────────────────────────────────
-describe('clampPlausibleMoney — E1 exploit #5 regression', () => {
+describe('clampPlausibleMoney — E1 exploit #5 regression (state-derived ceiling, 2026-09-02)', () => {
   it('regression: an edited-save / forged sync claiming an absurd figure is rejected, not believed', () => {
     // This is exactly the exploit: reconcileBalance's BASE (clientMoney) was
     // never checked against anything, so a save edited to claim an
@@ -192,28 +200,47 @@ describe('clampPlausibleMoney — E1 exploit #5 regression', () => {
     const prevMoney = 1_000_000_000; // $1B, plausible mid-game net worth
     const elapsedMs = 60_000; // one normal 60s sync interval
     const forgedClaim = 999_999_999_999_999; // near JS max safe integer
-    const result = clampPlausibleMoney(forgedClaim, prevMoney, elapsedMs);
+    const result = clampPlausibleMoney(forgedClaim, prevMoney, elapsedMs, GROSS);
 
     expect(result.wasClamped).toBe(true);
     expect(result.clampedMoney).toBeLessThan(forgedClaim);
-    expect(result.clampedMoney).toBe(prevMoney + elapsedMs * MAX_PLAUSIBLE_INCOME_PER_MS);
+    expect(result.clampedMoney).toBe(prevMoney + headroomFor(elapsedMs));
+    expect(result.headroom).toBe(headroomFor(elapsedMs));
     expect(result.rejectedExcess).toBe(forgedClaim - result.clampedMoney);
   });
 
-  it('does not clamp legitimate, generous tick income between syncs', () => {
-    // A whale corp earning even $50M in a single 60s sync interval (very
-    // generous relative to docs/BALANCE.md's largest single service revenue,
-    // $160M/MONTH) must sail through untouched.
+  it('does not clamp legitimate tick income between syncs', () => {
+    // A $273M/month corporation earns ≈ $760K per 60 s sync interval on the
+    // 6 h calendar; the ceiling grants 2x that.
     const prevMoney = 5_000_000_000;
-    const legitimateClaim = prevMoney + 50_000_000;
-    const result = clampPlausibleMoney(legitimateClaim, prevMoney, 60_000);
+    const perMinute = GROSS * (60_000 / REAL_MS_PER_GAME_MONTH);
+    const legitimateClaim = prevMoney + Math.round(perMinute * 1.5);
+    const result = clampPlausibleMoney(legitimateClaim, prevMoney, 60_000, GROSS);
     expect(result.wasClamped).toBe(false);
     expect(result.clampedMoney).toBe(legitimateClaim);
     expect(result.rejectedExcess).toBe(0);
   });
 
+  it('the ceiling is derived from the profile state: a corp with no revenue state gets no headroom', () => {
+    const prevMoney = 1_000_000;
+    const r = clampPlausibleMoney(prevMoney + 1, prevMoney, 60_000, 0);
+    expect(r.headroom).toBe(0);
+    expect(r.wasClamped).toBe(true);
+    expect(r.clampedMoney).toBe(prevMoney);
+    expect(plausibleIncomeHeadroom(60_000, Number.NaN)).toBe(0);
+    expect(plausibleIncomeHeadroom(60_000, -5)).toBe(0);
+  });
+
+  it('the 360x clock bug would now be rejected: a 60 s claim of a full month of gross is clamped', () => {
+    const prevMoney = 1_000_000_000;
+    const oldClockClaim = prevMoney + GROSS; // what the 60 s month used to credit per minute
+    const r = clampPlausibleMoney(oldClockClaim, prevMoney, 60_000, GROSS);
+    expect(r.wasClamped).toBe(true);
+    expect(r.rejectedExcess).toBeGreaterThan(GROSS * 0.99);
+  });
+
   it('never restricts downward movement (spending, hazard losses)', () => {
-    const result = clampPlausibleMoney(100, 999_999_999, 60_000);
+    const result = clampPlausibleMoney(100, 999_999_999, 60_000, GROSS);
     expect(result.wasClamped).toBe(false);
     expect(result.clampedMoney).toBe(100);
   });
@@ -222,29 +249,36 @@ describe('clampPlausibleMoney — E1 exploit #5 regression', () => {
     // The old 5 s FLOOR granted >= $10M of headroom to every request, and
     // every sync re-stamped lastSyncAt, so a tight loop minted ~$2B/min.
     const prevMoney = 1_000_000;
-    const r0 = clampPlausibleMoney(prevMoney + 1, prevMoney, 0);
+    const r0 = clampPlausibleMoney(prevMoney + 1, prevMoney, 0, GROSS);
     expect(r0.ceiling).toBe(prevMoney);
     expect(r0.wasClamped).toBe(true);
     expect(r0.clampedMoney).toBe(prevMoney);
-    const r4 = clampPlausibleMoney(prevMoney + 10_000_000, prevMoney, MIN_PLAUSIBILITY_ELAPSED_MS - 1);
+    const r4 = clampPlausibleMoney(prevMoney + 10_000_000, prevMoney, MIN_PLAUSIBILITY_ELAPSED_MS - 1, GROSS);
     expect(r4.ceiling).toBe(prevMoney);
     expect(r4.clampedMoney).toBe(prevMoney);
     // Above the threshold the headroom is linear in elapsed time.
-    const r5 = clampPlausibleMoney(prevMoney, prevMoney, MIN_PLAUSIBILITY_ELAPSED_MS);
-    expect(r5.ceiling).toBe(prevMoney + MIN_PLAUSIBILITY_ELAPSED_MS * MAX_PLAUSIBLE_INCOME_PER_MS);
-    expect(plausibleIncomeHeadroom(30_000)).toBe(30_000 * MAX_PLAUSIBLE_INCOME_PER_MS);
-    expect(plausibleIncomeHeadroom(-1)).toBe(0);
+    const r5 = clampPlausibleMoney(prevMoney, prevMoney, MIN_PLAUSIBILITY_ELAPSED_MS, GROSS);
+    expect(r5.ceiling).toBe(prevMoney + headroomFor(MIN_PLAUSIBILITY_ELAPSED_MS));
+    expect(plausibleIncomeHeadroom(30_000, GROSS)).toBe(headroomFor(30_000));
+    expect(Math.abs(plausibleIncomeHeadroom(60_000, GROSS) - 2 * plausibleIncomeHeadroom(30_000, GROSS))).toBeLessThanOrEqual(1);
+    expect(plausibleIncomeHeadroom(-1, GROSS)).toBe(0);
+  });
+
+  it('absolute backstop: $500/ms bounds any gross, however large', () => {
+    const r = clampPlausibleMoney(1e18, 0, 60_000, 1e15);
+    expect(r.headroom).toBe(60_000 * MAX_ABSOLUTE_INCOME_PER_MS);
+    expect(r.clampedMoney).toBe(60_000 * MAX_ABSOLUTE_INCOME_PER_MS);
   });
 
   it('caps elapsed time so a long-dormant lastSyncAt cannot produce an unbounded ceiling', () => {
     const prevMoney = 1_000_000;
     const oneYearMs = 365 * 24 * 3600_000;
-    const result = clampPlausibleMoney(prevMoney, prevMoney, oneYearMs);
-    expect(result.ceiling).toBe(prevMoney + MAX_PLAUSIBILITY_ELAPSED_MS * MAX_PLAUSIBLE_INCOME_PER_MS);
+    const result = clampPlausibleMoney(prevMoney, prevMoney, oneYearMs, GROSS);
+    expect(result.ceiling).toBe(prevMoney + headroomFor(MAX_PLAUSIBILITY_ELAPSED_MS));
   });
 
   it('treats non-finite inputs as zero/floor rather than throwing or producing NaN', () => {
-    const result = clampPlausibleMoney(Number.NaN, Number.NaN, Number.NaN);
+    const result = clampPlausibleMoney(Number.NaN, Number.NaN, Number.NaN, Number.NaN);
     expect(Number.isFinite(result.clampedMoney)).toBe(true);
     expect(Number.isFinite(result.ceiling)).toBe(true);
   });

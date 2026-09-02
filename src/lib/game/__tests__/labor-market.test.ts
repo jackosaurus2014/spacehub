@@ -232,3 +232,74 @@ describe('GUILD_STRIKE_WAGE_THRESHOLD', () => {
     expect(GUILD_STRIKE_WAGE_THRESHOLD).toBe(WAGE_INDEX_MAX);
   });
 });
+
+// ─── D6 population gates (docs/BALANCE.md "D6 population gates (2026-09-02)") ─
+// LABOR_SUPPLY_BASE = original ÷5 (Pass 9 shipped ÷4). Pass 8's threshold
+// methodology: a rational-cap corp employs 10 engineers at trainingLevel
+// 0.5 (8.5 effective), no crew quarters.
+
+import { getPayrollWageIndex, getMonthlyPayrollForState } from '../labor-market';
+import type { GameState } from '../types';
+
+function rationalCorps(n: number): LaborActivitySummary[] {
+  return Array.from({ length: n }, (_, i) => ({ id: `c${i}`, headcount: { engineer: 10 }, trainingLevel: 0.5, crewQuarters: 0 }));
+}
+function engineerIndexAt(corps: number): number {
+  return computeLaborAggregates(rationalCorps(corps)).get('engineer')!.index;
+}
+function firstCorps(pred: (idx: number) => boolean): number {
+  for (let c = 1; c <= 400; c++) if (pred(engineerIndexAt(c))) return c;
+  return -1;
+}
+
+describe('D6 — LABOR_SUPPLY_BASE ÷5 thresholds (engineer, Pass-8 methodology)', () => {
+  it('ships the original base ÷5 exactly', () => {
+    expect(LABOR_SUPPLY_BASE).toEqual({
+      engineer: 120, scientist: 100, miner: 140, operator: 110,
+      pilot: 80, negotiator: 60, security: 80, medic: 70,
+    });
+    expect(LABOR_SUPPLY_PER_QUARTERS).toBe(2); // housing counterplay NOT divided
+  });
+
+  it('leaves the 0.80 floor at 12 corps, crosses neutral at 15, pins 1.60 at 23 (Pass 8 ÷5 row)', () => {
+    expect(firstCorps(v => v > WAGE_INDEX_MIN + 1e-9)).toBe(12);
+    expect(firstCorps(v => v >= 1.0)).toBe(15);
+    expect(firstCorps(v => v >= WAGE_INDEX_MAX - 1e-9)).toBe(23);
+  });
+
+  it('5 corps sit on the floor, 15 corps are at neutral, 50 corps pin the cap', () => {
+    expect(engineerIndexAt(5)).toBe(WAGE_INDEX_MIN);
+    expect(engineerIndexAt(15)).toBeCloseTo(15 * 8.5 / 120, 9); // 1.0625
+    expect(engineerIndexAt(50)).toBe(WAGE_INDEX_MAX);
+  });
+
+  it('the wage-index clamp still holds at every population (never below 0.8, never above 1.6)', () => {
+    for (const c of [0, 1, 5, 10, 15, 23, 50, 400]) {
+      const v = engineerIndexAt(c);
+      expect(v).toBeGreaterThanOrEqual(WAGE_INDEX_MIN);
+      expect(v).toBeLessThanOrEqual(WAGE_INDEX_MAX);
+    }
+  });
+
+  it('Frontier payroll shield (Pass 9) still caps a pinned-hot D6 index at 1.0; graduated corps pay it in full', () => {
+    const NOW = 10_000_000;
+    const hotIndex = engineerIndexAt(50); // 1.6 at the new base
+    const base = {
+      version: 1, createdAt: NOW - 1000, lastTickAt: NOW,
+      money: 0, totalEarned: 0, totalSpent: 0,
+      gameDate: { year: 2150, month: 1 }, tickSpeed: 1,
+      buildings: [], completedResearch: [], activeResearch: null, activeServices: [],
+      unlockedLocations: ['earth_surface', 'leo'], resources: {}, eventLog: [],
+      stats: { rocketsLaunched: 0, satellitesDeployed: 0, stationsBuilt: 0, researchCompleted: 0, missionsToMoon: 0, missionsToMars: 0, missionsToOuterPlanets: 0 },
+      laborMarket: { index: { engineer: hotIndex }, asOf: NOW },
+    };
+    const frontier = { ...base, frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000 } as unknown as GameState;
+    const graduated = { ...base, frontierStatus: 'graduated' } as unknown as GameState;
+    expect(getPayrollWageIndex(frontier, 'engineer', NOW)).toBe(1.0);
+    expect(getPayrollWageIndex(graduated, 'engineer', NOW)).toBe(WAGE_INDEX_MAX);
+    const wf: WorkforceState = { engineers: 10, scientists: 0, miners: 0, operators: 0 };
+    const salary = WORKER_MAP.get('engineer')!.salary;
+    expect(getMonthlyPayrollForState(wf, frontier, NOW)).toBe(Math.round(10 * salary * 1.0));
+    expect(getMonthlyPayrollForState(wf, graduated, NOW)).toBe(Math.round(10 * salary * WAGE_INDEX_MAX));
+  });
+});

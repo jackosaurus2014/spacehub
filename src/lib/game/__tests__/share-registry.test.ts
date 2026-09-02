@@ -17,6 +17,7 @@ import {
   TOTAL_SHARES,
   CONTROL_SHARES,
   TAKEOVER_MIN_ACTIVE_CORPS,
+  ACTIVE_CORP_WINDOW_MS,
   MIN_VALUATION,
   MARKET_PREMIUM_MIN,
   MARKET_PREMIUM_MAX,
@@ -83,6 +84,13 @@ describe('computeValuation', () => {
 // ─── Population gate ────────────────────────────────────────────────────────
 
 describe('getTakeoverGateStatus', () => {
+  it('D6 population gates (docs/BALANCE.md 2026-09-02): the takeover gate is 10 active corps, 30-day window', () => {
+    expect(TAKEOVER_MIN_ACTIVE_CORPS).toBe(10);
+    expect(ACTIVE_CORP_WINDOW_MS).toBe(30 * 24 * 60 * 60 * 1000);
+    expect(getTakeoverGateStatus(9, {}).enabled).toBe(false);
+    expect(getTakeoverGateStatus(10, {}).enabled).toBe(true);
+  });
+
   it('is dormant below the active-corp threshold — awaiting market depth', () => {
     const g = getTakeoverGateStatus(TAKEOVER_MIN_ACTIVE_CORPS - 1, {});
     expect(g.enabled).toBe(false);
@@ -423,7 +431,7 @@ describe('clampEquitySnapshot', () => {
       enabled: true,
       reason: 'ok',
       activeCorps: 30,
-      requiredCorps: 25,
+      requiredCorps: TAKEOVER_MIN_ACTIVE_CORPS,
       registry: {
         totalShares: 100,
         founderShares: 5000, // forged
@@ -455,7 +463,7 @@ describe('clampEquitySnapshot', () => {
       enabled: false,
       reason: 'awaiting_market_depth',
       activeCorps: 9,
-      requiredCorps: 25,
+      requiredCorps: TAKEOVER_MIN_ACTIVE_CORPS,
       registry: null,
       tendersOnMe: [{ id: 't1', kind: 'tender', initiatorName: 'A', targetName: 'B', pricePerShare: 5, sharesSought: 10, closesAtMs: 99, status: 'open' }],
       myOffers: [],

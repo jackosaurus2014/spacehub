@@ -19,6 +19,8 @@ import {
 } from '../away-operations';
 import { AWAY_EFFICIENCY_TIERS, AWAY_EFFICIENCY_INVESTMENT_CAP, TICK_INTERVALS } from '../constants';
 import { enqueueBuildOrder } from '../command-queue';
+import { corporateOverheadMonthly } from '../formulas';
+import { SERVICE_MAP } from '../services';
 
 const TICK_MS = TICK_INTERVALS[1];
 const NOW = Date.UTC(2026, 5, 1, 12, 0, 0);
@@ -98,6 +100,54 @@ describe('getWeightedTicks', () => {
     const a = getWeightedTicks(50 * 3_600_000, 0.08);
     const b = getWeightedTicks(50 * 3_600_000, 0.08);
     expect(a).toBe(b);
+  });
+});
+
+describe('calculateAwayOperations — clock unification (2026-09-02)', () => {
+  /** A ~$273M/month corporation: svc_launch_small ($5M/mo nameplate) at the
+   *  instance multiplier that lands on $273M, no workforce. */
+  const MONTHLY = 273_000_000;
+  const corp = (awayMs: number) => baseState({
+    activeServices: [{
+      definitionId: 'svc_launch_small', locationId: 'earth_surface', linkedBuildingIds: [],
+      startDate: { year: 2026, month: 1 },
+      revenueMultiplier: MONTHLY / SERVICE_MAP.get('svc_launch_small')!.revenuePerMonth,
+    }],
+    buildings: [{ instanceId: 'b1', definitionId: 'launch_pad_small', locationId: 'earth_surface', buildStartDate: { year: 2026, month: 1 }, completionDate: { year: 2026, month: 1 }, isComplete: true, startedAtMs: NOW - 10_000_000, realDurationSeconds: 1 }],
+    workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0 },
+    lastTickAt: NOW - awayMs,
+  });
+
+  it('12 h away for a $273M/month corp grosses ≈ 2 game-months ≈ $546M — not $196B', () => {
+    const s = corp(12 * 3_600_000);
+    const r = calculateAwayOperations(s, NOW)!;
+    const gross = r.state.totalEarned - s.totalEarned;
+    // 12 h = 21,600 ticks x monthly/10,800 = 2 months (tier 1, 100%).
+    expect(gross).toBeGreaterThan(2 * MONTHLY * 0.5);
+    expect(gross).toBeLessThan(2 * MONTHLY * 1.5);
+    expect(gross).toBeLessThan(1_000_000_000);
+    // And it is exactly linear in tier 1: 6 h earns half.
+    const half = calculateAwayOperations(corp(6 * 3_600_000), NOW)!;
+    const halfGross = half.state.totalEarned - s.totalEarned;
+    expect(gross / halfGross).toBeCloseTo(2, 2);
+  });
+
+  it('charges corporate overhead and executive compensation while away (offline is never cheaper than online)', () => {
+    // 30 completed buildings with no services: the away ledger must carry
+    // the §1b overhead the live tick charges, on top of maintenance.
+    const buildings = Array.from({ length: 30 }, (_, i) => ({
+      instanceId: `b${i}`, definitionId: 'launch_pad_small', locationId: 'earth_surface',
+      buildStartDate: { year: 2026, month: 1 }, completionDate: { year: 2026, month: 1 },
+      isComplete: true, startedAtMs: NOW - 10_000_000, realDurationSeconds: 1,
+    }));
+    const s = baseState({
+      money: 50_000_000_000, activeServices: [], buildings,
+      workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0 },
+      lastTickAt: NOW - 12 * 3_600_000, // 2 game-months
+    });
+    const r = calculateAwayOperations(s, NOW)!;
+    const spent = r.state.totalSpent - s.totalSpent;
+    expect(spent).toBeGreaterThanOrEqual(2 * corporateOverheadMonthly(30) * 0.9);
   });
 });
 

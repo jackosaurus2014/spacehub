@@ -5,6 +5,7 @@ import { requireCronSecret } from '@/lib/errors';
 import { ORBITAL_SLOT_POOLS, occupancyBucket, isSlotOccupant } from '@/lib/game/spatial-strategy';
 import {
   computeMinBid,
+  computeSlotAuctionEligibility,
   resolveAuction,
   splitAuctionProceeds,
   assessIdleFees,
@@ -20,7 +21,8 @@ export const dynamic = 'force-dynamic';
 /**
  * POST /api/space-tycoon/orbital-slots/resolve
  * Cron job: recompute server-aggregated slot occupancy, auto-open auctions
- * for newly-saturated pools, resolve closed auctions (burn winning bid minus
+ * for newly-contested pools (absolute 85% saturation OR the D6 relative
+ * rule — computeSlotAuctionEligibility), resolve closed auctions (burn winning bid minus
  * governor cut, mint lease, refund losers), expire spent leases.
  * Should be called every 5-15 minutes by a cron job (mirrors bidding/resolve).
  * Auth: Bearer CRON_SECRET via requireCronSecret (fail-closed). Note the
@@ -61,20 +63,41 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // D6 population gates (docs/BALANCE.md "D6 population gates
+    // (2026-09-02)"): auction eligibility is RELATIVE — the most contested
+    // pool opens first even on a small world (≥8 occupied AND ≥ max(40%,
+    // P80 across pools)), with the absolute 85% rule kept as a superset.
+    // The percentile needs every pool at once, so it is computed here from
+    // the same counts the occupancy rows get. An eligible pool is stored
+    // with bucket 'saturated' — that stored label is what the client build
+    // gate (checkOrbitalSlotGate), the manual 'open' action, the posture
+    // signal and the panel's LEASE REQUIRED state all key off, so the gate
+    // becomes self-enforcing at the new threshold without touching sync.
+    // Physical congestion pricing re-derives its own bucket from the count
+    // (getCongestionMaintenanceMultiplier), so it is NOT inflated by this.
+    const eligibility = computeSlotAuctionEligibility(
+      ORBITAL_SLOT_POOLS.map(p => ({
+        locationId: p.locationId,
+        occupiedCount: occupiedCounts.get(p.locationId) || 0,
+        totalSlots: p.totalSlots,
+      })),
+    );
+
     let autoOpened = 0;
     for (const pool of ORBITAL_SLOT_POOLS) {
       const occupiedCount = occupiedCounts.get(pool.locationId) || 0;
-      const bucket = occupancyBucket(occupiedCount, pool.totalSlots);
+      const contested = eligibility.get(pool.locationId)?.eligible === true;
+      const bucket = contested ? 'saturated' : occupancyBucket(occupiedCount, pool.totalSlots);
       await prisma.orbitalSlotOccupancy.upsert({
         where: { locationId: pool.locationId },
         create: { locationId: pool.locationId, occupiedCount, totalSlots: pool.totalSlots, bucket },
         update: { occupiedCount, totalSlots: pool.totalSlots, bucket },
       });
 
-      // Auto-open an auction the moment a pool crosses saturation, if none
+      // Auto-open an auction the moment a pool becomes contested, if none
       // is already open — makes the gate self-enforcing rather than relying
       // on a player noticing and clicking "open" first.
-      if (bucket === 'saturated') {
+      if (contested) {
         const existing = await prisma.orbitalSlotAuction.findFirst({ where: { locationId: pool.locationId, status: 'open' } });
         if (!existing) {
           const minBid = computeMinBid(pool.locationId);

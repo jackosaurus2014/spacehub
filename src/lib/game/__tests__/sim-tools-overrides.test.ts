@@ -54,11 +54,11 @@ function crashedSnapshot(): MarketSnapshot {
   return { prices, asOf: 0 };
 }
 
-describe('Pass 9 — LABOR_SUPPLY_BASE ships the Pass-8 ÷4 prescription EXACTLY', () => {
-  it('engineer 150, scientist 125, miner 175, operator 138, pilot 100, negotiator 75, security 100, medic 88', () => {
+describe('D6 population gates — LABOR_SUPPLY_BASE ships the original base ÷5 EXACTLY (Pass 9 shipped ÷4)', () => {
+  it('engineer 120, scientist 100, miner 140, operator 110, pilot 80, negotiator 60, security 80, medic 70', () => {
     expect(LABOR_SUPPLY_BASE).toEqual({
-      engineer: 150, scientist: 125, miner: 175, operator: 138,
-      pilot: 100, negotiator: 75, security: 100, medic: 88,
+      engineer: 120, scientist: 100, miner: 140, operator: 110,
+      pilot: 80, negotiator: 60, security: 80, medic: 70,
     });
   });
 });
@@ -74,12 +74,12 @@ describe('Pass 8/9 — laborSupplyDivisor (H2 sweep switch over the shipped base
 
   it('divisor scales only the base supply — payroll matches computeWageIndex(effective, base/div)', () => {
     // 40 engineers at default trainingLevel 0.5 → effective 40 × (1 − 0.15) = 34.
-    // ÷5 supply of the SHIPPED base: 150/5 = 30 (no buildings → zero crew
-    // quarters). Index = 34/30 ≈ 1.1333 — inside the band, no clamp.
+    // ÷5 supply of the SHIPPED (D6) base: 120/5 = 24 (no buildings → zero
+    // crew quarters). Index = 34/24 ≈ 1.4167 — inside the band, no clamp.
     const p = corpWithHeads('c', 40);
     runWorld(newWorld([p], 0, null, { laborMarket: true, laborSupplyDivisor: 5 }), 1);
     const expectedIdx = computeWageIndex(34, LABOR_SUPPLY_BASE.engineer / 5);
-    expect(expectedIdx).toBeCloseTo(34 / 30, 10);
+    expect(expectedIdx).toBeCloseTo(34 / 24, 10);
     const salary = WORKER_MAP.get('engineer')!.salary;
     expect(p.history[0].payroll).toBe(Math.round(40 * salary * expectedIdx));
   });
@@ -88,13 +88,13 @@ describe('Pass 8/9 — laborSupplyDivisor (H2 sweep switch over the shipped base
     const p = corpWithHeads('c', 200);
     runWorld(newWorld([p], 0, null, { laborMarket: true }), 1);
     const salary = WORKER_MAP.get('engineer')!.salary;
-    const expectedIdx = computeWageIndex(170, LABOR_SUPPLY_BASE.engineer); // 170/150 ≈ 1.133
+    const expectedIdx = computeWageIndex(170, LABOR_SUPPLY_BASE.engineer); // 170/120 ≈ 1.417 (D6 base)
     expect(expectedIdx).toBeGreaterThan(1.0);
     expect(p.history[0].payroll).toBe(Math.round(200 * salary * expectedIdx));
   });
 
   it('small-world hiring still sits on the 0.8 floor (no newcomer wage squeeze from the ÷4)', () => {
-    const p = corpWithHeads('c', 40); // effective 34 / 150 = 0.227 → floor
+    const p = corpWithHeads('c', 40); // effective 34 / 120 = 0.283 → floor (D6 base)
     runWorld(newWorld([p], 0, null, { laborMarket: true }), 1);
     const salary = WORKER_MAP.get('engineer')!.salary;
     expect(p.history[0].payroll).toBe(Math.round(40 * salary * WAGE_INDEX_MIN));

@@ -59,16 +59,23 @@ describe('early-fab wave', () => {
       // every pool id is unique (resolve cron iterates this array)
       expect(new Set(ORBITAL_SLOT_POOLS.map(p => p.locationId)).size).toBe(ORBITAL_SLOT_POOLS.length);
     });
-    it('congestion maintenance multiplier follows the server occupancy bucket', () => {
-      const mk = (bucket?: string) => ({
-        orbitalSlotOccupancy: bucket ? { leo: { occupiedCount: 0, bucket } } : null,
+    it('congestion maintenance multiplier follows PHYSICAL server occupancy (count), not the lease-gate label', () => {
+      // LEO has 240 slots: 25% = 60, 60% = 144, 85% = 204.
+      const mk = (occupiedCount?: number, bucket = 'low') => ({
+        orbitalSlotOccupancy: occupiedCount !== undefined ? { leo: { occupiedCount, bucket } } : null,
       } as unknown as GameState);
       expect(getCongestionMaintenanceMultiplier(mk(), 'earth_surface')).toBe(1); // not a pool
       expect(getCongestionMaintenanceMultiplier(mk(), 'leo')).toBe(1);            // never synced
-      expect(getCongestionMaintenanceMultiplier(mk('low'), 'leo')).toBe(1);
-      expect(getCongestionMaintenanceMultiplier(mk('medium'), 'leo')).toBe(1.1);
-      expect(getCongestionMaintenanceMultiplier(mk('high'), 'leo')).toBe(1.25);
-      expect(getCongestionMaintenanceMultiplier(mk('saturated'), 'leo')).toBe(1.5);
+      expect(getCongestionMaintenanceMultiplier(mk(0), 'leo')).toBe(1);
+      expect(getCongestionMaintenanceMultiplier(mk(60), 'leo')).toBe(1.1);
+      expect(getCongestionMaintenanceMultiplier(mk(144), 'leo')).toBe(1.25);
+      expect(getCongestionMaintenanceMultiplier(mk(204), 'leo')).toBe(1.5);
+      // D6: a pool the resolve cron marked 'saturated' on RELATIVE grounds
+      // (lease-gated at 40%) pays its physical congestion rate, not 1.5×.
+      expect(getCongestionMaintenanceMultiplier(mk(96, 'saturated'), 'leo')).toBe(1.1);
+      // Pre-D6 snapshot shape (no count) still honours the stored bucket.
+      const legacy = { orbitalSlotOccupancy: { leo: { bucket: 'saturated' } } } as unknown as GameState;
+      expect(getCongestionMaintenanceMultiplier(legacy, 'leo')).toBe(1.5);
     });
   });
 

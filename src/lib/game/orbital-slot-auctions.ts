@@ -1,13 +1,126 @@
 // ─── Space Tycoon: Orbital Slot Lease Auctions ──────────────────────────────
 // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 5): finishes the
-// computeOrbitalSlotReport TODO in spatial-strategy.ts — once a pool
-// crosses SATURATED_OCCUPANCY_PCT (85%), a new build there requires winning
-// a sealed-bid slot-lease auction instead of just paying the build cost.
+// computeOrbitalSlotReport TODO in spatial-strategy.ts — once a pool is
+// CONTESTED (computeSlotAuctionEligibility below: absolute saturation at
+// SATURATED_OCCUPANCY_PCT, or the D6 relative rule), a new build there
+// requires winning a sealed-bid slot-lease auction instead of just paying
+// the build cost.
 // Pure/deterministic helpers live here; DB access lives in the API routes
 // (src/app/api/space-tycoon/orbital-slots/*) that call them, mirroring the
 // bounty/bidding escrow pattern (server-ledger.ts + isLedgerAvailable()).
 
-import { ORBITAL_SLOT_MAP, getChokepointPremium } from './spatial-strategy';
+import { ORBITAL_SLOT_MAP, SATURATED_OCCUPANCY_PCT, getChokepointPremium } from './spatial-strategy';
+
+// ─── D6 population gates: relative-occupancy auction trigger ────────────────
+// docs/BALANCE.md "D6 population gates (2026-09-02)" /
+// docs/GAME_DESIGN_REVIEW_2026-09.md D6 (founder-approved). Pass 8 measured
+// world GEO occupancy at 2-3 of 180 slots after 96 sim-months against an
+// 85% (153-slot) trigger: the auction was population-gated, never
+// price-gated, and could not fire at any realistic population. The trigger
+// is now RELATIVE — the most contested pools auction first even when the
+// world is small — while the absolute 85% rule is kept as a superset:
+//
+//   eligible(pool) = occupancyPct ≥ SATURATED_OCCUPANCY_PCT                (A)
+//                 OR ( occupied ≥ SLOT_AUCTION_MIN_OCCUPIED                  (B1)
+//                      AND occupancyPct ≥ max(SLOT_AUCTION_RELATIVE_THRESHOLD_PCT,
+//                                             P80(occupancyPct over all pools)) ) (B2)
+//
+// (B1) stops a 24-slot pool auctioning on three satellites; (B2)'s 40% floor
+// stops an empty world auctioning its emptiest pool; the 80th-percentile
+// term (linear-interpolated across the 5 pools) selects the top ~20% of
+// pools by relative occupancy, so with five pools only the single most
+// contested pool opens first (ties open together). Everything downstream —
+// the resolve cron's `bucket = 'saturated'` write, the client build gate
+// (spatial-strategy.checkOrbitalSlotGate), the posture signal, and the UI
+// "LEASE REQUIRED" state — keys off this one function. Lease term, sealed
+// bids, soft-close, idle fees, governor cut and computeMinBid are unchanged.
+
+/** Rule (B1): minimum occupied slots (buildings) before a pool can be
+ *  contested on relative grounds. */
+export const SLOT_AUCTION_MIN_OCCUPIED = 8;
+
+/** Rule (B2) floor: minimum occupancy % (of the pool) on relative grounds. */
+export const SLOT_AUCTION_RELATIVE_THRESHOLD_PCT = 40;
+
+/** Rule (B2) percentile of occupancy % across all pools (0-1). */
+export const SLOT_AUCTION_OCCUPANCY_PERCENTILE = 0.8;
+
+export interface PoolOccupancyInput {
+  locationId: string;
+  occupiedCount: number;
+  totalSlots: number;
+}
+
+export interface SlotAuctionEligibility {
+  locationId: string;
+  occupiedCount: number;
+  totalSlots: number;
+  /** 0-100, one decimal. */
+  occupancyPct: number;
+  /** The % this pool must reach on relative grounds right now:
+   *  max(SLOT_AUCTION_RELATIVE_THRESHOLD_PCT, P80 across pools). Moves as
+   *  rival pools fill — it is a snapshot, not a promise. */
+  thresholdPct: number;
+  /** Occupied slots at which an auction opens for THIS pool right now:
+   *  min(absolute-saturation count, max(MIN_OCCUPIED, ceil(thresholdPct))).
+   *  The UI's "auction opens at N leases" number. */
+  thresholdOccupied: number;
+  eligible: boolean;
+  reason: 'absolute_saturation' | 'relative_contest' | 'below_min_occupied' | 'below_threshold';
+}
+
+/** Linear-interpolated percentile (numpy default) over a finite list; 0 for
+ *  an empty list. Pure. */
+export function percentile(values: number[], p: number): number {
+  const clean = values.filter(v => Number.isFinite(v)).sort((a, b) => a - b);
+  if (clean.length === 0) return 0;
+  const q = Math.max(0, Math.min(1, p));
+  const pos = q * (clean.length - 1);
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  if (lo === hi) return clean[lo];
+  return clean[lo] + (clean[hi] - clean[lo]) * (pos - lo);
+}
+
+/**
+ * Auction eligibility for every pool in one pass (the percentile term needs
+ * all pools at once). Deterministic: same occupancy in, same map out. Pools
+ * with totalSlots ≤ 0 are never eligible.
+ */
+export function computeSlotAuctionEligibility(pools: PoolOccupancyInput[]): Map<string, SlotAuctionEligibility> {
+  const pct = (p: PoolOccupancyInput): number =>
+    p.totalSlots > 0 ? Math.round((Math.max(0, p.occupiedCount) / p.totalSlots) * 1000) / 10 : 0;
+  const p80 = percentile(pools.map(pct), SLOT_AUCTION_OCCUPANCY_PERCENTILE);
+  const thresholdPct = Math.max(SLOT_AUCTION_RELATIVE_THRESHOLD_PCT, p80);
+
+  const out = new Map<string, SlotAuctionEligibility>();
+  for (const pool of pools) {
+    const occupiedCount = Math.max(0, Math.floor(pool.occupiedCount || 0));
+    const totalSlots = Math.max(0, Math.floor(pool.totalSlots || 0));
+    const occupancyPct = pct({ ...pool, occupiedCount, totalSlots });
+    const absoluteCount = Math.ceil((SATURATED_OCCUPANCY_PCT / 100) * totalSlots);
+    const relativeCount = Math.max(SLOT_AUCTION_MIN_OCCUPIED, Math.ceil((thresholdPct / 100) * totalSlots));
+    const thresholdOccupied = totalSlots > 0 ? Math.min(absoluteCount, relativeCount) : Number.POSITIVE_INFINITY;
+
+    let reason: SlotAuctionEligibility['reason'];
+    if (totalSlots > 0 && occupancyPct >= SATURATED_OCCUPANCY_PCT) reason = 'absolute_saturation';
+    else if (occupiedCount < SLOT_AUCTION_MIN_OCCUPIED) reason = 'below_min_occupied';
+    else if (occupancyPct >= thresholdPct) reason = 'relative_contest';
+    else reason = 'below_threshold';
+
+    out.set(pool.locationId, {
+      locationId: pool.locationId,
+      occupiedCount,
+      totalSlots,
+      occupancyPct,
+      thresholdPct: Math.round(thresholdPct * 10) / 10,
+      thresholdOccupied,
+      eligible: reason === 'absolute_saturation' || reason === 'relative_contest',
+      reason,
+    });
+  }
+  return out;
+}
 
 /** Lease term once an auction is won — 90 real-world days. Long enough to be
  *  a real strategic asset, short enough that a slot doesn't get permanently

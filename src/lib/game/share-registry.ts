@@ -42,9 +42,19 @@ export const CONTROL_SHARES = 51;
 // ─── Population gate ────────────────────────────────────────────────────────
 
 /** Minimum active corporations before takeovers/raises/registry activate.
- *  Tender offers need targets; a 9-profile server would make the mechanic a
- *  griefing tool rather than a market. */
-export const TAKEOVER_MIN_ACTIVE_CORPS = 25;
+ *  Tender offers need targets; a handful of profiles would make the mechanic
+ *  a griefing tool rather than a market.
+ *
+ *  D6 population gates (docs/BALANCE.md "D6 population gates (2026-09-02)",
+ *  docs/GAME_DESIGN_REVIEW_2026-09.md D6, founder-approved): 25 → 10. At 25
+ *  the canon end-game was unreachable at any population the world has ever
+ *  had; at 10 a tender still has ≥9 possible targets (minus Frontier-
+ *  shielded corps) and ≥8 possible counterbidders, and the anti-griefing
+ *  floors that actually protect a target — the 30-day Frontier shield, the
+ *  20% control premium, the burned 2% arbitration fee, the 5-share minimum,
+ *  the 30-day target cooldown — are all population-independent. The 30-day
+ *  ACTIVE_CORP_WINDOW_MS is unchanged. */
+export const TAKEOVER_MIN_ACTIVE_CORPS = 10;
 
 /** "Active" = synced within this window. */
 export const ACTIVE_CORP_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;

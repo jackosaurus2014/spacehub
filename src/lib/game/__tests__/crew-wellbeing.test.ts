@@ -17,7 +17,7 @@ import {
 import { processTick } from '../game-engine';
 import { getGlobalGameDate } from '../server-time';
 import { loadGame } from '../save-load';
-import { SAVE_KEY } from '../constants';
+import { SAVE_KEY, TICKS_PER_GAME_MONTH } from '../constants';
 import { WORLD_EPOCH } from '../world-reset';
 
 // ─── Band + defaults ─────────────────────────────────────────────────────────
@@ -139,7 +139,7 @@ describe('engine wiring — monthly wellbeing pass', () => {
     const out = processTick(state);
     expect(out.workforce!.trainingLevel!).toBeGreaterThan(0.5);
     // 2 crew × $200K budget = $400K charged (only cost this tick besides payroll)
-    const payroll = Math.round((2 * 400_000) / 30); // 2 miners, fractional payroll
+    const payroll = Math.round((2 * 400_000) / TICKS_PER_GAME_MONTH); // 2 miners, fractional payroll
     expect(state.money - out.money).toBe(400_000 + payroll);
   });
 

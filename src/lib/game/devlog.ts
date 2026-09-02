@@ -13,6 +13,19 @@ export interface DevLogEntry {
 
 export const GAME_DEVLOG: DevLogEntry[] = [
   {
+    date: '2026-09-02', tag: 'economy',
+    title: 'Post-mortem: the game ran on two clocks',
+    summary: "The engine credited one game-month of revenue every 60 real seconds while the world calendar advanced one game-month every 6 real hours. Income accrued 360 times faster than the world it was priced in. The tick now follows the calendar, and every balance was divided by 360 so nobody's relative position changed.",
+    changes: [
+      "What happened: the calendar (years, quarters, seasons, leagues, expeditions) has always run at 6 real hours per game-month. A separate engine constant said a game-month was 30 ticks of 2 seconds — 60 seconds. Revenue, costs, payroll and mining were divided by that 30 every tick, so a corporation earned a full month of income every minute. Every balance playtest was run at the 6-hour rate, which is why the numbers in the design docs never matched what players saw.",
+      "How it was found: the September design review traced the top Epoch 2 corporation — $250B earned from eleven starter-tier buildings in nine days, with nothing in the catalogue worth buying — and the day-old newcomer at $482M from four buildings. The playtest tables put a week-old eleven-building corporation near $370M.",
+      "What changed: ticks-per-month is now derived from the calendar (10,800 ticks of 2 s = 6 h) instead of typed; the two places that recomputed the 60-second month for ETAs use the calendar directly; offline operations accrue on the same clock and now charge corporate overhead and executive compensation like a live session; the server's money plausibility ceiling is derived from what your corporation can actually gross per calendar month, with a hard $500K/s backstop; sub-unit mining output is carried between ticks instead of rounded away.",
+      "What was rescaled: on 2026-09-02 every corporation's cash, lifetime earned, lifetime spent, net worth, peak net worth and every resource stockpile were divided by 360. Buildings, ships, research, leaders, contracts and everything else were left exactly as they were. A snapshot of every profile was taken first and can be restored.",
+      "Compensation: none, deliberately. Every corporation was scaled by the same factor, so rankings, tiers and relative standing are unchanged. Nobody exploited anything — the game itself was miscounting.",
+      "Remaining risk: monthly run-rate displays that used to move every minute now move every 6 hours; construction and research timers were always wall-clock and are unaffected. If a number on your dashboard looks wrong after the change, use the Feedback tab — this is exactly what it is for.",
+    ],
+  },
+  {
     date: '2026-09-01', tag: 'economy',
     title: 'NPC demand is published ahead of time',
     summary: 'The NPC industrial corporations, faction procurement drives and service demand floors now publish what they will buy and sell over the next three days — the same numbers the hourly tick executes, so you can plan production around them.',
@@ -61,7 +74,7 @@ export const GAME_DEVLOG: DevLogEntry[] = [
   {
     date: '2026-08-16', tag: 'economy',
     title: 'Economic PvP waves E1–E7 and meaningful decisions M1–M6',
-    summary: 'Goods on the order book, finite demand pools, depletion, labour markets and lanes; construction purposes and takeovers (dormant until 25 corporations).',
+    summary: 'Goods on the order book, finite demand pools, depletion, labour markets and lanes; construction purposes and takeovers (dormant until 10 active corporations).',
     changes: ['Player-to-player limit orders with escrow and a bounded NPC liquidity floor.', 'Finite demand pools so cornering a market is possible and visible.', 'Resource depletion and lane wear.'],
   },
   {

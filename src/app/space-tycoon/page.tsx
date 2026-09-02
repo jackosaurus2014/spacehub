@@ -158,6 +158,7 @@ import type { LobbyStance } from '@/lib/game/accord-senate';
 import { acceptDelivery, deliverContract, getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
 import WorldResetNotice from '@/components/game/WorldResetNotice';
+import EconomyCalibrationNotice from '@/components/game/EconomyCalibrationNotice';
 import FrontierGraduationModal from '@/components/game/FrontierGraduationModal';
 import { graduateFrontier } from '@/lib/game/frontier';
 import ModulesPanel from '@/components/game/ModulesPanel';
@@ -2003,6 +2004,7 @@ export default function SpaceTycoonPage() {
     return (
       <>
         <WorldResetNotice />
+        <EconomyCalibrationNotice />
         <GameStartMenu
           onNewGame={handleNewGame}
           onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); navigateToTab(pickInitialTab(saved)); setShowMenu(false); } }}
@@ -2172,6 +2174,8 @@ export default function SpaceTycoonPage() {
 
       {/* Scheduled world-restart notice — renders only while a restart is pending */}
       <WorldResetNotice />
+      {/* Clock unification (2026-09-02) — self-expiring balance-rescale notice */}
+      <EconomyCalibrationNotice />
 
       {/* PvP Discoverability pass — "someone is doing it to me". M5 shipped
           victim telemetry whose only surface was a Situation Log row on the

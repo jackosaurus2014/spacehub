@@ -82,6 +82,7 @@ jest.mock('@/lib/game/server-ledger', () => {
   };
 });
 jest.mock('@/lib/game/server-time', () => ({
+  ...jest.requireActual('@/lib/game/server-time'), // clock constants stay real
   getGlobalGameDate: jest.fn(() => ({ totalMonths: 100, year: 2135, month: 4 })),
   formatServerDate: jest.fn(() => 'April 2135'),
 }));

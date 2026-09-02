@@ -1,36 +1,34 @@
 // ─── Space Tycoon: Subscriber Perks (Fair F2P Model) ─────────────────────────
 //
-// DESIGN PHILOSOPHY (informed by Path of Exile, Warframe, EVE Online):
+// DESIGN PHILOSOPHY (informed by Path of Exile, Warframe, EVE Online), as
+// committed publicly in docs/POLICY.md and CLAUDE.md ("Economy integrity —
+// no pay-to-win"):
 //
 // 1. FREE PLAYERS GET THE FULL GAME — every building, research, colony, ship,
 //    trade, alliance membership, contest, and victory condition.
-// 2. SUBSCRIBERS GET QUALITY-OF-LIFE — convenience, cosmetics, and modest
-//    speed boosts. Never exclusive power or content.
-// 3. NO PAY-TO-WIN — subscribers don't earn more revenue per building.
-//    They progress slightly faster but earn the same per service.
-// 4. SPEED-UP, NOT POWER-UP — Pro subscribers build/research 15% faster.
-//    This means they reach endgame ~6 weeks sooner over a year, not that they
-//    dominate in competitive play.
+// 2. SUBSCRIBERS GET QUALITY-OF-LIFE — convenience, cosmetics, analytics and
+//    social tooling. Never power, never progression speed, never money.
+// 3. NO PAY-TO-WIN — subscribers earn the same revenue per building, mine at
+//    the same rate, build and research at the same speed, start with the same
+//    cash, and pay the same prices. The economy cannot tell the tiers apart.
+//
+// History (docs/GAME_DESIGN_REVIEW_2026-09.md D3, 2026-09-02): this file once
+// granted Pro +$75M starting cash, 1.15x build/research speed, a longer
+// offline-income window and a 20% probe discount. None of it was ever wired
+// to the engine (zero importers), but it contradicted the published policy,
+// so the fields were deleted outright rather than zeroed. The guard test
+// (__tests__/subscriber-perks.test.ts) denylists any key that would grant
+// money, resources, speed, or discounts, so they cannot quietly return.
 //
 // The goal: subscribers feel rewarded for supporting SpaceNexus. Free players
-// never feel like they're missing the "real" game.
+// never feel like they are missing the "real" game.
 
 export type SubscriptionTier = 'free' | 'pro';
 
 export interface SubscriberPerks {
   tier: SubscriptionTier;
 
-  // ─── Starting Bonus ─────────────────────────────────────────────
-  startingMoney: number;
-
-  // ─── Progression Speed ──────────────────────────────────────────
-  buildSpeedMultiplier: number;    // 1.0 = normal, 1.15 = 15% faster
-  researchSpeedMultiplier: number; // Same — research completes faster
-  // NOTE: Revenue per service is IDENTICAL for all tiers.
-  // Subscribers build faster but don't earn more per building.
-
   // ─── Quality of Life ────────────────────────────────────────────
-  offlineIncomeHours: number;      // How long offline income accrues
   saveSlots: number;               // Number of saved games
   marketHistoryDays: number;       // Days of price history visible
   eventLogSize: number;            // How many events kept in log
@@ -52,8 +50,12 @@ export interface SubscriberPerks {
   apiAccess: boolean;              // REST API for external tools/bots
 
   // ─── Competitive Perks ──────────────────────────────────────────
+  // NOTE: these two are convenience caps on how many parallel decisions a
+  // player can juggle, not on what any decision pays. They are flagged in
+  // the D3 review as the next candidates to equalize if the founder wants
+  // the tiers to be strictly cosmetic; they grant no money, resources, or
+  // speed and pass the guard test.
   dailyRiskDecisions: number;      // How many risk decisions per day
-  surveyProbeDiscount: number;     // % discount on probe costs (not revenue)
   contractSlots: number;           // How many contracts can be active simultaneously
 }
 
@@ -62,13 +64,7 @@ export interface SubscriberPerks {
 const FREE_PERKS: SubscriberPerks = {
   tier: 'free',
 
-  // Starting & Speed
-  startingMoney: 75_000_000,        // $75M
-  buildSpeedMultiplier: 1.0,        // Normal speed
-  researchSpeedMultiplier: 1.0,     // Normal speed
-
   // QoL
-  offlineIncomeHours: 8,            // 8 hours max
   saveSlots: 1,                     // 1 save game
   marketHistoryDays: 3,             // 3 days of price history
   eventLogSize: 30,                 // 30 events
@@ -91,22 +87,13 @@ const FREE_PERKS: SubscriberPerks = {
 
   // Competitive
   dailyRiskDecisions: 2,            // 2 risk decisions per day
-  surveyProbeDiscount: 0,           // No discount
   contractSlots: 3,                 // 3 active contracts
 };
 
 const PRO_PERKS: SubscriberPerks = {
   tier: 'pro',
 
-  // Starting & Speed
-  startingMoney: 150_000_000,       // $150M (+100%)
-  buildSpeedMultiplier: 1.15,       // 15% faster builds
-  researchSpeedMultiplier: 1.15,    // 15% faster research
-  // At 1.15x: a 600s research takes 522s. Over a year of play,
-  // this saves ~6 weeks of progression. Meaningful but not dominant.
-
   // QoL
-  offlineIncomeHours: 24,           // 24 hours (3x free)
   saveSlots: 5,                     // 5 save games
   marketHistoryDays: 30,            // 30 days of full history
   eventLogSize: 200,                // 200 events
@@ -129,7 +116,6 @@ const PRO_PERKS: SubscriberPerks = {
 
   // Competitive
   dailyRiskDecisions: 5,            // 5 risk decisions per day (+3 over free)
-  surveyProbeDiscount: 0.20,        // 20% cheaper probes
   contractSlots: 8,                 // 8 active contracts
 };
 
@@ -145,30 +131,33 @@ export function getSubscriberPerks(tier: string): SubscriberPerks {
   return PERK_MAP[normalized as SubscriptionTier] || FREE_PERKS;
 }
 
+/** Every perk table, for the no-pay-to-win guard test. */
+export const ALL_PERK_TABLES: readonly SubscriberPerks[] = [FREE_PERKS, PRO_PERKS];
+
 // ─── Impact Analysis ─────────────────────────────────────────────────────────
 //
 // WHAT SUBSCRIBERS GET (summary):
 //
 // |Feature              | Free      | Pro ($20)         |
 // |---------------------|-----------|-------------------|
-// | Full game content   | ✅ Yes    | ✅ Yes            |
-// | Starting money      | $75M      | $150M             |
-// | Build/research speed| 1.0x      | 1.15x             |
+// | Full game content   | Yes       | Yes               |
+// | Starting money      | Same      | Same              |
+// | Build/research speed| Same      | Same              |
 // | Revenue per service | Same      | Same              |
-// | Offline income      | 8 hours   | 24 hours          |
-// | Create alliance     | ❌ (join) | ✅ Create (30)    |
+// | Offline operations  | Same      | Same              |
+// | Prices & discounts  | Same      | Same              |
+// | Create alliance     | No (join) | Create (30)       |
 // | Alliance size       | Join any  | Up to 30          |
 // | Market history      | 3 days    | 30 days           |
 // | Save slots          | 1         | 5                 |
 // | Risk decisions/day  | 2         | 5                 |
-// | Custom cosmetics    | ❌        | Colors+Ships+Logo |
-// | Leaderboard badge   | None      | ⭐ Star           |
+// | Custom cosmetics    | No        | Colors+Ships+Logo |
+// | Leaderboard badge   | None      | Star              |
 // | Analytics           | Basic     | Advanced+Export   |
-// | Probe discount      | 0%        | 20%               |
 // | Contract slots      | 3         | 8                 |
-// | API access          | ❌        | ✅                |
+// | API access          | No        | Yes               |
 //
-// WHAT'S NEVER BEHIND A PAYWALL:
+// WHAT IS NEVER BEHIND A PAYWALL:
 // - Building types, research, colonies, ships
 // - Market trading (buy/sell)
 // - Alliance membership (joining)
@@ -177,18 +166,8 @@ export function getSubscriberPerks(tier: string): SubscriberPerks {
 // - Resource mining & production
 // - Multiplayer features (bounties, contests)
 // - Victory conditions
-// - All 1000 researches
-// - All 25+ colony locations
-//
-// COMPETITIVE IMPACT ANALYSIS:
-// Pro subscriber vs free player after 1 year:
-// - Subscriber has researched ~15% more tech (6 weeks ahead)
-// - Subscriber has ~$150M more starting money (trivial after month 1)
-// - Subscriber took 5 risk decisions per day vs 2 (more chances for big wins)
-// - Subscriber has 30-day market history (better trading decisions)
-// - Both players earn IDENTICAL revenue from same buildings/services
-// - Both can mine same resources at same rates
-// - Both compete for same colony slots
+// - Every research item and every colony location
+// - Starting cash, build speed, research speed, revenue, prices
 //
 // This is equivalent to Path of Exile's stash tabs:
 // "Pay for convenience, not power."

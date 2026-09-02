@@ -333,9 +333,21 @@ describe('signal: contested and idle orbital slots', () => {
     expect(sig!.label).toContain(`/${GEO_TOTAL}`);
   });
 
-  it('does NOT fire below the saturation threshold', () => {
-    const sigs = deriveCompetitiveSignals(slotState(10), { nowMs: NOW });
+  it('does NOT fire for a pool the server has not marked contested (D6: keys off the stored bucket, like the build gate)', () => {
+    const sigs = deriveCompetitiveSignals(
+      slotState(10, { orbitalSlotOccupancy: { geo: { occupiedCount: 10, bucket: 'low' } } }),
+      { nowMs: NOW },
+    );
     expect(sigs.find(s => s.kind === 'slot_contested')).toBeUndefined();
+  });
+
+  it('D6: fires for a RELATIVELY contested pool (bucket saturated well below 85%) — same signal the gate enforces', () => {
+    const sig = deriveCompetitiveSignals(
+      slotState(80, { orbitalSlotOccupancy: { geo: { occupiedCount: 80, bucket: 'saturated' } } }),
+      { nowMs: NOW },
+    ).find(s => s.kind === 'slot_contested');
+    expect(sig).toBeDefined();
+    expect(sig!.weight).toBeGreaterThanOrEqual(30);
   });
 
   it('does NOT fire when the player already holds an active lease there', () => {

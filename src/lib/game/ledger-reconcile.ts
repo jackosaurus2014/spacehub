@@ -20,6 +20,7 @@
 // empty ledger: delta = 0, nothing changes, zero behavior difference.
 
 import type { GameState } from './types';
+import { REAL_MS_PER_GAME_MONTH } from './server-time';
 
 /** Wire-format ledger entry as returned by the sync route. */
 export interface LedgerEntryLite {
@@ -140,15 +141,35 @@ export function reconcileBalance(
 //
 // This is a stopgap, not the full server-authoritative wallet program
 // (SIMULATION_INTEGRITY_TOOLING.md): it bounds how much the client-claimed
-// figure may have plausibly grown since the profile's last sync, using a
-// generous ceiling (well above any legitimate tick-income rate — see
-// docs/BALANCE.md service revenue tables, whose largest single service is
-// $160M/month ≈ $60/sec) so real play is never clipped, while an implausible
-// jump (edited save, forged payload) is rejected down to the ceiling and
-// flagged. Ledger-mediated income (contracts, mega-projects, bounties...) is
-// NOT subject to this ceiling — it is added on top via `moneyDelta`, which
-// is independently server-verified.
-export const MAX_PLAUSIBLE_INCOME_PER_MS = 2_000; // $2M/sec ceiling
+// figure may have plausibly grown since the profile's last sync.
+//
+// Clock unification (2026-09-02, docs/GAME_DESIGN_REVIEW_2026-09.md D1): the
+// old ceiling was a flat $2M/s, derived from a real-calendar month while the
+// engine ran a 60 s month — 33,000x looser than its own comment. It is now
+// STATE-DERIVED:
+//
+//   headroom = min( serverMonthlyGross x MONEY_HEADROOM_MULT x elapsedMonths,
+//                   MAX_ABSOLUTE_INCOME_PER_MS x elapsedMs )
+//   elapsedMonths = elapsedMs / REAL_MS_PER_GAME_MONTH   (6 real hours)
+//
+// where `serverMonthlyGross` is the profile's theoretical-max monthly gross
+// revenue from the engine's own formula evaluated over the PERSISTED row
+// (resource-plausibility.ts computeServerMonthlyGross — every server-known
+// term real, every client-only multiplier at its documented cap), and the
+// absolute term is a $500K/s backstop that no legitimate corporation
+// approaches. There is NO per-request floor (exploit batch C-2). Ledger-
+// mediated income (contracts, mega-projects, bounties...) is NOT subject to
+// this ceiling — it is added on top via `moneyDelta`, which is independently
+// server-verified. One-off client-side credits larger than one window's
+// headroom (a science-mission payoff, a narrative reward) are absorbed over
+// the following syncs as headroom accrues — the persisted figure lags, the
+// client's own balance is never touched.
+
+/** Multiplier on the state-derived monthly gross — headroom for the
+ *  multipliers the server cannot see and for tick bursts after a tab wakes. */
+export const MONEY_HEADROOM_MULT = 2.0;
+/** Absolute backstop: $500 per ms = $500K/s ≈ $10.8B per 6 h game-month. */
+export const MAX_ABSOLUTE_INCOME_PER_MS = 500;
 /** Below this much wall-clock since the last persisted sync the client gets
  *  ZERO growth headroom (money may only stay <= prevMoney + ledger deltas).
  *  Game exploit batch 2026-09-02 (C-2): this used to be a FLOOR — every
@@ -163,14 +184,30 @@ export const MAX_PLAUSIBILITY_ELAPSED_MS = 30 * 24 * 3600_000; // 30d cap
  *  an honest client. */
 export const SYNC_MIN_INTERVAL_MS = 10_000;
 
-/** Growth headroom the plausibility ceiling grants for `elapsedMs` of wall
- *  clock: 0 below MIN_PLAUSIBILITY_ELAPSED_MS, linear up to the 30-day cap.
- *  Time-proportional, never floored — see C-2 above. */
-export function plausibleIncomeHeadroom(elapsedMs: number): number {
+/** The elapsed window the ceilings use: 0 below MIN_PLAUSIBILITY_ELAPSED_MS
+ *  (no floor — C-2), linear up to the 30-day cap. Shared with the resource
+ *  clamp (resource-plausibility.ts elapsedGameMonths). */
+export function plausibleElapsedMs(elapsedMs: number): number {
   const raw = Number.isFinite(elapsedMs) ? elapsedMs : 0;
   const safe = Math.min(MAX_PLAUSIBILITY_ELAPSED_MS, Math.max(0, raw));
-  if (safe < MIN_PLAUSIBILITY_ELAPSED_MS) return 0;
-  return safe * MAX_PLAUSIBLE_INCOME_PER_MS;
+  return safe < MIN_PLAUSIBILITY_ELAPSED_MS ? 0 : safe;
+}
+
+/** Growth headroom the plausibility ceiling grants for `elapsedMs` of wall
+ *  clock given the profile's server-derived monthly gross (formula in the
+ *  header). Time-proportional, never floored, always bounded by the
+ *  absolute backstop. A profile with no revenue-producing state gets zero. */
+export function plausibleIncomeHeadroom(elapsedMs: number, serverMonthlyGross: number): number {
+  const safe = plausibleElapsedMs(elapsedMs);
+  if (safe <= 0) return 0;
+  const gross = Number.isFinite(serverMonthlyGross) && serverMonthlyGross > 0 ? serverMonthlyGross : 0;
+  const elapsedMonths = safe / REAL_MS_PER_GAME_MONTH;
+  const stateDerived = gross * MONEY_HEADROOM_MULT * elapsedMonths;
+  const backstop = safe * MAX_ABSOLUTE_INCOME_PER_MS;
+  // Defensive: a non-finite state term (only reachable with a broken clock
+  // constant) must degrade to the backstop, never to an unbounded ceiling.
+  const headroom = Number.isFinite(stateDerived) ? Math.min(stateDerived, backstop) : backstop;
+  return Math.round(headroom);
 }
 
 export interface PlausibilityClampResult {
@@ -180,29 +217,35 @@ export interface PlausibilityClampResult {
   /** How much of the client's claim was rejected (0 when not clamped). */
   rejectedExcess: number;
   ceiling: number;
+  /** The headroom granted this window (ceiling - prevMoney). */
+  headroom: number;
 }
 
 /**
  * Bound a client-claimed money figure against how much it could plausibly
  * have grown (via client-simulated tick income only — ledger deltas are
- * handled separately) since `prevMoney` was last persisted, `elapsedMs` ago.
- * Never restricts downward movement (spending, losses, hazards are
- * unrestricted) — only clamps implausible upward jumps. Headroom is strictly
- * time-proportional: a re-sync inside MIN_PLAUSIBILITY_ELAPSED_MS gets none.
+ * handled separately) since `prevMoney` was last persisted, `elapsedMs` ago,
+ * for a profile whose persisted state can gross at most `serverMonthlyGross`
+ * per game-month. Never restricts downward movement (spending, losses,
+ * hazards are unrestricted) — only clamps implausible upward jumps. Headroom
+ * is strictly time-proportional: a re-sync inside
+ * MIN_PLAUSIBILITY_ELAPSED_MS gets none.
  */
 export function clampPlausibleMoney(
   clientMoney: number,
   prevMoney: number,
   elapsedMs: number,
+  serverMonthlyGross: number,
 ): PlausibilityClampResult {
   const safeClient = Number.isFinite(clientMoney) ? clientMoney : 0;
   const safePrev = Number.isFinite(prevMoney) ? prevMoney : 0;
-  const ceiling = safePrev + plausibleIncomeHeadroom(elapsedMs);
+  const headroom = plausibleIncomeHeadroom(elapsedMs, serverMonthlyGross);
+  const ceiling = safePrev + headroom;
 
   if (safeClient > ceiling) {
-    return { clampedMoney: ceiling, wasClamped: true, rejectedExcess: safeClient - ceiling, ceiling };
+    return { clampedMoney: ceiling, wasClamped: true, rejectedExcess: safeClient - ceiling, ceiling, headroom };
   }
-  return { clampedMoney: safeClient, wasClamped: false, rejectedExcess: 0, ceiling };
+  return { clampedMoney: safeClient, wasClamped: false, rejectedExcess: 0, ceiling, headroom };
 }
 
 /** Apply signed resource deltas onto an inventory map, clamped at zero. */

@@ -682,6 +682,14 @@ export interface GameState {
 
   // Tick counter (for sub-month tick tracking)
   tickCount?: number;
+  /** Clock unification (2026-09-02): sub-unit production carried between
+   *  ticks. At 10,800 ticks per game-month most rigs produce well under one
+   *  unit per tick; instead of dropping the fraction (or lumping a whole
+   *  month at the boundary) the engine accumulates it here, keyed by
+   *  `<location>:<resource>` (buildings), `ship:<instanceId>:<resource>`,
+   *  `mega:<resource>`, `license:<resource>`, and credits whole units as
+   *  they complete. Never displayed; safe to drop on migration. */
+  fractionalCarry?: Record<string, number>;
 
   // Achievements
   earnedAchievements?: string[];

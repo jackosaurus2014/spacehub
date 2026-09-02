@@ -19,12 +19,13 @@
 // factor 1 — fees are never inflated by a broken read.
 
 import prisma from '@/lib/db';
+import { REAL_MS_PER_GAME_MONTH } from './server-time';
 import {
   computeFeeIndexFactor, type FeeIndexSnapshot,
 } from './fee-index';
 
-/** One game-month = 6 real hours (server-time.ts REAL_SECONDS_PER_GAME_MONTH). */
-const GAME_MONTH_MS = 6 * 60 * 60 * 1000;
+/** One game-month = 6 real hours — the one game clock (server-time.ts). */
+const GAME_MONTH_MS = REAL_MS_PER_GAME_MONTH;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** UTC calendar-quarter key, e.g. "2026Q3". */

@@ -41,6 +41,15 @@ import {
 import { processTick, processFullTick } from '../game-engine';
 import { getNewGameState, loadGame } from '../save-load';
 import { SAVE_KEY } from '../constants';
+
+/** Clock unification: at 10,800 ticks per game-month a rig yields well under
+ *  one unit per tick, so engine routing tests run a burst of ticks and let
+ *  the fractional carry land whole units. */
+function tickN(s: GameState, n: number): GameState {
+  let out = s;
+  for (let i = 0; i < n; i++) out = processTick(out);
+  return out;
+}
 import { getGlobalGameDate } from '../server-time';
 import type { GameState } from '../types';
 
@@ -174,7 +183,7 @@ describe('production credit routing (grace ratchet)', () => {
         linkedBuildingIds: [], startDate: { year: 2026, month: 1 }, revenueMultiplier: 1,
       }],
     });
-    const out = processTick(s);
+    const out = tickN(s, 400);
     expect((out.locationInventories?.asteroid_belt?.iron || 0)).toBeGreaterThan(0);
     expect(out.resources.iron || 0).toBe(0);
   });
@@ -187,7 +196,7 @@ describe('production credit routing (grace ratchet)', () => {
         linkedBuildingIds: [], startDate: { year: 2026, month: 1 }, revenueMultiplier: 1,
       }],
     });
-    const out = processTick(s);
+    const out = tickN(s, 400);
     expect(out.resources.iron || 0).toBeGreaterThan(0);
     expect(out.locationInventories?.asteroid_belt).toBeUndefined();
   });
@@ -200,7 +209,7 @@ describe('production credit routing (grace ratchet)', () => {
         linkedBuildingIds: [], startDate: { year: 2026, month: 1 }, revenueMultiplier: 1,
       }],
     });
-    const out = processTick(s);
+    const out = tickN(s, 400);
     expect(out.resources.iron || 0).toBeGreaterThan(0);
     expect(out.locationInventories?.leo).toBeUndefined();
   });

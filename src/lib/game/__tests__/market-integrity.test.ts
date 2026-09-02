@@ -221,11 +221,14 @@ describe('market flows accumulate in state and drain on sync (A5-i)', () => {
         insuranceActive: false,
       } as unknown as GameState;
 
-      const result = processTick(state);
-      // svc_mining_lunar: 100 lunar_water/mo → ~3/tick; helium3 2/mo lump at month-end
+      // Clock unification: svc_mining_lunar yields 100 lunar_water per
+      // 10,800-tick game-month, so a 400-tick burst lands ≈ 3-4 whole units
+      // (fractional carry); helium3 (2/mo) stays in the carry for now.
+      let result = state;
+      for (let i = 0; i < 400; i++) result = processTick(result);
       expect(result.pendingMarketFlows).toBeDefined();
       expect(result.pendingMarketFlows!.mined.lunar_water).toBeGreaterThanOrEqual(3);
-      expect(result.pendingMarketFlows!.mined.helium3).toBeGreaterThanOrEqual(2);
+      expect(result.fractionalCarry?.['lunar_surface:helium3'] || 0).toBeGreaterThan(0);
       // Flows mirror what entered the inventory (month-end volatile decay
       // — C5 §3 — takes its 1-unit minimum bite after mining lands)
       expect(result.resources.lunar_water).toBeGreaterThanOrEqual(2);

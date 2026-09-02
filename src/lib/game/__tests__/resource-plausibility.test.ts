@@ -21,6 +21,7 @@ import {
   FLAT_FLOOR_MIN,
   FLAT_FLOOR_FRACTION,
   GAME_MONTH_WALL_MS,
+  FLAT_FLOOR_WINDOW_MS,
   MIN_ELAPSED_MS,
   MAX_ELAPSED_MS,
   MAX_BUILDING_MINING_CLIENT_MULT,
@@ -35,6 +36,7 @@ import {
 import { MINING_PRODUCTION } from '../resources';
 import { BUILDING_MAP } from '../buildings';
 import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from '../constants';
+import { REAL_MS_PER_GAME_MONTH } from '../server-time';
 
 const gd = { year: 2126, month: 1 };
 function building(instanceId: string, definitionId: string, locationId: string) {
@@ -68,9 +70,10 @@ const ironBase = MINING_PRODUCTION.svc_mining_mars.find(p => p.resource === 'iro
 const fuelBase = BUILDING_MAP.get('propellant_plant_lunar')!.producesPerMonth!.rocket_fuel!;
 
 describe('constants', () => {
-  it('derives the game-month wall clock from the engine constants (60 s at 1×)', () => {
+  it('the game-month wall clock IS the world calendar (6 h) — and the tick constant agrees', () => {
+    expect(GAME_MONTH_WALL_MS).toBe(REAL_MS_PER_GAME_MONTH);
     expect(GAME_MONTH_WALL_MS).toBe(TICKS_PER_GAME_MONTH * TICK_INTERVALS[1]);
-    expect(GAME_MONTH_WALL_MS).toBe(60_000);
+    expect(GAME_MONTH_WALL_MS).toBe(21_600_000);
   });
 
   it('exports the tunables the audit doc cites', () => {
@@ -100,8 +103,9 @@ describe('elapsedGameMonths', () => {
     expect(elapsedGameMonths(MIN_ELAPSED_MS - 1)).toBe(0);
     expect(elapsedGameMonths(MIN_ELAPSED_MS)).toBeCloseTo(MIN_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
     expect(elapsedGameMonths(365 * 24 * 3600_000)).toBeCloseTo(MAX_ELAPSED_MS / GAME_MONTH_WALL_MS, 10);
-    expect(elapsedGameMonths(60_000)).toBe(1);
-    expect(elapsedGameMonths(600_000)).toBe(10);
+    expect(elapsedGameMonths(REAL_MS_PER_GAME_MONTH)).toBe(1);
+    expect(elapsedGameMonths(10 * REAL_MS_PER_GAME_MONTH)).toBe(10);
+    expect(elapsedGameMonths(60_000)).toBeCloseTo(60_000 / REAL_MS_PER_GAME_MONTH, 12);
   });
 });
 
@@ -167,7 +171,7 @@ describe('ceiling math', () => {
       prevResources: { lunar_water: 1000, iron: 40, rocket_fuel: 0 },
       ...FIXTURE,
       ledgerDeltas: { lunar_water: 50, iron: -30, titanium: 5 },
-      elapsedMs: 60_000,
+      elapsedMs: GAME_MONTH_WALL_MS,
     });
     expect(elapsedMonths).toBe(1);
     expect(ceilings.lunar_water).toBeCloseTo(1000 + 50 + RESOURCE_SLACK * prodPerMonth.lunar_water + 250, 6);
@@ -180,8 +184,8 @@ describe('ceiling math', () => {
   });
 
   it('slack scales with elapsed time (10 months ≈ 10× the production term)', () => {
-    const a = computeResourceCeilings({ prevResources: { iron: 0 }, ...FIXTURE, ledgerDeltas: {}, elapsedMs: 60_000 });
-    const b = computeResourceCeilings({ prevResources: { iron: 0 }, ...FIXTURE, ledgerDeltas: {}, elapsedMs: 600_000 });
+    const a = computeResourceCeilings({ prevResources: { iron: 0 }, ...FIXTURE, ledgerDeltas: {}, elapsedMs: GAME_MONTH_WALL_MS });
+    const b = computeResourceCeilings({ prevResources: { iron: 0 }, ...FIXTURE, ledgerDeltas: {}, elapsedMs: 10 * GAME_MONTH_WALL_MS });
     expect(b.ceilings.iron - 100).toBeCloseTo((a.ceilings.iron - 100) * 10, 6);
   });
 
@@ -196,10 +200,13 @@ describe('ceiling math', () => {
 
   it('C-2c: the flat floor scales with the window and never exceeds one allowance per sync', () => {
     expect(flatFloor(1000, 1)).toBe(250);
-    expect(flatFloor(1000, 0.5)).toBe(125);
+    // Clock unification: the allowance window is the 60 s sync interval, so a
+    // 30 s window (expressed in game-months) is half an allowance.
+    expect(flatFloor(1000, (FLAT_FLOOR_WINDOW_MS / 2) / GAME_MONTH_WALL_MS)).toBe(125);
     expect(flatFloor(1000, 10)).toBe(250);
     expect(flatFloor(1000, 0)).toBe(0);
-    expect(ceilingFor(1000, 0, 0, 0.25)).toBe(1000 + 62.5);
+    // A quarter of the 60 s allowance window (15 s), expressed in game-months.
+    expect(ceilingFor(1000, 0, 0, (FLAT_FLOOR_WINDOW_MS / 4) / GAME_MONTH_WALL_MS)).toBe(1000 + 62.5);
   });
 });
 

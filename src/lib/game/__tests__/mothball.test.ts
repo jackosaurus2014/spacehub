@@ -415,12 +415,14 @@ describe('game-engine.ts §1/§2/§6 integration (processTick)', () => {
     });
     const mothballedOut = processTick(mothballedState);
     const activeOut = processTick(activeState);
-    expect(mothballedOut.resources.lunar_water || 0).toBe(0);
+    const produced = (s: typeof activeOut) => (s.resources.lunar_water || 0) + (s.fractionalCarry?.['lunar_surface:lunar_water'] || 0);
+    expect(produced(mothballedOut)).toBe(0);
     // Exact figure depends on the private multiplier stack (tier/research/
     // legacy bonuses, all neutral-ish by default but not guaranteed exactly
     // 1.0) — the M2 proof is the CONTRAST (mothballed=0, active>0), not the
     // precise monthly figure (that's consumption.test.ts/formulas' territory).
-    expect(activeOut.resources.lunar_water || 0).toBeGreaterThan(0);
+    // Clock unification: one tick yields a sub-unit amount, held in the carry.
+    expect(produced(activeOut)).toBeGreaterThan(0);
   });
 });
 

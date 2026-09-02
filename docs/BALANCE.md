@@ -265,12 +265,12 @@ repeatable at any tier; the high end is throttled by resource scarcity
 that a flat completion-count cap doesn't need to separately re-solve.
 
 **Diversified daily income reference points.** Rather than re-derive real
-per-day income from the game-month/tick-rate formulas (which blow up
-unrealistically if extrapolated to 24 continuous hours — see
-`TICK_INTERVALS`/`TICKS_PER_GAME_MONTH` in `constants.ts`, a ~$1M/mo
-service alone would imply $1.4B/day at nonstop 1x-speed ticking, which no
-real session looks like), this analysis uses the game's own **already-
-tuned real-daily benchmarks**: the `revenue_earned` daily-task targets in
+per-day income from the game-month/tick-rate formulas (at the time of this
+analysis the engine's typed `TICKS_PER_GAME_MONTH = 30` implied a 60 s
+game-month, so a ~$1M/mo service alone would have implied $1.4B/day at
+nonstop ticking — the two-clock defect fixed in "Clock unification
+(2026-09-02)" below; on the unified 6 h calendar the same service is $4M/day),
+this analysis uses the game's own **already-tuned real-daily benchmarks**: the `revenue_earned` daily-task targets in
 `alliance-events.ts`/`seasonal-events.ts` — $50M ("Profit Goal", easy),
 $100M-$200M ("Big Earnings"/daily task, solid early-mid), $500M (mid daily
 task), $1B (late daily task). These are calibrated by prior design passes
@@ -2355,3 +2355,229 @@ Balance interactions to keep in mind:
   `computeResourceFlows` and exceeds the floor is now permanently
   under-counted server-side (not just clipped once), so model it or attest
   it before shipping it.
+
+## D6 population gates (2026-09-02, founder-approved)
+
+**Source:** docs/GAME_DESIGN_REVIEW_2026-09.md D6 — *"Lower the PvP
+population gates, or seed them. … Without this the top half of the design
+cannot be experienced before the userbase is large, and the userbase will
+not grow on a game whose competitive half is invisible."* Pass 8 measured
+the three gates against a 26–36-corp sim world and found takeovers dormant,
+slot auctions "population-gated, not price-gated" (GEO 2–3 of 180 vs a
+153-slot trigger), and the labor index pinned at 0.80. Epoch 2 is running
+well under that population. Three constants, one addendum; no fee, price,
+term or shield changed.
+
+### 1. Takeovers at 10 active corporations
+
+`share-registry.ts TAKEOVER_MIN_ACTIVE_CORPS` **25 → 10**;
+`ACTIVE_CORP_WINDOW_MS` stays 30 days. Every consumer reads the constant
+(`getTakeoverGateStatus`, `/api/space-tycoon/equity` 409 body,
+`server-equity.ts` snapshot, `clampEquitySnapshot` default,
+`ShareRegistryPanel` dormant-state fallback — now imported instead of a
+hardcoded 25); `TYCOON_TAKEOVERS_ENABLED='false'` / `TYCOON_TAKEOVERS_FORCE`
+semantics unchanged. *Rationale:* the protections that actually stop a
+takeover market becoming a griefing tool are population-independent — the
+30-day / $500M Frontier shield, the 20% control premium over fair value, the
+burned 2% arbitration fee, the 5-share minimum, the 30-day target cooldown,
+and shares that only enter the float by the target's own raise, distress, or
+acceptance. At 10 corps a tender has ≥9 possible targets and ≥8 possible
+counterbidders, which is a market, not a duel. The Accord-chair electorate
+gate (16, `accord-chair.ts`) is deliberately NOT lowered — it protects a
+chamber, not a counterparty search.
+
+### 2. Slot auctions on relative occupancy
+
+`orbital-slot-auctions.ts computeSlotAuctionEligibility` (new, pure):
+
+```
+eligible = occupancyPct ≥ SATURATED_OCCUPANCY_PCT (85, unchanged)          — absolute
+        OR ( occupied ≥ SLOT_AUCTION_MIN_OCCUPIED (8)
+             AND occupancyPct ≥ max(SLOT_AUCTION_RELATIVE_THRESHOLD_PCT (40),
+                                    P80 of occupancyPct across all pools) ) — relative
+```
+
+`SLOT_AUCTION_OCCUPANCY_PERCENTILE = 0.8`, linear-interpolated across the 5
+pools, so with five pools only the single most-contested pool opens on
+relative grounds (ties open together); the 8-slot minimum stops a 24-slot
+pool auctioning on three satellites, the 40% floor stops an empty world
+auctioning its emptiest pool. Worked numbers at relaunch scale:
+lunar_orbit opens at **10 of 24**, jupiter_system at **16 of 40**,
+mars_orbit at **24 of 60**, GEO at **72 of 180**, LEO at **96 of 240** —
+each only while it is also the occupancy leader; the Pass-8 world (GEO 3
+of 180) still cannot fire, which is the point: contest, not charity.
+
+Plumbing: the resolve cron (`orbital-slots/resolve`) runs the eligibility
+pass once over all pools and stores `bucket = 'saturated'` for an eligible
+pool, so the client build gate (`checkOrbitalSlotGate`), the manual `open`
+action, the competitive-posture S3 signal and the panel's LEASE REQUIRED
+state all enforce the new trigger through the existing snapshot with no
+sync-route change. The GET now carries an `auctionEligibility {occupied,
+threshold, thresholdPct, eligible, reason}` line per pool and the Orbital
+Slots tab shows "auction opens at N slots" for not-yet-contested pools.
+**Decoupled on purpose:** `getCongestionMaintenanceMultiplier` re-derives
+the *physical* bucket from the occupied count, so a pool lease-gated at
+40% pays 'medium' congestion (1.1×), not the 85% crowding rate (1.5×) — no
+maintenance number changed at any occupancy. Unchanged: 90-day lease term,
+7-day sealed-bid window, soft-close, 10% governor cut / 90% burn, idle fees,
+transfer listings, and `computeMinBid` (base × chokepoint premium — the
+price still scales with the pool's chokepoint severity, not with the
+threshold).
+
+### 3. Labor supply ÷5 (of the original base)
+
+`labor-market.ts LABOR_SUPPLY_BASE`: engineer 150→**120**, scientist
+125→**100**, miner 175→**140**, operator 138→**110**, pilot 100→**80**,
+negotiator 75→**60**, security 100→**80**, medic 88→**70** — i.e. the
+original Pass-≤4 base ÷5 (Pass 9 had shipped ÷4; this is ÷1.25 on top).
+`LABOR_SUPPLY_PER_QUARTERS` stays 2 (housing counterplay is now relatively
+5× the original strength). The review's premise cited the 500–700 base; the
+÷5 row of Pass 8's own sweep is what it asked for.
+
+Engineer wage index, Pass-8 methodology (rational-cap corp = 10 engineers @
+trainingLevel 0.5 → 8.5 effective, no quarters), verified by
+`labor-market.test.ts` "D6":
+
+| base | 5 corps | 10 | 15 | 20 | 25 | 50 | leaves 0.80 | reaches 1.00 | pins 1.60 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| original ÷1 (600) | 0.800 | 0.800 | 0.800 | 0.800 | 0.800 | 0.800 | 57 | 71 | 113 |
+| Pass 9 ÷4 (150) — before | 0.800 | 0.800 | 0.850 | 1.133 | 1.417 | 1.600 | 15 | 18 | 29 |
+| **D6 ÷5 (120) — after** | 0.800 | 0.800 | **1.063** | 1.417 | 1.600 | 1.600 | **12** | **15** | **23** |
+
+Shields re-verified: `WAGE_INDEX_MIN/MAX` clamp holds at every population;
+the Pass-9 Frontier payroll shield (`getPayrollWageIndex` = min(index, 1.0)
+while `isInFrontier`) and the Pass-4 hire shield still cap a Frontier corp
+at 1.0 against a pinned 1.6 index — which matters more now that 1.6 pins at
+~23 corps instead of ~29.
+
+### What to watch (first month)
+
+- **First tender.** `TenderOffer` rows and the equity route's 409 rate;
+  the Situation Log emits the "market open" line from the first non-null
+  snapshot. If the gate opens and no tender appears within two weekly
+  loops, the constraint is discoverability or float (no raises → nothing
+  to buy), not the gate.
+- **First auction.** `OrbitalSlotAuction` rows opened with the pool's
+  `reason = 'relative_contest'`; expect lunar_orbit first. Watch bid counts
+  ≥2 (a one-bidder auction is a tax, not a contest) and idle-fee /
+  auto-release rows on the resulting lease. If the same corp keeps winning
+  the leader pool, revisit `SLOT_AUCTION_OCCUPANCY_PERCENTILE` (0.8 → 0.6
+  opens the top two pools).
+- **Wage index leaving the floor.** `LaborIndex.engineer` > 0.80 at ~12
+  active corps, > 1.0 at ~15; Frontier saves must show payroll at ≤ 1.0
+  throughout. If the index pins 1.6 below ~20 corps, hiring is above the
+  rational cap (a poach or wage-war signal, not a tuning error).
+- Reverting any one of the three is a single-constant change; the tests
+  named above pin the shipped values.
+
+---
+
+## Clock unification (2026-09-02)
+
+*docs/GAME_DESIGN_REVIEW_2026-09.md D1 (option A), D2 (option A), D3 — all
+founder-approved 2026-09-02. Public post-mortem: src/lib/game/devlog.ts,
+per docs/POLICY.md "public post-mortem within 14 days".*
+
+### What was wrong
+
+The game ran on two clocks. The world calendar (`server-time.ts`,
+`REAL_SECONDS_PER_GAME_MONTH = 21_600`) advances one game-month every 6 real
+hours and drives years, quarters, seasons, leagues, expeditions, consumption,
+directives and every hazard roll. The engine's per-tick share of monthly
+revenue/costs/payroll/production, however, divided by a typed
+`TICKS_PER_GAME_MONTH = 30` — 30 ticks x 2 s = a 60-second month. Income
+accrued **360x** faster than the calendar it was denominated in. Two more
+places (`order-queue.ts`, `ScienceMissionsPanel.tsx`) recomputed the 60 s
+month locally for ETA strings, `away-operations.ts` integrated the same
+per-tick share over wall-clock ticks (12 h away = 360 game-months of
+revenue), and the money plausibility ceiling (`MAX_PLAUSIBLE_INCOME_PER_MS
+= 2_000`) had been derived from a real-calendar month and was 33,000x looser
+than its own comment.
+
+Every playtest in this document (Pass 1-9, the 50-year runner, the PvP
+audit) was run at 6 h/month. **Every number above was what the design
+intended and none of it was what players experienced.** The live proof was
+the top Epoch 2 corporation: $250B earned from eleven starter-tier buildings
+in nine days, against a playtest expectation near $370M.
+
+### What changed
+
+| Site | Change |
+|---|---|
+| `constants.ts` | `TICKS_PER_GAME_MONTH = REAL_SECONDS_PER_GAME_MONTH / (TICK_INTERVALS[1] / 1000)` = **10,800**, derived, imported from `server-time.ts` (no cycle: server-time has no imports). Comments rewritten. |
+| `server-time.ts` | new `REAL_MS_PER_GAME_MONTH` export for elapsed-time math. |
+| `game-engine.ts` | `fraction = 1 / TICKS_PER_GAME_MONTH` now = 1/10,800. Sub-unit production (building mining, ship mining, megastructure passive resources, Hive biomatter deliveries) is **carried between ticks** (`state.fractionalCarry`) instead of rounded away / lumped at month-end — at 10,800 ticks/month nothing produces a whole unit per tick, and the old month-end lump lost every unit of a session that ended before the boundary. `incomeHistory` stores the monthly run-rate (per-tick net x 10,800; month-end ticks skipped) so the dashboard's "/mo" chart is honest. `dailyMetrics.revenue_earned` no longer multiplies by `fraction` twice. |
+| `away-operations.ts` | Per-tick share follows the derived constant automatically (12 h = 2 game-months). Revenue/cost integral bounded by `MAX_CATCHUP_MONTHS` like the directive loop. **Corporate overhead (§1b) and executive compensation (§1c) added to `costsPerTick`** — offline can never be cheaper than online. Efficiency tiers unchanged. |
+| `order-queue.ts`, `ScienceMissionsPanel.tsx` | shadow `REAL_SECONDS_PER_GAME_MONTH` recomputations deleted; import the canonical constant. |
+| `resource-plausibility.ts` | `GAME_MONTH_WALL_MS = REAL_MS_PER_GAME_MONTH` (was 60,000). The resource ceiling's `elapsedMonths` is therefore 360x tighter, matching the new production rate. New `computeServerMonthlyGross` (below). |
+| `ledger-reconcile.ts` + `sync/route.ts` | flat `$2M/s` ceiling replaced by the state-derived ceiling below. |
+| `subscriber-perks.ts` (D3) | `startingMoney`, `buildSpeedMultiplier`, `researchSpeedMultiplier`, `offlineIncomeHours`, `surveyProbeDiscount` deleted; guard test denylists their return. |
+
+### Money plausibility ceiling (replaces MAX_PLAUSIBLE_INCOME_PER_MS)
+
+```
+elapsedMs      = clamp(now - lastSyncAt, 0, 30 d); 0 below 5 s (no floor)
+elapsedMonths  = elapsedMs / 21,600,000
+headroom       = min( serverMonthlyGross x 2.0 x elapsedMonths,
+                      $500 per ms x elapsedMs )            // $500K/s backstop
+ceiling        = prevMoney + headroom  (+ server-verified ledger deltas)
+```
+
+`serverMonthlyGross` is computed from the persisted row with the resource
+ceiling's posture: service definitions, linked-building upgrade level,
+station-bonus buildings, completed research and workforce head-counts are
+evaluated for real; legacy (x6), tier (x1.2), reputation (x1.4), eras (x1.1),
+doctrine (x1.03), commanders (x2 assumed), random events (x2), morale
+(x1.15), wave-B stack (x2), demand scarcity (x1.25), returning-commander
+boost (x1.3) and megastructure revenue terms are at their documented caps;
+mining rigs are valued at nameplate units x band-max price x the mining cap
+product. Megastructure passive income and subsidiary net income are
+allowances gated on persisted `totalEarned`. Governor tax is not yet
+allowed for (bounded by `taxCap`; a governor's persisted figure lags until
+headroom absorbs it).
+
+Honest reading of the numbers: the client-only cap product is large (~10^3),
+so for any corporation grossing more than a few $M/month the **$500K/s
+backstop is the binding term** (≈ $30M per 60 s sync, ≈ $10.8B per
+game-month). That is still ~4,000x tighter than the old ceiling per sync and
+rejects the 360x defect outright (a 60 s claim of one month's gross is
+clamped). Tightening further means persisting legacy/tier/reputation on the
+profile so they can be evaluated for real — a follow-up, not this pass.
+
+One-off client-side credits larger than one window's headroom (science
+payoffs, narrative rewards) are absorbed over subsequent syncs as headroom
+accrues; the client's own balance is never touched, only the persisted
+figure lags.
+
+### Migration (D2)
+
+`scratchpad/clock-migration.sql` (run by the founder, one transaction):
+one `EconomicSnapshot` per profile (reason `pre-clock-migration`), then
+`money`, `totalEarned`, `totalSpent`, `netWorth`, `peakNetWorth` and every
+numeric value in `resources` / `serverResources` divided by 360 (rounded);
+buildings, ships, research, workforce, contracts and ledger rows untouched;
+the phase-1 `_resourceCeilings` stash cleared so the next sync re-baselines.
+Rollback = `restoreEconomicSnapshot` (money/netWorth/resources) plus x360 on
+the three columns the snapshot model does not carry (before-values are
+printed by the script). Compensation: none — everyone scaled equally, so
+rankings and tiers are unchanged.
+
+### What this does to the tables above
+
+Nothing. Every figure in Pass 1-9 and the 50-year playtest was computed at
+6 h/month and is now, for the first time, the rate players experience. The
+50-year deep-tier horizon ruled canon on 8/17 is real (50 game-years = 150
+real days). The two open concerns from the September review — decision
+cadence collapsing by year 30, and T4/T5 flagship paybacks — are now
+observable on live telemetry rather than masked by a 360x income surplus.
+
+### Follow-ups
+
+- `scripts/balance-archetypes.ts` and `scripts/simulate-playthroughs.ts`
+  step `TICKS_PER_GAME_MONTH` ticks per month; at 10,800 they are 360x
+  slower. They should switch to a month-grid step (or a synthetic tick
+  interval) before their next run.
+- Monthly run-rate widgets that used to visibly move every minute now move
+  every 6 hours; watch first-week feedback for "my income is frozen".
+- Persist legacy/tier/reputation server-side to tighten the gross ceiling.
+

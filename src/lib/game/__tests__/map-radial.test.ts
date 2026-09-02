@@ -143,7 +143,7 @@ describe('deriveRadialActions: disabled-with-reason gating', () => {
     });
     const build = find(state, 'geo', 'build');
     expect(build.enabled).toBe(false);
-    expect(build.reason).toContain('saturated');
+    expect(build.reason).toContain('contested');
     expect(build.reason).toContain('slot-lease auction');
   });
 

@@ -192,7 +192,8 @@ export function getChairPhase(nowMs: number): ChairPhaseStatus {
  * CHAIR_ELECTORATE_LOOKBACK_MS — before the election is anything but
  * theatre.
  *
- * Why 16, and why a different number from TAKEOVER_MIN_ACTIVE_CORPS (25):
+ * Why 16, and why a different number from TAKEOVER_MIN_ACTIVE_CORPS (10
+ * since the D6 population-gate pass, docs/BALANCE.md "D6 population gates"):
  * the two gates are protecting against different failure modes. A takeover
  * market needs *counterparties* — every participant must be able to find a
  * target, so it scales with pair-finding. An election needs a *chamber*: the

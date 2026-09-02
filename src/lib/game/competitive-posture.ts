@@ -93,10 +93,12 @@ import { getFeeIndexFactor } from './fee-index';
 import { MARKET_MICROSTRUCTURE_TECH_ID } from './cornering-intel';
 import {
   ORBITAL_SLOT_MAP,
-  SATURATED_OCCUPANCY_PCT,
   hasActiveSlotLease,
 } from './spatial-strategy';
-import { SLOT_IDLE_FEE_FRACTION, SLOT_IDLE_AUTO_RELEASE_MS, SLOT_IDLE_FEE_INTERVAL_MS } from './orbital-slot-auctions';
+import {
+  SLOT_IDLE_FEE_FRACTION, SLOT_IDLE_AUTO_RELEASE_MS, SLOT_IDLE_FEE_INTERVAL_MS,
+  SLOT_AUCTION_RELATIVE_THRESHOLD_PCT,
+} from './orbital-slot-auctions';
 import { DEMAND_POOL_STALE_MS } from './demand-pools';
 import { LABOR_MARKET_STALE_MS } from './labor-market';
 
@@ -261,10 +263,12 @@ export const COMPETITIVE_TOOLS: CompetitiveToolDef[] = [
     name: 'Orbital Slot Auctions',
     icon: 'territory',
     posture: 'Offense',
-    // spatial-strategy.ts SATURATED_OCCUPANCY_PCT 85;
-    // orbital-slot-auctions.ts LEASE_TERM_MS 90d, AUCTION_WINDOW_MS 7d,
-    // SLOT_IDLE_FEE_FRACTION 0.10 / 30d, SLOT_IDLE_AUTO_RELEASE_MS 90d.
-    what: 'Premium orbits are finite. Once a pool passes 85% occupancy, new construction there requires winning a sealed-bid slot lease — and a lease you hold is a slot a rival cannot use.',
+    // spatial-strategy.ts SATURATED_OCCUPANCY_PCT 85 (absolute) and the D6
+    // relative trigger in orbital-slot-auctions.ts
+    // (computeSlotAuctionEligibility: ≥8 occupied and ≥ max(40%, P80));
+    // LEASE_TERM_MS 90d, AUCTION_WINDOW_MS 7d, SLOT_IDLE_FEE_FRACTION
+    // 0.10 / 30d, SLOT_IDLE_AUTO_RELEASE_MS 90d.
+    what: 'Premium orbits are finite. Once a pool is contested — the most crowded pool server-wide once it passes 40% occupancy, or any pool past 85% — new construction there requires winning a sealed-bid slot lease, and a lease you hold is a slot a rival cannot use.',
     cost: 'Your sealed bid (10% of the winning bid goes to the zone governor, the rest is burned). Holding a lease you never build on costs 10% of the winning bid every 30 days and auto-releases after 90 days unbuilt.',
     whenRational: 'When the location is genuinely scarce and you either want to build there or want to keep a rival out of a chokepoint.',
     counterplay: 'Sealed bids, deterministic resolution, and the idle fee — denial is legitimate but taxed, and a denied rival can buy the lease outright at a market-clearing price.',
@@ -599,10 +603,13 @@ export function deriveCompetitiveSignals(
     }
   }
 
-  // ── S3 · A slot pool you operate at is saturated ─────────────────────────
+  // ── S3 · A slot pool you operate at is contested ─────────────────────────
   // Selector: state.orbitalSlotOccupancy (E7 sync snapshot) +
   // spatial-strategy.ORBITAL_SLOT_MAP + hasActiveSlotLease. Only pools the
   // player has actually unlocked; only when they do NOT already hold a lease.
+  // D6: keys off the stored bucket ('saturated' = lease-gated, written by
+  // the resolve cron for absolute OR relative contest) — the same signal
+  // checkOrbitalSlotGate enforces — not a client-side 85% recomputation.
   {
     const occ = state.orbitalSlotOccupancy;
     const spatialUnlocked = isFoldedFeatureUnlocked(state.corporationTier || 1, 'spatial');
@@ -615,7 +622,7 @@ export function deriveCompetitiveSignals(
         const occupied = typeof row?.occupiedCount === 'number' ? row.occupiedCount : 0;
         if (!Number.isFinite(total) || total <= 0) continue;
         const occupancyPct = (occupied / total) * 100;
-        if (occupancyPct < SATURATED_OCCUPANCY_PCT) continue;
+        if (row?.bucket !== 'saturated') continue;
         if (hasActiveSlotLease(state, locationId, nowMs)) continue;
         const locName = LOCATION_MAP.get(locationId)?.name || locationId;
         signals.push({
@@ -623,11 +630,11 @@ export function deriveCompetitiveSignals(
           kind: 'slot_contested',
           icon: 'territory',
           label: `${locName} is at ${occupied}/${total} orbital slots`,
-          detail: `Past ${SATURATED_OCCUPANCY_PCT}% occupancy this location stops accepting new construction unless you hold a slot lease. Leases are sold by sealed-bid auction — 10% of the winning bid goes to the zone governor and the rest is burned. A lease you win is also a slot a rival cannot use, but an unbuilt one is taxed.`,
+          detail: `This location is contested — it stops accepting new construction unless you hold a slot lease. Leases are sold by sealed-bid auction — 10% of the winning bid goes to the zone governor and the rest is burned. A lease you win is also a slot a rival cannot use, but an unbuilt one is taxed.`,
           statusLabel: 'Opportunity',
           tab: 'map',
           subView: 'map:slots',
-          weight: 30 + (occupancyPct - SATURATED_OCCUPANCY_PCT),
+          weight: 30 + Math.max(0, Math.round(occupancyPct - SLOT_AUCTION_RELATIVE_THRESHOLD_PCT)),
         });
       }
     }

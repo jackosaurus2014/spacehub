@@ -51,6 +51,8 @@ import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SHIP_MAP } from '@/lib/game/ships';
 import {
   computeResourceCeilings,
+  buildServerFlowState,
+  computeServerMonthlyGross,
   clampResources,
   getResourceClampMode,
   readResourceStash,
@@ -215,7 +217,7 @@ export async function POST(request: Request) {
     // columns feed the per-resource plausibility ceilings below (and the
     // 'pre-clamp' EconomicSnapshot in enforce mode), so select them once here.
     let existingProfile: {
-      id: string; money: number; netWorth: number; lastSyncAt: Date;
+      id: string; money: number; netWorth: number; totalEarned: number; lastSyncAt: Date;
       resources: unknown; buildingsData: unknown; shipsData: unknown;
       activeServicesData: unknown; completedResearchList: string[]; workforceData: unknown;
       serverResources: unknown;
@@ -226,7 +228,7 @@ export async function POST(request: Request) {
       existingProfile = await prisma.gameProfile.findUnique({
         where: { userId: session.user.id },
         select: {
-          id: true, money: true, netWorth: true, lastSyncAt: true,
+          id: true, money: true, netWorth: true, totalEarned: true, lastSyncAt: true,
           resources: true, buildingsData: true, shipsData: true,
           activeServicesData: true, completedResearchList: true, workforceData: true,
           serverResources: true,
@@ -243,13 +245,34 @@ export async function POST(request: Request) {
       if (existingProfile) {
         const elapsedMs = Date.now() - existingProfile.lastSyncAt.getTime();
         elapsedSinceLastSyncMs = elapsedMs;
-        const clamp = clampPlausibleMoney(clientMoney, existingProfile.money, elapsedMs);
+        // Clock unification (2026-09-02): the ceiling is derived from what
+        // THIS profile's persisted state can gross per 6 h game-month
+        // (resource-plausibility.ts computeServerMonthlyGross — same partial
+        // GameState builder the resource ceilings use), x2 headroom, bounded
+        // by a $500K/s backstop. A malformed row degrades to gross 0 (only
+        // ledger-mediated income passes), never to an unbounded ceiling.
+        let serverMonthlyGross = 0;
+        try {
+          serverMonthlyGross = computeServerMonthlyGross(
+            buildServerFlowState({
+              prevResources: existingProfile.resources as Record<string, number> | null,
+              prevBuildingsData: existingProfile.buildingsData,
+              prevShipsData: existingProfile.shipsData,
+              prevActiveServices: existingProfile.activeServicesData,
+              prevResearch: existingProfile.completedResearchList,
+            }),
+            { workforceData: existingProfile.workforceData, totalEarned: existingProfile.totalEarned },
+          );
+        } catch (grossError) {
+          logger.error('Server monthly gross computation failed — zero headroom this sync', { error: String(grossError) });
+        }
+        const clamp = clampPlausibleMoney(clientMoney, existingProfile.money, elapsedMs, serverMonthlyGross);
         plausibilityClampedMoney = clamp.clampedMoney;
         if (clamp.wasClamped) {
           logger.warn('Client money claim exceeded plausibility ceiling — clamped', {
             userId: session.user.id, profileId: existingProfile.id,
-            clientMoney, prevMoney: existingProfile.money, elapsedMs,
-            ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
+            clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
+            headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
           });
           try {
             await prisma.marketAuditLog.create({
@@ -257,8 +280,8 @@ export async function POST(request: Request) {
                 eventType: 'client_money_implausible_rejected',
                 profileId: existingProfile.id,
                 details: {
-                  clientMoney, prevMoney: existingProfile.money, elapsedMs,
-                  ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
+                  clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
+                  headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
                 },
                 severity: 'critical',
               },

@@ -34,7 +34,7 @@
 
 import type { GameState } from './types';
 import { computeResourceFlows, type FlowKind } from './resource-flow';
-import { TICK_INTERVALS, TICKS_PER_GAME_MONTH } from './constants';
+import { REAL_MS_PER_GAME_MONTH } from './server-time';
 import { MIN_PLAUSIBILITY_ELAPSED_MS, MAX_PLAUSIBILITY_ELAPSED_MS } from './ledger-reconcile';
 import { MEGASTRUCTURES } from './personal-megastructures';
 import { SHIP_MAP, getShipDerivedStats } from './ships';
@@ -42,6 +42,13 @@ import { MINING_LASER_RATE_BONUS } from './modules';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from './buildings';
 import { RESEARCH } from './research-tree';
 import { PRODUCTION_CHAINS, canFabricate } from './production-chains';
+import { SERVICE_MAP } from './services';
+import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
+import { getRevenueMultiplier as getUpgradeRevenueMultiplier } from './upgrades';
+import { getResearchBonuses } from './research-tree';
+import { getWorkforceBonuses } from './workforce';
+import { getMiningRevenueScale } from './mining-pricing';
+import { SUBSIDIARY_DEFS } from './subsidiaries';
 
 // ─── Tunables ────────────────────────────────────────────────────────────────
 
@@ -58,9 +65,10 @@ export const FLAT_FLOOR_MIN = 100;
 /** Proportional part of the same allowance (25% of the previous stock). */
 export const FLAT_FLOOR_FRACTION = 0.25;
 
-/** Wall-clock milliseconds per game month at 1× speed — derived from the
- *  engine constants (30 ticks × 2 000 ms = 60 000 ms), never hardcoded. */
-export const GAME_MONTH_WALL_MS = TICKS_PER_GAME_MONTH * TICK_INTERVALS[1];
+/** Wall-clock milliseconds per game month — the world calendar's 6 real
+ *  hours (server-time.ts), the one game clock since the 2026-09-02 clock
+ *  unification. Never hardcoded. */
+export const GAME_MONTH_WALL_MS = REAL_MS_PER_GAME_MONTH;
 
 /** Elapsed-time clamp, shared with the money clamp. Game exploit batch
  *  2026-09-02 (C-2): MIN is no longer a floor — below it the window counts
@@ -196,6 +204,220 @@ const CLIENT_MULT_BY_KIND: Partial<Record<FlowKind, number>> = {
   megastructure: 0,
 };
 
+// ─── Money half: server-derived monthly gross ceiling ───────────────────────
+// Clock unification (2026-09-02, docs/GAME_DESIGN_REVIEW_2026-09.md D1). The
+// money plausibility ceiling (ledger-reconcile.ts clampPlausibleMoney) used to
+// be a flat $2M/s. It is now `serverMonthlyGross x 2 x elapsedMonths` (with a
+// $500K/s backstop), where serverMonthlyGross is computed HERE from the
+// persisted row with the same posture as the resource ceiling above: every
+// server-known term evaluated for real, every client-only multiplier at its
+// documented cap. Only POSITIVE terms count (costs are never subtracted —
+// a ceiling that nets costs could clip an honest player whose client had not
+// run the sinks yet).
+//
+// Server-known, evaluated for real: service definitions, the linked
+// building's upgrade level, station-bonus buildings at the location,
+// completed research (serviceRevenueBonus), workforce head-counts
+// (serviceRevenue), the service instance's own multiplier (capped), and
+// mining rigs' nameplate output valued at the resource's band-maximum price.
+// Client-only, capped: legacy, tier, reputation, eras, doctrine, commanders,
+// random events, morale, wave-B stack, demand scarcity, returning-commander
+// boost, megastructure revenue multiplier.
+//
+// Allowances for income that is not a service at all are GATED on persisted
+// totalEarned so a fresh profile cannot claim them: megastructure passive
+// income (each definition's `minMoney` gate) and subsidiary net income
+// (tier inferred from totalEarned, subsidiaries.ts inferCorpTier's money
+// thresholds). Governor tax (zone-influence, server-computed) is deliberately
+// NOT allowed for yet — it is bounded by taxCap and a governor's persisted
+// figure simply lags until headroom absorbs it.
+
+/** workforce.ts:172 — `serviceRevenue` capped at +50%. */
+export const MAX_WORKFORCE_SERVICE_REVENUE_MULT = 1.5;
+/** research-tree.ts:951 — `serviceRevenueBonus` capped at +50%. */
+export const MAX_RESEARCH_SERVICE_REVENUE_MULT = 1.5;
+/** legacy-system.ts:550 — revenue category cap 5.0 => x6. */
+export const MAX_LEGACY_REVENUE_MULT = 6.0;
+/** corporation-tiers.ts:170 — top tier `revenueBonus: 0.20`. */
+export const MAX_TIER_REVENUE_MULT = 1.20;
+/** reputation.ts:126 — top standing `revenueMultiplier: 1.40`. */
+export const MAX_REPUTATION_REVENUE_MULT = 1.40;
+/** corporate-eras.ts:105 — largest era revenue bonus +10%. */
+export const MAX_ERA_REVENUE_MULT = 1.10;
+/** corporate-doctrine.ts:245 — Proprietary disclosure +3%. */
+export const MAX_DOCTRINE_REVENUE_MULT = 1.03;
+/** commanders.ts — class sums stack with diminishing returns and traits are
+ *  clamped; no single documented cap, so 2.0 is an ASSUMED bound (same
+ *  posture as MAX_COMMANDER_MINING_MULT). */
+export const MAX_COMMANDER_REVENUE_MULT = 2.0;
+/** random-events.ts — active effects MULTIPLY (1.3 x 1.2 x 1.15 ≈ 1.8 if
+ *  every positive event overlaps); 2.0 is the documented allowance. */
+export const MAX_EVENT_REVENUE_MULT = 2.0;
+/** game-engine.ts §1 stationBonus — capped at +50% (evaluated for real from
+ *  the persisted buildings; this is the ceiling of that evaluation). */
+export const MAX_STATION_BONUS = 0.5;
+/** workforce.ts:180 — morale band 0.8–1.15. */
+export const MAX_MORALE_MULT = 1.15;
+/** game-engine.ts:490 — waveBRevenueMult capped at 2.0 by the engine. */
+export const MAX_WAVE_B_REVENUE_MULT = 2.0;
+/** service-pricing.ts — undersupply scarcity premium ≤ +25%. */
+export const MAX_DEMAND_SCARCITY_MULT = 1.25;
+/** returning-commander.ts — 1.3x decaying to 1.0 over 14 days. */
+export const MAX_RETURNING_COMMANDER_MULT = 1.3;
+/** A service instance's own `revenueMultiplier` is client-reported (persisted
+ *  activeServicesData). Services start at 1.0; 2.0 is the allowance. */
+export const MAX_SERVICE_INSTANCE_MULT = 2.0;
+/** personal-megastructures.ts — revenueMultiplier terms multiply across
+ *  owned megastructures; product of each definition's largest term. */
+export const MAX_MEGASTRUCTURE_REVENUE_MULT: number = MEGASTRUCTURES.reduce((prod, def) => {
+  let best = 1;
+  for (const ph of def.phases || []) best = Math.max(best, ph.interimBonuses?.revenueMultiplier || 1);
+  best = Math.max(best, def.completionBonus?.revenueMultiplier || 1);
+  return prod * best;
+}, 1);
+
+/** Product of every client-only term in the §1 service revenue chain. */
+export const MAX_SERVICE_REVENUE_CLIENT_MULT =
+  MAX_LEGACY_REVENUE_MULT
+  * MAX_TIER_REVENUE_MULT
+  * MAX_REPUTATION_REVENUE_MULT
+  * MAX_ERA_REVENUE_MULT
+  * MAX_DOCTRINE_REVENUE_MULT
+  * MAX_COMMANDER_REVENUE_MULT
+  * MAX_EVENT_REVENUE_MULT
+  * MAX_MORALE_MULT
+  * MAX_WAVE_B_REVENUE_MULT
+  * MAX_DEMAND_SCARCITY_MULT
+  * MAX_RETURNING_COMMANDER_MULT
+  * MAX_MEGASTRUCTURE_REVENUE_MULT;
+
+/** subsidiaries.ts OPERATIONS_MULT[5] — the top operations level x9. */
+export const MAX_SUBSIDIARY_OPERATIONS_MULT = 9;
+/** subsidiaries.ts inferCorpTier money thresholds → max slots per tier
+ *  (MAX_SLOTS_BY_TIER). Only totalEarned is server-known, so the building/
+ *  research/location legs are treated as satisfied (most generous case). */
+const SUBSIDIARY_SLOTS_BY_TOTAL_EARNED: { minTotalEarned: number; slots: number }[] = [
+  { minTotalEarned: 500_000_000_000, slots: 6 }, // tier 5
+  { minTotalEarned: 100_000_000_000, slots: 6 }, // tier 4
+  { minTotalEarned: 10_000_000_000, slots: 4 },  // tier 3
+  { minTotalEarned: 1_000_000_000, slots: 2 },   // tier 2
+  { minTotalEarned: 0, slots: 1 },               // tier 1
+];
+const MAX_SUBSIDIARY_BASE_INCOME: number = SUBSIDIARY_DEFS.reduce((m, d) => Math.max(m, d.baseIncome || 0), 0);
+
+export interface ServerMonthlyGrossInputs {
+  /** `GameProfile.workforceData` (client workforce counts + stash keys). */
+  workforceData?: unknown;
+  /** `GameProfile.totalEarned` — gates the megastructure/subsidiary allowances. */
+  totalEarned?: number;
+}
+
+export interface ServerMonthlyGrossReport {
+  /** Theoretical-max gross revenue per game-month, all terms. */
+  gross: number;
+  services: number;
+  megastructurePassive: number;
+  subsidiaries: number;
+}
+
+const stationBonusAt = (state: GameState, locationId: string): number => {
+  let bonus = 0;
+  for (const b of state.buildings || []) {
+    if (!b || !b.isComplete || b.locationId !== locationId) continue;
+    if (BUILDING_MAP.get(b.definitionId)?.category === 'space_station') bonus += 0.15;
+  }
+  return Math.min(MAX_STATION_BONUS, bonus);
+};
+
+/**
+ * Theoretical-max monthly gross for a profile from its PERSISTED state
+ * (use buildServerFlowState to construct `state` from the row). Pure; a
+ * malformed row yields 0 for the affected term rather than throwing.
+ */
+export function computeServerMonthlyGrossDetailed(state: GameState, inputs: ServerMonthlyGrossInputs = {}): ServerMonthlyGrossReport {
+  const totalEarned = typeof inputs.totalEarned === 'number' && Number.isFinite(inputs.totalEarned) && inputs.totalEarned > 0
+    ? inputs.totalEarned : 0;
+
+  // Research (server-known list) — real.
+  let researchMult = MAX_RESEARCH_SERVICE_REVENUE_MULT;
+  try {
+    researchMult = 1 + Math.min(0.5, Math.max(0, getResearchBonuses(state.completedResearch || [], undefined).serviceRevenueBonus || 0));
+  } catch { researchMult = MAX_RESEARCH_SERVICE_REVENUE_MULT; }
+
+  // Workforce head-counts (persisted workforceData) — real when the shape is
+  // sane, the documented cap otherwise.
+  let workforceMult = MAX_WORKFORCE_SERVICE_REVENUE_MULT;
+  const wd = inputs.workforceData;
+  if (wd && typeof wd === 'object' && !Array.isArray(wd)) {
+    const w = wd as Record<string, unknown>;
+    const num = (k: string) => (typeof w[k] === 'number' && Number.isFinite(w[k] as number) && (w[k] as number) > 0 ? (w[k] as number) : 0);
+    try {
+      const b = getWorkforceBonuses({
+        engineers: num('engineers'), scientists: num('scientists'), miners: num('miners'), operators: num('operators'),
+        pilots: num('pilots'), negotiators: num('negotiators'), securitys: num('securitys'), medics: num('medics'),
+      } as NonNullable<GameState['workforce']>);
+      workforceMult = 1 + Math.min(0.5, Math.max(0, b.serviceRevenue || 0));
+    } catch { workforceMult = MAX_WORKFORCE_SERVICE_REVENUE_MULT; }
+  }
+
+  let services = 0;
+  for (const svc of state.activeServices || []) {
+    if (!svc || typeof svc.definitionId !== 'string') continue;
+    const def = SERVICE_MAP.get(svc.definitionId);
+    if (!def) continue;
+    const linkedBld = (state.buildings || []).find(b =>
+      b && b.isComplete && b.locationId === svc.locationId
+      && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId),
+    );
+    const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    const rawInst = typeof svc.revenueMultiplier === 'number' && Number.isFinite(svc.revenueMultiplier) ? svc.revenueMultiplier : 1;
+    const instMult = Math.min(MAX_SERVICE_INSTANCE_MULT, Math.max(0, rawInst));
+    let base = def.revenuePerMonth || 0;
+    if (def.type === 'mining_output') {
+      // Price-linked mining (mining-pricing.ts): nameplate units x band-max
+      // price x scale, with every client-only mining multiplier at its cap.
+      let valued = 0;
+      for (const { resource, amountPerMonth } of MINING_PRODUCTION[svc.definitionId] || []) {
+        const rd = RESOURCE_MAP.get(resource as never) as { maxPrice?: number; baseMarketPrice?: number } | undefined;
+        const price = Math.max(rd?.maxPrice || 0, rd?.baseMarketPrice || 0);
+        valued += amountPerMonth * price;
+      }
+      let scale = 1;
+      try { scale = getMiningRevenueScale(svc.definitionId); } catch { scale = 1; }
+      base = Math.max(base, valued * scale * MAX_BUILDING_MINING_CLIENT_MULT);
+    }
+    services += base * instMult * upgradeBoost * researchMult * workforceMult
+      * (1 + stationBonusAt(state, svc.locationId)) * MAX_SERVICE_REVENUE_CLIENT_MULT;
+  }
+
+  // Megastructure passive income — client-only; allowed per definition once
+  // the profile has EARNED its minMoney gate.
+  let megastructurePassive = 0;
+  for (const def of MEGASTRUCTURES) {
+    const gate = def.prerequisites?.minMoney || 0;
+    if (totalEarned < gate) continue;
+    let best = 0;
+    for (const ph of def.phases || []) best = Math.max(best, ph.interimBonuses?.passiveIncome || 0);
+    best = Math.max(best, def.completionBonus?.passiveIncome || 0);
+    megastructurePassive += best;
+  }
+
+  // Subsidiaries — client-only; slots by the money leg of inferCorpTier.
+  const slots = SUBSIDIARY_SLOTS_BY_TOTAL_EARNED.find(t => totalEarned >= t.minTotalEarned)?.slots || 0;
+  const subsidiaries = slots * MAX_SUBSIDIARY_BASE_INCOME * MAX_SUBSIDIARY_OPERATIONS_MULT;
+
+  const gross = services + megastructurePassive + subsidiaries;
+  return {
+    gross: Number.isFinite(gross) && gross > 0 ? Math.round(gross) : 0,
+    services: Math.round(services), megastructurePassive: Math.round(megastructurePassive), subsidiaries: Math.round(subsidiaries),
+  };
+}
+
+/** The headline number the sync route feeds clampPlausibleMoney. */
+export function computeServerMonthlyGross(state: GameState, inputs: ServerMonthlyGrossInputs = {}): number {
+  return computeServerMonthlyGrossDetailed(state, inputs).gross;
+}
+
 // ─── Inputs ──────────────────────────────────────────────────────────────────
 
 export interface ResourceCeilingInputs {
@@ -318,13 +540,22 @@ export function computeMaxProductionPerMonth(state: GameState, monthIndex?: numb
   return out;
 }
 
-/** Time-proportional scale on the flat allowance: a full allowance per game
- *  month of wall clock (60 s at 1×), linearly less for a shorter window,
+/** The flat allowance models one-off transfers PER SYNC (contract deliveries,
+ *  refining, survey finds, freight arrivals), so its time scale is the client
+ *  sync interval, not the game calendar. Clock unification (2026-09-02):
+ *  when the game-month was 60 s the two coincided; now that a month is 6 h
+ *  the allowance is pinned to this window explicitly so it keeps meaning
+ *  "one allowance per normal sync" (C-2c: linear below it, capped at 1). */
+export const FLAT_FLOOR_WINDOW_MS = 60_000;
+
+/** Time-proportional scale on the flat allowance: a full allowance per
+ *  FLAT_FLOOR_WINDOW_MS of wall clock (expressed here in game-months, the
+ *  unit the ceiling math carries), linearly less for a shorter window,
  *  never more than 1× per sync. Game exploit batch 2026-09-02 (C-2c): the
  *  old per-sync floor compounded per request (+25 % of stock every sync). */
 export function flatFloorScale(elapsedMonths: number): number {
   const m = Number.isFinite(elapsedMonths) && elapsedMonths > 0 ? elapsedMonths : 0;
-  return Math.min(1, m);
+  return Math.min(1, (m * GAME_MONTH_WALL_MS) / FLAT_FLOOR_WINDOW_MS);
 }
 
 /** The flat allowance for one resource over `elapsedMonths` of wall clock
