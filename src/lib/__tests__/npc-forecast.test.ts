@@ -326,7 +326,11 @@ describe('NPC forecast — drives, pools, filter', () => {
       { ...base, resourceSlug: 'iron', side: 'sell', quantity: 4 },
       { ...base, resourceSlug: 'gold', side: 'buy', quantity: 7 },
     ];
-    const forecast: NpcForecast = { generatedAt: new Date(T0).toISOString(), horizonHours: 72, scale: 1, active30d: 0, items, byResource: summarizeByResource(items) };
+    const forecast: NpcForecast = {
+      generatedAt: new Date(T0).toISOString(), horizonHours: 72, scale: 1, active30d: 0,
+      npcGovernor: { activePlayers30d: 0, activeNpcCorps: 10, activeIndustryCorps: 5, floorNpcCorps: 3, floorIndustryCorps: 2, maxNpcCorps: 10, maxIndustryCorps: 5, dormantIndustryCorpIds: [] },
+      items, byResource: summarizeByResource(items),
+    };
     expect(forecast.byResource).toEqual({ iron: { buy: 10, sell: 4 }, gold: { buy: 7, sell: 0 } });
     const iron = filterNpcForecast(forecast, 'iron');
     expect(iron.items).toHaveLength(2);

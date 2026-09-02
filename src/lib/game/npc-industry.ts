@@ -30,6 +30,7 @@ import { MANUFACTURED_RESOURCE_IDS } from './economic-sinks';
 import { RESOURCE_MAP } from './resources';
 import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY } from './market-engine';
 import { matchOrders, NPC_CORP_PREFIX } from './market-orderbook';
+import { activeNpcIndustryCount } from './npc-companies';
 
 export interface NpcIndustrySeed {
   id: string;
@@ -418,12 +419,44 @@ async function procure(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury
   return { bought, consumed };
 }
 
-export async function runNpcIndustryTick(now: Date = new Date()): Promise<{ scale: number; activeProfiles: number; corps: CorpTickResult[] }> {
-  const activeProfiles = await prisma.gameProfile.count({ where: { lastSyncAt: { gte: new Date(now.getTime() - 14 * 86400000) } } });
+/** Reason string a dormant corp's tick result carries in `skipped`. */
+export const NPC_DORMANT_REASON = 'dormant (population governor)';
+
+/**
+ * Cancel a dormant corp's resting orders gracefully — both sides, nothing
+ * is escrowed for NPC corps (relist() already does this for the sell side
+ * every tick). Exported for the governor test.
+ */
+export async function cancelDormantCorpOrders(corpId: string): Promise<number> {
+  const res = await prisma.marketLimitOrder.updateMany({
+    where: { profileId: corpId, status: { in: ['open', 'partial'] } },
+    data: { status: 'cancelled' },
+  });
+  return res.count;
+}
+
+export async function runNpcIndustryTick(now: Date = new Date()): Promise<{ scale: number; activeProfiles: number; active30d: number; activeIndustryCorps: number; corps: CorpTickResult[] }> {
+  const [activeProfiles, active30d] = await Promise.all([
+    prisma.gameProfile.count({ where: { lastSyncAt: { gte: new Date(now.getTime() - 14 * 86400000) } } }),
+    prisma.gameProfile.count({ where: { lastSyncAt: { gt: new Date(now.getTime() - 30 * 86400000) } } }),
+  ]);
   const scale = populationScale(activeProfiles);
+  // GAME_DESIGN_REVIEW_2026-09 row 11 — density governor: the TAIL of the
+  // seed order goes dormant as the 30-day-active population grows (floor 2).
+  const activeIndustryCorps = activeNpcIndustryCount(active30d);
   const results: CorpTickResult[] = [];
-  for (const seed of NPC_INDUSTRY_SEEDS) {
+  for (const [seedIndex, seed] of NPC_INDUSTRY_SEEDS.entries()) {
     const skipped: string[] = [];
+    if (seedIndex >= activeIndustryCorps) {
+      try {
+        const cancelled = await cancelDormantCorpOrders(seed.id);
+        if (cancelled > 0) logger.info('npc-industry: dormant corp orders cancelled', { corpId: seed.id, cancelled });
+      } catch (e) {
+        logger.warn('npc-industry: dormant cancel failed', { corpId: seed.id, error: String(e) });
+      }
+      results.push({ corpId: seed.id, built: {}, listed: {}, bought: {}, consumed: {}, treasury: 0, skipped: [NPC_DORMANT_REASON] });
+      continue;
+    }
     try {
       const row = await ensureCorp(seed);
       // Re-read after any fills since the row was upserted: fills mutate inventory/treasury in matchOrders.
@@ -463,5 +496,5 @@ export async function runNpcIndustryTick(now: Date = new Date()): Promise<{ scal
       results.push({ corpId: seed.id, built: {}, listed: {}, bought: {}, consumed: {}, treasury: 0, skipped: [...skipped, 'tick failed'] });
     }
   }
-  return { scale, activeProfiles, corps: results };
+  return { scale, activeProfiles, active30d, activeIndustryCorps, corps: results };
 }

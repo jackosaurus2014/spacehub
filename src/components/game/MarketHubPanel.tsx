@@ -202,6 +202,7 @@ export default function MarketHubPanel({ state, setState, onSellResource, onBuyR
             selectedResource={bookSlug}
             onOpenOrderBook={openOrderBook}
             onDeclareCampaign={openCampaignConsole}
+            onNavigateTab={onNavigateTab}
           />
         </div>
       ) : <LockedSubtabNotice icon="📊" label="Analytics" tier={FOLDED_FEATURE_TIERS.intelligence} />)}

@@ -5,15 +5,25 @@ const BASE = '/game';
 
 // ─── BUILDING ASSETS ─────────────────────────────────────────────────────────
 // Maps building category → asset image
+// Keys are the CANONICAL BuildingCategory values from types.ts. The legacy
+// names (`mining`, `fabrication`, `refinery`, `propellant_depot`, `habitat`)
+// are kept as aliases for older saves/tests, but nothing in buildings.ts
+// emits them any more — see the GAME_DESIGN_REVIEW_2026-09 §4 bug below.
 export const BUILDING_ASSETS: Record<string, string> = {
   launch_pad: `${BASE}/building-launch-pad.webp`,
+  // 'rocket' is in the BuildingCategory union but no definition uses it yet;
+  // pad art is the honest placeholder so it never falls through to habitat.
+  rocket: `${BASE}/building-launch-pad.webp`,
   ground_station: `${BASE}/building-data-center.webp`,
   satellite: `${BASE}/building-satellite.webp`,
   space_station: `${BASE}/building-space-station.webp`,
   datacenter: `${BASE}/building-data-center.webp`,
   solar_farm: `${BASE}/building-solar-farm.webp`,
-  mining: `${BASE}/building-mining-facility.webp`,
+  mining_enterprise: `${BASE}/building-mineral-extractor.webp`,
+  fabrication_facility: `${BASE}/building-fabrication-plant.webp`,
   habitat: `${BASE}/building-habitat.webp`,
+  // ── legacy aliases (pre-Wave-F category names) ──
+  mining: `${BASE}/building-mining-facility.webp`,
   fabrication: `${BASE}/building-fabrication.webp`,
   refinery: `${BASE}/building-fabrication.webp`,
   propellant_depot: `${BASE}/building-fabrication.webp`,
@@ -116,12 +126,38 @@ export const SHIP_ASSETS: Record<string, string> = {
   asteroid_miner: `${BASE}/ship-mining-m.webp`,
   deep_space_miner: `${BASE}/ship-mining-l.webp`,
   survey_probe: `${BASE}/ship-scout.webp`,
+  // Maintenance hulls (2026-08-31 damage-visibility wave) — NO dedicated art
+  // yet. GAME_DESIGN_REVIEW_2026-09 §4: both silently fell through to the
+  // cargo_shuttle fallback. Mapped EXPLICITLY to the closest existing
+  // silhouettes so the choice is intentional and the assets test can assert
+  // every hull resolves: the Orbital Servicer is a small uncrewed utility
+  // craft (prospector-drone silhouette), the Fleet Tender a larger roving
+  // support vessel (fuel-tanker silhouette, amber support accent).
+  // TODO(art batch): ship-servicer-tug.webp, ship-fleet-tender.webp — see
+  // SHIP_ART_BACKLOG below.
+  servicer_tug: `${BASE}/ship-prospector-drone.webp`,
+  fleet_tender: `${BASE}/ship-fuel-tanker.webp`,
   // Interstellar hulls (Wave 10) — these previously borrowed other hulls' art
   // (ship-scout-angle2 / ship-transport-l). Wave A6 gave them dedicated
   // renders: the Starfarer's warp-coil rings and the Ark's rotating habitat
   // ring are the silhouette cues that mark the interstellar era.
   starfarer_explorer: `${BASE}/ship-starfarer-explorer.webp`,
   colony_ark: `${BASE}/ship-colony-ark.webp`,
+};
+
+/** Hulls whose SHIP_ASSETS entry borrows another hull's render. Consumed by
+ *  the next art batch (scripts/generate-art.ts) and by assets-resolve.test.ts,
+ *  which asserts every SHIPS id resolves but tolerates a borrowed render only
+ *  for ids listed here. */
+export const SHIP_ART_BACKLOG: Record<string, { borrows: string; brief: string }> = {
+  servicer_tug: {
+    borrows: 'prospector_drone',
+    brief: 'Orbital Servicer: compact uncrewed tug, robotic arms folded, spare-parts bay; top-down plan view, amber support accent.',
+  },
+  fleet_tender: {
+    borrows: 'fuel_tanker',
+    brief: 'Fleet Tender: mid-size roving repair tender, drone bays along the flanks, self-healing hull plant amidships; top-down plan view, amber support accent.',
+  },
 };
 
 // ─── BACKGROUND ASSETS ───────────────────────────────────────────────────────
@@ -415,16 +451,32 @@ export function getSeasonalBuildingSkin(
 
 // Categories whose new art has tier variants (-s2 through -s5).
 // Tier 1 uses the base image (no suffix).
+//
+// GAME_DESIGN_REVIEW_2026-09 §4 (live bug, fixed 2026-09-02): this map keyed
+// on the LEGACY category names `mining` / `fabrication` while buildings.ts
+// has emitted `mining_enterprise` / `fabrication_facility` since Wave F, so
+// every mine and fabrication plant (32 of 96 definitions) missed this map,
+// missed BUILDING_ASSETS too, and rendered the habitat fallback. The tiered
+// art existed on disk the whole time. Canonical keys first; legacy aliases
+// kept so nothing that still passes the old names regresses.
 const BUILDING_TIER_BASE: Record<string, string> = {
   solar_farm: 'energy-generator',
-  mining: 'mineral-extractor',
+  mining_enterprise: 'mineral-extractor',
+  fabrication_facility: 'fabrication-plant',
   habitat: 'population-center',
+  datacenter: 'research-academy',
+  ground_station: 'sensor-array',
+  // ── legacy aliases ──
+  mining: 'mineral-extractor',
   fabrication: 'fabrication-plant',
   refinery: 'gas-refinery',
   propellant_depot: 'storage-vault',
-  datacenter: 'research-academy',
-  ground_station: 'sensor-array',
 };
+
+/** Exported for assets-resolve.test.ts — the art a category resolves to
+ *  when it has NO mapping at all. A canonical category resolving to this
+ *  while not being 'habitat' is the §4 bug. */
+export const BUILDING_FALLBACK_ASSET = `${BASE}/building-habitat.webp`;
 
 // Helper: Get building asset by building ID + category + tier
 // Categories in BUILDING_TIER_BASE get tier-specific art (-s2 to -s5).

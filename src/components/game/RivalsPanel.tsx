@@ -53,6 +53,8 @@ interface RivalAssignment {
   trend: number[];
   recentEvents: RivalEvent[];
   createdAt: string;
+  /** Row 14: this assignment carries a rivalry stake. */
+  designated: boolean;
 }
 
 interface RivalsSummary {
@@ -61,6 +63,24 @@ interface RivalsSummary {
   allTimeRecord: { wins: number; losses: number; draws: number };
   weekTimeRemainingMs: number;
   weekId: number;
+  designatedCount: number;
+  maxDesignated: number;
+  stakeRepPerWin: number;
+  stakeRepCapPerWeek: number;
+}
+
+interface StakeResult {
+  rivalCompanyName: string;
+  outcome: 'player' | 'rival' | 'draw';
+  playerGrowthPct: number;
+  rivalGrowthPct: number;
+  repAwarded: number;
+}
+
+interface StakesScorecard {
+  weekId: number;
+  repEarned: number;
+  results: StakeResult[];
 }
 
 interface HistoryWeek {
@@ -76,6 +96,8 @@ interface RivalsResponse {
   rivals: RivalAssignment[];
   summary: RivalsSummary;
   history: HistoryWeek[];
+  /** Row 14: last week's settled stakes (null = none were staked). */
+  stakes?: StakesScorecard | null;
 }
 
 // GET /api/space-tycoon/market/share?all=1 (market-share.ts) — the public
@@ -222,6 +244,33 @@ export default function RivalsPanel({ state, onNavigate }: RivalsPanelProps = {}
     }
   }, [fetchRivals]);
 
+  // GAME_DESIGN_REVIEW_2026-09 row 14: put a weekly reputation stake on a
+  // rival (or remove it). The server enforces the ≤3 / same-league rules.
+  const [designating, setDesignating] = useState<string | null>(null);
+  const [stakeError, setStakeError] = useState<string | null>(null);
+  const designateRival = useCallback(async (assignmentId: string, designate: boolean) => {
+    setDesignating(assignmentId);
+    setStakeError(null);
+    try {
+      const res = await fetch('/api/space-tycoon/rivals/designate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignmentId, designate }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json?.success === false) {
+        setStakeError(typeof json?.error === 'string' ? json.error : 'Could not update the stake.');
+      } else {
+        playSound(designate ? 'milestone' : 'click');
+      }
+      await fetchRivals();
+    } catch {
+      setStakeError('Network error — could not update the stake.');
+    } finally {
+      setDesignating(null);
+    }
+  }, [fetchRivals]);
+
   useEffect(() => {
     fetchRivals();
   }, [fetchRivals]);
@@ -290,6 +339,7 @@ export default function RivalsPanel({ state, onNavigate }: RivalsPanelProps = {}
   if (!data) return null;
 
   const { rivals, summary, history } = data;
+  const stakes = data.stakes ?? null;
 
   // ─── No rivals state ───────────────────────────────────────────────────
   if (rivals.length === 0) {
@@ -334,7 +384,14 @@ export default function RivalsPanel({ state, onNavigate }: RivalsPanelProps = {}
             <p className="text-slate-500 text-xs mt-0.5">
               {rivals.length} rival{rivals.length !== 1 ? 's' : ''} assigned
               {' \u00B7 '}Refreshes in {formatCountdown(summary.weekTimeRemainingMs)}
+              {' \u00B7 '}Stakes {summary.designatedCount}/{summary.maxDesignated}
             </p>
+            <p className="text-slate-600 text-[10px] mt-0.5">
+              Set a rival to stake reputation on out-growing them this week: +{summary.stakeRepPerWin} rep per win, max +{summary.stakeRepCapPerWeek}/week. Losing costs nothing.
+            </p>
+            {stakeError && (
+              <p role="alert" className="text-red-400 text-[10px] mt-1">{stakeError}</p>
+            )}
           </div>
           <div className="text-right">
             <p className="game-label">
@@ -364,6 +421,9 @@ export default function RivalsPanel({ state, onNavigate }: RivalsPanelProps = {}
           shareLoading={shareLoading}
           loadShare={loadShare}
           onNavigate={onNavigate}
+          onDesignate={designateRival}
+          designating={designating === rival.assignmentId}
+          stakesFull={summary.designatedCount >= summary.maxDesignated}
         />
       ))}
 
@@ -412,6 +472,29 @@ export default function RivalsPanel({ state, onNavigate }: RivalsPanelProps = {}
               {summary.allTimeRecord.draws}
             </p>
           </div>
+        </div>
+        {/* Row 14: last week's rivalry-stake scorecard line. */}
+        <div className="mt-3 pt-3 border-t border-white/[0.06] text-xs" aria-live="polite">
+          <span className="game-label mr-2">Last week&rsquo;s stakes</span>
+          {stakes && stakes.results.length > 0 ? (
+            <span className="text-slate-300">
+              {stakes.results.map((r, i) => (
+                <span key={i}>
+                  {i > 0 && <span className="text-slate-600">{' \u00B7 '}</span>}
+                  <span className={r.outcome === 'player' ? 'text-green-400' : r.outcome === 'rival' ? 'text-red-400' : 'text-slate-400'}>
+                    {r.outcome === 'player' ? 'Beat' : r.outcome === 'rival' ? 'Lost to' : 'Drew'} {r.rivalCompanyName}
+                  </span>
+                  <span className="text-slate-500 font-mono"> ({r.playerGrowthPct.toFixed(1)}% vs {r.rivalGrowthPct.toFixed(1)}%)</span>
+                  {r.repAwarded > 0 && <span className="text-cyan-300"> +{r.repAwarded} rep</span>}
+                </span>
+              ))}
+              {stakes.repEarned > 0 && (
+                <span className="text-cyan-300 font-semibold">{' \u00B7 '}+{stakes.repEarned} reputation total</span>
+              )}
+            </span>
+          ) : (
+            <span className="text-slate-500">No stakes settled last week — set a rival above to put reputation on the line.</span>
+          )}
         </div>
       </div>
 
@@ -621,6 +704,9 @@ function RivalCard({
   shareLoading,
   loadShare,
   onNavigate,
+  onDesignate,
+  designating,
+  stakesFull,
 }: {
   rival: RivalAssignment;
   index: number;
@@ -629,6 +715,9 @@ function RivalCard({
   shareLoading: boolean;
   loadShare: () => void;
   onNavigate?: (tab: GameTab) => void;
+  onDesignate: (assignmentId: string, designate: boolean) => void;
+  designating: boolean;
+  stakesFull: boolean;
 }) {
   const [poachOpen, setPoachOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -722,6 +811,23 @@ function RivalCard({
       {/* Actions — lever-discoverability pass (2026-09). Both verbs call the
           existing routes; the server enforces every gate. */}
       <div className="px-4 pb-3 flex flex-wrap gap-2" role="group" aria-label={`Actions against ${name}`}>
+        {/* Row 14: the rivalry stake — the one decision that makes tracking
+            this rival matter. Server enforces ≤3 stakes / same league. */}
+        <button
+          type="button"
+          onClick={() => onDesignate(rival.assignmentId, !rival.designated)}
+          disabled={designating || (!rival.designated && stakesFull)}
+          aria-pressed={rival.designated}
+          aria-label={rival.designated ? `Remove rivalry stake on ${name}` : `Set ${name} as a staked rival`}
+          title={!rival.designated && stakesFull ? 'All rivalry stakes are in use this week' : undefined}
+          className={`min-h-[44px] px-3 rounded-lg text-[11px] font-bold border focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            rival.designated
+              ? 'bg-indigo-500/20 border-indigo-400/50 text-indigo-100 hover:bg-indigo-500/30'
+              : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-200 hover:bg-indigo-500/20'
+          }`}
+        >
+          {designating ? 'Updating…' : rival.designated ? '\u2694\uFE0F Staked \u2014 remove' : 'Set as rival'}
+        </button>
         <button
           type="button"
           onClick={() => { playSound('click'); setPoachOpen(v => !v); }}

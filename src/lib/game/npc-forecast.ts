@@ -25,6 +25,7 @@
 
 import prisma from '@/lib/db';
 import { withCache } from '@/lib/api-cache';
+import { buildNpcGovernorSnapshot, NPC_GOVERNOR } from './npc-companies';
 import {
   NPC_INDUSTRY_SEEDS,
   populationScale,
@@ -93,6 +94,21 @@ export interface NpcForecast {
   scale: number;
   /** 30-day active profiles feeding the demand-pool scaler. */
   active30d: number;
+  /** GAME_DESIGN_REVIEW_2026-09 row 11 — the NPC density governor: how many
+   *  of the 10 market-backdrop corps and 5 industrial corps are active for
+   *  this population, plus the floors, so players can see and forecast the
+   *  backdrop receding. Industry items below are emitted only for active
+   *  corps (dormant corps rest no orders). */
+  npcGovernor: {
+    activePlayers30d: number;
+    activeNpcCorps: number;
+    activeIndustryCorps: number;
+    floorNpcCorps: number;
+    floorIndustryCorps: number;
+    maxNpcCorps: number;
+    maxIndustryCorps: number;
+    dormantIndustryCorpIds: string[];
+  };
   items: NpcForecastItem[];
   /** Unit totals per resource slug (industry + drive items only). */
   byResource: Record<string, { buy: number; sell: number }>;
@@ -376,6 +392,7 @@ export async function buildNpcForecast(now: Date = new Date(), horizonHours: num
     prisma.gameProfile.count({ where: { lastSyncAt: { gt: new Date(now.getTime() - 30 * 86400000) } } }),
   ]);
   const scale = populationScale(activeProfiles);
+  const governor = buildNpcGovernorSnapshot(active30d, now.getTime());
 
   const items: NpcForecastItem[] = [];
 
@@ -387,7 +404,8 @@ export async function buildNpcForecast(now: Date = new Date(), horizonHours: num
   });
   items.push(...driveItemsFromRows(driveRows));
 
-  for (const seed of NPC_INDUSTRY_SEEDS) {
+  for (const [seedIndex, seed] of NPC_INDUSTRY_SEEDS.entries()) {
+    if (seedIndex >= governor.activeIndustryCorps) continue; // dormant under the governor
     try {
       items.push(...await industryItems(seed, scale, horizon, now));
     } catch {
@@ -402,6 +420,16 @@ export async function buildNpcForecast(now: Date = new Date(), horizonHours: num
     horizonHours: horizon,
     scale,
     active30d,
+    npcGovernor: {
+      activePlayers30d: governor.activePlayers30d,
+      activeNpcCorps: governor.activeNpcCorps,
+      activeIndustryCorps: governor.activeIndustryCorps,
+      floorNpcCorps: NPC_GOVERNOR.MARKET_FLOOR,
+      floorIndustryCorps: NPC_GOVERNOR.INDUSTRY_FLOOR,
+      maxNpcCorps: NPC_GOVERNOR.MARKET_MAX,
+      maxIndustryCorps: NPC_GOVERNOR.INDUSTRY_MAX,
+      dormantIndustryCorpIds: NPC_INDUSTRY_SEEDS.slice(governor.activeIndustryCorps).map(s => s.id),
+    },
     items,
     byResource: summarizeByResource(items),
   };

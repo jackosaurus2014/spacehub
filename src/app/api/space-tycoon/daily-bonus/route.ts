@@ -3,7 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { computeDailyBonusClaim } from '@/lib/game/daily-bonus';
+import { computeDailyBonusClaim, getBonusSchedule, getDailyBonusTierMultiplier } from '@/lib/game/daily-bonus';
+import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
@@ -17,14 +18,26 @@ export const dynamic = 'force-dynamic';
  * dailyBonusStreak, one claim per UTC day) and the payout is credited via
  * the One Wallet ledger, so it settles into the client at the next sync.
  *
- * NOTE: the client UI (page.tsx daily-bonus modal) still runs the
- * localStorage flow — it is owned by the concurrent UI wave. Once it is
- * switched to POST here (and stops granting locally), the faucet closes.
- * Until then this route has no callers and grants nothing.
+ * DailyBonusModal.tsx claims here for signed-in players; the localStorage
+ * flow remains only for anonymous play.
  *
- * GET  → { claimable, streak, amount, lastClaimDate }
- * POST → claim; { success, amount, newStreak } (409 if already claimed today)
+ * Tier indexing (GAME_DESIGN_REVIEW_2026-09 row 9): the payout is
+ * base × DAILY_BONUS_TIER_MULT[tier], and the tier is derived HERE from the
+ * persisted profile's scalar columns (tierFromProfileScalars — bounded by
+ * ledgered totalEarned). The request body is never read; a client cannot
+ * name its own tier.
+ *
+ * GET  → { claimable, streak, amount, lastClaimDate, tier, multiplier, schedule }
+ * POST → claim; { success, amount, newStreak, tier } (409 if already claimed today)
  */
+
+const TIER_SELECT = {
+  totalEarned: true,
+  buildingCount: true,
+  researchCount: true,
+  locationsUnlocked: true,
+  serviceCount: true,
+} as const;
 
 function utcDate(offsetDays = 0): string {
   const d = new Date();
@@ -40,20 +53,24 @@ export async function GET() {
     }
     const profile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
-      select: { dailyBonusLastClaim: true, dailyBonusStreak: true },
+      select: { dailyBonusLastClaim: true, dailyBonusStreak: true, ...TIER_SELECT },
     });
     if (!profile) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
     }
+    const tier = tierFromProfileScalars(profile);
     const lastClaimDate = profile.dailyBonusLastClaim
       ? profile.dailyBonusLastClaim.toISOString().split('T')[0]
       : null;
-    const result = computeDailyBonusClaim(lastClaimDate, profile.dailyBonusStreak, utcDate(0), utcDate(-1));
+    const result = computeDailyBonusClaim(lastClaimDate, profile.dailyBonusStreak, utcDate(0), utcDate(-1), tier);
     return NextResponse.json({
       claimable: result.claimable,
       amount: result.amount,
       streak: profile.dailyBonusStreak,
       lastClaimDate,
+      tier,
+      multiplier: getDailyBonusTierMultiplier(tier),
+      schedule: getBonusSchedule(tier),
     });
   } catch (error) {
     logger.error('Daily bonus GET error', { error: String(error) });
@@ -69,17 +86,19 @@ export async function POST() {
     }
     const profile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
-      select: { id: true, dailyBonusLastClaim: true, dailyBonusStreak: true },
+      select: { id: true, dailyBonusLastClaim: true, dailyBonusStreak: true, ...TIER_SELECT },
     });
     if (!profile) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
     }
 
+    // Tier from the PERSISTED profile only (row 9) — never from the client.
+    const tier = tierFromProfileScalars(profile);
     const today = utcDate(0);
     const lastClaimDate = profile.dailyBonusLastClaim
       ? profile.dailyBonusLastClaim.toISOString().split('T')[0]
       : null;
-    const result = computeDailyBonusClaim(lastClaimDate, profile.dailyBonusStreak, today, utcDate(-1));
+    const result = computeDailyBonusClaim(lastClaimDate, profile.dailyBonusStreak, today, utcDate(-1), tier);
     if (!result.claimable) {
       return NextResponse.json({ success: false, error: 'Already claimed today' }, { status: 409 });
     }
@@ -107,7 +126,7 @@ export async function POST() {
       }
     });
 
-    return NextResponse.json({ success: true, amount: result.amount, newStreak: result.newStreak });
+    return NextResponse.json({ success: true, amount: result.amount, newStreak: result.newStreak, tier });
   } catch (error) {
     logger.error('Daily bonus claim error', { error: String(error) });
     return NextResponse.json({ error: 'Failed to claim daily bonus' }, { status: 500 });

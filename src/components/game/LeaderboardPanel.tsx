@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
-import { getNPCTitle } from '@/lib/game/npc-companies';
+import { getNPCTitle, isNpcDormant, NPC_SEEDS } from '@/lib/game/npc-companies';
 import { formatMoney } from '@/lib/game/formulas';
 import ShareButton from '@/components/ui/ShareButton';
 import { APP_URL } from '@/lib/constants';
@@ -72,7 +72,9 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
         all.push({
           rank: 0,
           companyName: npc.name,
-          title: getNPCTitle(npc),
+          // Row 11: a governor-dormant NPC is frozen — say so rather than
+          // showing a stale tier title.
+          title: isNpcDormant(npc.id, state.npcGovernor?.activeNpcCorps ?? NPC_SEEDS.length) ? 'Dormant' : getNPCTitle(npc),
           netWorth: npc.money,
           totalEarned: npc.totalEarned,
           buildingCount: npc.buildingCount,

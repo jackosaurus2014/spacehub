@@ -53,6 +53,10 @@ import { clampChairSnapshot, type ChairSnapshot } from './accord-chair';
 // same hop. Clamp lives in systemic-crises.ts (pure), same type-only posture
 // as demandPools above.
 import { clampCrisisSnapshot, type CrisisSnapshot } from './systemic-crises';
+// GAME_DESIGN_REVIEW_2026-09 rows 11 + 14: NPC density governor snapshot and
+// settled rivalry stakes ride the same hop. Both modules are pure.
+import { activeNpcCorpCount, activeNpcIndustryCount, type NpcGovernorSnapshot } from './npc-companies';
+import { RIVALRY_STAKE, RIVALRY_RESULTS_KEEP, type RivalryStakeResult } from './rivalry-stake';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -176,7 +180,76 @@ export interface ServerEffectsSnapshot {
    *  published, or never synced (pre-Round-2 behaviour — no crisis at all).
    *  Read-only: the client never mutates it. */
   crisis?: CrisisSnapshot | null;
+  /** GAME_DESIGN_REVIEW_2026-09 row 11: NPC density governor — how many of
+   *  the per-save NPC corps tick for the current 30-day-active population.
+   *  Re-derived from activePlayers30d on apply (never trusted as sent). */
+  npcGovernor?: NpcGovernorSnapshot | null;
+  /** GAME_DESIGN_REVIEW_2026-09 row 14: settled rivalry-stake WINS for this
+   *  profile (PlayerActivity 'rivalry_win' rows, last 4 weeks). Applied
+   *  idempotently by activity id — +rep, capped per week on apply too. */
+  rivalryStakes?: RivalryStakeResult[] | null;
   fetchedAtMs: number;
+}
+
+/** Row 11: never trust the counts as sent — recompute from the population
+ *  number so a bugged/hostile snapshot can't silence the whole backdrop. */
+export function clampNpcGovernorSnapshot(snap: NpcGovernorSnapshot | null | undefined): NpcGovernorSnapshot | null {
+  if (!snap || typeof snap !== 'object') return null;
+  const n = typeof snap.activePlayers30d === 'number' && Number.isFinite(snap.activePlayers30d)
+    ? Math.max(0, Math.round(snap.activePlayers30d)) : 0;
+  return {
+    activePlayers30d: n,
+    activeNpcCorps: activeNpcCorpCount(n),
+    activeIndustryCorps: activeNpcIndustryCount(n),
+    asOf: typeof snap.asOf === 'number' ? snap.asOf : Date.now(),
+  };
+}
+
+/**
+ * Row 14: fold settled rivalry-stake wins into the save. Pure and
+ * idempotent — keyed on the PlayerActivity id, so sync retries and multiple
+ * tabs can't double-grant. The per-week cap is enforced server-side at
+ * settlement AND re-enforced here per weekId as defense in depth.
+ */
+export function applyRivalryStakesToState(state: GameState, stakes: RivalryStakeResult[] | null | undefined): GameState {
+  if (!Array.isArray(stakes) || stakes.length === 0) return state;
+  const applied = new Set(state.rivalryStakesApplied || []);
+  const perWeek = new Map<number, number>();
+  for (const r of state.rivalryResults || []) perWeek.set(r.weekId, (perWeek.get(r.weekId) || 0) + r.rep);
+  let reputation = state.reputation || 0;
+  const results = [...(state.rivalryResults || [])];
+  const eventLog = [...state.eventLog];
+  let changed = false;
+  for (const s of stakes) {
+    if (!s || typeof s.id !== 'string' || applied.has(s.id)) continue;
+    if (typeof s.rep !== 'number' || !Number.isFinite(s.rep)) continue;
+    const weekId = typeof s.weekId === 'number' ? s.weekId : 0;
+    const room = RIVALRY_STAKE.REP_CAP_PER_WEEK - (perWeek.get(weekId) || 0);
+    const rep = Math.max(0, Math.min(RIVALRY_STAKE.REP_PER_WIN, Math.min(room, Math.round(s.rep))));
+    applied.add(s.id);
+    perWeek.set(weekId, (perWeek.get(weekId) || 0) + rep);
+    reputation += rep;
+    const opponent = typeof s.opponent === 'string' ? s.opponent.slice(0, 50) : 'a rival';
+    results.push({ id: s.id, weekId, opponent, rep, atMs: typeof s.atMs === 'number' ? s.atMs : Date.now() });
+    eventLog.unshift({
+      id: `evt_rivalry_win_${s.id}`,
+      date: state.gameDate,
+      type: 'milestone' as const,
+      title: `⚔️ Rivalry stake won vs ${opponent}`,
+      description: rep > 0
+        ? `You out-grew ${opponent} week over week. +${rep} reputation.`
+        : `You out-grew ${opponent} week over week (weekly reputation cap already reached).`,
+    });
+    changed = true;
+  }
+  if (!changed) return state;
+  return {
+    ...state,
+    reputation,
+    rivalryStakesApplied: Array.from(applied).slice(-48),
+    rivalryResults: results.slice(-RIVALRY_RESULTS_KEEP),
+    eventLog: eventLog.slice(0, 200),
+  };
 }
 
 // ─── Wave E5: clamp helpers (defensive — server data trusted more than
@@ -437,7 +510,17 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     systemicCrisis: eff.crisis !== undefined
       ? (eff.crisis ? clampCrisisSnapshot(eff.crisis) : null)
       : state.systemicCrisis,
+    // Row 11: the NPC density governor reaches the tick the same hop. Counts
+    // are re-derived from the population number, never trusted as sent.
+    npcGovernor: eff.npcGovernor !== undefined
+      ? clampNpcGovernorSnapshot(eff.npcGovernor)
+      : state.npcGovernor,
   };
+
+  // Row 14: settled rivalry-stake wins → reputation (idempotent by id).
+  if (eff.rivalryStakes !== undefined && eff.rivalryStakes !== null) {
+    out = applyRivalryStakesToState(out, eff.rivalryStakes);
+  }
 
   // Wave M5: the offense snapshot reaches the tick the same hop demandPools
   // does — but application is more than a stash (poach outcomes move crew

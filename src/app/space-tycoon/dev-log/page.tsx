@@ -43,7 +43,7 @@ export default function SpaceTycoonDevLogPage() {
             </li>
           ))}
         </ol>
-        <p className="text-xs text-slate-500 mt-8">Design principles and public policy: <Link href="/space-tycoon/about" className="text-cyan-400 hover:text-cyan-300">About Space Tycoon</Link> · <Link href="/space-tycoon/faq" className="text-cyan-400 hover:text-cyan-300">FAQ</Link>.</p>
+        <p className="text-xs text-slate-500 mt-8">Design principles and public policy: <Link href="/space-tycoon/about" className="text-cyan-400 hover:text-cyan-300">About Space Tycoon</Link> · <Link href="/space-tycoon/faq" className="text-cyan-400 hover:text-cyan-300">FAQ</Link> · quarterly <Link href="/space-tycoon/balance-reports" className="text-cyan-400 hover:text-cyan-300">balance reports</Link>.</p>
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Space Tycoon', href: '/space-tycoon' }, { name: 'Dev log' }]} />
       </div>
     </div>

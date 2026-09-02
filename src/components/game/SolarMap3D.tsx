@@ -37,6 +37,7 @@ import { OrbitControls, Stars, Billboard } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import type { GameState } from '@/lib/game/types';
 import { LANES } from '@/lib/game/spatial-strategy';
+import { laneKey } from '@/lib/game/trade-lanes';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { formatCountdown } from '@/lib/game/formulas';
 import { ZONE_MAP } from '@/lib/game/zone-influence';
@@ -103,6 +104,12 @@ interface SolarMap3DProps {
   /** Wave V4 — active map lens. Derived by the SAME map-modes.ts functions
    *  the 2D canvas uses (parity requirement). */
   mapMode?: MapMode;
+  /** Flow-map lane-volume layer (GAME_DESIGN_REVIEW_2026-09 §2 row 3):
+   *  laneKey → { v: 0..1, n: dispatches }. Lanes with an entry render amber,
+   *  brighter with volume, with a larger traffic marker. The count itself is
+   *  listed in text by the MapCommandCenter legend (parity with the 2D
+   *  canvas's inline labels). */
+  laneVolumes?: Record<string, { v: number; n: number }> | null;
 }
 
 // Wave V4 feature flag — flip false if the bloom pass ever busts the perf
@@ -672,7 +679,7 @@ function BeltRocks({ reduced }: { reduced: boolean }) {
 
 // ── Shipping lanes ───────────────────────────────────────────────────────────
 
-function LaneLines({ posRef, state, reduced }: { posRef: PositionsRef; state: GameState; reduced: boolean }) {
+function LaneLines({ posRef, state, reduced, laneVolumes }: { posRef: PositionsRef; state: GameState; reduced: boolean; laneVolumes?: Record<string, { v: number; n: number }> | null }) {
   // One 2-point line per lane + one traffic pulse per active lane.
   const pulsesRef = useRef<(THREE.Mesh | null)[]>([]);
   const unlockedSet = useMemo(() => new Set(state.unlockedLocations), [state.unlockedLocations]);
@@ -706,11 +713,17 @@ function LaneLines({ posRef, state, reduced }: { posRef: PositionsRef; state: Ga
       attr.setXYZ(0, from.pos[0], from.pos[1], from.pos[2]);
       attr.setXYZ(1, to.pos[0], to.pos[1], to.pos[2]);
       attr.needsUpdate = true;
+      // Flow-map volume layer: amber + brighter + bigger marker by volume.
+      const vol = laneVolumes ? laneVolumes[laneKey(lane.from, lane.to)] : undefined;
+      const mat = line.material as THREE.LineBasicMaterial;
+      mat.opacity = vol ? 0.3 + 0.6 * vol.v : active ? 0.18 : 0.06;
+      mat.color.set(vol ? '#fbbf24' : active ? '#22d3ee' : '#64748b');
       // pulse dots — one per active lane (3 in the 2D map; 1 keeps draw calls low)
       const pulse = pulsesRef.current[i];
       if (pulse) {
-        if (!active) { pulse.visible = false; return; }
+        if (!active && !vol) { pulse.visible = false; return; }
         pulse.visible = true;
+        pulse.scale.setScalar(vol ? 1 + 2.5 * vol.v : 1);
         const seed = (lane.from.charCodeAt(0) + lane.to.charCodeAt(0)) * 0.13;
         const t = reduced ? 0.5 : ((clock.elapsedTime * 0.25 + seed) % 1 + 1) % 1;
         pulse.position.set(
@@ -1431,7 +1444,7 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange }: SolarMap3DProps) {
+export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes }: SolarMap3DProps) {
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
   const [showLanes, setShowLanes] = useState(true);
   const [showShips, setShowShips] = useState(true);
@@ -1752,7 +1765,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           />
         ))}
         <SlotRings posRef={posRef} rings={slotRings} tierRef={tierRef} alwaysLabels={alwaysLabels} />
-        {showLanes && <LaneLines posRef={posRef} state={state} reduced={reduced} />}
+        {showLanes && <LaneLines posRef={posRef} state={state} reduced={reduced} laneVolumes={laneVolumes} />}
         {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
         {showShips && stationShips.map(s => <StationShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
         <MapPings3D posRef={posRef} reduced={reduced} />

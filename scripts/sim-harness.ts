@@ -38,6 +38,13 @@ import { SERVICE_MAP } from '../src/lib/game/services';
 import { MINING_PRODUCTION, RESOURCE_MAP } from '../src/lib/game/resources';
 // D5: flagship upkeep floor — the harness prices maintenance exactly as the engine does.
 import { getEffectiveMaintenancePerMonth } from '../src/lib/game/flagship-economics';
+// D4: Mark-II/III in-place refits — the REAL multipliers/costs (mark-upgrades.ts
+// is a leaf module), applied where game-engine.ts §1/§2/§6 apply them.
+import {
+  getMarkRevenueMultiplier, getMarkMaintenanceMultiplier, getMarkUpgradeCost,
+  getMarkUpgradeResourceCost, markSpendToDate, isMarkEligibleDefinition,
+  type MarkLevel,
+} from '../src/lib/game/mark-upgrades';
 import type { ResourceId } from '../src/lib/game/resources';
 import {
   serviceSaturationMultiplier,
@@ -95,6 +102,30 @@ export interface SimBuilding {
   definitionId: string;
   locationId: string;
   isComplete: boolean;
+  /** D4 (2026-09-02): Mark refit level. Absent/1 = Mark I (every legacy
+   *  table byte-identical). Set by stepMonth when a player's `refitPlan`
+   *  orders a refit; multiplies THIS building's own service revenue and
+   *  mining output (MARK_REVENUE_MULT) and its maintenance after the D5
+   *  floor (MARK_MAINTENANCE_MULT) — exactly game-engine.ts §1/§2/§6.
+   *  Saturation and demand pools still count the building as one unit. */
+  markLevel?: MarkLevel;
+}
+
+/** D4: one refit order (see SimPlayer.refitPlan). */
+export interface RefitOrder {
+  instanceId: string;
+  target: MarkLevel;
+}
+
+/** D4: per-building monthly P&L line (stamped on MonthRow.buildingLines when
+ *  world.opts.trackBuildingLines is on). `revenue` includes the building's
+ *  service revenue AND its price-linked mining revenue at the player's
+ *  private multiplier stack; `operating` is net of the duty-cycle rebate;
+ *  `maintenance` is the D5-floored, Mark-multiplied figure. */
+export interface BuildingLine {
+  revenue: number;
+  operating: number;
+  maintenance: number;
 }
 
 export interface SimPlayer {
@@ -166,6 +197,18 @@ export interface SimPlayer {
    *  should set this to mirror the live engine; absent/false models a
    *  pre-Pass-9 world (and keeps every legacy table byte-identical). */
   glideSpotFloor?: boolean;
+  /** D4 (2026-09-02): refit hook, called in stepMonth's purchase phase right
+   *  after the build plan. Returns Mark refit orders (instanceId + target
+   *  level) in priority order; each is charged getMarkUpgradeCost (money)
+   *  plus getMarkUpgradeResourceCost (stock first, shortfall bought at base
+   *  × INPUT_BUY_MULT — the constructionMaterials rule) and completes
+   *  instantly (refit wall-clock time is 60-90% of realBuildSeconds —
+   *  minutes-to-an-hour against a 6 h game-month, the same approximation
+   *  the harness makes for construction). Definition eligibility is
+   *  enforced here (isMarkEligibleDefinition); the Mark III research gate is
+   *  the RUNNER's responsibility (it owns the research schedule). Absent =
+   *  no refits (every legacy table byte-identical). */
+  refitPlan?: (p: SimPlayer, month: number) => RefitOrder[];
   history: MonthRow[];
 }
 
@@ -285,6 +328,14 @@ export interface MonthRow {
   stockByBucket?: Record<ResourceBucket, number>;
   /** End-of-month stockpile book value at base prices ($). */
   stockValue?: number;
+  // ─── D4 (2026-09-02) — only stamped when the world/player opts them in ──
+  /** Per-building P&L lines this month (world.opts.trackBuildingLines). */
+  buildingLines?: Record<string, BuildingLine>;
+  /** Refit money spent this month (money + bought materials); included in
+   *  `capex`. Present only when the player has a refitPlan. */
+  refitCapex?: number;
+  /** Refits completed this month (present only with a refitPlan). */
+  refits?: number;
 }
 
 export interface SimWorldOpts {
@@ -355,6 +406,12 @@ export interface SimWorldOpts {
    *  absent/1 already runs the recommended center; this switch divides the
    *  new base further (diagnostic sweeps only). */
   laborSupplyDivisor?: number;
+  /** D4 (2026-09-02): stamp MonthRow.buildingLines (per-building revenue /
+   *  operating / maintenance) every month — what a refit-aware runner reads
+   *  to price a Mark refit exactly as build-preview.ts
+   *  computeMarkUpgradePreview does, and what "realised flagship payback"
+   *  is measured from. Off by default — legacy rows keep their shape. */
+  trackBuildingLines?: boolean;
 }
 
 /** Balance Pass 2: expected units per delivery contract. Derivation from
@@ -392,7 +449,7 @@ export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult' | 'graduationGlide' | 'glideSpotFloor'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult' | 'graduationGlide' | 'glideSpotFloor' | 'refitPlan'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
@@ -406,6 +463,7 @@ export function newPlayer(
     revenueMult: opts.revenueMult,
     graduationGlide: opts.graduationGlide,
     glideSpotFloor: opts.glideSpotFloor,
+    refitPlan: opts.refitPlan,
     history: [],
   };
 }
@@ -422,7 +480,11 @@ export function bookNetWorth(p: SimPlayer): number {
   let buildingBook = 0;
   for (const b of p.buildings) {
     const def = BUILDING_MAP.get(b.definitionId);
-    if (def) buildingBook += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
+    if (def) {
+      buildingBook += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
+      // D4: depreciated refit spend (buildings.ts markBookValue) — 0 at Mark I.
+      if (b.markLevel && b.markLevel > 1) buildingBook += Math.round(markSpendToDate(def, b.markLevel) * BOOK_VALUE_DEPRECIATION_FACTOR);
+    }
   }
   let inventoryValue = 0;
   for (const [res, qty] of Object.entries(p.resources)) {
@@ -558,6 +620,43 @@ export function stepMonth(world: SimWorld, month: number): void {
         }
       }
     }
+    // D4: Mark refit orders (opt-in hook) — charged in the same purchase
+    // phase as builds, so `capex` and the decision cadence see them.
+    if (p.refitPlan) {
+      let refitCapex = 0;
+      let refits = 0;
+      for (const order of p.refitPlan(p, month)) {
+        const b = p.buildings.find(x => x.instanceId === order.instanceId);
+        if (!b) continue;
+        const def = BUILDING_MAP.get(b.definitionId);
+        if (!def || !isMarkEligibleDefinition(def).eligible) continue;
+        const cur = (b.markLevel || 1) as MarkLevel;
+        if (order.target !== cur + 1 || order.target > 3) continue;
+        const cost = getMarkUpgradeCost(def, order.target);
+        const materials = getMarkUpgradeResourceCost(def, order.target);
+        let matCost = 0;
+        for (const [res, qty] of Object.entries(materials)) {
+          const shortfall = Math.max(0, qty - (p.resources[res] || 0));
+          matCost += shortfall * (RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0) * INPUT_BUY_MULT;
+        }
+        if (p.money < cost + matCost) continue;
+        for (const [res, qty] of Object.entries(materials)) {
+          const fromStock = Math.min(p.resources[res] || 0, qty);
+          const shortfall = qty - fromStock;
+          if (fromStock > 0) p.resources[res] = (p.resources[res] || 0) - fromStock;
+          if (shortfall > 0) addFlow(flows.bought, res, shortfall);
+          addFlow(flows.construction, res, qty);
+        }
+        p.money -= cost + matCost;
+        p.totalSpent += cost + matCost;
+        capex += cost + matCost;
+        refitCapex += cost + matCost;
+        refits++;
+        b.markLevel = order.target;
+      }
+      (p as SimPlayer & { _refitCapex?: number; _refits?: number })._refitCapex = refitCapex;
+      (p as SimPlayer & { _refitCapex?: number; _refits?: number })._refits = refits;
+    }
     (p as SimPlayer & { _capex?: number })._capex = capex;
   }
 
@@ -656,10 +755,22 @@ export function stepMonth(world: SimWorld, month: number): void {
     const glideFrac = glideFractionAtMonth(p.graduationGlide, month);
     let revenue = 0, operating = 0, maintenance = 0;
     const effVals: number[] = [];
+    // D4: per-building lines (opt-in) — mirrors build-preview.ts's
+    // instanceRevenueMonthly attribution at the harness's structural stack.
+    const lines: Record<string, BuildingLine> | null = world.opts.trackBuildingLines ? {} : null;
+    const lineOf = (id: string): BuildingLine => {
+      if (!lines) return { revenue: 0, operating: 0, maintenance: 0 };
+      return lines[id] || (lines[id] = { revenue: 0, operating: 0, maintenance: 0 });
+    };
     for (const b of p.buildings) {
       const bDef = BUILDING_MAP.get(b.definitionId);
       if (!bDef) continue;
-      maintenance += getEffectiveMaintenancePerMonth(bDef);
+      // D4: Mark maintenance multiplier applies AFTER the D5 floor (engine §2).
+      const markMaint = b.markLevel ? getMarkMaintenanceMultiplier(b.markLevel) : 1;
+      const markRev = b.markLevel ? getMarkRevenueMultiplier(b.markLevel) : 1;
+      const bMaint = getEffectiveMaintenancePerMonth(bDef) * markMaint;
+      maintenance += bMaint;
+      if (lines) lineOf(b.instanceId).maintenance += bMaint;
       const eff = p.efficiency[b.instanceId] ?? 1;
       effVals.push(eff);
       const powerRatio = power[b.locationId] ? power[b.locationId].ratio : 1;
@@ -673,6 +784,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         const pos = saturationCounts.get(bucketKey) || 0;
         saturationCounts.set(bucketKey, pos + 1);
         operating += sDef.operatingCostPerMonth;
+        if (lines) lineOf(b.instanceId).operating += sDef.operatingCostPerMonth;
         if (sDef.type === 'mining_output') continue; // priced in §5 below (fabrication_output byproduct producers stay on this flat/pool path)
         const cat = getServiceCategory(svcId);
         // Balance Pass 6 (C1): the REAL engine glide blend (frontier.ts) —
@@ -682,13 +794,16 @@ export function stepMonth(world: SimWorld, month: number): void {
           cat ? (poolMults[demandPoolKey(b.locationId, cat)] ?? 1) : 1,
           glideFrac,
         );
-        revenue += sDef.revenuePerMonth
+        const svcRevenue = sDef.revenuePerMonth
           * rMult
           * serviceSaturationMultiplier(pos)
           * poolMult
           * powerRatio
           * (1 + stationBonus)
-          * eff;
+          * eff
+          * markRev; // D4: this building's own line only; saturation still counts one unit
+        revenue += svcRevenue;
+        if (lines) lineOf(b.instanceId).revenue += svcRevenue;
       }
     }
 
@@ -704,6 +819,9 @@ export function stepMonth(world: SimWorld, month: number): void {
       const bDef = BUILDING_MAP.get(b.definitionId);
       if (!bDef) continue;
       const eff = p.efficiency[b.instanceId] ?? 1;
+      // D4: Mark output multiplier on physical units (engine §6 markOutputMult
+      // — the priced units and the inventory units move together).
+      const markOut = b.markLevel ? getMarkRevenueMultiplier(b.markLevel) : 1;
       for (const svcId of bDef.enabledServices) {
         const production = MINING_PRODUCTION[svcId];
         if (!production) continue;
@@ -722,7 +840,7 @@ export function stepMonth(world: SimWorld, month: number): void {
             prev.acc * Math.pow(0.9, Math.max(0, nowMs - prev.atMs) / 86_400_000),
           );
           pressureByResource[resource] = pressure;
-          const mined = amountPerMonth * pressure * eff;
+          const mined = amountPerMonth * pressure * eff * markOut;
           const updated = applyExtractionEvent(prev.acc, prev.atMs, mined, resource, nowMs);
           world.extraction.set(key, { acc: updated.accumulated, atMs: updated.updatedAtMs });
           p.resources[resource] = (p.resources[resource] || 0) + mined;
@@ -739,8 +857,10 @@ export function stepMonth(world: SimWorld, month: number): void {
         if (isMiningOutput) {
           const sDef = SERVICE_MAP.get(svcId);
           if (sDef) {
-            operating -= sDef.operatingCostPerMonth
+            const rebate = sDef.operatingCostPerMonth
               * (1 - miningDutyCycleOpexMult(svcId, pressureByResource));
+            operating -= rebate;
+            if (lines) lineOf(b.instanceId).operating -= rebate;
           }
         }
         // Only true mining_output services price-link cash revenue here —
@@ -761,7 +881,9 @@ export function stepMonth(world: SimWorld, month: number): void {
             }
             snapshotForPlayer = { ...snapshotForPlayer, prices: floored };
           }
-          revenue += priceLinkedMiningRevenue(svcId, unitsPerResource, snapshotForPlayer) * rMult * saturationMult;
+          const miningRevenue = priceLinkedMiningRevenue(svcId, unitsPerResource, snapshotForPlayer) * rMult * saturationMult;
+          revenue += miningRevenue;
+          if (lines) lineOf(b.instanceId).revenue += miningRevenue;
         }
       }
     }
@@ -947,6 +1069,15 @@ export function stepMonth(world: SimWorld, month: number): void {
     // Balance Pass 3: payroll only stamped when the labor market is modeled —
     // legacy rows keep their exact shape.
     if (world.opts.laborMarket) row.payroll = payroll;
+    // D4: opt-in per-building lines and refit bookkeeping.
+    if (lines) row.buildingLines = lines;
+    if (p.refitPlan) {
+      const pr = p as SimPlayer & { _refitCapex?: number; _refits?: number };
+      row.refitCapex = pr._refitCapex || 0;
+      row.refits = pr._refits || 0;
+      pr._refitCapex = 0;
+      pr._refits = 0;
+    }
     p.history.push(row);
   }
 

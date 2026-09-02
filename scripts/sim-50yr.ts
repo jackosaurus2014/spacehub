@@ -12,7 +12,23 @@
 // module code via scripts/sim-harness.ts.
 //
 // Deterministic: no Date.now / Math.random anywhere in the sim path.
-//   npx tsx scripts/sim-50yr.ts
+//   npx tsx scripts/sim-50yr.ts            # standard run (every archetype Mark I forever)
+//   npx tsx scripts/sim-50yr.ts --refit    # refit-aware: archetypes take a Mark II/III
+//                                          # refit whenever its preview payback < 60 mo
+//
+// CLOCK NOTE (2026-09-02, docs/BALANCE.md "Clock unification"): this runner
+// and scripts/sim-harness.ts have ALWAYS stepped on a month grid — one
+// stepMonth() per game-month, research advanced by GAME_MONTH_MS (21,600 s)
+// per month. They never stepped TICKS_PER_GAME_MONTH engine ticks, so the
+// derived 10,800 changed nothing here (the whole 600-month world runs in
+// ~3 s). The tick-stepping runner that DID need a month-grid conversion is
+// scripts/balance-archetypes.ts (processTick's monthFraction override). The
+// month-grid regression lives in src/lib/game/__tests__/sim-month-grid.test.ts.
+//
+// 2026-Q3 additions (docs/BALANCE_REPORT_2026-Q3.md): D4 Mark refits
+// (harness refitPlan + per-building lines), realised flagship payback,
+// per-archetype sink coverage and a decade grid (§11) — the public
+// quarterly balance report is written from §11's tables.
 //
 // ─── What is modeled vs. not (the honest coverage statement) ────────────────
 // MODELED (real engine modules): service revenue stack (saturation × shared
@@ -51,10 +67,18 @@ import {
   newPlayer, newWorld, stepMonth, fm, mdTable, bookNetWorth, marginalCurve,
   extractionPressureReport, GAME_MONTH_MS, INPUT_BUY_MULT, LOCATION_POWER_PLAN,
   GRADUATION_GLIDE_GAME_MONTHS,
-  type SimPlayer, type SimWorld,
+  type SimPlayer, type SimWorld, type RefitOrder,
 } from './sim-harness';
 import { RESEARCH, RESEARCH_MAP } from '../src/lib/game/research-tree';
-import { revenueMultiplier } from '../src/lib/game/formulas';
+import { revenueMultiplier, scaledBuildingCost } from '../src/lib/game/formulas';
+// 2026-Q3: D4 refits priced exactly as build-preview.ts computeMarkUpgradePreview
+// (Δnet = revenue × (m₂/m₁ − 1) − floored maintenance × (k₂ − k₁)); D5 flagship set.
+import {
+  MARK_REVENUE_MULT, MARK_MAINTENANCE_MULT, MARK_III_GATE_BY_CATEGORY,
+  getMarkUpgradeCost, getMarkUpgradeResourceCost, isMarkEligibleDefinition,
+  type MarkLevel,
+} from '../src/lib/game/mark-upgrades';
+import { isFlagshipBuilding, getEffectiveMaintenancePerMonth } from '../src/lib/game/flagship-economics';
 import { CORPORATION_TIERS } from '../src/lib/game/corporation-tiers';
 import { BUILDING_MAP } from '../src/lib/game/buildings';
 import { RESOURCE_MAP, RESOURCES } from '../src/lib/game/resources';
@@ -87,6 +111,14 @@ const JOINER_MONEY = 200_000_000;    // S9 fresh-graduate scale
 const JOIN_A = 120;                  // late joiner #1 (year 10, 2160 in lore-decades)
 const JOIN_B = 360;                  // late joiner #2 (year 30)
 const CONTRACT_CAP_PER_DAY = 5;      // mid-tier (4 base + space_logistics)
+
+// ─── 2026-Q3 run modes ──────────────────────────────────────────────────────
+const ARGV = new Set(process.argv.slice(2));
+/** --refit: every archetype takes a Mark II (and, once its category's T3
+ *  gate tech is researched, Mark III) refit whenever the D4 preview payback
+ *  is under REFIT_PAYBACK_MAX_MONTHS and the cash-reserve rule allows. */
+const REFIT_AWARE = ARGV.has('--refit');
+const REFIT_PAYBACK_MAX_MONTHS = 60;
 
 // ─── Research model: real tree, serial slot, money-gated ────────────────────
 // Real charged cost is baseCostMoney (+ resourceCost drawn from stock,
@@ -220,6 +252,54 @@ function orderedPlanGated(order: Step[], rs: () => ResearchMeta): SimPlayer['pla
       want.push(step);
     }
     return want;
+  };
+}
+
+/** 2026-Q3 (D4): refit-aware strategy hook. Reads LAST month's per-building
+ *  lines (harness trackBuildingLines) and orders the refits whose preview
+ *  payback — the same arithmetic build-preview.ts shows the player — is
+ *  under REFIT_PAYBACK_MAX_MONTHS, cheapest-payback first, at most
+ *  `maxPerMonth` per month (construction-slot throughput, like builds),
+ *  never spending more than half of cash on one refit (the research
+ *  cash-reserve rule). Mark III additionally needs the category's T3 gate
+ *  tech in the archetype's research `done` set. */
+function makeRefitPlan(rs: () => ResearchMeta, maxPerMonth: number): SimPlayer['refitPlan'] {
+  return (p) => {
+    const last = p.history[p.history.length - 1];
+    if (!last?.buildingLines) return [];
+    const done = rs().done;
+    const cands: { order: RefitOrder; payback: number; cost: number }[] = [];
+    for (const b of p.buildings) {
+      const def = BUILDING_MAP.get(b.definitionId);
+      if (!def || !isMarkEligibleDefinition(def).eligible) continue;
+      const cur = (b.markLevel || 1) as MarkLevel;
+      if (cur >= 3) continue;
+      const target = (cur + 1) as MarkLevel;
+      if (target === 3 && !done.has(MARK_III_GATE_BY_CATEGORY[def.category])) continue;
+      const line = last.buildingLines[b.instanceId];
+      if (!line) continue;
+      const baseMaint = getEffectiveMaintenancePerMonth(def);
+      const dNet = line.revenue * (MARK_REVENUE_MULT[target] / MARK_REVENUE_MULT[cur] - 1)
+        - baseMaint * (MARK_MAINTENANCE_MULT[target] - MARK_MAINTENANCE_MULT[cur]);
+      if (dNet <= 0) continue;
+      let cost = getMarkUpgradeCost(def, target);
+      for (const [res, qty] of Object.entries(getMarkUpgradeResourceCost(def, target))) {
+        cost += qty * (RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0) * INPUT_BUY_MULT;
+      }
+      const payback = cost / dNet;
+      if (payback >= REFIT_PAYBACK_MAX_MONTHS) continue;
+      cands.push({ order: { instanceId: b.instanceId, target }, payback, cost });
+    }
+    cands.sort((a, b) => a.payback - b.payback || a.order.instanceId.localeCompare(b.order.instanceId));
+    const out: RefitOrder[] = [];
+    let cash = p.money;
+    for (const c of cands) {
+      if (out.length >= maxPerMonth) break;
+      if (cash < c.cost * 2) continue;
+      cash -= c.cost;
+      out.push(c.order);
+    }
+    return out;
   };
 }
 
@@ -498,6 +578,18 @@ interface Meta {
   buildingsAtDecadeEnd: number[];
   capitalAtDecadeEnd: number[];
   netByDecade: number[];
+  // 2026-Q3 report accumulators (inert for §1-§10; printed by §11 only).
+  buildMonths: Set<number>;     // months with build capex (refits excluded)
+  researchMonths: Set<number>;  // months with a research completion
+  refitMonths: Set<number>;     // months with a Mark refit
+  refitsByDecade: number[];
+  refitSpendByDecade: number[];
+  createdByDecade: number[];    // NPC-paid revenue + sales (+ decom recovery)
+  destroyedByDecade: number[];  // opex+maint+overhead+exec+payroll+inputs+capex+research
+  flagship: {
+    instanceId: string; definitionId: string; month: number; capex: number;
+    cumNet: number; paybackMonth: number | null;
+  } | null;
 }
 
 interface DecadeLedger {
@@ -563,7 +655,7 @@ interface ScenarioResult {
   totalResearchSpend: number;
 }
 
-function runScenario(months: number, joinerGlideMonths: number | null): ScenarioResult {
+function runScenario(months: number, joinerGlideMonths: number | null, refitAware: boolean = REFIT_AWARE): ScenarioResult {
   const metas: Meta[] = ARCHETYPES.map(arch => {
     const rs = makeResearchMeta(
       arch.name === 'mono-expander'
@@ -583,12 +675,16 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
       graduationGlide: joinerGlideMonths !== null && arch.joinMonth > 0
         ? { startMonth: arch.joinMonth, glideMonths: joinerGlideMonths }
         : undefined,
+      refitPlan: refitAware ? makeRefitPlan(() => rs, arch.maxBuilds) : undefined,
     });
     return {
       arch, player, rs, joined: arch.joinMonth === 0,
       negStreak: 0, decommissioned: 0, decomRecovered: 0,
       decisionMonths: new Set<number>(), firstProfitMonth: null, tier3Month: null,
       buildingsAtDecadeEnd: [], capitalAtDecadeEnd: [], netByDecade: [],
+      buildMonths: new Set<number>(), researchMonths: new Set<number>(), refitMonths: new Set<number>(),
+      refitsByDecade: [], refitSpendByDecade: [], createdByDecade: [], destroyedByDecade: [],
+      flagship: null,
     };
   });
 
@@ -602,6 +698,8 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
       laborMarket: true,
       dynamicSpot: true,
       contractOutlet: { capPerDay: CONTRACT_CAP_PER_DAY },
+      // 2026-Q3: per-building lines for refit pricing + realised flagship payback.
+      trackBuildingLines: true,
     },
   );
 
@@ -687,6 +785,40 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
       + (row.payroll || 0) + row.inputCost + row.capex;
     // Decision cadence: building capex counts.
     if (row.capex > 0) m.decisionMonths.add(month);
+    // 2026-Q3 accumulators (§11 only).
+    const refitCapex = row.refitCapex || 0;
+    if (row.capex - refitCapex > 0) m.buildMonths.add(month);
+    if ((row.refits || 0) > 0) {
+      m.refitMonths.add(month);
+      m.refitsByDecade[decadeIdx] = (m.refitsByDecade[decadeIdx] || 0) + (row.refits || 0);
+      m.refitSpendByDecade[decadeIdx] = (m.refitSpendByDecade[decadeIdx] || 0) + refitCapex;
+    }
+    m.createdByDecade[decadeIdx] = (m.createdByDecade[decadeIdx] || 0)
+      + row.revenue + row.resourceSales + (row.contractSales || 0);
+    m.destroyedByDecade[decadeIdx] = (m.destroyedByDecade[decadeIdx] || 0)
+      + row.operating + row.maintenance + row.overhead + row.execComp
+      + (row.payroll || 0) + row.inputCost + row.capex;
+    // First D5 flagship (baseCost ≥ FLAGSHIP_COST_FLOOR): record the buy, then
+    // accumulate ITS OWN line (revenue − operating − floored maintenance)
+    // until it has returned its scaled capex — the realised payback.
+    if (!m.flagship) {
+      for (const b of m.player.buildings) {
+        const def = BUILDING_MAP.get(b.definitionId);
+        if (!def || !isFlagshipBuilding(def)) continue;
+        const priorCopies = m.player.buildings.filter(o => o.definitionId === b.definitionId && o.locationId === b.locationId && o.instanceId < b.instanceId).length;
+        m.flagship = { instanceId: b.instanceId, definitionId: b.definitionId, month, capex: scaledBuildingCost(def.baseCost, priorCopies), cumNet: 0, paybackMonth: null };
+        break;
+      }
+    }
+    if (m.flagship && row.buildingLines) {
+      const line = row.buildingLines[m.flagship.instanceId];
+      if (line) {
+        m.flagship.cumNet += line.revenue - line.operating - line.maintenance;
+        if (m.flagship.paybackMonth === null && m.flagship.cumNet >= m.flagship.capex) {
+          m.flagship.paybackMonth = month - m.flagship.month + 1;
+        }
+      }
+    }
     // AAA Round 2 §9b (inert accumulator — printed only by §9b).
     m.netByDecade[decadeIdx] = (m.netByDecade[decadeIdx] || 0) + row.net;
     // First-profit / tier-3 milestones (months since join).
@@ -710,6 +842,7 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
           m.decomRecovered += rec.money;
           ledgers[decadeIdx].decomRecovered += rec.money;
           ledgers[decadeIdx].created += rec.money;
+          m.createdByDecade[decadeIdx] = (m.createdByDecade[decadeIdx] || 0) + rec.money;
         }
         m.decisionMonths.add(month);
       }
@@ -721,6 +854,8 @@ function runScenario(months: number, joinerGlideMonths: number | null): Scenario
     ledgers[decadeIdx].researchSpend += spendDelta;
     ledgers[decadeIdx].destroyed += spendDelta;
     if (completed > 0) m.decisionMonths.add(month);
+    if (completed > 0) m.researchMonths.add(month);
+    m.destroyedByDecade[decadeIdx] = (m.destroyedByDecade[decadeIdx] || 0) + spendDelta;
   }
   // Campaign fees are burned money — count them destroyed too.
   // (Added at declaration time below via the ledger's campaignFees line.)
@@ -781,7 +916,7 @@ const {
 // ════════════════════════════════════════════════════════════════════════════
 
 console.log('# Balance Pass 5 — 50-year shared-world playtest (8 archetypes, all realism switches on)\n');
-console.log(`World: ${MONTHS} game-months (${MONTHS / 12} game-years = ${MONTHS / 4} real days), npcSaleCaps+contendedNpcCaps, laborMarket, dynamicSpot, constructionMaterials, contractOutlet cap ${CONTRACT_CAP_PER_DAY}/day. Founders start ${fm(FOUNDER_MONEY)}; late joiners ${fm(JOINER_MONEY)} at months ${JOIN_A} and ${JOIN_B}.\n`);
+console.log(`World: ${MONTHS} game-months (${MONTHS / 12} game-years = ${MONTHS / 4} real days), npcSaleCaps+contendedNpcCaps, laborMarket, dynamicSpot, constructionMaterials, contractOutlet cap ${CONTRACT_CAP_PER_DAY}/day. Founders start ${fm(FOUNDER_MONEY)}; late joiners ${fm(JOINER_MONEY)} at months ${JOIN_A} and ${JOIN_B}.${REFIT_AWARE ? ` REFIT-AWARE: Mark II/III taken when preview payback < ${REFIT_PAYBACK_MAX_MONTHS} mo.` : ''}\n`);
 
 // ─── 1. Research/tier schedule actually achieved ────────────────────────────
 console.log('## 1. Research & corp-tier schedule achieved (money-gated serial research, real tree costs)\n');
@@ -1356,6 +1491,91 @@ console.log('\n## 10. Deep-tier flagship economics (first-copy marginalCurve, re
   console.log(mdTable(
     ['flagship', 'tier', 'capex', 'first-copy net/mo', 'self-payback', 'capex in median-income months', 'in best-income months', 'built by (y50)'],
     rows,
+  ));
+}
+
+// ─── 11. 2026-Q3 quarterly balance-report extract ───────────────────────────
+// docs/BALANCE_REPORT_2026-Q3.md is written from these tables (and §3/§4/§10
+// above). Everything here is a measurement of THIS run — no estimates.
+console.log(`\n## 11. Quarterly balance-report extract (mode: ${REFIT_AWARE ? 'REFIT-AWARE' : 'standard, no refits'})\n`);
+{
+  const decades = MONTHS / DECADE;
+  const cumEarnedAt = (m: Meta, worldMonth: number): number => {
+    let acc = 0;
+    for (const h of m.player.history) {
+      if (h.month > worldMonth) break;
+      acc += h.revenue + h.resourceSales + (h.contractSales || 0);
+    }
+    return acc;
+  };
+  const countIn = (set: Set<number>, lo: number, hi: number): number => {
+    let n = 0;
+    set.forEach(mm => { if (mm >= lo && mm < hi) n++; });
+    return n;
+  };
+  for (const m of metas) {
+    const rows: (string | number)[][] = [];
+    let refitsCum = 0, refitSpendCum = 0;
+    for (let d = 0; d < decades; d++) {
+      const lo = d * DECADE, hi = (d + 1) * DECADE, end = hi - 1;
+      refitsCum += m.refitsByDecade[d] || 0;
+      refitSpendCum += m.refitSpendByDecade[d] || 0;
+      if (m.arch.joinMonth >= hi) { rows.push([`y${(d + 1) * 10}`, '—', '—', '—', '—', '—', '—', '—']); continue; }
+      const row = rowOf(m, end)!;
+      const b = countIn(m.buildMonths, lo, hi), r = countIn(m.researchMonths, lo, hi), f = countIn(m.refitMonths, lo, hi);
+      const total = countIn(m.decisionMonths, lo, hi);
+      const created = m.createdByDecade[d] || 0, destroyed = m.destroyedByDecade[d] || 0;
+      rows.push([
+        `y${(d + 1) * 10}`,
+        fm(row.netWorthEst), fm(avgNet(m, end)),
+        `${total} (${b}b/${r}r/${f}f)`,
+        created > 0 ? `${(destroyed / created * 100).toFixed(0)}%` : '—',
+        `T${corpTierOf(cumEarnedAt(m, end))}`,
+        refitsCum,
+        fm(refitSpendCum),
+      ]);
+    }
+    console.log(`### ${m.arch.name}${m.arch.joinMonth > 0 ? ` (joins mo ${m.arch.joinMonth})` : ''}\n`);
+    console.log(mdTable(['decade end', 'book NW', 'net/mo (12-mo avg)', 'decision months (build/research/refit)', 'sink coverage', 'tier', 'refits (cum)', 'refit spend (cum)'], rows));
+    console.log('');
+  }
+
+  console.log('### First D5 flagship purchase and realised payback (own line: revenue − operating − floored maintenance)\n');
+  console.log(mdTable(
+    ['player', 'first flagship', 'bought', 'scaled capex', 'realised payback', 'own-line net recovered by y50'],
+    metas.map(m => {
+      const f = m.flagship;
+      if (!f) return [m.arch.name, 'none in 50 years', '—', '—', '—', '—'];
+      return [
+        m.arch.name, f.definitionId, `mo ${f.month} (y${(f.month / 12).toFixed(1)})`, fm(f.capex),
+        f.paybackMonth !== null ? `${f.paybackMonth} mo (${(f.paybackMonth / 12).toFixed(1)} y)` : `not by y50 (${MONTHS - f.month} mo held)`,
+        `${fm(f.cumNet)} (${(f.cumNet / f.capex * 100).toFixed(0)}%)`,
+      ];
+    }),
+  ));
+
+  console.log('\n### Concentration by decade (present players; book NW, negatives clamped)\n');
+  {
+    const rows: (string | number)[][] = [];
+    for (let d = 0; d < decades; d++) {
+      const end = (d + 1) * DECADE - 1;
+      const present = metas.filter(m => m.arch.joinMonth <= end);
+      const nws = present.map(m => rowOf(m, end)?.netWorthEst ?? 0);
+      const pos = nws.filter(x => x > 0).reduce((a, b) => a + b, 0);
+      const top = Math.max(...nws);
+      rows.push([`y${(d + 1) * 10}`, present.length, nws.filter(x => x > 0).length, gini(nws).toFixed(3), pos > 0 ? `${(top / pos * 100).toFixed(0)}%` : '—']);
+    }
+    console.log(mdTable(['decade end', 'players', 'solvent', 'Gini', 'top-1 share of positive NW'], rows));
+  }
+
+  console.log('\n### Mark levels held at y50\n');
+  console.log(mdTable(
+    ['player', 'buildings', 'Mark I', 'Mark II', 'Mark III'],
+    metas.map(m => {
+      const lv = [0, 0, 0, 0];
+      for (const b of m.player.buildings) lv[b.markLevel || 1]++;
+      return [m.arch.name, m.player.buildings.length, lv[1], lv[2], lv[3]];
+    }),
   ));
 }
 

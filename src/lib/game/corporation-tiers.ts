@@ -200,6 +200,46 @@ export function isFoldedFeatureUnlocked(tier: number, feature: FoldedFeature): b
 
 export const TIER_MAP = new Map(CORPORATION_TIERS.map(t => [t.tier, t]));
 
+// ─── Server-side tier from persisted profile scalars ─────────────────────────
+// GAME_DESIGN_REVIEW_2026-09 row 9: server routes that pay tier-indexed
+// rewards (daily bonus) must derive the tier from the PERSISTED GameProfile,
+// never from a client-supplied number. GameProfile stores totalEarned,
+// buildingCount, researchCount, locationsUnlocked and serviceCount as scalar
+// columns, so those five requirements are checked; the requirements that
+// only exist inside the save blob (builtShips, completedContracts,
+// legacyPower, completedMegastructures) are NOT checked here — so this is an
+// UPPER bound on the real tier, bounded by ledgered totalEarned, which is the
+// number that actually indexes the payouts.
+
+export interface ProfileTierScalars {
+  totalEarned: number;
+  buildingCount?: number;
+  researchCount?: number;
+  locationsUnlocked?: number;
+  serviceCount?: number;
+}
+
+export function tierFromProfileScalars(p: ProfileTierScalars): number {
+  const totalEarned = Number.isFinite(p.totalEarned) ? p.totalEarned : 0;
+  for (let i = CORPORATION_TIERS.length - 1; i >= 0; i--) {
+    const t = CORPORATION_TIERS[i];
+    const req = t.requirements;
+    const meets =
+      (req.totalEarned === undefined || totalEarned >= req.totalEarned) &&
+      (req.completedBuildings === undefined || p.buildingCount === undefined || p.buildingCount >= req.completedBuildings) &&
+      (req.completedResearch === undefined || p.researchCount === undefined || p.researchCount >= req.completedResearch) &&
+      (req.unlockedLocations === undefined || p.locationsUnlocked === undefined || p.locationsUnlocked >= req.unlockedLocations) &&
+      (req.activeServices === undefined || p.serviceCount === undefined || p.serviceCount >= req.activeServices);
+    if (meets) return t.tier;
+  }
+  return 1;
+}
+
+/** The totalEarned gate of a tier ($). Tier 1 has no gate → 0. */
+export function getTierTotalEarnedThreshold(tier: number): number {
+  return getTierDef(tier).requirements.totalEarned ?? 0;
+}
+
 // ─── Core Functions ──────────────────────────────────────────────────────────
 
 /**

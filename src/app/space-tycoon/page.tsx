@@ -2895,6 +2895,7 @@ export default function SpaceTycoonPage() {
           mount once the early steps are done (claims are day-keyed, so
           nothing is lost within the same day). */}
       {!isEarlyOnboarding(state) && <DailyBonusModal
+        corporationTier={state.corporationTier || 1}
         onClaim={(amount) => {
           setState(prev => prev ? {
             ...prev,

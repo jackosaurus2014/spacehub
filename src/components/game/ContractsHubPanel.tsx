@@ -15,6 +15,7 @@ import { isFoldedFeatureUnlocked, FOLDED_FEATURE_TIERS } from '@/lib/game/corpor
 import ContractsPanel from './ContractsPanel';
 import DiplomacyPanel from './DiplomacyPanel';
 import BiddingPanel from './BiddingPanel';
+import CompetitiveRacesPanel from './CompetitiveRacesPanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
@@ -68,6 +69,10 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
     return (
       <div className="space-y-3">
         <ConsolePanel title="Contracts" icon="contracts" subtitle="PVE delivery work and PVP competitive bidding.">{TopTabs}</ConsolePanel>
+        {/* GAME_DESIGN_REVIEW_2026-09 row 15: competitive RACES (first-N-to-
+            complete, server-verified) are gated by game month, not tier, so
+            they render for everyone; the sealed-bid board keeps its T5 gate. */}
+        <CompetitiveRacesPanel state={state} />
         {biddingUnlocked
           ? <BiddingPanel state={state} />
           : <LockedSubtabNotice icon="🎯" label="PVP Bidding" tier={FOLDED_FEATURE_TIERS.bidding} />}

@@ -16,6 +16,7 @@ const ACTIVITY_ICON: Record<string, IconName> = {
   colony_claimed: 'city',
   milestone_claimed: 'leaderboard',
   competitive_contract_claimed: 'scroll',
+  rivalry_win: 'swords',
   league_promotion: 'arrow-up',
   league_demotion: 'arrow-down',
   bounty_filled: 'money',

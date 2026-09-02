@@ -299,7 +299,7 @@ export function useGameSync(
           || data.mentorshipBonuses || data.demandPools
           || data.extractionPressure || data.laborMarket || data.laneBonuses
           || data.megaProjectBonuses || data.offense || data.equity || data.feeIndex
-          || data.chair || data.crisis
+          || data.chair || data.crisis || data.npcGovernor || data.rivalryStakes
         ) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
@@ -342,6 +342,12 @@ export function useGameSync(
             // clampCrisisSnapshot re-clamps inside applyServerEffectsToState.
             // Read-only — the client never writes back to it.
             crisis: (data.crisis as CrisisSnapshot) || undefined,
+            // GAME_DESIGN_REVIEW_2026-09 row 11: NPC density governor
+            // (re-derived from the population count on apply).
+            npcGovernor: data.npcGovernor || undefined,
+            // Row 14: settled rivalry-stake wins → reputation, idempotent
+            // by activity id inside applyRivalryStakesToState.
+            rivalryStakes: Array.isArray(data.rivalryStakes) ? data.rivalryStakes : undefined,
             fetchedAtMs: Date.now(),
           });
         }

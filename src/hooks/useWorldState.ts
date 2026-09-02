@@ -196,10 +196,16 @@ export function useActivityFeed(limit = 20): {
 export interface CompetitiveContractView {
   id: string;
   title: string;
+  client: string;
+  icon: string;
+  description: string;
+  category: string;
   tier: number;
   maxWinners: number;
   availableAfterGameMonth: number;
-  reward: { money: number; exclusiveTitle?: string };
+  expiresAfterHours: number;
+  requirement: { type: string; target: number; label: string; locationId?: string; resourceId?: string; categoryId?: string };
+  reward: { money: number; reputationBonus: number; resources?: Record<string, number>; exclusiveTitle?: string };
   winners: { companyName: string; claimedAt: string }[];
   slotsRemaining: number;
   isFull: boolean;

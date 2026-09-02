@@ -701,3 +701,51 @@ loop except the drives, which replace dead contract volume.
 reader order), heat views use the colorblind-safe ramp with numeric labels, all new panels
 keyboard-reachable, reduced-motion honors existing toggle. Phone: pools/share/flows are
 list-first; no hover-only intel.
+
+---
+
+## Flows — the commodity flow map (2026-09-02)
+
+**Founder-approved:** GAME_DESIGN_REVIEW_2026-09.md §2 row 3 — "commodity flow map + exporter/
+importer rankings from `MarketFill` and lane usage counters; the missing third of the
+intelligence pillar." CLAUDE.md: *"Flows are visible. Commodity supply maps, route-level volume,
+and exporter/importer rankings let players identify arbitrage, chokepoints, and rival
+concentration."* Price history (§E1 candles) and order-book depth already existed; per-corp
+share existed (§E6, `market-share.ts`). Nothing rendered flows as a map. Now:
+
+- **Library:** `src/lib/game/flow-map.ts` — `getFlowMap({ windowDays, resource })`, 10-minute
+  `unstable_cache`, ISO strings throughout. Pure aggregation helpers are unit-tested in
+  `__tests__/flow-map.test.ts`.
+- **Route:** `GET /api/space-tycoon/market/flows?resource=&days=` — session required (any
+  player), per-profile throttle 20/min (`route-throttle.ts`), `private, max-age=600`.
+- **UI:** Markets → Analytics → **Flow Map** (`FlowMapPanel.tsx`): resource selector synced to
+  the order-book selection, 7/30/90-day window, ranked bars (no new chart dependency),
+  exporter/importer tables, chokepoint callouts, and an **"Aim a lever"** row linking to the
+  price-campaign console (order book) and the poach inbox (Workforce) — links, not reimplementation.
+- **Map overlay:** MapCommandCenter's **Volume** toggle (beside *Labels*) thickens/recolours
+  the busiest lanes on both solar renderers and names the top lanes in text in the HUD legend.
+  Static; reduced-motion safe.
+
+### Sources — every figure comes from a persisted row
+
+| Section | Row | What it is (and is not) |
+|---|---|---|
+| `production[]` | `LocationExtraction` (locationId, resourceId, accumulated, updatedAt) | The §2.4 depletion accumulator, read through its ×0.9/day decay, rows touched inside the window. **Pressure-weighted units — not a per-day mined ledger.** |
+| `lanes[]` | `LaneUsage` (laneKey, usage, updatedAt) | §2.8 dispatch counter, ×0.97/day decay. Dispatches only. |
+| `tollsByZone[]` | `GameLedgerEntry` reason `lane_toll_income`, refId `zone:payer` | Real governor income, keyed by **zone**. Lane rows list their `zoneSlugs` so the UI shows the zone's toll next to the lane. |
+| `exporters[]` / `importers[]` | `MarketFill` (buyer, seller, quantity, totalValue, resourceSlug) | Top 10 corps per resource by units sold / bought. Names for all ten; **exact figures for ranks 1–3, coarse ranges below** (free tier — scouting is legitimate, precision is earned via `market_spy`). NPC market maker and NPC industrial corps are ranked as ordinary participants and labelled `npc`. |
+| `chokepoints[]` | derived from `lanes[]` | Lanes with dispatches ≥ P80 of all active lanes (`volume_p80`). |
+| `npcShare[]` | derived from `MarketFill` | NPC participation per fill side (player↔NPC fill = 50 %). |
+| `consumption.world[]` | `MarketResource.totalDemand` | Cumulative recipe demand, world-level, all-time — **not windowed**. |
+
+### Not yet persisted — returned as `null` + `reason`, listed in `missing[]`
+
+| Flow | Why it is null | Attestation that would light it up |
+|---|---|---|
+| `lanes[].cargoByResource` | `laneDispatchesThisTick` carries dispatch counts only. | Extend the sync payload with `{ laneKey: { resourceId: units } }` and a `LaneCargo` daily rollup (or add JSON `cargo` to `LaneUsage`). |
+| `lanes[].tollPaid` | Tolls are ledgered per zone; no lane key on the ledger row. | Put `laneKey` in the `lane_toll_income` refId (`zone:payer:laneKey`) — no schema change. |
+| `consumption.perLocation` | `consumedThisTick` is world-keyed by resource and only increments `totalDemand`. | Key the payload by location (the client already knows which building consumed) and add a `LocationConsumption` accumulator mirroring `LocationExtraction`. |
+| `chokepoints` (`carrier_concentration`, single corp ≥ 50 % of a lane's cargo) | Per-lane per-corp cargo is not persisted. | Falls out of the `LaneCargo` rollup above if it records `profileId`. The rule is implemented (`detectChokepoints(lanes, carrierShares)`) and tested; it just has no input yet. |
+| `production` as windowed units | `LocationExtraction` is a decaying pressure score. | A `LocationExtractionDaily (locationId, resourceId, day, units)` rollup written by the same sync branch. |
+
+No DDL was needed for this pass — everything shown derives from existing rows.

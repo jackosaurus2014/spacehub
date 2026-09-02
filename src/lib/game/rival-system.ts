@@ -6,6 +6,20 @@
 import prisma from '@/lib/db';
 import { getCurrentWeekId } from './weekly-events';
 
+// GAME_DESIGN_REVIEW_2026-09 row 14 — the rivalry stake lives in the pure
+// module rivalry-stake.ts (client-safe); re-exported here for the routes.
+export {
+  RIVALRY_STAKE,
+  RIVAL_DESIGNATED_EVENT,
+  RIVALRY_SETTLED_EVENT,
+  RIVALRY_WIN_ACTIVITY,
+  settleRivalryStake,
+  rivalryRepAward,
+  checkRivalryDesignation,
+  growthPct,
+} from './rivalry-stake';
+export type { RivalryOutcome, RivalrySettlement, DesignationCheck } from './rivalry-stake';
+
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 export const RIVAL_CONSTANTS = {

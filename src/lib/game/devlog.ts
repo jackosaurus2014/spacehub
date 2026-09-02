@@ -13,6 +13,17 @@ export interface DevLogEntry {
 
 export const GAME_DEVLOG: DevLogEntry[] = [
   {
+    date: '2026-09-02', tag: 'balance',
+    title: 'First quarterly balance report published',
+    summary: 'The public economic health report promised in the policy is now live: the 50-year balance simulation re-run on the unified clock with and without Mark-II refits, the first flagship payback measured in practice, inequality by decade, the live world as it actually is (two corporations), and what is watched next quarter. Every figure is sourced; nothing is estimated.',
+    changes: [
+      'Read it at /space-tycoon/balance-reports/2026-q3. Reports are quarterly from here on.',
+      'Headline: year-50 inequality across the eight simulated archetypes falls from a Gini of 0.730 to 0.548 when corporations take Mark-II refits; the first Jupiter datacenter returns its $20B in 76 game-months on its own line; money-supply sink coverage stays 95-104% in every decade.',
+      'Live world on publication day: two corporations, median net worth $236.9M, no player order-book fills in the trailing 30 days. Retention and faction balance are marked "measured next quarter" rather than invented.',
+      'No balance constant changed for this report. The one constant that would move the largest deviation is named, with the recommendation to leave it alone and why.',
+    ],
+  },
+  {
     date: '2026-09-02', tag: 'economy',
     title: 'Post-mortem: the game ran on two clocks',
     summary: "The engine credited one game-month of revenue every 60 real seconds while the world calendar advanced one game-month every 6 real hours. Income accrued 360 times faster than the world it was priced in. The tick now follows the calendar, and every balance was divided by 360 so nobody's relative position changed.",

@@ -16,6 +16,7 @@ import { CHART_DEFS } from '@/lib/charts/registry';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
 import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
+import { BALANCE_REPORTS } from '@/lib/game/balance-reports';
 
 const BASE_URL = 'https://spacenexus.us';
 
@@ -329,6 +330,8 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/space-tycoon/faq`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-tycoon/about`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/space-tycoon/dev-log`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-tycoon/balance-reports`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    ...BALANCE_REPORTS.map((r) => ({ url: `${BASE_URL}/space-tycoon/balance-reports/${r.slug}`, lastModified: new Date(`${r.publishedAt}T00:00:00Z`), changeFrequency: 'yearly' as const, priority: 0.6 })),
     { url: `${BASE_URL}/guide/space-economy-games`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-tycoon/leaderboard`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-tycoon/chronicle`, changeFrequency: 'daily' as const, priority: 0.5 },

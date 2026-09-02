@@ -2573,10 +2573,15 @@ observable on live telemetry rather than masked by a 360x income surplus.
 
 ### Follow-ups
 
-- `scripts/balance-archetypes.ts` and `scripts/simulate-playthroughs.ts`
+- ~~`scripts/balance-archetypes.ts` and `scripts/simulate-playthroughs.ts`
   step `TICKS_PER_GAME_MONTH` ticks per month; at 10,800 they are 360x
-  slower. They should switch to a month-grid step (or a synthetic tick
-  interval) before their next run.
+  slower.~~ DONE 2026-09-02 (Q3 report): `processTick` gained a
+  harness-only `monthFraction` override and `balance-archetypes.ts` steps a
+  30-tick month through it (byte-identical to its pre-unification grid;
+  6.7 s for 300 games). `simulate-playthroughs.ts` only imported the
+  constant — its own `simulateMonth` was always a month grid. `sim-50yr.ts`
+  / `sim-harness.ts` never stepped ticks at all (see the correction under
+  D5 below). Regression: `__tests__/sim-month-grid.test.ts`.
 - Monthly run-rate widgets that used to visibly move every minute now move
   every 6 hours; watch first-week feedback for "my income is frozen".
 - Persist legacy/tier/reputation server-side to tighten the gross ceiling.
@@ -2824,10 +2829,16 @@ figure must still be destroyed after D5.
   game-years pays ~$354B of floor upkeep (6 buildings, $1.18B/mo × 300
   months) — money destruction on the deep-tier path is ~$0.85T versus the
   $4.9T that was never going to be paid because nobody got there.
-- `sim-50yr.ts` must be re-run to replace this arithmetic with a measured
+- ~~`sim-50yr.ts` must be re-run to replace this arithmetic with a measured
   figure, but it steps `TICKS_PER_GAME_MONTH` ticks per month and is 360×
-  slower since the clock unification (see that section's follow-ups); the
-  month-grid step is the prerequisite.
+  slower since the clock unification.~~ CORRECTION (2026-09-02, Q3
+  report): `sim-50yr.ts` and `sim-harness.ts` have always stepped one
+  game-month per `stepMonth()` with research advanced by `GAME_MONTH_MS`
+  (21,600 s) — they never referenced `TICKS_PER_GAME_MONTH` and run the
+  600-month world in ~3 s. The re-run is in the "2026-Q3 balance report"
+  section below: measured research destruction is **$337B** (standard) /
+  **$513B** (refit-aware) against the $237B Pass-5 baseline; the first
+  flagship's realised own-line payback is **76 game-months**.
 
 ### Files
 
@@ -2841,3 +2852,172 @@ figure must still be destroyed after D5.
   the ROI guards see the floor.
 - Every maintenance site (engine §2, away-ops, economy-report, Dashboard,
   ResourceBar, map-modes, build-preview, BuildPanel catalog card).
+
+
+## 2026-Q3 balance report — first quarterly publication (2026-09-02)
+
+*Public report: `docs/BALANCE_REPORT_2026-Q3.md`, rendered at
+`/space-tycoon/balance-reports/2026-q3` (registry
+`src/lib/game/balance-reports.ts`; body generated into
+`balance-report-2026-q3.ts` by `scripts/generate-balance-report.ts`, guard
+test asserts doc ↔ constant equality). Fulfils docs/POLICY.md "balance
+review cadence".*
+
+### Harness changes (tooling only — no balance constant changed)
+
+- `game-engine.ts processTick(state, opts?)` — harness-only
+  `monthFraction` override (default 1/10,800; the two run-rate sites scale
+  by `1/fraction`). `balance-archetypes.ts` steps 30 ticks/month through it
+  and reproduces its pre-unification numbers exactly.
+- `sim-harness.ts` — D4 Mark refits: `SimBuilding.markLevel`,
+  `SimPlayer.refitPlan` hook (charged in the purchase phase: money +
+  materials, instant completion like builds), Mark revenue/output/maintenance
+  multipliers at the engine's §1/§2/§6 sites, `markSpendToDate` in
+  `bookNetWorth`; opt-in `trackBuildingLines` stamps per-building
+  revenue/operating/maintenance lines. Every legacy table byte-identical
+  (diffed on the full `sim-50yr.ts` output).
+- `sim-50yr.ts --refit` — refit-aware archetypes (preview payback < 60 mo,
+  cheapest first, ≤ construction slots per month, half-cash reserve rule;
+  Mark III behind the category gate tech); §11 prints the decade grid,
+  first-flagship realised payback, concentration and Mark-level tables.
+
+### Headline measurements (both runs, 600 months, 8 archetypes)
+
+| measure | standard | refit-aware |
+|---|---:|---:|
+| Gini y50 / top-1 share | 0.730 / 67% | 0.548 / 39% |
+| integrator NW / net-mo y50 | $66.15B / $713M | $71.23B / $830M |
+| joiner-y10 NW y50 | $18.74B (Pass 6: $18.70B) | $58.78B |
+| joiner-y30 NW y50 | $80.9M (Pass 6: $80.9M) | $12.67B |
+| mono-expander cadence y10-20 / y20-30 | 1 / 1 | 9 / 11 |
+| first flagship (integrator, datacenter_jupiter) | mo 407, payback 76 mo | mo 314, payback 76 mo |
+| sink coverage by decade | 102/95/104/98/102% | 104/98/101/95/96% |
+| research destroyed | $337B | $513B |
+
+Verdicts (full text in the report): D1 on-curve where the curve was not
+deliberately moved; the integrator is −28% income / −51% NW vs the Pass-5
+table with D5's now-affordable T5 tree the identified contributor (the
+constant that most directly moves it is `T5_RESEARCH_REPRICE_DIVISOR`;
+recommendation: leave it — the sink is exercised as designed). D5 landed
+(76-month realised payback at the sim's 3.0× stack; 7 of 8 archetypes never
+buy a flagship). D4 fills the H3 void for the starved archetypes but is a
+one-decade burst, not a standing rung; the mining-side residual (H4,
+`deep_drilling` stall) is unchanged. No runaway; watch the refit world's
++$28B cumulative minting and the passive turtle's cash pile.
+
+### Follow-ups
+
+- `--pre-d5` counterfactual switch in the harness so Q4 can attribute the
+  founders' gap by cause.
+- `market-share.ts`: flag `__NPC_CORP_*` participants as `isNpc` (only the
+  market maker is recognized today); publish the 90-day per-resource share
+  from the DB next quarter.
+- Retention and faction-balance methods are stated in the report; both need
+  the profile store and a population above n≈30 to be meaningful.
+
+---
+
+## Design-review batch (2026-09-02) — rows 9, 11, 14, 15 + §4 art bug
+
+Founder-approved small batch from `docs/GAME_DESIGN_REVIEW_2026-09.md`.
+Each item names its loop and the invariant it serves; none adds a
+real-money edge, none adds PvP combat, none moves money between players.
+
+### Row 9 — daily bonus indexed to corporation tier (daily loop)
+
+Before: `daily-bonus.ts` paid a flat $10M → $200M on a 7-day cycle
+regardless of tier — **$508M/week**, i.e. ~5× a $100M starting corporation
+per week (the single biggest faucet in the first month, a dominant
+strategy: "log in, don't play") and noise at $136B.
+
+After: payout = authored schedule × `DAILY_BONUS_TIER_MULT[tier]`, and the
+tier is derived **server-side** from the persisted profile
+(`tierFromProfileScalars` — totalEarned, buildingCount, researchCount,
+locationsUnlocked, serviceCount; the request body is never read).
+
+| Tier | Multiplier | Day 1 | Day 7 | 7-day cycle | Rule |
+|---|---:|---:|---:|---:|---|
+| T1 Startup | ×0.25 | $2.5M | $50M | $127M | meaningful, not dominant (1.3× start/week, was 5×) |
+| T2 Venture | ×0.5 | $5M | $100M | $254M | |
+| T3 Enterprise | ×1.0 | $10M | $200M | $508M | authored schedule |
+| T4 Corporation | ×1 | $10M | $200M | $508M | ≈1.02% of the $50B gate (exact 0.98, rounded to keep monotonic) |
+| T5 Conglomerate | ×10 | $100M | $2B | $5.08B | ≈1.02% of the $500B gate (exact 9.84) |
+| T6 Megacorp | ×100 | $1B | $20B | $50.8B | ≈1.02% of the $5T gate (exact 98.4) |
+| T7 Transcendent | ×1000 | $10B | $200B | $508B | ≈1.02% of the $50T gate (exact 984) |
+
+T4+ rule: cycle ≈ 1% of the tier's totalEarned gate; multipliers rounded
+to the decade so the schedule stays legible. Anonymous (localStorage) play
+uses the local save's tier and defaults to T1. Tests:
+`daily-bonus-tier.test.ts`, `api-daily-bonus-tier.test.ts`.
+
+### Row 9 — static contract ladder, tier-indexed cash multiplier (daily loop)
+
+The ladder ($50M → $2B, gated on research count) is kept as authored. At
+T4+ the **cash** half of a reward is scaled by `STATIC_CONTRACT_TIER_MULT`
+(resources unscaled — supply, not payment):
+
+| Tier | Multiplier | Basis |
+|---|---:|---|
+| T1–T3 | ×1.0 | authored |
+| T4 | ×2.2 | measured: Pass 5 integrator trailing-12-month net $451M (y10, NW $16.1B, T3 band) → $986M (y50, NW $136.2B, T4 band) |
+| T5 | ×4.8 | 2.2² — PROVISIONAL (no archetype reached T5 in the 50-year sim) |
+| T6 | ×10.6 | 2.2³ — provisional |
+| T7 | ×23.4 | 2.2⁴ — provisional |
+
+Honest note on the "5–10% of monthly net" target: the ladder does not meet
+it at T3 either — a $1.2B average T3 contract is ~30 months of the
+integrator's net; the pool is a one-shot windfall (17 contracts, each once),
+not an income line. Keeping the ladder (the brief) preserves that share
+across tiers; meeting 5–10% would mean repricing the ladder ~15× down, a
+separate founder decision. FTUE step rewards untouched. Test:
+`contract-tier-mult.test.ts`.
+
+### Row 11 — NPC density governor (monthly loop, NPC backdrop)
+
+`activeNpcCorps = clamp(round(10 − 0.15 × activePlayers30d), 3, 10)` for
+the 10 per-save market-backdrop corps; `clamp(round(5 − 0.075 × n), 2, 5)`
+for the 5 server-side industrial corps. The tail of the seed order sleeps
+first (deterministic). Dormant per-save NPCs are frozen (no revenue,
+research, expansion, production or market nudges); dormant industrial
+corps have both sides of their resting book cancelled and neither produce
+nor procure. Published on `/api/space-tycoon/npc-forecast` (`npcGovernor`)
+and delivered to each client via sync → server-effects (counts re-derived
+from the population on apply). Full spec in `docs/NPC_BACKDROP.md`.
+Tests: `npc-governor.test.ts`, `npc-industry-governor.test.ts`.
+
+### Row 14 — rivalry stake (weekly loop, meaningful decision)
+
+Designate ≤3 shadow rivals (same league bracket only); Monday's league cron
+compares each pair's week-over-week net-worth growth from the first/last
+`RivalSnapshot`; the winner earns **+1 reputation** (cap **+3/week** per
+profile) via a public `rivalry_win` PlayerActivity + a Situation Log item;
+the loser gets nothing. No money moves, no sink — an intel/reputation
+loop. Reputation reaches the save through the server-effects hop,
+idempotent by activity id, re-capped client-side. Side fix: finished-week
+rival assignments are now closed (they only ever accumulated) and the
+all-time W/L/D record is finally posted. Tests: `rivalry-stake.test.ts`,
+`api-rivalry-settlement.test.ts`.
+
+### Row 15 — dead code
+
+- `src/lib/game/refining.ts` was already deleted in audit Wave F
+  (`ecf5f172`); no importer remains. Row 15's first half was stale.
+- Competitive contracts: **kept and wired**, not folded. Bidding is a
+  sealed-bid first-price auction (win the right to fulfil, collateral,
+  reliability); a race is a shared first-N-to-complete prize verified
+  against the synced profile. Different mechanism, different tempo, and
+  the exclusive titles only make sense as races. `CompetitiveRacesPanel`
+  (Contracts hub → PVP, ungated by tier because races are game-month
+  gated) lists them with the Claim verb the route always had. Test:
+  `competitive-races.test.ts`. Open: `reward.reputationBonus` on races is
+  still never applied — the rivalry-stake channel could carry it.
+
+### §4 — art key mismatch (live bug)
+
+`assets.ts` keyed on legacy `mining`/`fabrication`; `buildings.ts` emits
+`mining_enterprise`/`fabrication_facility` since Wave F, so 32 of 96
+buildings rendered habitat art. Canonical keys added (legacy aliases
+kept); `servicer_tug`/`fleet_tender` mapped explicitly to the closest
+hulls and listed in `SHIP_ART_BACKLOG` for the next art batch.
+`assets-resolve.test.ts` asserts every emitted category and every hull
+resolves to an existing, non-fallback file.

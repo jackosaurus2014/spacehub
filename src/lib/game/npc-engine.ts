@@ -82,11 +82,19 @@ export function processNPCTick(
   // not two. Deterministic: the snapshot is a fixed input to this tick.
   // Omitted/empty = base-price fallback (identical to pre-E2 behavior).
   spotPrices: Record<string, number> = {},
+  // GAME_DESIGN_REVIEW_2026-09 row 11 — NPC density governor: how many of
+  // the seed-ordered corps are ACTIVE this tick (npc-companies.ts
+  // activeNpcCorpCount, delivered via state.npcGovernor). Dormant corps are
+  // returned untouched — no revenue, research, expansion, production or
+  // market nudges — so they resume seamlessly if population drops again.
+  // Omitted = all corps tick (pre-governor behaviour; solo/offline saves).
+  activeCorpCount: number = NPC_SEEDS.length,
 ): { npcs: NPCCompanyState[]; events: GameEvent[]; marketActions: NPCMarketAction[] } {
   const allEvents: GameEvent[] = [];
   const allMarketActions: NPCMarketAction[] = [];
 
   const updatedNpcs = npcs.map(npc => {
+    if (isNpcDormant(npc.id, activeCorpCount)) return npc;
     const n = { ...npc, monthsPlayed: npc.monthsPlayed + 1 };
     const events: GameEvent[] = [];
 
@@ -254,7 +262,7 @@ export function applyNPCMarketActions(
 }
 
 // Helper: index lookup for staggered activity
-import { NPC_SEEDS } from './npc-companies';
+import { NPC_SEEDS, isNpcDormant } from './npc-companies';
 const NPC_SEEDS_INDEX = new Map(NPC_SEEDS.map((s, i) => [s.id, i]));
 
 // Helper: base prices for NPC revenue estimation (fallback when no live spot).

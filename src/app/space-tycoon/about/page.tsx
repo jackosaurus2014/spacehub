@@ -47,7 +47,7 @@ const FAQ = [
   { q: 'Is Space Tycoon a space MMO?', a: 'Yes. Every player shares one persistent economy: the same live market, contracts, weekly league and faction standings. Corporations, alliances, mergers and takeovers are the end-game. There is no fleet combat; players compete by out-producing, out-trading and out-manoeuvring each other.' },
   { q: 'Is it free? Is there pay-to-win?', a: 'Free to play in the browser with no download. Real-money purchases are cosmetic or convenience only — never resources, money, research acceleration or exclusive gameplay. The no-pay-to-win commitment is written into the public policy.' },
   { q: 'What do you actually do in it?', a: 'Build launch pads, stations and factories; mine and refine; manufacture components at fabrication facilities; list them on the order book; win contracts; research a 270-plus technology tree; expand from Earth to the Moon, Mars, the belt and beyond; and form or join a corporation to do all of it at scale.' },
-  { q: 'Is it a live-service game?', a: 'The world moves whether you are logged in or not. Contracts and briefings refresh daily, league and faction standings weekly, corporate quarterlies every game quarter, seasonal events on a calendar. Real launches and NOAA space weather feed the simulation. Balance passes ship continuously and are logged in the dev log.' },
+  { q: 'Is it a live-service game?', a: 'The world moves whether you are logged in or not. Contracts and briefings refresh daily, league and faction standings weekly, corporate quarterlies every game quarter, seasonal events on a calendar. Real launches and NOAA space weather feed the simulation. Balance passes ship continuously and are logged in the dev log, and a public economic balance report is published every quarter.' },
   { q: 'How does it compare to EVE Online or Prosperous Universe?', a: 'Closest to Prosperous Universe in spirit (economy first, no combat) with a lighter on-ramp and a real-solar-system setting; closest to EVE in the corporate end-game, minus the fleet warfare. See the table on this page.' },
   { q: 'Does it work on a phone?', a: 'Yes — every command-centre feature is designed for touch and small screens, and there is an Android build.' },
 ];
@@ -71,6 +71,7 @@ export default function SpaceTycoonAboutPage() {
             <Link href="/space-tycoon" className="btn-primary text-sm py-2.5 px-5">Play free in your browser</Link>
             <Link href="/space-tycoon/faq" className="btn-secondary text-sm py-2.5 px-5">How to play (FAQ)</Link>
             <Link href="/space-tycoon/dev-log" className="btn-secondary text-sm py-2.5 px-5">Dev log</Link>
+            <Link href="/space-tycoon/balance-reports" className="btn-secondary text-sm py-2.5 px-5">Balance reports</Link>
           </div>
         </header>
 

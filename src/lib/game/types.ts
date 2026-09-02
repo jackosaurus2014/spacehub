@@ -547,6 +547,17 @@ export interface GameState {
     sellThreshold: number;
   }[];
   npcMarketPressure?: Record<string, number>;
+  /** GAME_DESIGN_REVIEW_2026-09 row 11 — NPC density governor snapshot
+   *  (npc-companies.ts buildNpcGovernorSnapshot), delivered via sync →
+   *  server-effects. activeNpcCorps bounds how many of npcCompanies tick;
+   *  the rest are dormant (frozen, no market nudges). null/absent = all
+   *  tick (solo/offline saves — an unsynced world is a quiet one). */
+  npcGovernor?: {
+    activePlayers30d: number;
+    activeNpcCorps: number;
+    activeIndustryCorps: number;
+    asOf: number;
+  } | null;
 
   // Random events & economy
   // researchSpeedMultiplier (V17 / Wave W4): additive-optional field so
@@ -998,6 +1009,12 @@ export interface GameState {
   /** Audit §1b "Leagues": seasons whose promotion boost has already been
    *  granted (dedupe cursor for server-effects league boost grants). */
   claimedLeagueBoostSeasonIds?: string[];
+  /** GAME_DESIGN_REVIEW_2026-09 row 14 — rivalry stakes. PlayerActivity ids
+   *  whose reputation grant has already been folded into this save
+   *  (idempotency for sync retries), and the recent settled results the
+   *  Situation Log / RivalsPanel scorecard read. See rivalry-stake.ts. */
+  rivalryStakesApplied?: string[];
+  rivalryResults?: { id: string; weekId: number; opponent: string; rep: number; atMs: number }[];
 
   /** Sol Events (real-world feed, src/lib/game/real-world-feed.ts): modest,
    *  time-bounded, world-shared bonus mirror while a real launch window is

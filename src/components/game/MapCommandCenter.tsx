@@ -147,6 +147,28 @@ export default function MapCommandCenter({
   const [detail, setDetail] = useState<{ view: MapContextView; token: number } | null>(null);
   const [zoomTier, setZoomTier] = useState<MapZoomTier>('location');
   const [labelsAlways, setLabelsAlways] = useState(false);
+  // Flow-map lane-volume layer (GAME_DESIGN_REVIEW_2026-09 §2 row 3): fetched
+  // once on first toggle from the 10-min-cached flows endpoint; both solar
+  // renderers thicken/recolour the listed lanes and the legend names the top
+  // lanes in text (never width or colour alone). Static — reduced-motion safe.
+  const [showVolume, setShowVolume] = useState(false);
+  const [laneVolumes, setLaneVolumes] = useState<{ map: Record<string, { v: number; n: number }>; top: string[]; windowDays: number } | null>(null);
+  useEffect(() => {
+    if (!showVolume || laneVolumes) return;
+    let cancelled = false;
+    fetch('/api/space-tycoon/market/flows?days=7')
+      .then(r => (r.ok ? r.json() : null))
+      .then((d: { windowDays?: number; lanes?: { laneKey: string; dispatches: number; fromName: string; toName: string }[] } | null) => {
+        if (cancelled) return;
+        const lanes = Array.isArray(d?.lanes) ? d.lanes : [];
+        const max = lanes[0]?.dispatches || 0;
+        const map: Record<string, { v: number; n: number }> = {};
+        for (const l of lanes) if (l.dispatches > 0) map[l.laneKey] = { v: max > 0 ? l.dispatches / max : 0, n: l.dispatches };
+        setLaneVolumes({ map, top: lanes.slice(0, 4).map(l => `${l.fromName}↔${l.toName} ${Math.round(l.dispatches)}`), windowDays: d?.windowDays || 7 });
+      })
+      .catch(() => { if (!cancelled) setLaneVolumes({ map: {}, top: [], windowDays: 7 }); });
+    return () => { cancelled = true; };
+  }, [showVolume, laneVolumes]);
   useEffect(() => {
     try { setLabelsAlways(localStorage.getItem(MAP_LABELS_KEY) === '1'); } catch { /* default off */ }
   }, []);
@@ -413,6 +435,7 @@ export default function MapCommandCenter({
             mapMode={mapMode}
             alwaysLabels={labelsAlways}
             onZoomTierChange={setZoomTier}
+            laneVolumes={showVolume ? laneVolumes?.map : null}
           />
         ) : (
           <SolarSystemCanvas
@@ -425,6 +448,7 @@ export default function MapCommandCenter({
             mapMode={mapMode}
             alwaysLabels={labelsAlways}
             onZoomTierChange={setZoomTier}
+            laneVolumes={showVolume ? laneVolumes?.map : null}
           />
         )
       ) : (
@@ -576,7 +600,25 @@ export default function MapCommandCenter({
             >
               {labelsAlways ? '● Labels: All' : '○ Labels: Zoom'}
             </button>
+            <button
+              type="button"
+              onClick={() => { playSound('click'); setShowVolume(v => !v); }}
+              aria-pressed={showVolume}
+              title="Lane volume layer — thicken and label the busiest freight lanes from the last 7 days (Markets → Analytics → Flow Map)"
+              className={`min-h-[44px] px-2.5 text-[10px] font-semibold whitespace-nowrap border-l border-white/[0.08] transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                showVolume ? 'bg-amber-500/20 text-amber-200' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {showVolume ? '● Volume' : '○ Volume'}
+            </button>
           </div>
+          {showVolume && (
+            <p className="hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] text-slate-300 max-w-[min(94vw,460px)] text-center" role="status" aria-live="polite">
+              {!laneVolumes ? 'Loading lane volume…'
+                : laneVolumes.top.length === 0 ? `Lane volume (${laneVolumes.windowDays}d): no freight dispatches recorded.`
+                : `Lane volume (${laneVolumes.windowDays}d, dispatches): ${laneVolumes.top.join(' · ')}`}
+            </p>
+          )}
 
           {/* Orbital-slot ring legend — the ring is colour + line pattern +
               numbers; this names all three in text. */}

@@ -10,6 +10,12 @@ import {
   compareMetric,
 } from '@/lib/game/rival-system';
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
+import {
+  RIVAL_DESIGNATED_EVENT,
+  RIVALRY_SETTLED_EVENT,
+  RIVALRY_STAKE,
+  type RivalryOutcome,
+} from '@/lib/game/rivalry-stake';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,6 +82,17 @@ export async function GET() {
       },
       orderBy: { createdAt: 'asc' },
     });
+
+    // GAME_DESIGN_REVIEW_2026-09 row 14: which active assignments carry a
+    // rivalry stake (a 'rival_designated' RivalEvent IS the designation).
+    const designatedSet = new Set<string>();
+    if (assignments.length > 0) {
+      const designations = await prisma.rivalEvent.findMany({
+        where: { type: RIVAL_DESIGNATED_EVENT, assignmentId: { in: assignments.map((a) => a.id) } },
+        select: { assignmentId: true },
+      });
+      for (const d of designations) designatedSet.add(d.assignmentId);
+    }
 
     // Build rival response objects
     const rivals = assignments.map((a) => {
@@ -171,6 +188,7 @@ export async function GET() {
           createdAt: e.createdAt.toISOString(),
         })),
         createdAt: a.createdAt.toISOString(),
+        designated: designatedSet.has(a.id),
       };
     });
 
@@ -183,8 +201,28 @@ export async function GET() {
       },
       include: {
         rival: { select: { companyName: true } },
+        // Row 14: the settled stake (one per assignment) for the scorecard.
+        events: { where: { type: RIVALRY_SETTLED_EVENT }, select: { metadata: true }, take: 1 },
       },
     });
+
+    // Row 14: last week's rivalry-stake scorecard.
+    const stakeResults = historyAssignments
+      .filter((ha) => ha.events.length > 0)
+      .map((ha) => {
+        const m = (ha.events[0].metadata as Record<string, unknown> | null) || {};
+        const outcome = (m.outcome === 'player' || m.outcome === 'rival' || m.outcome === 'draw' ? m.outcome : 'draw') as RivalryOutcome;
+        return {
+          rivalCompanyName: ha.rival.companyName,
+          outcome,
+          playerGrowthPct: typeof m.playerGrowthPct === 'number' ? m.playerGrowthPct : 0,
+          rivalGrowthPct: typeof m.rivalGrowthPct === 'number' ? m.rivalGrowthPct : 0,
+          repAwarded: outcome === 'player' && typeof m.repAwarded === 'number' ? m.repAwarded : 0,
+        };
+      });
+    const stakes = stakeResults.length > 0
+      ? { weekId: lastWeekId, repEarned: stakeResults.reduce((s, r) => s + r.repAwarded, 0), results: stakeResults }
+      : null;
 
     const history =
       historyAssignments.length > 0
@@ -254,9 +292,14 @@ export async function GET() {
       },
       weekTimeRemainingMs: getWeekTimeRemainingMs(),
       weekId,
+      // Row 14: rivalry-stake budget.
+      designatedCount: rivals.filter((r) => r.designated).length,
+      maxDesignated: RIVALRY_STAKE.MAX_DESIGNATED,
+      stakeRepPerWin: RIVALRY_STAKE.REP_PER_WIN,
+      stakeRepCapPerWeek: RIVALRY_STAKE.REP_CAP_PER_WEEK,
     };
 
-    return NextResponse.json({ rivals, summary, history });
+    return NextResponse.json({ rivals, summary, history, stakes });
   } catch (error) {
     console.error('Rivals GET error:', error);
     return NextResponse.json(

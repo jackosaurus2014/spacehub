@@ -4,6 +4,7 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import type { GameState, LocationType } from '@/lib/game/types';
 import { LOCATIONS } from '@/lib/game/solar-system';
 import { LANES } from '@/lib/game/spatial-strategy';
+import { laneKey } from '@/lib/game/trade-lanes';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { ZONE_MAP } from '@/lib/game/zone-influence';
@@ -126,6 +127,11 @@ interface SolarSystemCanvasProps {
    *  fully covered by a panel overlay; parity with SolarMap3D's `active`).
    *  The last painted frame is retained — no per-frame work while covered. */
   active?: boolean;
+  /** Flow-map lane-volume layer (GAME_DESIGN_REVIEW_2026-09 §2 row 3):
+   *  laneKey → { v: 0..1 normalised dispatches, n: dispatches }. Lanes with
+   *  an entry draw thicker, amber, and labelled with their count. Static —
+   *  reduced-motion safe. */
+  laneVolumes?: Record<string, { v: number; n: number }> | null;
 }
 
 // Visual layout: positions per location (this flat projection's own geometry).
@@ -256,7 +262,7 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
   return { cache: cacheRef.current, loaded };
 }
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -488,12 +494,23 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         const fy = fromLayout.y * h * zoom + offset.y;
         const tx = toLayout.x * w * zoom + offset.x;
         const ty = toLayout.y * h * zoom + offset.y;
-        ctx.strokeStyle = unlockedBoth ? 'rgba(34,211,238,0.12)' : 'rgba(100,116,139,0.05)';
-        ctx.setLineDash(unlockedBoth ? [] : [4, 4]);
+        const vol = laneVolumes ? laneVolumes[laneKey(lane.from, lane.to)] : undefined;
+        ctx.lineWidth = vol ? 1 + 3 * vol.v : 1;
+        ctx.strokeStyle = vol ? `rgba(251,191,36,${0.25 + 0.5 * vol.v})` : unlockedBoth ? 'rgba(34,211,238,0.12)' : 'rgba(100,116,139,0.05)';
+        ctx.setLineDash(unlockedBoth || vol ? [] : [4, 4]);
         ctx.beginPath();
         ctx.moveTo(fx, fy);
         ctx.lineTo(tx, ty);
         ctx.stroke();
+        if (vol) {
+          // Volume label — the count in text, so width is never the only cue.
+          ctx.save();
+          ctx.font = `600 ${9 * zoom}px Inter, sans-serif`;
+          ctx.fillStyle = 'rgba(253,230,138,0.95)';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${Math.round(vol.n)} runs`, (fx + tx) / 2, (fy + ty) / 2 - 4 * zoom);
+          ctx.restore();
+        }
 
         // Animated flow pulses on active lanes (both endpoints unlocked).
         // 3 dots staggered across the chord; t cycles every 4s.
@@ -521,6 +538,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         }
       }
       ctx.setLineDash([]);
+      ctx.lineWidth = 1;
     }
 
     // ─── Sun ──────────────────────────────────────────────────────
@@ -1093,7 +1111,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings, laneVolumes]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {

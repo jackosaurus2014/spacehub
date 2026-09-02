@@ -287,6 +287,32 @@ export const COMPETITIVE_CONTRACT_POOL: CompetitiveContract[] = [
   },
 ];
 
+// ─── Client race status (GAME_DESIGN_REVIEW_2026-09 row 15) ─────────────────
+// Decision: KEEP the competitive-contract race as its own contract type and
+// wire the missing client (CompetitiveRacesPanel.tsx under the Contracts
+// hub's PVP tab) rather than fold it into bidding. The two are different
+// mechanisms on different loops: bidding (contract-bidding.ts) is a
+// sealed-bid, first-price AUCTION on server-generated contracts with
+// collateral and a reliability score — you win the RIGHT to fulfil; a race
+// is a shared, slot-limited, first-N-to-COMPLETE prize verified against the
+// synced profile — no bid, no collateral, the whole server competes on the
+// same clock. Folding would lose the "be first" tempo and the exclusive
+// titles. The pool was already server-verified (Wave E1) and publicly
+// listed (WorldStatusCard); only the Claim verb was unreachable.
+
+export type CompetitiveRaceStatus = 'claimed_by_me' | 'open' | 'full';
+
+export interface CompetitiveRaceLike {
+  winners: { companyName: string }[];
+  maxWinners: number;
+}
+
+/** What a race looks like to one company — the client's Claim gate. */
+export function raceStatusFor(race: CompetitiveRaceLike, myCompanyName: string | null | undefined): CompetitiveRaceStatus {
+  if (myCompanyName && race.winners.some(w => w.companyName === myCompanyName)) return 'claimed_by_me';
+  return race.winners.length >= race.maxWinners ? 'full' : 'open';
+}
+
 /** Get contracts that are currently active based on game month */
 export function getActiveCompetitiveContracts(gameMonth: number): CompetitiveContract[] {
   return COMPETITIVE_CONTRACT_POOL.filter(c => gameMonth >= c.availableAfterGameMonth);

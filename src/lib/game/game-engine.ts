@@ -181,7 +181,17 @@ function getDailyMetrics(state: GameState): NonNullable<GameState['dailyMetrics'
  * Process a single game tick (1 in-game month).
  * Pure function: takes state, returns new state. Never mutates input.
  */
-export function processTick(state: GameState): GameState {
+export interface ProcessTickOptions {
+  /** Balance-harness override (scripts/balance-archetypes.ts, month-grid
+   *  tests): the share of one game-month this tick accrues. Defaults to the
+   *  live 1 / TICKS_PER_GAME_MONTH. A harness that used to step 30 ticks
+   *  per month at 1/30 passes { monthFraction: 1 / 30 } and reproduces its
+   *  pre-clock-unification numbers exactly; { monthFraction: 1 } accrues a
+   *  whole month in one call. Never set by the live client. */
+  monthFraction?: number;
+}
+
+export function processTick(state: GameState, opts?: ProcessTickOptions): GameState {
   // Global server time: all players share the same game date.
   // The calendar is derived from real wall-clock time (server epoch),
   // NOT from tick counting. Revenue/costs apply fractionally each tick.
@@ -200,7 +210,13 @@ export function processTick(state: GameState): GameState {
   // TICKS_PER_GAME_MONTH is derived from the world calendar (10,800 ticks of
   // 2 s = 6 real hours), so one game-month of P&L accrues over exactly one
   // calendar month — the same clock isMonthEnd above fires on.
-  const fraction = 1 / TICKS_PER_GAME_MONTH;
+  const fraction = opts?.monthFraction && opts.monthFraction > 0 && opts.monthFraction <= 1
+    ? opts.monthFraction
+    : 1 / TICKS_PER_GAME_MONTH;
+  // Ticks-per-month this tick implies (10,800 live; 1/monthFraction under a
+  // harness override) — the two run-rate sites below scale by this so a
+  // month-grid step reports the same monthly figures a live tick does.
+  const ticksPerMonth = 1 / fraction;
 
   const events: GameEvent[] = [];
   let money = state.money;
@@ -1266,7 +1282,7 @@ export function processTick(state: GameState): GameState {
     // runway"). Status computed here, efficiency multiplier applied to
     // service revenue in §1 on subsequent ticks.
     if (corpTier >= RESERVE_REQUIREMENT_MIN_TIER) {
-      const monthlyExpenseRunRate = Math.round(recurringCostSliceThisTick * TICKS_PER_GAME_MONTH);
+      const monthlyExpenseRunRate = Math.round(recurringCostSliceThisTick * ticksPerMonth);
       const requiredReserve = calculateRequiredReserve(0, monthlyExpenseRunRate);
       const rs = getReserveStatus(money, requiredReserve);
       const prevStatus = state.reserveStatus?.status || 'healthy';
@@ -1293,7 +1309,7 @@ export function processTick(state: GameState): GameState {
   const netIncome = Math.round(monthlyRevenue - monthlyCosts - payroll);
   const incomeHistory = isMonthEnd
     ? (state.incomeHistory || [])
-    : [...(state.incomeHistory || []), netIncome * TICKS_PER_GAME_MONTH].slice(-24);
+    : [...(state.incomeHistory || []), netIncome * ticksPerMonth].slice(-24);
 
   // ─── 11. Bankruptcy protection ────────────────────────────────────
   // Don't let money go below -$50M (prevents death spiral)
@@ -1887,7 +1903,12 @@ export function processFullTick(state: GameState): GameState {
   // 2. Process NPC companies (can fail safely)
   try {
     if (newState.npcCompanies && newState.npcCompanies.length > 0) {
-      const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate, npcBias, newState.marketSnapshot?.prices || {});
+      // GAME_DESIGN_REVIEW_2026-09 row 11: the NPC density governor bounds
+      // how many corps tick; absent snapshot = all of them (solo/offline).
+      const npcResult = processNPCTick(
+        newState.npcCompanies, newState.gameDate, npcBias, newState.marketSnapshot?.prices || {},
+        newState.npcGovernor?.activeNpcCorps ?? undefined,
+      );
       newState = {
         ...newState,
         npcCompanies: npcResult.npcs,

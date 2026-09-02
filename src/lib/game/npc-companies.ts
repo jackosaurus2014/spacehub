@@ -119,6 +119,78 @@ export const NPC_SEEDS: NPCSeedData[] = [
   },
 ];
 
+// ─── NPC density governor (GAME_DESIGN_REVIEW_2026-09 §2 row 11) ───────────
+// NPC_BACKDROP.md: "All 10 NPCs are always active … Consider a density
+// governor that activates/dormants NPCs based on observed player activity,
+// with a minimum floor of ~3." The governor is a pure function of the
+// 30-day-active player count (the same count the demand-pool scaler uses):
+//
+//   market backdrop (these 10 corps, per-save, npc-engine.ts):
+//       active = clamp(round(10 − 0.15 × activePlayers30d), 3, 10)
+//       → 10 at ≤3 players, 8 at 13, 5 at 33, floor 3 from 47 players
+//   industrial backdrop (5 corps, server-side, npc-industry.ts):
+//       active = clamp(round(5 − 0.075 × activePlayers30d), 2, 5)
+//       → 5 at ≤6 players, 4 at 13, 3 at 27, floor 2 from 40 players
+//
+// Dormant corps are the TAIL of the seed order (deterministic — every save
+// and the server agree on which corps sleep). A dormant per-save NPC stops
+// ticking (no research, no expansion, no production, no market nudges) and
+// is left frozen in the save so it resumes seamlessly if population drops.
+// A dormant industrial corp has its resting order-book orders cancelled
+// (nothing is escrowed for NPC corps) and neither produces nor procures.
+// The count is published on /api/space-tycoon/npc-forecast (npcGovernor)
+// and reaches each client's tick via the sync → server-effects hop.
+export const NPC_GOVERNOR = {
+  MARKET_MAX: 10,
+  MARKET_FLOOR: 3,
+  MARKET_SLOPE: 0.15,
+  INDUSTRY_MAX: 5,
+  INDUSTRY_FLOOR: 2,
+  INDUSTRY_SLOPE: 0.075,
+} as const;
+
+function governorClamp(max: number, floor: number, slope: number, activePlayers30d: number): number {
+  const n = Number.isFinite(activePlayers30d) ? Math.max(0, activePlayers30d) : 0;
+  return Math.max(floor, Math.min(max, Math.round(max - slope * n)));
+}
+
+/** How many of the 10 market-backdrop NPC corps tick for this population. */
+export function activeNpcCorpCount(activePlayers30d: number): number {
+  return governorClamp(NPC_GOVERNOR.MARKET_MAX, NPC_GOVERNOR.MARKET_FLOOR, NPC_GOVERNOR.MARKET_SLOPE, activePlayers30d);
+}
+
+/** How many of the 5 industrial NPC corps run for this population. */
+export function activeNpcIndustryCount(activePlayers30d: number): number {
+  return governorClamp(NPC_GOVERNOR.INDUSTRY_MAX, NPC_GOVERNOR.INDUSTRY_FLOOR, NPC_GOVERNOR.INDUSTRY_SLOPE, activePlayers30d);
+}
+
+const NPC_SEED_INDEX = new Map(NPC_SEEDS.map((s, i) => [s.id, i]));
+
+/** Whether a per-save NPC is dormant under a governor count (tail of the
+ *  seed order sleeps first). Unknown ids are treated as active. */
+export function isNpcDormant(npcId: string, activeCorpCount: number): boolean {
+  const idx = NPC_SEED_INDEX.get(npcId);
+  if (idx === undefined) return false;
+  return idx >= Math.max(0, Math.min(NPC_SEEDS.length, activeCorpCount));
+}
+
+/** The snapshot shape carried on GameState.npcGovernor / server-effects. */
+export interface NpcGovernorSnapshot {
+  activePlayers30d: number;
+  activeNpcCorps: number;
+  activeIndustryCorps: number;
+  asOf: number;
+}
+
+export function buildNpcGovernorSnapshot(activePlayers30d: number, asOf: number = Date.now()): NpcGovernorSnapshot {
+  return {
+    activePlayers30d: Math.max(0, Math.round(activePlayers30d)),
+    activeNpcCorps: activeNpcCorpCount(activePlayers30d),
+    activeIndustryCorps: activeNpcIndustryCount(activePlayers30d),
+    asOf,
+  };
+}
+
 /** Create initial NPC state from seed data */
 export function createNPCFromSeed(seed: NPCSeedData): NPCCompanyState {
   return {

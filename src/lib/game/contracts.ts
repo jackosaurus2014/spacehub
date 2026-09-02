@@ -218,6 +218,42 @@ export const CONTRACT_POOL: ContractDefinition[] = [
   },
 ];
 
+// ─── Tier-indexed reward multiplier (GAME_DESIGN_REVIEW_2026-09 row 9) ─────
+// The static ladder ($50M → $2B, gated on research count) is kept as
+// authored; at corporation tier 4+ the CASH half of every reward is scaled
+// so the ladder keeps the same share of a corporation's monthly net that it
+// has at T3. Derivation (BALANCE.md Pass 5 decade tables, integrator
+// archetype — the only archetype that reaches the T3→T4 band inside the
+// 50-year sim): trailing-12-month net $451M at y10 (NW $16.1B, T3 band) →
+// $986M at y50 (NW $136.2B, T4 band) = ×2.19 per tier step. T5+ have no
+// measured net yet ("zero T5 flagships in the 50-year sim"), so the same
+// ×2.2 step is extrapolated geometrically and flagged PROVISIONAL until
+// live T5 telemetry lands. Resources are unscaled (supply, not payment).
+//
+//   T1-T3  ×1.0    (authored ladder)
+//   T4     ×2.2    measured (Pass 5)
+//   T5     ×4.8    2.2²  provisional
+//   T6     ×10.6   2.2³  provisional
+//   T7     ×23.4   2.2⁴  provisional
+//
+// Honest note: even at T3 the ladder is NOT "5-10% of monthly net" — a
+// $1.2B average T3 contract is ~30 months of the integrator's net, i.e. the
+// ladder is a one-shot windfall (16 contracts, each once) rather than an
+// income line. Keeping the ladder (the brief) means the share is preserved,
+// not reduced; repricing the ladder is a separate founder decision.
+export const STATIC_CONTRACT_TIER_MULT: Record<number, number> = {
+  1: 1, 2: 1, 3: 1,
+  4: 2.2,
+  5: 4.8,
+  6: 10.6,
+  7: 23.4,
+};
+
+export function getStaticContractTierMultiplier(tier: number | null | undefined): number {
+  const t = Math.max(1, Math.min(7, Math.floor(Number(tier) || 1)));
+  return STATIC_CONTRACT_TIER_MULT[t] ?? 1;
+}
+
 /** Get current progress for a requirement */
 export function getRequirementProgress(state: GameState, req: ContractRequirement): number {
   switch (req.type) {
@@ -293,7 +329,11 @@ export function generateContracts(state: GameState): ContractDefinition[] {
  *
  *  Sol Events (real-world feed, src/lib/game/real-world-feed.ts): while a
  *  real launch window is live/imminent, worldEventBonuses.contractPayoutBonus
- *  (+10% flat, world-shared) rides the same multiplier stack. */
+ *  (+10% flat, world-shared) rides the same multiplier stack.
+ *
+ *  GAME_DESIGN_REVIEW_2026-09 row 9: corporation tier 4+ scales the cash
+ *  half by STATIC_CONTRACT_TIER_MULT (×1 through T3, so pre-existing
+ *  behaviour and tests are unchanged below T4). */
 export function applyContractReward(state: GameState, reward: ContractReward): GameState {
   const resources = { ...state.resources };
   if (reward.resources) {
@@ -304,8 +344,11 @@ export function applyContractReward(state: GameState, reward: ContractReward): G
   const repBonuses = getReputationBonuses(state.reputation || 0);
   const wfBonuses = getWorkforceBonuses(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
   const worldEventB = clampWorldEventBonuses(state.worldEventBonuses);
+  // Row 9: tier-indexed multiplier (×1 through T3) — see STATIC_CONTRACT_TIER_MULT.
+  const tierMult = getStaticContractTierMultiplier(state.corporationTier || 1);
   const payout = Math.round(
     reward.money
+    * tierMult
     * repBonuses.contractRewardMultiplier
     * (1 + wfBonuses.contractPayBonus)
     * (1 + (worldEventB?.contractPayoutBonus || 0))

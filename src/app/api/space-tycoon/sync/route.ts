@@ -11,6 +11,10 @@ import { getGlobalGameDate, formatServerDate } from '@/lib/game/server-time';
 import { buildDemandPoolSnapshot } from '@/lib/game/service-pricing';
 import type { DemandPoolSnapshot } from '@/lib/game/demand-pools';
 import { getCurrentSeasonNumber } from '@/lib/game/seasonal-events';
+// GAME_DESIGN_REVIEW_2026-09 rows 11 + 14: NPC density governor snapshot and
+// settled rivalry stakes ride the server-effects hop.
+import { buildNpcGovernorSnapshot } from '@/lib/game/npc-companies';
+import { RIVALRY_WIN_ACTIVITY, type RivalryStakeResult } from '@/lib/game/rivalry-stake';
 import {
   calculateMetricScore,
   getMetricDefinition,
@@ -1676,6 +1680,46 @@ export async function POST(request: Request) {
       }
     } catch { /* rivals summary non-critical */ }
 
+    // ── GAME_DESIGN_REVIEW_2026-09 row 14: settled rivalry-stake wins for
+    // this profile (last 28 days). The client folds them into reputation
+    // idempotently by activity id (server-effects.applyRivalryStakesToState).
+    let rivalryStakes: RivalryStakeResult[] | null = null;
+    try {
+      const wins = await prisma.playerActivity.findMany({
+        where: {
+          profileId: profile.id,
+          type: RIVALRY_WIN_ACTIVITY,
+          createdAt: { gt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000) },
+        },
+        select: { id: true, metadata: true, createdAt: true },
+        orderBy: { createdAt: 'asc' },
+        take: 24,
+      });
+      if (wins.length > 0) {
+        rivalryStakes = wins.map((w) => {
+          const m = (w.metadata as Record<string, unknown> | null) || {};
+          return {
+            id: w.id,
+            weekId: typeof m.weekId === 'number' ? m.weekId : 0,
+            opponent: typeof m.opponent === 'string' ? m.opponent : 'a rival',
+            rep: typeof m.rep === 'number' ? m.rep : 0,
+            atMs: w.createdAt.getTime(),
+          };
+        });
+      }
+    } catch { /* rivalry stakes non-critical (schema lag) */ }
+
+    // ── GAME_DESIGN_REVIEW_2026-09 row 11: NPC density governor — the same
+    // 30-day-active count the demand-pool cron uses. Absent on failure →
+    // the client ticks every NPC (pre-governor behaviour).
+    let npcGovernor: ReturnType<typeof buildNpcGovernorSnapshot> | null = null;
+    try {
+      const active30d = await prisma.gameProfile.count({
+        where: { lastSyncAt: { gt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+      });
+      npcGovernor = buildNpcGovernorSnapshot(active30d);
+    } catch { /* governor non-critical */ }
+
     // ── Wave M5 (docs/MEANINGFUL_2026-08.md §M5 / §3.2 O6): settle freight
     // tolls to zone governors. The client debited itself at dispatch time
     // (cargo-logistics.ts) from the PUBLIC toll snapshot; here the credit
@@ -1869,6 +1913,10 @@ export async function POST(request: Request) {
       // premium loading).
       crisis,
       rivals: rivalsSummary,
+      // Row 14: settled rivalry-stake wins (additive; older clients ignore).
+      rivalryStakes,
+      // Row 11: NPC density governor (additive; older clients tick all NPCs).
+      npcGovernor,
       leagueInfo,
       // Audit Wave B: server-computed effects consumed by the client tick
       // via useGameSync → server-effects.ts → game-engine.

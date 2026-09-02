@@ -132,3 +132,40 @@ Surfaces: Markets → Analytics → **NPC Demand** (table with window, NPC,
 resource, side, quantity, price cap, confidence-as-text; resource filter
 follows the order book's selection) and the order-book header line
 "NPC demand next 72h: buy X / sell Y" for the selected resource.
+
+## NPC density governor (shipped 2026-09-02)
+
+The "No NPC dormancy / dynamic population scaling" item above is built
+(`docs/GAME_DESIGN_REVIEW_2026-09.md` §2 row 11). `src/lib/game/npc-companies.ts`
+exports the governor as pure functions of the **30-day-active player count**
+(the same count the demand-pool scaler uses):
+
+| Backdrop | Rule | 0–3 players | 13 | 33 | 47+ |
+|---|---|---:|---:|---:|---:|
+| Market corps (10, per-save, `npc-engine.ts`) | `clamp(round(10 − 0.15·n), 3, 10)` | 10 | 8 | 5 | **3** (floor) |
+| Industrial corps (5, server, `npc-industry.ts`) | `clamp(round(5 − 0.075·n), 2, 5)` | 5 | 4 | 3 (at 27) | **2** (floor, from 40) |
+
+- **Which corps sleep:** the tail of the seed order, so every save and the
+  server agree. A dormant per-save NPC is returned untouched by
+  `processNPCTick` — no revenue, research, expansion, production or market
+  nudges — and resumes seamlessly if population drops. A dormant industrial
+  corp has both sides of its resting `MarketLimitOrder` book cancelled
+  (nothing is escrowed for NPC corps) and neither produces nor procures;
+  its tick result carries `skipped: ['dormant (population governor)']`.
+- **Delivery:** the sync route counts 30-day actives and sends
+  `npcGovernor` on the server-effects hop; `clampNpcGovernorSnapshot`
+  re-derives the counts from the population number on apply (a bugged or
+  hostile snapshot cannot silence the backdrop). Solo/offline saves with no
+  snapshot tick every NPC — an unsynced world is a quiet one.
+- **Published:** `GET /api/space-tycoon/npc-forecast` → `npcGovernor`
+  `{ activePlayers30d, activeNpcCorps, activeIndustryCorps, floorNpcCorps,
+  floorIndustryCorps, maxNpcCorps, maxIndustryCorps, dormantIndustryCorpIds }`;
+  industry forecast items are emitted only for active corps. The
+  Leaderboard shows dormant NPCs with the title "Dormant".
+- **Invariants held:** no new locations/resources/research for NPCs; the
+  governor only ever removes activity, never adds capability; the
+  `populationScale` share-scaler is unchanged and still applies to the corps
+  that remain active.
+
+Tests: `src/lib/game/__tests__/npc-governor.test.ts`,
+`src/lib/__tests__/npc-industry-governor.test.ts`.

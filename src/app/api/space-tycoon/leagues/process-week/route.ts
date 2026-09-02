@@ -20,6 +20,14 @@ import {
 import { getCurrentWeekId } from '@/lib/game/weekly-events';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { resolveMetricCurrentValue } from '@/lib/game/market-share';
+import { RIVAL_CONSTANTS } from '@/lib/game/rival-system';
+import {
+  RIVAL_DESIGNATED_EVENT,
+  RIVALRY_SETTLED_EVENT,
+  RIVALRY_WIN_ACTIVITY,
+  settleRivalryStake,
+  rivalryRepAward,
+} from '@/lib/game/rivalry-stake';
 
 export const dynamic = 'force-dynamic';
 
@@ -195,6 +203,103 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // ── Step 1b (GAME_DESIGN_REVIEW_2026-09 row 14): settle rivalry stakes ──
+    // Every rival assignment from a finished week is closed here (it never
+    // was before — assignments only ever accumulated). For each DESIGNATED
+    // pair the first and last net-worth snapshots of the week give each
+    // side's growth; the winner gets a 'rivalry_win' PlayerActivity carrying
+    // the reputation grant (+REP_PER_WIN, capped REP_CAP_PER_WEEK per
+    // profile per week), the loser gets nothing — no money, no sink. A
+    // 'rivalry_settled' RivalEvent on the assignment is the idempotency
+    // marker and the scorecard row. All-time W/L/D on the profile is
+    // updated from the tug-of-war score at the same time.
+    const rivalryStats = { assignmentsClosed: 0, stakesSettled: 0, wins: 0, draws: 0, repAwarded: 0 };
+    try {
+      const staleAssignments = await prisma.rivalAssignment.findMany({
+        where: { isActive: true, weekId: { lt: currentWeekId } },
+        include: {
+          player: { select: { id: true, companyName: true } },
+          rival: { select: { id: true, companyName: true } },
+          snapshots: { orderBy: { snapshotAt: 'asc' }, select: { playerNetWorth: true, rivalNetWorth: true } },
+          events: { where: { type: { in: [RIVAL_DESIGNATED_EVENT, RIVALRY_SETTLED_EVENT] } }, select: { type: true } },
+        },
+      });
+      const repThisRun = new Map<string, number>(); // `${profileId}:${weekId}` → rep granted
+      for (const a of staleAssignments) {
+        const designated = a.events.some(e => e.type === RIVAL_DESIGNATED_EVENT);
+        const alreadySettled = a.events.some(e => e.type === RIVALRY_SETTLED_EVENT);
+        if (designated && !alreadySettled && a.snapshots.length >= 2) {
+          const first = a.snapshots[0];
+          const last = a.snapshots[a.snapshots.length - 1];
+          const s = settleRivalryStake(first.playerNetWorth, last.playerNetWorth, first.rivalNetWorth, last.rivalNetWorth);
+          let repAwarded = 0;
+          let winner: { id: string; companyName: string } | null = null;
+          let loserName = '';
+          if (s.outcome === 'player') { winner = a.player; loserName = a.rival.companyName; }
+          else if (s.outcome === 'rival') { winner = a.rival; loserName = a.player.companyName; }
+          if (winner) {
+            const key = `${winner.id}:${a.weekId}`;
+            repAwarded = rivalryRepAward(repThisRun.get(key) || 0);
+            repThisRun.set(key, (repThisRun.get(key) || 0) + repAwarded);
+            const winnerGrowth = s.outcome === 'player' ? s.playerGrowthPct : s.rivalGrowthPct;
+            const loserGrowth = s.outcome === 'player' ? s.rivalGrowthPct : s.playerGrowthPct;
+            await prisma.playerActivity.create({
+              data: {
+                profileId: winner.id,
+                companyName: winner.companyName.slice(0, 50),
+                type: RIVALRY_WIN_ACTIVITY,
+                title: `${winner.companyName} out-grew ${loserName} in a rivalry stake`,
+                description: `Week ${a.weekId}: ${winnerGrowth.toFixed(1)}% vs ${loserGrowth.toFixed(1)}% net-worth growth. +${repAwarded} reputation.`,
+                metadata: {
+                  weekId: a.weekId,
+                  opponent: loserName,
+                  rep: repAwarded,
+                  assignmentId: a.id,
+                  winnerGrowthPct: winnerGrowth,
+                  loserGrowthPct: loserGrowth,
+                },
+              },
+            });
+            rivalryStats.wins++;
+            rivalryStats.repAwarded += repAwarded;
+          } else {
+            rivalryStats.draws++;
+          }
+          await prisma.rivalEvent.create({
+            data: {
+              assignmentId: a.id,
+              type: RIVALRY_SETTLED_EVENT,
+              title: s.outcome === 'player' ? 'Rivalry stake won' : s.outcome === 'rival' ? 'Rivalry stake lost' : 'Rivalry stake drawn',
+              description: `Week ${a.weekId}: you ${s.playerGrowthPct.toFixed(1)}% vs ${a.rival.companyName} ${s.rivalGrowthPct.toFixed(1)}% net-worth growth.`,
+              metadata: {
+                outcome: s.outcome,
+                playerGrowthPct: s.playerGrowthPct,
+                rivalGrowthPct: s.rivalGrowthPct,
+                repAwarded: s.outcome === 'player' ? repAwarded : 0,
+                winnerCompanyName: winner?.companyName ?? null,
+                weekId: a.weekId,
+              },
+            },
+          });
+          rivalryStats.stakesSettled++;
+        }
+        // Close the week for this pair and post the tug-of-war result to the
+        // all-time record (rivalWins/Losses/Draws were never incremented).
+        const result = a.rivalryScore > RIVAL_CONSTANTS.WIN_THRESHOLD ? 'win'
+          : a.rivalryScore < RIVAL_CONSTANTS.LOSS_THRESHOLD ? 'loss' : 'draw';
+        await prisma.rivalAssignment.update({ where: { id: a.id }, data: { isActive: false } });
+        await prisma.gameProfile.update({
+          where: { id: a.player.id },
+          data: result === 'win' ? { rivalWins: { increment: 1 } }
+            : result === 'loss' ? { rivalLosses: { increment: 1 } }
+            : { rivalDraws: { increment: 1 } },
+        });
+        rivalryStats.assignmentsClosed++;
+      }
+    } catch (err) {
+      console.error('Rivalry stake settlement error (non-fatal):', err);
+    }
+
     // ── Step 2: Create a new season with new brackets ──────────────────────
 
     const newSeasonNumber = activeSeason ? activeSeason.seasonNumber + 1 : 1;
@@ -332,6 +437,7 @@ export async function POST(request: NextRequest) {
       metricName: metric.name,
       processed: {
         ...stats,
+        rivalries: rivalryStats,
         newSeason: {
           id: newSeason.id,
           byLeague: newByLeague,

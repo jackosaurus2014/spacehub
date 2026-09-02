@@ -15,7 +15,9 @@ import { CATEGORY_LABELS } from '@/lib/game/demand-pools';
 import { useModalA11y } from './useModalA11y';
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
+import FlowMapPanel from './FlowMapPanel';
 import type { IconName } from '@/lib/game/icons';
+import type { GameTab } from '@/lib/game/types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,7 +58,7 @@ interface CorporationRow {
   rank: number;
 }
 
-type IntelTab = 'market' | 'corporations' | 'flows' | 'share' | 'demand' | 'npc' | 'offense';
+type IntelTab = 'market' | 'corporations' | 'flows' | 'flowmap' | 'share' | 'demand' | 'npc' | 'offense';
 
 interface MarketIntelligencePanelProps {
   /** Lever-discoverability pass (2026-09): the order book's selected resource,
@@ -67,6 +69,9 @@ interface MarketIntelligencePanelProps {
   /** Open the order book's price-campaign console for a resource (the hub is
    *  the home of the declare form; Analytics keeps this thin link). */
   onDeclareCampaign?: (slug: string) => void;
+  /** Flow map (GAME_DESIGN_REVIEW_2026-09 §2 row 3): the chokepoint
+   *  "Aim a lever" row routes the poach lever to Workforce. */
+  onNavigateTab?: (tab: GameTab) => void;
 }
 
 // GET /api/space-tycoon/npc-forecast row shape (npc-forecast.ts NpcForecastItem).
@@ -113,7 +118,7 @@ interface DemandPoolRowView {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function MarketIntelligencePanel({ selectedResource, onOpenOrderBook, onDeclareCampaign }: MarketIntelligencePanelProps = {}) {
+export default function MarketIntelligencePanel({ selectedResource, onOpenOrderBook, onDeclareCampaign, onNavigateTab }: MarketIntelligencePanelProps = {}) {
   const [tab, setTab] = useState<IntelTab>('market');
 
   return (
@@ -134,6 +139,9 @@ export default function MarketIntelligencePanel({ selectedResource, onOpenOrderB
           <TabButton active={tab === 'flows'} onClick={() => setTab('flows')} icon="globe">
             Supply Flows
           </TabButton>
+          <TabButton active={tab === 'flowmap'} onClick={() => setTab('flowmap')} icon="map">
+            Flow Map
+          </TabButton>
           <TabButton active={tab === 'share'} onClick={() => setTab('share')} icon="leaderboard">
             Market Share
           </TabButton>
@@ -152,6 +160,7 @@ export default function MarketIntelligencePanel({ selectedResource, onOpenOrderB
       {tab === 'market' && <MarketsTab />}
       {tab === 'corporations' && <CorporationsTab />}
       {tab === 'flows' && <SupplyFlowsTab />}
+      {tab === 'flowmap' && <FlowMapPanel selectedResource={selectedResource} onOpenOrderBook={onOpenOrderBook} onDeclareCampaign={onDeclareCampaign} onNavigateTab={onNavigateTab} />}
       {tab === 'share' && <MarketShareTab />}
       {tab === 'demand' && <DemandMapTab />}
       {tab === 'npc' && <NpcForecastTab selectedResource={selectedResource} onOpenOrderBook={onOpenOrderBook} />}

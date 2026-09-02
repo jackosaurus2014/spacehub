@@ -8,6 +8,10 @@ import { useModalA11y } from './useModalA11y';
 
 interface DailyBonusModalProps {
   onClaim: (amount: number) => void;
+  /** Local save's corporation tier — used ONLY by the anonymous
+   *  localStorage flow. Signed-in claims are priced by the server from the
+   *  persisted profile (row 9); the schedule shown then comes from GET. */
+  corporationTier?: number;
 }
 
 /**
@@ -23,7 +27,7 @@ interface DailyBonusModalProps {
  * players (no GameProfile to track a server-side claim against), so the
  * game still works without an account.
  */
-export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
+export default function DailyBonusModal({ onClaim, corporationTier = 1 }: DailyBonusModalProps) {
   const [visible, setVisible] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [claimedAmount, setClaimedAmount] = useState(0);
@@ -34,7 +38,11 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
   // once on mount from the GET probe below; null while unresolved.
   const useServerRef = useRef<boolean | null>(null);
 
-  const schedule = getBonusSchedule();
+  // Server-priced schedule (signed in) wins; anonymous players see the
+  // local save's tier schedule.
+  const [serverSchedule, setServerSchedule] = useState<{ day: number; amount: number }[] | null>(null);
+  const [tier, setTier] = useState<number>(corporationTier);
+  const schedule = serverSchedule ?? getBonusSchedule(corporationTier);
 
   useEffect(() => {
     // Check if bonus available after a short delay (let game load first)
@@ -48,6 +56,8 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
         } else if (res.ok) {
           const data = await res.json();
           useServerRef.current = true;
+          if (Array.isArray(data.schedule) && data.schedule.length === 7) setServerSchedule(data.schedule);
+          if (typeof data.tier === 'number') setTier(data.tier);
           if (data.claimable) {
             setStreak(data.streak || 0);
             setVisible(true);
@@ -105,7 +115,7 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
     }
 
     // Anonymous fallback — localStorage only.
-    const { amount, newStreak } = claimDailyBonus();
+    const { amount, newStreak } = claimDailyBonus(corporationTier);
     if (amount > 0) {
       playSound('milestone');
       setClaimedAmount(amount);
@@ -146,6 +156,9 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
                 <h3 id="daily-bonus-title" className="text-xl font-bold text-white">Daily Bonus</h3>
                 <p className="text-slate-400 text-sm mt-1">
                   {streak > 0 ? `${streak}-day streak!` : 'Welcome back!'} Claim your reward.
+                </p>
+                <p className="text-slate-600 text-[10px] mt-1">
+                  Tier {tier} schedule — the bonus scales with your corporation tier.
                 </p>
               </div>
 

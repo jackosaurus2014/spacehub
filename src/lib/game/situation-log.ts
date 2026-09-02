@@ -78,6 +78,10 @@ export type SituationSeverity = 'critical' | 'warning' | 'info';
 export type SituationCategory =
   | 'hazard_recent' | 'hazard_forecast' | 'contract' | 'senate' | 'charter'
   | 'story_chapter' | 'economic_cycle' | 'queue_idle' | 'mail'
+  // GAME_DESIGN_REVIEW_2026-09 row 14: a rivalry stake settled in this
+  // corporation's favour (state.rivalryResults, delivered via sync →
+  // server-effects.applyRivalryStakesToState). Pure lens like the rest.
+  | 'rivalry'
   // Wave E3 (docs/ECONOMY_PVP_2026-08.md §E3): building recipe inputs ran
   // short — the facility is browned out toward the 0.5 efficiency floor.
   | 'supply_shortfall'
@@ -803,6 +807,23 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
       detail: 'Discovery reports and dispatches waiting in the mailbox.',
       severity: 'info',
       tab: 'reports',
+    });
+  }
+
+  // ── Rivalry stakes won (row 14) — last 7 days ────────────────────────────
+  for (const r of state.rivalryResults || []) {
+    if (nowMs - r.atMs > 7 * 24 * 60 * 60 * 1000) continue;
+    items.push({
+      id: `sit-rivalry-${r.id}`,
+      category: 'rivalry',
+      icon: 'swords',
+      label: `Rivalry stake won vs ${r.opponent}`,
+      detail: r.rep > 0
+        ? `You out-grew ${r.opponent} week over week: +${r.rep} reputation. Set next week's stakes in Standings → Rivals.`
+        : `You out-grew ${r.opponent} week over week (weekly reputation cap already reached).`,
+      severity: 'info',
+      atMs: r.atMs,
+      tab: 'leaderboard',
     });
   }
 

@@ -6,16 +6,30 @@
 // strength of the archetypes.
 //
 // Run: npx tsx scripts/balance-archetypes.ts
+//
+// Month-grid stepping (2026-09-02, after the clock unification): the live
+// engine now accrues 1/10,800 of a month per tick (TICKS_PER_GAME_MONTH is
+// derived from the 6 h calendar month), which would make this runner 360x
+// slower than when it was written. It therefore steps SIM_TICKS_PER_MONTH
+// ticks per game-month through processTick's `monthFraction` override —
+// the same 30-tick / (1/30) grid the pre-unification harness ran on, so its
+// historical numbers are reproduced exactly (see
+// src/lib/game/__tests__/sim-month-grid.test.ts). Construction and research
+// timers are wall-clock in the engine and are not fast-forwarded here: this
+// is an idle-coast comparison of the starting portfolios, as it always was.
 
 import { getNewGameState } from '../src/lib/game/save-load';
 import { processTick } from '../src/lib/game/game-engine';
 import { applyArchetype, ARCHETYPES, type StartingArchetype } from '../src/lib/game/archetypes';
-import { TICKS_PER_GAME_MONTH } from '../src/lib/game/constants';
 import type { GameState } from '../src/lib/game/types';
 
 const GAMES_PER_ARCHETYPE = 100;
 const CHECKPOINTS_MONTHS = [3, 6, 12, 24];   // game-months to record
-const TOTAL_TICKS = CHECKPOINTS_MONTHS[CHECKPOINTS_MONTHS.length - 1] * TICKS_PER_GAME_MONTH;
+/** Sim granularity: ticks per game-month on the month grid (NOT the live
+ *  10,800 — see the header). 30 reproduces the pre-unification runner. */
+export const SIM_TICKS_PER_MONTH = 30;
+const SIM_MONTH_FRACTION = 1 / SIM_TICKS_PER_MONTH;
+const TOTAL_TICKS = CHECKPOINTS_MONTHS[CHECKPOINTS_MONTHS.length - 1] * SIM_TICKS_PER_MONTH;
 
 interface Snapshot {
   monthsElapsed: number;
@@ -55,11 +69,11 @@ function simulateGame(archetypeId: StartingArchetype): Snapshot[] {
   let state = applyArchetype(base, archetypeId);
 
   const snapshots: Snapshot[] = [];
-  const checkpointTicks = CHECKPOINTS_MONTHS.map(m => m * TICKS_PER_GAME_MONTH);
+  const checkpointTicks = CHECKPOINTS_MONTHS.map(m => m * SIM_TICKS_PER_MONTH);
   let nextCheckpointIdx = 0;
 
   for (let t = 1; t <= TOTAL_TICKS; t++) {
-    state = processTick(state);
+    state = processTick(state, { monthFraction: SIM_MONTH_FRACTION });
     if (nextCheckpointIdx < checkpointTicks.length && t >= checkpointTicks[nextCheckpointIdx]) {
       snapshots.push(takeSnapshot(state, CHECKPOINTS_MONTHS[nextCheckpointIdx]));
       nextCheckpointIdx++;
