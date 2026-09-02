@@ -178,7 +178,9 @@ function mapSAMNotice(notice: SAMNotice): MappedOpportunity {
     setAside: notice.setAside || null,
     classificationCode: notice.classificationCode || null,
     estimatedValue: null,
-    awardAmount: notice.award?.amount || null,
+    // v2 returns award.amount as a string ("592687.00"); the column is Float.
+    // First post-quota-reset sync (2026-09-02 00:05Z) crashed on it.
+    awardAmount: parseAwardAmount(notice.award?.amount),
     postedDate: notice.postedDate ? new Date(notice.postedDate) : null,
     responseDeadline: notice.responseDeadLine
       ? new Date(notice.responseDeadLine)
@@ -293,4 +295,11 @@ export async function fetchSAMOpportunities(
     returned: result.opportunities.length,
   });
   return result;
+}
+
+/** SAM.gov v2 sends `award.amount` as a decimal string; accept string or number, else null. */
+export function parseAwardAmount(raw: unknown): number | null {
+  if (raw === null || raw === undefined || raw === '') return null;
+  const n = typeof raw === 'number' ? raw : Number(String(raw).replace(/[$,\s]/g, ''));
+  return Number.isFinite(n) && n >= 0 ? n : null;
 }
