@@ -184,6 +184,54 @@ export function resolveSatelliteId(input: string): string {
   return SAT_ALIAS.ISS;
 }
 
+// ── Bulk group fallback ─────────────────────────────────────────────────────
+const VISUAL_GROUP_TTL_MS = 6 * 60 * 60 * 1000;
+let visualGroupCache: { byNorad: Map<string, TLEData>; fetchedAt: number } | null = null;
+let visualGroupInflight: Promise<Map<string, TLEData> | null> | null = null;
+
+async function loadVisualGroup(): Promise<Map<string, TLEData> | null> {
+  if (visualGroupCache && Date.now() - visualGroupCache.fetchedAt < VISUAL_GROUP_TTL_MS) {
+    return visualGroupCache.byNorad;
+  }
+  if (visualGroupInflight) return visualGroupInflight;
+  visualGroupInflight = (async () => {
+    try {
+      const res = await fetch('https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle', {
+        headers: { Accept: 'text/plain' },
+        signal: AbortSignal.timeout(12_000),
+      });
+      if (!res.ok) {
+        logger.warn('CelesTrak visual group fetch non-OK', { status: res.status });
+        return visualGroupCache?.byNorad ?? null;
+      }
+      const parsed = parseTLEText(await res.text());
+      if (parsed.length === 0) return visualGroupCache?.byNorad ?? null;
+      const byNorad = new Map<string, TLEData>();
+      for (const t of parsed) byNorad.set(t.noradId, t);
+      visualGroupCache = { byNorad, fetchedAt: Date.now() };
+      return byNorad;
+    } catch (err) {
+      logger.warn('CelesTrak visual group fetch failed', { error: err instanceof Error ? err.message : String(err) });
+      return visualGroupCache?.byNorad ?? null;
+    } finally {
+      visualGroupInflight = null;
+    }
+  })();
+  return visualGroupInflight;
+}
+
+async function lookupInVisualGroup(noradId: string): Promise<TLEData | null> {
+  const group = await loadVisualGroup();
+  return group?.get(noradId) ?? null;
+}
+
+/** Test hook. */
+export function _resetTleCaches(): void {
+  tleCache.clear();
+  visualGroupCache = null;
+  visualGroupInflight = null;
+}
+
 /**
  * Fetch TLE for a given satellite identifier. Tries CelesTrak first,
  * falls back to a hardcoded ISS TLE if unreachable (keeps the cron
@@ -222,7 +270,18 @@ export async function fetchTLE(
     });
   }
 
-  // Fallback: hardcoded ISS TLE (only for ISS). Better a stale prediction
+  // Fallback 1 (2026-09-01): the per-object CATNR endpoint is the one
+  // CelesTrak throttles hardest, and it failed from production on the first
+  // /tonight render. The bulk "visual" group (100 brightest objects, incl.
+  // ISS / Tiangong / Hubble) is fetched once and cached for 6 h — the same
+  // budget /api/satellites/tle already spends.
+  const fromGroup = await lookupInVisualGroup(noradId);
+  if (fromGroup) {
+    tleCache.set(noradId, { tle: fromGroup, fetchedAt: Date.now() });
+    return fromGroup;
+  }
+
+  // Fallback 2: hardcoded ISS TLE (only for ISS). Better a stale prediction
   // than a failed cron run.
   if (noradId === SAT_ALIAS.ISS) {
     try {

@@ -26,7 +26,6 @@
  * the ISS at the same band.
  */
 
-import { unstable_cache } from 'next/cache';
 import { fetchTLE, predictPasses } from '@/lib/satellite-pass-predictor';
 import { tleToLatLng } from '@/lib/satellite-propagator';
 import type { TLEData } from '@/lib/satellite-propagator';
@@ -303,8 +302,32 @@ export async function safeComputeTonight(city: TonightCity, now: Date = new Date
  * itself only moves once a day). `now` is taken inside the cached function
  * so it does not become part of the key.
  */
-export function getTonightPasses(slug: string): Promise<TonightResult | null> {
+// Per-instance memo instead of unstable_cache (2026-09-01): a CelesTrak
+// hiccup on the first render used to be cached for the full 30 minutes as
+// "no passes tonight". Successful results keep the 30-min TTL; results
+// carrying `error` are retried after 60 s.
+const TONIGHT_OK_TTL_MS = 30 * 60 * 1000;
+const TONIGHT_ERR_TTL_MS = 60 * 1000;
+const tonightMemo = new Map<string, { result: TonightResult; at: number }>();
+
+export function _resetTonightMemo(): void {
+  tonightMemo.clear();
+}
+
+export async function getTonightPasses(slug: string): Promise<TonightResult | null> {
   const city = getTonightCity(slug);
-  if (!city) return Promise.resolve(null);
-  return unstable_cache(() => safeComputeTonight(city, new Date()), ['tonight-v1', city.slug], { revalidate: 1800 })();
+  if (!city) return null;
+  const hit = tonightMemo.get(city.slug);
+  const now = Date.now();
+  if (hit) {
+    const ttl = hit.result.error || hit.result.sats.some((s) => s.error) ? TONIGHT_ERR_TTL_MS : TONIGHT_OK_TTL_MS;
+    if (now - hit.at < ttl) return hit.result;
+  }
+  const result = await safeComputeTonight(city, new Date(now));
+  tonightMemo.set(city.slug, { result, at: now });
+  if (tonightMemo.size > 200) {
+    const oldest = Array.from(tonightMemo.entries()).sort((a, b) => a[1].at - b[1].at)[0];
+    if (oldest) tonightMemo.delete(oldest[0]);
+  }
+  return result;
 }
