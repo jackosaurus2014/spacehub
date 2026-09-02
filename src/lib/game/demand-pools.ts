@@ -148,11 +148,16 @@ export const NPC_DEMAND_FLOOR: Record<string, Partial<Record<ServiceCategory, nu
   mars_orbit:    { sensor: 140_000_000, compute: 80_000_000, telecom: 15_000_000, logistics: 100_000_000, launch: 15_000_000, insurance: 8_000_000 },
   mars_surface:  { tourism: 250_000_000, logistics: 65_000_000, fabrication: 30_000_000, power: 15_000_000, sensor: 20_000_000, telecom: 12_000_000, compute: 15_000_000 },
   asteroid_belt: { sensor: 90_000_000, launch: 130_000_000, logistics: 45_000_000, fabrication: 30_000_000, telecom: 10_000_000 },
-  jupiter_system: { telecom: 95_000_000, compute: 30_000_000, logistics: 25_000_000, sensor: 15_000_000 },
+  // D5 (docs/BALANCE.md "D5 flagship economics"): jupiter telecom, saturn
+  // fabrication and outer telecom re-authored at 3.0x their retuned flagship
+  // services (svc_jupiter_relay $110M, svc_titan_processing $130M,
+  // svc_deep_space_comm $240M) per this table's own 2.5-3.5x rule — the
+  // pool, not the sticker price, is what caps a lone flagship's income.
+  jupiter_system: { telecom: 330_000_000, compute: 30_000_000, logistics: 25_000_000, sensor: 15_000_000 },
   // fabrication raised 110M->130M alongside svc_titan_processing's M1 revenue
   // bump (35M->50M) to keep the 2.5-3.5x floor-authoring rule intact.
-  saturn_system: { fabrication: 130_000_000, telecom: 20_000_000, logistics: 30_000_000, sensor: 12_000_000 },
-  outer_system:  { telecom: 130_000_000, logistics: 30_000_000, sensor: 25_000_000 },
+  saturn_system: { fabrication: 390_000_000, telecom: 20_000_000, logistics: 30_000_000, sensor: 12_000_000 },
+  outer_system:  { telecom: 720_000_000, logistics: 30_000_000, sensor: 25_000_000 },
 
   // ─── AAA Round 1 E3.4 — the 12 colony markets ────────────────────────────
   // Authored at exactly 3.0x each market's flagship service, inside the

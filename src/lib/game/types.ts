@@ -228,6 +228,19 @@ export interface BuildingInstance {
   /** World-month index (server clock) at which a T3+ decommission's teardown
    *  finishes and scrap recovery is credited — set by decommissionBuilding. */
   decommissionCompletesAtMonth?: number;
+  /** D4 (docs/GAME_DESIGN_REVIEW_2026-09.md, BALANCE.md "Mark-II tier"):
+   *  in-place upgrade tier. Absent/1 = base build, 2 = Mark II, 3 = Mark III.
+   *  Multiplies THIS building's service revenue / mining output and its
+   *  maintenance (mark-upgrades.ts); saturation still counts it as one unit.
+   *  Distinct from `upgradeLevel` (the Advanced/Elite ladder) — both stack. */
+  markLevel?: number;
+  /** D4: a Mark refit in progress — target level, wall-clock start and
+   *  duration (60% / 90% of realBuildSeconds). The building keeps operating
+   *  at its current mark during the refit; game-engine flips markLevel when
+   *  the wall clock elapses (same pattern as upgradeStartedAtMs). */
+  markUpgradeTarget?: number;
+  markUpgradeStartedAtMs?: number;
+  markUpgradeDurationSeconds?: number;
 }
 
 // ─── Research ───────────────────────────────────────────────────────────────

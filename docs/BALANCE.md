@@ -2581,3 +2581,263 @@ observable on live telemetry rather than masked by a 360x income surplus.
   every 6 hours; watch first-week feedback for "my income is frozen".
 - Persist legacy/tier/reputation server-side to tighten the gross ceiling.
 
+
+## Mark-II tier (D4) — in-place upgrades (2026-09-02)
+
+*docs/GAME_DESIGN_REVIEW_2026-09.md §1 D4 / §2 row 4, founder-approved
+2026-09-02. Closes the open #30 "ladder-gap Mark-II upgrade tier" item from
+the 8/17 design ledger (content over repricing). Code:
+`src/lib/game/mark-upgrades.ts` (leaf), `build-preview.ts`
+`computeMarkUpgradePreview`, `buildings.ts markBookValue`; engine sites
+game-engine.ts §1 / §2 / §6 and the mark-completion pass next to the
+Advanced/Elite completion; away-operations.ts parity; economy-report,
+DashboardPanel, ResourceBar, map-modes, resource-plausibility mirrors.
+Tests: `__tests__/mark-upgrades.test.ts`.*
+
+### The gap it fills
+
+H3 (Pass 5) measured the decision cadence collapsing to 0–3 decisions per
+decade by year 30 for every archetype: copy N+1 lands in a saturation pool
+floored at 0.35 (`formulas.ts serviceSaturationMultiplier`) and the catalog
+jumps from ~$2B rungs straight to $8–80B. A Mark refit improves an EXISTING
+building instead of adding a copy, and its price sits exactly in the void.
+
+### The table
+
+| level | cost (× baseCost) | revenue (own line) | maintenance | refit time | prerequisite |
+|---|---|---|---|---|---|
+| Mark II | 1.5× | 1.6× | 2.2× | 60% of realBuildSeconds (wall clock) | complete, operational, < 10% hazard damage, no refit running |
+| Mark III | 2.5× (cumulative 4.0×) | 2.4× | 3.6× | 90% | Mark II + one T3 research node per category (below) |
+
+- A $1.2B T3 building refits for **$1.8B** then **$3B**; ground_station $45M / $75M;
+  mining_titan $60B / $100B.
+- The revenue multiplier touches ONLY that building's own service revenue
+  and, for mining rigs, its physical output (the priced units and the
+  inventory units move together — `markOutputMult` in §6 is the same factor
+  §1 applies to `baseTerm`, so nothing is double-counted).
+- **Saturation still counts one unit** — a Mark III telecom sat is one
+  2.4×-earning satellite, not 2.4 satellites at the 0.35 floor. That is the
+  entire point of the rung versus copy N+1, and it is a CI invariant
+  (`revenueLines[].avgSaturation` identical with a Mark III first copy).
+- Maintenance climbs faster than revenue at every step, so the refit is a
+  real P&L decision, never a free win. The Advanced/Elite `upgradeLevel`
+  ladder is unchanged and stacks multiplicatively.
+- Materials: Mark II `titanium 10×tier, aluminum 15×tier`; Mark III
+  `titanium 15×tier, rare_earth 5×tier, platinum_group 2×tier`. Never above
+  the largest authored definition bill, so the spend rides the phase-2
+  `builtThisTick` attestation unchanged (`applyMarkUpgradeStart` writes
+  `pendingInventoryAttestations.built`; useGameSync ships it; the sync route
+  caps and ledgers it as `client_build_spend` — nothing server-side changed).
+- Not available for `maxPerPlayer`-capped definitions (fabrication_earth,
+  research_institute_earth — the cap IS the design) or definitions with no
+  service line (pure power / research / habitat infrastructure — the refit
+  would be a maintenance trap). Both refusals are in `isMarkEligibleDefinition`.
+- Book value: `markBookValue(inst, BOOK_VALUE_DEPRECIATION_FACTOR)` adds the
+  depreciated refit spend to `computeBookNetWorth` (frontier.ts) — so the
+  wealth tax (§1c) reaches Mark capex exactly as it reaches base capex.
+
+### Mark III research gates (all existing T3 nodes with ZERO consumers before this wave)
+
+| category | gate | authored cost |
+|---|---|---|
+| launch_pad | orbital_refueling | $1.5B |
+| rocket | rotating_detonation | $1.8B |
+| satellite | software_defined_sat | $2.5B |
+| ground_station | laser_comm_relay ($2B; deep_space_network_expansion was the thematic pick but is a repeatable program) | $2B |
+| space_station | artificial_gravity | $4B |
+| datacenter | optical_computing | $4B |
+| solar_farm | wireless_power_transfer | $2.5B |
+| mining_enterprise | autonomous_excavation | $2.5B |
+| fabrication_facility | high_temp_alloys | $2.5B |
+
+No techs were added. Repo-wide grep on 2026-09-02: none of the nine ids
+appeared outside research-tree.ts (and, for two of them, a legacy
+simulate-playthroughs.ts list).
+
+### Worked paybacks (neutral multipliers, authored figures; the live card uses the real pools)
+
+`Δnet = revenue × (m₂ − m₁) − maintenance × (k₂ − k₁)`; payback = refit cost / Δnet.
+
+| building | base payback | Mark II cost | Δrevenue | Δmaint | Δnet | Mark II payback | Mark III cost (from II) | Δnet | Mark III payback |
+|---|---|---|---|---|---|---|---|---|---|
+| ground_station ($30M; $2M/$0.6M/$0.3M) | 27 mo | $45M | +$1.2M | +$0.36M | +$0.84M | **54 mo** | $75M | +$1.18M | **64 mo** |
+| sat_telecom_geo ($150M; $8M/$2.5M/$0.8M) | 32 mo | $225M | +$4.8M | +$0.96M | +$3.84M | **59 mo** | $375M | +$5.28M | **71 mo** |
+| launch_pad_heavy (T3, $800M; $55M/$20M/$3M) | 25 mo | $1.2B | +$33M | +$3.6M | +$29.4M | **41 mo** | $2B | +$39.8M | **51 mo** |
+| datacenter_geo (T3, $900M; $22M/$7M/$4M) | 82 mo | $1.35B | +$13.2M | +$4.8M | +$8.4M | **161 mo** | $2.25B | +$12M | **188 mo** |
+| mining_ganymede (T4, $10B; $40M/$13.6M/$6.25M) | 500 mo | $15B | +$24M | +$7.5M | +$16.5M | **910 mo** (355 at the 2.07 reference stack) | $25B | +$23.25M | **1,075 mo** |
+| mining_titan (T4 flagship, post-D5: $40B; $265M/$55M/$160M floor) | 1,153 mo (126 at stack) | $60B | +$159M | +$192M | **−$33M** | **never at neutral** (438 mo at stack) | — | — | — |
+
+Reading: a Mark refit is "more of a good thing" — its payback is ~2× the
+base building's because the operating cost is not paid twice but the
+maintenance is paid 2.2×. Where the base building is a strong buy (T1–T3
+Earth/GEO lines) the refit is a strong buy; where the base building is a
+long-horizon bet (T4) the refit is a longer one; on a D5 flagship the upkeep
+floor makes Mark II money-losing at neutral multipliers and marginal at the
+reference stack. **The preview says so before the player commits** — a
+losing refit renders amber with "never pays back at the current run-rate".
+That is the meaningful-decision invariant, not a defect.
+
+### Follow-ups
+
+- `sync/route.ts` netWorth still books `baseCost × 0.6` per completed
+  building; it should add `markBookValue(b, BOOK_VALUE_DEPRECIATION_FACTOR)`.
+  The sync payload's `buildings[]` also carries neither `instanceId` nor
+  `markLevel` (useGameSync maps `{definitionId, locationId, isComplete,
+  upgradeLevel}`), so the server-side gross ceiling cannot yet see a Mark
+  tier (the `getMarkRevenueMultiplier` call in resource-plausibility.ts
+  evaluates to 1.0 until the payload carries it). Phase-3 verification of
+  Mark spend (cost vs `totalSpent` delta) belongs with that change.
+- The map's LocationDetailConsole / RadialCommandMenu expose no per-building
+  actions today (mothball and rush-repair live in the map's embedded
+  BuildPanel via MapContextPanel); the Refit button therefore lives in the
+  same place — the Build tab and the map's Build sub-panel.
+
+## D5 flagship economics (2026-09-02)
+
+*docs/GAME_DESIGN_REVIEW_2026-09.md §1 D5 / §2 row 5, founder-approved
+2026-09-02. Pass 7's WATCH item ("even a corporation that eventually unlocks
+a flagship buys a strictly money-losing asset") is closed. Code:
+`src/lib/game/flagship-economics.ts`, `research-tree.ts` (35 nodes),
+`services.ts` (8 services), `demand-pools.ts` (3 floors), every maintenance
+site listed under D4. Tests: `__tests__/flagship-economics.test.ts`
+(harness-measured band), `tier-ladder-first-copy-roi.test.ts` (still green).*
+
+Both halves shipped together — research spend is ~30% of all money
+destroyed (Pass 5: $237B of $782B over 50 years), so the reprice without
+the sink would break the money supply.
+
+### (a) Flagship upkeep floor
+
+`maintenance = max(authored, baseCost × FLAGSHIP_UPKEEP_RATE)` for every
+building with `baseCost ≥ FLAGSHIP_COST_FLOOR`.
+
+- **FLAGSHIP_COST_FLOOR = $20B**, not the $5B the review sketched: $5B
+  catches fourteen T3 buildings (mining_mars $5B, orbital_refinery $6B,
+  space_station_mars $8B, habitat_mars $15B, space_station_belt $15B, …) and
+  T1–T3 numbers are out of scope. The self-payback set starts at
+  datacenter_jupiter ($20B) and nothing sits between $16.0B
+  (mining_titan_deep, T5, ~500-month payback without help) and $20B.
+- **FLAGSHIP_UPKEEP_RATE = 0.004** (0.4%/game-month ≈ 4.8%/game-year of
+  asset value). Every downstream reduction (research maintenanceReduction,
+  tier, reputation, mothball 25%, Mark multipliers) applies AFTER the floor.
+- Eleven buildings qualify — eight with income (table below) and three
+  pure-infrastructure stations whose return is the +15% location bonus,
+  crew quarters, shielding and expedition support: space_station_jupiter
+  ($30M → **$200M/mo**), space_station_saturn ($40M → **$320M/mo**),
+  outpost_outer ($60M → **$800M/mo**). These are deliberately in: the floor
+  is an asset-value sink, and the interstellar gateway is meant to be the
+  richest corporations' campaign-loop expense. WATCH on live telemetry
+  whether anyone builds them once T5 is reachable; if not, the lever is a
+  station-bonus raise for T4+ stations, not a floor exemption.
+
+### (b) T5 research reprice ÷10 (35 nodes)
+
+Every node whose authored cost was ≥ $50B: 34 T5 nodes + mega_structures
+(T4, $50B → $5B). Pre-reprice ledger in `T5_RESEARCH_REPRICED` (guard test
+enforces `now = prev / 10` and that nothing outside the ledger ever cost
+≥ $50B). The 35 nodes summed to **$4.925T before, $492.5B after**; the full
+T5 tree is now ~$490B against the integrator's $611B 50-year gross — the
+interstellar era becomes reachable inside the canon horizon without
+touching a single T1–T3 number.
+
+| node | before | after | | node | before | after |
+|---|---|---|---|---|---|---|
+| orbital_ring | $500B | $50B | | heavy_radiation_shielding | $120B | $12B |
+| antimatter_propulsion | $500B | $50B | | self_replicating_miners | $120B | $12B |
+| jump_drive | $500B | $50B | | space_elevator_cable | $100B | $10B |
+| interstellar_colonization | $300B | $30B | | fusion_drive | $100B | $10B |
+| fission_fragment | $300B | $30B | | interstellar_probe | $100B | $10B |
+| generation_ships | $200B | $20B | | magnetic_shield | $100B | $10B |
+| antimatter_reactor | $200B | $20B | | metallic_hydrogen / fusion_reactor / automated_mining_fleet / programmable_matter / exoplanet_survey / metric_engineering_refinements | $80B | $8B |
+| exotic_matter_refining | $200B | $20B | | precursor_studies | $75B | $7.5B |
+| ocean_seeding | $200B | $20B | | iso_materials_analysis | $70B | $7B |
+| space_elevator_design | $150B | $15B | | xenobiochemistry | $65B | $6.5B |
+| hive_pattern_mathematics | $62B | $6.2B | | intelligence_directorate / europan_biochemistry | $60B | $6B |
+| vacuum_metallurgy_breakthrough | $58B | $5.8B | | deep_biosphere_ecology | $55B | $5.5B |
+| gravitational_wave_det / swarm_intelligence / mega_structures (T4) / quantum_cryptanalysis / oort_cloud_probe | $50B | $5B | | | | |
+
+### (b′) Flagship income raise and the payback band
+
+Reference stack **2.07 = 1.5 (research serviceRevenueBonus cap) × 1.2 (top
+corporation-tier revenueBonus) × 1.15 (one station at the location)** — the
+three persistent, solo-earnable, documented caps. Transient terms (events,
+returning-commander boost), prestige resets (legacy) and corporate-scale
+packs (alliance / subsidiaries / victory) are excluded on purpose: the band
+must be reachable by one diligent corporation.
+
+Payback is measured with the SAME harness the M1 first-copy-ROI guard uses
+(`scripts/sim-harness.ts marginalCurve`, solo, real pools / power plan /
+inputs / overhead; `revenueMult` = the stack). Three of the eight are
+pool-priced (telecom at Jupiter and the outer system, fabrication at
+Saturn) and a sticker-price raise alone is self-defeating there — the
+location's NPC floor demand caps a lone flagship's effective revenue (at
+$185M the Jupiter relay's pool multiplier fell to 0.41). Those three floors
+were re-authored at exactly 3.0× the retuned service per the table's own
+2.5–3.5× rule (jupiter telecom $95M → $330M, saturn fabrication $130M →
+$390M, outer telecom $130M → $720M).
+
+| flagship | capex | revenue/mo before → after | maint before → after (floor) | payback before (neutral / stack) | payback after (neutral / **stack**) |
+|---|---|---|---|---|---|
+| datacenter_jupiter | $20B | $36M → $110M | $5M → $80M | 3,393 / 428 | 1,683 / **143** |
+| fabrication_titan | $25B | $50M → $130M | $8M → $100M | 1,372 / 334 | 1,764 / **152** |
+| mining_europa | $30B | $120M → $200M | $20M → $120M | 737 / 177 | 1,450 / **128** |
+| mining_titan | $40B | $160M → $265M | $25M → $160M | 618 / 170 | 1,153 / **126** |
+| deep_space_relay | $50B | $40M → $240M | $6M → $200M | 2,198 / 718 | 1,114 / **155** |
+| mining_kuiper | $150B | $140M → $850M | $18M → $600M | 1,558 / 610 | 669 / **132** |
+| mining_triton (T6) | $25.3B | $101.2M → $165M | $15.8M → $101.2M | 497 / 159 | 864 / **123** |
+| mining_pluto (T6) | $27B | $108M → $175M | $16.9M → $108M | 497 / 159 | 895 / **124** |
+
+Every after-row is inside 120–240 at the stack and still profitable on its
+first copy at neutral multipliers (the M1/F1 no-trap invariant holds — the
+guard test is green). The shape is intentional: at neutral a flagship is a
+thin, generational asset (1,000+ months); a mature corporation that has
+earned the documented caps sees it self-pay in 10–13 game-years. Operating
+costs were not touched.
+
+### 50-year research-destruction arithmetic (canon horizon kept)
+
+Pass 5 recorded **$237B** of research spend destroyed over 50 years across
+the archetypes, out of $782B total destruction. Requirement: ≥ ~70% of that
+figure must still be destroyed after D5.
+
+- The reprice only removes money from nodes that COST ≥ $50B. The 50-year
+  runs never reached them ("zero T5 flagships in the 50-year sim";
+  `deep_space_relay` and `mining_kuiper` built by nobody), so the measured
+  $237B is T1–T4 spend and is untouched: **research destruction stays at
+  ~100% of today's figure for the archetypes as played.**
+- Worst case — a corporation that DOES buy the whole repriced set now
+  destroys $492.5B instead of $4.925T on those nodes. Against the $237B
+  baseline that is a −$213B swing only if every dollar of the baseline had
+  been T5, which it was not; the honest bound is "the T5 share of research
+  destruction drops by 90%", and the T5 share of a 50-year run is ≤ the
+  ~$0.74T T1–T4 tree's complement, i.e. small.
+- The floor puts the money back where it now gets spent. The eight income
+  flagships alone add Σ(floor − authored) = 75 + 92 + 100 + 135 + 194 + 582
+  + 85 + 91 = **$1.35B per game-month** of new destruction when all are
+  held (≈ $16.3B/game-year); the three infrastructure flagships add another
+  $1.19B/month. One corporation holding the income set for 15 game-years
+  destroys ~$244B — more than the entire 50-year research baseline — and
+  because T5 is now reachable inside the horizon, the sink is actually
+  exercised rather than theoretical. Ratio check at the margin: a
+  corporation that buys the full repriced T5 tree ($492.5B, −$4.43T vs
+  before) and then holds the six original flagships for the remaining ~25
+  game-years pays ~$354B of floor upkeep (6 buildings, $1.18B/mo × 300
+  months) — money destruction on the deep-tier path is ~$0.85T versus the
+  $4.9T that was never going to be paid because nobody got there.
+- `sim-50yr.ts` must be re-run to replace this arithmetic with a measured
+  figure, but it steps `TICKS_PER_GAME_MONTH` ticks per month and is 360×
+  slower since the clock unification (see that section's follow-ups); the
+  month-grid step is the prerequisite.
+
+### Files
+
+- `src/lib/game/flagship-economics.ts` — constants, floor helper, ledger,
+  income set, `flagshipPaybackMonths` (transparent back-of-envelope).
+- `src/lib/game/research-tree.ts` — 35 `baseCostMoney` values ÷10, header note.
+- `src/lib/game/services.ts` — 8 flagship `revenuePerMonth` values.
+- `src/lib/game/demand-pools.ts` — 3 NPC floors (3.0× rule).
+- `scripts/sim-harness.ts` — maintenance priced through
+  `getEffectiveMaintenancePerMonth` (both fleet and marginal-curve sites) so
+  the ROI guards see the floor.
+- Every maintenance site (engine §2, away-ops, economy-report, Dashboard,
+  ResourceBar, map-modes, build-preview, BuildPanel catalog card).

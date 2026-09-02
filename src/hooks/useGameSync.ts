@@ -156,10 +156,17 @@ export function useGameSync(
         startingArchetype: state.startingArchetype || null,
         // Full state for multiplayer visibility
         buildings: state.buildings.map(b => ({
+          instanceId: b.instanceId,
           definitionId: b.definitionId,
           locationId: b.locationId,
           isComplete: b.isComplete,
           upgradeLevel: b.upgradeLevel || 0,
+          // D4 Mark refits (mark-upgrades.ts): the persisted markLevel is what
+          // the server's monthly-gross ceiling and netWorth book value read.
+          markLevel: b.markLevel || 1,
+          markUpgradeTarget: b.markUpgradeTarget,
+          markUpgradeStartedAtMs: b.markUpgradeStartedAtMs,
+          markUpgradeDurationSeconds: b.markUpgradeDurationSeconds,
         })),
         activeServices: state.activeServices.map(s => ({
           definitionId: s.definitionId,

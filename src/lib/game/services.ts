@@ -82,11 +82,11 @@ export const SERVICES: ServiceDefinition[] = [
     requiredBuildings: ['mining_asteroid'], requiredResearch: ['asteroid_capture'] },
   { id: 'svc_mining_europa', name: 'Europa Subsurface Resources', type: 'mining_output', tier: 4,
     description: 'Exotic materials from Europa\'s subsurface ocean.',
-    revenuePerMonth: 120_000_000, operatingCostPerMonth: 45_000_000,
+    revenuePerMonth: 200_000_000, operatingCostPerMonth: 45_000_000,
     requiredBuildings: ['mining_europa'], requiredResearch: ['deep_drilling'] },
   { id: 'svc_mining_titan', name: 'Titan Hydrocarbon Exports', type: 'mining_output', tier: 4,
     description: 'Methane and ethane from Titan for fuel and chemical production.',
-    revenuePerMonth: 160_000_000, operatingCostPerMonth: 55_000_000,
+    revenuePerMonth: 265_000_000, operatingCostPerMonth: 55_000_000,
     requiredBuildings: ['mining_titan'], requiredResearch: ['deep_drilling'] },
 
   // ─── TOURISM ──────────────────────────────────────────────────────────
@@ -162,25 +162,25 @@ export const SERVICES: ServiceDefinition[] = [
     description: 'Extract exotic materials, helium-3, and platinum group metals from Kuiper Belt objects.',
     // M1/F1: outer-system service grosses raised ~1.75x (80M->140M) — the
     // frontier premium the tier ladder was missing (see MEANINGFUL_2026-08 §5 M1.2).
-    revenuePerMonth: 140_000_000, operatingCostPerMonth: 25_000_000,
+    revenuePerMonth: 850_000_000, operatingCostPerMonth: 25_000_000,
     requiredBuildings: ['mining_kuiper'], requiredResearch: ['deep_drilling'] },
   { id: 'svc_deep_space_comm', name: 'Deep Space Data Relay', type: 'telecom_service', tier: 5,
     description: 'Long-range communication relay services for outer system operations and deep space probes.',
-    revenuePerMonth: 40_000_000, operatingCostPerMonth: 15_000_000,
+    revenuePerMonth: 240_000_000, operatingCostPerMonth: 15_000_000,
     requiredBuildings: ['deep_space_relay'], requiredResearch: ['fusion_drive'] },
   { id: 'svc_jupiter_relay', name: 'Jupiter System Relay', type: 'telecom_service', tier: 4,
     description: 'Data relay and edge computing services for Jupiter system operations.',
     // M1/F1: 30M->36M (still ratio 2.64x vs the 95M jupiter_system:telecom
     // floor — inside the 2.5-3.5x authoring band) so the flagship pays for
     // its required reactor's upkeep. See MEANINGFUL_2026-08 §5 M1.2.
-    revenuePerMonth: 36_000_000, operatingCostPerMonth: 12_000_000,
+    revenuePerMonth: 110_000_000, operatingCostPerMonth: 12_000_000,
     requiredBuildings: ['datacenter_jupiter'], requiredResearch: ['nuclear_thermal', 'edge_ai'] },
   { id: 'svc_titan_processing', name: 'Titan Chemical Processing', type: 'fabrication_output', tier: 4,
     description: 'Process Titan hydrocarbons into refined chemicals and rocket fuel for export.',
     // M1/F1: 35M->50M (~1.43x, ratio 110M/50M=2.2x — see note below, kept
     // inside band via saturn_system.fabrication's unchanged 110M floor
     // headroom) so the flagship isn't a 6,700-month outlier among its T4 peers.
-    revenuePerMonth: 50_000_000, operatingCostPerMonth: 12_000_000,
+    revenuePerMonth: 130_000_000, operatingCostPerMonth: 12_000_000,
     requiredBuildings: ['fabrication_titan'], requiredResearch: ['deep_drilling', 'orbital_assembly'] },
 
   // ─── AAA Round 1 E3.4 — colony services ──────────────────────────────────
@@ -317,7 +317,7 @@ export const SERVICES: ServiceDefinition[] = [
     requiredBuildings: ['colony_triton'], requiredResearch: [] },
   { id: 'svc_triton_mining', name: 'Triton Exotic Isotope Extraction', type: 'mining_output', tier: 6,
     description: "Antimatter precursors, deuterium and ammonia from captured Kuiper material.",
-    revenuePerMonth: 101_206_000, operatingCostPerMonth: 34_410_040,
+    revenuePerMonth: 165_000_000, operatingCostPerMonth: 34_410_040,
     requiredBuildings: ['mining_triton'], requiredResearch: [] },
   { id: 'svc_triton_nitrogen', name: 'Triton Nitrogen Products', type: 'fabrication_output', tier: 6,
     description: "Liquid nitrogen propellant and life-support gas sold to outbound missions.",
@@ -329,7 +329,7 @@ export const SERVICES: ServiceDefinition[] = [
     requiredBuildings: ['colony_pluto'], requiredResearch: [] },
   { id: 'svc_pluto_mining', name: 'Charon Mineral Extraction', type: 'mining_output', tier: 6,
     description: "Antimatter precursors, exotic materials and rare earths from Charon and the Plutonian surface.",
-    revenuePerMonth: 108_000_000, operatingCostPerMonth: 36_720_000,
+    revenuePerMonth: 175_000_000, operatingCostPerMonth: 36_720_000,
     requiredBuildings: ['mining_pluto'], requiredResearch: [] },
   { id: 'svc_interstellar_research', name: 'Interstellar Relay & Research', type: 'ai_datacenter', tier: 6,
     description: "Deep-space relay bandwidth and interstellar survey processing sold on contract.",

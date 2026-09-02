@@ -10,6 +10,8 @@
 // must draw next to the location label, plus an `srText` sentence for the
 // keyboard Location List / screen readers.
 
+import { getMarkRevenueMultiplier, getMarkMaintenanceMultiplier } from './mark-upgrades'; // D4
+import { getEffectiveMaintenancePerMonth } from './flagship-economics'; // D5
 import type { GameState } from './types';
 import { SERVICE_MAP } from './services';
 import { BUILDING_MAP } from './buildings';
@@ -100,15 +102,19 @@ export function computeLocationPnL(state: GameState): Record<string, number> {
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
+    const owner = svc.linkedBuildingIds?.length
+      ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId))
+      : undefined;
     pnl[svc.locationId] = (pnl[svc.locationId] || 0)
-      + def.revenuePerMonth * svc.revenueMultiplier
+      + def.revenuePerMonth * svc.revenueMultiplier * getMarkRevenueMultiplier(owner) // D4
       - def.operatingCostPerMonth;
   }
   for (const bld of state.buildings) {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
-    pnl[bld.locationId] = (pnl[bld.locationId] || 0) - def.maintenanceCostPerMonth;
+    // D4/D5: Mark maintenance multiplier and the flagship upkeep floor.
+    pnl[bld.locationId] = (pnl[bld.locationId] || 0) - getEffectiveMaintenancePerMonth(def) * getMarkMaintenanceMultiplier(bld);
   }
   return pnl;
 }

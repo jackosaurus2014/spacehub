@@ -3,7 +3,10 @@
 // achievements, ship cargo, bankruptcy protection, and revenue caps.
 
 import type { GameState, GameEvent, GameReport } from './types';
-import { BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier } from './buildings';
+import { BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier, getEffectiveMaintenancePerMonth } from './buildings';
+// D4: Mark-II/III in-place refits (mark-upgrades.ts) — per-instance revenue /
+// maintenance multipliers and wall-clock completion.
+import { getMarkRevenueMultiplier, getMarkMaintenanceMultiplier, completeMarkUpgrades } from './mark-upgrades';
 import { getCongestionMaintenanceMultiplier } from './spatial-strategy';
 import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
@@ -459,6 +462,12 @@ export function processTick(state: GameState): GameState {
     // linkedBuildingIds keep the find() fallback.
     const linkedBld = ownerBld ?? state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    // D4 (mark-upgrades.ts): THIS building's Mark tier multiplies its own
+    // service revenue (and, for mining_output, the priced units — baseTerm
+    // is linear in units, so one factor here covers both paths without the
+    // double-count a units×boost application would produce). Saturation
+    // above still counted the building as one unit.
+    const markRevMult = getMarkRevenueMultiplier(linkedBld);
     // Wave E4: finite demand pool multiplier for this service's
     // (location, category) market — server snapshot when fresh, else the
     // deterministic local pool. Includes phase-in + Frontier shield.
@@ -558,6 +567,7 @@ export function processTick(state: GameState): GameState {
       * svc.revenueMultiplier
       * multipliers.revenueMultiplier
       * upgradeBoost
+      * markRevMult              // D4: Mark-II 1.6x / Mark-III 2.4x, this building only
       * (1 + wfBonuses.serviceRevenue)
       * (1 + resBonuses.serviceRevenueBonus)
       * legacyRevMult
@@ -642,14 +652,17 @@ export function processTick(state: GameState): GameState {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
-    const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
+    // D4: Mark-II 2.2x / Mark-III 3.6x — stacks with the Advanced/Elite ladder.
+    const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0) * getMarkMaintenanceMultiplier(bld);
     // Wave M2: mothballed/reactivating/decommissioning buildings pay 25%
     // maintenance instead of the full rate — "paused", not "free".
     const mothballMaintMult = getMothballMaintenanceMultiplier(bld);
     // Early-fab wave: crowded orbits (LEO/GEO/… slot pools) cost more to
     // operate in — continuous congestion pricing, see spatial-strategy.ts.
     const congestionMult = getCongestionMaintenanceMultiplier(state, bld.locationId);
-    const maint = Math.round(def.maintenanceCostPerMonth * congestionMult * fraction * multipliers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
+    // D5 (flagship-economics.ts): buildings >= $20B start from
+    // max(authored, 0.4% of baseCost) — every reduction below still applies.
+    const maint = Math.round(getEffectiveMaintenancePerMonth(def) * congestionMult * fraction * multipliers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) /* audit Wave B §1b */);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -867,6 +880,12 @@ export function processTick(state: GameState): GameState {
       ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId))
       : undefined;
     if (miningOwnerBld && !isBuildingOperational(miningOwnerBld)) continue;
+    // D4: the producing building's Mark tier scales its physical output
+    // (same factor §1 applied to the priced revenue). Legacy services with
+    // no linkedBuildingIds fall back to the location's first enabling building.
+    const markOutputMult = getMarkRevenueMultiplier(
+      miningOwnerBld ?? state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId)),
+    );
     // Wave E3: hauler-fuel shortfall on the linked mining building scales
     // output down to the 0.5 soft floor (same factor as its service revenue).
     const svcSupplyEff = svc.linkedBuildingIds?.length
@@ -888,7 +907,7 @@ export function processTick(state: GameState): GameState {
       // the SAME (location, resource) thins the seam for everyone. Read from
       // the last server snapshot; neutral 1.0 (no penalty) when absent/stale.
       const extractionPressure = getExtractionPressureMultiplier(state.extractionPressure, svc.locationId, resource);
-      const fractionalAmount = amountPerMonth * fraction * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff;
+      const fractionalAmount = amountPerMonth * fraction * miningMult * extractionPressure * (1 + freighterBonus) * (1 + locationBonus) * svcSupplyEff * markOutputMult;
       const added = creditCarry(`${svc.locationId}:${resource}`, fractionalAmount);
       if (added >= 1) {
         routeProductionCredit(resources, locationInventories, svc.locationId, resource, added, routeLocally);
@@ -2007,6 +2026,23 @@ export function processFullTick(state: GameState): GameState {
     });
     if (upgradedBuildings !== newState.buildings) {
       newState = { ...newState, buildings: upgradedBuildings };
+    }
+    // D4: Mark refit completion (wall clock, same pattern as above).
+    const markPass = completeMarkUpgrades(newState.buildings, Date.now());
+    if (markPass.buildings !== newState.buildings) {
+      const markEvents = markPass.completed.map(b => {
+        const d = BUILDING_MAP.get(b.definitionId);
+        return {
+          id: generateId(), date: newState.gameDate, type: 'build_complete' as const,
+          title: `${d?.name || 'Building'} refit complete — Mark ${b.markLevel === 3 ? 'III' : 'II'}`,
+          description: `Revenue ${b.markLevel === 3 ? '2.4' : '1.6'}x, maintenance ${b.markLevel === 3 ? '3.6' : '2.2'}x from now on.`,
+        };
+      });
+      newState = {
+        ...newState,
+        buildings: markPass.buildings,
+        eventLog: [...markEvents, ...(newState.eventLog || [])].slice(0, MAX_EVENT_LOG),
+      };
     }
   } catch (err) {
     console.error('Upgrade check error (non-fatal):', err);

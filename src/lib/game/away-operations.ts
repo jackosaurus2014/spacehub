@@ -37,6 +37,8 @@ import { BUILDING_MAP } from './buildings';
 import { MINING_PRODUCTION } from './resources';
 import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
+import { getMarkRevenueMultiplier, getMarkMaintenanceMultiplier } from './mark-upgrades'; // D4 away-parity
+import { getEffectiveMaintenancePerMonth } from './flagship-economics'; // D5 away-parity
 import { formatMoney, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
 import { getWorkforceBonuses } from './workforce';
 // Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.4/§2.6/§E5): away-time parity —
@@ -275,6 +277,8 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       && BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId)
     );
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    // D4 away-parity with game-engine.ts §1: this building's Mark tier.
+    const markRevMult = getMarkRevenueMultiplier(ownerBld ?? linkedBld);
     const supplyMult = getServiceDemandMultiplier(
       working, svc.definitionId, svc.locationId, getTotalGameMonths(working.gameDate), now,
     );
@@ -306,6 +310,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       * svc.revenueMultiplier
       * multipliers.revenueMultiplier
       * upgradeBoost
+      * markRevMult
       * (1 + wfBonuses.serviceRevenue)
       * (1 + resBonuses.serviceRevenueBonus)
       * legacyBonuses.revenueMultiplier
@@ -318,9 +323,9 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
-    const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
+    const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0) * getMarkMaintenanceMultiplier(bld); // D4
     const mothballMaintMult = getMothballMaintenanceMultiplier(bld);
-    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction));
+    costsPerTick += Math.round(getEffectiveMaintenancePerMonth(def) * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * maintMult * mothballMaintMult * (1 - resBonuses.maintenanceReduction));
   }
   // Pass 9: Frontier-shielded payroll index — away-parity with
   // game-engine.ts §0 (same isInFrontier read at `now` the mining shield
@@ -364,12 +369,16 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       ? working.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId))
       : undefined;
     if (miningOwnerBld && !isBuildingOperational(miningOwnerBld)) continue;
+    // D4 away-parity with game-engine.ts §6: the rig's Mark tier scales output.
+    const markOutputMult = getMarkRevenueMultiplier(
+      miningOwnerBld ?? working.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId)),
+    );
     for (const { resource, amountPerMonth } of production) {
       // Wave E5 (§2.4): the same deposit extraction-pressure brake the live
       // tick applies, read from the last-synced snapshot (no cross-player
       // computation here — deterministic, own-state-only).
       const pressure = getExtractionPressureMultiplier(working.extractionPressure, svc.locationId, resource);
-      const totalMined = amountPerMonth * fraction * miningMult * pressure * weightedTicks;
+      const totalMined = amountPerMonth * fraction * miningMult * pressure * weightedTicks * markOutputMult;
       if (totalMined >= 1) resourcesEarned[resource] = (resourcesEarned[resource] || 0) + Math.round(totalMined);
     }
   }

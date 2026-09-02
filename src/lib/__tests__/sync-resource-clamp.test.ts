@@ -73,6 +73,8 @@ import { RESOURCE_BASELINE_KEY, RESOURCE_CEILINGS_KEY, FLAT_FLOOR_MIN, buildServ
 import { plausibleIncomeHeadroom } from '@/lib/game/ledger-reconcile';
 import { __resetRouteThrottle } from '@/lib/game/route-throttle';
 import { STARTING_MONEY } from '@/lib/game/constants';
+import { BUILDING_MAP } from '@/lib/game/buildings';
+import { BOOK_VALUE_DEPRECIATION_FACTOR } from '@/lib/game/frontier';
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
 
@@ -302,5 +304,45 @@ describe('POST /api/space-tycoon/sync — resource plausibility clamp', () => {
     expect(data.money as number).toBeLessThan(1_000_000 + 2_000 * 60_000); // far below the old flat $2M/s
     expect(mockMarketAuditLog.create).toHaveBeenCalledTimes(1);
     expect(mockMarketAuditLog.create.mock.calls[0][0].data.eventType).toBe('client_money_implausible_rejected');
+  });
+});
+
+describe('POST /api/space-tycoon/sync — D4 Mark refits in the payload', () => {
+  const GS = BUILDING_MAP.get('ground_station')!;
+  const gsBuilding = (markLevel: number, extra: Record<string, unknown> = {}) => ({
+    instanceId: 'gs1', definitionId: 'ground_station', locationId: 'earth_surface', isComplete: true, upgradeLevel: 0, markLevel, ...extra,
+  });
+
+  it('markLevel 7 is a 400 and nothing is persisted', async () => {
+    process.env.RESOURCE_CLAMP_MODE = 'shadow';
+    setup(existingRow());
+    const { res, json } = await postSync({ buildings: [gsBuilding(7)] });
+    expect(res.status).toBe(400);
+    expect(JSON.stringify(json)).toMatch(/markLevel/);
+    expect(mockGameProfile.upsert).not.toHaveBeenCalled();
+  });
+
+  it('markLevel 3 (+ an in-flight refit on a second building) is persisted verbatim in buildingsData with instanceIds, and netWorth books the refit spend', async () => {
+    process.env.RESOURCE_CLAMP_MODE = 'shadow';
+    setup(existingRow());
+    const refit = { instanceId: 'gs2', definitionId: 'ground_station', locationId: 'earth_surface', isComplete: true, upgradeLevel: 0,
+      markLevel: 1, markUpgradeTarget: 2, markUpgradeStartedAtMs: 1_700_000_000_000, markUpgradeDurationSeconds: 3600 };
+    const mk3 = await postSync({ buildings: [gsBuilding(3), refit] });
+    expect(mk3.res.status).toBe(200);
+    const data = persisted();
+    expect(data.buildingsData).toEqual([
+      { instanceId: 'gs1', definitionId: 'ground_station', locationId: 'earth_surface', isComplete: true, upgradeLevel: 0, markLevel: 3 },
+      refit,
+    ]);
+
+    // Same corporation, same cash, Mark I twins → the only difference is the
+    // depreciated Mark III refit spend (markSpendToDate = 4x baseCost).
+    __resetRouteThrottle();
+    jest.clearAllMocks();
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as never);
+    setup(existingRow());
+    const mk1 = await postSync({ buildings: [gsBuilding(1), { ...refit, markUpgradeTarget: undefined, markUpgradeStartedAtMs: undefined, markUpgradeDurationSeconds: undefined }] });
+    expect(mk1.res.status).toBe(200);
+    expect(mk3.json.netWorth - mk1.json.netWorth).toBe(Math.round(GS.baseCost * 4 * BOOK_VALUE_DEPRECIATION_FACTOR));
   });
 });

@@ -36,6 +36,8 @@ import { BUILDINGS, BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier
 import { CHAIN_MAP } from '../src/lib/game/production-chains';
 import { SERVICE_MAP } from '../src/lib/game/services';
 import { MINING_PRODUCTION, RESOURCE_MAP } from '../src/lib/game/resources';
+// D5: flagship upkeep floor — the harness prices maintenance exactly as the engine does.
+import { getEffectiveMaintenancePerMonth } from '../src/lib/game/flagship-economics';
 import type { ResourceId } from '../src/lib/game/resources';
 import {
   serviceSaturationMultiplier,
@@ -657,7 +659,7 @@ export function stepMonth(world: SimWorld, month: number): void {
     for (const b of p.buildings) {
       const bDef = BUILDING_MAP.get(b.definitionId);
       if (!bDef) continue;
-      maintenance += bDef.maintenanceCostPerMonth;
+      maintenance += getEffectiveMaintenancePerMonth(bDef);
       const eff = p.efficiency[b.instanceId] ?? 1;
       effVals.push(eff);
       const powerRatio = power[b.locationId] ? power[b.locationId].ratio : 1;
@@ -1135,7 +1137,7 @@ export function marginalCurve(
     const miningInstances: { svcId: string; production: { resource: string; amountPerMonth: number }[]; powerRatio: number; saturationMult: number }[] = [];
     for (const b of p.buildings) {
       const bDef = BUILDING_MAP.get(b.definitionId)!;
-      maintenance += bDef.maintenanceCostPerMonth;
+      maintenance += getEffectiveMaintenancePerMonth(bDef);
       if (bDef.consumesPerMonth) {
         for (const [res, amt] of Object.entries(bDef.consumesPerMonth)) {
           inputCost += amt * (RESOURCE_MAP.get(res as ResourceId)?.baseMarketPrice || 0) * INPUT_BUY_MULT;

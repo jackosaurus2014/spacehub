@@ -56,6 +56,8 @@ import { getGlobalGameDate } from '@/lib/game/server-time';
 import { applyMiniActivityBonus } from '@/lib/game/mini-activities';
 import { setInsuranceActive } from '@/lib/game/economic-sinks';
 import { calculateRushRepairCost } from '@/lib/game/hazards';
+// D4: Mark-II/III in-place refits (docs/BALANCE.md "Mark-II tier").
+import { applyMarkUpgradeStart, getNextMarkLevel, getMarkUpgradeCost, getMarkUpgradeSeconds, MARK_NAMES } from '@/lib/game/mark-upgrades';
 import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/game/contracts';
 import { createContractBoost } from '@/lib/game/speed-boosts';
 import OperationsDebriefModal from '@/components/game/OperationsDebriefModal';
@@ -1093,6 +1095,35 @@ export default function SpaceTycoonPage() {
         totalSpent: prev.totalSpent + cost,
         buildings,
         eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Rush repair: ${def.name}`, description: `Paid ${formatMoney(cost)} to instantly repair structural damage.` }, ...prev.eventLog].slice(0, 50),
+      };
+    });
+  }, []);
+
+  // D4 (mark-upgrades.ts): start a Mark refit on a completed building. The
+  // pure helper re-runs every prerequisite (complete, operational, < 10%
+  // damage, Mark III research gate, money + materials) and attests the
+  // materials through pendingInventoryAttestations.built — the phase-2
+  // `builtThisTick` path — exactly as handleBuild does for a new structure.
+  const handleMarkUpgradeBuilding = useCallback((instanceId: string) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const bld = prev.buildings.find(b => b.instanceId === instanceId);
+      const def = bld ? BUILDING_MAP.get(bld.definitionId) : undefined;
+      if (!bld || !def) return prev;
+      const target = getNextMarkLevel(bld);
+      const next = applyMarkUpgradeStart(prev, instanceId, def, Date.now());
+      if (next === prev || !target) { playSound('error'); return prev; }
+      playSound('build_start');
+      mapPing({ kind: 'location', id: bld.locationId }, 'ack');
+      hapticAck();
+      const cost = getMarkUpgradeCost(def, target);
+      return {
+        ...next,
+        eventLog: [{
+          id: generateId(), date: prev.gameDate, type: 'build_complete' as const,
+          title: `Refit started: ${def.name} → ${MARK_NAMES[target]}`,
+          description: `Ready in ${formatDuration(getMarkUpgradeSeconds(def, target))}. Cost: ${formatMoney(cost)}. Operates at its current mark meanwhile.`,
+        }, ...next.eventLog].slice(0, 50),
       };
     });
   }, []);
@@ -2353,6 +2384,7 @@ export default function SpaceTycoonPage() {
             onMothballBuilding={handleMothballBuilding}
             onReactivateBuilding={handleReactivateBuilding}
             onRushRepairBuilding={handleRushRepairBuilding}
+            onMarkUpgradeBuilding={handleMarkUpgradeBuilding}
             onDispatchShip={handleDispatchShip}
             onLaunchExpedition={handleLaunchExpedition}
             onNavigateTab={(navTab) => { playSound('click'); navigateToTab(navTab); }}
@@ -2401,7 +2433,7 @@ export default function SpaceTycoonPage() {
             setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
           }}
         />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} />}
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel

@@ -2,7 +2,14 @@
 // realBuildSeconds: Tier 1 ≈ 3-5 min (180-300s), Tier 2 ≈ 10-20 min, Tier 3 ≈ 30-45 min, Tier 4 ≈ 45-60 min
 // Duplicate builds at same location scale by 1.3x time (in addition to cost scaling)
 
-import type { BuildingDefinition, BuildingCategory, BuildingDerivedStats, BuildingSynergyRange } from './types';
+import type { BuildingDefinition, BuildingCategory, BuildingDerivedStats, BuildingSynergyRange, BuildingInstance } from './types';
+import { markSpendToDate } from './mark-upgrades';
+import { getEffectiveMaintenancePerMonth } from './flagship-economics';
+
+// D5: the authored-side maintenance every P&L site starts from (flagship
+// upkeep floor applied). Re-exported here so callers that already import
+// from buildings.ts need no second import.
+export { getEffectiveMaintenancePerMonth };
 
 export const BUILDINGS: BuildingDefinition[] = [
   // ─── LAUNCH PADS ──────────────────────────────────────────────────────
@@ -226,14 +233,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     consumesPerMonth: { rocket_fuel: 5 } },
   { id: 'mining_europa', name: 'Europa Ice Drill', category: 'mining_enterprise', tier: 4,
     description: 'Drill through Europa\'s ice shell for subsurface ocean resources.',
-    tooltip: 'EXOTIC MATERIALS SOURCE. Activates Europa Subsurface Resources at $120M/mo vs $45M cost = $75M/mo net — one of the highest-profit services in the game. Produces 5 exotic materials ($2M each) + 200 lunar water per month. Exotic materials are needed for Tier 5 research and endgame construction. Requires "Deep Drilling" research + Jupiter unlock ($100B). The $75M/mo net profit makes this worth the massive investment.',
+    tooltip: 'EXOTIC MATERIALS SOURCE. Activates Europa Subsurface Resources at $200M/mo vs $45M operating cost, against a $120M/mo flagship upkeep floor (0.4% of the $30B build) = ~$35M/mo net at neutral multipliers — one of the highest-profit services in the game. Produces 5 exotic materials ($2M each) + 200 lunar water per month. Exotic materials are needed for Tier 5 research and endgame construction. Requires "Deep Drilling" research + Jupiter unlock ($100B). The $75M/mo net profit makes this worth the massive investment.',
     baseCost: 30_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 20_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'jupiter_system', enabledServices: ['svc_mining_europa'],
     realBuildSeconds: 5400, resourceCost: { titanium: 200, rare_earth: 80, platinum_group: 20 }, powerRequired: 15,
     consumesPerMonth: { rocket_fuel: 5 } },
   { id: 'mining_titan', name: 'Titan Hydrocarbon Harvester', category: 'mining_enterprise', tier: 4,
     description: 'Harvest methane and ethane from Titan\'s lakes.',
-    tooltip: 'HIGHEST REVENUE SERVICE IN THE GAME. Activates Titan Hydrocarbon Exports at $160M/mo vs $55M cost = $105M/mo net. Produces 300 methane + 150 ethane per month. The $105M/mo net is the single best revenue source available. Requires "Deep Drilling" research + Saturn unlock ($200B). Late-game mega-investment that funds everything else. Build as soon as you can afford the Saturn system.',
+    tooltip: 'HIGHEST REVENUE SERVICE IN THE GAME. Activates Titan Hydrocarbon Exports at $265M/mo vs $55M operating cost, against a $160M/mo flagship upkeep floor (0.4% of the $40B build) = ~$50M/mo net at neutral multipliers. Produces 300 methane + 150 ethane per month. The $105M/mo net is the single best revenue source available. Requires "Deep Drilling" research + Saturn unlock ($200B). Late-game mega-investment that funds everything else. Build as soon as you can afford the Saturn system.',
     baseCost: 40_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 25_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'saturn_system', enabledServices: ['svc_mining_titan'],
     realBuildSeconds: 5400, resourceCost: { titanium: 250, rare_earth: 100, platinum_group: 30 }, powerRequired: 15,
@@ -1047,4 +1054,25 @@ export function checkBuildingCap(
       ? `Limited to one ${def.name} per corporation`
       : `Limited to ${def.maxPerPlayer} per corporation`,
   };
+}
+
+/** D4 (mark-upgrades.ts): depreciated book value of the Mark refit money
+ *  sunk into one instance — Σ(baseCost × MARK_COST_MULT[2..markLevel]) ×
+ *  `depreciation`. Pass frontier.ts's BOOK_VALUE_DEPRECIATION_FACTOR (0.6)
+ *  so refit capex is booked exactly like the base build. Returns 0 for an
+ *  incomplete instance, an unknown definition, or Mark I.
+ *
+ *  FOLLOW-UP (not in this wave — sync/route.ts is out of scope): the sync
+ *  route's netWorth computes `BUILDING_MAP baseCost × 0.6` per completed
+ *  building; it should add `markBookValue(b, BOOK_VALUE_DEPRECIATION_FACTOR)`
+ *  so a Mark III corporation's league/leaderboard/exec-comp net worth
+ *  includes the refit spend (frontier.ts computeBookNetWorth already does). */
+export function markBookValue(
+  inst: Pick<BuildingInstance, 'definitionId' | 'isComplete' | 'markLevel'>,
+  depreciation: number,
+): number {
+  if (!inst.isComplete) return 0;
+  const def = BUILDING_MAP.get(inst.definitionId);
+  if (!def) return 0;
+  return Math.round(markSpendToDate(def, inst.markLevel || 1) * depreciation);
 }

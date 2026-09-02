@@ -8,7 +8,7 @@
 // opt out to unlock the full competitive economy sooner.
 
 import type { GameState } from './types';
-import { BUILDING_MAP } from './buildings';
+import { BUILDING_MAP, markBookValue } from './buildings';
 import { SHIP_MAP } from './ships';
 import { RESOURCE_MAP, type ResourceId } from './resources';
 
@@ -79,6 +79,8 @@ export function computeBookNetWorth(state: GameState, escrow: number = 0): numbe
     if (!b.isComplete) continue;
     const def = BUILDING_MAP.get(b.definitionId);
     if (def) buildingBook += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
+    // D4: Mark refit capex is booked like the base build (mark-upgrades.ts).
+    buildingBook += markBookValue(b, BOOK_VALUE_DEPRECIATION_FACTOR);
   }
 
   let shipBook = 0;

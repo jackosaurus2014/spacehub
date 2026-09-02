@@ -30,6 +30,8 @@ import { getMegastructureBonuses } from './personal-megastructures';
 import { getReputationBonuses } from './reputation';
 import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
+import { getMarkRevenueMultiplier, getMarkMaintenanceMultiplier } from './mark-upgrades'; // D4
+import { getEffectiveMaintenancePerMonth } from './flagship-economics'; // D5
 import { computeCommanderBonuses } from './commanders';
 import { serviceSaturationMultiplier, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
 import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER, computeBookNetWorth } from './frontier';
@@ -254,12 +256,14 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     saturationCounts.set(bucketKey, saturationPosition + 1);
     const saturationMult = serviceSaturationMultiplier(saturationPosition);
 
-    // Per-instance-specific multipliers (not globally applicable)
-    const linkedBld = state.buildings.find(b =>
+    // Per-instance-specific multipliers (not globally applicable). D4: the
+    // service's OWN building first (linkedBuildingIds) — a find-first at the
+    // location would credit copy #1's Mark tier to every sibling.
+    const linkedBld = (svc.linkedBuildingIds?.length ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId)) : undefined) ?? state.buildings.find(b =>
       b.isComplete && b.locationId === svc.locationId &&
       BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId),
     );
-    const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0) * getMarkRevenueMultiplier(linkedBld); // D4
     const locPower = powerData[svc.locationId];
     const powerRatio = locPower ? locPower.ratio : 1;
     if (powerRatio < 1) hasPowerDeficit = true;
@@ -356,9 +360,9 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     if (!def) continue;
     if (bld.isComplete) {
       completedBuildingCount++;
-      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
+      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0) * getMarkMaintenanceMultiplier(bld); // D4
       buildingMaintenance += Math.round(
-        def.maintenanceCostPerMonth
+        getEffectiveMaintenancePerMonth(def) // D5 flagship floor
         * eventMultipliers.costMultiplier
         * maintMult
         * (1 - resBonuses.maintenanceReduction)

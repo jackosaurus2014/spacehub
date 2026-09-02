@@ -47,7 +47,7 @@ import { isLedgerAvailable, recordSyncAuthoredLedger } from '@/lib/game/server-l
 import { resolveMetricCurrentValue } from '@/lib/game/market-share';
 import { getMegaProjectBonuses } from '@/lib/game/mega-projects';
 import { BOOK_VALUE_DEPRECIATION_FACTOR } from '@/lib/game/frontier';
-import { BUILDING_MAP } from '@/lib/game/buildings';
+import { BUILDING_MAP, markBookValue } from '@/lib/game/buildings';
 import { SHIP_MAP } from '@/lib/game/ships';
 import {
   computeResourceCeilings,
@@ -778,6 +778,10 @@ export async function POST(request: Request) {
       if (!b.isComplete) continue;
       const def = BUILDING_MAP.get(b.definitionId);
       if (def && Number.isFinite(def.baseCost)) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
+      // D4: Mark refit capex is booked like the base build (mark-upgrades.ts
+      // markSpendToDate at the validated 1..3 markLevel) — same line as
+      // frontier.ts computeBookNetWorth.
+      assetBookValue += markBookValue(b, BOOK_VALUE_DEPRECIATION_FACTOR);
     }
     for (const sh of economics.ships) {
       if (!sh.isBuilt) continue;

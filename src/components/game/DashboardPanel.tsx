@@ -14,6 +14,8 @@ import { getWorkforceBonuses } from '@/lib/game/workforce';
 // payroll, so this dashboard estimate must too.
 import { getMonthlyPayrollForState } from '@/lib/game/labor-market';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
+import { getMarkRevenueMultiplier, getMarkMaintenanceMultiplier } from '@/lib/game/mark-upgrades'; // D4
+import { getEffectiveMaintenancePerMonth } from '@/lib/game/flagship-economics'; // D5
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { LOCATIONS } from '@/lib/game/solar-system';
 import { getFrontierSummary, FRONTIER_GRADUATION_NET_WORTH } from '@/lib/game/frontier';
@@ -570,8 +572,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
     for (const svc of state.activeServices) {
       const def = SERVICE_MAP.get(svc.definitionId);
       if (!def) continue;
-      const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
-      const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+      const linkedBld = (svc.linkedBuildingIds?.length ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId)) : undefined) ?? state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId)); // D4: own building first
+      const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0) * getMarkRevenueMultiplier(linkedBld); // D4
       const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, demandMonthIndex);
       collectedDemandMults.push(supplyMult);
       // Power factor: underpowered locations reduce revenue
@@ -593,8 +595,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       if (!bld.isComplete) continue;
       const def = BUILDING_MAP.get(bld.definitionId);
       if (!def) continue;
-      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-      maintenance += Math.round(def.maintenanceCostPerMonth * maintMult * (1 - resBonuses.maintenanceReduction));
+      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0) * getMarkMaintenanceMultiplier(bld); // D4
+      maintenance += Math.round(getEffectiveMaintenancePerMonth(def) * maintMult * (1 - resBonuses.maintenanceReduction)); // D5 floor
     }
     // Check if any services are demand-pool-impacted (Wave E4)
     const hasSupplyPenalty = collectedDemandMults.some(m => m < 0.99);
@@ -1053,8 +1055,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
               for (const svc of state.activeServices) {
                 const def = SERVICE_MAP.get(svc.definitionId);
                 if (!def) continue;
-                const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
-                const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+                const linkedBld = (svc.linkedBuildingIds?.length ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId)) : undefined) ?? state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId)); // D4: own building first
+                const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0) * getMarkRevenueMultiplier(linkedBld); // D4
                 const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, gameDateToMonthIndex(state.gameDate));
                 const locPower = powerData[svc.locationId];
                 const powerRatio = locPower ? locPower.ratio : 1;

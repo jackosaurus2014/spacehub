@@ -31,6 +31,7 @@ import { COMMANDER_MAP } from './commanders';
 import { FACTION_LICENSE_MAP } from './factions';
 import { ARCHETYPE_MAP, type StartingArchetype } from './archetypes';
 import { STARTING_MONEY, STARTING_YEAR } from './constants';
+import { MIN_MARK_LEVEL, MAX_MARK_LEVEL } from './mark-upgrades';
 
 // ─── Hard caps ───────────────────────────────────────────────────────────────
 
@@ -71,6 +72,12 @@ export interface SyncBuilding {
   upgradeLevel: number;
   status?: 'active' | 'mothballed' | 'reactivating' | 'decommissioning';
   damagePct?: number;
+  /** D4 Mark refit level (mark-upgrades.ts). Always 1..3; absent → 1. */
+  markLevel: number;
+  /** Refit in progress: target 2..3 + wall-clock start / duration. */
+  markUpgradeTarget?: number;
+  markUpgradeStartedAtMs?: number;
+  markUpgradeDurationSeconds?: number;
 }
 
 export interface SyncShip {
@@ -182,12 +189,42 @@ function validateBuildings(raw: unknown): SyncBuilding[] {
     if (typeof r.locationId !== 'string' || !LOCATION_MAP.has(r.locationId)) {
       return fail(`buildings[${i}].locationId`, `buildings[${i}].locationId is not a known location`);
     }
+    // D4: markLevel is an integer 1..3 (absent = 1). Out-of-range is a 400,
+    // not a clamp — a forged markLevel 7 would otherwise read as 2.4x through
+    // getMarkLevel's fallback, and a silently coerced value hides the forgery.
+    let markLevel = MIN_MARK_LEVEL as number;
+    if (r.markLevel !== undefined && r.markLevel !== null) {
+      if (typeof r.markLevel !== 'number' || !Number.isInteger(r.markLevel)
+        || r.markLevel < MIN_MARK_LEVEL || r.markLevel > MAX_MARK_LEVEL) {
+        return fail(`buildings[${i}].markLevel`, `buildings[${i}].markLevel must be an integer between ${MIN_MARK_LEVEL} and ${MAX_MARK_LEVEL}`);
+      }
+      markLevel = r.markLevel;
+    }
     const item: SyncBuilding = {
       definitionId: r.definitionId,
       locationId: r.locationId,
       isComplete: optionalBool(r.isComplete),
       upgradeLevel: Math.floor(clampNum(r.upgradeLevel, 0, 2, 0)),
+      markLevel,
     };
+    if (r.markUpgradeTarget !== undefined && r.markUpgradeTarget !== null) {
+      if (typeof r.markUpgradeTarget !== 'number' || !Number.isInteger(r.markUpgradeTarget)
+        || r.markUpgradeTarget < 2 || r.markUpgradeTarget > MAX_MARK_LEVEL) {
+        return fail(`buildings[${i}].markUpgradeTarget`, `buildings[${i}].markUpgradeTarget must be an integer between 2 and ${MAX_MARK_LEVEL}`);
+      }
+      if (r.markUpgradeTarget <= markLevel) {
+        return fail(`buildings[${i}].markUpgradeTarget`, `buildings[${i}].markUpgradeTarget must exceed markLevel`);
+      }
+      item.markUpgradeTarget = r.markUpgradeTarget;
+      if (r.markUpgradeStartedAtMs !== undefined && r.markUpgradeStartedAtMs !== null) {
+        item.markUpgradeStartedAtMs = clampNum(
+          finiteNumber(r.markUpgradeStartedAtMs, `buildings[${i}].markUpgradeStartedAtMs`), 0, 4102444800000, 0);
+      }
+      if (r.markUpgradeDurationSeconds !== undefined && r.markUpgradeDurationSeconds !== null) {
+        item.markUpgradeDurationSeconds = clampNum(
+          finiteNumber(r.markUpgradeDurationSeconds, `buildings[${i}].markUpgradeDurationSeconds`), 0, 31_536_000, 0);
+      }
+    }
     if (typeof r.instanceId === 'string' && ID_RE.test(r.instanceId)) {
       if (seen.has(r.instanceId)) return; // duplicate instance — keep the first
       seen.add(r.instanceId);
@@ -418,6 +455,7 @@ export function buildFirstSyncKit(archetypeRaw: unknown, nowMs: number = Date.no
     locationId: b.locationId,
     isComplete: true,
     upgradeLevel: 0,
+    markLevel: MIN_MARK_LEVEL,
   }));
   const activeServices: SyncService[] = def.startingServices.map(svc => ({
     definitionId: svc.definitionId,

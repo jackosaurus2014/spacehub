@@ -11,6 +11,8 @@ import { getWorkforceBonuses } from '@/lib/game/workforce';
 import { getMonthlyPayrollForState } from '@/lib/game/labor-market';
 import { getResearchBonuses } from '@/lib/game/research-tree';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
+import { getMarkRevenueMultiplier, getMarkMaintenanceMultiplier } from '@/lib/game/mark-upgrades'; // D4
+import { getEffectiveMaintenancePerMonth } from '@/lib/game/flagship-economics'; // D5
 import { getActiveMultipliers } from '@/lib/game/random-events';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from '@/lib/game/sound-engine';
@@ -253,8 +255,8 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
     for (const svc of state.activeServices) {
       const def = SERVICE_MAP.get(svc.definitionId);
       if (!def) continue;
-      const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
-      const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+      const linkedBld = (svc.linkedBuildingIds?.length ? state.buildings.find(b => svc.linkedBuildingIds.includes(b.instanceId)) : undefined) ?? state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId)); // D4: own building first
+      const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0) * getMarkRevenueMultiplier(linkedBld); // D4
       const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, gameDateToMonthIndex(state.gameDate));
       rev += def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost
         * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * legacyBonuses.revenueMultiplier * (1 + tb.revenueBonus) * supplyMult;
@@ -264,8 +266,8 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
       if (!bld.isComplete) continue;
       const def = BUILDING_MAP.get(bld.definitionId);
       if (!def) continue;
-      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-      cost += def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyBonuses.costMultiplier * (1 - tb.maintenanceReduction);
+      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0) * getMarkMaintenanceMultiplier(bld); // D4
+      cost += getEffectiveMaintenancePerMonth(def) * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyBonuses.costMultiplier * (1 - tb.maintenanceReduction);
     }
     cost += getMonthlyPayrollForState(workforce, state); // Pass 9: Frontier-shielded
     for (const ship of (state.ships || [])) {

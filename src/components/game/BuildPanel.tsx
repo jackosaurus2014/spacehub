@@ -50,7 +50,12 @@ import {
 // replaces reliance on that static prose with a live number derived from the
 // SAME formulas the tick uses — the spec's preferred fix ("replaced by a live
 // P&L preview — better").
-import { computeBuildPreview } from '@/lib/game/build-preview';
+import { computeBuildPreview, computeMarkUpgradePreview } from '@/lib/game/build-preview';
+// D4 (docs/BALANCE.md "Mark-II tier"): in-place refits — the rung between
+// "another copy at the 0.35 saturation floor" and the next catalog tier.
+import { MARK_NAMES, MARK_REVENUE_MULT, MARK_MAINTENANCE_MULT, getMarkLevel, isMarkUpgradeInProgress } from '@/lib/game/mark-upgrades';
+import { RESEARCH_MAP } from '@/lib/game/research-tree';
+import { getEffectiveMaintenancePerMonth } from '@/lib/game/flagship-economics';
 // Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md): every
 // capability is a real modifier into an existing formula (hazard mitigation,
 // shock buffering, freight fuel, detection, training, away efficiency,
@@ -164,9 +169,12 @@ interface BuildPanelProps {
   /** Wave M2: begin spinning a mothballed building back up (charges a small
    *  fee, 1-game-month delay). Reactivate button only renders when provided. */
   onReactivateBuilding?: (instanceId: string) => void;
+  /** D4: start a Mark-II/III refit (mark-upgrades.ts). The Refit button and
+   *  its cost/benefit preview only render when provided. */
+  onMarkUpgradeBuilding?: (instanceId: string) => void;
 }
 
-export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy, onMothballBuilding, onReactivateBuilding }: BuildPanelProps) {
+export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy, onMothballBuilding, onReactivateBuilding, onMarkUpgradeBuilding }: BuildPanelProps) {
   const [selectedLocation, setSelectedLocation] = useState(initialLocationId || state.unlockedLocations[0] || 'earth_surface');
   const totalSlots = getConstructionSlots(state);
   const activeBuilds = getActiveConstructions(state);
@@ -411,7 +419,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 {bld.enabledServices.length > 0 && (() => {
                   const svc = SERVICE_MAP.get(bld.enabledServices[0]);
                   if (!svc) return null;
-                  const net = svc.revenuePerMonth - svc.operatingCostPerMonth - bld.maintenanceCostPerMonth;
+                  const net = svc.revenuePerMonth - svc.operatingCostPerMonth - getEffectiveMaintenancePerMonth(bld); // D5 flagship floor
                   return (
                     <div className="flex items-center gap-1 mb-2 text-[10px]">
                       <span className="text-green-400/70">Earns {formatMoney(svc.revenuePerMonth)}/mo</span>
@@ -538,7 +546,14 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 return (
                   <div key={bld.instanceId} className="py-1 px-2 rounded hover:bg-white/[0.02]">
                     <div className="flex items-center justify-between">
-                      <span className="text-white text-xs">{def.name}</span>
+                      <span className="text-white text-xs">
+                        {def.name}
+                        {getMarkLevel(bld) > 1 && (
+                          <span className="ml-1.5 text-[9px] font-bold tracking-wider text-cyan-300 border border-cyan-500/30 rounded px-1 py-px align-middle" aria-label={MARK_NAMES[getMarkLevel(bld)]}>
+                            MK {getMarkLevel(bld) === 3 ? 'III' : 'II'}
+                          </span>
+                        )}
+                      </span>
                       <div className="flex items-center gap-1.5">
                         {recipeActive && operational && (
                           <HoloTip
@@ -698,6 +713,83 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                         ) : null}
                       </div>
                     )}
+                    {/* D4: Mark-II/III refit — the in-place rung. Cost/benefit
+                        preview from build-preview.ts (Δ revenue, Δ maintenance,
+                        payback at the current run-rate); a money-losing refit
+                        still renders, labelled "never pays back". */}
+                    {onMarkUpgradeBuilding && operational && (() => {
+                      const mk = computeMarkUpgradePreview(state, bld.instanceId);
+                      if (!mk) return null;
+                      if (isMarkUpgradeInProgress(bld)) {
+                        const remaining = Math.max(0, (bld.markUpgradeDurationSeconds || 0) - (Date.now() - (bld.markUpgradeStartedAtMs || 0)) / 1000);
+                        return (
+                          <div className="mt-1 text-[10px] text-cyan-300/80 flex items-center gap-1" role="status">
+                            <GameIcon name="wrench" size={10} /> Refitting to {MARK_NAMES[(bld.markUpgradeTarget === 3 ? 3 : 2)]} — {formatDuration(Math.round(remaining))} remaining
+                          </div>
+                        );
+                      }
+                      if (!mk.target) return null; // Mark III already; nothing to offer
+                      if (!mk.check.allowed) {
+                        // Definition-level exclusions stay silent (nothing to decide);
+                        // instance-level blockers (research gate, damage) are shown.
+                        if (mk.check.reason && (mk.check.missingResearch || (bld.damagePct || 0) > 0)) {
+                          const gateName = mk.check.missingResearch ? RESEARCH_MAP.get(mk.check.missingResearch)?.name || mk.check.missingResearch : null;
+                          return (
+                            <div className="mt-1 text-[10px] text-slate-500">
+                              {MARK_NAMES[mk.target]} refit locked — {gateName ? <>research <span className="text-slate-300">{gateName}</span></> : mk.check.reason}
+                            </div>
+                          );
+                        }
+                        return null;
+                      }
+                      const short = Object.entries(mk.resourceCost).filter(([r, q]) => (state.resources[r] || 0) < q);
+                      const cantAfford = state.money < mk.cost || short.length > 0;
+                      const materialsText = Object.entries(mk.resourceCost)
+                        .map(([r, q]) => `${q} ${(RESOURCE_MAP.get(r as ResourceId)?.name || r.replace(/_/g, ' '))}`)
+                        .join(', ');
+                      return (
+                        <div className="mt-1">
+                          <HoloTip
+                            content={{
+                              title: `Refit to ${MARK_NAMES[mk.target]}`,
+                              icon: 'wrench',
+                              body: (
+                                <div className="space-y-1">
+                                  <p>
+                                    Upgrade this building in place: revenue ×{MARK_REVENUE_MULT[mk.target]}, maintenance ×{MARK_MAINTENANCE_MULT[mk.target]}.
+                                    It still counts as one unit for market saturation — the whole point versus building another copy.
+                                    Operates at its current mark during the {formatDuration(mk.seconds)} refit.
+                                  </p>
+                                  <p>
+                                    Revenue {formatMoney(mk.currentRevenueMonthly)} → {formatMoney(mk.nextRevenueMonthly)}/mo (+{formatMoney(mk.deltaRevenueMonthly)}); maintenance {formatMoney(mk.currentMaintenanceMonthly)} → {formatMoney(mk.nextMaintenanceMonthly)}/mo (+{formatMoney(mk.deltaMaintenanceMonthly)}).
+                                    Net {mk.deltaNetMonthly >= 0 ? '+' : ''}{formatMoney(mk.deltaNetMonthly)}/mo → {mk.paybackMonths ? `pays back in ~${mk.paybackMonths} game-months` : 'never pays back at the current run-rate'}.
+                                    Materials: {materialsText}. At current pools, before research/commander bonuses.
+                                  </p>
+                                </div>
+                              ),
+                            }}
+                          >
+                            <button
+                              onClick={() => onMarkUpgradeBuilding(bld.instanceId)}
+                              disabled={cantAfford}
+                              aria-label={`Refit ${def.name} to ${MARK_NAMES[mk.target]} for ${formatMoney(mk.cost)}`}
+                              className={`w-full min-h-[28px] text-[10px] px-2 py-1 rounded border transition-colors flex items-center justify-center gap-1 ${
+                                cantAfford
+                                  ? 'bg-white/[0.02] text-slate-600 border-white/[0.06] cursor-not-allowed'
+                                  : mk.deltaNetMonthly > 0
+                                    ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20 hover:bg-cyan-500/20'
+                                    : 'bg-amber-500/10 text-amber-300 border-amber-500/20 hover:bg-amber-500/20'
+                              }`}
+                            >
+                              <GameIcon name="wrench" size={11} /> Refit → {MARK_NAMES[mk.target]} — {formatMoney(mk.cost)} · {mk.deltaNetMonthly >= 0 ? '+' : ''}{formatMoney(mk.deltaNetMonthly)}/mo · {mk.paybackMonths ? `${mk.paybackMonths} mo payback` : 'never pays back'}
+                            </button>
+                          </HoloTip>
+                          {short.length > 0 && (
+                            <div className="text-[10px] text-slate-500 mt-0.5">Short on: {short.map(([r]) => (RESOURCE_MAP.get(r as ResourceId)?.name || r.replace(/_/g, ' '))).join(', ')}</div>
+                          )}
+                        </div>
+                      );
+                    })()}
                     {hasDamage && onRushRepairBuilding && (
                       <button
                         onClick={() => onRushRepairBuilding(bld.instanceId)}

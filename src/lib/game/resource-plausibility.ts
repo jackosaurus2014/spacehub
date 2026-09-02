@@ -45,6 +45,7 @@ import { PRODUCTION_CHAINS, canFabricate } from './production-chains';
 import { SERVICE_MAP } from './services';
 import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier } from './upgrades';
+import { getMarkRevenueMultiplier } from './mark-upgrades'; // D4: persisted markLevel on the buildings row
 import { getResearchBonuses } from './research-tree';
 import { getWorkforceBonuses } from './workforce';
 import { getMiningRevenueScale } from './mining-pricing';
@@ -365,11 +366,19 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     if (!svc || typeof svc.definitionId !== 'string') continue;
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
-    const linkedBld = (state.buildings || []).find(b =>
-      b && b.isComplete && b.locationId === svc.locationId
-      && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId),
-    );
-    const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    // Ceiling = the BEST-refitted eligible building at the location (D4:
+    // markLevel is validated 1..3 by sync-validation.ts and persisted on the
+    // buildings row, so the Mark multiplier here is real, not the neutral 1.0).
+    let upgradeBoost = 1;
+    let sawLinked = false;
+    for (const b of state.buildings || []) {
+      if (!b || !b.isComplete || b.locationId !== svc.locationId) continue;
+      if (!BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId)) continue;
+      sawLinked = true;
+      const boost = getUpgradeRevenueMultiplier(b.upgradeLevel || 0) * getMarkRevenueMultiplier(b);
+      if (boost > upgradeBoost) upgradeBoost = boost;
+    }
+    if (!sawLinked) upgradeBoost = getUpgradeRevenueMultiplier(0) * getMarkRevenueMultiplier(null);
     const rawInst = typeof svc.revenueMultiplier === 'number' && Number.isFinite(svc.revenueMultiplier) ? svc.revenueMultiplier : 1;
     const instMult = Math.min(MAX_SERVICE_INSTANCE_MULT, Math.max(0, rawInst));
     let base = def.revenuePerMonth || 0;

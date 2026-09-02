@@ -103,6 +103,8 @@ interface MapCommandCenterProps {
    *  panel — the natural place to click a damaged satellite. */
   onRushRepairBuilding?: (instanceId: string) => void;
   onReactivateBuilding?: (instanceId: string) => void;
+  /** D4: start a Mark-II/III refit from the map's Build sub-panel. */
+  onMarkUpgradeBuilding?: (instanceId: string) => void;
   /** W14 (cargo logistics): optional manifest — dispatch debits it at the
    *  origin and the tick engine credits the destination on arrival. */
   onDispatchShip: (shipInstanceId: string, toLocationId: string, cargo?: Record<string, number>) => void;
@@ -126,7 +128,7 @@ interface MapCommandCenterProps {
 }
 
 export default function MapCommandCenter({
-  state, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onRushRepairBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
+  state, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onRushRepairBuilding, onMarkUpgradeBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
@@ -674,6 +676,7 @@ export default function MapCommandCenter({
           onMothballBuilding={onMothballBuilding}
           onReactivateBuilding={onReactivateBuilding}
           onRushRepairBuilding={onRushRepairBuilding}
+          onMarkUpgradeBuilding={onMarkUpgradeBuilding}
           onDispatchShip={onDispatchShip}
           onLaunchExpedition={onLaunchExpedition}
           onNavigateTab={onNavigateTab}
