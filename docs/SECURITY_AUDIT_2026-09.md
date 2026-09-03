@@ -639,3 +639,150 @@ adds a per-IP `tycoon-economy` bucket (60/min) over the same POST paths.
   lets iron grow ~9 000 units per 60 s window.
 - The `buildings[i].definitionId` 400 (C-5) is the one validation that can
   hit an honest player with a retired definition — watch logs after deploy.
+
+## Phase 3 slice 1 — buildings (2026-09-02)
+
+Founder-approved item 5. §5 of the design review named the structural fix
+for the remaining class (contracts, book value, zones, season ceilings all
+reading client-written `buildingsData`): a server-side construction ledger
+where an asset row exists only because a paid, ledgered server transaction
+created it, with server timestamps for completion. This slice does that for
+BUILDINGS; ships, research, services and locations follow.
+
+### What is authoritative now
+
+**`ServerAsset`** (prisma; DDL applied by hand before deploy) — `kind`
+('building' now), `definitionId`, `instanceId` (the client's own id,
+`@@unique([profileId, instanceId])`), `locationId`, `status`
+(`pending | complete | mothballed | sold`), `markLevel`, `startedAt`,
+`completesAt`, `paidMoney`, `paidResources`, `ledgerSeq`. A row is written
+only by:
+
+| Route (session + 30/min/profile, `route-throttle.ts`) | Effect | Ledger reasons |
+|---|---|---|
+| `POST /api/space-tycoon/assets/build` `{definitionId, locationId, instanceId}` | validates definition / `requiredLocation` / `requiredResearch` / `maxPerPlayer` (`checkBuildingCap` over live rows) / unlock / orbital-slot gate; prices with `scaledBuildingCost(baseCost, liveRowsOfThisDefAtLocation) × (1 − research buildCostReduction)` from the PERSISTED research list; verifies materials against `loadAuthoritativeInventory`; atomic `updateMany money >= cost`; inserts `pending` with `completesAt = now + serverSeconds`. Retry-safe: an existing `instanceId` returns the row, charges nothing. | `building_build` (−money, burned), `building_build_resources` (−qty per slug) |
+| `POST /assets/refit` `{instanceId}` | `canStartMarkUpgrade` on the server row (damage merged from the client JSON); writes the TARGET `markLevel` + `completesAt = now + refit seconds`, status stays `complete` | `building_refit`, `building_refit_resources` |
+| `POST /assets/sell` | `complete\|mothballed → sold` (status-guarded); credits `computeDecommissionRecovery` | `building_decommission_recovery` (+money, +materials) |
+| `POST /assets/mothball` / `/reactivate` | status flips; reactivation charges `REACTIVATION_FEE_FRACTION × baseCost` | `building_reactivation_fee` (burned) |
+| `POST /assets/repair` `{instanceId, damagePct}` | charges `calculateRushRepairCost` for the (client-owned, capped 0.85) damage; the row is untouched | `building_rush_repair` (burned) |
+| `GET /assets` | the profile's rows after a lazy pending → complete pass | — |
+| `POST /api/cron/assets-complete` (every 5 min, `tycoon-assets-complete`) | `pending → complete` where `completesAt <= now`; the sync and GET run the same pass lazily | — |
+
+All seven reasons are in `CLIENT_APPLIED_LEDGER_REASONS`: the client applies
+each order locally on the 2xx, so the rows are never handed back as pending
+deltas, but their resource legs are NOT stamped folded — they fold into
+`serverResources` on the next sync like the market/trade goods legs (H-5).
+
+**Location unlock** is `STARTING_LOCATIONS (earth_surface, leo)` ∪ the
+persisted `unlockedLocationsList` ∪ `ColonyClaim` rows. ColonyClaim alone
+cannot be the gate: since the 2026-09-01 hardening a claim REQUIRES a
+completed building at the location, so the first building anywhere new would
+be impossible. `unlockedLocationsList` is client-synced (the unlock fee is
+not yet server-ledgered) — the 'location' asset kind closes that.
+
+**Completion time.** `serverSeconds = scaledBuildTime(realBuildSeconds,
+count) / min(2, 1 + research buildSpeedBonus) / DEV_FAST_MULTIPLIER`. The
+client-only multipliers the server cannot evaluate from persisted columns are
+IGNORED — every one of them only makes a build faster, so the server figure
+is the conservative (slower-or-equal) value: workforce `buildSpeed`,
+specialization `build_speed`, victory `buildSpeed`, alliance
+`buildSpeedBonus`, legacy build speed, corporate-era multiplier, megastructure
+`buildSpeedMultiplier`, reputation, commander and doctrine multipliers, and
+active construction boosts. The client keeps its own tick math (it receives
+`realDurationSeconds` = the base scaled time, exactly what it computed
+before) and stores the server's `completesAt` as `serverCompletesAtMs`, so a
+structure can read "complete" locally a little before the registry flips it.
+Refits use `getMarkUpgradeSeconds` on both sides — identical.
+
+### The client is server-first
+
+The six `page.tsx` handlers (`handleBuild`, `handleMarkUpgradeBuilding`,
+`handleSellBuilding`, `handleMothballBuilding`, `handleReactivateBuilding`,
+`handleRushRepairBuilding`) validate locally, call the route, and mutate
+local state ONLY on a 2xx, using the server's cost and timing
+(`asset-client.ts`). A 401 / `no_profile` 404 (no account, never synced) is
+"local-only play" and keeps the pre-registry path; a network failure or any
+other refusal mutates nothing and surfaces the reason (error sound + toast;
+a request slower than 800 ms shows a "confirming with the registry" hint).
+The build and refit paths no longer attest their material spend through
+`builtThisTick` (the route ledgered it — attesting too would double-count);
+research and ship attestation stay client-side for later slices.
+`applyMarkUpgradeStart` gained `{ attestMaterials, startedAtMs,
+durationSeconds }` for this.
+
+### Sync reconciliation — `ASSET_LEDGER_MODE=off|shadow|enforce` (default shadow)
+
+Server-side in `server-assets.ts`; wired into the sync before the book-value
+line. Per sync:
+
+- **Adoption ratchet (`_assetBaselineAt`, server stash, `stripStashKeys`-
+  protected).** The first sync of a profile without the marker inserts a row
+  for every complete / pending / mothballed client building (`paidMoney 0`,
+  `ledgerSeq null`; pending keeps `startedAtMs + realDurationSeconds` from
+  the raw body; 'decommissioning' skipped) and stamps the marker — exactly
+  once. The `createMany` is issued even for zero rows so it doubles as the
+  availability probe: no marker is ever stamped while the table is missing.
+  A brand-new profile's starter-kit buildings become its first rows in the
+  same request. The asset routes run the same adoption when an order arrives
+  before the first post-deploy sync.
+- **shadow:** `diffClientAssets` → client buildings with no live row are
+  audited `client_asset_not_in_ledger` (warning, 1/hour/profile via
+  `_assetAuditLoggedAt`) and persisted as today; server rows the client no
+  longer lists are `server_asset_not_in_client` (info) and left alone.
+- **enforce:** those buildings are DROPPED from the persisted
+  `buildingsData` (`client_asset_rejected`, critical) and returned as
+  `assetLedger.rejectedInstanceIds`; `useGameSync` queues them and
+  `processFullTick` applies `applyAssetReconciliationToState`
+  (asset-reconcile.ts): removes the buildings and any service linked solely
+  to them, refunds nothing (never paid server-side), idempotent by
+  instanceId. Unlisted server rows stay logged-only; the reader helper simply
+  never counts a row the client stopped listing — a client can only ever
+  REDUCE its own asset set.
+
+### Readers switched — `loadServerBuildings(profileId, buildingsData)`
+
+Returns BuildingInstance-shaped objects (`source: 'server' | 'client'`):
+identity, location, completion, mark level, mothball status and timing are
+server-owned; `damagePct`, `supplyPolicy`, `upgradeLevel`, the transitional
+'reactivating' status and the game-date labels are merged from the client
+JSON by instanceId, so downstream math is unchanged. A `complete` row with a
+future `completesAt` is a refit in progress at `markLevel − 1`. Shadow →
+the UNION (server rows + client-only rows); enforce → server rows the client
+still lists; off / unavailable table → the client JSON. Batched form
+`loadServerBuildingsForProfiles` for the crons.
+
+Switched: `checkContractFulfillment`'s callers (`bidding/fulfill`,
+`competitive-contracts`), the sync's book net worth (same line as
+`frontier.ts computeBookNetWorth`), `zones/update`, `demand-pools/update`,
+`labor/update`, `seasons/progress` (→ `season-metrics-server`),
+`speed-runs/check`, and `milestones` (live facts; the aged
+`EconomicSnapshot` columns stay JSON). Espionage target reads stay on the
+JSON for now — intel, not money.
+
+### Rollout
+
+1. Apply the DDL (`ServerAsset` + indexes), deploy. Default shadow: every
+   active profile adopts on its next sync; the routes start writing rows.
+2. Watch `MarketAuditLog WHERE eventType IN ('client_asset_not_in_ledger',
+   'server_asset_not_in_client')` for ~7 days. A `client_asset_not_in_ledger`
+   on an honest profile means a client path still creates buildings without
+   the route — fix the path, then null the profile's `_assetBaselineAt` to
+   re-adopt.
+3. `ASSET_LEDGER_MODE=enforce`. Profiles without the marker still read as
+   union (no rows could exist yet), so a late returner is adopted, never
+   wiped.
+
+### What remains (later slices)
+
+Ships (`shipsData`, `ships_at_location`, book value), research
+(`completedResearchList` — the research gate above trusts it), services
+(`activeServicesData`, `services_count`, season ceilings), locations (the
+unlock fee), the espionage reads, and the phase-1.5 growth allowance.
+
+Tests: `server-assets.test.ts` (pricing / duration / row projection /
+merge / diff / adoption; build route 401 / 429 / every validation / atomic
+debit + ledger rows + pending row / retry-safety / adoption / 503; refit,
+sell, mothball, reactivate, repair ledger effects; cron fail-closed + flip),
+`asset-reconcile.test.ts` (adoption once + table-missing guard; shadow audit
++ throttle + unlisted rows; enforce drop + rejected ids + book value; off;
+client removal idempotent + queue merge).

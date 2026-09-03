@@ -223,7 +223,19 @@ export function applyMarkUpgradeStart(
   instanceId: string,
   def: BuildingDefinition,
   now: number = Date.now(),
+  opts: {
+    /** Phase 3 slice 1: when the /assets/refit route has already ledgered
+     *  the materials (building_refit_resources), the client must NOT also
+     *  attest them through builtThisTick (double-count). Default true keeps
+     *  the pre-registry behaviour for local-only play. */
+    attestMaterials?: boolean;
+    /** Server-provided refit timing (wall clock) — overrides the local
+     *  getMarkUpgradeSeconds figure so client and registry agree exactly. */
+    startedAtMs?: number;
+    durationSeconds?: number;
+  } = {},
 ): GameState {
+  const attest = opts.attestMaterials !== false;
   const inst = state.buildings.find(b => b.instanceId === instanceId);
   if (!inst || inst.definitionId !== def.id) return state;
   const check = canStartMarkUpgrade(inst, def, state.completedResearch || []);
@@ -239,15 +251,21 @@ export function applyMarkUpgradeStart(
   for (const [res, qty] of Object.entries(materials)) resources[res] = (resources[res] || 0) - qty;
   const pending = state.pendingInventoryAttestations || { crafted: {}, built: {} };
   const built = { ...pending.built };
-  for (const [res, qty] of Object.entries(materials)) built[res] = (built[res] || 0) + qty;
+  if (attest) {
+    for (const [res, qty] of Object.entries(materials)) built[res] = (built[res] || 0) + qty;
+  }
+  const startedAtMs = typeof opts.startedAtMs === 'number' && Number.isFinite(opts.startedAtMs) ? opts.startedAtMs : now;
+  const durationSeconds = typeof opts.durationSeconds === 'number' && Number.isFinite(opts.durationSeconds) && opts.durationSeconds > 0
+    ? opts.durationSeconds
+    : getMarkUpgradeSeconds(def, target);
   return {
     ...state,
     money: state.money - cost,
     totalSpent: state.totalSpent + cost,
     resources,
-    pendingInventoryAttestations: { crafted: { ...pending.crafted }, built },
+    pendingInventoryAttestations: attest ? { crafted: { ...pending.crafted }, built } : state.pendingInventoryAttestations,
     buildings: state.buildings.map(b => b.instanceId === instanceId
-      ? { ...b, markUpgradeTarget: target, markUpgradeStartedAtMs: now, markUpgradeDurationSeconds: getMarkUpgradeSeconds(def, target) }
+      ? { ...b, markUpgradeTarget: target, markUpgradeStartedAtMs: startedAtMs, markUpgradeDurationSeconds: durationSeconds }
       : b),
   };
 }

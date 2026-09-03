@@ -41,6 +41,7 @@ import {
   sanitizeCommanderIds,
   sanitizeFactionLicenses,
   buildFirstSyncKit,
+  SYNC_MAX_BUILDINGS,
   type FirstSyncKit,
   type ValidatedSyncEconomics,
 } from '@/lib/game/sync-validation';
@@ -80,6 +81,23 @@ import {
   type AttestationRejection,
 } from '@/lib/game/resource-plausibility';
 import { takeEconomicSnapshotFromRow } from '@/lib/game/economic-snapshot';
+// Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 —
+// buildings"): the server-authoritative building registry.
+import {
+  ASSET_AUDIT_LOGGED_KEY,
+  ASSET_AUDIT_THROTTLE_MS,
+  ASSET_BASELINE_KEY,
+  auditAsset,
+  buildAdoptionRows,
+  completeDueAssets,
+  diffClientAssets,
+  getAssetLedgerMode,
+  loadServerAssetRows,
+  mergeServerBuildings,
+  readAssetAuditLoggedAt,
+  readAssetBaseline,
+  type AssetLedgerMode,
+} from '@/lib/game/server-assets';
 
 /**
  * POST /api/space-tycoon/sync
@@ -777,8 +795,118 @@ export async function POST(request: Request) {
     // league/espionage/leaderboard brackets this value feeds. Buildings/ships
     // are client-reported (same trust level as buildingCount/serviceCount
     // elsewhere in this route) and capped defensively before iterating.
+    //
+    // ── Phase 3 slice 1: server-authoritative buildings ──────────────────
+    // docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 — buildings". The
+    // client's buildings[] is diffed against the profile's ServerAsset rows
+    // (server-assets.ts header for the three ASSET_LEDGER_MODE levels):
+    //   - ADOPTION (once, ratchet `_assetBaselineAt`): a save that predates
+    //     the registry has its complete / pending / mothballed buildings
+    //     inserted as rows (paidMoney 0, ledgerSeq null) this sync.
+    //   - shadow: client buildings with no row → `client_asset_not_in_ledger`
+    //     (warning, 1/hour/profile); persisted unchanged. Server rows the
+    //     client no longer lists → `server_asset_not_in_client` (info).
+    //   - enforce: those buildings are DROPPED from the persisted
+    //     buildingsData (`client_asset_rejected`, critical) and returned as
+    //     `assetLedger.rejectedInstanceIds` so the client removes them
+    //     (asset-reconcile.ts). Nothing is refunded — never paid server-side.
+    // Book value below reads the same merged view the other readers use.
+    const assetLedgerMode = getAssetLedgerMode();
+    const assetExtras: Record<string, unknown> = {};
+    let assetLedgerInfo: {
+      mode: AssetLedgerMode; adopted: boolean; adoptedCount: number;
+      rejectedInstanceIds: string[]; notInLedger: number; unlistedServerRows: number;
+    } | null = null;
+    let buildingsToPersist = economics.buildings;
+    let bookBuildings: Array<{ definitionId: string; isComplete: boolean; markLevel?: number }> = economics.buildings;
+    let adoptKitAfterCreate = false;
+    if (assetLedgerMode !== 'off' && existingProfile) {
+      try {
+        const nowMs = Date.now();
+        const baseline = readAssetBaseline(existingProfile.workforceData);
+        const loggedAt = readAssetAuditLoggedAt(existingProfile.workforceData);
+        if (loggedAt) assetExtras[ASSET_AUDIT_LOGGED_KEY] = loggedAt;
+        if (!baseline) {
+          // Adoption: the validated list, enriched with the raw body's
+          // wall-clock timing (sync-validation drops startedAtMs /
+          // realDurationSeconds) so pending builds keep their completion time.
+          const rawTiming = new Map<string, { startedAtMs?: number; realDurationSeconds?: number }>();
+          const rawBuildings = (body as Record<string, unknown>).buildings;
+          if (Array.isArray(rawBuildings)) {
+            for (const rb of rawBuildings.slice(0, SYNC_MAX_BUILDINGS)) {
+              if (!rb || typeof rb !== 'object') continue;
+              const r = rb as Record<string, unknown>;
+              if (typeof r.instanceId !== 'string') continue;
+              rawTiming.set(r.instanceId, {
+                startedAtMs: typeof r.startedAtMs === 'number' && Number.isFinite(r.startedAtMs) ? r.startedAtMs : undefined,
+                realDurationSeconds: typeof r.realDurationSeconds === 'number' && Number.isFinite(r.realDurationSeconds) ? r.realDurationSeconds : undefined,
+              });
+            }
+          }
+          const adoptable = economics.buildings.map(b => ({ ...b, ...(b.instanceId ? rawTiming.get(b.instanceId) : {}) }));
+          const rows = buildAdoptionRows(existingProfile.id, adoptable, nowMs);
+          // Always issued (even for zero rows): it doubles as the availability
+          // probe, so the marker is never stamped while the table is missing.
+          await prisma.serverAsset.createMany({ data: rows, skipDuplicates: true });
+          assetExtras[ASSET_BASELINE_KEY] = new Date(nowMs).toISOString();
+          assetLedgerInfo = { mode: assetLedgerMode, adopted: true, adoptedCount: rows.length, rejectedInstanceIds: [], notInLedger: 0, unlistedServerRows: 0 };
+          logger.info('Asset registry: client buildings adopted', { profileId: existingProfile.id, count: rows.length, mode: assetLedgerMode });
+        } else {
+          assetExtras[ASSET_BASELINE_KEY] = baseline;
+          await completeDueAssets(prisma, existingProfile.id, new Date(nowMs));
+          const rows = await loadServerAssetRows(existingProfile.id, prisma);
+          const diff = diffClientAssets(economics.buildings, rows);
+          const enforce = assetLedgerMode === 'enforce';
+          if (diff.clientNotInLedger.length > 0 || diff.serverNotInClient.length > 0) {
+            const throttled = !!loggedAt && nowMs - Date.parse(loggedAt) < ASSET_AUDIT_THROTTLE_MS;
+            if (!throttled) {
+              assetExtras[ASSET_AUDIT_LOGGED_KEY] = new Date(nowMs).toISOString();
+              if (diff.clientNotInLedger.length > 0) {
+                logger.warn(
+                  enforce ? 'Client buildings with no registry row — rejected' : 'Client buildings with no registry row — shadow (persisted)',
+                  { profileId: existingProfile.id, count: diff.clientNotInLedger.length, instanceIds: diff.clientNotInLedger.slice(0, 20) },
+                );
+                await auditAsset(prisma, {
+                  eventType: enforce ? 'client_asset_rejected' : 'client_asset_not_in_ledger',
+                  profileId: existingProfile.id,
+                  severity: enforce ? 'critical' : 'warning',
+                  details: { mode: assetLedgerMode, count: diff.clientNotInLedger.length, instanceIds: diff.clientNotInLedger.slice(0, 50) },
+                });
+              }
+              if (diff.serverNotInClient.length > 0) {
+                await auditAsset(prisma, {
+                  eventType: 'server_asset_not_in_client',
+                  profileId: existingProfile.id,
+                  severity: 'info',
+                  details: { mode: assetLedgerMode, count: diff.serverNotInClient.length, instanceIds: diff.serverNotInClient.slice(0, 50) },
+                });
+              }
+            }
+          }
+          const rejected = enforce ? diff.clientNotInLedger.filter(id => id !== '?') : [];
+          if (enforce && diff.clientNotInLedger.length > 0) {
+            const rejectedSet = new Set(diff.clientNotInLedger);
+            buildingsToPersist = economics.buildings.filter(b => !!b.instanceId && !rejectedSet.has(b.instanceId));
+          }
+          bookBuildings = mergeServerBuildings(rows, buildingsToPersist, assetLedgerMode, nowMs).buildings;
+          assetLedgerInfo = {
+            mode: assetLedgerMode, adopted: false, adoptedCount: 0, rejectedInstanceIds: rejected,
+            notInLedger: diff.clientNotInLedger.length, unlistedServerRows: diff.serverNotInClient.length,
+          };
+        }
+      } catch (assetError) {
+        // Registry is best-effort (table may lag deploy); never block the sync.
+        logger.error('Asset registry reconciliation failed', { error: String(assetError) });
+      }
+    } else if (assetLedgerMode !== 'off' && firstSyncKit) {
+      // C-1: a brand-new profile's kit buildings become its registry rows
+      // right after the row is created (below), baselined in this request.
+      assetExtras[ASSET_BASELINE_KEY] = new Date().toISOString();
+      adoptKitAfterCreate = true;
+    }
+
     let assetBookValue = 0;
-    for (const b of economics.buildings) {
+    for (const b of bookBuildings) {
       if (!b.isComplete) continue;
       const def = BUILDING_MAP.get(b.definitionId);
       if (def && Number.isFinite(def.baseCost)) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
@@ -831,7 +959,9 @@ export async function POST(request: Request) {
     }
 
     // Validated (C-5) arrays for storage — or the first-sync kit (C-1).
-    const safeBuildings = economics.buildings;
+    // Phase 3 slice 1: in enforce mode this is the client list MINUS the
+    // buildings the registry never sold it (see the asset block above).
+    const safeBuildings = buildingsToPersist;
     const safeServices = economics.activeServices;
     const safeLocations = economics.unlockedLocations;
     const safeResearch = economics.completedResearch;
@@ -857,8 +987,11 @@ export async function POST(request: Request) {
     // Carry the resource-plausibility stash (`_resourceBaselineAt`,
     // `_resourceCeilings`) forward on every sync — the client never echoes
     // these keys back, it only sends its own workforce object.
-    const workforceDataToPersist = Object.keys(resourceExtras).length > 0
-      ? { ...((workforceData && typeof workforceData === 'object') ? (workforceData as Record<string, unknown>) : {}), ...resourceExtras }
+    // Phase 3 slice 1: + the asset registry stash (`_assetBaselineAt`,
+    // `_assetAuditLoggedAt`) — same ratchet, same stripStashKeys protection.
+    const stashExtras = { ...resourceExtras, ...assetExtras };
+    const workforceDataToPersist = Object.keys(stashExtras).length > 0
+      ? { ...((workforceData && typeof workforceData === 'object') ? (workforceData as Record<string, unknown>) : {}), ...stashExtras }
       : workforceData;
 
     // C-1: a read that found no row must not race a row that exists (a
@@ -901,6 +1034,19 @@ export async function POST(request: Request) {
             serverResources: (serverResourcesToPersist ?? {}) as object,
           },
         });
+
+    // Phase 3 slice 1 (C-1): the starter kit's buildings are this new
+    // profile's first registry rows — baselined in the same request, so the
+    // next sync is already diffed against server rows.
+    if (adoptKitAfterCreate && firstSyncKit) {
+      try {
+        const rows = buildAdoptionRows(profile.id, firstSyncKit.buildings, Date.now());
+        await prisma.serverAsset.createMany({ data: rows, skipDuplicates: true });
+        assetLedgerInfo = { mode: assetLedgerMode, adopted: true, adoptedCount: rows.length, rejectedInstanceIds: [], notInLedger: 0, unlistedServerRows: 0 };
+      } catch (kitAssetError) {
+        logger.error('Asset registry: first-sync kit adoption failed', { error: String(kitAssetError) });
+      }
+    }
 
     // Phase 2 follow-through (best-effort, after the row is written): stamp
     // the folded ledger rows, then write the sync-authored rows — corrections
@@ -1870,6 +2016,9 @@ export async function POST(request: Request) {
       reconciledMoney,
       ledger: ledgerInfo,
       resourceClamp: resourceClampInfo,
+      // Phase 3 slice 1: building-registry reconciliation (mode, adoption,
+      // and — in enforce — the instanceIds the client must remove).
+      assetLedger: assetLedgerInfo,
       // Phase 2: server-owned inventory telemetry (adoption, capped growth,
       // divergence, corrections, attestation caps). Additive field.
       serverInventory: serverInventoryInfo,

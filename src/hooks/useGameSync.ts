@@ -27,6 +27,8 @@ import { queueLaneUsageFlush } from '@/lib/game/trade-lanes';
 // through the server-effects hop.
 import { queueTollFlush, type OffenseSnapshot } from '@/lib/game/offense';
 import { queueAttestationFlush } from '@/lib/game/inventory-attestations';
+// Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): building-registry rejections.
+import { queueAssetReconciliation } from '@/lib/game/asset-reconcile';
 // Wave M6 (docs/MEANINGFUL_2026-08.md §M6): equity snapshot type for the
 // server-effects hand-off (share registry / tenders / holdings).
 import type { EquitySnapshot } from '@/lib/game/share-registry';
@@ -259,6 +261,12 @@ export function useGameSync(
         // Wave M5 (O6): the toll payments were delivered — queue their flush.
         if (Object.keys(tollPayments).length > 0) {
           queueTollFlush(tollPayments);
+        }
+        // Phase 3 slice 1: the registry rejected client buildings it never
+        // sold (enforce mode) — queue their removal for the engine
+        // (asset-reconcile.ts; idempotent by instanceId).
+        if (data.assetLedger && Array.isArray(data.assetLedger.rejectedInstanceIds) && data.assetLedger.rejectedInstanceIds.length > 0) {
+          queueAssetReconciliation({ mode: String(data.assetLedger.mode || ''), rejectedInstanceIds: data.assetLedger.rejectedInstanceIds });
         }
         // Phase 2: the attestations were delivered — queue their flush.
         if (Object.keys(craftedAttest).length > 0 || Object.keys(builtAttest).length > 0) {

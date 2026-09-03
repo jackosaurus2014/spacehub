@@ -7,6 +7,8 @@ import { COMPETITIVE_CONTRACT_POOL } from '@/lib/game/competitive-contracts';
 import { getGlobalGameDate } from '@/lib/game/server-time';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { checkContractFulfillment, type GameProfileForFulfillment } from '@/lib/game/contract-bidding';
+// Phase 3 slice 1: building predicates read the server registry (server-assets.ts).
+import { loadServerBuildings } from '@/lib/game/server-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -152,8 +154,11 @@ export async function POST(request: NextRequest) {
     const colonyClaims = requiresColonyCheck(contract.requirement.type)
       ? await prisma.colonyClaim.findMany({ where: { profileId: profile.id }, select: { locationId: true } })
       : [];
+    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): buildings come from
+    // the ServerAsset registry (union in shadow, server rows only in enforce).
+    const registryBuildings = await loadServerBuildings(profile.id, profile.buildingsData, { workforceData: profile.workforceData });
     const fulfillmentProfile: GameProfileForFulfillment = {
-      buildingsData: profile.buildingsData,
+      buildingsData: registryBuildings.buildings,
       resources: profile.resources,
       completedResearchList: profile.completedResearchList,
       shipsData: profile.shipsData,

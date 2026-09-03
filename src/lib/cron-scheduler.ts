@@ -297,6 +297,9 @@ const CRON_JOBS: CronJobDef[] = [
   // cadence keeps closings settled within ~2h of their deadline. Registered
   // in middleware.ts cronPaths (the CSRF-for-new-cron gotcha).
   { schedule: '30 */2 * * *', path: '/api/space-tycoon/equity/resolve',             label: 'tycoon-equity-resolve',        maxStaleMinutes: 1440 },
+  // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): flip ServerAsset rows pending -> complete
+  // once completesAt has passed. Also done lazily on sync / GET /assets, so a missed tick only delays.
+  { schedule: '*/5 * * * *',  path: '/api/cron/assets-complete',                    label: 'tycoon-assets-complete',       maxStaleMinutes: 30 },
 
   // AAA Round 1 wave E1 (docs/AAA_PROGRAM_2026-08.md "E1 implementation"):
   // the Accord Chair certifier. The election lives on the MONTHLY loop (a

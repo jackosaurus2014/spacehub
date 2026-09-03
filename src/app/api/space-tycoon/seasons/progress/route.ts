@@ -20,6 +20,8 @@ import {
 import { RESOURCES } from '@/lib/game/resources';
 import { validateBody, seasonProgressSchema } from '@/lib/validations';
 import { validationError } from '@/lib/errors';
+// Phase 3 slice 1: building metrics read the ServerAsset registry (server-assets.ts).
+import { loadServerBuildings } from '@/lib/game/server-assets';
 
 const ENERGY_RESOURCE_SLUGS = RESOURCES.filter(r => r.category === 'energy').map(r => r.id);
 
@@ -153,10 +155,13 @@ export async function POST(request: NextRequest) {
       marketStats = await loadMarketStats(profile.id, new Date(currentEvent.startsAt));
     }
 
+    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): buildings come from
+    // the ServerAsset registry (union in shadow, server rows only in enforce).
+    const registryBuildings = await loadServerBuildings(profile.id, profile.buildingsData, { workforceData: profile.workforceData });
     const metricProfile = {
       totalEarned: profile.totalEarned,
       totalBidsWon: profile.totalBidsWon,
-      buildingsData: profile.buildingsData,
+      buildingsData: registryBuildings.buildings,
       activeServicesData: profile.activeServicesData,
       unlockedLocationsList: profile.unlockedLocationsList,
       completedResearchList: profile.completedResearchList,

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { requireCronSecret } from '@/lib/errors';
+// Phase 3 slice 1: buildings come from the ServerAsset registry (server-assets.ts).
+import { loadServerBuildingsForProfiles } from '@/lib/game/server-assets';
 import {
   computePoolAggregates,
   emaBlend,
@@ -58,6 +60,7 @@ export async function POST(request: Request) {
       }),
     ]);
 
+    const registryBuildings = await loadServerBuildingsForProfiles(profiles.map(p => ({ id: p.id, buildingsData: p.buildingsData })));
     const summaries: ProfileActivitySummary[] = profiles.map(p => {
       // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): a
       // mothballed/reactivating/decommissioning building withdraws from the
@@ -65,9 +68,10 @@ export async function POST(request: Request) {
       // visible supply withdrawal rivals can see in the pool intel"). Drop
       // the building AND any service solely linked to it from this profile's
       // contribution before it's aggregated into the shared pool.
-      const rawBuildings = Array.isArray(p.buildingsData)
-        ? (p.buildingsData as { instanceId?: string; definitionId?: string; locationId?: string; isComplete?: boolean; status?: string }[])
-        : [];
+      // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): the registry view
+      // (union in shadow, server rows only in enforce), batched above.
+      const rawBuildings = (registryBuildings.get(p.id)?.buildings ?? []) as unknown as
+        { instanceId?: string; definitionId?: string; locationId?: string; isComplete?: boolean; status?: string }[];
       const nonOperationalIds = new Set(
         rawBuildings
           .filter(b => typeof b?.instanceId === 'string' && !!b?.status && b.status !== 'active')

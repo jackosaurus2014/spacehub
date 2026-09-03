@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { requireCronSecret } from '@/lib/errors';
+// Phase 3 slice 1: buildings come from the ServerAsset registry (server-assets.ts).
+import { loadServerBuildingsForProfiles } from '@/lib/game/server-assets';
 import {
   computeLaborAggregates,
   workforceDataToHeadcount,
@@ -46,13 +48,14 @@ export async function POST(request: Request) {
       take: 2000,
     });
 
+    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): one batched registry
+    // read; union in shadow, server rows only in enforce.
+    const registryBuildings = await loadServerBuildingsForProfiles(profiles.map(p => ({ id: p.id, buildingsData: p.buildingsData, workforceData: p.workforceData })));
     const summaries: LaborActivitySummary[] = profiles.map(p => {
       const wf = (p.workforceData || {}) as Record<string, unknown>;
-      const buildings = Array.isArray(p.buildingsData)
-        ? (p.buildingsData as { definitionId?: string; isComplete?: boolean }[])
-            .filter(b => typeof b?.definitionId === 'string')
-            .map(b => ({ definitionId: b.definitionId as string, isComplete: b.isComplete !== false }))
-        : [];
+      const buildings = ((registryBuildings.get(p.id)?.buildings ?? []) as { definitionId?: string; isComplete?: boolean }[])
+        .filter(b => typeof b?.definitionId === 'string')
+        .map(b => ({ definitionId: b.definitionId as string, isComplete: b.isComplete !== false }));
       return {
         id: p.id,
         headcount: workforceDataToHeadcount(wf),

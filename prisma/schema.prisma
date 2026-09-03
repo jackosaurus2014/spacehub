@@ -196,6 +196,8 @@ model GameProfile {
   allianceMembership AllianceMember?
   activityLogs       PlayerActivity[]
   colonyClaims       ColonyClaim[]
+  // Phase 3 slice 1: server-authoritative assets (buildings first).
+  serverAssets       ServerAsset[]
   economicSnapshots  EconomicSnapshot[]
 
   // Full game state for multiplayer visibility
@@ -433,6 +435,39 @@ model ColonyClaim {
   @@index([locationId])
   @@index([profileId])
 }
+
+// Server-authoritative assets, phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md
+// "Phase 3 slice 1 — buildings"). A row exists only because a paid, ledgered
+// server transaction created it (or the one-time adoption of a pre-existing
+// client save). `kind` is 'building' today; ships / research / services /
+// locations arrive in later slices. Status: pending (under construction,
+// flips to complete when completesAt <= now — cron + lazy pass), complete,
+// mothballed, sold (terminal). A refit keeps status 'complete', writes the
+// TARGET markLevel and a future completesAt; readers treat "complete with a
+// future completesAt" as refit-in-progress at markLevel-1.
+model ServerAsset {
+  id            String      @id @default(cuid())
+  profileId     String
+  profile       GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  kind          String
+  definitionId  String
+  instanceId    String
+  locationId    String?
+  status        String      @default("pending")
+  markLevel     Int         @default(1)
+  startedAt     DateTime    @default(now())
+  completesAt   DateTime
+  paidMoney     Float       @default(0)
+  paidResources Json        @default("{}")
+  ledgerSeq     Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([profileId, instanceId])
+  @@index([profileId, kind, status])
+  @@index([kind, status, completesAt])
+}
+
 
 model MarketResource {
   id           String   @id @default(cuid())

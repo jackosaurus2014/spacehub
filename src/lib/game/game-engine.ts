@@ -79,6 +79,8 @@ import {
   getScienceHazardDamageMultipliers,
 } from './science-missions';
 import { consumeServerReconciliation, applyReconciliationToState } from './ledger-reconcile';
+// Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): registry-rejected buildings.
+import { consumeAssetReconciliation, applyAssetReconciliationToState } from './asset-reconcile';
 // Audit Wave B (Change #2 "dead-multiplier pack" + Change #6 + A10) imports:
 import { getSpecializationBonuses } from './specializations';
 import { getVictoryBonuses } from './victory-conditions';
@@ -1726,6 +1728,18 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Ledger reconciliation apply error (non-fatal):', err);
+  }
+
+  // 0a2. Phase 3 slice 1: remove buildings the server registry rejected
+  // (enforce mode — never paid for server-side). Same single-slot hand-off;
+  // idempotent by instanceId; refunds nothing.
+  try {
+    const assetRec = consumeAssetReconciliation();
+    if (assetRec) {
+      workingState = applyAssetReconciliationToState(workingState, assetRec);
+    }
+  } catch (err) {
+    console.error('Asset reconciliation apply error (non-fatal):', err);
   }
 
   // 0b. Audit Wave B (Change #6 / A2, A7, A8, league boosts): apply any

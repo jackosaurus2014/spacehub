@@ -14,6 +14,8 @@ import {
 } from '@/lib/game/contract-bidding';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { loadAuthoritativeInventory, auditServerInventoryGate } from '@/lib/game/server-inventory';
+// Phase 3 slice 1: building predicates read the server registry (server-assets.ts).
+import { loadServerBuildings } from '@/lib/game/server-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -191,8 +193,11 @@ export async function POST(request: NextRequest) {
     // verified against SERVER TRUTH (serverResources + unfolded ledger tail)
     // when the profile has a server map; the client view otherwise.
     const inventory = await loadAuthoritativeInventory(profile);
+    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): buildings come from
+    // the ServerAsset registry (union in shadow, server rows only in enforce).
+    const registryBuildings = await loadServerBuildings(profile.id, profile.buildingsData);
     const fulfillment = checkContractFulfillment(requirements, {
-      buildingsData: profile.buildingsData,
+      buildingsData: registryBuildings.buildings,
       resources: inventory.resources,
       completedResearchList: profile.completedResearchList,
       shipsData: profile.shipsData,

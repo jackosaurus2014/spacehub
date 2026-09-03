@@ -35,7 +35,9 @@ import { setBuildingSupplyPolicy } from '@/lib/game/consumption';
 // "the exit decision"): mothball (pause) and decommission (scrap for partial
 // recovery) — the pure state mutators live in mothball.ts, same house style
 // as setBuildingSupplyPolicy above.
-import { mothballBuilding, reactivateBuilding, decommissionBuilding } from '@/lib/game/mothball';
+import { mothballBuilding, reactivateBuilding, decommissionBuilding, isBuildingOperational, isBuildingMothballed, isBuildingDecommissioning, REACTIVATION_FEE_FRACTION } from '@/lib/game/mothball';
+// Phase 3 slice 1: server-first building orders (docs/SECURITY_AUDIT_2026-09.md).
+import { requestAssetOp, reportAssetFailure } from '@/lib/game/asset-client';
 import DailyBonusModal, { useDailyBonusProbe } from '@/components/game/DailyBonusModal';
 import AlliancePanel from '@/components/game/AlliancePanel';
 import AllianceHubPanel from '@/components/game/AllianceHubPanel';
@@ -1007,6 +1009,13 @@ export default function SpaceTycoonPage() {
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevFrontierStatusRef = useRef<GameState['frontierStatus'] | undefined>(undefined);
+  // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 —
+  // buildings"): the six building handlers are SERVER-FIRST — they validate
+  // against the latest state here, call /api/space-tycoon/assets/* and only
+  // mutate local state on a 2xx (asset-client.ts). This ref is the
+  // pre-request read; the post-response write still goes through setState.
+  const stateRef = useRef<GameState | null>(null);
+  useEffect(() => { stateRef.current = state; }, [state]);
 
   // Sync to server for leaderboard (every 60s, fails gracefully if not logged in)
   // Also receives dynamic service pricing multipliers from the server
@@ -1118,129 +1127,177 @@ export default function SpaceTycoonPage() {
 
   // Damage-visibility wave (2026-08-31): named so BOTH repair surfaces (the
   // Build tab and the map's context panel) share one handler.
+  // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): SERVER-FIRST. The
+  // /assets/repair route prices and ledgers the fee (building_rush_repair);
+  // damagePct itself stays client-owned and is cleared here on the 2xx.
+  // 'local' (no account / no profile) keeps the pre-registry local path.
   const handleRushRepairBuilding = useCallback((instanceId: string) => {
-    setState(prev => {
-      if (!prev) return prev;
-      const bld = prev.buildings.find(b => b.instanceId === instanceId);
-      if (!bld || !bld.damagePct) return prev;
-      const def = BUILDING_MAP.get(bld.definitionId);
-      if (!def) return prev;
-      const cost = calculateRushRepairCost(bld.damagePct, def.baseCost);
-      if (prev.money < cost) { playSound('error'); return prev; }
-      playSound('click');
-      const buildings = prev.buildings.map(b => b.instanceId === instanceId ? { ...b, damagePct: undefined } : b);
-      return {
-        ...prev,
-        money: prev.money - cost,
-        totalSpent: prev.totalSpent + cost,
-        buildings,
-        eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Rush repair: ${def.name}`, description: `Paid ${formatMoney(cost)} to instantly repair structural damage.` }, ...prev.eventLog].slice(0, 50),
-      };
+    const cur = stateRef.current;
+    if (!cur) return;
+    const bld = cur.buildings.find(b => b.instanceId === instanceId);
+    if (!bld || !bld.damagePct) return;
+    const def = BUILDING_MAP.get(bld.definitionId);
+    if (!def) return;
+    const localCost = calculateRushRepairCost(bld.damagePct, def.baseCost);
+    if (cur.money < localCost) { playSound('error'); return; }
+    playSound('click');
+    void requestAssetOp('repair', { instanceId, damagePct: bld.damagePct }, 'rush repair').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Rush repair', () => playSound('error')); return; }
+      const cost = res.kind === 'ok' && typeof res.data.cost === 'number' ? res.data.cost : localCost;
+      setState(prev => {
+        if (!prev) return prev;
+        const buildings = prev.buildings.map(b => b.instanceId === instanceId ? { ...b, damagePct: undefined } : b);
+        return {
+          ...prev,
+          money: prev.money - cost,
+          totalSpent: prev.totalSpent + cost,
+          buildings,
+          eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Rush repair: ${def.name}`, description: `Paid ${formatMoney(cost)} to instantly repair structural damage.` }, ...prev.eventLog].slice(0, 50),
+        };
+      });
     });
   }, []);
 
   // D4 (mark-upgrades.ts): start a Mark refit on a completed building. The
   // pure helper re-runs every prerequisite (complete, operational, < 10%
-  // damage, Mark III research gate, money + materials) and attests the
-  // materials through pendingInventoryAttestations.built — the phase-2
-  // `builtThisTick` path — exactly as handleBuild does for a new structure.
+  // damage, Mark III research gate, money + materials). Phase 3 slice 1:
+  // SERVER-FIRST — /assets/refit ledgers the money AND the materials
+  // (building_refit / building_refit_resources), so on a 2xx the materials
+  // are NOT also attested through builtThisTick (attestMaterials: false);
+  // the server's refit timing is stored so client and registry agree.
   const handleMarkUpgradeBuilding = useCallback((instanceId: string) => {
-    setState(prev => {
-      if (!prev) return prev;
-      const bld = prev.buildings.find(b => b.instanceId === instanceId);
-      const def = bld ? BUILDING_MAP.get(bld.definitionId) : undefined;
-      if (!bld || !def) return prev;
-      const target = getNextMarkLevel(bld);
-      const next = applyMarkUpgradeStart(prev, instanceId, def, Date.now());
-      if (next === prev || !target) { playSound('error'); return prev; }
-      playSound('build_start');
-      mapPing({ kind: 'location', id: bld.locationId }, 'ack');
-      hapticAck();
-      const cost = getMarkUpgradeCost(def, target);
-      return {
-        ...next,
-        eventLog: [{
-          id: generateId(), date: prev.gameDate, type: 'build_complete' as const,
-          title: `Refit started: ${def.name} → ${MARK_NAMES[target]}`,
-          description: `Ready in ${formatDuration(getMarkUpgradeSeconds(def, target))}. Cost: ${formatMoney(cost)}. Operates at its current mark meanwhile.`,
-        }, ...next.eventLog].slice(0, 50),
-      };
+    const cur = stateRef.current;
+    if (!cur) return;
+    const bld = cur.buildings.find(b => b.instanceId === instanceId);
+    const def = bld ? BUILDING_MAP.get(bld.definitionId) : undefined;
+    if (!bld || !def) return;
+    const target = getNextMarkLevel(bld);
+    const precheck = applyMarkUpgradeStart(cur, instanceId, def, Date.now(), { attestMaterials: false });
+    if (precheck === cur || !target) { playSound('error'); return; }
+    playSound('click');
+    void requestAssetOp('refit', { instanceId }, `${MARK_NAMES[target]} refit`).then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Refit', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data : null;
+      setState(prev => {
+        if (!prev) return prev;
+        const next = applyMarkUpgradeStart(prev, instanceId, def, Date.now(), {
+          attestMaterials: !server,
+          startedAtMs: server && typeof server.startedAtMs === 'number' ? server.startedAtMs : undefined,
+          durationSeconds: server && typeof server.durationSeconds === 'number' ? server.durationSeconds : undefined,
+        });
+        if (next === prev) { playSound('error'); return prev; }
+        playSound('build_start');
+        mapPing({ kind: 'location', id: bld.locationId }, 'ack');
+        hapticAck();
+        const cost = server && typeof server.cost === 'number' ? server.cost : getMarkUpgradeCost(def, target);
+        const seconds = server && typeof server.durationSeconds === 'number' ? server.durationSeconds : getMarkUpgradeSeconds(def, target);
+        return {
+          ...next,
+          eventLog: [{
+            id: generateId(), date: prev.gameDate, type: 'build_complete' as const,
+            title: `Refit started: ${def.name} → ${MARK_NAMES[target]}`,
+            description: `Ready in ${formatDuration(seconds)}. Cost: ${formatMoney(cost)}. Operates at its current mark meanwhile.`,
+          }, ...next.eventLog].slice(0, 50),
+        };
+      });
     });
   }, []);
 
+  // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): SERVER-FIRST. The
+  // local checks below are the fast "can I even order this" pass (same as
+  // BuildPanel's); /assets/build re-validates everything, prices the build
+  // from ITS count + the persisted research list, ledgers money + materials
+  // (building_build / building_build_resources) and returns the instance's
+  // timing. Local state is only mutated on the 2xx, using the server's cost
+  // and timing; the materials are NOT attested through builtThisTick any
+  // more (the route ledgered them). 'local' keeps the pre-registry path.
   const handleBuild = useCallback((buildingId: string, locationId: string) => {
-    playSound('build_start');
-    setState(prev => {
-      if (!prev) return prev;
-      const def = BUILDING_MAP.get(buildingId);
-      if (!def) return prev;
-      const count = prev.buildings.filter(b => b.definitionId === buildingId && b.locationId === locationId).length;
-      // Audit A3 wiring note: research-tree's buildCostReduction (the
-      // largest keyword bucket in the research effect system — all
-      // cost-reducing rocketry/propulsion/infrastructure/crew/ships research)
-      // previously computed but was never applied to the actual build cost.
-      const { buildCostReduction } = getResearchBonuses(prev.completedResearch, prev.repeatableResearchLevels);
-      const cost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
-      if (prev.money < cost) { playSound('error'); return prev; }
-
-      // Balance Pass 4 (docs/BALANCE.md "Pass 4"): orbital-slot gate — a
-      // saturated pool (E7 requiresLeaseAuction) blocks NEW builds unless
-      // the player holds a slot lease (or the Frontier first-building
-      // exemption applies). BuildPanel disables the card with the reason;
-      // this is defense in depth for any other entrance.
-      const slotGate = checkOrbitalSlotGate(prev, locationId);
-      if (!slotGate.allowed) { playSound('error'); return prev; }
-
-      // Early-fab wave: per-corporation cap (fabrication_earth max 1).
-      // BuildPanel disables the card with the reason; defense in depth here.
-      if (!checkBuildingCap(prev.buildings, def).allowed) { playSound('error'); return prev; }
-
-      // Check resource costs
-      if (def.resourceCost) {
-        for (const [resId, qty] of Object.entries(def.resourceCost)) {
-          if ((prev.resources[resId] || 0) < qty) { playSound('error'); return prev; }
-        }
+    const cur = stateRef.current;
+    if (!cur) return;
+    const def = BUILDING_MAP.get(buildingId);
+    if (!def) return;
+    const count = cur.buildings.filter(b => b.definitionId === buildingId && b.locationId === locationId).length;
+    // Audit A3 wiring note: research-tree's buildCostReduction (the
+    // largest keyword bucket in the research effect system — all
+    // cost-reducing rocketry/propulsion/infrastructure/crew/ships research)
+    // previously computed but was never applied to the actual build cost.
+    const { buildCostReduction } = getResearchBonuses(cur.completedResearch, cur.repeatableResearchLevels);
+    const localCost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
+    if (cur.money < localCost) { playSound('error'); return; }
+    // Balance Pass 4 (docs/BALANCE.md "Pass 4"): orbital-slot gate — a
+    // saturated pool (E7 requiresLeaseAuction) blocks NEW builds unless
+    // the player holds a slot lease (or the Frontier first-building
+    // exemption applies). BuildPanel disables the card with the reason;
+    // this is defense in depth for any other entrance.
+    if (!checkOrbitalSlotGate(cur, locationId).allowed) { playSound('error'); return; }
+    // Early-fab wave: per-corporation cap (fabrication_earth max 1).
+    if (!checkBuildingCap(cur.buildings, def).allowed) { playSound('error'); return; }
+    if (def.resourceCost) {
+      for (const [resId, qty] of Object.entries(def.resourceCost)) {
+        if ((cur.resources[resId] || 0) < qty) { playSound('error'); return; }
       }
+    }
+    const instanceId = generateId();
+    playSound('click');
+    void requestAssetOp('build', { definitionId: buildingId, locationId, instanceId }, `${def.name} order`).then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Construction', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data : null;
+      setState(prev => {
+        if (!prev) return prev;
+        if (prev.buildings.some(b => b.instanceId === instanceId)) return prev; // idempotent
+        const countNow = prev.buildings.filter(b => b.definitionId === buildingId && b.locationId === locationId).length;
+        const { buildCostReduction: reductionNow } = getResearchBonuses(prev.completedResearch, prev.repeatableResearchLevels);
+        const cost = server && typeof server.cost === 'number'
+          ? server.cost
+          : Math.round(scaledBuildingCost(def.baseCost, countNow) * (1 - reductionNow));
+        const realDuration = server && typeof server.realDurationSeconds === 'number'
+          ? server.realDurationSeconds
+          : scaledBuildTime(def.realBuildSeconds, countNow);
+        const startedAtMs = server && typeof server.startedAtMs === 'number' ? server.startedAtMs : Date.now();
+        const serverCompletesAtMs = server && typeof server.completesAt === 'string' ? Date.parse(server.completesAt) : NaN;
 
-      // Deduct resources
-      const newResources = { ...prev.resources };
-      if (def.resourceCost) {
-        for (const [resId, qty] of Object.entries(def.resourceCost)) {
-          newResources[resId] = (newResources[resId] || 0) - qty;
+        // Deduct resources
+        const newResources = { ...prev.resources };
+        if (def.resourceCost) {
+          for (const [resId, qty] of Object.entries(def.resourceCost)) {
+            newResources[resId] = Math.max(0, (newResources[resId] || 0) - qty);
+          }
         }
-      }
 
-      const completionDate = advanceDate(prev.gameDate, def.buildTimeMonths);
-      const realDuration = scaledBuildTime(def.realBuildSeconds, count);
-      mapPing({ kind: 'location', id: locationId }, 'ack'); // Wave V7 — order-ack beacon at the build site
-      hapticAck();
-      return {
-        ...prev,
-        money: prev.money - cost,
-        totalSpent: prev.totalSpent + cost,
-        resources: newResources,
-        // Phase 2 (inventory-attestations.ts): attest the resource spend.
-        pendingInventoryAttestations: def.resourceCost
-          ? accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>)
-          : prev.pendingInventoryAttestations,
-        buildings: [...prev.buildings, {
-          instanceId: generateId(),
-          definitionId: buildingId,
-          locationId,
-          buildStartDate: prev.gameDate,
-          completionDate,
-          isComplete: false,
-          startedAtMs: Date.now(),
-          realDurationSeconds: realDuration,
-        }],
-        eventLog: [{
-          id: generateId(),
-          date: prev.gameDate,
-          type: 'build_complete' as const,
-          title: `Construction Started: ${def.name}`,
-          description: `Ready in ${formatDuration(realDuration)}. Cost: ${formatMoney(cost)}.`,
-        }, ...prev.eventLog].slice(0, 50),
-      };
+        const completionDate = advanceDate(prev.gameDate, def.buildTimeMonths);
+        playSound('build_start');
+        mapPing({ kind: 'location', id: locationId }, 'ack'); // Wave V7 — order-ack beacon at the build site
+        hapticAck();
+        return {
+          ...prev,
+          money: prev.money - cost,
+          totalSpent: prev.totalSpent + cost,
+          resources: newResources,
+          // Phase 2 (inventory-attestations.ts): attest the resource spend —
+          // ONLY on the local-only path; the registry ledgered it otherwise.
+          pendingInventoryAttestations: !server && def.resourceCost
+            ? accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>)
+            : prev.pendingInventoryAttestations,
+          buildings: [...prev.buildings, {
+            instanceId,
+            definitionId: buildingId,
+            locationId,
+            buildStartDate: prev.gameDate,
+            completionDate,
+            isComplete: false,
+            startedAtMs,
+            realDurationSeconds: realDuration,
+            ...(Number.isFinite(serverCompletesAtMs) ? { serverCompletesAtMs } : {}),
+          }],
+          eventLog: [{
+            id: generateId(),
+            date: prev.gameDate,
+            type: 'build_complete' as const,
+            title: `Construction Started: ${def.name}`,
+            description: `Ready in ${formatDuration(realDuration)}. Cost: ${formatMoney(cost)}.`,
+          }, ...prev.eventLog].slice(0, 50),
+        };
+      });
     });
   }, []);
 
@@ -1854,12 +1911,25 @@ export default function SpaceTycoonPage() {
   // routes T3+ buildings through a 1-game-month teardown instead of
   // vanishing instantly (matches the spec's "T3+ takes 1 game-month
   // teardown"). T1/T2 keep the old instant-scrap feel.
+  // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): SERVER-FIRST —
+  // /assets/sell flips the registry row to 'sold' and ledgers the recovery
+  // (building_decommission_recovery, money + materials); the local
+  // decommission (instant for T1/T2, one-game-month teardown for T3+) runs
+  // only on the 2xx. 'local' keeps the pre-registry path.
   const handleSellBuilding = useCallback((instanceId: string) => {
-    playSound('money');
-    setState(prev => {
-      if (!prev) return prev;
-      const monthIndex = getGlobalGameDate().totalMonths;
-      return decommissionBuilding(prev, instanceId, monthIndex);
+    const cur = stateRef.current;
+    if (!cur) return;
+    const bld = cur.buildings.find(b => b.instanceId === instanceId);
+    if (!bld || !bld.isComplete || isBuildingDecommissioning(bld)) { playSound('error'); return; }
+    playSound('click');
+    void requestAssetOp('sell', { instanceId }, 'decommission').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Decommission', () => playSound('error')); return; }
+      playSound('money');
+      setState(prev => {
+        if (!prev) return prev;
+        const monthIndex = getGlobalGameDate().totalMonths;
+        return decommissionBuilding(prev, instanceId, monthIndex);
+      });
     });
   }, []);
 
@@ -1867,23 +1937,41 @@ export default function SpaceTycoonPage() {
   // Wave M2: pause a building (zero revenue, zero consumption, 25%
   // maintenance) — the reversible "ride out a market crash" tool, as
   // distinct from decommission's irreversible scrap-for-partial-recovery.
+  // Phase 3 slice 1: SERVER-FIRST (/assets/mothball flips the registry row;
+  // /assets/reactivate charges the spin-up fee, building_reactivation_fee).
   const handleMothballBuilding = useCallback((instanceId: string) => {
+    const cur = stateRef.current;
+    if (!cur) return;
+    const bld = cur.buildings.find(b => b.instanceId === instanceId);
+    if (!bld || !bld.isComplete || !isBuildingOperational(bld)) { playSound('error'); return; }
     playSound('click');
-    setState(prev => {
-      if (!prev) return prev;
-      const monthIndex = getGlobalGameDate().totalMonths;
-      return mothballBuilding(prev, instanceId, monthIndex);
+    void requestAssetOp('mothball', { instanceId }, 'mothball').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Mothball', () => playSound('error')); return; }
+      setState(prev => {
+        if (!prev) return prev;
+        const monthIndex = getGlobalGameDate().totalMonths;
+        return mothballBuilding(prev, instanceId, monthIndex);
+      });
     });
   }, []);
 
   const handleReactivateBuilding = useCallback((instanceId: string) => {
+    const cur = stateRef.current;
+    if (!cur) return;
+    const bld = cur.buildings.find(b => b.instanceId === instanceId);
+    const def = bld ? BUILDING_MAP.get(bld.definitionId) : undefined;
+    if (!bld || !def || !isBuildingMothballed(bld)) { playSound('error'); return; }
+    if (cur.money < Math.round(def.baseCost * REACTIVATION_FEE_FRACTION)) { playSound('error'); return; } // can't afford the spin-up fee
     playSound('click');
-    setState(prev => {
-      if (!prev) return prev;
-      const monthIndex = getGlobalGameDate().totalMonths;
-      const next = reactivateBuilding(prev, instanceId, monthIndex);
-      if (next === prev) playSound('error'); // couldn't afford the spin-up fee
-      return next;
+    void requestAssetOp('reactivate', { instanceId }, 'reactivation').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Reactivation', () => playSound('error')); return; }
+      setState(prev => {
+        if (!prev) return prev;
+        const monthIndex = getGlobalGameDate().totalMonths;
+        const next = reactivateBuilding(prev, instanceId, monthIndex);
+        if (next === prev) playSound('error');
+        return next;
+      });
     });
   }, []);
 

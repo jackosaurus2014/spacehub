@@ -17,6 +17,8 @@ import type { GameState } from '@/lib/game/types';
 // picks them up on its next sync reconciliation instead of the payload being
 // discarded by the panel.
 import { isLedgerAvailable, recordLedger } from '@/lib/game/server-ledger';
+// Phase 3 slice 1: buildings come from the ServerAsset registry (server-assets.ts).
+import { loadServerBuildings } from '@/lib/game/server-assets';
 
 /**
  * POST /api/space-tycoon/speed-runs/check
@@ -97,6 +99,9 @@ export async function POST(request: Request) {
     // predicate in speed-runs.ts reads only money / buildings /
     // completedResearch / activeServices / unlockedLocations.
     const asArray = <T,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
+    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): buildings come from
+    // the ServerAsset registry (union in shadow, server rows only in enforce).
+    const registryBuildings = await loadServerBuildings(profile.id, profile.buildingsData);
     const state: GameState = {
       version: 1,
       createdAt: Date.now(),
@@ -106,7 +111,7 @@ export async function POST(request: Request) {
       totalSpent: Number.isFinite(profile.totalSpent) ? profile.totalSpent : 0,
       gameDate: { year: profile.gameYear || 2026, month: 1 },
       tickSpeed: 1,
-      buildings: asArray<GameState['buildings'][number]>(profile.buildingsData),
+      buildings: registryBuildings.buildings,
       completedResearch: Array.isArray(profile.completedResearchList) ? profile.completedResearchList : [],
       activeResearch: null,
       activeServices: asArray<GameState['activeServices'][number]>(profile.activeServicesData),

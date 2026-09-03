@@ -165,7 +165,24 @@ export type LedgerReason =
   | 'contract_penalty_received'
   | 'contract_resources_delivered'
   | 'contract_resources_received'
-  | 'arbitration_fee';
+  | 'arbitration_fee'
+  // Server-authoritative assets, phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md
+  // "Phase 3 slice 1 — buildings"): every building mutation is a paid server
+  // transaction that creates / flips a ServerAsset row. The client applies
+  // each of these locally on the 2xx (page.tsx handlers), so they sit in
+  // ledger-reconcile.ts CLIENT_APPLIED_LEDGER_REASONS (never returned as
+  // pending deltas) while their resource legs still fold into serverResources.
+  // building_build / building_refit / building_reactivation_fee /
+  // building_rush_repair are BURNED (BALANCE.md money sinks — no matching
+  // credit anywhere); building_decommission_recovery is the below-book
+  // scrap credit (mothball.ts computeDecommissionRecovery).
+  | 'building_build'
+  | 'building_build_resources'
+  | 'building_refit'
+  | 'building_refit_resources'
+  | 'building_decommission_recovery'
+  | 'building_reactivation_fee'
+  | 'building_rush_repair';
 
 export interface LedgerWrite {
   profileId: string;

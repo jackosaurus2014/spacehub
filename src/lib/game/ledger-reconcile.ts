@@ -75,6 +75,19 @@ export const CLIENT_APPLIED_LEDGER_REASONS = [
   'market_trade_buy_goods',
   'market_trade_sell_goods',
   'market_trade_sell_proceeds',
+  // Phase 3 slice 1 (server-authoritative buildings): the asset routes debit /
+  // credit the server columns and ledger every leg, but the CLIENT applies
+  // the build / refit / scrap / reactivation / repair locally on the 2xx
+  // (page.tsx handlers), so these rows never come back as pending deltas.
+  // Their resource legs are NOT stamped folded — they fold into
+  // serverResources like market_trade goods.
+  'building_build',
+  'building_build_resources',
+  'building_refit',
+  'building_refit_resources',
+  'building_decommission_recovery',
+  'building_reactivation_fee',
+  'building_rush_repair',
 ] as const;
 /** Every reason the client's pending-delta query must exclude. */
 export const PENDING_EXCLUDED_LEDGER_REASONS = [

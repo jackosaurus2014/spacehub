@@ -5,6 +5,8 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { MILESTONES } from '@/lib/game/milestones';
 import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
+// Phase 3 slice 1: live building facts read the ServerAsset registry (server-assets.ts).
+import { loadServerBuildings } from '@/lib/game/server-assets';
 import {
   verifyMilestone,
   MILESTONE_SNAPSHOT_AGE_MS,
@@ -132,11 +134,15 @@ export async function POST(request: NextRequest) {
       agedSnapshots = rows;
     } catch { /* table may lag — treated as "no aged snapshot" → 409 */ }
 
+    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): the LIVE building
+    // facts come from the ServerAsset registry (union in shadow, server rows
+    // only in enforce); the aged snapshots keep their column JSON.
+    const registryBuildings = await loadServerBuildings(profile.id, profile.buildingsData);
     const verification = verifyMilestone(
       milestoneId,
       {
         money: profile.money,
-        buildingsData: profile.buildingsData,
+        buildingsData: registryBuildings.buildings,
         activeServicesData: profile.activeServicesData,
         completedResearchList: profile.completedResearchList,
         unlockedLocationsList: profile.unlockedLocationsList,

@@ -13,6 +13,18 @@ export interface DevLogEntry {
 
 export const GAME_DEVLOG: DevLogEntry[] = [
   {
+    date: '2026-09-02', tag: 'economy',
+    title: 'Buildings are ordered through the corporate registry',
+    summary: 'Every build, refit, decommission, mothball, reactivation and rush repair is now a server transaction: the registry prices it, charges the wallet and materials through the same ledger every trade uses, and records the structure with a server completion time. Contracts, book value, zone influence, season challenges and milestone claims read that registry instead of the save file.',
+    changes: [
+      'What changed for you: nothing in the flow. The Build tab works as before. Orders confirm with the registry first; if the registry refuses (not enough cash, a contested orbit without a lease, a location that has not synced yet) the order is not placed and the reason is shown.',
+      'Why: until now the server learned about your buildings only from your save file, so a forged file could claim a fleet of stations it never paid for and have contracts, rankings and zone governorships believe it. A structure now exists server-side only because a paid transaction created it.',
+      'Existing corporations: your current buildings were adopted into the registry on your first sync after this release, exactly once, at no cost. Nothing was removed.',
+      'Completion times: the registry finishes a build on its own clock, which ignores workforce, commander and doctrine speed bonuses (they only ever make a build faster). Your local view can show a structure complete a little before the registry does; contract checks follow the registry.',
+      'Rollout: the registry runs in shadow this week (it records and compares, changes nothing). Once the comparison is clean it starts enforcing: a building the registry never sold you is removed on the next sync.',
+    ],
+  },
+  {
     date: '2026-09-02', tag: 'balance',
     title: 'First quarterly balance report published',
     summary: 'The public economic health report promised in the policy is now live: the 50-year balance simulation re-run on the unified clock with and without Mark-II refits, the first flagship payback measured in practice, inequality by decade, the live world as it actually is (two corporations), and what is watched next quarter. Every figure is sourced; nothing is estimated.',

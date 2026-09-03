@@ -241,6 +241,13 @@ export interface BuildingInstance {
   markUpgradeTarget?: number;
   markUpgradeStartedAtMs?: number;
   markUpgradeDurationSeconds?: number;
+  /** Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 —
+   *  buildings"): the SERVER's completion time for this instance, from the
+   *  /assets/build (or /refit) response. Conservative — it ignores the
+   *  client-only speed multipliers — so the local tick may show the
+   *  structure complete a little before the registry does. Informational;
+   *  not persisted by the sync (sync-validation drops it). */
+  serverCompletesAtMs?: number;
 }
 
 // ─── Research ───────────────────────────────────────────────────────────────
