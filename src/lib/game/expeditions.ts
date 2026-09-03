@@ -424,7 +424,13 @@ export function launchExpedition(
   const money = state.money - costs.totalMoneyCost;
   const totalSpent = state.totalSpent + costs.totalMoneyCost;
 
-  // Consume inventory fuel.
+  // Consume inventory fuel. Row 13 note (location-aware inventory): expedition
+  // supplies stay on the HOME pool by design — interstellar missions stage
+  // out of the Earth cluster, so their exotic fuel and consumables have to be
+  // physically at Earth. Colony-refined exotic fuel reaches this pool the same
+  // way any remote good does: an interstellar trade route (or a freighter)
+  // brings it home first. That is the intended logistics cost, not an
+  // oversight.
   const resources = { ...(state.resources || {}) };
   if (costs.fuelFromInventory > 0) {
     resources.exotic_fuel = (resources.exotic_fuel || 0) - costs.fuelFromInventory;
@@ -563,6 +569,11 @@ export function establishColony(
   expeditionId: string,
   name?: string,
   now: number = Date.now(),
+  /** Row 12 (signal lag, docs/GAME_DESIGN_REVIEW_2026-09.md §2): when the
+   *  founding fee already left at order-transmission time
+   *  (interstellar-commands.ts), the arrival must not charge it twice.
+   *  Default false keeps every direct/legacy call identical. */
+  opts: { prepaid?: boolean } = {},
 ): ColonyResult | ColonyError {
   const expeditions = state.expeditions || [];
   const exp = expeditions.find(e => e.id === expeditionId);
@@ -576,7 +587,8 @@ export function establishColony(
   if ((state.interstellarColonies || []).some(c => c.systemId === system.id)) {
     return { ok: false, reason: 'colony_already_exists_here' };
   }
-  if (state.money < COLONY_FOUNDING_COST) {
+  const foundingCharge = opts.prepaid ? 0 : COLONY_FOUNDING_COST;
+  if (state.money < foundingCharge) {
     return { ok: false, reason: 'insufficient_funds', detail: `Founding requires ${formatMoney(COLONY_FOUNDING_COST)}.` };
   }
 
@@ -629,8 +641,8 @@ export function establishColony(
 
   const newState: GameState = {
     ...state,
-    money: state.money - COLONY_FOUNDING_COST,
-    totalSpent: state.totalSpent + COLONY_FOUNDING_COST,
+    money: state.money - foundingCharge,
+    totalSpent: state.totalSpent + foundingCharge,
     expeditions: updatedExpeditions,
     interstellarColonies: [...(state.interstellarColonies || []), colony],
     ships,
@@ -655,6 +667,8 @@ export function getColonyUpgradeCost(currentLevel: number): number {
 export function upgradeColony(
   state: GameState,
   colonyId: string,
+  /** Row 12 (signal lag): fee already paid at transmission — see establishColony. */
+  opts: { prepaid?: boolean } = {},
 ): { ok: true; state: GameState } | UpgradeError {
   const colonies = state.interstellarColonies || [];
   const colony = colonies.find(c => c.id === colonyId);
@@ -672,7 +686,8 @@ export function upgradeColony(
   }
 
   const cost = getColonyUpgradeCost(colony.infrastructureLevel);
-  if (state.money < cost) {
+  const upgradeCharge = opts.prepaid ? 0 : cost;
+  if (state.money < upgradeCharge) {
     return { ok: false, reason: 'insufficient_funds', detail: `Upgrade requires ${formatMoney(cost)}.` };
   }
 
@@ -694,8 +709,8 @@ export function upgradeColony(
     ok: true,
     state: {
       ...state,
-      money: state.money - cost,
-      totalSpent: state.totalSpent + cost,
+      money: state.money - upgradeCharge,
+      totalSpent: state.totalSpent + upgradeCharge,
       interstellarColonies: updated,
       eventLog: [{
         id: generateId(),
@@ -721,6 +736,8 @@ export function establishTradeRoute(
   colonyId: string,
   resourceId: string,
   now: number = Date.now(),
+  /** Row 12 (signal lag): fee already paid at transmission — see establishColony. */
+  opts: { prepaid?: boolean } = {},
 ): { ok: true; state: GameState; route: InterstellarTradeRouteState } | TradeRouteError {
   const colony = (state.interstellarColonies || []).find(c => c.id === colonyId);
   if (!colony) return { ok: false, reason: 'colony_not_found' };
@@ -731,7 +748,8 @@ export function establishTradeRoute(
     r => r.colonyId === colonyId && r.resourceId === resourceId,
   );
   if (existing) return { ok: false, reason: 'route_already_exists' };
-  if (state.money < TRADE_ROUTE_SETUP_COST) {
+  const setupCharge = opts.prepaid ? 0 : TRADE_ROUTE_SETUP_COST;
+  if (state.money < setupCharge) {
     return { ok: false, reason: 'insufficient_funds', detail: `Route setup requires ${formatMoney(TRADE_ROUTE_SETUP_COST)}.` };
   }
 
@@ -763,8 +781,8 @@ export function establishTradeRoute(
     route,
     state: {
       ...state,
-      money: state.money - TRADE_ROUTE_SETUP_COST,
-      totalSpent: state.totalSpent + TRADE_ROUTE_SETUP_COST,
+      money: state.money - setupCharge,
+      totalSpent: state.totalSpent + setupCharge,
       interstellarTradeRoutes: [...(state.interstellarTradeRoutes || []), route],
       eventLog: [{
         id: generateId(),

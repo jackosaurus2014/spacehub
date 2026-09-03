@@ -33,8 +33,8 @@
 // Session-design fit (SESSION_DESIGN.md): wage index is explicitly a WEEKLY
 // loop item (§7), not daily — the cron/job cadence below matches.
 
-import type { WorkerType, WorkforceState } from './workforce';
-import { WORKER_TYPES, WORKER_MAP, getHireCost } from './workforce';
+import type { WorkerType, WorkforceState, RequiredCrew } from './workforce';
+import { WORKER_TYPES, WORKER_MAP, getHireCost, getRequiredCrew } from './workforce';
 import { BUILDING_MAP, getBuildingDerivedStats } from './buildings';
 import { isInFrontier } from './frontier';
 import type { GameState } from './types';
@@ -113,6 +113,16 @@ export interface LaborActivitySummary {
   /** Sum of getBuildingDerivedStats(def).crewQuarters across this profile's
    *  COMPLETED buildings. */
   crewQuarters: number;
+  /** Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): the headcount this
+   *  profile's COMPLETE buildings and BUILT hulls actually require
+   *  (workforce.ts getRequiredCrew). Before per-building crew existed, labor
+   *  demand was just "who happens to be hired", which capped near ~19 heads
+   *  per corporation no matter how large the fleet — so the wage index could
+   *  only move with server population (BALANCE.md H2). Demand is now
+   *  max(hired, required): an UNFILLED position still bids for labor, which
+   *  is what makes a build-out raise wages for everyone. Absent = pre-Row-6
+   *  behaviour (hired headcount only). */
+  requiredHeadcount?: RequiredCrew;
 }
 
 export interface LaborAggregate {
@@ -120,9 +130,13 @@ export interface LaborAggregate {
   /** Raw (unmitigated) headcount across all summaries — the honest
    *  "how many of this type are employed server-wide" figure shown in UI. */
   employedRaw: number;
-  /** Training-mitigated headcount — the figure the wage index is actually
-   *  computed from. */
+  /** Training-mitigated headcount. */
   employedEffective: number;
+  /** Row 6: raw required headcount (filled + unfilled) server-wide. */
+  requiredRaw: number;
+  /** Row 6: the figure the wage index is actually computed from —
+   *  max(employedEffective, requiredEffective), both training-mitigated. */
+  demandEffective: number;
   supply: number;
   index: number;
 }
@@ -136,6 +150,8 @@ export function computeLaborAggregates(summaries: LaborActivitySummary[]): Map<W
   let crewQuartersServerWide = 0;
   const rawByType = new Map<WorkerType, number>();
   const effectiveByType = new Map<WorkerType, number>();
+  const requiredRawByType = new Map<WorkerType, number>();
+  const requiredEffByType = new Map<WorkerType, number>();
 
   for (const s of summaries) {
     crewQuartersServerWide += Math.max(0, s.crewQuarters || 0);
@@ -143,9 +159,16 @@ export function computeLaborAggregates(summaries: LaborActivitySummary[]): Map<W
     const mitigation = training * TRAINING_HEADCOUNT_MITIGATION_CAP;
     for (const wDef of WORKER_TYPES) {
       const n = Math.max(0, s.headcount[wDef.type] || 0);
-      if (n === 0) continue;
-      rawByType.set(wDef.type, (rawByType.get(wDef.type) || 0) + n);
-      effectiveByType.set(wDef.type, (effectiveByType.get(wDef.type) || 0) + n * (1 - mitigation));
+      if (n > 0) {
+        rawByType.set(wDef.type, (rawByType.get(wDef.type) || 0) + n);
+        effectiveByType.set(wDef.type, (effectiveByType.get(wDef.type) || 0) + n * (1 - mitigation));
+      }
+      // Row 6: open positions bid for labor too.
+      const req = Math.max(0, s.requiredHeadcount?.[wDef.type] || 0);
+      if (req > 0) {
+        requiredRawByType.set(wDef.type, (requiredRawByType.get(wDef.type) || 0) + req);
+        requiredEffByType.set(wDef.type, (requiredEffByType.get(wDef.type) || 0) + req * (1 - mitigation));
+      }
     }
   }
 
@@ -153,15 +176,38 @@ export function computeLaborAggregates(summaries: LaborActivitySummary[]): Map<W
   for (const wDef of WORKER_TYPES) {
     const supply = laborSupply(wDef.type, crewQuartersServerWide);
     const employedEffective = effectiveByType.get(wDef.type) || 0;
+    const requiredEffective = requiredEffByType.get(wDef.type) || 0;
+    const demandEffective = Math.max(employedEffective, requiredEffective);
     out.set(wDef.type, {
       type: wDef.type,
       employedRaw: rawByType.get(wDef.type) || 0,
       employedEffective,
+      requiredRaw: requiredRawByType.get(wDef.type) || 0,
+      demandEffective,
       supply,
-      index: computeWageIndex(employedEffective, supply),
+      index: computeWageIndex(demandEffective, supply),
     });
   }
   return out;
+}
+
+/** Row 6: a profile's required headcount from its persisted asset lists —
+ *  the shape the weekly labor job and the tests both feed into
+ *  LaborActivitySummary.requiredHeadcount. Thin wrapper over
+ *  workforce.ts getRequiredCrew so the cron and the client tick can never
+ *  disagree about what a fleet demands. */
+export function requiredHeadcountFor(
+  buildings: { definitionId: string; isComplete?: boolean; status?: string }[],
+  ships: { definitionId: string; isBuilt?: boolean }[] = [],
+): RequiredCrew {
+  return getRequiredCrew(
+    buildings.map(b => ({
+      definitionId: b.definitionId,
+      isComplete: b.isComplete !== false,
+      status: b.status as never,
+    })),
+    ships.map(sh => ({ definitionId: sh.definitionId, isBuilt: sh.isBuilt !== false })),
+  );
 }
 
 /** Read a synced-profile's raw workforceData JSON into the bare

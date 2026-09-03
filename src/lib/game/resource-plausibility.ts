@@ -47,7 +47,7 @@ import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier } from './upgrades';
 import { getMarkRevenueMultiplier } from './mark-upgrades'; // D4: persisted markLevel on the buildings row
 import { getResearchBonuses } from './research-tree';
-import { getWorkforceBonuses } from './workforce';
+import { getWorkforceBonuses, getStaffingEfficiency, STAFFING_FLOOR } from './workforce';
 import { getMiningRevenueScale } from './mining-pricing';
 import { SUBSIDIARY_DEFS } from './subsidiaries';
 
@@ -533,13 +533,26 @@ export function computeMaxProductionPerMonth(state: GameState, monthIndex?: numb
     // and only reachable with corrupt data; the shadow week will surface it).
     return out;
   }
+  // Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): the flow lens now
+  // multiplies mining by the crew-staffing efficiency (0.5–1.0). A CEILING
+  // must not: the player can hire crew at any moment between syncs, so the
+  // upper bound is the fully-crewed figure. Dividing the term straight back
+  // out keeps the ceiling exactly as tight as it was before crew existed
+  // (never looser — the quotient is 1 for a fully-staffed corporation).
+  const staffingDivisor = Math.max(
+    STAFFING_FLOOR,
+    Math.min(1, getStaffingEfficiency(state, false) || 1),
+  );
   for (const flow of report.flows) {
     let total = 0;
     for (const c of flow.contributions) {
       if (c.perMonth <= 0) continue;
       const mult = CLIENT_MULT_BY_KIND[c.kind];
       if (!mult) continue;
-      total += c.perMonth * mult;
+      const staffingNeutral = (c.kind === 'mining' || c.kind === 'ship_mining')
+        ? c.perMonth / staffingDivisor
+        : c.perMonth;
+      total += staffingNeutral * mult;
     }
     if (total > 0) out[flow.resourceId] = total;
   }

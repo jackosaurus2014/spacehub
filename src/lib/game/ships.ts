@@ -68,6 +68,45 @@ export interface ShipDefinition {
   /** Phase I: optional per-ship overrides for any of the derived stats.
    *  Values not specified here are filled in by role+tier defaults. */
   stats?: Partial<ShipDerivedStats>;
+  /** Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): the hull's flight
+   *  crew, by role. Absent = derived from `crewRequired` (the role+tier stat
+   *  every hull already has) via getShipCrew — authoring this field is only
+   *  needed when a hull's split differs from its role's default. */
+  crew?: ShipCrew;
+}
+
+/** Row 6: a hull's flight crew. Ships draw on pilots and engineers; miners,
+ *  operators and scientists are station/building crew. */
+export interface ShipCrew {
+  pilots?: number;
+  engineers?: number;
+}
+
+/** How each role splits its `crewRequired` between pilots and engineers.
+ *  Survey ships are mostly pilots-and-sensors; maintenance tugs are mostly
+ *  engineers with a stick. */
+export const SHIP_CREW_PILOT_SHARE: Readonly<Record<ShipRole, number>> = {
+  transport: 0.5,
+  tanker: 0.5,
+  survey: 0.7,
+  mining: 0.4,
+  maintenance: 0.3,
+};
+
+/**
+ * Row 6: the flight crew a built hull requires. Reuses the hull's existing
+ * `crewRequired` derived stat (ShipDerivedStats — authored per hull or filled
+ * from the role+tier profile) rather than inventing a second headcount, so a
+ * heavier hull automatically asks for more people. At least one pilot on any
+ * hull that needs a crew at all.
+ */
+export function getShipCrew(def: ShipDefinition): ShipCrew {
+  if (def.crew) return def.crew;
+  const total = Math.max(0, Math.round(getShipDerivedStats(def).crewRequired || 0));
+  if (total <= 0) return {};
+  const pilots = Math.max(1, Math.round(total * (SHIP_CREW_PILOT_SHARE[def.role] ?? 0.5)));
+  const engineers = Math.max(0, total - pilots);
+  return engineers > 0 ? { pilots, engineers } : { pilots };
 }
 
 /**

@@ -8,6 +8,9 @@
 // deferred; declaring the data here lets UI and future waves depend on it.
 
 import type { SolarSystemLocation } from './types';
+// Row 12 (signal lag): the lag rate is quoted in game-months, so it is
+// derived from the ONE world-clock constant rather than a shadow copy.
+import { REAL_SECONDS_PER_GAME_MONTH } from './server-time';
 
 // ─── Interstellar waypoints ──────────────────────────────────────────────────
 // Five initial star systems reachable with jump-drive tech. Distances in
@@ -136,21 +139,76 @@ export const EXOTIC_FUEL_RESOURCE = {
   npcRestockPerHour: 0,
 } as const;
 
-// ─── Signal lag (future integration) ─────────────────────────────────────────
-// Interstellar operations have real delay. A ship sent to Proxima can't be
-// redirected mid-transit without an 8.5-year round-trip signal. The lag
-// mechanic simulates this by:
-//   - Queueing commands with "command send timestamp"
-//   - Commands executed at "arrival time" = sendTime + signalRoundTripMinutes
-//   - Player can see status but not react instantly
+// ─── Signal lag (row 12, 2026-09-02) ────────────────────────────────────────
+// docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 12. Interstellar operations have
+// real delay: a colony at Proxima cannot be told to break ground the instant
+// the player clicks. Every order aimed at an asset in ANOTHER star system is
+// transmitted, not executed — it sits in `state.pendingInterstellarCommands`
+// until its light-lag has elapsed, and the engine tick applies it then.
+//
+// Lag rate (BALANCE.md "Signal lag"): 2 game-months per light-year. On the
+// unified world clock (server-time.ts, 6 real hours per game-month) that is
+// 12 real hours per light-year — Proxima at 4.24 ly ≈ 2.1 real days, Sirius
+// at 8.60 ly ≈ 4.3 days. Deliberately NOT the physical 4.24-year one-way
+// round trip: this is a campaign-loop texture knob (days, not decades), tuned
+// so an order issued in one session lands in a later one.
+//
+// Rules, per the founder-approved row:
+//   • Fees leave at ISSUE time through the existing ledger paths (the order
+//     was paid for when it was sent).
+//   • A command is cancellable until it executes — with NO refund. Recalling
+//     a transmission does not un-spend the money that bought the mission.
+//   • Execution is idempotent on the executing side (each command is removed
+//     from the queue as it is applied).
+//
+// Sol-side assets are unaffected: nothing inside the heliopause queues here.
+
+/** Game-months of signal lag per light-year of distance. */
+export const SIGNAL_LAG_GAME_MONTHS_PER_LY = 2;
+
+/** Real milliseconds of signal lag per light-year (2 game-months × the world
+ *  clock's 6-real-hour game-month = 12 real hours per ly). */
+export const LIGHT_LAG_PER_LY_MS = SIGNAL_LAG_GAME_MONTHS_PER_LY * REAL_SECONDS_PER_GAME_MONTH * 1000;
+
+/** Every order shape that can be sent across interstellar distance. */
+export type InterstellarCommandKind =
+  | 'found_colony'
+  | 'upgrade_colony'
+  | 'establish_trade_route'
+  | 'set_trade_route_status'
+  | 'recall_expedition';
 
 export interface PendingInterstellarCommand {
   id: string;
-  shipInstanceId: string;
+  kind: InterstellarCommandKind;
+  /** Destination system — what sets the lag. */
   targetSystemId: string;
-  command: 'depart' | 'return' | 'abort';
+  distanceLy: number;
+  /** Money already debited at issue time (0 for free orders). Never refunded. */
+  feePaid: number;
   sentAtMs: number;
-  arrivesAtMs: number;
+  /** Wall-clock instant the order arrives and is applied by the tick. */
+  executeAtMs: number;
+  /** Player-facing one-liner for the queue chip / panel row. */
+  label: string;
+  /** Per-kind arguments; only the fields that kind needs are set. */
+  expeditionId?: string;
+  colonyId?: string;
+  tradeRouteId?: string;
+  resourceId?: string;
+  colonyName?: string;
+  routeStatus?: 'active' | 'suspended';
+}
+
+/** Signal lag for a distance in light-years, in real milliseconds. */
+export function getSignalLagMs(distanceLy: number): number {
+  return Math.round(Math.max(0, distanceLy) * LIGHT_LAG_PER_LY_MS);
+}
+
+/** Signal lag to a known system (0 for an unknown id — never block an order
+ *  on a data gap). */
+export function getSystemSignalLagMs(systemId: string): number {
+  return getSignalLagMs(INTERSTELLAR_SYSTEM_MAP.get(systemId)?.distanceLy ?? 0);
 }
 
 // ─── First-contact events ───────────────────────────────────────────────────

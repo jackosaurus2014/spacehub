@@ -5,6 +5,12 @@ import type { GameState } from '@/lib/game/types';
 import { PRODUCTION_CHAINS, CRAFTED_PRODUCT_IDS, getCraftedProductValue, canFabricate } from '@/lib/game/production-chains';
 import { RESEARCH_MAP } from '@/lib/game/research-tree';
 import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
+import { LOCATION_MAP } from '@/lib/game/solar-system';
+// Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, location-aware inventory): a
+// craft runs at a real plant. Inputs are drawn from THAT site's stockpile and
+// the finished batch is credited back there — so the card has to quote the
+// plant's pool, not a corporation-wide total that may sit 4 AU away.
+import { chooseFabricationSite, getLocationStock, isLocationEconomyActive, isHomeLocation } from '@/lib/game/cargo-logistics';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
@@ -265,8 +271,15 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
             ) : (
               <div className="grid md:grid-cols-2 gap-2 mb-4">
                 {availableRecipes.map(recipe => {
+                  // Row 13: which plant would run this, and what does IT hold?
+                  const siting = chooseFabricationSite(state, recipe);
+                  const site = siting.locationId;
+                  const siteLocal = !!site && isLocationEconomyActive(state) && !isHomeLocation(site);
+                  const stockAt = (resId: string) => siteLocal && site
+                    ? getLocationStock(state, site, resId)
+                    : (allResources[resId] || 0);
                   const hasInputs = Object.entries(recipe.inputs).every(
-                    ([resId, qty]) => (allResources[resId] || 0) >= qty
+                    ([resId, qty]) => stockAt(resId) >= qty
                   );
                   // Crafting queue (2026-08-31): while a craft runs, the
                   // button QUEUES (cap 5) instead of being dead — inputs are
@@ -287,7 +300,7 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
                       {/* Inputs → Output */}
                       <div className="flex items-center gap-1.5 mb-2 flex-wrap">
                         {Object.entries(recipe.inputs).map(([resId, qty]) => {
-                          const have = allResources[resId] || 0;
+                          const have = stockAt(resId);
                           const short = have < qty;
                           return (
                             <span key={resId} className={`text-[10px] px-1 py-0.5 rounded border ${
@@ -306,6 +319,12 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
                           {craftingSpeedMult > 1 ? (
                             <><span className="line-through opacity-50">{formatDuration(recipe.timeSeconds)}</span>{' '}<span className="text-cyan-400">{formatDuration(Math.round(recipe.timeSeconds / craftingSpeedMult))}</span></>
                           ) : formatDuration(recipe.timeSeconds)} · Sells for {formatMoney(getCraftedProductValue(recipe, state.marketSnapshot?.prices))}/u
+                          {siteLocal && site && (
+                            <div className="text-slate-500">
+                              Runs at {LOCATION_MAP.get(site)?.name || site} — inputs drawn there, output stored there.
+                              {!siting.inputsOnSite && ' Haul the missing inputs in first.'}
+                            </div>
+                          )}
                         </div>
                         <button
                           onClick={() => { if (canCraft) { playSound('build_start'); onStartCrafting(recipe.id); } }}

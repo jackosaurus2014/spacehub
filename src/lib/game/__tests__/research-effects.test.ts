@@ -23,9 +23,21 @@ import {
   getResearchBonuses,
   getResearchMechanicalEffect,
   inferEffectsFromFlavor,
+  scaleResearchEffect,
   type ResearchBonuses,
 } from '../research-tree';
 import type { ResearchDefinition, ResearchEffectType } from '../types';
+
+// ─── Row 8 (docs/BALANCE.md "Inert techs rework (2026-09-02)") ──────────────
+// Authored magnitudes in EFFECTS_BY_ID are UNCHANGED; what a tech GRANTS is
+// now the authored magnitude × RESEARCH_BUCKET_MAGNITUDE_SCALE[bucket],
+// floored at RESEARCH_MIN_EFFECT_MAGNITUDE. The assertions below therefore
+// derive their expected numbers from scaleResearchEffect rather than
+// hard-coding the pre-rework figures — so a future magnitude re-tune moves
+// the test with the game instead of breaking it.
+const pctOf = (type: Parameters<typeof scaleResearchEffect>[0]['type'], magnitude: number) =>
+  (scaleResearchEffect({ type, magnitude }).magnitude * 100).toFixed(1);
+
 
 // ─── 1. Completeness ────────────────────────────────────────────────────────
 
@@ -144,30 +156,30 @@ describe('W1 precedence — def.effects beats inferEffectsFromFlavor', () => {
   test('explicit effects of a DIFFERENT type than the flavor implies are used as-is', () => {
     const def = makeDef({ effects: [{ type: 'revenue', magnitude: 0.15 }] });
     // Flavor says "mining", explicit says "revenue" — explicit must win.
-    expect(getResearchMechanicalEffect(def)).toBe('+15.0% service revenue');
+    expect(getResearchMechanicalEffect(def)).toBe(`+${pctOf('revenue', 0.15)}% service revenue`);
     expect(getResearchMechanicalEffect(def)).not.toContain('mining');
   });
 
   test('explicit effects magnitude is respected (not re-derived from flavor "90%")', () => {
     const def = makeDef({ effects: [{ type: 'mining', magnitude: 0.12 }] });
-    expect(getResearchMechanicalEffect(def)).toBe('+12.0% mining output');
+    expect(getResearchMechanicalEffect(def)).toBe(`+${pctOf('mining', 0.12)}% mining output`);
   });
 
   test('explicit effects are still clamped to PER_EFFECT_CAP even if authored above it', () => {
     const def = makeDef({ effects: [{ type: 'mining', magnitude: 0.99 }] });
-    expect(getResearchMechanicalEffect(def)).toBe('+30.0% mining output');
+    expect(getResearchMechanicalEffect(def)).toBe(`+${pctOf('mining', PER_EFFECT_CAP)}% mining output`);
   });
 
   test('without explicit effects, falls back to the flavor-text parser', () => {
     const def = makeDef({ effects: undefined, effect: '+18% mining yield' });
-    expect(getResearchMechanicalEffect(def)).toBe('+18.0% mining output');
+    expect(getResearchMechanicalEffect(def)).toBe(`+${pctOf('mining', 0.18)}% mining output`);
     expect(inferEffectsFromFlavor(def.effect)).toEqual([{ type: 'mining', magnitude: 0.18 }]);
   });
 
   test('without explicit effects AND unparseable flavor, falls back to the legacy category-tier formula', () => {
     const def = makeDef({ effects: undefined, effect: 'Enables something with no numbers', category: 'rocketry', tier: 3 });
     // legacy formula: rocketry -> buildCost @ tier*0.02 = 0.06
-    expect(getResearchMechanicalEffect(def)).toBe('-6.0% building cost');
+    expect(getResearchMechanicalEffect(def)).toBe(`-${pctOf('buildCost', 0.06)}% building cost`);
   });
 
   test('every real tech in RESEARCH resolves via the explicit-effects path, not the parser fallback', () => {
@@ -194,14 +206,14 @@ describe('W1 before/after — honest flavor text matches what resolves', () => {
   test('reusable_boosters: was "-40% launch cost" (over cap), now honest -30%', () => {
     const def = RESEARCH_MAP.get('reusable_boosters')!;
     expect(def.effect).toBe('-30% launch cost');
-    expect(getResearchMechanicalEffect(def)).toBe('-30.0% building cost');
+    expect(getResearchMechanicalEffect(def)).toBe(`-${pctOf('buildCost', 0.30)}% building cost`);
   });
 
   test('automated_mining_fleet: was "5x mining revenue" (would silently resolve to +30%), now says +30%', () => {
     const def = RESEARCH_MAP.get('automated_mining_fleet')!;
     expect(def.effect).toBe('+30% mining revenue');
     expect(def.effect).not.toMatch(/\dx/);
-    expect(getResearchMechanicalEffect(def)).toBe('+30.0% mining output');
+    expect(getResearchMechanicalEffect(def)).toBe(`+${pctOf('mining', 0.30)}% mining output`);
   });
 
   test('fusion_reactor: was "10x power" (900% overpromise), now honest +30%', () => {

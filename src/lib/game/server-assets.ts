@@ -82,8 +82,12 @@ export const LIVE_ASSET_STATUSES: readonly string[] = ['pending', 'complete', 'm
 /** Wave-B build-speed cap (game-engine.ts §3) — research is the only term of
  *  that product the server can evaluate from persisted columns. */
 export const MAX_SERVER_BUILD_SPEED_MULT = 2.0;
-/** research-tree.ts getResearchBonuses caps researchSpeedBonus at +50%. */
-export const MAX_SERVER_RESEARCH_SPEED_MULT = 1.5;
+/** research-tree.ts getResearchBonuses caps researchSpeedBonus at +50% at
+ *  corporation tier 1 and, since Row 8 (docs/BALANCE.md "Inert techs rework
+ *  (2026-09-02)"), at +95% at tier 7 (base × (1 + 0.15 × (tier − 1))). The
+ *  server ceiling tracks the highest reachable cap so a tier-7 corporation's
+ *  quote can never come back SLOWER than the client's preview. */
+export const MAX_SERVER_RESEARCH_SPEED_MULT = 1.95;
 /** Ship scrap recovery (page.tsx handleScrapShip: 30 % of baseCost). */
 export const SHIP_SCRAP_RECOVERY_FRACTION = 0.3;
 /** The research that opens the second queue (page.tsx handleStartResearch). */
@@ -131,10 +135,15 @@ export function computeServerBuildCost(
   def: Pick<BuildingDefinition, 'baseCost'>,
   countAtLocation: number,
   completedResearch: readonly string[],
+  /** Row 8: the corporation tier that sets the aggregate caps. Callers pass
+   *  corporation-tiers.ts tierFromProfileScalars(profile) — derived from
+   *  PERSISTED scalars, never from a client-supplied number. Omitted = tier 1
+   *  = the pre-Row-8 caps. */
+  corporationTier: number = 1,
 ): ServerBuildCost {
   let buildCostReduction = 0;
   try {
-    const b = getResearchBonuses(Array.isArray(completedResearch) ? [...completedResearch] : [], undefined);
+    const b = getResearchBonuses(Array.isArray(completedResearch) ? [...completedResearch] : [], undefined, corporationTier);
     buildCostReduction = Math.min(0.9, Math.max(0, b.buildCostReduction || 0));
   } catch { buildCostReduction = 0; }
   const count = Math.max(0, Math.floor(countAtLocation));
@@ -170,11 +179,13 @@ export function computeServerBuildDuration(
   def: Pick<BuildingDefinition, 'realBuildSeconds'>,
   countAtLocation: number,
   completedResearch: readonly string[],
+  /** Row 8: see computeServerBuildCost. */
+  corporationTier: number = 1,
 ): ServerBuildDuration {
   const baseSeconds = Math.max(1, scaledBuildTime(def.realBuildSeconds, Math.max(0, Math.floor(countAtLocation))));
   let researchBuildSpeedMult = 1;
   try {
-    const b = getResearchBonuses(Array.isArray(completedResearch) ? [...completedResearch] : [], undefined);
+    const b = getResearchBonuses(Array.isArray(completedResearch) ? [...completedResearch] : [], undefined, corporationTier);
     researchBuildSpeedMult = Math.min(MAX_SERVER_BUILD_SPEED_MULT, Math.max(1, 1 + (b.buildSpeedBonus || 0)));
   } catch { researchBuildSpeedMult = 1; }
   const serverSeconds = Math.max(1, Math.ceil(baseSeconds / (researchBuildSpeedMult * DEV_FAST_MULTIPLIER)));
@@ -665,7 +676,8 @@ export interface ServerResearchQuote {
  *
  * Duration: the client's `researchSpeedMult` product has eleven terms; the
  * only one the server can evaluate from persisted columns is the research
- * `researchSpeedBonus` (capped 1.5). Every other term is >= 1 on the
+ * `researchSpeedBonus` (capped 1.5 at tier 1, 1.95 at tier 7 since Row 8).
+ * Every other term is >= 1 on the
  * client (workforce, legacy, era, reputation, commanders, doctrine, boosts,
  * Wave-B pack, capabilities), so the server figure is the conservative
  * (slower-or-equal) value — same posture as computeServerBuildDuration.
@@ -674,6 +686,8 @@ export function computeServerResearchQuote(
   def: ResearchDefinition,
   completedResearch: readonly string[],
   repeatableLevel: number = 0,
+  /** Row 8: see computeServerBuildCost. */
+  corporationTier: number = 1,
 ): ServerResearchQuote {
   const completed = Array.isArray(completedResearch) ? [...completedResearch] : [];
   const level = Math.max(0, Math.floor(repeatableLevel));
@@ -684,7 +698,7 @@ export function computeServerResearchQuote(
   });
   let researchSpeedMult = 1;
   try {
-    const b = getResearchBonuses(completed, undefined);
+    const b = getResearchBonuses(completed, undefined, corporationTier);
     researchSpeedMult = Math.min(MAX_SERVER_RESEARCH_SPEED_MULT, Math.max(1, 1 + (b.researchSpeedBonus || 0)));
   } catch { researchSpeedMult = 1; }
   const effectiveSeconds = Math.max(1, Math.round(disp.effectiveRealDurationSeconds));

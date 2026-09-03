@@ -41,6 +41,102 @@ const TIER_RESEARCH_RESOURCES: Record<number, Record<string, number>> = {
 
 type RawResearch = Omit<ResearchDefinition, 'realResearchSeconds' | 'resourceCost'>;
 
+// ─── Row 8: inert-tech rework (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 8;
+// docs/BALANCE.md "Inert techs rework (2026-09-02)") ────────────────────────
+// The aggregate buckets below used to be FLAT: serviceRevenue capped at 0.50
+// while PER_EFFECT_CAP allowed 0.30 per tech, so TWO revenue techs saturated
+// the bucket and the other ~50 revenue techs were worth exactly +0.00% — some
+// of them $15B. The rework keeps the caps (BALANCE.md's "no frictionless
+// stacking" thesis is untouched) but makes them GROW with corporation tier,
+// and lowers the per-tech magnitudes in the crowded buckets so a full
+// research CATEGORY's contribution lands near the tier-7 cap instead of two
+// techs doing it.
+//
+//   cap(bucket, tier) = base(bucket) × (1 + 0.15 × (tier − 1))
+//
+// so the tier-7 revenue cap is 0.50 × 1.9 = 0.95 and the tier-1 cap is
+// exactly today's 0.50 (a starting corporation sees NO change).
+
+/** Tier-1 aggregate cap per effect bucket — the pre-rework flat caps, now the
+ *  BASE of the tier-scaled curve. Exported for tests and the Research panel. */
+export const RESEARCH_BUCKET_BASE_CAPS: Record<ResearchEffectType, number> = {
+  buildCost: 0.50,
+  buildSpeed: 0.50,
+  mining: 1.00,
+  revenue: 0.50,
+  research: 0.50,
+  maintenance: 0.50,
+  travelSpeed: 0.50,
+  insuranceDiscount: 0.40,
+  hazardResistance: 0.30,   // risk pillar — deliberately the lowest base
+  crewMorale: 0.30,         // 0-1 morale scale
+  fuelEfficiency: 0.50,
+  consumptionReduction: 0.40,
+  expeditionRisk: 0.30,     // risk pillar
+};
+
+/** Cap growth per corporation tier above 1 (+15%/tier of the BASE). */
+export const RESEARCH_CAP_TIER_GROWTH = 0.15;
+
+/** Corporation tiers run 1..7 (corporation-tiers.ts CORPORATION_TIERS). */
+export const RESEARCH_CAP_MAX_TIER = 7;
+
+/** The aggregate cap this corporation actually plays against. */
+export function getResearchBucketCap(type: ResearchEffectType, corporationTier: number = 1): number {
+  const t = Math.max(1, Math.min(RESEARCH_CAP_MAX_TIER, Math.floor(corporationTier || 1)));
+  return RESEARCH_BUCKET_BASE_CAPS[type] * (1 + RESEARCH_CAP_TIER_GROWTH * (t - 1));
+}
+
+/** Per-bucket magnitude scale applied to EVERY authored/inferred/repeatable
+ *  effect of that type (Row 8). 1.0 = untouched. The crowded buckets are
+ *  scaled so that ONE full research category's contribution lands near the
+ *  tier-7 cap — i.e. a category beeline maxes a bucket, the whole tree no
+ *  longer maxes it twice over. Derived numerically (see BALANCE.md's changed
+ *  -tech table); tune HERE, never the caps above. */
+export const RESEARCH_BUCKET_MAGNITUDE_SCALE: Record<ResearchEffectType, number> = {
+  // scale = tier-7 cap ÷ the tree's total raw magnitude in that bucket, so
+  // "own every tech in the bucket" == "sit exactly on the tier-7 cap".
+  // Comment shows what a pre-rework +30% tech now grants.
+  buildCost: 0.1501,           // raw total 6.33 → 0.95   (+30% → +4.5%)
+  buildSpeed: 0.2209,          // raw total 4.30 → 0.95   (+30% → +6.6%)
+  mining: 0.2251,              // raw total 8.44 → 1.90   (+30% → +6.8%)
+  revenue: 0.0575,             // raw total 16.51 → 0.95  (+30% → +1.7%) — the crowded one: 88 techs feed it
+  research: 0.5772,            // raw total 1.65 → 0.95   (+30% → +17.3%)
+  maintenance: 0.1027,         // raw total 9.25 → 0.95   (+30% → +3.1%)
+  travelSpeed: 0.2997,         // raw total 3.17 → 0.95   (+30% → +9.0%)
+  insuranceDiscount: 1,        // raw total 0.55 < cap 0.76 — never saturated, untouched
+  hazardResistance: 0.1351,    // raw total 4.22 → 0.57   (+30% → +4.1%) — risk pillar keeps the low cap
+  crewMorale: 0.4957,          // raw total 1.15 → 0.57   (+30% → +14.9%)
+  fuelEfficiency: 0.3220,      // raw total 2.95 → 0.95   (+30% → +9.7%)
+  consumptionReduction: 1,     // 1 tech, 0.10 total — untouched
+  expeditionRisk: 1,           // 1 tech, 0.25 total — untouched
+};
+
+/** Floor for any NON-ZERO scaled magnitude (Row 8). Without it the crowded
+ *  buckets' smallest authored effects would render as "+0.1% service
+ *  revenue", which is the same "why did I buy this" problem in a smaller
+ *  font. 0.5% is the smallest number the Research panel will ever show. The
+ *  floor deliberately overshoots the aggregate cap slightly — the handful of
+ *  techs that still can't fit are the ones marked `gateOnly`. */
+export const RESEARCH_MIN_EFFECT_MAGNITUDE = 0.005;
+
+/** Cost multiplier for a `gateOnly` node — it grants no direct bonus, so it
+ *  is priced as a prerequisite, not as a bonus (Row 8: "a quarter of their
+ *  cost"). Applied once, in the RESEARCH build below. */
+export const GATE_ONLY_COST_MULTIPLIER = 0.25;
+
+/** Apply the Row-8 per-bucket magnitude scale (and re-clamp). Single place
+ *  the scale is honoured so authored effects, flavor-inferred effects and
+ *  repeatable per-level effects can never diverge. */
+export function scaleResearchEffect(eff: ResearchEffect): ResearchEffect {
+  const scale = RESEARCH_BUCKET_MAGNITUDE_SCALE[eff.type] ?? 1;
+  const raw = Math.max(0, Math.min(PER_EFFECT_CAP, eff.magnitude));
+  if (raw <= 0) return { type: eff.type, magnitude: 0 };
+  const m = Math.max(RESEARCH_MIN_EFFECT_MAGNITUDE, Math.round(raw * scale * 10000) / 10000);
+  return { type: eff.type, magnitude: m };
+}
+
+
 const RAW_RESEARCH: RawResearch[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // ROCKETRY (15 researches)
@@ -145,7 +241,7 @@ const RAW_RESEARCH: RawResearch[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   { id: 'triple_junction', name: 'Triple-Junction Solar Cells', category: 'solar_arrays', tier: 1, description: '30%+ efficiency photovoltaics.', effect: 'Enables solar farms, +20% power', baseCostMoney: 60_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: ['solar_farm_orbital'] },
   { id: 'perovskite_tandem', name: 'Perovskite-Si Tandem', category: 'solar_arrays', tier: 2, description: 'Next-gen tandem solar cells.', effect: '+30% power, -30% cost. Unlocks Lunar Orbital Solar Array.', baseCostMoney: 200_000_000, baseTimeMonths: 12, prerequisites: ['triple_junction'], unlocks: ['solar_array_lunar_orbit'] },
-  { id: 'beamed_power', name: 'Beamed Power Reception', category: 'solar_arrays', tier: 4, description: 'Receive microwave-beamed energy.', effect: 'Enables deep-space power', baseCostMoney: 12_000_000_000, baseTimeMonths: 30, prerequisites: ['perovskite_tandem'], unlocks: [] },
+  { id: 'beamed_power', gateOnly: true, name: 'Beamed Power Reception', category: 'solar_arrays', tier: 4, description: 'Receive microwave-beamed energy.', effect: 'Enables deep-space power', baseCostMoney: 12_000_000_000, baseTimeMonths: 30, prerequisites: ['perovskite_tandem'], unlocks: [] },
   { id: 'concentrator_solar', name: 'Solar Concentrator Arrays', category: 'solar_arrays', tier: 2, description: 'Mirror-focused solar thermal power.', effect: '+30% power density', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['triple_junction'], unlocks: [] },
   { id: 'solar_sail_power', name: 'Solar Sail Power Generation', category: 'solar_arrays', tier: 3, description: 'Thin-film solar sails that generate power.', effect: 'Combined propulsion + power', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['perovskite_tandem'], unlocks: [] },
   { id: 'fission_surface_power', name: 'Surface Fission Reactor', category: 'solar_arrays', tier: 3, description: 'Compact fission power for planetary surfaces.', effect: '+30% surface power generation. Unlocks nuclear reactors at all locations.', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['concentrator_solar'], unlocks: ['nuclear_reactor_leo', 'nuclear_reactor_lunar', 'nuclear_reactor_mars_orbit', 'nuclear_reactor_mars_surface'] },
@@ -155,7 +251,7 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'rtg_enhanced', name: 'Enhanced RTGs', category: 'solar_arrays', tier: 2, description: 'Improved radioisotope thermoelectric generators.', effect: '+30% deep space power', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['battery_advanced'], unlocks: [] },
   { id: 'energy_harvesting', name: 'Ambient Energy Harvesting', category: 'solar_arrays', tier: 2, description: 'Harvest thermal gradients and vibrations.', effect: '+10% station power at no cost', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['battery_advanced'], unlocks: [] },
   { id: 'superconducting_grid', name: 'Superconducting Power Grid', category: 'solar_arrays', tier: 4, description: 'Zero-loss power distribution.', effect: '-20% power losses, +15% efficiency', baseCostMoney: 10_000_000_000, baseTimeMonths: 28, prerequisites: ['wireless_power_transfer'], unlocks: [] },
-  { id: 'antimatter_reactor', name: 'Antimatter Power Reactor', category: 'solar_arrays', tier: 5, description: 'Matter-antimatter annihilation power — Penning-trap microgram-scale antimatter production scaled by the 2147 industrial base (LORE.md Breakthrough era); explicitly lore-tech, not a near-term extrapolation of today\'s picogram-scale physics.', effect: 'Ultimate power source', baseCostMoney: 20_000_000_000, baseTimeMonths: 60, prerequisites: ['fusion_reactor'], unlocks: [] },
+  { id: 'antimatter_reactor', gateOnly: true, name: 'Antimatter Power Reactor', category: 'solar_arrays', tier: 5, description: 'Matter-antimatter annihilation power — Penning-trap microgram-scale antimatter production scaled by the 2147 industrial base (LORE.md Breakthrough era); explicitly lore-tech, not a near-term extrapolation of today\'s picogram-scale physics.', effect: 'Ultimate power source', baseCostMoney: 20_000_000_000, baseTimeMonths: 60, prerequisites: ['fusion_reactor'], unlocks: [] },
   { id: 'space_based_solar_power', name: 'Space-Based Solar Power', category: 'solar_arrays', tier: 4, description: 'Orbital power stations beaming to Earth.', effect: 'New revenue stream: power sales to Earth', baseCostMoney: 5_000_000_000, baseTimeMonths: 24, prerequisites: ['concentrator_solar', 'beamed_power'], unlocks: [] },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -292,7 +388,7 @@ const RAW_RESEARCH: RawResearch[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   { id: 'atmospheric_analysis', name: 'Atmospheric Analysis', category: 'terraforming', tier: 3, description: 'Study planetary atmospheres for modification.', effect: 'Enables terraforming planning', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['atmospheric_processing'], unlocks: [] },
   { id: 'greenhouse_engineering', name: 'Greenhouse Gas Engineering', category: 'terraforming', tier: 3, description: 'Deploy orbital mirrors and greenhouse gases.', effect: '+25% colony habitability on Mars', baseCostMoney: 5_000_000_000, baseTimeMonths: 30, prerequisites: ['atmospheric_analysis'], unlocks: [] },
-  { id: 'mars_warming', name: 'Mars Atmospheric Warming', category: 'terraforming', tier: 4, description: 'Begin warming Mars atmosphere — peer-reviewed models (Jakosky & Edwards 2018) find Mars lacks enough accessible CO2 for full warming with current techniques and put realistic timelines in the centuries; treat as a multi-generational project.', effect: '+30% Mars colony capacity', baseCostMoney: 30_000_000_000, baseTimeMonths: 48, prerequisites: ['greenhouse_engineering'], unlocks: [] },
+  { id: 'mars_warming', gateOnly: true, name: 'Mars Atmospheric Warming', category: 'terraforming', tier: 4, description: 'Begin warming Mars atmosphere — peer-reviewed models (Jakosky & Edwards 2018) find Mars lacks enough accessible CO2 for full warming with current techniques and put realistic timelines in the centuries; treat as a multi-generational project.', effect: '+30% Mars colony capacity', baseCostMoney: 30_000_000_000, baseTimeMonths: 48, prerequisites: ['greenhouse_engineering'], unlocks: [] },
   { id: 'oxygen_production', name: 'Industrial O2 Production', category: 'terraforming', tier: 3, description: 'Large-scale oxygen from CO2/water.', effect: '+30% colony oxygen production', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['isru_oxygen'], unlocks: [] },
   // Wave E3 (§4.3): unlocks the Agricultural Dome — the organics leg of the life-support chain (§3.1 chain E).
   { id: 'hydroponic_agriculture', name: 'Hydroponic Agriculture', category: 'terraforming', tier: 2, description: 'Closed-loop soil-free crop systems sized for dome farming on Luna and Mars.', effect: 'Unlocks the Agricultural Dome; -10% building recipe input consumption', baseCostMoney: 600_000_000, baseTimeMonths: 12, prerequisites: ['resource_prospecting'], unlocks: ['agri_dome'] },
@@ -326,7 +422,7 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'debris_shield_active', name: 'Active Debris Shielding', category: 'defense', tier: 3, description: 'Laser or projectile debris defense.', effect: '+30% station defense rating', baseCostMoney: 4_000_000_000, baseTimeMonths: 22, prerequisites: ['space_debris_cleanup'], unlocks: [] },
   { id: 'hardened_electronics', name: 'EMP-Hardened Electronics', category: 'defense', tier: 2, description: 'Protect systems from electromagnetic pulses.', effect: '+30% system resilience', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['rad_hard_processors'], unlocks: [] },
   { id: 'emergency_response', name: 'Space Emergency Response', category: 'defense', tier: 2, description: 'Rapid deployment rescue teams.', effect: '+30% crew survival in emergencies', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['emergency_escape'], unlocks: [] },
-  { id: 'nuclear_deflection', name: 'Nuclear Asteroid Deflection', category: 'defense', tier: 4, description: 'Nuclear standoff burst for large asteroids.', effect: 'Can deflect planet-killer asteroids', baseCostMoney: 15_000_000_000, baseTimeMonths: 30, prerequisites: ['asteroid_deflection'], unlocks: [] },
+  { id: 'nuclear_deflection', gateOnly: true, name: 'Nuclear Asteroid Deflection', category: 'defense', tier: 4, description: 'Nuclear standoff burst for large asteroids.', effect: 'Can deflect planet-killer asteroids', baseCostMoney: 15_000_000_000, baseTimeMonths: 30, prerequisites: ['asteroid_deflection'], unlocks: [] },
   { id: 'space_situational', name: 'Space Situational Awareness', category: 'defense', tier: 1, description: 'Track all objects in Earth orbit.', effect: '+20% debris tracking revenue', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
   { id: 'cyber_defense', name: 'Space Cyber Defense', category: 'defense', tier: 3, description: 'Protect space assets from cyber attacks.', effect: '+30% defense rating', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['cybersecurity_adv'], unlocks: [] },
   { id: 'gravity_tractor', name: 'Gravity Tractor', category: 'defense', tier: 3, description: 'Slowly redirect asteroids using gravity.', effect: 'Precise long-term deflection', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['asteroid_deflection'], unlocks: [] },
@@ -376,7 +472,7 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'venture_capital', name: 'Space Venture Fund', category: 'economy', tier: 3, description: 'Fund other players for equity.', effect: '+10% revenue from funded players', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['tech_licensing'], unlocks: [] },
   { id: 'tax_optimization', name: 'Tax Optimization Strategy', category: 'economy', tier: 1, description: 'Minimize operational tax burden.', effect: '-10% all costs', baseCostMoney: 50_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
   { id: 'brand_management', name: 'Brand & Reputation', category: 'economy', tier: 1, description: 'Build corporate reputation.', effect: '+10% contract win rate', baseCostMoney: 40_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
-  { id: 'merger_acquisition', name: 'M&A Strategy', category: 'economy', tier: 4, description: 'Acquire competitor assets.', effect: 'Enables corporate acquisitions', baseCostMoney: 10_000_000_000, baseTimeMonths: 24, prerequisites: ['venture_capital'], unlocks: [] },
+  { id: 'merger_acquisition', gateOnly: true, name: 'M&A Strategy', category: 'economy', tier: 4, description: 'Acquire competitor assets.', effect: 'Enables corporate acquisitions', baseCostMoney: 10_000_000_000, baseTimeMonths: 24, prerequisites: ['venture_capital'], unlocks: [] },
   // Wave M5 (docs/MEANINGFUL_2026-08.md §3.2 O3/O4): the two offense-toolkit
   // gates. market_microstructure unlocks the standing-order demand report
   // (aim a corner at what rivals' buildings actually need); guild_arbitration
@@ -459,7 +555,14 @@ export const EFFECTS_BY_ID: Record<string, ResearchEffect[]> = {
   radiation_shielding: [{ type: 'maintenance', magnitude: 0.06 }],
   interplanetary_cruisers: [{ type: 'maintenance', magnitude: 0.06 }],
   self_repair: [{ type: 'maintenance', magnitude: 0.3 }],
-  generation_ships: [{ type: 'maintenance', magnitude: 0.1 }],
+  // Row 8: re-pointed instead of retired. Its lone maintenance effect was
+  // the worst value-per-dollar in a 58-tech bucket, so a $20B tier-5
+  // capstone resolved to +0.00%. Closed-loop life support is literally
+  // what a generation ship IS, so it now also feeds consumptionReduction
+  // (2 techs, never saturated) — a real bonus at every corporation tier,
+  // at its unchanged price. (The sim evidence for keeping the price is in
+  // docs/BALANCE.md "Inert techs rework".)
+  generation_ships: [{ type: 'maintenance', magnitude: 0.1 }, { type: 'consumptionReduction', magnitude: 0.1 }],
   hull_composites: [{ type: 'buildCost', magnitude: 0.1 }],
   cryo_hibernation: [{ type: 'maintenance', magnitude: 0.3 }],
   artificial_gravity: [{ type: 'crewMorale', magnitude: 0.3 }],
@@ -737,6 +840,13 @@ export const RESEARCH: ResearchDefinition[] = RAW_RESEARCH.map(r => {
   const resCost = TIER_RESEARCH_RESOURCES[r.tier] || {};
   return {
     ...r,
+    // Row 8: a gate-only node is priced as a prerequisite, not as a bonus.
+    // Applied exactly ONCE, here, so every downstream consumer (the research
+    // panel, getResearchDisplayState, command-queue, the sims, the server
+    // ledger) sees the same charged price with no second discount.
+    baseCostMoney: r.gateOnly
+      ? Math.round(r.baseCostMoney * GATE_ONLY_COST_MULTIPLIER)
+      : r.baseCostMoney,
     realResearchSeconds: TIER_RESEARCH_SECONDS[r.tier] || 600,
     resourceCost: Object.keys(resCost).length > 0 ? resCost : undefined,
     // W1 effect-authoring pass: every tech's hand-authored effects, keyed by
@@ -827,7 +937,19 @@ export function inferEffectsFromFlavor(effectText: string): ResearchEffect[] {
  * nothing, fall back to the legacy category-tier formula so no research is
  * ever completely silent.
  */
-function resolveEffects(def: ResearchDefinition): ResearchEffect[] {
+export function resolveEffects(def: ResearchDefinition): ResearchEffect[] {
+  // Row 8: a `gateOnly` node is a PREREQUISITE, not a bonus — it grants
+  // nothing directly (and is priced at GATE_ONLY_COST_MULTIPLIER for it).
+  // Its prerequisites[]/unlocks[] role is untouched.
+  if (def.gateOnly) return [];
+  return resolveEffectsRaw(def).map(scaleResearchEffect).filter(e => e.magnitude > 0);
+}
+
+/** The pre-Row-8 resolution: authored effects, else flavor text, else the
+ *  legacy category-tier fallback. Unscaled — callers go through
+ *  resolveEffects(). Exported for the classifier's "what did this tech
+ *  originally claim" column and for tests. */
+export function resolveEffectsRaw(def: ResearchDefinition): ResearchEffect[] {
   // Explicit effects field (future) — use as-is, clamp magnitudes.
   const explicit = (def as ResearchDefinition & { effects?: ResearchEffect[] }).effects;
   if (explicit && explicit.length > 0) {
@@ -894,6 +1016,11 @@ export interface ResearchBonuses {
 export function getResearchBonuses(
   completedResearchIds: string[],
   repeatableLevels?: Record<string, number>,
+  /** Row 8: aggregate caps grow +15%/tier of their base (see
+   *  getResearchBucketCap). Omitted = tier 1 = exactly the pre-rework caps,
+   *  so every existing call site keeps its old behaviour until it threads
+   *  the corporation tier through. */
+  corporationTier: number = 1,
 ): ResearchBonuses {
   let buildCostReduction = 0;
   let buildSpeedBonus = 0;
@@ -946,31 +1073,35 @@ export function getResearchBonuses(
       if (!def?.repeatable) continue;
       const levels = Math.min(level, def.repeatable.maxLevel);
       for (let i = 0; i < levels; i++) {
-        for (const eff of def.repeatable.effectPerLevel) applyEffect(eff);
+        // Row 8: repeatable per-level effects ride the same per-bucket
+        // magnitude scale as every other effect (scaleResearchEffect).
+        for (const eff of def.repeatable.effectPerLevel) applyEffect(scaleResearchEffect(eff));
       }
     }
   }
 
+  // Row 8: every cap below is getResearchBucketCap(bucket, corporationTier) —
+  // base × (1 + 0.15 × (tier − 1)). At tier 1 these are numerically identical
+  // to the pre-rework flat caps (0.50 / 1.00 / 0.40 / 0.30); at tier 7 they
+  // are 1.9× them (revenue 0.95, mining 1.90, hazard 0.57). The BALANCE.md
+  // "sinks > sources, no frictionless stacking" thesis and the CLAUDE.md
+  // "real risk" invariant are preserved — hazardResistance/expeditionRisk
+  // still top out well under hazards.ts's own MITIGATION_CAP of 0.90.
+  const cap = (t: ResearchEffectType) => getResearchBucketCap(t, corporationTier);
   return {
-    buildCostReduction: Math.min(buildCostReduction, 0.50),    // Cap 50%
-    buildSpeedBonus: Math.min(buildSpeedBonus, 0.50),          // Cap 50%
-    miningOutputBonus: Math.min(miningOutputBonus, 1.0),       // Cap 100%
-    serviceRevenueBonus: Math.min(serviceRevenueBonus, 0.50),  // Cap 50%
-    researchSpeedBonus: Math.min(researchSpeedBonus, 0.50),    // Cap 50%
-    maintenanceReduction: Math.min(maintenanceReduction, 0.50), // Cap 50%
-    // BALANCE.md caps below follow the same "sinks > sources, no frictionless
-    // stacking" thesis as the six above. hazardResistance/expeditionRisk are
-    // deliberately capped lower (0.30, matching PER_EFFECT_CAP) to preserve
-    // CLAUDE.md's "real risk" invariant — hazards.ts's own MITIGATION_CAP is
-    // 0.90 and even that is a documented "don't fully delete the risk pillar"
-    // compromise; research on top of ship/building mitigation must stay modest.
-    travelSpeedBonus: Math.min(travelSpeedBonus, 0.50),           // Cap 50%
-    insuranceDiscountBonus: Math.min(insuranceDiscountBonus, 0.40), // Cap 40%
-    hazardResistanceBonus: Math.min(hazardResistanceBonus, 0.30),   // Cap 30% (risk pillar)
-    crewMoraleBonus: Math.min(crewMoraleBonus, 0.30),               // Cap 0.30 on a 0-1 morale scale
-    fuelEfficiencyBonus: Math.min(fuelEfficiencyBonus, 0.50),       // Cap 50% (consumed by cargo-logistics.ts freight pricing, W14)
-    consumptionReductionBonus: Math.min(consumptionReductionBonus, 0.40), // Cap 40% (§4.1; consumed by consumption.ts, wave E3)
-    expeditionRiskBonus: Math.min(expeditionRiskBonus, 0.30),       // Cap 30% (risk pillar; dormant as generic bucket — see interface comment)
+    buildCostReduction: Math.min(buildCostReduction, cap('buildCost')),
+    buildSpeedBonus: Math.min(buildSpeedBonus, cap('buildSpeed')),
+    miningOutputBonus: Math.min(miningOutputBonus, cap('mining')),
+    serviceRevenueBonus: Math.min(serviceRevenueBonus, cap('revenue')),
+    researchSpeedBonus: Math.min(researchSpeedBonus, cap('research')),
+    maintenanceReduction: Math.min(maintenanceReduction, cap('maintenance')),
+    travelSpeedBonus: Math.min(travelSpeedBonus, cap('travelSpeed')),
+    insuranceDiscountBonus: Math.min(insuranceDiscountBonus, cap('insuranceDiscount')),
+    hazardResistanceBonus: Math.min(hazardResistanceBonus, cap('hazardResistance')),
+    crewMoraleBonus: Math.min(crewMoraleBonus, cap('crewMorale')),
+    fuelEfficiencyBonus: Math.min(fuelEfficiencyBonus, cap('fuelEfficiency')),
+    consumptionReductionBonus: Math.min(consumptionReductionBonus, cap('consumptionReduction')),
+    expeditionRiskBonus: Math.min(expeditionRiskBonus, cap('expeditionRisk')),
   };
 }
 
@@ -1109,6 +1240,9 @@ export function getResearchDisplayState(
  */
 export function getResearchMechanicalEffect(def: ResearchDefinition): string {
   const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
+  // Row 8: gate-only nodes say so instead of rendering an em-dash the player
+  // has to interpret.
+  if (def.gateOnly) return GATE_ONLY_LABEL;
   const effects = resolveEffects(def);
   if (effects.length === 0) return '—';
   return effects.map(e => {
@@ -1149,3 +1283,302 @@ export const RESEARCH_CATEGORIES = [
   { id: 'exploration', name: 'Exploration', icon: '🔭' },
   { id: 'economy', name: 'Economy & Trade', icon: '📊' },
 ] as const;
+
+
+// ─── Row 8: the inert-tech classifier ───────────────────────────────────────
+// docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 8. A tech is INERT when every
+// bucket it feeds is already saturated by the CHEAPEST SET of techs that
+// reaches that bucket's cap — i.e. a rational corporation that bought the
+// best-value techs first gains exactly +0.00% from buying this one. Pure and
+// deterministic (no state, no clock): the only inputs are the tech table and
+// the corporation tier that sets the caps.
+//
+// "Cheapest set" is greedy by money-per-point-of-bonus (baseCostMoney ÷
+// magnitude), ties broken by id so the ordering is stable across runs. The
+// tech that crosses the cap is IN the set, with a partial marginal.
+
+/** The Research panel's label for a gate-only node. */
+export const GATE_ONLY_LABEL = 'Prerequisite — no direct bonus';
+
+export interface TechEffectClassification {
+  id: string;
+  name: string;
+  category: string;
+  tier: number;
+  /** Charged money cost (a gate-only node is already quartered here). */
+  costMoney: number;
+  /** Buckets this tech feeds, after the Row-8 magnitude scale. */
+  buckets: ResearchEffectType[];
+  /** Scaled magnitude this tech contributes, per bucket. */
+  magnitudeByBucket: Partial<Record<ResearchEffectType, number>>;
+  /** What it actually adds once the cheapest saturating set is owned. */
+  marginalByBucket: Partial<Record<ResearchEffectType, number>>;
+  marginalTotal: number;
+  /** In the cheapest saturating set of at least one of its buckets. */
+  inSaturatingSet: boolean;
+  /** Has effects, but every one of them is worth +0.00% — the Row-8 target. */
+  inert: boolean;
+  gateOnly: boolean;
+  /** Buildings/features this tech gates; preserved for gate-only nodes. */
+  unlocks: string[];
+  /** How many other techs list this one as a prerequisite. */
+  prerequisiteFor: number;
+}
+
+export interface TechBucketSummary {
+  bucket: ResearchEffectType;
+  cap: number;
+  /** Techs feeding this bucket. */
+  techs: number;
+  /** Sum of every contribution — how far past the cap the tree can stack. */
+  totalMagnitude: number;
+  /** Size of the cheapest set that reaches the cap (= techs, if it never does). */
+  saturatingSetSize: number;
+  /** Techs in this bucket whose marginal contribution is zero. */
+  inert: number;
+  /** Largest single-CATEGORY contribution — the Row-8 tuning target
+   *  ("a full category's sum lands near the tier-7 cap"). */
+  largestCategorySum: number;
+  largestCategory: string;
+}
+
+export interface TechEffectClassificationReport {
+  corporationTier: number;
+  techs: TechEffectClassification[];
+  /** Techs with effects whose every effect is worth +0.00%. */
+  inertCount: number;
+  inertIds: string[];
+  /** Techs with at least one non-zero marginal contribution. */
+  liveCount: number;
+  /** Explicit `gateOnly: true` nodes — honest prerequisites, not inert bonuses. */
+  gateOnlyCount: number;
+  byBucket: TechBucketSummary[];
+}
+
+/**
+ * Classify every tech's marginal usefulness at a given corporation tier.
+ * Pure — same inputs, same output. Exported for tests, for the Research
+ * panel's "current contribution → after purchase" line, and for the balance
+ * tooling that produced BALANCE.md's changed-tech table.
+ */
+export function classifyTechEffects(
+  corporationTier: number = 1,
+  defs: ResearchDefinition[] = RESEARCH,
+): TechEffectClassificationReport {
+  // Prerequisite fan-in (a gate-only node's real job).
+  const prereqFanIn = new Map<string, number>();
+  for (const d of defs) {
+    for (const pre of d.prerequisites || []) prereqFanIn.set(pre, (prereqFanIn.get(pre) || 0) + 1);
+  }
+
+  // Per-tech scaled magnitude per bucket. Repeatables count their FULL ladder
+  // (maxLevel × effectPerLevel) — that is what a completionist owns.
+  const magByTech = new Map<string, Map<ResearchEffectType, number>>();
+  for (const d of defs) {
+    const m = new Map<ResearchEffectType, number>();
+    for (const e of resolveEffects(d)) m.set(e.type, (m.get(e.type) || 0) + e.magnitude);
+    if (d.repeatable) {
+      for (let i = 0; i < d.repeatable.maxLevel; i++) {
+        for (const e of d.repeatable.effectPerLevel) {
+          const se = scaleResearchEffect(e);
+          if (se.magnitude > 0) m.set(se.type, (m.get(se.type) || 0) + se.magnitude);
+        }
+      }
+    }
+    magByTech.set(d.id, m);
+  }
+
+  const buckets = Object.keys(RESEARCH_BUCKET_BASE_CAPS) as ResearchEffectType[];
+  const marginalByTech = new Map<string, Map<ResearchEffectType, number>>();
+  const inSet = new Set<string>();
+  const bucketSummaries: TechBucketSummary[] = [];
+
+  for (const bucket of buckets) {
+    const cap = getResearchBucketCap(bucket, corporationTier);
+    const feeders = defs
+      .filter(d => (magByTech.get(d.id)?.get(bucket) || 0) > 0)
+      .map(d => ({ d, mag: magByTech.get(d.id)!.get(bucket)! }));
+
+    // Cheapest-first by money per point of bonus (stable tie-break on id).
+    feeders.sort((a, b) => {
+      const va = a.d.baseCostMoney / a.mag;
+      const vb = b.d.baseCostMoney / b.mag;
+      return va === vb ? (a.d.id < b.d.id ? -1 : 1) : va - vb;
+    });
+
+    let running = 0;
+    let setSize = 0;
+    let inertInBucket = 0;
+    for (const f of feeders) {
+      const headroom = Math.max(0, cap - running);
+      const marginal = Math.min(f.mag, headroom);
+      if (marginal > 0) {
+        setSize++;
+        inSet.add(f.d.id);
+        let m = marginalByTech.get(f.d.id);
+        if (!m) { m = new Map(); marginalByTech.set(f.d.id, m); }
+        m.set(bucket, marginal);
+      } else {
+        inertInBucket++;
+      }
+      running += f.mag;
+    }
+
+    const byCategory = new Map<string, number>();
+    for (const f of feeders) byCategory.set(f.d.category, (byCategory.get(f.d.category) || 0) + f.mag);
+    let largestCategory = '—';
+    let largestCategorySum = 0;
+    for (const [cat, sum] of byCategory) {
+      if (sum > largestCategorySum) { largestCategorySum = sum; largestCategory = cat; }
+    }
+
+    bucketSummaries.push({
+      bucket,
+      cap,
+      techs: feeders.length,
+      totalMagnitude: Math.round(feeders.reduce((a, f) => a + f.mag, 0) * 10000) / 10000,
+      saturatingSetSize: setSize,
+      inert: inertInBucket,
+      largestCategorySum: Math.round(largestCategorySum * 10000) / 10000,
+      largestCategory,
+    });
+  }
+
+  const techs: TechEffectClassification[] = defs.map(d => {
+    const mags = magByTech.get(d.id) || new Map<ResearchEffectType, number>();
+    const marg = marginalByTech.get(d.id) || new Map<ResearchEffectType, number>();
+    const magnitudeByBucket: Partial<Record<ResearchEffectType, number>> = {};
+    for (const [k, v] of mags) magnitudeByBucket[k] = Math.round(v * 10000) / 10000;
+    const marginalByBucket: Partial<Record<ResearchEffectType, number>> = {};
+    let marginalTotal = 0;
+    for (const [k, v] of marg) {
+      marginalByBucket[k] = Math.round(v * 10000) / 10000;
+      marginalTotal += v;
+    }
+    const bucketList = [...mags.keys()];
+    return {
+      id: d.id,
+      name: d.name,
+      category: d.category,
+      tier: d.tier,
+      costMoney: d.baseCostMoney,
+      buckets: bucketList,
+      magnitudeByBucket,
+      marginalByBucket,
+      marginalTotal: Math.round(marginalTotal * 10000) / 10000,
+      inSaturatingSet: inSet.has(d.id),
+      inert: bucketList.length > 0 && marginalTotal <= 0,
+      gateOnly: !!d.gateOnly,
+      unlocks: d.unlocks || [],
+      prerequisiteFor: prereqFanIn.get(d.id) || 0,
+    };
+  });
+
+  const inertIds = techs.filter(t => t.inert).map(t => t.id);
+  return {
+    corporationTier,
+    techs,
+    inertCount: inertIds.length,
+    inertIds,
+    liveCount: techs.filter(t => t.marginalTotal > 0).length,
+    gateOnlyCount: techs.filter(t => t.gateOnly).length,
+    byBucket: bucketSummaries,
+  };
+}
+
+// ─── Row 8 UI: "current contribution → after purchase" ──────────────────────
+
+export interface ResearchContributionLine {
+  bucket: ResearchEffectType;
+  label: string;
+  /** Player's current aggregate in this bucket (already capped). */
+  current: number;
+  /** What the aggregate becomes if this tech is bought (already capped). */
+  after: number;
+  /** after − current. Zero means "this tech is worth +0.00% to you". */
+  delta: number;
+  cap: number;
+}
+
+const BUCKET_LABEL: Record<ResearchEffectType, string> = {
+  buildCost: 'building cost',
+  buildSpeed: 'build speed',
+  mining: 'mining output',
+  revenue: 'service revenue',
+  research: 'research speed',
+  maintenance: 'maintenance cost',
+  travelSpeed: 'ship transit speed',
+  insuranceDiscount: 'insurance premium',
+  hazardResistance: 'hazard damage',
+  crewMorale: 'crew morale',
+  fuelEfficiency: 'fuel consumption',
+  consumptionReduction: 'building input consumption',
+  expeditionRisk: 'expedition hazard damage',
+};
+
+const BONUS_KEY_BY_BUCKET: Record<ResearchEffectType, keyof ResearchBonuses> = {
+  buildCost: 'buildCostReduction',
+  buildSpeed: 'buildSpeedBonus',
+  mining: 'miningOutputBonus',
+  revenue: 'serviceRevenueBonus',
+  research: 'researchSpeedBonus',
+  maintenance: 'maintenanceReduction',
+  travelSpeed: 'travelSpeedBonus',
+  insuranceDiscount: 'insuranceDiscountBonus',
+  hazardResistance: 'hazardResistanceBonus',
+  crewMorale: 'crewMoraleBonus',
+  fuelEfficiency: 'fuelEfficiencyBonus',
+  consumptionReduction: 'consumptionReductionBonus',
+  expeditionRisk: 'expeditionRiskBonus',
+};
+
+/**
+ * Row 8 UI contract: for ONE tech, what the player's aggregate is now and
+ * what it becomes after buying it — computed by running the real
+ * getResearchBonuses twice, so the panel can never claim a bonus the engine
+ * won't pay. An empty array means the tech grants no direct bonus at all
+ * (gate-only); an array whose deltas are all zero means the player is already
+ * capped and should be told so before spending $15B.
+ */
+export function getResearchContribution(
+  def: ResearchDefinition,
+  completedResearchIds: string[],
+  repeatableLevels?: Record<string, number>,
+  corporationTier: number = 1,
+): ResearchContributionLine[] {
+  if (def.gateOnly) return [];
+  const effects = resolveEffects(def);
+  if (effects.length === 0 && !def.repeatable) return [];
+  const before = getResearchBonuses(completedResearchIds, repeatableLevels, corporationTier);
+  const withTech = completedResearchIds.includes(def.id)
+    ? completedResearchIds
+    : [...completedResearchIds, def.id];
+  // A repeatable never enters completedResearch — model its NEXT level instead.
+  const nextLevels = def.repeatable
+    ? { ...(repeatableLevels || {}), [def.id]: Math.min(def.repeatable.maxLevel, getRepeatableLevel(def.id, repeatableLevels) + 1) }
+    : repeatableLevels;
+  const after = getResearchBonuses(def.repeatable ? completedResearchIds : withTech, nextLevels, corporationTier);
+
+  const sourceEffects = def.repeatable
+    ? def.repeatable.effectPerLevel.map(scaleResearchEffect)
+    : effects;
+
+  const seen = new Set<ResearchEffectType>();
+  const lines: ResearchContributionLine[] = [];
+  for (const e of sourceEffects) {
+    if (seen.has(e.type)) continue;
+    seen.add(e.type);
+    const key = BONUS_KEY_BY_BUCKET[e.type];
+    const cur = before[key] as number;
+    const aft = after[key] as number;
+    lines.push({
+      bucket: e.type,
+      label: BUCKET_LABEL[e.type],
+      current: Math.round(cur * 10000) / 10000,
+      after: Math.round(aft * 10000) / 10000,
+      delta: Math.round((aft - cur) * 10000) / 10000,
+      cap: getResearchBucketCap(e.type, corporationTier),
+    });
+  }
+  return lines;
+}

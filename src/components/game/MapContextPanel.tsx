@@ -172,7 +172,7 @@ export default function MapContextPanel({
   if (view === 'build') {
     return panelShell(
       <PanelTitle icon="🏗️" title="Build" subtitle={loc?.name || locId} onBack={() => setView('overview')} />,
-      <BuildPanel state={state} onBuild={onBuild} onSellBuilding={onSellBuilding} onMothballBuilding={onMothballBuilding} onReactivateBuilding={onReactivateBuilding} onRushRepairBuilding={onRushRepairBuilding} onMarkUpgradeBuilding={onMarkUpgradeBuilding} initialLocationId={locId} lockLocation />
+      <BuildPanel state={state} onBuild={onBuild} onSellBuilding={onSellBuilding} onMothballBuilding={onMothballBuilding} onReactivateBuilding={onReactivateBuilding} onRushRepairBuilding={onRushRepairBuilding} onMarkUpgradeBuilding={onMarkUpgradeBuilding} onDispatchShip={onDispatchShip} initialLocationId={locId} lockLocation />
     );
   }
 

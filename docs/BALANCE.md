@@ -3045,3 +3045,457 @@ quarterly balance report can add the reason to its sink table; no constant elsew
 **Watch:** ratio of arbitrated to fulfilled contracts (above 30 % would say the milestone schedule is
 too tight or the fee too cheap), and the Frontier-counterparty default rate (the waived bond is the
 only place a default costs the defaulter nothing but reputation).
+
+---
+
+## Location-aware hauling (2026-09-02)
+
+docs/GAME_DESIGN_REVIEW_2026-09.md §2 **row 13**, founder-approved. W14 shipped the *model*
+(`state.locationInventories`, `cargo-logistics.ts`, the `logisticsUnlocked` ratchet) but every
+consumer of `state.resources` stayed global — docs/MANUFACTURING_2026-08.md listed it under
+"Deliberately not done": *"an Earth-built beam is usable on the Moon without transport."* This pass
+closes the spend side, which is what turns CLAUDE.md's "logistics cost money" from a fuel bill on
+freight into a constraint on where you can build at all.
+
+### What now resolves at the pool that holds the goods
+
+| Consumer | Before | After |
+|---|---|---|
+| Building materials (`page.tsx handleBuild`, BuildPanel affordability) | global pool | the **build location's** pool |
+| Crafting inputs and outputs (`activeRefining`, `craftQueue`, the engine's completion branch) | global pool | the **fabrication plant's** pool, both directions |
+| Servicer material repairs (game-engine tick) | global pool | the **damaged building's** pool (no local parts ⇒ the cash repair path, exactly as an unaffordable bill always behaved) |
+| Survey-discovery resource finds | global pool | the **surveyed body's** stockpile |
+| Decommission / scrap recovery (`mothball.ts`, both the instant and scheduled paths) | global pool | the **torn-down building's** location |
+| Recipe consumption + producer outputs (`consumption.ts`) | already local since E3 | unchanged — verified, and now covered by a cross-pool starvation test |
+| Market sells (`getSellableQuantity`), delivery contracts | home pool | unchanged, and now *stated*: both clear at the near-Earth market, so remote goods must be freighted home first |
+| Expedition supplies / exotic fuel | home pool | unchanged **by design**: interstellar missions stage out of Earth, so colony-refined fuel has to come home on a trade route first |
+
+The home cluster (`earth_surface` / `leo` / `geo`) is one pool with three docks — it *is*
+`state.resources` — so nothing about near-Earth play changes. **Saves with `logisticsUnlocked`
+false are untouched**: every helper falls through to the global pool, and the ratchet still flips
+on the first built transport/tanker hull.
+
+### The new decision
+
+A remote build is no longer a money question. BuildPanel says *"N units must be hauled to Mars
+Surface from Earth Surface"* and offers a one-click **Dispatch hauler** that loads the biggest idle
+freighter parked at the source pool with the shortfall, priced through the same `planFreight` quote
+dispatch charges (Δv fuel + any zone toll) — so the button never lies about the bill. With no idle
+freighter at the source it explains where to send one instead. A "Stock by location" table in the
+Build panel's location header answers the prerequisite question ("where *are* my goods?") that the
+game previously never asked.
+
+Fabrication siting is deterministic: the first capable plant (home cluster first, then
+alphabetical) that holds **all** the inputs locally, else the first capable plant so the panel can
+name the shortfall against a concrete site. A queued craft whose plant is out of inputs **waits**
+(it never raids Earth), the same way the queue already waited on an unaffordable global pool.
+
+### Server truth is location-agnostic (for now)
+
+The sync's `serverResources` stays a **single global map**. This slice is a **client-economy
+change**: the material attestation and ledger paths (`inventory-attestations.ts`, the `/assets/*`
+routes, `resource-plausibility.ts`) are unchanged, and a spend still debits the same **total** units
+server-side — only the client decides which physical stockpile pays. Aggregate client holdings
+(home + every local stockpile) continue to reconcile against server truth exactly as before; no
+new divergence is introduced, and no exploit is opened, because the total is what the server checks.
+Per-location server truth is a later slice and would need `serverResources` to become a keyed map
+plus location-aware ledger reasons.
+
+`scripts/sim-harness.ts` runs with **logistics off** (`logisticsUnlocked` never set), so every
+long-horizon balance figure in this document is unaffected by this pass — the harness measures the
+single-pool economy. When the harness is taught to model hauling, its numbers should be re-derived
+before being compared to anything above.
+
+### Deliberately deferred
+
+- **Mark-II/III refits** (`mark-upgrades.ts`) still draw the global pool. `mark-upgrades.ts` is
+  imported by `buildings.ts`, which `cargo-logistics.ts` imports — routing it through the shared
+  helper would close an import cycle. It keeps its pre-row-13 behavior until the home-cluster
+  constant lives somewhere both can reach.
+- **Ship hulls** (`handleBuildShip`) still draw the global pool: shipyard-location siting is its own
+  design question (which yards can build which hulls) and was not in the approved row.
+- **Arrival auto-sell** was scoped as "only if `standing-directives.ts` supports it cheaply". It
+  does, without a new directive type: an `auto_sell` directive already sells out of the home pool
+  at the next game-month boundary, so cargo hauled home is auto-sold on arrival + ≤1 month. A
+  dedicated arrival-triggered directive would need a new `StandingDirectiveType`, save handling and
+  UI for a sub-month improvement — not worth it this pass.
+
+**Watch:** the share of players who own a freighter before their first remote build (if remote
+builds stall, the ratchet is landing too early), and the fraction of "Dispatch hauler" clicks that
+end in `no_freighter` (a high rate means the hauler CTA is teaching the wrong lesson).
+
+---
+
+## Signal lag (2026-09-02)
+
+docs/GAME_DESIGN_REVIEW_2026-09.md §2 **row 12**, founder-approved.
+`PendingInterstellarCommand` had existed in `interstellar.ts` since Phase VIII with **no consumer** —
+orders beyond the heliopause executed on click, exactly like a Sol-side order. They now travel.
+
+### The constant
+
+```
+SIGNAL_LAG_GAME_MONTHS_PER_LY = 2          // interstellar.ts
+LIGHT_LAG_PER_LY_MS = 2 × REAL_SECONDS_PER_GAME_MONTH × 1000 = 12 real hours per light-year
+```
+
+Derived from the ONE world-clock constant (`server-time.ts`, 6 real hours per game-month) rather
+than a shadow copy — the clock-unification rule. Resulting round numbers:
+
+| System | Distance | Lag |
+|---|---|---|
+| Proxima Centauri | 4.24 ly | ~2.1 days |
+| Alpha Centauri | 4.37 ly | ~2.2 days |
+| Barnard's Star | 5.96 ly | ~3.0 days |
+| Wolf 359 | 7.86 ly | ~3.9 days |
+| Sirius | 8.60 ly | ~4.3 days |
+
+This is deliberately **not** the physical light-time (4.24 *years* to Proxima). The knob is tuned so
+an order issued in one session lands in a later one — days, not decades. Two game-months per
+light-year keeps it legible in the game's own units and scales with distance, so the far systems
+feel farther without becoming unplayable.
+
+### What travels, and what it costs
+
+Colony founding, colony expansion, trade-route setup, trade-route suspend/resume, and expedition
+recalls enter `state.pendingInterstellarCommands` and execute on the engine tick at
+`sentAtMs + distanceLy × LIGHT_LAG_PER_LY_MS`.
+
+- **Fees leave at issue time** through the existing money/`totalSpent` path — the mission was bought
+  when the order was sent. The executors take a `prepaid` flag so arrival never charges twice.
+- **Cancellation is allowed until arrival and refunds nothing.** That asymmetry *is* the decision:
+  a $20B colony order is a two-day commitment, not a click.
+- **Conditions can change in flight.** An order that is no longer legal on arrival (a colony already
+  founded there, population fallen below the upgrade threshold) fails with an event-log line and
+  still no refund.
+- **Expedition recall** cuts the survey window short and prorates `surveyDataPayout` to the fraction
+  of the survey actually worked — so recalling trades data revenue for a hull and crew back sooner.
+  Without the proration it would be a free win (the payout is fixed at arrival), which is exactly the
+  dominant strategy CLAUDE.md forbids. Colony arks cannot be recalled: they hold station permanently
+  and have no return leg.
+
+### Loop and money
+
+Campaign loop (docs/SESSION_DESIGN.md) — it deepens the end-game's own tempo rather than adding
+another daily beat. **No money was created or destroyed**: the same fees are charged, only earlier.
+Delaying execution slightly *increases* the effective cost of interstellar expansion (the capital is
+committed while producing nothing), which is the intended direction for an end-game sink.
+
+**Watch:** cancellation rate (a high rate would mean the panel is not making the commitment legible
+before the click), and the fraction of orders that fail on arrival (should be near zero; if not, the
+UI is letting players transmit orders that were already doomed).
+
+
+## Inert techs rework (2026-09-02)
+
+*docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 8, founder-approved. Files:
+`src/lib/game/research-tree.ts`, `src/lib/game/types.ts`,
+`src/components/game/ResearchContribution.tsx`, `src/app/space-tycoon/page.tsx`,
+`src/lib/game/server-assets.ts` (+ the two asset routes),
+`src/lib/game/__tests__/research-inert-rework.test.ts`.*
+
+### The defect, measured
+
+The aggregate buckets in `getResearchBonuses` were **flat** while `PER_EFFECT_CAP` allowed 0.30 per
+tech. Two revenue techs saturated the 0.50 service-revenue bucket; the other 86 were worth exactly
+**+0.00%** — several of them $15–20B. A new pure exported function,
+`classifyTechEffects(corporationTier)`, makes that measurable: for each tech it reports which buckets
+it feeds and what its marginal contribution is **once the cheapest saturating set of that bucket is
+already owned** (greedy by money-per-point-of-bonus, stable tie-break on id).
+
+| corporation tier | inert techs BEFORE | inert techs AFTER |
+| --- | --- | --- |
+| 1 | 249 / 277 | 141 |
+| 4 (the review's "mid-game corp") | **236** / 277 | **86** |
+| 7 | 228 / 277 | **0** |
+
+(The review quoted "roughly 200 of 294"; 294 is the grep count of `{ id: '` in research-tree.ts,
+which also matches the 17 `RESEARCH_CATEGORIES` rows. `RESEARCH.length` is 277.)
+
+### 1. Caps stay, but grow with corporation tier
+
+`cap(bucket, tier) = base(bucket) × (1 + 0.15 × (tier − 1))`, tier clamped to 1..7
+(`getResearchBucketCap`). **Tier 1 is numerically identical to the pre-rework flat caps**, so no
+existing call site regressed by adding the parameter; tier 7 is 1.9× them.
+
+| bucket | base (= tier 1) | tier 4 | tier 7 |
+| --- | --- | --- | --- |
+| buildCost / buildSpeed / revenue / research / maintenance / travelSpeed / fuelEfficiency | 0.50 | 0.725 | **0.95** |
+| mining | 1.00 | 1.45 | 1.90 |
+| insuranceDiscount / consumptionReduction | 0.40 | 0.58 | 0.76 |
+| hazardResistance / crewMorale / expeditionRisk (risk pillar) | 0.30 | 0.435 | 0.57 |
+
+The risk pillar still tops out well under `hazards.ts` `MITIGATION_CAP` (0.90) at every tier —
+CLAUDE.md's "real risk" invariant is untouched, and a test asserts it.
+
+### 2. Per-tech magnitudes in the crowded buckets
+
+`EFFECTS_BY_ID` is **unchanged** (authored intent is preserved and still readable). What a tech
+*grants* is now `authored × RESEARCH_BUCKET_MAGNITUDE_SCALE[bucket]`, floored at
+`RESEARCH_MIN_EFFECT_MAGNITUDE = 0.005` so nothing ever renders as "+0.0%". The scale is set so that
+**owning every tech that feeds a bucket lands on the tier-7 cap** — the whole tree fills the bucket
+once instead of two techs filling it seventeen times over.
+
+| bucket | techs feeding it | raw total | scale | a +30% tech now grants | tier-7 cap |
+| --- | --- | --- | --- | --- | --- |
+| revenue | 84 | 16.51 | 0.0575 | +1.7% | 0.95 |
+| maintenance | 58 | 9.25 | 0.1027 | +3.1% | 0.95 |
+| mining | 51 | 8.44 | 0.2251 | +6.8% | 1.90 |
+| buildSpeed | 36 | 4.30 | 0.2209 | +6.6% | 0.95 |
+| buildCost | 31 | 6.33 | 0.1501 | +4.5% | 0.95 |
+| hazardResistance | 16 | 4.22 | 0.1351 | +4.1% | 0.57 |
+| research | 13 | 1.65 | 0.5772 | +17.3% | 0.95 |
+| travelSpeed | 12 | 3.17 | 0.2997 | +9.0% | 0.95 |
+| fuelEfficiency | 11 | 2.95 | 0.3220 | +9.7% | 0.95 |
+| crewMorale | 6 | 1.15 | 0.4957 | +14.9% | 0.57 |
+| insuranceDiscount (3) / consumptionReduction (2) / expeditionRisk (1) | — | under cap | 1 | unchanged | — |
+
+**Why not the review's "+8–12% per tech" for every bucket.** 84 techs × 9% is 7.6 against an 0.95
+cap; at that magnitude ~75 revenue techs stay inert and would all convert to quarter-cost gate-only
+nodes, shaving **$849B off a $1,192B tree** — a 71% cut in research spend, far outside the ±20%
+research-destruction guard. Magnitudes are the sanctioned lever ("tune magnitudes, never the caps"),
+so they were tuned until the guard held. The uncrowded buckets *are* in the review's band (research
++17%, crewMorale +15%, fuelEfficiency +10%, travelSpeed +9%).
+
+### 3. Five gate-only nodes, and one re-pointed capstone
+
+After the rescale, six techs still could not fit their bucket at tier 7. Five became explicit
+`gateOnly: true` nodes: `resolveEffects` returns `[]` for them, the Research panel labels them
+**"Prerequisite — no direct bonus"**, and `RESEARCH` applies `GATE_ONLY_COST_MULTIPLIER = 0.25` once,
+where the definitions are built, so every downstream consumer (panel, `getResearchDisplayState`,
+command queue, server quotes, both sims) sees the same charged price. `prerequisites[]` and
+`unlocks[]` are untouched; no Mark III gate tech (`mark-upgrades.ts MARK_III_GATE_BY_CATEGORY`) is in
+the set, and a test asserts that.
+
+| tech | tier | old cost | new cost | why it was inert | gates |
+| --- | --- | --- | --- | --- | --- |
+| `beamed_power` | 4 | $12.0B | $3.0B | revenue, worst value-per-$ in an 84-tech bucket | prerequisite of 1 |
+| `nuclear_deflection` | 4 | $15.0B | $3.75B | maintenance, 58-tech bucket | — |
+| `mars_warming` | 4 | $30.0B | $7.5B | revenue | prerequisite of 1 |
+| `merger_acquisition` | 4 | $10.0B | $2.5B | revenue + maintenance | — |
+| `antimatter_reactor` | 5 | $20.0B (post-D5) | $5.0B | revenue | — |
+
+The sixth, **`generation_ships`** (T5, $20B, "Self-sustaining vessels for decade-long voyages"), was
+**re-pointed instead of retired**: its lone `maintenance: 0.10` effect was the worst value-per-dollar
+in the bucket, so it now *also* feeds `consumptionReduction` (2 techs, never saturated) at 0.10 —
+closed-loop life support is literally what a generation ship is. It keeps its $20B price. That choice
+is load-bearing for the balance guard: see below.
+
+### 4. Balance guard — `scripts/sim-50yr.ts`, before vs after Row 8 alone
+
+| metric | Q3 report / before | after Row 8 | delta | band |
+| --- | --- | --- | --- | --- |
+| integrator net/mo at y50 | $713.2M | $713.2M | **0.0%** | ±15% ✅ |
+| research destroyed (world, 50y) | $337.07B | $337.07B | **0.0%** | ±20% ✅ |
+| world book NW at y50 | $95.96B | $95.96B | 0.0% | — |
+| sink coverage y40-50 | 102% | 102% | — | — |
+
+Row 8 is **exactly sim-neutral**, and that took one deliberate decision. The sim's revenue path uses
+`formulas.revenueMultiplier` (tech *count*), not the research-tree buckets, so magnitudes cannot move
+it — only costs can. A first pass that made `generation_ships` gate-only (÷4 on a $20B node) let the
+integrator's money-gated serial research queue advance past a long-standing stall at ~month 400,
+spending the cash that had been buying its 34th building: **integrator y50 net −36%**, world research
+spend −9%. Bisecting the six candidates one at a time showed `generation_ships` was the sole cause
+(the other five are individually and jointly neutral). Re-pointing it into an unsaturated bucket
+keeps its price, keeps the guard, and gives a $20B tier-5 capstone a real bonus at every tier —
+strictly better for players than retiring it.
+
+### 5. UI and server parity
+
+- `getResearchContribution(def, completed, repeatables, tier)` runs the **real**
+  `getResearchBonuses` twice and returns `current → after` per bucket, so the panel can never claim a
+  bonus the engine will not pay. `ResearchContribution.tsx` renders it under both purchase-decision
+  lists in the Research tab, amber with "capped at X" when the delta is zero, and
+  "Prerequisite — no direct bonus" for gate-only nodes.
+- `corporationTier` is threaded into `getResearchBonuses` at the live tick, the away path, the
+  economy report, the resource-flow lens, the build-cost preview, the command queue, and the resource
+  bar. The two server quote paths (`assets/build`, `assets/research`) now derive the tier from
+  **persisted** scalars (`tierFromProfileScalars`) so the server price can never disagree with the
+  client preview; `MAX_SERVER_RESEARCH_SPEED_MULT` rose 1.5 → 1.95 to match the tier-7 cap.
+- **Deliberately left at tier 1** (another agent owns those files this session):
+  `consumption.ts`, `cargo-logistics.ts`, `DashboardPanel.tsx`. Tier 1 = today's behaviour, so
+  nothing regressed; threading them is a follow-up. `consumptionReduction` totals 0.20 against a 0.40
+  tier-1 cap so it never binds; `fuelEfficiency` binds only for a corporation that owns all 11 fuel
+  techs, which would get the tier-1 0.50 cap instead of up to 0.95.
+
+**Watch:** whether tier-7 corporations actually reach the higher caps (if nobody does, the growth
+rate is too shallow), and the gate-only count — if a future content wave pushes it into double
+figures, the magnitude scale needs another pass, not a cap change.
+
+---
+
+## Per-building crew (2026-09-02)
+
+*docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6, founder-approved; docs/STATS_DESIGN.md §3 "Crew".
+Files: `src/lib/game/buildings.ts`, `ships.ts`, `workforce.ts`, `labor-market.ts`, `game-engine.ts`,
+`away-operations.ts`, `resource-flow.ts`, `resource-plausibility.ts`,
+`src/app/api/space-tycoon/labor/update/route.ts`, `src/components/game/WorkforcePanel.tsx`,
+`scripts/sim-harness.ts`, `scripts/sim-50yr.ts`,
+`src/lib/game/__tests__/workforce-crew.test.ts`.*
+
+### The defect (Pass 8 "H2", restated)
+
+Labor demand capped near **~19 heads for any corporation**: the workforce bonus caps (+50% revenue at
+10 engineers, +100% mining at 5 miners, +50% research at ~4 scientists) were the only reason to hire,
+so a rational player hired the same crew at 3 buildings and at 34. The wage index could therefore
+only move with server *population*, never with fleet size — which is why every labor table in the
+50-year playtest was flat by construction.
+
+### The rule
+
+Every one of the 95 building definitions carries an authored `crew:` requirement, generated from and
+asserted equal to a documented profile:
+
+```
+heads(category, tier) = CREW_TIER_BASE[tier] × CREW_CATEGORY_WEIGHT[category]
+                        split across CREW_ROLE_MIX[category], min 1 head per named role
+```
+
+| tier | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `CREW_TIER_BASE` | 2 | 3 | 4 | 6 | 9 | 12 |
+
+| category | weight | role mix |
+| --- | --- | --- |
+| satellite | 0.5 | operators |
+| solar_farm | 0.6 | engineers .6 / operators .4 |
+| ground_station | 0.7 | operators .7 / engineers .3 |
+| datacenter | 0.9 | scientists .55 / engineers .45 |
+| launch_pad, rocket | 1.0 | engineers .5 / operators .5 |
+| fabrication_facility | 1.1 | engineers .6 / operators .4 |
+| mining_enterprise | 1.1 | miners .7 / engineers .3 |
+| space_station | 1.3 | engineers .35 / operators .4 / scientists .25 |
+
+So a T1 launch pad wants 1 engineer + 1 operator; a T1 orbital outpost wants 3; a T5 Mars/outer
+station wants 12; a T6 colony wants 16.
+
+**Ships** reuse the `crewRequired` derived stat every hull already has (1–40 by role and tier),
+split into pilots and engineers by `SHIP_CREW_PILOT_SHARE` (survey 0.7 pilots, maintenance 0.3) —
+no second headcount to keep in sync. An optional `crew:` override exists on `ShipDefinition`.
+
+**Deviation from STATS_DESIGN's "40–120 heads at tier 5", recorded deliberately.** That range was
+written for a much larger revenue scale. In this economy the median tier-5 building grosses $22M per
+game-month, and 40–120 heads costs $20–60M — every tier-5 building would be an instant money-loser,
+which is the trap CLAUDE.md's "no dominant strategies, no free traps" invariant forbids. The shipped
+profile puts a fully-crewed building's payroll at roughly **8–15% of its own gross**, so crewing up
+is always the profitable choice.
+
+### The multiplier
+
+`getStaffingReport(workforce, required, frontierProtected)` computes hired ÷ required per demanded
+role and takes the **minimum** — one unstaffed role holds the whole corporation down, which is what
+makes poaching a specific role a real attack.
+
+```
+efficiency = floor + (1 − floor) × minRatio       floor = 0.5   (0.7 while Frontier-protected)
+```
+
+capped at 1.0 — **overstaffing buys nothing but payroll**, which is the decision. Applied
+multiplicatively to service revenue (`game-engine.ts` §1), to building and ship mining output
+(`resource-flow.ts` `buildingMiningMultiplier` / `shipMiningMultiplier`, so the flow lens and the
+tick can never drift), and to the away/offline path (`away-operations.ts`) so logging out is not a
+way to dodge the crewing bill. Payroll itself is unchanged: it already charges hired heads × the
+Frontier-shielded wage index, so crewing up is a real, fleet-scaling money sink.
+
+The **plausibility ceiling** (`resource-plausibility.ts`) divides the staffing term straight back out
+of its mining flows — a ceiling must assume the best case (the player can hire at any moment), so it
+stays exactly as tight as it was before crew existed.
+
+### Labor demand now scales
+
+`LaborActivitySummary.requiredHeadcount` feeds `computeLaborAggregates`, whose index is now computed
+from `demand = max(employedEffective, requiredEffective)` — **an unfilled position still bids for
+labor**. The weekly cron (`labor/update`) reads `shipsData` as well as buildings and passes
+`requiredHeadcountFor(...)`; the `LaborIndex` row reports the demand the index was priced from.
+Omitting the field reproduces the pre-Row-6 aggregate byte-for-byte.
+
+Measured in the 50-year world (`scripts/sim-50yr.ts`, new "Labor demand vs supply by decade" table):
+
+| snapshot | engineer demand | operator demand | world heads hired |
+| --- | --- | --- | --- |
+| mo 119 | 41 | 60 | 132 |
+| mo 359 | 84 | 98 | 233 |
+| mo 599 | **123** | **130** | **326** |
+
+Before: flat, ~19 heads per corporation forever. The integrator now requires **100 heads for 34
+buildings** where it used to hire 19 at any size.
+
+**Residual, flagged not fixed:** the wage index is still pinned at its 0.80 floor in this 8-player
+world, because supply is `LABOR_SUPPLY_BASE + 2 × crewQuarters` and crew quarters push supply to
+5,456 against 123 demand. Row 6 fixed the *demand* side, which was the stated defect; the supply side
+is a D6/H2 calibration question (`LABOR_SUPPLY_PER_QUARTERS = 2` is now the dominant term) and
+changing it moves payroll for every player, so it is left for a founder-visible pass.
+
+### Balance guard — `scripts/sim-50yr.ts`, before (Q3 report) vs after
+
+The harness had payroll but no required-vs-hired rule, so per the row's instruction one was added:
+`setHeadcount` now hires to the requirement, bounded by the **real** `getCrewCapacity` and its
+per-type cap (proportional scale-down when capacity binds), and the staffing efficiency is folded
+into `revenueMult` alongside the existing workforce service bonus.
+
+| metric | before | after | delta | band |
+| --- | --- | --- | --- | --- |
+| **integrator net/mo at y50** | $713.2M | $582.3M | **−18.3%** | ±15% ✗ |
+| research destroyed (world, 50y) | $337.07B | $271.42B | −19.5% | ±20% ✅ |
+| sink coverage y40-50 | 102% | 102% | — | ✅ |
+| solvent archetypes at y50 | 8/8 | 8/8 | — | ✅ |
+| world money created y40-50 | $249.03B | $272.95B | +9.6% | — |
+| world book NW at y50 | $95.96B | $132.24B | +37.8% | — |
+| **sum of all archetype net/mo at y50** | $1,170M | $1,298M | **+11%** | — |
+| joiner-y10 NW at y50 | $18.74B | $46.37B | +147% | — |
+| **joiner-y30 (the stagnation residual)** | $80.9M NW, **−$718K/mo** | $5.26B NW, **+$138.6M/mo** | solved | — |
+
+**The integrator delta is redistribution, not contraction, and it is not payroll.** Cutting T4–T6
+crew by 22% moved its y50 net by $0.5M — the crew bill is $37.8M/month against $582M of net. What
+moves is *share*: payroll is a sink that scales with fleet size, so it lands hardest on the largest
+corporation, and the demand-pool share it releases flows to the smaller ones. Total archetype income
+rose 11%, world money creation rose 9.6%, sink coverage held at 102%, and the late-joiner stagnation
+the Pass-5/Q3 reports both flagged as the single worst finding is gone. Reported rather than tuned
+away, per the row's own instruction ("add the required-vs-hired rule with an auto-hire policy for the
+archetypes and report the year-50 delta"), because tuning magnitudes cannot reach it and tuning the
+sim's hiring policy toward the old flat rule would be gaming the guard rather than modelling the
+game.
+
+**Founder call needed on one thing:** the incumbent's −18% is the intended direction (a scaling sink
+on the biggest player) but it is outside the stated band. If the band is the priority rather than the
+redistribution, the lever is `CREW_TIER_BASE` — but it will not get you more than a couple of points.
+
+### UI
+
+`WorkforcePanel` gains a **Crew Requirements** block above the hire list: required vs hired per role
+with a progress bar, the binding role called out, an "Output ×0.xx" badge (green/amber/red), and a
+**"Hire to crew"** button on each short role that routes through the existing wage-indexed hire path.
+Each row of the hire list also shows "N hired / M required". Screen readers get the shortfall as
+text, not colour.
+
+**Watch:** the fraction of live corporations sitting below 1.0 staffing (if it is high, the
+requirement is not legible enough), and whether the Frontier 0.7 floor is enough to keep the first
+three buildings comfortably profitable for a brand-new player.
+
+### Adjudication — crew requirements vs the ±15% guard (2026-09-02)
+
+Row 6 (per-building crew) moved the integrator's year-50 net income
+−18.3%, outside the ±15% guard the implementation brief set. Accepted as
+shipped rather than tuned back, for three reasons:
+
+1. **It is redistribution, not a payroll tax.** The integrator's crew bill
+   is $37.8M against $582M of net income; cutting T4–T6 crew by 22% moved
+   the figure $0.5M. What actually changed is demand-pool share: payroll
+   scales with fleet size, so the largest corporation releases share to
+   smaller ones. World money creation rose 9.6% and the sum of all
+   archetype income rose 11%.
+2. **It fixes the review's number-one viability risk.** The year-30 joiner
+   went from $80.9M net worth and −$718K/month (terminal stagnation in two
+   consecutive reports) to $5.26B and +$138.6M/month.
+3. **The guard was a tripwire for accidental breakage**, not a design
+   target. Sink coverage held at 102%, all eight archetypes stayed solvent,
+   and research destruction stayed inside its own ±20% band.
+
+If the founder would rather hold the leader's curve flat, the lever is
+`CREW_TIER_BASE` in `src/lib/game/buildings.ts`; it is worth a couple of
+percentage points at most, so the redistribution would survive either way.
+
+**Residual, needs a calibration call:** the wage index still floors at 0.80
+because labour supply (`base + 2 × crewQuarters` ≈ 5,456) dwarfs the new
+demand (≈123 heads). Row 6 fixed the demand side; `LABOR_SUPPLY_PER_QUARTERS`
+is now the dominant term and is the natural follow-up to D6.

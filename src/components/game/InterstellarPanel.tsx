@@ -6,7 +6,7 @@
 // manage everything already in flight: expedition history + hazard logs,
 // colonies, and trade routes. Per CLAUDE.md's campaign-loop end-game.
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { GameState, GameTab, ExpeditionState } from '@/lib/game/types';
 import {
@@ -20,6 +20,10 @@ import {
   TRADE_ROUTE_SETUP_COST, TRADE_MIN_SHIPMENT_UNITS,
 } from '@/lib/game/expeditions';
 import { FACTION_MAP, getFactionArtUrl, type FactionId } from '@/lib/game/factions';
+// Row 12 (docs/GAME_DESIGN_REVIEW_2026-09.md §2): orders to another star
+// system are transmitted, not executed — they cross at light speed (2
+// game-months per light-year) and the tick applies them on arrival.
+import { getInterstellarCommandProgress } from '@/lib/game/interstellar-commands';
 import { formatMoney } from '@/lib/game/formulas';
 import { PLANET_ASSETS, getRegionArt, getSystemVista, getArtVariant } from '@/lib/game/assets';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
@@ -37,6 +41,13 @@ interface Props {
   onUpgradeColony: (colonyId: string) => void;
   onEstablishTradeRoute: (colonyId: string, resourceId: string) => void;
   onSetTradeRouteStatus: (routeId: string, status: 'active' | 'suspended') => void;
+  /** Row 12: abandon an order still crossing interstellar space. No refund —
+   *  the fee bought a mission that has already left. */
+  onCancelInterstellarCommand?: (commandId: string) => void;
+  /** Row 12: order a surveying expedition home early. Transmitted like any
+   *  other interstellar order, and the survey payout is prorated to the
+   *  fraction actually completed — a trade, not a free win. */
+  onRecallExpedition?: (expeditionId: string) => void;
 }
 
 /** Thematic biome art fallback per destination system — narrative-matched to each
@@ -54,6 +65,7 @@ type SubTab = 'destinations' | 'expeditions' | 'colonies' | 'trade';
 
 export default function InterstellarPanel({
   state, onNavigateTab, onEstablishColony, onUpgradeColony, onEstablishTradeRoute, onSetTradeRouteStatus,
+  onCancelInterstellarCommand, onRecallExpedition,
 }: Props) {
   const [subTab, setSubTab] = useState<SubTab>('expeditions');
   const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null);
@@ -139,8 +151,13 @@ export default function InterstellarPanel({
         </div>
       </ConsolePanel>
 
+      {/* Row 12: everything currently crossing the gulf as a radio signal.
+          Sits above the sub-tabs because it applies to all of them — a
+          colony order, a trade-route order and a recall all queue here. */}
+      <SignalQueue state={state} onCancel={onCancelInterstellarCommand} />
+
       {subTab === 'expeditions' && (
-        <ExpeditionsTab state={state} onNavigateTab={onNavigateTab} />
+        <ExpeditionsTab state={state} onNavigateTab={onNavigateTab} onRecallExpedition={onRecallExpedition} />
       )}
 
       {subTab === 'colonies' && (
@@ -288,6 +305,87 @@ export default function InterstellarPanel({
   );
 }
 
+/**
+ * Row 12 (docs/GAME_DESIGN_REVIEW_2026-09.md §2) — orders in transit.
+ *
+ * Nothing you send beyond the heliopause happens now. The order crosses at
+ * light speed (2 game-months per light-year: Proxima ~2 days, Sirius ~4) and
+ * the engine tick applies it on arrival. The money left when the order did,
+ * so cancelling refunds nothing — that asymmetry is the decision.
+ *
+ * Accessibility: progress is a real ARIA progressbar with the percentage and
+ * ETA in text, and the bar has no animation of its own (only a motion-safe:
+ * width transition), so reduced-motion users lose nothing but the slide.
+ */
+function SignalQueue({
+  state, onCancel,
+}: {
+  state: GameState;
+  onCancel?: (commandId: string) => void;
+}) {
+  // Refresh the ETA on a slow beat — signal lag is measured in hours, so a
+  // 15-second tick is plenty and costs nothing.
+  const [, setBeat] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setBeat(n => n + 1), 15_000);
+    return () => clearInterval(t);
+  }, []);
+
+  const pending = getInterstellarCommandProgress(state);
+  if (pending.length === 0) return null;
+
+  return (
+    <ConsolePanel
+      title="Orders in transit"
+      icon="interstellar"
+      subtitle="Commands sent to another star system travel at light speed — two game-months per light-year. They execute on arrival. Cancelling before then is allowed and refunds nothing."
+      accent="cyan"
+    >
+      <ul className="space-y-2">
+        {pending.map(p => {
+          const pct = Math.round(p.progress * 100);
+          return (
+            <li key={p.command.id} className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-2.5">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-white text-xs font-medium truncate">{p.command.label}</p>
+                  <p className="text-[10px] text-slate-400">
+                    {p.command.distanceLy.toFixed(2)} ly · {p.etaLabel} · {pct}% of the crossing
+                    {p.command.feePaid > 0 && <> · {formatMoney(p.command.feePaid)} committed</>}
+                  </p>
+                </div>
+                {onCancel && (
+                  <button
+                    type="button"
+                    onClick={() => onCancel(p.command.id)}
+                    className="shrink-0 min-h-[44px] px-2.5 py-1 rounded-lg text-[10px] font-semibold border border-white/[0.12] text-slate-300 hover:text-white hover:border-white/[0.25] transition-colors"
+                    title="Cancel this order. The fee is not refunded."
+                  >
+                    Cancel (no refund)
+                  </button>
+                )}
+              </div>
+              <div
+                className="mt-2 h-1.5 rounded-full bg-white/[0.06] overflow-hidden"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={pct}
+                aria-label={`${p.command.label} — ${p.etaLabel}`}
+              >
+                <div
+                  className="h-full rounded-full bg-cyan-400/70 motion-safe:transition-[width] motion-safe:duration-700"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </ConsolePanel>
+  );
+}
+
 function PrereqChip({ label, met, help }: { label: string; met: boolean; help: string }) {
   return (
     <div
@@ -306,7 +404,11 @@ function PrereqChip({ label, met, help }: { label: string; met: boolean; help: s
 
 // ─── Expeditions tab ─────────────────────────────────────────────────────────
 
-function ExpeditionsTab({ state, onNavigateTab }: { state: GameState; onNavigateTab: (tab: GameTab) => void }) {
+function ExpeditionsTab({ state, onNavigateTab, onRecallExpedition }: {
+  state: GameState;
+  onNavigateTab: (tab: GameTab) => void;
+  onRecallExpedition?: (expeditionId: string) => void;
+}) {
   const expeditions = state.expeditions || [];
   const active = expeditions.filter(e => e.phase === 'outbound' || e.phase === 'exploring' || e.phase === 'returning');
   const history = expeditions
@@ -336,7 +438,7 @@ function ExpeditionsTab({ state, onNavigateTab }: { state: GameState; onNavigate
         <div>
           <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-2">In Flight</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {active.map(exp => <ActiveExpeditionCard key={exp.id} state={state} exp={exp} />)}
+            {active.map(exp => <ActiveExpeditionCard key={exp.id} state={state} exp={exp} onRecallExpedition={onRecallExpedition} />)}
           </div>
         </div>
       )}
@@ -353,10 +455,21 @@ function ExpeditionsTab({ state, onNavigateTab }: { state: GameState; onNavigate
   );
 }
 
-function ActiveExpeditionCard({ state, exp }: { state: GameState; exp: ExpeditionState }) {
+function ActiveExpeditionCard({ state, exp, onRecallExpedition }: {
+  state: GameState;
+  exp: ExpeditionState;
+  onRecallExpedition?: (expeditionId: string) => void;
+}) {
   const progress = getExpeditionProgress(state, exp.id);
   const shipDef = SHIP_MAP.get(exp.shipDefinitionId);
   if (!progress) return null;
+  // Row 12: a recall is only meaningful for an explorer still on station —
+  // colony arks hold station permanently and have no return leg. The order
+  // itself takes a light-lag crossing to reach the ship.
+  const canRecall = !!onRecallExpedition
+    && exp.phase === 'exploring'
+    && !(COLONY_CAPABLE_SHIP_IDS as readonly string[]).includes(exp.shipDefinitionId)
+    && !(state.pendingInterstellarCommands || []).some(c => c.kind === 'recall_expedition' && c.expeditionId === exp.id);
 
   return (
     <div className="hud-frame relative rounded-xl border border-cyan-500/25 bg-cyan-500/[0.04] p-3">
@@ -382,6 +495,16 @@ function ActiveExpeditionCard({ state, exp }: { state: GameState; exp: Expeditio
         {exp.extraShielding && <DataChip icon="check" tone="info">Hardened shielding</DataChip>}
         <DataChip tone="neutral">Hull {(exp.hullIntegrity * 100).toFixed(0)}%</DataChip>
       </div>
+      {canRecall && (
+        <button
+          type="button"
+          onClick={() => onRecallExpedition?.(exp.id)}
+          className="mt-2 w-full min-h-[44px] px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border border-white/[0.12] text-slate-300 hover:text-white hover:border-white/[0.25] transition-colors"
+          title="Cut the survey short and start the return leg. The order takes a light-lag crossing to arrive; survey data is paid pro rata for the months actually worked."
+        >
+          Recall — end survey early
+        </button>
+      )}
     </div>
   );
 }

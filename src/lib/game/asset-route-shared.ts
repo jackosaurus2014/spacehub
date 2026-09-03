@@ -38,6 +38,16 @@ export interface AssetProfileRow {
    *  condition merged into the registry views). */
   shipsData: unknown;
   activeServicesData: unknown;
+  /** Row 8 (docs/BALANCE.md "Inert techs rework (2026-09-02)"): the persisted
+   *  scalars corporation-tiers.ts tierFromProfileScalars reads. Research
+   *  aggregate caps grow with corporation tier, so the server's build and
+   *  research quotes must be taken at the same tier the client previewed —
+   *  and that tier must come from PERSISTED columns, never from the client. */
+  totalEarned: number;
+  buildingCount: number;
+  researchCount: number;
+  serviceCount: number;
+  locationsUnlocked: number;
 }
 
 export class InsufficientFundsError extends Error {}
@@ -58,6 +68,8 @@ export async function loadAssetProfile(routeKey: string = 'assets'): Promise<{ r
       buildingsData: true, workforceData: true, resources: true, serverResources: true,
       completedResearchList: true, unlockedLocationsList: true,
       shipsData: true, activeServicesData: true,
+      totalEarned: true, buildingCount: true, researchCount: true,
+      serviceCount: true, locationsUnlocked: true,
     },
   });
   if (!profile) {

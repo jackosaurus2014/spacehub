@@ -196,7 +196,7 @@ export function attemptBuildStart(
   if (!checkBuildingCap(state.buildings, def).allowed) return { ok: false, reason: 'building_cap_reached' };
 
   const count = state.buildings.filter(b => b.definitionId === order.buildingId && b.locationId === order.locationId).length;
-  const { buildCostReduction } = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
+  const { buildCostReduction } = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels, state.corporationTier || 1); // Row 8: tier-scaled caps
   const cost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
   if (state.money < cost) return { ok: false, reason: 'insufficient_funds' };
   if (def.resourceCost) {

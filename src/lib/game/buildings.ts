@@ -2,7 +2,7 @@
 // realBuildSeconds: Tier 1 ≈ 3-5 min (180-300s), Tier 2 ≈ 10-20 min, Tier 3 ≈ 30-45 min, Tier 4 ≈ 45-60 min
 // Duplicate builds at same location scale by 1.3x time (in addition to cost scaling)
 
-import type { BuildingDefinition, BuildingCategory, BuildingDerivedStats, BuildingSynergyRange, BuildingInstance } from './types';
+import type { BuildingCrew, BuildingDefinition, BuildingCategory, BuildingDerivedStats, BuildingSynergyRange, BuildingInstance } from './types';
 import { markSpendToDate } from './mark-upgrades';
 import { getEffectiveMaintenancePerMonth } from './flagship-economics';
 
@@ -13,7 +13,7 @@ export { getEffectiveMaintenancePerMonth };
 
 export const BUILDINGS: BuildingDefinition[] = [
   // ─── LAUNCH PADS ──────────────────────────────────────────────────────
-  { id: 'launch_pad_small', name: 'Small Launch Pad', category: 'launch_pad', tier: 1,
+  { id: 'launch_pad_small', crew: { engineers: 1, operators: 1 }, name: 'Small Launch Pad', category: 'launch_pad', tier: 1,
     description: 'Supports small and medium rockets up to 5 tons to LEO.',
     tooltip: 'YOUR FIRST REVENUE GENERATOR. Build this immediately — it activates Small Launch Services earning $5M/mo revenue at $2M/mo operating cost = $3M/mo net profit. Combined with maintenance ($500K/mo), you net $2.5M/mo. At $50M build cost, it pays for itself in 20 months. No research needed. This is how you start making money.',
     baseCost: 50_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 500_000,
@@ -26,7 +26,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     // building stays the honest first money-maker.
     consumesPerMonth: { rocket_fuel: 10 },
     capabilities: { logisticsSupport: 0.03 } },
-  { id: 'launch_pad_medium', name: 'Medium Launch Pad', category: 'launch_pad', tier: 2,
+  { id: 'launch_pad_medium', crew: { engineers: 2, operators: 2 }, name: 'Medium Launch Pad', category: 'launch_pad', tier: 2,
     description: 'Supports reusable medium-lift vehicles up to 25 tons to LEO.',
     tooltip: 'MAJOR REVENUE UPGRADE. Activates Medium Launch Services at $18M/mo revenue vs $7M/mo operating cost = $11M/mo net. A huge jump from the small pad\'s $3M net. Requires "Reusable Boosters" research first. Build this as your second or third building once research completes. (Economics shift with pool saturation and research — see the live projection on the build card.)',
     baseCost: 200_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 1_500_000,
@@ -34,7 +34,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 900, resourceCost: { iron: 50, aluminum: 30 },
     consumesPerMonth: { rocket_fuel: 40 },
     capabilities: { logisticsSupport: 0.05 } }, // E3: 40 × $120K ≈ 27% of $18M gross
-  { id: 'launch_pad_heavy', name: 'Heavy Launch Pad', category: 'launch_pad', tier: 3,
+  { id: 'launch_pad_heavy', crew: { engineers: 2, operators: 2 }, name: 'Heavy Launch Pad', category: 'launch_pad', tier: 3,
     description: 'Supports super-heavy vehicles. 100+ tons to LEO.',
     tooltip: 'HIGHEST-REVENUE LAUNCH SERVICE. Activates Heavy Launch at $55M/mo revenue vs $20M/mo cost = $35M/mo net profit. The single highest-margin Earth-based service. Requires "Super Heavy Lift" research (Tier 3 rocketry). Essential for mid-game income before mining operations come online. (See the live projection on the build card for current pool-adjusted economics.)',
     baseCost: 800_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 3_000_000,
@@ -44,14 +44,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { logisticsSupport: 0.06, shipyardSlots: 1 } }, // E3: 120 × $120K ≈ 26% of $55M gross
 
   // ─── GROUND ───────────────────────────────────────────────────────────
-  { id: 'ground_station', name: 'Ground Station', category: 'ground_station', tier: 1,
+  { id: 'ground_station', crew: { engineers: 1, operators: 1 }, name: 'Ground Station', category: 'ground_station', tier: 1,
     description: 'Antenna complex for satellite comms and tracking. Generates revenue from tracking services.',
     tooltip: 'CHEAPEST BUILDING IN THE GAME ($30M, 3 min build). Activates Ground Tracking at $2M/mo revenue vs $600K cost = $1.4M/mo net. Low upfront cost and no research needed. Build this first — it starts generating income immediately while you research and save for bigger buildings. Also counts toward building-count contracts.',
     baseCost: 30_000_000, buildTimeMonths: 4, maintenanceCostPerMonth: 300_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: ['svc_ground_tracking'],
     realBuildSeconds: 180,
     capabilities: { detectionBonus: 0.02, expeditionSupport: 0.02 } },
-  { id: 'mission_control', name: 'Mission Control Center', category: 'ground_station', tier: 1,
+  { id: 'mission_control', crew: { engineers: 1, operators: 1 }, name: 'Mission Control Center', category: 'ground_station', tier: 1,
     description: 'Command center for space ops. Generates revenue from mission management contracts.',
     tooltip: 'DOUBLES YOUR GROUND REVENUE. Activates Mission Operations at $4M/mo revenue vs $1.5M cost = $2.5M/mo net. No research needed. Build right after Ground Station for a combined $3.9M/mo ground income. Also required for the Space Insurance service later (when you research SAR Imaging). Strong early-game foundation building.',
     baseCost: 80_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 800_000,
@@ -60,7 +60,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { trainingSpeed: 0.10, awayAutomation: 0.03, detectionBonus: 0.02 } },
 
   // ─── SATELLITES (LEO) ─────────────────────────────────────────────────
-  { id: 'sat_telecom', name: 'LEO Telecom Satellite', category: 'satellite', tier: 1,
+  { id: 'sat_telecom', crew: { operators: 1 }, name: 'LEO Telecom Satellite', category: 'satellite', tier: 1,
     description: 'Low-latency broadband satellite for LEO constellation.',
     tooltip: 'CHEAPEST SATELLITE ($15M). Activates LEO Broadband at $3.5M/mo revenue vs $1.2M cost = $2.3M/mo net. No research needed — just unlock LEO (free). Great ROI for the price. Build 3-5 to create a constellation and boost your satellite count for contracts. Each additional one has slightly higher cost (1.15x scaling) but same revenue. Foundation of your space economy.',
     baseCost: 15_000_000, buildTimeMonths: 3, maintenanceCostPerMonth: 200_000,
@@ -68,7 +68,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 240,
     consumesPerMonth: { satellite_bus: 0.05 },
     capabilities: { awayAutomation: 0.01 } }, // E3: constellation attrition spares (§2.2)
-  { id: 'sat_sensor', name: 'LEO Sensor Satellite', category: 'satellite', tier: 1,
+  { id: 'sat_sensor', crew: { operators: 1 }, name: 'LEO Sensor Satellite', category: 'satellite', tier: 1,
     description: 'Earth observation satellite with optical and infrared sensors.',
     tooltip: 'EARTH OBSERVATION REVENUE. Activates LEO Earth Observation at $3M/mo vs $800K cost = $2.2M/mo net. Requires "High Res Optical" research. Great margin (73% profit). Also needed as a prerequisite for the high-value Asteroid Survey service ($28M/mo) later. Deploy multiple for satellite contract milestones.',
     baseCost: 25_000_000, buildTimeMonths: 4, maintenanceCostPerMonth: 250_000,
@@ -78,7 +78,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { detectionBonus: 0.03, expeditionSupport: 0.02 } },
 
   // ─── SATELLITES (GEO) ─────────────────────────────────────────────────
-  { id: 'sat_telecom_geo', name: 'GEO Telecom Satellite', category: 'satellite', tier: 1,
+  { id: 'sat_telecom_geo', crew: { operators: 1 }, name: 'GEO Telecom Satellite', category: 'satellite', tier: 1,
     description: 'High-throughput geostationary communications satellite.',
     tooltip: 'PREMIUM TELECOM REVENUE. Activates GEO Communications at $8M/mo vs $2.5M cost = $5.5M/mo net. More than double the LEO telecom profit per satellite, but costs 10x more ($150M). Requires unlocking GEO orbit ($50M). Build once you have stable early income. The $5.5M/mo net makes this one of the best mid-early investments.',
     baseCost: 150_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 800_000,
@@ -86,7 +86,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 420,
     consumesPerMonth: { satellite_bus: 0.1 },
     capabilities: { awayAutomation: 0.02 } },
-  { id: 'sat_sensor_geo', name: 'GEO Sensor Satellite', category: 'satellite', tier: 2,
+  { id: 'sat_sensor_geo', crew: { operators: 2 }, name: 'GEO Sensor Satellite', category: 'satellite', tier: 2,
     description: 'Persistent Earth monitoring from geostationary orbit.',
     tooltip: 'PERSISTENT MONITORING. Activates GEO Persistent Monitoring at $8M/mo vs $2.5M cost = $5.5M/mo net. Same economics as GEO telecom but requires "High Res Optical" research. The advantage is diversification — having both telecom and sensor GEO satellites means more total revenue from the same orbit slot. Needs rare earth (10) and titanium (20) to build.',
     baseCost: 200_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 1_000_000,
@@ -96,7 +96,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { detectionBonus: 0.04, expeditionSupport: 0.03 } },
 
   // ─── SPACE STATIONS ───────────────────────────────────────────────────
-  { id: 'space_station_small', name: 'Orbital Outpost', category: 'space_station', tier: 1,
+  { id: 'space_station_small', crew: { engineers: 1, operators: 1, scientists: 1 }, name: 'Orbital Outpost', category: 'space_station', tier: 1,
     description: 'Small modular space station in LEO. 4-person crew capacity.',
     tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). A slow-payback but strategic build — it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone. (Check the live projection on the build card before committing $500M.)',
     baseCost: 500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 5_000_000,
@@ -107,7 +107,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     // Shortfall also hits crew morale (consumption.ts).
     consumesPerMonth: { life_support_pack: 3 },
     capabilities: { hazardShielding: 0.03, crewQuarters: 2 } },
-  { id: 'space_station_lunar', name: 'Lunar Gateway', category: 'space_station', tier: 2,
+  { id: 'space_station_lunar', crew: { engineers: 1, operators: 2, scientists: 1 }, name: 'Lunar Gateway', category: 'space_station', tier: 2,
     description: 'Orbital station around the Moon. Staging point for surface operations.',
     tooltip: 'CISLUNAR HUB (+15% REVENUE BONUS). Activates Lunar Gateway Tours at $25M/mo vs $10M cost = $15M/mo net. Also boosts ALL service revenue in Lunar Orbit by +15%. Positions you as a lunar operator and fulfills "station at location" competitive contracts. Requires Lunar Orbit unlock ($1B) plus research. The $15M/mo net profit justifies the $2B cost over time, and you need a presence here for late-game lunar dominance.',
     baseCost: 2_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 8_000_000,
@@ -115,7 +115,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1200, resourceCost: { aluminum: 100, titanium: 40, iron: 80 }, powerRequired: 8,
     consumesPerMonth: { life_support_pack: 4 },
     capabilities: { hazardShielding: 0.04, diplomacy: 0.04, crewQuarters: 3 } },
-  { id: 'space_station_mars', name: 'Mars Orbital Station', category: 'space_station', tier: 3,
+  { id: 'space_station_mars', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Mars Orbital Station', category: 'space_station', tier: 3,
     description: 'Permanent crewed station in Mars orbit.',
     tooltip: 'MARS COMMAND CENTER (+15% REVENUE BONUS). Activates Mars Station Operations at $45M/mo vs $15M cost = $30M/mo net. Also boosts ALL service revenue in Mars Orbit by +15%. One of the highest-profit services in the game. Requires "Interplanetary Cruisers" research. Critical for Mars colonization contracts and late-game competitive milestones.',
     baseCost: 8_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
@@ -125,7 +125,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { hazardShielding: 0.05, diplomacy: 0.05, crewQuarters: 4 } },
 
   // ─── DATA CENTERS ─────────────────────────────────────────────────────
-  { id: 'datacenter_orbital', name: 'Orbital Data Center', category: 'datacenter', tier: 2,
+  { id: 'datacenter_orbital', crew: { engineers: 1, scientists: 1 }, name: 'Orbital Data Center', category: 'datacenter', tier: 2,
     description: 'AI compute facility in orbit. Free cooling, solar powered.',
     tooltip: 'HIGH-MARGIN TECH PLAY. Activates Orbital AI Compute at $12M/mo vs $4M cost = $8M/mo net. Excellent 67% profit margin. Requires "Rad-Hardened Processors" research. The AI datacenter revenue is a strong return per dollar invested early — saturates fast if others build here too. Build as soon as you complete the research.',
     baseCost: 300_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_000_000,
@@ -133,7 +133,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 420, resourceCost: { rare_earth: 15, titanium: 10 }, powerRequired: 10,
     consumesPerMonth: { electronics_package: 2 },
     capabilities: { researchSpeed: 0.03 } }, // E3: compute spares, 2 × $1.5M = 25% of $12M gross
-  { id: 'datacenter_geo', name: 'GEO Data Center', category: 'datacenter', tier: 3,
+  { id: 'datacenter_geo', crew: { engineers: 2, scientists: 2 }, name: 'GEO Data Center', category: 'datacenter', tier: 3,
     description: 'Heavy AI compute anchored in a premium geostationary slot. Constant sun, fixed ground footprint, zero handover latency.',
     tooltip: 'PRIME-ORBIT COMPUTE. Activates GEO AI Compute at $22M/mo vs $7M cost = $15M/mo net — but it sits in the contested GEO belt, so congestion raises upkeep as the belt fills, and it consumes a satellite bus every 10 months for station-keeping hardware. Requires "Rad-Hardened Processors" + "Edge AI". The step up from the LEO Orbital Data Center for corporations ready to fight for premium slots.',
     baseCost: 900_000_000, buildTimeMonths: 16, maintenanceCostPerMonth: 4_000_000,
@@ -147,7 +147,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // building-capabilities.ts). Earth institute capped at 1/corporation like
   // the Earth fab; the off-world ladder is where committed research corps
   // stack the rest.
-  { id: 'research_institute_earth', name: 'Terrestrial Research Institute', category: 'datacenter', tier: 1,
+  { id: 'research_institute_earth', crew: { engineers: 1, scientists: 1 }, name: 'Terrestrial Research Institute', category: 'datacenter', tier: 1,
     description: 'A ground-side R&D campus: cheap lab space, deep talent pool, no launch costs for your scientists.',
     tooltip: 'FIRST RESEARCH BOOST. +5% research speed, corporation-wide. No research required and no orbit to reach — but capped at ONE per corporation (Earth real estate and regulator patience are finite). The off-world labs stack on top of it.',
     baseCost: 250_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 1_200_000,
@@ -155,21 +155,21 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 420, resourceCost: { iron: 30, aluminum: 15 }, powerRequired: 0,
     maxPerPlayer: 1,
     capabilities: { researchSpeed: 0.05 } },
-  { id: 'research_lab_orbital', name: 'Orbital Research Laboratory', category: 'datacenter', tier: 2,
+  { id: 'research_lab_orbital', crew: { engineers: 1, scientists: 1 }, name: 'Orbital Research Laboratory', category: 'datacenter', tier: 2,
     description: 'Microgravity materials science and protein crystallography in low-Earth orbit.',
     tooltip: 'MICROGRAVITY SCIENCE. +5% research speed, stacking with the Terrestrial Research Institute. Occupies a LEO slot — congestion raises its upkeep as the shells fill. Requires "Orbital Assembly".',
     baseCost: 550_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_500_000,
     requiredResearch: ['orbital_assembly'], requiredLocation: 'leo', enabledServices: [],
     realBuildSeconds: 900, resourceCost: { aluminum: 40, titanium: 15, rare_earth: 8 }, powerRequired: 6,
     capabilities: { researchSpeed: 0.05 } },
-  { id: 'research_station_lunar', name: 'Lunar Research Station', category: 'datacenter', tier: 3,
+  { id: 'research_station_lunar', crew: { engineers: 2, scientists: 2 }, name: 'Lunar Research Station', category: 'datacenter', tier: 3,
     description: 'Far-side radio quiet, vacuum labs, and one-sixth gravity for long-duration experiments.',
     tooltip: 'FAR-SIDE SCIENCE. +6% research speed. The Moon offers radio quiet and stable vacuum no orbit can match. Requires "Regolith Processing".',
     baseCost: 1_800_000_000, buildTimeMonths: 20, maintenanceCostPerMonth: 3_500_000,
     requiredResearch: ['regolith_processing'], requiredLocation: 'lunar_surface', enabledServices: [],
     realBuildSeconds: 2400, resourceCost: { iron: 120, aluminum: 80, rare_earth: 15 }, powerRequired: 8,
     capabilities: { researchSpeed: 0.06 } },
-  { id: 'research_station_mars', name: 'Mars Research Complex', category: 'datacenter', tier: 3,
+  { id: 'research_station_mars', crew: { engineers: 2, scientists: 2 }, name: 'Mars Research Complex', category: 'datacenter', tier: 3,
     description: 'Planetary science headquarters: geology, ISRU pilot plants, and a permanent scientific staff on Mars.',
     tooltip: 'PLANETARY SCIENCE HQ. +7% research speed — the largest single lab in the family. A serious late-mid-game commitment on the Martian surface. Requires "Edge AI" for its autonomous lab systems.',
     baseCost: 3_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 4_500_000,
@@ -177,7 +177,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 3600, resourceCost: { iron: 250, titanium: 100, rare_earth: 30 }, powerRequired: 10,
     capabilities: { researchSpeed: 0.07 } },
 
-  { id: 'datacenter_mars_orbit', name: 'Mars Data Relay', category: 'datacenter', tier: 3,
+  { id: 'datacenter_mars_orbit', crew: { engineers: 2, scientists: 2 }, name: 'Mars Data Relay', category: 'datacenter', tier: 3,
     description: 'Data processing and relay facility at Mars.',
     tooltip: 'DEEP-SPACE COMPUTE. Activates Mars Data Processing at $25M/mo vs $8M cost = $17M/mo net. Required for Mars operations communication and data relay. Requires "Edge AI" research. A long-horizon investment, but essential infrastructure if you\'re building a Mars presence. Also enables Propellant Brokerage when combined with other Mars infrastructure.',
     baseCost: 3_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
@@ -187,13 +187,13 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { researchSpeed: 0.04, awayAutomation: 0.02 } }, // E3: 3 × $1.5M = 18% of $25M gross
 
   // ─── SOLAR FARMS ──────────────────────────────────────────────────────
-  { id: 'solar_farm_orbital', name: 'Orbital Solar Farm', category: 'solar_farm', tier: 1,
+  { id: 'solar_farm_orbital', crew: { engineers: 1, operators: 1 }, name: 'Orbital Solar Farm', category: 'solar_farm', tier: 1,
     description: 'Large solar array providing power to orbital facilities.',
     tooltip: 'POWER INFRASTRUCTURE. Activates Orbital Power Sales at $3M/mo vs $800K cost = $2.2M/mo net. Low revenue but high margin (73%) and cheap to build ($100M). Requires "Triple Junction" research. Power generation supports your other orbital facilities and is a prerequisite for advanced energy research. Good filler building while saving for bigger investments.',
     baseCost: 100_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 500_000,
     requiredResearch: ['triple_junction'], requiredLocation: 'leo', enabledServices: ['svc_power_orbital'],
     realBuildSeconds: 300, powerGenerated: 20 },
-  { id: 'solar_farm_lunar', name: 'Lunar Solar Farm', category: 'solar_farm', tier: 2,
+  { id: 'solar_farm_lunar', crew: { engineers: 1, operators: 1 }, name: 'Lunar Solar Farm', category: 'solar_farm', tier: 2,
     description: 'Solar arrays on the lunar surface. Powers mining and fabrication.',
     tooltip: 'LUNAR POWER GRID. Activates Lunar Power Grid at $5M/mo vs $1.2M cost = $3.8M/mo net. Essential infrastructure for your lunar mining and fabrication operations. Without power, your lunar buildings operate less efficiently. Requires "Triple Junction" research and Lunar Surface unlock. Build alongside your first lunar mining operation.',
     baseCost: 400_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 800_000,
@@ -201,13 +201,13 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 900, powerGenerated: 30 },
 
   // ─── MINING ───────────────────────────────────────────────────────────
-  { id: 'mining_lunar_basic', name: 'Basic Lunar Extractor', category: 'mining_enterprise', tier: 1,
+  { id: 'mining_lunar_basic', crew: { engineers: 1, miners: 2 }, name: 'Basic Lunar Extractor', category: 'mining_enterprise', tier: 1,
     description: 'Simple surface skimmer that scrapes loose regolith ice. Small output, but no advanced materials needed to build.',
     tooltip: 'BOOTSTRAP MINING. Money-only build ($250M, no resource inputs) so you can start producing lunar water before having iron/aluminum. Output is 20 water + 0.5 helium-3 per game month — modest but enough to unlock follow-on construction and start earning Lunar Basic Water Sales revenue. Upgrade to the full Lunar Ice Mine when you have the metals to afford it.',
     baseCost: 250_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
     requiredResearch: [], requiredLocation: 'lunar_surface', enabledServices: ['svc_mining_lunar_basic'],
     realBuildSeconds: 420, powerRequired: 3 },
-  { id: 'mining_lunar_ice', name: 'Lunar Ice Mine', category: 'mining_enterprise', tier: 2,
+  { id: 'mining_lunar_ice', crew: { engineers: 1, miners: 2 }, name: 'Lunar Ice Mine', category: 'mining_enterprise', tier: 2,
     description: 'Extract water ice from permanently shadowed craters.',
     tooltip: 'YOUR GATEWAY TO RESOURCES. Activates Lunar Water Sales at $18M/mo vs $7M cost = $11M/mo net. More importantly, it produces 100 lunar water + 2 helium-3 per game month — resources you NEED for advanced buildings and research. Water sells for $50K/unit on the global Market (already open from turn one). Once built, your resource economy begins. Requires "Resource Prospecting" research + Lunar Surface unlock ($2B).',
     baseCost: 1_500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 3_000_000,
@@ -217,28 +217,28 @@ export const BUILDINGS: BuildingDefinition[] = [
     // Extractor is deliberately recipe-free — it is the bootstrap building
     // new players own before any fuel chain exists (on-ramp protection).
     consumesPerMonth: { rocket_fuel: 5 } },
-  { id: 'mining_mars', name: 'Mars Mining Operation', category: 'mining_enterprise', tier: 3,
+  { id: 'mining_mars', crew: { engineers: 1, miners: 3 }, name: 'Mars Mining Operation', category: 'mining_enterprise', tier: 3,
     description: 'Extract metals and water from Martian regolith.',
     tooltip: 'BULK METAL PRODUCTION. Activates Mars Resource Extraction at $35M/mo vs $13M cost = $22M/mo net. Produces 200 iron + 50 aluminum + 80 Mars water per month — massive quantities of building materials. If you\'re running low on iron and aluminum for construction, this is the solution. Requires "Regolith Processing" research + Mars Surface unlock ($25B). Expensive to set up but the resource output fuels your entire expansion.',
     baseCost: 5_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_mining_mars'],
     realBuildSeconds: 2700, resourceCost: { iron: 200, titanium: 80, aluminum: 100, rare_earth: 20 }, powerRequired: 15,
     consumesPerMonth: { rocket_fuel: 5 } },
-  { id: 'mining_asteroid', name: 'Asteroid Mining Rig', category: 'mining_enterprise', tier: 3,
+  { id: 'mining_asteroid', crew: { engineers: 1, miners: 3 }, name: 'Asteroid Mining Rig', category: 'mining_enterprise', tier: 3,
     description: 'Capture and process metallic asteroids.',
     tooltip: 'PRECIOUS METALS BONANZA. Activates Asteroid Metals at $50M/mo vs $18M cost = $32M/mo net. Produces 500 iron + 10 platinum + 15 gold + 20 rare earth + 30 titanium per month. This is where the REAL money is — platinum ($500K/unit) and gold ($300K/unit) are the most valuable tradeable resources. Requires "Asteroid Capture" research + Belt unlock ($15B). The $32M/mo net plus resource value makes this one of the best investments in the game.',
     baseCost: 8_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 10_000_000,
     requiredResearch: ['asteroid_capture'], requiredLocation: 'asteroid_belt', enabledServices: ['svc_mining_asteroid'],
     realBuildSeconds: 3600, resourceCost: { titanium: 100, iron: 300, rare_earth: 30 }, powerRequired: 12,
     consumesPerMonth: { rocket_fuel: 5 } },
-  { id: 'mining_europa', name: 'Europa Ice Drill', category: 'mining_enterprise', tier: 4,
+  { id: 'mining_europa', crew: { engineers: 2, miners: 5 }, name: 'Europa Ice Drill', category: 'mining_enterprise', tier: 4,
     description: 'Drill through Europa\'s ice shell for subsurface ocean resources.',
     tooltip: 'EXOTIC MATERIALS SOURCE. Activates Europa Subsurface Resources at $200M/mo vs $45M operating cost, against a $120M/mo flagship upkeep floor (0.4% of the $30B build) = ~$35M/mo net at neutral multipliers — one of the highest-profit services in the game. Produces 5 exotic materials ($2M each) + 200 lunar water per month. Exotic materials are needed for Tier 5 research and endgame construction. Requires "Deep Drilling" research + Jupiter unlock ($100B). The $75M/mo net profit makes this worth the massive investment.',
     baseCost: 30_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 20_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'jupiter_system', enabledServices: ['svc_mining_europa'],
     realBuildSeconds: 5400, resourceCost: { titanium: 200, rare_earth: 80, platinum_group: 20 }, powerRequired: 15,
     consumesPerMonth: { rocket_fuel: 5 } },
-  { id: 'mining_titan', name: 'Titan Hydrocarbon Harvester', category: 'mining_enterprise', tier: 4,
+  { id: 'mining_titan', crew: { engineers: 2, miners: 5 }, name: 'Titan Hydrocarbon Harvester', category: 'mining_enterprise', tier: 4,
     description: 'Harvest methane and ethane from Titan\'s lakes.',
     tooltip: 'HIGHEST REVENUE SERVICE IN THE GAME. Activates Titan Hydrocarbon Exports at $265M/mo vs $55M operating cost, against a $160M/mo flagship upkeep floor (0.4% of the $40B build) = ~$50M/mo net at neutral multipliers. Produces 300 methane + 150 ethane per month. The $105M/mo net is the single best revenue source available. Requires "Deep Drilling" research + Saturn unlock ($200B). Late-game mega-investment that funds everything else. Build as soon as you can afford the Saturn system.',
     baseCost: 40_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 25_000_000,
@@ -247,21 +247,21 @@ export const BUILDINGS: BuildingDefinition[] = [
     consumesPerMonth: { rocket_fuel: 5 } },
 
   // ─── FABRICATION ──────────────────────────────────────────────────────
-  { id: 'fabrication_earth', name: 'Terrestrial Fabrication Works', category: 'fabrication_facility', tier: 1,
+  { id: 'fabrication_earth', crew: { engineers: 1, operators: 1 }, name: 'Terrestrial Fabrication Works', category: 'fabrication_facility', tier: 1,
     description: 'Ground-side factory: smelt, refine and assemble components from delivered ore before you have industry off-world.',
     tooltip: 'FIRST FACTORY. Runs Tier 1-2 recipes (ingots, alloys, fuel, beams, electronics, solar arrays, propulsion, life support). Products (T3+) need an off-world plant. Unlimited Earth power; inputs still have to be bought or hauled down.',
     baseCost: 350_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [],
     realBuildSeconds: 480, resourceCost: { iron: 40, aluminum: 20 }, powerRequired: 0,
     maxPerPlayer: 1 }, // Early-fab wave: one per corporation — Earth launch/environmental permits cap ground industry; scaling up means orbit.
-  { id: 'fabrication_orbital', name: 'Orbital Fabrication Lab', category: 'fabrication_facility', tier: 2,
+  { id: 'fabrication_orbital', crew: { engineers: 2, operators: 1 }, name: 'Orbital Fabrication Lab', category: 'fabrication_facility', tier: 2,
     description: 'Manufacture components in microgravity.',
     tooltip: 'UNLOCKS CRAFTING. Activates Orbital Manufacturing at $10M/mo vs $4M cost = $6M/mo net. More importantly, this unlocks the Crafting tab — letting you refine raw resources into higher-value products (steel ingots, electronics, solar panels). Also produces 5 titanium + 3 rare earth per month passively. Requires "Orbital Assembly" research. Build to unlock the entire production chain system.',
     baseCost: 600_000_000, buildTimeMonths: 14, maintenanceCostPerMonth: 3_000_000,
     requiredResearch: ['orbital_assembly'], requiredLocation: 'leo', enabledServices: ['svc_fabrication_orbital'],
     realBuildSeconds: 900, resourceCost: { iron: 60, aluminum: 40, rare_earth: 10 }, powerRequired: 8,
     capabilities: { shipyardSlots: 1 } },
-  { id: 'fabrication_lunar', name: 'Lunar Manufacturing Plant', category: 'fabrication_facility', tier: 2,
+  { id: 'fabrication_lunar', crew: { engineers: 2, operators: 1 }, name: 'Lunar Manufacturing Plant', category: 'fabrication_facility', tier: 2,
     description: 'Use lunar materials to build components on-site.',
     tooltip: 'LUNAR INDUSTRY. Activates Lunar Manufacturing at $15M/mo vs $6M cost = $9M/mo net. Produces 30 aluminum + 50 iron per month — a steady stream of building materials without needing mining ships. Combined with your Lunar Ice Mine, creates a self-sustaining lunar economy. Requires both "Orbital Assembly" and "Regolith Processing" research. Build alongside your lunar mining operation.',
     baseCost: 2_000_000_000, buildTimeMonths: 20, maintenanceCostPerMonth: 4_000_000,
@@ -270,7 +270,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { inventoryProtection: 0.10 } },
 
   // ─── HABITATS ─────────────────────────────────────────────────────────
-  { id: 'habitat_lunar', name: 'Lunar Habitat', category: 'space_station', tier: 2,
+  { id: 'habitat_lunar', crew: { engineers: 1, operators: 2, scientists: 1 }, name: 'Lunar Habitat', category: 'space_station', tier: 2,
     description: 'Pressurized habitat on the lunar surface. 8-person capacity.',
     tooltip: 'LUNAR TOURISM HUB (+15% REVENUE BONUS). Activates Lunar Tourism at $30M/mo vs $12M cost = $18M/mo net. Also boosts ALL service revenue on the Lunar Surface by +15% (stacks with other stations). The highest-revenue lunar service. Lunar Tourism is a premium revenue stream that attracts wealthy tourists. Requires "Modular Spacecraft" + "Resource Prospecting" research plus lunar water (50) and metals to build. A very long-horizon investment at $3B, but steady income is valuable for mid-game stability.',
     baseCost: 3_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
@@ -278,7 +278,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1500, resourceCost: { aluminum: 80, titanium: 30, lunar_water: 50, iron: 60 }, powerRequired: 8,
     consumesPerMonth: { life_support_pack: 3 },
     capabilities: { crewQuarters: 4, trainingSpeed: 0.05 } },
-  { id: 'habitat_mars', name: 'Mars Habitat', category: 'space_station', tier: 3,
+  { id: 'habitat_mars', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Mars Habitat', category: 'space_station', tier: 3,
     description: 'First permanent human settlement on Mars.',
     tooltip: 'MARS COLONIZATION (+15% REVENUE BONUS). Activates Mars Tourism at $80M/mo vs $35M cost = $45M/mo net — one of the top 5 revenue sources in the game. Also boosts ALL service revenue on Mars Surface by +15% (stacks with other stations). Establishes humanity\'s first Mars settlement and counts toward the "Mars Colonization Initiative" contract ($1B reward). Requires "Interplanetary Cruisers" + "Regolith Processing" research. At $15B cost and heavy resource requirements, this is a late mid-game milestone that defines your Mars strategy.',
     baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 12_000_000,
@@ -288,7 +288,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { crewQuarters: 6, trainingSpeed: 0.08 } },
 
   // ─── GEO INFRASTRUCTURE ─────────────────────────────────────────────
-  { id: 'solar_farm_geo', name: 'GEO Solar Power Platform', category: 'solar_farm', tier: 2,
+  { id: 'solar_farm_geo', crew: { engineers: 1, operators: 1 }, name: 'GEO Solar Power Platform', category: 'solar_farm', tier: 2,
     description: 'High-power solar farm in geostationary orbit for space-based solar power.',
     tooltip: 'ENABLES NAVIGATION SERVICES. Activates Navigation (GPS) at $15M/mo vs $4M cost = $11M/mo net. The main reason to build this is unlocking the high-margin navigation service. Requires "Triple Junction" + "High Power Comms" research. Build in GEO orbit after you have telecom satellites there.',
     baseCost: 300_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 1_500_000,
@@ -296,14 +296,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 600, resourceCost: { aluminum: 40, rare_earth: 10 }, powerGenerated: 40 }, // 10 min
 
   // ─── RELAY SATELLITES ───────────────────────────────────────────────
-  { id: 'sat_lunar_relay', name: 'Lunar Relay Satellite', category: 'satellite', tier: 2,
+  { id: 'sat_lunar_relay', crew: { operators: 2 }, name: 'Lunar Relay Satellite', category: 'satellite', tier: 2,
     description: 'Communication relay for cislunar operations and debris tracking.',
     tooltip: 'TWO SERVICES IN ONE. Activates both Debris Removal ($12M/mo, $5M cost = $7M net) AND Space Insurance ($8M/mo, $1.8M cost = $6.2M net). Combined: $13.2M/mo net from a single $200M building. Best ROI of any satellite. Requires "Reusable Boosters" research + Lunar Orbit unlock ($1B). Build this as soon as you unlock Lunar Orbit — two revenue streams from one building.',
     baseCost: 200_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
     requiredResearch: ['reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_debris_removal', 'svc_space_insurance'],
     realBuildSeconds: 720, resourceCost: { aluminum: 15, rare_earth: 5 }, powerRequired: 3,
     capabilities: { hazardShielding: 0.03, awayAutomation: 0.02 } }, // 12 min
-  { id: 'sat_mars_relay', name: 'Mars Relay Satellite', category: 'satellite', tier: 3,
+  { id: 'sat_mars_relay', crew: { operators: 2 }, name: 'Mars Relay Satellite', category: 'satellite', tier: 3,
     description: 'Deep-space communications relay for Mars operations.',
     tooltip: 'MARS COMMS + PROPELLANT BROKERAGE. Activates Propellant Brokerage at $40M/mo vs $15M cost = $25M/mo net. One of the highest-profit services available at Mars. Essential for supporting your Mars fleet and trading operations. Requires "Super Heavy Lift" + "Ion Drives" research + Mars Orbit unlock ($10B). Build alongside your Mars orbital station.',
     baseCost: 1_000_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_000_000,
@@ -312,14 +312,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { awayAutomation: 0.03, logisticsSupport: 0.04 } }, // 15 min
 
   // ─── MARS SURFACE INFRASTRUCTURE ────────────────────────────────────
-  { id: 'fabrication_mars', name: 'Mars Manufacturing Plant', category: 'fabrication_facility', tier: 3,
+  { id: 'fabrication_mars', crew: { engineers: 3, operators: 2 }, name: 'Mars Manufacturing Plant', category: 'fabrication_facility', tier: 3,
     description: 'Manufacture components using Martian resources. Key to Mars self-sufficiency.',
     tooltip: 'MARS SELF-SUFFICIENCY + PROPELLANT DEPOT. Activates Propellant Depot Services at $20M/mo vs $7M cost = $13M/mo net. Makes Mars operations sustainable by manufacturing components locally instead of shipping from Earth. Combined with Mars Mining, creates a self-sufficient Mars economy. Requires "Orbital Assembly" + "Regolith Processing" research. Essential for long-term Mars presence.',
     baseCost: 8_000_000_000, buildTimeMonths: 28, maintenanceCostPerMonth: 6_000_000,
     requiredResearch: ['orbital_assembly', 'regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_propellant_depot'],
     realBuildSeconds: 2400, resourceCost: { titanium: 80, aluminum: 100, iron: 150, mars_water: 40 }, powerRequired: 15,
     capabilities: { logisticsSupport: 0.05 } }, // 40 min
-  { id: 'solar_farm_mars', name: 'Mars Solar Farm', category: 'solar_farm', tier: 3,
+  { id: 'solar_farm_mars', crew: { engineers: 1, operators: 1 }, name: 'Mars Solar Farm', category: 'solar_farm', tier: 3,
     description: 'Large solar array on the Martian surface. Lower efficiency than Earth but essential.',
     tooltip: 'MARS POWER INFRASTRUCTURE. Supports Mars mining and fabrication operations. While it doesn\'t directly enable a revenue service, Mars surface buildings need power infrastructure to operate efficiently. Requires "Triple Junction" + "Resource Prospecting" research. Build alongside your Mars Mining Operation and Habitat to create a complete Mars base. Adds to your building count for infrastructure contracts.',
     baseCost: 2_000_000_000, buildTimeMonths: 14, maintenanceCostPerMonth: 2_000_000,
@@ -327,50 +327,50 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1200, resourceCost: { aluminum: 60, iron: 80, rare_earth: 15 }, powerGenerated: 25 }, // 20 min
 
   // ─── NUCLEAR POWER & ADVANCED ENERGY ──────────────────────────────
-  { id: 'nuclear_reactor_leo', name: 'Orbital Nuclear Reactor', category: 'solar_farm', tier: 2,
+  { id: 'nuclear_reactor_leo', crew: { engineers: 1, operators: 1 }, name: 'Orbital Nuclear Reactor', category: 'solar_farm', tier: 2,
     description: 'Compact fission reactor providing reliable continuous power in LEO. Not dependent on solar exposure.',
     tooltip: 'RELIABLE LEO POWER. Unlike solar farms, nuclear reactors provide constant power regardless of orbital position. At 30 MW output, this single reactor covers the power needs of a data center (10 MW), fabrication lab (8 MW), and station (5 MW) combined. Requires "Surface Fission Reactor" research. More expensive than solar ($500M vs $100M) but higher output and no solar dependency. Essential for heavy LEO infrastructure.',
     baseCost: 500_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 2_000_000,
     requiredResearch: ['fission_surface_power'], requiredLocation: 'leo', enabledServices: [],
     realBuildSeconds: 1200, resourceCost: { titanium: 30, rare_earth: 15 }, powerGenerated: 30 }, // 20 min
-  { id: 'solar_array_lunar_orbit', name: 'Lunar Orbital Solar Array', category: 'solar_farm', tier: 2,
+  { id: 'solar_array_lunar_orbit', crew: { engineers: 1, operators: 1 }, name: 'Lunar Orbital Solar Array', category: 'solar_farm', tier: 2,
     description: 'Large solar array in lunar orbit providing power to orbital facilities.',
     tooltip: 'LUNAR ORBIT POWER. Provides 25 MW to power your Lunar Gateway (8 MW) and relay satellites (3 MW each). Without this, your Lunar Gateway operates at reduced efficiency and loses revenue. Requires "Perovskite-Si Tandem" research. Build this immediately when you unlock Lunar Orbit to avoid power penalties on your Gateway station.',
     baseCost: 400_000_000, buildTimeMonths: 5, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: ['perovskite_tandem'], requiredLocation: 'lunar_orbit', enabledServices: [],
     realBuildSeconds: 900, resourceCost: { aluminum: 20, rare_earth: 10 }, powerGenerated: 25 }, // 15 min
-  { id: 'nuclear_reactor_lunar', name: 'Lunar Surface Reactor', category: 'solar_farm', tier: 2,
+  { id: 'nuclear_reactor_lunar', crew: { engineers: 1, operators: 1 }, name: 'Lunar Surface Reactor', category: 'solar_farm', tier: 2,
     description: 'Compact fission reactor for lunar surface operations. Provides reliable power during the 14-day lunar night when solar is unavailable.',
     tooltip: 'LUNAR NIGHT POWER. During the 14-day lunar night, solar farms produce zero power. This reactor ensures continuous operations for your mining, fabrication, and habitat. At 35 MW output, it covers the full 30 MW demand of all lunar surface buildings with headroom for expansion. Combined with the solar farm (30 MW), you get 65 MW total — plenty for duplicate buildings. Build alongside your Lunar Solar Farm for a robust power grid. Requires "Surface Fission Reactor" research.',
     baseCost: 800_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 3_000_000,
     requiredResearch: ['fission_surface_power'], requiredLocation: 'lunar_surface', enabledServices: [],
     realBuildSeconds: 1200, resourceCost: { titanium: 40, rare_earth: 20 }, powerGenerated: 35 }, // 20 min
-  { id: 'nuclear_reactor_mars_orbit', name: 'Mars Orbital Reactor', category: 'solar_farm', tier: 3,
+  { id: 'nuclear_reactor_mars_orbit', crew: { engineers: 1, operators: 1 }, name: 'Mars Orbital Reactor', category: 'solar_farm', tier: 3,
     description: 'Nuclear fission reactor powering Mars orbital infrastructure. Essential for data relay and station operations.',
     tooltip: 'MARS ORBIT POWER. Provides 35 MW to power your Mars Orbital Station (10 MW), Mars Data Relay (20 MW), and other orbital facilities. Solar is weaker at Mars distance, making nuclear the better option. Requires "Surface Fission Reactor" research. Build before or alongside your Mars station to avoid crippling power penalties.',
     baseCost: 1_200_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 4_000_000,
     requiredResearch: ['fission_surface_power'], requiredLocation: 'mars_orbit', enabledServices: [],
     realBuildSeconds: 1800, resourceCost: { titanium: 50, rare_earth: 25, platinum_group: 5 }, powerGenerated: 35 }, // 30 min
-  { id: 'nuclear_reactor_mars_surface', name: 'Mars Surface Reactor', category: 'solar_farm', tier: 3,
+  { id: 'nuclear_reactor_mars_surface', crew: { engineers: 1, operators: 1 }, name: 'Mars Surface Reactor', category: 'solar_farm', tier: 3,
     description: 'Kilopower-class fission reactor for Mars surface operations. Provides reliable power during dust storms when solar is unavailable.',
     tooltip: 'MARS SURFACE POWERHOUSE. Generates 40 MW — enough to supplement your Mars Solar Farm (25 MW) and cover all surface operations: mining (15 MW), fabrication (15 MW), habitat (12 MW) = 42 MW total need. During dust storms, solar output drops but nuclear keeps running. Build alongside your Mars Solar Farm for full power coverage. Requires "Surface Fission Reactor" research.',
     baseCost: 1_500_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['fission_surface_power'], requiredLocation: 'mars_surface', enabledServices: [],
     realBuildSeconds: 2400, resourceCost: { titanium: 60, rare_earth: 30, platinum_group: 8 }, powerGenerated: 40 }, // 40 min
-  { id: 'nuclear_reactor_asteroid', name: 'Asteroid Belt Reactor', category: 'solar_farm', tier: 3,
+  { id: 'nuclear_reactor_asteroid', crew: { engineers: 1, operators: 1 }, name: 'Asteroid Belt Reactor', category: 'solar_farm', tier: 3,
     description: 'Self-contained nuclear reactor powering mining and refining operations in the asteroid belt, where solar power is insufficient.',
     tooltip: 'BELT POWER — NO SOLAR ALTERNATIVE. The asteroid belt is too far from the Sun for effective solar power. This is the ONLY way to power your Asteroid Mining Rig (12 MW), Asteroid Refinery (10 MW), and Ceres Station (8 MW). At 35 MW, one reactor covers a mining rig + refinery. Build two for full belt coverage. Requires "Surface Fission Reactor" + "Spacecraft Nuclear Reactors" research.',
     baseCost: 1_800_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['fission_surface_power', 'nuclear_power_spacecraft'], requiredLocation: 'asteroid_belt', enabledServices: [],
     realBuildSeconds: 2400, resourceCost: { titanium: 70, rare_earth: 30, platinum_group: 10 }, powerGenerated: 35 }, // 40 min
-  { id: 'nuclear_reactor_jupiter', name: 'Jovian Nuclear Plant', category: 'solar_farm', tier: 4,
+  { id: 'nuclear_reactor_jupiter', crew: { engineers: 2, operators: 1 }, name: 'Jovian Nuclear Plant', category: 'solar_farm', tier: 4,
     description: 'High-output nuclear reactor for Jupiter system operations. Solar power is impractical at this distance from the Sun.',
     tooltip: 'JUPITER POWER — ESSENTIAL. At Jupiter distance, solar panels produce only 4% of their Earth output. Nuclear is mandatory. Your Jovian Station generates 15 MW but needs 10 MW + 15 MW for the data center. Europa Ice Drill needs 15 MW. This 40 MW reactor fills the gap. The station\'s built-in reactor (net +5 MW) is not enough alone. Requires "Surface Fission Reactor" + "Spacecraft Nuclear Reactors" research.',
     baseCost: 3_000_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['fission_surface_power', 'nuclear_power_spacecraft'], requiredLocation: 'jupiter_system', enabledServices: [],
     realBuildSeconds: 3600, resourceCost: { titanium: 100, rare_earth: 50, platinum_group: 15, exotic_materials: 3 }, powerGenerated: 40,
     consumesPerMonth: { helium3: 0.2, deuterium: 0.5 } }, // E3: T4 fusion fuel cycle (§2.2 chain D)
-  { id: 'nuclear_reactor_saturn', name: 'Saturnian Nuclear Plant', category: 'solar_farm', tier: 4,
+  { id: 'nuclear_reactor_saturn', crew: { engineers: 2, operators: 1 }, name: 'Saturnian Nuclear Plant', category: 'solar_farm', tier: 4,
     description: 'Advanced nuclear reactor for Saturn system operations. Powers Titan mining and chemical processing.',
     tooltip: 'SATURN POWER — ESSENTIAL. Saturn receives only 1% of Earth\'s solar energy. Nuclear is the only option. Your Kronos Station generates 20 MW (net +8 MW) but Titan Hydrocarbon Harvester (15 MW) + Titan Chemical Plant (12 MW) need far more. This 40 MW reactor ensures full operations. The $105M/mo from Titan mining makes this investment trivial. Requires "Surface Fission Reactor" + "Spacecraft Nuclear Reactors" research.',
     baseCost: 3_500_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 9_000_000,
@@ -379,14 +379,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     consumesPerMonth: { helium3: 0.2, deuterium: 0.5 } }, // E3: T4 fusion fuel cycle
 
   // ─── ASTEROID BELT INFRASTRUCTURE ───────────────────────────────────
-  { id: 'fabrication_asteroid', name: 'Asteroid Refinery', category: 'fabrication_facility', tier: 3,
+  { id: 'fabrication_asteroid', crew: { engineers: 3, operators: 2 }, name: 'Asteroid Refinery', category: 'fabrication_facility', tier: 3,
     description: 'Process asteroid materials in-situ. Reduces transport costs dramatically.',
     tooltip: 'ASTEROID SURVEY DATA. Activates Asteroid Survey Data service at $28M/mo vs $10M cost = $18M/mo net. Processes raw asteroid materials on-site, eliminating the need to ship unrefined ore back to Earth. Also a prerequisite for advanced asteroid belt operations. Requires "Asteroid Capture" + "Orbital Assembly" research. Build after your Asteroid Mining Rig is operational.',
     baseCost: 12_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['asteroid_capture', 'orbital_assembly'], requiredLocation: 'asteroid_belt', enabledServices: ['svc_asteroid_survey'],
     realBuildSeconds: 2700, resourceCost: { titanium: 100, iron: 200, platinum_group: 10, rare_earth: 30 }, powerRequired: 10,
     capabilities: { inventoryProtection: 0.15 } }, // 45 min
-  { id: 'space_station_belt', name: 'Ceres Station', category: 'space_station', tier: 3,
+  { id: 'space_station_belt', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Ceres Station', category: 'space_station', tier: 3,
     description: 'Deep-space outpost at Ceres. Hub for asteroid belt operations.',
     tooltip: 'DEEP-SPACE HUB (+15% REVENUE BONUS). Establishes a permanent presence at Ceres — the largest object in the asteroid belt. Boosts ALL service revenue at the Asteroid Belt by +15%. Serves as a staging point for asteroid mining ships, reducing transit times. Adds to your station count for competitive contracts. At $15B it\'s a prestige investment that signals dominance of the Belt. Required for serious endgame asteroid belt operations.',
     baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
@@ -396,7 +396,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { hazardShielding: 0.05, inventoryProtection: 0.15, diplomacy: 0.04 } }, // 1 hr
 
   // ─── JUPITER SYSTEM INFRASTRUCTURE ──────────────────────────────────
-  { id: 'space_station_jupiter', name: 'Jovian Station', category: 'space_station', tier: 4,
+  { id: 'space_station_jupiter', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Jovian Station', category: 'space_station', tier: 4,
     description: 'Orbital research platform in Jupiter system. Supports Europa operations.',
     tooltip: 'JUPITER COMMAND (+15% REVENUE BONUS). Staging platform for Europa mining and Jovian moon exploration. Boosts ALL service revenue in the Jupiter System by +15%. Supports your Europa Ice Drill operations and fulfills "Jupiter Expedition" competitive contracts (up to $5B reward + "Jovian Pioneer" title). At $50B it\'s a major late-game investment, but Jupiter system access is required for exotic materials production. Build alongside Europa Ice Drill.',
     baseCost: 50_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 30_000_000,
@@ -404,7 +404,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 7200, resourceCost: { titanium: 200, platinum_group: 25, rare_earth: 60, exotic_materials: 3 }, powerRequired: 10, powerGenerated: 15,
     consumesPerMonth: { life_support_pack: 5 },
     capabilities: { hazardShielding: 0.06, diplomacy: 0.05, crewQuarters: 4, expeditionSupport: 0.04 } }, // 2 hr — nuclear powered, net +5 MW
-  { id: 'datacenter_jupiter', name: 'Jupiter Relay Hub', category: 'datacenter', tier: 4,
+  { id: 'datacenter_jupiter', crew: { engineers: 2, scientists: 3 }, name: 'Jupiter Relay Hub', category: 'datacenter', tier: 4,
     description: 'Deep-space data relay and edge computing center for outer system.',
     tooltip: 'OUTER SYSTEM COMMS. Provides communication relay for Jupiter and Saturn operations. Without this, your outer system facilities operate in isolation. Edge computing processes scientific data locally instead of transmitting raw data back to Earth. Requires "Nuclear Thermal" + "Edge AI" research. Build to support your Jupiter and Saturn expansion.',
     // M1/F1: maintenance cut 15M->5M and electronics_package upkeep trimmed
@@ -418,7 +418,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { researchSpeed: 0.05, awayAutomation: 0.03, expeditionSupport: 0.04 } }, // 90 min
 
   // ─── SATURN SYSTEM INFRASTRUCTURE ───────────────────────────────────
-  { id: 'space_station_saturn', name: 'Kronos Station', category: 'space_station', tier: 4,
+  { id: 'space_station_saturn', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Kronos Station', category: 'space_station', tier: 4,
     description: 'Saturn orbital platform. Staging for Titan and Enceladus operations.',
     tooltip: 'SATURN COMMAND (+15% REVENUE BONUS). Staging platform for Titan Hydrocarbon Harvester — the highest-revenue building in the game ($105M/mo net). Boosts ALL service revenue in the Saturn System by +15%. Without Kronos Station, Titan operations have no support infrastructure. Also fulfills deep-space station competitive contracts. At $80B it\'s the most expensive station, but Titan\'s $105M/mo revenue justifies the investment.',
     baseCost: 80_000_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 40_000_000,
@@ -426,7 +426,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 7200, resourceCost: { titanium: 300, platinum_group: 40, rare_earth: 80, exotic_materials: 5 }, powerRequired: 12, powerGenerated: 20,
     consumesPerMonth: { life_support_pack: 6 },
     capabilities: { hazardShielding: 0.06, diplomacy: 0.05, crewQuarters: 4, inventoryProtection: 0.15 } }, // 2 hr — nuclear powered, net +8 MW
-  { id: 'fabrication_titan', name: 'Titan Chemical Plant', category: 'fabrication_facility', tier: 4,
+  { id: 'fabrication_titan', crew: { engineers: 4, operators: 3 }, name: 'Titan Chemical Plant', category: 'fabrication_facility', tier: 4,
     description: 'Process Titan hydrocarbons into rocket fuel and industrial chemicals.',
     tooltip: 'FUEL REFINERY. Processes Titan\'s methane and ethane into rocket fuel and industrial chemicals on-site. Reduces the cost of fueling deep-space missions from Saturn. Combined with Titan Hydrocarbon Harvester, creates a self-sustaining fuel production chain. At $25B it\'s expensive but essential for efficient outer system operations.',
     // M1/F1: maintenance cut 18M->8M (frontier premium, see docs/MEANINGFUL_2026-08.md §5 M1.2).
@@ -436,7 +436,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { logisticsSupport: 0.06 } }, // 90 min
 
   // ─── OUTER SYSTEM INFRASTRUCTURE ────────────────────────────────────
-  { id: 'outpost_outer', name: 'Deep Space Outpost', category: 'space_station', tier: 5,
+  { id: 'outpost_outer', crew: { engineers: 4, operators: 5, scientists: 3 }, name: 'Deep Space Outpost', category: 'space_station', tier: 5,
     description: 'Humanity\'s farthest permanent settlement. Research and exploration hub.',
     tooltip: 'ENDGAME PRESTIGE (+15% REVENUE BONUS). Humanity\'s most distant permanent outpost — beyond Neptune. Boosts ALL service revenue in the Outer System by +15%. The ultimate achievement in the game. Requires "Fusion Drive" + "Generation Ships" research (Tier 5) and the Outer System unlock ($500B). At $200B with exotic materials (20) and helium-3 (10) required, this is the final building milestone. Fulfills the "Architect of the Final Frontier" competitive contract.',
     baseCost: 200_000_000_000, buildTimeMonths: 96, maintenanceCostPerMonth: 60_000_000,
@@ -444,7 +444,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 14400, resourceCost: { titanium: 500, platinum_group: 100, exotic_materials: 20, helium3: 10 }, powerRequired: 10, powerGenerated: 50,
     consumesPerMonth: { life_support_pack: 6, helium3: 0.2, deuterium: 0.5 },
     capabilities: { hazardShielding: 0.08, diplomacy: 0.08, expeditionSupport: 0.06, crewQuarters: 5 } }, // 4 hr — fusion powered, net +40 MW; E3: crew + fusion fuel
-  { id: 'mining_kuiper', name: 'Kuiper Belt Mining Platform', category: 'mining_enterprise', tier: 5,
+  { id: 'mining_kuiper', crew: { engineers: 3, miners: 7 }, name: 'Kuiper Belt Mining Platform', category: 'mining_enterprise', tier: 5,
     description: 'Extract exotic materials and volatiles from Kuiper Belt objects.',
     tooltip: 'ULTIMATE MINING. Extracts the rarest materials in the solar system from Kuiper Belt objects. Exotic materials ($2M each) and other volatiles not available anywhere else in these quantities. Requires "Fusion Drive" + "Automated Mining Fleet" research. At $150B it\'s the most expensive mining operation, but the resource output is unmatched. Late endgame only.',
     // M1/F1: maintenance cut 50M->18M (was 25-60x a T1 satellite's while its
@@ -457,7 +457,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     requiredResearch: ['fusion_drive', 'automated_mining_fleet'], requiredLocation: 'outer_system', enabledServices: ['svc_mining_kuiper'],
     realBuildSeconds: 10800, resourceCost: { titanium: 400, platinum_group: 80, exotic_materials: 15 },
     consumesPerMonth: { rocket_fuel: 5 } }, // 3 hr
-  { id: 'deep_space_relay', name: 'Deep Space Communication Relay', category: 'satellite', tier: 5,
+  { id: 'deep_space_relay', crew: { operators: 5 }, name: 'Deep Space Communication Relay', category: 'satellite', tier: 5,
     description: 'Long-range communication relay for outer system operations.',
     tooltip: 'OUTER SYSTEM COMMS. Maintains communication with your Deep Space Outpost and Kuiper Belt Mining Platform. Without this relay, outer system operations lose coordination. The farthest communication infrastructure ever built. Requires "Fusion Drive" research. Build alongside your other outer system facilities.',
     // M1/F1: maintenance cut 20M->6M (frontier premium — long payback, never negative).
@@ -478,7 +478,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // floor (no inputs supplied) is always maintenance-negative — the soft
   // floor can never be farmed as a something-from-nothing printer (BALANCE.md
   // sinks-first invariant).
-  { id: 'propellant_plant_lunar', name: 'Lunar Propellant Plant', category: 'fabrication_facility', tier: 2,
+  { id: 'propellant_plant_lunar', crew: { engineers: 2, operators: 1 }, name: 'Lunar Propellant Plant', category: 'fabrication_facility', tier: 2,
     description: 'Electrolyzes lunar ice into cryogenic propellant. The Moon becomes a gas station.',
     tooltip: 'VERTICAL INTEGRATION FOR LAUNCH CORPS. Passively converts 30 lunar water into 20 rocket fuel every game month — no crafting queue needed. Pair with a Lunar Ice Mine and your launch pads (which consume propellant every month, per their recipes) never buy fuel at market spread again. When fuel spot spikes, sell the surplus instead. Requires "Water ISRU" research.',
     baseCost: 900_000_000, buildTimeMonths: 14, maintenanceCostPerMonth: 1_500_000,
@@ -486,7 +486,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 900, resourceCost: { iron: 60, aluminum: 30 }, powerRequired: 8,
     consumesPerMonth: { lunar_water: 30 }, producesPerMonth: { rocket_fuel: 20 },
     capabilities: { logisticsSupport: 0.05 } },
-  { id: 'propellant_plant_mars', name: 'Mars Propellant Plant', category: 'fabrication_facility', tier: 3,
+  { id: 'propellant_plant_mars', crew: { engineers: 3, operators: 2 }, name: 'Mars Propellant Plant', category: 'fabrication_facility', tier: 3,
     description: 'ISRU propellant production from Martian subsurface ice. Fuels the outbound frontier.',
     tooltip: 'THE FRONTIER FUEL DEPOT. Converts 30 Mars water into 20 rocket fuel per game month, passively. Mars-side fuel supply is what makes deep-system mining recipes (5 fuel/mo haulers) and heavy freight sustainable without hauling propellant up Earth\'s gravity well. New T3 construction pays part of its cost in components — the E3 component sink.',
     baseCost: 2_500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 2_500_000,
@@ -494,7 +494,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1500, resourceCost: { structural_beams: 10, steel_ingots: 20, iron: 100 }, powerRequired: 10,
     consumesPerMonth: { mars_water: 30 }, producesPerMonth: { rocket_fuel: 20 },
     capabilities: { logisticsSupport: 0.05 } },
-  { id: 'agri_dome', name: 'Agricultural Dome', category: 'fabrication_facility', tier: 2,
+  { id: 'agri_dome', crew: { engineers: 2, operators: 1 }, name: 'Agricultural Dome', category: 'fabrication_facility', tier: 2,
     description: 'Pressurized hydroponic farm dome. Grows the organics that keep crews alive.',
     tooltip: 'THE FOOD CHAIN STARTS HERE. Converts 10 Mars water + 5 ammonia into 8 organic compounds per game month — the key feedstock for Life Support Works. Every crewed station and habitat in the game consumes life support packs monthly, so organics demand scales with the whole server\'s population. Requires "Hydroponic Agriculture" research.',
     baseCost: 1_200_000_000, buildTimeMonths: 16, maintenanceCostPerMonth: 3_500_000,
@@ -502,7 +502,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1200, resourceCost: { aluminum: 60, iron: 80, mars_water: 20 }, powerRequired: 8,
     consumesPerMonth: { mars_water: 10, ammonia: 5 }, producesPerMonth: { organic_compounds: 8 },
     capabilities: { crewQuarters: 2 } },
-  { id: 'life_support_works', name: 'Life Support Works', category: 'fabrication_facility', tier: 2,
+  { id: 'life_support_works', crew: { engineers: 2, operators: 1 }, name: 'Life Support Works', category: 'fabrication_facility', tier: 2,
     description: 'Assembles water, ammonia, and organics into sealed life-support cartridges.',
     tooltip: 'THE PAYROLL OF MATTER. Produces 8 life support packs per game month from water, ammonia, and organic compounds. Packs are a PLAYER-ONLY market (the NPC maker quotes none) and every crewed building on the server consumes them monthly — undersupply hits rivals\' efficiency AND crew morale. Ceres ammonia logistics is the classic supply line. Requires "Oxygen Extraction" research.',
     baseCost: 1_500_000_000, buildTimeMonths: 16, maintenanceCostPerMonth: 1_500_000,
@@ -510,7 +510,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1200, resourceCost: { iron: 80, aluminum: 50, titanium: 15 }, powerRequired: 10,
     consumesPerMonth: { lunar_water: 10, ammonia: 4, organic_compounds: 2 }, producesPerMonth: { life_support_pack: 8 },
     capabilities: { crewQuarters: 2 } },
-  { id: 'orbital_refinery', name: 'Orbital Refinery', category: 'fabrication_facility', tier: 3,
+  { id: 'orbital_refinery', crew: { engineers: 3, operators: 2 }, name: 'Orbital Refinery', category: 'fabrication_facility', tier: 3,
     description: 'Belt-anchored bulk refinery. Moves tier-1 smelting off the fab queue into passive throughput.',
     tooltip: 'PASSIVE BULK REFINING AT THE SOURCE. Converts 200 iron + 80 aluminum into 100 steel ingots + 40 aluminum alloy every game month — no crafting queue time. Anchor it next to an Asteroid Mining Rig (500 iron/mo at the same location) and refine in situ, then freight the dense product: the classic Δv play. Requires "Orbital Refining Complex" research. Construction pays in components.',
     baseCost: 6_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
@@ -562,19 +562,19 @@ export const BUILDINGS: BuildingDefinition[] = [
   // `aerostat_tech` typo that made Venus permanently unreachable.
 
   // ── Ceres (ceres_surface, tier 3) ──
-  { id: 'colony_ceres', name: 'Ceres Colony', category: 'space_station', tier: 3,
+  { id: 'colony_ceres', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Ceres Colony', category: 'space_station', tier: 3,
     description: "Spin-gravity habitat rings cut into Occator crater. Houses the Belt's largest permanent civilian population.",
     tooltip: "Belt anchor habitat. Population services and berthing fees for the busiest crossroads in the asteroid belt.",
     baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
     requiredResearch: [], requiredLocation: 'ceres_surface', enabledServices: ['svc_ceres_habitation'],
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { crewQuarters: 40, logisticsSupport: 0.03 } },
-  { id: 'mining_ceres', name: 'Ceres Volatile Extraction', category: 'mining_enterprise', tier: 3,
+  { id: 'mining_ceres', crew: { engineers: 1, miners: 3 }, name: 'Ceres Volatile Extraction', category: 'mining_enterprise', tier: 3,
     description: "Brine wells and ammonia-ice mining across the Ceres regolith.",
     tooltip: "The Belt's volatile source. Ammonia and organics for life support and chemical feedstock, plus bulk iron.",
     baseCost: 5_900_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 3_687_500,
     requiredResearch: [], requiredLocation: 'ceres_surface', enabledServices: ['svc_mining_ceres'],
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 } },
-  { id: 'trade_hub_ceres', name: 'Ceres Trade Hub', category: 'space_station', tier: 3,
+  { id: 'trade_hub_ceres', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Ceres Trade Hub', category: 'space_station', tier: 3,
     description: "Bonded warehousing and a clearing exchange at the Belt's natural crossroads.",
     tooltip: "Logistics infrastructure. Trims freight fuel on every route touching the Belt and raises inventory protection.",
     baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
@@ -582,19 +582,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { logisticsSupport: 0.05, inventoryProtection: 0.05 } },
 
   // ── Venus (venus_orbit, tier 3) ──
-  { id: 'colony_venus', name: 'Venus Cloud Habitat', category: 'space_station', tier: 3,
+  { id: 'colony_venus', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Venus Cloud Habitat', category: 'space_station', tier: 3,
     description: "Buoyant aerostat city floating at 50 km, where pressure and temperature are Earth-like.",
     tooltip: "The most habitable real estate off Earth. Tourism and long-stay research residency at one atmosphere.",
     baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
     requiredResearch: [], requiredLocation: 'venus_orbit', enabledServices: ['svc_venus_habitation'],
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { crewQuarters: 35 } },
-  { id: 'atmospheric_processor', name: 'Venus Atmospheric Processor', category: 'mining_enterprise', tier: 3,
+  { id: 'atmospheric_processor', crew: { engineers: 1, miners: 3 }, name: 'Venus Atmospheric Processor', category: 'mining_enterprise', tier: 3,
     description: "Scoops and separators harvesting the Venusian atmosphere for sulfur compounds and carbon feedstock.",
     tooltip: "Atmospheric mining. Sulfur and ammonia at volume with no drilling and no regolith handling.",
     baseCost: 6_001_500_000, buildTimeMonths: 24, maintenanceCostPerMonth: 3_750_938,
     requiredResearch: [], requiredLocation: 'venus_orbit', enabledServices: ['svc_venus_volatiles'],
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 } },
-  { id: 'venus_observatory', name: 'Venus Atmospheric Observatory', category: 'satellite', tier: 3,
+  { id: 'venus_observatory', crew: { operators: 2 }, name: 'Venus Atmospheric Observatory', category: 'satellite', tier: 3,
     description: "Sensor platform studying super-rotation, sulfuric weather and surface radar mapping.",
     tooltip: "Planetary-science data sales. Steady sensor revenue and a detection bonus for corporate intelligence.",
     baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
@@ -602,19 +602,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { detectionBonus: 0.04 } },
 
   // ── Mercury (mercury_surface, tier 3) ──
-  { id: 'colony_mercury', name: 'Mercury Polar Outpost', category: 'space_station', tier: 3,
+  { id: 'colony_mercury', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Mercury Polar Outpost', category: 'space_station', tier: 3,
     description: "Permanently-shadowed crater base at the north pole, where ice survives beside a 430 C dayside.",
     tooltip: "Extreme-environment station. Crew quarters plus the thermal shielding the rest of the site depends on.",
     baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
     requiredResearch: [], requiredLocation: 'mercury_surface', enabledServices: ['svc_mercury_habitation'],
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, capabilities: { crewQuarters: 25, hazardShielding: 0.05 } },
-  { id: 'mining_mercury', name: 'Mercury Metal Extraction', category: 'mining_enterprise', tier: 3,
+  { id: 'mining_mercury', crew: { engineers: 1, miners: 3 }, name: 'Mercury Metal Extraction', category: 'mining_enterprise', tier: 3,
     description: "Strip mining Mercury's unusually metal-rich crust \u2014 the densest ore bodies in the inner system.",
     tooltip: "Highest-grade metal in the inner system. Iron and platinum-group at grades no asteroid matches.",
     baseCost: 6_050_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 3_781_250,
     requiredResearch: [], requiredLocation: 'mercury_surface', enabledServices: ['svc_mercury_mining'],
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 } },
-  { id: 'solar_mega_array', name: 'Solar Mega-Array', category: 'solar_farm', tier: 3,
+  { id: 'solar_mega_array', crew: { engineers: 1, operators: 1 }, name: 'Solar Mega-Array', category: 'solar_farm', tier: 3,
     description: "Square kilometres of collectors at 0.39 AU, beaming power system-wide by microwave relay.",
     tooltip: "Power at six times Earth-orbit insolation. Generates the site's power and sells the surplus.",
     baseCost: 3_500_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 2_187_500,
@@ -622,19 +622,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 3600, resourceCost: { iron: 400, titanium: 150, aluminum: 200 }, powerGenerated: 60 },
 
   // ── Io (io_surface, tier 4) ──
-  { id: 'colony_io', name: 'Io Volcanic Station', category: 'space_station', tier: 4,
+  { id: 'colony_io', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Io Volcanic Station', category: 'space_station', tier: 4,
     description: "Hardened, radiation-shielded station riding the most volcanically active body in the system.",
     tooltip: "Survival infrastructure inside Jupiter's radiation belt. Heavy shielding for everything else on Io.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
     requiredResearch: [], requiredLocation: 'io_surface', enabledServices: ['svc_io_habitation'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 20, hazardShielding: 0.08 } },
-  { id: 'mining_io', name: 'Io Sulfur Works', category: 'mining_enterprise', tier: 4,
+  { id: 'mining_io', crew: { engineers: 2, miners: 5 }, name: 'Io Sulfur Works', category: 'mining_enterprise', tier: 4,
     description: "Harvesting sulfur and silicate ejecta straight from the Loki Patera flow fields.",
     tooltip: "Sulfur at industrial volume plus silicate metals. The volcanoes do the excavation for you.",
     baseCost: 9_999_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_249_375,
     requiredResearch: [], requiredLocation: 'io_surface', enabledServices: ['svc_io_mining'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
-  { id: 'geothermal_plant', name: 'Io Geothermal Plant', category: 'solar_farm', tier: 4,
+  { id: 'geothermal_plant', crew: { engineers: 2, operators: 1 }, name: 'Io Geothermal Plant', category: 'solar_farm', tier: 4,
     description: "Tidal-heating tap sunk into a lava tube \u2014 the only baseload power source in the outer system that needs no fuel.",
     tooltip: "Fuel-free baseload power where sunlight is 4% of Earth's. Powers the whole Jovian operation.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
@@ -642,19 +642,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, powerGenerated: 70 },
 
   // ── Europa (europa_surface, tier 4) ──
-  { id: 'colony_europa', name: 'Europa Ice Station', category: 'space_station', tier: 4,
+  { id: 'colony_europa', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Europa Ice Station', category: 'space_station', tier: 4,
     description: "Sub-ice habitat bored into the Conamara chaos, twenty metres below the radiation line.",
     tooltip: "The ice is the shielding. Quarters and shielding for the deepest-value site in the Jovian system.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
     requiredResearch: [], requiredLocation: 'europa_surface', enabledServices: ['svc_europa_habitation'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 25, hazardShielding: 0.07 } },
-  { id: 'mining_europa_deep', name: 'Europa Deep-Ocean Rig', category: 'mining_enterprise', tier: 4,
+  { id: 'mining_europa_deep', crew: { engineers: 2, miners: 5 }, name: 'Europa Deep-Ocean Rig', category: 'mining_enterprise', tier: 4,
     description: "Cryobot boreholes reaching the subsurface ocean and the hydrothermal floor beneath it.",
     tooltip: "Exotic materials and organics from a live ocean. The richest non-interstellar exotic source in the game.",
     baseCost: 9_900_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_187_500,
     requiredResearch: [], requiredLocation: 'europa_surface', enabledServices: ['svc_europa_deep_mining'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
-  { id: 'ocean_lab', name: 'Europa Ocean Laboratory', category: 'datacenter', tier: 4,
+  { id: 'ocean_lab', crew: { engineers: 2, scientists: 3 }, name: 'Europa Ocean Laboratory', category: 'datacenter', tier: 4,
     description: "Astrobiology laboratory working live samples from the Europan water column.",
     tooltip: "Biosignature research. Sensor revenue plus a research-speed bonus across the whole corporation.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
@@ -662,19 +662,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { researchSpeed: 0.04 } },
 
   // ── Ganymede (ganymede_surface, tier 4) ──
-  { id: 'colony_ganymede', name: 'Ganymede Colony', category: 'space_station', tier: 4,
+  { id: 'colony_ganymede', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Ganymede Colony', category: 'space_station', tier: 4,
     description: "The Jovian system's administrative capital, sheltered by the only moon with its own magnetosphere.",
     tooltip: "Regional capital. The largest crew capacity in the outer system, protected by a natural magnetic field.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
     requiredResearch: [], requiredLocation: 'ganymede_surface', enabledServices: ['svc_ganymede_habitation'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 60, hazardShielding: 0.04 } },
-  { id: 'mining_ganymede', name: 'Ganymede Core Metals', category: 'mining_enterprise', tier: 4,
+  { id: 'mining_ganymede', crew: { engineers: 2, miners: 5 }, name: 'Ganymede Core Metals', category: 'mining_enterprise', tier: 4,
     description: "Deep shafts reaching differentiated core metals under the ice shell.",
     tooltip: "Bulk structural metal in the outer system \u2014 iron and titanium without the haul from the Belt.",
     baseCost: 10_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_250_000,
     requiredResearch: [], requiredLocation: 'ganymede_surface', enabledServices: ['svc_mining_ganymede'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
-  { id: 'research_campus', name: 'Ganymede Research Campus', category: 'datacenter', tier: 4,
+  { id: 'research_campus', crew: { engineers: 2, scientists: 3 }, name: 'Ganymede Research Campus', category: 'datacenter', tier: 4,
     description: "The outer system's largest compute cluster, cooled for free by the ambient 110 K.",
     tooltip: "Free cooling at 110 Kelvin. Compute revenue plus corporation-wide research speed and training throughput.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
@@ -682,19 +682,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { researchSpeed: 0.06, trainingSpeed: 0.05 } },
 
   // ── Callisto (callisto_surface, tier 4) ──
-  { id: 'colony_callisto', name: 'Callisto Base', category: 'space_station', tier: 4,
+  { id: 'colony_callisto', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Callisto Base', category: 'space_station', tier: 4,
     description: "Surface base on the only large Jovian moon outside the hard radiation belt.",
     tooltip: "The safe Jovian moon. Low radiation means cheap habitats and a natural staging point.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
     requiredResearch: [], requiredLocation: 'callisto_surface', enabledServices: ['svc_callisto_habitation'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { crewQuarters: 45 } },
-  { id: 'mining_callisto', name: 'Callisto Regolith Works', category: 'mining_enterprise', tier: 4,
+  { id: 'mining_callisto', crew: { engineers: 2, miners: 5 }, name: 'Callisto Regolith Works', category: 'mining_enterprise', tier: 4,
     description: "Surface mining of ancient, undisturbed regolith across the most heavily-cratered body known.",
     tooltip: "Bulk feedstock with no radiation surcharge. Iron, aluminium and ammonia for outer-system construction.",
     baseCost: 10_000_500_000, buildTimeMonths: 36, maintenanceCostPerMonth: 6_250_312,
     requiredResearch: [], requiredLocation: 'callisto_surface', enabledServices: ['svc_mining_callisto'],
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 } },
-  { id: 'fuel_depot_callisto', name: 'Callisto Fuel Depot', category: 'space_station', tier: 4,
+  { id: 'fuel_depot_callisto', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Callisto Fuel Depot', category: 'space_station', tier: 4,
     description: "Cryogenic propellant farm and berthing complex \u2014 the outer system's refuelling stop.",
     tooltip: "The gateway depot. Cuts freight fuel on every route through the Jovian system and shelters inventory.",
     baseCost: 4_500_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 2_812_500,
@@ -702,19 +702,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 7200, resourceCost: { iron: 700, titanium: 300, aluminum: 350, rare_earth: 40 }, capabilities: { logisticsSupport: 0.06, expeditionSupport: 0.05 } },
 
   // ── Titan (titan_surface, tier 5) ──
-  { id: 'colony_titan', name: 'Titan Colony', category: 'space_station', tier: 5,
+  { id: 'colony_titan', crew: { engineers: 4, operators: 5, scientists: 3 }, name: 'Titan Colony', category: 'space_station', tier: 5,
     description: "Pressurised settlement under a nitrogen sky thick enough to walk in with nothing but a coat and a mask.",
     tooltip: "The outer system's most liveable surface. Large crew capacity and a real atmosphere overhead.",
     baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
     requiredResearch: [], requiredLocation: 'titan_surface', enabledServices: ['svc_titan_habitation'],
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { crewQuarters: 70, hazardShielding: 0.05 } },
-  { id: 'mining_titan_deep', name: 'Titan Lake Extraction', category: 'mining_enterprise', tier: 5,
+  { id: 'mining_titan_deep', crew: { engineers: 3, miners: 7 }, name: 'Titan Lake Extraction', category: 'mining_enterprise', tier: 5,
     description: "Floating extraction platforms working Kraken Mare's liquid methane and ethane.",
     tooltip: "Hydrocarbons by the lake-full. The largest volume-mining operation available anywhere in Sol.",
     baseCost: 16_001_250_000, buildTimeMonths: 48, maintenanceCostPerMonth: 10_000_781,
     requiredResearch: [], requiredLocation: 'titan_surface', enabledServices: ['svc_titan_lake_mining'],
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
-  { id: 'methane_refinery', name: 'Titan Chemical Works', category: 'fabrication_facility', tier: 5,
+  { id: 'methane_refinery', crew: { engineers: 6, operators: 4 }, name: 'Titan Chemical Works', category: 'fabrication_facility', tier: 5,
     description: "Cracking plant turning lake hydrocarbons and tholins into polymers, propellant and feedstock.",
     tooltip: "Adds value on top of Titan extraction \u2014 refined chemistry sells for far more than raw hydrocarbons.",
     baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
@@ -722,19 +722,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
 
   // ── Enceladus (enceladus_surface, tier 5) ──
-  { id: 'colony_enceladus', name: 'Enceladus Station', category: 'space_station', tier: 5,
+  { id: 'colony_enceladus', crew: { engineers: 4, operators: 5, scientists: 3 }, name: 'Enceladus Station', category: 'space_station', tier: 5,
     description: "Tethered station over the south-polar tiger stripes, riding the plume field.",
     tooltip: "Quarters at the most scientifically valuable site in Sol, with the shielding the plume work needs.",
     baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
     requiredResearch: [], requiredLocation: 'enceladus_surface', enabledServices: ['svc_enceladus_habitation'],
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { crewQuarters: 30, hazardShielding: 0.05 } },
-  { id: 'geyser_collector', name: 'Enceladus Plume Collector', category: 'mining_enterprise', tier: 5,
+  { id: 'geyser_collector', crew: { engineers: 3, miners: 7 }, name: 'Enceladus Plume Collector', category: 'mining_enterprise', tier: 5,
     description: "Collector array flying through the cryovolcanic plumes, sampling an ocean without ever landing.",
     tooltip: "Free ocean samples. The plumes deliver hydrothermal organics and biosignature material to orbit.",
     baseCost: 14_150_500_000, buildTimeMonths: 48, maintenanceCostPerMonth: 8_844_062,
     requiredResearch: [], requiredLocation: 'enceladus_surface', enabledServices: ['svc_enceladus_collection'],
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
-  { id: 'bio_lab_enceladus', name: 'Enceladus Hydrothermal Laboratory', category: 'datacenter', tier: 5,
+  { id: 'bio_lab_enceladus', crew: { engineers: 4, scientists: 4 }, name: 'Enceladus Hydrothermal Laboratory', category: 'datacenter', tier: 5,
     description: "Sealed laboratory culturing and sequencing hydrothermal material straight from the plume stream.",
     tooltip: "The highest-value science in the solar system. Strong research speed and premium data licensing.",
     baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
@@ -742,19 +742,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { researchSpeed: 0.07 } },
 
   // ── Titania (titania_surface, tier 5) ──
-  { id: 'colony_titania', name: 'Titania Outpost', category: 'space_station', tier: 5,
+  { id: 'colony_titania', crew: { engineers: 4, operators: 5, scientists: 3 }, name: 'Titania Outpost', category: 'space_station', tier: 5,
     description: "Frontier outpost on the largest Uranian moon \u2014 nineteen astronomical units from any help.",
     tooltip: "The Uranian foothold. Quarters and an away-operations relay for the loneliest station crewed by humans.",
     baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
     requiredResearch: [], requiredLocation: 'titania_surface', enabledServices: ['svc_titania_habitation'],
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { crewQuarters: 25, awayAutomation: 0.04 } },
-  { id: 'mining_titania', name: 'Titania Deuterium Works', category: 'mining_enterprise', tier: 5,
+  { id: 'mining_titania', crew: { engineers: 3, miners: 7 }, name: 'Titania Deuterium Works', category: 'mining_enterprise', tier: 5,
     description: "Isotope separation plant pulling deuterium out of Titania's water ice mantle.",
     tooltip: "Fusion fuel at the source. Deuterium is worth more per tonne than anything you can dig in the Belt.",
     baseCost: 15_200_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 9_500_000,
     requiredResearch: [], requiredLocation: 'titania_surface', enabledServices: ['svc_titania_mining'],
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 } },
-  { id: 'cryo_lab', name: 'Titania Cryogenics Laboratory', category: 'datacenter', tier: 5,
+  { id: 'cryo_lab', crew: { engineers: 4, scientists: 4 }, name: 'Titania Cryogenics Laboratory', category: 'datacenter', tier: 5,
     description: "Materials laboratory exploiting an ambient 60 K for superconductor and cryostructure work.",
     tooltip: "Ambient temperatures no Earth lab can buy. Research speed plus premium materials-science data.",
     baseCost: 5_500_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 3_437_500,
@@ -762,19 +762,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 12000, resourceCost: { titanium: 500, rare_earth: 90, platinum_group: 25 }, capabilities: { researchSpeed: 0.06 } },
 
   // ── Triton (triton_surface, tier 6) ──
-  { id: 'colony_triton', name: 'Triton Frontier Base', category: 'space_station', tier: 6,
+  { id: 'colony_triton', crew: { engineers: 5, operators: 6, scientists: 4 }, name: 'Triton Frontier Base', category: 'space_station', tier: 6,
     description: "Base camp on a captured Kuiper body in retrograde orbit \u2014 the last permanent settlement before the dark.",
     tooltip: "The edge of the crewed frontier. Quarters, automation and the staging point for interstellar work.",
     baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
     requiredResearch: [], requiredLocation: 'triton_surface', enabledServices: ['svc_triton_habitation'],
     realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 }, capabilities: { crewQuarters: 30, awayAutomation: 0.05, expeditionSupport: 0.06 } },
-  { id: 'mining_triton', name: 'Triton Exotic Extraction', category: 'mining_enterprise', tier: 6,
+  { id: 'mining_triton', crew: { engineers: 4, miners: 9 }, name: 'Triton Exotic Extraction', category: 'mining_enterprise', tier: 6,
     description: "Nitrogen-ice mining and exotic isotope separation on a body that formed beyond Neptune.",
     tooltip: "Antimatter precursors and deuterium. Kuiper-origin chemistry that exists nowhere closer to the Sun.",
     baseCost: 25_301_500_000, buildTimeMonths: 60, maintenanceCostPerMonth: 15_813_438,
     requiredResearch: [], requiredLocation: 'triton_surface', enabledServices: ['svc_triton_mining'],
     realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 } },
-  { id: 'nitrogen_plant', name: 'Triton Nitrogen Plant', category: 'fabrication_facility', tier: 6,
+  { id: 'nitrogen_plant', crew: { engineers: 8, operators: 5 }, name: 'Triton Nitrogen Plant', category: 'fabrication_facility', tier: 6,
     description: "Cryogenic plant liquefying Triton's nitrogen for propellant, life support and industrial feedstock.",
     tooltip: "Propellant and breathing gas at the frontier \u2014 the reason deep-space missions can stage from Neptune at all.",
     baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
@@ -782,19 +782,19 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 }, capabilities: { logisticsSupport: 0.05, expeditionSupport: 0.05 } },
 
   // ── Pluto-Charon (pluto_surface, tier 6) ──
-  { id: 'colony_pluto', name: 'Pluto Colony', category: 'space_station', tier: 6,
+  { id: 'colony_pluto', crew: { engineers: 5, operators: 6, scientists: 4 }, name: 'Pluto Colony', category: 'space_station', tier: 6,
     description: "Sunken habitat under Sputnik Planitia's nitrogen glacier, tidally locked to Charon overhead.",
     tooltip: "Humanity's furthest permanent city. Maximum away-automation and the deepest crew capacity out here.",
     baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
     requiredResearch: [], requiredLocation: 'pluto_surface', enabledServices: ['svc_pluto_habitation'],
     realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 }, capabilities: { crewQuarters: 35, awayAutomation: 0.06, expeditionSupport: 0.05 } },
-  { id: 'mining_pluto', name: 'Charon Minerals Operation', category: 'mining_enterprise', tier: 6,
+  { id: 'mining_pluto', crew: { engineers: 4, miners: 9 }, name: 'Charon Minerals Operation', category: 'mining_enterprise', tier: 6,
     description: "Mining Charon's cryovolcanic plains and the interstellar dust that has settled there for four billion years.",
     tooltip: "Interstellar particles and primordial exotics \u2014 material older than the Sun, and priced accordingly.",
     baseCost: 27_000_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 16_875_000,
     requiredResearch: [], requiredLocation: 'pluto_surface', enabledServices: ['svc_pluto_mining'],
     realBuildSeconds: 18000, resourceCost: { titanium: 700, rare_earth: 150, platinum_group: 50, exotic_materials: 10 } },
-  { id: 'interstellar_beacon', name: 'Pluto Interstellar Beacon', category: 'ground_station', tier: 6,
+  { id: 'interstellar_beacon', crew: { engineers: 3, operators: 6 }, name: 'Pluto Interstellar Beacon', category: 'ground_station', tier: 6,
     description: "Phased array at the edge of the heliosphere, holding the comms link to everything beyond it.",
     tooltip: "The relay every expedition talks through. Compute revenue plus the strongest expedition support in Sol.",
     baseCost: 6_500_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 4_062_500,
@@ -979,6 +979,92 @@ export function getBuildingDerivedStats(def: BuildingDefinition): BuildingDerive
   const defaults = profile(def.tier);
   if (!def.stats) return defaults;
   return { ...defaults, ...def.stats };
+}
+
+// ─── Row 6: per-building crew requirements ──────────────────────────────────
+// docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6, docs/STATS_DESIGN.md §3.
+// Before this, labor demand capped near ~19 heads for ANY corporation: the
+// workforce bonus caps (+50% revenue at 10 engineers, +100% mining at 5
+// miners, +50% research at ~4 scientists) meant a rational player hired the
+// same tiny crew whether it ran 3 buildings or 34, so the wage index could
+// only move with server POPULATION, never with fleet size (BALANCE.md H2).
+//
+// Every building now names the heads it needs to run at full efficiency. The
+// requirement is authored per definition (`crew:` on all 95 below) and is
+// generated from this profile, so the two can never drift:
+//
+//   heads(category, tier) = CREW_TIER_BASE[tier] × CREW_CATEGORY_WEIGHT[cat]
+//   split across CREW_ROLE_MIX[cat], min 1 head per named role.
+//
+// MAGNITUDE (docs/BALANCE.md "Per-building crew (2026-09-02)"): payroll is a
+// real sink — heads × base salary × the live wage index — so the profile is
+// sized against BUILDING GROSS REVENUE, not against STATS_DESIGN's raw 0-500
+// ranges (those were written for a much larger revenue scale; a tier-5
+// building in this economy grosses a median $22M/month, and STATS_DESIGN's
+// "40-120 heads" would cost $20-60M/month to staff — an instant money-loser).
+// The shipped numbers put a fully-crewed building's payroll at roughly
+// 8-15% of its gross, which keeps crewing up strictly profitable (the
+// understaffing multiplier below is worth up to 2× revenue) while making the
+// bill scale with the fleet. Tuned against scripts/sim-50yr.ts — see the
+// balance guard in BALANCE.md before changing these.
+
+/** Total heads for a tier-N building before the category weight. */
+export const CREW_TIER_BASE: Readonly<Record<number, number>> = {
+  1: 2, 2: 3, 3: 4, 4: 6, 5: 9, 6: 12,
+};
+
+/** How crew-hungry each category is relative to the tier base. Satellites are
+ *  flown by a handful of ground controllers; space stations are inhabited. */
+export const CREW_CATEGORY_WEIGHT: Readonly<Record<BuildingCategory, number>> = {
+  satellite: 0.5,
+  solar_farm: 0.6,
+  ground_station: 0.7,
+  datacenter: 0.9,
+  rocket: 1.0,
+  launch_pad: 1.0,
+  fabrication_facility: 1.1,
+  mining_enterprise: 1.1,
+  space_station: 1.3,
+};
+
+/** Which roles a category's crew is drawn from, and in what proportion. */
+export const CREW_ROLE_MIX: Readonly<Record<BuildingCategory, Readonly<Partial<Record<keyof BuildingCrew, number>>>>> = {
+  launch_pad:           { engineers: 0.5,  operators: 0.5 },
+  rocket:               { engineers: 0.5,  operators: 0.5 },
+  ground_station:       { operators: 0.7,  engineers: 0.3 },
+  satellite:            { operators: 1.0 },
+  space_station:        { engineers: 0.35, operators: 0.4,  scientists: 0.25 },
+  datacenter:           { scientists: 0.55, engineers: 0.45 },
+  fabrication_facility: { engineers: 0.6,  operators: 0.4 },
+  mining_enterprise:    { miners: 0.7,     engineers: 0.3 },
+  solar_farm:           { engineers: 0.6,  operators: 0.4 },
+};
+
+/** The generated requirement for a (category, tier). Deterministic — the
+ *  authored `crew:` fields below are produced from exactly this. */
+export function crewProfile(category: BuildingCategory, tier: number): BuildingCrew {
+  const base = CREW_TIER_BASE[Math.max(1, Math.min(6, Math.round(tier)))] ?? CREW_TIER_BASE[1];
+  const heads = base * (CREW_CATEGORY_WEIGHT[category] ?? 1);
+  const mix = CREW_ROLE_MIX[category] ?? { engineers: 1 };
+  const out: BuildingCrew = {};
+  for (const [role, share] of Object.entries(mix)) {
+    if (!share) continue;
+    out[role as keyof BuildingCrew] = Math.max(1, Math.round(heads * share));
+  }
+  return out;
+}
+
+/** The crew requirement actually used by the engine: the authored field when
+ *  present, the category+tier profile otherwise (so future/modded content is
+ *  never silently crewless). */
+export function getBuildingCrew(def: Pick<BuildingDefinition, 'crew' | 'category' | 'tier'>): BuildingCrew {
+  return def.crew ?? crewProfile(def.category, def.tier);
+}
+
+/** Total heads a building asks for, across roles. */
+export function getBuildingCrewTotal(def: Pick<BuildingDefinition, 'crew' | 'category' | 'tier'>): number {
+  const c = getBuildingCrew(def);
+  return (c.engineers || 0) + (c.operators || 0) + (c.scientists || 0) + (c.miners || 0);
 }
 
 /** Scale build time for duplicates: 1.3x per existing instance at same location */

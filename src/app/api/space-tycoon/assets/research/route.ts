@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { RESEARCH_MAP } from '@/lib/game/research-tree';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
@@ -94,7 +95,15 @@ export async function POST(request: NextRequest) {
     const check = checkResearchStart(def, view.completed, pendingDefs, level);
     if (!check.ok) return badRequest(check.reason || 'Research cannot start', check.code || 'research_blocked', { missingResearch: check.missing });
 
-    const quote = computeServerResearchQuote(def, view.completed, level);
+    // Row 8: quote at the profile's real (persisted-scalar) corporation tier
+    // so the server's research-speed ceiling matches the client's preview.
+    const quote = computeServerResearchQuote(def, view.completed, level, tierFromProfileScalars({
+      totalEarned: profile.totalEarned,
+      buildingCount: profile.buildingCount,
+      researchCount: profile.researchCount,
+      locationsUnlocked: profile.locationsUnlocked,
+      serviceCount: profile.serviceCount,
+    }));
     if (Object.keys(quote.resourceCost).length > 0) {
       const inventory = await loadAuthoritativeInventory(profile);
       for (const [slug, qty] of Object.entries(quote.resourceCost)) {

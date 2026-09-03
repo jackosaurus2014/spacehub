@@ -81,6 +81,13 @@ import {
 import { isFlagshipBuilding, getEffectiveMaintenancePerMonth } from '../src/lib/game/flagship-economics';
 import { CORPORATION_TIERS } from '../src/lib/game/corporation-tiers';
 import { BUILDING_MAP } from '../src/lib/game/buildings';
+// Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): per-building crew
+// requirements. The archetypes now run a REAL auto-hire policy against the
+// real getRequiredCrew/getCrewCapacity/getStaffingReport, so payroll and the
+// wage index scale with the fleet instead of capping near ~19 heads.
+import {
+  getRequiredCrew, getCrewCapacity, getStaffingReport, CREWED_ROLES,
+} from '../src/lib/game/workforce';
 import { RESOURCE_MAP, RESOURCES } from '../src/lib/game/resources';
 import type { ResourceId } from '../src/lib/game/resources';
 import { computeDecommissionRecovery } from '../src/lib/game/mothball';
@@ -525,15 +532,52 @@ const ARCHETYPES: Archetype[] = [
 // caps, so the wage index can only move with POPULATION, never fleet size).
 // The workforce serviceRevenue bonus is folded into revenueMult each month
 // (payroll without its benefit side would be a phantom tax).
-function setHeadcount(p: SimPlayer, researching: boolean): void {
+// Row 6 auto-hire policy. Pre-Row-6 this was a flat cap-aware rule (10
+// engineers / 5 miners / 4 scientists) because the workforce BONUS caps were
+// the only reason to hire — which is exactly the H2 defect: per-corp labor
+// demand was bounded by bonus caps, so the wage index could only move with
+// POPULATION, never fleet size. Now every complete building names its crew
+// (buildings.ts `crew:`), and a rational corporation staffs to that
+// requirement because the shortfall multiplier is worth up to 2x revenue
+// while a fully-crewed building's payroll is ~8-15% of its gross.
+//
+// The policy: hire to the requirement, bounded by the REAL crew capacity
+// (workforce.ts getCrewCapacity — base + buildings + off-world locations +
+// research/3 + habitat crew quarters) and its per-type cap. When capacity
+// binds, roles are scaled proportionally, which is what a real player does
+// (and it keeps the staffing ratio — the min across roles — honest).
+function setHeadcount(p: SimPlayer, researching: boolean, researchDone: number): void {
   const b = p.buildings.length;
-  if (b < 3) { p.headcount = {}; return; }
-  const mining = p.buildings.filter(x => BUILDING_MAP.get(x.definitionId)?.category === 'mining_enterprise').length;
-  p.headcount = {
-    engineer: Math.min(10, b),               // ramp with fleet up to the cap
-    miner: Math.min(5, 2 * mining),
-    scientist: researching ? Math.min(4, Math.max(0, b - 2)) : 0,
-  };
+  // Pre-Row-6 this returned {} below 3 buildings (hiring bought nothing but
+  // payroll at that size). With crew requirements a skeleton corporation that
+  // hires NOBODY runs at the 0.5 staffing floor, so the rational policy is to
+  // crew from the first building onward.
+  if (b === 0) { p.headcount = {}; return; }
+  const required = getRequiredCrew(
+    p.buildings.map(x => ({ definitionId: x.definitionId, isComplete: true })),
+    [],   // ships are not modeled by the harness (see coverage statement)
+  );
+  // Scientists are also hired for RESEARCH SPEED, not only to crew labs.
+  if (researching) {
+    required.scientist = Math.max(required.scientist || 0, Math.min(4, Math.max(0, b - 2)));
+  }
+
+  const locations = new Set(p.buildings.map(x => x.locationId)).size;
+  const capacity = getCrewCapacity(
+    b, locations, researchDone, 0,
+    sumCrewQuarters(p.buildings.map(x => ({ definitionId: x.definitionId, isComplete: true }))),
+  );
+
+  const totalRequired = CREWED_ROLES.reduce((a, r) => a + (required[r] || 0), 0);
+  const scale = totalRequired > capacity.total && totalRequired > 0 ? capacity.total / totalRequired : 1;
+
+  const hc: Partial<Record<'engineer' | 'operator' | 'scientist' | 'miner' | 'pilot', number>> = {};
+  for (const role of CREWED_ROLES) {
+    const need = required[role] || 0;
+    if (need <= 0) continue;
+    hc[role as 'engineer'] = Math.max(0, Math.min(capacity.perType, Math.floor(need * scale)));
+  }
+  p.headcount = hc;
 }
 
 function applyPrivateMultipliers(p: SimPlayer, rs: ResearchMeta): void {
@@ -546,10 +590,22 @@ function applyPrivateMultipliers(p: SimPlayer, rs: ResearchMeta): void {
     operators: hc.operator || 0,
   };
   const wfServiceBonus = getWorkforceBonuses(wf).serviceRevenue; // real cap 0.5
-  // Research multiplier (engine cap 2.0) × workforce service bonus (cap 1.5).
+  // Row 6: the crew-staffing efficiency multiplier the engine applies to
+  // service revenue (game-engine.ts §1) and mining output (§0c). Folded in
+  // here because the harness applies every private multiplier through
+  // revenueMult. Frontier shielding is not modeled (the 50-year runner's
+  // documented worst case: late joiners face the OPEN market from day 1).
+  const staffing = getStaffingReport(
+    { ...DEFAULT_WORKFORCE, engineers: hc.engineer || 0, miners: hc.miner || 0,
+      scientists: hc.scientist || 0, operators: hc.operator || 0, pilots: hc.pilot || 0 },
+    getRequiredCrew(p.buildings.map(x => ({ definitionId: x.definitionId, isComplete: true })), []),
+    false,
+  );
+  // Research multiplier (engine cap 2.0) × workforce service bonus (cap 1.5)
+  // × staffing efficiency (0.5–1.0).
   // Mining OUTPUT bonus (physical units) deliberately NOT applied —
   // conservative; it would inflate flows and price impact.
-  p.revenueMult = revenueMultiplier(rs.completed) * (1 + wfServiceBonus);
+  p.revenueMult = revenueMultiplier(rs.completed) * (1 + wfServiceBonus) * staffing.efficiency;
 }
 
 // ─── Campaign schedule (aggressor, lunar_water) ─────────────────────────────
@@ -649,7 +705,9 @@ interface ScenarioResult {
   world: SimWorld;
   ledgers: DecadeLedger[];
   spotSnapshots: { month: number; prices: Record<string, number> }[];
-  laborSnapshots: { month: number; indices: Record<string, number> }[];
+  laborSnapshots: { month: number; indices: Record<string, number>;
+    /** Row 6: demand (max of hired and REQUIRED) and supply per crew type. */
+    demand: Record<string, number>; hired: Record<string, number>; supply: Record<string, number> }[];
   pressureSnapshots: { month: number; rows: { key: string; pressure: number }[] }[];
   campaignLog: string[];
   totalResearchSpend: number;
@@ -708,7 +766,8 @@ function runScenario(months: number, joinerGlideMonths: number | null, refitAwar
   }));
 
   const spotSnapshots: { month: number; prices: Record<string, number> }[] = [];
-  const laborSnapshots: { month: number; indices: Record<string, number> }[] = [];
+  const laborSnapshots: { month: number; indices: Record<string, number>;
+    demand: Record<string, number>; hired: Record<string, number>; supply: Record<string, number> }[] = [];
   const pressureSnapshots: { month: number; rows: { key: string; pressure: number }[] }[] = [];
   const campaignLog: string[] = [];
 
@@ -763,7 +822,7 @@ function runScenario(months: number, joinerGlideMonths: number | null, refitAwar
     if (!m.joined) continue;
     const stillResearching = m.rs.idx < m.rs.queue.length
       && (m.rs.maxCount === undefined || m.rs.completed < m.rs.maxCount);
-    setHeadcount(m.player, stillResearching);
+    setHeadcount(m.player, stillResearching, m.rs.completed);
     applyPrivateMultipliers(m.player, m.rs);
   }
 
@@ -884,11 +943,23 @@ function runScenario(months: number, joinerGlideMonths: number | null, refitAwar
       headcount: p.headcount || {},
       trainingLevel: p.trainingLevel,
       crewQuarters: sumCrewQuarters(p.buildings),
+      // Row 6: the fleet's requirement is the demand side of the index.
+      requiredHeadcount: getRequiredCrew(
+        p.buildings.map(b => ({ definitionId: b.definitionId, isComplete: true })), [],
+      ),
     }));
     const agg = computeLaborAggregates(summaries);
     const indices: Record<string, number> = {};
-    agg.forEach((a, type) => { indices[type] = a.index; });
-    laborSnapshots.push({ month, indices });
+    const demand: Record<string, number> = {};
+    const hired: Record<string, number> = {};
+    const supply: Record<string, number> = {};
+    agg.forEach((a, type) => {
+      indices[type] = a.index;
+      demand[type] = Math.round(Math.max(a.employedRaw, a.requiredRaw));
+      hired[type] = a.employedRaw;
+      supply[type] = a.supply;
+    });
+    laborSnapshots.push({ month, indices, demand, hired, supply });
     pressureSnapshots.push({ month, rows: extractionPressureReport(world, month + 1).slice(0, 8) });
   }
 }
@@ -1039,6 +1110,43 @@ console.log(mdTable(
     (s.indices['operator'] ?? 1).toFixed(2), (s.indices['scientist'] ?? 1).toFixed(2)]),
 ));
 
+// Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): the whole point of
+// per-building crew is that labor DEMAND grows with the fleet. Before it,
+// demand capped near ~19 heads world-wide per corporation no matter how many
+// buildings it ran (BALANCE.md H2), so this table was flat by construction.
+console.log('\n### Labor demand vs supply by decade (Row 6: demand = max(hired, required by the fleet))\n');
+console.log(mdTable(
+  ['snapshot', 'engineer dem/sup', 'miner dem/sup', 'operator dem/sup', 'scientist dem/sup', 'world heads hired'],
+  laborSnapshots.map(s => {
+    const cell = (t: string) => `${s.demand[t] ?? 0} / ${Math.round(s.supply[t] ?? 0)}`;
+    const totalHired = Object.values(s.hired).reduce((a, b) => a + b, 0);
+    return [`mo ${s.month}`, cell('engineer'), cell('miner'), cell('operator'), cell('scientist'), String(totalHired)];
+  }),
+));
+
+console.log('\n### Crew staffing by archetype at year 50 (Row 6)\n');
+console.log(mdTable(
+  ['archetype', 'buildings', 'required heads', 'hired heads', 'binding role', 'staffing efficiency', 'payroll/mo'],
+  metas.filter(m => m.joined).map(m => {
+    const req = getRequiredCrew(
+      m.player.buildings.map(b => ({ definitionId: b.definitionId, isComplete: true })), [],
+    );
+    const hc = m.player.headcount || {};
+    const rep = getStaffingReport(
+      { ...DEFAULT_WORKFORCE, engineers: hc.engineer || 0, miners: hc.miner || 0,
+        scientists: hc.scientist || 0, operators: hc.operator || 0, pilots: hc.pilot || 0 },
+      req, false,
+    );
+    const last = m.player.history[m.player.history.length - 1];
+    return [
+      m.arch.name, String(m.player.buildings.length),
+      String(rep.totalRequired), String(rep.totalHired),
+      rep.worstRole ?? '—', rep.efficiency.toFixed(3),
+      fm(last?.payroll ?? 0),
+    ];
+  }),
+));
+
 console.log('\n### Extraction pressure at decade ends (8 most depleted deposits)\n');
 for (const snap of pressureSnapshots.filter((_, i) => i === 0 || i === 2 || i === pressureSnapshots.length - 1)) {
   console.log(`mo ${snap.month}: ` + snap.rows.map(r => `${r.key}=${r.pressure}`).join('; '));
@@ -1101,7 +1209,7 @@ console.log('\n\n## 6. Late-joiner viability (THE relaunch question)\n');
     });
     for (let mm = 0; mm < 60; mm++) {
       const stillResearching = soloRs.idx < soloRs.queue.length;
-      setHeadcount(solo, stillResearching);
+      setHeadcount(solo, stillResearching, soloRs.completed);
       applyPrivateMultipliers(solo, soloRs);
       stepMonth(soloWorld, mm);
       advanceResearch(solo, soloRs);

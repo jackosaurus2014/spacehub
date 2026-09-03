@@ -11,6 +11,7 @@ import {
   RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect, getResearchBonuses,
   isRareTechVisible, getResearchDisplayState, type ResearchDisplayState,
 } from '@/lib/game/research-tree';
+import ResearchContribution from '@/components/game/ResearchContribution';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
@@ -109,7 +110,12 @@ import { SHIP_MAP, generateShipName } from '@/lib/game/ships';
 // 4X Wave W14 (audit C1): freight dispatch goes through the one sanctioned
 // cargo mutator — debit-at-departure (origin stock + Δv-priced fuel),
 // credit-at-arrival handled by the tick engine.
-import { dispatchShipWithCargo } from '@/lib/game/cargo-logistics';
+// Row 13 (location-aware inventory): build and craft orders spend materials
+// at the site that runs them; chooseFabricationSite picks the plant.
+import {
+  dispatchShipWithCargo, checkLocalMaterials, spendMaterialsAtLocation,
+  chooseFabricationSite, HOME_LOCATION_IDS,
+} from '@/lib/game/cargo-logistics';
 import { CHAIN_MAP } from '@/lib/game/production-chains';
 import { consumeHeadhuntVoucher, type WorkerType } from '@/lib/game/workforce';
 // Balance Pass 4: hire cost is wage-indexed (getHireCost × live index,
@@ -177,9 +183,16 @@ import ModulesPanel from '@/components/game/ModulesPanel';
 import AnomaliesPanel from '@/components/game/AnomaliesPanel';
 import InterstellarPanel from '@/components/game/InterstellarPanel';
 import {
-  launchExpedition, establishColony, upgradeColony, establishTradeRoute, setTradeRouteStatus,
+  launchExpedition,
   type ExpeditionPlanRequest,
 } from '@/lib/game/expeditions';
+// Row 12 (signal lag): colony founding/expansion, trade-route setup and
+// suspension, and expedition recalls no longer execute on click — they are
+// transmitted through this queue and applied on arrival by the engine tick.
+import {
+  issueInterstellarCommand, cancelInterstellarCommand,
+  type InterstellarCommandRequest,
+} from '@/lib/game/interstellar-commands';
 import ScienceMissionsPanel from '@/components/game/ScienceMissionsPanel';
 import {
   startScienceMission, markMilestoneClaimAttempted,
@@ -381,7 +394,15 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                     </span>
                   </div>
                   <p className="text-[10px] mb-0.5" style={{ color: 'var(--text-tertiary)' }}>{r.effect}</p>
-                  <p className="text-[10px] mb-1.5 text-cyan-300/80 font-mono">→ {getResearchMechanicalEffect(r)}</p>
+                  <p className="text-[10px] mb-0.5 text-cyan-300/80 font-mono">→ {getResearchMechanicalEffect(r)}</p>
+                  {/* Row 8: current contribution → after purchase, so nobody buys +0.00%. */}
+                  <ResearchContribution
+                    def={r}
+                    completedResearch={state.completedResearch}
+                    repeatableResearchLevels={state.repeatableResearchLevels}
+                    corporationTier={state.corporationTier || 1}
+                    className="mb-1.5"
+                  />
                   {unlocksText && (
                     <p className="text-[10px] font-medium" style={{ color: '#56F000' }}>
                       Unlocks: {unlocksText}
@@ -640,7 +661,17 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                         </div>
                       </div>
                       <p className="text-slate-400 text-[10px] mb-0.5 leading-relaxed">{r.effect}</p>
-                      <p className="text-cyan-300/80 text-[10px] font-mono mb-1.5">→ {getResearchMechanicalEffect(r)}</p>
+                      <p className="text-cyan-300/80 text-[10px] font-mono mb-0.5">→ {getResearchMechanicalEffect(r)}</p>
+                      {/* Row 8: current contribution → after purchase, so nobody buys +0.00%. */}
+                      {!completed && (
+                        <ResearchContribution
+                          def={r}
+                          completedResearch={state.completedResearch}
+                          repeatableResearchLevels={state.repeatableResearchLevels}
+                          corporationTier={state.corporationTier || 1}
+                          className="mb-1.5"
+                        />
+                      )}
                       {/* Prerequisites */}
                       {locked && r.prerequisites.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-1.5">
@@ -1221,7 +1252,7 @@ export default function SpaceTycoonPage() {
     // largest keyword bucket in the research effect system — all
     // cost-reducing rocketry/propulsion/infrastructure/crew/ships research)
     // previously computed but was never applied to the actual build cost.
-    const { buildCostReduction } = getResearchBonuses(cur.completedResearch, cur.repeatableResearchLevels);
+    const { buildCostReduction } = getResearchBonuses(cur.completedResearch, cur.repeatableResearchLevels, cur.corporationTier || 1); // Row 8: tier-scaled caps
     const localCost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
     if (cur.money < localCost) { playSound('error'); return; }
     // Balance Pass 4 (docs/BALANCE.md "Pass 4"): orbital-slot gate — a
@@ -1232,10 +1263,14 @@ export default function SpaceTycoonPage() {
     if (!checkOrbitalSlotGate(cur, locationId).allowed) { playSound('error'); return; }
     // Early-fab wave: per-corporation cap (fabrication_earth max 1).
     if (!checkBuildingCap(cur.buildings, def).allowed) { playSound('error'); return; }
-    if (def.resourceCost) {
-      for (const [resId, qty] of Object.entries(def.resourceCost)) {
-        if ((cur.resources[resId] || 0) < qty) { playSound('error'); return; }
-      }
+    // Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, location-aware
+    // inventory): materials must be AT the build site. Home-cluster builds
+    // and any save with the logistics ratchet off draw the global pool
+    // exactly as before; a remote site draws its own stockpile, and
+    // BuildPanel shows what has to be hauled plus a one-click hauler.
+    if (def.resourceCost && !checkLocalMaterials(cur, locationId, def.resourceCost as Record<string, number>).ok) {
+      playSound('error');
+      return;
     }
     const instanceId = generateId();
     playSound('click');
@@ -1246,7 +1281,7 @@ export default function SpaceTycoonPage() {
         if (!prev) return prev;
         if (prev.buildings.some(b => b.instanceId === instanceId)) return prev; // idempotent
         const countNow = prev.buildings.filter(b => b.definitionId === buildingId && b.locationId === locationId).length;
-        const { buildCostReduction: reductionNow } = getResearchBonuses(prev.completedResearch, prev.repeatableResearchLevels);
+        const { buildCostReduction: reductionNow } = getResearchBonuses(prev.completedResearch, prev.repeatableResearchLevels, prev.corporationTier || 1); // Row 8: tier-scaled caps
         const cost = server && typeof server.cost === 'number'
           ? server.cost
           : Math.round(scaledBuildingCost(def.baseCost, countNow) * (1 - reductionNow));
@@ -1256,13 +1291,13 @@ export default function SpaceTycoonPage() {
         const startedAtMs = server && typeof server.startedAtMs === 'number' ? server.startedAtMs : Date.now();
         const serverCompletesAtMs = server && typeof server.completesAt === 'string' ? Date.parse(server.completesAt) : NaN;
 
-        // Deduct resources
-        const newResources = { ...prev.resources };
-        if (def.resourceCost) {
-          for (const [resId, qty] of Object.entries(def.resourceCost)) {
-            newResources[resId] = Math.max(0, (newResources[resId] || 0) - qty);
-          }
-        }
+        // Deduct resources — row 13: at the BUILD LOCATION's pool. The
+        // server ledger still debits the same TOTAL units (serverResources
+        // is a single global map; see cargo-logistics.ts "SERVER NOTE"), so
+        // this only decides which physical stockpile pays.
+        const spend = def.resourceCost
+          ? spendMaterialsAtLocation(prev, locationId, def.resourceCost as Record<string, number>)
+          : { resources: prev.resources, locationInventories: prev.locationInventories };
 
         const completionDate = advanceDate(prev.gameDate, def.buildTimeMonths);
         playSound('build_start');
@@ -1272,7 +1307,8 @@ export default function SpaceTycoonPage() {
           ...prev,
           money: prev.money - cost,
           totalSpent: prev.totalSpent + cost,
-          resources: newResources,
+          resources: spend.resources,
+          locationInventories: spend.locationInventories,
           // Phase 2 (inventory-attestations.ts): attest the resource spend —
           // ONLY on the local-only path; the registry ledgered it otherwise.
           pendingInventoryAttestations: !server && def.resourceCost
@@ -2202,40 +2238,49 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
-  const handleEstablishColony = useCallback((expeditionId: string, name?: string) => {
+  // Row 12 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, signal lag): every order
+  // below is aimed at an asset in ANOTHER star system, so it is TRANSMITTED,
+  // not executed. issueInterstellarCommand debits the fee now (the mission is
+  // bought when the order is sent) and queues the order to execute when its
+  // light lag elapses — 2 game-months per light-year, so Proxima is ~2 real
+  // days out. The engine tick applies it; the Interstellar panel and the
+  // order queue show it in transit, cancellable with no refund.
+  const handleIssueInterstellarCommand = useCallback((req: InterstellarCommandRequest) => {
     setState(prev => {
       if (!prev) return prev;
-      const result = establishColony(prev, expeditionId, name);
+      const result = issueInterstellarCommand(prev, req, Date.now());
       if (!result.ok) { playSound('error'); return prev; }
-      playSound('milestone');
+      playSound('click');
+      mapPing({ kind: 'system', id: result.command.targetSystemId }, 'ack');
+      hapticAck();
       return result.state;
     });
   }, []);
+
+  const handleCancelInterstellarCommand = useCallback((commandId: string) => {
+    playSound('click');
+    setState(prev => (prev ? cancelInterstellarCommand(prev, commandId) : prev));
+  }, []);
+
+  const handleEstablishColony = useCallback((expeditionId: string, name?: string) => {
+    handleIssueInterstellarCommand({ kind: 'found_colony', expeditionId, name });
+  }, [handleIssueInterstellarCommand]);
 
   const handleUpgradeColony = useCallback((colonyId: string) => {
-    setState(prev => {
-      if (!prev) return prev;
-      const result = upgradeColony(prev, colonyId);
-      if (!result.ok) { playSound('error'); return prev; }
-      playSound('milestone');
-      return result.state;
-    });
-  }, []);
+    handleIssueInterstellarCommand({ kind: 'upgrade_colony', colonyId });
+  }, [handleIssueInterstellarCommand]);
 
   const handleEstablishTradeRoute = useCallback((colonyId: string, resourceId: string) => {
-    setState(prev => {
-      if (!prev) return prev;
-      const result = establishTradeRoute(prev, colonyId, resourceId);
-      if (!result.ok) { playSound('error'); return prev; }
-      playSound('milestone');
-      return result.state;
-    });
-  }, []);
+    handleIssueInterstellarCommand({ kind: 'establish_trade_route', colonyId, resourceId });
+  }, [handleIssueInterstellarCommand]);
 
   const handleSetTradeRouteStatus = useCallback((routeId: string, status: 'active' | 'suspended') => {
-    playSound('click');
-    setState(prev => (prev ? setTradeRouteStatus(prev, routeId, status) : prev));
-  }, []);
+    handleIssueInterstellarCommand({ kind: 'set_trade_route_status', tradeRouteId: routeId, status });
+  }, [handleIssueInterstellarCommand]);
+
+  const handleRecallExpedition = useCallback((expeditionId: string) => {
+    handleIssueInterstellarCommand({ kind: 'recall_expedition', expeditionId });
+  }, [handleIssueInterstellarCommand]);
 
   // ─── Flagship scientific missions (4X Wave W6, science-missions.ts) ──────
   // Same pattern as the expedition handlers: planScienceMission is pure and
@@ -2591,7 +2636,7 @@ export default function SpaceTycoonPage() {
             setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
           }}
         />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} />}
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} onDispatchShip={handleDispatchShip} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel
@@ -2694,22 +2739,28 @@ export default function SpaceTycoonPage() {
             // Crafting queue (2026-08-31, Jay): a click while busy QUEUES the
             // order (cap 5) instead of being refused — inputs are checked and
             // deducted when the order actually starts (engine auto-start).
+            // Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2): a craft runs at
+            // a real fabrication plant — inputs are drawn from THAT site's
+            // pool and the output is credited back there by the engine's
+            // completion branch. Home-cluster plants and every save with the
+            // logistics ratchet off resolve to the global pool as before.
+            const siting = chooseFabricationSite(prev, recipe);
+            const craftSite = siting.locationId || HOME_LOCATION_IDS[0];
             if (prev.activeRefining) {
               const queue = prev.craftQueue || [];
               if (queue.length >= 5) { playSound('error'); return prev; }
-              return { ...prev, craftQueue: [...queue, { recipeId }] };
+              return { ...prev, craftQueue: [...queue, { recipeId, locationId: craftSite }] };
             }
-            const allRes = { ...(prev.resources || {}), ...(prev.craftedProducts || {}) };
-            for (const [resId, qty] of Object.entries(recipe.inputs)) {
-              if ((allRes[resId] || 0) < qty) { playSound('error'); return prev; }
+            if (!checkLocalMaterials(prev, craftSite, recipe.inputs as Record<string, number>).ok) {
+              playSound('error');
+              return prev;
             }
-            // Deduct inputs from resources or craftedProducts
-            const newRes = { ...prev.resources };
+            // Deduct inputs at the plant (crafted products live in
+            // `resources` since Wave E2 / save V31; craftedProducts is the
+            // drained legacy map kept only for pre-V31 leftovers).
+            const spendCraft = spendMaterialsAtLocation(prev, craftSite, recipe.inputs as Record<string, number>);
+            const newRes = spendCraft.resources;
             const newProducts = { ...(prev.craftedProducts || {}) };
-            for (const [resId, qty] of Object.entries(recipe.inputs)) {
-              if (newRes[resId] !== undefined && newRes[resId] >= qty) { newRes[resId] -= qty; }
-              else if (newProducts[resId] !== undefined) { newProducts[resId] -= qty; }
-            }
             // Wave E1 (docs/ECONOMY_PVP_2026-08.md §E1, exploit #3): outputs
             // used to be credited HERE immediately on start, AND AGAIN by
             // game-engine.ts's processFullTick refining-completion check
@@ -2720,8 +2771,9 @@ export default function SpaceTycoonPage() {
             return {
               ...prev,
               resources: newRes,
+              locationInventories: spendCraft.locationInventories,
               craftedProducts: newProducts,
-              activeRefining: { recipeId, startedAtMs: Date.now(), durationSeconds: recipe.timeSeconds },
+              activeRefining: { recipeId, startedAtMs: Date.now(), durationSeconds: recipe.timeSeconds, locationId: craftSite },
               eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Crafting: ${recipe.name}`, description: `Producing ${recipe.outputQuantity}x ${recipe.outputId.replace(/_/g, ' ')}.` }, ...prev.eventLog].slice(0, 50),
             };
           });
@@ -2905,6 +2957,8 @@ export default function SpaceTycoonPage() {
             onUpgradeColony={handleUpgradeColony}
             onEstablishTradeRoute={handleEstablishTradeRoute}
             onSetTradeRouteStatus={handleSetTradeRouteStatus}
+            onCancelInterstellarCommand={handleCancelInterstellarCommand}
+            onRecallExpedition={handleRecallExpedition}
           />
         )}
         {tab === 'subsidiaries' && (

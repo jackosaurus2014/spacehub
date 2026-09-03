@@ -13,6 +13,34 @@ export interface DevLogEntry {
 
 export const GAME_DEVLOG: DevLogEntry[] = [
   {
+    date: '2026-09-02', tag: 'balance',
+    title: 'Your buildings need people — and research stops selling you +0.00%',
+    summary: 'Two changes that make the numbers on a card mean something. Every building and hull now names the crew it needs to run at full output, and understaffing costs you real revenue instead of nothing. And the research tree stops charging billions for techs that were mathematically worth zero: the tree now tells you, before you buy, exactly how much a tech adds to YOUR corporation.',
+    changes: [
+      'Every building and every hull now lists a crew requirement — a small launch pad wants one engineer and one operator; a Mars station wants twelve people; a mining hull wants pilots. The Workforce tab shows required vs hired for each role, with a Hire to crew button on whichever role you are short on.',
+      'Understaffing is a real cost, not a warning. Service revenue and mining output scale from half at zero crew up to full when you are properly staffed, and it is your WORST-staffed role that sets the number — one empty role holds the whole corporation down. Overstaffing buys nothing but payroll, so there is no point hoarding people.',
+      'New corporations are shielded: while you are inside the Protected Frontier the floor is 70%, not 50%, so the first few buildings stay comfortably profitable while you learn the system.',
+      'Because a fleet now genuinely demands labour, the shared wage market finally responds to how much everyone is building instead of only to how many players are online. Unfilled positions bid for crew too.',
+      'Research: the aggregate caps that bonuses stack toward now RISE with your corporation tier — a Transcendent corporation can push service revenue research to +95% where a startup tops out at +50%. Per-tech bonuses in the crowded categories were lowered to match, so a full research category fills a bucket instead of two techs filling it and the other eighty doing nothing.',
+      'The Research panel now shows, on every tech, what your current bonus is and what it becomes if you buy it. If a tech would add +0.0% at your tier, it says so in amber before you spend the money.',
+      'Five techs whose only effect was mathematically unreachable are now labelled honestly as "Prerequisite — no direct bonus" and cost a quarter of what they did. They still unlock exactly what they always unlocked. One more — Generation Ships — was given a real bonus instead of being retired: closed-loop life support now cuts your buildings’ input consumption.',
+    ],
+  },
+  {
+    date: '2026-09-02', tag: 'economy',
+    title: 'Goods are where you left them — and orders to other stars travel at light speed',
+    summary: 'Two changes to how distance works. Materials now have to BE at the site that uses them: a beam on Earth no longer builds a base on Mars. And an order sent to a colony in another star system is transmitted, not executed — it crosses at two game-months per light-year and takes effect when it arrives.',
+    changes: [
+      'Where your goods are now matters. Once you own a freight hull, building materials are paid out of the stock at the build location, crafting draws its inputs at the plant that runs the recipe and stores the output there, servicer repairs use parts on site, survey finds stay at the body you surveyed, and scrapping a remote facility leaves the salvage there. The Earth/LEO/GEO cluster is one shared pool, so near-Earth play is unchanged.',
+      'The Build tab tells you what is missing and where it is — "180 iron must be hauled to Mars Surface from Earth Surface" — and offers a one-click Dispatch hauler that loads your biggest idle freighter at the source and quotes the real fuel bill before you commit. A new "Stock by location" table shows every pool at a glance.',
+      'Selling still happens at Earth. The market and delivery contracts clear only from the home cluster, so ore mined at Ceres has to come home before it can be sold — that was always true, and the panels now say so plainly.',
+      'Never owned a freighter? Nothing changes for you at all. The single shared stockpile keeps working exactly as before until your first transport or tanker is built.',
+      'Interstellar orders now travel. Founding a colony, expanding one, opening or suspending a trade route, and recalling a survey expedition are transmitted to the destination and execute on arrival: two game-months per light-year, which is about two days to Proxima Centauri and four to Sirius. The Interstellar panel and the order queue show each one crossing, with the time remaining.',
+      'The fee leaves when the order does. You can cancel an order still in transit, but there is no refund — the mission was bought when you sent it. If conditions change before it lands (someone already founded a colony there), the order fails on arrival and says so.',
+      'Recalling an expedition early now pays survey data for the months actually worked, not the full projection. Getting your hull and crew back sooner is a real trade, not a free win. Colony arks hold station permanently and cannot be recalled.',
+    ],
+  },
+  {
     date: '2026-09-02', tag: 'economy',
     title: 'Research, ships and location unlocks join the corporate registry',
     summary: 'The registry that started recording buildings this morning now records research starts, ship orders, ship scrapping and location unlocks as server transactions, and derives your active services from the buildings and research it holds. Contracts, espionage unlocks, season challenges, zone influence, demand pools, colony presence and book value read the registry for all of it.',

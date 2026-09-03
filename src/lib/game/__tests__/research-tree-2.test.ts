@@ -38,6 +38,7 @@ import {
   isRepeatableMaxed,
   getRepeatableNextCost,
   getResearchDisplayState,
+  scaleResearchEffect,
 } from '../research-tree';
 import type { ResearchBonuses } from '../research-tree';
 
@@ -318,21 +319,28 @@ describe('W3 property test — repeatables stay inside the SAME aggregate caps a
     }
   });
 
+  // Row 8 (docs/BALANCE.md "Inert techs rework (2026-09-02)"): a repeatable's
+  // per-level effect rides the SAME per-bucket magnitude scale every other
+  // effect does (research-tree.ts scaleResearchEffect), so the expected
+  // numbers are derived, not hard-coded.
+  const perLevelMining = scaleResearchEffect({ type: 'mining', magnitude: 0.02 }).magnitude;
+
   test('a single maxed repeatable alone (no other research) contributes exactly 5x its per-level magnitude, uncapped at that scale', () => {
     const def = RESEARCH_MAP.get('yield_learning_curve_program')!;
     const bonuses = getResearchBonuses([], { [def.id]: 5 });
-    expect(bonuses.miningOutputBonus).toBeCloseTo(0.02 * 5, 6); // 10%, well under the 100% mining cap
+    expect(bonuses.miningOutputBonus).toBeCloseTo(perLevelMining * 5, 6); // well under the 100% mining cap
   });
 
   test('repeatable levels beyond maxLevel in a malformed save are clamped, not over-summed', () => {
     const def = RESEARCH_MAP.get('yield_learning_curve_program')!;
     const bonuses = getResearchBonuses([], { [def.id]: 999 }); // corrupt/cheated save value
-    expect(bonuses.miningOutputBonus).toBeCloseTo(0.02 * 5, 6); // still only 5 levels' worth
+    expect(bonuses.miningOutputBonus).toBeCloseTo(perLevelMining * 5, 6); // still only 5 levels' worth
   });
 
   test('getResearchBonuses with no repeatableLevels arg (legacy call sites) behaves exactly as before W3', () => {
     const bonuses = getResearchBonuses(['reusable_boosters']);
-    expect(bonuses.buildCostReduction).toBeCloseTo(0.3, 6);
+    expect(bonuses.buildCostReduction).toBeCloseTo(
+      scaleResearchEffect({ type: 'buildCost', magnitude: 0.3 }).magnitude, 6);
   });
 });
 

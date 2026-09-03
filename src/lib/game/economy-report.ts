@@ -193,7 +193,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
   // Pass 9: Frontier-shielded payroll index — must mirror game-engine.ts §0
   // exactly (the P&L never disagrees with actual tick behavior).
   const payroll = getMonthlyPayrollForState(workforce, state, now);
-  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
+  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels, state.corporationTier || 1); // Row 8: tier-scaled caps
 
   const legacy = state.legacy || DEFAULT_LEGACY;
   const legacyBonuses = getLegacyBonuses(legacy);

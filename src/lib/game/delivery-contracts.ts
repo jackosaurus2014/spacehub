@@ -19,6 +19,10 @@ import { getWorkforceBonuses } from './workforce';
 import { computeFactionPostures, getCurrentRealignmentEpoch, type FactionPosture } from './realignment';
 import type { ResourceCategory } from './economic-seasons';
 import { getSpotPrice } from './spot-price';
+// Row 13: one name for "units that can actually clear at Earth" — shared
+// with the market panel so contracts and sells can never disagree about
+// which pool pays. (No cycle: cargo-logistics does not import this module.)
+import { getSellableQuantity } from './cargo-logistics';
 // Wave E7 (§E7 "zone-tagged contracts"): tag each generated contract with
 // the zone it executes in (the issuing faction's territory, per
 // zone-influence.ts's lore-anchored FACTION_TERRITORY). Flavor/display only
@@ -526,10 +530,19 @@ export function acceptDelivery(state: GameState, contractId: string, now: number
   };
 }
 
+/**
+ * Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, location-aware inventory):
+ * delivery contracts settle at the near-Earth market, so they draw the HOME
+ * pool — `state.resources` — and remote stockpiles do NOT count. That is the
+ * same rule market sells follow (cargo-logistics.getSellableQuantity): goods
+ * mined at Ceres have to be freighted home before they can satisfy a
+ * contract. No behavior change here; this is the rule stated out loud, since
+ * "which pool pays" is now a real question everywhere else in the economy.
+ */
 export function canDeliver(state: GameState, contractId: string): boolean {
   const contract = (state.activeDeliveries || []).find(c => c.id === contractId);
   if (!contract || contract.status !== 'accepted') return false;
-  const have = state.resources[contract.resourceId] || 0;
+  const have = getSellableQuantity(state, contract.resourceId);
   return have >= contract.quantity;
 }
 

@@ -24,7 +24,7 @@ import { advanceSystemicCrisis } from './systemic-crises';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP, getTravelTime } from './ships';
-import { getWorkforceBonuses } from './workforce';
+import { getWorkforceBonuses, getRequiredCrew, getStaffingReport, type WorkforceState } from './workforce';
 import { getActiveBoostMultiplier, cleanupExpiredBoosts } from './speed-boosts';
 import type { ActiveBoost } from './speed-boosts';
 import { getGlobalActiveMarketEvents } from './market-events';
@@ -70,6 +70,9 @@ import {
 } from './economic-sinks';
 import { accumulateMinedFlows, accumulateNpcFlows, accumulateShockFlows, consumeMarketFlowFlush, applyMarketFlowFlush } from './market-pressure';
 import { processExpeditionTick } from './expeditions';
+// Row 12 (docs/GAME_DESIGN_REVIEW_2026-09.md §2): interstellar signal lag —
+// orders to other star systems execute on arrival, not on click.
+import { processInterstellarCommandTick } from './interstellar-commands';
 // 4X Wave W6 (science-missions.ts): flagship science programs — tick beside
 // expeditions; Sentinel constellation extends the hazard forecast horizon and
 // (with the deflection demo) trims hazard damage post-roll (the W1 pattern).
@@ -94,7 +97,12 @@ import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './mo
 // stockpile once logistics is unlocked; arriving freight credits its
 // destination. The credit half of the dup-proof debit/credit pair (the debit
 // lives in dispatchShipWithCargo).
-import { routeProductionCredit, creditArrivalCargo, hasFreightCapability } from './cargo-logistics';
+import {
+  routeProductionCredit, creditArrivalCargo, hasFreightCapability,
+  // Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2): location-aware spending —
+  // the crafting queue draws its inputs at the plant that runs the order.
+  debitLocationInventory, isHomeLocation, HOME_LOCATION_IDS,
+} from './cargo-logistics';
 import { updateCrewWellbeing, getTotalCrew, getCrewCapacity } from './workforce';
 // Construction Purposes wave (docs/CONSTRUCTION_PURPOSES_2026-08.md):
 // datacenter compute joins the research-speed stack; habitat crewQuarters
@@ -238,7 +246,7 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
 
   // Get research bonuses (category-specific bonuses from completed research).
   // W3 (4X Op5 repeatables): also sums levels from state.repeatableResearchLevels.
-  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
+  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels, state.corporationTier || 1); // Row 8: aggregate caps grow +15%/tier
 
   // Get legacy bonuses (replaces prestige)
   const legacy = state.legacy || DEFAULT_LEGACY;
@@ -338,6 +346,24 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
     }
   };
 
+  // ─── 0. Crew staffing (Row 6) ────────────────────────────────────
+  // docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6. Every complete building and
+  // built hull names the heads it needs (buildings.ts `crew:` / ships.ts
+  // getShipCrew). The staffing ratio per role is hired ÷ required; the
+  // MINIMUM across roles drives one efficiency multiplier — 0.5 at zero
+  // staffing (0.7 while the Protected Frontier shield is up), 1.0 fully
+  // crewed, never above 1.0 (surplus crew is pure payroll, which is the
+  // decision). Applied multiplicatively to service revenue (§1) and to
+  // mining output (the §0c mining multiplier). Payroll below is unchanged —
+  // it already charges hired heads × the wage index, so crewing up is a real
+  // scaling sink with a real benefit attached.
+  const staffing = getStaffingReport(
+    workforce as WorkforceState,
+    getRequiredCrew(state.buildings, state.ships),
+    isInFrontier(state),
+  );
+  const staffingEfficiency = staffing.efficiency;
+
   // ─── 0. Workforce payroll (fractional per tick) ──────────────────
   // W13: compensation-philosophy policy multiplies payroll (Generous ×1.15 /
   // Lean ×0.90 / neutral ×1.0). Wave E5 (§2.6): salary is base × the
@@ -400,6 +426,7 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
     mentorshipMiningBonus: mentorshipB.miningBonus, // LS2: mentee mining share
     coopMegaMiningBonus: coopMegaB.miningBonus, // E7: cooperative mega-projects
     boostMiningMult: getActiveBoostMultiplier(activeBoosts, 'mining'),
+    staffingEfficiency,                        // Row 6: understaffed rigs extract less
   });
   /** Freighter/tanker logistics bonus for mining at a location — shared by
    *  §1's price-linked mining revenue and §6's physical unit production so
@@ -605,6 +632,7 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
       * (isMiningOutput ? 1 : supplyEfficiency) // Wave E3 (§2.2) — folded into unitsPerResource for mining above
       * reserveEfficiencyMult     // audit Wave E (C5 §7)
       * returningCommanderRevMult // LS2: decaying re-entry boost, 1.3x -> 1.0x over 14 days
+      * staffingEfficiency        // Row 6: crew shortfall, 0.5-1.0 (0.7 floor in Frontier)
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
@@ -1227,9 +1255,19 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
         const bill = calculateResourceRepairCost(bigStep, def);
         // `resources` is the tick's working copy (decay above mutates it the
         // same way) — deduct the materials bill directly.
-        const affordable = Object.entries(bill).every(([resId, qty]) => (resources[resId] || 0) >= qty);
+        // Row 13 (location-aware inventory): spare parts have to BE at the
+        // damaged facility. A servicer at Ceres draws Ceres stock; the home
+        // cluster and every pre-ratchet save draw the global pool as before.
+        // No local parts = the cash repair path below, same as an
+        // unaffordable bill always did.
+        const repairPool = routeLocally && !isHomeLocation(b.locationId)
+          ? (locationInventories[b.locationId] || {})
+          : resources;
+        const affordable = Object.entries(bill).every(([resId, qty]) => (repairPool[resId] || 0) >= qty);
         if (affordable) {
-          for (const [resId, qty] of Object.entries(bill)) resources[resId] = (resources[resId] || 0) - qty;
+          for (const [resId, qty] of Object.entries(bill)) {
+            debitLocationInventory(resources, locationInventories, b.locationId, resId, qty, routeLocally);
+          }
           servicersAt.set(b.locationId, servicers - 1); // one building per servicer per month
           step = bigStep;
           paidWithMaterials = true;
@@ -1997,11 +2035,19 @@ export function processFullTick(state: GameState): GameState {
         // Look up recipe to find outputs
         const { CHAIN_MAP } = require('./production-chains');
         const recipe = CHAIN_MAP.get(newState.activeRefining.recipeId);
+        // Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, location-aware
+        // inventory): the finished batch is credited AT THE PLANT that ran it
+        // — a Ceres fabricator fills Ceres storage, not Earth's. With the
+        // logistics ratchet off, at a home-cluster plant, or on a pre-row-13
+        // save with no locationId, this is the global pool exactly as before.
+        const craftSite = newState.activeRefining.locationId || HOME_LOCATION_IDS[0];
+        const craftRouteLocally = newState.logisticsUnlocked === true;
         const resources = { ...(newState.resources || {}) };
+        const craftInventories: Record<string, Record<string, number>> = { ...(newState.locationInventories || {}) };
         if (recipe) {
-          resources[recipe.outputId] = (resources[recipe.outputId] || 0) + recipe.outputQuantity;
+          routeProductionCredit(resources, craftInventories, craftSite, recipe.outputId, recipe.outputQuantity, craftRouteLocally);
         }
-        newState = { ...newState, activeRefining: null, resources };
+        newState = { ...newState, activeRefining: null, resources, locationInventories: craftInventories };
         // Phase 2 (inventory-attestations.ts): attest the output so the
         // server-owned map accepts this craft on the next sync.
         if (recipe) {
@@ -2019,21 +2065,34 @@ export function processFullTick(state: GameState): GameState {
         // sequence stays predictable.
         const queue = [...(newState.craftQueue || [])];
         if (queue.length > 0) {
-          const next = CHAIN_MAP.get(queue[0].recipeId);
+          const head = queue[0];
+          const next = CHAIN_MAP.get(head.recipeId);
           if (!next) {
             queue.shift(); // recipe removed from the game — drop the order
             newState = { ...newState, craftQueue: queue };
           } else {
-            const affordable = Object.entries(next.inputs as Record<string, number>).every(([resId, qty]) => (resources[resId] || 0) >= qty);
+            // Row 13: the queued order runs at ITS plant (defaulting to the
+            // one that just finished) and draws inputs from that plant's
+            // pool. Unaffordable LOCALLY = the queue waits, exactly as it
+            // already waits on an unaffordable global pool — haul the inputs
+            // in and it starts on the next tick.
+            const nextSite = head.locationId || craftSite;
+            const nextLocal = craftRouteLocally && !isHomeLocation(nextSite);
+            const nextPool = nextLocal ? (craftInventories[nextSite] || {}) : resources;
+            const affordable = Object.entries(next.inputs as Record<string, number>).every(([resId, qty]) => (nextPool[resId] || 0) >= qty);
             if (affordable) {
               const nextRes = { ...resources };
-              for (const [resId, qty] of Object.entries(next.inputs as Record<string, number>)) nextRes[resId] = (nextRes[resId] || 0) - qty;
+              const nextInv: Record<string, Record<string, number>> = { ...craftInventories };
+              for (const [resId, qty] of Object.entries(next.inputs as Record<string, number>)) {
+                debitLocationInventory(nextRes, nextInv, nextSite, resId, qty, craftRouteLocally);
+              }
               queue.shift();
               newState = {
                 ...newState,
                 resources: nextRes,
+                locationInventories: nextInv,
                 craftQueue: queue,
-                activeRefining: { recipeId: next.id, startedAtMs: Date.now(), durationSeconds: next.timeSeconds },
+                activeRefining: { recipeId: next.id, startedAtMs: Date.now(), durationSeconds: next.timeSeconds, locationId: nextSite },
               };
             }
           }
@@ -2113,7 +2172,7 @@ export function processFullTick(state: GameState): GameState {
       // in processFullTick, a different function/scope than processTick's
       // own `resBonuses` (line ~107) — recomputed here (cheap, pure) so
       // transitSpeedMult below can read travelSpeedBonus.
-      const resBonuses = getResearchBonuses(newState.completedResearch, newState.repeatableResearchLevels);
+      const resBonuses = getResearchBonuses(newState.completedResearch, newState.repeatableResearchLevels, newState.corporationTier || 1); // Row 8: aggregate caps grow +15%/tier
       // W8 (Leaders 2.0): same reasoning — recompute commanderBonuses in
       // this scope so transitSpeedMult can read the Propulsion
       // Specialist/Cryogenics Engineer/Risk Taker trait contributions.
@@ -2343,8 +2402,15 @@ export function processFullTick(state: GameState): GameState {
                 shipMoney += discovery.rewards.money;
               }
               if (discovery.rewards.resources) {
+                // Row 13: a survey find is physically AT the surveyed body —
+                // it accrues to that location's stockpile once logistics is
+                // unlocked, like any other remote production.
                 for (const [resId, qty] of Object.entries(discovery.rewards.resources)) {
-                  resources[resId] = (resources[resId] || 0) + (qty as number);
+                  routeProductionCredit(
+                    resources, shipLocationInventories,
+                    ship.surveyExpedition.targetLocation, resId, qty as number,
+                    newState.logisticsUnlocked === true,
+                  );
                 }
               }
               shipEvents.push({
@@ -2485,6 +2551,18 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Logistics ratchet error (non-fatal):', err);
+  }
+
+  // 6a-ii. Interstellar signal lag (GAME_DESIGN_REVIEW_2026-09 row 12):
+  // orders transmitted to another star system execute when their light lag
+  // elapses (2 game-months per light-year — interstellar.ts
+  // LIGHT_LAG_PER_LY_MS). Runs BEFORE the expedition tick below so an order
+  // that arrives this tick (e.g. a recall) is reflected in the same pass.
+  // Same state reference back when nothing is due.
+  try {
+    newState = processInterstellarCommandTick(newState, Date.now());
+  } catch (err) {
+    console.error('Interstellar command tick error (non-fatal):', err);
   }
 
   // 6b. Interstellar expeditions, colonies, and trade routes (Wave 10).

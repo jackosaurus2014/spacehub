@@ -60,6 +60,13 @@ import { computeCargoValue, computeFreightTolls, accumulateTollPayments, type Fr
 // logisticsSupport, combined endpoint total capped at 15% (mirrors the
 // lane-investment cap; stacks multiplicatively with lane + research terms).
 import { getLocationCapabilityBonus, CAPABILITY_CAPS } from './building-capabilities';
+// Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2): location-aware spending —
+// the build/craft/scrap consumers of `state.resources` now resolve against
+// the pool that physically holds the goods. buildings.ts + production-chains
+// are leaf modules from here (neither imports cargo-logistics), so this adds
+// no cycle.
+import { BUILDING_MAP } from './buildings';
+import { facilityTierFor, type ProductDefinition } from './production-chains';
 
 // ─── Home cluster ────────────────────────────────────────────────────────────
 
@@ -534,3 +541,346 @@ export const FREIGHT_PLAN_ERROR_TEXT: Record<FreightPlanError['reason'], string>
   insufficient_origin_stock: 'Not enough stock at the origin location.',
   insufficient_funds: 'Not enough cash to cover the fuel bill.',
 };
+
+// ─── Location-aware spending (GAME_DESIGN_REVIEW_2026-09 §2 row 13) ──────────
+// W14 shipped the inventory MODEL (per-location stockpiles + freight). It
+// deliberately left every *consumer* of `state.resources` global: an
+// Earth-built beam was usable on Ceres with no transport
+// (docs/MANUFACTURING_2026-08.md "Deliberately not done"). This section
+// closes that gap on the spend side — building materials, crafting inputs,
+// and scrap recovery now resolve at the pool that physically holds the
+// goods, which is what makes "logistics cost money" (CLAUDE.md) a decision
+// instead of flavour.
+//
+// The ratchet is unchanged: while `state.logisticsUnlocked` is false (any
+// save that has never owned a built transport/tanker hull), every helper
+// here reads and writes the ONE global pool, so pre-row-13 behavior is
+// preserved exactly. Home-cluster sites (earth_surface/leo/geo) always use
+// the global pool — it *is* their local inventory.
+//
+// SERVER NOTE: the sync's `serverResources` stays a single global map. Server
+// truth is location-agnostic; this is a client-economy slice. The material
+// attestation/ledger paths (inventory-attestations.ts, /assets/* routes) are
+// untouched — a spend still debits the same TOTAL units server-side, only
+// the client decides which pool they physically leave from.
+
+/** Is the per-location economy live for this save? */
+export function isLocationEconomyActive(state: GameState): boolean {
+  return state.logisticsUnlocked === true;
+}
+
+/** Debit a resource at a location. Mirror image of routeProductionCredit —
+ *  same copy-on-write contract (the caller owns the outer copies). */
+export function debitLocationInventory(
+  resources: Record<string, number>,
+  locationInventories: Record<string, Record<string, number>>,
+  locationId: string,
+  resourceId: string,
+  amount: number,
+  routeLocally: boolean,
+): void {
+  if (amount <= 0) return;
+  if (!routeLocally || isHomeLocation(locationId)) {
+    resources[resourceId] = Math.max(0, (resources[resourceId] || 0) - amount);
+    return;
+  }
+  const loc = { ...(locationInventories[locationId] || {}) };
+  loc[resourceId] = Math.max(0, (loc[resourceId] || 0) - amount);
+  if (loc[resourceId] <= 0) delete loc[resourceId];
+  locationInventories[locationId] = loc;
+}
+
+/** Debit a whole material bill at one location. Returns fresh top-level
+ *  copies so callers can drop them straight into a state object. */
+export function spendMaterialsAtLocation(
+  state: GameState,
+  locationId: string,
+  cost: Record<string, number>,
+): { resources: Record<string, number>; locationInventories: Record<string, Record<string, number>> } {
+  const resources = { ...(state.resources || {}) };
+  const locationInventories: Record<string, Record<string, number>> = { ...(state.locationInventories || {}) };
+  const routeLocally = isLocationEconomyActive(state);
+  for (const [resId, qty] of Object.entries(cost || {})) {
+    debitLocationInventory(resources, locationInventories, locationId, resId, qty, routeLocally);
+  }
+  return { resources, locationInventories };
+}
+
+export interface MaterialShortfall {
+  resourceId: string;
+  /** Units the order needs. */
+  need: number;
+  /** Units physically present at the build/fab site. */
+  atSite: number;
+  /** Units that must be hauled in (need − atSite). */
+  short: number;
+  /** Pools holding the missing units, largest first. */
+  sources: { locationId: string; quantity: number }[];
+}
+
+export interface LocalMaterialsCheck {
+  ok: boolean;
+  locationId: string;
+  /** True when this site draws the global pool (ratchet off, or home cluster). */
+  usesHomePool: boolean;
+  shortfalls: MaterialShortfall[];
+}
+
+/** Pools OTHER than this site holding a resource, largest first. */
+function otherPoolsHolding(state: GameState, siteId: string, resourceId: string): { locationId: string; quantity: number }[] {
+  const out: { locationId: string; quantity: number }[] = [];
+  const home = (state.resources || {})[resourceId] || 0;
+  if (!isHomeLocation(siteId) && home > 0) out.push({ locationId: 'earth_surface', quantity: home });
+  for (const [locId, inv] of Object.entries(state.locationInventories || {})) {
+    if (locId === siteId) continue;
+    const qty = inv?.[resourceId] || 0;
+    if (qty > 0) out.push({ locationId: locId, quantity: qty });
+  }
+  out.sort((a, b) => b.quantity - a.quantity);
+  return out;
+}
+
+/**
+ * Can this location pay a material bill out of its OWN stock? The honest
+ * "N units must be hauled from X" readout behind BuildPanel's cards.
+ */
+export function checkLocalMaterials(
+  state: GameState,
+  locationId: string,
+  cost: Record<string, number> | undefined,
+): LocalMaterialsCheck {
+  const routeLocally = isLocationEconomyActive(state);
+  const usesHomePool = !routeLocally || isHomeLocation(locationId);
+  const shortfalls: MaterialShortfall[] = [];
+  for (const [resId, qty] of Object.entries(cost || {})) {
+    if (!qty || qty <= 0) continue;
+    const atSite = usesHomePool
+      ? (state.resources || {})[resId] || 0
+      : getLocationStock(state, locationId, resId);
+    if (atSite >= qty) continue;
+    shortfalls.push({
+      resourceId: resId,
+      need: qty,
+      atSite,
+      short: qty - atSite,
+      sources: usesHomePool ? [] : otherPoolsHolding(state, locationId, resId),
+    });
+  }
+  return { ok: shortfalls.length === 0, locationId, usesHomePool, shortfalls };
+}
+
+// ─── One-click hauling (BuildPanel's "Dispatch hauler") ──────────────────────
+
+export interface HaulSuggestion {
+  ok: true;
+  shipInstanceId: string;
+  shipName: string;
+  from: string;
+  to: string;
+  cargo: Record<string, number>;
+  fuelCost: number;
+  tollCost: number;
+  travelSeconds: number;
+  capacity: number;
+  loadUnits: number;
+  /** True when hull capacity could not take the whole shortfall in one run. */
+  partial: boolean;
+}
+
+export type HaulSuggestionError = {
+  ok: false;
+  reason: 'no_shortfall' | 'no_source' | 'no_freighter' | 'plan_failed';
+  /** Player-facing explanation — always says what to do next. */
+  detail: string;
+};
+
+/**
+ * Idle, built transport/tanker hulls able to lift out of a given pool. The
+ * home cluster is ONE pool with three docks (earth_surface / leo / geo), so a
+ * shuttle parked in LEO can lift Earth stock — anywhere else, the hull has to
+ * be at that exact location.
+ */
+export function getIdleFreightersAt(state: GameState, locationId: string): NonNullable<GameState['ships']> {
+  const homePool = isHomeLocation(locationId);
+  return (state.ships || []).filter(s => {
+    if (!s.isBuilt || s.status !== 'idle') return false;
+    if (homePool ? !isHomeLocation(s.currentLocation) : s.currentLocation !== locationId) return false;
+    const def = SHIP_MAP.get(s.definitionId);
+    return def?.role === 'transport' || def?.role === 'tanker';
+  });
+}
+
+/**
+ * Plan the single freight run that best closes a material shortfall at
+ * `toLocationId`: pick the pool holding the most missing units, pick the
+ * biggest idle freighter parked there, and fill its hold with the shortfall
+ * (largest lines first). Pure — priced through planFreight, so the quote the
+ * button shows is the quote dispatch charges.
+ */
+export function planShortfallHaul(
+  state: GameState,
+  toLocationId: string,
+  cost: Record<string, number> | undefined,
+  nowMs: number = Date.now(),
+): HaulSuggestion | HaulSuggestionError {
+  const check = checkLocalMaterials(state, toLocationId, cost);
+  if (check.ok) return { ok: false, reason: 'no_shortfall', detail: 'Everything this order needs is already on site.' };
+
+  // Score candidate source pools by how much of the shortfall each covers.
+  const coverage = new Map<string, number>();
+  for (const sf of check.shortfalls) {
+    for (const src of sf.sources) {
+      coverage.set(src.locationId, (coverage.get(src.locationId) || 0) + Math.min(sf.short, src.quantity));
+    }
+  }
+  if (coverage.size === 0) {
+    const names = check.shortfalls.map(s => `${Math.ceil(s.short)} ${s.resourceId.replace(/_/g, ' ')}`).join(', ');
+    return { ok: false, reason: 'no_source', detail: `Nowhere in the corporation holds the missing ${names} — mine, craft or buy them first.` };
+  }
+  const [bestSource] = [...coverage.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const from = bestSource[0];
+
+  const freighters = getIdleFreightersAt(state, from);
+  const fromName = LOCATION_MAP.get(from)?.name || from;
+  if (freighters.length === 0) {
+    return {
+      ok: false,
+      reason: 'no_freighter',
+      detail: `The missing materials are at ${fromName}, but no idle transport or tanker is parked there. Send one to ${fromName} first (Fleet → Dispatch).`,
+    };
+  }
+  const ship = freighters
+    .slice()
+    .sort((a, b) => getShipCargoCapacity(state, b.instanceId) - getShipCargoCapacity(state, a.instanceId))[0];
+  // The hull's own dock is the origin of record (inside the home cluster the
+  // pool and the dock can differ — LEO lifting Earth stock).
+  const origin = ship.currentLocation;
+  const capacity = getShipCargoCapacity(state, ship.instanceId);
+  const role = SHIP_MAP.get(ship.definitionId)?.role;
+
+  // Fill the hold: biggest shortfall lines first, never more than the source
+  // actually holds, never past capacity (load-units respect tanker liquids).
+  const cargo: Record<string, number> = {};
+  let partial = false;
+  const lines = check.shortfalls
+    .map(sf => ({ resourceId: sf.resourceId, want: Math.ceil(sf.short), have: getLocationStock(state, origin, sf.resourceId) }))
+    .sort((a, b) => b.want - a.want);
+  for (const line of lines) {
+    const wanted = Math.min(line.want, Math.floor(line.have));
+    if (wanted <= 0) { partial = true; continue; }
+    if (wanted < line.want) partial = true;
+    let take = wanted;
+    while (take > 0 && getCargoLoadUnits(role, { ...cargo, [line.resourceId]: take }) > capacity) take--;
+    if (take <= 0) { partial = true; continue; }
+    if (take < wanted) partial = true;
+    cargo[line.resourceId] = take;
+  }
+  if (Object.keys(cargo).length === 0) {
+    return { ok: false, reason: 'plan_failed', detail: `${ship.name} has no spare capacity for this manifest.` };
+  }
+
+  const plan = planFreight(state, ship.instanceId, toLocationId, cargo, nowMs);
+  if (!plan.ok) {
+    return { ok: false, reason: 'plan_failed', detail: FREIGHT_PLAN_ERROR_TEXT[plan.reason] + (plan.detail ? ` (${plan.detail})` : '') };
+  }
+  return {
+    ok: true,
+    shipInstanceId: ship.instanceId,
+    shipName: ship.name,
+    from: origin,
+    to: toLocationId,
+    cargo: plan.cargo,
+    fuelCost: plan.fuelCost,
+    tollCost: plan.tollCost,
+    travelSeconds: plan.travelSeconds,
+    capacity,
+    loadUnits: plan.loadUnits,
+    partial,
+  };
+}
+
+// ─── Fabrication siting (crafting draws + credits at the plant) ──────────────
+
+/** Locations with a completed fabrication facility able to run a recipe. */
+export function getFabricationSites(
+  state: GameState,
+  recipe: Pick<ProductDefinition, 'tier'>,
+): string[] {
+  const need = facilityTierFor(recipe);
+  const sites = new Set<string>();
+  for (const b of state.buildings || []) {
+    if (!b.isComplete) continue;
+    const def = BUILDING_MAP.get(b.definitionId);
+    if (!def || def.category !== 'fabrication_facility' || def.tier < need) continue;
+    sites.add(b.locationId);
+  }
+  return [...sites].sort();
+}
+
+export interface FabricationSiting {
+  /** Chosen plant location, or null when the corporation has no capable facility. */
+  locationId: string | null;
+  /** Every capable site, sorted. */
+  candidates: string[];
+  /** True when the chosen site holds every input locally. */
+  inputsOnSite: boolean;
+}
+
+/**
+ * Which plant runs this recipe. Deterministic: the first capable site (home
+ * cluster first, then alphabetical) that holds ALL inputs locally; if none
+ * does, the first capable site — so the panel can explain the shortfall
+ * against a concrete plant instead of silently failing.
+ */
+export function chooseFabricationSite(
+  state: GameState,
+  recipe: Pick<ProductDefinition, 'tier' | 'inputs'>,
+): FabricationSiting {
+  const candidates = getFabricationSites(state, recipe);
+  if (candidates.length === 0) return { locationId: null, candidates, inputsOnSite: false };
+  const ordered = candidates
+    .slice()
+    .sort((a, b) => (isHomeLocation(b) ? 1 : 0) - (isHomeLocation(a) ? 1 : 0) || a.localeCompare(b));
+  for (const site of ordered) {
+    if (checkLocalMaterials(state, site, recipe.inputs as Record<string, number>).ok) {
+      return { locationId: site, candidates, inputsOnSite: true };
+    }
+  }
+  return { locationId: ordered[0], candidates, inputsOnSite: false };
+}
+
+// ─── "Stock by location" readout (BuildPanel header / Dashboard) ─────────────
+
+export interface LocationStockRow {
+  /** 'home' for the shared Earth/LEO/GEO pool, otherwise the location id. */
+  id: string;
+  name: string;
+  isHome: boolean;
+  /** Total units held in this pool. */
+  units: number;
+  /** Distinct resources held. */
+  lines: number;
+  /** Largest holdings first (the caller caps for display). */
+  top: { resourceId: string; quantity: number }[];
+}
+
+export function getStockByLocation(state: GameState): LocationStockRow[] {
+  const rows: LocationStockRow[] = [];
+  const build = (id: string, name: string, isHome: boolean, inv: Record<string, number>): LocationStockRow => {
+    const held = Object.entries(inv || {}).filter(([, q]) => (q || 0) > 0);
+    return {
+      id,
+      name,
+      isHome,
+      units: held.reduce((a, [, q]) => a + q, 0),
+      lines: held.length,
+      top: held.map(([resourceId, quantity]) => ({ resourceId, quantity })).sort((a, b) => b.quantity - a.quantity),
+    };
+  };
+  rows.push(build('home', 'Home cluster (Earth · LEO · GEO)', true, state.resources || {}));
+  for (const [locId, inv] of Object.entries(state.locationInventories || {})) {
+    const row = build(locId, LOCATION_MAP.get(locId)?.name || locId, false, inv || {});
+    if (row.units > 0) rows.push(row);
+  }
+  return rows.sort((a, b) => (b.isHome ? 1 : 0) - (a.isHome ? 1 : 0) || b.units - a.units);
+}

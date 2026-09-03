@@ -80,7 +80,7 @@ import {
   LABOR_SUPPLY_PER_QUARTERS,
   type LaborActivitySummary,
 } from '../src/lib/game/labor-market';
-import { WORKER_TYPES, type WorkerType } from '../src/lib/game/workforce';
+import { WORKER_TYPES, getRequiredCrew, type WorkerType } from '../src/lib/game/workforce';
 import {
   calculatePriceAfterMining,
   calculatePriceAfterTrade,
@@ -562,6 +562,14 @@ export function stepMonth(world: SimWorld, month: number): void {
       headcount: p.headcount || {},
       trainingLevel: p.trainingLevel,
       crewQuarters: sumCrewQuarters(p.buildings),
+      // Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): labor DEMAND is
+      // what the fleet requires, filled or not — the same figure the weekly
+      // cron now feeds computeLaborAggregates. Without it the index would
+      // still only see hired heads, which is the H2 defect this row fixes.
+      requiredHeadcount: getRequiredCrew(
+        p.buildings.map(b => ({ definitionId: b.definitionId, isComplete: true })),
+        [],
+      ),
     }));
     const aggregates = computeLaborAggregates(summaries);
     wageIndexByType = new Map();
@@ -574,7 +582,7 @@ export function stepMonth(world: SimWorld, month: number): void {
       aggregates.forEach((agg, type) => {
         const scaledSupply = LABOR_SUPPLY_BASE[type] / divisor
           + Math.max(0, quartersServerWide) * LABOR_SUPPLY_PER_QUARTERS;
-        wageIndexByType!.set(type, computeWageIndex(agg.employedEffective, scaledSupply));
+        wageIndexByType!.set(type, computeWageIndex(agg.demandEffective, scaledSupply));
       });
     } else {
       aggregates.forEach((agg, type) => wageIndexByType!.set(type, agg.index));

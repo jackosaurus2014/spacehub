@@ -10,6 +10,8 @@
 import { BUILDING_MAP } from './buildings';
 import { LOCATION_MAP } from './solar-system';
 import { getExpeditionProgress } from './expeditions';
+// Row 12 (signal lag): orders in transit to another star system.
+import { getInterstellarCommandProgress } from './interstellar-commands';
 import { getActiveScienceMissions, getScienceMissionProgress, SCIENCE_PROGRAM_MAP } from './science-missions';
 import { SHIP_MAP } from './ships';
 import { REAL_SECONDS_PER_GAME_MONTH } from './server-time';
@@ -137,6 +139,23 @@ export function buildOrderQueue(state: GameState): OrderQueueItem[] {
         ? progress.monthsToNextPhase * REAL_SECONDS_PER_GAME_MONTH
         : null,
       target: { kind: 'location', id: program.locationId },
+    });
+  }
+
+  // Row 12 (docs/GAME_DESIGN_REVIEW_2026-09.md §2): orders still crossing
+  // interstellar space. They are not "work in progress" — they are a signal
+  // in flight — but they occupy the same mental slot as any other pending
+  // order, so they belong in the same queue. Clicking one focuses the
+  // destination system.
+  for (const p of getInterstellarCommandProgress(state, nowMs)) {
+    items.push({
+      id: `signal-${p.command.id}`,
+      icon: 'interstellar',
+      label: p.command.label,
+      sub: `In transit — ${p.etaLabel}`,
+      pct: Math.round(p.progress * 100),
+      etaSeconds: p.msRemaining / 1000,
+      target: { kind: 'system', id: p.command.targetSystemId },
     });
   }
 

@@ -41,8 +41,8 @@ These change what players see and need your call. My recommendation is first in 
 
 Each names its loop and the CLAUDE.md invariant it serves. Effort: S (hours), M (days), L (a week or more).
 
-| # | Proposal | Loop | Invariant | Effort |
-|---|---|---|---|---|
+| # | Proposal | Loop | Invariant | Effort | Status |
+|---|---|---|---|---|---|
 | 1 | **Unify the game clock** (D1-A) + away-ops parity + plausibility ceiling re-derived from the real clock | all | P&L, long-horizon | M |
 | 2 | **Binding corp-to-corp supply contracts**: `issuerProfileId` on contracts, server-ledger escrow, milestones, auto-penalty on default, public feed entry | weekly / monthly | corporate scale, meaningful decision | L |
 | 3 | **Commodity flow map + exporter/importer rankings** from MarketFill and lane usage counters; the missing third of the intelligence pillar and the likeliest cure for zero PvP usage | daily | market intelligence | M |
@@ -54,8 +54,8 @@ Each names its loop and the CLAUDE.md invariant it serves. Effort: S (hours), M 
 | 9 | **Index the daily bonus and static contract ladder to tier** (or retire the daily bonus above T3); a flat $508M/week is dominant at a $100M start and noise at $136B | daily | P&L, no P2W | S |
 | 10 | **Corp-to-corp pacts + arbitration + signed-agreements timeline**: extend alliance diplomacy to corp pairs, enforce no-poach clauses against the poaching route, faction-mediated arbitration fee as a new sink, all routed into the activity feed | monthly | corporate scale, no combat | L |
 | 11 | **NPC density governor** (floor of 3, scale the 10-corp roster with population) and publish the quarterly balance report with Gini and NPC share (POLICY.md commitment; the data already exists) | monthly | NPC backdrop, simulation integrity | S |
-| 12 | **Signal-lag execution for interstellar commands** (`PendingInterstellarCommand` is a type with no consumer) so the beyond-heliopause era has its own texture | campaign | interstellar extension | M |
-| 13 | **Location-aware inventory and hauling** (already scaffolded: `locationInventories`, `cargo-logistics.ts`); route build, craft, and sell consumption through per-location stock with the `logisticsUnlocked` ratchet | daily | logistics cost money | L |
+| 12 | **Signal-lag execution for interstellar commands** (`PendingInterstellarCommand` is a type with no consumer) so the beyond-heliopause era has its own texture | campaign | interstellar extension | M | **DONE 2026-09-02** — `interstellar-commands.ts`; 2 game-months per light-year (`LIGHT_LAG_PER_LY_MS` = 12 real hours/ly). Fees at issue, cancellable with no refund, executed by the tick. docs/BALANCE.md "Signal lag (2026-09-02)". |
+| 13 | **Location-aware inventory and hauling** (already scaffolded: `locationInventories`, `cargo-logistics.ts`); route build, craft, and sell consumption through per-location stock with the `logisticsUnlocked` ratchet | daily | logistics cost money | L | **DONE 2026-09-02** — build/craft/repair/scrap/survey spend at the local pool; BuildPanel haul CTA + stock-by-location table. Server `serverResources` stays a single global map (client-economy slice). docs/BALANCE.md "Location-aware hauling (2026-09-02)". |
 | 14 | **Rivals reward path**: today Rivals is a leaderboard with no consequence; tie a rival's relative performance to a small weekly stake (reputation or a league metric) so tracking one is a decision | weekly | meaningful decision | S |
 | 15 | **Delete `refining.ts`** (dead duplicate of production-chains) and the orphaned competitive-contracts client gap: either wire a UI or fold it into bidding | — | hygiene | S |
 

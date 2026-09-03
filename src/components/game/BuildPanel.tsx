@@ -33,6 +33,14 @@ import { calculateRushRepairCost } from '@/lib/game/hazards';
 // supply efficiency + the vertical-integration-vs-market sourcing toggle.
 import { describeRecipeLine, getBuildingConsumptionEfficiency, hasRecipe } from '@/lib/game/consumption';
 import { RESOURCE_MAP } from '@/lib/game/resources';
+// Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, location-aware inventory):
+// build materials are paid from stock AT THE BUILD LOCATION once the
+// logistics ratchet is on. The panel shows what is on site, what has to be
+// hauled and from where, and offers the one-click hauler that closes the gap.
+import {
+  checkLocalMaterials, planShortfallHaul, getStockByLocation, isLocationEconomyActive,
+  getLocationStock, isHomeLocation,
+} from '@/lib/game/cargo-logistics';
 import type { ResourceId } from '@/lib/game/resources';
 // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5, "the exit
 // decision"): mothball (pause, reversible) and decommission (scrap for
@@ -158,6 +166,78 @@ function PurposeChips({ definitionId }: { definitionId: string }) {
 }
 
 interface SpecRow { id: string; stat: string; value: string }
+/** Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2): the hauling gap on a
+ *  build card. Says exactly how many units are missing and which stockpile
+ *  holds them, then offers the single freight run that closes it — priced by
+ *  the same planFreight quote dispatch charges (Δv fuel + any zone toll), so
+ *  the button never lies about the bill. Renders nothing when the site can
+ *  pay locally, which includes every home-cluster build and every save with
+ *  the logistics ratchet still off. */
+function HaulShortfallNotice({
+  state, locationId, cost, onDispatchShip,
+}: {
+  state: GameState;
+  locationId: string;
+  cost?: Record<string, number>;
+  onDispatchShip?: (shipInstanceId: string, toLocation: string, cargo?: Record<string, number>) => void;
+}) {
+  const check = checkLocalMaterials(state, locationId, cost);
+  if (check.ok || check.usesHomePool) return null;
+  const siteName = LOCATION_MAP.get(locationId)?.name || locationId;
+  const haul = planShortfallHaul(state, locationId, cost);
+  return (
+    <div className="mb-2 rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--surface)] p-2 text-[10px] leading-relaxed text-[var(--ink-2)]" role="status">
+      <div className="flex items-start gap-1.5">
+        <StatusPip state="hold" label="HAUL REQUIRED" />
+        <div className="flex-1">
+          {check.shortfalls.map(sf => {
+            const name = RESOURCE_MAP.get(sf.resourceId as ResourceId)?.name || sf.resourceId.replace(/_/g, ' ');
+            const source = sf.sources[0];
+            const sourceName = source ? (LOCATION_MAP.get(source.locationId)?.name || source.locationId) : null;
+            return (
+              <div key={sf.resourceId}>
+                <span className="font-mono tabular-nums text-[var(--ink)]">{Math.ceil(sf.short)}</span>{' '}
+                {name} must be hauled to {siteName}
+                {sourceName ? <> from <span className="text-[var(--ink)]">{sourceName}</span></> : ' — nowhere in the corporation holds it'}.
+              </div>
+            );
+          })}
+          {haul.ok ? (
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              <span>
+                {haul.shipName} · {haul.loadUnits}/{haul.capacity} load-units · fuel {formatMoney(haul.fuelCost)}
+                {haul.tollCost > 0 ? ` + toll ${formatMoney(haul.tollCost)}` : ''} · {formatDuration(haul.travelSeconds)}
+                {haul.partial ? ' · one run does not cover the whole shortfall' : ''}
+              </span>
+              {onDispatchShip && (
+                <button
+                  type="button"
+                  className="btn-secondary min-h-[44px] px-2.5 py-1 text-[10px]"
+                  onClick={() => onDispatchShip(haul.shipInstanceId, haul.to, haul.cargo)}
+                >
+                  Dispatch hauler
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="mt-1.5 text-[var(--ink-3)]">{haul.detail}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Row 13: where the corporation's goods physically are. Compact enough to
+ *  live in the Build panel's location header, which is exactly where the
+ *  question "can I build this here?" gets asked. */
+interface StockRow { id: string; location: string; units: number; lines: number; holdings: string }
+const STOCK_COLUMNS: DataTableColumn<StockRow>[] = [
+  { key: 'location', header: 'Pool', sortable: false },
+  { key: 'units', header: 'Units', align: 'right', numeric: true, sortable: false, render: r => <span className="font-mono tabular-nums text-[var(--ink)]">{Math.round(r.units).toLocaleString()}</span> },
+  { key: 'holdings', header: 'Largest holdings', sortable: false, render: r => <span className="text-[var(--ink-2)]">{r.holdings}</span> },
+];
+
 const SPEC_COLUMNS: DataTableColumn<SpecRow>[] = [
   { key: 'stat', header: 'Stat', sortable: false },
   { key: 'value', header: 'Value', align: 'right', sortable: false, render: r => <span className="font-mono tabular-nums text-[var(--ink)]">{r.value}</span> },
@@ -210,9 +290,14 @@ interface BuildPanelProps {
   /** D4: start a Mark-II/III refit (mark-upgrades.ts). The Refit button and
    *  its cost/benefit preview only render when provided. */
   onMarkUpgradeBuilding?: (instanceId: string) => void;
+  /** Row 13: send a freighter loaded with the materials a remote build is
+   *  short of. Same handler the Fleet tab and the map command centre use
+   *  (dispatchShipWithCargo). The "Dispatch hauler" button only renders when
+   *  provided — without it the panel still explains the shortfall. */
+  onDispatchShip?: (shipInstanceId: string, toLocation: string, cargo?: Record<string, number>) => void;
 }
 
-export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy, onMothballBuilding, onReactivateBuilding, onMarkUpgradeBuilding }: BuildPanelProps) {
+export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy, onMothballBuilding, onReactivateBuilding, onMarkUpgradeBuilding, onDispatchShip }: BuildPanelProps) {
   const [selectedLocation, setSelectedLocation] = useState(initialLocationId || state.unlockedLocations[0] || 'earth_surface');
   const totalSlots = getConstructionSlots(state);
   const activeBuilds = getActiveConstructions(state);
@@ -222,6 +307,12 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
   // location unless the player holds a slot lease (or the Frontier
   // first-building exemption applies). Mirrors handleBuild's check exactly.
   const slotGate = checkOrbitalSlotGate(state, selectedLocation);
+  // Row 13: is the per-location economy live, and does THIS site have its own
+  // stockpile? (Home cluster shares the global pool — it *is* their local
+  // inventory, so nothing changes there.)
+  const locationEconomy = isLocationEconomyActive(state);
+  const siteHasOwnPool = locationEconomy && !isHomeLocation(selectedLocation);
+  const stockRows = locationEconomy ? getStockByLocation(state) : [];
 
   const availableBuildings = BUILDINGS.filter(b => {
     if (b.requiredLocation !== selectedLocation) return false;
@@ -299,6 +390,31 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
             </div>
           </div>
         )}
+
+        {/* Row 13 (location-aware inventory): stock by location. Only shown
+            once the logistics ratchet is on — before that there is one pool
+            and the table would say nothing. */}
+        {locationEconomy && stockRows.length > 0 && (
+          <div className="mt-3">
+            <p className={`${OVERLINE} mb-1.5`}>Stock by location</p>
+            <DataTable<StockRow>
+              caption="Resource stock by location"
+              columns={STOCK_COLUMNS}
+              rows={stockRows.map(r => ({
+                id: r.id,
+                location: r.name,
+                units: r.units,
+                lines: r.lines,
+                holdings: r.top.slice(0, 3)
+                  .map(h => `${Math.round(h.quantity).toLocaleString()} ${RESOURCE_MAP.get(h.resourceId as ResourceId)?.name || h.resourceId.replace(/_/g, ' ')}`)
+                  .join(' · ') || 'empty',
+              }))}
+            />
+            <p className="mt-1 text-[10px] text-[var(--ink-3)]">
+              Builds and fabrication draw the pool they stand in; the market and delivery contracts clear only at the home cluster.
+            </p>
+          </div>
+        )}
       </Console>
 
       {/* Balance Pass 4: slot-gate notice — the whole location is
@@ -335,9 +451,11 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
             const count = countAtLocation(bld.id);
             const cost = scaledBuildingCost(bld.baseCost, count);
             const canAffordMoney = state.money >= cost;
-            const hasResources = !bld.resourceCost || Object.entries(bld.resourceCost).every(
-              ([resId, qty]) => (state.resources[resId] || 0) >= qty
-            );
+            // Row 13: affordability is a LOCAL question now — materials have
+            // to be at this site (home cluster / ratchet off = the global
+            // pool, unchanged). Mirrors page.tsx handleBuild exactly.
+            const materials = checkLocalMaterials(state, selectedLocation, bld.resourceCost as Record<string, number> | undefined);
+            const hasResources = materials.ok;
             // Early-fab wave: per-corporation cap (fabrication_earth max 1).
             const capCheck = checkBuildingCap(state.buildings, bld);
             const canAfford = canAffordMoney && hasResources && slotsAvailable && slotGate.allowed && capCheck.allowed;
@@ -473,7 +591,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                 {bld.resourceCost && Object.keys(bld.resourceCost).length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-2">
                     {Object.entries(bld.resourceCost).map(([resId, qty]) => {
-                      const have = state.resources[resId] || 0;
+                      const have = siteHasOwnPool ? getLocationStock(state, selectedLocation, resId) : (state.resources[resId] || 0);
                       const enough = have >= qty;
                       return (
                         <span
@@ -490,6 +608,15 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     })}
                   </div>
                 )}
+                {/* Row 13: what has to be hauled in, from where, and the one
+                    click that does it. Renders only for a remote site with a
+                    real shortfall. */}
+                <HaulShortfallNotice
+                  state={state}
+                  locationId={selectedLocation}
+                  cost={bld.resourceCost as Record<string, number> | undefined}
+                  onDispatchShip={onDispatchShip}
+                />
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-xs font-mono tabular-nums">
                     <span style={{ color: canAffordMoney ? 'var(--go)' : 'var(--crit)' }}>{formatMoney(cost)}</span>

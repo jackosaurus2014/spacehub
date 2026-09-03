@@ -8,6 +8,7 @@ import {
   computeLaborAggregates,
   workforceDataToHeadcount,
   sumCrewQuarters,
+  requiredHeadcountFor,
   type LaborActivitySummary,
 } from '@/lib/game/labor-market';
 
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     const now = Date.now();
     const profiles = await prisma.gameProfile.findMany({
       where: { lastSyncAt: { gt: new Date(now - 7 * 24 * 3600_000) } },
-      select: { id: true, workforceData: true, buildingsData: true },
+      select: { id: true, workforceData: true, buildingsData: true, shipsData: true },
       take: 2000,
     });
 
@@ -56,11 +57,19 @@ export async function POST(request: Request) {
       const buildings = ((registryBuildings.get(p.id)?.buildings ?? []) as { definitionId?: string; isComplete?: boolean }[])
         .filter(b => typeof b?.definitionId === 'string')
         .map(b => ({ definitionId: b.definitionId as string, isComplete: b.isComplete !== false }));
+      // Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): labor DEMAND is
+      // what a fleet requires, not just who happens to be hired — otherwise
+      // the wage index cannot respond to fleet growth (BALANCE.md H2).
+      const ships = (Array.isArray(p.shipsData) ? p.shipsData : [])
+        .filter((sh): sh is { definitionId: string; isBuilt?: boolean } =>
+          !!sh && typeof sh === 'object' && typeof (sh as { definitionId?: unknown }).definitionId === 'string')
+        .map(sh => ({ definitionId: sh.definitionId, isBuilt: sh.isBuilt !== false }));
       return {
         id: p.id,
         headcount: workforceDataToHeadcount(wf),
         trainingLevel: typeof wf.trainingLevel === 'number' ? wf.trainingLevel : 0.5,
         crewQuarters: sumCrewQuarters(buildings),
+        requiredHeadcount: requiredHeadcountFor(buildings, ships),
       };
     });
 
@@ -73,12 +82,15 @@ export async function POST(request: Request) {
         create: {
           crewType: agg.type,
           wageIndex: agg.index,
-          employedRaw: agg.employedRaw,
+          // Row 6: the LaborIndex row reports the demand the index was priced
+          // from (max of hired and required) so the UI's "N employed" figure
+          // matches the wage players are charged.
+          employedRaw: Math.round(Math.max(agg.employedRaw, agg.requiredRaw)),
           supply: agg.supply,
         },
         update: {
           wageIndex: agg.index,
-          employedRaw: agg.employedRaw,
+          employedRaw: Math.round(Math.max(agg.employedRaw, agg.requiredRaw)),
           supply: agg.supply,
         },
       });

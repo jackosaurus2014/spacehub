@@ -16,6 +16,11 @@ import type { CorporateDoctrineState, BoardDirective } from './corporate-doctrin
 // so this is a compile-time-erased edge — no runtime cycle.
 import type { MarketSnapshot } from './spot-price';
 
+// Row 12 (signal lag): type-only import — interstellar.ts imports `type
+// { SolarSystemLocation }` from this file, so this is the same compile-time-
+// erased circular reference as the commanders/doctrine edges above.
+import type { PendingInterstellarCommand } from './interstellar';
+
 // E4 (Finite Demand Pools): type-only import of the per-(location, category)
 // demand-pool snapshot the sync route delivers — same pattern as
 // MarketSnapshot above (demand-pools.ts never value-imports types.ts).
@@ -174,6 +179,25 @@ export interface BuildingDefinition {
   /** Construction Purposes wave: non-revenue purposes wired into existing
    *  formulas (see BuildingCapabilities doc + building-capabilities.ts). */
   capabilities?: BuildingCapabilities;
+  /** Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6, docs/STATS_DESIGN.md
+   *  §3 "Crew"): heads this building needs to run at full efficiency, by
+   *  role. Authored on every definition (buildings.ts) and tier-scaled;
+   *  `getBuildingCrew(def)` falls back to the category+tier profile for
+   *  content that predates the field. Understaffing does NOT stop a building
+   *  — it scales service revenue and mining output down toward a 0.5 floor
+   *  (workforce.ts getStaffingEfficiency), which is what makes labor demand
+   *  grow with fleet size instead of capping near 19 heads (BALANCE.md H2). */
+  crew?: BuildingCrew;
+}
+
+/** Row 6: per-building crew requirement, by workforce.ts WorkerType. Only the
+ *  four operating roles participate — pilots/negotiators/security/medics are
+ *  fleet and corporate staff, not building crew. */
+export interface BuildingCrew {
+  engineers?: number;
+  operators?: number;
+  scientists?: number;
+  miners?: number;
 }
 
 export interface BuildingInstance {
@@ -327,6 +351,19 @@ export interface ResearchDefinition {
    * fallback for that case (research-tree.ts `inferEffectsFromFlavor`).
    */
   effects?: ResearchEffect[];
+
+  /**
+   * Row 8 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 8, docs/BALANCE.md
+   * "Inert techs rework (2026-09-02)"): this node exists to GATE, not to
+   * bonus. Its authored effect saturated its aggregate bucket before it
+   * could ever be bought, so instead of selling a +0.00% bonus the game
+   * says so out loud: `resolveEffects` returns [] for it, the Research panel
+   * labels it "Prerequisite — no direct bonus", and its money cost is
+   * multiplied by GATE_ONLY_COST_MULTIPLIER (0.25) once, where RESEARCH is
+   * built. Its `prerequisites[]` and `unlocks[]` roles are untouched — a
+   * gate-only node still gates exactly what it always gated.
+   */
+  gateOnly?: boolean;
 
   // ─── W3/W10 (4X_BASELINE_2026-08.md Part 2a Op4/Op5) ─────────────────────
 
@@ -619,7 +656,11 @@ export interface GameState {
   claimedMilestones?: Record<string, string>;
 
   // Refining / Production
-  activeRefining?: { recipeId: string; startedAtMs: number; durationSeconds: number } | null;
+  /** `locationId` (row 13, 2026-09-02): the fabrication plant actually
+   *  running the order. Inputs were drawn from that site's pool and the
+   *  output is credited back there. Absent on pre-row-13 saves and whenever
+   *  the location economy is off → home pool, exactly as before. */
+  activeRefining?: { recipeId: string; startedAtMs: number; durationSeconds: number; locationId?: string } | null;
   /** Crafting queue (2026-08-31, Jay): orders waiting behind activeRefining.
    *  The engine auto-starts the head entry when the active craft completes,
    *  deducting inputs AT START (same rule as manual starts — no reservation).
@@ -628,7 +669,7 @@ export interface GameState {
    *  empty; no save migration needed. Free cap: 5 entries (convenience-only
    *  per the no-pay-to-win policy — a paid raise beyond this must stay
    *  convenience, never competitive). */
-  craftQueue?: { recipeId: string }[] | null;
+  craftQueue?: { recipeId: string; locationId?: string }[] | null;
   /**
    * @deprecated Wave E2 "Goods on the Book" (docs/ECONOMY_PVP_2026-08.md §E2,
    * save-load.ts V31): crafted-product stock now lives in `resources` — every
@@ -982,6 +1023,12 @@ export interface GameState {
   expeditions?: ExpeditionState[];
   interstellarColonies?: InterstellarColonyState[];
   interstellarTradeRoutes?: InterstellarTradeRouteState[];
+  /** Row 12 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, 2026-09-02): orders sent
+   *  to assets in ANOTHER star system travel at light speed — they sit here
+   *  until `executeAtMs`, then the tick applies them. Shape +
+   *  lag constant in interstellar.ts; issue/execute/cancel in
+   *  interstellar-commands.ts. Absent on every pre-row-12 save. */
+  pendingInterstellarCommands?: PendingInterstellarCommand[];
 
   // ─── Audit Wave B (V14) — server-computed bonuses that reach the tick ────
   // All fields additive + optional; solo/logged-out players never set them

@@ -16,7 +16,7 @@
 import { marginalCurve, LOCATION_POWER_PLAN } from '../../../../scripts/sim-harness';
 import { BUILDINGS, BUILDING_MAP, getEffectiveMaintenancePerMonth as fromBuildings } from '../buildings';
 import { SERVICE_MAP } from '../services';
-import { RESEARCH, RESEARCH_MAP } from '../research-tree';
+import { RESEARCH, RESEARCH_MAP, GATE_ONLY_COST_MULTIPLIER } from '../research-tree';
 import { NPC_DEMAND_FLOOR } from '../demand-pools';
 import {
   FLAGSHIP_COST_FLOOR, FLAGSHIP_UPKEEP_RATE, FLAGSHIP_REFERENCE_STACK, FLAGSHIP_PAYBACK_BAND,
@@ -118,7 +118,11 @@ describe('D5(b) — T5 research reprice ÷10', () => {
       const def = RESEARCH_MAP.get(id);
       expect(def).toBeDefined();
       expect(prev).toBeGreaterThanOrEqual(T5_RESEARCH_REPRICE_THRESHOLD);
-      expect(def!.baseCostMoney).toBe(prev / T5_RESEARCH_REPRICE_DIVISOR);
+      // Row 8 (docs/BALANCE.md "Inert techs rework (2026-09-02)") composes with
+      // D5: a node that is BOTH D5-repriced and now `gateOnly` pays both
+      // multipliers. antimatter_reactor is the one overlap today.
+      const gateMult = def!.gateOnly ? GATE_ONLY_COST_MULTIPLIER : 1;
+      expect(def!.baseCostMoney).toBe(Math.round((prev / T5_RESEARCH_REPRICE_DIVISOR) * gateMult));
     }
     for (const def of RESEARCH) {
       if (!(def.id in T5_RESEARCH_REPRICED)) expect(def.baseCostMoney).toBeLessThan(T5_RESEARCH_REPRICE_THRESHOLD);
@@ -136,7 +140,13 @@ describe('D5(b) — T5 research reprice ÷10', () => {
     expect(t5Total).toBeGreaterThan(450_000_000_000);
     const prevTotal = Object.values(T5_RESEARCH_REPRICED).reduce((a, b) => a + b, 0);
     expect(prevTotal).toBe(4_925_000_000_000);
+    // Row 8: the ledgered total is the D5 figure MINUS the extra 75% shaved
+    // off any node that is also a gate-only prerequisite now.
+    const gateShave = Object.keys(T5_RESEARCH_REPRICED)
+      .map(id => RESEARCH_MAP.get(id)!)
+      .filter(d => d.gateOnly)
+      .reduce((a, d) => a + (T5_RESEARCH_REPRICED[d.id] / T5_RESEARCH_REPRICE_DIVISOR) * (1 - GATE_ONLY_COST_MULTIPLIER), 0);
     const nowTotal = Object.keys(T5_RESEARCH_REPRICED).reduce((a, id) => a + RESEARCH_MAP.get(id)!.baseCostMoney, 0);
-    expect(nowTotal).toBe(492_500_000_000);
+    expect(nowTotal).toBe(492_500_000_000 - gateShave);
   });
 });

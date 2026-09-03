@@ -7,7 +7,9 @@
 // and the multiplier band is 0.8–1.15 per the audit spec, so morale is a
 // managed stat, not a stealth penalty.
 
-import type { GameState } from './types';
+import type { GameState, BuildingInstance } from './types';
+import { BUILDING_MAP, getBuildingCrew } from './buildings';
+import { SHIP_MAP, getShipCrew, type ShipInstance } from './ships';
 
 export type WorkerType = 'engineer' | 'scientist' | 'miner' | 'operator'
   | 'pilot' | 'negotiator' | 'security' | 'medic';
@@ -179,6 +181,152 @@ export function getWorkforceBonuses(workforce: WorkforceState): {
     // small bonus (well-run crew) or a bounded penalty, never a stealth tax.
     moraleMultiplier: Math.max(0.8, Math.min(1.15, morale)),
   };
+}
+
+// ─── Row 6: per-building / per-hull crew requirements ───────────────────────
+// docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6. Labor demand used to cap near
+// ~19 heads for ANY corporation (BALANCE.md H2): the bonus caps above are
+// reached at 10 engineers / 5 miners / ~4 scientists, so a rational player
+// hired the same crew at 3 buildings and at 34. Buildings and hulls now name
+// the heads they need; the shortfall is priced as an efficiency multiplier on
+// service revenue and mining output (game-engine.ts), and payroll charges the
+// heads actually hired — so crewing up is a real, scaling money sink with a
+// real benefit, and the wage index finally responds to fleet growth.
+
+/** Required headcount by role. Only the roles a fleet actually demands appear. */
+export type RequiredCrew = Partial<Record<WorkerType, number>>;
+
+/** Roles that a fleet can demand (buildings: 4 operating roles; ships: pilots
+ *  + engineers). Negotiators/security/medics are discretionary corporate
+ *  staff with no requirement — hiring them is a pure choice. */
+export const CREWED_ROLES: readonly WorkerType[] = ['engineer', 'operator', 'scientist', 'miner', 'pilot'];
+
+/** Buildings count only when COMPLETE (a construction site has a contractor
+ *  crew, not an operating one) and only while operational — a mothballed rig
+ *  produces nothing and is therefore not staffed. Ships count once built. */
+export function getRequiredCrew(
+  buildings: ReadonlyArray<Pick<BuildingInstance, 'definitionId' | 'isComplete' | 'status'>> | undefined,
+  ships: ReadonlyArray<Pick<ShipInstance, 'definitionId' | 'isBuilt'>> | undefined,
+): RequiredCrew {
+  const out: RequiredCrew = {};
+  const add = (role: WorkerType, n: number | undefined) => {
+    if (!n) return;
+    out[role] = (out[role] || 0) + n;
+  };
+  for (const b of buildings || []) {
+    if (b.isComplete === false) continue;
+    if (b.status && b.status !== 'active') continue;   // mothballed / decommissioning
+    const def = BUILDING_MAP.get(b.definitionId);
+    if (!def) continue;
+    const c = getBuildingCrew(def);
+    add('engineer', c.engineers);
+    add('operator', c.operators);
+    add('scientist', c.scientists);
+    add('miner', c.miners);
+  }
+  for (const sh of ships || []) {
+    if (!sh.isBuilt) continue;
+    const def = SHIP_MAP.get(sh.definitionId);
+    if (!def) continue;
+    const c = getShipCrew(def);
+    add('pilot', c.pilots);
+    add('engineer', c.engineers);
+  }
+  return out;
+}
+
+export function getRequiredCrewTotal(required: RequiredCrew): number {
+  let t = 0;
+  for (const role of CREWED_ROLES) t += required[role] || 0;
+  return t;
+}
+
+/** Efficiency multiplier at zero staffing. A skeleton crew still keeps the
+ *  lights on — an unstaffed corporation is halved, never zeroed (CLAUDE.md:
+ *  hazards destroy things, understaffing is an economic decision). */
+export const STAFFING_FLOOR = 0.5;
+/** The Protected Frontier's floor: a new corporation is never punished for a
+ *  crewing bill it has not learned about yet (matches the other Frontier
+ *  shields — service-pricing's pool floor, mining's spot floor). */
+export const STAFFING_FRONTIER_FLOOR = 0.7;
+
+export interface StaffingReport {
+  required: RequiredCrew;
+  hired: Partial<Record<WorkerType, number>>;
+  /** hired ÷ required per demanded role, clamped to 0..1. */
+  ratioByRole: Partial<Record<WorkerType, number>>;
+  /** The binding role — the one holding the multiplier down. */
+  worstRole: WorkerType | null;
+  /** min over demanded roles of ratioByRole (1 when nothing is demanded). */
+  minRatio: number;
+  /** The multiplier applied to service revenue and mining output. */
+  efficiency: number;
+  /** Open positions by role (required − hired, never negative). */
+  shortfallByRole: Partial<Record<WorkerType, number>>;
+  totalRequired: number;
+  totalHired: number;
+}
+
+/**
+ * Row 6 core: staffing ratio per role, the binding role, and the resulting
+ * efficiency multiplier. Linear from STAFFING_FLOOR at zero staffing to 1.0
+ * at full — never above 1.0 (no overstaffing bonus; surplus crew is pure
+ * payroll, which is the point of the decision). `frontierFloor` raises the
+ * floor to 0.7 for a Protected-Frontier corporation.
+ */
+export function getStaffingReport(
+  workforce: WorkforceState | undefined,
+  required: RequiredCrew,
+  frontierProtected: boolean = false,
+): StaffingReport {
+  const hired: Partial<Record<WorkerType, number>> = {};
+  for (const role of CREWED_ROLES) {
+    const v = workforce ? (workforce[`${role}s` as keyof WorkforceState] as number | undefined) : 0;
+    hired[role] = typeof v === 'number' && Number.isFinite(v) && v > 0 ? Math.floor(v) : 0;
+  }
+
+  const ratioByRole: Partial<Record<WorkerType, number>> = {};
+  const shortfallByRole: Partial<Record<WorkerType, number>> = {};
+  let minRatio = 1;
+  let worstRole: WorkerType | null = null;
+  let totalRequired = 0;
+  let totalHired = 0;
+
+  for (const role of CREWED_ROLES) {
+    const need = Math.max(0, Math.round(required[role] || 0));
+    const have = hired[role] || 0;
+    totalHired += have;
+    if (need <= 0) continue;
+    totalRequired += need;
+    const ratio = Math.max(0, Math.min(1, have / need));
+    ratioByRole[role] = ratio;
+    shortfallByRole[role] = Math.max(0, need - have);
+    if (ratio < minRatio) { minRatio = ratio; worstRole = role; }
+  }
+
+  const floor = frontierProtected ? STAFFING_FRONTIER_FLOOR : STAFFING_FLOOR;
+  const efficiency = totalRequired === 0
+    ? 1
+    : Math.min(1, Math.max(floor, floor + (1 - floor) * minRatio));
+
+  return {
+    required, hired, ratioByRole, worstRole,
+    minRatio: totalRequired === 0 ? 1 : minRatio,
+    efficiency,
+    shortfallByRole, totalRequired, totalHired,
+  };
+}
+
+/** Convenience: the multiplier alone, straight off a GameState. */
+export function getStaffingEfficiency(
+  state: Pick<GameState, 'workforce' | 'buildings' | 'ships'>,
+  frontierProtected: boolean = false,
+): number {
+  return getStaffingReport(
+    state.workforce,
+    getRequiredCrew(state.buildings, state.ships),
+    frontierProtected,
+  ).efficiency;
 }
 
 // ─── Espionage headhunt voucher (audit A8) ──────────────────────────────────

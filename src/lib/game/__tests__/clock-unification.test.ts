@@ -39,7 +39,11 @@ function liveState(overrides: Partial<GameState> = {}): GameState {
     money: 1_000_000_000,
     gameDate: { year: g.year, month: g.month },
     lastTickAt: Date.now(),
-    workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0 },
+    // Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): a launch pad needs
+    // 1 engineer + 1 operator to run at full efficiency. This suite measures
+    // the CLOCK, so it staffs the pad — an unstaffed corporation is a
+    // separate (deliberate) 0.5x multiplier tested in workforce-crew.test.ts.
+    workforce: { engineers: 1, scientists: 0, miners: 0, operators: 1 },
     activeServices: [{ definitionId: 'svc_launch_small', locationId: 'earth_surface', linkedBuildingIds: [], startDate: { year: g.year, month: g.month }, revenueMultiplier: 1 }],
     buildings: [{ instanceId: 'b1', definitionId: 'launch_pad_small', locationId: 'earth_surface', buildStartDate: { year: g.year, month: g.month }, completionDate: { year: g.year, month: g.month }, isComplete: true, startedAtMs: Date.now() - 10_000_000, realDurationSeconds: 1 }],
     ...overrides,

@@ -102,10 +102,21 @@ forecastable (CLAUDE.md).
   MINED_ONLY.
 
 ## Deliberately not done
-- **Location-aware inventory / hauling.** Goods are still a flat per-corp
-  inventory; an Earth-built beam is usable on the Moon without transport. That
-  is the next economic step (logistics cost money — CLAUDE.md) and touches
-  every consumer of `state.resources`.
+- ~~**Location-aware inventory / hauling.**~~ **DONE 2026-09-02** — design-review
+  row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, founder-approved). Building
+  materials, crafting inputs/outputs, servicer repairs, survey finds and scrap
+  recovery all resolve at the pool that physically holds the goods once the
+  `logisticsUnlocked` ratchet is on; BuildPanel names the shortfall and offers a
+  one-click hauler. Market sells and delivery contracts still clear only at the
+  home cluster, and expedition supplies still stage from Earth — both by design.
+  Saves with the ratchet off are byte-identical to before. Full write-up:
+  docs/BALANCE.md "Location-aware hauling (2026-09-02)".
+  **Server note:** the sync's `serverResources` remains a single global map —
+  server truth is location-agnostic and this slice is a client-economy change.
+  A spend debits the same TOTAL units server-side; the attestation/ledger paths
+  (`inventory-attestations.ts`, the `/assets/*` routes) are unchanged. Deferred
+  within the row: Mark-II/III refits and ship hulls still draw the global pool
+  (import-cycle and shipyard-siting reasons respectively).
 - **Per-save NPC rivals** (`npc-engine.ts`) still only mine common resources;
   they are a client-side flavour system, not the shared market.
 - **Delivery contracts** remain a second outlet for crafted goods; their

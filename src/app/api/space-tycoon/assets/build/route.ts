@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { BUILDING_MAP, checkBuildingCap } from '@/lib/game/buildings';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { ORBITAL_SLOT_MAP } from '@/lib/game/spatial-strategy';
 import { FRONTIER_DURATION_MS, FRONTIER_HARD_CAP_NET_WORTH } from '@/lib/game/frontier';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
@@ -145,8 +146,19 @@ export async function POST(request: NextRequest) {
 
     // Price + duration, server-side.
     const count = countLiveAt(rows, def.id, locationId);
-    const priced = computeServerBuildCost(def, count, research);
-    const timing = computeServerBuildDuration(def, count, research);
+    // Row 8 (docs/BALANCE.md "Inert techs rework (2026-09-02)"): research
+    // aggregate caps grow with corporation tier, so the server quote must be
+    // taken at the SAME tier the client's preview used — derived here from
+    // PERSISTED profile scalars (never a client-supplied number).
+    const corpTier = tierFromProfileScalars({
+      totalEarned: profile.totalEarned,
+      buildingCount: profile.buildingCount,
+      researchCount: profile.researchCount,
+      locationsUnlocked: profile.locationsUnlocked,
+      serviceCount: profile.serviceCount,
+    });
+    const priced = computeServerBuildCost(def, count, research, corpTier);
+    const timing = computeServerBuildDuration(def, count, research, corpTier);
     const resourceCost: Record<string, number> = def.resourceCost ? { ...def.resourceCost } : {};
 
     // Resources: verified against server truth when the profile has a

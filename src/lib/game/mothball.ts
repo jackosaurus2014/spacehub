@@ -42,6 +42,11 @@ import { RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
 import { generateId, formatMoney } from './formulas';
 import { MAX_EVENT_LOG } from './constants';
+// Row 13 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, location-aware inventory):
+// scrap comes off a structure that stands somewhere. The salvage is credited
+// at the torn-down building's location once the logistics ratchet is on —
+// hauling it home is the player's problem, exactly like mined ore.
+import { routeProductionCredit } from './cargo-logistics';
 
 // ─── Constants (§M2) ─────────────────────────────────────────────────────────
 
@@ -260,8 +265,10 @@ export function decommissionBuilding(state: GameState, instanceId: string, month
     !(s.linkedBuildingIds?.length === 1 && s.linkedBuildingIds[0] === instanceId)
   );
   const resources = { ...state.resources };
+  const locationInventories: Record<string, Record<string, number>> = { ...(state.locationInventories || {}) };
+  const routeLocally = state.logisticsUnlocked === true;
   for (const [resId, qty] of Object.entries(recovery.resources)) {
-    resources[resId] = (resources[resId] || 0) + qty;
+    routeProductionCredit(resources, locationInventories, bld.locationId, resId, qty, routeLocally);
   }
 
   return {
@@ -269,6 +276,7 @@ export function decommissionBuilding(state: GameState, instanceId: string, month
     buildings,
     activeServices,
     resources,
+    locationInventories,
     money: state.money + recovery.money,
     totalEarned: state.totalEarned + recovery.money,
     eventLog: pushEvent(state, {
@@ -329,6 +337,8 @@ export function processScheduledDecommissionsForMonth(state: GameState, monthInd
   let money = state.money;
   let totalEarned = state.totalEarned;
   const resources = { ...state.resources };
+  const locationInventories: Record<string, Record<string, number>> = { ...(state.locationInventories || {}) };
+  const routeLocally = state.logisticsUnlocked === true;
   const names: string[] = [];
   for (const b of due) {
     const def = BUILDING_MAP.get(b.definitionId);
@@ -337,7 +347,7 @@ export function processScheduledDecommissionsForMonth(state: GameState, monthInd
     money += recovery.money;
     totalEarned += recovery.money;
     for (const [resId, qty] of Object.entries(recovery.resources)) {
-      resources[resId] = (resources[resId] || 0) + qty;
+      routeProductionCredit(resources, locationInventories, b.locationId, resId, qty, routeLocally);
     }
     names.push(def.name);
   }
@@ -349,6 +359,7 @@ export function processScheduledDecommissionsForMonth(state: GameState, monthInd
     buildings,
     activeServices,
     resources,
+    locationInventories,
     money,
     totalEarned,
     eventLog: pushEvent(state, {

@@ -44,6 +44,7 @@ import { MINING_PRODUCTION, RESOURCE_MAP, type ResourceDefinition, type Resource
 import { SHIP_MAP, getMiningMultiplier as getShipLocationMiningMultiplier } from './ships';
 import { BUILDING_MAP } from './buildings';
 import { isBuildingOperational } from './mothball';
+import { isInFrontier } from './frontier';
 import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { getShipMiningRateMultiplier } from './modules';
 import {
@@ -55,7 +56,7 @@ import {
   hasRecipe,
 } from './consumption';
 import { applyResourceDecay } from './economic-sinks';
-import { getWorkforceBonuses } from './workforce';
+import { getWorkforceBonuses, getStaffingEfficiency } from './workforce';
 import { getEffectiveWorkforceForBonuses, mergeProgramWorkforceBonuses } from './programs';
 import { getResearchBonuses } from './research-tree';
 import { DEFAULT_LEGACY, getLegacyBonuses } from './legacy-system';
@@ -91,6 +92,11 @@ export interface BuildingMiningTerms {
   mentorshipMiningBonus: number;
   coopMegaMiningBonus: number;
   boostMiningMult: number;
+  /** Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): the crew-staffing
+   *  efficiency multiplier (workforce.ts getStaffingReport) — 0.5 at zero
+   *  staffing (0.7 inside the Protected Frontier) up to 1.0 fully crewed,
+   *  never above. Absent/undefined = 1 (pre-Row-6 behaviour). */
+  staffingEfficiency?: number;
 }
 
 /** The "Wave B" sub-product, capped at 2.0 — kept as its own function
@@ -117,7 +123,8 @@ export function buildingMiningMultiplier(t: BuildingMiningTerms): number {
     * (t.megaMiningMult || 1)
     * t.repMiningMult
     * t.commanderMiningMult
-    * waveBMiningMultiplier(t);
+    * waveBMiningMultiplier(t)
+    * (t.staffingEfficiency ?? 1);   // Row 6: understaffed rigs extract less
 }
 
 /** Ship mining runs a deliberately shorter chain than building mining (no
@@ -131,6 +138,9 @@ export interface ShipMiningTerms {
   specMiningOutput: number;
   victoryMiningMult: number;
   allianceMiningBonus: number;
+  /** Row 6: see BuildingMiningTerms.staffingEfficiency. A hull with no pilots
+   *  mines at the same reduced rate an unstaffed rig does. */
+  staffingEfficiency?: number;
 }
 
 export function shipMiningMultiplier(t: ShipMiningTerms): number {
@@ -139,7 +149,8 @@ export function shipMiningMultiplier(t: ShipMiningTerms): number {
     * (1 + t.tierMiningBonus)
     * (1 + t.specMiningOutput)
     * t.victoryMiningMult
-    * (1 + t.allianceMiningBonus);
+    * (1 + t.allianceMiningBonus)
+    * (t.staffingEfficiency ?? 1);   // Row 6
 }
 
 /** Freighter/tanker logistics bonus for mining at a location: +10% per idle
@@ -174,7 +185,7 @@ export function surveyProbeMiningBonus(
  *  are the same values the tick computes. */
 export function collectBuildingMiningTerms(state: GameState): BuildingMiningTerms {
   const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(state)), state);
-  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
+  const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels, state.corporationTier || 1); // Row 8: tier-scaled caps
   const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
   const eraModifiers = getActiveEraModifiers(state);
   const tierBonuses = getTierBonuses(state.corporationTier || 1);
@@ -188,7 +199,10 @@ export function collectBuildingMiningTerms(state: GameState): BuildingMiningTerm
   const coopMegaB = clampMegaProjectBonuses(state.megaProjectBonuses);
   const activeBoosts: ActiveBoost[] = (state.activeBoosts || []) as ActiveBoost[];
 
+  const staffingEfficiency = getStaffingEfficiency(state, isInFrontier(state));
+
   return {
+    staffingEfficiency,
     wfMiningOutput: wfBonuses.miningOutput,
     resMiningOutputBonus: resBonuses.miningOutputBonus,
     legacyMiningMult: legacyBonuses.miningMultiplier,
@@ -214,6 +228,7 @@ export function collectShipMiningTerms(state: GameState): ShipMiningTerms {
   const victoryBonuses = getVictoryBonuses(state.earnedVictories || []);
   const allianceB = clampAllianceBonuses(state.allianceBonuses);
   return {
+    staffingEfficiency: getStaffingEfficiency(state, isInFrontier(state)),  // Row 6
     wfMiningOutput: wfBonuses.miningOutput,
     legacyMiningMult: legacyBonuses.miningMultiplier,
     tierMiningBonus: tierBonuses.miningBonus,

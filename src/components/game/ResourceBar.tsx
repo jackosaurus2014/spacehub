@@ -246,7 +246,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
   const { revenue, costs, net } = useMemo(() => {
     const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
     const wfBonuses = getWorkforceBonuses(workforce);
-    const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels);
+    const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels, state.corporationTier || 1); // Row 8: tier-scaled caps
     const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
     const tb = getTierBonuses(state.corporationTier || 1);
     const multipliers = getActiveMultipliers(state);

@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { GameState } from '@/lib/game/types';
-import { WORKER_TYPES, getWorkforceBonuses, getCrewCapacity, canHireWorker } from '@/lib/game/workforce';
+import { WORKER_TYPES, getWorkforceBonuses, getCrewCapacity, canHireWorker,
+  getRequiredCrew, getStaffingReport } from '@/lib/game/workforce';
+import { isInFrontier } from '@/lib/game/frontier';
 import type { WorkerType } from '@/lib/game/workforce';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
@@ -113,6 +115,16 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
   // Construction Purposes wave: habitat/station crewQuarters capability adds
   // real crew capacity (breakdown row "Habitat crew quarters").
   const capabilityCrewQuarters = getCapabilityCrewQuarters(state);
+  // Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): what the fleet
+  // requires vs what is hired, and the efficiency multiplier the shortfall
+  // costs. Same pure functions the engine applies, so the panel can never
+  // show a different number than the tick charges.
+  const frontierProtected = isInFrontier(state);
+  const staffing = getStaffingReport(
+    workforce,
+    getRequiredCrew(state.buildings, state.ships),
+    frontierProtected,
+  );
   const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew, capabilityCrewQuarters);
   const now = Date.now();
   const headhuntVoucher = (state.activeIntelPerks || []).find(
@@ -290,6 +302,79 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
         </div>
       </div>
 
+      {/* Row 6 (docs/GAME_DESIGN_REVIEW_2026-09.md §2 row 6): required vs hired
+          per role, and the efficiency multiplier the shortfall is costing. */}
+      {staffing.totalRequired > 0 && (
+        <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <span className="hud-corner-bl" aria-hidden="true" />
+          <span className="hud-corner-br" aria-hidden="true" />
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+            <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider">Crew Requirements</h3>
+            <span
+              className={`text-[10px] px-2 py-0.5 rounded-full border ${
+                staffing.efficiency >= 0.999
+                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+                  : staffing.efficiency >= 0.85
+                    ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+                    : 'bg-red-500/10 text-red-300 border-red-500/20'
+              }`}
+              title="Service revenue and mining output are multiplied by this. It is the LOWEST staffing ratio across your crewed roles — one unstaffed role holds the whole corporation down."
+            >
+              Output ×{staffing.efficiency.toFixed(2)}
+              {staffing.efficiency < 0.999 && staffing.worstRole ? ` — short on ${staffing.worstRole}s` : ''}
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            {WORKER_TYPES.filter(w => (staffing.required[w.type] || 0) > 0).map(w => {
+              const need = staffing.required[w.type] || 0;
+              const have = staffing.hired[w.type] || 0;
+              const short = staffing.shortfallByRole[w.type] || 0;
+              const ratio = Math.max(0, Math.min(1, staffing.ratioByRole[w.type] ?? 1));
+              const hireCost = getHireCostWithWageIndex(state, w.type as WorkerType);
+              const hireCheck = canHireWorker(workforce, w.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew, capabilityCrewQuarters);
+              const canHire = state.money >= hireCost && hireCheck.allowed;
+              return (
+                <div key={w.type} className="flex items-center justify-between gap-3 p-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span aria-hidden="true">{w.icon}</span>
+                    <span className="text-white text-xs truncate">{w.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`game-number text-xs ${short > 0 ? 'text-amber-300' : 'text-emerald-300'}`}>
+                      {have} / {need}
+                    </span>
+                    <span className="sr-only">{short > 0 ? `${short} positions unfilled` : 'fully crewed'}</span>
+                    <div className="w-16 h-1.5 rounded-full bg-white/[0.06] overflow-hidden" aria-hidden="true">
+                      <div
+                        className={`h-full rounded-full ${short > 0 ? 'bg-amber-400' : 'bg-emerald-400'}`}
+                        style={{ width: `${Math.round(ratio * 100)}%` }}
+                      />
+                    </div>
+                    {short > 0 && (
+                      <button
+                        onClick={() => { if (canHire) { playSound('click'); onHire(w.type); } }}
+                        disabled={!canHire}
+                        title={!hireCheck.allowed ? hireCheck.reason : state.money < hireCost ? 'Insufficient funds' : `Hire one ${w.name} for ${formatMoney(hireCost)}`}
+                        className={`min-h-[44px] px-2.5 py-1 rounded-lg text-[10px] font-medium transition-colors ${
+                          canHire ? 'bg-cyan-600 text-white hover:bg-cyan-500' : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
+                        }`}
+                      >
+                        Hire to crew
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-slate-500 text-[10px] mt-2">
+            Every complete building and built hull needs crew. Payroll charges the heads you hire; the
+            shortfall scales service revenue and mining output down toward {frontierProtected ? '0.70' : '0.50'}
+            {frontierProtected ? ' (Protected Frontier floor)' : ''}. Overstaffing buys nothing but payroll.
+          </p>
+        </div>
+      )}
+
       {/* Hire Workers */}
       <div className="hud-frame relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <span className="hud-corner-bl" aria-hidden="true" />
@@ -330,6 +415,14 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-white text-sm font-medium">{worker.name}</span>
                       <span className="game-number text-cyan-400 text-xs">{count} hired</span>
+                      {(staffing.required[worker.type] || 0) > 0 && (
+                        <span
+                          className={`game-number text-xs ${(staffing.shortfallByRole[worker.type] || 0) > 0 ? 'text-amber-300' : 'text-emerald-300'}`}
+                          title="Heads required by your complete buildings and built hulls (Row 6)."
+                        >
+                          / {staffing.required[worker.type]} required
+                        </span>
+                      )}
                       {wageIndex !== 1.0 && (
                         <span
                           className={`text-[10px] px-1.5 py-0.5 rounded-full border ${

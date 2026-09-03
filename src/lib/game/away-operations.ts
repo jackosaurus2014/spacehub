@@ -51,6 +51,7 @@ import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
 import { isInFrontier, getGraduationGlideFraction, computeBookNetWorth } from './frontier';
 import { getResearchBonuses } from './research-tree';
+import { getStaffingEfficiency } from './workforce';
 import {
   TICKS_PER_GAME_MONTH, TICK_INTERVALS, MAX_EVENT_LOG,
   AWAY_EFFICIENCY_TIERS, AWAY_EFFICIENCY_INVESTMENT_CAP,
@@ -231,7 +232,10 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   // completed-cohort bonuses merged in — same treatment as the live tick, so
   // an away window with an active/completed cohort projects honestly.
   const wfBonuses = mergeProgramWorkforceBonuses(getWorkforceBonuses(getEffectiveWorkforceForBonuses(working)), working);
-  const resBonuses = getResearchBonuses(working.completedResearch, working.repeatableResearchLevels);
+  // Row 8: aggregate caps grow +15%/corporation tier (research-tree.ts
+  // getResearchBucketCap) — the away path must read the same caps the live
+  // tick does or offline catch-up would quietly pay a lower ceiling.
+  const resBonuses = getResearchBonuses(working.completedResearch, working.repeatableResearchLevels, working.corporationTier || 1);
   const legacyBonuses = getLegacyBonuses(working.legacy || DEFAULT_LEGACY);
   // LS4: away catch-up must agree with the live tick's era focus bonus/malus
   // — otherwise chartering a heavy-revenue era would have no reason to
@@ -248,7 +252,12 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
   // freighter/location/consumption terms) — matches this module's existing,
   // pre-M3 approximation posture for mining exactly (§6's own resourcesEarned
   // loop below never modeled those either).
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyBonuses.miningMultiplier * eraModifiers.miningMultiplier;
+  // Row 6 away-parity with game-engine.ts §0 (docs/GAME_DESIGN_REVIEW_2026-09.md
+  // §2 row 6): an understaffed corporation earns and extracts less offline
+  // too — otherwise logging out would be the cheapest way to dodge the
+  // crewing bill.
+  const awayStaffingEfficiency = getStaffingEfficiency(working, isInFrontier(working, now));
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyBonuses.miningMultiplier * eraModifiers.miningMultiplier * awayStaffingEfficiency;
   const awayMonthIndex = getTotalGameMonths(working.gameDate);
   // Balance Pass 3 ([FRONTIER] gap fix) — away-parity with game-engine.ts
   // §1: Frontier saves floor mining spot at base (crashes can't bite;
@@ -316,6 +325,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       * legacyBonuses.revenueMultiplier
       * eraModifiers.revenueMultiplier
       * supplyMult
+      * awayStaffingEfficiency   // Row 6 away-parity
     );
     costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * miningOpexMult);
   }
