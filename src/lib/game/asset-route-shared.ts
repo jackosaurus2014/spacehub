@@ -34,6 +34,10 @@ export interface AssetProfileRow {
   serverResources: unknown;
   completedResearchList: string[];
   unlockedLocationsList: string[];
+  /** Slices 3-4: the persisted client fleet / service list (client-owned
+   *  condition merged into the registry views). */
+  shipsData: unknown;
+  activeServicesData: unknown;
 }
 
 export class InsufficientFundsError extends Error {}
@@ -53,6 +57,7 @@ export async function loadAssetProfile(routeKey: string = 'assets'): Promise<{ r
       id: true, companyName: true, money: true, netWorth: true, createdAt: true,
       buildingsData: true, workforceData: true, resources: true, serverResources: true,
       completedResearchList: true, unlockedLocationsList: true,
+      shipsData: true, activeServicesData: true,
     },
   });
   if (!profile) {
@@ -76,6 +81,11 @@ export function badRequest(error: string, code: string, extra: Record<string, un
 
 /** Load one live building row for the profile (any live status). */
 export async function findLiveBuildingRow(profileId: string, instanceId: string, db: Db = prisma): Promise<ServerAssetRow | null> {
+  return findLiveRow(profileId, instanceId, ASSET_KIND_BUILDING, db);
+}
+
+/** Load one live row of `kind` for the profile (any live status). */
+export async function findLiveRow(profileId: string, instanceId: string, kind: string, db: Db = prisma): Promise<ServerAssetRow | null> {
   const row = await db.serverAsset.findUnique({
     where: { profileId_instanceId: { profileId, instanceId } },
     select: {
@@ -84,7 +94,7 @@ export async function findLiveBuildingRow(profileId: string, instanceId: string,
       paidResources: true, ledgerSeq: true,
     },
   });
-  if (!row || row.kind !== ASSET_KIND_BUILDING || !LIVE_ASSET_STATUSES.includes(row.status)) return null;
+  if (!row || row.kind !== kind || !LIVE_ASSET_STATUSES.includes(row.status)) return null;
   return row as ServerAssetRow;
 }
 

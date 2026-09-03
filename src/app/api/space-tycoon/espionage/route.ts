@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { loadServerResearch } from '@/lib/game/server-assets';
 import {
   ESPIONAGE_ACTIONS,
   SECURITY_LEVELS,
@@ -34,12 +35,16 @@ export async function GET() {
         netWorth: true,
         money: true,
         completedResearchList: true,
+        workforceData: true,
       },
     });
 
     if (!profile) {
       return NextResponse.json({ error: 'No game profile found. Start playing first.' }, { status: 404 });
     }
+    // Phase 3 slice 2 (docs/SECURITY_AUDIT_2026-09.md): the action unlock
+    // gate reads the registry's research view.
+    const registryResearch = (await loadServerResearch(profile.id, profile.completedResearchList, { workforceData: profile.workforceData })).completed;
 
     // Fetch or create EspionageProfile
     let espProfile = await prisma.espionageProfile.findUnique({
@@ -133,7 +138,7 @@ export async function GET() {
 
     // Determine unlocked actions
     const unlockedActions = (Object.keys(ESPIONAGE_ACTIONS) as EspionageActionType[]).filter(
-      (at) => isActionUnlocked(at, profile.completedResearchList),
+      (at) => isActionUnlocked(at, registryResearch),
     );
 
     // Recent incoming attacks (detected)

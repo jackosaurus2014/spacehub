@@ -386,6 +386,12 @@ export interface ActiveResearch {
   startedAtMs: number;
   /** Real-time seconds required */
   realDurationSeconds: number;
+  /** Phase 3 slice 2 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slices 2-5"):
+   *  the registry row's instanceId (client-generated, sent to
+   *  /assets/research) and the SERVER's completion time — conservative,
+   *  informational, not persisted. */
+  instanceId?: string;
+  serverCompletesAtMs?: number;
 }
 
 // ─── Services ───────────────────────────────────────────────────────────────

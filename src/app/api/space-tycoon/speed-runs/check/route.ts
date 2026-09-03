@@ -18,7 +18,7 @@ import type { GameState } from '@/lib/game/types';
 // discarded by the panel.
 import { isLedgerAvailable, recordLedger } from '@/lib/game/server-ledger';
 // Phase 3 slice 1: buildings come from the ServerAsset registry (server-assets.ts).
-import { loadServerBuildings } from '@/lib/game/server-assets';
+import { loadServerRegistry } from '@/lib/game/server-assets';
 
 /**
  * POST /api/space-tycoon/speed-runs/check
@@ -66,6 +66,8 @@ export async function POST(request: Request) {
         completedResearchList: true,
         activeServicesData: true,
         unlockedLocationsList: true,
+        shipsData: true,
+        workforceData: true,
       },
     });
 
@@ -99,9 +101,10 @@ export async function POST(request: Request) {
     // predicate in speed-runs.ts reads only money / buildings /
     // completedResearch / activeServices / unlockedLocations.
     const asArray = <T,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
-    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): buildings come from
-    // the ServerAsset registry (union in shadow, server rows only in enforce).
-    const registryBuildings = await loadServerBuildings(profile.id, profile.buildingsData);
+    // Phase 3 slices 1-5 (docs/SECURITY_AUDIT_2026-09.md): buildings,
+    // research, services and locations come from the ServerAsset registry
+    // (union in shadow, server rows only in enforce).
+    const registry = await loadServerRegistry(profile.id, profile, { workforceData: profile.workforceData });
     const state: GameState = {
       version: 1,
       createdAt: Date.now(),
@@ -111,11 +114,11 @@ export async function POST(request: Request) {
       totalSpent: Number.isFinite(profile.totalSpent) ? profile.totalSpent : 0,
       gameDate: { year: profile.gameYear || 2026, month: 1 },
       tickSpeed: 1,
-      buildings: registryBuildings.buildings,
-      completedResearch: Array.isArray(profile.completedResearchList) ? profile.completedResearchList : [],
+      buildings: registry.buildings.buildings,
+      completedResearch: registry.research.completed,
       activeResearch: null,
-      activeServices: asArray<GameState['activeServices'][number]>(profile.activeServicesData),
-      unlockedLocations: Array.isArray(profile.unlockedLocationsList) ? profile.unlockedLocationsList : [],
+      activeServices: registry.services.services as GameState['activeServices'],
+      unlockedLocations: registry.locations.unlocked,
       resources: profile.resources && typeof profile.resources === 'object'
         ? (profile.resources as Record<string, number>)
         : {},

@@ -14,6 +14,7 @@ import { NextRequest } from 'next/server';
 const mockGameProfile = { findUnique: jest.fn(), upsert: jest.fn(), update: jest.fn(), count: jest.fn(), findMany: jest.fn() };
 const mockGameLedgerEntry = { updateMany: jest.fn(), findMany: jest.fn(), create: jest.fn(), findFirst: jest.fn() };
 const mockServerAsset = { findMany: jest.fn(), createMany: jest.fn(), updateMany: jest.fn() };
+const mockColonyClaim = { findMany: jest.fn() };
 const mockMarketAuditLog = { create: jest.fn() };
 const mockMarketResource = { findMany: jest.fn(), findUnique: jest.fn(), update: jest.fn(), updateMany: jest.fn() };
 const mockEconomicSnapshot = { create: jest.fn() };
@@ -25,6 +26,7 @@ jest.mock('@/lib/db', () => {
     gameProfile: mockGameProfile,
     gameLedgerEntry: mockGameLedgerEntry,
     serverAsset: mockServerAsset,
+    colonyClaim: mockColonyClaim,
     marketAuditLog: mockMarketAuditLog,
     marketResource: mockMarketResource,
     economicSnapshot: mockEconomicSnapshot,
@@ -64,7 +66,9 @@ jest.mock('@/lib/game/referrals', () => ({ attachReferral: jest.fn(), REFERRAL_C
 
 import { getServerSession } from 'next-auth';
 import { __resetRouteThrottle } from '@/lib/game/route-throttle';
-import { ASSET_AUDIT_LOGGED_KEY, ASSET_BASELINE_KEY, type ServerAssetRow } from '@/lib/game/server-assets';
+import { ASSET_AUDIT_LOGGED_KEY, ASSET_BASELINE_KEY, ASSET_BASELINE2_KEY, locationInstanceId, researchInstanceId, type ServerAssetRow } from '@/lib/game/server-assets';
+import { BUILDING_MAP } from '@/lib/game/buildings';
+import { SERVICE_MAP } from '@/lib/game/services';
 import {
   applyAssetReconciliationToState,
   queueAssetReconciliation,
@@ -77,6 +81,8 @@ import type { GameState } from '@/lib/game/types';
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
 
 const PAST_ISO = '2026-08-01T00:00:00.000Z';
+/** Both adoption markers stamped — the diff path. */
+const BOTH = { [ASSET_BASELINE_KEY]: PAST_ISO, [ASSET_BASELINE2_KEY]: PAST_ISO };
 const ORIGINAL_ASSET_MODE = process.env.ASSET_LEDGER_MODE;
 const ORIGINAL_CLAMP_MODE = process.env.RESOURCE_CLAMP_MODE;
 
@@ -123,6 +129,7 @@ function setup(profile: ReturnType<typeof existingRow>, rows: ServerAssetRow[] =
   mockServerAsset.findMany.mockResolvedValue(rows);
   mockServerAsset.createMany.mockResolvedValue({ count: 0 });
   mockServerAsset.updateMany.mockResolvedValue({ count: 0 });
+  mockColonyClaim.findMany.mockResolvedValue([]);
   mockMarketAuditLog.create.mockResolvedValue({});
   mockMarketResource.findMany.mockResolvedValue([]);
   mockEconomicSnapshot.create.mockResolvedValue({ id: 'snap-1' });
@@ -173,7 +180,9 @@ describe('sync — asset registry adoption', () => {
     });
     expect(res.status).toBe(200);
     expect(json.assetLedger).toEqual(expect.objectContaining({ mode: 'shadow', adopted: true, adoptedCount: 2, rejectedInstanceIds: [] }));
-    expect(mockServerAsset.createMany).toHaveBeenCalledTimes(1);
+    // Slice 1 buildings + slices 2-5 (nothing to adopt here) — both markers stamped.
+    expect(mockServerAsset.createMany).toHaveBeenCalledTimes(2);
+    expect(mockServerAsset.createMany.mock.calls[1][0].data).toEqual([]);
     const rows = mockServerAsset.createMany.mock.calls[0][0].data;
     expect(rows).toHaveLength(2);
     expect(rows[0]).toEqual(expect.objectContaining({ instanceId: 'b1', status: 'complete', paidMoney: 0, ledgerSeq: null }));
@@ -181,6 +190,7 @@ describe('sync — asset registry adoption', () => {
     expect((rows[1].completesAt as Date).getTime()).toBe(pendingStart + 600_000);
     const wd = persisted().workforceData as Record<string, unknown>;
     expect(typeof wd[ASSET_BASELINE_KEY]).toBe('string');
+    expect(typeof wd[ASSET_BASELINE2_KEY]).toBe('string');
     expect(wd.engineers).toBe(2);
     expect((persisted().buildingsData as unknown[]).length).toBe(2);
     expect(assetAudits()).toHaveLength(0);
@@ -188,7 +198,7 @@ describe('sync — asset registry adoption', () => {
 
   it('never re-adopts once the marker exists (the marker is carried forward)', async () => {
     delete process.env.ASSET_LEDGER_MODE;
-    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO } }), [row('b1')]);
+    setup(existingRow({ workforceData: { ...BOTH } }), [row('b1')]);
     const { json } = await postSync({ buildings: [gsBuilding('b1')] });
     expect(mockServerAsset.createMany).not.toHaveBeenCalled();
     expect(json.assetLedger.adopted).toBe(false);
@@ -211,7 +221,7 @@ describe('sync — asset registry adoption', () => {
 describe('sync — shadow vs enforce', () => {
   it('shadow: a client building with no row is audited (warning) and persisted unchanged', async () => {
     delete process.env.ASSET_LEDGER_MODE;
-    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO } }), [row('b1')]);
+    setup(existingRow({ workforceData: { ...BOTH } }), [row('b1')]);
     const { json } = await postSync({ buildings: [gsBuilding('b1'), gsBuilding('b2')] });
     expect(json.assetLedger).toEqual(expect.objectContaining({ mode: 'shadow', rejectedInstanceIds: [], notInLedger: 1 }));
     expect((persisted().buildingsData as { instanceId: string }[]).map(b => b.instanceId)).toEqual(['b1', 'b2']);
@@ -228,7 +238,7 @@ describe('sync — shadow vs enforce', () => {
   it('shadow: the audit is throttled to once an hour per profile', async () => {
     delete process.env.ASSET_LEDGER_MODE;
     const recent = new Date(Date.now() - 10 * 60_000).toISOString();
-    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO, [ASSET_AUDIT_LOGGED_KEY]: recent } }), [row('b1')]);
+    setup(existingRow({ workforceData: { ...BOTH, [ASSET_AUDIT_LOGGED_KEY]: recent } }), [row('b1')]);
     const { json } = await postSync({ buildings: [gsBuilding('b1'), gsBuilding('b2')] });
     expect(json.assetLedger.notInLedger).toBe(1);
     expect(assetAudits()).toHaveLength(0);
@@ -237,7 +247,7 @@ describe('sync — shadow vs enforce', () => {
 
   it('shadow: a server row the client no longer lists is logged (info), never removed', async () => {
     delete process.env.ASSET_LEDGER_MODE;
-    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO } }), [row('b1'), row('b3')]);
+    setup(existingRow({ workforceData: { ...BOTH } }), [row('b1'), row('b3')]);
     const { json } = await postSync({ buildings: [gsBuilding('b1')] });
     expect(json.assetLedger.unlistedServerRows).toBe(1);
     const audits = assetAudits();
@@ -249,7 +259,7 @@ describe('sync — shadow vs enforce', () => {
 
   it('enforce: drops unpaid client buildings from the persisted list, audits critical, returns their ids', async () => {
     process.env.ASSET_LEDGER_MODE = 'enforce';
-    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO } }), [row('b1')]);
+    setup(existingRow({ workforceData: { ...BOTH } }), [row('b1')]);
     const { res, json } = await postSync({
       buildings: [gsBuilding('b1'), gsBuilding('b2'), { ...gsBuilding('x'), instanceId: undefined }],
     });
@@ -265,13 +275,13 @@ describe('sync — shadow vs enforce', () => {
   it('enforce: book net worth counts only registry rows the client still lists', async () => {
     process.env.ASSET_LEDGER_MODE = 'enforce';
     // Two forged buildings, one registry row → book value of exactly one pad.
-    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO }, resources: {} }), [row('b1')]);
+    setup(existingRow({ workforceData: { ...BOTH }, resources: {} }), [row('b1')]);
     const forged = await postSync({ money: 0, resources: {}, buildings: [gsBuilding('b1'), gsBuilding('b2'), gsBuilding('b3')] });
     expect(forged.json.netWorth).toBe(Math.round(50_000_000 * 0.6));
 
     delete process.env.ASSET_LEDGER_MODE; // shadow keeps the pre-registry figure
     __resetRouteThrottle(); // C-2b sync cadence is in-memory
-    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO }, resources: {} }), [row('b1')]);
+    setup(existingRow({ workforceData: { ...BOTH }, resources: {} }), [row('b1')]);
     const shadow = await postSync({ money: 0, resources: {}, buildings: [gsBuilding('b1'), gsBuilding('b2'), gsBuilding('b3')] });
     expect(shadow.json.netWorth).toBe(Math.round(3 * 50_000_000 * 0.6));
   });
@@ -326,7 +336,179 @@ describe('client — applyAssetReconciliationToState', () => {
     queueAssetReconciliation({ mode: 'enforce', rejectedInstanceIds: ['a', 'b'] });
     queueAssetReconciliation({ mode: 'enforce', rejectedInstanceIds: ['b', 'c'] });
     queueAssetReconciliation({ mode: 'enforce', rejectedInstanceIds: [] }); // ignored
-    expect(consumeAssetReconciliation()).toEqual({ mode: 'enforce', rejectedInstanceIds: ['a', 'b', 'c'] });
+    expect(consumeAssetReconciliation()).toEqual({
+      mode: 'enforce', rejectedInstanceIds: ['a', 'b', 'c'], rejectedResearchIds: [], rejectedShipIds: [], rejectedLocationIds: [],
+    });
+    expect(consumeAssetReconciliation()).toBeNull();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Phase 3 slices 2-5 — research / ships / services / locations
+// ═══════════════════════════════════════════════════════════════════════════
+
+function researchRow(definitionId: string, overrides: Partial<ServerAssetRow> = {}): ServerAssetRow {
+  const at = new Date(Date.now() - 3600_000);
+  return {
+    id: `row-r-${definitionId}`, profileId: 'profile-1', kind: 'research', definitionId, instanceId: researchInstanceId(definitionId),
+    locationId: null, status: 'complete', markLevel: 1, startedAt: at, completesAt: at, paidMoney: 0, paidResources: {}, ledgerSeq: null, ...overrides,
+  };
+}
+function shipRow(instanceId: string, definitionId: string, overrides: Partial<ServerAssetRow> = {}): ServerAssetRow {
+  const at = new Date(Date.now() - 3600_000);
+  return {
+    id: `row-s-${instanceId}`, profileId: 'profile-1', kind: 'ship', definitionId, instanceId,
+    locationId: 'earth_surface', status: 'complete', markLevel: 1, startedAt: at, completesAt: at, paidMoney: 0, paidResources: {}, ledgerSeq: null, ...overrides,
+  };
+}
+function locationRow(locationId: string): ServerAssetRow {
+  const at = new Date(Date.now() - 3600_000);
+  return {
+    id: `row-l-${locationId}`, profileId: 'profile-1', kind: 'location', definitionId: locationId, instanceId: locationInstanceId(locationId),
+    locationId, status: 'complete', markLevel: 1, startedAt: at, completesAt: at, paidMoney: 0, paidResources: {}, ledgerSeq: null,
+  };
+}
+function gsShip(instanceId: string, overrides: Record<string, unknown> = {}) {
+  const def = Array.from(require('@/lib/game/ships').SHIP_MAP.keys())[0] as string;
+  return { instanceId, definitionId: def, name: 'Hull', status: 'idle', currentLocation: 'earth_surface', isBuilt: true, ...overrides };
+}
+const shipDefId = (): string => Array.from(require('@/lib/game/ships').SHIP_MAP.keys())[0] as string;
+
+describe('sync — slice 2-5 adoption (second marker)', () => {
+  it('a profile slice 1 already stamped adopts its research / ships / locations exactly once under _assetBaselineAt2', async () => {
+    delete process.env.ASSET_LEDGER_MODE;
+    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO, engineers: 1 } }), [row('b1')]);
+    const { json } = await postSync({
+      buildings: [gsBuilding('b1')],
+      completedResearch: ['reusable_boosters'],
+      ships: [gsShip('s1'), gsShip('s2', { isBuilt: false, buildStartedAtMs: Date.now() - 5_000, buildDurationSeconds: 60 })],
+      unlockedLocations: ['earth_surface', 'leo', 'geo'],
+      workforce: { engineers: 1 },
+    });
+    expect(json.assetLedger).toEqual(expect.objectContaining({ adopted: true, adoptedCount: 4 }));
+    expect(mockServerAsset.createMany).toHaveBeenCalledTimes(1);
+    const rows = mockServerAsset.createMany.mock.calls[0][0].data;
+    expect(rows.map((r: { kind: string; instanceId: string; status: string }) => `${r.kind}:${r.instanceId}:${r.status}`)).toEqual([
+      `research:${researchInstanceId('reusable_boosters')}:complete`, 'ship:s1:complete', 'ship:s2:pending', `location:${locationInstanceId('geo')}:complete`,
+    ]);
+    expect((rows[2].completesAt as Date).getTime()).toBeGreaterThan(Date.now() + 50_000); // keeps its build timing
+    const wd = persisted().workforceData as Record<string, unknown>;
+    expect(wd[ASSET_BASELINE_KEY]).toBe(PAST_ISO);
+    expect(typeof wd[ASSET_BASELINE2_KEY]).toBe('string');
+    expect(wd.engineers).toBe(1);
+    expect(assetAudits()).toHaveLength(0);
+  });
+
+  it('defers ship adoption (marker 2 not stamped) while a client ship lacks an instanceId', async () => {
+    delete process.env.ASSET_LEDGER_MODE;
+    setup(existingRow({ workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO } }), [row('b1')]);
+    const { json } = await postSync({
+      buildings: [gsBuilding('b1')],
+      completedResearch: ['reusable_boosters'],
+      ships: [{ definitionId: shipDefId(), status: 'idle', currentLocation: 'earth_surface' }],
+    });
+    expect(json.assetLedger.adopted).toBe(true);
+    const rows = mockServerAsset.createMany.mock.calls[0][0].data;
+    expect(rows.map((r: { kind: string }) => r.kind)).toEqual(['research']); // research adopted, the id-less ship is not
+    const wd = persisted().workforceData as Record<string, unknown>;
+    expect(wd[ASSET_BASELINE2_KEY]).toBeUndefined();
+  });
+});
+
+describe('sync — slices 2-5 shadow vs enforce', () => {
+  const clientPayload = () => ({
+    buildings: [gsBuilding('b1')],
+    completedResearch: ['reusable_boosters', 'high_res_optical'],
+    researchCount: 2,
+    ships: [gsShip('s1'), gsShip('s2')],
+    unlockedLocations: ['earth_surface', 'leo', 'geo', 'mars_surface'],
+    activeServices: [{ definitionId: 'svc_launch_small', locationId: 'earth_surface', linkedBuildingIds: ['b1'] }],
+  });
+  const serverRows = () => [row('b1'), researchRow('reusable_boosters'), researchRow('launch_abort_systems'), shipRow('s1', shipDefId()), locationRow('geo')];
+
+  it('shadow: gaps in every kind are audited once (throttled together); lists persist as sent, research as the union with complete rows', async () => {
+    delete process.env.ASSET_LEDGER_MODE;
+    setup(existingRow({ workforceData: { ...BOTH } }), serverRows());
+    const { res, json } = await postSync(clientPayload());
+    expect(res.status).toBe(200);
+    expect(json.assetLedger).toEqual(expect.objectContaining({
+      mode: 'shadow', rejectedInstanceIds: [], rejectedResearchIds: [], rejectedShipIds: [], rejectedLocationIds: [],
+      notInLedger: 3, // high_res_optical, s2, mars_surface
+    }));
+    expect(json.assetLedger.unlistedServerRows).toBe(1); // launch_abort_systems
+    expect(json.assetLedger.services).toEqual(expect.objectContaining({ derived: expect.any(Number), client: 1 }));
+    const p = persisted();
+    expect(p.completedResearchList).toEqual(['reusable_boosters', 'high_res_optical', 'launch_abort_systems']); // union
+    expect((p.shipsData as { instanceId: string }[]).map(s => s.instanceId)).toEqual(['s1', 's2']);
+    expect(p.unlockedLocationsList).toEqual(['earth_surface', 'leo', 'geo', 'mars_surface']);
+    expect(p.researchCount).toBe(2);   // shadow keeps the client's counter as sent
+    const audits = assetAudits();
+    const kinds = audits.filter(a => a.eventType === 'client_asset_not_in_ledger').map(a => a.details.kind);
+    expect(kinds).toEqual(['research', 'ship', 'location']);
+    expect(audits.some(a => a.eventType === 'server_asset_not_in_client' && a.details.research?.[0] === 'launch_abort_systems')).toBe(true);
+  });
+
+  it('enforce: drops unledgered research / ships / locations, returns their ids, persists the DERIVED services and registry counts', async () => {
+    process.env.ASSET_LEDGER_MODE = 'enforce';
+    setup(existingRow({ workforceData: { ...BOTH } }), serverRows());
+    const { res, json } = await postSync(clientPayload());
+    expect(res.status).toBe(200);
+    expect(json.assetLedger).toEqual(expect.objectContaining({
+      mode: 'enforce', rejectedInstanceIds: [], rejectedResearchIds: ['high_res_optical'], rejectedShipIds: ['s2'], rejectedLocationIds: ['mars_surface'],
+    }));
+    const p = persisted();
+    expect(p.completedResearchList).toEqual(['reusable_boosters']);
+    expect((p.shipsData as { instanceId: string }[]).map(s => s.instanceId)).toEqual(['s1']);
+    expect(p.unlockedLocationsList).toEqual(['earth_surface', 'leo', 'geo']);
+    // Services: derived from the registry's complete buildings (b1 = launch_pad_small) + research.
+    const padServices = BUILDING_MAP.get('launch_pad_small')!.enabledServices.filter(s => SERVICE_MAP.get(s)?.requiredResearch.every(r => r === 'reusable_boosters'));
+    expect((p.activeServicesData as { definitionId: string; linkedBuildingIds: string[] }[]).map(s => `${s.definitionId}|${s.linkedBuildingIds[0]}`))
+      .toEqual(padServices.map(s => `${s}|b1`));
+    expect(p.serviceCount).toBe(padServices.length);
+    expect(p.researchCount).toBe(1);
+    expect(p.locationsUnlocked).toBe(3);
+    const audits = assetAudits();
+    expect(audits.filter(a => a.eventType === 'client_asset_rejected' && a.severity === 'critical').map(a => a.details.kind)).toEqual(['research', 'ship', 'location']);
+  });
+
+  it('enforce: book net worth counts only registry ships the client still lists', async () => {
+    process.env.ASSET_LEDGER_MODE = 'enforce';
+    const def = require('@/lib/game/ships').SHIP_MAP.get(shipDefId());
+    setup(existingRow({ workforceData: { ...BOTH }, resources: {} }), [shipRow('s1', shipDefId())]);
+    const { json } = await postSync({ money: 0, resources: {}, ships: [gsShip('s1'), gsShip('s2'), gsShip('s3')] });
+    expect(json.netWorth).toBe(Math.round(def.baseCost * 0.6));
+  });
+});
+
+describe('client — applyAssetReconciliationToState (slices 2-5)', () => {
+  it('removes rejected research, ships and location unlocks (never a starting location); refunds nothing; idempotent', () => {
+    const base = getNewGameState();
+    const state: GameState = {
+      ...base,
+      completedResearch: ['reusable_boosters', 'high_res_optical'],
+      ships: [gsShip('s1') as unknown as NonNullable<GameState['ships']>[number], gsShip('s2') as unknown as NonNullable<GameState['ships']>[number]],
+      unlockedLocations: ['earth_surface', 'leo', 'geo', 'mars_surface'],
+      money: 5,
+    };
+    const next = applyAssetReconciliationToState(state, {
+      mode: 'enforce', rejectedInstanceIds: [], rejectedResearchIds: ['high_res_optical', 'ghost'], rejectedShipIds: ['s2'], rejectedLocationIds: ['mars_surface', 'leo'],
+    });
+    expect(next).not.toBe(state);
+    expect(next.completedResearch).toEqual(['reusable_boosters']);
+    expect((next.ships || []).map(s => s.instanceId)).toEqual(['s1']);
+    expect(next.unlockedLocations).toEqual(['earth_surface', 'leo', 'geo']);
+    expect(next.money).toBe(5);
+    expect(next.eventLog[0].title).toContain('1 research project, 1 ship, 1 location unlock');
+    expect(applyAssetReconciliationToState(next, { mode: 'enforce', rejectedInstanceIds: [], rejectedResearchIds: ['high_res_optical'], rejectedShipIds: ['s2'], rejectedLocationIds: ['mars_surface'] })).toBe(next);
+    expect(applyAssetReconciliationToState(next, { mode: 'enforce', rejectedInstanceIds: [], rejectedLocationIds: ['leo'] })).toBe(next);
+  });
+
+  it('queue merges every kind and drains once', () => {
+    queueAssetReconciliation({ mode: 'enforce', rejectedInstanceIds: [], rejectedResearchIds: ['r1'], rejectedShipIds: ['s1'] });
+    queueAssetReconciliation({ mode: 'enforce', rejectedInstanceIds: ['b1'], rejectedResearchIds: ['r1', 'r2'], rejectedLocationIds: ['geo'] });
+    expect(consumeAssetReconciliation()).toEqual({
+      mode: 'enforce', rejectedInstanceIds: ['b1'], rejectedResearchIds: ['r1', 'r2'], rejectedShipIds: ['s1'], rejectedLocationIds: ['geo'],
+    });
     expect(consumeAssetReconciliation()).toBeNull();
   });
 });

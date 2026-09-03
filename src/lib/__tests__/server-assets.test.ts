@@ -2,7 +2,8 @@
  * @jest-environment node
  *
  * Server-authoritative assets, phase 3 slice 1 — buildings
- * (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 — buildings"): the
+ * (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 — buildings") and slices
+ * 2-5 — research / ships / services / locations ("Phase 3 slices 2-5"): the
  * /api/space-tycoon/assets/* routes, the completion cron, and the pure
  * helpers in server-assets.ts.
  *
@@ -19,7 +20,7 @@ const mockServerAsset = {
   update: jest.fn(), updateMany: jest.fn(),
 };
 const mockGameLedgerEntry = { findFirst: jest.fn(), findMany: jest.fn(), create: jest.fn(), updateMany: jest.fn() };
-const mockColonyClaim = { findUnique: jest.fn() };
+const mockColonyClaim = { findUnique: jest.fn(), findMany: jest.fn() };
 const mockOrbitalSlotOccupancy = { findUnique: jest.fn() };
 const mockOrbitalSlotLease = { findFirst: jest.fn() };
 const mockMarketAuditLog = { create: jest.fn() };
@@ -78,14 +79,37 @@ import { computeDecommissionRecovery, REACTIVATION_FEE_FRACTION } from '@/lib/ga
 import { calculateRushRepairCost } from '@/lib/game/hazards';
 import {
   ASSET_BASELINE_KEY,
+  ASSET_BASELINE2_KEY,
+  SHIP_SCRAP_RECOVERY_FRACTION,
   buildAdoptionRows,
+  buildAdoptionRows2,
+  checkResearchStart,
   computeServerBuildCost,
   computeServerBuildDuration,
+  computeServerResearchQuote,
+  computeServerShipCost,
+  deriveServicesFromAssets,
   diffClientAssets,
+  diffClientAssets2,
+  locationInstanceId,
   mergeServerBuildings,
+  mergeServerLocations,
+  mergeServerResearch,
+  mergeServerServices,
+  mergeServerShips,
+  researchInstanceId,
   rowToBuildingInstance,
+  rowToShipInstance,
+  shipsAdoptable,
   type ServerAssetRow,
 } from '@/lib/game/server-assets';
+import { RESEARCH_MAP } from '@/lib/game/research-tree';
+import { SHIP_MAP } from '@/lib/game/ships';
+import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { SERVICE_MAP } from '@/lib/game/services';
+import { DEV_FAST_MULTIPLIER } from '@/lib/game/constants';
+import { processTick } from '@/lib/game/game-engine';
+import { getNewGameState } from '@/lib/game/save-load';
 import { ASSET_ROUTE_MAX_PER_MINUTE } from '@/lib/game/asset-route-shared';
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
@@ -103,7 +127,9 @@ function profileRow(overrides: Record<string, unknown> = {}) {
     netWorth: 900_000_000, // above the Frontier cap — no slot-gate exemption
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     buildingsData: [],
-    workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO },
+    shipsData: [],
+    activeServicesData: [],
+    workforceData: { [ASSET_BASELINE_KEY]: PAST_ISO, [ASSET_BASELINE2_KEY]: PAST_ISO },
     resources: { iron: 100, aluminum: 100, titanium: 1000, rare_earth: 100, platinum_group: 100 },
     serverResources: null,
     completedResearchList: [],
@@ -122,13 +148,17 @@ function row(overrides: Partial<ServerAssetRow> = {}): ServerAssetRow {
   };
 }
 
-type RouteName = 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair';
+type RouteName = 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock';
 async function post(route: RouteName, body: unknown) {
   const mod = route === 'build' ? await import('@/app/api/space-tycoon/assets/build/route')
     : route === 'refit' ? await import('@/app/api/space-tycoon/assets/refit/route')
     : route === 'sell' ? await import('@/app/api/space-tycoon/assets/sell/route')
     : route === 'mothball' ? await import('@/app/api/space-tycoon/assets/mothball/route')
     : route === 'reactivate' ? await import('@/app/api/space-tycoon/assets/reactivate/route')
+    : route === 'research' ? await import('@/app/api/space-tycoon/assets/research/route')
+    : route === 'ship' ? await import('@/app/api/space-tycoon/assets/ship/route')
+    : route === 'scrap' ? await import('@/app/api/space-tycoon/assets/scrap/route')
+    : route === 'unlock' ? await import('@/app/api/space-tycoon/assets/unlock/route')
     : await import('@/app/api/space-tycoon/assets/repair/route');
   const req = new NextRequest(`http://localhost/api/space-tycoon/assets/${route}`, {
     method: 'POST',
@@ -153,6 +183,7 @@ function setup(profile = profileRow(), rows: ServerAssetRow[] = []) {
   mockGameLedgerEntry.findFirst.mockResolvedValue({ seq: 42 });
   mockGameLedgerEntry.findMany.mockResolvedValue([]);
   mockColonyClaim.findUnique.mockResolvedValue(null);
+  mockColonyClaim.findMany.mockResolvedValue([]);
   mockOrbitalSlotOccupancy.findUnique.mockResolvedValue(null);
   mockOrbitalSlotLease.findFirst.mockResolvedValue(null);
   mockMarketAuditLog.create.mockResolvedValue({});
@@ -289,8 +320,8 @@ describe('POST /api/space-tycoon/assets/build', () => {
       ?? Array.from(BUILDING_MAP.values()).find(d => d.requiredLocation === 'lunar_surface')!;
     setup(profileRow({ completedResearchList: lunar.requiredResearch }));
     expect((await post('build', { definitionId: lunar.id, locationId: 'lunar_surface', instanceId: 'new-2' })).json.code).toBe('location_locked');
-    // ...but a ColonyClaim there unlocks it.
-    mockColonyClaim.findUnique.mockResolvedValue({ id: 'claim-1' });
+    // ...but a ColonyClaim there unlocks it (slice 5: the location projection).
+    mockColonyClaim.findMany.mockResolvedValue([{ locationId: 'lunar_surface' }]);
     const claimed = await post('build', { definitionId: lunar.id, locationId: 'lunar_surface', instanceId: 'new-2' });
     expect(claimed.json.code).not.toBe('location_locked');
     mockServerAsset.create.mockClear();
@@ -389,8 +420,10 @@ describe('POST /api/space-tycoon/assets/build', () => {
     mockServerAsset.findMany.mockResolvedValue([row({ instanceId: 'old-1', paidMoney: 0, ledgerSeq: null })]);
     const { res, json } = await post('build', body);
     expect(res.status).toBe(200);
-    expect(mockServerAsset.createMany).toHaveBeenCalledTimes(1);
+    // Slice 1 adoption (buildings) + slices 2-5 adoption (research / ships / locations — nothing here).
+    expect(mockServerAsset.createMany).toHaveBeenCalledTimes(2);
     expect(mockServerAsset.createMany.mock.calls[0][0].data[0]).toEqual(expect.objectContaining({ instanceId: 'old-1', status: 'complete', paidMoney: 0 }));
+    expect(mockServerAsset.createMany.mock.calls[1][0].data).toEqual([]);
     const marker = mockGameProfile.update.mock.calls[0][0].data.workforceData;
     expect(marker.engineers).toBe(3);
     expect(typeof marker[ASSET_BASELINE_KEY]).toBe('string');
@@ -532,6 +565,7 @@ describe('POST /api/cron/assets-complete', () => {
   it('flips pending rows whose completesAt has passed; fails closed without the secret', async () => {
     process.env.CRON_SECRET = 'test-secret';
     const { POST } = await import('@/app/api/cron/assets-complete/route');
+    mockServerAsset.findMany.mockResolvedValue([]);
     mockServerAsset.updateMany.mockResolvedValue({ count: 3 });
 
     const unauth = await POST(new NextRequest('http://localhost/api/cron/assets-complete', { method: 'POST' }));
@@ -544,7 +578,395 @@ describe('POST /api/cron/assets-complete', () => {
     expect(res.status).toBe(200);
     expect((await res.json()).completed).toBe(3);
     const call = mockServerAsset.updateMany.mock.calls[0][0];
-    expect(call.where).toEqual(expect.objectContaining({ kind: 'building', status: 'pending', completesAt: { lte: expect.any(Date) } }));
+    expect(call.where).toEqual(expect.objectContaining({ kind: { in: ['building', 'research', 'ship', 'location'] }, status: 'pending', completesAt: { lte: expect.any(Date) } }));
     expect(call.data).toEqual({ status: 'complete' });
+  });
+
+  it('appends a completed research row to the persisted completedResearchList exactly once (repeatables excluded)', async () => {
+    process.env.CRON_SECRET = 'test-secret';
+    const { POST } = await import('@/app/api/cron/assets-complete/route');
+    const repeatable = Array.from(RESEARCH_MAP.values()).find(r => !!r.repeatable)!;
+    mockServerAsset.findMany.mockResolvedValue([
+      { profileId: 'profile-1', definitionId: 'reusable_boosters' },
+      { profileId: 'profile-1', definitionId: 'launch_abort_systems' },
+      { profileId: 'profile-1', definitionId: repeatable.id },
+    ]);
+    mockServerAsset.updateMany.mockResolvedValue({ count: 3 });
+    mockGameProfile.findUnique.mockResolvedValue({ completedResearchList: ['launch_abort_systems'] });
+    mockGameProfile.update.mockResolvedValue({});
+    const res = await POST(new NextRequest('http://localhost/api/cron/assets-complete', {
+      method: 'POST', headers: { authorization: 'Bearer test-secret' },
+    }));
+    expect(res.status).toBe(200);
+    expect(mockGameProfile.update).toHaveBeenCalledTimes(1);
+    expect(mockGameProfile.update.mock.calls[0][0]).toEqual({
+      where: { id: 'profile-1' },
+      data: { completedResearchList: ['launch_abort_systems', 'reusable_boosters'], researchCount: 2 },
+    });
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Phase 3 slices 2-5 — research / ships / services / locations
+// ═══════════════════════════════════════════════════════════════════════════
+
+const BOOSTERS = RESEARCH_MAP.get('reusable_boosters')!;          // tier 1, no prerequisites
+const CADENCE = RESEARCH_MAP.get('rapid_launch_cadence')!;         // requires reusable_boosters
+const T3_RESEARCH = Array.from(RESEARCH_MAP.values()).find(r => r.tier === 3 && r.prerequisites.length === 0 && !r.repeatable && !r.rare)
+  ?? Array.from(RESEARCH_MAP.values()).find(r => r.tier === 3 && !r.repeatable && !r.rare)!;
+const REPEATABLE = Array.from(RESEARCH_MAP.values()).find(r => !!r.repeatable)!;
+const SHIP_DEF = Array.from(SHIP_MAP.values()).find(s => s.requiredResearch.length === 0)!;
+const GATED_SHIP = Array.from(SHIP_MAP.values()).find(s => s.requiredResearch.length > 0)!;
+const GEO = LOCATION_MAP.get('geo')!;                              // $50M, no research
+const LUNAR_ORBIT = LOCATION_MAP.get('lunar_orbit')!;              // requires reusable_boosters
+
+function researchRow(definitionId: string, overrides: Partial<ServerAssetRow> = {}): ServerAssetRow {
+  const startedAt = new Date(Date.now() - 3600_000);
+  return {
+    id: `row-r-${definitionId}`, profileId: 'profile-1', kind: 'research', definitionId, instanceId: researchInstanceId(definitionId),
+    locationId: null, status: 'complete', markLevel: 1, startedAt, completesAt: startedAt, paidMoney: 0, paidResources: {}, ledgerSeq: null,
+    ...overrides,
+  };
+}
+function shipRow(instanceId: string, overrides: Partial<ServerAssetRow> = {}): ServerAssetRow {
+  const startedAt = new Date(Date.now() - 3600_000);
+  return {
+    id: `row-s-${instanceId}`, profileId: 'profile-1', kind: 'ship', definitionId: SHIP_DEF.id, instanceId,
+    locationId: 'earth_surface', status: 'complete', markLevel: 1, startedAt, completesAt: startedAt, paidMoney: SHIP_DEF.baseCost, paidResources: {}, ledgerSeq: 7,
+    ...overrides,
+  };
+}
+function locationRow(locationId: string): ServerAssetRow {
+  const at = new Date(Date.now() - 3600_000);
+  return {
+    id: `row-l-${locationId}`, profileId: 'profile-1', kind: 'location', definitionId: locationId, instanceId: locationInstanceId(locationId),
+    locationId, status: 'complete', markLevel: 1, startedAt: at, completesAt: at, paidMoney: 0, paidResources: {}, ledgerSeq: null,
+  };
+}
+
+describe('server-assets.ts — slice 2 research helpers', () => {
+  it('quotes the client price (base / doctrine override / repeatable escalation) and a conservative duration', () => {
+    const q = computeServerResearchQuote(BOOSTERS, []);
+    expect(q.cost).toBe(BOOSTERS.baseCostMoney);
+    expect(q.effectiveSeconds).toBe(BOOSTERS.realResearchSeconds);
+    expect(q.serverSeconds).toBe(Math.ceil(BOOSTERS.realResearchSeconds / DEV_FAST_MULTIPLIER));
+    expect(q.doctrineLocked).toBe(false);
+    // Doctrine override: the sibling is complete → 2x price + retool time.
+    const ntr = RESEARCH_MAP.get('nuclear_thermal')!;
+    const locked = computeServerResearchQuote(ntr, ['nuclear_electric']);
+    expect(locked.doctrineLocked).toBe(true);
+    expect(locked.cost).toBe(ntr.baseCostMoney * 2);
+    expect(locked.effectiveSeconds).toBeGreaterThan(ntr.realResearchSeconds);
+    // Repeatable: level N costs baseCost × mult^N.
+    const rep = computeServerResearchQuote(REPEATABLE, [], 2);
+    expect(rep.cost).toBe(Math.round(REPEATABLE.baseCostMoney * Math.pow(REPEATABLE.repeatable!.costMultiplierPerLevel, 2)));
+    expect(rep.repeatableLevel).toBe(2);
+    // Research speed bonus shortens the server horizon, capped at 1.5x.
+    const fast = computeServerResearchQuote(BOOSTERS, ['launch_site_optimization', 'high_res_optical']);
+    expect(fast.researchSpeedMult).toBeGreaterThanOrEqual(1);
+    expect(fast.researchSpeedMult).toBeLessThanOrEqual(1.5);
+    expect(fast.serverSeconds).toBeLessThanOrEqual(q.serverSeconds);
+  });
+
+  it('start rule: prerequisites, already complete / in progress, repeatable cap, two-queue slot rule', () => {
+    expect(checkResearchStart(undefined, [], []).code).toBe('unknown_definition');
+    expect(checkResearchStart(CADENCE, [], []).code).toBe('prereq_missing');
+    expect(checkResearchStart(CADENCE, [], []).missing).toEqual(['reusable_boosters']);
+    expect(checkResearchStart(BOOSTERS, ['reusable_boosters'], []).code).toBe('already_completed');
+    expect(checkResearchStart(BOOSTERS, [], ['reusable_boosters']).code).toBe('already_in_progress');
+    expect(checkResearchStart(REPEATABLE, [], [], REPEATABLE.repeatable!.maxLevel).code).toBe('repeatable_maxed');
+    // One queue without parallel_research, two with it.
+    expect(checkResearchStart(BOOSTERS, [], ['launch_abort_systems']).code).toBe('queue_full');
+    expect(checkResearchStart(BOOSTERS, ['parallel_research'], ['launch_abort_systems']).ok).toBe(true);
+    expect(checkResearchStart(BOOSTERS, ['parallel_research'], ['launch_abort_systems', 'high_res_optical']).code).toBe('queue_full');
+    expect(checkResearchStart(BOOSTERS, [], []).ok).toBe(true);
+  });
+
+  it('mergeServerResearch: off = client, shadow = union, enforce = complete rows the client still lists; repeatable levels from rows', () => {
+    const rows = [
+      researchRow('reusable_boosters'),
+      researchRow('launch_abort_systems', { status: 'pending', completesAt: new Date(Date.now() + 60_000) }),
+      researchRow(REPEATABLE.id, { instanceId: researchInstanceId(REPEATABLE.id, 1) }),
+      researchRow(REPEATABLE.id, { id: 'r2', instanceId: researchInstanceId(REPEATABLE.id, 2) }),
+    ];
+    const client = ['high_res_optical', 'reusable_boosters'];
+    expect(mergeServerResearch(rows, client, 'off').completed).toEqual(client);
+    const shadow = mergeServerResearch(rows, client, 'shadow');
+    expect(shadow.completed).toEqual(['high_res_optical', 'reusable_boosters']);
+    expect(shadow.pending.map(p => p.definitionId)).toEqual(['launch_abort_systems']);
+    expect(shadow.repeatableLevels[REPEATABLE.id]).toBe(2);
+    expect(shadow.source).toBe('union');
+    const enforce = mergeServerResearch(rows, client, 'enforce');
+    expect(enforce.completed).toEqual(['reusable_boosters']);
+    expect(enforce.source).toBe('server');
+    // A server-complete id the client does not list yet joins the union in shadow.
+    expect(mergeServerResearch(rows, [], 'shadow').completed).toEqual(['reusable_boosters']);
+  });
+});
+
+describe('server-assets.ts — slice 3 ship helpers', () => {
+  it('prices the hull with the world launch-cost discount; build time is the definition\'s', () => {
+    expect(computeServerShipCost(SHIP_DEF, null).cost).toBe(SHIP_DEF.baseCost);
+    expect(computeServerShipCost(SHIP_DEF, { launchCostReduction: 0.15 }).cost).toBe(Math.round(SHIP_DEF.baseCost * 0.85));
+  });
+
+  it('rowToShipInstance: identity + isBuilt + build timing are server-owned; name / status / location / route come from the client', () => {
+    const pending = shipRow('s1', { status: 'pending', startedAt: new Date(Date.now() - 10_000), completesAt: new Date(Date.now() + 50_000) });
+    const view = rowToShipInstance(pending, { name: 'Kestrel', status: 'in_transit', currentLocation: 'leo' } as never);
+    expect(view).toEqual(expect.objectContaining({ instanceId: 's1', definitionId: SHIP_DEF.id, name: 'Kestrel', isBuilt: false, status: 'building', currentLocation: 'leo', source: 'server' }));
+    expect(view.buildDurationSeconds).toBe(60);
+    const built = rowToShipInstance(shipRow('s2'), { status: 'mining', currentLocation: 'asteroid_belt', route: { from: 'leo', to: 'asteroid_belt', departedAtMs: 1, arrivalAtMs: 2, cargo: {} } } as never);
+    expect(built.isBuilt).toBe(true);
+    expect(built.status).toBe('mining');
+    expect(built.currentLocation).toBe('asteroid_belt');
+    expect(built.route?.to).toBe('asteroid_belt');
+    // No client entry → idle at its build location, definition name.
+    const orphan = rowToShipInstance(shipRow('s3', { locationId: 'lunar_orbit' }), undefined);
+    expect(orphan).toEqual(expect.objectContaining({ status: 'idle', currentLocation: 'lunar_orbit', name: SHIP_DEF.name }));
+  });
+
+  it('mergeServerShips: off = client, shadow = union, enforce = rows the client still lists; scrapped rows never count', () => {
+    const rows = [shipRow('s1'), shipRow('s2', { status: 'scrapped' }), shipRow('s3')];
+    const client = [{ instanceId: 's1', definitionId: SHIP_DEF.id, status: 'idle', currentLocation: 'leo', isBuilt: true }, { instanceId: 'forged', definitionId: SHIP_DEF.id, status: 'idle', currentLocation: 'leo', isBuilt: true }];
+    expect(mergeServerShips(rows, client, 'off').ships.map(s => s.instanceId)).toEqual(['s1', 'forged']);
+    expect(mergeServerShips(rows, client, 'shadow').ships.map(s => `${s.instanceId}:${s.source}`)).toEqual(['s1:server', 's3:server', 'forged:client']);
+    expect(mergeServerShips(rows, client, 'enforce').ships.map(s => s.instanceId)).toEqual(['s1']);
+  });
+});
+
+describe('server-assets.ts — slice 5 location projection', () => {
+  it('STARTING ∪ ColonyClaim ∪ rows (∪ client in shadow, rows ∩ client in enforce)', () => {
+    const rows = [locationRow('geo'), locationRow('lunar_orbit')];
+    expect(mergeServerLocations([], [], ['geo', 'mars_surface'], 'off').unlocked).toEqual(['earth_surface', 'leo', 'geo', 'mars_surface']);
+    expect(mergeServerLocations(rows, ['pluto_surface'], ['geo', 'mars_surface'], 'shadow').unlocked).toEqual(['earth_surface', 'leo', 'pluto_surface', 'geo', 'lunar_orbit', 'mars_surface']);
+    expect(mergeServerLocations(rows, ['pluto_surface'], ['geo', 'mars_surface'], 'enforce').unlocked).toEqual(['earth_surface', 'leo', 'pluto_surface', 'geo']);
+  });
+});
+
+describe('server-assets.ts — slice 4 derived services', () => {
+  it('derives exactly the services game-engine.ts §5 activates for the same buildings + research', () => {
+    // A building whose service needs no research, and one whose service is research-gated.
+    const free = Array.from(BUILDING_MAP.values()).find(b => b.enabledServices.some(s => SERVICE_MAP.get(s)?.requiredResearch.length === 0))!;
+    const gated = Array.from(BUILDING_MAP.values()).find(b => b.enabledServices.some(s => (SERVICE_MAP.get(s)?.requiredResearch.length ?? 0) > 0))!;
+    const gatedSvc = SERVICE_MAP.get(gated.enabledServices.find(s => (SERVICE_MAP.get(s)?.requiredResearch.length ?? 0) > 0)!)!;
+    const buildings = [
+      { instanceId: 'f1', definitionId: free.id, locationId: free.requiredLocation, isComplete: true, buildStartDate: { year: 2126, month: 1 }, completionDate: { year: 2126, month: 2 } },
+      { instanceId: 'f2', definitionId: free.id, locationId: free.requiredLocation, isComplete: true, buildStartDate: { year: 2126, month: 1 }, completionDate: { year: 2126, month: 2 } },
+      { instanceId: 'g1', definitionId: gated.id, locationId: gated.requiredLocation, isComplete: true, buildStartDate: { year: 2126, month: 1 }, completionDate: { year: 2126, month: 2 } },
+      { instanceId: 'p1', definitionId: free.id, locationId: free.requiredLocation, isComplete: false, startedAtMs: Date.now(), realDurationSeconds: 1e6, buildStartDate: { year: 2126, month: 1 }, completionDate: { year: 2126, month: 2 } },
+    ];
+    const key = (s: { definitionId: string; linkedBuildingIds: string[] }) => `${s.definitionId}|${s.linkedBuildingIds[0]}`;
+    // Without the gating research: only the free building's services.
+    const noResearch = deriveServicesFromAssets(buildings, []);
+    expect(noResearch.map(key)).not.toContain(`${gatedSvc.id}|g1`);
+    // Parity with the engine on the same fixture (research satisfied).
+    const research = [...gatedSvc.requiredResearch, 'launch_abort_systems'];
+    const derived = deriveServicesFromAssets(buildings, research);
+    const state = { ...getNewGameState(), buildings, completedResearch: research, activeServices: [], money: 1e12 };
+    const engine = processTick(state as never);
+    expect(derived.map(key).sort()).toEqual(engine.activeServices.map(key).sort());
+    expect(derived.map(key)).toContain(`${gatedSvc.id}|g1`);
+    // Same revenue multiplier as the engine (min(researchCount, 10)).
+    expect(derived[0].revenueMultiplier).toBe(engine.activeServices[0].revenueMultiplier);
+  });
+
+  it('mergeServerServices matches by (definition, building) or (definition, location); off / shadow / enforce', () => {
+    const d = (bld: string, def = 'svc_launch_small', loc = 'earth_surface') => ({ definitionId: def, locationId: loc, linkedBuildingIds: [bld], startDate: { year: 2126, month: 1 }, revenueMultiplier: 1 });
+    const derived = [d('b1'), d('b2')];
+    const client = [{ definitionId: 'svc_launch_small', locationId: 'earth_surface', linkedBuildingIds: ['b1'] }, { definitionId: 'svc_launch_small', locationId: 'earth_surface' }, { definitionId: 'svc_launch_small', locationId: 'leo' }];
+    const off = mergeServerServices(derived, client, 'off');
+    expect(off.services).toHaveLength(3);
+    const shadow = mergeServerServices(derived, client, 'shadow');
+    expect(shadow.missingFromClient).toBe(0);   // b1 by building, b2 by location
+    expect(shadow.extraInClient).toBe(1);       // the leo entry derives from nothing
+    expect(shadow.services).toHaveLength(3);    // client entries kept; nothing derived is unmatched
+    const enforce = mergeServerServices(derived, client, 'enforce');
+    expect(enforce.services).toEqual(derived);
+    // A derived service the client lacks is appended in shadow.
+    expect(mergeServerServices(derived, [client[0]], 'shadow').services.map(s => s.linkedBuildingIds[0])).toEqual(['b1', 'b2']);
+  });
+});
+
+describe('server-assets.ts — slice 2-5 adoption + diff', () => {
+  it('buildAdoptionRows2: research (non-repeatable) → complete, ships keep their timing, non-starting locations → complete', () => {
+    const now = Date.now();
+    const rows = buildAdoptionRows2('profile-1', {
+      completedResearch: ['reusable_boosters', REPEATABLE.id, 'nope', 'reusable_boosters'],
+      ships: [
+        { instanceId: 's1', definitionId: SHIP_DEF.id, currentLocation: 'leo', isBuilt: true },
+        { instanceId: 's2', definitionId: SHIP_DEF.id, currentLocation: 'leo', isBuilt: false, buildStartedAtMs: now - 5_000, buildDurationSeconds: 60 },
+        { definitionId: SHIP_DEF.id, currentLocation: 'leo', isBuilt: true },
+        { instanceId: 's4', definitionId: 'nope', currentLocation: 'leo', isBuilt: true },
+      ],
+      unlockedLocations: ['earth_surface', 'leo', 'geo', 'not_a_place'],
+    }, now);
+    expect(rows.map(r => `${r.kind}:${r.instanceId}:${r.status}`)).toEqual([
+      `research:${researchInstanceId('reusable_boosters')}:complete`,
+      'ship:s1:complete',
+      'ship:s2:pending',
+      `location:${locationInstanceId('geo')}:complete`,
+    ]);
+    expect((rows[2].completesAt as Date).getTime()).toBe(now - 5_000 + 60_000);
+    expect(rows.every(r => r.paidMoney === 0 && r.ledgerSeq === null)).toBe(true);
+    expect(shipsAdoptable([{ instanceId: 's1' }])).toBe(true);
+    expect(shipsAdoptable([{ instanceId: 's1' }, { definitionId: SHIP_DEF.id }])).toBe(false);
+  });
+
+  it('diffClientAssets2 reports every direction for research, ships and locations (claims count as unlocked)', () => {
+    const rows = [researchRow('reusable_boosters'), researchRow(REPEATABLE.id), shipRow('s1'), shipRow('s9'), locationRow('geo')];
+    const diff = diffClientAssets2(
+      { completedResearch: ['reusable_boosters', 'high_res_optical'], ships: [{ instanceId: 's1' }, { instanceId: 's2' }, { definitionId: 'x' }], unlockedLocations: ['geo', 'mars_surface', 'pluto_surface'] },
+      rows, ['pluto_surface'],
+    );
+    expect(diff.researchNotInLedger).toEqual(['high_res_optical']);
+    expect(diff.serverResearchNotInClient).toEqual([]); // the repeatable never appears in the client list
+    expect(diff.shipsNotInLedger).toEqual(['s2', '?']);
+    expect(diff.serverShipsNotInClient).toEqual(['s9']);
+    expect(diff.locationsNotInLedger).toEqual(['mars_surface']);
+    expect(diff.serverLocationsNotInClient).toEqual([]);
+  });
+});
+
+describe('POST /api/space-tycoon/assets/research', () => {
+  const body = { definitionId: 'reusable_boosters', instanceId: 'r-1' };
+
+  it('validates the definition, prerequisites, completion, queue and materials', async () => {
+    setup();
+    expect((await post('research', { ...body, definitionId: 'nope' })).json.code).toBe('unknown_definition');
+    expect((await post('research', { ...body, instanceId: '' })).json.code).toBe('invalid_instance_id');
+    expect((await post('research', { ...body, definitionId: 'rapid_launch_cadence' })).json.code).toBe('prereq_missing');
+    // Complete via the registry row (the persisted list is empty — union semantics).
+    setup(profileRow(), [researchRow('reusable_boosters')]);
+    expect((await post('research', body)).json.code).toBe('already_completed');
+    // Queue full: one pending row, no parallel_research.
+    setup(profileRow(), [researchRow('launch_abort_systems', { status: 'pending', completesAt: new Date(Date.now() + 60_000) })]);
+    expect((await post('research', body)).json.code).toBe('queue_full');
+    // Second queue with parallel_research in the persisted list.
+    setup(profileRow({ completedResearchList: ['parallel_research'] }), [researchRow('launch_abort_systems', { status: 'pending', completesAt: new Date(Date.now() + 60_000) })]);
+    expect((await post('research', body)).res.status).toBe(200);
+    mockServerAsset.create.mockClear();
+    // Materials (tier 3) verified against the inventory.
+    setup(profileRow({ resources: { iron: 1 }, completedResearchList: T3_RESEARCH.prerequisites, money: 1e13 }));
+    expect((await post('research', { definitionId: T3_RESEARCH.id, instanceId: 'r-3' })).json.code).toBe('insufficient_resources');
+    expect(mockServerAsset.create).not.toHaveBeenCalled();
+  });
+
+  it('success: charges the server quote, ledgers money + materials, inserts a pending row with the conservative completesAt', async () => {
+    setup(profileRow({ money: 1e13, completedResearchList: T3_RESEARCH.prerequisites }));
+    const { res, json } = await post('research', { definitionId: T3_RESEARCH.id, instanceId: 'r-3' });
+    expect(res.status).toBe(200);
+    const quote = computeServerResearchQuote(T3_RESEARCH, T3_RESEARCH.prerequisites);
+    expect(json.cost).toBe(quote.cost);
+    expect(json.realDurationSeconds).toBe(quote.effectiveSeconds);
+    expect(Date.parse(json.completesAt) - json.startedAtMs).toBe(quote.serverSeconds * 1000);
+    expect(mockServerAsset.create.mock.calls[0][0].data).toEqual(expect.objectContaining({
+      kind: 'research', definitionId: T3_RESEARCH.id, instanceId: 'r-3', status: 'pending', paidMoney: quote.cost, paidResources: T3_RESEARCH.resourceCost,
+    }));
+    const debit = mockGameProfile.updateMany.mock.calls[0][0];
+    expect(debit.where).toEqual({ id: 'profile-1', money: { gte: quote.cost } });
+    const reasons = mockRecordLedger.mock.calls.map(c => c[1]);
+    expect(reasons).toEqual(expect.arrayContaining([
+      expect.objectContaining({ moneyDelta: -quote.cost, reason: 'research_start', refId: 'row-new' }),
+      expect.objectContaining({ resourceSlug: 'titanium', resourceDelta: -(T3_RESEARCH.resourceCost!.titanium), reason: 'research_start_resources' }),
+    ]));
+  });
+
+  it('is retry-safe by instanceId', async () => {
+    setup(profileRow(), [researchRow('reusable_boosters', { instanceId: 'r-1', status: 'pending', completesAt: new Date(Date.now() + 60_000) })]);
+    const { json } = await post('research', body);
+    expect(json.idempotent).toBe(true);
+    expect(mockRecordLedger).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /api/space-tycoon/assets/ship', () => {
+  const body = { definitionId: SHIP_DEF.id, locationId: 'earth_surface', instanceId: 's-1' };
+
+  it('validates the definition, research gate, location unlock and the shipyard cap', async () => {
+    setup(profileRow({ money: 1e13 }));
+    expect((await post('ship', { ...body, definitionId: 'nope' })).json.code).toBe('unknown_definition');
+    expect((await post('ship', { ...body, definitionId: GATED_SHIP.id })).json.code).toBe('research_required');
+    expect((await post('ship', { ...body, locationId: 'mars_surface' })).json.code).toBe('location_locked');
+    setup(profileRow({ money: 1e13 }), Array.from({ length: 8 }, (_, i) => shipRow(`p${i}`, { status: 'pending', completesAt: new Date(Date.now() + 60_000) })));
+    expect((await post('ship', body)).json.code).toBe('shipyard_full');
+    expect(mockServerAsset.create).not.toHaveBeenCalled();
+  });
+
+  it('success: charges the hull, ledgers money + materials, inserts a pending row with buildTimeSeconds', async () => {
+    setup(profileRow({ money: 1e13, resources: { iron: 1e6, aluminum: 1e6, titanium: 1e6, rare_earth: 1e6, platinum_group: 1e6, electronics: 1e6, steel: 1e6, composites: 1e6, fuel: 1e6 } }));
+    const { res, json } = await post('ship', body);
+    expect(res.status).toBe(200);
+    expect(json.cost).toBe(SHIP_DEF.baseCost);
+    expect(json.buildDurationSeconds).toBe(SHIP_DEF.buildTimeSeconds);
+    expect(Date.parse(json.completesAt) - json.startedAtMs).toBe(SHIP_DEF.buildTimeSeconds * 1000);
+    expect(mockServerAsset.create.mock.calls[0][0].data).toEqual(expect.objectContaining({ kind: 'ship', definitionId: SHIP_DEF.id, instanceId: 's-1', locationId: 'earth_surface', status: 'pending', paidMoney: SHIP_DEF.baseCost }));
+    const reasons = mockRecordLedger.mock.calls.map(c => c[1]);
+    expect(reasons).toEqual(expect.arrayContaining([expect.objectContaining({ moneyDelta: -SHIP_DEF.baseCost, reason: 'ship_build', refId: 'row-new' })]));
+  });
+});
+
+describe('POST /api/space-tycoon/assets/scrap', () => {
+  const ORIGINAL = process.env.ASSET_LEDGER_MODE;
+  afterEach(() => { if (ORIGINAL === undefined) delete process.env.ASSET_LEDGER_MODE; else process.env.ASSET_LEDGER_MODE = ORIGINAL; });
+
+  it('refuses a ship whose persisted status is not idle; shadow accepts an unregistered ship without a credit', async () => {
+    setup(profileRow({ shipsData: [{ instanceId: 's-1', status: 'in_transit', isBuilt: true }] }), [shipRow('s-1')]);
+    expect((await post('scrap', { instanceId: 's-1' })).json.code).toBe('not_idle');
+    delete process.env.ASSET_LEDGER_MODE; // shadow
+    setup(profileRow({ shipsData: [{ instanceId: 'ghost', status: 'idle', isBuilt: true }] }));
+    const { res, json } = await post('scrap', { instanceId: 'ghost' });
+    expect(res.status).toBe(200);
+    expect(json.ledgered).toBe(false);
+    expect(mockRecordLedger).not.toHaveBeenCalled();
+    process.env.ASSET_LEDGER_MODE = 'enforce';
+    setup(profileRow({ shipsData: [{ instanceId: 'ghost', status: 'idle', isBuilt: true }] }));
+    expect((await post('scrap', { instanceId: 'ghost' })).res.status).toBe(404);
+  });
+
+  it('flips the row to scrapped and credits 30 % of baseCost through the ledger; a pending hull is refused', async () => {
+    setup(profileRow({ shipsData: [{ instanceId: 's-1', status: 'idle', isBuilt: true }] }), [shipRow('s-1')]);
+    const { res, json } = await post('scrap', { instanceId: 's-1' });
+    expect(res.status).toBe(200);
+    const recovery = Math.round(SHIP_DEF.baseCost * SHIP_SCRAP_RECOVERY_FRACTION);
+    expect(json).toEqual(expect.objectContaining({ ledgered: true, recovery }));
+    expect(mockServerAsset.updateMany.mock.calls[0][0]).toEqual({ where: { id: 'row-s-s-1', status: { in: ['pending', 'complete'] } }, data: { status: 'scrapped' } });
+    expect(mockGameProfile.update.mock.calls[0][0].data.money).toEqual({ increment: recovery });
+    expect(mockRecordLedger.mock.calls.map(c => c[1])).toEqual([expect.objectContaining({ moneyDelta: recovery, reason: 'ship_scrap_recovery' })]);
+
+    setup(profileRow(), [shipRow('s-2', { status: 'pending', completesAt: new Date(Date.now() + 60_000) })]);
+    expect((await post('scrap', { instanceId: 's-2' })).json.code).toBe('not_complete');
+  });
+});
+
+describe('POST /api/space-tycoon/assets/unlock', () => {
+  it('validates the location + research gate + funds; starting locations and claimed bodies are free and idempotent', async () => {
+    setup(profileRow({ money: 1e12 }));
+    expect((await post('unlock', { locationId: 'nope' })).json.code).toBe('unknown_location');
+    expect((await post('unlock', { locationId: 'leo' })).json.idempotent).toBe(true);
+    expect((await post('unlock', { locationId: 'lunar_orbit' })).json.code).toBe('research_required');
+    setup(profileRow({ money: 1 }));
+    expect((await post('unlock', { locationId: 'geo' })).json.code).toBe('insufficient_funds');
+    // A ColonyClaim on the body → already unlocked, nothing charged.
+    setup(profileRow({ money: 1e12 }));
+    mockColonyClaim.findMany.mockResolvedValue([{ locationId: 'geo' }]);
+    expect((await post('unlock', { locationId: 'geo' })).json.idempotent).toBe(true);
+    // An existing row → idempotent too.
+    setup(profileRow({ money: 1e12 }), [locationRow('geo')]);
+    expect((await post('unlock', { locationId: 'geo' })).json.idempotent).toBe(true);
+    expect(mockServerAsset.create).not.toHaveBeenCalled();
+    expect(mockRecordLedger).not.toHaveBeenCalled();
+  });
+
+  it('success: charges unlockCost (burned) and inserts a complete location row; research from the registry view', async () => {
+    setup(profileRow({ money: 1e12 }), [researchRow('reusable_boosters')]);
+    const { res, json } = await post('unlock', { locationId: 'lunar_orbit' });
+    expect(res.status).toBe(200);
+    expect(json.cost).toBe(LUNAR_ORBIT.unlockCost);
+    expect(mockServerAsset.create.mock.calls[0][0].data).toEqual(expect.objectContaining({
+      kind: 'location', definitionId: 'lunar_orbit', instanceId: locationInstanceId('lunar_orbit'), locationId: 'lunar_orbit', status: 'complete', paidMoney: LUNAR_ORBIT.unlockCost,
+    }));
+    expect(mockGameProfile.updateMany.mock.calls[0][0].where).toEqual({ id: 'profile-1', money: { gte: LUNAR_ORBIT.unlockCost } });
+    expect(mockRecordLedger.mock.calls.map(c => c[1])).toEqual([expect.objectContaining({ moneyDelta: -LUNAR_ORBIT.unlockCost, reason: 'location_unlock', refId: 'row-new' })]);
+    expect(GEO.unlockCost).toBeGreaterThan(0);
   });
 });

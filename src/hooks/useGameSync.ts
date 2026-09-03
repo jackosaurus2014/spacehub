@@ -170,16 +170,26 @@ export function useGameSync(
           markUpgradeStartedAtMs: b.markUpgradeStartedAtMs,
           markUpgradeDurationSeconds: b.markUpgradeDurationSeconds,
         })),
+        // Phase 3 slices 2-5 (docs/SECURITY_AUDIT_2026-09.md): services carry
+        // their linked building so the registry's derived-service diff can
+        // match by (definition, building); ships carry their instanceId,
+        // isBuilt and build timing so the registry can adopt and diff them.
         activeServices: state.activeServices.map(s => ({
           definitionId: s.definitionId,
           locationId: s.locationId,
+          linkedBuildingIds: s.linkedBuildingIds || [],
         })),
         unlockedLocations: state.unlockedLocations,
         completedResearch: state.completedResearch,
         ships: (state.ships || []).map(s => ({
+          instanceId: s.instanceId,
           definitionId: s.definitionId,
+          name: s.name,
           status: s.status,
           currentLocation: s.currentLocation,
+          isBuilt: s.isBuilt,
+          buildStartedAtMs: s.buildStartedAtMs,
+          buildDurationSeconds: s.buildDurationSeconds,
         })),
         workforce: state.workforce || null,
         // Audit Wave B (§1c commander marketPriceMultiplier): the hired
@@ -262,11 +272,19 @@ export function useGameSync(
         if (Object.keys(tollPayments).length > 0) {
           queueTollFlush(tollPayments);
         }
-        // Phase 3 slice 1: the registry rejected client buildings it never
-        // sold (enforce mode) — queue their removal for the engine
-        // (asset-reconcile.ts; idempotent by instanceId).
-        if (data.assetLedger && Array.isArray(data.assetLedger.rejectedInstanceIds) && data.assetLedger.rejectedInstanceIds.length > 0) {
-          queueAssetReconciliation({ mode: String(data.assetLedger.mode || ''), rejectedInstanceIds: data.assetLedger.rejectedInstanceIds });
+        // Phase 3 slices 1-5: the registry rejected client buildings /
+        // research / ships / location unlocks it never sold (enforce mode) —
+        // queue their removal for the engine (asset-reconcile.ts; idempotent).
+        if (data.assetLedger && typeof data.assetLedger === 'object') {
+          const al = data.assetLedger as Record<string, unknown>;
+          const arr = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+          queueAssetReconciliation({
+            mode: String(al.mode || ''),
+            rejectedInstanceIds: arr(al.rejectedInstanceIds),
+            rejectedResearchIds: arr(al.rejectedResearchIds),
+            rejectedShipIds: arr(al.rejectedShipIds),
+            rejectedLocationIds: arr(al.rejectedLocationIds),
+          });
         }
         // Phase 2: the attestations were delivered — queue their flush.
         if (Object.keys(craftedAttest).length > 0 || Object.keys(builtAttest).length > 0) {

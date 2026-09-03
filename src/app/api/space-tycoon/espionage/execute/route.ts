@@ -18,6 +18,7 @@ import {
   type TargetGameProfile,
 } from '@/lib/game/espionage-system';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { loadServerResearch } from '@/lib/game/server-assets';
 import { getRecentTradesForEspionage } from '@/lib/game/market-share';
 import { findBlockingPact } from '@/lib/game/corp-pacts-server';
 import { validateBody, espionageExecuteSchema } from '@/lib/validations';
@@ -64,12 +65,18 @@ export async function POST(request: NextRequest) {
         money: true,
         completedResearchList: true,
         createdAt: true,
+        workforceData: true,
       },
     });
 
     if (!attackerGameProfile) {
       return NextResponse.json({ error: 'No game profile found.' }, { status: 404 });
     }
+    // Phase 3 slice 2 (docs/SECURITY_AUDIT_2026-09.md): the attacker's
+    // research gate + tech bonus read the registry's research view.
+    const attackerResearch = (await loadServerResearch(
+      attackerGameProfile.id, attackerGameProfile.completedResearchList, { workforceData: attackerGameProfile.workforceData },
+    )).completed;
 
     // ── Self-targeting check ──
     if (attackerGameProfile.id === targetId) {
@@ -91,7 +98,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Research unlock check ──
-    if (!isActionUnlocked(validActionType, attackerGameProfile.completedResearchList)) {
+    if (!isActionUnlocked(validActionType, attackerResearch)) {
       const action = ESPIONAGE_ACTIONS[validActionType];
       return NextResponse.json({
         error: `Action locked. Requires research: ${action.unlockRequirement}.`,
@@ -268,7 +275,7 @@ export async function POST(request: NextRequest) {
     // ── Execute the espionage action ──
     const attackerData: AttackerProfile = {
       netWorth: attackerGameProfile.netWorth,
-      completedResearch: attackerGameProfile.completedResearchList,
+      completedResearch: attackerResearch,
     };
 
     const targetEspData: TargetEspionageProfile = {

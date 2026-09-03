@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { ASSET_KIND_BUILDING, completeDueAssets, getAssetLedgerMode } from '@/lib/game/server-assets';
+import { ASSET_KINDS, completeDueAssets, getAssetLedgerMode } from '@/lib/game/server-assets';
 import { loadAssetProfile } from '@/lib/game/asset-route-shared';
 
 export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/space-tycoon/assets — the session profile's ServerAsset rows
- * (buildings), newest first, after a lazy pending → complete pass.
+ * (every kind: building / research / ship / location), newest first, after
+ * a lazy pending → complete pass.
  */
 export async function GET() {
   try {
@@ -18,11 +19,11 @@ export async function GET() {
 
     const completed = await completeDueAssets(prisma, profile.id);
     const rows = await prisma.serverAsset.findMany({
-      where: { profileId: profile.id, kind: ASSET_KIND_BUILDING },
+      where: { profileId: profile.id, kind: { in: [...ASSET_KINDS] } },
       orderBy: { createdAt: 'desc' },
-      take: 500,
+      take: 2000,
       select: {
-        instanceId: true, definitionId: true, locationId: true, status: true, markLevel: true,
+        kind: true, instanceId: true, definitionId: true, locationId: true, status: true, markLevel: true,
         startedAt: true, completesAt: true, paidMoney: true, paidResources: true, ledgerSeq: true, createdAt: true,
       },
     });

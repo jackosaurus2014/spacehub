@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { requireCronSecret } from '@/lib/errors';
-// Phase 3 slice 1: buildings come from the ServerAsset registry (server-assets.ts).
-import { loadServerBuildingsForProfiles } from '@/lib/game/server-assets';
+// Phase 3 slices 1-5: buildings, services and ships come from the ServerAsset
+// registry (server-assets.ts).
+import { loadServerRegistryForProfiles } from '@/lib/game/server-assets';
 import {
   computePoolAggregates,
   emaBlend,
@@ -55,12 +56,12 @@ export async function POST(request: Request) {
       }),
       prisma.gameProfile.findMany({
         where: { lastSyncAt: { gt: new Date(now - 7 * 24 * 3600_000) } },
-        select: { id: true, buildingsData: true, activeServicesData: true, shipsData: true },
+        select: { id: true, buildingsData: true, activeServicesData: true, shipsData: true, completedResearchList: true, unlockedLocationsList: true, workforceData: true },
         take: 2000,
       }),
     ]);
 
-    const registryBuildings = await loadServerBuildingsForProfiles(profiles.map(p => ({ id: p.id, buildingsData: p.buildingsData })));
+    const registry = await loadServerRegistryForProfiles(profiles);
     const summaries: ProfileActivitySummary[] = profiles.map(p => {
       // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): a
       // mothballed/reactivating/decommissioning building withdraws from the
@@ -70,8 +71,11 @@ export async function POST(request: Request) {
       // contribution before it's aggregated into the shared pool.
       // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): the registry view
       // (union in shadow, server rows only in enforce), batched above.
-      const rawBuildings = (registryBuildings.get(p.id)?.buildings ?? []) as unknown as
+      const view = registry.get(p.id);
+      const rawBuildings = (view?.buildings.buildings ?? []) as unknown as
         { instanceId?: string; definitionId?: string; locationId?: string; isComplete?: boolean; status?: string }[];
+      const rawServices = (view?.services.services ?? []) as { definitionId?: string; locationId?: string; linkedBuildingIds?: unknown }[];
+      const rawShips = (view?.ships.ships ?? []) as { currentLocation?: string; isBuilt?: boolean }[];
       const nonOperationalIds = new Set(
         rawBuildings
           .filter(b => typeof b?.instanceId === 'string' && !!b?.status && b.status !== 'active')
@@ -83,20 +87,19 @@ export async function POST(request: Request) {
           .filter(b => typeof b?.definitionId === 'string' && typeof b?.locationId === 'string')
           .filter(b => !b?.instanceId || !nonOperationalIds.has(b.instanceId))
           .map(b => ({ definitionId: b.definitionId as string, locationId: b.locationId as string, isComplete: b.isComplete !== false })),
-        services: Array.isArray(p.activeServicesData)
-          ? (p.activeServicesData as { definitionId?: string; locationId?: string; linkedBuildingIds?: unknown }[])
-              .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
-              .filter(s => {
-                const ids = Array.isArray(s.linkedBuildingIds)
-                  ? s.linkedBuildingIds.filter((x): x is string => typeof x === 'string')
-                  : [];
-                return ids.length === 0 || ids.every(id => !nonOperationalIds.has(id));
-              })
-              .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string }))
-          : [],
-        ships: Array.isArray(p.shipsData)
-          ? (p.shipsData as { currentLocation?: string }[]).map(s => ({ currentLocation: s?.currentLocation }))
-          : [],
+        // Phase 3 slice 4: the registry's service projection (derived from
+        // complete buildings + research; union in shadow).
+        services: rawServices
+          .filter(s => typeof s?.definitionId === 'string' && typeof s?.locationId === 'string')
+          .filter(s => {
+            const ids = Array.isArray(s.linkedBuildingIds)
+              ? s.linkedBuildingIds.filter((x): x is string => typeof x === 'string')
+              : [];
+            return ids.length === 0 || ids.every(id => !nonOperationalIds.has(id));
+          })
+          .map(s => ({ definitionId: s.definitionId as string, locationId: s.locationId as string })),
+        // Phase 3 slice 3: the registry's ship view (location is client-owned condition).
+        ships: rawShips.map(s => ({ currentLocation: s?.currentLocation })),
       };
     });
 

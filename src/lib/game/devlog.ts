@@ -14,6 +14,18 @@ export interface DevLogEntry {
 export const GAME_DEVLOG: DevLogEntry[] = [
   {
     date: '2026-09-02', tag: 'economy',
+    title: 'Research, ships and location unlocks join the corporate registry',
+    summary: 'The registry that started recording buildings this morning now records research starts, ship orders, ship scrapping and location unlocks as server transactions, and derives your active services from the buildings and research it holds. Contracts, espionage unlocks, season challenges, zone influence, demand pools, colony presence and book value read the registry for all of it.',
+    changes: [
+      'What changed for you: nothing in the flow. Starting research, ordering a hull, scrapping a ship and unlocking a location confirm with the registry first; a refusal (not enough cash or materials, a prerequisite you do not have, both research queues busy, every shipyard slot in use, a location whose research you have not finished) leaves your save untouched and tells you why.',
+      'Location unlocks were free server-side until now — only your save file paid for them. The unlock fee is now charged through the ledger. Claiming a colony slot at a body is still its own separate fee, as before.',
+      'Existing corporations: your completed research and unlocked locations were adopted into the registry on your first sync after this release, at no cost. Your fleet is adopted the first time the updated game sends it — reload once if you have been playing for a while. Nothing was removed.',
+      'Services are no longer something your save file asserts: the registry derives them from the buildings and research it holds, exactly the way the game engine does. If the two disagree the difference is logged, not enforced, for now.',
+      'Rollout: everything runs in shadow this week (record and compare, change nothing). Once the comparison is clean, enforcement covers buildings, research, ships, services and unlocks in one switch; anything the registry never sold you is struck on the next sync.',
+    ],
+  },
+  {
+    date: '2026-09-02', tag: 'economy',
     title: 'Buildings are ordered through the corporate registry',
     summary: 'Every build, refit, decommission, mothball, reactivation and rush repair is now a server transaction: the registry prices it, charges the wallet and materials through the same ledger every trade uses, and records the structure with a server completion time. Contracts, book value, zone influence, season challenges and milestone claims read that registry instead of the save file.',
     changes: [

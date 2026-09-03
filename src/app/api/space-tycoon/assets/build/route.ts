@@ -9,12 +9,13 @@ import { isLedgerAvailable } from '@/lib/game/server-ledger';
 import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
 import {
   ASSET_KIND_BUILDING,
-  STARTING_LOCATIONS,
   computeServerBuildCost,
   computeServerBuildDuration,
   countLiveAt,
   ensureAssetAdoption,
-  loadServerAssetRows,
+  ensureAssetAdoption2,
+  loadServerRegistry,
+  rowsOfKind,
 } from '@/lib/game/server-assets';
 import {
   InsufficientFundsError,
@@ -44,12 +45,14 @@ export const dynamic = 'force-dynamic';
  * building_build_resources), and inserts the ServerAsset row (pending,
  * completesAt = now + the conservative server duration).
  *
- * Location unlock is checked against STARTING_LOCATIONS ∪ the persisted
- * unlockedLocationsList ∪ ColonyClaim rows. ColonyClaim alone cannot be the
- * gate: since the 2026-09-01 hardening a claim REQUIRES a completed building
- * at the location, so the first building anywhere new would be impossible.
- * unlockedLocationsList is client-synced (the unlock fee is not yet
- * server-ledgered — the 'location' asset kind is a later slice).
+ * Slices 2 + 5 ("Phase 3 slices 2-5"): the research gate and the build-cost
+ * research reductions read the registry's research view
+ * (loadServerRegistry — complete research rows ∪ the persisted list in
+ * shadow), and the location gate reads its location projection
+ * (STARTING_LOCATIONS ∪ ColonyClaim ∪ paid 'location' rows ∪ the persisted
+ * list in shadow). ColonyClaim alone cannot be the gate: since the
+ * 2026-09-01 hardening a claim REQUIRES a completed building at the
+ * location, so the first building anywhere new would be impossible.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -70,39 +73,31 @@ export async function POST(request: NextRequest) {
     if (def.requiredLocation !== locationId) {
       return badRequest(`${def.name} can only be built at ${def.requiredLocation.replace(/_/g, ' ')}`, 'wrong_location');
     }
-    const research = Array.isArray(profile.completedResearchList) ? profile.completedResearchList : [];
+    // Registry availability + one-time adoption of a pre-registry save.
+    let registry;
+    try {
+      await ensureAssetAdoption(profile, prisma);
+      await ensureAssetAdoption2(profile, prisma);
+      registry = await loadServerRegistry(profile.id, profile, { mode: 'shadow' });
+    } catch (err) {
+      logger.error('Asset registry unavailable', { error: String(err) });
+      return NextResponse.json({ error: 'Asset registry unavailable', code: 'registry_unavailable' }, { status: 503 });
+    }
+    const rows = rowsOfKind(registry.rows, ASSET_KIND_BUILDING);
+
+    // Research gate + reductions: the registry's research view (slice 2).
+    const research = registry.research.completed;
     const missing = (def.requiredResearch || []).filter(r => !research.includes(r));
     if (missing.length > 0) {
       return badRequest(`${def.name} requires research: ${missing.join(', ')}`, 'research_required', { missingResearch: missing });
     }
 
-    // Location unlock (see header).
-    let unlocked = STARTING_LOCATIONS.includes(locationId)
-      || (Array.isArray(profile.unlockedLocationsList) && profile.unlockedLocationsList.includes(locationId));
-    if (!unlocked) {
-      try {
-        const claim = await prisma.colonyClaim.findUnique({
-          where: { locationId_profileId: { locationId, profileId: profile.id } },
-          select: { id: true },
-        });
-        unlocked = !!claim;
-      } catch { /* table may lag */ }
-    }
-    if (!unlocked) {
+    // Location unlock: the registry's location projection (slice 5, see header).
+    if (!registry.locations.unlocked.includes(locationId)) {
       return badRequest(
-        `${LOCATION_MAP.get(locationId)?.name || locationId} is not unlocked on the server yet — unlocks register on the next sync (within a minute).`,
+        `${LOCATION_MAP.get(locationId)?.name || locationId} is not unlocked on the server yet — unlock it from the map first.`,
         'location_locked',
       );
-    }
-
-    // Registry availability + one-time adoption of a pre-registry save.
-    let rows;
-    try {
-      await ensureAssetAdoption(profile, prisma);
-      rows = await loadServerAssetRows(profile.id, prisma);
-    } catch (err) {
-      logger.error('Asset registry unavailable', { error: String(err) });
-      return NextResponse.json({ error: 'Asset registry unavailable', code: 'registry_unavailable' }, { status: 503 });
     }
 
     // Retry-safe: the same instanceId already exists → return it, no charge.

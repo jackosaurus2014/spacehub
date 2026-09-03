@@ -1301,93 +1301,133 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
+  // Phase 3 slice 2 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slices 2-5"):
+  // SERVER-FIRST. The local checks below are the fast "can I even order
+  // this" pass (same as ResearchPanel's); /assets/research re-validates the
+  // prerequisites, the two-queue rule and the price from the registry's own
+  // research view, ledgers money + materials (research_start /
+  // research_start_resources) and returns the start's timing. Local state
+  // is only mutated on the 2xx, using the server's cost and base duration
+  // (the client still divides by ITS speed multipliers); the materials are
+  // NOT attested through builtThisTick any more (the route ledgered them).
+  // 'local' keeps the pre-registry path. Rare-tech visibility stays a local
+  // check (unlockedRareTechIds is never synced).
   const handleStartResearch = useCallback((researchId: string) => {
-    playSound('research_start');
-    setState(prev => {
-      if (!prev) return prev;
-      const def = RESEARCH_MAP.get(researchId);
-      if (!def) { playSound('error'); return prev; }
-
-      // W10: rare techs can't be started before they're discovered — defense
-      // in depth, the UI already hides these entirely.
-      const disp = getResearchDisplayState(def, prev);
-      if (!disp.visible || disp.completed) { playSound('error'); return prev; }
-      if (prev.money < disp.effectiveMoneyCost) { playSound('error'); return prev; }
-
-      // Check resource costs
-      if (def.resourceCost) {
-        for (const [resId, qty] of Object.entries(def.resourceCost)) {
-          if ((prev.resources[resId] || 0) < qty) { playSound('error'); return prev; }
-        }
+    const cur = stateRef.current;
+    if (!cur) return;
+    const def = RESEARCH_MAP.get(researchId);
+    if (!def) { playSound('error'); return; }
+    // W10: rare techs can't be started before they're discovered — defense
+    // in depth, the UI already hides these entirely.
+    const disp = getResearchDisplayState(def, cur);
+    if (!disp.visible || disp.completed) { playSound('error'); return; }
+    if (cur.money < disp.effectiveMoneyCost) { playSound('error'); return; }
+    if (def.resourceCost) {
+      for (const [resId, qty] of Object.entries(def.resourceCost)) {
+        if ((cur.resources[resId] || 0) < qty) { playSound('error'); return; }
       }
+    }
+    const hasQueue2 = cur.completedResearch.includes('parallel_research');
+    if (cur.activeResearch && (!hasQueue2 || cur.activeResearch2)) { playSound('error'); return; }
+    const instanceId = generateId();
+    playSound('click');
+    void requestAssetOp('research', { definitionId: researchId, instanceId }, `${def.name} research`).then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Research', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data : null;
+      setState(prev => {
+        if (!prev) return prev;
+        if (prev.activeResearch?.instanceId === instanceId || prev.activeResearch2?.instanceId === instanceId) return prev; // idempotent
+        const dispNow = getResearchDisplayState(def, prev);
+        // Determine which queue to use
+        const hasQueue2Now = prev.completedResearch.includes('parallel_research');
+        const queue1Free = !prev.activeResearch;
+        const queue2Free = hasQueue2Now && !prev.activeResearch2;
+        if (!queue1Free && !queue2Free) { playSound('error'); return prev; }
 
-      // Determine which queue to use
-      const hasQueue2 = prev.completedResearch.includes('parallel_research');
-      const queue1Free = !prev.activeResearch;
-      const queue2Free = hasQueue2 && !prev.activeResearch2;
+        const cost = server && typeof server.cost === 'number' ? server.cost : dispNow.effectiveMoneyCost;
+        const realDuration = server && typeof server.realDurationSeconds === 'number' ? server.realDurationSeconds : dispNow.effectiveRealDurationSeconds;
+        const totalMonthsBase = server && typeof server.totalMonths === 'number' ? server.totalMonths : dispNow.effectiveTotalMonths;
+        const startedAtMs = server && typeof server.startedAtMs === 'number' ? server.startedAtMs : Date.now();
+        const serverCompletesAtMs = server && typeof server.completesAt === 'string' ? Date.parse(server.completesAt) : NaN;
 
-      if (!queue1Free && !queue2Free) { playSound('error'); return prev; }
-
-      // Deduct resources
-      const newResources = { ...prev.resources };
-      if (def.resourceCost) {
-        for (const [resId, qty] of Object.entries(def.resourceCost)) {
-          newResources[resId] = (newResources[resId] || 0) - qty;
+        // Deduct resources
+        const newResources = { ...prev.resources };
+        if (def.resourceCost) {
+          for (const [resId, qty] of Object.entries(def.resourceCost)) {
+            newResources[resId] = (newResources[resId] || 0) - qty;
+          }
         }
-      }
-      // Phase 2 (inventory-attestations.ts): attest the resource spend.
-      const researchAttestations = def.resourceCost
-        ? accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>)
-        : prev.pendingInventoryAttestations;
+        // Phase 2 (inventory-attestations.ts): attest the resource spend —
+        // ONLY on the local-only path; the registry ledgered it otherwise.
+        const researchAttestations = !server && def.resourceCost
+          ? accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>)
+          : prev.pendingInventoryAttestations;
 
-      // W3: doctrine-locked techs and repeatable next-levels both use
-      // disp's effective cost/duration (2x+6mo override, or the escalated
-      // 2.5x/level repeatable cost) instead of def.baseCostMoney/realResearchSeconds.
-      const researchEntry = {
-        definitionId: researchId,
-        startDate: prev.gameDate,
-        progressMonths: 0,
-        totalMonths: scaledResearchTime(disp.effectiveTotalMonths, def.tier),
-        startedAtMs: Date.now(),
-        realDurationSeconds: disp.effectiveRealDurationSeconds,
-      };
+        // W3: doctrine-locked techs and repeatable next-levels both use
+        // disp's effective cost/duration (2x+6mo override, or the escalated
+        // 2.5x/level repeatable cost) instead of def.baseCostMoney/realResearchSeconds.
+        const researchEntry = {
+          definitionId: researchId,
+          startDate: prev.gameDate,
+          progressMonths: 0,
+          totalMonths: scaledResearchTime(totalMonthsBase, def.tier),
+          startedAtMs,
+          realDurationSeconds: realDuration,
+          instanceId,
+          ...(Number.isFinite(serverCompletesAtMs) ? { serverCompletesAtMs } : {}),
+        };
 
-      const queueLabel = queue1Free ? '' : ' (Q2)';
-      const lockedByDef = disp.doctrineLocked && disp.lockedBySiblingId ? RESEARCH_MAP.get(disp.lockedBySiblingId) : null;
-      const overrideNote = lockedByDef ? ` (doctrine override — was locked by ${lockedByDef.name})` : '';
-      const levelNote = def.repeatable ? ` (Level ${disp.repeatableLevel + 1}/${def.repeatable.maxLevel})` : '';
-      return {
-        ...prev,
-        money: prev.money - disp.effectiveMoneyCost,
-        totalSpent: prev.totalSpent + disp.effectiveMoneyCost,
-        resources: newResources,
-        pendingInventoryAttestations: researchAttestations,
-        activeResearch: queue1Free ? researchEntry : prev.activeResearch,
-        activeResearch2: queue1Free ? prev.activeResearch2 : researchEntry,
-        eventLog: [{
-          id: generateId(),
-          date: prev.gameDate,
-          type: 'research_complete' as const,
-          title: `Research Started${queueLabel}: ${def.name}${overrideNote}${levelNote}`,
-          description: `Ready in ${formatDuration(disp.effectiveRealDurationSeconds)}. Cost: ${formatMoney(disp.effectiveMoneyCost)}.`,
-        }, ...prev.eventLog].slice(0, 50),
-      };
+        playSound('research_start');
+        const queueLabel = queue1Free ? '' : ' (Q2)';
+        const lockedByDef = dispNow.doctrineLocked && dispNow.lockedBySiblingId ? RESEARCH_MAP.get(dispNow.lockedBySiblingId) : null;
+        const overrideNote = lockedByDef ? ` (doctrine override — was locked by ${lockedByDef.name})` : '';
+        const levelNote = def.repeatable ? ` (Level ${dispNow.repeatableLevel + 1}/${def.repeatable.maxLevel})` : '';
+        return {
+          ...prev,
+          money: prev.money - cost,
+          totalSpent: prev.totalSpent + cost,
+          resources: newResources,
+          pendingInventoryAttestations: researchAttestations,
+          activeResearch: queue1Free ? researchEntry : prev.activeResearch,
+          activeResearch2: queue1Free ? prev.activeResearch2 : researchEntry,
+          eventLog: [{
+            id: generateId(),
+            date: prev.gameDate,
+            type: 'research_complete' as const,
+            title: `Research Started${queueLabel}: ${def.name}${overrideNote}${levelNote}`,
+            description: `Ready in ${formatDuration(realDuration)}. Cost: ${formatMoney(cost)}.`,
+          }, ...prev.eventLog].slice(0, 50),
+        };
+      });
     });
   }, []);
 
+  // Phase 3 slice 5 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slices 2-5"):
+  // SERVER-FIRST. /assets/unlock charges `loc.unlockCost` through the ledger
+  // (location_unlock) and records the unlock; the local unlock below runs
+  // only on the 2xx (or 'local' play). The colony-slot claim (/colonies,
+  // presence-gated, its own claimCost) and the first-to-reach milestone
+  // POSTs that follow are unchanged.
   const handleUnlockLocation = useCallback((locId: string) => {
+    const cur = stateRef.current;
+    if (!cur) return;
+    const loc = LOCATION_MAP.get(locId);
+    if (!loc || cur.unlockedLocations.includes(locId) || cur.money < loc.unlockCost) { playSound('error'); return; }
+    const companyName = cur.companyName || 'Untitled Aerospace';
+    const locName = loc.name;
+    playSound('click');
+    void requestAssetOp('unlock', { locationId: locId }, `${loc.name} unlock`).then(res => {
+    if (res.kind === 'fail') { reportAssetFailure(res, 'Location unlock', () => playSound('error')); return; }
+    const server = res.kind === 'ok' ? res.data : null;
+    const cost = server && typeof server.cost === 'number' ? server.cost : loc.unlockCost;
     playSound('location_unlock');
-    let claimCompanyName: string | null = null;
     setState(prev => {
       if (!prev) return prev;
-      const loc = LOCATION_MAP.get(locId);
-      if (!loc || prev.money < loc.unlockCost) { playSound('error'); return prev; }
-      claimCompanyName = prev.companyName || 'Untitled Aerospace';
-
+      if (prev.unlockedLocations.includes(locId)) return prev; // idempotent
       return {
         ...prev,
-        money: prev.money - loc.unlockCost,
-        totalSpent: prev.totalSpent + loc.unlockCost,
+        money: prev.money - cost,
+        totalSpent: prev.totalSpent + cost,
         unlockedLocations: [...prev.unlockedLocations, locId],
         eventLog: [{
           id: generateId(),
@@ -1399,15 +1439,14 @@ export default function SpaceTycoonPage() {
       };
     });
 
-    // The local unlock above always happens (it's the player's own save) —
-    // everything below is reconciling that with the shared multiplayer
-    // world (audit hotlist #6). Both used to be `.catch(() => {})`
-    // fire-and-forget, silently swallowing scarcity failures and race
-    // losses. Now: retry once on network failure, surface the outcome via
-    // toast either way, and log an honest event when we lost a race.
-    if (claimCompanyName === null) return;
-    const companyName = claimCompanyName;
-    const locName = LOCATION_MAP.get(locId)?.name || locId;
+    // The local unlock above is the player's own save — everything below is
+    // reconciling that with the shared multiplayer world (audit hotlist
+    // #6). Both used to be `.catch(() => {})` fire-and-forget, silently
+    // swallowing scarcity failures and race losses. Now: retry once on
+    // network failure, surface the outcome via toast either way, and log an
+    // honest event when we lost a race. (The colony claim requires presence
+    // at the body, so on a fresh unlock it reports "needs a building or
+    // ship there" — the slot is claimed once the corporation is present.)
 
     postWithRetry('/api/space-tycoon/colonies', { locationId: locId, companyName })
       .then(async res => {
@@ -1451,6 +1490,7 @@ export default function SpaceTycoonPage() {
         })
         .catch(() => {});
     }
+    });
   }, []);
 
   const [showArchetypePicker, setShowArchetypePicker] = useState(false);
@@ -2015,35 +2055,109 @@ export default function SpaceTycoonPage() {
   }, []);
 
   // ─── Scrap Ship ────────────────────────────────────────────────────
+  // Phase 3 slice 3 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slices 2-5"):
+  // SERVER-FIRST. /assets/scrap flips the registry row to 'scrapped' and
+  // ledgers the 30 % salvage (ship_scrap_recovery); the local scrap runs
+  // only on the 2xx, using the server's recovery figure when it ledgered
+  // one (in shadow a fleet the registry has not adopted yet is accepted
+  // with `ledgered: false` and the local figure applies). The idle rule is
+  // checked locally and, from the persisted status, server-side.
   const handleScrapShip = useCallback((shipInstanceId: string) => {
-    playSound('money');
-    setState(prev => {
-      if (!prev || !prev.ships) return prev;
-      const shipIdx = prev.ships.findIndex(s => s.instanceId === shipInstanceId);
-      if (shipIdx === -1) return prev;
-      const ship = prev.ships[shipIdx];
-      if (!ship.isBuilt) { playSound('error'); return prev; } // Can't scrap under construction
-      if (ship.status !== 'idle') { playSound('error'); return prev; } // Must be idle
+    const cur = stateRef.current;
+    if (!cur || !cur.ships) return;
+    const ship = cur.ships.find(s => s.instanceId === shipInstanceId);
+    if (!ship) return;
+    if (!ship.isBuilt || ship.status !== 'idle') { playSound('error'); return; } // Must be built and idle
+    const shipDef = SHIP_MAP.get(ship.definitionId);
+    if (!shipDef) return;
+    playSound('click');
+    void requestAssetOp('scrap', { instanceId: shipInstanceId }, 'scrap').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Scrap', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data : null;
+      // Scrap for 30% of original cost (the server's figure when it ledgered one)
+      const scrapValue = server && server.ledgered === true && typeof server.recovery === 'number'
+        ? server.recovery
+        : Math.round(shipDef.baseCost * 0.3);
+      playSound('money');
+      setState(prev => {
+        if (!prev || !prev.ships) return prev;
+        const current = prev.ships.find(s => s.instanceId === shipInstanceId);
+        if (!current) return prev; // idempotent
+        return {
+          ...prev,
+          money: prev.money + scrapValue,
+          totalEarned: prev.totalEarned + scrapValue,
+          ships: prev.ships.filter(s => s.instanceId !== shipInstanceId),
+          eventLog: [{
+            id: generateId(),
+            date: prev.gameDate,
+            type: 'milestone' as const,
+            title: `Scrapped: ${current.name}`,
+            description: `Recovered ${formatMoney(scrapValue)} in salvage (30% of build cost).`,
+          }, ...prev.eventLog].slice(0, 50),
+        };
+      });
+    });
+  }, []);
 
-      const shipDef = SHIP_MAP.get(ship.definitionId);
-      if (!shipDef) return prev;
-
-      // Scrap for 30% of original cost
-      const scrapValue = Math.round(shipDef.baseCost * 0.3);
-
-      return {
-        ...prev,
-        money: prev.money + scrapValue,
-        totalEarned: prev.totalEarned + scrapValue,
-        ships: prev.ships.filter(s => s.instanceId !== shipInstanceId),
-        eventLog: [{
-          id: generateId(),
-          date: prev.gameDate,
-          type: 'milestone' as const,
-          title: `Scrapped: ${ship.name}`,
-          description: `Recovered ${formatMoney(scrapValue)} in salvage (30% of build cost).`,
-        }, ...prev.eventLog].slice(0, 50),
-      };
+  // Phase 3 slice 3: SERVER-FIRST ship order. /assets/ship re-validates the
+  // research gate, the unlock and the shipyard cap, prices the hull with the
+  // world's mega-project launch discount, ledgers money + materials
+  // (ship_build / ship_build_resources) and returns the build timing. Local
+  // state is only mutated on the 2xx; the materials are NOT attested through
+  // builtThisTick on that path. 'local' keeps the pre-registry path.
+  const handleBuildShip = useCallback((shipDefId: string, locationId: string) => {
+    const cur = stateRef.current;
+    const def = SHIP_MAP.get(shipDefId);
+    if (!cur || !def) return;
+    // E3.3: completed cooperative mega-projects (the Space Elevator's
+    // -15%) discount the cost of putting mass into space. Identity
+    // (x1) until a server actually finishes one.
+    if (cur.money < applyLaunchCostReduction(def.baseCost, cur)) { playSound('error'); return; }
+    for (const [resId, qty] of Object.entries(def.resourceCost)) {
+      if ((cur.resources[resId] || 0) < qty) { playSound('error'); return; }
+    }
+    const instanceId = generateId();
+    playSound('click');
+    void requestAssetOp('ship', { definitionId: shipDefId, locationId, instanceId }, `${def.name} order`).then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Shipyard', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data : null;
+      playSound('build_start');
+      setState(prev => {
+        if (!prev) return prev;
+        if ((prev.ships || []).some(s => s.instanceId === instanceId)) return prev; // idempotent
+        const hullCost = server && typeof server.cost === 'number' ? server.cost : applyLaunchCostReduction(def.baseCost, prev);
+        const startedAtMs = server && typeof server.startedAtMs === 'number' ? server.startedAtMs : Date.now();
+        const duration = server && typeof server.buildDurationSeconds === 'number' ? server.buildDurationSeconds : def.buildTimeSeconds;
+        const newResources = { ...prev.resources };
+        for (const [resId, qty] of Object.entries(def.resourceCost)) {
+          newResources[resId] = (newResources[resId] || 0) - qty;
+        }
+        // Phase 2 (inventory-attestations.ts): attest the resource spend —
+        // ONLY on the local-only path; the registry ledgered it otherwise.
+        const shipAttestations = !server
+          ? accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>)
+          : prev.pendingInventoryAttestations;
+        const newShip = {
+          instanceId,
+          definitionId: shipDefId,
+          name: generateShipName(def.role),
+          status: 'building' as const,
+          currentLocation: locationId,
+          isBuilt: false,
+          buildStartedAtMs: startedAtMs,
+          buildDurationSeconds: duration,
+        };
+        return {
+          ...prev,
+          money: prev.money - hullCost,
+          totalSpent: prev.totalSpent + hullCost,
+          resources: newResources,
+          ships: [...(prev.ships || []), newShip],
+          pendingInventoryAttestations: shipAttestations,
+          eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Ship ordered: ${newShip.name}`, description: `${def.name} — ready in ${formatDuration(duration)}.` }, ...prev.eventLog].slice(0, 50),
+        };
+      });
     });
   }, []);
 
@@ -2482,48 +2596,7 @@ export default function SpaceTycoonPage() {
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel
           state={state}
-          onBuildShip={(shipDefId, locationId) => {
-            const def = SHIP_MAP.get(shipDefId);
-            if (!def) return;
-            playSound('build_start');
-            setState(prev => {
-              if (!prev) { playSound('error'); return prev; }
-              // E3.3: completed cooperative mega-projects (the Space Elevator's
-              // -15%) discount the cost of putting mass into space. Identity
-              // (x1) until a server actually finishes one.
-              const hullCost = applyLaunchCostReduction(def.baseCost, prev);
-              if (prev.money < hullCost) { playSound('error'); return prev; }
-              // Check resources
-              for (const [resId, qty] of Object.entries(def.resourceCost)) {
-                if ((prev.resources[resId] || 0) < qty) { playSound('error'); return prev; }
-              }
-              const newResources = { ...prev.resources };
-              for (const [resId, qty] of Object.entries(def.resourceCost)) {
-                newResources[resId] = (newResources[resId] || 0) - qty;
-              }
-              // Phase 2 (inventory-attestations.ts): attest the resource spend.
-              const shipAttestations = accumulateBuiltSpend(prev.pendingInventoryAttestations, def.resourceCost as Record<string, number>);
-              const newShip = {
-                instanceId: generateId(),
-                definitionId: shipDefId,
-                name: generateShipName(def.role),
-                status: 'building' as const,
-                currentLocation: locationId,
-                isBuilt: false,
-                buildStartedAtMs: Date.now(),
-                buildDurationSeconds: def.buildTimeSeconds,
-              };
-              return {
-                ...prev,
-                money: prev.money - hullCost,
-                totalSpent: prev.totalSpent + hullCost,
-                resources: newResources,
-                ships: [...(prev.ships || []), newShip],
-                pendingInventoryAttestations: shipAttestations,
-                eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Ship ordered: ${newShip.name}`, description: `${def.name} — ready in ${formatDuration(def.buildTimeSeconds)}.` }, ...prev.eventLog].slice(0, 50),
-              };
-            });
-          }}
+          onBuildShip={handleBuildShip}
           onStartMining={(shipInstanceId, resourceId) => {
             setState(prev => {
               if (!prev) return prev;

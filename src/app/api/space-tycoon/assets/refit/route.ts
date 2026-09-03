@@ -10,7 +10,7 @@ import {
 } from '@/lib/game/mark-upgrades';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
-import { rowToBuildingInstance } from '@/lib/game/server-assets';
+import { loadServerResearch, rowToBuildingInstance } from '@/lib/game/server-assets';
 import {
   InsufficientFundsError,
   AssetStateError,
@@ -56,7 +56,8 @@ export async function POST(request: NextRequest) {
       .find(b => b && b.instanceId === instanceId);
     const now = Date.now();
     const inst = rowToBuildingInstance(row, clientBuilding, now);
-    const research = Array.isArray(profile.completedResearchList) ? profile.completedResearchList : [];
+    // Slice 2: the Mark III research gate reads the registry's research view.
+    const research = (await loadServerResearch(profile.id, profile.completedResearchList, { workforceData: profile.workforceData })).completed;
     const check = canStartMarkUpgrade(inst, def, research);
     if (!check.allowed || !check.target) {
       return badRequest(check.reason || 'Refit not available', 'refit_blocked', { missingResearch: check.missingResearch });

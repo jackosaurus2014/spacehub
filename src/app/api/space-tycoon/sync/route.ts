@@ -42,8 +42,11 @@ import {
   sanitizeFactionLicenses,
   buildFirstSyncKit,
   SYNC_MAX_BUILDINGS,
+  SYNC_MAX_SHIPS,
   type FirstSyncKit,
   type ValidatedSyncEconomics,
+  type SyncService,
+  type SyncShip,
 } from '@/lib/game/sync-validation';
 import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
@@ -87,15 +90,22 @@ import {
   ASSET_AUDIT_LOGGED_KEY,
   ASSET_AUDIT_THROTTLE_MS,
   ASSET_BASELINE_KEY,
+  ASSET_BASELINE2_KEY,
   auditAsset,
   buildAdoptionRows,
+  buildAdoptionRows2,
   completeDueAssets,
   diffClientAssets,
+  diffClientAssets2,
   getAssetLedgerMode,
-  loadServerAssetRows,
+  loadServerRegistry,
+  loadServerServicesForProfiles,
   mergeServerBuildings,
+  mergeServerShips,
   readAssetAuditLoggedAt,
   readAssetBaseline,
+  readAssetBaseline2,
+  shipsAdoptable,
   type AssetLedgerMode,
 } from '@/lib/game/server-assets';
 
@@ -811,21 +821,53 @@ export async function POST(request: Request) {
     //     `assetLedger.rejectedInstanceIds` so the client removes them
     //     (asset-reconcile.ts). Nothing is refunded — never paid server-side.
     // Book value below reads the same merged view the other readers use.
+    // ── Phase 3 slices 2-5 ("Phase 3 slices 2-5") ─────────────────────────
+    // The same block now reconciles research (`completedResearch[]` vs
+    // 'research' rows), ships (`ships[]` vs 'ship' rows), unlocked locations
+    // (`unlockedLocations[]` vs STARTING ∪ ColonyClaim ∪ 'location' rows) and
+    // services (the client's `activeServices[]` vs the set DERIVED from
+    // complete buildings + complete research — never rows). Adoption of the
+    // three new kinds ratchets on a second marker (`_assetBaselineAt2`) so a
+    // profile slice 1 already stamped adopts them exactly once; ship
+    // adoption is deferred (marker not stamped) until the client sends ship
+    // instanceIds. Enforce drops unledgered research / ships / locations
+    // (`rejectedResearchIds` / `rejectedShipIds` / `rejectedLocationIds`)
+    // and persists the DERIVED service set + counts; shadow audits each gap
+    // (same 1/hour/profile throttle) and persists the client's lists — the
+    // research list as the UNION with complete rows, so a cron-appended
+    // completion is never lost to a stale client list.
     const assetLedgerMode = getAssetLedgerMode();
     const assetExtras: Record<string, unknown> = {};
-    let assetLedgerInfo: {
+    type AssetLedgerInfo = {
       mode: AssetLedgerMode; adopted: boolean; adoptedCount: number;
-      rejectedInstanceIds: string[]; notInLedger: number; unlistedServerRows: number;
-    } | null = null;
+      rejectedInstanceIds: string[]; rejectedResearchIds: string[]; rejectedShipIds: string[]; rejectedLocationIds: string[];
+      notInLedger: number; unlistedServerRows: number;
+      services: { derived: number; client: number; missingFromClient: number; extraInClient: number; source: string } | null;
+    };
+    const emptyAdoptInfo = (count: number): AssetLedgerInfo => ({
+      mode: assetLedgerMode, adopted: true, adoptedCount: count,
+      rejectedInstanceIds: [], rejectedResearchIds: [], rejectedShipIds: [], rejectedLocationIds: [],
+      notInLedger: 0, unlistedServerRows: 0, services: null,
+    });
+    let assetLedgerInfo: AssetLedgerInfo | null = null;
     let buildingsToPersist = economics.buildings;
     let bookBuildings: Array<{ definitionId: string; isComplete: boolean; markLevel?: number }> = economics.buildings;
+    let researchToPersist: string[] = economics.completedResearch;
+    let shipsToPersist: SyncShip[] = economics.ships;
+    let servicesToPersist: SyncService[] = economics.activeServices;
+    let locationsToPersist: string[] = economics.unlockedLocations;
+    let bookShips: Array<{ definitionId: string; isBuilt: boolean }> = economics.ships;
+    let enforcedCounts: { researchCount: number; serviceCount: number; locationsUnlocked: number } | null = null;
     let adoptKitAfterCreate = false;
     if (assetLedgerMode !== 'off' && existingProfile) {
       try {
         const nowMs = Date.now();
         const baseline = readAssetBaseline(existingProfile.workforceData);
+        const baseline2 = readAssetBaseline2(existingProfile.workforceData);
         const loggedAt = readAssetAuditLoggedAt(existingProfile.workforceData);
         if (loggedAt) assetExtras[ASSET_AUDIT_LOGGED_KEY] = loggedAt;
+        let adoptedCount = 0;
+        let adoptedAny = false;
         if (!baseline) {
           // Adoption: the validated list, enriched with the raw body's
           // wall-clock timing (sync-validation drops startedAtMs /
@@ -849,15 +891,73 @@ export async function POST(request: Request) {
           // probe, so the marker is never stamped while the table is missing.
           await prisma.serverAsset.createMany({ data: rows, skipDuplicates: true });
           assetExtras[ASSET_BASELINE_KEY] = new Date(nowMs).toISOString();
-          assetLedgerInfo = { mode: assetLedgerMode, adopted: true, adoptedCount: rows.length, rejectedInstanceIds: [], notInLedger: 0, unlistedServerRows: 0 };
+          adoptedCount += rows.length;
+          adoptedAny = true;
           logger.info('Asset registry: client buildings adopted', { profileId: existingProfile.id, count: rows.length, mode: assetLedgerMode });
         } else {
           assetExtras[ASSET_BASELINE_KEY] = baseline;
+        }
+        if (!baseline2) {
+          // Slices 2-5 adoption: research / ships / unlocked locations. The
+          // validated ship list drops the wall-clock build timing — enrich
+          // it from the raw body like the buildings above. Ships need
+          // instanceIds (the slice 3 payload): a pre-slice client sends
+          // none, so ship adoption is DEFERRED (marker not stamped) until
+          // it does — otherwise enforce would strike a real fleet.
+          const rawShipTiming = new Map<string, { buildStartedAtMs?: number; buildDurationSeconds?: number }>();
+          const rawShips = (body as Record<string, unknown>).ships;
+          if (Array.isArray(rawShips)) {
+            for (const rs of rawShips.slice(0, SYNC_MAX_SHIPS)) {
+              if (!rs || typeof rs !== 'object') continue;
+              const r = rs as Record<string, unknown>;
+              if (typeof r.instanceId !== 'string') continue;
+              rawShipTiming.set(r.instanceId, {
+                buildStartedAtMs: typeof r.buildStartedAtMs === 'number' && Number.isFinite(r.buildStartedAtMs) ? r.buildStartedAtMs : undefined,
+                buildDurationSeconds: typeof r.buildDurationSeconds === 'number' && Number.isFinite(r.buildDurationSeconds) ? r.buildDurationSeconds : undefined,
+              });
+            }
+          }
+          const shipsOk = shipsAdoptable(economics.ships);
+          const adoptableShips = economics.ships.map(sh => ({ ...sh, ...(sh.instanceId ? rawShipTiming.get(sh.instanceId) : {}) }));
+          const rows2 = buildAdoptionRows2(existingProfile.id, {
+            completedResearch: economics.completedResearch,
+            ships: shipsOk ? adoptableShips : [],
+            unlockedLocations: economics.unlockedLocations,
+          }, nowMs);
+          await prisma.serverAsset.createMany({ data: rows2, skipDuplicates: true });
+          if (shipsOk) assetExtras[ASSET_BASELINE2_KEY] = new Date(nowMs).toISOString();
+          adoptedCount += rows2.length;
+          adoptedAny = true;
+          logger.info('Asset registry: client research / ships / locations adopted', {
+            profileId: existingProfile.id, count: rows2.length, mode: assetLedgerMode, shipsDeferred: !shipsOk,
+          });
+        } else {
+          assetExtras[ASSET_BASELINE2_KEY] = baseline2;
+        }
+        if (adoptedAny) {
+          assetLedgerInfo = emptyAdoptInfo(adoptedCount);
+        } else {
           await completeDueAssets(prisma, existingProfile.id, new Date(nowMs));
-          const rows = await loadServerAssetRows(existingProfile.id, prisma);
+          const registry = await loadServerRegistry(existingProfile.id, {
+            buildingsData: economics.buildings,
+            shipsData: economics.ships,
+            activeServicesData: economics.activeServices,
+            completedResearchList: economics.completedResearch,
+            unlockedLocationsList: economics.unlockedLocations,
+            workforceData: existingProfile.workforceData,
+          }, { mode: assetLedgerMode, now: nowMs });
+          const rows = registry.rows;
           const diff = diffClientAssets(economics.buildings, rows);
+          const diff2 = diffClientAssets2(
+            { completedResearch: economics.completedResearch, ships: economics.ships, unlockedLocations: economics.unlockedLocations },
+            rows, registry.colonyClaimLocationIds, nowMs,
+          );
+          const svc = registry.services;
           const enforce = assetLedgerMode === 'enforce';
-          if (diff.clientNotInLedger.length > 0 || diff.serverNotInClient.length > 0) {
+          const notInLedger2 = diff2.researchNotInLedger.length + diff2.shipsNotInLedger.length + diff2.locationsNotInLedger.length;
+          const unlisted2 = diff2.serverResearchNotInClient.length + diff2.serverShipsNotInClient.length + diff2.serverLocationsNotInClient.length;
+          const servicesDiverge = svc.missingFromClient > 0 || svc.extraInClient > 0;
+          if (diff.clientNotInLedger.length > 0 || diff.serverNotInClient.length > 0 || notInLedger2 > 0 || unlisted2 > 0 || servicesDiverge) {
             const throttled = !!loggedAt && nowMs - Date.parse(loggedAt) < ASSET_AUDIT_THROTTLE_MS;
             if (!throttled) {
               assetExtras[ASSET_AUDIT_LOGGED_KEY] = new Date(nowMs).toISOString();
@@ -881,17 +981,86 @@ export async function POST(request: Request) {
                   details: { mode: assetLedgerMode, count: diff.serverNotInClient.length, instanceIds: diff.serverNotInClient.slice(0, 50) },
                 });
               }
+              // Slices 2-5: one row per kind with a gap, same event types.
+              const gaps2: Array<[string, string[]]> = [
+                ['research', diff2.researchNotInLedger], ['ship', diff2.shipsNotInLedger], ['location', diff2.locationsNotInLedger],
+              ];
+              for (const [kind, ids] of gaps2) {
+                if (ids.length === 0) continue;
+                logger.warn(
+                  enforce ? `Client ${kind} assets with no registry row — rejected` : `Client ${kind} assets with no registry row — shadow (persisted)`,
+                  { profileId: existingProfile.id, count: ids.length, ids: ids.slice(0, 20) },
+                );
+                await auditAsset(prisma, {
+                  eventType: enforce ? 'client_asset_rejected' : 'client_asset_not_in_ledger',
+                  profileId: existingProfile.id,
+                  severity: enforce ? 'critical' : 'warning',
+                  details: { mode: assetLedgerMode, kind, count: ids.length, ids: ids.slice(0, 50) },
+                });
+              }
+              if (unlisted2 > 0) {
+                await auditAsset(prisma, {
+                  eventType: 'server_asset_not_in_client',
+                  profileId: existingProfile.id,
+                  severity: 'info',
+                  details: {
+                    mode: assetLedgerMode, count: unlisted2,
+                    research: diff2.serverResearchNotInClient.slice(0, 50), ships: diff2.serverShipsNotInClient.slice(0, 50), locations: diff2.serverLocationsNotInClient.slice(0, 50),
+                  },
+                });
+              }
+              if (servicesDiverge) {
+                await auditAsset(prisma, {
+                  eventType: 'client_services_divergent',
+                  profileId: existingProfile.id,
+                  severity: 'warning',
+                  details: { mode: assetLedgerMode, derived: svc.derived.length, client: economics.activeServices.length, missingFromClient: svc.missingFromClient, extraInClient: svc.extraInClient },
+                });
+              }
             }
           }
           const rejected = enforce ? diff.clientNotInLedger.filter(id => id !== '?') : [];
-          if (enforce && diff.clientNotInLedger.length > 0) {
-            const rejectedSet = new Set(diff.clientNotInLedger);
-            buildingsToPersist = economics.buildings.filter(b => !!b.instanceId && !rejectedSet.has(b.instanceId));
+          const rejectedResearch = enforce ? diff2.researchNotInLedger : [];
+          const rejectedShips = enforce ? diff2.shipsNotInLedger.filter(id => id !== '?') : [];
+          const rejectedLocations = enforce ? diff2.locationsNotInLedger : [];
+          if (enforce) {
+            if (diff.clientNotInLedger.length > 0) {
+              const rejectedSet = new Set(diff.clientNotInLedger);
+              buildingsToPersist = economics.buildings.filter(b => !!b.instanceId && !rejectedSet.has(b.instanceId));
+            }
+            if (diff2.researchNotInLedger.length > 0) {
+              const set = new Set(diff2.researchNotInLedger);
+              researchToPersist = economics.completedResearch.filter(id => !set.has(id));
+            }
+            if (diff2.shipsNotInLedger.length > 0) {
+              const set = new Set(diff2.shipsNotInLedger);
+              shipsToPersist = economics.ships.filter(sh => !!sh.instanceId && !set.has(sh.instanceId));
+            }
+            if (diff2.locationsNotInLedger.length > 0) {
+              const set = new Set(diff2.locationsNotInLedger);
+              locationsToPersist = economics.unlockedLocations.filter(l => !set.has(l));
+            }
+            // Slice 4: the persisted service set IS the derived set in enforce.
+            servicesToPersist = svc.derived.map(d => ({ definitionId: d.definitionId, locationId: d.locationId, linkedBuildingIds: d.linkedBuildingIds }));
+            enforcedCounts = {
+              researchCount: researchToPersist.length,
+              serviceCount: servicesToPersist.length,
+              locationsUnlocked: registry.locations.unlocked.length,
+            };
+          } else {
+            // Shadow: the persisted research list is the union with the
+            // complete rows (a cron-appended completion survives a stale
+            // client list); everything else is persisted as sent.
+            researchToPersist = registry.research.completed;
           }
           bookBuildings = mergeServerBuildings(rows, buildingsToPersist, assetLedgerMode, nowMs).buildings;
+          bookShips = mergeServerShips(rows, shipsToPersist, assetLedgerMode, nowMs).ships;
           assetLedgerInfo = {
-            mode: assetLedgerMode, adopted: false, adoptedCount: 0, rejectedInstanceIds: rejected,
-            notInLedger: diff.clientNotInLedger.length, unlistedServerRows: diff.serverNotInClient.length,
+            mode: assetLedgerMode, adopted: false, adoptedCount: 0,
+            rejectedInstanceIds: rejected, rejectedResearchIds: rejectedResearch, rejectedShipIds: rejectedShips, rejectedLocationIds: rejectedLocations,
+            notInLedger: diff.clientNotInLedger.length + notInLedger2,
+            unlistedServerRows: diff.serverNotInClient.length + unlisted2,
+            services: { derived: svc.derived.length, client: economics.activeServices.length, missingFromClient: svc.missingFromClient, extraInClient: svc.extraInClient, source: svc.source },
           };
         }
       } catch (assetError) {
@@ -899,9 +1068,12 @@ export async function POST(request: Request) {
         logger.error('Asset registry reconciliation failed', { error: String(assetError) });
       }
     } else if (assetLedgerMode !== 'off' && firstSyncKit) {
-      // C-1: a brand-new profile's kit buildings become its registry rows
-      // right after the row is created (below), baselined in this request.
-      assetExtras[ASSET_BASELINE_KEY] = new Date().toISOString();
+      // C-1: a brand-new profile's kit buildings / research / ships /
+      // locations become its registry rows right after the row is created
+      // (below), baselined (both markers) in this request.
+      const kitIso = new Date().toISOString();
+      assetExtras[ASSET_BASELINE_KEY] = kitIso;
+      assetExtras[ASSET_BASELINE2_KEY] = kitIso;
       adoptKitAfterCreate = true;
     }
 
@@ -915,14 +1087,22 @@ export async function POST(request: Request) {
       // frontier.ts computeBookNetWorth.
       assetBookValue += markBookValue(b, BOOK_VALUE_DEPRECIATION_FACTOR);
     }
-    for (const sh of economics.ships) {
+    // Slice 3: ships book through the registry view (isBuilt is server-owned
+    // there — union in shadow, server rows the client still lists in enforce).
+    for (const sh of bookShips) {
       if (!sh.isBuilt) continue;
       const def = SHIP_MAP.get(sh.definitionId);
       if (def && Number.isFinite(def.baseCost)) assetBookValue += def.baseCost * BOOK_VALUE_DEPRECIATION_FACTOR;
     }
     const netWorthRaw = reconciledMoney + resourceValue + assetBookValue;
     const netWorth = Number.isFinite(netWorthRaw) ? Math.round(netWorthRaw) : Math.round(reconciledMoney);
-    const { totalEarned, totalSpent, buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear } = economics;
+    const { totalEarned, totalSpent, buildingCount, gameYear } = economics;
+    // Slices 2/4/5: in enforce the scalar counts corporation-tiers.ts
+    // tierFromProfileScalars (daily bonus) and the contract `services_count`
+    // check read are derived from the registry, not the client's counters.
+    const researchCount = enforcedCounts ? enforcedCounts.researchCount : economics.researchCount;
+    const serviceCount = enforcedCounts ? enforcedCounts.serviceCount : economics.serviceCount;
+    const locationsUnlocked = enforcedCounts ? enforcedCounts.locationsUnlocked : economics.locationsUnlocked;
 
     // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 5): server-
     // aggregated orbital-slot occupancy (finishes the computeOrbitalSlotReport
@@ -961,11 +1141,14 @@ export async function POST(request: Request) {
     // Validated (C-5) arrays for storage — or the first-sync kit (C-1).
     // Phase 3 slice 1: in enforce mode this is the client list MINUS the
     // buildings the registry never sold it (see the asset block above).
+    // Phase 3 slices 2-5: research / ships / locations minus what enforce
+    // rejected (research = the union with complete rows in shadow);
+    // services = the derived set in enforce.
     const safeBuildings = buildingsToPersist;
-    const safeServices = economics.activeServices;
-    const safeLocations = economics.unlockedLocations;
-    const safeResearch = economics.completedResearch;
-    const safeShips = economics.ships;
+    const safeServices = servicesToPersist;
+    const safeLocations = locationsToPersist;
+    const safeResearch = researchToPersist;
+    const safeShips = shipsToPersist;
 
     // Referral (2026-08-28): remember whether this sync is creating the
     // profile so an invite cookie can be attributed exactly once.
@@ -1040,9 +1223,14 @@ export async function POST(request: Request) {
     // next sync is already diffed against server rows.
     if (adoptKitAfterCreate && firstSyncKit) {
       try {
-        const rows = buildAdoptionRows(profile.id, firstSyncKit.buildings, Date.now());
+        const rows = [
+          ...buildAdoptionRows(profile.id, firstSyncKit.buildings, Date.now()),
+          ...buildAdoptionRows2(profile.id, {
+            completedResearch: firstSyncKit.completedResearch, ships: firstSyncKit.ships, unlockedLocations: firstSyncKit.unlockedLocations,
+          }, Date.now()),
+        ];
         await prisma.serverAsset.createMany({ data: rows, skipDuplicates: true });
-        assetLedgerInfo = { mode: assetLedgerMode, adopted: true, adoptedCount: rows.length, rejectedInstanceIds: [], notInLedger: 0, unlistedServerRows: 0 };
+        assetLedgerInfo = emptyAdoptInfo(rows.length);
       } catch (kitAssetError) {
         logger.error('Asset registry: first-sync kit adoption failed', { error: String(kitAssetError) });
       }
@@ -1588,11 +1776,14 @@ export async function POST(request: Request) {
       const { SERVICE_MAP } = await import('@/lib/game/services');
       const { LOCATION_TO_ZONE } = await import('@/lib/game/zone-influence');
       const allProfiles = await prisma.gameProfile.findMany({
-        select: { activeServicesData: true },
+        select: { id: true, activeServicesData: true, buildingsData: true, completedResearchList: true, workforceData: true },
         where: { lastSyncAt: { gt: new Date(Date.now() - 7 * 24 * 3600_000) } }, // Active in last 7 days
       });
+      // Phase 3 slice 4: the tax base reads the registry's service projection
+      // (derived from complete buildings + research; union in shadow).
+      const registryServices = await loadServerServicesForProfiles(allProfiles);
       for (const p of allProfiles) {
-        const services = (p.activeServicesData as { definitionId: string; locationId?: string }[] | null) || [];
+        const services = registryServices.get(p.id)?.services ?? [];
         for (const svc of services) {
           // Governor tax base (audit A7): zone-wide service activity
           if (svc.definitionId && svc.locationId) {

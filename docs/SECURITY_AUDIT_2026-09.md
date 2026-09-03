@@ -786,3 +786,183 @@ sell, mothball, reactivate, repair ledger effects; cron fail-closed + flip),
 `asset-reconcile.test.ts` (adoption once + table-missing guard; shadow audit
 + throttle + unlisted rows; enforce drop + rejected ids + book value; off;
 client removal idempotent + queue merge).
+
+## Phase 3 slices 2-5 — research, ships, services, locations (2026-09-02)
+
+Slice 1 made buildings server-created. This extends the same design — the
+same `ServerAsset` table, the same `ASSET_LEDGER_MODE` ladder, the same
+adoption ratchet, the same reader switch — to the four remaining
+client-written columns: `completedResearchList`, `shipsData`,
+`activeServicesData`, `unlockedLocationsList`. No schema change: `kind` is
+now `'building' | 'research' | 'ship' | 'location'`; services are never
+rows (below). No DDL for this deploy.
+
+### What is authoritative now
+
+| Route (session + 30/min/profile) | Effect | Ledger reasons |
+|---|---|---|
+| `POST /assets/research` `{definitionId, instanceId}` | validates prerequisites against the registry's research view, not-complete / not-in-progress, the repeatable level cap (= count of complete rows of that definition), and the **two-queue rule** (pending research rows vs `1 + parallel_research` — `page.tsx handleStartResearch`'s rule mirrored); prices with `research-tree.ts getResearchDisplayState` on the server view (`baseCostMoney`, the 2× doctrine override, the ×2.5/level repeatable escalation — `computeServerResearchQuote`); verifies `def.resourceCost` against `loadAuthoritativeInventory`; atomic debit; inserts `pending` with `completesAt = now + effectiveSeconds / min(1.5, 1 + research speed bonus) / DEV_FAST`. Retry-safe by instanceId. | `research_start` (burned), `research_start_resources` |
+| `POST /assets/ship` `{definitionId, locationId, instanceId}` | validates `requiredResearch` (registry view), the build location (registry location projection) and a hard shipyard cap (pending hulls < `MAX_SHIPYARD_SLOTS`); prices with `applyLaunchCostReduction(def.baseCost, worldMegaProjectBonuses)` + `def.resourceCost`; inserts `pending` with `completesAt = now + def.buildTimeSeconds` (identical on both sides — the engine applies no multiplier to ship builds). | `ship_build` (burned), `ship_build_resources` |
+| `POST /assets/scrap` `{instanceId}` | `pending\|complete → scrapped` (terminal, status-guarded); credits `30 % × baseCost`. Idle rule: the PERSISTED `shipsData` status must be idle in every mode. Shadow + no row → accepted with `ledgered: false` (no credit; the client applies its local salvage as before). Enforce + no row → 404; a missing persisted entry is audited `ship_scrap_status_unverified` before the credit. | `ship_scrap_recovery` (+money) |
+| `POST /assets/unlock` `{locationId}` | validates the location (`LOCATION_MAP` — base bodies and the colony bodies merged from `colonies.ts`) and its `requiredResearch` (registry view); charges `loc.unlockCost`; inserts a `complete` `'location'` row (`instanceId location:<id>`). Starting locations, an existing row and a `ColonyClaim` on the body are all free + idempotent. Replaces the free client unlock. | `location_unlock` (burned) |
+| `GET /assets` | now lists every kind | — |
+| `POST /api/cron/assets-complete` | flips `pending → complete` for every kind; a completed **research** row is also appended to the profile's persisted `completedResearchList` (+`researchCount`) exactly once (non-repeatable definitions only), so readers still on that column stay correct during shadow. | — |
+
+All six new reasons are in `CLIENT_APPLIED_LEDGER_REASONS` (the client
+applies each order locally on the 2xx; resource legs fold into
+`serverResources` on the next sync).
+
+**Services** have no purchase route. `deriveServicesFromAssets(buildings,
+research)` is `game-engine.ts §5` evaluated server-side: one service per
+(complete building, `enabledServices` entry whose `requiredResearch` is
+complete), `revenueMultiplier(min(researchCount, 10))`. `loadServerServices`
+derives it from the MERGED buildings + MERGED research (so shadow keeps union
+semantics end to end) and matches the client's list by (definition,
+building) — or (definition, location) for the pre-slice payload that sent
+no `linkedBuildingIds`. Parity with `processTick` is unit-tested on a
+fixture.
+
+**Locations** are a projection: `loadServerLocations = STARTING_LOCATIONS ∪
+ColonyClaim ∪ complete 'location' rows` (∪ the persisted list in shadow;
+rows ∩ the persisted list in enforce). A ColonyClaim is server truth on its
+own and always counts.
+
+**The unlock / colony split.** `POST /colonies` sells the COLONY SLOT
+(`colonies.ts claimCost`, presence-gated, slot-capped; it is what
+`colony_established` contracts read). `POST /assets/unlock` sells ACCESS
+(`unlockCost` — build / dispatch there). These were already two different
+fees before this slice (the client charged `unlockCost` locally, the claim
+charged `claimCost` server-side); nothing is charged twice for the same
+thing — a claimed body unlocks free, and an unlocked body is idempotent.
+The literal "colony bodies only through /colonies" split is impossible
+without loosening the 2026-09-01 hardening: a claim REQUIRES a completed
+building or ship at the body, which requires the unlock first. Follow-up:
+the client's claim POST at unlock time can never satisfy the presence gate;
+a "Claim colony" action belongs in the map panel once the corporation is
+present.
+
+### What stays client-owned condition (documented, not enforced)
+
+- **Ships:** `name`, `status`, `currentLocation`, `route`, cargo,
+  `miningOperation`, `surveyExpedition`, hull damage. The registry records
+  that a hull exists and was paid for, not where it is. `rowToShipInstance`
+  merges these by instanceId; a row with no client entry sits idle at its
+  build location. Readers of `currentLocation` (colony presence, demand
+  pools) therefore still trust the client for the location leg.
+- **Research:** rare-tech visibility (`unlockedRareTechIds` is never
+  synced); the client-only speed multipliers (every one ≥ 1, so the server
+  completion is slower-or-equal, like buildings); the exact per-tier
+  shipyard slot count (the server enforces only the hard cap).
+- **Research timing edge:** the server flips a research row and appends the
+  id on its own clock; a client whose local timer has not finished yet
+  re-sends its own list on the next sync. Shadow persists the UNION with
+  the complete rows so the appended id is never lost; enforce counts only
+  rows the client still lists (conservative, self-healing once the client
+  finishes).
+- **Repeatable programs:** level = count of complete rows of that
+  definition; the client's `repeatableResearchLevels` is not synced.
+
+### Sync reconciliation + adoption
+
+Same block, same modes, same 1/hour/profile audit throttle
+(`_assetAuditLoggedAt`):
+
+- **Adoption ratchet 2 (`_assetBaselineAt2`).** A profile slice 1 already
+  stamped adopts its research / ships / non-starting locations exactly once
+  under the second marker (`buildAdoptionRows2`; `paidMoney 0`, `ledgerSeq
+  null`; pending hulls keep `buildStartedAtMs + buildDurationSeconds` from
+  the raw body). A profile with neither marker adopts everything and stamps
+  both. A brand-new profile's kit adopts both in the create request. **Ship
+  adoption is deferred (marker 2 not stamped) while any client ship lacks
+  an instanceId** — the pre-slice sync payload sent ships without ids, and
+  adopting such a save would have stamped the marker with the fleet missing
+  (then enforce would strike it). The client payload now sends ship
+  `instanceId / isBuilt / name / build timing` and service
+  `linkedBuildingIds`.
+- **shadow:** per kind, client entries with no row → `client_asset_not_in_
+  ledger` (warning, `details.kind`); rows the client no longer lists →
+  `server_asset_not_in_client` (info); a derived-vs-client service gap →
+  `client_services_divergent` (warning: derived / client / missingFromClient
+  / extraInClient). Lists persist as sent — research as the union.
+- **enforce:** unledgered research / ships / locations are DROPPED from the
+  persisted columns and returned as `assetLedger.rejectedResearchIds /
+  rejectedShipIds / rejectedLocationIds` (`client_asset_rejected`,
+  critical); `activeServicesData` is REPLACED by the derived set; the scalar
+  columns `researchCount / serviceCount / locationsUnlocked` are derived
+  from the registry (so `corporation-tiers.ts tierFromProfileScalars` — the
+  daily bonus — and the contract `services_count` check read registry
+  truth). `applyAssetReconciliationToState` removes the rejected research,
+  ships and unlocks client-side (never a starting location; refunds
+  nothing; idempotent). Book net worth's ship leg reads the merged view.
+- `assetLedger` response: `{ mode, adopted, adoptedCount,
+  rejectedInstanceIds, rejectedResearchIds, rejectedShipIds,
+  rejectedLocationIds, notInLedger, unlistedServerRows, services: { derived,
+  client, missingFromClient, extraInClient, source } }`.
+
+### Readers switched
+
+`loadServerRegistry(profileId, profile)` (one row query + one ColonyClaim
+query, every kind) and the batched `loadServerRegistryForProfiles` /
+`loadServerServicesForProfiles`; single-kind `loadServerResearch /
+loadServerShips / loadServerLocations / loadServerServices`.
+
+- research: `bidding/fulfill` + `competitive-contracts`
+  (`research_completed_category`), `espionage` + `espionage/execute`
+  (`isActionUnlocked`, tech bonus), `seasons/progress`, `speed-runs/check`,
+  `zones/update`, the `assets/build` research gate + cost reductions, the
+  `assets/refit` Mark III gate, `assets/ship` / `assets/unlock` gates; the
+  sync's `researchCount` in enforce.
+- ships: `bidding/fulfill` + `competitive-contracts` (`ships_at_location`),
+  `colonies` presence, `demand-pools/update`, the sync's book net worth,
+  `seasons/progress`.
+- services: `competitive-contracts` (`services_count`), the sync's zone
+  governor tax base, `demand-pools/update`, `zones/update`,
+  `seasons/progress`, `speed-runs/check`; the sync's `serviceCount` in
+  enforce.
+- locations: the `assets/build` location gate (was persisted list ∪ claim),
+  `bidding/fulfill` + `competitive-contracts`, `seasons/progress`,
+  `speed-runs/check`; the sync's `locationsUnlocked` in enforce.
+
+Still on the JSON: espionage TARGET reads (intel, not money), milestones
+(slice 1 scope), `resource-plausibility.ts buildServerFlowState` (the
+ceilings — generous by design), the client-owned ship location leg above.
+
+### Client
+
+`handleStartResearch`, `handleBuildShip` (was the inline `onBuildShip`),
+`handleScrapShip` and `handleUnlockLocation` are server-first like the six
+building handlers: validate locally, call the route, mutate on the 2xx with
+the server's cost / timing / recovery, keep `'local'` play for signed-out
+sessions, surface refusals. The research and ship paths no longer attest
+their material spend through `builtThisTick` on the server path.
+`ActiveResearch` gained `instanceId` / `serverCompletesAtMs`.
+
+### The flip plan
+
+1. Deploy (shadow, no DDL). Every active profile adopts research /
+   locations on its next sync; ships adopt on the first sync from the new
+   client bundle (deferred until then — watch `shipsDeferred: true` in the
+   adoption log line).
+2. Watch for ~7 days: `MarketAuditLog WHERE eventType IN
+   ('client_asset_not_in_ledger', 'server_asset_not_in_client',
+   'client_services_divergent')` with `details.kind`. Expected noise:
+   `client_services_divergent` from the (definition, location) fallback
+   match on clients that have not yet reloaded; research
+   `server_asset_not_in_client` for a few minutes around each completion
+   (server flips first). A `client_asset_not_in_ledger` for `kind: ship`
+   on an honest profile after the client reload means a ship path still
+   creates hulls without the route — fix it, then null the profile's
+   `_assetBaselineAt2` to re-adopt.
+3. `ASSET_LEDGER_MODE=enforce` (one switch flips all five kinds; slice 1 was
+   already shadow). Profiles without a marker still read as union, so a
+   late returner is adopted, never wiped.
+
+Tests: `server-assets.test.ts` (research quote / start rule / merge modes;
+ship cost / row projection / merge; location projection; derived services
+parity with `processTick` + matching modes; adoption rows 2 + deferral +
+diff 2; routes research / ship / scrap / unlock — validations, ledger rows,
+pending rows, retry-safety, scrap idle + shadow / enforce; cron flips every
+kind and appends research once), `asset-reconcile.test.ts` (adoption under
+marker 2 once + ship deferral; shadow audits per kind + research union;
+enforce drops + rejected ids + derived services + registry counts + ship
+book value; client removal + queue merge for every kind).

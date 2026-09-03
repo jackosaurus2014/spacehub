@@ -8,7 +8,7 @@ import { getGlobalGameDate } from '@/lib/game/server-time';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { checkContractFulfillment, type GameProfileForFulfillment } from '@/lib/game/contract-bidding';
 // Phase 3 slice 1: building predicates read the server registry (server-assets.ts).
-import { loadServerBuildings } from '@/lib/game/server-assets';
+import { loadServerRegistry } from '@/lib/game/server-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -154,17 +154,18 @@ export async function POST(request: NextRequest) {
     const colonyClaims = requiresColonyCheck(contract.requirement.type)
       ? await prisma.colonyClaim.findMany({ where: { profileId: profile.id }, select: { locationId: true } })
       : [];
-    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): buildings come from
-    // the ServerAsset registry (union in shadow, server rows only in enforce).
-    const registryBuildings = await loadServerBuildings(profile.id, profile.buildingsData, { workforceData: profile.workforceData });
+    // Phase 3 slices 1-5 (docs/SECURITY_AUDIT_2026-09.md): buildings,
+    // research, ships, services and unlocked locations come from the
+    // ServerAsset registry (union in shadow, server rows only in enforce).
+    const registry = await loadServerRegistry(profile.id, profile, { workforceData: profile.workforceData });
     const fulfillmentProfile: GameProfileForFulfillment = {
-      buildingsData: registryBuildings.buildings,
+      buildingsData: registry.buildings.buildings,
       resources: profile.resources,
-      completedResearchList: profile.completedResearchList,
-      shipsData: profile.shipsData,
-      unlockedLocationsList: profile.unlockedLocationsList,
+      completedResearchList: registry.research.completed,
+      shipsData: registry.ships.ships,
+      unlockedLocationsList: registry.locations.unlocked,
       netWorth: profile.netWorth,
-      serviceCount: profile.serviceCount,
+      serviceCount: registry.services.services.length,
       colonyLocationIds: colonyClaims.map(c => c.locationId),
     };
     const fulfillment = checkContractFulfillment(

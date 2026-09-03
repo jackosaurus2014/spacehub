@@ -182,7 +182,18 @@ export type LedgerReason =
   | 'building_refit_resources'
   | 'building_decommission_recovery'
   | 'building_reactivation_fee'
-  | 'building_rush_repair';
+  | 'building_rush_repair'
+  // Phase 3 slices 2-5 ("Phase 3 slices 2-5"): research starts, ship hulls
+  // and location unlocks are paid server transactions too. research_start /
+  // ship_build / location_unlock are BURNED sinks; ship_scrap_recovery is the
+  // 30 % salvage credit (page.tsx handleScrapShip). Same client-applied
+  // posture as the building reasons.
+  | 'research_start'
+  | 'research_start_resources'
+  | 'ship_build'
+  | 'ship_build_resources'
+  | 'ship_scrap_recovery'
+  | 'location_unlock';
 
 export interface LedgerWrite {
   profileId: string;

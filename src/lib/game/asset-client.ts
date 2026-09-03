@@ -1,7 +1,9 @@
 // ─── Space Tycoon: client side of the server-authoritative asset routes ─────
-// docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 — buildings". The six
-// building handlers in page.tsx call the matching /api/space-tycoon/assets/*
-// route FIRST and mutate local state only on a 2xx ("server-first"). This
+// docs/SECURITY_AUDIT_2026-09.md "Phase 3 slice 1 — buildings" and "Phase 3
+// slices 2-5". The building handlers, handleStartResearch, onBuildShip,
+// handleScrapShip and handleUnlockLocation in page.tsx call the matching
+// /api/space-tycoon/assets/* route FIRST and mutate local state only on a
+// 2xx ("server-first"). This
 // module is the one fetch wrapper they share, and it classifies the outcome:
 //
 //   ok     — 2xx; `data` is the route's JSON (instanceId, completesAt, cost…)
@@ -24,7 +26,7 @@ export type AssetOpResult<T = Record<string, unknown>> =
 export const PENDING_HINT_MS = 800;
 
 export async function requestAssetOp<T = Record<string, unknown>>(
-  path: 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair',
+  path: 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock',
   body: Record<string, unknown>,
   label: string,
 ): Promise<AssetOpResult<T>> {

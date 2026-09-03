@@ -8,8 +8,7 @@ import { getColonyClaimCost, getColonyMaxSlots } from '@/lib/game/colonies';
 import { isLedgerAvailable, recordLedger } from '@/lib/game/server-ledger';
 import { validateBody, colonyClaimSchema } from '@/lib/validations';
 import { validationError } from '@/lib/errors';
-import type { BuildingInstance } from '@/lib/game/types';
-import type { ShipInstance } from '@/lib/game/ships';
+import { loadServerBuildings, loadServerShips } from '@/lib/game/server-assets';
 
 export const dynamic = 'force-dynamic';
 
@@ -104,7 +103,7 @@ export async function POST(request: NextRequest) {
 
     const profile = await prisma.gameProfile.findUnique({
       where: { userId: session.user.id },
-      select: { id: true, companyName: true, money: true, buildingsData: true, shipsData: true },
+      select: { id: true, companyName: true, money: true, buildingsData: true, shipsData: true, workforceData: true },
     });
     if (!profile) {
       return NextResponse.json({ error: 'No game profile' }, { status: 404 });
@@ -133,8 +132,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Presence prerequisite: a completed building or a built ship there.
-    const buildings = Array.isArray(profile.buildingsData) ? (profile.buildingsData as unknown as BuildingInstance[]) : [];
-    const ships = Array.isArray(profile.shipsData) ? (profile.shipsData as unknown as ShipInstance[]) : [];
+    // Phase 3 slices 1 + 3 (docs/SECURITY_AUDIT_2026-09.md): both read the
+    // ServerAsset registry (union in shadow, server rows only in enforce);
+    // a ship's currentLocation stays client-owned condition.
+    const buildings = (await loadServerBuildings(profile.id, profile.buildingsData, { workforceData: profile.workforceData })).buildings;
+    const ships = (await loadServerShips(profile.id, profile.shipsData, { workforceData: profile.workforceData })).ships;
     const hasPresence =
       buildings.some(b => b && b.isComplete && b.locationId === locationId) ||
       ships.some(s => s && s.isBuilt && s.currentLocation === locationId);

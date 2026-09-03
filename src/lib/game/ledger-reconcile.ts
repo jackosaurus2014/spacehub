@@ -88,6 +88,13 @@ export const CLIENT_APPLIED_LEDGER_REASONS = [
   'building_decommission_recovery',
   'building_reactivation_fee',
   'building_rush_repair',
+  // Phase 3 slices 2-5: research / ship / location orders — same contract.
+  'research_start',
+  'research_start_resources',
+  'ship_build',
+  'ship_build_resources',
+  'ship_scrap_recovery',
+  'location_unlock',
 ] as const;
 /** Every reason the client's pending-delta query must exclude. */
 export const PENDING_EXCLUDED_LEDGER_REASONS = [

@@ -13,7 +13,7 @@ import {
 } from '@/lib/game/zone-influence';
 import type { BuildingInstance, ServiceInstance } from '@/lib/game/types';
 // Phase 3 slice 1: buildings come from the ServerAsset registry (server-assets.ts).
-import { loadServerBuildingsForProfiles } from '@/lib/game/server-assets';
+import { loadServerRegistryForProfiles } from '@/lib/game/server-assets';
 
 /**
  * POST /api/space-tycoon/zones/update
@@ -54,6 +54,8 @@ export async function POST(request: Request) {
         completedResearchList: true,
         lastSyncAt: true,
         unlockedLocationsList: true,
+        shipsData: true,
+        workforceData: true,
       },
     });
 
@@ -104,13 +106,15 @@ export async function POST(request: Request) {
       zonePlayerData.set(zone.slug, []);
     }
 
-    // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): one batched registry
-    // read; union in shadow, server rows only in enforce.
-    const registryBuildings = await loadServerBuildingsForProfiles(profiles.map(p => ({ id: p.id, buildingsData: p.buildingsData })));
+    // Phase 3 slices 1-5 (docs/SECURITY_AUDIT_2026-09.md): one batched
+    // registry read for buildings, services and research; union in shadow,
+    // server rows only in enforce.
+    const registry = await loadServerRegistryForProfiles(profiles);
     for (const profile of profiles) {
-      const buildings = (registryBuildings.get(profile.id)?.buildings ?? []) as BuildingInstance[];
-      const services = (profile.activeServicesData as unknown as ServiceInstance[]) || [];
-      const research = profile.completedResearchList || [];
+      const view = registry.get(profile.id);
+      const buildings = (view?.buildings.buildings ?? []) as BuildingInstance[];
+      const services = (view?.services.services ?? []) as ServiceInstance[];
+      const research = view?.research.completed ?? (profile.completedResearchList || []);
       // completedContracts (client-simulated delivery contracts) still isn't
       // stored server-side — pass empty (matches pre-E7 behavior for that
       // signal) but supply the REAL zone-tagged BiddingContract count as the
