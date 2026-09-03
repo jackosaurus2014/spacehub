@@ -93,6 +93,7 @@ jest.mock('@/lib/game/market-orderbook', () => ({
 }));
 
 import { getServerSession } from 'next-auth';
+import { __resetRouteThrottle } from '@/lib/game/route-throttle';
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
 
@@ -130,6 +131,11 @@ function makeProfile(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // The per-profile route throttle is module-level in-memory state shared by
+  // every suite that lands in the same jest worker. Without this reset, a
+  // suite that exhausts a bucket for 'profile-1' makes these routes answer
+  // 429 here — a real cross-suite flake seen 2026-09-03.
+  __resetRouteThrottle();
   mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as never);
 });
 

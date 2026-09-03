@@ -12,6 +12,7 @@
  */
 
 import { fetchSAMOpportunities } from '@/lib/procurement/sam-gov';
+import { shouldRunWeeklySamLeg, recordWeeklySamLegRun } from '@/lib/procurement/sam-budget';
 import { upsertContent, getContentItem } from '@/lib/dynamic-content';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
@@ -50,14 +51,34 @@ const DEFENSE_KEYWORDS = [
  */
 export async function fetchDefenseProcurement(): Promise<number> {
   try {
+    // Quota discipline (2026-09-03): this SAM.gov leg shares one scarce
+    // account-wide daily budget with the procurement page's own daily sync
+    // (see src/lib/procurement/sam-budget.ts). /procurement is the daily
+    // priority consumer, so /space-defense's live-procurement panel only
+    // actually calls SAM.gov about once a week — the rest of this cron
+    // (news + RSS feeds below) still runs daily as before; only the SAM
+    // call is gated.
+    const shouldRun = await shouldRunWeeklySamLeg('space-defense');
+    if (!shouldRun) {
+      logger.info('Defense procurement SAM fetch skipped (weekly gate — last run <7d ago)');
+      return 0;
+    }
+
     const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
     const postedFrom = ninetyDaysAgo.toISOString().split('T')[0].replace(/-/g, '/');
 
-    const results = await fetchSAMOpportunities({
-      keywords: DEFENSE_KEYWORDS.join(' OR '),
-      postedFrom,
-      limit: 50,
-    });
+    const results = await fetchSAMOpportunities(
+      {
+        keywords: DEFENSE_KEYWORDS.join(' OR '),
+        postedFrom,
+        limit: 50,
+      },
+      'space-defense',
+    );
+
+    if (!results.degraded) {
+      await recordWeeklySamLegRun('space-defense');
+    }
 
     // Filter for defense-related agencies
     const defenseOpps = results.opportunities.filter((opp) => {
@@ -105,11 +126,18 @@ export async function fetchDefenseProcurement(): Promise<number> {
       );
     }
 
-    logger.info('Defense procurement fetch complete', {
-      total: results.totalRecords,
-      defenseFiltered: defenseOpps.length,
-      stored: liveContracts.length,
-    });
+    if (results.degraded) {
+      logger.warn('Defense procurement fetch degraded', {
+        reason: results.degraded.reason,
+        detail: results.degraded.detail,
+      });
+    } else {
+      logger.info('Defense procurement fetch complete', {
+        total: results.totalRecords,
+        defenseFiltered: defenseOpps.length,
+        stored: liveContracts.length,
+      });
+    }
 
     return liveContracts.length;
   } catch (error) {

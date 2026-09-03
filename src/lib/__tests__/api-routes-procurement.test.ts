@@ -121,6 +121,7 @@ jest.mock('@/lib/procurement/sam-gov', () => ({
 import { prisma } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { apiCache } from '@/lib/api-cache';
+import { logger } from '@/lib/logger';
 import { fetchSAMOpportunities } from '@/lib/procurement/sam-gov';
 
 import { GET as opportunitiesGET, POST as opportunitiesPOST } from '@/app/api/procurement/opportunities/route';
@@ -506,6 +507,68 @@ describe('POST /api/procurement/opportunities', () => {
       },
       data: { isActive: false },
     });
+
+    process.env.CRON_SECRET = originalEnv;
+  });
+
+  it('returns 200 with a degraded payload and logs "SAM.gov sync degraded" (not "completed") when the SAM fetch was degraded', async () => {
+    // 2026-09-03 fix: a quota-exhausted/circuit-open SAM.gov run used to
+    // still log "SAM.gov sync completed" with success:true off the circuit
+    // breaker's empty fallback. fetchSAMOpportunities now reports that via
+    // result.degraded — the route must surface it, not paper over it.
+    const originalEnv = process.env.CRON_SECRET;
+    process.env.CRON_SECRET = 'test-secret';
+
+    mockFetchSAM.mockResolvedValue({
+      opportunities: [],
+      totalRecords: 0,
+      degraded: { reason: 'quota_exhausted', detail: 'SAM.gov API error: 429 Too Many Requests' },
+    } as any);
+    (prisma.procurementOpportunity.updateMany as jest.Mock).mockResolvedValue({ count: 0 });
+
+    const req = new NextRequest('http://example.com/api/procurement/opportunities', {
+      method: 'POST',
+      headers: { authorization: 'Bearer test-secret' },
+    });
+    const res = await opportunitiesPOST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.data.degraded).toEqual({
+      reason: 'quota_exhausted',
+      detail: 'SAM.gov API error: 429 Too Many Requests',
+    });
+
+    const warnMessages = (logger.warn as jest.Mock).mock.calls.map((c) => c[0]);
+    expect(warnMessages).toContain('SAM.gov sync degraded');
+    const infoMessages = (logger.info as jest.Mock).mock.calls.map((c) => c[0]);
+    expect(infoMessages).not.toContain('SAM.gov sync completed');
+
+    process.env.CRON_SECRET = originalEnv;
+  });
+
+  it('does not include a degraded field and logs "SAM.gov sync completed" on a clean sync', async () => {
+    const originalEnv = process.env.CRON_SECRET;
+    process.env.CRON_SECRET = 'test-secret';
+
+    mockFetchSAM.mockResolvedValue({ opportunities: [], totalRecords: 0 });
+    (prisma.procurementOpportunity.updateMany as jest.Mock).mockResolvedValue({ count: 0 });
+
+    const req = new NextRequest('http://example.com/api/procurement/opportunities', {
+      method: 'POST',
+      headers: { authorization: 'Bearer test-secret' },
+    });
+    const res = await opportunitiesPOST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.data.degraded).toBeUndefined();
+
+    const infoMessages = (logger.info as jest.Mock).mock.calls.map((c) => c[0]);
+    expect(infoMessages).toContain('SAM.gov sync completed');
+    const warnMessages = (logger.warn as jest.Mock).mock.calls.map((c) => c[0]);
+    expect(warnMessages).not.toContain('SAM.gov sync degraded');
 
     process.env.CRON_SECRET = originalEnv;
   });

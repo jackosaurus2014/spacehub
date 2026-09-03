@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { internalError, createSuccessResponse } from '@/lib/errors';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
+import { getSamBudgetStatus } from '@/lib/procurement/sam-budget';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,7 +86,18 @@ export async function GET() {
     const combinedActive = (activeOpportunities ?? 0) + fundingOpen;
     const upcomingDeadlines = (procDeadlines ?? 0) + fundingDeadlines;
 
+    // samBudget never throws (reserveSamCall/getSamBudgetStatus fail open
+    // internally), but guard anyway so a future refactor there can't take
+    // down this endpoint's other, unrelated stats.
+    let samBudget: Awaited<ReturnType<typeof getSamBudgetStatus>>;
+    try {
+      samBudget = await getSamBudgetStatus();
+    } catch {
+      samBudget = { used: 0, budget: 0, byLabel: {}, dayKey: new Date().toISOString().slice(0, 10) };
+    }
+
     const stats = {
+      samBudget,
       overview: {
         totalOpportunities,
         activeOpportunities: combinedActive,

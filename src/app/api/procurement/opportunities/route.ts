@@ -227,14 +227,40 @@ export async function POST(request: Request) {
       data: { isActive: false },
     });
 
-    logger.info('SAM.gov sync completed', {
-      totalFetched: result.totalRecords,
+    // Honest telemetry (2026-09-03 fix): a quota-exhausted / circuit-open /
+    // budget-exhausted fetch used to still log "SAM.gov fetch successful"
+    // and "SAM.gov sync completed" with success:true off the circuit
+    // breaker's empty fallback. fetchSAMOpportunities now reports that
+    // explicitly via result.degraded — surface it here instead of pretending
+    // the sync completed cleanly. HTTP stays 200 either way (this is a cron
+    // endpoint, not a client-facing failure), but the payload and the log
+    // line both say what actually happened.
+    const responsePayload = {
       created,
       updated,
+      totalFetched: result.totalRecords,
       expiredClosed: expired.count,
-    });
+      ...(result.degraded ? { degraded: result.degraded } : {}),
+    };
 
-    return createSuccessResponse({ created, updated, totalFetched: result.totalRecords, expiredClosed: expired.count });
+    if (result.degraded) {
+      logger.warn('SAM.gov sync degraded', {
+        reason: result.degraded.reason,
+        detail: result.degraded.detail,
+        created,
+        updated,
+        expiredClosed: expired.count,
+      });
+    } else {
+      logger.info('SAM.gov sync completed', {
+        totalFetched: result.totalRecords,
+        created,
+        updated,
+        expiredClosed: expired.count,
+      });
+    }
+
+    return createSuccessResponse(responsePayload);
   } catch (error) {
     logger.error('Failed to sync SAM.gov data', {
       error: error instanceof Error ? error.message : String(error),

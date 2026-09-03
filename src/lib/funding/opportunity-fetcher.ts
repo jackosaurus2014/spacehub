@@ -1,5 +1,6 @@
 import { createCircuitBreaker } from '@/lib/circuit-breaker';
 import { logger } from '@/lib/logger';
+import { reserveSamCall, shouldRunWeeklySamLeg, recordWeeklySamLegRun } from '@/lib/procurement/sam-budget';
 
 // Circuit breakers for each source
 const grantsBreaker = createCircuitBreaker('grants-gov', { failureThreshold: 3, resetTimeout: 120000 });
@@ -238,17 +239,45 @@ export async function fetchSamGovOpportunities(): Promise<FundingOpportunityInpu
     logger.warn('SAM API key not configured (set SAM_API_KEY or SAM_GOV_API_KEY), skipping SAM.gov opportunity fetch');
     return results;
   }
+  // Weekly gate (2026-09-03): this fetcher calls api.sam.gov DIRECTLY,
+  // bypassing fetchSAMOpportunities()'s cache/circuit-breaker in
+  // src/lib/procurement/sam-gov.ts entirely — found while auditing the
+  // account's daily SAM.gov quota. It shares that same scarce daily budget
+  // with procurement (the daily priority consumer) and space-defense, so
+  // it both reserves from the shared budget below AND only actually runs
+  // about once a week, the same treatment as space-defense's SAM leg.
+  const shouldRun = await shouldRunWeeklySamLeg('funding');
+  if (!shouldRun) {
+    logger.info('SAM.gov fetch skipped (funding — weekly gate, last run <7d ago)');
+    return results;
+  }
+
   try {
-    // Quota discipline (2026-09-01): the SAM key allows ~5 calls/day until
-    // the account is entity-verified. Two keywords here + two NAICS calls on
-    // the procurement side = 4/day, inside budget. isSpaceRelated still
-    // filters, so broad keywords are safe.
     const keywords = ['space', 'satellite'];
+    let ranAtLeastOne = false;
     for (const keyword of keywords) {
+      const reservation = await reserveSamCall('funding');
+      if (!reservation.allowed) {
+        logger.warn('SAM.gov fetch skipped (funding — budget exhausted)', {
+          used: reservation.used,
+          budget: reservation.budget,
+        });
+        break;
+      }
+
       const url = `https://api.sam.gov/opportunities/v2/search?api_key=${apiKey}&q=${encodeURIComponent(keyword)}&postedFrom=${encodeURIComponent(getDateDaysAgo(30))}&postedTo=${encodeURIComponent(getDateDaysAgo(0))}&limit=25&offset=0`;
       const res = await fetch(url);
+      if (res.status === 429) {
+        logger.warn('SAM.gov fetch failed (429 — daily quota exhausted)', { source: 'funding', keyword });
+        break;
+      }
       if (!res.ok) continue;
       const data = await res.json();
+      if (data.code === '900804' || /throttled/i.test(String(data.message || ''))) {
+        logger.warn('SAM.gov fetch failed (429 — daily quota exhausted)', { source: 'funding', keyword });
+        break;
+      }
+      ranAtLeastOne = true;
       for (const opp of data?.opportunitiesData || []) {
         const extId = `sam-${opp.noticeId}`;
         if (results.some(r => r.externalId === extId)) continue;
@@ -277,6 +306,9 @@ export async function fetchSamGovOpportunities(): Promise<FundingOpportunityInpu
           naicsCode: opp.naicsCode || undefined,
         });
       }
+    }
+    if (ranAtLeastOne) {
+      await recordWeeklySamLegRun('funding');
     }
   } catch (error) {
     logger.error('Failed to fetch from SAM.gov', { error: error instanceof Error ? error.message : String(error) });

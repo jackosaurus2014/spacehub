@@ -1,6 +1,7 @@
-import { createCircuitBreaker } from '@/lib/circuit-breaker';
+import { createCircuitBreaker, CircuitState } from '@/lib/circuit-breaker';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
+import { reserveSamCall, type SamCallLabel } from '@/lib/procurement/sam-budget';
 
 const samBreaker = createCircuitBreaker('sam-gov', {
   failureThreshold: 3,
@@ -83,6 +84,18 @@ export interface SAMNotice {
 export interface SAMResponse {
   totalRecords: number;
   opportunities: MappedOpportunity[];
+  /**
+   * Present whenever this response did NOT come from a clean, complete
+   * SAM.gov fetch — a quota-exhausted 429, an open circuit breaker, a
+   * non-2xx response, an exhausted internal daily budget, or a missing API
+   * key. Callers must never report success on an empty result without
+   * checking this first (that silent-zero telemetry was half of the
+   * 2026-09-03 bug this field fixes).
+   */
+  degraded?: {
+    reason: 'quota_exhausted' | 'circuit_open' | 'http_error' | 'no_api_key' | 'budget_exhausted';
+    detail?: string;
+  };
 }
 
 export interface MappedOpportunity {
@@ -197,13 +210,49 @@ function mapSAMNotice(notice: SAMNotice): MappedOpportunity {
   };
 }
 
+/** Internal error carrying a discriminated reason so the loop below can log honestly. */
+class SamFetchError extends Error {
+  constructor(public readonly reason: 'quota_exhausted' | 'http_error', message: string) {
+    super(message);
+    this.name = 'SamFetchError';
+  }
+}
+
+/** Perform one real SAM.gov HTTP request. Throws SamFetchError on any non-success outcome. */
+async function performSamFetch(url: string): Promise<{ totalRecords: number; opportunities: MappedOpportunity[] }> {
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (response.status === 429) {
+    throw new SamFetchError('quota_exhausted', `SAM.gov API error: 429 ${response.statusText}`);
+  }
+  if (!response.ok) {
+    throw new SamFetchError('http_error', `SAM.gov API error: ${response.status} ${response.statusText}`);
+  }
+  const data = await response.json();
+  // Throttle bodies (code 900804) arrive as HTTP 200, so they're detected
+  // explicitly — otherwise a quota-exhausted day would look like a real
+  // (empty) result and get cached/reported as success.
+  if (data.code === '900804' || /throttled/i.test(String(data.message || ''))) {
+    throw new SamFetchError('quota_exhausted', `SAM.gov quota exhausted (resets ${data.nextAccessTime || 'midnight UTC'})`);
+  }
+  const rawNotices: SAMNotice[] = data.opportunitiesData || data.opportunities || [];
+  return { totalRecords: data.totalRecords || 0, opportunities: rawNotices.map(mapSAMNotice) };
+}
+
 export async function fetchSAMOpportunities(
-  params: SAMSearchParams
+  params: SAMSearchParams,
+  label: SamCallLabel = 'procurement'
 ): Promise<SAMResponse> {
   const apiKey = process.env.SAM_GOV_API_KEY || process.env.SAM_API_KEY;
   if (!apiKey) {
     logger.warn('SAM API key not configured (set SAM_API_KEY or SAM_GOV_API_KEY), returning empty results');
-    return { totalRecords: 0, opportunities: [] };
+    return {
+      totalRecords: 0,
+      opportunities: [],
+      degraded: { reason: 'no_api_key', detail: 'SAM_API_KEY / SAM_GOV_API_KEY not set' },
+    };
   }
 
   // Build cache key from params
@@ -255,41 +304,69 @@ export async function fetchSAMOpportunities(
   }
 
   // One request PER code (comma lists match nothing — see note above),
-  // merged and deduped by notice id. Throttle bodies (code 900804) arrive
-  // as HTTP 200, so they're detected explicitly and thrown — otherwise a
-  // quota-exhausted day would cache an empty result as if it were real.
-  const merged = new Map<string, ReturnType<typeof mapSAMNotice>>();
+  // merged and deduped by notice id. Every request is gated by (a) the
+  // circuit breaker's own OPEN state and (b) the shared daily budget in
+  // src/lib/procurement/sam-budget.ts — both checked BEFORE the network
+  // call, so an exhausted budget or an open circuit never triggers a wasted
+  // fetch. Any failure breaks the loop immediately: on a scarce quota,
+  // trying the next code after the first one 429s just burns another slot
+  // for a call that will fail the same way.
+  const merged = new Map<string, MappedOpportunity>();
   let totalRecords = 0;
+  let degraded: NonNullable<SAMResponse['degraded']> | undefined;
+
   for (const code of naicsCodes) {
+    if (samBreaker.getStatus().state === CircuitState.OPEN) {
+      logger.warn('SAM.gov fetch skipped (circuit open)', { label, code });
+      degraded = { reason: 'circuit_open', detail: 'sam-gov circuit breaker is OPEN' };
+      break;
+    }
+
+    const reservation = await reserveSamCall(label);
+    if (!reservation.allowed) {
+      logger.warn('SAM.gov fetch skipped (budget exhausted)', {
+        label,
+        used: reservation.used,
+        budget: reservation.budget,
+      });
+      degraded = {
+        reason: 'budget_exhausted',
+        detail: `daily SAM.gov budget exhausted (${reservation.used}/${reservation.budget})`,
+      };
+      break;
+    }
+
     queryParams.set('ncode', code);
     const url = `${SAM_API_URL}?${queryParams.toString()}`;
-    const page = await samBreaker.execute(
-      async () => {
-        const response = await fetch(url, {
-          headers: { Accept: 'application/json' },
-          signal: AbortSignal.timeout(15000),
-        });
-        if (!response.ok) {
-          throw new Error(`SAM.gov API error: ${response.status} ${response.statusText}`);
-        }
-        const data = await response.json();
-        if (data.code === '900804' || /throttled/i.test(String(data.message || ''))) {
-          throw new Error(`SAM.gov quota exhausted (resets ${data.nextAccessTime || 'midnight UTC'})`);
-        }
-        const rawNotices: SAMNotice[] = data.opportunitiesData || data.opportunities || [];
-        return { totalRecords: data.totalRecords || 0, opportunities: rawNotices.map(mapSAMNotice) } as SAMResponse;
-      },
-      { totalRecords: 0, opportunities: [] }
-    );
-    totalRecords += page.totalRecords;
-    for (const o of page.opportunities) merged.set(o.samNoticeId || `${o.title}-${code}`, o);
+    try {
+      const page = await samBreaker.execute(() => performSamFetch(url));
+      totalRecords += page.totalRecords;
+      for (const o of page.opportunities) merged.set(o.samNoticeId || `${o.title}-${code}`, o);
+    } catch (error) {
+      const reason: 'quota_exhausted' | 'http_error' = error instanceof SamFetchError ? error.reason : 'http_error';
+      const detail = error instanceof Error ? error.message : String(error);
+      if (reason === 'quota_exhausted') {
+        logger.warn('SAM.gov fetch failed (429 — daily quota exhausted)', { label, code, detail });
+      } else {
+        logger.warn('SAM.gov fetch failed (http error)', { label, code, detail });
+      }
+      degraded = { reason, detail };
+      break;
+    }
     await new Promise(r => setTimeout(r, 300));
   }
 
   const result: SAMResponse = { totalRecords, opportunities: Array.from(merged.values()) };
-  // Cache for 10 minutes — only real (non-thrown) fetches reach here.
+  if (degraded) {
+    result.degraded = degraded;
+    return result;
+  }
+
+  // Cache for 10 minutes — only a fully clean (non-degraded) fetch reaches
+  // here, and only a fully clean fetch is allowed to claim "successful".
   apiCache.set(cacheKey, result, CacheTTL.STOCKS);
   logger.info('SAM.gov fetch successful', {
+    label,
     codes: naicsCodes.join('+'),
     total: totalRecords,
     returned: result.opportunities.length,
