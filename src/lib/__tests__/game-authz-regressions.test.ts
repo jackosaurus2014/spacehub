@@ -427,6 +427,70 @@ describe('POST /api/space-tycoon/colonies (claim fee)', () => {
     );
     expect(JSON.stringify(body)).not.toContain('Rival Dynamics');
   });
+
+  // 2026-09-03 (colony-slot claim UI fix): the fee is a BURNED money sink
+  // (BALANCE.md "the five money sinks" — no matching credit), recorded
+  // through the same ledger every other economic route uses. Assert the
+  // burn is actually logged, not just that money left the profile.
+  it('burns the claim fee through the ledger (colony_claim_burn, no matching credit)', async () => {
+    const { isLedgerAvailable, recordLedger } = await import('@/lib/game/server-ledger');
+    (isLedgerAvailable as jest.Mock).mockResolvedValueOnce(true);
+    const { POST } = await import('@/app/api/space-tycoon/colonies/route');
+    mockGameProfile.findUnique.mockResolvedValue(makeProfile({ money: 1e12, buildingsData: [plutoBuilding] }));
+    mockGameProfile.updateMany.mockResolvedValue({ count: 1 });
+    mockColonyClaim.create.mockResolvedValue({ id: 'claim-1', claimedAt: new Date() });
+    mockPlayerActivity.create.mockResolvedValue({});
+
+    const res = await POST(post('/api/space-tycoon/colonies', { locationId: 'pluto_surface' }));
+
+    expect(res.status).toBe(200);
+    expect(recordLedger).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        profileId: 'profile-1',
+        moneyDelta: -5_000_000_000,
+        reason: 'colony_claim_burn',
+      }),
+    );
+  });
+
+  // A second claim attempt at a location the profile already holds must be
+  // a no-op, not a duplicate charge — the route treats it as idempotent
+  // success rather than an error (matches the client's alreadyClaimed
+  // handling in handleClaimColony, space-tycoon/page.tsx).
+  it('a second claim at an already-held location is idempotent — no charge, no duplicate row', async () => {
+    const { POST } = await import('@/app/api/space-tycoon/colonies/route');
+    mockGameProfile.findUnique.mockResolvedValue(makeProfile({ money: 1e12, buildingsData: [plutoBuilding] }));
+    mockColonyClaim.findUnique.mockResolvedValue({ id: 'existing-claim', locationId: 'pluto_surface', profileId: 'profile-1' });
+
+    const res = await POST(post('/api/space-tycoon/colonies', { locationId: 'pluto_surface' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({ success: true, alreadyClaimed: true });
+    expect(mockColonyClaim.create).not.toHaveBeenCalled();
+    expect(mockGameProfile.updateMany).not.toHaveBeenCalled();
+    expect(mockTransaction).not.toHaveBeenCalled();
+  });
+
+  // Slot scarcity (colonies.ts getColonyMaxSlots — Pluto caps at 5) must be
+  // enforced server-side and refused honestly, without charging the fee.
+  it('SECURITY: a location at its slot cap is refused and never charged', async () => {
+    const { POST } = await import('@/app/api/space-tycoon/colonies/route');
+    mockGameProfile.findUnique.mockResolvedValue(makeProfile({ money: 1e12, buildingsData: [plutoBuilding] }));
+    mockColonyClaim.count.mockResolvedValue(5); // Pluto's maxColonySlots
+
+    const res = await POST(post('/api/space-tycoon/colonies', { locationId: 'pluto_surface' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200); // a legitimate game outcome, not an HTTP error
+    expect(body.success).toBe(false);
+    expect(body.slotsUsed).toBe(5);
+    expect(body.maxSlots).toBe(5);
+    expect(mockColonyClaim.create).not.toHaveBeenCalled();
+    expect(mockGameProfile.updateMany).not.toHaveBeenCalled();
+    expect(mockTransaction).not.toHaveBeenCalled();
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

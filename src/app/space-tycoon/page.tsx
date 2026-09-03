@@ -14,6 +14,7 @@ import {
 import ResearchContribution from '@/components/game/ResearchContribution';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
+import { getColonyClaimCost } from '@/lib/game/colonies';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
 import { requestSubView, onSubViewAnnounce } from '@/lib/game/sub-view';
 import { updateMusicMood } from '@/lib/game/music-engine';
@@ -1441,9 +1442,23 @@ export default function SpaceTycoonPage() {
   // Phase 3 slice 5 (docs/SECURITY_AUDIT_2026-09.md "Phase 3 slices 2-5"):
   // SERVER-FIRST. /assets/unlock charges `loc.unlockCost` through the ledger
   // (location_unlock) and records the unlock; the local unlock below runs
-  // only on the 2xx (or 'local' play). The colony-slot claim (/colonies,
-  // presence-gated, its own claimCost) and the first-to-reach milestone
-  // POSTs that follow are unchanged.
+  // only on the 2xx (or 'local' play). The first-to-reach milestone POST
+  // that follows is unchanged.
+  //
+  // Colony-slot claim bug fix (2026-09-03): this handler used to ALSO fire
+  // a POST to /api/space-tycoon/colonies the instant a location unlocked.
+  // That request is guaranteed to fail: /colonies requires a completed
+  // building or a built ship already standing at the location (server-synced
+  // buildingsData/shipsData — colonies/route.ts), and a location that just
+  // unlocked has neither by definition. The single attempt the UI ever made
+  // was therefore certain to lose, surfacing a misleading "Colony slot"
+  // warning toast on every unlock and leaving the claim fee ($100M-$5B,
+  // BALANCE.md "the five money sinks") permanently un-burnable and the
+  // `colony_established` contract predicate permanently unsatisfiable. The
+  // claim is now its own deliberate, presence-gated action — see
+  // handleClaimColony below, wired to the "Claim Colony Slot" affordance in
+  // MapContextPanel.tsx's location detail panel — so nothing is POSTed here
+  // anymore.
   const handleUnlockLocation = useCallback((locId: string) => {
     const cur = stateRef.current;
     if (!cur) return;
@@ -1475,29 +1490,12 @@ export default function SpaceTycoonPage() {
       };
     });
 
-    // The local unlock above is the player's own save — everything below is
-    // reconciling that with the shared multiplayer world (audit hotlist
-    // #6). Both used to be `.catch(() => {})` fire-and-forget, silently
-    // swallowing scarcity failures and race losses. Now: retry once on
-    // network failure, surface the outcome via toast either way, and log an
-    // honest event when we lost a race. (The colony claim requires presence
-    // at the body, so on a fresh unlock it reports "needs a building or
-    // ship there" — the slot is claimed once the corporation is present.)
-
-    postWithRetry('/api/space-tycoon/colonies', { locationId: locId, companyName })
-      .then(async res => {
-        if (!res) {
-          toast.warning(`Couldn't confirm your colony claim at ${locName} with the server — it'll stay in sync next time you're online.`, 'Colony claim');
-          return;
-        }
-        if (res.status === 401) return; // anonymous/local-only play — nothing to reconcile
-        if (!res.ok) return;
-        const data = await res.json().catch(() => null);
-        if (data && data.success === false && data.error) {
-          toast.warning(data.error, 'Colony slot');
-        }
-      })
-      .catch(() => {});
+    // The local unlock above is the player's own save — the first-to-reach
+    // milestone POST below reconciles that with the shared multiplayer world
+    // (audit hotlist #6). Retries once on network failure and surfaces the
+    // outcome via toast either way, logging an honest event when we lost the
+    // race. (The colony-slot claim used to fire here too — see the comment
+    // on handleUnlockLocation above for why that was removed.)
 
     const milestoneId = LOCATION_MILESTONE_MAP[locId]?.id;
     if (milestoneId) {
@@ -1527,6 +1525,101 @@ export default function SpaceTycoonPage() {
         .catch(() => {});
     }
     });
+  }, []);
+
+  // ─── Claim Colony Slot (2026-09-03 fix) ────────────────────────────────
+  // Replaces the dead automatic claim in handleUnlockLocation. Called only
+  // from the explicit "Claim Colony Slot" affordance in
+  // MapContextPanel.tsx, which already pre-checks presence, slot
+  // availability, and affordability so this is normally a request that can
+  // succeed — but the server (colonies/route.ts) remains the sole judge,
+  // and every one of its real outcomes is surfaced honestly below:
+  // success, insufficient funds, no slots left (a legitimate race loss —
+  // not a network error), already claimed, and unreachable server.
+  // Server-first, same discipline as handleUnlockLocation: local state
+  // (money, claimedColonies, eventLog) is mutated only after the server
+  // confirms.
+  const handleClaimColony = useCallback((locId: string) => {
+    const cur = stateRef.current;
+    if (!cur) return;
+    const loc = LOCATION_MAP.get(locId);
+    const locName = loc?.name || locId.replace(/_/g, ' ');
+    const staticCost = getColonyClaimCost(locId);
+    if (!loc || staticCost === null) { playSound('error'); return; } // not a claimable location
+    if ((cur.claimedColonies || []).includes(locId)) { return; } // idempotent — UI already hides this case
+    const hasPresence =
+      cur.buildings.some(b => b.isComplete && b.locationId === locId) ||
+      (cur.ships || []).some(s => s.isBuilt && s.currentLocation === locId);
+    if (!hasPresence) {
+      toast.warning(`You need a completed building or a stationed ship at ${locName} before claiming a colony there.`, 'Colony claim');
+      playSound('error');
+      return;
+    }
+    const companyName = cur.companyName || 'Untitled Aerospace';
+    playSound('click');
+
+    void postWithRetry('/api/space-tycoon/colonies', { locationId: locId, companyName })
+      .then(async res => {
+        if (!res) {
+          toast.warning(`Couldn't reach the corporate registry to claim ${locName} — nothing was charged. Try again.`, 'Colony claim');
+          playSound('error');
+          return;
+        }
+        if (res.status === 401) {
+          toast.info(`Sign in to claim a colony slot at ${locName} — claims are recorded in the shared multiplayer world and are what colony contracts check.`, 'Colony claim');
+          return;
+        }
+        const data = await res.json().catch(() => null) as {
+          success?: boolean; alreadyClaimed?: boolean; error?: string; claimCost?: number;
+          slotsUsed?: number; maxSlots?: number;
+        } | null;
+        if (!data) {
+          toast.warning(`Couldn't confirm the claim at ${locName} — the registry gave no answer. Check the map again shortly.`, 'Colony claim');
+          return;
+        }
+        if (!res.ok || data.success === false) {
+          // Insufficient funds (400), unknown location (400), no presence
+          // (400 — shouldn't happen given the pre-check above, but the
+          // server is authoritative), or slots full (200, success:false —
+          // a legitimate race loss, not an error).
+          toast.warning(data.error || `${locName} claim was refused.`, data.slotsUsed !== undefined ? 'Colony slot full' : 'Colony claim');
+          playSound('error');
+          return;
+        }
+        if (data.alreadyClaimed) {
+          toast.info(`You already hold a colony claim at ${locName}.`, 'Colony claim');
+          setState(prev => (prev && !(prev.claimedColonies || []).includes(locId))
+            ? { ...prev, claimedColonies: [...(prev.claimedColonies || []), locId] }
+            : prev);
+          return;
+        }
+        // Success — reflect the debit + claim in the local save, same
+        // pattern handleUnlockLocation uses for unlocks.
+        const cost = typeof data.claimCost === 'number' ? data.claimCost : staticCost;
+        const slotNote = data.maxSlots ? ` (slot ${data.slotsUsed}/${data.maxSlots})` : '';
+        playSound('location_unlock');
+        toast.success(`Colony claimed at ${locName}${slotNote} — ${formatMoney(cost)} burned.`, 'Colony established');
+        setState(prev => {
+          if (!prev) return prev;
+          if ((prev.claimedColonies || []).includes(locId)) return prev; // idempotent
+          return {
+            ...prev,
+            money: prev.money - cost,
+            totalSpent: prev.totalSpent + cost,
+            claimedColonies: [...(prev.claimedColonies || []), locId],
+            eventLog: [{
+              id: generateId(),
+              date: prev.gameDate,
+              type: 'colony_claimed' as const,
+              title: `Colony Claimed: ${locName}`,
+              description: `Established a colony presence at ${locName} for ${formatMoney(cost)} (non-refundable)${slotNote}.`,
+            }, ...prev.eventLog].slice(0, 50),
+          };
+        });
+      })
+      .catch(() => {
+        toast.warning(`Couldn't confirm the claim at ${locName} — nothing was charged if the request never reached the server.`, 'Colony claim');
+      });
   }, []);
 
   const [showArchetypePicker, setShowArchetypePicker] = useState(false);
@@ -2579,6 +2672,7 @@ export default function SpaceTycoonPage() {
           <MapCommandCenter
             state={state}
             onUnlock={handleUnlockLocation}
+            onClaimColony={handleClaimColony}
             onBuild={handleBuild}
             onSellBuilding={handleSellBuilding}
             onMothballBuilding={handleMothballBuilding}

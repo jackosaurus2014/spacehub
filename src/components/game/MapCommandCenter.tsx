@@ -95,6 +95,10 @@ function use3DCapable(): boolean {
 interface MapCommandCenterProps {
   state: GameState;
   onUnlock: (locId: string) => void;
+  /** Colony-slot claim fix (2026-09-03): a deliberate, presence-gated action
+   *  distinct from onUnlock — see MapContextPanel.tsx's Claim Colony Slot
+   *  affordance and space-tycoon/page.tsx's handleClaimColony. */
+  onClaimColony: (locId: string) => void;
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
   /** Wave M2 (docs/MEANINGFUL_2026-08.md §M2): mothball (pause) / reactivate
@@ -129,7 +133,7 @@ interface MapCommandCenterProps {
 }
 
 export default function MapCommandCenter({
-  state, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onRushRepairBuilding, onMarkUpgradeBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
+  state, onUnlock, onClaimColony, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onRushRepairBuilding, onMarkUpgradeBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab, onRegionFocus, focusRequest, covered = false,
 }: MapCommandCenterProps) {
   const [layer, setLayer] = useState<Layer>('solar');
   const [selection, setSelection] = useState<MapSelection | null>(null);
@@ -714,6 +718,7 @@ export default function MapCommandCenter({
           viewToken={detail.token}
           onClose={() => { setSelection(null); setDetail(null); if (selection.kind === 'location') onRegionFocus(null); }}
           onUnlock={onUnlock}
+          onClaimColony={onClaimColony}
           onBuild={onBuild}
           onSellBuilding={onSellBuilding}
           onMothballBuilding={onMothballBuilding}

@@ -34,6 +34,7 @@ export function getNewGameState(): GameState {
     activeResearch2: null,
     activeServices: [],
     unlockedLocations: ['earth_surface', 'leo'],
+    claimedColonies: [],
     resources: {},
     eventLog: [{
       id: 'start',

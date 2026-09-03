@@ -518,6 +518,7 @@ export type GameEventType =
   | 'research_complete'
   | 'service_started'
   | 'location_unlocked'
+  | 'colony_claimed'
   | 'milestone'
   | 'random_event'
   | 'npc_activity';
@@ -563,6 +564,15 @@ export interface GameState {
   activeServices: ServiceInstance[];
   unlockedLocations: string[];
   resources: Record<string, number>; // ResourceId → quantity
+
+  /** Colony-slot claim bug fix (2026-09-03): locations where THIS profile
+   *  holds a server-confirmed ColonyClaim row (colonies/route.ts). Mirrors
+   *  `unlockedLocations`'s local-save contract — set only after the server
+   *  confirms success or 'alreadyClaimed', by handleClaimColony in
+   *  space-tycoon/page.tsx. Presentation/idempotency only: the server
+   *  ColonyClaim table (and contract-bidding.ts's `colony_established`
+   *  check) remains the sole source of truth. */
+  claimedColonies?: string[];
 
   /** Active mining bonuses from survey probe discoveries */
   miningBonuses?: { locationId: string; resourceId: string; bonusPct: number; expiresAtMonth: number }[];

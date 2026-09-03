@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import type { GameState, GameTab } from '@/lib/game/types';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { getColonyClaimCost, getColonyMaxSlots } from '@/lib/game/colonies';
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { MINING_LOCATIONS, SHIP_MAP, getTravelTime } from '@/lib/game/ships';
 import { LOCATION_ASSETS, SHIP_ASSETS } from '@/lib/game/assets';
@@ -74,6 +75,10 @@ interface MapContextPanelProps {
   viewToken?: number;
   onClose: () => void;
   onUnlock: (locId: string) => void;
+  /** Colony-slot claim fix (2026-09-03): a deliberate, presence-gated action
+   *  distinct from onUnlock — surfaced as "Claim Colony Slot" in
+   *  LocationOverview's ClaimColonyBlock, below. */
+  onClaimColony: (locId: string) => void;
   onBuild: (buildingId: string, locationId: string) => void;
   onSellBuilding: (instanceId: string) => void;
   /** Wave M2 (docs/MEANINGFUL_2026-08.md §M2): mothball (pause) / reactivate
@@ -107,7 +112,7 @@ const CATEGORY_META: Record<string, { label: string; icon: string }> = {
 };
 
 export default function MapContextPanel({
-  state, selection, initialView = 'overview', viewToken, onClose, onUnlock, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onRushRepairBuilding, onMarkUpgradeBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab,
+  state, selection, initialView = 'overview', viewToken, onClose, onUnlock, onClaimColony, onBuild, onSellBuilding, onMothballBuilding, onReactivateBuilding, onRushRepairBuilding, onMarkUpgradeBuilding, onDispatchShip, onLaunchExpedition, onNavigateTab,
 }: MapContextPanelProps) {
   const [view, setView] = useState<MapContextView>(initialView);
   const [pickedShip, setPickedShip] = useState<string | null>(null);
@@ -196,6 +201,7 @@ export default function MapContextPanel({
       locationId={locId}
       unlocked={unlocked}
       onUnlock={onUnlock}
+      onClaimColony={onClaimColony}
       onOpenBuild={() => setView('build')}
       onOpenDispatch={() => setView('dispatch')}
       onNavigateTab={onNavigateTab}
@@ -251,12 +257,13 @@ function GalacticHeader({ systemId }: { systemId: string }) {
 }
 
 function LocationOverview({
-  state, locationId, unlocked, onUnlock, onOpenBuild, onOpenDispatch, onNavigateTab,
+  state, locationId, unlocked, onUnlock, onClaimColony, onOpenBuild, onOpenDispatch, onNavigateTab,
 }: {
   state: GameState;
   locationId: string;
   unlocked: boolean;
   onUnlock: (locId: string) => void;
+  onClaimColony: (locId: string) => void;
   onOpenBuild: () => void;
   onOpenDispatch: () => void;
   onNavigateTab: (tab: GameTab) => void;
@@ -458,6 +465,13 @@ function LocationOverview({
             <p className="text-[10px] text-slate-500 italic">🤖 {npcCount} NPC {npcCount === 1 ? 'competitor operates' : 'competitors operate'} here — informational only.</p>
           )}
 
+          {/* Colony-slot claim fix (2026-09-03): the deliberate, presence-
+              gated replacement for the dead auto-claim that used to fire on
+              unlock. Only renders for locations colonies.ts actually charges
+              a claim fee for (getColonyClaimCost !== null); hidden entirely
+              for earth_surface and other non-claimable ids. */}
+          <ClaimColonyBlock state={state} locationId={locationId} onClaimColony={onClaimColony} />
+
           {/* Actions */}
           <div className="grid grid-cols-1 gap-2 pt-1">
             <button
@@ -483,6 +497,115 @@ function LocationOverview({
             </button>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+/** Colony-slot claim fix (2026-09-03). Before this the ONLY client call to
+ *  POST /api/space-tycoon/colonies fired the instant a location unlocked —
+ *  a request guaranteed to fail, since the route requires a completed
+ *  building or a built ship already at the location (colonies/route.ts),
+ *  which a freshly-unlocked location by definition has neither of. This is
+ *  the deliberate replacement: it only offers the action when it can
+ *  succeed (requirement 1), makes the exact non-refundable fee part of the
+ *  confirm step (requirement 2, same `confirm()` pattern BuildPanel.tsx
+ *  uses for Scrap/Decommission — the codebase's existing irreversible-
+ *  action confirm), and reports every real server outcome via
+ *  onClaimColony -> handleClaimColony in space-tycoon/page.tsx
+ *  (requirement 3).
+ *
+ *  Slot scarcity (colonies.ts EXPANDED_LOCATIONS.maxColonySlots /
+ *  getColonyMaxSlots) is honoured here for UX only — it hides a doomed
+ *  click behind an explanatory disabled state, never invents new
+ *  disclosure: `names` is the SAME public GET /api/space-tycoon/colonies /
+ *  game-state roster WorldPresenceBlock already renders above this block.
+ *  Base (non-expanded) locations return maxSlots=999 from
+ *  getColonyMaxSlots, meaning "uncapped" — never shown as full. There is
+ *  NO population gate on colony claims (that's a different mechanic, the
+ *  D6 gate on orbital-slot AUCTIONS — orbital-slots/route.ts — which this
+ *  block does not touch). */
+function ClaimColonyBlock({
+  state, locationId, onClaimColony,
+}: {
+  state: GameState;
+  locationId: string;
+  onClaimColony: (locId: string) => void;
+}) {
+  const { world, available } = useWorldState();
+  const claimCost = getColonyClaimCost(locationId);
+  if (claimCost === null) return null; // e.g. earth_surface — not a claimable location at all
+
+  const loc = LOCATION_MAP.get(locationId);
+  const locName = loc?.name || locationId.replace(/_/g, ' ');
+  const maxSlots = getColonyMaxSlots(locationId); // 999 = uncapped (base locations)
+  const capped = maxSlots < 999;
+  const names = world?.world.colonies[locationId] || [];
+  const count = world?.world.colonyCounts[locationId] ?? names.length;
+  const myName = (state.companyName || '').trim();
+  const alreadyClaimed = (state.claimedColonies || []).includes(locationId) || (!!myName && names.includes(myName));
+
+  const hasPresence =
+    state.buildings.some(b => b.isComplete && b.locationId === locationId) ||
+    (state.ships || []).some(s => s.isBuilt && s.currentLocation === locationId);
+  const full = available && capped && count >= maxSlots && !alreadyClaimed;
+  const canAfford = state.money >= claimCost;
+
+  if (alreadyClaimed) {
+    return (
+      <div className="flex items-center gap-1.5 text-[11px] px-2.5 py-2 rounded-lg border border-emerald-500/25 bg-emerald-500/10 text-emerald-300" role="status">
+        <span aria-hidden="true">✓</span>
+        <span>Colony slot claimed at {locName}.</span>
+      </div>
+    );
+  }
+
+  let reason: string | null = null;
+  if (!hasPresence) reason = 'Build a completed facility or station a ship here first.';
+  else if (full) reason = `Full — ${count}/${maxSlots} slots occupied.`;
+  else if (!canAfford) reason = `Need ${formatMoney(claimCost - state.money)} more.`;
+  const disabled = !hasPresence || full || !canAfford;
+
+  const holders = names.slice(0, 5);
+  const extraHolders = names.length - holders.length;
+
+  const handleClick = () => {
+    if (disabled) return;
+    const confirmMsg = `Claim a colony slot at ${locName} for ${formatMoney(claimCost)}?\n\nThis fee is charged immediately, is NON-REFUNDABLE, and is burned — it never returns as building or service value (BALANCE.md "the five money sinks").`;
+    if (confirm(confirmMsg)) onClaimColony(locationId);
+  };
+
+  return (
+    <div className="rounded-lg border border-purple-500/15 bg-purple-500/5 p-2.5 space-y-1.5">
+      <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold flex items-center gap-1">
+        <span aria-hidden="true">🚩</span> Colony Claim
+      </div>
+      {capped && (
+        <p className="text-[10px] text-slate-500">
+          Slots: <span className={full ? 'text-red-300 font-semibold' : 'text-slate-300'}>{count}/{maxSlots}</span>{full ? ' — FULL' : ''}
+          {full && holders.length > 0 && <> · Held by {holders.join(', ')}{extraHolders > 0 ? ` +${extraHolders} more` : ''}</>}
+        </p>
+      )}
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={disabled}
+        title={disabled && reason ? reason : undefined}
+        aria-label={disabled
+          ? `Claim colony slot unavailable at ${locName}: ${reason}`
+          : `Claim colony slot at ${locName} for ${formatMoney(claimCost)}, non-refundable`}
+        className={`w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+          disabled ? 'bg-white/[0.04] text-slate-600 cursor-not-allowed' : 'bg-purple-600 text-white hover:bg-purple-500'
+        }`}
+      >
+        {disabled ? '🔒 Claim Unavailable' : `🚩 Claim Colony Slot — ${formatMoney(claimCost)}`}
+      </button>
+      {disabled && reason ? (
+        <p className="text-[10px] text-amber-400/80 flex items-center gap-1" role="status">
+          <span aria-hidden="true">⚠️</span> {reason}
+        </p>
+      ) : (
+        <p className="text-[10px] text-slate-500">One-time, non-refundable fee — burned, not converted into building value.</p>
       )}
     </div>
   );
