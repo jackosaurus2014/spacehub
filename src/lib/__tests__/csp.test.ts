@@ -105,23 +105,35 @@ describe('buildCsp — enforced (nonce-free) policy', () => {
     }
   });
 
-  it('frame-src keeps YouTube/Vimeo/AdSense and drops Twitter + google.com', () => {
+  it('frame-src keeps YouTube/Vimeo/AdSense creative + auxiliary frames, drops Twitter', () => {
     const f = directive(prod, 'frame-src');
     expect(f).toContain('https://player.vimeo.com');
     expect(f).toContain('https://www.youtube-nocookie.com');
     expect(f).toContain('https://www.youtube.com');
     expect(f).toContain('https://googleads.g.doubleclick.net');
     expect(f).toContain('https://tpc.googlesyndication.com');
+    // 2026-09-03: restored after a day of prod csp_violation reports showed
+    // these blocking on ad-bearing pages (docs/SECURITY_AUDIT_2026-09.md "CSP").
+    expect(f).toContain('https://pagead2.googlesyndication.com');
+    expect(f).toContain('https://ep1.adtrafficquality.google');
+    expect(f).toContain('https://ep2.adtrafficquality.google');
+    expect(f).toContain('https://www.google.com');
+    expect(f).toContain('https://fundingchoicesmessages.google.com');
     expect(f).not.toContain('platform.twitter.com');
-    expect(f).not.toContain('https://www.google.com');
     expect(FRAME_SRC_HOSTS).toContain('https://player.vimeo.com');
   });
 
-  it('drops the dead Google Fonts hosts (next/font self-hosts)', () => {
-    expect(prod).not.toContain('fonts.googleapis.com');
-    expect(prod).not.toContain('fonts.gstatic.com');
-    expect(directive(prod, 'style-src')).toBe("style-src 'self' 'unsafe-inline'");
-    expect(directive(prod, 'font-src')).toBe("font-src 'self' data:");
+  it('carries fonts.googleapis.com/gstatic.com for third-party-injected Google Fonts', () => {
+    // 2026-09-03: restored after prod csp_violation reports showed
+    // style-src-elem blocking fonts.googleapis.com on ad-bearing pages. A
+    // real-browser repro found zero <link href*="fonts.googleapis"> tags in
+    // our own DOM (next/font still self-hosts our fonts — this is not our
+    // pages' own dependency), so this is for a stylesheet some third-party
+    // script (most likely Google's ad/consent tooling) injects at runtime.
+    expect(directive(prod, 'style-src')).toBe(
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
+    );
+    expect(directive(prod, 'font-src')).toBe("font-src 'self' data: https://fonts.gstatic.com");
   });
 
   it('carries the hardening directives + reporting', () => {

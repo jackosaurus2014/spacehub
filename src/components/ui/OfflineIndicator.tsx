@@ -44,14 +44,24 @@ export default function OfflineIndicator() {
     }
   }, [isOnline]);
 
+  // The banner stays mounted so it can transition its height instead of
+  // popping in, which means when online it is only VISUALLY collapsed
+  // (max-h-0 + opacity-0, not display:none). Collapsed-but-present text is
+  // still in the accessibility tree, so before 2026-09-03 every screen-reader
+  // user was told "You're offline. Cached data shown." on every page of the
+  // site while perfectly online — a false alarm on a permanent basis, against
+  // the screen-reader commitment in CLAUDE.md. aria-hidden while online takes
+  // it out of the tree without giving up the transition. role="status" +
+  // aria-live="polite" then announce it once, when it genuinely appears.
   return (
     <div
+      aria-hidden={isOnline || undefined}
       className={`overflow-hidden transition-all duration-200 ease-out ${
         !isOnline ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
       }`}
     >
       <div className="bg-amber-900/80 border-b border-amber-700/50 px-4 py-2 text-center">
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2" role="status" aria-live="polite">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
           <span className="text-sm text-amber-200 font-medium">
             You&apos;re offline. Cached data shown.

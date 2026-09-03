@@ -7,10 +7,22 @@
 // value — the exact raw material."
 //
 // Source of truth: `MarketFill` (server-authoritative order-book fills — see
-// market-orderbook.ts's matchOrders()). NPCs (`__NPC_MARKET_MAKER__`) are
-// counted as ordinary participants in every total per canon ("NPC economic
-// backdrop... floor, not ceiling" / "NPCs aren't even counted" was §1b's
-// complaint about service revenue — telemetry must not repeat that mistake).
+// market-orderbook.ts's matchOrders()). NPCs — the market maker
+// (`__NPC_MARKET_MAKER__`) AND the five NPC industrial corporations
+// (`__NPC_CORP_*`, npc-industry.ts) — are counted as ordinary participants
+// in every total per canon ("NPC economic backdrop... floor, not ceiling" /
+// "NPCs aren't even counted" was §1b's complaint about service revenue —
+// telemetry must not repeat that mistake), but are FLAGGED via `isNpc` (see
+// `./npc-identity.ts`'s `isNpcProfileId`) so a player scouting the order
+// book can tell NPC volume from rival volume.
+//
+// Fixed 2026-09-03 (balance-report-2026-q3.ts §8): two defects the
+// published Q3 balance report flagged as open. (1) `isNpc`/`companyName`
+// used to recognize only the market maker — the five industrial NPC corps
+// rendered as if they were rival players; fixed by delegating to the
+// canonical predicate in ./npc-identity.ts. (2) `sharePct` used to sum to
+// 200% across participants (see `rankShares` doc below for the fix and the
+// exact semantics chosen).
 //
 // Trust tiers (canon, CLAUDE.md "market intelligence is a first-class
 // feature" + §5 item 1): FREE tier = top-5 leaderboard per resource, always
@@ -25,8 +37,13 @@
 import prisma from '@/lib/db';
 import { RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
+import { NPC_PROFILE_ID, isNpcProfileId, npcDisplayName } from './npc-identity';
 
-export const NPC_PROFILE_ID = '__NPC_MARKET_MAKER__';
+// NPC_PROFILE_ID now lives in npc-identity.ts (canonical, dependency-free —
+// see that module's header for why the __NPC_CORP_* predicate was split out
+// of this file). Re-exported here so existing `import { NPC_PROFILE_ID }
+// from './market-share'` call sites (flow-map.ts, tests) keep working.
+export { NPC_PROFILE_ID };
 
 /** Default trailing window for "current" share/telemetry reads. */
 export const DEFAULT_SHARE_WINDOW_DAYS = 30;
@@ -59,7 +76,32 @@ export interface ProfileShareAgg {
 export interface ProfileShareEntry extends ProfileShareAgg {
   companyName: string | null;
   isNpc: boolean;
-  sharePct: number; // 0-100, share of totalValue among all aggregated participants
+  /**
+   * HEADLINE reading, 0-100 — this participant's share of total TRADE-SIDE
+   * value. Every fill has two sides (a buyer and a seller), each credited
+   * with the fill's full value in `totalValue` above (see
+   * `aggregateFillsByProfile` doc) — so the natural denominator for a
+   * number that sums to 100% across all participants is the DOUBLED market
+   * total (2 × the single-counted `sumFillValue(fills)`), not the raw
+   * total. This is what every leaderboard/UI should display as "share".
+   * Fixed 2026-09-03 — previously divided by the single-counted total,
+   * so Σ sharePct across participants was 200%, not 100% (balance-report
+   * §8).
+   */
+  sharePct: number;
+  /**
+   * SECONDARY reading, 0-100 — "this participant was on one side of X% of
+   * all traded value" (totalValue ÷ the single-counted market total). This
+   * is the number `sharePct` used to be before the 2026-09-03 fix; it does
+   * NOT sum to 100% across participants (two participants share credit for
+   * every fill), but it answers a genuinely different question than
+   * `sharePct` — "how much of the market did this corp touch" rather than
+   * "what fraction of trade-side credit does this corp hold" — and some
+   * callers (e.g. corp-pacts-server.ts's non-aggression 40%-of-market
+   * enforcement) mean THIS reading, not the headline one. Kept as a
+   * separate field rather than destroyed by the fix.
+   */
+  sideValuePct: number;
 }
 
 // ─── Pure aggregation ───────────────────────────────────────────────────────
@@ -99,20 +141,35 @@ export function sumFillValue(fills: RawFill[]): number {
 
 /**
  * Rank a per-profile aggregate map into share entries, sorted by totalValue
- * desc. `sharePct` is each participant's totalValue as a percentage of
- * `marketTotalValue` (pass `sumFillValue(fills)`, NOT the sum of the agg map
- * — see `aggregateFillsByProfile` doc). Pure — no I/O.
+ * desc. `marketTotalValue` is the single-counted total (pass
+ * `sumFillValue(fills)`, NOT the sum of the agg map — see
+ * `aggregateFillsByProfile` doc). Pure — no I/O.
+ *
+ * `sharePct` (headline) is computed against `2 × marketTotalValue` — the
+ * doubled total is the correct denominator because `agg` already credits
+ * each fill's value to BOTH the buyer and the seller, so Σ sharePct across
+ * the returned entries is ~100%, not 200% (see `ProfileShareEntry` doc for
+ * the full rationale and the fix date). `sideValuePct` preserves the older
+ * "share of traded value I was on one side of" reading against the raw
+ * single-counted total, for callers that specifically want that (it does
+ * NOT sum to 100%).
+ *
+ * `isNpc` and `companyName` recognize BOTH the NPC market maker and the
+ * NPC industrial corporations via `isNpcProfileId`/`npcDisplayName`
+ * (./npc-identity.ts) — not just the market maker.
  */
 export function rankShares(
   agg: Map<string, ProfileShareAgg>,
   marketTotalValue: number,
   companyNames: Map<string, string>,
 ): ProfileShareEntry[] {
+  const doubledTotal = marketTotalValue * 2;
   const entries: ProfileShareEntry[] = Array.from(agg.values()).map((row) => ({
     ...row,
-    companyName: row.profileId === NPC_PROFILE_ID ? 'NPC Market Maker' : companyNames.get(row.profileId) ?? null,
-    isNpc: row.profileId === NPC_PROFILE_ID,
-    sharePct: marketTotalValue > 0 ? Math.round((row.totalValue / marketTotalValue) * 1000) / 10 : 0,
+    companyName: npcDisplayName(row.profileId) ?? companyNames.get(row.profileId) ?? null,
+    isNpc: isNpcProfileId(row.profileId),
+    sharePct: doubledTotal > 0 ? Math.round((row.totalValue / doubledTotal) * 1000) / 10 : 0,
+    sideValuePct: marketTotalValue > 0 ? Math.round((row.totalValue / marketTotalValue) * 1000) / 10 : 0,
   }));
   entries.sort((a, b) => b.totalValue - a.totalValue);
   return entries;
@@ -229,7 +286,10 @@ async function fetchFillsSince(since: Date, resourceSlug?: string): Promise<RawF
 }
 
 async function fetchCompanyNames(profileIds: string[]): Promise<Map<string, string>> {
-  const ids = profileIds.filter((id) => id !== NPC_PROFILE_ID);
+  // Neither the market maker nor the NPC industrial corps have a
+  // GameProfile row (npc-industry.ts) — skip querying for them entirely
+  // rather than relying on the query simply finding no match.
+  const ids = profileIds.filter((id) => !isNpcProfileId(id));
   if (ids.length === 0) return new Map();
   const rows = await prisma.gameProfile.findMany({
     where: { id: { in: ids } },

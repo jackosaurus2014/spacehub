@@ -11,25 +11,18 @@ import { recordLedger, isLedgerAvailable } from './server-ledger';
 import { isMarketEventActiveForResource } from './market-events';
 import { resolveSellableQuantity, auditServerInventoryGate } from './server-inventory';
 import { logger } from '@/lib/logger';
+import { NPC_PROFILE_ID, NPC_CORP_PREFIX, isNpcCorpId, isNpcParty } from './npc-identity';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const FEE_RATE = 0.02; // 2% transaction fee
 const NPC_SPREAD_HALF = 0.10; // 10% each side = 20% total NPC spread
 const MAX_OPEN_ORDERS = 20; // Base max open orders per player
-const NPC_PROFILE_ID = '__NPC_MARKET_MAKER__';
 
-/** NPC industrial corporations (npc-industry.ts) trade on this book under
- *  ids with this prefix. They have no GameProfile row: fills settle against
- *  NpcIndustrialCorp.inventory / .treasury instead. */
-export const NPC_CORP_PREFIX = '__NPC_CORP_';
-export function isNpcCorpId(id: string): boolean {
-  return id.startsWith(NPC_CORP_PREFIX);
-}
-/** Any non-player party on the book: the market maker or an industrial corp. */
-export function isNpcParty(id: string): boolean {
-  return id === NPC_PROFILE_ID || isNpcCorpId(id);
-}
+// NPC_PROFILE_ID / NPC_CORP_PREFIX / isNpcCorpId / isNpcParty now live in
+// npc-identity.ts (canonical, dependency-free) — re-exported below so
+// existing imports of these names from this module keep working.
+export { NPC_CORP_PREFIX, isNpcCorpId, isNpcParty };
 
 // NPC daily volume caps by resource — extracted to npc-volume-caps.ts
 // (pure, client-safe) in Balance Pass 1 so the sim harness can read them

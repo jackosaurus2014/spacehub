@@ -6,6 +6,19 @@ import { useEffect, useState } from 'react';
 // never blank); the client keeps it ticking. aria-live is deliberately off —
 // a per-second live region is a screen-reader denial of service; the label
 // carries the time in words.
+//
+// suppressHydrationWarning is REQUIRED and load-bearing (fixed 2026-09-03).
+// `now` is null on the first render, so both the server render and the
+// hydration render fall back to their own `Date.now()`. Those clocks differ by
+// however long sits between prerender and hydration — for the ISR/prerendered
+// routes this rail appears on, minutes to hours — so the text NEVER matches
+// and React reported minified error #418 ("text content does not match") on
+// every page load site-wide, twice per load on /space-tycoon. The divergence is
+// intentional: a clock must show the client's time. Suppressing the warning is
+// React's sanctioned escape hatch for exactly this case, and it is what
+// src/components/ui/Countdown.tsx already does. Do not remove it, and do not
+// "fix" this by rendering blank until mounted — that reintroduces the empty
+// header the fallback exists to prevent.
 function fmt(ms: number): string {
   if (ms <= 0) return 'LIVE';
   const s = Math.floor(ms / 1000);
@@ -28,7 +41,12 @@ export default function LiveRailClock({ iso }: { iso: string }) {
   const ms = target - (now ?? Date.now());
   const label = ms <= 0 ? 'Launching now' : `Launch in ${Math.max(0, Math.round(ms / 60000))} minutes`;
   return (
-    <span className="font-mono tabular-nums text-[#4FD8E8] font-semibold" aria-label={label} aria-live="off">
+    <span
+      className="font-mono tabular-nums text-[#4FD8E8] font-semibold"
+      aria-label={label}
+      aria-live="off"
+      suppressHydrationWarning
+    >
       {fmt(ms)}
     </span>
   );

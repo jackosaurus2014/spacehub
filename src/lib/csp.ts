@@ -11,15 +11,52 @@
  *      nonce, no strict-dynamic. Always sent, so nothing regresses.
  *   2. The NONCE policy — `'nonce-…' 'strict-dynamic'` plus a CSP2 fallback
  *      ladder. Sent as Content-Security-Policy-Report-Only on nonce-eligible
- *      routes until CSP_MODE=enforce-nonce flips it to the enforced header.
+ *      routes. CSP_MODE=enforce-nonce would make it the enforced header
+ *      there — DO NOT FLIP THIS (see below); it is not yet safe.
  *
- * Why the nonce policy is gated by route (isNonceEligible): Next 14 reads
- * the nonce from the request's CSP header and stamps it on its own scripts,
- * but it does NOT force dynamic rendering. A nonce sent to a prerendered /
- * ISR route would either be absent from the cached HTML (every Next script
- * reports a violation; in enforce mode the page would not hydrate) or —
- * worse — be baked into the ISR cache by a revalidation and served to every
- * later visitor. So nonces go only to routes Next renders per request.
+ * ⚠ THE REPORT-ONLY NONCE EXPERIMENT CANNOT VALIDATE ITSELF (found
+ * 2026-09-03, docs/SECURITY_AUDIT_2026-09.md "CSP: nonce diagnosis"). Empirically
+ * verified against the actual installed Next 15.5.25 (prod curl + a local
+ * `next start` A/B on the same build, CSP_MODE=report-only vs enforce-nonce):
+ * Next.js only stamps its own <script> tags with the nonce when the nonce
+ * arrives on the ENFORCED `Content-Security-Policy` request header. When it
+ * arrives only on `Content-Security-Policy-Report-Only` (today's default),
+ * Next stamps ZERO script tags with any nonce — not its own bootstrap/chunk
+ * scripts, not our three hash-listed inline scripts (they don't need one,
+ * but this proves the mechanism is dark, not selective). This holds despite
+ * `parseRequestHeaders` in Next's own source reading
+ * `headers['content-security-policy'] || headers['content-security-policy-report-only']`
+ * — the fallback exists in the source but does not reach script-stamping in
+ * practice, and Next's official CSP docs only ever document the enforced
+ * header for this. Consequence: every `script-src-elem` violation reported
+ * against our own origin under report-only mode is an artifact of this dead
+ * mechanism, not evidence about real nonce coverage — the report-only
+ * telemetry proves nothing about enforce-nonce readiness. A second,
+ * independent blocker was found in the same investigation: our root layout
+ * renders ~15 SEO JSON-LD `<script type="application/ld+json">` components
+ * (`src/components/StructuredData.tsx`, `src/components/seo/*Schema.tsx`,
+ * used across ~100 pages) with neither a nonce nor a hash — most carry
+ * per-page dynamic content so they can't be hash-listed like the three
+ * static inline scripts. In a local enforce-nonce A/B these were the only
+ * script tags left unstamped (8 of 58 on /embed/space-weather: 5 JSON-LD +
+ * our 3 hash-covered ones — the JSON-LD ones, unlike ours, have no hash
+ * fallback). A CSP3 browser under strict-dynamic + nonce ignores the
+ * `'unsafe-inline' https:` fallback, so these would be blocked outright if
+ * CSP_MODE=enforce-nonce were flipped today. Recommendation: do not flip
+ * CSP_MODE for the ~2026-09-08 decision; the enforced-policy hardening
+ * above is the safe path. Resume the nonce ambition only after (a) threading
+ * the nonce through every JSON-LD schema component, and (b) re-testing with
+ * the nonce actually carried on the enforced header (a narrow experiment on
+ * 2-3 already-dynamic routes), since report-only can't tell us anything.
+ *
+ * Why the nonce policy is gated by route (isNonceEligible) regardless: Next 14+
+ * reads the nonce from the request's *enforced* CSP header and stamps it on
+ * its own scripts, but it does NOT force dynamic rendering. A nonce sent to
+ * a prerendered / ISR route would either be absent from the cached HTML
+ * (every Next script reports a violation; in enforce mode the page would not
+ * hydrate) or — worse — be baked into the ISR cache by a revalidation and
+ * served to every later visitor. So nonces go only to routes Next renders
+ * per request.
  */
 
 // ── Host allowlists ───────────────────────────────────────────────────────
@@ -92,13 +129,36 @@ export const LEGACY_CONNECT_HOSTS = [
   'https://www.googleapis.com',
 ] as const;
 
-/** Iframe destinations: YouTube players, Vimeo (AMA replays), AdSense frames. */
+/**
+ * Iframe destinations: YouTube players, Vimeo (AMA replays), AdSense creative
+ * frames, plus the AdSense auxiliary frames confirmed live-blocking in prod
+ * CSP reports on 2026-09-03 (docs/SECURITY_AUDIT_2026-09.md, "CSP"):
+ *   - pagead2.googlesyndication.com — ad creative rendering; seen blocked in
+ *     the production report log (intermittent in manual repro, kept because
+ *     the report log shows it recurring).
+ *   - ep1./ep2.adtrafficquality.google — Google's invalid-traffic detection
+ *     frames. A real-browser repro against two live ad-bearing pages
+ *     (space-launch-cost-comparison, space-stocks) showed the AdSense tag
+ *     itself unaffected (window.adsbygoogle defined, slot gets an iframe)
+ *     but these two frames reproducibly blocked — degrades Google's
+ *     invalid-traffic/serving-quality signal without stopping ad delivery.
+ *   - www.google.com — same auxiliary-frame family, reproducibly blocked
+ *     alongside ep2 in the same repro.
+ *   - fundingchoicesmessages.google.com — consent-message iframe (EU/UK
+ *     consent mode); not reproduced blocked but ships from the same origin
+ *     family as the script-src entry below it, kept for parity.
+ */
 export const FRAME_SRC_HOSTS = [
   'https://www.youtube-nocookie.com',
   'https://www.youtube.com',
   'https://player.vimeo.com',
   'https://googleads.g.doubleclick.net',
   'https://tpc.googlesyndication.com',
+  'https://pagead2.googlesyndication.com',
+  'https://ep1.adtrafficquality.google',
+  'https://ep2.adtrafficquality.google',
+  'https://www.google.com',
+  'https://fundingchoicesmessages.google.com',
 ] as const;
 
 export const CSP_REPORT_PATH = '/api/csp-report';
@@ -308,8 +368,14 @@ export type CspMode = 'report-only' | 'enforce-nonce';
 
 /**
  * CSP_MODE=report-only (default): nonce policy goes out as
- * Content-Security-Policy-Report-Only on eligible routes.
- * CSP_MODE=enforce-nonce: the nonce policy becomes the enforced header there.
+ * Content-Security-Policy-Report-Only on eligible routes. Note (2026-09-03):
+ * in this mode Next does not stamp the nonce onto anything — see the
+ * warning at the top of this file — so this mode's violation reports cannot
+ * be used to judge enforce-nonce readiness.
+ * CSP_MODE=enforce-nonce: the nonce policy becomes the enforced header
+ * there, and Next *does* stamp it correctly there (verified) — but do not
+ * flip this yet; the JSON-LD schema gap documented at the top of this file
+ * would break under it. See docs/SECURITY_AUDIT_2026-09.md "CSP".
  */
 export function getCspMode(raw: string | undefined = process.env.CSP_MODE): CspMode {
   return raw === 'enforce-nonce' ? 'enforce-nonce' : 'report-only';
@@ -353,6 +419,19 @@ export function buildCsp({ nonce, frameAncestors, reportOnly = false, dev = fals
   //  - enforced (no nonce): today's shape. No hashes here on purpose — a
   //    hash would make CSP2+ browsers ignore 'unsafe-inline', which Next's
   //    own bootstrap inline scripts still need without a nonce.
+  //
+  // eval decision (2026-09-03, docs/SECURITY_AUDIT_2026-09.md "CSP"): a full
+  // day of prod csp_violation reports showed `script-src` blocking `eval` on
+  // ad-bearing pages, and this predates the 2026-09-02 rewrite — the old
+  // policy blocked it too, so this is not a regression. A real-browser repro
+  // against two live ad-bearing pages (space-launch-cost-comparison,
+  // space-stocks) confirmed the AdSense tag works WITHOUT 'unsafe-eval':
+  // window.adsbygoogle is defined, the ad script loads, and the slot gets an
+  // iframe. Nothing observed requires eval. Decision: leave it blocked
+  // (option ii) rather than widen script-src for a capability we cannot show
+  // is needed — 'self' + explicit hosts stays tighter. Revisit only if a
+  // specific Google feature (e.g. a consent-mode or anti-fraud path) is shown
+  // to depend on it; do not re-add 'unsafe-eval' speculatively.
   const scriptSrc = nonce
     ? [
         "'self'",
@@ -380,9 +459,20 @@ export function buildCsp({ nonce, frameAncestors, reportOnly = false, dev = fals
   const directives: string[] = [
     "default-src 'self'",
     `script-src ${scriptSrc.join(' ')}`,
-    "style-src 'self' 'unsafe-inline'",
+    // fonts.googleapis.com: restored 2026-09-03 — prod csp_violation reports
+    // showed style-src-elem blocking it on ad-bearing pages. A real-browser
+    // repro found zero <link href*="fonts.googleapis"> tags in our own DOM
+    // (next/font self-hosts, so this isn't our pages' own dependency — the
+    // 2026-09-02 rewrite was right to call it unused from OUR code); the
+    // request is a stylesheet injected at runtime by a third party (most
+    // likely Google's ad/consent tooling). Kept in style-src so that
+    // whichever third-party script injects it doesn't get silently blocked.
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob: https:",
-    "font-src 'self' data:",
+    // fonts.gstatic.com: the font files a fonts.googleapis.com stylesheet
+    // (style-src, above) @imports — allowed here so a third-party-injected
+    // Google Fonts stylesheet doesn't load with every glyph blocked.
+    "font-src 'self' data: https://fonts.gstatic.com",
     `connect-src ${connectSrc.join(' ')}`,
     `frame-src ${FRAME_SRC_HOSTS.join(' ')}`,
     `frame-ancestors ${frameAncestors}`,

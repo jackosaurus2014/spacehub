@@ -386,10 +386,27 @@ window and recover after it (refit-aware run: lunar_water at 30% at month
 `market-share.ts` (top participants by fill value, trailing 30 days). A
 resource-by-resource share and the 90-day quarterly window need a database
 read (`computeServerTradeSummary`, `getResourceShare`) and will be published
-from the live database next quarter. Two things to fix before then: the
-share endpoint marks the five `__NPC_CORP_*` industrial corporations as
-`isNpc: false` (only the market maker `__NPC_MARKET_MAKER__` is recognized),
-and per-side shares sum to 200% of value (buyer and seller each count).
+from the live database next quarter. **Two things were fixed on 2026-09-03**
+(both were open when this report published): the share endpoint used to mark
+the five `__NPC_CORP_*` industrial corporations `isNpc: false` (only the
+market maker `__NPC_MARKET_MAKER__` was recognized) — it now uses one
+canonical predicate (`npc-identity.ts`'s `isNpcProfileId`) shared by
+`market-share.ts`, `market-orderbook.ts` and `flow-map.ts`, so every UI
+reading the share endpoint labels NPC industrial volume as NPC, not
+rival-player volume. And per-side shares used to sum to 200% of value
+(buyer and seller each counted the full fill value against the
+single-counted market total); `sharePct` is now computed against the
+doubled trade-side total, so it sums to ~100% across participants. The
+pre-fix reading survives as a separate field, `sideValuePct` — needed by at
+least one real consumer (`corp-pacts-server.ts`'s non-aggression-pact
+clause, calibrated to "holds 40% of traded value," not "holds 40% of
+trade-side credit"), which was switched to it so the fix does not silently
+change that pact's enforcement bar. **Does the measured NPC share above
+change?** No — it is unchanged at **100%**. The fix only changes how value
+is apportioned *among* participants; this window had zero player fills (all
+five participants were NPC industrial corporations trading with each
+other), so the player/NPC split — 0% player, 100% NPC — was never affected
+by the per-participant double-counting bug.
 
 **Faction balance — measured next quarter.** No public endpoint exposes
 faction standings, and the sim does not model factions. Method: aggregate

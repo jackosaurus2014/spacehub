@@ -278,12 +278,16 @@ describe('corp-pacts — enforcement', () => {
 
   it('non_aggression: a price campaign is refused only when the partner holds ≥ 40% of the market', async () => {
     mockCorpPact.findMany.mockResolvedValue([{ id: 'p-2', kind: 'non_aggression', proposerProfileId: me.id, counterpartyProfileId: them.id, endsAt: new Date(Date.now() + DAY) }]);
-    mockGetResourceShare.mockResolvedValue({ entries: [{ profileId: them.id, companyName: 'Them Corp', sharePct: 55 }] });
+    // findNonAggressionCampaignBlock reads `sideValuePct` (share of traded
+    // value), not the headline `sharePct` (share of trade-side credit,
+    // fixed 2026-09-03 to sum to 100% across participants) — see the
+    // function's doc comment in corp-pacts-server.ts.
+    mockGetResourceShare.mockResolvedValue({ entries: [{ profileId: them.id, companyName: 'Them Corp', sharePct: 27, sideValuePct: 55 }] });
     const blocked = await findNonAggressionCampaignBlock(me.id, 'iron');
     expect(blocked).toMatchObject({ error: 'pact', pactId: 'p-2', kind: 'non_aggression', partner: 'Them Corp' });
     expect(mockGetResourceShare).toHaveBeenCalledWith('iron', { full: true });
 
-    mockGetResourceShare.mockResolvedValue({ entries: [{ profileId: them.id, companyName: 'Them Corp', sharePct: 12 }] });
+    mockGetResourceShare.mockResolvedValue({ entries: [{ profileId: them.id, companyName: 'Them Corp', sharePct: 6, sideValuePct: 12 }] });
     expect(await findNonAggressionCampaignBlock(me.id, 'iron')).toBeNull();
 
     // No pact at all → the share read is skipped entirely.

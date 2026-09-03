@@ -119,6 +119,15 @@ export async function findBlockingPact(
  * of the resource's trailing-window traded value. The share read is
  * server-internal (`full: true`) — enforcement, not disclosure; the refusal
  * body names the partner only (a corp already knows who it signed with).
+ *
+ * Uses `entry.sideValuePct`, NOT `entry.sharePct` — deliberately. The 40%
+ * threshold means "holds 40% of traded VALUE" (market-share.ts's older,
+ * single-counted reading), not "holds 40% of trade-side credit" (the
+ * headline `sharePct`, which was fixed 2026-09-03 to sum to 100% across
+ * participants and is therefore roughly half the size for a given corp in
+ * a multi-participant market). Switching this check to the new headline
+ * field would have silently doubled the effective dominance bar and made
+ * the pact clause far harder to trigger — see balance-report-2026-q3.ts §8.
  */
 export async function findNonAggressionCampaignBlock(actorId: string, resourceSlug: string): Promise<PactRefusalBody | null> {
   let pacts: ActivePactLite[] = [];
@@ -141,7 +150,7 @@ export async function findNonAggressionCampaignBlock(actorId: string, resourceSl
   } catch { return null; }
   for (const entry of share.entries) {
     const pact = partnerIds.get(entry.profileId);
-    if (pact && entry.sharePct >= NON_AGGRESSION_SHARE_THRESHOLD_PCT) {
+    if (pact && entry.sideValuePct >= NON_AGGRESSION_SHARE_THRESHOLD_PCT) {
       return pactRefusal(pact, entry.companyName ?? 'your pact partner', 'price_campaign');
     }
   }

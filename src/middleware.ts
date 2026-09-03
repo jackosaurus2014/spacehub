@@ -914,12 +914,19 @@ export async function middleware(req: NextRequest) {
   // everything else gets 'none' + DENY.
   //
   // Nonce rollout (CSP_MODE, default report-only): on routes Next renders per
-  // request the nonce policy also goes out — as Report-Only until the reports
-  // run clean, then enforced. Next 14 reads the nonce from the request's
-  // Content-Security-Policy[-Report-Only] header and stamps it on its own
-  // bootstrap + next/script tags, so the header carrying the nonce is
-  // forwarded on the request (never the nonce-free one — Next would read
-  // that first and find no nonce). x-nonce is forwarded for server components.
+  // request the nonce policy also goes out as Report-Only. We still forward
+  // whichever header (enforced or report-only) actually carries the nonce on
+  // the request, plus x-nonce for server components — but as of 2026-09-03
+  // this only matters in enforce-nonce mode: verified against the real
+  // installed Next 15.5.25 (prod + a local next start A/B) that Next stamps
+  // the nonce onto its own <script> tags ONLY when it arrives on the
+  // ENFORCED Content-Security-Policy request header, never when it's only on
+  // Content-Security-Policy-Report-Only. So in report-only mode (today's
+  // default) Next stamps no nonce on anything, and every script-src-elem
+  // violation reported against our own origin in that mode is an artifact of
+  // that, not a real coverage gap. See the warning at the top of
+  // src/lib/csp.ts and docs/SECURITY_AUDIT_2026-09.md "CSP" before changing
+  // CSP_MODE — do not flip to enforce-nonce without reading that first.
   const csp = documentCspHeaders({ pathname });
   let response: NextResponse;
   if (csp.nonce) {

@@ -42,7 +42,8 @@ import { LOCATION_MAP } from './solar-system';
 import { RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
 import { LOCATION_TO_ZONE, ZONE_MAP } from './zone-influence';
-import { aggregateFillsByProfile, NPC_PROFILE_ID } from './market-share';
+import { aggregateFillsByProfile } from './market-share';
+import { isNpcProfileId, npcDisplayName } from './npc-identity';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -64,8 +65,6 @@ export const CHOKEPOINT_VOLUME_PERCENTILE = 80;
  *  fraction of its cargo (rule defined; data not yet persisted — see
  *  `detectChokepoints`). */
 export const CHOKEPOINT_CARRIER_SHARE = 0.5;
-
-const NPC_CORP_PREFIX = '__NPC_CORP_';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -341,17 +340,13 @@ export interface FlowFillInput {
   totalValue: number;
 }
 
-export function isNpcProfileId(id: string): boolean {
-  return id === NPC_PROFILE_ID || id.startsWith(NPC_CORP_PREFIX);
-}
+// isNpcProfileId now lives in npc-identity.ts (canonical, dependency-free)
+// — re-exported here so existing `import { isNpcProfileId } from
+// './flow-map'` call sites (this module's own __tests__) keep working.
+export { isNpcProfileId };
 
 function displayName(profileId: string, names: Map<string, string>): string {
-  if (profileId === NPC_PROFILE_ID) return 'NPC Market Maker';
-  if (profileId.startsWith(NPC_CORP_PREFIX)) {
-    const slug = profileId.slice(NPC_CORP_PREFIX.length).replace(/_+$/, '');
-    return `NPC ${slug.replace(/_/g, ' ')}`;
-  }
-  return names.get(profileId) || 'Unnamed corporation';
+  return npcDisplayName(profileId) ?? names.get(profileId) ?? 'Unnamed corporation';
 }
 
 /**
