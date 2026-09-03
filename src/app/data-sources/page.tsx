@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -17,7 +18,8 @@ interface DataSource {
 interface DataCategory {
   title: string;
   description: string;
-  icon: JSX.Element;
+  // @types/react 19 drops the global `JSX` namespace; it lives under React now.
+  icon: React.JSX.Element;
   accentColor: string;
   sources: DataSource[];
 }

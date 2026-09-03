@@ -16,7 +16,16 @@ export interface DeckProps {
   as?: React.ElementType;
 }
 
-export default function Deck({ children, className = '', as: Tag = 'p' }: DeckProps) {
+/**
+ * @types/react 19 no longer resolves a bare `React.ElementType` union down to a
+ * usable prop set in JSX — every shared attribute collapses to `never`. Casting
+ * the polymorphic tag to a host-element component type restores className/style
+ * /children without narrowing what callers may pass in.
+ */
+type HostTag = React.ElementType<React.HTMLAttributes<HTMLElement>>;
+
+export default function Deck({ children, className = '', as = 'p' }: DeckProps) {
+  const Tag = as as HostTag;
   return (
     <Tag
       className={`font-body text-[1.25rem] italic leading-[1.5] text-[var(--ink-2)] ${className}`}

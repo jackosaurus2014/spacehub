@@ -140,9 +140,11 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             </td>
           ),
           hr: () => <hr className="border-white/[0.06] my-4" />,
+          // @types/react 19 widens <img src> to `string | Blob`; next/image
+          // only accepts a string URL, so drop anything that is not one.
           img: ({ src, alt }) => (
             <Image
-              src={src || ''}
+              src={typeof src === 'string' ? src : ''}
               alt={alt || ''}
               width={800}
               height={400}

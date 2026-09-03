@@ -31,6 +31,14 @@ export interface ConsoleProps {
   padded?: boolean;
 }
 
+/**
+ * @types/react 19 no longer resolves a bare `React.ElementType` union down to a
+ * usable prop set in JSX — every shared attribute collapses to `never`. Casting
+ * the polymorphic tag to a host-element component type restores className/style
+ * /children without narrowing what callers may pass in.
+ */
+type HostTag = React.ElementType<React.HTMLAttributes<HTMLElement>>;
+
 export default function Console({
   title,
   source,
@@ -39,9 +47,10 @@ export default function Console({
   actions,
   children,
   className = '',
-  as: Tag = 'section',
+  as = 'section',
   padded = true,
 }: ConsoleProps) {
+  const Tag = as as HostTag;
   const stamp = formatUtcHHMM(asOf);
   const provenance = [source, stamp ? `updated ${stamp}` : null].filter(Boolean).join(' \u00B7 ');
   const hasHeader = Boolean(title || provenance || status || actions);
