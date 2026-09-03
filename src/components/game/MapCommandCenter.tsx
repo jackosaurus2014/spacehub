@@ -43,6 +43,7 @@ import { SLOT_SEGMENT_STYLE } from '@/lib/game/map-bodies';
 import GlobalActivityFeed from './GlobalActivityFeed';
 import SpatialStrategyPanel from './SpatialStrategyPanel';
 import { playSound } from '@/lib/game/sound-engine';
+import { THREE_D_ENABLED } from '@/lib/three-runtime';
 import { updateMusicMood } from '@/lib/game/music-engine';
 import { isFoldedFeatureUnlocked } from '@/lib/game/corporation-tiers';
 import { MAP_MODES, MAP_MODE_MAP, cycleMapMode, type MapMode } from '@/lib/game/map-modes';
@@ -221,7 +222,7 @@ export default function MapCommandCenter({
       setPrefer3D(localStorage.getItem(MAP_RENDERER_KEY) !== '2d');
     } catch { /* storage unavailable → default 3D on capable hardware */ }
   }, []);
-  const use3D = capable3D && prefer3D;
+  const use3D = THREE_D_ENABLED && capable3D && prefer3D;
   const toggleRenderer = useCallback(() => {
     playSound('click');
     setPrefer3D(prev => {
@@ -489,7 +490,7 @@ export default function MapCommandCenter({
         >
           ✴ Galactic
         </button>
-        {capable3D && layer === 'solar' && (
+        {THREE_D_ENABLED && capable3D && layer === 'solar' && (
           <button
             type="button"
             onClick={toggleRenderer}

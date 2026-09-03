@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
+import { THREE_D_ENABLED } from '@/lib/three-runtime';
 import VideoStream from './VideoStream';
 import MissionTimeline from './MissionTimeline';
 import TelemetryDisplay from './TelemetryDisplay';
@@ -64,7 +65,7 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
   const [currentPhaseId, setCurrentPhaseId] = useState<string | null>(event.missionPhase);
   const [latestTelemetry, setLatestTelemetry] = useState<TelemetryPoint | null>(null);
   const [isLive, setIsLive] = useState(event.isLive);
-  const [use3D, setUse3D] = useState(true);
+  const [use3D, setUse3D] = useState(THREE_D_ENABLED);
   const [countdown, setCountdown] = useState<string>('');
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -278,7 +279,7 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              {use3D ? (
+              {use3D && THREE_D_ENABLED ? (
                 <TrajectoryVisualization
                   altitude={latestTelemetry?.altitude ?? 0}
                   downrange={latestTelemetry?.downrange ?? 0}

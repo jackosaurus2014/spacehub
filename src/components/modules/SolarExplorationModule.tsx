@@ -5,6 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { PlanetaryBody, LANDER_STATUS_INFO } from '@/types';
 import { clientLogger } from '@/lib/client-logger';
+import { THREE_D_ENABLED, THREE_D_DISABLED_NOTE } from '@/lib/three-runtime';
 
 // Dynamic import for 3D scene (client-side only)
 const PlanetaryScene = dynamic(
@@ -142,7 +143,7 @@ export default function SolarExplorationModule() {
             <span className="sr-only">
               {`3D visualization of ${selectedBody.name}, a ${selectedBody.type}. ${selectedBody.landers?.length || 0} missions recorded${selectedBody.description ? `. ${selectedBody.description}` : ''}`}
             </span>
-            <PlanetaryScene body={selectedBody} height="350px" />
+            {THREE_D_ENABLED ? <PlanetaryScene body={selectedBody} height="350px" /> : <div className="p-8 text-center"><p className="text-slate-400 text-sm">{THREE_D_DISABLED_NOTE}</p></div>}
           </div>
 
           {/* Info Panel */}

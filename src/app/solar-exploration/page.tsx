@@ -19,6 +19,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { THREE_D_ENABLED, THREE_D_DISABLED_NOTE } from '@/lib/three-runtime';
 
 // Dynamic import for 3D scene (client-side only)
 const PlanetaryScene = dynamic(
@@ -423,7 +424,7 @@ function SolarExplorationContent() {
             {/* 3D Viewer */}
             <div className="xl:col-span-2">
               <div className="card overflow-visible">
-                <PlanetaryScene body={selectedBody} height="500px" />
+                {THREE_D_ENABLED ? <PlanetaryScene body={selectedBody} height="500px" /> : <div className="p-8 text-center"><p className="text-slate-400 text-sm">{THREE_D_DISABLED_NOTE}</p></div>}
               </div>
 
               {/* Body Info */}
