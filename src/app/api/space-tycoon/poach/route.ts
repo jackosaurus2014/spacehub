@@ -13,6 +13,7 @@ import {
 import { getServerFeeIndexFactor } from '@/lib/game/fee-index-server';
 import { resolveExpiredPoachOffers, freeRetentionUsed } from '@/lib/game/offense-server';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
+import { findBlockingPact } from '@/lib/game/corp-pacts-server';
 import { validateBody, poachBodySchema } from '@/lib/validations';
 import { validationError } from '@/lib/errors';
 
@@ -141,6 +142,13 @@ export async function POST(request: NextRequest) {
       });
       if (myMembership && target.allianceMembership && myMembership.allianceId === target.allianceMembership.allianceId) {
         return NextResponse.json({ error: 'Cannot poach from alliance members.' }, { status: 400 });
+      }
+      // Diplomacy (2026-09-02): an active no_poach pact with the target
+      // refuses the offer until the actor breaks the pact in public
+      // (corp-pacts.ts). 400 `pact` carries the pact id for the UI.
+      const pactBlock = await findBlockingPact(profile.id, targetId, 'poach', target.companyName);
+      if (pactBlock) {
+        return NextResponse.json(pactBlock, { status: 400 });
       }
 
       // Per-target cooldown (30 days between offers at the same corp).

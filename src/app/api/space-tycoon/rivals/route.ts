@@ -161,6 +161,10 @@ export async function GET() {
         scoreLabel: scoreInfo.label,
         scoreColor: scoreInfo.color,
         rival: {
+          // Diplomacy (2026-09-02): the Rivals card's "Propose pact" needs
+          // the counterparty id (public ids are already exposed by the
+          // share leaderboard and the public corp pages).
+          profileId: a.rivalId,
           companyName: rival.companyName,
           netWorth: rival.netWorth,
           buildingCount: rival.buildingCount,

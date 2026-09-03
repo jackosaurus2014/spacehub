@@ -8,6 +8,7 @@
 
 import { useActivityFeed, formatRelativeTime, type ActivityEntry } from '@/hooks/useWorldState';
 import GameIcon from './GameIcon';
+import DiplomacyTimelinePanel from './DiplomacyTimelinePanel';
 import type { IconName } from '@/lib/game/icons';
 
 // Icon per activity type — falls back to a generic pulse glyph for types
@@ -23,6 +24,14 @@ const ACTIVITY_ICON: Record<string, IconName> = {
   bid_won: 'target',
   alliance_war: 'swords',
   alliance_treaty: 'handshake',
+  // Diplomacy (2026-09-02): corp-to-corp contracts + pacts.
+  contract_signed: 'handshake',
+  contract_fulfilled: 'check',
+  contract_defaulted: 'warning',
+  contract_cancelled: 'handshake',
+  contract_arbitrated: 'balance',
+  pact_signed: 'scroll',
+  pact_broken: 'scroll',
 };
 
 function iconFor(type: string): IconName {
@@ -54,6 +63,17 @@ export default function GlobalActivityFeed({ limit = 20, compact = false, classN
         <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <GameIcon name="activity" size={14} glow="cyan" /> Galactic Activity
         </h3>
+      )}
+      {/* Diplomacy (2026-09-02): the latest signed agreements / breaks /
+          rulings as a strip above the log — the public timeline lives in
+          Contracts → Diplomacy; this is its ticker. */}
+      {!compact && (
+        <section aria-label="Latest diplomacy" className="mb-2 rounded-lg border border-white/[0.05] bg-white/[0.02] px-2 py-1.5">
+          <h4 className="font-hud text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+            <GameIcon name="scroll" size={11} /> Diplomacy
+          </h4>
+          <DiplomacyTimelinePanel compact limit={4} />
+        </section>
       )}
       <div
         className="space-y-1 max-h-[50vh] overflow-y-auto game-scroll"

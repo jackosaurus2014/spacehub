@@ -57,6 +57,9 @@ import { clampCrisisSnapshot, type CrisisSnapshot } from './systemic-crises';
 // settled rivalry stakes ride the same hop. Both modules are pure.
 import { activeNpcCorpCount, activeNpcIndustryCount, type NpcGovernorSnapshot } from './npc-companies';
 import { RIVALRY_STAKE, RIVALRY_RESULTS_KEEP, type RivalryStakeResult } from './rivalry-stake';
+// Diplomacy (2026-09-02): the diplomacy snapshot + reputation events ride
+// the same hop the rivalry stakes do (corp-diplomacy.ts).
+import { applyDiplomacyRepToState, clampDiplomacySnapshot, type DiplomacySnapshot, type DiplomacyRepEvent } from './corp-diplomacy';
 
 export interface AllianceBonusSnapshot {
   revenueBonus: number;    // fraction, e.g. 0.25 = +25%
@@ -188,6 +191,13 @@ export interface ServerEffectsSnapshot {
    *  profile (PlayerActivity 'rivalry_win' rows, last 4 weeks). Applied
    *  idempotently by activity id — +rep, capped per week on apply too. */
   rivalryStakes?: RivalryStakeResult[] | null;
+  /** Diplomacy (2026-09-02): directed contract offers / milestones due /
+   *  pact proposals for the Situation Log (corp-diplomacy.ts). Re-clamped
+   *  via clampDiplomacySnapshot; null = never synced. */
+  diplomacy?: DiplomacySnapshot | null;
+  /** Diplomacy: server-side reputation deltas (+1 fulfilled / −2 default /
+   *  −3 pact broken), applied idempotently by CorpReputationEvent id. */
+  diplomacyRep?: DiplomacyRepEvent[] | null;
   fetchedAtMs: number;
 }
 
@@ -515,11 +525,22 @@ export function applyServerEffectsToState(state: GameState, eff: ServerEffectsSn
     npcGovernor: eff.npcGovernor !== undefined
       ? clampNpcGovernorSnapshot(eff.npcGovernor)
       : state.npcGovernor,
+    // Diplomacy (2026-09-02): plain clamped stash — the Situation Log and
+    // the Contracts hub badge are pure lenses over state.diplomacy.
+    diplomacy: eff.diplomacy !== undefined
+      ? clampDiplomacySnapshot(eff.diplomacy)
+      : state.diplomacy,
   };
 
   // Row 14: settled rivalry-stake wins → reputation (idempotent by id).
   if (eff.rivalryStakes !== undefined && eff.rivalryStakes !== null) {
     out = applyRivalryStakesToState(out, eff.rivalryStakes);
+  }
+
+  // Diplomacy: contract fulfilment / default / pact-break reputation
+  // deltas → reputation (idempotent by CorpReputationEvent id).
+  if (eff.diplomacyRep !== undefined && eff.diplomacyRep !== null) {
+    out = applyDiplomacyRepToState(out, eff.diplomacyRep);
   }
 
   // Wave M5: the offense snapshot reaches the tick the same hop demandPools

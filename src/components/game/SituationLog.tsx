@@ -53,6 +53,9 @@ const CATEGORY_LABEL: Record<SituationCategory, string> = {
   // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md)
   systemic_crisis: 'Accord Emergency',
   quarter_closed: 'Quarter Closed',
+  contract_milestone: 'Contract Milestone',
+  contract_offer: 'Contract Offer',
+  pact_proposal: 'Pact Proposal',
 };
 
 const CATEGORY_FRAME: Record<SituationCategory, string> = {
@@ -96,6 +99,9 @@ const CATEGORY_FRAME: Record<SituationCategory, string> = {
   // sole carrier of state.
   systemic_crisis: 'border-amber-500/25 bg-amber-500/[0.03]',
   quarter_closed: 'border-cyan-500/25 bg-cyan-500/[0.03]',
+  contract_milestone: 'border-amber-500/25 bg-amber-500/[0.03]',
+  contract_offer: 'border-cyan-500/25 bg-cyan-500/[0.03]',
+  pact_proposal: 'border-cyan-500/25 bg-cyan-500/[0.03]',
 };
 
 const SEVERITY_TONE: Record<SituationSeverity, 'bad' | 'warn' | 'info'> = {

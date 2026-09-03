@@ -4283,3 +4283,43 @@ export const seasonProgressSchema = z.object({
 });
 
 export type SeasonProgressInput = z.infer<typeof seasonProgressSchema>;
+
+// ─── Diplomacy (2026-09-02): corp-to-corp contracts + pacts ──────────────────
+// Bounds mirror corp-contracts.ts / corp-pacts.ts constants; the handlers
+// re-clamp, so these are the coarse "is this even a request" gate.
+export const corpContractCreateSchema = z.object({
+  resourceSlug: z.string().min(1).max(64),
+  quantity: z.number().finite().int().min(1).max(100_000),
+  pricePerUnit: z.number().finite().positive().max(1e12),
+  deadlineDays: z.number().finite().min(1).max(30),
+  milestoneCount: z.number().finite().int().min(1).max(4).optional(),
+  penaltyPct: z.number().finite().min(0).max(25).optional(),
+  publicNote: z.string().max(400).optional(),
+  counterpartyProfileId: z.string().min(1).max(64).optional(),
+  counterpartyCompanyName: z.string().min(1).max(200).optional(),
+});
+export type CorpContractCreateInput = z.infer<typeof corpContractCreateSchema>;
+
+export const corpContractIdSchema = z.object({
+  contractId: z.string().min(1).max(64),
+});
+
+export const corpContractDeliverSchema = z.object({
+  contractId: z.string().min(1).max(64),
+  quantity: z.number().finite().int().min(1).max(100_000).optional(),
+});
+
+export const corpPactBodySchema = z.discriminatedUnion('action', [
+  z.object({
+    action: z.literal('propose'),
+    kind: z.enum(['non_aggression', 'no_poach', 'territory_share', 'trade_preference']),
+    counterpartyProfileId: z.string().min(1).max(64).optional(),
+    counterpartyCompanyName: z.string().min(1).max(200).optional(),
+    durationDays: z.number().finite().min(7).max(90).optional(),
+    terms: z.record(z.string(), z.unknown()).optional(),
+  }),
+  z.object({ action: z.literal('accept'), pactId: z.string().min(1).max(64) }),
+  z.object({ action: z.literal('decline'), pactId: z.string().min(1).max(64) }),
+  z.object({ action: z.literal('break'), pactId: z.string().min(1).max(64) }),
+]);
+export type CorpPactBodyInput = z.infer<typeof corpPactBodySchema>;

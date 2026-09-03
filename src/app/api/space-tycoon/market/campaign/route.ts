@@ -15,6 +15,7 @@ import {
 } from '@/lib/game/price-campaigns';
 import { isServerFrontierProtected } from '@/lib/game/talent-poaching';
 import { getCampaignMarketTelemetry } from '@/lib/game/offense-server';
+import { findNonAggressionCampaignBlock } from '@/lib/game/corp-pacts-server';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 
 export const dynamic = 'force-dynamic';
@@ -119,6 +120,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         error: `Declaring a price campaign requires $${(PRICE_CAMPAIGN_MIN_NET_WORTH / 1_000_000).toFixed(0)}M net worth.`,
       }, { status: 400 });
+    }
+
+    // ── Diplomacy (2026-09-02): non_aggression clause ──
+    // A campaign on a market where a non-aggression partner holds ≥ 40% of
+    // trailing traded value (market-share.ts) is refused until the actor
+    // breaks the pact in public (corp-pacts.ts).
+    const pactBlock = await findNonAggressionCampaignBlock(profile.id, resourceSlug);
+    if (pactBlock) {
+      return NextResponse.json(pactBlock, { status: 400 });
     }
 
     // ── One campaign at a time ──

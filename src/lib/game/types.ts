@@ -1016,6 +1016,17 @@ export interface GameState {
   rivalryStakesApplied?: string[];
   rivalryResults?: { id: string; weekId: number; opponent: string; rep: number; atMs: number }[];
 
+  /** Diplomacy (2026-09-02, docs/ECONOMY_PVP_2026-08.md "Diplomacy"): the
+   *  last diplomacy snapshot the server delivered via sync (corp-
+   *  diplomacy.ts) — directed contract offers to me, next milestone /
+   *  deadline on each live contract, pact proposals awaiting my reply.
+   *  Feeds the Situation Log. Null/absent = never synced. [SAVE] optional
+   *  field, no migration. */
+  diplomacy?: import('./corp-diplomacy').DiplomacySnapshot | null;
+  /** CorpReputationEvent ids already folded into `reputation` (server-
+   *  effects.ts applyDiplomacyRepToState) — idempotency under sync retries. */
+  diplomacyRepApplied?: string[];
+
   /** Sol Events (real-world feed, src/lib/game/real-world-feed.ts): modest,
    *  time-bounded, world-shared bonus mirror while a real launch window is
    *  open or a program milestone is <7 days old. Queued client-side by

@@ -1709,6 +1709,19 @@ export async function POST(request: Request) {
       }
     } catch { /* rivalry stakes non-critical (schema lag) */ }
 
+    // ── Diplomacy (2026-09-02): directed contract offers / milestones due /
+    // pact proposals (Situation Log) + the server-side reputation deltas
+    // the client folds in idempotently (server-effects.applyDiplomacyRepToState).
+    let diplomacy: import('@/lib/game/corp-diplomacy').DiplomacySnapshot | null = null;
+    let diplomacyRep: import('@/lib/game/corp-diplomacy').DiplomacyRepEvent[] | null = null;
+    try {
+      const { buildDiplomacySnapshot, readRecentRepEvents } = await import('@/lib/game/corp-contracts-server');
+      [diplomacy, diplomacyRep] = await Promise.all([
+        buildDiplomacySnapshot(profile.id),
+        readRecentRepEvents(profile.id),
+      ]);
+    } catch { /* diplomacy snapshot non-critical (schema may lag deploy) */ }
+
     // ── GAME_DESIGN_REVIEW_2026-09 row 11: NPC density governor — the same
     // 30-day-active count the demand-pool cron uses. Absent on failure →
     // the client ticks every NPC (pre-governor behaviour).
@@ -1912,6 +1925,9 @@ export async function POST(request: Request) {
       // simply ignore it (pre-Round-2 behavior: no crisis, no situation, no
       // premium loading).
       crisis,
+      // Diplomacy (2026-09-02): additive fields; older clients ignore them.
+      diplomacy,
+      diplomacyRep,
       rivals: rivalsSummary,
       // Row 14: settled rivalry-stake wins (additive; older clients ignore).
       rivalryStakes,

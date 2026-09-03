@@ -191,6 +191,40 @@ export function useActivityFeed(limit = 20): {
   return { activities: data?.activities || [], loading, error, available: !!data && !error };
 }
 
+// ─── /api/space-tycoon/diplomacy/feed ────────────────────────────────────────
+// Diplomacy (2026-09-02): the public diplomatic timeline (corp contracts,
+// pacts, arbitration rulings, alliance treaties). Server-cached 5 min; the
+// client polls at the same cadence and shares one entry across every
+// mounted consumer (Contracts hub Diplomacy view + the activity strip).
+
+export interface DiplomacyFeedView {
+  id: string;
+  kind: string;
+  at: string;
+  title: string;
+  description: string | null;
+  parties: string[];
+  refId: string | null;
+}
+
+const DIPLOMACY_FEED_POLL_MS = 5 * 60_000;
+
+export function useDiplomacyFeed(limit = 60): {
+  entries: DiplomacyFeedView[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => void;
+} {
+  const key = `space-tycoon:diplomacy-feed:${limit}`;
+  const { data, loading, error, refresh } = usePolledResource<{ entries: DiplomacyFeedView[] }>(
+    key,
+    `/api/space-tycoon/diplomacy/feed?limit=${limit}`,
+    DIPLOMACY_FEED_POLL_MS,
+    DIPLOMACY_FEED_POLL_MS,
+  );
+  return { entries: data?.entries || [], loading, error, refresh };
+}
+
 // ─── /api/space-tycoon/competitive-contracts ─────────────────────────────────
 
 export interface CompetitiveContractView {

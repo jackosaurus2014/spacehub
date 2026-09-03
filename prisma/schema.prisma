@@ -295,6 +295,16 @@ model GameProfile {
   poachOffersMade     PoachOffer[]    @relation("poachAttacker")
   poachOffersReceived PoachOffer[]    @relation("poachTarget")
 
+  // Diplomacy (2026-09-02, docs/ECONOMY_PVP_2026-08.md "Diplomacy"):
+  // binding corp-to-corp supply contracts, pacts, and the server-side
+  // reputation deltas they produce (see CorpContract/CorpPact/
+  // CorpReputationEvent below).
+  corpContractsIssued   CorpContract[] @relation("corpContractIssuer")
+  corpContractsAccepted CorpContract[] @relation("corpContractCounterparty")
+  corpPactsProposed     CorpPact[]     @relation("corpPactProposer")
+  corpPactsReceived     CorpPact[]     @relation("corpPactCounterparty")
+  corpReputationEvents  CorpReputationEvent[]
+
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
@@ -7643,6 +7653,118 @@ model PoachOffer {
   @@index([targetId, status])
   @@index([attackerId, status])
   @@index([status, respondBy])
+}
+
+// ─── Diplomacy (2026-09-02) ──────────────────────────────────────────────────
+// docs/ECONOMY_PVP_2026-08.md "Diplomacy (2026-09-02)" — GAME_DESIGN_REVIEW
+// §2 rows 2 + 10; CLAUDE.md "Diplomacy and binding contracts between
+// players". All three tables are SERVER-AUTHORITATIVE shared world state.
+// Money moves only through the One-Wallet ledger (server-ledger.ts):
+//   contract_escrow / contract_escrow_refund   issuer's payment, in and out
+//   contract_collateral / contract_collateral_refund   counterparty's bond
+//   contract_payment                            release to the counterparty
+//   contract_penalty_paid / contract_penalty_received  collateral → issuer
+//   contract_resources_delivered / contract_resources_received   the goods
+//   arbitration_fee                             BURNED (BALANCE.md sink)
+
+// A binding buy contract: the ISSUER pays (escrowed at creation), the
+// COUNTERPARTY delivers `quantity` units of `resourceSlug` on a milestone
+// schedule before `deadlineAt`, posting `collateralMoney` on acceptance.
+model CorpContract {
+  id                    String       @id @default(cuid())
+  issuerProfileId       String
+  issuer                GameProfile  @relation("corpContractIssuer", fields: [issuerProfileId], references: [id], onDelete: Cascade)
+  /// Null while open on the public market; set at acceptance (or at creation
+  /// for a DIRECTED offer only that corporation may accept).
+  counterpartyProfileId String?
+  counterparty          GameProfile? @relation("corpContractCounterparty", fields: [counterpartyProfileId], references: [id], onDelete: Cascade)
+  /// Set when the issuer named a counterparty at creation (directed offer).
+  directed              Boolean      @default(false)
+  /// draft | open | accepted | delivering | fulfilled | defaulted | cancelled | disputed | arbitrated
+  status                String       @default("open")
+  resourceSlug          String
+  quantity              Int
+  deliveredQty          Int          @default(0)
+  pricePerUnit          Float
+  totalValue            Float
+  /// Issuer's payment escrowed at creation (constant). Remaining held =
+  /// escrowMoney − escrowReleased − escrowRefunded.
+  escrowMoney           Float        @default(0)
+  escrowReleased        Float        @default(0)
+  escrowRefunded        Float        @default(0)
+  /// v1 = buy contracts only; reserved for reverse/sell contracts.
+  escrowResources       Json?
+  /// [{ pct, dueAt, deliveredQty, deliveredAt, releasedMoney }]
+  milestones            Json         @default("[]")
+  /// 0–25, default 10. Collateral = penaltyPct% × totalValue, posted by the
+  /// counterparty on acceptance (0 for a Frontier-shielded counterparty).
+  penaltyPct            Int          @default(10)
+  collateralMoney       Float        @default(0)
+  collateralForfeited   Float        @default(0)
+  collateralRefunded    Float        @default(0)
+  deadlineAt            DateTime
+  publicNote            String?
+  cancelRequestedBy     String?
+  disputedByProfileId   String?
+  disputeFeeBurned      Float        @default(0)
+  arbitratedBy          String?
+  ruling                String?
+  createdAt             DateTime     @default(now())
+  acceptedAt            DateTime?
+  resolvedAt            DateTime?
+
+  @@index([status, deadlineAt])
+  @@index([issuerProfileId, status])
+  @@index([counterpartyProfileId, status])
+  @@index([createdAt])
+}
+
+// A corp-to-corp pact. Enforced server-side at the offense routes:
+//   no_poach         → /api/space-tycoon/poach offer creation refused
+//   non_aggression   → price campaigns on a market the partner holds ≥40% of,
+//                      and espionage against the partner, refused
+//   territory_share  → zone governance challenges against the partner refused
+//   trade_preference → registered only (order-book priority not enforced)
+// Breaking an active pact costs the breaker −3 reputation and is public.
+model CorpPact {
+  id                    String      @id @default(cuid())
+  proposerProfileId     String
+  proposer              GameProfile @relation("corpPactProposer", fields: [proposerProfileId], references: [id], onDelete: Cascade)
+  counterpartyProfileId String
+  counterparty          GameProfile @relation("corpPactCounterparty", fields: [counterpartyProfileId], references: [id], onDelete: Cascade)
+  /// non_aggression | no_poach | territory_share | trade_preference
+  kind                  String
+  /// proposed | active | expired | broken | declined
+  status                String      @default("proposed")
+  termsJson             Json?
+  durationDays          Int         @default(30)
+  startsAt              DateTime?
+  endsAt                DateTime?
+  brokenByProfileId     String?
+  brokenAt              DateTime?
+  createdAt             DateTime    @default(now())
+  resolvedAt            DateTime?
+
+  @@index([status, endsAt])
+  @@index([proposerProfileId, status])
+  @@index([counterpartyProfileId, status])
+  @@index([kind, status])
+}
+
+// Server-side reputation deltas from diplomacy (+1 fulfilled, −2 default,
+// −3 pact broken). Delivered to the client on sync and folded into
+// GameState.reputation idempotently by id (server-effects.ts) — the same
+// hop the rivalry-stake wins ride.
+model CorpReputationEvent {
+  id        String      @id @default(cuid())
+  profileId String
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  delta     Int
+  reason    String
+  refId     String?
+  createdAt DateTime    @default(now())
+
+  @@index([profileId, createdAt])
 }
 
 // ─── AAA Round 1 wave E1: The Accord Chair ───────────────────────────────────

@@ -43,7 +43,7 @@ import { LOCATION_MAP } from './solar-system';
 import { getDepositGrade, EXTRACTION_PRESSURE_MIN } from './extraction-pressure';
 import { GUILD_STRIKE_WAGE_THRESHOLD, WAGE_INDEX_MAX } from './labor-market';
 import { WORKER_TYPES } from './workforce';
-import { MINING_PRODUCTION } from './resources';
+import { MINING_PRODUCTION, RESOURCE_MAP, type ResourceId } from './resources';
 // Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5): surface a building's
 // mothball/reactivation/decommission state in the Situation Log — the
 // "reflect mothballed state" requirement. Pure GameState + world-clock lens,
@@ -72,6 +72,11 @@ import { getCrisisStatus, CRISIS_APPROACH_MAP } from './systemic-crises';
 // the player's own game clock, via quarterly-reports.ts's own trigger check.
 import { shouldGenerateQuarterlyReport, generateQuarterlyReport, getCompletedQuarterIndex, type QuarterlyReport } from './quarterly-reports';
 import { formatMoney } from './formulas';
+// Diplomacy (2026-09-02): milestone-due / contract-offer / pact-proposal
+// items — pure read of state.diplomacy (corp-diplomacy.ts).
+import { DIPLOMACY_SNAPSHOT_STALE_MS } from './corp-diplomacy';
+import { CORP_CONTRACT_MILESTONE_WARN_MS } from './corp-contracts';
+import { describePactKind } from './corp-pacts';
 
 export type SituationSeverity = 'critical' | 'warning' | 'info';
 
@@ -119,6 +124,11 @@ export type SituationCategory =
   // Wave M5 (O4): a rival's signing-bonus raid on this player's crew —
   // counteroffer window closing (the [SAVE] V38 "counteroffer inbox").
   | 'poach_offer'
+  // Diplomacy (2026-09-02, docs/ECONOMY_PVP_2026-08.md "Diplomacy"): a
+  // binding corp-to-corp contract milestone or deadline inside 24h, a
+  // directed contract offer awaiting my answer, a pact proposed to me.
+  // Pure lens over state.diplomacy (delivered via sync → server-effects).
+  | 'contract_milestone' | 'contract_offer' | 'pact_proposal'
   | 'lane_toll'
   // PvP Discoverability pass (2026-08, competitive-posture.ts): the
   // "right now is a moment to use one of these tools" surface. Every entry
@@ -825,6 +835,65 @@ export function deriveSituationLog(state: GameState, opts: SituationLogOptions =
       atMs: r.atMs,
       tab: 'leaderboard',
     });
+  }
+
+  // ── Diplomacy (2026-09-02) — pure lens over state.diplomacy ─────────────
+  const diplomacy = state.diplomacy;
+  if (diplomacy && typeof diplomacy.asOf === 'number' && nowMs - diplomacy.asOf <= DIPLOMACY_SNAPSHOT_STALE_MS) {
+    // Milestone / deadline due within 24h on a live contract. Counterparty
+    // rows are the actionable ones (deliver now); issuer rows are watch
+    // items (your supplier is due).
+    for (const m of diplomacy.milestonesDue || []) {
+      const msLeft = m.dueAt - nowMs;
+      if (msLeft > CORP_CONTRACT_MILESTONE_WARN_MS) continue;
+      const resource = RESOURCE_MAP.get(m.resourceSlug as ResourceId)?.name ?? m.resourceSlug.replace(/_/g, ' ');
+      const overdue = msLeft <= 0;
+      const what = m.isDeadline ? 'Contract deadline' : `${m.pct}% milestone`;
+      items.push({
+        id: `sit-contract-milestone-${m.contractId}-${m.pct}`,
+        category: 'contract_milestone',
+        icon: 'handshake',
+        label: m.role === 'counterparty'
+          ? `${what} for ${m.otherName} ${overdue ? 'is overdue' : `due in ${formatHoursOrDays(msLeft)}`}`
+          : `${m.otherName}'s ${what.toLowerCase()} ${overdue ? 'is overdue' : `falls due in ${formatHoursOrDays(msLeft)}`}`,
+        detail: m.role === 'counterparty'
+          ? `Deliver ${m.remainingQty.toLocaleString()} more ${resource} to stay on schedule — ${m.isDeadline ? 'missing the deadline forfeits your bond' : 'a missed milestone is grounds for arbitration'}.`
+          : `${m.remainingQty.toLocaleString()} ${resource} still owed. If they slip, you can take the contract to arbitration.`,
+        severity: m.role === 'counterparty' ? (overdue || msLeft <= 6 * 60 * 60 * 1000 ? 'critical' : 'warning') : 'info',
+        atMs: m.dueAt,
+        tab: 'contracts',
+        subView: 'contracts:corp',
+      });
+    }
+    // Directed contract offers — someone named you as their supplier.
+    for (const o of diplomacy.incomingOffers || []) {
+      const resource = RESOURCE_MAP.get(o.resourceSlug as ResourceId)?.name ?? o.resourceSlug.replace(/_/g, ' ');
+      items.push({
+        id: `sit-contract-offer-${o.id}`,
+        category: 'contract_offer',
+        icon: 'handshake',
+        label: `Contract offer from ${o.issuerName}: ${o.quantity.toLocaleString()} ${resource}`,
+        detail: `${formatMoney(o.totalValue)} is already in escrow. Accept in Contracts → Corp Contracts before ${new Date(o.deadlineAt).toISOString().slice(0, 10)}.`,
+        severity: 'info',
+        atMs: o.deadlineAt,
+        tab: 'contracts',
+        subView: 'contracts:corp',
+      });
+    }
+    // Pact proposals awaiting my reply.
+    for (const p of diplomacy.pactProposals || []) {
+      items.push({
+        id: `sit-pact-proposal-${p.id}`,
+        category: 'pact_proposal',
+        icon: 'scroll',
+        label: `${p.proposerName} proposes a ${describePactKind(p.kind)}`,
+        detail: `${p.durationDays}-day term. Signing is public; breaking it later costs reputation in the open.`,
+        severity: 'info',
+        atMs: p.createdAt,
+        tab: 'contracts',
+        subView: 'contracts:corp',
+      });
+    }
   }
 
   const severityRank: Record<SituationSeverity, number> = { critical: 0, warning: 1, info: 2 };

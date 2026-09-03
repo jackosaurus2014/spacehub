@@ -315,6 +315,15 @@ const CRON_JOBS: CronJobDef[] = [
   // the equity settler (:30) nor the Chair certifier (:50). Registered in
   // middleware.ts cronPaths (the CSRF-for-new-cron gotcha).
   { schedule: '20 */2 * * *', path: '/api/space-tycoon/crisis/resolve',             label: 'tycoon-crisis-resolve',        maxStaleMinutes: 1440 },
+  // Diplomacy (2026-09-02, docs/ECONOMY_PVP_2026-08.md "Diplomacy"): corp-
+  // to-corp supply-contract deadline settlement (default → collateral pays
+  // the issuer pro-rata, −2 rep, public row), open-contract expiry refunds,
+  // and pact expiry. Contracts live on the weekly/monthly loop (1–30 day
+  // deadlines); hourly at :40 keeps settlement within an hour of a deadline
+  // and off the :00/:15/:20/:30 game minutes. /api/cron/ prefix is already
+  // in the middleware CSRF cron allowlist; the route also lazily sweeps on
+  // every corp-contracts GET, so a missed run only delays, never loses.
+  { schedule: '40 * * * *',   path: '/api/cron/corp-contracts-resolve',              label: 'tycoon-corp-contracts-resolve', maxStaleMinutes: 180 },
 
   // Opt-in email programs (2026-09-01) on the shared EmailProgramSend ledger
   // (program + periodKey unique → a catch-up rerun never double-sends). One

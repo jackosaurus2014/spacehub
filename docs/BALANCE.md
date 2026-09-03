@@ -3021,3 +3021,27 @@ kept); `servicer_tug`/`fleet_tender` mapped explicitly to the closest
 hulls and listed in `SHIP_ART_BACKLOG` for the next art batch.
 `assets-resolve.test.ts` asserts every emitted category and every hull
 resolves to an existing, non-fallback file.
+
+---
+
+## Diplomacy sinks and transfers (2026-09-02)
+
+docs/ECONOMY_PVP_2026-08.md "Diplomacy (2026-09-02)". Two new money movements; the decision on each
+was **penalty transfers, fee burns**:
+
+| Movement | Ledger reason | Sink or transfer | Why |
+|---|---|---|---|
+| Contract default / arbitration penalty | `contract_penalty_received` (issuer credit; the counterparty's loss is the un-refunded part of its earlier `contract_collateral` debit) | **Transfer** to the wronged party | A default harms a specific corporation; the remedy should make *them* whole, not the void. Burning it would make defaults cheaper for the world than for the victim and turn "sign, then default" into a pure sink with no injured party — the wrong incentive for the agreement half of economic warfare. |
+| Arbitration fee (2 % of contract value, paid by the disputing party) | `arbitration_fee` | **Sink** (no matching credit) | Same posture as `tender_arbitration_burn` and the poach action fee: invoking the bureau must cost something real so disputes are not free option-taking, and no player may profit from being disputed. |
+
+Escrow (`contract_escrow` / `contract_payment` / refunds) and collateral (`contract_collateral` /
+refunds) are neutral: money changes hands only for goods delivered, at a price inside 0.3×–3× spot.
+The price band bounds the player-to-player transfer that a contract with an alt could otherwise
+launder; the collateral (≤ 25 % of value) bounds what a default can move.
+
+**Expected magnitude:** at relaunch scale (contracts of $10⁵–$10⁷) the fee sink is noise against the
+existing sinks (research ≈ 30 % of destruction, campaign/poach fees). It is listed here so the
+quarterly balance report can add the reason to its sink table; no constant elsewhere changed.
+**Watch:** ratio of arbitrated to fulfilled contracts (above 30 % would say the milestone schedule is
+too tight or the fee too cheap), and the Frontier-counterparty default rate (the waived bond is the
+only place a default costs the defaulter nothing but reputation).

@@ -21,6 +21,8 @@ import ContractsPanel from './ContractsPanel';
 import DiplomacyPanel from './DiplomacyPanel';
 import BiddingPanel from './BiddingPanel';
 import CompetitiveRacesPanel from './CompetitiveRacesPanel';
+import CorpContractsPanel from './CorpContractsPanel';
+import DiplomacyTimelinePanel from './DiplomacyTimelinePanel';
 import LockedSubtabNotice from './LockedSubtabNotice';
 import { ConsolePanel } from './chrome';
 import GameIcon from './GameIcon';
@@ -36,7 +38,10 @@ interface ContractsHubPanelProps {
   embedded?: boolean;
 }
 
-type ContractsView = 'standard' | 'deliveries' | 'races' | 'pvp';
+// Diplomacy (2026-09-02): 'corp' (binding corp-to-corp supply contracts +
+// pacts) and 'diplomacy' (the public timeline) — hubs.ts entries
+// contracts:corp / contracts:diplomacy.
+type ContractsView = 'standard' | 'deliveries' | 'races' | 'pvp' | 'corp' | 'diplomacy';
 
 export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDelivery, onDeliverContract, embedded = false }: ContractsHubPanelProps) {
   const tier = state.corporationTier || 1;
@@ -48,13 +53,14 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
     deliveriesUnlocked ? 'deliveries' : 'standard',
     requested => {
       if (requested === 'standard' || requested === 'races' || requested === 'pvp') return requested;
+      if (requested === 'corp' || requested === 'diplomacy') return requested;
       if (requested === 'bidding' || requested === 'pvp') return 'pvp';
       if (requested === 'pve') return deliveriesUnlocked ? 'deliveries' : 'standard';
       if (requested === 'deliveries') return 'deliveries';
       return null;
     },
   );
-  const hubTab: 'pve' | 'pvp' = view === 'pvp' || view === 'races' ? 'pvp' : 'pve';
+  const hubTab: 'pve' | 'pvp' | 'corp' = view === 'pvp' || view === 'races' ? 'pvp' : view === 'corp' || view === 'diplomacy' ? 'corp' : 'pve';
   const pveSection: 'deliveries' | 'standard' = view === 'deliveries' ? 'deliveries' : 'standard';
 
   const TopTabs = (
@@ -81,8 +87,47 @@ export default function ContractsHubPanel({ state, onAcceptContract, onAcceptDel
       >
         <GameIcon name="target" size={13} /> PVP Bidding{!biddingUnlocked && <GameIcon name="lock" size={11} label="Locked" />}
       </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={hubTab === 'corp'}
+        onClick={() => setView('corp')}
+        className={`min-h-[44px] px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          hubTab === 'corp' ? 'game-tab-active text-white' : 'text-slate-500 hover:text-white hover:bg-white/[0.04]'
+        }`}
+      >
+        <GameIcon name="handshake" size={13} /> Corp Diplomacy
+      </button>
     </div>
   );
+
+  if (hubTab === 'corp') {
+    const CorpStrip = (
+      <div className="flex rounded-lg overflow-hidden border border-white/[0.05] w-fit" role="tablist" aria-label="Corp diplomacy view">
+        <button type="button" role="tab" aria-selected={view === 'corp'} onClick={() => setView('corp')}
+          className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors flex items-center gap-1 ${view === 'corp' ? 'bg-white/[0.06] text-white' : 'text-slate-500 hover:text-white'}`}>
+          <GameIcon name="handshake" size={11} /> Corp Contracts
+        </button>
+        <button type="button" role="tab" aria-selected={view === 'diplomacy'} onClick={() => setView('diplomacy')}
+          className={`min-h-[36px] px-3 py-1 text-[10px] font-medium transition-colors flex items-center gap-1 ${view === 'diplomacy' ? 'bg-white/[0.06] text-white' : 'text-slate-500 hover:text-white'}`}>
+          <GameIcon name="scroll" size={11} /> Timeline
+        </button>
+      </div>
+    );
+    return (
+      <div className="space-y-3">
+        {!embedded && (
+          <ConsolePanel title="Contracts" icon="contracts" subtitle="Binding corp-to-corp contracts, pacts, and the public diplomatic record.">
+            <div className="space-y-2">
+              {TopTabs}
+              {CorpStrip}
+            </div>
+          </ConsolePanel>
+        )}
+        {view === 'diplomacy' ? <DiplomacyTimelinePanel /> : <CorpContractsPanel state={state} />}
+      </div>
+    );
+  }
 
   if (hubTab === 'pvp') {
     return (

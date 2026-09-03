@@ -300,6 +300,7 @@ export function useGameSync(
           || data.extractionPressure || data.laborMarket || data.laneBonuses
           || data.megaProjectBonuses || data.offense || data.equity || data.feeIndex
           || data.chair || data.crisis || data.npcGovernor || data.rivalryStakes
+          || data.diplomacy || data.diplomacyRep
         ) {
           queueServerEffects({
             allianceBonuses: data.allianceBonuses || null,
@@ -348,6 +349,12 @@ export function useGameSync(
             // Row 14: settled rivalry-stake wins → reputation, idempotent
             // by activity id inside applyRivalryStakesToState.
             rivalryStakes: Array.isArray(data.rivalryStakes) ? data.rivalryStakes : undefined,
+            // Diplomacy (2026-09-02): contract offers / milestones due /
+            // pact proposals for the Situation Log, and the server-side
+            // reputation deltas (idempotent by id inside
+            // applyDiplomacyRepToState).
+            diplomacy: data.diplomacy || undefined,
+            diplomacyRep: Array.isArray(data.diplomacyRep) ? data.diplomacyRep : undefined,
             fetchedAtMs: Date.now(),
           });
         }

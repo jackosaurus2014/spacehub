@@ -749,3 +749,136 @@ share existed (§E6, `market-share.ts`). Nothing rendered flows as a map. Now:
 | `production` as windowed units | `LocationExtraction` is a decaying pressure score. | A `LocationExtractionDaily (locationId, resourceId, day, units)` rollup written by the same sync branch. |
 
 No DDL was needed for this pass — everything shown derives from existing rows.
+
+---
+
+## Diplomacy (2026-09-02)
+
+**Founder-approved:** GAME_DESIGN_REVIEW_2026-09.md §2 rows 2 and 10. CLAUDE.md "Diplomacy and
+binding contracts between players": *binding player-to-player contracts with escrow, milestones and
+automatic penalty enforcement; non-aggression / no-poach / territory-sharing pacts, signed on-chain
+and public; arbitration without a he-said-she-said loop; a public diplomacy feed.* Before this wave
+the economic-warfare toolkit had an offense half (campaigns, poaching, cornering, espionage,
+takeovers) and no agreement half. Now:
+
+### 1. Binding corp-to-corp supply contracts (weekly / monthly loop)
+
+- **Models:** `CorpContract`, `CorpReputationEvent` (prisma/schema.prisma; DDL applied by hand in prod).
+- **Rules (pure):** `src/lib/game/corp-contracts.ts`. **Server:** `corp-contracts-server.ts`.
+- **Routes:** `GET/POST /api/space-tycoon/corp-contracts` (list / create), `POST …/accept`, `…/deliver`,
+  `…/cancel`, `…/dispute`; cron `POST /api/cron/corp-contracts-resolve` hourly at :40 (`cron-scheduler.ts`)
+  plus a lazy sweep on every list read. Per-profile throttle 10/min on every mutation (`route-throttle.ts`).
+- **v1 = buy contracts.** The ISSUER escrows `quantity × pricePerUnit` at creation (`contract_escrow`);
+  the COUNTERPARTY posts `penaltyPct × totalValue` as collateral on acceptance (`contract_collateral`)
+  and delivers from the **authoritative** inventory (`server-inventory.ts resolveSellableQuantity` —
+  the same gate bounties use; a client map claiming 10,000 units cannot deliver more than the server
+  holds). Escrow is released **per milestone** (`contract_payment`): units beyond the last satisfied
+  milestone are paid when the next one closes; the final milestone sweeps whatever is held.
+- **Limits:** price within **0.3×–3× the live `MarketResource.currentPrice`** (base price fallback);
+  quantity ≤ 100,000; deadline 1–30 days; 1–4 evenly spaced cumulative milestones; penalty 0–25 %
+  (default 10); ≤ 10 outstanding per issuer and ≤ 10 obligations per counterparty; public note ≤ 200
+  chars, tag/control-stripped. Optional **directed offers** (`counterpartyProfileId` /
+  `counterpartyCompanyName`) only the named corporation can accept — these surface as "contract
+  offer received" in the Situation Log.
+- **Default (deadline passed):** delivered units paid pro-rata (net of milestone releases), the
+  collateral's share of the *undelivered* fraction **transfers to the issuer**
+  (`contract_penalty_received`), the rest of the collateral and escrow go home, the defaulter takes
+  **−2 reputation** (`CorpReputationEvent`) and a public `contract_defaulted` row. Never-accepted
+  contracts past deadline are withdrawn and refunded.
+- **Cancel:** issuer only while open (full refund). Once accepted, cancellation is **mutual** — the
+  first request is recorded (`cancelRequestedBy`); the other party's matching request settles with no
+  penalty. Unilateral exit is arbitration.
+- **[FRONTIER] rule (mirrors talent-poaching.ts):** the shield protects a Frontier corporation from
+  *loss*, never from opportunity. A Frontier-protected counterparty (`isServerFrontierProtected`:
+  under 30 days old and under the $500M hard cap) may accept but posts **no collateral and can never
+  forfeit any**; on default the issuer's escrow comes straight back and the defaulter still takes the
+  public −2. Issuing is always allowed — escrow is the issuer's own spend.
+- **Reputation:** +1 to **both** sides on fulfilment, −2 to the defaulter, −3 for breaking a pact —
+  the rivalry-stake scale (`rivalry-stake.ts REP_PER_WIN = 1`). Delivered on sync as
+  `diplomacyRep` and folded into `GameState.reputation` idempotently by event id
+  (`server-effects.ts` → `corp-diplomacy.ts applyDiplomacyRepToState`, floored at 0). This is the one
+  documented exception to "reputation never decreases" (`reputation.ts` header).
+
+### 2. Arbitration — deterministic, no moderation loop
+
+Either party of an accepted contract may dispute **once**. Fee = **2 % of totalValue, BURNED**
+(`arbitration_fee` — no matching credit anywhere). The ruling is immediate
+(`computeArbitrationRuling`):
+
+| Who disputes | Shortfall measured as | Effect |
+|---|---|---|
+| Issuer | `max(0, expectedByNow − delivered)` where expectedByNow = cumulative units of every milestone whose `dueAt ≤ now` | Only what was already due counts; a supplier ahead of schedule loses nothing |
+| Counterparty | `quantity − delivered` | They are walking away: the whole undelivered balance is the shortfall |
+
+Delivered units are always paid pro-rata; penalty = `collateral × shortfall / quantity` transfers to
+the issuer; remainder refunded both ways; shortfall > 0 → counterparty −2. The ruling is flavoured
+as the arbitration bureau of the faction whose **home region the resource belongs to** (LORE.md):
+Dominion Commerce Tribunal (inner-system metals, refined goods, components, water, industrial),
+Pallas-4 Mercantile Board (Belt precious metals / rare earths), Warchiefs Circle of the Ring Clans
+(Titan hydrocarbons), Great Nest Exchange Pattern (Kuiper bio-materials), Convocation Salvage Court
+(exotic fuels), Triton Archive Adjudicators (precursor-adjacent technology). Non-signatory bureaus
+say so in their writ line — same arithmetic, different letterhead. `arbitratedBy` + `ruling` are
+stored on the row and published as `contract_arbitrated`.
+
+### 3. Corp-to-corp pacts (monthly loop)
+
+- **Model:** `CorpPact`. **Rules:** `corp-pacts.ts`. **Server:** `corp-pacts-server.ts`.
+- **Routes:** `GET/POST /api/space-tycoon/corp-pacts` (`propose` / `accept` / `decline` / `break`),
+  public registry `GET /api/space-tycoon/corp-pacts/registry` (cached 5 min).
+- Four kinds, 7–90 day terms, one active/proposed pact per (pair, kind), ≤ 20 active per corp.
+  **Breaking** an active pact: −3 reputation + public `pact_broken` row. Signing is public
+  (`pact_signed`); proposals are private until signed.
+- **Enforcement points** (all return `400 { error: 'pact', pactId, kind, partner, message }`):
+
+| Kind | Where | Rule |
+|---|---|---|
+| `no_poach` | `api/space-tycoon/poach/route.ts` (after the alliance check) | offer creation refused |
+| `non_aggression` | `api/space-tycoon/market/campaign/route.ts` (before the one-campaign gate) | refused when a partner holds **≥ 40 %** of the resource's trailing traded value (`market-share.ts getResourceShare(full)` — internal enforcement read, not disclosure) |
+| `non_aggression` | `api/space-tycoon/espionage/execute/route.ts` (after the target fetch) | refused |
+| `territory_share` | `api/space-tycoon/zones/challenge/route.ts` (after the zone fetch) | challenge against the partner's governorship refused |
+| `trade_preference` | — | **registered only.** Order-book price-time priority for partner orders would need a per-match pact lookup inside `market-orderbook.ts`'s matching loop (`orderBy price, createdAt`) — not the trivial change the brief allowed. Public on the timeline; no mechanical edge. |
+
+The pact is only an obstacle, never a wall: the actor can always break it first — that is the
+decision (honour it, or break it in the open for −3).
+
+### 4. Public diplomacy timeline
+
+`GET /api/space-tycoon/diplomacy/feed` (public, cached 5 min) merges `PlayerActivity` rows of the
+seven diplomacy types with `AllianceDiplomacy` treaties and wars, newest first. Rendered as
+**Contracts & Diplomacy → Diplomacy** (`DiplomacyTimelinePanel.tsx`, hub entry `contracts:diplomacy`)
+and as a four-row strip atop `GlobalActivityFeed`. **Situation Log** items (pure lens over the new
+`GameState.diplomacy` snapshot delivered on sync): milestone / deadline due within 24 h
+(critical for the supplier inside 6 h), directed contract offer received, pact proposed.
+
+### 5. UI
+
+`CorpContractsPanel.tsx` — Contracts hub entry `contracts:corp`: header telemetry (open market, my
+live contracts, escrow locked, bond posted, active pacts), the issue form with the spot band and
+the supplier's bond shown before submit, the open market and my contracts as `DataTable`s with
+deliver / dispute / cancel / withdraw actions, arbitration rulings, and the pact inbox / propose form
+/ registry. Design system throughout (Console, DataTable, StatusPip, Telemetry, tokens, GameIcon).
+Rivals card gained **Propose pact** (`ProposePactButton.tsx`; the rivals API now returns the rival's
+`profileId`).
+
+### Design invariants checklist
+
+- Meaningful decision: escrow capital vs. supply certainty; bond vs. margin; honour vs. break.
+- P&L: every leg is a ledger row; penalties transfer, fees burn (BALANCE.md note).
+- Loop: contracts weekly/monthly (1–30 day deadlines), pacts monthly (7–90 days).
+- No combat: a default moves money and reputation; nothing is destroyed.
+- Corporate scale: all of it is corp-to-corp; alliance treaties untouched above it.
+- Interstellar: resource-keyed; a new resource maps to a bureau by category.
+- No P2W: nothing here is purchasable.
+- Intelligence: the timeline and registry are public; the share read behind non-aggression is
+  internal enforcement only.
+- Accessibility: word + pip for every state, labelled controls, keyboard-reachable, aria-live notices.
+- Phone: DataTable's under-640 px card fallback; 40–44 px controls.
+
+### Tests
+
+`src/lib/__tests__/corp-contracts.test.ts` (band, milestones, pro-rata release, default settlement,
+arbitration math + bureau, Frontier waiver, note sanitising, rep idempotency; create escrow +
+throttle + 401, accept collateral + Frontier, deliver against server inventory + fulfilment,
+cron default resolution + expiry + CRON_SECRET, dispute ruling) and `corp-pacts.test.ts` (kinds,
+durations, refusal body; propose/accept/duplicate/break/expiry; **no_poach refuses the real poach
+route**; non-aggression 40 % rule; Situation Log items).

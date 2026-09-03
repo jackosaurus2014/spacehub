@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { canChallengeGovernor, CHALLENGE_DURATION_MS, ZONE_MAP } from '@/lib/game/zone-influence';
+import { findBlockingPact } from '@/lib/game/corp-pacts-server';
 
 /**
  * POST /api/space-tycoon/zones/challenge
@@ -79,6 +80,14 @@ export async function POST(request: Request) {
         { error: 'You are already the governor of this zone' },
         { status: 400 }
       );
+    }
+
+    // Diplomacy (2026-09-02): a territory_share pact with the sitting
+    // governor refuses the challenge until the actor breaks the pact in
+    // public (corp-pacts.ts).
+    const pactBlock = await findBlockingPact(profile.id, zone.governorId, 'zone_challenge', zone.governorName ?? undefined);
+    if (pactBlock) {
+      return NextResponse.json(pactBlock, { status: 400 });
     }
 
     // Check for existing active challenge in this zone

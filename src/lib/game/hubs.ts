@@ -103,6 +103,12 @@ export const HUB_CATALOG: readonly HubDef[] = [
       { id: 'deliveries', label: 'Faction Deliveries', icon: 'handshake', tab: 'contracts', subView: 'contracts:deliveries', feature: 'diplomacy' },
       { id: 'races', label: 'Races', icon: 'target', tab: 'contracts', subView: 'contracts:races' },
       { id: 'bidding', label: 'PVP Bidding', icon: 'swords', tab: 'contracts', subView: 'contracts:pvp', feature: 'bidding' },
+      // Diplomacy (2026-09-02, docs/ECONOMY_PVP_2026-08.md "Diplomacy"):
+      // binding corp-to-corp supply contracts + pacts, and the public
+      // diplomacy timeline. Tier 1 — the cooperative half of economic
+      // warfare is part of the on-ramp, not the endgame.
+      { id: 'corp', label: 'Corp Contracts', icon: 'handshake', tab: 'contracts', subView: 'contracts:corp' },
+      { id: 'diplomacy', label: 'Diplomacy', icon: 'scroll', tab: 'contracts', subView: 'contracts:diplomacy' },
       { id: 'bounties', label: 'Bounties', icon: 'bounties', tab: 'bounties' },
       { id: 'alliance', label: 'Alliance', icon: 'alliance', tab: 'alliance' },
       { id: 'factions', label: 'Factions', icon: 'factions', tab: 'factions' },

@@ -10,6 +10,7 @@ import { FRONTIER_HARD_CAP_NET_WORTH } from '@/lib/game/frontier';
 import { COMPETITIVE_TOOL_MAP } from '@/lib/game/competitive-posture';
 import { requestSubView } from '@/lib/game/sub-view';
 import { playSound } from '@/lib/game/sound-engine';
+import ProposePactButton from './ProposePactButton';
 import PoachLauncher from './PoachLauncher';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -23,6 +24,9 @@ interface RivalComparison {
 }
 
 interface RivalData {
+  /** Diplomacy (2026-09-02): present on the rival side only — the target
+   *  for "Propose pact". */
+  profileId?: string;
   companyName: string;
   netWorth: number;
   buildingCount: number;
@@ -838,6 +842,11 @@ function RivalCard({
         >
           Poach talent
         </button>
+        {/* Diplomacy (2026-09-02): the agreement half of economic warfare —
+            a no-poach / non-aggression / territory pact with this rival. */}
+        {rival.rival.profileId && (
+          <ProposePactButton targetProfileId={rival.rival.profileId} targetName={name} className="basis-full sm:basis-auto" />
+        )}
         <button
           type="button"
           onClick={() => { playSound('click'); if (!shareOpen) loadShare(); setShareOpen(v => !v); }}

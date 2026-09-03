@@ -1,6 +1,11 @@
 // ─── Space Tycoon: Reputation System ────────────────────────────────────────
 // Global score from all positive actions. Higher reputation unlocks threshold
-// bonuses that compound with other multipliers. Reputation never decreases.
+// bonuses that compound with other multipliers. Reputation never decreases —
+// with ONE documented exception (Diplomacy, 2026-09-02): defaulting on a
+// binding corp-to-corp contract (−2) or breaking a signed pact (−3) is a
+// server-ledgered, public act that lowers the score (floored at 0). Those
+// deltas arrive as CorpReputationEvent rows on sync and are applied via
+// corp-diplomacy.ts applyDiplomacyRepToState → applyReputationDelta below.
 
 import type { GameState } from './types';
 
@@ -142,6 +147,20 @@ export function addReputation(state: GameState, source: ReputationSource): GameS
     ...state,
     reputation: newRep,
   };
+}
+
+/** Diplomacy deltas (corp-diplomacy.ts DIPLOMACY_REP): the one signed path.
+ *  Positive deltas add; negative deltas subtract, floored at 0. */
+export const DIPLOMACY_REP_DELTAS = {
+  contract_fulfilled: 1,
+  contract_defaulted: -2,
+  pact_broken: -3,
+} as const;
+
+export function applyReputationDelta(state: GameState, delta: number): GameState {
+  if (!Number.isFinite(delta) || delta === 0) return state;
+  const currentRep = state.reputation || 0;
+  return { ...state, reputation: Math.max(0, currentRep + Math.round(delta)) };
 }
 
 /** Add a custom number of reputation points */

@@ -19,6 +19,7 @@ import {
 } from '@/lib/game/espionage-system';
 import { recordLedger, isLedgerAvailable } from '@/lib/game/server-ledger';
 import { getRecentTradesForEspionage } from '@/lib/game/market-share';
+import { findBlockingPact } from '@/lib/game/corp-pacts-server';
 import { validateBody, espionageExecuteSchema } from '@/lib/validations';
 import { validationError } from '@/lib/errors';
 
@@ -188,6 +189,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         error: 'Cannot perform espionage against alliance members.',
       }, { status: 400 });
+    }
+
+    // ── Diplomacy (2026-09-02): non_aggression pact with the target ──
+    // Refused until the actor breaks the pact in public (corp-pacts.ts).
+    const pactBlock = await findBlockingPact(attackerGameProfile.id, targetId, 'espionage', targetGameProfile.companyName);
+    if (pactBlock) {
+      return NextResponse.json(pactBlock, { status: 400 });
     }
 
     // ── Per-target cooldown check ──

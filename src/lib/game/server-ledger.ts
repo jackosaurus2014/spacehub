@@ -148,7 +148,24 @@ export type LedgerReason =
   | 'market_trade_buy_payment'
   | 'market_trade_buy_goods'
   | 'market_trade_sell_goods'
-  | 'market_trade_sell_proceeds';
+  | 'market_trade_sell_proceeds'
+  // Diplomacy (2026-09-02, docs/ECONOMY_PVP_2026-08.md "Diplomacy"): binding
+  // corp-to-corp supply contracts (corp-contracts.ts). Escrow/collateral and
+  // their refunds mirror bounty_escrow's shape; contract_payment releases
+  // the issuer's escrow to the counterparty per milestone; the penalty is a
+  // player-to-player TRANSFER (collateral → the wronged issuer) and the
+  // goods move as resource rows. `arbitration_fee` has no matching credit
+  // anywhere — the 2% dispute fee is BURNED (BALANCE.md money sink).
+  | 'contract_escrow'
+  | 'contract_escrow_refund'
+  | 'contract_collateral'
+  | 'contract_collateral_refund'
+  | 'contract_payment'
+  | 'contract_penalty_paid'
+  | 'contract_penalty_received'
+  | 'contract_resources_delivered'
+  | 'contract_resources_received'
+  | 'arbitration_fee';
 
 export interface LedgerWrite {
   profileId: string;
