@@ -102,7 +102,21 @@ export function useGameSync(
   const lastSyncRef = useRef(0);
   const retryCount = useRef(0);
 
+  // The engine replaces `state` on every 2s tick. If doSync closed over it,
+  // this hook's scheduling effect (below) tore down and re-created its 5s
+  // initial timer and 60s interval on every tick, so NEITHER EVER FIRED and
+  // the game never reached the server — the save lived only in localStorage.
+  // Regression found 2026-09-03 by driving a real signed-in join: the profile
+  // was never created. doSync must stay referentially stable; it reads the
+  // latest state and callback through refs instead.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const onServerDataRef = useRef(onServerData);
+  onServerDataRef.current = onServerData;
+
   const doSync = useCallback(async () => {
+    const state = stateRef.current;
+    const onServerData = onServerDataRef.current;
     if (!state) return;
 
     // Rate limit: don't sync more than once per 30 seconds
@@ -434,7 +448,10 @@ export function useGameSync(
         error: retryCount.current > 3 ? 'Sync unavailable' : null,
       }));
     }
-  }, [state]);
+  // Intentionally empty: state and onServerData are read from refs above so
+  // this callback stays stable and the sync timers are never reset.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Periodic sync
   useEffect(() => {
