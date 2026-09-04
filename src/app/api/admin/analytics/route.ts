@@ -179,9 +179,12 @@ export async function GET() {
       });
     }
 
+    const tycoon = await tycoonFunnel(since7d, since30d);
+
     return NextResponse.json({
       success: true,
       data: {
+        tycoon,
         totalUsers,
         signupsLast7Days,
         signupsLast30Days,
@@ -208,4 +211,30 @@ export async function GET() {
     });
     return internalError(err instanceof Error ? err.message : 'Failed to load analytics');
   }
+}
+
+// ── Space Tycoon first-session funnel, server-side half ─────────────────────
+// The client half is GA4 events (src/lib/game/funnel-events.ts). This is the
+// part GA4 cannot see: for signed-in players, did they come back? A profile
+// whose last sync is a day or more after it was created is a returning
+// player by definition, with no event to lose and no consent banner in the
+// way. Archetypes found a corporation with 2-3 buildings, so "built" means
+// more than that.
+const ARCHETYPE_MAX_STARTING_BUILDINGS = 3;
+
+async function tycoonFunnel(since7d: Date, since30d: Date) {
+  const cohort = await prisma.gameProfile.findMany({
+    where: { createdAt: { gte: since30d } },
+    select: { createdAt: true, lastSyncAt: true, buildingCount: true, locationsUnlocked: true },
+  });
+  const age = (p: { createdAt: Date; lastSyncAt: Date }) => p.lastSyncAt.getTime() - p.createdAt.getTime();
+  return {
+    windowDays: 30,
+    profilesCreated30d: cohort.length,
+    profilesCreated7d: cohort.filter((p) => p.createdAt >= since7d).length,
+    builtBeyondStart: cohort.filter((p) => p.buildingCount > ARCHETYPE_MAX_STARTING_BUILDINGS).length,
+    unlockedSecondBody: cohort.filter((p) => p.locationsUnlocked > 2).length,
+    returnedAfter1d: cohort.filter((p) => age(p) >= MS_PER_DAY).length,
+    returnedAfter7d: cohort.filter((p) => age(p) >= 7 * MS_PER_DAY).length,
+  };
 }

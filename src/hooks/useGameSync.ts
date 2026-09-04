@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { TYCOON_EVENTS, trackTycoon, fireOnce } from '@/lib/game/funnel-events';
 import type { GameState } from '@/lib/game/types';
 import { queueServerReconciliation, type LedgerReconciliation } from '@/lib/game/ledger-reconcile';
 import {
@@ -268,6 +269,9 @@ export function useGameSync(
         const data = await res.json();
         lastSyncRef.current = Date.now();
         retryCount.current = 0;
+        // First-session funnel: the signed-in line. Everything before this
+        // can be an anonymous local save; from here the profile persists.
+        fireOnce('first_sync', () => trackTycoon(TYCOON_EVENTS.firstSync));
         // Audit Wave E (A5-i/iv): the flows were delivered — queue the flush
         // so the engine subtracts exactly what was sent on the next tick.
         // Wave E5: + per-location mined attribution and hazard shocks.

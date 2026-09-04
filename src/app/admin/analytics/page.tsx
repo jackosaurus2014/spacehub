@@ -35,6 +35,15 @@ interface AnalyticsData {
     wau: number;
     mau: number;
   };
+  tycoon?: {
+    windowDays: number;
+    profilesCreated30d: number;
+    profilesCreated7d: number;
+    builtBeyondStart: number;
+    unlockedSecondBody: number;
+    returnedAfter1d: number;
+    returnedAfter7d: number;
+  };
 }
 
 interface GrowthMetricsData {
@@ -369,6 +378,49 @@ export default function AdminAnalyticsPage() {
                             <span className="text-white font-semibold text-sm min-w-[60px] text-right">
                               {row.count.toLocaleString()}
                             </span>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
+
+            {/* Space Tycoon first-session funnel — signed-in players only; the
+                anonymous half is in GA4 under the tycoon_* events. */}
+            {data.tycoon && (
+              <ScrollReveal delay={0.18}>
+                <div className="card border border-space-600/50 p-5">
+                  <h2 className="text-white font-semibold text-lg mb-1">Space Tycoon Funnel</h2>
+                  <p className="text-star-400 text-xs mb-4">
+                    signed-in corporations founded in the last {data.tycoon.windowDays} days ({data.tycoon.profilesCreated7d} in the last 7) · anonymous play is in GA4 as tycoon_* events
+                  </p>
+                  <div className="space-y-2">
+                    {(() => {
+                      const t = data.tycoon!;
+                      const steps: Array<{ label: string; value: number; color: string }> = [
+                        { label: 'Corporation founded', value: t.profilesCreated30d, color: 'text-slate-200' },
+                        { label: 'Built beyond the archetype start', value: t.builtBeyondStart, color: 'text-cyan-300' },
+                        { label: 'Unlocked a third location', value: t.unlockedSecondBody, color: 'text-blue-300' },
+                        { label: 'Came back a day later', value: t.returnedAfter1d, color: 'text-amber-300' },
+                        { label: 'Still playing a week later', value: t.returnedAfter7d, color: 'text-emerald-300' },
+                      ];
+                      const top = Math.max(steps[0].value, 1);
+                      return steps.map((step) => {
+                        const pct = Math.round((step.value / top) * 100);
+                        return (
+                          <div key={step.label} className="rounded-lg border border-space-600/30 bg-space-700/20 px-4 py-3 flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-medium ${step.color}`}>{step.label}</p>
+                              <div className="h-2 mt-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                                <div className="h-full rounded-full bg-cyan-500/60" style={{ width: `${pct}%` }} />
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <p className="text-white font-semibold tabular-nums">{step.value}</p>
+                              <p className="text-star-400 text-xs tabular-nums">{pct}% of founded</p>
+                            </div>
                           </div>
                         );
                       });

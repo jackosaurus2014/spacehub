@@ -132,10 +132,8 @@ import TutorialOverlay, { getTutorialTargetTab } from '@/components/game/Tutoria
 // FTUE v2 (simulated-newcomer audit 8/16): pure onboarding chain — step
 // definitions, completion detection, reward grants — lives in onboarding.ts;
 // TutorialOverlay renders it, these handlers mutate through it.
-import {
-  advanceOnboarding, skipOnboarding, restartOnboarding,
-  isOnboardingActive, isOnboardingComplete, isEarlyOnboarding,
-} from '@/lib/game/onboarding';
+import { advanceOnboarding, skipOnboarding, restartOnboarding, isOnboardingActive, isOnboardingComplete, isEarlyOnboarding, getCurrentOnboardingStep } from '@/lib/game/onboarding';
+import { TYCOON_EVENTS, trackTycoon, fireOnce, startFunnelForNewGame, hasPlayerBuilt } from '@/lib/game/funnel-events';
 import FeatureUnlockToast, { useFeatureUnlockQueue } from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
@@ -1647,6 +1645,11 @@ export default function SpaceTycoonPage() {
     saveGame(newState);
     setShowArchetypePicker(false);
     setShowMenu(false);
+    // First-session funnel (funnel-events.ts): a fresh corporation resets the
+    // once-per-save latches and records its starting building count so the
+    // player's own first build is distinguishable from the archetype's.
+    startFunnelForNewGame(newState.buildings.length);
+    trackTycoon(TYCOON_EVENTS.newGame, { archetype: archetypeId });
     navigateToTab('dashboard'); // fresh corp always starts on the guided Dashboard, even if a prior save had reached the map
     // Reset tutorial so it shows for new games
     try {
@@ -1676,10 +1679,20 @@ export default function SpaceTycoonPage() {
   // Tutorial handlers — FTUE v2: all mutation goes through onboarding.ts's
   // pure functions (advance grants each step's one-time reward exactly once).
   const handleTutorialAdvance = useCallback((manual: boolean) => {
+    const cur = stateRef.current;
+    if (cur) {
+      const def = getCurrentOnboardingStep(cur);
+      const next = advanceOnboarding(cur, { manual });
+      if (def && next.tutorialStep !== cur.tutorialStep) {
+        trackTycoon(TYCOON_EVENTS.tutorialStep, { step: def.step, step_id: def.id, manual });
+      }
+    }
     setState(prev => (prev ? advanceOnboarding(prev, { manual }) : prev));
   }, []);
 
   const handleTutorialSkip = useCallback(() => {
+    const cur = stateRef.current;
+    if (cur) trackTycoon(TYCOON_EVENTS.tutorialSkip, { step: cur.tutorialStep ?? 0 });
     setState(prev => (prev ? skipOnboarding(prev) : prev));
   }, []);
 
@@ -1687,6 +1700,21 @@ export default function SpaceTycoonPage() {
     playSound('click');
     setState(prev => (prev ? restartOnboarding(prev) : prev));
   }, []);
+
+  // First-session funnel: tab changes, the first map open and the first
+  // building the player placed. Read from state rather than the click
+  // handlers so hub nav, deep links, hotkeys and the tutorial all count
+  // exactly once (must be before any early returns — React hooks rules).
+  useEffect(() => {
+    if (!state) return;
+    trackTycoon(TYCOON_EVENTS.tab, { tab });
+    if (tab === 'map') fireOnce('first_map', () => trackTycoon(TYCOON_EVENTS.firstMap));
+  }, [tab, !!state]); // eslint-disable-line react-hooks/exhaustive-deps
+  const buildingCount = state?.buildings.length ?? 0;
+  useEffect(() => {
+    if (!state || !hasPlayerBuilt(buildingCount)) return;
+    fireOnce('first_build', () => trackTycoon(TYCOON_EVENTS.firstBuild, { buildings: buildingCount }));
+  }, [buildingCount, !!state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check achievements periodically (must be before any early returns — React hooks rules)
   useEffect(() => {
