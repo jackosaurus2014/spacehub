@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroArt from '@/components/ui/HeroArt';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -11,18 +10,9 @@ import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootno
 // Railway's build container has no DB access — figures are fetched at request time.
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Blue Origin vs SpaceX: Who Is Winning in 2026?',
-  description: 'New Glenn has flown three times (two successes, one failure) while Falcon 9 launches almost every other day. Rockets, reusability, Starlink vs Amazon Leo, NASA contracts, valuation and roadmaps — the full 2026 comparison.',
-  keywords: ['Blue Origin vs SpaceX', 'SpaceX vs Blue Origin', 'SpaceX comparison', 'Blue Origin comparison', 'space company comparison', 'rocket companies compared'],
-  openGraph: {
-    title: 'Blue Origin vs SpaceX: Who Is Winning in 2026?',
-    description: 'New Glenn has flown three times (two successes, one failure) while Falcon 9 launches almost every other day. Rockets, reusability, Starlink vs Amazon Leo, NASA contracts, valuation and roadmaps — the full 2026 comparison.',
-    url: 'https://spacenexus.us/compare/spacex-vs-blue-origin',
-    type: 'article',
-  },
-  alternates: { canonical: 'https://spacenexus.us/compare/spacex-vs-blue-origin' },
-};
+// Metadata lives in layout.tsx (single source). This page is the TABLE; the
+// long-form answer to "who is winning" is /guide/blue-origin-vs-spacex, and the
+// two are titled for different intents so they stop splitting one query.
 
 const COMPARISON_DATA = [
   { metric: 'Founded', spacex: '2002', blueOrigin: '2000' },
@@ -81,10 +71,16 @@ export default async function SpaceXVsBlueOrigin() {
           <span className="text-zinc-300">SpaceX vs Blue Origin</span>
         </nav>
         <HeroArt src="/art/hero-rivalry-launch.webp" className="mb-6" />
-        <h1 className="text-display text-3xl md:text-4xl mb-3">SpaceX vs Blue Origin</h1>
+        <h1 className="text-display text-3xl md:text-4xl mb-3">SpaceX vs Blue Origin: the numbers side by side</h1>
         <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl">
-          A comprehensive side-by-side comparison of the two most prominent space launch companies, updated with the latest data from SpaceNexus.
+          Every key figure in one table — launches, reusability, payload, constellations, crew, NASA contracts, funding and valuation — with the money figures pulled live.
         </p>
+        <Link
+          href="/guide/blue-origin-vs-spacex"
+          className="mt-4 inline-flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2.5 text-sm text-cyan-200 hover:bg-cyan-500/15 transition-colors"
+        >
+          Want the full story? Read the guide: who is actually winning in 2026 &rarr;
+        </Link>
       </div>
 
       {/* Comparison Table */}

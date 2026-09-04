@@ -190,6 +190,9 @@ export default async function RocketPage(props: { params: Promise<{ slug: string
           <h3 className="text-lg font-bold text-white mb-3">Go deeper</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
             <Link href="/guide/space-launch-cost-comparison" className="text-slate-300 hover:text-white">How much does it cost to launch a satellite? Every rocket compared &rarr;</Link>
+            {['falcon-9', 'falcon-heavy', 'starship', 'new-glenn'].includes(params.slug) && (
+              <Link href="/guide/blue-origin-vs-spacex" className="text-slate-300 hover:text-white">Blue Origin vs SpaceX: who is winning in 2026? &rarr;</Link>
+            )}
             <Link href="/launch-vehicles" className="text-slate-300 hover:text-white">Launch vehicle database: compare all {allRocketSlugs().length}+ rockets &rarr;</Link>
             <Link href="/mission-control" className="text-slate-300 hover:text-white">Mission Control: live countdowns and streams &rarr;</Link>
             <Link href="/launch-cost-calculator" className="text-slate-300 hover:text-white">Launch cost calculator &rarr;</Link>

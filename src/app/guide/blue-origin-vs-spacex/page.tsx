@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import HeroArt from '@/components/ui/HeroArt';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -17,17 +18,56 @@ import { formatLaunchDate } from '@/components/launches/LaunchRow';
 // page never says "recently" about something that happened last year.
 export const dynamic = 'force-dynamic';
 
-const TITLE = 'Blue Origin vs SpaceX: The Complete 2026 Guide';
+// CTR pass (2026-09-04, roadmap Tier 2). This page and /compare/spacex-vs-blue-origin
+// were splitting the "blue origin vs spacex" query with near-identical titles.
+// The guide now owns the head term with the direct question a searcher is
+// asking; the compare page is retitled to the table intent. The description
+// leads with whatever the tracker says about New Glenn's NEXT flight, so the
+// snippet carries this week's news instead of a generic promise.
+const TITLE = 'Blue Origin vs SpaceX: Who Is Winning in 2026?';
 const DESCRIPTION =
   'How the two companies actually differ — rockets, reusability, cadence, Starlink vs Amazon Leo, NASA contracts, engines, money — with live launch counts and what to watch over the next twelve months.';
+/** Bumped by hand when the prose changes. The launch figures are live, but a
+ *  dateModified that changes on every request is a freshness signal search
+ *  engines learn to ignore; this one only moves when the words do. */
+const LAST_EDITED = '2026-09-04T00:00:00Z';
 
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  keywords: ['blue origin vs spacex', 'new glenn vs falcon 9', 'new glenn vs starship', 'blue origin spacex comparison', 'amazon leo vs starlink', 'is blue origin catching up to spacex'],
-  alternates: { canonical: 'https://spacenexus.us/guide/blue-origin-vs-spacex' },
-  openGraph: { title: TITLE, description: DESCRIPTION, type: 'article', publishedTime: '2026-08-29T00:00:00Z', modifiedTime: '2026-08-29T00:00:00Z', authors: ['SpaceNexus'], images: [{ url: '/art/hero-rivalry-launch.webp', width: 1344, height: 768 }] },
-};
+// One tracker read per request, shared by generateMetadata and the page.
+const getIndex = cache(() => getRocketIndex(new Date()));
+type IndexRow = Awaited<ReturnType<typeof getRocketIndex>>[number];
+
+/** The New Glenn line for the snippet and the lede. Phrased from what the
+ *  tracker shows so it stays true after flight four: before it, this is a
+ *  return to flight; after it, it is a cadence figure. */
+function newGlennStatus(ng: IndexRow | undefined): string {
+  const flown = ng ? ng.last90Days : 0;
+  const times = `${flown} time${flown === 1 ? '' : 's'}`;
+  if (!ng?.nextLaunch) {
+    return flown > 0
+      ? `New Glenn has flown ${times} in the last 90 days and has no next launch on the manifest yet`
+      : 'New Glenn has no launch on the manifest yet after the April 2026 loss';
+  }
+  const d = formatLaunchDate(ng.nextLaunch, false);
+  return flown > 0
+    ? `New Glenn has flown ${times} in the last 90 days and flies next on ${d}`
+    : `New Glenn's return to flight — its first launch since the April 2026 loss — is on the manifest for ${d}`;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  let description = DESCRIPTION;
+  try {
+    const ng = (await getIndex()).find((r) => r.slug === 'new-glenn');
+    if (ng) description = `${newGlennStatus(ng)}; Falcon 9 launches every few days. Rockets, reusability, cadence, Starlink vs Amazon Leo, NASA contracts and money — with live launch counts.`;
+  } catch { /* tracker unavailable → the static description */ }
+  return {
+    title: TITLE,
+    description,
+    keywords: ['blue origin vs spacex', 'spacex vs blue origin', 'new glenn vs falcon 9', 'new glenn vs starship', 'blue origin spacex comparison', 'amazon leo vs starlink', 'is blue origin catching up to spacex', 'who is winning blue origin or spacex'],
+    alternates: { canonical: 'https://spacenexus.us/guide/blue-origin-vs-spacex' },
+    openGraph: { title: TITLE, description, type: 'article', publishedTime: '2026-08-29T00:00:00Z', modifiedTime: LAST_EDITED, authors: ['SpaceNexus'], images: [{ url: '/art/hero-rivalry-launch.webp', width: 1344, height: 768 }] },
+    twitter: { card: 'summary_large_image', title: TITLE, description, images: ['/art/hero-rivalry-launch.webp'] },
+  };
+}
 
 const TOC = [
   { id: 'verdict', label: 'The short answer' },
@@ -59,7 +99,8 @@ function n(x: number | null | undefined, unit = ''): string {
 
 export default async function BlueOriginVsSpaceXGuide() {
   const now = new Date();
-  const index = await getRocketIndex(now);
+  const index = await getIndex();
+  const edited = new Date(LAST_EDITED);
   const live = (slug: string) => index.find((r) => r.slug === slug);
   const f9 = live('falcon-9');
   const ng = live('new-glenn');
@@ -87,11 +128,11 @@ export default async function BlueOriginVsSpaceXGuide() {
               Two companies founded two years apart by two of the richest people alive, chasing the same prize with opposite temperaments. This is how they actually compare in 2026 — rockets, cadence, reuse, constellations, contracts, engines and money — with the launch numbers pulled live from our tracker.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Updated: {now.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })}</span>
+              <span>Updated {edited.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })} · launch figures live</span>
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
-              <ReadingTime wordCount={2400} className="flex items-center gap-1.5" />
+              <ReadingTime wordCount={3400} className="flex items-center gap-1.5" />
             </div>
           </header>
           <HeroArt src="/art/hero-rivalry-launch.webp" className="mb-8" />
@@ -109,6 +150,9 @@ export default async function BlueOriginVsSpaceXGuide() {
             <article className="card p-8 space-y-10">
               <section id="verdict">
                 <h2 className="text-2xl font-bold text-white mb-4">The short answer</h2>
+                <p className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-4 py-3 text-slate-300 leading-relaxed mb-5">
+                  <strong className="text-cyan-300">Where things stand today:</strong> {newGlennStatus(ng)}. Falcon 9 has flown {f9 ? f9.last90Days : '—'} times in the last 90 days.
+                </p>
                 <p className="text-slate-400 leading-relaxed mb-4">
                   SpaceX is the incumbent by every operational measure: more than 500 orbital launches, a booster fleet that has landed over 400 times, a crew capsule with a dozen-plus missions, and Starlink, a constellation of 9,000-plus satellites that earns well over $10 billion a year and pays for everything else. It went public in June 2026 and trades at roughly $2 trillion.
                 </p>
@@ -252,7 +296,7 @@ export default async function BlueOriginVsSpaceXGuide() {
               <section id="watch">
                 <h2 className="text-2xl font-bold text-white mb-4">What to watch over the next twelve months</h2>
                 <ul className="space-y-3 text-slate-400 leading-relaxed">
-                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">New Glenn&apos;s return to flight.</strong> After the April 2026 loss, flight four is the whole ballgame: a clean mission restores the schedule, a second failure would push customers toward Vulcan and Falcon 9 for years. <Link href="/rockets/new-glenn" className="text-cyan-400 hover:text-cyan-300">Track it here</Link>.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">New Glenn&apos;s return to flight.</strong> {ng?.nextLaunch && ng.last90Days === 0 ? `Our tracker has it on ${formatLaunchDate(ng.nextLaunch, false)}. ` : ''}After the April 2026 loss, flight four is the whole ballgame: a clean mission restores the schedule, a second failure would push customers toward Vulcan and Falcon 9 for years. <Link href="/rockets/new-glenn" className="text-cyan-400 hover:text-cyan-300">Track it here</Link>.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">The first New Glenn booster reflight.</strong> Landing was proven in November 2025; reflight is what changes the economics.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Starship reaching operational status.</strong> Every Starship milestone lowers the price floor New Glenn will eventually have to meet. <Link href="/starship" className="text-cyan-400 hover:text-cyan-300">Starship tracker</Link>.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Amazon Leo&apos;s deployment pace</strong> and how much of it New Glenn actually flies versus the other providers on the manifest.</span></li>
@@ -289,7 +333,7 @@ export default async function BlueOriginVsSpaceXGuide() {
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
             '@context': 'https://schema.org', '@type': 'Article', headline: TITLE, description: DESCRIPTION,
             author: { '@type': 'Organization', name: 'SpaceNexus' }, publisher: { '@type': 'Organization', name: 'SpaceNexus', logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' } },
-            datePublished: '2026-08-29T00:00:00Z', dateModified: now.toISOString(), mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/blue-origin-vs-spacex' },
+            datePublished: '2026-08-29T00:00:00Z', dateModified: LAST_EDITED, mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/blue-origin-vs-spacex' },
           }).replace(/</g, '\\u003c') }} />
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
             '@context': 'https://schema.org', '@type': 'FAQPage',

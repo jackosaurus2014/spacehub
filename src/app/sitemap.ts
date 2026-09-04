@@ -213,7 +213,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compare/bloomberg-terminal`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/quilty-analytics`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/payload-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
-    { url: `${BASE_URL}/compare/spacex-vs-blue-origin`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/spacex-vs-blue-origin`, changeFrequency: 'monthly' as const, priority: 0.6 }, // the guide carries the head term
     { url: `${BASE_URL}/compare/rocket-lab-vs-relativity-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/starlink-vs-oneweb`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/planet-labs-vs-maxar`, changeFrequency: 'monthly' as const, priority: 0.8 },
