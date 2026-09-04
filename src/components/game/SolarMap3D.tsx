@@ -1512,11 +1512,20 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   // Never leave a pointer cursor behind when the map unmounts mid-hover.
   useEffect(() => () => { document.body.style.cursor = 'auto'; }, []);
 
+  // A jump from outside the renderer (map jump hotkeys, Order Queue chip,
+  // Outliner deep-link) has to bring the camera with it. Without this the
+  // reticle lands on a body that is off-screen or a few pixels wide and the
+  // jump reads as "nothing happened". Held in a ref because the focus helper
+  // is defined further down, after the layout maths it depends on; the ref is
+  // assigned during render, so it is always set before any effect runs.
+  const focusExternalRef = useRef<((locId: string) => void) | null>(null);
+
   // External selection sync (Order Queue HUD / context-panel close) — same
   // contract as the 2D canvas.
   useEffect(() => {
     if (selectedLocationId !== undefined && selectedLocationId !== selectedLoc) {
       setSelectedLoc(selectedLocationId);
+      if (selectedLocationId) focusExternalRef.current?.(selectedLocationId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLocationId]);
@@ -1544,6 +1553,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     cam.position.copy(target).add(dir);
     controls.update();
   }, []);
+  focusExternalRef.current = focusCameraOn;
 
   /**
    * @param anchor  Screen point to hang the radial command menu on.
@@ -1671,7 +1681,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   }, []);
 
   // Keyboard zoom — CLAUDE.md keyboard-only invariant, matching the 2D
-  // canvas's bindings exactly (`+` / `=` in, `-` / `_` out, `0` reset) with
+  // canvas's bindings exactly (`+` / `=` in, `-` / `_` out, `R` / Home reset) with
   // the same input-field guards the shell's M/C shortcuts use. Gated on
   // `active` so keys never fire under a covering panel overlay. zoomBy and
   // reset are instant camera moves (OrbitControls.update clamps distance),
@@ -1688,7 +1698,10 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
       } else if (e.key === '-' || e.key === '_') {
         e.preventDefault();
         zoomBy(1.25);
-      } else if (e.key === '0') {
+      } else if (e.key === 'r' || e.key === 'R' || e.key === 'Home') {
+        // Reset moved off `0` (2026-09-04) so the whole digit row belongs to
+        // the map's jump hotkeys. `R` works on compact keyboards that have no
+        // Home key; Home is kept for the pan/zoom convention.
         e.preventDefault();
         resetView();
       }
@@ -1809,7 +1822,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
       <div className="absolute top-2 right-2 flex flex-col gap-1 z-20">
         <button onClick={() => zoomBy(0.8)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
         <button onClick={() => zoomBy(1.25)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
-        <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="0">⟲</button>
+        <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
       </div>
 
       {/* Layer toggles — bottom-right, same as 2D embedded */}
@@ -1948,12 +1961,13 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
       <p id="solar-map-3d-hint" className="sr-only">
         Click a planet, moon, or orbital marker to open its radial command menu — build, dispatch, demand,
         standing orders and full detail, right at the body. Drag to orbit the camera; scroll, pinch with two
-        fingers, or press plus and minus to zoom (0 resets the view). The wheel zooms toward the cursor, so
+        fingers, or press plus and minus to zoom (R or Home resets the view). The wheel zooms toward the cursor, so
         pointing at Earth and scrolling spreads the close-packed orbital markers apart for easy picking.
         Camera distance controls how much per-location detail is drawn; the Location List always shows
         everything, and the Labels toggle forces full labels at every zoom.
         Use the Location List overlay (bottom-left) to browse and select every location by keyboard and press
         C on a row for its command menu, or switch to the 2D map with the 2D/3D toggle.
+        Number keys jump straight to a body: 1 to 9 and 0 select the ten bodies of the active bank, and the backquote key pages between banks. The Jump legend at the bottom of the map names every binding and is clickable. 
         Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}.
       </p>
     </div>

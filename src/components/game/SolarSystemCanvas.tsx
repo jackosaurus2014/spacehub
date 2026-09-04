@@ -270,9 +270,18 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
   // Stay in sync with an externally-driven selection (e.g. the Order Queue
   // HUD or the map context panel's close button in embedded mode).
+  //
+  // A jump from outside the renderer (map jump hotkeys, Order Queue chip,
+  // Outliner deep-link) has to bring the camera with it. Without this the
+  // reticle lands on a body that is off-screen or a few pixels wide and the
+  // jump reads as "nothing happened". Held in a ref because the focus helper
+  // is defined further down, after the layout maths it depends on; the ref is
+  // assigned during render, so it is always set before any effect runs.
+  const focusExternalRef = useRef<((locId: string) => void) | null>(null);
   useEffect(() => {
     if (selectedLocationId !== undefined && selectedLocationId !== selectedLoc) {
       setSelectedLoc(selectedLocationId);
+      if (selectedLocationId) focusExternalRef.current?.(selectedLocationId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLocationId]);
@@ -1172,6 +1181,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       y: rect.height / 2 - layout.y * rect.height * z,
     });
   }, [applyCamera]);
+  focusExternalRef.current = centreOn;
 
   /**
    * @param anchor  Screen point to hang the radial command menu on.
@@ -1341,7 +1351,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   }, [applyCamera]);
 
   // Keyboard zoom/pan — CLAUDE.md keyboard-only invariant. `+` / `=` / `-` /
-  // `0` work map-wide with the same input-field guards the shell's M/C
+  // `R` work map-wide with the same input-field guards the shell's M/C
   // shortcuts use; arrow-key panning only applies while the canvas itself has
   // focus so list and radiogroup arrow navigation is never hijacked. Every
   // branch is an instant state change — no animated transition, so there is
@@ -1363,7 +1373,10 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       } else if (e.key === '-' || e.key === '_') {
         e.preventDefault();
         applyCamera(zoomAboutPoint(cam, cam.zoom / BUTTON_ZOOM_FACTOR, centre));
-      } else if (e.key === '0') {
+      } else if (e.key === 'r' || e.key === 'R' || e.key === 'Home') {
+        // Reset moved off `0` (2026-09-04) so the whole digit row belongs to
+        // the map's jump hotkeys. `R` works on compact keyboards that have no
+        // Home key; Home is kept for the pan/zoom convention.
         e.preventDefault();
         applyCamera(DEFAULT_MAP_CAMERA);
       } else if (
@@ -1508,7 +1521,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           <span className="hud-corner-br" aria-hidden="true" />
           <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
           <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom / BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
-          <button onClick={() => applyCamera(DEFAULT_MAP_CAMERA)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="0">⟲</button>
+          <button onClick={() => applyCamera(DEFAULT_MAP_CAMERA)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
         </div>
 
         {/* Layer toggles — moved to bottom-right in map-command mode so the
@@ -1566,11 +1579,12 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
         <p id="solar-system-canvas-hint" className="sr-only">
           Click a location to open its radial command menu — build, dispatch, demand, standing orders and full detail, at the body.
-          Drag or use one finger to pan; scroll, pinch with two fingers, or press plus and minus to zoom (0 resets the view) —
+          Drag or use one finger to pan; scroll, pinch with two fingers, or press plus and minus to zoom (R or Home resets the view) —
           zooming in spreads the close-packed Earth-orbit locations apart so each is easy to pick.
           Zoom controls how much per-location detail is drawn; the Location List always shows everything,
           and the Labels toggle forces full labels at every zoom. Focus the map and use the arrow keys to pan by keyboard,
           or use the Location List overlay (bottom-left) to browse and select every location, and press C on a row for its command menu.
+          Number keys jump straight to a body: 1 to 9 and 0 select the ten bodies of the active bank, and the backquote key pages between banks. The Jump legend at the bottom of the map names every binding and is clickable. 
           Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}.
         </p>
       </div>
@@ -1608,7 +1622,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           <span className="hud-corner-br" aria-hidden="true" />
           <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
           <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom / BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
-          <button onClick={() => applyCamera(DEFAULT_MAP_CAMERA)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="0">⟲</button>
+          <button onClick={() => applyCamera(DEFAULT_MAP_CAMERA)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
         </div>
 
         {/* Layer toggles */}

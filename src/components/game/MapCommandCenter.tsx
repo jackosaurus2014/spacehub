@@ -47,6 +47,20 @@ import { THREE_D_ENABLED } from '@/lib/three-runtime';
 import { updateMusicMood } from '@/lib/game/music-engine';
 import { isFoldedFeatureUnlocked } from '@/lib/game/corporation-tiers';
 import { MAP_MODES, MAP_MODE_MAP, cycleMapMode, type MapMode } from '@/lib/game/map-modes';
+import {
+  SOLAR_HOTKEY_ENTRIES,
+  GALACTIC_HOTKEY_ENTRIES,
+  BANK_CYCLE_KEY,
+  bankCount,
+  clampBank,
+  cycleBank,
+  entriesForBank,
+  isBankCycleEvent,
+  resolveSlot,
+  slotFromKeyEvent,
+  describeBinding,
+  type HotkeyEntry,
+} from '@/lib/game/map-hotkeys';
 import GameIcon from './GameIcon';
 
 type Layer = 'solar' | 'galactic';
@@ -379,6 +393,81 @@ export default function MapCommandCenter({
         : LOCATION_MAP.get(radial.id)?.name || radial.id)
     : '';
 
+  // ── Jump hotkeys (2026-09-04) ─────────────────────────────────────────────
+  // `1`-`9` and `0` select the ten bodies of the active bank; `` ` `` pages
+  // banks (Shift+`` ` `` pages back). Slots come from map-hotkeys.ts, which is
+  // ALSO what the visible legend below renders — one derivation, so the
+  // binding a player reads is the binding that fires. Camera reset moved off
+  // `0` to `R`/Home in both renderers to free the digit row.
+  const hotkeyEntries = layer === 'solar' ? SOLAR_HOTKEY_ENTRIES : GALACTIC_HOTKEY_ENTRIES;
+  const hotkeyBanks = bankCount(hotkeyEntries.length);
+  const [hotkeyBank, setHotkeyBank] = useState(0);
+  const [jumpOpen, setJumpOpen] = useState(false);
+  // The layers hold different body counts, so a bank carried across from the
+  // solar map can point past the end of the galactic one.
+  useEffect(() => { setHotkeyBank(b => clampBank(b, hotkeyEntries.length)); }, [hotkeyEntries]);
+
+  /** Screen-reader announcement for a jump. The map itself is a canvas, so a
+   *  keyboard-only player gets no visual confirmation of what they selected —
+   *  this is the confirmation. */
+  const [jumpNotice, setJumpNotice] = useState('');
+  const jumpTo = useCallback((entry: HotkeyEntry) => {
+    playSound('click');
+    if (layer === 'solar') {
+      // A locked body is a legitimate jump target: it opens the unlock panel,
+      // exactly as activating a locked Location List row does.
+      const locked = !state.unlockedLocations?.includes(entry.id);
+      setJumpNotice(`${entry.name} selected${locked ? ', locked — showing unlock requirements' : ''}.`);
+      selectLocation(entry.id);
+    } else {
+      setJumpNotice(`${entry.name} selected.`);
+      selectSystem(entry.id);
+    }
+  }, [layer, selectLocation, selectSystem, state.unlockedLocations]);
+
+  const pageBank = useCallback((dir: 1 | -1) => {
+    if (hotkeyBanks < 2) return;
+    playSound('click');
+    setHotkeyBank(b => cycleBank(b, hotkeyEntries.length, dir));
+    setJumpOpen(true); // paging blind would be a guessing game
+  }, [hotkeyBanks, hotkeyEntries.length]);
+
+  useEffect(() => {
+    if (covered) return; // never steal keys while a panel overlay is up
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      // `covered` only tracks the desktop panel overlay. Event choices, the
+      // tutorial, daily bonus and achievements are modal dialogs rendered
+      // outside this tree, and a jump firing behind one of them moves a map
+      // the player cannot see. Observed live: an Accord Council event modal
+      // opened over the map mid-session.
+      if (document.querySelector('[aria-modal="true"]')) return;
+      if (isBankCycleEvent(e)) {
+        if (hotkeyBanks < 2) return;
+        e.preventDefault();
+        pageBank(e.shiftKey ? -1 : 1);
+        return;
+      }
+      const slot = slotFromKeyEvent(e);
+      if (slot === null) return;
+      // A partial last bank has empty slots; those keys stay silent rather
+      // than beeping or wrapping to some other body.
+      const entry = resolveSlot(hotkeyEntries, hotkeyBank, slot);
+      if (!entry) return;
+      e.preventDefault();
+      jumpTo(entry);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [covered, hotkeyEntries, hotkeyBank, hotkeyBanks, jumpTo, pageBank]);
+
+  const bankEntries = useMemo(
+    () => entriesForBank(hotkeyEntries, hotkeyBank),
+    [hotkeyEntries, hotkeyBank],
+  );
+
   // Keyboard route into the radial menu from anywhere on the map: with a
   // location selected, `C` opens its command arc in the centre of the stage.
   // (The Location List rows handle `C` themselves and anchor the arc on the
@@ -692,6 +781,86 @@ export default function MapCommandCenter({
           </div>
         </div>
       )}
+
+      {/* Jump hotkey legend (2026-09-04) — the visible half of the number-key
+          bindings. Collapsed to a chip by default so it never eats map; the
+          chip still names the keys, which is how the feature is discovered.
+          Every slot is also a button, so this doubles as the keyboard route
+          to the twelve colony bodies the renderers' Location List omits. */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 w-[min(92vw,300px)] flex flex-col items-stretch gap-1">
+        {jumpOpen && (
+          <div className="hud-frame rounded-xl border border-white/[0.08] bg-[#050510]/95 backdrop-blur-md overflow-hidden animate-reveal-up">
+            <span className="hud-corner-bl" aria-hidden="true" />
+            <span className="hud-corner-br" aria-hidden="true" />
+            {hotkeyBanks > 1 && (
+              <div className="flex items-center justify-between border-b border-white/[0.06] px-1">
+                <button
+                  type="button"
+                  onClick={() => pageBank(-1)}
+                  className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  aria-label={`Previous hotkey bank (Shift plus ${BANK_CYCLE_KEY})`}
+                >
+                  ‹
+                </button>
+                <span className="text-[10px] text-slate-300 font-hud" role="status" aria-live="polite">
+                  Bank <span className="text-cyan-300 font-semibold">{hotkeyBank + 1}</span> of {hotkeyBanks}
+                  <span className="text-slate-500"> · press {BANK_CYCLE_KEY} to page</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => pageBank(1)}
+                  className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  aria-label={`Next hotkey bank (${BANK_CYCLE_KEY})`}
+                >
+                  ›
+                </button>
+              </div>
+            )}
+            <ul className="max-h-[44vh] overflow-y-auto py-1" aria-label={`Jump hotkeys, bank ${hotkeyBank + 1} of ${hotkeyBanks}`}>
+              {bankEntries.map(entry => {
+                const isSelected = selection?.id === entry.id;
+                const locked = layer === 'solar' && !state.unlockedLocations?.includes(entry.id);
+                return (
+                  <li key={entry.id}>
+                    <button
+                      type="button"
+                      onClick={() => jumpTo(entry)}
+                      aria-pressed={isSelected}
+                      aria-keyshortcuts={entry.digit}
+                      className={`w-full min-h-[44px] px-2 flex items-center gap-2 text-left text-[11px] transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-400 ${
+                        isSelected ? 'bg-cyan-500/15 text-cyan-200' : 'text-slate-300 hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <kbd className="shrink-0 w-6 h-6 flex items-center justify-center rounded border border-white/15 bg-white/[0.06] font-mono text-[11px] text-white">
+                        {entry.digit}
+                      </kbd>
+                      <span aria-hidden="true" className="shrink-0">{layer === 'solar' ? (locked ? '🔒' : '🔓') : '✴'}</span>
+                      <span className="truncate">{entry.name}</span>
+                      <span className="sr-only">
+                        {locked ? ', locked' : ''}{isSelected ? ', currently selected' : ''}. Press {describeBinding(entry)}.
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => { playSound('click'); setJumpOpen(v => !v); }}
+          aria-expanded={jumpOpen}
+          title={`Jump to a map body by number key. 1-9 and 0 select the ten bodies of the active bank${hotkeyBanks > 1 ? `; ${BANK_CYCLE_KEY} pages between the ${hotkeyBanks} banks` : ''}.`}
+          className="hud-frame min-h-[36px] px-3 rounded-xl border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm text-[10px] font-semibold text-slate-300 hover:text-white flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+        >
+          <span aria-hidden="true">⌨</span>
+          <span>Jump <span className="font-mono text-cyan-300">1</span>–<span className="font-mono text-cyan-300">0</span></span>
+          {hotkeyBanks > 1 && <span className="text-slate-500">bank {hotkeyBank + 1}/{hotkeyBanks}</span>}
+          <span aria-hidden="true" className={`text-slate-500 transition-transform ${jumpOpen ? '' : 'rotate-180'}`}>▾</span>
+        </button>
+        {/* Keyboard-only players get no visual confirmation from a canvas. */}
+        <p className="sr-only" role="status" aria-live="polite">{jumpNotice}</p>
+      </div>
 
       {/* Wave A2 — radial command menu, now on BOTH layers (Wave A4). The
           component is presentational; the action set comes from the layer's
