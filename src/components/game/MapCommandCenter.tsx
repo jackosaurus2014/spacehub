@@ -787,7 +787,7 @@ export default function MapCommandCenter({
           chip still names the keys, which is how the feature is discovered.
           Every slot is also a button, so this doubles as the keyboard route
           to the twelve colony bodies the renderers' Location List omits. */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 w-[min(92vw,300px)] flex flex-col items-stretch gap-1">
+      <div className="absolute bottom-16 sm:bottom-10 left-1/2 -translate-x-1/2 z-20 w-[min(92vw,300px)] flex flex-col items-stretch gap-1">
         {jumpOpen && (
           <div className="hud-frame rounded-xl border border-white/[0.08] bg-[#050510]/95 backdrop-blur-md overflow-hidden animate-reveal-up">
             <span className="hud-corner-bl" aria-hidden="true" />
