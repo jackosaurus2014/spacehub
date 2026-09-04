@@ -38,6 +38,16 @@ Third: **the agents' MAU arithmetic is optimistic by ~3×** (the Opus advocate s
 | 15 | **Spend the Epoch 2 window**: post Space Tycoon to r/incremental_games and the browser-game community while "every deposit is unclaimed" is true (~3 weeks). *Founder action — outbound is gated on you.* | Only channel that can deliver thousands in a week; hard expiry. | Opus. Needs #6 and #3 first so the landing isn't undercut. |
 | 16 | **Per-page "returned within 30 days" report in `/admin/analytics`** so the week-3 reallocation is measured, not argued. | GA4 wiring exists. | Opus. |
 
+
+### Added 2026-09-04 — demand pass (three question-shaped guides, all SHIPPED 9/4)
+
+Chosen from live search demand rather than the original list: the largest new question since the June IPO, the one the web has no good answer to, and the one where most published answers are wrong.
+
+- `/guide/spacex-stock-explained` — "Is SpaceX stock a buy?" answered as an explanation, never a verdict; live quote, market cap, Falcon 9 cadence, next Starship flight. Prominent not-investment-advice notice above the fold and at the end (Jay's requirement for anything touching buy/sell).
+- `/guide/how-to-get-a-job-in-the-space-industry` — every number live from the ATS board, hiring index and stated-salary benchmarks; six routes in, the no-degree path, citizenship/ITAR. Title carries the live posting count.
+- `/guide/when-is-artemis-3` — the post-February-2026 plan (2027 Earth-orbit docking test; landing on Artemis IV 2028), crew, prerequisites, 12-question FAQ, live news rail. Facts mirror `/artemis` MISSION_TIMELINE — change both together.
+- Still on the list from the same pass, not built: a live "which rockets are flying in 2026" scorecard; promote the space-tourism-cost blog post (already ranking #3) to a guide with a fact-checked price table; an ISS-retirement explainer.
+
 ## Tier 3 — October (M/L, authority)
 
 - **Slip Index page + per-provider on-time scorecard** (publish once #7 has ~6 weeks of data). Proprietary forever.
