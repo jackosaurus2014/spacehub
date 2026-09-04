@@ -276,6 +276,8 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/gig-work/my-gigs',
   '/gig-work/post',
   '/guide/blue-origin-vs-spacex',
+  '/guide/how-to-get-a-job-in-the-space-industry',
+  '/guide/spacex-stock-explained',
   '/guide/space-debris-and-traffic-management',
   '/guide/watch-a-launch/[city]',
   '/hire',

@@ -123,6 +123,21 @@ export const GUIDE_LIST: GuideEntry[] = [
     title: 'Space Weather Risk for Satellite Operators: Kp, Flares, CMEs and What to Do',
     shortTitle: 'Space Weather Risk',
   },
+  {
+    slug: 'how-to-get-a-job-in-the-space-industry',
+    title: 'How to Get a Job in the Space Industry (2026)',
+    shortTitle: 'Get a Space Job',
+  },
+  {
+    slug: 'spacex-stock-explained',
+    title: 'SpaceX Stock (SPCX) Explained',
+    shortTitle: 'SpaceX Stock Explained',
+  },
+  {
+    slug: 'when-is-artemis-3',
+    title: 'When Is Artemis III? Date, Crew and FAQ',
+    shortTitle: 'When Is Artemis III?',
+  },
 ];
 
 export function getGuideNavigation(currentSlug: string): {
