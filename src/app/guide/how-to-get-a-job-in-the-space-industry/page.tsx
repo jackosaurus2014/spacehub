@@ -104,7 +104,9 @@ export default async function HowToGetASpaceJobGuide() {
     ...cat,
     row: salaries?.byCategory.find((r) => r.category === cat.value) ?? null,
   })).filter((x) => x.row && x.row.count > 0);
-  const remotePct = index?.remoteShare.percent ?? (hub && hub.activeCount > 0 ? Math.round((hub.remoteCount / hub.activeCount) * 100) : null);
+  const rawRemote = index?.remoteShare.percent ?? (hub && hub.activeCount > 0 ? (hub.remoteCount / hub.activeCount) * 100 : null);
+  // The index reports an unrounded ratio; one decimal is all a reader needs.
+  const remotePct = rawRemote == null ? null : Math.round(rawRemote * 10) / 10;
 
   return (
     <div className="min-h-screen bg-black">

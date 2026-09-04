@@ -128,6 +128,9 @@ export default async function SpaceXStockExplainedGuide() {
 
           <header className="mb-6">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{TITLE}</h1>
+            {/* Above everything, by design: a reader who stops after the
+                headline has still seen it. */}
+            <div className="mb-5"><Disclaimer id="disclaimer" prominent /></div>
             <p className="text-lg text-slate-300 leading-relaxed">
               Since the June 2026 IPO, &ldquo;is SpaceX stock a buy?&rdquo; has become the most-asked question in the industry. This page does not answer it. It explains what a share of SPCX is a claim on, what the company&apos;s first reported numbers said, how to read a valuation near two trillion dollars, and what actually moves the price — with the quote and the launch cadence pulled live.
             </p>
@@ -140,8 +143,6 @@ export default async function SpaceXStockExplainedGuide() {
             </div>
           </header>
           <HeroArt src="/art/hero-space-capital.png" className="mb-8" />
-
-          <div className="mb-8"><Disclaimer id="disclaimer" prominent /></div>
 
           <nav className="card p-6 mb-10">
             <h2 className="text-lg font-bold text-white mb-3">In this guide</h2>
