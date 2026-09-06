@@ -5,8 +5,8 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'Virgin Galactic vs Blue Origin: Complete Comparison 2026',
-  description: 'Compare Virgin Galactic and Blue Origin suborbital space tourism — vehicle design, ticket prices, flights completed, altitude reached, and current operational status.',
+  title: 'Virgin Galactic vs Blue Origin: $750k Seats, 90 km vs 107 km, Both Paused (2026)',
+  description: 'Neither is flying tourists today: Virgin Galactic is selling $750,000 seats for Delta-class flights targeted from late 2026, and Blue Origin paused New Shepard in January 2026 for at least two years. Vehicles, altitude, flight counts, safety records and what a ticket buys.',
   keywords: ['Virgin Galactic vs Blue Origin', 'space tourism comparison', 'suborbital flight comparison', 'VSS Unity vs New Shepard', 'space tourism 2026'],
   openGraph: {
     title: 'Virgin Galactic vs Blue Origin: Complete Comparison 2026 | SpaceNexus',
@@ -26,8 +26,8 @@ const COMPARISON_DATA = [
   { metric: 'Apogee Altitude', a: '~89–90 km (Kármán line disputed)', b: '~107 km (above 100 km Kármán line)' },
   { metric: 'Crewed Tourist Flights Completed', a: '6 commercial spaceflights (Galactic 01–06, June 2023 – Jan 2024)', b: '8 crewed flights (2021–2024, including post-return NS-25/NS-26)' },
   { metric: 'Passengers Per Flight', a: '6 (including 2 pilots)', b: '6 passengers (autonomous capsule)' },
-  { metric: 'Ticket Price', a: '$450,000 per seat (2023 pricing)', b: 'Not publicly listed (auctioned / private)' },
-  { metric: 'Operational Status (2026)', a: 'Suspended — grounded after Jan 2024 final Unity flight (Galactic 06), transitioning to Delta class', b: 'Resumed flights May 2024 post-anomaly; New Shepard operational' },
+  { metric: 'Ticket Price', a: '$750,000 per seat (sales reopened Apr 2026; was $450,000 in 2021 and $600,000 in 2023)', b: 'Not publicly listed (auctioned / private)' },
+  { metric: 'Operational Status (2026)', a: 'Not flying — Unity retired after Galactic 06 (Jan 2024); Delta-class commercial service targeted Q4 2026', b: 'Paused — New Shepard flights halted Jan 30, 2026 for at least two years to focus on the Blue Moon lunar lander (last flight NS-38)' },
   { metric: 'New Shepard Anomaly', a: 'N/A', b: 'Uncrewed booster failure Sep 2022; flights resumed May 2024' },
   { metric: 'Publicly Traded', a: 'Yes (SPCE, NYSE)', b: 'No (private)' },
   { metric: 'Next Vehicle', a: 'Delta class spaceplane (in development)', b: 'New Glenn (orbital) — separate program' },
@@ -124,15 +124,15 @@ export default function Page() {
             </div>
             <div key="How much does a ticket cost?">
               <h3 className="text-base font-semibold text-white mb-1">How much does a ticket cost?</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">Virgin Galactic&apos;s last published price was $450,000 a seat. Blue Origin does not publish a price; early seats were auctioned and later ones sold privately, with reports well above Virgin Galactic&apos;s figure. Our space-tourism guide keeps the current figures.</p>
+              <p className="text-sm text-slate-400 leading-relaxed">Virgin Galactic reopened sales in April 2026 at $750,000 a seat, up from $450,000 in 2021 and $600,000 in 2023, for Delta-class flights targeted from late 2026. Blue Origin never published a New Shepard price — seats were auctioned or sold privately — and it is not selling flights during the pause. Our space-tourism guide keeps the current figures.</p>
             </div>
             <div key="Is Virgin Galactic still flying?">
               <h3 className="text-base font-semibold text-white mb-1">Is Virgin Galactic still flying?</h3>
               <p className="text-sm text-slate-400 leading-relaxed">Not currently. Its last commercial flight was Galactic 06 in January 2024; VSS Unity was retired and the company is building its Delta-class spaceplanes, with commercial flights targeted after they enter service.</p>
             </div>
-            <div key="Is New Shepard safe?">
-              <h3 className="text-base font-semibold text-white mb-1">Is New Shepard safe?</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">It has flown crews repeatedly since 2021 with no injuries. An uncrewed booster failed in September 2022 — the capsule&apos;s abort system pulled the capsule clear as designed — and flights resumed in May 2024 after the investigation.</p>
+            <div key="Is New Shepard still flying?">
+              <h3 className="text-base font-semibold text-white mb-1">Is New Shepard still flying?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Not at the moment. Blue Origin paused New Shepard on January 30, 2026 for at least two years to put its people on the Blue Moon lunar lander, after NS-38 flew six customers a week earlier. Its safety record stands: crews flown since 2021 with no injuries, and the one failure — an uncrewed booster in September 2022 — saw the capsule&apos;s abort system pull it clear as designed.</p>
             </div>
             <div key="Can I invest in either company?">
               <h3 className="text-base font-semibold text-white mb-1">Can I invest in either company?</h3>
@@ -140,7 +140,7 @@ export default function Page() {
             </div>
         </div>
       </section>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Which goes higher, Virgin Galactic or Blue Origin?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Blue Origin. New Shepard reaches about 107 km, above the 100 km Kármán line; Virgin Galactic's SpaceShipTwo reached about 89-90 km, above the 80 km line the US uses for astronaut wings but below the Kármán line.\"}}, {\"@type\": \"Question\", \"name\": \"How much does a ticket cost?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Virgin Galactic's last published price was $450,000 a seat. Blue Origin does not publish a price; early seats were auctioned and later ones sold privately, with reports well above Virgin Galactic's figure. Our space-tourism guide keeps the current figures.\"}}, {\"@type\": \"Question\", \"name\": \"Is Virgin Galactic still flying?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Not currently. Its last commercial flight was Galactic 06 in January 2024; VSS Unity was retired and the company is building its Delta-class spaceplanes, with commercial flights targeted after they enter service.\"}}, {\"@type\": \"Question\", \"name\": \"Is New Shepard safe?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"It has flown crews repeatedly since 2021 with no injuries. An uncrewed booster failed in September 2022 — the capsule's abort system pulled the capsule clear as designed — and flights resumed in May 2024 after the investigation.\"}}, {\"@type\": \"Question\", \"name\": \"Can I invest in either company?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Virgin Galactic is public as SPCE on the NYSE. Blue Origin is private, funded almost entirely by Jeff Bezos, with no announced listing. Nothing on SpaceNexus is investment advice.\"}}]}".replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Which goes higher, Virgin Galactic or Blue Origin?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Blue Origin. New Shepard reaches about 107 km, above the 100 km Kármán line; Virgin Galactic's SpaceShipTwo reached about 89-90 km, above the 80 km line the US uses for astronaut wings but below the Kármán line.\"}}, {\"@type\": \"Question\", \"name\": \"How much does a ticket cost?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Virgin Galactic's last published price was $450,000 a seat. Blue Origin does not publish a price; early seats were auctioned and later ones sold privately, with reports well above Virgin Galactic's figure. Our space-tourism guide keeps the current figures.\"}}, {\"@type\": \"Question\", \"name\": \"Is Virgin Galactic still flying?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Not currently. Its last commercial flight was Galactic 06 in January 2024; VSS Unity was retired and the company is building its Delta-class spaceplanes, with commercial flights targeted after they enter service.\"}}, {\"@type\": \"Question\", \"name\": \"Is New Shepard still flying?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"It has flown crews repeatedly since 2021 with no injuries. An uncrewed booster failed in September 2022 — the capsule's abort system pulled the capsule clear as designed — and flights resumed in May 2024 after the investigation.\"}}, {\"@type\": \"Question\", \"name\": \"Can I invest in either company?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Virgin Galactic is public as SPCE on the NYSE. Blue Origin is private, funded almost entirely by Jeff Bezos, with no announced listing. Nothing on SpaceNexus is investment advice.\"}}]}".replace(/</g, '\\u003c') }} />
 
 
       {/* JSON-LD */}

@@ -138,6 +138,16 @@ export const GUIDE_LIST: GuideEntry[] = [
     title: 'When Is Artemis III? Date, Crew and FAQ',
     shortTitle: 'When Is Artemis III?',
   },
+  {
+    slug: 'rockets-flying-in-2026',
+    title: 'Which Rockets Are Flying in 2026? Live Scorecard',
+    shortTitle: 'Rockets Flying in 2026',
+  },
+  {
+    slug: 'space-tourism-cost',
+    title: 'How Much Does It Cost to Go to Space? (2026)',
+    shortTitle: 'Space Tourism Cost',
+  },
 ];
 
 export function getGuideNavigation(currentSlug: string): {

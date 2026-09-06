@@ -5,8 +5,8 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'Starlink vs OneWeb: Complete Comparison 2026',
-  description: 'Compare Starlink (SpaceX) and OneWeb (Eutelsat) LEO broadband constellations side by side — satellites deployed, coverage, latency, pricing, and subscribers. Updated data from SpaceNexus.',
+  title: 'Starlink vs OneWeb: 10,000+ vs 648 Satellites Compared (2026)',
+  description: 'Starlink runs more than 10,000 satellites at 340-570 km for consumers and enterprises; Eutelsat OneWeb runs 648 at 1,200 km for business and government. Latency, speed, coverage, terminals and who each one is for.',
   keywords: ['Starlink vs OneWeb', 'LEO broadband comparison', 'satellite internet comparison', 'Starlink vs Eutelsat OneWeb', 'low earth orbit internet'],
   openGraph: {
     title: 'Starlink vs OneWeb: Complete Comparison 2026 | SpaceNexus',

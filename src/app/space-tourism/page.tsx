@@ -1152,7 +1152,7 @@ export default function SpaceTourismPage() {
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Link
-                    href="/blog/space-tourism-2026-who-can-fly-costs"
+                    href="/guide/space-tourism-cost"
                     className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
                   >
                     <span className="text-slate-500 mt-0.5 shrink-0">📰</span>

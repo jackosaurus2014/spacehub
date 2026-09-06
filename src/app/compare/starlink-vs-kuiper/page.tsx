@@ -11,8 +11,8 @@ import { CompareFiguresFootnote } from '@/components/compare/CompareFigureFootno
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Starlink vs Project Kuiper: Complete Comparison 2026',
-  description: 'Compare Starlink (SpaceX) and Project Kuiper (Amazon) LEO broadband constellations — satellites deployed, coverage, latency, pricing, launch strategy, and market approach.',
+  title: 'Starlink vs Amazon Leo (Kuiper): 10,000+ vs 3,236 Satellites (2026)',
+  description: 'Starlink has more than 10,000 satellites in orbit and about 12 million subscribers; Amazon Leo (formerly Project Kuiper) is licensed for 3,236 and is in early deployment. Altitude, latency, speed, terminals, launch providers and the FCC deadline, side by side.',
   keywords: ['Starlink vs Kuiper', 'Project Kuiper vs Starlink', 'Amazon satellite internet', 'LEO broadband comparison', 'satellite internet 2026'],
   openGraph: {
     title: 'Starlink vs Project Kuiper: Complete Comparison 2026 | SpaceNexus',
