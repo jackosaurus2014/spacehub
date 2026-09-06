@@ -128,6 +128,34 @@ export default function StarlinkVsOneWeb() {
       </div>
 
       {/* Schema.org structured data */}
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Is OneWeb faster than Starlink?">
+              <h3 className="text-base font-semibold text-white mb-1">Is OneWeb faster than Starlink?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">No. Starlink delivers roughly 50-250 Mbps to consumers at 20-60 ms latency from about 550 km; OneWeb delivers 50-200 Mbps to enterprise terminals at 30-70 ms from about 1,200 km. The higher orbit costs OneWeb some latency but needs far fewer satellites for coverage.</p>
+            </div>
+            <div key="Can a home user buy OneWeb?">
+              <h3 className="text-base font-semibold text-white mb-1">Can a home user buy OneWeb?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Not directly. OneWeb sells through telecoms, governments and enterprise integrators; it has no direct-to-consumer product. Starlink sells directly to households, RVs, boats, aircraft and businesses.</p>
+            </div>
+            <div key="Which has better polar coverage?">
+              <h3 className="text-base font-semibold text-white mb-1">Which has better polar coverage?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Both cover the poles: OneWeb&apos;s orbits are inclined at 87.9 degrees, and Starlink has added polar shells. OneWeb built polar coverage first, which is why it won early Arctic and government business.</p>
+            </div>
+            <div key="Who owns OneWeb?">
+              <h3 className="text-base font-semibold text-white mb-1">Who owns OneWeb?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Eutelsat Group. OneWeb merged with the French geostationary operator Eutelsat in 2023 and now trades as Eutelsat OneWeb, combining LEO and GEO capacity in one company.</p>
+            </div>
+            <div key="Why does Starlink have inter-satellite lasers and OneWeb does not?">
+              <h3 className="text-base font-semibold text-white mb-1">Why does Starlink have inter-satellite lasers and OneWeb does not?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Starlink&apos;s V1.5 and later satellites relay traffic to each other by laser, so a user can be served without a ground station nearby — over oceans, for instance. OneWeb Gen 1 relays through ground stations, which limits where it can serve without local infrastructure; that is on the list for its next generation.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Is OneWeb faster than Starlink?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"No. Starlink delivers roughly 50-250 Mbps to consumers at 20-60 ms latency from about 550 km; OneWeb delivers 50-200 Mbps to enterprise terminals at 30-70 ms from about 1,200 km. The higher orbit costs OneWeb some latency but needs far fewer satellites for coverage.\"}}, {\"@type\": \"Question\", \"name\": \"Can a home user buy OneWeb?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Not directly. OneWeb sells through telecoms, governments and enterprise integrators; it has no direct-to-consumer product. Starlink sells directly to households, RVs, boats, aircraft and businesses.\"}}, {\"@type\": \"Question\", \"name\": \"Which has better polar coverage?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Both cover the poles: OneWeb's orbits are inclined at 87.9 degrees, and Starlink has added polar shells. OneWeb built polar coverage first, which is why it won early Arctic and government business.\"}}, {\"@type\": \"Question\", \"name\": \"Who owns OneWeb?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Eutelsat Group. OneWeb merged with the French geostationary operator Eutelsat in 2023 and now trades as Eutelsat OneWeb, combining LEO and GEO capacity in one company.\"}}, {\"@type\": \"Question\", \"name\": \"Why does Starlink have inter-satellite lasers and OneWeb does not?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Starlink's V1.5 and later satellites relay traffic to each other by laser, so a user can be served without a ground station nearby — over oceans, for instance. OneWeb Gen 1 relays through ground stations, which limits where it can serve without local infrastructure; that is on the list for its next generation.\"}}]}".replace(/</g, '\\u003c') }} />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

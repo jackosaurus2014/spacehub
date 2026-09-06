@@ -183,6 +183,30 @@ export default async function Page() {
           ))}
         </div>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Is SPCX or RKLB the better investment?">
+              <h3 className="text-base font-semibold text-white mb-1">Is SPCX or RKLB the better investment?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">This page does not say, and nothing on SpaceNexus is investment advice. It lays out what each company earns, how each is valued and what each is betting on — SpaceX on Starlink and Starship, Rocket Lab on Neutron and its space-systems business — so you can bring an informed question to a licensed adviser.</p>
+            </div>
+            <div key="How much bigger is SpaceX than Rocket Lab?">
+              <h3 className="text-base font-semibold text-white mb-1">How much bigger is SpaceX than Rocket Lab?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Roughly two orders of magnitude by market value — about $2 trillion against roughly $12 billion — and more than twenty times by revenue. Rocket Lab is a real launch and satellite-components company; SpaceX is a telecom that also runs the world&apos;s launch market.</p>
+            </div>
+            <div key="Does Rocket Lab make money?">
+              <h3 className="text-base font-semibold text-white mb-1">Does Rocket Lab make money?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">It has grown revenue quickly — about $436 million in 2024 — while still investing heavily in Neutron; check its latest quarterly filing for the current profit picture. SpaceX reported a net loss in Q2 2026 on $7.8 billion of revenue because of Starship and constellation spending.</p>
+            </div>
+            <div key="What would move RKLB the most?">
+              <h3 className="text-base font-semibold text-white mb-1">What would move RKLB the most?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Neutron&apos;s first flight, targeted for late 2026: it is the company&apos;s entry into the medium-launch market Falcon 9 dominates. For SPCX the equivalent is Starship reaching routine reuse and Starlink&apos;s subscriber growth.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Is SPCX or RKLB the better investment?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"This page does not say, and nothing on SpaceNexus is investment advice. It lays out what each company earns, how each is valued and what each is betting on — SpaceX on Starlink and Starship, Rocket Lab on Neutron and its space-systems business — so you can bring an informed question to a licensed adviser.\"}}, {\"@type\": \"Question\", \"name\": \"How much bigger is SpaceX than Rocket Lab?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Roughly two orders of magnitude by market value — about $2 trillion against roughly $12 billion — and more than twenty times by revenue. Rocket Lab is a real launch and satellite-components company; SpaceX is a telecom that also runs the world's launch market.\"}}, {\"@type\": \"Question\", \"name\": \"Does Rocket Lab make money?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"It has grown revenue quickly — about $436 million in 2024 — while still investing heavily in Neutron; check its latest quarterly filing for the current profit picture. SpaceX reported a net loss in Q2 2026 on $7.8 billion of revenue because of Starship and constellation spending.\"}}, {\"@type\": \"Question\", \"name\": \"What would move RKLB the most?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Neutron's first flight, targeted for late 2026: it is the company's entry into the medium-launch market Falcon 9 dominates. For SPCX the equivalent is Starship reaching routine reuse and Starlink's subscriber growth.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

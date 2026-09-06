@@ -5,8 +5,8 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
-  title: 'Starship vs New Glenn: Heavy-Lift Rocket Status Comparison (Aug 2026)',
-  description: 'Starship vs New Glenn as of August 2026 — operational status, payload class, reuse approach, and flight cadence. Starship flying operational Starlink V3 missions; New Glenn rebuilding LC-36 after its May 2026 static-fire explosion.',
+  title: 'Starship vs New Glenn: Which Is Further Along? Status, Cadence, Blockers (Sep 2026)',
+  description: 'Starship is flying operational Starlink V3 missions; New Glenn has flown three times, reflown a booster, and is grounded while LC-36 is rebuilt after the May 2026 explosion. What each has proven, what each is stuck on, and what to watch.',
   keywords: ['Starship vs New Glenn', 'SpaceX Starship status', 'Blue Origin New Glenn status', 'New Glenn LC-36 explosion', 'Starship Starlink V3', 'heavy lift rocket comparison 2026'],
   openGraph: {
     title: 'Starship vs New Glenn: Heavy-Lift Rocket Status Comparison (Aug 2026) | SpaceNexus',
@@ -34,7 +34,7 @@ const COMPARISON_DATA = [
   { metric: 'Vehicle Class', a: 'Super heavy-lift (largest rocket ever built)', b: 'Heavy-lift' },
   { metric: 'First Orbital Flight', a: 'IFT-1, Apr 2023 (test campaign)', b: 'NG-1, Jan 2025 — reached orbit; booster lost on landing attempt' },
   { metric: 'Operational Status (Aug 2026)', a: 'Operational — flying revenue payload missions (Starlink V3)', b: 'Grounded — LC-36, its only orbital pad, is being rebuilt after a static-fire explosion' },
-  { metric: 'Most Recent Flight', a: 'Flight 13 (Jul 24, 2026) — first operational Starlink V3 deployment', b: 'NG-3 (Apr 19, 2026) — last flight before the pad was lost' },
+  { metric: 'Most Recent Flight', a: 'Flight 13 (Jul 24, 2026) — first operational Starlink V3 deployment', b: 'NG-3 (Apr 19, 2026) — first booster reflight, landed; upper stage left payload in wrong orbit; last flight before the pad was lost' },
   { metric: 'Booster Recovery Track Record', a: 'Multiple prior tower-catches in test campaign; Flight 13 booster completed a controlled ocean splashdown rather than a catch', b: 'First-ever New Glenn booster reuse achieved on NG-3 — landed a previously-flown booster for the second time' },
   { metric: 'Upper-Stage Recovery', a: 'Not yet caught — Flight 13 upper stage splashed down intact ("softest splashdown" to date); first tower-catch attempt targeted for Flight 14 (NET late Aug 2026)', b: 'Expendable second stage (no reuse in current design)' },
   { metric: 'Payload to LEO', a: '~150,000 kg (expendable); ~100,000 kg (reusable config, target)', b: '~45,000 kg' },
@@ -44,8 +44,8 @@ const COMPARISON_DATA = [
   { metric: 'First Stage Engines', a: '33 Raptor 2 (LOX/CH4)', b: '7 BE-4 (LOX/LNG)' },
   { metric: 'Launch Site(s)', a: 'Starbase, Boca Chica, TX', b: 'LC-36, Cape Canaveral SFS, FL (sole pad — currently under repair)' },
   { metric: 'Current Blocker', a: 'Tower-catch reliability for the upper stage; ship recovery from ocean splashdown', b: 'LC-36 rebuild after May 28, 2026 static-fire explosion; return to flight targeted before end of 2026' },
-  { metric: 'Manifest Impact', a: 'Starlink V3 cadence still ramping as catch reliability improves', b: '~24-mission Amazon Kuiper manifest and Blue Moon MK1 lunar lander frozen until LC-36 reopens' },
-  { metric: 'Key Customers', a: 'SpaceX (Starlink V3), NASA (Artemis HLS)', b: 'Amazon Kuiper, NASA (ESCAPADE — already delivered Nov 2025), USSF, Telesat' },
+  { metric: 'Manifest Impact', a: 'Starlink V3 cadence still ramping as catch reliability improves', b: '~24-mission Amazon Leo (formerly Kuiper) manifest and Blue Moon MK1 lunar lander frozen until LC-36 reopens' },
+  { metric: 'Key Customers', a: 'SpaceX (Starlink V3), NASA (Artemis HLS)', b: 'Amazon Leo (formerly Kuiper), NASA (ESCAPADE — already delivered Nov 2025), USSF, Telesat' },
 ];
 
 export default function Page() {
@@ -114,7 +114,7 @@ export default function Page() {
         New Glenn has been flying since January 2025, when NG-1 reached orbit on its debut but lost its booster during the landing attempt. Blue Origin then landed a booster successfully on NG-2, which delivered NASA&apos;s twin ESCAPADE Mars orbiters in November 2025, and reused that milestone in April 2026: NG-3 landed a previously-flown booster for a second time &mdash; the first-ever reuse of a New Glenn first stage, and arguably ahead of where SpaceX was at the equivalent stage of Falcon 9&apos;s program. NG-3&apos;s upper stage did suffer a thrust anomaly that left AST SpaceMobile&apos;s BlueBird-7 satellite in a lower-than-planned orbit.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        The progress stalled hard on May 28, 2026, when a static-fire test exploded, destroying a booster and fueled second stage and heavily damaging LC-36 &mdash; New Glenn&apos;s only orbital launch pad. Blue Origin is rebuilding the pad and has targeted a return to flight before the end of 2026, but every month LC-36 stays down, the roughly 24-mission Amazon Kuiper manifest and the Blue Moon MK1 lunar lander slip further behind schedule.
+        The progress stalled hard on May 28, 2026, when a static-fire test exploded, destroying a booster and fueled second stage and heavily damaging LC-36 &mdash; New Glenn&apos;s only orbital launch pad. Blue Origin is rebuilding the pad and has targeted a return to flight before the end of 2026, but every month LC-36 stays down, the roughly 24-mission Amazon Leo (formerly Kuiper) manifest and the Blue Moon MK1 lunar lander slip further behind schedule.
       </p>
 
       {/* The comparison that matters */}
@@ -152,11 +152,39 @@ export default function Page() {
           ))}
         </div>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Which rocket is further along, Starship or New Glenn?">
+              <h3 className="text-base font-semibold text-white mb-1">Which rocket is further along, Starship or New Glenn?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Starship, as of September 2026: it is flying revenue payloads (Starlink V3) and iterating on tower catch. New Glenn reached orbit on its first flight and reflew a booster on its third, but that flight&apos;s upper stage failed to deliver its payload, and the vehicle is grounded until LC-36 is rebuilt after the May 28, 2026 static-fire explosion.</p>
+            </div>
+            <div key="Why is New Glenn grounded?">
+              <h3 className="text-base font-semibold text-white mb-1">Why is New Glenn grounded?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Two events. The FAA grounded it after NG-3 on April 19, 2026, when a thrust anomaly on the second upper-stage burn left the payload in the wrong orbit. Then on May 28 a booster and its fueled upper stage exploded during a static fire on Launch Complex 36 — Blue Origin traced it to a BE-4 main oxygen valve — badly damaging the rocket&apos;s only pad. Return to flight is targeted before the end of 2026.</p>
+            </div>
+            <div key="Has New Glenn reused a booster?">
+              <h3 className="text-base font-semibold text-white mb-1">Has New Glenn reused a booster?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Yes — on NG-3, April 19, 2026, it flew the booster from NG-2 and landed it again on the ship Jacklyn, the first heavy-lift booster reuse by anyone other than SpaceX. The booster lost on May 28 was a different vehicle.</p>
+            </div>
+            <div key="Is Starship operational?">
+              <h3 className="text-base font-semibold text-white mb-1">Is Starship operational?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">It is flying operational payloads — Flight 13 in July 2026 deployed the first Starlink V3 satellites — but full reuse is not routine yet. The remaining work is catching the ship at the tower and, for Artemis, in-orbit propellant transfer.</p>
+            </div>
+            <div key="What does the grounding mean for Amazon Leo and Artemis?">
+              <h3 className="text-base font-semibold text-white mb-1">What does the grounding mean for Amazon Leo and Artemis?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Amazon Leo&apos;s New Glenn manifest and the Blue Moon lunar landers are frozen until LC-36 reopens; Amazon&apos;s other launch providers carry more of the load meanwhile. Artemis III&apos;s docking test in 2027 needs a Blue Moon test article on orbit, so the pad schedule now matters to NASA too.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Which rocket is further along, Starship or New Glenn?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Starship, as of September 2026: it is flying revenue payloads (Starlink V3) and iterating on tower catch. New Glenn reached orbit on its first flight and reflew a booster on its third, but that flight's upper stage failed to deliver its payload, and the vehicle is grounded until LC-36 is rebuilt after the May 28, 2026 static-fire explosion.\"}}, {\"@type\": \"Question\", \"name\": \"Why is New Glenn grounded?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Two events. The FAA grounded it after NG-3 on April 19, 2026, when a thrust anomaly on the second upper-stage burn left the payload in the wrong orbit. Then on May 28 a booster and its fueled upper stage exploded during a static fire on Launch Complex 36 — Blue Origin traced it to a BE-4 main oxygen valve — badly damaging the rocket's only pad. Return to flight is targeted before the end of 2026.\"}}, {\"@type\": \"Question\", \"name\": \"Has New Glenn reused a booster?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Yes — on NG-3, April 19, 2026, it flew the booster from NG-2 and landed it again on the ship Jacklyn, the first heavy-lift booster reuse by anyone other than SpaceX. The booster lost on May 28 was a different vehicle.\"}}, {\"@type\": \"Question\", \"name\": \"Is Starship operational?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"It is flying operational payloads — Flight 13 in July 2026 deployed the first Starlink V3 satellites — but full reuse is not routine yet. The remaining work is catching the ship at the tower and, for Artemis, in-orbit propellant transfer.\"}}, {\"@type\": \"Question\", \"name\": \"What does the grounding mean for Amazon Leo and Artemis?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Amazon Leo's New Glenn manifest and the Blue Moon lunar landers are frozen until LC-36 reopens; Amazon's other launch providers carry more of the load meanwhile. Artemis III's docking test in 2027 needs a Blue Moon test article on orbit, so the pad schedule now matters to NASA too.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org', '@type': 'Article',
-        headline: 'Starship vs New Glenn: Heavy-Lift Rocket Status Comparison (Aug 2026)',
+        headline: 'Starship vs New Glenn: Which Is Further Along? Status, Cadence, Blockers (Sep 2026)',
         description: 'Starship vs New Glenn as of August 2026 — operational status, payload class, reuse approach, and flight cadence.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },

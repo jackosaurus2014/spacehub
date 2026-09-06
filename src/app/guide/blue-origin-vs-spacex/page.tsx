@@ -30,7 +30,7 @@ const DESCRIPTION =
 /** Bumped by hand when the prose changes. The launch figures are live, but a
  *  dateModified that changes on every request is a freshness signal search
  *  engines learn to ignore; this one only moves when the words do. */
-const LAST_EDITED = '2026-09-04T00:00:00Z';
+const LAST_EDITED = '2026-09-06T00:00:00Z';
 
 // One tracker read per request, shared by generateMetadata and the page.
 const getIndex = cache(() => getRocketIndex(new Date()));
@@ -45,12 +45,12 @@ function newGlennStatus(ng: IndexRow | undefined): string {
   if (!ng?.nextLaunch) {
     return flown > 0
       ? `New Glenn has flown ${times} in the last 90 days and has no next launch on the manifest yet`
-      : 'New Glenn has no launch on the manifest yet after the April 2026 loss';
+      : 'New Glenn has no launch on the manifest yet after the May 2026 pad explosion';
   }
   const d = formatLaunchDate(ng.nextLaunch, false);
   return flown > 0
     ? `New Glenn has flown ${times} in the last 90 days and flies next on ${d}`
-    : `New Glenn's return to flight — its first launch since the April 2026 loss — is on the manifest for ${d}`;
+    : `New Glenn's return to flight — its first launch since April's upper-stage mishap and the May pad explosion — is on the manifest for ${d}`;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -84,7 +84,7 @@ const TOC = [
 ];
 
 const FAQ = [
-  { q: 'Is Blue Origin catching up to SpaceX?', a: 'In capability, yes: New Glenn is an operational heavy-lift rocket with a landed booster, which only SpaceX could say two years ago. In scale, no: SpaceX flies more missions in a typical fortnight than New Glenn has flown in its life. The gap that matters now is cadence, and cadence is a manufacturing problem, not a rocket-science problem.' },
+  { q: 'Is Blue Origin catching up to SpaceX?', a: 'In capability, yes: New Glenn is a heavy-lift rocket that has landed and reflown a booster, which only SpaceX could say two years ago — though it is grounded until its pad is rebuilt after the May 2026 explosion. In scale, no: SpaceX flies more missions in a typical fortnight than New Glenn has flown in its life. The gap that matters now is cadence, and cadence is a manufacturing problem, not a rocket-science problem.' },
   { q: 'Which rocket is bigger, New Glenn or Falcon 9?', a: 'New Glenn. It carries about 45 tonnes to low Earth orbit against Falcon 9\'s 22.8 tonnes, with a 7-metre fairing that fits payloads Falcon 9 cannot. Starship, when operational, dwarfs both at 100-150 tonnes.' },
   { q: 'Is Blue Origin cheaper than SpaceX?', a: 'On list price they are close: roughly $68 million for a New Glenn launch versus about $74 million for Falcon 9. Per kilogram New Glenn is cheaper on paper because it lifts twice the mass, but Falcon 9\'s reliability record and schedule certainty are what customers actually pay for today.' },
   { q: 'Does Blue Origin have a Starlink competitor?', a: 'Not one it owns. Amazon Leo (formerly Project Kuiper) is Amazon\'s constellation; Blue Origin is one of its launch providers alongside ULA, Arianespace and — awkwardly — SpaceX. Blue Origin and Amazon are separate companies that share a founder.' },
@@ -157,7 +157,7 @@ export default async function BlueOriginVsSpaceXGuide() {
                   SpaceX is the incumbent by every operational measure: more than 500 orbital launches, a booster fleet that has landed over 400 times, a crew capsule with a dozen-plus missions, and Starlink, a constellation of 9,000-plus satellites that earns well over $10 billion a year and pays for everything else. It went public in June 2026 and trades at roughly $2 trillion.
                 </p>
                 <p className="text-slate-400 leading-relaxed mb-4">
-                  Blue Origin is, finally, a real orbital launch company. New Glenn reached orbit on its first try in January 2025, landed its booster on the second flight that November, and lost its third vehicle in April 2026. Three flights in fifteen months is an early-programme record, not a cadence — but the rocket is bigger than Falcon 9, priced against it, and has customers waiting: Amazon Leo, NASA science missions and national-security manifests.
+                  Blue Origin is, finally, a real orbital launch company. New Glenn reached orbit on its first try in January 2025, landed its booster on the second flight that November, and reflew that booster on the third flight in April 2026 — the first heavy-lift booster reuse outside SpaceX — though the upper stage left its payload in the wrong orbit and the FAA grounded the vehicle. Then, on May 28, a static-fire explosion traced to a BE-4 oxygen valve destroyed another booster and badly damaged Launch Complex 36, the rocket&apos;s only pad. Three flights in fifteen months is an early-programme record, not a cadence — but the rocket is bigger than Falcon 9, priced against it, and has customers waiting: Amazon Leo, NASA science missions and national-security manifests.
                 </p>
                 <p className="text-slate-400 leading-relaxed">
                   So the honest framing for 2026 is not &ldquo;who is winning&rdquo; — SpaceX is — but <strong className="text-slate-300">whether the launch market is about to have a second heavy-lift supplier that customers can plan around</strong>. That question turns on New Glenn&apos;s return to flight and first booster reflight, and this guide is organised around it.
@@ -240,7 +240,7 @@ export default async function BlueOriginVsSpaceXGuide() {
                   SpaceX&apos;s Falcon 9 booster has landed more than 400 times and individual boosters have flown more than twenty missions. Reuse is no longer a demonstration; it is the default, and new boosters are the exception. Fairings are recovered and reflown too. The economic effect is that SpaceX&apos;s marginal cost per launch is far below its list price, which is how it can fly Starlink batches every few days without a customer paying for them.
                 </p>
                 <p className="text-slate-400 leading-relaxed mb-4">
-                  Blue Origin has landed a New Glenn booster once — on the vehicle&apos;s second flight, in November 2025, on its ship <em>Jacklyn</em> — which is one flight sooner than SpaceX managed with Falcon 9. Landing is the easy half; the hard half is reflight, and New Glenn has not yet reflown a booster. Until it does, every New Glenn launch is effectively an expendable launch on the accounts, whatever the design intent. New Shepard, meanwhile, has been reflying boosters and capsules routinely for years; the institutional knowledge is real, it just has not been proven at orbital scale.
+                  Blue Origin landed a New Glenn booster on the vehicle&apos;s second flight, in November 2025, on its ship <em>Jacklyn</em> — one flight sooner than SpaceX managed with Falcon 9 — and reflew and landed that same booster on the third flight, in April 2026. That is the milestone that changes the economics, and it was reached faster than Falcon 9 reached it. What has not been reached is doing it routinely: the April mission&apos;s upper stage failed to deliver its payload, and the May pad explosion cost a booster and the pad. Until New Glenn is flying again and reusing boosters as a matter of course, every launch still carries a first-flight risk premium on the accounts, whatever the design intent. New Shepard, meanwhile, has been reflying boosters and capsules routinely for years; the institutional knowledge is real, it just has not been proven at orbital scale.
                 </p>
                 <p className="text-slate-400 leading-relaxed">
                   Starship is the next front: full reuse of both stages, with the booster caught by the launch tower. When it works routinely, the cost floor moves again and New Glenn will be competing with a rocket that is cheaper per kilogram by a wide margin. That is the strongest argument for Blue Origin to push cadence now, while its comparison point is still Falcon 9.
@@ -296,8 +296,8 @@ export default async function BlueOriginVsSpaceXGuide() {
               <section id="watch">
                 <h2 className="text-2xl font-bold text-white mb-4">What to watch over the next twelve months</h2>
                 <ul className="space-y-3 text-slate-400 leading-relaxed">
-                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">New Glenn&apos;s return to flight.</strong> {ng?.nextLaunch && ng.last90Days === 0 ? `Our tracker has it on ${formatLaunchDate(ng.nextLaunch, false)}. ` : ''}After the April 2026 loss, flight four is the whole ballgame: a clean mission restores the schedule, a second failure would push customers toward Vulcan and Falcon 9 for years. <Link href="/rockets/new-glenn" className="text-cyan-400 hover:text-cyan-300">Track it here</Link>.</span></li>
-                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">The first New Glenn booster reflight.</strong> Landing was proven in November 2025; reflight is what changes the economics.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">New Glenn&apos;s return to flight.</strong> {ng?.nextLaunch && ng.last90Days === 0 ? `Our tracker has it on ${formatLaunchDate(ng.nextLaunch, false)}. ` : ''}After April&apos;s upper-stage anomaly and the May pad explosion, flight four is the whole ballgame: a clean mission from a rebuilt LC-36 restores the schedule, another failure would push customers toward Vulcan and Falcon 9 for years. <Link href="/rockets/new-glenn" className="text-cyan-400 hover:text-cyan-300">Track it here</Link>.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Routine booster reuse.</strong> Landing was proven in November 2025 and the first reflight in April 2026; the economics only change when every flight reuses a booster and the upper stage delivers.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Starship reaching operational status.</strong> Every Starship milestone lowers the price floor New Glenn will eventually have to meet. <Link href="/starship" className="text-cyan-400 hover:text-cyan-300">Starship tracker</Link>.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Amazon Leo&apos;s deployment pace</strong> and how much of it New Glenn actually flies versus the other providers on the manifest.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Artemis III&apos;s date</strong> — the Starship lander&apos;s schedule sets the timeline for Blue Moon too. <Link href="/artemis" className="text-cyan-400 hover:text-cyan-300">Artemis tracker</Link>.</span></li>

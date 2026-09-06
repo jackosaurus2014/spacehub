@@ -114,6 +114,34 @@ export default function Page() {
           ))}
         </div>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Is ULA cheaper than SpaceX?">
+              <h3 className="text-base font-semibold text-white mb-1">Is ULA cheaper than SpaceX?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">No. A Falcon 9 lists at about $74 million; Vulcan Centaur is estimated at $100-150 million depending on configuration, and Atlas V ranged from about $80 million to $160 million. ULA competes on reliability, orbit accuracy and its national-security track record rather than price.</p>
+            </div>
+            <div key="Who launches more, SpaceX or ULA?">
+              <h3 className="text-base font-semibold text-white mb-1">Who launches more, SpaceX or ULA?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">SpaceX, by more than an order of magnitude — well over a hundred launches a year against ULA&apos;s handful. That gap is the reusable booster: Falcon 9 first stages have landed more than 200 times, while Vulcan is expendable.</p>
+            </div>
+            <div key="Does ULA still fly national-security missions?">
+              <h3 className="text-base font-semibold text-white mb-1">Does ULA still fly national-security missions?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Yes. ULA was the primary National Security Space Launch provider before SpaceX was certified in 2015 and still holds a share of the NSSL lanes with Vulcan. Both companies fly GPS, NRO and Space Force payloads.</p>
+            </div>
+            <div key="Who owns ULA now?">
+              <h3 className="text-base font-semibold text-white mb-1">Who owns ULA now?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">ULA was a 50/50 joint venture of Boeing and Lockheed Martin from 2006; the venture was sold in 2024. Its engines come from a competitor: Vulcan&apos;s first stage uses two BE-4 engines built by Blue Origin.</p>
+            </div>
+            <div key="Which rocket is more reliable?">
+              <h3 className="text-base font-semibold text-white mb-1">Which rocket is more reliable?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Both are among the most reliable ever flown. Atlas V retired with a run of 100 consecutive successes; Falcon 9&apos;s success rate is above 99 percent across hundreds of flights, which at its cadence is a larger body of evidence. Vulcan is early in its record.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Is ULA cheaper than SpaceX?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"No. A Falcon 9 lists at about $74 million; Vulcan Centaur is estimated at $100-150 million depending on configuration, and Atlas V ranged from about $80 million to $160 million. ULA competes on reliability, orbit accuracy and its national-security track record rather than price.\"}}, {\"@type\": \"Question\", \"name\": \"Who launches more, SpaceX or ULA?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"SpaceX, by more than an order of magnitude — well over a hundred launches a year against ULA's handful. That gap is the reusable booster: Falcon 9 first stages have landed more than 200 times, while Vulcan is expendable.\"}}, {\"@type\": \"Question\", \"name\": \"Does ULA still fly national-security missions?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Yes. ULA was the primary National Security Space Launch provider before SpaceX was certified in 2015 and still holds a share of the NSSL lanes with Vulcan. Both companies fly GPS, NRO and Space Force payloads.\"}}, {\"@type\": \"Question\", \"name\": \"Who owns ULA now?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"ULA was a 50/50 joint venture of Boeing and Lockheed Martin from 2006; the venture was sold in 2024. Its engines come from a competitor: Vulcan's first stage uses two BE-4 engines built by Blue Origin.\"}}, {\"@type\": \"Question\", \"name\": \"Which rocket is more reliable?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Both are among the most reliable ever flown. Atlas V retired with a run of 100 consecutive successes; Falcon 9's success rate is above 99 percent across hundreds of flights, which at its cadence is a larger body of evidence. Vulcan is early in its record.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

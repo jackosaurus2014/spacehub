@@ -156,6 +156,34 @@ export default async function Page() {
           <li><Link href="/compare/satellites" className="text-sm text-indigo-400 hover:text-indigo-300">Satellite Constellation Comparison Tool</Link></li>
         </ul>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Is Starlink replacing Iridium?">
+              <h3 className="text-base font-semibold text-white mb-1">Is Starlink replacing Iridium?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Not for what Iridium is used for. Iridium&apos;s 66-satellite L-band network serves handheld phones, IoT modems, aviation safety and maritime distress with true global coverage; Starlink serves broadband to dish-sized terminals. Starlink&apos;s direct-to-cell service is the first real overlap, and it is early.</p>
+            </div>
+            <div key="Which has better coverage, Iridium or Starlink?">
+              <h3 className="text-base font-semibold text-white mb-1">Which has better coverage, Iridium or Starlink?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Iridium covers 100 percent of the Earth including the poles and open ocean, which is why aviation and maritime safety systems use it. Starlink covers the large majority of populated areas and is extending polar and ocean coverage via inter-satellite lasers.</p>
+            </div>
+            <div key="Why is Iridium so much slower?">
+              <h3 className="text-base font-semibold text-white mb-1">Why is Iridium so much slower?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">It is designed for a different job. Iridium&apos;s L-band links carry voice and small data packets — 2.4 kbps for basic services up to about 700 kbps on Certus — to tiny antennas with very high reliability. Starlink&apos;s Ku- and Ka-band links deliver 25-220+ Mbps to a phased-array dish.</p>
+            </div>
+            <div key="Can I invest in Iridium or Starlink?">
+              <h3 className="text-base font-semibold text-white mb-1">Can I invest in Iridium or Starlink?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Iridium is public as IRDM; Starlink is a division of SpaceX, public as SPCX since June 2026, so SPCX is the only way to own Starlink. Nothing on SpaceNexus is investment advice.</p>
+            </div>
+            <div key="Which is cheaper?">
+              <h3 className="text-base font-semibold text-white mb-1">Which is cheaper?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">For broadband, Starlink — Iridium does not sell broadband. For a global SOS device or an IoT sensor that must work anywhere on Earth, Iridium&apos;s small terminals and low-data plans are the practical option; the two rarely compete for the same customer.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Is Starlink replacing Iridium?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Not for what Iridium is used for. Iridium's 66-satellite L-band network serves handheld phones, IoT modems, aviation safety and maritime distress with true global coverage; Starlink serves broadband to dish-sized terminals. Starlink's direct-to-cell service is the first real overlap, and it is early.\"}}, {\"@type\": \"Question\", \"name\": \"Which has better coverage, Iridium or Starlink?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Iridium covers 100 percent of the Earth including the poles and open ocean, which is why aviation and maritime safety systems use it. Starlink covers the large majority of populated areas and is extending polar and ocean coverage via inter-satellite lasers.\"}}, {\"@type\": \"Question\", \"name\": \"Why is Iridium so much slower?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"It is designed for a different job. Iridium's L-band links carry voice and small data packets — 2.4 kbps for basic services up to about 700 kbps on Certus — to tiny antennas with very high reliability. Starlink's Ku- and Ka-band links deliver 25-220+ Mbps to a phased-array dish.\"}}, {\"@type\": \"Question\", \"name\": \"Can I invest in Iridium or Starlink?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Iridium is public as IRDM; Starlink is a division of SpaceX, public as SPCX since June 2026, so SPCX is the only way to own Starlink. Nothing on SpaceNexus is investment advice.\"}}, {\"@type\": \"Question\", \"name\": \"Which is cheaper?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"For broadband, Starlink — Iridium does not sell broadband. For a global SOS device or an IoT sensor that must work anywhere on Earth, Iridium's small terminals and low-data plans are the practical option; the two rarely compete for the same customer.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

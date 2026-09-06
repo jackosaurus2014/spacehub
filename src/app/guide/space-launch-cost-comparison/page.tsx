@@ -9,7 +9,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { getRocketScorecard, fmtPrice, fmtPerKg } from '@/lib/rocket-scorecard';
-import { getLaunchCalendar } from '@/lib/launch-calendar';
+import { getLaunchCalendar, launchDisplayName } from '@/lib/launch-calendar';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
@@ -207,7 +207,7 @@ export default async function SpaceLaunchCostComparisonPage() {
             <p className="text-[15px] text-[var(--ink-2)] leading-relaxed mt-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-4 py-3">
               <strong className="text-cyan-300">Where the market is today:</strong> Falcon 9 has flown {f9.last90Days} times in the last 90 days and {f9.thisYear} times this year
               {starship?.nextLaunch ? <>; the next Starship flight is on our tracker for {formatLaunchDate(starship.nextLaunch, false)}</> : null}
-              {next ? <>. The next orbital launch of any kind is {next.name} on {formatLaunchDate(new Date(next.launchDate), false)}</> : null}.
+              {next ? <>. The next orbital launch of any kind is {launchDisplayName(next.name, next.rocket)} on {formatLaunchDate(new Date(next.launchDate), false)}</> : null}.
             </p>
           )}
           <p className="text-[12px] text-[var(--ink-3)] mt-3">Prices as of {LAUNCH_COST_AS_OF} · {LAUNCH_COST_SOURCE}. Flight counts from our launch tracker at the moment you loaded the page.</p>
@@ -1069,7 +1069,7 @@ export default async function SpaceLaunchCostComparisonPage() {
                 <LaunchCrossLinks rocket="Falcon 9" upcoming alertsAnchor hide={['mc']} />
                 {next && (
                   <div className="mt-6">
-                    <LaunchWatchForm eventId={next.id} label={`Email me about the next launch: ${next.name}, ${formatLaunchDate(new Date(next.launchDate), false)}`} source="guide-launch-cost" />
+                    <LaunchWatchForm eventId={next.id} label={`Email me about the next launch: ${launchDisplayName(next.name, next.rocket)}, ${formatLaunchDate(new Date(next.launchDate), false)}`} source="guide-launch-cost" />
                   </div>
                 )}
               </section>

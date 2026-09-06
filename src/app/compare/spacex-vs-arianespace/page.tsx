@@ -132,6 +132,34 @@ export default function Page() {
           <li><Link href="/compare/launch-vehicles" className="text-sm text-indigo-400 hover:text-indigo-300">Interactive Launch Vehicle Comparison Tool</Link></li>
         </ul>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Is Ariane 6 cheaper than Falcon 9?">
+              <h3 className="text-base font-semibold text-white mb-1">Is Ariane 6 cheaper than Falcon 9?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">No. Ariane 62 is estimated at about $77 million and the four-booster Ariane 64 at about $115 million, against roughly $74 million for a Falcon 9 that lifts more than either. Per kilogram the gap is larger still, because Ariane 6 is expendable.</p>
+            </div>
+            <div key="Why does Europe keep launching on Ariane if SpaceX is cheaper?">
+              <h3 className="text-base font-semibold text-white mb-1">Why does Europe keep launching on Ariane if SpaceX is cheaper?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Sovereign access to space. ESA, the EU and European governments pay for an independent launcher so that Galileo, Copernicus and military payloads never depend on a foreign company. Commercial customers, with no such obligation, mostly went to SpaceX.</p>
+            </div>
+            <div key="Does Arianespace reuse rockets?">
+              <h3 className="text-base font-semibold text-white mb-1">Does Arianespace reuse rockets?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Not yet. Ariane 6 is fully expendable. European reusable demonstrators and the next-generation launcher programme are under way, but nothing reusable is in service.</p>
+            </div>
+            <div key="Where do they launch from?">
+              <h3 className="text-base font-semibold text-white mb-1">Where do they launch from?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">SpaceX from Cape Canaveral, Kennedy and Vandenberg in the United States, plus Starship from Starbase in Texas. Arianespace from the Guiana Space Centre at Kourou, French Guiana, near the equator — a geographic advantage for geostationary missions.</p>
+            </div>
+            <div key="How many launches does each fly a year?">
+              <h3 className="text-base font-semibold text-white mb-1">How many launches does each fly a year?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">SpaceX flew well over a hundred Falcon missions in 2024 and is running faster in 2026. Arianespace flew a handful in 2024, its transition year from Ariane 5 to Ariane 6, and is ramping Ariane 6 toward roughly ten a year. Our launch-schedule guide shows both providers&apos; live counts.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Is Ariane 6 cheaper than Falcon 9?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"No. Ariane 62 is estimated at about $77 million and the four-booster Ariane 64 at about $115 million, against roughly $74 million for a Falcon 9 that lifts more than either. Per kilogram the gap is larger still, because Ariane 6 is expendable.\"}}, {\"@type\": \"Question\", \"name\": \"Why does Europe keep launching on Ariane if SpaceX is cheaper?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Sovereign access to space. ESA, the EU and European governments pay for an independent launcher so that Galileo, Copernicus and military payloads never depend on a foreign company. Commercial customers, with no such obligation, mostly went to SpaceX.\"}}, {\"@type\": \"Question\", \"name\": \"Does Arianespace reuse rockets?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Not yet. Ariane 6 is fully expendable. European reusable demonstrators and the next-generation launcher programme are under way, but nothing reusable is in service.\"}}, {\"@type\": \"Question\", \"name\": \"Where do they launch from?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"SpaceX from Cape Canaveral, Kennedy and Vandenberg in the United States, plus Starship from Starbase in Texas. Arianespace from the Guiana Space Centre at Kourou, French Guiana, near the equator — a geographic advantage for geostationary missions.\"}}, {\"@type\": \"Question\", \"name\": \"How many launches does each fly a year?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"SpaceX flew well over a hundred Falcon missions in 2024 and is running faster in 2026. Arianespace flew a handful in 2024, its transition year from Ariane 5 to Ariane 6, and is ramping Ariane 6 toward roughly ten a year. Our launch-schedule guide shows both providers' live counts.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

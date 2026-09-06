@@ -44,9 +44,24 @@ export interface LaunchCalendar {
   next30Days: CalendarLaunch[];
   /** The soonest scheduled launch — the honest "email me about the next one" target. */
   nextLaunch: CalendarLaunch | null;
+  /** 0-based month of the last scheduled launch we hold, or null when the
+   *  manifest holds nothing ahead. The upstream feed only carries roughly the
+   *  next three months, so a month past this is "not loaded yet", not "zero
+   *  launches" — the page must say which. */
+  horizonMonth: number | null;
 }
 
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** The feed names launches "Rocket | Payload" and uses "Unknown Payload" when
+ *  the payload is not public, which reads badly in a sentence ("email me
+ *  about Long March 2D | Unknown Payload"). Drop the placeholder and, when
+ *  nothing is left, fall back to the rocket. */
+export function launchDisplayName(name: string, rocket?: string | null): string {
+  const cleaned = name.replace(/\s*\|\s*unknown payload\s*$/i, '').trim();
+  if (cleaned && !/^unknown payload$/i.test(cleaned)) return cleaned;
+  return rocket ? `${rocket} launch` : name;
+}
 
 export const getLaunchCalendar = unstable_cache(async (): Promise<LaunchCalendar | null> => {
   try {
@@ -87,6 +102,7 @@ export const getLaunchCalendar = unstable_cache(async (): Promise<LaunchCalendar
       }
     }
 
+    const lastScheduled = rows.filter((r) => r.launchDate!.getTime() > now.getTime() && r.status !== 'scrubbed').pop();
     return {
       asOf: now.toISOString(),
       year,
@@ -95,6 +111,7 @@ export const getLaunchCalendar = unstable_cache(async (): Promise<LaunchCalendar
       scheduledRestOfYear: scheduledRest,
       next30Days: next30.slice(0, 40),
       nextLaunch: next30[0] ?? null,
+      horizonMonth: lastScheduled ? lastScheduled.launchDate!.getUTCMonth() : null,
     };
   } catch {
     return null;

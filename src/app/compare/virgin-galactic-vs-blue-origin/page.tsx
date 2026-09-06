@@ -114,6 +114,34 @@ export default function Page() {
           ))}
         </div>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Which goes higher, Virgin Galactic or Blue Origin?">
+              <h3 className="text-base font-semibold text-white mb-1">Which goes higher, Virgin Galactic or Blue Origin?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Blue Origin. New Shepard reaches about 107 km, above the 100 km Kármán line; Virgin Galactic&apos;s SpaceShipTwo reached about 89-90 km, above the 80 km line the US uses for astronaut wings but below the Kármán line.</p>
+            </div>
+            <div key="How much does a ticket cost?">
+              <h3 className="text-base font-semibold text-white mb-1">How much does a ticket cost?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Virgin Galactic&apos;s last published price was $450,000 a seat. Blue Origin does not publish a price; early seats were auctioned and later ones sold privately, with reports well above Virgin Galactic&apos;s figure. Our space-tourism guide keeps the current figures.</p>
+            </div>
+            <div key="Is Virgin Galactic still flying?">
+              <h3 className="text-base font-semibold text-white mb-1">Is Virgin Galactic still flying?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Not currently. Its last commercial flight was Galactic 06 in January 2024; VSS Unity was retired and the company is building its Delta-class spaceplanes, with commercial flights targeted after they enter service.</p>
+            </div>
+            <div key="Is New Shepard safe?">
+              <h3 className="text-base font-semibold text-white mb-1">Is New Shepard safe?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">It has flown crews repeatedly since 2021 with no injuries. An uncrewed booster failed in September 2022 — the capsule&apos;s abort system pulled the capsule clear as designed — and flights resumed in May 2024 after the investigation.</p>
+            </div>
+            <div key="Can I invest in either company?">
+              <h3 className="text-base font-semibold text-white mb-1">Can I invest in either company?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Virgin Galactic is public as SPCE on the NYSE. Blue Origin is private, funded almost entirely by Jeff Bezos, with no announced listing. Nothing on SpaceNexus is investment advice.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Which goes higher, Virgin Galactic or Blue Origin?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Blue Origin. New Shepard reaches about 107 km, above the 100 km Kármán line; Virgin Galactic's SpaceShipTwo reached about 89-90 km, above the 80 km line the US uses for astronaut wings but below the Kármán line.\"}}, {\"@type\": \"Question\", \"name\": \"How much does a ticket cost?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Virgin Galactic's last published price was $450,000 a seat. Blue Origin does not publish a price; early seats were auctioned and later ones sold privately, with reports well above Virgin Galactic's figure. Our space-tourism guide keeps the current figures.\"}}, {\"@type\": \"Question\", \"name\": \"Is Virgin Galactic still flying?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Not currently. Its last commercial flight was Galactic 06 in January 2024; VSS Unity was retired and the company is building its Delta-class spaceplanes, with commercial flights targeted after they enter service.\"}}, {\"@type\": \"Question\", \"name\": \"Is New Shepard safe?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"It has flown crews repeatedly since 2021 with no injuries. An uncrewed booster failed in September 2022 — the capsule's abort system pulled the capsule clear as designed — and flights resumed in May 2024 after the investigation.\"}}, {\"@type\": \"Question\", \"name\": \"Can I invest in either company?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Virgin Galactic is public as SPCE on the NYSE. Blue Origin is private, funded almost entirely by Jeff Bezos, with no announced listing. Nothing on SpaceNexus is investment advice.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

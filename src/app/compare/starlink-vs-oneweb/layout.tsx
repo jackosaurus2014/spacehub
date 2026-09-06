@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Starlink vs OneWeb: Satellite Internet Comparison | SpaceNexus',
+  title: 'Starlink vs OneWeb: 10,000+ vs 648 Satellites Compared (2026)',
   description:
-    'Compare Starlink and OneWeb side-by-side: constellation size, coverage, target markets, latency, orbital strategies, and enterprise vs consumer focus in satellite broadband.',
+    'Starlink runs more than 10,000 satellites at 340-570 km for consumers and enterprises; Eutelsat OneWeb runs 648 at 1,200 km for business and government. Latency, speed, coverage, terminals and who each one is for.',
   keywords: [
     'Starlink vs OneWeb',
     'satellite internet comparison',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'global broadband coverage',
   ],
   openGraph: {
-    title: 'Starlink vs OneWeb: Satellite Internet Comparison | SpaceNexus',
+    title: 'Starlink vs OneWeb: 10,000+ vs 648 Satellites Compared (2026)',
     description:
       'Compare Starlink and OneWeb side-by-side: constellation size, coverage, target markets, latency, and orbital strategies.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Starlink vs OneWeb: Satellite Internet Comparison | SpaceNexus',
+    title: 'Starlink vs OneWeb: 10,000+ vs 648 Satellites Compared (2026)',
     description:
       'Compare Starlink and OneWeb side-by-side: constellation size, coverage, target markets, latency, and orbital strategies.',
     images: ['/api/og?title=Starlink+vs+OneWeb&type=compare'],

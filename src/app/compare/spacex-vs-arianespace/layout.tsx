@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SpaceX vs Arianespace: Launch Provider Comparison 2026',
-  description: 'Compare SpaceX and Arianespace side by side — Falcon 9/Heavy vs Ariane 6, market share, pricing, government customers, and launch cadence. Updated 2026 data.',
+  title: 'SpaceX vs Arianespace: Falcon 9 vs Ariane 6 on Price, Lift and Cadence (2026)',
+  description: 'Falcon 9 lists at about $74M for 22,800 kg to LEO with a reusable booster; Ariane 6 is expendable at roughly $77-115M for 10,300-21,650 kg. Launch record, government customers, sites and what Europe is doing about reuse.',
   keywords: ['SpaceX vs Arianespace', 'Falcon 9 vs Ariane 6', 'launch provider comparison', 'European space launch', 'commercial launch market 2026'],
   openGraph: {
     title: 'SpaceX vs Arianespace: Launch Provider Comparison 2026 | SpaceNexus',

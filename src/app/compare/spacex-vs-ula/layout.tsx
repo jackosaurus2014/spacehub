@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SpaceX vs ULA: Space Industry Comparison | SpaceNexus',
+  title: 'SpaceX vs ULA: Falcon 9 vs Vulcan on Cost, Cadence and Reliability (2026)',
   description:
-    'Compare SpaceX and United Launch Alliance side-by-side: Falcon 9 vs Vulcan Centaur, launch costs, government contracts, reliability records, and national security missions.',
+    'Falcon 9 lists at about $74M and flies every few days with a reusable booster; Vulcan Centaur is expendable, costs roughly $100-150M and flies a handful of times a year. Launch record, national-security lanes, engines and payload, side by side.',
   keywords: [
     'SpaceX vs ULA',
     'Falcon 9 vs Vulcan Centaur',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'United Launch Alliance comparison',
   ],
   openGraph: {
-    title: 'SpaceX vs ULA: Space Industry Comparison | SpaceNexus',
+    title: 'SpaceX vs ULA: Falcon 9 vs Vulcan on Cost, Cadence and Reliability (2026)',
     description:
       'Compare SpaceX and United Launch Alliance side-by-side: Falcon 9 vs Vulcan Centaur, launch costs, reliability records, and national security missions.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SpaceX vs ULA: Space Industry Comparison | SpaceNexus',
+    title: 'SpaceX vs ULA: Falcon 9 vs Vulcan on Cost, Cadence and Reliability (2026)',
     description:
       'Compare SpaceX and United Launch Alliance side-by-side: Falcon 9 vs Vulcan Centaur, launch costs, reliability records, and national security missions.',
     images: ['/api/og?title=SpaceX+vs+ULA&type=compare'],

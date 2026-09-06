@@ -10,7 +10,7 @@ import { SITE_STATS } from '@/lib/site-stats';
 import NewsletterSignup from '@/components/NewsletterSignup';
 
 import { getLaunchCadence } from '@/lib/launch-cadence';
-import { getLaunchCalendar } from '@/lib/launch-calendar';
+import { getLaunchCalendar, launchDisplayName } from '@/lib/launch-calendar';
 import { getSlipData, RECORDING_SINCE } from '@/lib/launch-slips';
 import { getRocketScorecard } from '@/lib/rocket-scorecard';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
@@ -246,7 +246,7 @@ export default async function SpaceLaunchSchedule2026Page() {
               <section id="monthly">
                 <h2 className="text-2xl font-bold text-white mb-4">Month-by-Month Launch Schedule</h2>
                 <p className="text-slate-400 leading-relaxed mb-4">
-                  Launches that flew each month this year, and what is on the manifest for the months ahead. Manifests move constantly — the changes we record are further down — so the scheduled counts are a snapshot, not a promise. For countdowns and streams, use{' '}
+                  Launches that flew each month this year, and what is on the manifest for the months ahead. Manifests move constantly — the changes we record are further down — so the scheduled counts are a snapshot, not a promise, and our feed only carries the next few months. For countdowns and streams, use{' '}
                   <Link href="/mission-control" className="text-slate-300 hover:underline">Mission Control</Link>.
                 </p>
                 {calendar ? (
@@ -258,6 +258,11 @@ export default async function SpaceLaunchSchedule2026Page() {
                           <>
                             <div className="text-lg font-bold text-white mt-1 tabular-nums">{m.flown}</div>
                             <div className="text-xs text-slate-400">flown{m.failed > 0 ? ` · ${m.failed} failed` : ''}{m.isCurrent && m.scheduled > 0 ? ` · ${m.scheduled} to go` : ''}</div>
+                          </>
+                        ) : calendar.horizonMonth != null && m.month - 1 > calendar.horizonMonth ? (
+                          <>
+                            <div className="text-lg font-bold text-slate-500 mt-1">—</div>
+                            <div className="text-xs text-slate-500">beyond the manifest window</div>
                           </>
                         ) : (
                           <>
@@ -280,7 +285,7 @@ export default async function SpaceLaunchSchedule2026Page() {
                         <li key={l.id}>
                           <Link href={`/launch/${l.id}`} className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-white/[0.04] transition-colors">
                             <span className="min-w-0">
-                              <span className="block text-sm text-white truncate">{l.name}</span>
+                              <span className="block text-sm text-white truncate">{launchDisplayName(l.name, l.rocket)}</span>
                               <span className="block text-xs text-slate-400 truncate">{[l.rocket, l.agency, l.location].filter(Boolean).join(' · ')}</span>
                             </span>
                             <span className="text-xs text-slate-300 whitespace-nowrap tabular-nums">{fmtDay(l.launchDate)}</span>
@@ -301,7 +306,7 @@ export default async function SpaceLaunchSchedule2026Page() {
                       {fromCape.map((l) => (
                         <li key={l.id}>
                           <Link href={`/launch/${l.id}`} className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-white/[0.04] transition-colors">
-                            <span className="min-w-0"><span className="block text-sm text-white truncate">{l.name}</span><span className="block text-xs text-slate-400 truncate">{[l.rocket, l.agency].filter(Boolean).join(' · ')}</span></span>
+                            <span className="min-w-0"><span className="block text-sm text-white truncate">{launchDisplayName(l.name, l.rocket)}</span><span className="block text-xs text-slate-400 truncate">{[l.rocket, l.agency].filter(Boolean).join(' · ')}</span></span>
                             <span className="text-xs text-slate-300 whitespace-nowrap tabular-nums">{fmtDay(l.launchDate)}</span>
                           </Link>
                         </li>
@@ -480,7 +485,7 @@ export default async function SpaceLaunchSchedule2026Page() {
                 <div id="launch-alerts" className="mt-8 scroll-mt-24 space-y-6">
                   <LaunchCrossLinks rocket={next?.rocket ?? 'Falcon 9'} location={next?.location ?? null} upcoming alertsAnchor hide={['mc']} />
                   {next && (
-                    <LaunchWatchForm eventId={next.id} label={`Email me about the next launch: ${next.name}, ${fmtDay(next.launchDate)}`} source="guide-launch-schedule" />
+                    <LaunchWatchForm eventId={next.id} label={`Email me about the next launch: ${launchDisplayName(next.name, next.rocket)}, ${fmtDay(next.launchDate)}`} source="guide-launch-schedule" />
                   )}
                 </div>
               </section>

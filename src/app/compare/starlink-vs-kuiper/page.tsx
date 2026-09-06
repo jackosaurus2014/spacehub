@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   keywords: ['Starlink vs Kuiper', 'Project Kuiper vs Starlink', 'Amazon satellite internet', 'LEO broadband comparison', 'satellite internet 2026'],
   openGraph: {
     title: 'Starlink vs Project Kuiper: Complete Comparison 2026 | SpaceNexus',
-    description: 'Side-by-side comparison of Starlink and Amazon Project Kuiper satellite internet constellations.',
+    description: 'Side-by-side comparison of Starlink and Amazon Leo (formerly Project Kuiper) satellite internet constellations.',
     url: 'https://spacenexus.us/compare/starlink-vs-kuiper',
     type: 'article',
   },
@@ -24,14 +24,14 @@ export const metadata: Metadata = {
 };
 
 const COMPARISON_DATA = [
-  { metric: 'Operator', a: 'SpaceX (Starlink)', b: 'Amazon (Project Kuiper)' },
+  { metric: 'Operator', a: 'SpaceX (Starlink)', b: 'Amazon (Amazon Leo, formerly Project Kuiper)' },
   { metric: 'Service Start', a: 'Public beta Oct 2020; full service 2021', b: 'Prototype tests 2023; commercial 2025' },
   { metric: 'Satellites in Orbit (Aug 2026)', a: '10,000+', b: 'Small in-orbit fleet — production launches began 2025 but the 50%-by-2026 FCC deadline was waived to 2029, so build-out is still early. See our live Constellations tracker for the current count.' },
   { metric: 'Total Constellation Authorized', a: '~42,000 (FCC Gen 1 + Gen 2)', b: '3,236 (FCC licensed)' },
   { metric: 'Orbital Altitude', a: '~340–570 km', b: '~590–630 km' },
   { metric: 'Inter-Satellite Links', a: 'Yes (laser ISLs on V2 satellites)', b: 'Yes (planned on production satellites)' },
   { metric: 'Launch Provider', a: 'SpaceX (Falcon 9 / Starship)', b: 'ULA Vulcan, Blue Origin New Glenn, Arianespace' },
-  { metric: 'Subscribers', a: '4M+ (as of 2025)', b: 'Not yet commercially available at scale' },
+  { metric: 'Subscribers', a: '~12M (Q2 2026)', b: 'Not yet commercially available at scale' },
   { metric: 'Typical Latency', a: '20–60 ms', b: 'Target <30 ms (per Amazon specs)' },
   { metric: 'Download Speed (target)', a: '50–250 Mbps (consumer)', b: 'Up to 400 Mbps (per Amazon claims)' },
   { metric: 'User Terminal', a: 'Starlink dish (phased array)', b: 'Amazon-designed phased array terminal' },
@@ -150,11 +150,39 @@ export default async function Page() {
         </ul>
       </div>
 
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Is Amazon Leo the same as Project Kuiper?">
+              <h3 className="text-base font-semibold text-white mb-1">Is Amazon Leo the same as Project Kuiper?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Yes. Amazon renamed Project Kuiper to Amazon Leo; the constellation, the FCC licence for 3,236 satellites and the launch contracts are unchanged. Older coverage still says Kuiper.</p>
+            </div>
+            <div key="Which is bigger, Starlink or Amazon Leo?">
+              <h3 className="text-base font-semibold text-white mb-1">Which is bigger, Starlink or Amazon Leo?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Starlink, by a wide margin: more than 10,000 satellites in orbit against an Amazon Leo constellation licensed for 3,236, of which only the early batches have launched. Starlink also has FCC authorisation for up to about 42,000.</p>
+            </div>
+            <div key="Can I subscribe to Amazon Leo yet?">
+              <h3 className="text-base font-semibold text-white mb-1">Can I subscribe to Amazon Leo yet?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Not at scale. Amazon Leo is in early deployment and initial service; consumer pricing has not been announced. Starlink residential service is available in most of the world at about $120 a month in the US.</p>
+            </div>
+            <div key="Who launches Amazon Leo satellites?">
+              <h3 className="text-base font-semibold text-white mb-1">Who launches Amazon Leo satellites?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Several providers: ULA&apos;s Atlas V and Vulcan, Blue Origin&apos;s New Glenn, Arianespace, and Falcon 9 — Amazon bought SpaceX launches when its other providers ran behind. New Glenn is grounded until its pad is rebuilt after the May 2026 explosion, which pushes more of the manifest onto the others.</p>
+            </div>
+            <div key="Does Amazon Leo have a deadline?">
+              <h3 className="text-base font-semibold text-white mb-1">Does Amazon Leo have a deadline?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">The FCC originally required half the constellation in orbit by mid-2026; Amazon was granted a waiver extending that to 2029. Starlink has no comparable deadline because its network is already operating.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Is Amazon Leo the same as Project Kuiper?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Yes. Amazon renamed Project Kuiper to Amazon Leo; the constellation, the FCC licence for 3,236 satellites and the launch contracts are unchanged. Older coverage still says Kuiper.\"}}, {\"@type\": \"Question\", \"name\": \"Which is bigger, Starlink or Amazon Leo?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Starlink, by a wide margin: more than 10,000 satellites in orbit against an Amazon Leo constellation licensed for 3,236, of which only the early batches have launched. Starlink also has FCC authorisation for up to about 42,000.\"}}, {\"@type\": \"Question\", \"name\": \"Can I subscribe to Amazon Leo yet?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Not at scale. Amazon Leo is in early deployment and initial service; consumer pricing has not been announced. Starlink residential service is available in most of the world at about $120 a month in the US.\"}}, {\"@type\": \"Question\", \"name\": \"Who launches Amazon Leo satellites?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Several providers: ULA's Atlas V and Vulcan, Blue Origin's New Glenn, Arianespace, and Falcon 9 — Amazon bought SpaceX launches when its other providers ran behind. New Glenn is grounded until its pad is rebuilt after the May 2026 explosion, which pushes more of the manifest onto the others.\"}}, {\"@type\": \"Question\", \"name\": \"Does Amazon Leo have a deadline?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"The FCC originally required half the constellation in orbit by mid-2026; Amazon was granted a waiver extending that to 2029. Starlink has no comparable deadline because its network is already operating.\"}}]}".replace(/</g, '\\u003c') }} />
+
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org', '@type': 'Article',
-        headline: 'Starlink vs Project Kuiper: Complete Comparison 2026',
-        description: 'Side-by-side comparison of Starlink and Amazon Project Kuiper satellite internet constellations.',
+        headline: 'Starlink vs Amazon Leo (Kuiper): Complete Comparison 2026',
+        description: 'Side-by-side comparison of Starlink and Amazon Leo (formerly Project Kuiper) satellite internet constellations.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
         datePublished: '2026-03-22', dateModified: '2026-08-14',

@@ -6,8 +6,8 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'SpaceX Starship vs Blue Origin New Glenn: Heavy-Lift Rocket Comparison 2026',
-  description: 'Compare SpaceX Starship and Blue Origin New Glenn side by side — payload to LEO/GTO, dimensions, reusability, engines, first flight, cost estimates, and customer manifests.',
+  title: 'Starship vs New Glenn Specs: 150 t vs 45 t to LEO, Engines, Size, Cost (2026)',
+  description: 'The two heavy-lift rockets by the numbers: Starship lifts ~150,000 kg to LEO with 33 Raptors and 74 MN of thrust; New Glenn lifts ~45,000 kg with 7 BE-4s. Height, diameter, stages, fairing, propellants, reuse and first flights, side by side. For current status see our companion page.',
   keywords: ['Starship vs New Glenn', 'SpaceX Starship', 'Blue Origin New Glenn', 'heavy lift rocket', 'super heavy launch vehicle', 'rocket comparison'],
   openGraph: {
     title: 'SpaceX Starship vs Blue Origin New Glenn: Heavy-Lift Rocket Comparison 2026 | SpaceNexus',
@@ -32,9 +32,9 @@ const COMPARISON_DATA = [
   { metric: 'Fairing Diameter', a: '8 m (entire upper stage is the payload bay)', b: '7 m' },
   { metric: 'Reusability', a: 'Both stages designed for full reuse (booster caught by tower)', b: 'First stage reusable (landing on drone ship); 2nd stage expendable' },
   { metric: 'Propellant', a: 'LOX / liquid methane (both stages)', b: 'LOX / LNG (1st stage); LOX / LH2 (2nd stage)' },
-  { metric: 'First Orbital Flight', a: 'IFT-1 (Apr 2023); IFT-4 partial success (Jun 2024)', b: 'NG-1 (Oct 2025) — booster lost on landing attempt' },
+  { metric: 'First Orbital Flight', a: 'IFT-1 (Apr 2023); IFT-4 partial success (Jun 2024)', b: 'NG-1 (Jan 2025) — reached orbit; booster lost on landing attempt' },
   { metric: 'Estimated Launch Cost', a: '~$10-30M per flight (target, reusable)', b: '~$50-70M per flight (estimated)' },
-  { metric: 'Key Customers', a: 'NASA (HLS Artemis), USSF, Starlink, commercial', b: 'NASA (ESCAPADE), Amazon Kuiper, USSF, Telesat' },
+  { metric: 'Key Customers', a: 'NASA (HLS Artemis), USSF, Starlink, commercial', b: 'NASA (ESCAPADE), Amazon Leo (formerly Kuiper), USSF, Telesat' },
   { metric: 'Artemis Role', a: 'Starship HLS — crewed Moon lander for Artemis III+', b: 'None currently (competing for future contracts)' },
   { metric: 'Manufacturing Location', a: 'Starbase, Boca Chica, TX', b: 'Rocket factory, Cape Canaveral, FL' },
   { metric: 'Key Differentiator', a: 'Largest payload capacity ever; full reusability; Mars-class vehicle', b: 'First reusable heavy-lift competitor to Falcon Heavy; 7m fairing' },
@@ -146,11 +146,39 @@ export default function Page() {
           <li><Link href="/guide/launch-vehicle-economics" className="text-sm text-indigo-400 hover:text-indigo-300">Launch Vehicle Economics: The Complete 2026 Guide</Link></li>
         </ul>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="How much bigger is Starship than New Glenn?">
+              <h3 className="text-base font-semibold text-white mb-1">How much bigger is Starship than New Glenn?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">About 121 metres tall and 9 metres across against 98 metres and 7 metres, with roughly four times the first-stage thrust — 74 MN from 33 Raptor engines versus 17 MN from 7 BE-4s — and about three times the payload to low Earth orbit: around 150,000 kg expendable against 45,000 kg.</p>
+            </div>
+            <div key="Which has the bigger fairing?">
+              <h3 className="text-base font-semibold text-white mb-1">Which has the bigger fairing?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Starship: its entire 9-metre upper stage is the payload bay, with an 8-metre usable payload diameter. New Glenn&apos;s 7-metre fairing is the widest conventional fairing in commercial service and larger than Falcon 9&apos;s 5.2 metres.</p>
+            </div>
+            <div key="Are both rockets reusable?">
+              <h3 className="text-base font-semibold text-white mb-1">Are both rockets reusable?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">New Glenn reuses its first stage, landing on a ship at sea, and expends its hydrogen upper stage. Starship is designed to reuse both stages, with the booster caught by the launch tower; full routine reuse is still being worked out.</p>
+            </div>
+            <div key="What fuels do they use?">
+              <h3 className="text-base font-semibold text-white mb-1">What fuels do they use?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Starship burns liquid methane and liquid oxygen in both stages. New Glenn burns liquefied natural gas and oxygen in the first stage (BE-4) and liquid hydrogen and oxygen in the second (BE-3U).</p>
+            </div>
+            <div key="When did each first reach orbit?">
+              <h3 className="text-base font-semibold text-white mb-1">When did each first reach orbit?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">New Glenn on its first flight, NG-1, in January 2025. Starship&apos;s test campaign began in April 2023; it first reached orbital velocity and deployed operational payloads on Flight 13 in July 2026. Our status comparison covers where each stands today.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"How much bigger is Starship than New Glenn?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"About 121 metres tall and 9 metres across against 98 metres and 7 metres, with roughly four times the first-stage thrust — 74 MN from 33 Raptor engines versus 17 MN from 7 BE-4s — and about three times the payload to low Earth orbit: around 150,000 kg expendable against 45,000 kg.\"}}, {\"@type\": \"Question\", \"name\": \"Which has the bigger fairing?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Starship: its entire 9-metre upper stage is the payload bay, with an 8-metre usable payload diameter. New Glenn's 7-metre fairing is the widest conventional fairing in commercial service and larger than Falcon 9's 5.2 metres.\"}}, {\"@type\": \"Question\", \"name\": \"Are both rockets reusable?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"New Glenn reuses its first stage, landing on a ship at sea, and expends its hydrogen upper stage. Starship is designed to reuse both stages, with the booster caught by the launch tower; full routine reuse is still being worked out.\"}}, {\"@type\": \"Question\", \"name\": \"What fuels do they use?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Starship burns liquid methane and liquid oxygen in both stages. New Glenn burns liquefied natural gas and oxygen in the first stage (BE-4) and liquid hydrogen and oxygen in the second (BE-3U).\"}}, {\"@type\": \"Question\", \"name\": \"When did each first reach orbit?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"New Glenn on its first flight, NG-1, in January 2025. Starship's test campaign began in April 2023; it first reached orbital velocity and deployed operational payloads on Flight 13 in July 2026. Our status comparison covers where each stands today.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org', '@type': 'Article',
-        headline: 'SpaceX Starship vs Blue Origin New Glenn: Heavy-Lift Rocket Comparison 2026',
+        headline: 'Starship vs New Glenn Specs: 150 t vs 45 t to LEO, Engines, Size, Cost (2026)',
         description: 'Side-by-side comparison of Starship and New Glenn covering payload, dimensions, reusability, engines, customers, and the heavy-lift launch market.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },

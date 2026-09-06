@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Virgin Galactic vs Blue Origin: Space Tourism Comparison | SpaceNexus',
+  title: 'Virgin Galactic vs Blue Origin: $450k Seats, 90 km vs 107 km (2026)',
   description:
-    'Compare Virgin Galactic and Blue Origin space tourism side-by-side: ticket prices, flight experience, altitude reached, vehicle design, safety records, and booking availability.',
+    'Virgin Galactic flies a rocket plane to about 90 km for $450,000 a seat and is grounded until its Delta class flies; Blue Origin\'s New Shepard capsule passes 100 km and is flying. Vehicles, altitude, flight count, safety records and what a ticket gets you.',
   keywords: [
     'Virgin Galactic vs Blue Origin',
     'space tourism comparison',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'space tourism 2026',
   ],
   openGraph: {
-    title: 'Virgin Galactic vs Blue Origin: Space Tourism Comparison | SpaceNexus',
+    title: 'Virgin Galactic vs Blue Origin: $450k Seats, 90 km vs 107 km (2026)',
     description:
       'Compare Virgin Galactic and Blue Origin space tourism side-by-side: ticket prices, flight experience, altitude reached, vehicle design, and booking availability.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Virgin Galactic vs Blue Origin: Space Tourism Comparison | SpaceNexus',
+    title: 'Virgin Galactic vs Blue Origin: $450k Seats, 90 km vs 107 km (2026)',
     description:
       'Compare Virgin Galactic and Blue Origin space tourism side-by-side: ticket prices, flight experience, altitude reached, vehicle design, and booking availability.',
     images: ['/api/og?title=Virgin+Galactic+vs+Blue+Origin&type=compare'],

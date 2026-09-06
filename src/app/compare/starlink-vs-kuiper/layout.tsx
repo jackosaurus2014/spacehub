@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Starlink vs Kuiper: Satellite Internet Comparison | SpaceNexus',
+  title: 'Starlink vs Amazon Leo (Kuiper): 10,000+ vs 3,236 Satellites (2026)',
   description:
-    'Compare Starlink and Amazon Kuiper side-by-side: satellite counts, coverage areas, latency, pricing, orbital altitudes, and deployment timelines for satellite internet constellations.',
+    'Starlink has more than 10,000 satellites in orbit and about 12 million subscribers; Amazon Leo (formerly Project Kuiper) is licensed for 3,236 and is in early deployment. Altitude, latency, speed, terminals, launch providers and the FCC deadline, side by side.',
   keywords: [
     'Starlink vs Kuiper',
     'Starlink vs Amazon Kuiper',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'internet from space',
   ],
   openGraph: {
-    title: 'Starlink vs Kuiper: Satellite Internet Comparison | SpaceNexus',
+    title: 'Starlink vs Amazon Leo (Kuiper): 10,000+ vs 3,236 Satellites (2026)',
     description:
       'Compare Starlink and Amazon Kuiper side-by-side: satellite counts, coverage areas, latency, pricing, and deployment timelines.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Starlink vs Kuiper: Satellite Internet Comparison | SpaceNexus',
+    title: 'Starlink vs Amazon Leo (Kuiper): 10,000+ vs 3,236 Satellites (2026)',
     description:
       'Compare Starlink and Amazon Kuiper side-by-side: satellite counts, coverage areas, latency, pricing, and deployment timelines.',
     images: ['/api/og?title=Starlink+vs+Kuiper&type=compare'],

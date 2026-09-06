@@ -167,6 +167,34 @@ export default async function Page() {
           <li><Link href="/guide/space-launch-cost-comparison" className="text-sm text-indigo-400 hover:text-indigo-300">Space Launch Cost Comparison 2026</Link></li>
         </ul>
       </div>
+      {/* FAQ + FAQPage schema (Tier 2 #13, 2026-09-06) */}
+      <section id="faq" className="mt-8">
+        <h2 className="text-lg font-bold text-white mb-4">Frequently asked</h2>
+        <div className="space-y-4">
+            <div key="Is Rocket Lab a competitor to SpaceX?">
+              <h3 className="text-base font-semibold text-white mb-1">Is Rocket Lab a competitor to SpaceX?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">In small launch, yes — Electron is the leading dedicated small launcher and SpaceX has no small rocket. In medium launch, not yet: Rocket Lab&apos;s Neutron is designed to compete with Falcon 9 but has not flown. In scale, no: Rocket Lab&apos;s revenue is a small fraction of SpaceX&apos;s.</p>
+            </div>
+            <div key="What is the difference between Electron and Falcon 9?">
+              <h3 className="text-base font-semibold text-white mb-1">What is the difference between Electron and Falcon 9?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Electron lifts about 310 kg to low Earth orbit for a dedicated small-satellite customer; Falcon 9 lifts 22,800 kg. Electron costs a few million dollars a flight and a great deal more per kilogram; Falcon 9 costs about $74 million and is the cheapest per kilogram of any operational rocket.</p>
+            </div>
+            <div key="Can I invest in Rocket Lab and SpaceX?">
+              <h3 className="text-base font-semibold text-white mb-1">Can I invest in Rocket Lab and SpaceX?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Both are public: Rocket Lab as RKLB and SpaceX as SPCX (since June 2026), both on the Nasdaq. Our SPCX vs RKLB comparison and the Space Stocks hub cover them. Nothing on SpaceNexus is investment advice.</p>
+            </div>
+            <div key="When does Neutron fly?">
+              <h3 className="text-base font-semibold text-white mb-1">When does Neutron fly?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Rocket Lab targets a first flight in late 2026. Neutron is a reusable medium-lift rocket carrying about 13,000 kg to LEO, aimed at constellation and government customers now flying on Falcon 9.</p>
+            </div>
+            <div key="Does Rocket Lab reuse rockets?">
+              <h3 className="text-base font-semibold text-white mb-1">Does Rocket Lab reuse rockets?</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">Electron has recovered boosters from the ocean and demonstrated a mid-air helicopter catch, but reuse is not routine. Neutron is designed for propulsive booster landing from the start. Falcon 9 boosters have landed more than 200 times and individual boosters fly more than twenty missions.</p>
+            </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"Is Rocket Lab a competitor to SpaceX?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"In small launch, yes — Electron is the leading dedicated small launcher and SpaceX has no small rocket. In medium launch, not yet: Rocket Lab's Neutron is designed to compete with Falcon 9 but has not flown. In scale, no: Rocket Lab's revenue is a small fraction of SpaceX's.\"}}, {\"@type\": \"Question\", \"name\": \"What is the difference between Electron and Falcon 9?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Electron lifts about 310 kg to low Earth orbit for a dedicated small-satellite customer; Falcon 9 lifts 22,800 kg. Electron costs a few million dollars a flight and a great deal more per kilogram; Falcon 9 costs about $74 million and is the cheapest per kilogram of any operational rocket.\"}}, {\"@type\": \"Question\", \"name\": \"Can I invest in Rocket Lab and SpaceX?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Both are public: Rocket Lab as RKLB and SpaceX as SPCX (since June 2026), both on the Nasdaq. Our SPCX vs RKLB comparison and the Space Stocks hub cover them. Nothing on SpaceNexus is investment advice.\"}}, {\"@type\": \"Question\", \"name\": \"When does Neutron fly?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Rocket Lab targets a first flight in late 2026. Neutron is a reusable medium-lift rocket carrying about 13,000 kg to LEO, aimed at constellation and government customers now flying on Falcon 9.\"}}, {\"@type\": \"Question\", \"name\": \"Does Rocket Lab reuse rockets?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"Electron has recovered boosters from the ocean and demonstrated a mid-air helicopter catch, but reuse is not routine. Neutron is designed for propulsive booster landing from the start. Falcon 9 boosters have landed more than 200 times and individual boosters fly more than twenty missions.\"}}]}".replace(/</g, '\\u003c') }} />
+
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
