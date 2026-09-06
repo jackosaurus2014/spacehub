@@ -106,12 +106,26 @@ export async function getRocketLiveStats(slug: string, now: Date = new Date()): 
 }
 
 /** Index-page summary for every catalogued rocket in one scan. */
-export async function getRocketIndex(now: Date = new Date()): Promise<Array<{ slug: string; spec: LaunchVehicle; flown: number; last90Days: number; nextLaunch: Date | null }>> {
+export interface RocketIndexRow {
+  slug: string;
+  spec: LaunchVehicle;
+  /** All-time tracked lift-offs (completed + failed). */
+  flown: number;
+  last90Days: number;
+  nextLaunch: Date | null;
+  /** Lift-offs in the current UTC calendar year (scorecard, 2026-09-06). */
+  thisYear: number;
+  thisYearFailed: number;
+  lastFlight: Date | null;
+}
+
+export async function getRocketIndex(now: Date = new Date()): Promise<RocketIndexRow[]> {
   const rows = await prisma.spaceEvent.findMany({
     where: { rocket: { not: null }, type: { in: [...LAUNCH_EVENT_TYPES] } },
     select: { rocket: true, launchDate: true, status: true },
   });
   const ninety = now.getTime() - 90 * 86_400_000;
+  const startOfYear = Date.UTC(now.getUTCFullYear(), 0, 1);
   return allRocketSlugs().map((slug) => {
     const entry = getRocketEntry(slug)!;
     const spec = getRocketSpec(slug)!;
@@ -124,6 +138,9 @@ export async function getRocketIndex(now: Date = new Date()): Promise<Array<{ sl
       flown: past.filter((r) => r.status === 'completed' || r.status === 'failed').length,
       last90Days: past.filter((r) => r.launchDate!.getTime() >= ninety && r.status !== 'scrubbed').length,
       nextLaunch: future[0]?.launchDate ?? null,
+      thisYear: past.filter((r) => r.launchDate!.getTime() >= startOfYear && (r.status === 'completed' || r.status === 'failed')).length,
+      thisYearFailed: past.filter((r) => r.launchDate!.getTime() >= startOfYear && r.status === 'failed').length,
+      lastFlight: past.filter((r) => r.status === 'completed' || r.status === 'failed').sort((a, b) => b.launchDate!.getTime() - a.launchDate!.getTime())[0]?.launchDate ?? null,
     };
   });
 }

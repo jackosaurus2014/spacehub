@@ -15,6 +15,7 @@ import { getNextLaunches } from '@/lib/launch-sites';
 import { getMissionControlEvents } from '@/lib/space-events';
 import { getLatestGalleryItems, type GalleryItem } from '@/lib/gallery';
 import GalleryImage from '@/components/gallery/GalleryImage';
+import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import { logger } from '@/lib/logger';
 import type { SpaceEvent } from '@/types';
 import MissionControlClient from './MissionControlClient';
@@ -212,6 +213,12 @@ export default async function MissionControlPage() {
                     sub={next48 === 1 ? 'launch on the board' : 'launches on the board'}
                   />
                 </div>
+              </div>
+              {/* Tier 2 #12 (2026-09-06): the same "what's next" rail every
+                  launch page carries, keyed to the next launch. Mission
+                  Control is the hub, so the hub link itself is hidden. */}
+              <div className="mt-5">
+                <LaunchCrossLinks rocket={next.rocket} location={next.location} eventId={next.id} upcoming hide={['mc']} />
               </div>
             </section>
           ) : (

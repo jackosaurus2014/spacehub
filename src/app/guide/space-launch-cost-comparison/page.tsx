@@ -8,8 +8,18 @@ import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { getRocketScorecard, fmtPrice, fmtPerKg } from '@/lib/rocket-scorecard';
+import { getLaunchCalendar } from '@/lib/launch-calendar';
+import { formatLaunchDate } from '@/components/launches/LaunchRow';
+import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
+import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 
-export const revalidate = 3600; // ISR: revalidate every hour
+// Tier 2 #11 (2026-09-06): the vehicle table, the cadence line and the
+// next-launch alert are read from the tracker at request time. force-dynamic
+// rather than ISR because the Railway build container has no database.
+export const dynamic = 'force-dynamic';
+/** Bumped by hand when the prose changes. Live figures do not move it. */
+const LAST_EDITED = '2026-09-06T00:00:00Z';
 
 export const metadata: Metadata = {
   title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
@@ -103,7 +113,7 @@ function buildStructuredData() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
-    dateModified: new Date().toISOString(),
+    dateModified: LAST_EDITED,
     mainEntityOfPage: 'https://spacenexus.us/guide/space-launch-cost-comparison',
     image: 'https://spacenexus.us/og-image.png',
   };
@@ -124,8 +134,16 @@ function buildStructuredData() {
 /* ------------------------------------------------------------------ */
 /*  Page component                                                    */
 /* ------------------------------------------------------------------ */
-export default function SpaceLaunchCostComparisonPage() {
+export default async function SpaceLaunchCostComparisonPage() {
   const { article, faqSchema } = buildStructuredData();
+  const [scorecard, calendar] = await Promise.all([
+    getRocketScorecard().catch(() => []),
+    getLaunchCalendar().catch(() => null),
+  ]);
+  const f9 = scorecard.find((r) => r.slug === 'falcon-9');
+  const starship = scorecard.find((r) => r.slug === 'starship');
+  const priced = scorecard.filter((r) => r.costMillions != null && r.status !== 'Retired');
+  const next = calendar?.nextLaunch ?? null;
 
   return (
     <>
@@ -167,7 +185,7 @@ export default function SpaceLaunchCostComparisonPage() {
               Prices, Payload Capacity &amp; Cost Per Kilogram for Every Major Vehicle
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
-              <time dateTime="2026-09-01">Last updated: September 2026</time>
+              <time dateTime={LAST_EDITED}>Updated September 6, 2026 · flight figures live</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
               <ReadingTime wordCount={3600} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
@@ -185,7 +203,14 @@ export default function SpaceLaunchCostComparisonPage() {
           <p className="text-[17px] text-[var(--ink)] leading-relaxed">
             A dedicated Falcon 9 lists at about <strong>{fmtUsdM(FALCON9_LIST_PRICE_USD)}</strong> — roughly <strong>{fmtUsd(FALCON9_DEDICATED_PER_KG)} per kilogram</strong> at full payload. Rideshare on SpaceX Transporter is about <strong>{fmtUsd(RIDESHARE_PER_KG)}/kg</strong> with a {RIDESHARE_MIN_KG} kg minimum ({fmtUsdK(RIDESHARE_MIN_PRICE_USD)}). A dedicated small launcher such as Electron runs about {fmtUsd(ELECTRON_DEDICATED_PER_KG)}/kg; Falcon Heavy lists near {fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)}; Starship targets ${STARSHIP_TARGET_PER_KG.low}–${STARSHIP_TARGET_PER_KG.high}/kg at mature flight rates. Everything below is the detail behind those numbers.
           </p>
-          <p className="text-[12px] text-[var(--ink-3)] mt-3">Prices as of {LAUNCH_COST_AS_OF} · {LAUNCH_COST_SOURCE}.</p>
+          {f9 && (
+            <p className="text-[15px] text-[var(--ink-2)] leading-relaxed mt-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-4 py-3">
+              <strong className="text-cyan-300">Where the market is today:</strong> Falcon 9 has flown {f9.last90Days} times in the last 90 days and {f9.thisYear} times this year
+              {starship?.nextLaunch ? <>; the next Starship flight is on our tracker for {formatLaunchDate(starship.nextLaunch, false)}</> : null}
+              {next ? <>. The next orbital launch of any kind is {next.name} on {formatLaunchDate(new Date(next.launchDate), false)}</> : null}.
+            </p>
+          )}
+          <p className="text-[12px] text-[var(--ink-3)] mt-3">Prices as of {LAUNCH_COST_AS_OF} · {LAUNCH_COST_SOURCE}. Flight counts from our launch tracker at the moment you loaded the page.</p>
         </section>
 
         {/* ── Main content area ── */}
@@ -354,6 +379,31 @@ export default function SpaceLaunchCostComparisonPage() {
                   <Link href="/rockets/new-glenn" className="text-cyan-400 hover:text-cyan-300">New Glenn</Link> or{' '}
                   <Link href="/rockets/electron" className="text-cyan-400 hover:text-cyan-300">Electron</Link>.
                 </p>
+                {priced.length > 0 && (
+                  <div className="overflow-x-auto mb-8">
+                    <table className="w-full text-sm min-w-[720px]">
+                      <caption className="text-left text-xs text-star-300 mb-2">Every priced vehicle in our registry, ranked by flights this year. Prices are published or reported list figures; flight counts are live from the tracker.</caption>
+                      <thead>
+                        <tr className="text-left text-[10px] uppercase tracking-wider text-star-300 border-b border-white/[0.08]">
+                          <th className="px-3 py-2.5">Vehicle</th><th className="px-3 py-2.5 text-right">List price</th><th className="px-3 py-2.5 text-right">$/kg LEO</th><th className="px-3 py-2.5 text-right">To LEO</th><th className="px-3 py-2.5 text-right">Flights this year</th><th className="px-3 py-2.5 text-right">Last 90 days</th><th className="px-3 py-2.5">Next launch</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {priced.map((r) => (
+                          <tr key={r.slug} className="border-b border-white/[0.06] last:border-0">
+                            <td className="px-3 py-2.5 text-white"><Link href={`/rockets/${r.slug}`} className="hover:text-cyan-300">{r.name}</Link><span className="text-star-300 text-xs"> · {r.manufacturer}</span></td>
+                            <td className="px-3 py-2.5 text-right text-white tabular-nums">{fmtPrice(r.costMillions)}</td>
+                            <td className="px-3 py-2.5 text-right text-white tabular-nums">{fmtPerKg(r.costPerKgLeo)}</td>
+                            <td className="px-3 py-2.5 text-right text-star-200 tabular-nums">{r.payloadLeoKg.toLocaleString('en-US')} kg</td>
+                            <td className="px-3 py-2.5 text-right text-white tabular-nums">{r.thisYear}{r.thisYearFailed > 0 ? <span className="text-red-300 text-xs"> ({r.thisYearFailed} failed)</span> : null}</td>
+                            <td className="px-3 py-2.5 text-right text-star-200 tabular-nums">{r.last90Days}</td>
+                            <td className="px-3 py-2.5 text-star-200">{r.nextLaunch ? formatLaunchDate(r.nextLaunch, false) : r.status === 'In Development' ? 'Not yet flown' : '—'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
                 <div className="space-y-6 text-star-200 leading-relaxed text-lg">
                   <h3 className="text-xl font-semibold text-white mt-4 mb-3">
                     SpaceX Falcon 9
@@ -1014,6 +1064,15 @@ export default function SpaceLaunchCostComparisonPage() {
                 </div>
               </section>
 
+              <section id="launch-alerts" className="mb-10 scroll-mt-24">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">What&apos;s next</h2>
+                <LaunchCrossLinks rocket="Falcon 9" upcoming alertsAnchor hide={['mc']} />
+                {next && (
+                  <div className="mt-6">
+                    <LaunchWatchForm eventId={next.id} label={`Email me about the next launch: ${next.name}, ${formatLaunchDate(new Date(next.launchDate), false)}`} source="guide-launch-cost" />
+                  </div>
+                )}
+              </section>
               <RelatedModules modules={PAGE_RELATIONS['guide/space-launch-cost-comparison']} />
 
               {/* Guide Navigation */}
